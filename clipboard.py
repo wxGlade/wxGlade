@@ -3,24 +3,47 @@
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
 # License: GPL (see license.txt)
 
-class wxGladeClipboard:
-    """\
-    class used to copy widgets to/from the clipboard
-    """
-    __dict = None
-    def __init__(self, xml_str="", option=0, flag=0, border=0):
-        if wxGladeClipboard.__dict is None: wxGladeClipboard.__dict = {}
-        self.__dict__ = wxGladeClipboard.__dict
-        self.xml_str = xml_str
-        self.option = option
-        self.flag = flag
-        self.border = border
+from wxPython.wx import *
 
-clipboard = wxGladeClipboard()
+
+# Format used by wxGlade for the clipboard.
+_widget_data_format = wxCustomDataFormat("wxglade_widget")
+
+
+class _WidgetDataObject(wxCustomDataObject):
+    """\
+    Object representig a widget in the clipboard.
+    """
+    def __init__(self, *args):
+        wxCustomDataObject.__init__(self, _widget_data_format)
+        if args:
+            data = apply(self._widget2repr, args)
+            self.SetData(data)
+
+    def _widget2repr(self, *args):
+        """\
+        Convert *args into a string and returns it.
+        *args contains option, flag, border, xml_str.
+        """
+        assert len(args) == 4
+        return ":".join([str(elem) for elem in args])
+
+    def GetWidgetData(self):
+        """\
+        Convert a string into option, flag, border and xml_string
+        and returns them in a list.
+        """
+        ret = self.GetData().split(":", 4)
+        assert len(ret) == 4, "Invalid data in the clipboard"
+        for i in range(3):
+            # option, flag and border are integers.
+            ret[i] = int(ret[i])
+        return ret
+
 
 def copy(widget):
     """\
-    copies widget and all its children to the clipboard
+    Copies widget and all its children to the clipboard.
     """
     from cStringIO import StringIO
     xml_str = StringIO()
@@ -38,42 +61,59 @@ def copy(widget):
     flag = widget.get_int_flag() 
     option = widget.get_option()
     border = widget.get_border()
-    global clipboard
-    clipboard = wxGladeClipboard(xml_str.getvalue(), option, flag, border)
-    #print clipboard.xml_str
+    if wxTheClipboard.Open():
+        try:
+            wdo = _WidgetDataObject(option, flag, border,
+                                    xml_str.getvalue())
+            if not wxTheClipboard.SetData(wdo):
+                print "Data can't be copied to clipboard."
+                return False
+            return True
+        finally:
+            wxTheClipboard.Close()
+    else:
+        print "Clipboard can't be opened."
+        return False
+
 
 def cut(widget):
-    copy(widget)
-    widget.remove()
+    """\
+    Copies widget and all its children to the clipboard and then
+    removes them.
+    """
+    if copy(widget):
+        widget.remove()
+        return True
+    else:
+        return False
+
 
 def paste(parent, sizer, pos):
     """\
-    copies a widget (and all its children) from the clipboard to the given
+    Copies a widget (and all its children) from the clipboard to the given
     destination (parent, sizer and position inside the sizer)
-    returns True if there was something to paste, False otherwise
+    returns True if there was something to paste, False otherwise.
     """
-    xml_str = clipboard.xml_str
+    if wxTheClipboard.Open():
+        try:
+            if wxTheClipboard.IsSupported(_widget_data_format):
+                wdo = _WidgetDataObject()
+                if not wxTheClipboard.GetData(wdo):
+                    print "Data can't be copied from clipboard."
+                    return False
+            else:
+                return False
+        finally:
+            wxTheClipboard.Close()
+    else:
+        print "Clipboard can't be opened."
+        return False
+
+    option, flag, border, xml_str = wdo.GetWidgetData()
     if xml_str:
-        #log = open('clipboard_log.txt', 'w')
-        #log.write(xml_str)
-        #log.close()
         import xml_parse
-##         class XmlClipboardObject:
-##             def __init__(self, **kwds):
-##                 self.__dict__.update(kwds)
-##         sizer = XmlClipboardObject(obj=sizer, parent=parent)
-##         par = XmlClipboardObject(obj=parent, parent=parent)
-##         sizeritem = xml_parse.Sizeritem()
-##         sizeritem.option = clipboard.option
-##         sizeritem.flag = clipboard.flag
-##         sizeritem.border = clipboard.border
-##         sizeritem.pos = pos
-##         si = XmlClipboardObject(obj=sizeritem, parent=parent)
-##         parser = xml_parse.XmlWidgetBuilder(True, par, sizer, si)
         parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos,
-                                                     clipboard.option,
-                                                     clipboard.flag,
-                                                     clipboard.border)
+                                                     option, flag, border)
         parser.parse_string(xml_str)
-        return True # widget hierarchy pasted
-    return False # there's nothing to paste
+        return True # Widget hierarchy pasted.
+    return False # There's nothing to paste.
