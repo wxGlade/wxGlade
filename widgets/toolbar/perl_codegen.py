@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.3 2003/06/26 08:48:13 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.4 2003/07/11 07:30:26 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -86,12 +86,12 @@ class PerlCodeGenerator:
                     kind = 'wxITEM_NORMAL'
                 if tool.bitmap1:
                     bmp1 = 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % \
-                        plgen.quote_str(tool.bitmap1)
+                        plgen.quote_path(tool.bitmap1)
                 else:
                     bmp1 = 'wxNullBitmap'
                 if tool.bitmap2:
                     bmp2 = 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % \
-                        plgen.quote_str(tool.bitmap2)
+                        plgen.quote_path(tool.bitmap2)
                 else:
                     bmp2 = 'wxNullBitmap'
 #                append('%s->AddLabelTool(%s, %s, %s, %s, %s, %s, %s);\n' %
@@ -116,8 +116,8 @@ class PerlCodeGenerator:
 
         init = [
             '\n# Tool Bar\n',
-            '$self->{%s} = %s->new($self, -1, wxDefaultPosition, wxDefaultSize, %s);\n' %
-                 (obj.name, obj.klass.replace('wx','Wx::',1), style),
+            '$self->{%s} = %s->new($self, -1, wxDefaultPosition, \
+wxDefaultSize, %s);\n' % (obj.name, obj.klass.replace('wx','Wx::',1), style),
                  '$self->SetToolBar($self->{%s});\n' % obj.name 
             ]
         init.extend(self.get_init_code(obj))
