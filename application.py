@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.40 2004/09/17 13:09:56 agriggio Exp $
+# $Id: application.py,v 1.41 2004/10/05 08:49:11 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -486,7 +486,7 @@ class Application(object):
                 if os.path.isfile(name):
                     os.unlink(name)
         except:
-            traceback.print_exc()
+            #traceback.print_exc()
             wxMessageBox("Problem previewing gui", "Error",
                          wxOK|wxCENTRE|wxICON_EXCLAMATION, self.notebook)
         # restore app state
