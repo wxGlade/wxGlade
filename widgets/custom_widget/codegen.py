@@ -83,7 +83,7 @@ def self_%s_on_paint(event):
     dc.DrawRectangle(x-1, y-1, tw+2, th+2)
     dc.DrawText(text, x, y)
     dc.EndDrawing()    
-        """ % (widget.name, widget.name, widget.klass)
+""" % ((widget.name,) * 3)
         for line in on_paint_code.splitlines():
             append(line + '\n')        
         append('EVT_PAINT(self.%s, self_%s_on_paint)\n' %
@@ -111,6 +111,32 @@ class CppCodeGenerator:
 # end of class CppCodeGenerator
 
 
+        
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+
+    class CustomXrcObject(xrcgen.DefaultXrcObject):
+        from xml.sax.saxutils import escape
+
+        def write(self, outfile, ntabs):
+            # first, fix the class:
+            self.klass = obj.klass
+            # then, the attributes:
+            if 'arguments' in self.properties:
+                args = self.properties['arguments']
+                del self.properties['arguments']
+                for arg in args:           
+                    try:
+                        name, val = [s.strip() for s in arg.split(':', 1)]
+                    except Exception, e:
+                        print 'Exception:', e
+                        continue # silently ignore malformed arguments
+                    self.properties[name] = val
+            xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
+
+    return CustomXrcObject(obj)
+
+
 def initialize():
     common.class_names['CustomWidget'] = 'CustomWidget'
 
@@ -127,5 +153,6 @@ def initialize():
                                     'CustomWidget')
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
-        xrcgen.add_widget_handler('CustomWidget',
-                                  xrcgen.NotImplementedXrcObject)
+        xrcgen.add_widget_handler('CustomWidget', xrc_code_generator)
+        xrcgen.add_property_handler('arguments', ArgumentsCodeHandler,
+                                    'CustomWidget')

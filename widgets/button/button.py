@@ -58,11 +58,10 @@ class EditButton(ManagedBase):
 
     def set_default(self, value):
         self.default = bool(int(value))
-##         if value and self.widget:
-##             self.widget.SetDefault()
 
 # end of class EditButton
         
+
 def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditButton objects.
@@ -78,6 +77,7 @@ def builder(parent, sizer, pos, number=[1]):
     button.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
+
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build EditButton objects from an xml file
@@ -89,8 +89,6 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     button = EditButton(label, parent, wxNewId(), misc._encode(label), sizer,
                         pos, common.property_panel, show=False)
-##     sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
-##                    border=sizeritem.border, size=button.GetBestSize())
     node = Tree.Node(button)
     button.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

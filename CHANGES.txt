@@ -1,4 +1,7 @@
-2005-05-07: application.py, edit_windows.py, xml_parse.py, 
+2003-05-10: custom_widget/*, xrc2wxg.py: 
+               support of XRC code generation (and import) for custom widgets
+
+2003-05-07: application.py, edit_windows.py, xml_parse.py, 
             widgets/menubar/codegen.py, widgets/toolbar/codegen.py,
             widgets/custom_widget/codegen.py:
                added preview support

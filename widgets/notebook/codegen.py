@@ -82,7 +82,10 @@ class PythonCodeGenerator:
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
+
     class NotebookXrcObject(xrcgen.DefaultXrcObject):
+        from xml.sax.saxutils import escape
+
         def write(self, outfile, ntabs):
             if self.properties.has_key('tabs'):
                 self.tabs = self.properties['tabs']
@@ -95,7 +98,6 @@ def xrc_code_generator(obj):
             xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
 
         def write_child_prologue(self, child, outfile, ntabs):
-            from xml.sax.saxutils import escape
             if self.tabs:
                 tab_s = '    ' * ntabs
                 outfile.write(tab_s + '<object class="notebookpage">\n')
@@ -108,7 +110,6 @@ def xrc_code_generator(obj):
                 outfile.write('    '*ntabs + '</object>\n')
                 
     return NotebookXrcObject(obj)
-
 
 
 class CppCodeGenerator:

@@ -60,7 +60,7 @@ class CustomWidget(ManagedBase):
         self.access_functions['arguments'] = (self.get_arguments,
                                               self.set_arguments)
         
-        cols = [('Constructor Parameters', GridProperty.STRING)]
+        cols = [('Arguments', GridProperty.STRING)]
         self.properties['arguments'] = ArgumentsProperty(self, 'arguments',
                                                          None, cols, 2)
 
@@ -97,11 +97,27 @@ class CustomWidget(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1)
         szr = wxBoxSizer(wxVERTICAL)
         args = self.properties['arguments']
         args.display(panel)
         szr.Add(args.panel, 1, wxALL|wxEXPAND, 5)
+        help_btn = wxButton(panel, -1, 'Help on "Arguments" property')
+        text = """\
+The 'Arguments' property behaves differently when generating
+XRC code wrt C++ or python: you can use it to add custom attributes
+to the resource object. To do so, arguments must have the following
+format: ATTRIBUTE_NAME: ATTRIBUTE_VALUE
+For instance:
+    default_value: 10
+is translated to:
+    <default_value>10</default_value>
+Invalid entries are silently ignored"""
+        def show_help(event):
+            wxMessageBox(text, 'Help on "Arguments" property',
+                         wxOK|wxCENTRE|wxICON_INFORMATION)
+        EVT_BUTTON(help_btn, -1, show_help)
+        szr.Add(help_btn, 0, wxBOTTOM|wxLEFT|wxRIGHT|wxEXPAND, 5)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
