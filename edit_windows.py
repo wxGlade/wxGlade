@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.57 2004/08/15 12:01:45 agriggio Exp $
+# $Id: edit_windows.py,v 1.58 2004/08/17 12:07:25 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -652,10 +652,6 @@ class ManagedBase(WindowBase):
                           wxEXPAND, wxALIGN_RIGHT, wxALIGN_BOTTOM,
                           wxALIGN_CENTER_HORIZONTAL, wxALIGN_CENTER_VERTICAL,
                           wxSHAPED, wxADJUST_MINSIZE)
-        sizer.add_item(self, pos)
-
-        szprop = self.sizer_properties
-        szprop['option'] = SpinProperty(self, "option", None, 0, (0, 1000))
         flag_labels = ('#section#Border',
                        'wxALL',
                        'wxLEFT', 'wxRIGHT',
@@ -664,6 +660,15 @@ class ManagedBase(WindowBase):
                        'wxALIGN_BOTTOM', 'wxALIGN_CENTER_HORIZONTAL',
                        'wxALIGN_CENTER_VERTICAL', 'wxSHAPED',
                        'wxADJUST_MINSIZE')
+        # ALB 2004-08-16 - see the "wxPython migration guide" for details...
+        if misc.check_wx_version(2, 5, 2):
+            self.flag = wxFIXED_MINSIZE
+            self.flags_pos += (wxFIXED_MINSIZE, )
+            flag_labels += ('wxFIXED_MISIZE', )
+        sizer.add_item(self, pos)
+
+        szprop = self.sizer_properties
+        szprop['option'] = SpinProperty(self, "option", None, 0, (0, 1000))
         szprop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
         szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
         pos_p = szprop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
