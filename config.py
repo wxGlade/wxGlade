@@ -7,6 +7,7 @@
 
 from wxPython.wx import *
 from ConfigParser import *
+import common, misc, sys, os, os.path
 
 class wxGladePreferences(wxDialog):
     def __init__(self, preferences):
@@ -104,7 +105,6 @@ class wxGladePreferences(wxDialog):
 
 # end of class wxGladePreferences
 
-import os, os.path
 
 class Preferences(ConfigParser):
     _defaults = {
@@ -139,11 +139,18 @@ class Preferences(ConfigParser):
         
 preferences = None
 
+if sys.platform == 'win32': _rc_name = 'wxglade.ini'
+else: _rc_name = 'wxgladerc'
+
+if misc.check_wx_version(2, 3, 3): _use_file_history = True
+else: _use_file_history = False
+
 def init_preferences():
     global preferences
     if preferences is None:
         preferences = Preferences()
-        preferences.read(['wxgladerc', os.path.expanduser('~/.wxgladerc')])
+        preferences.read([_rc_name,
+                          os.path.expanduser('~/.wxglade/%s' % _rc_name)])
         if not preferences.has_section('wxglade'):
             preferences.add_section('wxglade')
 
@@ -154,13 +161,40 @@ def edit_preferences():
     dialog.Destroy()
 
 def save_preferences():
-    if not preferences.changed: return
-    try:
-        outfile = open(os.path.expanduser('~/.wxgladerc'), 'w')
-    except IOError:
-        # if there's no home dir, write to the global wxgladerc file
-        outfile = open('wxgladerc', 'w')
-    # let the exception be raised to signal abnormal behaviour
-    preferences.write(outfile)
-    outfile.close()
+    # let the exception be raised
+    path = os.path.expanduser('~')
+    if path == '~': path = '.'
+    else:
+        path = os.path.join(path, '.wxglade')
+        if not os.path.isdir(path):
+            os.mkdir(path)
+    # always save the file history
+    if _use_file_history:
+        fh = common.palette.file_history
+        filenames = [ fh.GetHistoryFile(i) for i in
+                      range(fh.GetNoHistoryFiles()) ]
+        outfile = open(os.path.join(path, 'file_history.txt'), 'w')
+        for filename in filenames:
+            print >> outfile, filename
+        outfile.close()
+    if preferences.changed:
+        outfile = open(os.path.join(path, _rc_name), 'w')
+        # let the exception be raised to signal abnormal behaviour
+        preferences.write(outfile)
+        outfile.close()
 
+def load_history():
+    """\
+    Loads the file history and returns a list of paths
+    """
+    path = os.path.expanduser('~')
+    if path == '~': path = '.'
+    else: path = os.path.join(path, '.wxglade')
+    try:
+        history = open(os.path.join(path, 'file_history.txt'))
+        l = history.readlines()
+        history.close()
+        return l
+    except IOError:
+        # don't consider this an error
+        return [] 

@@ -137,7 +137,7 @@ def check_wx_version(major, minor=0, release=0):
     returns True if the current wxPython version is at least
     major.minor.release
     """
-    return "%d.%d.%d" % (major, minor, release) >= wx.__version__
+    return wx.__version__ >= "%d.%d.%d" % (major, minor, release)
 ##     wx_major, wx_minor, wx_release = [int(t) for t in
 ##                                       wx.__version__.split('.')][:3]
 ##     return wx_major > major or \
