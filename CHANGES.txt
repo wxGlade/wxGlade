@@ -1,3 +1,6 @@
+2003-01-27: codegen/py_codegen.py, codegen/cpp_codegen.py:
+                fixed bugs in multi-files mode code generation 
+
 2003-01-24: widget_properties.py:
                 fixed segfault caused by a change (bug?) in wxPython 2.4.0.2
 
