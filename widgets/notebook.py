@@ -9,49 +9,60 @@ from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase, WindowBase
 
-class NotebookPane(wxPanel, WindowBase):
+class NotebookPane(WindowBase):
     def __init__(self, name, parent, id, property_window, show=True):
-        wxPanel.__init__(self, parent, id)
         WindowBase.__init__(self, name, 'wxPanel', parent,
                             id, property_window, show)
-        self.has_sizer = False
-        self.sel_marker = misc.SelectionMarker(self, self)
+        self.sizer = None
+        self.sel_marker = None 
         self.remove_page_from_parent = True # if True, a call to Destroy will
                                             # also remove the pane from its
                                             # parent's list of pages
-        EVT_LEFT_DOWN(self, self.drop_sizer)
-        EVT_ENTER_WINDOW(self, self.on_enter)
-        EVT_MOVE(self, self.on_move)
+
+    def create_widget(self):
+        self.widget = wxPanel(self.parent.widget, self.id)
+        self.sel_marker = misc.SelectionMarker(self.widget, self.widget)
+        EVT_LEFT_DOWN(self.widget, self.drop_sizer)
+        EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        EVT_MOVE(self.widget, self.on_move)
+        def GetBestSize():
+            if self.sizer and self.widget:
+                return self.widget.GetSizer().GetMinSize()
+            return wxPanel.GetBestSize(self.widget)
+        self.widget.GetBestSize = GetBestSize
+
+    def set_sizer(self, sizer):
+        self.sizer = sizer
+        if self.sizer and self.sizer.widget and self.widget:
+            self.widget.SetAutoLayout(True)
+            self.widget.SetSizer(self.sizer.widget)    
         
     def popup_menu(self, *args): pass
 
     def on_enter(self, event):
-        if not self.has_sizer and common.adding_sizer:
-            self.SetCursor(wxCROSS_CURSOR)
+        if not self.sizer and common.adding_sizer:
+            self.widget.SetCursor(wxCROSS_CURSOR)
         else:
-            self.SetCursor(wxNullCursor)
+            self.widget.SetCursor(wxNullCursor)
 
     def drop_sizer(self, event):
-        if self.has_sizer or not common.adding_sizer:
+        if self.sizer or not common.adding_sizer:
             self.on_set_focus(event) # default behaviour: call show_properties
             return
-        common.widgets[common.widget_to_add](self, None, None)
-        common.adding_widget = common.adding_sizer = 0
-        common.widget_to_add = None
-        self.has_sizer = True
-        common.app_tree.app.saved = False
         self.SetCursor(wxNullCursor)
+        common.widgets[common.widget_to_add](self, None, None)
+        common.adding_widget = common.adding_sizer = False
+        common.widget_to_add = None
+        self.sizer = True # in this case, self.sizer is used only as a flag
+                          # (this is really ugly, I must find a better way)
+        common.app_tree.app.saved = False
 
     def on_parent_size(self, event):
-        if self.has_sizer:
-            self.GetSizer().Layout()
+        if self.sizer and self.widget:
+            self.widget.GetSizer().Layout()
     
-    def GetBestSize(self):
-        if self.has_sizer: return self.GetSizer().GetMinSize()
-        return wxPanel.GetBestSize(self)
-
     def update_view(self, selected):
-        self.sel_marker.Show(selected)
+        if self.sel_marker: self.sel_marker.Show(selected)
 
     def on_move(self, event): self.sel_marker.update()
 
@@ -61,13 +72,15 @@ class NotebookPane(wxPanel, WindowBase):
 
     def remove(self, remove_page_from_parent=True):
         self.remove_page_from_parent = remove_page_from_parent
-        ManagedBase.remove(self)
+        WindowBase.remove(self)
 
-    def Destroy(self):
+    def delete(self):
+        if not self.widget: return
+        if self.sel_marker: self.sel_marker.Destroy()
         if self.remove_page_from_parent:
             index = self.parent.find_page(self)
-            if index >= 0: self.parent.RemovePage(index)
-        wxPanel.Destroy(self)
+            if index >= 0: self.parent.widget.RemovePage(index)
+        WindowBase.delete(self)
 
 # end of class NotebookPane
 
@@ -131,6 +144,7 @@ class EditNotebook(ManagedBase):
         """
         ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer,
                              pos, property_window, show=show)
+        self.style = style
         self.tabs = [ ['tab1', None] ] # list of pages of this notebook
                                        # (actually a list of
                                        # 2-list label, window)
@@ -144,6 +158,16 @@ class EditNotebook(ManagedBase):
         self.properties['tabs'] = NotebookPagesProperty(self, 'tabs', None,
                                                         tab_cols)
         del tab_cols
+        self.nb_sizer = None 
+
+    def create_widget(self):
+        self.widget = wxNotebook(self.parent.widget, self.id, style=self.style)
+        self.nb_sizer = wxNotebookSizer(self.widget)
+        if not self.widget.GetPageCount():
+            for name, window in self.tabs:
+                if not window: continue
+                window.show_widget(True)
+                self.widget.AddPage(window.widget, name)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -163,11 +187,12 @@ class EditNotebook(ManagedBase):
 
     def add_tab(self, window, name):
         self.tabs.append([name, window])
-        if self.widget:
-            self.widget.AddPage(window, name)
         node = Tree.Node(window)
         window.node = node
         common.app_tree.add(node, self.node)
+        if self.widget:
+            window.show_widget(True)
+            self.widget.AddPage(window.widget, name)
        
     def get_tabs(self):
         return [ [n] for n, w in self.tabs ]
@@ -177,44 +202,36 @@ class EditNotebook(ManagedBase):
         if delta > 0:
             # we have to remove some pages
             i = len(tabs)
-            for n, window in self.tabs[i:]:
-                if self.widget:
+            if self.widget:
+                for n, window in self.tabs[i:]:
                     self.widget.RemovePage(i)
-                window.remove(False)
+                    window.remove(False)
             del self.tabs[i:]
-            self.SetSelection(0)
+            if self.widget: self.widget.SetSelection(0)
         elif delta < 0:
             # we have to add some pages
             number = len(self.tabs)+1
             while common.app_tree.has_name(self.name + '_pane_%s' % number):
                 number += 1
             for i in range(-delta):
-                if self.widget:
-                    window = NotebookPane(self.name + '_pane_%s' % number, self,
-                                          wxNewId(), self.property_window)
-                else:
-                    window = None
+                window = NotebookPane(self.name + '_pane_%s' % number,
+                                      self, wxNewId(), self.property_window)
                 number += 1
                 self.add_tab(window, "_")
             if self.widget:
-                self.SetSelection(self.GetPageCount()-1)
+                self.widget.SetSelection(self.widget.GetPageCount()-1)
         # finally, we must update the labels of the tabs
         for i in range(len(tabs)):
             if self.widget:
                 self.widget.SetPageText(i, tabs[i][0])
             self.tabs[i][0] = tabs[i][0]
 
-    def remove(self, *args):
+    def delete(self):
         if self.widget:
             for i in range(self.widget.GetPageCount()):
                 self.widget.RemovePage(i)
-        ManagedBase.remove(self, *args)
-
-    def destroy_widget(self):
-        if self.widget:
-            for i in range(self.widget.GetPageCount()):
-                self.widget.RemovePage(i)
-            self.widget.Destroy(self)
+            #self.nb_sizer.Destroy()
+        ManagedBase.delete(self)
 
     def get_property_handler(self, name):
         if name == 'tabs': return TabsHandler(self)
@@ -224,15 +241,12 @@ class EditNotebook(ManagedBase):
         returns the index of the given page in the notebook, or -1 if the page
         cannot be found
         """
+        if not self.widget: return -1
         for i in range(len(self.tabs)):
-            if self.tabs[i][1] is page: return i
+            if self.tabs[i][1] is page:
+                if i < self.widget.GetPageCount(): return i
+                else: return -1
         return -1
-
-    def create_widget(self):
-        self.widget = wxNotebook(self.parent.widget, self.id, style=self.style)
-        self.nb_sizer = wxNotebookSizer(self.widget)
-        self.widget.Destroy = self.destroy_widget
-
 
 # end of class EditNotebook
         
@@ -272,16 +286,15 @@ def builder(parent, sizer, pos, number=[1]):
 
     node = Tree.Node(window)
     window.node = node
+    window.set_option(1)
+    window.set_flag("wxEXPAND")
+    window.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
     window.tabs = []
     window.add_tab(pane1, 'tab1')
 
     sizer.set_item(window.pos, 1, wxEXPAND)
-    window.sizer_properties['option'].set_value(1)
-    window.sizer_properties['flag'].set_value("wxEXPAND")
-
-    window.Show()
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
@@ -333,7 +346,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
     if hasattr(tmp_win[0], 'klass'):
         window.klass = tmp_win[0].klass
         window.klass_prop.set_value(window.klass)
-        
+
     sizer.set_item(window.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
     node = Tree.Node(window)
@@ -343,26 +356,28 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
     return window
 
 
-def xml_builder_pane(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder_pane(attrs, parent, sizer, sizeritem, pos=None, index=[-1]):
     """\
     factory to build NotebookPane objects from an xml file
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
     except KeyError: raise XmlParsingError, "'name' attribute missing"
+    index[0] += 1
     if hasattr(parent, 'tmp_tab_names'):
-        try: tab_name = parent.tmp_tab_names[parent.GetPageCount()]
+        try: tab_name = parent.tmp_tab_names[index[0]]
         except IndexError: tab_name = name
     else: tab_name = name
 
     pane = NotebookPane(name, parent, wxNewId(), common.property_panel)
-    if not parent.GetPageCount(): parent.tabs = []
+    if not index[0]: parent.tabs = []
     parent.add_tab(pane, tab_name)
     if hasattr(parent, 'tmp_tab_names') and \
-       parent.GetPageCount() == len(parent.tmp_tab_names):
+           index[0] == len(parent.tmp_tab_names)-1:
         # all the tabs have been added, so now we can set the value of the
         # tabs property
         parent.properties['tabs'].set_value(zip(parent.tmp_tab_names))
+        index[0] = -1 # reset the index for the next notebook
     return pane
 
 

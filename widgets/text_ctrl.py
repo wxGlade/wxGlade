@@ -17,6 +17,8 @@ class EditTextCtrl(ManagedBase):
                  show=True):
         ManagedBase.__init__(self, name, 'wxTextCtrl', parent, id, sizer, pos,
                              property_window, show=show)
+        self.value = ""
+        self.style = 0
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['style'] = (self.get_style, self.set_style)
         prop = self.properties
@@ -31,7 +33,9 @@ class EditTextCtrl(ManagedBase):
                         'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH')
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
 
-        self.value = ""
+    def create_widget(self):
+        self.widget = wxTextCtrl(self.parent.widget, self.id, value=self.value,
+                                 style=self.style)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -54,8 +58,7 @@ class EditTextCtrl(ManagedBase):
         value = str(value)
         if value != self.value:
             self.value = value
-            if self.widget:
-                self.widget.SetValue(value)
+            if self.widget: self.widget.SetValue(value)
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
@@ -72,11 +75,7 @@ class EditTextCtrl(ManagedBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        if self.widget:
-            self.widget.SetWindowStyleFlag(style)
-
-    def create_widget(self):
-        self.widget = wxTextCtrl(self.parent.widget, self.id, self.value)
+        if self.widget: self.widget.SetWindowStyleFlag(self.style)
 
 # end of class EditTextCtrl
 
@@ -93,6 +92,7 @@ def builder(parent, sizer, pos, number=[1]):
                         common.property_panel)
     node = Tree.Node(text)
     text.node = node
+    text.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):

@@ -64,11 +64,11 @@ class EditBitmapButton(ManagedBase):
         if type is None:
             self.bitmap = ''
         else:
-            self.bitmap = filename
+            self.bitmap = value
         if self.widget:
             bmp = self.load_bitmap(type)
             self.widget.SetBitmapLabel(bmp)
-            self.widget.set_size("%s, %s" % tuple(self.GetBestSize()))
+            self.widget.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
     def create_widget(self):
         bmp = self.load_bitmap(self.guess_type(self.bitmap))
@@ -100,6 +100,7 @@ def builder(parent, sizer, pos, number=[1]):
                               common.property_panel)
     node = Tree.Node(button)
     button.node = node
+    button.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -112,9 +113,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     button = EditBitmapButton(label, parent, wxNewId(), '', sizer, pos,
-                              common.property_panel)
+                              common.property_panel, show=False)
     sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border, size=button.GetBestSize())
+                   border=sizeritem.border) #, size=button.GetBestSize())
     node = Tree.Node(button)
     button.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

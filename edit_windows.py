@@ -656,8 +656,11 @@ class TopLevelBase(WindowBase):
         self.sizer = True # in this case, self.sizer is used only as a flag
                           # (this is really ugly, I must find a better way)
 
-    def hide_widget(self, event):
+    def hide_widget(self, *args):
         self.widget.Hide()
+        common.app_tree.expand(self.node, False)
+        common.app_tree.select_item(self.node.parent)
+        common.app_tree.app.show_properties()
 
     def on_size(self, event):
         WindowBase.on_size(self, event)

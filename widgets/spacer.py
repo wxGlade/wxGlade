@@ -17,15 +17,18 @@ class EditSpacer(ManagedBase):
         """
         ManagedBase.__init__(self, name, 'spacer', parent, id, sizer,
                              pos, property_window, show=show)
-
-        self.size = (widht, height)
+        self.size = [width, height]
 
         self.access_functions['width'] = (self.get_width, self.set_width)
         self.access_functions['height'] = (self.get_height, self.set_height)
 
-        wp = self.properties['width'] = SpinProperty(self, 'width', None)
-        hp = self.properties['height'] = SpinProperty(self, 'height', None)
+        self.properties['width'] = SpinProperty(self, 'width', None)
+        self.properties['height'] = SpinProperty(self, 'height', None)
 
+    def create_widget(self):
+        self.widget = wxPanel(self.parent.widget, self.id, size=self.size)
+        self.widget.GetBestSize = self.widget.GetSize
+        
     def create_properties(self):
         ManagedBase.create_properties(self)
         page = self.notebook.GetPage(1)
@@ -66,10 +69,6 @@ class EditSpacer(ManagedBase):
             self.widget.SetSize(self.size)
         self.sizer.set_item(self.pos, size=self.size)
 
-    def create_widget(self):
-        self.widget = wxPanel(self.parent.widget, self.id, size=self.size)
-        self.widget.GetBestSize = self.GetSize
-
 # end of class EditSpacer
         
 
@@ -88,8 +87,8 @@ def builder(parent, sizer, pos):
             self.height.set_value(20)
             
             szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(self.width, 0, wxEXPAND)
-            szr.Add(self.height, 0, wxEXPAND)
+            szr.Add(self.width.panel, 0, wxEXPAND)
+            szr.Add(self.height.panel, 0, wxEXPAND)
             sz = wxBoxSizer(wxHORIZONTAL)
             sz.Add(wxButton(self, wxID_OK, 'OK'))
             szr.Add(sz, 0, wxALL|wxALIGN_CENTER, 4)
@@ -110,8 +109,9 @@ def builder(parent, sizer, pos):
                         common.property_panel)
     node = Tree.Node(spacer)
     spacer.node = node
+    spacer.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1) 
-    sizer.set_item(spacer.pos, size=spacer.GetSize())
+    #sizer.set_item(spacer.pos, size=spacer.GetSize())
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\

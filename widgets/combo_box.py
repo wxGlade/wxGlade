@@ -11,7 +11,6 @@ from widget_properties import *
 
 from ChoicesProperty import *
 
-
 if wxPlatform == '__WXMSW__':
     class wxComboBox2(wxComboBox):
         # on windows GetBestSize considers also the drop down menu, while we
@@ -32,11 +31,14 @@ class EditComboBox(ManagedBase):
         """
         ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer,
                              pos, property_window, show=show)
+        self.choices = choices
+        if len(choices): self.selection = 0
+        else: self.selection = -1
+        self.style = 0
         # properties
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
         self.access_functions['style'] = (self.get_style, self.set_style)
         style_labels = ('#section#Style', 'wxCB_READONLY', 'wxCB_SORT')
-        self.style = 0
         self.style_pos = [ eval(s) for s in style_labels[1:] ]
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
@@ -48,11 +50,13 @@ class EditComboBox(ManagedBase):
                                               self.set_selection)
         self.choices = list(choices)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
-                                                    r=(0, len(self.choices) - 1))
-        if len(self.choices)
-            self.selection = 0
-        else:
-            self.selection = -1
+                                                    r=(0, len(choices)-1))
+
+    def create_widget(self):
+        self.widget = wxComboBox2(self.parent.widget, self.id,
+                                 choices=self.choices)
+        self.set_selection(self.selection)
+        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -81,22 +85,15 @@ class EditComboBox(ManagedBase):
                 self.widget.SetSelection(value)
 
     def get_choices(self):
-        # A copy of self.choice is returned, otherwise the caller
-        # could be able to change self.choice but not what is shown
-        # by self.widget. 
-        return list(self.choices)
+        return zip(self.choices)
 
     def set_choices(self, values):
-        values = list(values)
+        self.choices = [ v[0] for v in values ]
         self.properties['selection'].set_range(0, len(self.choices)-1)
         if self.widget:
             self.widget.Clear()
-            for value in values:
-                # !!! I can't understand what you are doing,
-                # why value[0]?
-                self.widget.Append(value[0])
+            for c in self.choices: self.widget.Append(c)
             self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
-            self.widget.SetSelection(int(self.properties['selection'].get_value()))
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
@@ -114,9 +111,8 @@ class EditComboBox(ManagedBase):
             if value[v]:
                 self.style |= self.style_pos[v]
         self.style = style
-        # !!! Why didn't you use SetWindowStyleFlag in the original version?
-##        if self.widget:
-##            self.SetWindowStyleFlag(style)
+        if self.widget:
+            self.SetWindowStyleFlag(style)
 
     def create_widget(self):
         self.widget = wxComboBox2(self.parent.widget, self.id, choices=self.choices)
@@ -140,8 +136,9 @@ def builder(parent, sizer, pos, number=[1]):
     choice = EditComboBox(name, parent, wxNewId(), [misc._encode('choice 1')],
                           sizer, pos, common.property_panel)
     node = Tree.Node(choice)
-    sizer.set_item(pos, size=choice.GetBestSize())
+#    sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
+    choice.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -156,8 +153,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     choice = EditComboBox(name, parent, wxNewId(), [], sizer, pos,
                         common.property_panel)
     sizer.set_item(choice.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border,
-                   size=choice.GetBestSize())
+                   flag=sizeritem.flag, border=sizeritem.border)
+##                    size=choice.GetBestSize())
     node = Tree.Node(choice)
     choice.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

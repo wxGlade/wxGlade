@@ -17,14 +17,21 @@ class EditCheckBox(ManagedBase):
         """
         ManagedBase.__init__(self, name, 'wxCheckBox', parent, id, sizer,
                              pos, property_window, show=show)
+        self.label = label
+        self.value = 0 # if nonzero, che checkbox is checked
+
         self.access_functions['label'] = (self.get_label, self.set_label)
-        self.access_functions['checked'] = (self.get_value(),
-                                            self.set_value)
+        self.access_functions['checked'] = (self.get_value, self.set_value)
         self.properties['label'] = TextProperty(self, 'label', None)
         self.properties['checked'] = CheckBoxProperty(self, 'checked', None,
                                                       'Checked')
-        self.label = label
-        self.value = 0 # If nonzero, che checkbox is checked.
+
+    def create_widget(self):
+        self.widget = wxCheckBox(self.parent.widget, self.id, self.label)
+        self.widget.SetValue(self.value)
+        def on_checkbox(event):
+            self.set_value(self.value)
+        EVT_CHECKBOX(self.widget, self.id, on_checkbox)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -47,7 +54,7 @@ class EditCheckBox(ManagedBase):
         if value != self.label:
             self.label = value
             if self.widget:
-                self.SetLabel(self.label)
+                self.widget.SetLabel(self.label)
 
     def get_value(self):
         return self.value
@@ -56,12 +63,7 @@ class EditCheckBox(ManagedBase):
         self.value = int(value)
         if self.widget:
             self.widget.SetValue(self.value)
-
-    def create_widget(self):
-        self.widget = wxCheckBox(self.parent.widget, self.id, self.label)
-        def on_checkbox(event):
-            self.set_value(self.value)
-        EVT_CHECKBOX(self.widget, self.id, on_checkbox)
+            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
 # end of class EditCheckBox
    
@@ -78,6 +80,7 @@ def builder(parent, sizer, pos, number=[1]):
                             common.property_panel)
     node = Tree.Node(checkbox)
     checkbox.node = node
+    checkbox.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -91,10 +94,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     checkbox = EditCheckBox(label, parent, wxNewId(),
                             misc._encode(label), sizer, pos,
-                            common.property_panel) 
+                            common.property_panel, show=False) 
     sizer.set_item(checkbox.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border,
-                   size=checkbox.GetBestSize())
+                   flag=sizeritem.flag, border=sizeritem.border) #,
+##                   size=checkbox.GetBestSize())
     node = Tree.Node(checkbox)
     checkbox.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

@@ -9,46 +9,57 @@ from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase, WindowBase, EditBase
 
-class SplitterPane(wxPanel, WindowBase):
+class SplitterPane(WindowBase):
     def __init__(self, name, parent, id, pos, property_window, show=True):
-        wxPanel.__init__(self, parent, id)
         WindowBase.__init__(self, name, 'wxPanel', parent,
                             id, property_window, show)
-        self.has_sizer = False
-        self.sel_marker = misc.SelectionMarker(self, parent)
-        EVT_LEFT_DOWN(self, self.drop_sizer)
-        EVT_ENTER_WINDOW(self, self.on_enter)
-        EVT_MOVE(self, self.on_move)
+        self.sizer = None
+        self.sel_marker = None 
+
+    def create_widget(self):
+        self.widget = wxPanel(self.parent.widget, self.id)
+        self.sel_marker = misc.SelectionMarker(self.widget, self.parent.widget)
+        EVT_LEFT_DOWN(self.widget, self.drop_sizer)
+        EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        EVT_MOVE(self.widget, self.on_move)
+        def GetBestSize():
+            if self.sizer and self.widget:
+                return self.widget.GetSizer().GetMinSize()
+            return wxPanel.GetBestSize(self.widget)
+        self.widget.GetBestSize = GetBestSize
+        
+    def set_sizer(self, sizer):
+        self.sizer = sizer
+        if self.sizer and self.sizer.widget and self.widget:
+            self.widget.SetAutoLayout(True)
+            self.widget.SetSizer(self.sizer.widget)    
         
     def popup_menu(self, *args): pass
 
     def on_enter(self, event):
-        if not self.has_sizer and common.adding_sizer:
-            self.SetCursor(wxCROSS_CURSOR)
+        if not self.sizer and common.adding_sizer:
+            self.widget.SetCursor(wxCROSS_CURSOR)
         else:
-            self.SetCursor(wxNullCursor)
+            self.widget.SetCursor(wxNullCursor)
 
     def drop_sizer(self, event):
-        if self.has_sizer or not common.adding_sizer:
+        if self.sizer or not common.adding_sizer:
             self.on_set_focus(event) # default behaviour: call show_properties
             return
-        common.widgets[common.widget_to_add](self, None, None)
-        common.adding_widget = common.adding_sizer = 0
-        common.widget_to_add = None
-        self.has_sizer = True
-        common.app_tree.app.saved = False
         self.SetCursor(wxNullCursor)
+        common.widgets[common.widget_to_add](self, None, None)
+        common.adding_widget = common.adding_sizer = False
+        common.widget_to_add = None
+        self.sizer = True # in this case, self.sizer is used only as a flag
+                          # (this is really ugly, I must find a better way)
+        common.app_tree.app.saved = False
 
     def on_parent_size(self, event):
         if self.has_sizer:
             self.GetSizer().Layout()
     
-    def GetBestSize(self):
-        if self.has_sizer: return self.GetSizer().GetMinSize()
-        return wxPanel.GetBestSize(self)
-
     def update_view(self, selected):
-        self.sel_marker.Show(selected)
+        if self.sel_marker: self.sel_marker.Show(selected)
 
     def on_move(self, event): self.sel_marker.update()
 
@@ -56,25 +67,31 @@ class SplitterPane(wxPanel, WindowBase):
         WindowBase.on_size(self, event)
         self.sel_marker.update()
 
+    def delete(self):
+        if not self.widget: return
+        if self.sel_marker: self.sel_marker.Destroy()
+        WindowBase.delete(self)
+        
 # end of class SplitterPane
 
 
-class EditSplitterWindow(wxSplitterWindow, ManagedBase):
+class EditSplitterWindow(ManagedBase):
     def __init__(self, name, parent, id, style, win_1, win_2, orientation,
                  sizer, pos, property_window, show=True):
         """\
         Class to handle wxSplitterWindow objects
         """
-        if style is None: style = wxSP_3D
-        wxSplitterWindow.__init__(self, parent, id, style=style)
         ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer,
                              pos, property_window, show=show)
+        if style is None: style = wxSP_3D
+        self.style = style
         self.window_1 = win_1 
         self.window_2 = win_2 
         self.orientation = orientation
+        self.sash_pos = 0
 
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.access_functions['sash_pos'] = (self.GetSashPosition,
+        self.access_functions['sash_pos'] = (self.get_sash_pos,
                                              self.set_sash_pos)
 
         self.style_pos  = (wxSP_3D, wxSP_3DSASH, wxSP_3DBORDER,
@@ -102,19 +119,31 @@ class EditSplitterWindow(wxSplitterWindow, ManagedBase):
         self.properties['window_2'] = HiddenProperty(self, 'window_2',
                                                      get_win_2)
 
-        if self.orientation == wxSPLIT_HORIZONTAL:
-            max_pos = self.GetClientSize()[1]
-        else: max_pos = self.GetClientSize()[0]
         self.properties['sash_pos'] = SpinProperty(self, 'sash_pos', None,
-                                                   r=(0, max_pos)) 
+                                                   r=(0, 20),
+                                                   can_disable=True) 
 
+    def create_widget(self):
+        self.widget = wxSplitterWindow(self.parent.widget, self.id,
+                                       style=self.style)
         self.split()
-        EVT_SIZE(parent, self.on_parent_size)
-        EVT_SPLITTER_SASH_POS_CHANGED(self, self.GetId(),
+        EVT_SPLITTER_SASH_POS_CHANGED(self.widget, self.widget.GetId(),
                                       self.on_sash_pos_changed)
-        if not self.Disconnect(-1, -1, wxEVT_LEFT_DOWN):
-            print "Unable to disconnect the event handler"
 
+    def finish_widget_creation(self):
+        ManagedBase.finish_widget_creation(self)
+        sp = self.properties['sash_pos']
+        if not sp.is_active():
+            print 'sash_pos is active'
+            if self.orientation == wxSPLIT_HORIZONTAL:
+                max_pos = self.widget.GetClientSize()[1]
+            else: max_pos = self.widget.GetClientSize()[0]
+            sp.set_range(0, max_pos)
+            sp.set_value(max_pos/2)
+            self.set_sash_pos(max_pos/2)
+        else:
+            self.set_sash_pos(sp.get_value())
+        
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxScrolledWindow(self.notebook, -1)
@@ -134,40 +163,25 @@ class EditSplitterWindow(wxSplitterWindow, ManagedBase):
         return ManagedBase.__getitem__(self, key)
 
     def split(self):
+        if not self.widget: return
         if self.window_1 and self.window_2:
+            self.window_1.show_widget(True)
+            self.window_2.show_widget(True)
             if self.orientation == wxSPLIT_VERTICAL:
-                self.SplitVertically(self.window_1, self.window_2)
+                self.widget.SplitVertically(self.window_1.widget,
+                                            self.window_2.widget)
             else:
-                self.SplitHorizontally(self.window_1, self.window_2)
+                self.SplitHorizontally(self.window_1.widget,
+                                       self.window_2.widget)
             sp = self.properties['sash_pos'].get_value()
             if not sp:
-                self.SetSashPosition(self.GetClientSize()[0]/2)
-            else: self.SetSashPosition(sp)
-
-    def on_enter(self, event):
-        if not(self.has_sizer_1 or self.has_sizer_2) and common.adding_sizer:
-            self.SetCursor(wxCROSS_CURSOR)
-        else:
-            self.SetCursor(wxNullCursor)
-
-    def on_parent_size(self, event):
-        if self.has_sizer_1: self.window_1.Layout()
-        if self.has_sizer_2: self.window_2.Layout()
-
-    def GetBestSize(self):
-        ww, hh = 7, 0
-        if self.has_sizer_1:
-            w, h = self.window_1.GetSizer().GetMinSize()
-            ww += w; hh = h
-        if self.has_sizer_2:
-            w, h = self.window_1.GetSizer().GetMinSize()
-            ww += w; hh = max(hh, h)
-        return ww, hh
+                self.widget.SetSashPosition(self.widget.GetClientSize()[0]/2)
+            else: self.widget.SetSashPosition(sp)
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.GetWindowStyleFlag()
+            style = self.style #GetWindowStyleFlag()
             for i in range(len(self.style_pos)):
                 if style & self.style_pos[i]: retval[i] = 1
         except AttributeError: pass
@@ -175,32 +189,38 @@ class EditSplitterWindow(wxSplitterWindow, ManagedBase):
 
     def set_style(self, value):
         value = self.properties['style'].prepare_value(value)
-        style = 0
+        self.style = 0
         for v in range(len(value)):
             if value[v]:
-                style |= self.style_pos[v]
-        self.SetWindowStyleFlag(style)
+                self.style |= self.style_pos[v]
+        if self.widget: self.widget.SetWindowStyleFlag(self.style)
+
+    def get_sash_pos(self): return self.sash_pos
 
     def set_sash_pos(self, value):
         try: value = int(value)
         except ValueError: return
-        w, h = self.GetClientSize()
-        if self.orientation == wxSPLIT_VERTICAL:
-            if w < value: self.SetClientSize((value, -1))
-        elif h < value: self.SetClientSize((-1, value))
-        self.SetSashPosition(value)
+        self.sash_pos = value
+        if self.widget:
+            w, h = self.widget.GetClientSize()
+            if self.orientation == wxSPLIT_VERTICAL:
+                if w < value: self.widget.SetClientSize((value, -1))
+            elif h < value: self.widget.SetClientSize((-1, value))
+            self.widget.SetSashPosition(value)
 
     def on_size(self, event):
+        if not self.widget: return
         try:
             if self.orientation == wxSPLIT_VERTICAL:
-                max_pos = self.GetClientSize()[0]
-            else: max_pos = self.GetClientSize()[1]
+                max_pos = self.widget.GetClientSize()[0]
+            else: max_pos = self.widget.GetClientSize()[1]
             self.properties['sash_pos'].set_range(0, max_pos)
         except (AttributeError, KeyError): pass
         ManagedBase.on_size(self, event)
 
     def on_sash_pos_changed(self, event):
-        self.properties['sash_pos'].set_value(self.GetSashPosition())
+        self.sash_pos = self.widget.GetSashPosition()
+        self.properties['sash_pos'].set_value(self.sash_pos)
         event.Skip()
 
 # end of class EditSplitterWindow
@@ -246,6 +266,11 @@ def builder(parent, sizer, pos, number=[1]):
     
     node = Tree.Node(window)
     window.node = node
+
+    window.set_option(1)
+    window.set_flag("wxEXPAND")
+    window.show_widget(True)
+
     common.app_tree.insert(node, sizer.node, pos-1)
 
     node2 = Tree.Node(window.window_1)
@@ -257,11 +282,11 @@ def builder(parent, sizer, pos, number=[1]):
     common.app_tree.add(node3, window.node)
 
     sizer.set_item(window.pos, 1, wxEXPAND)
-    window.sizer_properties['option'].set_value(1)
-    window.sizer_properties['flag'].set_value("wxEXPAND")
+##     window.sizer_properties['option'].set_value(1)
+##     window.sizer_properties['flag'].set_value("wxEXPAND")
 
-    window.split()
-    window.Show()
+##     window.split()
+##     window.Show()
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,

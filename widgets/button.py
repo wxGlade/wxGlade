@@ -16,6 +16,7 @@ class EditButton(ManagedBase):
         """\
         Class to handle wxButton objects
         """
+        #wxButton.__init__(self, parent, id, label)
         self.label = label
         ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
                              property_window, show=show)
@@ -39,13 +40,13 @@ class EditButton(ManagedBase):
     def set_label(self, value):
         if value != self.label:
             if self.widget:
-                self.SetLabel(value)
-                self.set_width(self.GetBestSize()[0])
+                self.widget.SetLabel(value)
+                self.set_width(self.widget.GetBestSize()[0])
             self.label = value
             self.old_label = value
 
     def create_widget(self):
-        self.widget = wxButton(self, self.parent.widget, self.id, self.label)
+        self.widget = wxButton(self.parent.widget, self.id, self.label)
 
 
 # end of class EditButton
@@ -62,6 +63,7 @@ def builder(parent, sizer, pos, number=[1]):
                         pos, common.property_panel)
     node = Tree.Node(button)
     button.node = node
+    button.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -74,9 +76,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     button = EditButton(label, parent, wxNewId(), misc._encode(label), sizer,
-                        pos, common.property_panel)
-    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border, size=button.GetBestSize())
+                        pos, common.property_panel, show=False)
+##     sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
+##                    border=sizeritem.border, size=button.GetBestSize())
     node = Tree.Node(button)
     button.node = node
     if pos is None: common.app_tree.add(node, sizer.node)
