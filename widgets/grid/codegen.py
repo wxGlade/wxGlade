@@ -58,6 +58,10 @@ def python_generate_properties(obj):
         c = misc.string_to_color(prop['lines_color'])
         out.append('%s.SetGridLineColour(wxColour(%d,%d,%d))\n' %
                    (name, int(c.Red()), int(c.Green()), int(c.Blue()) ) )
+    if prop.get('label_bg_color', False):
+        c = misc.string_to_color(prop['label_bg_color'])
+        out.append('%s.SetLabelBackgroundColour(wxColour(%d,%d,%d))\n' %
+                   (name, int(c.Red()), int(c.Green()), int(c.Blue()) ) )
     out.extend(pygen.generate_common_properties(obj))
     return out
 
