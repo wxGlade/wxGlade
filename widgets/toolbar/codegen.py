@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.10 2003/07/26 09:15:56 agriggio Exp $
+# $Id: codegen.py,v 1.11 2003/08/16 13:47:45 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -70,7 +70,7 @@ class PythonCodeGenerator:
                 append('%s.AddSeparator()\n' % obj_name)
             else:
                 name, val = pygen.generate_code_id(None, tool.id)
-                if not name and (not val or val == '-1'):
+                if obj.preview or (not name and (not val or val == '-1')):
                     id = 'wxNewId()'
                 else:
                     if name: ids.append(name)
