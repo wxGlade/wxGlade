@@ -130,7 +130,6 @@ class EditSplitterWindow(ManagedBase):
         self.widget = wxSplitterWindow(self.parent.widget, self.id,
                                        style=self.style)
         self.split()
-        
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
@@ -227,6 +226,8 @@ class EditSplitterWindow(ManagedBase):
             self.properties['sash_pos'].set_range(0, max_pos)
             if not self.properties['sash_pos'].is_active():
                 self.widget.SetSashPosition(max_pos/2)
+                self.sash_pos = self.widget.GetSashPosition()
+                self.properties['sash_pos'].set_value(self.sash_pos)
         except (AttributeError, KeyError): pass
         ManagedBase.on_size(self, event)
 

@@ -66,7 +66,8 @@ class NotebookVirtualSizer(Sizer):
         if not (pos < self.window.widget.GetPageCount()):
             self.window.widget.AddPage(item.widget, label)
         elif self.window.widget.GetPage(pos) is not item.widget:
-            self.window.widget.RemovePage(pos)
+            #self.window.widget.RemovePage(pos)
+            self.window.widget.DeletePage(pos)
             self.window.widget.InsertPage(pos, item.widget, label)
             self.window.widget.SetSelection(pos)
             
@@ -223,7 +224,9 @@ class EditNotebook(ManagedBase):
         if self.widget:
             window.show_widget(True)
             self.virtual_sizer.set_item(pos)
-       
+            try: window.sel_marker.update()
+            except AttributeError: pass
+
     def get_tabs(self):
         return [ [n] for n, w in self.tabs ]
 
