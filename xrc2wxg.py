@@ -134,6 +134,11 @@ def fix_flag_property(document):
     for elem in document.getElementsByTagName('flag'):
         tmp = elem.firstChild.data.replace('CENTRE', 'CENTER')
         elem.firstChild.data = tmp.replace('GROW', 'EXPAND')
+        if elem.firstChild.data.find('wxALIGN_CENTER_HORIZONTAL') < 0 and \
+               elem.firstChild.data.find('wxALIGN_CENTER_VERTICAL') < 0:
+            elem.firstChild.data = elem.firstChild.data.replace(
+                'wxALIGN_CENTER', 'wxALIGN_CENTER_HORIZONTAL|'
+                'wxALIGN_CENTER_VERTICAL')
 
 
 def fix_menubars(document):
@@ -260,11 +265,18 @@ def fix_spacers(document):
 
 
 def fix_toplevel_names(document):
+    names = {}
     for widget in get_child_elems(document.documentElement):
         klass = widget.getAttribute('class')
         if klass == 'wxPanel':
             widget.setAttribute('base', 'EditTopLevelPanel')
-        widget.setAttribute('class', klass.replace('wx', 'My'))
+        klass_name = kn = klass.replace('wx', 'My')
+        name = widget.getAttribute('name')
+        i = 1
+        while names.has_key(klass_name) or klass_name == name:
+            klass_name = kn + str(i)
+            i += 1
+        widget.setAttribute('class', klass_name)
 
 
 def fix_sliders(document):
@@ -310,7 +322,7 @@ or enter a bug report at the SourceForge bug tracker.
 Please note that this doesn't handle ALL XRC files correctly, but only those
 which already are in a format which wxGlade likes: this means that every
 non-toplevel widget must be inside sizers and that the resource must not
-contain widgets or properties unknown to wxGlade.
+contain widgets unknown to wxGlade.
     """ % str(exc)
     print >> sys.stderr, msg
     raise sys.exit(1)
