@@ -678,7 +678,7 @@ class EditStaticBoxSizer(SizerBase):
         self.orient = orient
 
     def create_widget(self):
-        self.widget = wxStaticBoxSizer(wxStaticBox(window.widget, -1,
+        self.widget = wxStaticBoxSizer(wxStaticBox(self.window.widget, -1,
                                                    self.label), self.orient)
         self.widget.Add(self._btn, 0, wxEXPAND)
         for c in self.children[1:]: # we've already added self._btn
