@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.54 2004/09/20 22:10:12 agriggio Exp $
+# $Id: main.py,v 1.55 2004/09/27 08:21:59 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -110,6 +110,18 @@ class ToggleButtonBox(wxPanel):
 # end of class ToggleButtonBox
 
 
+class wxGladeArtProvider(wxArtProvider):
+    def CreateBitmap(self, artid, client, size):
+        if wxPlatform == '__WXGTK__' and artid == wxART_FOLDER:
+            return wxBitmap(os.path.join(common.wxglade_path, 'icons',
+                                         'closed_folder.xpm'),
+                            wxBITMAP_TYPE_XPM)
+        return wxNullBitmap
+
+# end of class wxGladeArtProvider
+
+
+
 class wxGladeFrame(wxFrame):
     """\
     Main frame of wxGlade (palette)
@@ -162,6 +174,11 @@ class wxGladeFrame(wxFrame):
         GENERATE_CODE_ID = wxNewId()
         append_item(file_menu, GENERATE_CODE_ID, "&Generate Code\tCtrl+G",
                     'generate.xpm')
+        
+        file_menu.AppendSeparator()
+        IMPORT_ID = wxNewId()
+        append_item(file_menu, IMPORT_ID, "&Import from XRC...\tCtrl+I")
+        
         EXIT_ID = wxNewId()
         file_menu.AppendSeparator()
         append_item(file_menu, EXIT_ID, 'E&xit\tCtrl+Q', 'exit.xpm')
@@ -210,7 +227,8 @@ class wxGladeFrame(wxFrame):
         EVT_MENU(self, EXIT_ID, lambda e: self.Close())
         EVT_MENU(self, TUT_ID, self.show_tutorial)
         EVT_MENU(self, ABOUT_ID, self.show_about_box)
-        EVT_MENU(self, PREFS_ID, self.edit_preferences) 
+        EVT_MENU(self, PREFS_ID, self.edit_preferences)
+        EVT_MENU(self, IMPORT_ID, self.import_xrc)
 
         # Tutorial window
 ##         self.tut_frame = None
@@ -453,7 +471,8 @@ class wxGladeFrame(wxFrame):
             self._open_app(infile)
             self.cur_dir = os.path.dirname(infile)
 
-    def _open_app(self, infilename, use_progress_dialog=True):
+    def _open_app(self, infilename, use_progress_dialog=True,
+                  is_filelike=False):
         import time
         from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, \
              XmlParsingError
@@ -462,22 +481,29 @@ class wxGladeFrame(wxFrame):
         start = time.clock()
 
         common.app_tree.clear()
-        common.app_tree.app.filename = infilename
+        if not is_filelike:
+            common.app_tree.app.filename = infilename
+        else:
+            common.app_tree.filename = getattr(infilename, 'name', None)
         common.property_panel.Reparent(self.hidden_frame)
         # prevent the auto-expansion of nodes
         common.app_tree.auto_expand = False
 
         old_dir = os.getcwd()
         try:
-            os.chdir(os.path.dirname(infilename))
-            infile = open(infilename)
+            if not is_filelike:
+                os.chdir(os.path.dirname(infilename))
+                infile = open(infilename)
+            else:
+                infile = infilename
+                infilename = getattr(infile, 'name', None)
             if use_progress_dialog and config.preferences.show_progress:
                 p = ProgressXmlWidgetBuilder(input_file=infile)
             else:
                 p = XmlWidgetBuilder()
             p.parse(infile)
         except (IOError, OSError, SAXParseException, XmlParsingError), msg:
-            if locals().has_key('infile'): infile.close()
+            if locals().has_key('infile') and not is_filelike: infile.close()
             common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
@@ -490,7 +516,7 @@ class wxGladeFrame(wxFrame):
         except Exception, msg:
             import traceback; traceback.print_exc()
 
-            if locals().has_key('infile'): infile.close()
+            if locals().has_key('infile') and not is_filelike: infile.close()
             common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
@@ -506,7 +532,8 @@ class wxGladeFrame(wxFrame):
             os.chdir(old_dir)
             return 
 
-        infile.close()
+        if not is_filelike:
+            infile.close()
         common.app_tree.select_item(common.app_tree.root)
         common.app_tree.root.widget.show_properties()
         common.property_panel.Reparent(self.frame2)
@@ -519,7 +546,7 @@ class wxGladeFrame(wxFrame):
 
         common.app_tree.app.saved = True
         
-        if hasattr(self, 'file_history'):
+        if hasattr(self, 'file_history') and infilename is not None:
             self.file_history.AddFileToHistory(infilename)
 
     def save_app(self, event):
@@ -621,6 +648,33 @@ class wxGladeFrame(wxFrame):
         self.tree_frame.Hide()
         self.frame2.Hide()
 
+    def import_xrc(self, event):
+        import xrc2wxg, cStringIO
+
+        if not self.ask_save():
+            return
+        
+        infile = wxFileSelector("Import file", wildcard="XRC files (*.xrc)"
+                                "|*.xrc|All files|*",
+                                flags=wxOPEN|wxFILE_MUST_EXIST,
+                                default_path=self.cur_dir)
+        if infile:
+            buf = cStringIO.StringIO()
+            try:
+                xrc2wxg.convert(infile, buf)
+                buf.seek(0)
+                self._open_app(buf, is_filelike=True)
+                common.app_tree.app.saved = False
+            except Exception, msg:
+                import traceback; traceback.print_exc()
+                wxMessageBox("An exception occurred while importing file "
+                             "\"%s\".\nThis is the error message associated "
+                             "with it:\n        %s\n"
+                             "For more details, look at the full traceback "
+                             "on the console.\nIf you think this is a wxGlade "
+                             "bug, please report it." % (infile, msg), "Error",
+                             wxOK|wxCENTRE|wxICON_ERROR)
+
 # end of class wxGladeFrame
 
 
@@ -634,6 +688,9 @@ class wxGlade(wxApp):
             self.SetAssertMode(0)
         wxInitAllImageHandlers()
         config.init_preferences()
+
+        wxArtProvider_PushProvider(wxGladeArtProvider())
+
         frame = wxGladeFrame()
         if wxPlatform == '__WXMSW__':
             def on_activate(event):
