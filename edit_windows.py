@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.75 2004/12/19 00:55:03 agriggio Exp $
+# $Id: edit_windows.py,v 1.76 2005/02/07 12:47:04 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -918,12 +918,13 @@ class TopLevelBase(WindowBase, PreviewMixin):
     _is_toplevel = True
     
     def __init__(self, name, klass, parent, id, property_window, show=True,
-                 has_title=True):
+                 has_title=True, title=None):
         WindowBase.__init__(self, name, klass, parent, id, property_window,
                             show=show)
         self.has_title = has_title
         if self.has_title:
-            self.title = self.name
+            if title is None: title = self.name
+            self.title = title
             self.access_functions['title'] = (self.get_title, self.set_title)
             self.properties['title'] = TextProperty(self, 'title', None)
         self.sizer = None # sizer that controls the layout of the children

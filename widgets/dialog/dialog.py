@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.23 2005/01/10 20:22:34 agriggio Exp $
+# $Id: dialog.py,v 1.24 2005/02/07 12:47:03 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -15,7 +15,7 @@ class EditDialog(TopLevelBase):
     def __init__(self, name, parent, id, title, property_window,
                  style=wxDEFAULT_DIALOG_STYLE, show=True, klass='wxDialog'):
         TopLevelBase.__init__(self, name, klass, parent, id,
-                              property_window, show=show)
+                              property_window, show=show, title=title)
         self.base = 'wxDialog'
         
         self.style = style
@@ -254,7 +254,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     from xml_parse import XmlParsingError
     try: label = attrs['name']
     except KeyError: raise XmlParsingError, "'name' attribute missing"
-    dialog = EditDialog(label, parent, wxNewId(), label, common.property_panel,
+    dialog = EditDialog(label, parent, wxNewId(), "", common.property_panel,
                         show=False)
     node = Tree.Node(dialog)
     dialog.node = node

@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.39 2005/01/10 20:22:33 agriggio Exp $
+# $Id: frame.py,v 1.40 2005/02/07 12:46:59 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -161,7 +161,7 @@ class EditFrame(TopLevelBase):
     def __init__(self, name, parent, id, title, property_window,
                  style=wxDEFAULT_FRAME_STYLE, show=True, klass='wxFrame'):
         TopLevelBase.__init__(self, name, klass, parent, id,
-                              property_window, show=show)
+                              property_window, show=show, title=title)
         self.base = 'wxFrame'
         self.style = style
         self.statusbar = None
@@ -480,7 +480,7 @@ def _make_builder(base_class):
         from xml_parse import XmlParsingError
         try: label = attrs['name']
         except KeyError: raise XmlParsingError, "'name' attribute missing"
-        frame = base_class(label, parent, wxNewId(), label,
+        frame = base_class(label, parent, wxNewId(), "",
                            common.property_panel,
                            show=False)
         node = Tree.Node(frame)
