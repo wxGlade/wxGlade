@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.67 2004/10/18 12:11:30 agriggio Exp $
+# $Id: edit_windows.py,v 1.68 2004/10/21 17:42:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -430,6 +430,7 @@ class WindowBase(EditBase):
         """\
         update the value of the 'size' property
         """
+        skip = True
         try:
             w_1, h_1 = 0, 0
             sz = self.properties['size']
@@ -440,6 +441,7 @@ class WindowBase(EditBase):
                 val = sz.get_value()
                 if use_dialog_units: val = val[:-1]
                 w_1, h_1 = [int(t) for t in val.split(',')]
+                skip = False
             else: use_dialog_units = config.preferences.use_dialog_units #False
             if use_dialog_units:
                 w, h = self.widget.ConvertPixelSizeToDialog(
@@ -453,7 +455,8 @@ class WindowBase(EditBase):
             self.properties['size'].set_value(size)
             self.size = size
         except KeyError: pass
-        event.Skip()
+        if skip:
+            event.Skip()
 
     def get_tooltip(self):
         return self.tooltip
@@ -566,10 +569,13 @@ class WindowBase(EditBase):
             self.size = value
             if self.widget:
                 if use_dialog_units: size = wxDLG_SZE(self.widget, size)
+                if misc.check_wx_version(2, 5):
+                    self.widget.SetMinSize(size)
                 self.widget.SetSize(size)
                 try:
                     self.sizer.set_item(self.pos, size=self.widget.GetSize())
-                except AttributeError: pass
+                except AttributeError:
+                    pass
 
     def get_size(self):
         return self.size
@@ -728,7 +734,9 @@ class ManagedBase(WindowBase):
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
 
-    def on_move(self, event): self.sel_marker.update()
+    def on_move(self, event):
+        self.sel_marker.update()
+        
     def on_size(self, event):
         WindowBase.on_size(self, event)
         self.sel_marker.update()
