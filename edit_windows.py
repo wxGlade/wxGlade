@@ -191,7 +191,7 @@ class EditBase:
         is the same
         """
         self.show_properties()
-        if wxPlatform != '__WXMSW__': event.Skip()
+        #if wxPlatform != '__WXMSW__': event.Skip()
 
     def get_property_handler(self, prop_name):
         """\
