@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.71 2004/11/04 22:14:13 agriggio Exp $
+# $Id: edit_windows.py,v 1.72 2004/11/06 12:06:11 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -432,7 +432,6 @@ class WindowBase(EditBase):
         """\
         update the value of the 'size' property
         """
-        skip = True
         try:
             w_1, h_1 = 0, 0
             sz = self.properties['size']
@@ -443,8 +442,8 @@ class WindowBase(EditBase):
                 val = sz.get_value()
                 if use_dialog_units: val = val[:-1]
                 w_1, h_1 = [int(t) for t in val.split(',')]
-                #skip = False
-            else: use_dialog_units = config.preferences.use_dialog_units #False
+            else:
+                use_dialog_units = config.preferences.use_dialog_units #False
             if use_dialog_units:
                 w, h = self.widget.ConvertPixelSizeToDialog(
                     self.widget.GetSize())
@@ -454,10 +453,11 @@ class WindowBase(EditBase):
             if h_1 == -1: h = -1
             size = "%s, %s" % (w, h)
             if use_dialog_units: size += "d"
+            self.size = size
+            self.properties['size'].set_value(size)
         except KeyError:
             pass
-        if skip:
-            event.Skip()
+        event.Skip()
 
     def get_tooltip(self):
         return self.tooltip
@@ -742,8 +742,8 @@ class ManagedBase(WindowBase):
         old = self.size
         WindowBase.on_size(self, event)
         sz = self.properties['size']
-        if not (sz.is_active() and (int(self.get_option()) != 0 or
-                                    self.get_int_flag() & wxEXPAND)):
+        if (sz.is_active() and (int(self.get_option()) != 0 or
+                                self.get_int_flag() & wxEXPAND)):
             self.properties['size'].set_value(old)
             self.size = old
         self.sel_marker.update()
@@ -922,6 +922,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def finish_widget_creation(self, *args, **kwds):
         WindowBase.finish_widget_creation(self)
+        self.widget.SetMinSize = self.widget.SetSize
         if self.has_title:
             self.widget.SetTitle(self.properties['title'].get_value())
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
@@ -933,8 +934,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.widget.CenterOnScreen()
         # ALB 2004-10-15
         self.widget.SetAcceleratorTable(common.palette.accel_table)
-        self.properties['size'].set_value('%s, %s' %
-                                          tuple(self.widget.GetSize()))
 
     def show_widget(self, yes):
         WindowBase.show_widget(self, yes)
