@@ -193,6 +193,7 @@ class EditRadioBox(ManagedBase):
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
             return ChoicesHandler(self)
+        return ManagedBase.get_property_handler(self, prop_name)
 
     def GetBestSize(self):
         w, h = self.widget.GetSizer().GetMinSize()

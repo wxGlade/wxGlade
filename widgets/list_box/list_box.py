@@ -72,6 +72,7 @@ class EditListBox(ManagedBase):
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
             return ChoicesHandler(self)
+        return ManagedBase.get_property_handler(self, prop_name)
 
     def get_choices(self):
         return zip(self.choices)
