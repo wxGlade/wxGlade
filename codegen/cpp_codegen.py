@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.30 2003/07/26 09:15:57 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.31 2003/12/03 17:04:10 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -918,7 +918,7 @@ def generate_code_id(obj, id=None):
     if id is None:
         id = obj.properties.get('id')
 
-    if id is None: return '', '-1'
+    if not id: return '', '-1'
     tokens = id.split('=')
     if len(tokens) > 1: name, val = tokens[:2]
     else: return '', tokens[0] # we assume name is declared elsewhere
