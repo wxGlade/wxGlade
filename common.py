@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.33 2004/05/05 20:47:42 agriggio Exp $
+# $Id: common.py,v 1.34 2004/07/18 09:29:40 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -7,12 +7,12 @@
 
 import os
 
-# if False, the program is invoked from the command-line in batch mode (for
+# if False, the program is invoked from the command-line in "batch" mode (for
 # code generation only)
 use_gui = True
 
 # version identification string
-version = '0.3.3'
+version = '0.3.4pre'
 
 # program path, set in wxglade.py
 wxglade_path = '.'

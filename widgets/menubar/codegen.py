@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.13 2004/02/20 19:10:32 agriggio Exp $
+# $Id: codegen.py,v 1.14 2004/07/18 09:29:40 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -63,14 +63,29 @@ class PythonCodeGenerator:
                         item_type = cn('wxITEM_CHECK')
                     elif item.radio == '1':
                         item_type = cn('wxITEM_RADIO')
-                    if item_type:
-                        append('%s.Append(%s, %s, %s, %s)\n' %
-                               (menu, id, pygen.quote_str(item.label),
-                                pygen.quote_str(item.help_str), item_type))
+                    if item.name:
+                        # ALB 2004-18-07
+                        name = 'self.%s' % item.name
+                        if item_type:
+                            append('%s = %s(%s, %s, %s, %s, %s)\n' %
+                                   (name, cn('wxMenuItem'), menu, id,
+                                    pygen.quote_str(item.label),
+                                    pygen.quote_str(item.help_str), item_type))
+                        else:
+                            append('%s = %s(%s, %s, %s, %s)\n' %
+                                   (name, cn('wxMenuItem'), menu,
+                                    id, pygen.quote_str(item.label),
+                                    pygen.quote_str(item.help_str)))
+                        append('%s.AppendItem(%s)\n' % (menu, name))
                     else:
-                        append('%s.Append(%s, %s, %s)\n' %
-                               (menu, id, pygen.quote_str(item.label),
-                                pygen.quote_str(item.help_str)))
+                        if item_type:
+                            append('%s.Append(%s, %s, %s, %s)\n' %
+                                   (menu, id, pygen.quote_str(item.label),
+                                    pygen.quote_str(item.help_str), item_type))
+                        else:
+                            append('%s.Append(%s, %s, %s)\n' %
+                                   (menu, id, pygen.quote_str(item.label),
+                                    pygen.quote_str(item.help_str)))
         #print 'menus = %s' % menus
 
         if obj.is_toplevel: obj_name = 'self'
