@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.9 2004/09/17 13:09:48 agriggio Exp $
+# $Id: perl_codegen.py,v 1.10 2005/03/25 16:09:44 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -30,7 +30,8 @@ class PerlCodeGenerator:
         if bitmapsize:
             try:
                 w, h = [int(i) for i in bitmapsize.split(',')]
-                append('%s->SetToolBitmapSize(%s, %s);\n' % (obj_name, w, h))
+                append('%s->SetToolBitmapSize(wxSIZE(%s, %s));\n' % \
+                       (obj_name, w, h))
             except:
                 pass
 
