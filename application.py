@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.23 2003/06/24 15:07:27 agriggio Exp $
+# $Id: application.py,v 1.24 2003/06/24 18:10:37 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -132,10 +132,15 @@ class Application(object):
         dialog = FileDirDialog(self, panel, '|'.join(wildcard),
                                "Select output file", "Select output directory",
                                wxSAVE|wxOVERWRITE_PROMPT)
+
+        # this "columns-stuff" is to fix a bug (of at least wxGTK)
+        _writers = common.code_writers.keys()
+        if not len(_writers) % 3: columns = 3
+        elif not len(_writers) % 2: columns = 2
+        else: columns = 1
         
         self.codewriters_prop = RadioProperty(self, "language", panel,
-                                              common.code_writers.keys(),
-                                              columns=3)
+                                              _writers, columns=columns)
 
         self.codewriters_prop.set_str_value('python')
         
