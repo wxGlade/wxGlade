@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.58 2005/02/12 16:14:07 agriggio Exp $
+# $Id: edit_sizers.py,v 1.59 2005/04/04 18:59:38 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -486,6 +486,7 @@ class SizerBase(Sizer):
             self.option = 1
             self.flag = wxEXPAND
             self.border = 0
+            self.sizer = None
             
         self.menu = menu
         if self.menu is None:
@@ -549,7 +550,12 @@ class SizerBase(Sizer):
         self.klass_prop = DialogProperty(self, 'class', None, dialog)
         if not self.toplevel:
             prop = self.sizer_properties = {}
-            prop['option'] = SpinProperty(self, 'option', None, 0, (0, 1000))
+
+            #prop['option'] = SpinProperty(self, 'option', None, 0, (0, 1000))
+            from layout_option_property import LayoutOptionProperty, \
+                 LayoutPosProperty
+            prop['option'] = LayoutOptionProperty(self, self.sizer)
+
             flag_labels = ['#section#Border', 'wxALL',
                            'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM',
                            '#section#Alignment', 'wxEXPAND', 'wxALIGN_RIGHT',
@@ -558,9 +564,15 @@ class SizerBase(Sizer):
                            'wxADJUST_MINSIZE' ]
             prop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
             prop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
-            pos_p = prop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
-            def write(*args, **kwds): pass
-            pos_p.write = write
+##             pos_p = prop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
+##             def write(*args, **kwds): pass
+##             pos_p.write = write
+            prop['pos'] = LayoutPosProperty(self, self.sizer)
+
+    def set_sizer(self, sizer):
+        self.sizer = sizer
+        self.sizer_properties['option'].set_sizer(sizer)
+        self.sizer_properties['pos'].set_sizer(sizer)
 
     def get_pos(self):
         return self.pos - 1
@@ -720,7 +732,10 @@ class SizerBase(Sizer):
             print self.children, pos
             raise SystemExit
 
-        item.sizer = self
+        if hasattr(item, 'set_sizer'):
+            item.set_sizer(self)
+        else:
+            item.sizer = self
         item.pos = pos
 
         self._add_item_widget(item, pos, option, flag, border, size,
@@ -742,7 +757,8 @@ class SizerBase(Sizer):
             else: w, h = item.widget.GetBestSize()
             if w == -1: w = item.widget.GetBestSize()[0]
             if h == -1: h = item.widget.GetBestSize()[1]
-            self.widget.SetItemMinSize(item.widget, w, h)
+            if option == 0 or not (flag & wxEXPAND):
+                self.widget.SetItemMinSize(item.widget, w, h)
             return
 
         if not misc.check_wx_version(2, 5):
@@ -770,8 +786,19 @@ class SizerBase(Sizer):
             else: w, h = item.widget.GetBestSize()
             if w == -1: w = item.widget.GetBestSize()[0]
             if h == -1: h = item.widget.GetBestSize()[1]
-            self.widget.SetItemMinSize(item.widget, w, h)
-        except: pass
+            option = 0
+            if misc.check_wx_version(2, 5): option = elem.GetProportion()
+            else: option = elem.GetOption()
+            flag = elem.GetFlag()
+            if not size or (option == 0 or not (flag & wxEXPAND)):
+                self.widget.SetItemMinSize(item.widget, w, h)
+            else:
+                self.widget.SetItemMinSize(item.widget,
+                                           *item.widget.GetBestSize())
+            #self.widget.SetItemMinSize(item.widget, w, h)
+        except Exception, e:
+            #import traceback; traceback.print_exc()
+            pass
         if force_layout: self.layout() # update the layout of self
 
     def _fix_notebook(self, pos, notebook_sizer, force_layout=True):
@@ -838,7 +865,14 @@ class SizerBase(Sizer):
             w, h = size
             if w == -1: w = item.GetBestSize()[0]
             if h == -1: h = item.GetBestSize()[1]
-            self.widget.SetItemMinSize(item, w, h)
+            option = 0
+            if misc.check_wx_version(2, 5): option = elem.GetProportion()
+            else: option = elem.GetOption()
+            flag = elem.GetFlag()
+            if not size or (option == 0 or not (flag & wxEXPAND)):
+                self.widget.SetItemMinSize(item, w, h)
+            else:
+                self.widget.SetItemMinSize(item, *item.GetBestSize())
         if force_layout:
             self.layout(True)
             #try: self.sizer.Layout()
@@ -1190,7 +1224,8 @@ class EditBoxSizer(SizerBase):
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:
                 sp = c.item.properties.get('size')
-                if sp and sp.is_active():
+                if sp and sp.is_active() and \
+                       (c.option == 0 or not (c.flag & wxEXPAND)):
                     size = sp.get_value().strip()
                     if size[-1] == 'd':
                         size = size[:-1]
@@ -1199,7 +1234,8 @@ class EditBoxSizer(SizerBase):
                     w, h = [ int(v) for v in size.split(',') ]
                     if use_dialog_units:
                         w, h = wxDLG_SZE(c.item.widget, (w, h))
-                else: w, h = c.item.widget.GetBestSize()
+                else:
+                    w, h = c.item.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.item.widget, w, h)
         if not self.toplevel and hasattr(self, 'sizer'):
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer'
@@ -1267,7 +1303,8 @@ class EditStaticBoxSizer(SizerBase):
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:
                 sp = c.item.properties.get('size')
-                if sp and sp.is_active():
+                if sp and sp.is_active() and \
+                       (c.option == 0 or not (c.flag & wxEXPAND)):
                     size = sp.get_value().strip()
                     if size[-1] == 'd':
                         size = size[:-1]
@@ -1276,7 +1313,8 @@ class EditStaticBoxSizer(SizerBase):
                     w, h = [ int(v) for v in size.split(',') ]
                     if use_dialog_units:
                         w, h = wxDLG_SZE(c.item.widget, (w, h))
-                else: w, h = c.item.widget.GetBestSize()
+                else:
+                    w, h = c.item.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.item.widget, w, h)
         self.layout()
         if not self.toplevel and hasattr(self, 'sizer'):
@@ -1424,7 +1462,8 @@ class GridSizerBase(SizerBase):
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:
                 sp = c.item.properties.get('size')
-                if sp and sp.is_active():
+                if sp and sp.is_active() and \
+                       (c.option == 0 or not (c.flag & wxEXPAND)):
                     size = sp.get_value().strip()
                     if size[-1] == 'd':
                         size = size[:-1]
@@ -1433,7 +1472,8 @@ class GridSizerBase(SizerBase):
                     w, h = [ int(v) for v in size.split(',') ]
                     if use_dialog_units:
                         w, h = wxDLG_SZE(c.item.widget, (w, h))
-                else: w, h = c.item.widget.GetBestSize()
+                else:
+                    w, h = c.item.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.item.widget, w, h)
         self.widget.Layout()
 ##         print self.name, 'rows, cols:', self.rows, self.cols, len(self.children)
