@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxSplitterWindow objects
-# $Id: codegen.py,v 1.10 2003/05/13 10:05:08 agriggio Exp $
+# $Id: codegen.py,v 1.11 2003/05/22 11:13:43 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -157,6 +157,35 @@ class CppCodeGenerator:
 # end of class CppCodeGenerator
 
 
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+
+    class XrcCodeGenerator(xrcgen.DefaultXrcObject):
+        props_map = {
+            'sash_pos': 'sashpos',
+            'window_1': '',
+            'window_2': '',
+            }
+        orient_map = {
+            'wxSPLIT_VERTICAL': 'vertical',
+            'wxSPLIT_HORIZONTAL': 'horizontal',
+            }
+        def write_property(self, name, val, outfile, ntabs):
+            try:
+                prop = self.props_map.get(name, name)
+                if not prop: return
+                if prop == 'orientation':
+                    val = self.orient_map[val]
+                xrcgen.DefaultXrcObject.write_property(
+                    self, prop, val, outfile, ntabs)
+            except KeyError:
+                return
+            
+    # end of class XrcCodeGenerator
+
+    return XrcCodeGenerator(obj)
+
+
 def initialize():
     common.class_names['EditSplitterWindow'] = 'wxSplitterWindow'
     common.class_names['SplitterPane'] = 'wxPanel'
@@ -168,8 +197,7 @@ def initialize():
         pygen.add_widget_handler('wxSplitterWindow', PythonCodeGenerator())
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
-        xrcgen.add_widget_handler('wxSplitterWindow',
-                                  xrcgen.NotImplementedXrcObject)
+        xrcgen.add_widget_handler('wxSplitterWindow', xrc_code_generator)#xrcgen.NotImplementedXrcObject)
     cppgen = common.code_writers.get('C++')
     if cppgen:
         cppgen.add_widget_handler('wxSplitterWindow', CppCodeGenerator())

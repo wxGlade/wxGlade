@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.5 2003/05/13 10:05:06 agriggio Exp $
+# $Id: codegen.py,v 1.6 2003/05/22 11:13:43 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -133,7 +133,7 @@ class ToolsHandler:
     def char_data(self, data):
         self.attr_val.append(data)
 
-# end of class MenuHandler
+# end of class ToolsHandler
 
 
 def xrc_code_generator(obj):
@@ -155,6 +155,10 @@ def xrc_code_generator(obj):
                 else:
                     write('    '*tabs + '<object class="tool">\n')
                 # why XRC seems to ignore label??
+                # this has been fixed on CVS, so add it (it shouldn't hurt...)
+                if item.label:
+                    write('    '*(tabs+1) + '<label>%s</label>\n' %
+                          escape(item.label))
                 if item.short_help:
                     write('    '*(tabs+1) + '<tooltip>%s</tooltip>\n' % \
                           escape(item.short_help))
@@ -171,6 +175,10 @@ def xrc_code_generator(obj):
                     # again, it seems that XRC doesn't support "radio" tools
                     if int(item.type) == 1:
                         write('    '*(tabs+1) + '<toggle>1</toggle>\n')
+                    # the above has been fixed on CVS, so add a radio if
+                    # it's there
+                    elif int(item.type) == 2:
+                        write('    '*(tabs+1) + '<radio>1</radio>\n')
                 except ValueError:
                     pass
                 write('    '*tabs + '</object>\n')
@@ -198,10 +206,11 @@ def xrc_code_generator(obj):
             if style:
                 style = style.split('|')
                 style.append('wxTB_HORIZONTAL')
-                for s in 'wxTB_TEXT', 'wxTB_NOICONS':
-                    # these two flags are (surprisingly) unsupported by XRC...
-                    try: style.remove(s)
-                    except ValueError: pass
+                # wxTB_TEXT and wxTB_NOICONS added in CVS
+##                 for s in 'wxTB_TEXT', 'wxTB_NOICONS':
+##                     # these two flags are (surprisingly) unsupported by XRC...
+##                     try: style.remove(s)
+##                     except ValueError: pass
                 write('    '*(tabs+1) + '<style>%s</style>\n' % \
                       escape('|'.join(style)))
             for t in tools:
