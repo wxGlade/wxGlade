@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.27 2003/08/07 12:05:59 crazyinsomniac Exp $
+# $Id: frame.py,v 1.28 2004/01/05 17:22:03 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -20,11 +20,9 @@ class EditStatusBar(EditBase):
         self.fields = [ [self.name, "-1"] ] # list of 2-lists label, size
                                             # for the statusbar fields
         self.access_functions['fields'] = (self.get_fields, self.set_fields) 
-        prop = self.properties['fields'] = GridProperty(self, 'fields', None,
-                                                        [("Text",
-                                                          GridProperty.STRING),
-                                                         ("Size",
-                                                          GridProperty.INT)])
+        prop = self.properties['fields'] = GridProperty(
+            self, 'fields', None,
+            [("Text", GridProperty.STRING), ("Size", GridProperty.INT)])
         # replace the default 'write' method of 'prop' with a custom one
         def write_prop(outfile, tabs):
             from xml.sax.saxutils import escape, quoteattr
@@ -90,7 +88,8 @@ class EditStatusBar(EditBase):
 
     def remove(self, *args):
         if self.parent.widget: self.parent.widget.SetStatusBar(None)
-        self.parent.properties['statusbar'].set_value(0)
+        try: self.parent.properties['statusbar'].set_value(0)
+        except KeyError: pass
         if self.widget: self.widget.Hide()
         EditBase.remove(self)
 
