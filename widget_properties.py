@@ -182,7 +182,8 @@ class TextProperty(Property, _activator):
         if self.multiline: style |= wxTE_MULTILINE
         val = self.get_value()
         if self.multiline: val = val.replace('\\n', '\n')
-        self.text = wxTextCtrl(self.panel, self.id, val, style=style)
+        self.text = wxTextCtrl(self.panel, self.id, val, style=style,
+                               size=(_label_initial_width, -1))
         #label = wxStaticText(self.panel, -1, _mangle(self.name))
         label = wxGenStaticText(self.panel, -1, _mangle(self.name),
                                 size=(_label_initial_width, -1))
@@ -289,8 +290,8 @@ class CheckBoxProperty(Property):
         EVT_CHECKBOX(self.panel, self.id, function)
 
     def get_value(self):
-        try: return self.cb.GetValue()
-        except AttributeError: return self.val
+        try: return int(self.cb.GetValue())
+        except AttributeError: return int(self.val)
 
     def set_value(self, val):
         self.val = int(val)
@@ -513,7 +514,8 @@ class DialogProperty(Property, _activator):
         self.id = wxNewId()
         self.panel = wxPanel(parent, -1)
         val = str(self.owner[self.name][0]())
-        self.text = wxTextCtrl(self.panel, self.id, val)
+        self.text = wxTextCtrl(self.panel, self.id, val,
+                               size=(_label_initial_width, -1))
         self.btn = wxButton(self.panel, self.id+1, " ... ",
                             size=(_label_initial_width, -1))
         if self.can_disable:

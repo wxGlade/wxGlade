@@ -105,7 +105,8 @@ class Application(object):
         self.use_gettext_prop = CheckBoxProperty(self, "use_gettext", panel,
                                                  "Enable gettext support")
         TOP_WIN_ID = wxNewId()
-        self.top_win_prop = wxChoice(panel, TOP_WIN_ID, choices=[])
+        self.top_win_prop = wxChoice(panel, TOP_WIN_ID, choices=[],
+                                     size=(1, -1))
         self.top_window = '' # name of the top window of the generated app
 
         self.name_prop = TextProperty(self, "name", panel, True)
