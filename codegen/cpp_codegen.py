@@ -146,7 +146,7 @@ class SourceFileContent:
                 if class_name is None:
                     # this is the first class declared in the file: insert the
                     # new ones before this
-                    out_lines.append('\n<%swxGlade insert new_classes>' %
+                    out_lines.append('<%swxGlade insert new_classes>' %
                                      nonce)
                     new_classes_inserted = True
                 class_name = result.group(1)
@@ -170,7 +170,7 @@ class SourceFileContent:
             # if we are here, the previous ``version'' of the file did not
             # contain any class, so we must add the new_classes tag at the
             # end of the file
-            out_lines.append('\n<%swxGlade insert new_classes>' % nonce)
+            out_lines.append('<%swxGlade insert new_classes>' % nonce)
         tmp_in.close()
         # set the ``persistent'' content of the file
         if is_header: self.header_content = "".join(out_lines)
@@ -329,7 +329,7 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     try: klass = classes[toplevel.klass]
     except KeyError: klass = classes[toplevel.klass] = ClassLines()
     name = obj.name
-    if obj.base == 'wxNotebook':
+    if obj.base == 'wxNotebook' and not obj.is_toplevel:
         # this is an ugly TEMPORARY HACK! We must find a better way
         name += '_sizer'
     buffer = '%s->Add(%s, %s, %s, %s);\n' % \
