@@ -255,6 +255,7 @@ class SizerBase:
         self.name = name
         self.klass = klass
         self.base = klass
+        self.pos = 0 # for sub-sizers, the position inside the parent
         self.properties = {}
         self.property_window = window.property_window 
         self.window = window # window this sizer is responsible
@@ -319,6 +320,7 @@ class SizerBase:
             self.access_functions['option'] = (self.get_option,self.set_option)
             self.access_functions['flag'] = (self.get_flag, self.set_flag)
             self.access_functions['border'] = (self.get_border,self.set_border)
+            self.access_functions['pos'] = (self.get_pos, self.set_pos)
 
         self.name_prop = TextProperty(self, 'name', None)
         #self.klass_prop = TextProperty(self, 'class', None, readonly=True)
@@ -334,6 +336,18 @@ class SizerBase:
                            'wxALIGN_CENTER_VERTICAL']
             prop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
             prop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
+            pos_p = prop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
+            def write(*args, **kwds): pass
+            pos_p.write = write
+
+    def get_pos(self): return self.pos - 1
+    def set_pos(self, value):
+        self.sizer.change_item_pos(self, min(value + 1,
+                                             len(self.sizer.children) - 1))
+
+    def update_pos(self, value):
+        self.sizer_properties['pos'].set_value(value-1)
+        self.pos = value
 
     def change(self, *args):
         wxCallAfter(change_sizer, self, self.klass_prop.get_value())
@@ -358,6 +372,8 @@ class SizerBase:
             prop['option'].display(panel)
             prop['flag'].display(panel)
             prop['border'].display(panel)
+            prop['pos'].display(panel)
+            sizer_tmp.Add(prop['pos'].panel, 0, wxEXPAND)
             sizer_tmp.Add(prop['option'].panel, 0, wxEXPAND)
             sizer_tmp.Add(prop['border'].panel, 0, wxEXPAND)
             sizer_tmp.Add(prop['flag'].panel, 0, wxEXPAND)
@@ -560,6 +576,44 @@ class SizerBase:
             except: pass
         if recursive and hasattr(self, 'sizer'):
             self.sizer.layout(recursive)
+
+    # 2002-10-09 -------------------------------------------------------------
+    def change_item_pos(self, item, new_pos, force_layout=True):
+        """\
+        Changes the position of the 'item' so that it is at 'new_pos'
+        'new_pos' must be a valid position
+        """
+        if not self.widget: return
+        
+        old_pos = item.pos
+        import copy
+        new_item = copy.copy(self.children[old_pos])
+        if old_pos > new_pos:
+            for c in self.children[new_pos:old_pos]:
+                c.item.update_pos(c.item.pos + 1)
+            self.children.insert(new_pos, new_item)
+            del self.children[old_pos+1]
+        else:
+            for c in self.children[old_pos+1:new_pos+1]:
+                c.item.update_pos(c.item.pos - 1)
+            del self.children[old_pos]
+            self.children.insert(new_pos+1, new_item)
+        item.update_pos(new_pos)
+
+        for c in self.children[1:]:
+            print '(%s, %s)' % (c.item.name, c.item.pos),
+        print
+
+        elem = self.widget.GetChildren()[old_pos]
+        elem.SetSizer(None)
+        self.widget.Remove(old_pos)
+        self.widget.Insert(new_pos, item.widget, new_item.option,
+                           new_item.flag, new_item.border)
+
+        common.app_tree.change_node_pos(item.node, new_pos-1)
+
+        if force_layout: self.layout()
+    # ------------------------------------------------------------------------
 
     def set_option(self, value):
         """\
@@ -1390,6 +1444,7 @@ def builder(parent, sizer, pos, number=[1], show=True):
     sz.show_widget(show) #True)
     if sizer is not None:
         sz.sizer_properties['flag'].set_value('wxEXPAND')
+        sz.sizer_properties['pos'].set_value(pos-1)
     dialog.Destroy()
 
 
@@ -1502,6 +1557,7 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
     sz.show_widget(show) #True)
     if sizer is not None:
         sz.sizer_properties['flag'].set_value('wxEXPAND')
+        sz.sizer_properties['pos'].set_value(pos-1)
     
     dialog.Destroy()
 
