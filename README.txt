@@ -7,8 +7,7 @@ THIS PROGRAM COMES WITH NO WARRANTY
 * Requirements:
 ---------------
 Python >= 2.2
-wxPython >= 2.4 (versions between 2.3.2.1 and 2.4 should still work, but aren't
-tested anymore)  
+wxPython >= 2.4.2
 
 
 * Installation:
