@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.3 2003/06/23 22:57:33 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.4 2003/06/24 15:37:44 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -485,7 +485,7 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     """
     # an ugly hack to allow the addition of spacers: if obj_name can be parsed
     # as a couple of integers, it is the size of the spacer to add
-    itsASpacer = False
+
     obj_name = obj.name
     try:
         w, h = [ int(s) for s in obj_name.split(',') ]
@@ -495,26 +495,16 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
             # is a local variable or an attribute of its paren
             if test_attribute(obj):
                 obj_name = '$self->{%s}' % obj_name
+
         if obj.base == 'wxNotebook':
             obj_name = 'Wx::NotebookSizer->new(%s)' % obj_name
-    else:
-        itsASpacer = True
-        pass # it was the dimension of a spacer
+        elif obj_name[0:1] != '$':
+            obj_name = '$self->{%s}' % obj_name
 
     try:
         klass = classes[toplevel.klass]
     except KeyError:
         klass = classes[toplevel.klass] = ClassLines()
-
-
-# I can't track where obj_name is already wrapped in $self->{}
-# so I test it -- DAMN -- crazyinsomniac
-    if not itsASpacer:
-        if obj_name[0:1] != '$' :
-            if obj_name[0:8] != r'$self->{' :
-                if obj_name[0:22] != r'Wx::NotebookSizer->new' :
-                    obj_name= '$self->{%s}' % obj_name
-
 
     buffer = '\t$self->{%s}->Add(%s, %s, %s, %s);\n' % \
              (sizer.name, obj_name, option, flag, border)
