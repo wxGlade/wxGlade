@@ -154,12 +154,12 @@ class XmlWidgetBuilder(XmlParser):
                 obj.obj['option'][1](si.obj.option)
                 obj.obj['flag'][1](si.obj.flag_str())
                 obj.obj['border'][1](si.obj.border)
-                if not int(si.obj.option):
-                    sz = obj.obj.properties.get('size')
-                    if sz is not None and not sz.is_active():
-                        # update the item size, if it was not specified
-                        obj.obj.sizer.set_item(obj.obj.pos,
-                                               size=obj.obj.GetBestSize())
+##                 if not int(si.obj.option):
+##                     sz = obj.obj.properties.get('size')
+##                     if sz is not None and not sz.is_active():
+##                         # update the item size, if it was not specified
+##                         obj.obj.sizer.set_item(obj.obj.pos,
+##                                                size=obj.obj.GetBestSize())
         else:
             # end of a property or error
             # 1: set _curr_prop value

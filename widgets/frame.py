@@ -39,7 +39,7 @@ class MenuItemDialog(wxDialog):
         self.ok.SetDefault()
         self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
         self.do_layout()
-        self.selected_index = -1 # index of the selected element in the \
+        self.selected_index = -1 # index of the selected element in the 
                                  # wxListCtrl menu_items
         # event handlers
         EVT_BUTTON(self, ADD_ID, self.add_menu_item)
@@ -395,9 +395,9 @@ class MenuProperty(Property):
 # end of class MenuProperty
 
 
-class EditMenuBar(wxMenuBar, EditBase):
+class EditMenuBar(EditBase):
     def __init__(self, parent, property_window):
-        wxMenuBar.__init__(self)
+        #wxMenuBar.__init__(self)
         EditBase.__init__(self, parent.name + '_menubar', 'wxMenuBar',
                           parent, wxNewId(), property_window,
                           custom_class=False)
@@ -406,11 +406,17 @@ class EditMenuBar(wxMenuBar, EditBase):
         self.menus = [] # list of MenuTree objects
         self.access_functions['menus'] = (self.get_menus, self.set_menus)
         prop = self.properties['menus'] = MenuProperty(self, 'menus', None) 
-        self.Show()
+        #self.Show()
         self.node = Tree.Node(self)
         common.app_tree.add(self.node, parent.node)
-        parent.SetMenuBar(self)
-        EVT_LEFT_DOWN(self, self.on_set_focus)
+        #parent.SetMenuBar(self)
+        #EVT_LEFT_DOWN(self, self.on_set_focus)
+
+    def create_widget(self):
+        self.widget = wxMenuBar()
+        if self.parent.widget: self.parent.widget.SetMenuBar(self)
+        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        self.set_menus(self.menus) # show the menus
 
     def create_properties(self):
         EditBase.create_properties(self)
@@ -437,8 +443,9 @@ class EditMenuBar(wxMenuBar, EditBase):
         return self.menus
 
     def set_menus(self, menus):
-        [self.Remove(i) for i in range(self.GetMenuCount())]
         self.menus = menus
+        if not self.widget: return # nothing left to do
+        for i in range(self.widget.GetMenuCount()): self.widget.Remove(i)
         def append(menu, items):
             for item in items:
                 if item.name == '---': # item is a separator
@@ -451,102 +458,103 @@ class EditMenuBar(wxMenuBar, EditBase):
                     try: checkable = int(item.checkable)
                     except: checkable = 0
                     menu.Append(wxNewId(), item.label, checkable=checkable)
-        first = self.GetMenuCount() #0 #1
+        first = self.widget.GetMenuCount() #0 #1
         for menu in self.menus:
             m = wxMenu()
             append(m, menu.root.children)
             if first:
-                self.Replace(0, m, menu.root.label)
+                self.widget.Replace(0, m, menu.root.label)
                 first = 0
-            else: self.Append(m, menu.root.label)
-        self.Refresh()
+            else: self.widget.Append(m, menu.root.label)
+        self.widget.Refresh()
       
     def remove(self, *args):
-        self.parent.SetMenuBar(None)
         self.parent.properties['menubar'].set_value(0)
+        if self.parent.widget: self.parent.widget.SetMenuBar(None)
         EditBase.remove(self)
 
     def Destroy(self): pass
 
     def popup_menu(self, *args): pass
 
-    def get_property_handler(self, name, _handler=[None]):
+    def get_property_handler(self, name):
         class MenuHandler:
             itemattrs = ['label', 'id', 'name', 'checkable']
-            def __init__(s):
-                s.menu_items = []
-                s.curr_menu = []
-                s.curr_item = None
-                s.curr_index = 0
-                s.menu_depth = 0
-                _handler[0] = s
-            def start_elem(s, name, attrs):
+            def __init__(self, owner):
+                self.owner = owner
+                self.menu_items = []
+                self.curr_menu = []
+                self.curr_item = None
+                self.curr_index = 0
+                self.menu_depth = 0
+            def start_elem(self, name, attrs):
                 if name == 'menus': return
                 if name == 'menu':
-                    s.menu_depth += 1
-                    if s.menu_depth == 1:
+                    self.menu_depth += 1
+                    if self.menu_depth == 1:
                         label = misc._encode(attrs['label'])
                         t = MenuTree(attrs['name'], label)
-                        s.curr_menu.append( (t.root, wxMenu()) )
-                        self.menus.append(t)
-                        self.Append(s.curr_menu[0][1], label)
+                        self.curr_menu.append( (t.root,) ) #wxMenu()) )
+                        self.owner.menus.append(t)
+                        #self.owner.Append(self.curr_menu[0][1], label)
                         return
                     node = MenuTree.Node(label=label, name=attrs['name'])
-                    cm = s.curr_menu[-1]
+                    cm = self.curr_menu[-1]
                     cm[0].children.append(node)
                     node.parent = cm[0]
                     menu = wxMenu()
-                    cm[1].AppendMenu(wxNewId(), label, menu)
-                    s.curr_menu.append( (node, menu) )
+                    #cm[1].AppendMenu(wxNewId(), label, menu)
+                    self.curr_menu.append( (node, menu) )
                 elif name == 'item':
-                    s.curr_item = MenuTree.Node()
+                    self.curr_item = MenuTree.Node()
                 else:
-                    try: s.curr_index = s.itemattrs.index(name)
+                    try: self.curr_index = self.itemattrs.index(name)
                     except ValueError:
                         from xml_parse import XmlParsingError
                         raise XmlParsingError, "invalid menu item attribute"
-            def end_elem(s, name):
+            def end_elem(self, name):
                 if name == 'item':
-                    try: cm = s.curr_menu[-1]
+                    try: cm = self.curr_menu[-1]
                     except IndexError:
                         from xml_parse import XmlParsingError
                         raise XmlParsingError, "menu item outside a menu"
-                    cm[0].children.append(s.curr_item)
-                    s.curr_item.parent = cm[0]
-                    if s.curr_item.name == '---':
-                        cm[1].AppendSeparator()
-                    else:
-                        try: checkable = int(s.curr_item.checkable)
-                        except: checkable = 0
-                        cm[1].Append(wxNewId(), s.curr_item.label,
-                                     checkable=checkable)
+                    cm[0].children.append(self.curr_item)
+                    self.curr_item.parent = cm[0]
+##                     if self.curr_item.name == '---':
+##                         cm[1].AppendSeparator()
+##                     else:
+##                         try: checkable = int(self.curr_item.checkable)
+##                         except: checkable = 0
+##                         cm[1].Append(wxNewId(), self.curr_item.label,
+##                                      checkable=checkable)
                 elif name == 'menu':
-                    s.menu_depth -= 1
-                    s.curr_menu.pop()
+                    self.menu_depth -= 1
+                    self.curr_menu.pop()
                 elif name == 'menus':
-                    _handler[0] = None
+                    self.owner.set_menus(self.owner.menus)
+                    self.owner.properties['menus'].set_value(self.owner.menus)
                     return True
-            def char_data(s, data):
-                setattr(s.curr_item, s.itemattrs[s.curr_index], data)
+            def char_data(self, data):
+                setattr(self.curr_item, self.itemattrs[self.curr_index], data)
                 
         if name == 'menus':
-            return MenuHandler()
+            return MenuHandler(self)
         return None
 
 # end of class EditMenuBar
 
 
-class EditStatusBar(wxStatusBar, EditBase):
+class EditStatusBar(EditBase):
     def __init__(self, parent, property_window):
-        id = wxNewId()
-        wxStatusBar.__init__(self, parent, id)
+        #id = wxNewId()
+        #wxStatusBar.__init__(self, parent, id)
         EditBase.__init__(self, parent.name + '_statusbar',
                           'wxStatusBar', parent, id, property_window,
                           custom_class=False)
         self.fields = [ [self.name, "-1"] ] # list of 2-lists label, size
                                             # for the statusbar fields
-        self.SetFieldsCount(1)
-        self.SetStatusText(self.name)
+##         self.SetFieldsCount(1)
+##         self.SetStatusText(self.name)
         self.access_functions['fields'] = (self.get_fields, self.set_fields) 
         prop = self.properties['fields'] = GridProperty(self, 'fields', None,
                                                         [("Text",
@@ -568,12 +576,18 @@ class EditStatusBar(wxStatusBar, EditBase):
             fwrite('    ' * tabs + '</fields>\n')
         prop.write = write_prop
 
-        EVT_LEFT_DOWN(self, self.on_set_focus)
+##         EVT_LEFT_DOWN(self, self.on_set_focus)
 
-        parent.SetStatusBar(self)
+##         parent.SetStatusBar(self)
 
         self.node = Tree.Node(self)
         common.app_tree.add(self.node, parent.node)
+
+    def create_widget(self):
+        self.widget = wxStatusBar(self.parent.widget, wxNewId())
+        EVT_LEFT_DOWN(self, self.on_set_focus)
+        self.set_fields(self.fields)
+        if self.parent.widget: self.parent.widget.SetStatusBar(self)
 
     def create_properties(self):
         EditBase.create_properties(self)
@@ -597,15 +611,16 @@ class EditStatusBar(wxStatusBar, EditBase):
 
     def set_fields(self, values):
         # values is a list of lists
-        self.SetFieldsCount(len(values))
         self.fields = []
+        if self.widget: self.widget.SetFieldsCount(len(values))
         for i in range(len(values)):
             try: v = int(values[i][1])
             except: v = 0
             s = values[i][0]
             self.fields.append([s, str(v)])
-            self.SetStatusText(s, i)
-        self.SetStatusWidths([int(i[1]) for i in self.fields])
+            if self.widget: self.widget.SetStatusText(s, i)
+        if self.widget:
+            self.widget.SetStatusWidths([int(i[1]) for i in self.fields])
 
     def get_fields(self):
         return self.fields
@@ -614,9 +629,9 @@ class EditStatusBar(wxStatusBar, EditBase):
         return self.access_functions[key]
 
     def remove(self, *args):
-        self.parent.SetStatusBar(None)
+        if self.parent.widget: self.parent.widget.SetStatusBar(None)
         self.parent.properties['statusbar'].set_value(0)
-        self.Hide()
+        if self.widget: self.widget.Hide()
         EditBase.remove(self)
 
     def popup_menu(self, *args): pass # to avoid strange segfault :)
@@ -624,41 +639,44 @@ class EditStatusBar(wxStatusBar, EditBase):
     def get_property_handler(self, name):
         class FieldsHandler:
             """\
-            custom Property handler for statusbar fields parsing.
+            custom Property handler for statusbar fields.
             """
-            def __init__(s):
-                s.width = -1
-                s.value = []
-            def start_elem(s, name, attrs):
-                if name == 'fields': s.fields = []
+            def __init__(self, owner):
+                self.owner = owner
+                self.width = -1
+                self.value = []
+            def start_elem(self, name, attrs):
+                if name == 'fields': self.fields = []
                 else: # name == 'field'
-                    s.value = []
-                    s.width = attrs.get('width', '-1')
-            def end_elem(s, name): 
+                    self.value = []
+                    self.width = attrs.get('width', '-1')
+            def end_elem(self, name): 
                 if name == 'field':
-                    s.fields.append(["".join(s.value), s.width])
+                    self.fields.append(["".join(self.value), self.width])
                 else: # name == 'fields'
-                    self.fields = s.fields
-                    self.set_fields(self.fields)
-                    self.properties['fields'].set_value(self.fields)
-                    return 1
-            def char_data(s, data):
-                s.value.append(data)
+                    self.owner.fields = self.fields
+                    self.owner.set_fields(self.owner.fields)
+                    self.owner.properties['fields'].set_value(
+                        self.owner.fields)
+                    return True
+            def char_data(self, data):
+                self.value.append(data)
                 return False # tell there's no need to go further
                              # (i.e. to call add_property)
 
-        if name == 'fields': return FieldsHandler()
+        if name == 'fields': return FieldsHandler(self)
         return None
 
 # end of class EditStatusBar
 
 
-class EditFrame(wxFrame, TopLevelBase):
+class EditFrame(TopLevelBase):
     def __init__(self, name, parent, id, title, property_window,
-                 style=wxDEFAULT_FRAME_STYLE, show=1, klass='wxFrame'):
-        wxFrame.__init__(self, parent, id, title, style=style)
+                 style=wxDEFAULT_FRAME_STYLE, show=True, klass='wxFrame'):
+        #wxFrame.__init__(self, parent, id, title, style=style)
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show)
+        self.style = style
         self.statusbar = None
         self.access_functions['statusbar'] = (self.get_statusbar,
                                               self.set_statusbar)
@@ -678,9 +696,9 @@ class EditFrame(wxFrame, TopLevelBase):
                           wxRESIZE_BORDER, wxFRAME_TOOL_WINDOW,
                           wxFRAME_NO_TASKBAR)
         # remove the unused _rmenu items Copy and Cut
-        for label in ("Copy", "Cut"):
-            item_id = self._rmenu.FindItem(label)
-            self._rmenu.Delete(item_id)
+##         for label in ("Copy", "Cut"):
+##             item_id = self._rmenu.FindItem(label)
+##             self._rmenu.Delete(item_id)
 
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # menubar property
@@ -690,14 +708,26 @@ class EditFrame(wxFrame, TopLevelBase):
         prop['statusbar'] = CheckBoxProperty(self, 'statusbar', None,
                                              'Has StatusBar')
         # event handlers
-        EVT_LEFT_DOWN(self, self.drop_sizer)
-        EVT_ENTER_WINDOW(self, self.on_enter)
-        EVT_CLOSE(self, self.ask_remove)
+##         EVT_LEFT_DOWN(self, self.drop_sizer)
+##         EVT_ENTER_WINDOW(self, self.on_enter)
+##         EVT_CLOSE(self, self.ask_remove)
 
-        self.has_sizer = False # if True, the frame already has a sizer
-        self.SetAutoLayout(True)
-        self.SetSize((400, 300))
-        self.Show(show)
+##         self.has_sizer = False # if True, the frame already has a sizer
+##         self.SetAutoLayout(True)
+##         self.SetSize((400, 300))
+##         self.Show(show)
+
+    def create_widget(self):
+        if self.parent: w = self.parent.widget
+        else: w = None
+        self.widget = wxFrame(w, self.id, self.get_title())
+
+    def finish_widget_creation(self):
+        TopLevelBase.finish_widget_creation(self)
+        if self.menubar and self.menubar.widget:
+            self.widget.SetMenuBar(self.menubar.widget)
+        if self.statusbar and self.statusbar.widget:
+            self.widget.SetStatusBar(self.statusbar.widget)
 
     def create_properties(self):
         TopLevelBase.create_properties(self)
@@ -718,21 +748,21 @@ class EditFrame(wxFrame, TopLevelBase):
         w, h = panel.GetClientSizeTuple()
         panel.SetScrollbars(5, 5, math.ceil(w/5.0), math.ceil(h/5.0))
 
-    def on_enter(self, event):
-        if not self.has_sizer and common.adding_sizer:
-            self.SetCursor(wxCROSS_CURSOR)
-        else:
-            self.SetCursor(wxNullCursor)
+##     def on_enter(self, event):
+##         if not self.has_sizer and common.adding_sizer:
+##             self.SetCursor(wxCROSS_CURSOR)
+##         else:
+##             self.SetCursor(wxNullCursor)
 
-    def drop_sizer(self, event):
-        if self.has_sizer or not common.adding_sizer:
-            self.on_set_focus(event) # default behaviour: call show_properties
-            return
-        common.adding_widget = common.adding_sizer = False
-        self.SetCursor(wxNullCursor)
-        common.widgets[common.widget_to_add](self, None, None)
-        common.widget_to_add = None
-        self.has_sizer = True
+##     def drop_sizer(self, event):
+##         if self.has_sizer or not common.adding_sizer:
+##             self.on_set_focus(event) # default behaviour: call show_properties
+##             return
+##         common.adding_widget = common.adding_sizer = False
+##         self.SetCursor(wxNullCursor)
+##         common.widgets[common.widget_to_add](self, None, None)
+##         common.widget_to_add = None
+##         self.has_sizer = True
 
     def get_menubar(self):
         return self.menubar is not None
@@ -753,13 +783,15 @@ class EditFrame(wxFrame, TopLevelBase):
         else:
             self.statusbar = self.statusbar.remove()
             self.show_properties(None)
-        # this is needed at least on win32
-        wxPostEvent(self, wxSizeEvent(self.GetSize(), self.GetId()))
+        if self.widgte:
+            # this is needed at least on win32
+            wxPostEvent(self.widget, wxSizeEvent(self.widget.GetSize(),
+                                                 self.widget.GetId()))
         
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.GetWindowStyleFlag()
+            style = self.style #self.GetWindowStyleFlag()
             for i in range(len(self.style_pos)):
                 if style & self.style_pos[i]:
                     retval[i] = 1
@@ -780,36 +812,37 @@ class EditFrame(wxFrame, TopLevelBase):
                          'wxRESIZE_BORDER': wxRESIZE_BORDER,
                          'wxFRAME_TOOL_WINDOW': wxFRAME_TOOL_WINDOW,
                          'wxFRAME_NO_TASKBAR': wxFRAME_NO_TASKBAR }
-        if 'style' in self.properties:
-            value = self.properties['style'].prepare_value(value)
-            style = 0
-            for v in range(len(value)):
-                if value[v]:
-                    style |= self.style_pos[v]
-        else:
-            style = eval(value)
-        self.SetWindowStyleFlag(style)
+##         if 'style' in self.properties:
+        value = self.properties['style'].prepare_value(value)
+        style = 0
+        for v in range(len(value)):
+            if value[v]:
+                style |= self.style_pos[v]
+##         else:
+##             style = eval(value)
+        self.style = style
+        if self.widget: self.widget.SetWindowStyleFlag(style)
 
-    def ask_remove(self, event):
-        if wxPlatform == '__WXMSW__':
-            # this msgbox causes a segfault on GTK... and I don't know why :-(
-            if wxMessageBox("Do you want to remove this frame\n"
-                            "from the current app?", "Are you sure?",
-                            wxYES_NO|wxCENTRE|wxICON_QUESTION) == wxYES:
-                self.remove()
-        else:
-            wxMessageBox("To remove the frame, right-click on it on the tree\n"
-                         "and select the 'remove' option", "Information",
-                         wxOK|wxCENTRE|wxICON_INFORMATION, self)
+##     def ask_remove(self, event):
+##         if wxPlatform == '__WXMSW__':
+##             # this msgbox causes a segfault on GTK... and I don't know why :-(
+##             if wxMessageBox("Do you want to remove this frame\n"
+##                             "from the current app?", "Are you sure?",
+##                             wxYES_NO|wxCENTRE|wxICON_QUESTION) == wxYES:
+##                 self.remove()
+##         else:
+##             wxMessageBox("To remove the frame, right-click on it on the tree\n"
+##                          "and select the 'remove' option", "Information",
+##                          wxOK|wxCENTRE|wxICON_INFORMATION, self)
 
     def remove(self, *args):
         if self.statusbar: self.statusbar = self.statusbar.remove()
         if self.menubar: self.menubar = self.menubar.remove()
         TopLevelBase.remove(self, *args)
 
-    def on_size(self, event):
-        TopLevelBase.on_size(self, event)
-        if self.has_sizer: self.GetSizer().Refresh()
+##     def on_size(self, event):
+##         TopLevelBase.on_size(self, event)
+##         if self.has_sizer: self.GetSizer().Refresh()
 
 # end of class EditFrame
 
@@ -848,6 +881,7 @@ def builder(parent, sizer, pos, number=[0]):
     frame.node = node
     common.app_tree.add(node)
     dialog.Destroy()
+    frame.show_widget(True)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\

@@ -120,7 +120,9 @@ def string_to_color(color):
     return apply(wxColour, [int(color[i:i+2], 16) for i in range(1, 7, 2)])
 
     
-def get_toplevel_parent(window):
+def get_toplevel_parent(obj):
+    if not isinstance(obj, wxWindow): window = obj.widget
+    else: window = obj
     while window and not window.IsTopLevel():
         window = window.GetParent()
     return window

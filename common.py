@@ -312,4 +312,6 @@ class Application(object):
 
     def update_view(self, *args): pass
 
+    def is_visible(self): return True
+
 # end of class Application
