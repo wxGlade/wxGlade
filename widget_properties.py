@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.39 2003/07/16 20:14:43 agriggio Exp $
+# $Id: widget_properties.py,v 1.40 2004/02/09 07:58:53 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -947,7 +947,7 @@ class GridProperty(Property): #wxPanel, Property):
         self.rows += 1
 
     def remove_row(self, event):
-        if self.rows > 1:
+        if self.rows > 0: #1:
             self.grid.DeleteRows(self.cur_row)
             self.rows -= 1
 
