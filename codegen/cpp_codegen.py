@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.26 2003/07/05 14:32:39 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.27 2003/07/11 16:09:22 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -515,6 +515,11 @@ def add_class(code_obj):
     elif prev_src is not None:
         hwrite(tabs(1) + '// begin wxGlade: %s::ids\n' % code_obj.klass)
         ids = classes[code_obj.klass].ids
+
+        # let's try to see if there are extra ids to add to the enum
+        if hasattr(builder, 'get_ids_code'):
+            ids.extend(builder.get_ids_code(code_obj))
+
         if ids:
             hwrite(tabs(1) + 'enum {\n')
             ids = (',\n' + tabs(2)).join(ids)
@@ -890,19 +895,28 @@ def generate_code_font(obj):
            (size, family, style, weight, underlined, face)
 
 
-def generate_code_id(obj):
+_last_generated_id = 1000
+
+def generate_code_id(obj, id=None):
     """\
     returns a 2-tuple of strings representing the LOC that sets the id of the
     given object: the first line is the declaration of the variable, and is
     empty if the object's id is a constant, and the second line is the value
     of the id
     """
-    id = obj.properties.get('id')
+    global _last_generated_id
+
+    if id is None:
+        id = obj.properties.get('id')
+
     if id is None: return '', '-1'
     tokens = id.split('=')
     if len(tokens) > 1: name, val = tokens[:2]
     else: return '', tokens[0] # we assume name is declared elsewhere
     if not name: return '', val
+    if val.strip() == '?':
+        val = str(_last_generated_id)
+        _last_generated_id += 1        
     return '%s = %s' % (name, val), name
 
 

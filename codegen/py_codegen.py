@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.30 2003/07/05 14:32:39 agriggio Exp $
+# $Id: py_codegen.py,v 1.31 2003/07/11 16:09:22 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -789,21 +789,25 @@ def generate_code_font(obj):
             (size, family, style, weight, underlined, face)
 
 
-def generate_code_id(obj):
+def generate_code_id(obj, id=None):
     """\
     returns a 2-tuple of strings representing the LOC that sets the id of the
     given object: the first line is the declaration of the variable, and is
     empty if the object's id is a constant, and the second line is the value
     of the id
     """
-    if obj.preview:
+    if obj and obj.preview:
         return '', '-1' # never generate ids for preview code
-    id = obj.properties.get('id')
+    if id is None:
+        id = obj.properties.get('id')
+
     if id is None: return '', '-1'
     tokens = id.split('=')
     if len(tokens) > 1: name, val = tokens[:2]
     else: return '', tokens[0] # we assume name is declared elsewhere
     if not name: return '', val
+    if val.strip() == '?':
+        val = 'wxNewId()'
     return ('%s = %s\n' % (name, val), name)
 
 
