@@ -126,10 +126,10 @@ class SourceFileContent:
         # regexp to match class declarations (this isn't very accurate -
         # doesn't match template classes, nor virtual inheritance, but
         # should be enough for most cases)
-        class_decl = re.compile(r'^\s*class\s+([a-zA-Z_]\w*)\s*'
-                                '(:\s*(public|protected|private)?\s+[\w:]+'
-                                '(,\s*(public|protected|private)?\s+[\w:]+)*'
-                                ')?')
+        class_decl = re.compile(r'^\s*class\s+([a-zA-Z_]\w*)\s*')
+##                                 '(:\s*(public|protected|private)?\s+[\w:]+'
+##                                 '(,\s*(public|protected|private)?\s+[\w:]+)*'
+##                                 ')?')
         # regexps to match wxGlade blocks
         block_start = re.compile(r'^\s*//\s*begin\s+wxGlade:\s*'
                                  '(\w*)::(\w+)\s*$')
@@ -446,9 +446,7 @@ def add_class(code_obj):
         hwrite(tabs(1) + '// end wxGlade\n\n')
         # constructor prototype
         hwrite(tabs(1) + '%s(%s);\n' % (code_obj.klass, sign_decl1))
-        # 2002-11-12: changed private to protected to allow "customization
-        #             by subclassing" as in QTDesigner
-        hwrite('\nprotected:\n')
+        hwrite('\nprivate:\n')
         # set_properties and do_layout prototypes
         hwrite(tabs(1) + '// begin wxGlade: %s::methods\n' % code_obj.klass)
         hwrite(tabs(1) + 'void set_properties();\n')
@@ -456,6 +454,7 @@ def add_class(code_obj):
         hwrite(tabs(1) + '// end wxGlade\n')
         # declarations of the attributes
         hwrite('\n')
+        hwrite('protected:\n')
         hwrite(tabs(1) + '// begin wxGlade: %s::attributes\n' % code_obj.klass)
         for o_type, o_name in classes[code_obj.klass].sub_objs:
             hwrite(tabs(1) + '%s* %s;\n' % (o_type, o_name))
