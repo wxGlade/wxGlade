@@ -1,5 +1,5 @@
 # tool.py: Tool objects
-# $Id: tool.py,v 1.5 2004/12/08 18:11:23 agriggio Exp $
+# $Id: tool.py,v 1.6 2004/12/10 12:30:50 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -38,7 +38,7 @@ class Tool:
                escape(_encode_to_xml(self.bitmap2)))
         if self.handler:
             fwrite(tab_s + '<handler>%s</handler>\n' % \
-                   escape(_encode_to_xml(self.handler)))
+                   escape(_encode_to_xml(self.handler.strip())))
         fwrite("    " * tabs + '</tool>\n')
 
 # end of class Tool

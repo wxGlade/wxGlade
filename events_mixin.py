@@ -1,5 +1,5 @@
 # events_mixin.py: mixin class for 'events' property
-# $Id: events_mixin.py,v 1.1 2004/12/08 18:11:32 agriggio Exp $
+# $Id: events_mixin.py,v 1.2 2004/12/10 12:30:53 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sf.net>
 # License: MIT (see license.txt)
@@ -7,6 +7,8 @@
 
 from wxPython.wx import *
 from wxPython.grid import *
+
+import re
 
 from widget_properties import GridProperty
 from misc import enumerate
@@ -22,6 +24,7 @@ class EventsProperty(GridProperty):
         self._pos = {}
         for index, name in enumerate(owner.events):
             self._pos[name] = index
+        self.validator_re = re.compile(r'^\s*\w+\s*$')
         self.set_value([[name, ''] for name in owner.events])
 
     def display(self, parent):
@@ -31,6 +34,10 @@ class EventsProperty(GridProperty):
         self.grid.SetColAttr(0, attr)
         self.grid.AutoSizeColumn(0, False)
         self.grid.AutoSizeColumn(1, False)
+        EVT_GRID_CELL_CHANGE(self.grid, self.on_change_val)
+        szr = self.panel.GetSizer()
+        szr.Show(self.btn_sizer, False)
+        szr.Layout()
 
     def set_value_dict(self, values_dict):
         val = self.get_value()
@@ -50,8 +57,17 @@ class EventsProperty(GridProperty):
             for event, handler in handlers:
                 if handler:
                     write('%s<handler event=%s>%s</handler>\n' %
-                          (stab, quoteattr(event), escape(handler)))
+                          (stab, quoteattr(event), escape(handler.strip())))
             write('    ' * tabs + '</events>\n')
+
+    def on_change_val(self, event):
+        val = self.get_value()
+        for i in range(len(val)):
+            handler = val[i][1].strip()
+            if handler and self.validator_re.match(handler) is None:
+                self.set_value(self.val)
+                return event.Skip()
+        GridProperty.on_change_val(self, event)
 
 # end of class EventsProperty
 

@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.44 2004/12/08 18:11:33 agriggio Exp $
+# $Id: application.py,v 1.45 2004/12/10 12:30:53 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -115,7 +115,7 @@ class Application(object):
         def set_output_path(value): self.output_path = value
         self.use_gettext = False
         def set_use_gettext(value): self.use_gettext = bool(int(value))
-        self.for_version = wx.VERSION_STRING[:3]
+        self.for_version = wxVERSION_STRING[:3]
         def set_for_version(value):
             self.for_version = self.for_version_prop.get_str_value()
         self.access_functions = {

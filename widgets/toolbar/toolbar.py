@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.16 2004/12/08 18:11:23 agriggio Exp $
+# $Id: toolbar.py,v 1.17 2004/12/10 12:30:49 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -88,6 +88,8 @@ class ToolsDialog(wxDialog):
         self.long_help_str = wxTextCtrl(self, LONG_HELP_STR_ID)
         # ALB 2004-12-05
         self.event_handler = wxTextCtrl(self, -1)
+        import re
+        self.handler_re = re.compile(r'^\s*\w*\s*$')
 
         self.bitmap1 = _MyBrowseButton(
             self, BITMAP1_ID, labelText='Normal Bitmap', buttonText='...',
@@ -267,7 +269,12 @@ class ToolsDialog(wxDialog):
         """        
         set_item = self.tool_items.SetStringItem
         index = self.selected_index
-        if index < 0: return
+        handler = self.event_handler.GetValue()
+        if not self.handler_re.match(handler):
+            event.GetEventObject().SetFocus()
+            return
+        if index < 0:
+            return event.Skip()
         set_item(index, 0, self.label.GetValue())
         set_item(index, 1, self.id.GetValue())
         set_item(index, 2, self.bitmap1.GetValue())
