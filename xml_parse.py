@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.25 2003/07/16 20:14:43 agriggio Exp $
+# $Id: xml_parse.py,v 1.26 2003/07/23 14:46:25 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -625,7 +625,6 @@ class CodeObject:
                 #self.base != 'CustomWidget':
                 self.is_toplevel = True 
                 self.parser._toplevels.push(self)
-
             #------------- 2003-05-07: preview --------------------------------
             elif self.preview and not can_be_toplevel:
                 # if this is a custom class, but not a toplevel one,

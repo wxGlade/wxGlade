@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.29 2003/07/18 07:50:46 agriggio Exp $
+# $Id: application.py,v 1.30 2003/07/23 14:46:26 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -392,6 +392,12 @@ class Application(object):
             out_name[0] = os.tempnam(None, 'wxg') + '.py'
             #print 'Temporary name:', out_name[0]
         widget_class_name = widget.klass
+        
+        if widget.klass == widget.base:
+            import random
+            widget.klass = '_%d_%s' % \
+                           (random.randrange(10**8, 10**9), widget.klass)
+            
         real_path = self.output_path
         self.output_path = out_name[0]
         real_codegen_opt = self.codegen_opt
@@ -404,7 +410,7 @@ class Application(object):
         try:
             self.generate_code(preview=True)
             # dynamically import the generated module
-            FrameClass = misc.import_name(self.output_path, widget_class_name)
+            FrameClass = misc.import_name(self.output_path, widget.klass)
             if issubclass(FrameClass, wxMDIChildFrame):
                 frame = wxMDIParentFrame(None, -1, '')
                 child = FrameClass(frame, -1, '')
@@ -437,7 +443,8 @@ class Application(object):
             frame.Show()
             # remove the temporary file (and the .pyc one too)
             if os.path.isfile(self.output_path):
-                os.unlink(self.output_path)
+                #os.unlink(self.output_path)
+                pass
             for ext in 'c', 'o': # remove eventual .pyc and .pyo files
                 name = self.output_path + ext
                 if os.path.isfile(name):
@@ -447,6 +454,7 @@ class Application(object):
             wxMessageBox("Problem previewing gui", "Error",
                          wxOK|wxCENTRE|wxICON_EXCLAMATION, self.notebook)
         # restore app state
+        widget.klass = widget_class_name
         self.output_path = real_path
         self.codegen_opt = real_codegen_opt
         self.language = real_language
