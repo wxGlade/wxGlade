@@ -92,9 +92,10 @@ class EditSlider(ManagedBase):
             if self.widget:
                 self.SetValue(value)
 
-    def create_widget
-        wxSlider(self.parent, self.id, self.value,
-                 self.range[0], self.range[1], style=self.style)
+    def create_widget(self):
+        self.widget = wxSlider(self.parent.widget, self.id, self.value,
+                               self.range[0], self.range[1],
+                               style=self.style)
 
 # end of class EditSlider
 

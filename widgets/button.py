@@ -45,7 +45,7 @@ class EditButton(ManagedBase):
             self.old_label = value
 
     def create_widget(self):
-        self.widget = wxButton(self, self.parent, self.id, self.label)
+        self.widget = wxButton(self, self.parent.widget, self.id, self.label)
 
 
 # end of class EditButton

@@ -87,8 +87,9 @@ class EditSpinCtrl(ManagedBase):
                 self.widget.SetValue(self.value)
 
     def create_widget(self):
-        self.widget = wxSpinCtrl(self.parent, self.id, min=self.range[0],
-                                 max=self.range[1], initial=self.value)
+        self.widget = wxSpinCtrl(self.parent.widget, self.id,
+                                 min=self.range[0], max=self.range[1],
+                                 initial=self.value)
 
 # end of class EditSpinCtrl
 

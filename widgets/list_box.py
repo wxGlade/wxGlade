@@ -110,7 +110,7 @@ class EditListBox(ManagedBase):
                 self.widget.SetSelection(value)
 
     def create_widget(self):
-        self.widget = wxListBox(self.parent, self.id, choices=self.choices) 
+        self.widget = wxListBox(self.parent.widget, self.id, choices=self.choices) 
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
 # end of class EditListBox

@@ -72,7 +72,7 @@ class EditBitmapButton(ManagedBase):
 
     def create_widget(self):
         bmp = self.load_bitmap(self.guess_type(self.bitmap))
-        self.widget = wxBitmapButton(self.parent, self.id, bmp)
+        self.widget = wxBitmapButton(self.parent.widget, self.id, bmp)
 
     def load_bitmap(self, type):
         if self.bitmap:

@@ -64,7 +64,7 @@ class EditToggleButton(ManagedBase):
                 self.SetValue(value)
 
     def create_widget(self):
-        self.widget = wxToggleButton(self.parent, self.id, self.label)
+        self.widget = wxToggleButton(self.parent.widget, self.id, self.label)
         EVT_TOGGLEBUTTON(self.widget, self.id, self.on_set_focus)
 
 # end of class EditToggleButton

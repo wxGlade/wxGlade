@@ -73,7 +73,7 @@ class EditStaticBitmap(ManagedBase):
 
     def create_widget(self):
         bmp = self.load_bitmap(self.guess_type(self.bitmap))
-        self.widget = wxStaticBitmap(self.parent, self.id, bmp)
+        self.widget = wxStaticBitmap(self.parent.widget, self.id, bmp)
 
     def load_bitmap(self, type):
         if self.bitmap:
