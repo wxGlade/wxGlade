@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.24 2003/06/24 18:10:37 agriggio Exp $
+# $Id: application.py,v 1.25 2003/07/05 14:32:40 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -10,7 +10,7 @@ from wxPython.wx import *
 from widget_properties import *
 from tree import Tree, WidgetTree
 import common, math, misc, os, config
-import traceback
+import traceback, re
 
 class FileDirDialog:
     """\
@@ -82,11 +82,7 @@ class Application(object):
         self.name = "app" # name of the wxApp instance to generate
         self.__saved = True # if True, there are no changes to save
         self.__filename = None # name of the output xml file
-        def set_name(value):
-            self.name = "%s" % value
         self.klass = "MyApp"
-        def set_klass(value):
-            self.klass = "%s" % value
         self.codegen_opt = 0 # if != 0, generates a separate file
                              # for each class 
         def set_codegen_opt(value):
@@ -99,8 +95,8 @@ class Application(object):
         self.use_gettext = False
         def set_use_gettext(value): self.use_gettext = bool(int(value))
         self.access_functions = {
-            'name': (lambda : self.name, set_name),
-            'class': (lambda : self.klass, set_klass), 
+            'name': (lambda : self.name, self.set_name),
+            'class': (lambda : self.klass, self.set_klass), 
             'code_generation': (lambda : self.codegen_opt, set_codegen_opt),
             'output_path': (lambda : self.output_path, set_output_path),
             'language': (self.get_language, self.set_language),
@@ -183,6 +179,21 @@ class Application(object):
         # (to simplify Tree)
         self.widget = None # this is always None
 
+    def set_name(self, value):
+        value = "%s" % value
+        if not re.match(self.set_name.pattern, value):
+            self.name_prop.set_value(self.name)
+        else:
+            self.name = value
+    set_name.pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')
+
+    def set_klass(self, value):
+        value = "%s" % value
+        if not re.match(self.set_klass.pattern, value):
+            self.klass_prop.set_value(self.klass)
+        else:
+            self.klass = value
+    set_klass.pattern = re.compile('^[a-zA-Z]+[\w:.0-9]*$')
 
     def _get_default_encoding(self):
         """\

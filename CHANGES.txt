@@ -1,3 +1,11 @@
+2003-07-05: edit_windows.py, application.py:
+                added validation code for `name' and `class' properties
+                (fixed bug #764186)
+            credits.txt:
+                updated developer names
+            codegen/py_codegen.py, codegen/cpp_codegen.py:
+                fixed bug in quote_str
+
 2003-06-26: tree.py, widgets/panel/*:
                 added scrolled window support (this required a small change
                 in Tree.Node.write in tree.py)
@@ -18,8 +26,9 @@
 
 2003-05-22: common.py, config.py:
                 added local widgets path support
-
-2003-05-19: docs/tutorial.html: 
+-------------------------------------------------------------------------------
+2003-05-19: version 0.2.3 released
+            docs/tutorial.html: 
                 some updates to the tutorial
 
 2003-05-15: widgets/frame/*, widgets/dialog/*, edit_windows.py:

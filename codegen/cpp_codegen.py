@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.25 2003/06/21 14:28:45 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.26 2003/07/05 14:32:39 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -175,6 +175,11 @@ def tabs(number):
 # if True, enable gettext support
 _use_gettext = False
 
+_quote_str_pattern = re.compile(r'\\[natbv"]?')
+def _do_replace(match):
+    if match.group(0) == '\\': return '\\\\'
+    else: return match.group(0)
+
 def quote_str(s):
     """\
     returns a quoted version of 's', suitable to insert in a C++ source file
@@ -182,6 +187,7 @@ def quote_str(s):
     """
     if not s: return 'wxT("")'
     s = s.replace('"', r'\"')
+    s = _quote_str_pattern.sub(_do_replace, s)
     if _use_gettext: return '_("' + s + '")'
     else: return 'wxT("' + s + '")'
 
