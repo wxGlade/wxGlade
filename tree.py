@@ -429,6 +429,8 @@ class WidgetTree(wxTreeCtrl, Tree):
         self.SetItemText(node.item, widget.name)
 
     def change_node_pos(self, node, new_pos):
+        if new_pos > self.GetChildrenCount(node.parent.item, False):
+            return
         index = node.parent.children.index(node)
         Tree.change_node_pos(self, node, new_pos, index)
         old_item = node.item
