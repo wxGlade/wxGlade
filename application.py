@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.38 2004/02/17 18:24:46 agriggio Exp $
+# $Id: application.py,v 1.39 2004/04/26 20:16:35 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -281,7 +281,7 @@ class Application(object):
         if index != -1:
             if wxPlatform == '__WXGTK__':
                 choices = [ self.top_win_prop.GetString(i) for i in \
-                            range(self.top_win_prop.Number()) if i != index ]
+                            range(self.top_win_prop.GetCount()) if i != index ]
                 self.top_win_prop.Clear()
                 for c in choices:
                     self.top_win_prop.Append(c)
@@ -296,7 +296,7 @@ class Application(object):
             if wxPlatform == '__WXGTK__':
                 sel_index = self.top_win_prop.GetSelection()
                 choices = [ self.top_win_prop.GetString(i) for i in \
-                            range(self.top_win_prop.Number()) ]
+                            range(self.top_win_prop.GetCount()) ]
                 choices[index] = newname
                 self.top_win_prop.Clear()
                 for c in choices:
