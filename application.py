@@ -25,8 +25,6 @@ class FileDirDialog:
                                # some directories
         style = 0
         if misc.check_wx_version(2, 3, 3):
-##         v = wx.__version__.split('.', 2)[-1]
-##         if v and int(v[0]) > 2:
             style = wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON
         self.dir_dialog = wxDirDialog(parent, dir_message, style=style)
         del log_null
@@ -34,8 +32,6 @@ class FileDirDialog:
         self.file_message = file_message
         self.style = style
         self.prev_dir = config.preferences.codegen_path
-##         self.prev_dir = os.path.expanduser('~')
-##         if self.prev_dir == '~': self.prev_dir = None
 
     def ShowModal(self):
         if self.owner.codegen_opt == 0:
@@ -78,7 +74,8 @@ class Application(object):
         self.notebook.SetAutoLayout(True)
         self.notebook.sizer = nb_sizer
         self.notebook.Hide()
-        panel = wxPanel(self.notebook, -1)
+        #panel = wxPanel(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1)
         self.name = "app" # name of the wxApp instance to generate
         self.__saved = True # if True, there are no changes to save
         self.__filename = None # name of the output xml file
@@ -98,15 +95,19 @@ class Application(object):
             'class': (lambda : self.klass, set_klass), 
             'code_generation': (lambda : self.codegen_opt, set_codegen_opt),
             'output_path': (lambda : self.output_path, set_output_path),
-            'language': (lambda : 0, self.set_language)
+            'language': (lambda : 0, self.set_language),
+            'encoding': (self.get_encoding, self.set_encoding)
             }
         TOP_WIN_ID = wxNewId()
         self.top_win_prop = wxChoice(panel, TOP_WIN_ID, choices=[])
         self.top_window = '' # name of the top window of the generated app
-        
+
         self.name_prop = TextProperty(self, "name", panel, True)
         self.klass_prop = TextProperty(self, "class", panel, True)
 
+        self.encoding = self._get_default_encoding()
+        self.encoding_prop = TextProperty(self, 'encoding', panel)
+        
         self.codegen_prop = RadioProperty(self, "code_generation", panel,
                                           ["Single file", "Separate file for" \
                                            " each class"])
@@ -123,7 +124,8 @@ class Application(object):
                                            dialog)
         
         self.codewriters_prop = RadioProperty(self, "language", panel,
-                                              common.code_writers.keys())
+                                              common.code_writers.keys(),
+                                              columns=3)
 
         self.codewriters_prop.set_str_value('python')
         
@@ -134,6 +136,7 @@ class Application(object):
         sizer = wxBoxSizer(wxVERTICAL)
         sizer.Add(self.name_prop.panel, 0, wxEXPAND)
         sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
+        sizer.Add(self.encoding_prop.panel, 0, wxEXPAND)
         szr = wxBoxSizer(wxHORIZONTAL)
         szr.Add(wxStaticText(panel, -1, "Top window"), 2,
                 wxALL|wxALIGN_CENTER, 3)
@@ -148,7 +151,10 @@ class Application(object):
         panel.SetSizer(sizer)
         sizer.Layout()
         sizer.Fit(panel)
+        h = panel.GetSize()[1]
         self.notebook.AddPage(panel, "Application")
+        import math
+        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
 
         EVT_BUTTON(btn, BTN_ID, self.generate_code)
         EVT_CHOICE(self.top_win_prop, TOP_WIN_ID, self.set_top_window)
@@ -156,6 +162,26 @@ class Application(object):
         # this is here to keep the interface similar to the various widgets
         # (to simplify Tree)
         self.widget = None # this is always None
+
+    def _get_default_encoding(self):
+        """\
+        Returns the name of the default character encoding of this machine
+        """
+        import locale
+        locale.setlocale(locale.LC_ALL)
+        try: return locale.nl_langinfo(locale.CODESET)
+        except AttributeError: return 'latin-1' # this is what I use, so... :-)
+
+    def get_encoding(self):
+        return self.encoding
+
+    def set_encoding(self, value):
+        try: unicode('a', value)
+        except LookupError, e:
+            wxMessageBox(str(e), "Error", wxOK|wxCENTRE|wxICON_ERROR)
+            self.encoding_prop.set_value(self.encoding)
+        else:
+            self.encoding = value
 
     def set_language(self, value):
         language = self.codewriters_prop.get_str_value()

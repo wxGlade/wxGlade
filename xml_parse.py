@@ -93,6 +93,13 @@ class XmlWidgetBuilder(XmlParser):
             # get properties of the app
             self._appl_started = True
             app = common.app_tree.app
+            encoding = attrs.get("encoding")
+            if encoding:
+                try: unicode('a', encoding)
+                except LookupError: pass
+                else:
+                    app.encoding = encoding
+                    app.encoding_prop.set_value(encoding)
             path = attrs.get("path")
             if path:
                 app.output_path = path

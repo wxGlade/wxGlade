@@ -150,15 +150,19 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     return tmp
 
 
-def _encode_from_xml(label, encoding='latin-1'):
+def _encode_from_xml(label, encoding=None):
     """\
     Returns a str which is the encoded version of the unicode label
     """
+    if encoding is None:
+        encoding = app_tree.app.encoding
     return label.encode(encoding, 'replace')
 
-def _encode_to_xml(label, encoding='latin-1'):
+def _encode_to_xml(label, encoding=None):
     """\
     returns a utf-8 encoded representation of label. This is equivalent to:
     str(label).decode(encoding).encode('utf-8')
     """
+    if encoding is None:
+        encoding = app_tree.app.encoding
     return str(label).decode(encoding).encode('utf-8')
