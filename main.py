@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.40 2003/05/16 19:55:45 agriggio Exp $
+# $Id: main.py,v 1.41 2003/06/02 12:41:31 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -31,6 +31,83 @@ class wxGladePropertyPanel(wxPanel):
 # end of class wxGladePropertyPanel
 
 
+TOGGLE_BOX_EVENT = wxNewEventType()
+
+def EVT_TOGGLE_BOX(win, id, func):
+    win.Connect(id, -1, TOGGLE_BOX_EVENT, func)
+
+class ToggleBoxEvent(wxPyCommandEvent):
+    def __init__(self, id, value, strval):
+        wxPyCommandEvent.__init__(self)
+        self.SetId(id)
+        self.SetEventType(TOGGLE_BOX_EVENT)
+        self.value = value
+        self.strval = strval
+
+    def GetValue(self):
+        return self.value
+
+    def GetStringValue(self):
+        return self.strval
+
+# end of class ToggleBoxEvent
+
+
+class ToggleButtonBox(wxPanel):
+    def __init__(self, parent, id, choices=[], value=0):
+        wxPanel.__init__(self, parent, id)
+        self.buttons = [wxToggleButton(self, -1, c) for c in choices]
+        self.selected = None
+        self.SetValue(value)
+        for b in self.buttons:
+            def handler(event, b=b):
+                self.on_toggle(b, event)
+            EVT_TOGGLEBUTTON(self, b.GetId(), handler)
+        sizer = wxBoxSizer(wxVERTICAL)
+        for b in self.buttons:
+            sizer.Add(b, 0, wxALL|wxEXPAND, 1)
+        self.SetAutoLayout(True)
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+        sizer.SetSizeHints(self)
+
+    def on_toggle(self, button, event):
+        if self.selected is button:
+            self.selected.SetValue(True)
+            return
+        if self.selected is not None:
+            self.selected.SetValue(False)
+        self.selected = button
+        wxPostEvent(self, ToggleBoxEvent(self.GetId(), self.GetValue(),
+                                         self.GetStringValue()))
+
+    def GetValue(self):
+        if self.selected is not None:
+            return self.buttons.index(self.selected)
+        return -1
+
+    def GetStringValue(self):
+        if self.selected is None: return None
+        return self.selected.GetLabel()
+
+    def SetValue(self, index):
+        if self.selected is not None:
+            self.selected.SetValue(False)
+        if -1 < index < len(self.buttons):
+            self.selected = self.buttons[index]
+            self.selected.SetValue(True)
+
+    def SetStringValue(self, strval):
+        index = -1
+        for i in range(len(self.buttons)):
+            if self.buttons[i].GetLabel() == strval:
+                index = i
+                break
+        self.SetValue(index)
+
+# end of class ToggleButtonBox
+
+
 class wxGladeFrame(wxFrame):
     """\
     Main frame of wxGlade (palette)
@@ -52,12 +129,12 @@ class wxGladeFrame(wxFrame):
         file_menu = wxMenu(style=wxMENU_TEAROFF)
         view_menu = wxMenu(style=wxMENU_TEAROFF)
         help_menu = wxMenu(style=wxMENU_TEAROFF)
-        sizer = wxGridSizer(0, config.preferences.buttons_per_row)
         wxToolTip_SetDelay(1000)
+
         # load the available code generators
         common.load_code_writers()
         # load the available widgets and sizers
-        buttons = common.load_widgets()
+        core_btns, custom_btns = common.load_widgets()
         sizer_btns = common.load_sizers()
         
         self.TREE_ID = TREE_ID = wxNewId()
@@ -128,11 +205,45 @@ class wxGladeFrame(wxFrame):
         # Tutorial window
         self.tut_frame = None
         # layout
-        self.SetAutoLayout(True)
-        for b in buttons: sizer.Add(b)
-        for sb in sizer_btns: sizer.Add(sb)
-        self.SetSizer(sizer)
-        sizer.Fit(self)
+        # if there are custom components, add the toggle box...
+        if custom_btns:
+            main_sizer = wxBoxSizer(wxVERTICAL)
+            show_core_custom = ToggleButtonBox(
+                self, -1, ["Core components", "Custom components"], 0)
+            core_sizer = wxGridSizer(0, config.preferences.buttons_per_row)
+            custom_sizer = wxGridSizer(0, config.preferences.buttons_per_row)
+            self.SetAutoLayout(True)
+            # core components
+            for b in core_btns: core_sizer.Add(b)
+            for sb in sizer_btns: core_sizer.Add(sb)
+            # custom components
+            for b in custom_btns: custom_sizer.Add(b)
+            main_sizer.Add(show_core_custom, 0, wxEXPAND)
+            main_sizer.Add(core_sizer, 1, wxEXPAND)
+            main_sizer.Add(custom_sizer, 1, wxEXPAND)
+            main_sizer.Show(custom_sizer, False)
+            self.SetSizer(main_sizer)
+            main_sizer.Fit(self)
+            # events to display core/custom components
+            def on_show_core_custom(event):
+                to_show = core_sizer
+                to_hide = custom_sizer
+                if event.GetValue() == 1:
+                    to_show, to_hide = to_hide, to_show
+                main_sizer.Show(to_show, True)
+                main_sizer.Show(to_hide, False)
+                main_sizer.Layout()           
+            EVT_TOGGLE_BOX(self, show_core_custom.GetId(), on_show_core_custom)
+        # ... otherwise (the common case), just add the palette of core buttons
+        else:
+            sizer = wxGridSizer(0, config.preferences.buttons_per_row)
+            self.SetAutoLayout(True)
+            # core components
+            for b in core_btns: sizer.Add(b)
+            for sb in sizer_btns: sizer.Add(sb)
+            self.SetSizer(sizer)
+            sizer.Fit(self)
+        
         # Properties window
         frame_style = wxDEFAULT_FRAME_STYLE
         frame_tool_win = config.preferences.frame_tool_win
