@@ -4,7 +4,7 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import common
+import common,misc
 
 def python_code_generator(obj):
     """\
@@ -54,6 +54,10 @@ def python_generate_properties(obj):
     if prop.get('enable_grid_resize', False):
         out.append('%s.EnableDragGridSize(%s)\n' %
                    (name, prop['enable_grid_resize']))
+    if prop.get('lines_color', False):
+        c = misc.string_to_color(prop['lines_color'])
+        out.append('%s.SetGridLineColour(%d,d,d)\n' %
+                   (name, c.Red(), c.Green(), c.Blue()))
     out.extend(pygen.generate_common_properties(obj))
     return out
 
