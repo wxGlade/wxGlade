@@ -5,6 +5,11 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
+
+# this is needed for wx >= 2.3.4 to clip the label showing the name of the
+# property, otherwise on the properties tabs horizontal scrollbars are shown
+_label_initial_width = 5 
+
 from wxPython.wx import *
 from wxPython.grid import *
 from xml.sax.saxutils import escape
@@ -179,7 +184,8 @@ class TextProperty(Property, _activator):
         if self.multiline: val = val.replace('\\n', '\n')
         self.text = wxTextCtrl(self.panel, self.id, val, style=style)
         #label = wxStaticText(self.panel, -1, _mangle(self.name))
-        label = wxGenStaticText(self.panel, -1, _mangle(self.name))
+        label = wxGenStaticText(self.panel, -1, _mangle(self.name),
+                                size=(_label_initial_width, -1))
         label.SetToolTip(wxToolTip(_mangle(self.name)))
         if self.can_disable:
             self._enabler = wxCheckBox(self.panel, self.id+1, '')
@@ -268,7 +274,6 @@ class CheckBoxProperty(Property):
         label = wxStaticText(self.panel, -1, self.label)
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 5, wxALIGN_CENTER|wxALL, 3)
-        sizer.SetItemMinSize(label, *label.GetBestSize())        
         sizer.Add(self.cb, 2, wxALIGN_CENTER|wxALL, 3)
         self.panel.SetAutoLayout(True)
         self.panel.SetSizer(sizer)
@@ -424,7 +429,8 @@ class SpinProperty(Property, _activator):
             self.spin.SetValue(1) # needed for GTK to display a '0'
         self.spin.SetValue(val) #int(self.owner[self.name][0]()))
         #label = wxStaticText(self.panel, -1, _mangle(self.name))
-        label = wxGenStaticText(self.panel, -1, _mangle(self.name))
+        label = wxGenStaticText(self.panel, -1, _mangle(self.name),
+                                size=(_label_initial_width, -1))
         label.SetToolTip(wxToolTip(_mangle(self.name)))
         if self.can_disable:
             self._enabler = wxCheckBox(self.panel, self.id+1, '')
@@ -435,7 +441,6 @@ class SpinProperty(Property, _activator):
             self._target = self.spin
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
-        sizer.SetItemMinSize(label, *label.GetBestSize())        
         try:
             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
             option = 4
@@ -499,7 +504,8 @@ class DialogProperty(Property, _activator):
         self.panel = wxPanel(parent, -1)
         val = str(self.owner[self.name][0]())
         self.text = wxTextCtrl(self.panel, self.id, val)
-        self.btn = wxButton(self.panel, self.id+1, "...")
+        self.btn = wxButton(self.panel, self.id+1, " ... ",
+                            size=(_label_initial_width, -1))
         if self.can_disable:
             self._enabler = wxCheckBox(self.panel, self.id+1, '')
             EVT_CHECKBOX(self.panel, self.id+1,
@@ -509,12 +515,12 @@ class DialogProperty(Property, _activator):
             self._enabler.SetValue(self.is_active())
             self._target = self.text
         #label = wxStaticText(self.panel, -1, _mangle(self.name))
-        label = wxGenStaticText(self.panel, -1, _mangle(self.name))
+        label = wxGenStaticText(self.panel, -1, _mangle(self.name),
+                                size=(_label_initial_width, -1))
         label.SetToolTip(wxToolTip(_mangle(self.name)))
         EVT_BUTTON(self.panel, self.id+1, self.display_dialog)
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
-        sizer.SetItemMinSize(label, *label.GetBestSize())        
         try:
             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
             option = 3

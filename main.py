@@ -439,6 +439,9 @@ class wxGlade(wxApp):
         import sys
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
+        # needed for wx >= 2.3.4 to disable wxPyAssertionError exceptions
+        if misc.check_wx_version(2, 3, 4):
+            self.SetAssertMode(0)
         wxInitAllImageHandlers()
         config.init_preferences()
         frame = wxGladeFrame()

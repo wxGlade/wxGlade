@@ -82,7 +82,8 @@ class EditListBox(ManagedBase):
         if self.widget:
             self.widget.Clear()
             for c in self.choices: self.widget.Append(c)
-            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+            if not self.properties['size'].is_active():
+                self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
             self.widget.SetSelection(
                 int(self.properties['selection'].get_value()))
 

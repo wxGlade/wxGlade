@@ -93,13 +93,17 @@ class SelectionMarker:
 import common
 _encode = common._encode_from_xml
 
+def bound(number, lower, upper):
+    return min(max(lower, number), upper)
+
 def color_to_string(color):
     """\
     returns the hexadecimal string representation of the given color:
     for example: wxWHITE ==> #ffffff
     """
     import operator
-    return '#' + reduce(operator.add, map(lambda s: '%02x' % s, color.Get()))
+    return '#' + reduce(operator.add, ['%02x' % bound(c, 0, 255) for c in
+                                       color.Get()])
 
 def string_to_color(color):
     """\

@@ -39,18 +39,12 @@ class GridColsProperty(GridProperty):
 
     def add_row(self, event):
         GridProperty.add_row(self, event)
-##         label = ord('A') + self.rows-1
-##         if label > ord('Z'): label = 'C' + str(self.rows-1)
-##         else: label = chr(label)
         label = self._get_label(self.rows-1)
         self.grid.SetCellValue(self.rows-1, 0, label)
         self.grid.SetCellValue(self.rows-1, 1, '-1')
 
     def insert_row(self, event):
         GridProperty.insert_row(self, event)
-##         label = ord('A') + self.cur_row
-##         if label > ord('Z'): label = 'C' + str(self.cur_row)
-##         else: label = chr(label)
         label = self._get_label(self.cur_row)
         self.grid.SetCellValue(self.cur_row, 0, label)
         self.grid.SetCellValue(self.cur_row, 1, '-1')
@@ -212,9 +206,11 @@ class EditGrid(ManagedBase):
         if not self.properties['label_bg_color'].is_active():
             self.label_bg_color = misc.color_to_string(
                 self.widget.GetLabelBackgroundColour())
+            self.properties['label_bg_color'].set_value(self.label_bg_color)
         if not self.properties['lines_color'].is_active():
             self.lines_color = misc.color_to_string(
                 self.widget.GetGridLineColour())
+            self.properties['lines_color'].set_value(self.lines_color)
         self.widget.SetRowLabelSize(self.row_label_size)
         self.widget.SetColLabelSize(self.col_label_size)
         self.widget.EnableEditing(self.enable_editing)

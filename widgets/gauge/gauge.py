@@ -72,7 +72,7 @@ class EditGauge(ManagedBase):
     def set_range(self, val):
         self.range = int(val)
         self.properties['range'].set_value(self.range)
-        if self.widget: self.widget.SetRange(min_v, max_v)
+        if self.widget: self.widget.SetRange(self.range)
 
 # end of class EditGauge
 
