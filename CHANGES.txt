@@ -1,3 +1,7 @@
+2004-10-15: common.py, config.py, configUI.py, main.py, res/preferences.wxg:
+                auto save support (i.e. now wxg files can be saved
+                automatically periodically)
+
 2004-09-17: edit_sizers/sizers_codegen.py, edit_sizers/perl_sizers_codegen.py,
             codegen/*.py:
                 fixed issue with wxStaticBoxSizer code generation

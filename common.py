@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.40 2004/09/17 13:09:56 agriggio Exp $
+# $Id: common.py,v 1.41 2004/10/15 10:49:23 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -273,3 +273,57 @@ def save_file(filename, content, which='wxg'):
     finally:
         if 'infile' in locals(): infile.close()
         if 'outfile' in locals(): outfile.close()
+
+
+#------------------------------------------------------------------------------
+# Autosaving, added 2004-10-15
+#------------------------------------------------------------------------------
+
+def autosave_current():
+    if not app_tree.app.filename or app_tree.app.saved:
+        return # do nothing for now in this case...
+    path, name = os.path.split(app_tree.app.filename)
+    outfile = open(os.path.join(path, "#~wxg.autosave~%s#" % name), 'w')
+    app_tree.write(outfile)
+    outfile.close()
+
+
+def remove_autosaved():
+    if not app_tree.app.filename:
+        return
+    path, name = os.path.split(app_tree.app.filename)
+    autosaved = os.path.join(path, "#~wxg.autosave~%s#" % name)
+    if os.path.exists(autosaved):
+        try:
+            os.unlink(autosaved)
+        except OSError, e:
+            print e
+
+
+def check_autosaved(filename):
+    """\
+    Returns True iff there are some auto saved data for filename
+    """
+    path, name = os.path.split(filename)
+    autosaved = os.path.join(path, "#~wxg.autosave~%s#" % name)
+    try:
+        orig = os.stat(filename)
+        auto = os.stat(autosaved)
+        return orig.st_mtime < auto.st_mtime
+    except OSError, e:
+        print e
+        return False
+    
+
+def restore_from_autosaved(filename):
+    path, name = os.path.split(filename)
+    autosaved = os.path.join(path, "#~wxg.autosave~%s#" % name)
+    # when restoring, make a backup copy (if user's preferences say so...)
+    if os.access(autosaved, os.R_OK):
+        try:
+            save_file(filename, open(autosaved).read(), 'wxg')
+        except OSError, e:
+            print e
+            return False
+        return True
+    return False

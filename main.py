@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.55 2004/09/27 08:21:59 agriggio Exp $
+# $Id: main.py,v 1.56 2004/10/15 10:49:23 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -127,11 +127,13 @@ class wxGladeFrame(wxFrame):
     Main frame of wxGlade (palette)
     """
     def __init__(self, parent=None):
-        style = wxSYSTEM_MENU|wxCAPTION|wxMINIMIZE_BOX
+        style = wxSYSTEM_MENU|wxCAPTION|wxMINIMIZE_BOX|wxRESIZE_BORDER
         if misc.check_wx_version(2, 5):
             style |= wxCLOSE_BOX
         wxFrame.__init__(self, parent, -1, "wxGlade v%s" % common.version,
                          style=style)
+        self.CreateStatusBar(1)
+
         if parent is None: parent = self
         common.palette = self # to provide a reference accessible
                               # by the various widget classes
@@ -210,8 +212,16 @@ class wxGladeFrame(wxFrame):
                 self.file_history.AddFileToHistory(path.strip())
                 
             def open_from_history(event):
-                self._open_app(self.file_history.GetHistoryFile(
-                    event.GetId() - wxID_FILE1))
+                infile = self.file_history.GetHistoryFile(
+                    event.GetId() - wxID_FILE1)
+                # ALB 2004-10-15 try to restore possible autosave content...
+                if common.check_autosaved(infile) and \
+                       wxMessageBox("There seems to be auto saved data for "
+                                    "this file: do you want to restore it?",
+                                    "Auto save detected",
+                                    style=wxICON_QUESTION|wxYES_NO) == wxYES:
+                    common.restore_from_autosaved(infile)
+                self._open_app(infile)
                 
             EVT_MENU_RANGE(self, wxID_FILE1, wxID_FILE9, open_from_history)
         
@@ -345,6 +355,7 @@ class wxGladeFrame(wxFrame):
         self.tree_frame = wxFrame(self, -1, 'wxGlade: Tree',
                                   style=frame_style)
         self.tree_frame.SetIcon(icon)
+        
         import application
         app = application.Application(common.property_panel)
         common.app_tree = WidgetTree(self.tree_frame, app)
@@ -416,8 +427,26 @@ class wxGladeFrame(wxFrame):
         #self.tree_frame.SetDropTarget(self._droptarget)
         #self.frame2.SetDropTarget(self._droptarget)
 
+        # ALB 2004-10-15, autosave support...
+        self.autosave_timer = None
+        if config.preferences.autosave:
+            TIMER_ID = wxNewId()
+            self.autosave_timer = wxTimer(self, TIMER_ID)
+            EVT_TIMER(self, TIMER_ID, self.on_autosave_timer)
+            self.autosave_timer.Start(
+                int(config.preferences.autosave_delay) * 1000)
+        # ALB 2004-10-15
+        CLEAR_SB_TIMER_ID = wxNewId()
+        self.clear_sb_timer = wxTimer(self, CLEAR_SB_TIMER_ID)
+        EVT_TIMER(self, CLEAR_SB_TIMER_ID, self.on_clear_sb_timer)
+            
         self.Raise()
 
+    def on_autosave_timer(self, event):
+        self.user_message("Auto saving...")
+        common.autosave_current()
+        self.user_message("Auto saving... done")
+        
     def edit_preferences(self, event):
         config.edit_preferences()
 
@@ -431,6 +460,17 @@ class wxGladeFrame(wxFrame):
             common.app_tree.app.show_properties()
             if common.app_tree.cur_widget:
                 common.app_tree.cur_widget.show_properties()
+
+    def user_message(self, msg):
+        sb = self.GetStatusBar()
+        if sb:
+            sb.SetStatusText(msg)
+            self.clear_sb_timer.Start(5000, True)
+
+    def on_clear_sb_timer(self, event):
+        sb = self.GetStatusBar()
+        if sb:
+            sb.SetStatusText("")
 
     def ask_save(self):
         """\
@@ -454,6 +494,7 @@ class wxGladeFrame(wxFrame):
             common.app_tree.clear()
             common.app_tree.app.filename = None
             common.app_tree.app.saved = True
+            self.user_message("")
         
     def open_app(self, event_unused):
         """\
@@ -468,6 +509,13 @@ class wxGladeFrame(wxFrame):
                                 flags=wxOPEN|wxFILE_MUST_EXIST,
                                 default_path=self.cur_dir)
         if infile:
+            # ALB 2004-10-15 try to restore possible autosave content...
+            if common.check_autosaved(infile) and \
+                   wxMessageBox("There seems to be auto saved data for "
+                                "this file: do you want to restore it?",
+                                "Auto save detected",
+                                style=wxICON_QUESTION|wxYES_NO) == wxYES:
+                common.restore_from_autosaved(infile)
             self._open_app(infile)
             self.cur_dir = os.path.dirname(infile)
 
@@ -549,6 +597,13 @@ class wxGladeFrame(wxFrame):
         if hasattr(self, 'file_history') and infilename is not None:
             self.file_history.AddFileToHistory(infilename)
 
+        # ALB 2004-10-15
+        if config.preferences.autosave and self.autosave_timer is not None:
+            self.autosave_timer.Start()
+
+        self.user_message("Loaded %s (%.2f seconds)" % \
+                          (common.app_tree.app.filename, end-start))
+
     def save_app(self, event):
         """\
         saves a wxGlade project onto an xml file
@@ -582,6 +637,12 @@ class wxGladeFrame(wxFrame):
                          wxOK|wxCENTRE|wxICON_ERROR)
             else:
                 common.app_tree.app.saved = True
+                common.remove_autosaved() # ALB 2004-10-15
+                # ALB 2004-10-15
+                if config.preferences.autosave and \
+                       self.autosave_timer is not None:
+                    self.autosave_timer.Start()
+                self.user_message("Saved %s" % common.app_tree.app.filename)
 
     def save_app_as(self, event):
         """\
@@ -618,6 +679,7 @@ class wxGladeFrame(wxFrame):
                              wxOK|wxCENTRE|wxICON_ERROR)
             self._skip_activate = True
             self.Destroy()
+            common.remove_autosaved() # ALB 2004-10-15
             misc.wxCallAfter(wxGetApp().ExitMainLoop)
 
     def show_about_box(self, event):
@@ -698,6 +760,7 @@ class wxGlade(wxApp):
                     frame.show_and_raise()
                 event.Skip()
             EVT_ACTIVATE_APP(self, on_activate)
+
         self.SetTopWindow(frame)
         self.SetExitOnFrameDelete(True)
         return True
