@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.46 2004/08/26 12:03:27 agriggio Exp $
+# $Id: edit_sizers.py,v 1.47 2004/09/17 11:40:04 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -84,8 +84,10 @@ class SizerSlot:
                 misc.append_item(self.menu, REMOVE_ID, 'Remove\tDel',
                                  'remove.xpm')
             misc.append_item(self.menu, PASTE_ID, 'Paste\tCtrl+V', 'paste.xpm')
-            EVT_MENU(self.widget, REMOVE_ID, self.remove)
-            EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)            
+            def bind(method):
+                return lambda e: misc.wxCallAfter(method)
+            EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+            EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
         self.widget.PopupMenu(self.menu, event.GetPosition())
 
     def remove(self, *args):
@@ -199,17 +201,19 @@ class SizerHandleButton(wxButton):
             # provide popup menu for removal
             REMOVE_ID = wxNewId() 
             self._rmenu = misc.wxGladePopupMenu(self.sizer.name)
+            def bind(method):
+                return lambda e: misc.wxCallAfter(method)
             #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
             misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
                              'remove.xpm')
-            EVT_MENU(self, REMOVE_ID, self._remove)
+            EVT_MENU(self, REMOVE_ID, bind(self._remove))
             for item in self.menu:
                 id = wxNewId()
                 #self._rmenu.Append(id, item[0])
                 bmp = None
                 if len(item) > 2: bmp = item[2]
                 misc.append_item(self._rmenu, id, item[0], bmp)
-                EVT_MENU(self, id, item[1])
+                EVT_MENU(self, id, bind(item[1]))
             self.sizer._rmenu = self._rmenu
             del self.menu
         self.PopupMenu(self._rmenu, event.GetPosition())
@@ -721,7 +725,7 @@ class SizerBase(Sizer):
             elem.SetBorder(border)
         else:
             self.widget.Insert(pos, item.widget, option, flag, border)
-            self.widget.RemovePos(pos+1)
+            self.widget.Remove(pos+1)
             if elem.IsWindow():
                 w = elem.GetWindow()
                 w.SetContainingSizer(None)
