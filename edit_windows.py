@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.53 2004/05/05 20:47:42 agriggio Exp $
+# $Id: edit_windows.py,v 1.54 2004/05/17 09:50:20 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -299,6 +299,9 @@ class WindowBase(EditBase):
         max_x = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_X)
         max_y = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_Y)
 
+        self._original = {'background': None, 'foreground': None,
+                          'font': None}        
+
         prop = self.properties
         prop['id'] = TextProperty(self, 'id', None, can_disable=True)
         prop['size'] = TextProperty(self, 'size', None, can_disable=True)
@@ -324,6 +327,13 @@ class WindowBase(EditBase):
         prop['hidden'] = CheckBoxProperty(self, 'hidden', None)
 
     def finish_widget_creation(self, *args, **kwds):
+        self._original['background'] = self.widget.GetBackgroundColour()
+        self._original['foreground'] = self.widget.GetForegroundColour()
+        fnt = self.widget.GetFont()
+        if not fnt.Ok():
+            fnt = wxSystemSettings_GetSystemFont(wxDEFAULT_GUI_FONT)
+        self._original['font'] = fnt
+        
         prop = self.properties
         size = prop['size'].get_value()
         if size:

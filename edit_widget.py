@@ -71,18 +71,20 @@ def increment_label(label, number=[1]):
         _label = '%s_%d' % (label, number[0])
     return _label
         
+
 def add_widget_node(widget, sizer, pos):
     node = Tree.Node(widget)
     widget.node = node
     widget.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
-    
+    if pos is None: common.app_tree.add(node, sizer.node)
+    else: common.app_tree.insert(node, sizer.node, pos-1)
+
+
 def get_label_from_xml(attrs):
     from xml_parse import XmlParsingError
     try: label = attrs['name']
     except KeyError: raise XmlParsingError, "'name' attribute missing"
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+
 
 def initialize(edit_klass, builder, xml_builder, icon_path):
     """\
