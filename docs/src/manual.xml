@@ -5,7 +5,7 @@
 <book>
   <title>wxGlade user manual</title>
   <bookinfo>
-    <date>$Date: 2004/01/28 10:18:40 $</date>
+    <date>$Date: 2004/01/29 10:12:10 $</date>
     <author>
       <firstname>documentation by Marcello</firstname>
       <surname>Semboli</surname>
@@ -270,8 +270,8 @@ command line.
         <para>A .wxg file can contain multiple forms, panels, menus and toolbars and generate either 
         a single file containing all classes or multiple files containing one class each.
         </para>
-        <para>The wxGlade does not manage events, file inclusion, function names, stubs, 
-        and noting else the graphic interface code.</para>
+        <para>The wxGlade does not manage events, file inclusion, function names, stubs or
+        anything else but graphic interface code.</para>
   </section>
   <section>
     <title>Command line invocation</title>
