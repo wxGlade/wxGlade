@@ -118,6 +118,9 @@ def builder(parent, sizer, pos, number=[0]):
     dialog.show_widget(True)
     common.app_tree.add(node)
     class_dialog.Destroy()
+    if wxPlatform == '__WXMSW__':
+        dialog.widget.CenterOnScreen()
+        dialog.widget.Raise()
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
