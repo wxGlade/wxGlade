@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.19 2004/09/17 13:09:53 agriggio Exp $
+# $Id: codegen.py,v 1.20 2004/10/26 11:06:32 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -222,6 +222,12 @@ class CppFrameCodeGenerator:
 
 class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
     extra_headers = ['<wx/mdi.h>']
+
+    constructor = [('wxMDIParentFraome*', 'parent'), ('int', 'id'),
+                   ('const wxString&', 'title'),
+                   ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+                   ('const wxSize&', 'size', 'wxDefaultSize'),
+                   ('long', 'style', 'wxDEFAULT_FRAME_STYLE')]
 
 # end of class CppMDIChildFrameCodeGenerator
 
