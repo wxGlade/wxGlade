@@ -99,6 +99,6 @@ def initialize():
                        ('int', 'maxValue'),
                        ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                        ('const wxSize&', 'size', 'wxDefaultSize'),
-                       ('long', 'style', '0')]
+                       ('long', 'style', 'wxSL_HORIZONTAL')]
         cppgen.add_widget_handler('wxSlider', cpp_code_generator, constructor)
     
