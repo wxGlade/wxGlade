@@ -57,7 +57,6 @@ class EditBase:
 
         if show:
             self.show_widget(True)
-            #self.SetFocus()
             property_window.SetSize((250, 340))
             property_window.Show(True)
 
@@ -536,14 +535,11 @@ class ManagedBase(WindowBase):
             import traceback; traceback.print_exc()
 
     def get_option(self):
-##         try: return self.sizer.GetChildren()[self.pos].GetOption()
-##         except AttributeError: return 0
         return self.option
 
     def get_flag(self):
         retval = [0] * len(self.flags_pos)
         try:
-            #flag = self.sizer.GetChildren()[self.pos].GetFlag()
             for i in range(len(self.flags_pos)):
                 if self.flag & self.flags_pos[i]:
                     retval[i] = 1
@@ -551,12 +547,9 @@ class ManagedBase(WindowBase):
         return retval
 
     def get_int_flag(self):
-        #return self.sizer.GetChildren()[self.pos].GetFlag()
         return self.flag
 
     def get_border(self):
-##         try: return self.sizer.GetChildren()[self.pos].GetBorder()
-##         except AttributeError: return 0
         return self.border
 
     def delete(self):
@@ -565,18 +558,6 @@ class ManagedBase(WindowBase):
         WindowBase.delete(self)
 
     def remove(self, *args):
-##         from edit_sizers import SizerSlot
-##         elem = self.sizer.GetChildren()[self.pos]
-##         w = SizerSlot(self.parent, self.sizer, self.pos)
-##         try:
-##             self.sizer.elements[self.sizer.elements.index(self)] = w
-##         except (IndexError, KeyError):
-##             pass        
-##         elem.SetWindow(w)
-##         elem.SetOption(1)
-##         elem.SetBorder(0)
-##         elem.SetFlag(wxEXPAND)
-##         self.sizer.Layout()
         self.sizer.free_slot(self.pos)        
         WindowBase.remove(self)
 
