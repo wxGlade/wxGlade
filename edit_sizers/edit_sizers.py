@@ -482,7 +482,7 @@ class SizerBase:
         nb_sizer = wxNotebookSizer(self.notebook)
         self.notebook.sizer = nb_sizer
         self.notebook.SetAutoLayout(True)
-        panel = wxScrolledWindow(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         sizer_tmp = wxBoxSizer(wxVERTICAL)
         self.name_prop.display(panel)
         self.klass_prop.display(panel)
@@ -1264,7 +1264,7 @@ class GridSizerBase(SizerBase):
 
     def create_properties(self):
         SizerBase.create_properties(self)
-        page = wxScrolledWindow(self.notebook, -1)
+        page = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         sizer = wxBoxSizer(wxVERTICAL)
         props = self.properties
         props['rows'].display(page)

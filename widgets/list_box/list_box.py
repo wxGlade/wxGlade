@@ -50,7 +50,7 @@ class EditListBox(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         szr = wxBoxSizer(wxVERTICAL)
         self.properties['choices'].display(panel)
         self.properties['style'].display(panel)
