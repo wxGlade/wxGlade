@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.1 2003/06/23 21:29:26 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.2 2003/07/26 12:07:33 agriggio Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -25,34 +25,25 @@ class PerlCodeGenerator:
             for item in items:
                 if item.name == '---': # item is a separator
                     append('%s->AppendSeparator();\n' % menu)
-                elif item.children:
+                    continue
+                name, val = pygen.generate_code_id(None, item.id)
+                if not name and val == '-1':
+                    id = 'Wx::NewId()'
+                else:
+                    if name: ids.append(name)
+                    id = val                
+                if item.children:
                     if item.name:
                         name = item.name
                     else:
                         name = '%s_sub' % menu
 
                     append('%s = Wx::Menu->new();\n' % name)
-                    if not obj.preview and item.id: # generating id
-                        tokens = item.id.split('=')
-                        if len(tokens) > 1:
-                            id = tokens[0]
-                            ids.append(' = '.join(tokens) + '\n')
-                        else:
-                            id = item.id
-                    else: id = 'Wx::NewId()'
                     append_items(name, item.children)
                     append('%s->AppendMenu(%s, %s, %s, %s);\n' %
                            (menu, id, plgen.quote_str(item.label),
                             name, plgen.quote_str(item.help_str)))
                 else:
-                    if not obj.preview and item.id: # no ids for preview
-                        tokens = item.id.split('=')
-                        if len(tokens) > 1:
-                            id = tokens[0]
-                            ids.append(' = '.join(tokens) + '\n')
-                        else:
-                            id = item.id
-                    else: id = 'Wx::NewId()'
                     item_type = 0
                     if item.checkable == '1':
                         item_type = 1

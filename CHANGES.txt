@@ -1,3 +1,11 @@
+2003-07-26: codegen/pl_codegen.py, toolbar/perl_codegen.py,
+            menubar/perl_codegen.py:
+                brought Perl code generator up to date:
+                 - multiple files support
+                 - ``keep contents'' support
+                 - automatic ids generation (ID_FOO=?) support
+                everything is still *experimental* and NEEDS EXTENSIVE TESTING
+
 2003-07-18: widgets/toolbar/codegen.py, widgets/bitmap_button/codegen.py,
             widgets/static_bitmap/codegen.py:
                 added (limited) support to xpm data (not on files). I.e. if 

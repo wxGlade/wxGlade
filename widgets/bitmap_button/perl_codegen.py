@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxBitmapButton objects
-# $Id: perl_codegen.py,v 1.3 2003/07/11 07:30:26 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.4 2003/07/26 12:07:33 agriggio Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge
 # License: MIT (see license.txt)
@@ -30,28 +30,27 @@ class PerlCodeGenerator:
         else:
             parent = '$self'
 
-        if not bmp_file: bmp = 'wxNullBitmap'
+        if not bmp_file:
+            bmp = 'wxNullBitmap'
+        elif bmp_file.startswith('var:'): # this is a variable holding XPM data
+            bmp = 'Wx::Bitmap->newFromXPM(%s)' % bmp_file[4:].strip()
         else:
-            type = _bmp_str_types.get(os.path.splitext(bmp_file)[1].lower())
-            if not type:
-                bmp = 'wxNullBitmap'
-            else:
-                bmp = 'Wx::Bitmap->new(%s, %s)' % \
-                      (plgen.quote_path(bmp_file), type)
+            bmp = 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % \
+                  plgen.quote_path(bmp_file)
         init = []
         if id_name: init.append(id_name)
-        init.append('\t$self->{%s} = %s->new(%s, %s, %s);\n' % 
+        init.append('$self->{%s} = %s->new(%s, %s, %s);\n' % 
                     ( obj.name, obj.klass.replace('wx','Wx::',1),
-                    parent, id, bmp) )
+                      parent, id, bmp) )
 
         props_buf = plgen.generate_common_properties(obj)
         if not prop.has_key('size'):
             props_buf.append(
-                '\t$self->{%s}->SetSize($self->{%s}->GetBestSize());\n' %
-                             (obj.name, obj.name)
-                         )
+                '$self->{%s}->SetSize($self->{%s}->GetBestSize());\n' %
+                (obj.name, obj.name)
+                )
         if prop.get('default', False):
-            props_buf.append('\t$self->{%s}->SetDefault();\n' % obj.name)
+            props_buf.append('$self->{%s}->SetDefault();\n' % obj.name)
         return init, props_buf, []
 
 # end of class PerlCodeGenerator
