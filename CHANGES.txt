@@ -1,0 +1,70 @@
+2002-07-22: TODO.txt: updated
+	    docs/tech_notes.txt: added (incomplete)
+
+2002-07-20: edit_sizers.py: - added a create_properties method, with the same 
+			      purpose of EditBase.create_properties
+			    - fixed a couple of bugs (double Destroy call) on
+			      SizerSlot
+	    widgets/splitter_window.py: completed transition from the old
+					Property behaviour to the new one
+	    xml_parse.py: created ClipboardXmlWidgetBuilder, to parse the 
+			  contents of the clipboard
+	    clipboard.py: changes to use the new ClipboardXmlWidgetBuilder
+
+2002-07-19: main.py, widget_properties.py, edit_windows.py, edit_sizers.py:
+                     fixed a lot of memory leaks
+
+2002-07-18: widget_properties.py: changed all the Properties: they are not
+                                  instances of wxPanel anymore, but they have
+                                  a panel attribute, which is initialized only
+                                  when needed (i.e. when the owner of the 
+                                  Property has focus)
+            edit_windows.py, edit_sizers.py: changes to reflect the new 
+                                             behaviour of Properties: now
+                                             the notebook inside which 
+                                             Properties are displayed is
+                                             built only when needed
+            xml_parse.py: nothing special, but thanks to the new behaviour
+                          of Properties, loading from an xml is MUCH faster!
+
+2002-07-17: codegen/py_codegen.py: - support for multiple output files
+                                   - initial support for tags in the generated
+                                     source files to know what to 
+                                     overwrite and what to leave untouched
+
+2002-07-16: codegen/py_codegen.py: - initial support for multiple files
+				   - if __name__ == '__main__' block on 
+				     generated code
+				   - remove duplicate declarations of custom
+				     classes when there is more than one 
+				     instance
+            main.py: fixed some memory leaks
+	    common.py: initial support for generation of multiple files
+	    xml_parse.py: initial support for generation of multiple files
+	    TODO.txt: added plan to support an XRC code generator
+
+2002-07-14: version 0.1alpha2
+            wxglade.py: added comments, added an if __name__ == '__main__'
+                        block (thanks Rhymes)
+            codegen/py_codegen.py: - fixed bug in the generated code when a
+                                   __do_layout method is empty
+                                   - translated the last Italian comment to
+                                   English
+            widgets/notebook.py: - fixed bug in the generated code when the
+                                 notebook is an instance of a custom class     
+                                 - fixed bug in xml_builder which prevented 
+                                 the 'class' property from having the right 
+                                 value
+            widgets/splitter_window.py: - fixed bug in the generated code when 
+                                        the window is an instance of a 
+                                        custom class
+                                        - fixed bug in xml_builder which 
+                                        prevented the 'class' property 
+                                        from having the right value
+            widgets/static_line.py: - fixed bug in xml_builder which 
+                                    prevented the 'class' property 
+                                    from having the right value
+            docs/tutorial.html: - fixed some errors (thanks Rhymes)
+                                - added information about custom classes
+-------------------------------------------------------------------------------
+2002-07-12: version 0.1alpha (first public release)

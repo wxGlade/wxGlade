@@ -1,0 +1,69 @@
+wxGlade TODO list
+-----------------
+Last update: 2002-07-22
+
+The list is more or less sorted by priority
+
+Key: 
+     (*) Done, needs testing  
+     (#) Working on it...
+     All the others are open issues
+
+
+- Code generation on separate files (*)
+
+- "tags" on the generated code, to detect the portions of code to replace and
+  those to keep as is, when updating an existing file (*)
+
+- better support to custom classes, that is to say:
+  - Avoid double class declaration on the generated files when using
+    multiple instances of the same custom class (*)
+  - Avoid xml code duplication (in the same case as above): this may be hard
+
+- full Unicode support (#)
+
+- Investigation of the many memory leaks (#)
+
+- speedup of the xml loading (#)
+
+- custom wxDirDialog (to choose the destination dir for the generated
+  code, as the Windows default one doesn't allow to create a new dir)
+
+- Checks on the values of some properties (name, class,...), maybe with
+  wxValidator 
+
+- MDI
+
+- Code generation from the command line, witout starting the GUI
+
+- Event handlers support
+
+- Edit -> Preferences... to customize some aspects of wxGlade
+
+- ListCtrl e TreeCtrl
+
+- More basic properties for widgets (enabled for example)
+
+- ToolBar for frames 
+
+- complete MenuBar with icons and StatusBar messages support
+
+- support wxWindows xml resources (XRC) through a code generator
+
+- Grid
+
+- Less frequently used controls
+
+- on-line help (with wxHtmlHelpController)
+
+- test of the various modules with unittest
+
+- gettext support
+
+- support for C++ code generation (and maybe other languages, if someone wants
+  to do the work)
+
+- ``Templates'' for particular windows (for example, something as a dialog with
+  an image, a centered label and a couple of buttons)
+
+- ...
