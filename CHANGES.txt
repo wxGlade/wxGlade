@@ -1,5 +1,5 @@
--------------------------------------------------------------------------------
-2004-03-04: version 0.3.2 released
+2004-03-06: widgets/panel/panel.py:
+                fixed (hopefully) bug #880674
 
 2004-02-19: clipboard.py, main.py:
                 added Drag&Drop of wxg files for opening them (thanks to Chris
