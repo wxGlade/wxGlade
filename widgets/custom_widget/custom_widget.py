@@ -1,5 +1,5 @@
 # custom_widget.py: custom wxWindow objects
-# $Id: custom_widget.py,v 1.13 2003/10/30 07:52:32 dinogen Exp $
+# $Id: custom_widget.py,v 1.14 2004/05/11 08:05:13 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -57,7 +57,7 @@ class CustomWidget(ManagedBase):
                  show=True):
         ManagedBase.__init__(self, name, klass, parent, id, sizer, pos,
                              property_window, show)
-        self.arguments = [['$parent'], ['$id'],['$width'],['$height']]
+        self.arguments = [['$parent'], ['$id']] #,['$width'],['$height']]
         self.access_functions['arguments'] = (self.get_arguments,
                                               self.set_arguments)
         
