@@ -1,6 +1,6 @@
 wxGlade TODO list
 -----------------
-Last update: 2003-05-13
+Last update: 2003-07-28
 
 The list is more or less sorted by priority
 
@@ -24,7 +24,7 @@ Things Done:
 
 - support for C++ code generation
 
-- Possibility to chane the type of a sizer after its creation
+- Possibility to change the type of a sizer after its creation
  
 - Possibility to change the position of a widget inside its sizer
 
@@ -40,26 +40,28 @@ Things Done:
 
 - Preview of toplevel widgets
 
+- Checks on the values of some properties (name, class,...)
+
+- More basic properties for widgets (enabled for example)
+
+- ScrolledWindow (as a `scrollable' property for panels)
+
+- widgets path, to let the user add new widget modules
+
+- support for Perl code generation
+
 
 Real TODO (# = Partially done):
 -------------------------------
 
 - Undo/Redo
 
-- Better XRC support (custom classes, separate files, ...)
-
-- widgets path, to let the user add new widget modules
+- Better XRC support (custom classes, separate files, ...) (#: custom classes -
+  see the tutorial)
 
 - Event handlers support
 
 - ListCtrl and TreeCtrl (#: need to add more properties)
-
-- ScrolledWindow
-
-- Checks on the values of some properties (name, class,...), maybe with
-  wxValidator 
-
-- More basic properties for widgets (enabled for example)
 
 - ToolBar for frames (#: no controls yet)
 
@@ -77,5 +79,7 @@ Real TODO (# = Partially done):
   an image, a centered label and a couple of buttons)
 
 - TabOrder property (this may be hard though)
+
+- (Maybe) Java code generator
 
 - ...

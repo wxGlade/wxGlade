@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.31 2003/07/23 15:35:55 agriggio Exp $
+# $Id: application.py,v 1.32 2003/07/29 14:42:14 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -393,6 +393,10 @@ class Application(object):
             #print 'Temporary name:', out_name[0]
         widget_class_name = widget.klass
 
+        # make a valid name for the class (this can be invalid for
+        # some sensible reasons...)
+        widget.klass = widget.klass[widget.klass.rfind('.')+1:]
+        widget.klass = widget.klass[widget.klass.rfind(':')+1:]
         if widget.klass == widget.base:
             import random
             widget.klass = '_%d_%s' % \
@@ -406,6 +410,9 @@ class Application(object):
         self.use_gettext = False
         self.language = 'python'
         self.codegen_opt = 0
+        overwrite = self.overwrite
+        self.overwrite = 0
+        
         frame = None
         try:
             self.generate_code(preview=True)
@@ -444,11 +451,8 @@ class Application(object):
             # raise the frame
             frame.Center()
             frame.Show()
-            # remove the temporary file (and the .pyc one too)
-            if os.path.isfile(self.output_path):
-                #os.unlink(self.output_path)
-                pass
-            for ext in 'c', 'o': # remove eventual .pyc and .pyo files
+            # remove the temporary file (and the .pyc/.pyo ones too)
+            for ext in '', 'c', 'o':
                 name = self.output_path + ext
                 if os.path.isfile(name):
                     os.unlink(name)
@@ -462,6 +466,7 @@ class Application(object):
         self.codegen_opt = real_codegen_opt
         self.language = real_language
         self.use_gettext = real_use_gettext
+        self.overwrite = overwrite
         return frame
 
 # end of class Application

@@ -1,5 +1,5 @@
 # Grid.py: wxGrid objects
-# $Id: grid.py,v 1.24 2003/06/21 14:28:44 agriggio Exp $
+# $Id: grid.py,v 1.25 2003/07/29 14:42:13 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -232,10 +232,6 @@ class EditGrid(ManagedBase):
                 self.widget.SetColSize(i, s1)
             i += 1
 
-        # A grid should be wxEXPANDed and 'option' should be 1,
-        # or you can't see it.
-        self.set_option(1)  
-        self.set_flag("wxEXPAND")
         self.set_selection_mode(self.selection_mode)
         # following two events are to permit select grid from designer frame
         EVT_GRID_CELL_LEFT_CLICK(self.widget, self.on_set_focus)  
@@ -409,6 +405,10 @@ def builder(parent, sizer, pos, number=[1]):
         label = 'grid_%d' % number[0]
     grid = EditGrid(label, parent, wxNewId(), sizer, pos,
                     common.property_panel)
+    # A grid should be wxEXPANDed and 'option' should be 1,
+    # or you can't see it.
+    grid.set_option(1)  
+    grid.set_flag("wxEXPAND")
     node = Tree.Node(grid)
     grid.node = node
     grid.show_widget(True)
@@ -425,9 +425,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     grid = EditGrid(label, parent, wxNewId(), sizer,
-                        pos, common.property_panel, show=False)
+                    pos, common.property_panel, show=False)
     sizer.set_item(grid.pos, option=sizeritem.option, flag=sizeritem.flag,
-                    border=sizeritem.border) #, size=(100,100))  #HELP#
+                   border=sizeritem.border) #, size=(100,100))  #HELP#
     node = Tree.Node(grid)
     grid.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

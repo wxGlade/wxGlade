@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.42 2003/06/24 15:07:27 agriggio Exp $
+# $Id: main.py,v 1.43 2003/07/29 14:42:14 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -311,8 +311,12 @@ class wxGladeFrame(wxFrame):
             misc.set_geometry(self.frame2, prefs.get_geometry('properties'))
             misc.set_geometry(self.tree_frame, prefs.get_geometry('tree'))
         else:
-            self.frame2.SetSize((250, 350))
-            self.SetPosition((0, 0))
+            if wxPlatform == '__WXMAC__':
+                self.frame2.SetSize((345, 384)) # I've been told this is OK...
+                self.SetPosition((0, 45)) # to avoid the OS X menubar
+            else:
+                self.frame2.SetSize((250, 350))
+                self.SetPosition((0, 0))
             x, y = self.GetPosition()
             h = self.GetSize()[1]
             w = self.frame2.GetSize()[0]
