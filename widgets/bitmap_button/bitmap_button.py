@@ -73,7 +73,9 @@ class EditBitmapButton(ManagedBase):
         if self.widget:
             bmp = self.load_bitmap(type)
             self.widget.SetBitmapLabel(bmp)
-            self.widget.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
+            self.widget.SetBitmapSelected(bmp)
+            self.widget.SetBitmapFocus(bmp)
+            self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
     def create_widget(self):
         bmp = self.load_bitmap(self.guess_type(self.bitmap))

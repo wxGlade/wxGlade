@@ -76,7 +76,9 @@ class PanelBase(object):
 
     def get_widget_best_size(self):
         if self.top_sizer and self.widget.GetSizer():
-            return self.widget.GetSizer().GetMinSize()
+            #return self.widget.GetSizer().CalcMin()
+            self.top_sizer.fit_parent()
+            return self.widget.GetSize()
         return wxPanel.GetBestSize(self.widget)
 
     def get_style(self):
