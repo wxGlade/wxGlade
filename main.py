@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.56 2004/10/15 10:49:23 agriggio Exp $
+# $Id: main.py,v 1.57 2004/10/15 23:30:35 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -240,6 +240,17 @@ class wxGladeFrame(wxFrame):
         EVT_MENU(self, PREFS_ID, self.edit_preferences)
         EVT_MENU(self, IMPORT_ID, self.import_xrc)
 
+        self.accel_table = wxAcceleratorTable([
+            (wxACCEL_CTRL, ord('N'), NEW_ID),
+            (wxACCEL_CTRL, ord('O'), OPEN_ID),
+            (wxACCEL_CTRL, ord('S'), SAVE_ID),
+            (wxACCEL_CTRL|wxACCEL_SHIFT, ord('S'), SAVE_AS_ID),
+            (wxACCEL_CTRL, ord('G'), GENERATE_CODE_ID),
+            (wxACCEL_CTRL, ord('I'), IMPORT_ID),
+            (0, WXK_F1, TUT_ID),
+            (wxACCEL_CTRL, ord('Q'), EXIT_ID),
+            ])
+
         # Tutorial window
 ##         self.tut_frame = None
         # layout
@@ -439,13 +450,15 @@ class wxGladeFrame(wxFrame):
         CLEAR_SB_TIMER_ID = wxNewId()
         self.clear_sb_timer = wxTimer(self, CLEAR_SB_TIMER_ID)
         EVT_TIMER(self, CLEAR_SB_TIMER_ID, self.on_clear_sb_timer)
-            
+
+        self.frame2.SetAcceleratorTable(self.accel_table)
+        self.tree_frame.SetAcceleratorTable(self.accel_table)
+
         self.Raise()
 
     def on_autosave_timer(self, event):
-        self.user_message("Auto saving...")
-        common.autosave_current()
-        self.user_message("Auto saving... done")
+        if common.autosave_current():
+            self.user_message("Auto saving... done")
         
     def edit_preferences(self, event):
         config.edit_preferences()

@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.48 2004/10/14 16:34:09 agriggio Exp $
+# $Id: py_codegen.py,v 1.49 2004/10/15 23:30:34 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -748,7 +748,7 @@ def add_app(app_attrs, top_win_class):
     append(tab + '%s = %s(None, -1, "")\n' % (top_win, top_win_class))
     if klass:
         append(tab + 'self.SetTopWindow(%s)\n' % top_win)
-        append(tab + '%s.Show(1)\n' % top_win)
+        append(tab + '%s.Show()\n' % top_win)
         append(tab + 'return 1\n\n')
         append('# end of class %s\n\n' % klass)
         append('if __name__ == "__main__":\n')
@@ -760,7 +760,7 @@ def add_app(app_attrs, top_win_class):
         append(tab + '%s = %s(0)\n' % (name, klass))
     else:
         append(tab + '%s.SetTopWindow(%s)\n' % (name, top_win))
-        append(tab + '%s.Show(1)\n' % top_win)
+        append(tab + '%s.Show()\n' % top_win)
     append(tab + '%s.MainLoop()\n' % name)
 
     if multiple_files:
@@ -878,6 +878,8 @@ def generate_code_id(obj, id=None):
     if val.strip() == '?':
         val = cn('wxNewId()')
     # check to see if we have to make the var global or not...
+    name = name.strip()
+    val = val.strip()
     if '.' in name: return ('%s = %s\n' % (name, val), name)
     return ('global %s; %s = %s\n' % (name, name, val), name)
 
@@ -896,7 +898,7 @@ def generate_code_disabled(obj):
     try: disabled = int(obj.properties['disabled'])
     except: disabled = False
     if disabled:
-        return self + '.Enable(0)\n'
+        return self + '.Enable(False)\n'
 
 
 def generate_code_focused(obj):
