@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.27 2003/07/29 14:42:14 agriggio Exp $
+# $Id: xml_parse.py,v 1.28 2003/10/24 14:05:03 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -715,7 +715,9 @@ class Sizeritem:
                   'wxALIGN_CENTER_VERTICAL': wx.wxALIGN_CENTER_VERTICAL,
                   'wxLEFT': wx.wxLEFT, 'wxRIGHT': wx.wxRIGHT,
                   'wxTOP': wx.wxTOP,
-                  'wxBOTTOM': wx.wxBOTTOM }
+                  'wxBOTTOM': wx.wxBOTTOM,
+                  'wxSHAPED': wx.wxSHAPED,
+                  'wxADJUST_MINSIZE': wx.wxADJUST_MINSIZE, }
 
     def __init__(self):
         self.option = self.border = 0
