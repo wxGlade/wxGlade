@@ -89,7 +89,7 @@ class EditBitmapButton(ManagedBase):
             return wxNullBitmap
 
     def guess_type(self, filename):
-        return _bmp_types.get(os.path.splitext(str(filename))[1], None)
+        return _bmp_types.get(os.path.splitext(str(filename))[1].lower(), None)
 
     def get_default(self):
         return self.default

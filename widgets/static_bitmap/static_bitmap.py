@@ -98,7 +98,7 @@ class EditStaticBitmap(ManagedBase):
             return wxNullBitmap
 
     def guess_type(self, filename):
-        return _bmp_types.get(os.path.splitext(str(filename))[1], None)
+        return _bmp_types.get(os.path.splitext(str(filename))[1].lower(), None)
 
 # end of class EditStaticBitmap
         
