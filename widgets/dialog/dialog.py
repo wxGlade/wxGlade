@@ -35,7 +35,12 @@ class EditDialog(TopLevelBase):
         # editing the dialog (for example, a dialog without a caption would
         # be hard to move, etc.)
         default_style = wxCAPTION|wxSYSTEM_MENU|wxRESIZE_BORDER
-        self.widget = wxDialog(w, self.id, "", style=default_style)
+        # change 2002-10-09: now we create a wxFrame instead of a wxDialog,
+        # because the latter gives troubles I wasn't able to solve when using
+        # wxPython 2.3.3.1 :-/
+        self.widget = wxFrame(None, self.id, "", style=default_style)
+        self.widget.SetBackgroundColour(wxSystemSettings_GetSystemColour(
+            wxSYS_COLOUR_BTNFACE))
 
     def finish_widget_creation(self):
         TopLevelBase.finish_widget_creation(self)

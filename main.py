@@ -353,6 +353,7 @@ class wxGladeFrame(wxFrame):
         if not self.tut_frame:
             from wxPython.html import wxHtmlWindow
             self.tut_frame = wxFrame(self, -1, "wxGlade Tutorial")
+            self.tut_frame.SetIcon(self.GetIcon())
             panel = wxPanel(self.tut_frame, -1)
             sizer = wxBoxSizer(wxVERTICAL)
             html = wxHtmlWindow(panel, -1, style=wxSUNKEN_BORDER)
@@ -360,10 +361,12 @@ class wxGladeFrame(wxFrame):
             sizer.Add(html, 1, wxEXPAND)
             btn = wxButton(panel, -1, 'Close')
             btn.SetDefault()
-            sizer.Add(btn, 0, wxALL|wxALIGN_CENTER, 10)
+            sz2 = wxBoxSizer(wxHORIZONTAL)
+            sz2.Add(btn, 0, wxRIGHT, 20)
+            sizer.Add(sz2, 0, wxALL|wxALIGN_RIGHT, 10)
             panel.SetAutoLayout(True)
             panel.SetSizer(sizer)
-            self.tut_frame.SetSize((640, 550))
+            self.tut_frame.SetSize((610, 550))
             EVT_CLOSE(self.tut_frame, lambda e: self.tut_frame.Hide())
             EVT_BUTTON(btn, btn.GetId(), lambda e: self.tut_frame.Hide())
             if wxPlatform == '__WXMSW__':

@@ -1,6 +1,6 @@
 wxGlade TODO list
 -----------------
-Last update: 2002-09-07
+Last update: 2002-10-09
 
 The list is more or less sorted by priority
 
@@ -34,6 +34,11 @@ Real TODO (# = Partially done):
 
 - Undo/Redo
 
+- Possibility to chane the type of a sizer after its creation (#: almost done,
+  but needs *A LOT* of testing)
+ 
+- Possibility to change the position of a widget inside its sizer
+
 - Event handlers support
 
 - Edit -> Preferences... to customize some aspects of wxGlade
@@ -66,7 +71,7 @@ Real TODO (# = Partially done):
 
 - TabOrder property (this may be hard though)
 
-- better support of custom classes, that is to say:
-  - Avoid xml code duplication (in the same case as above): this may be hard
+- better support of custom classes:
+  - Avoid xml code duplication: this may be hard
 
 - ...

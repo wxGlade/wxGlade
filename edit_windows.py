@@ -153,7 +153,7 @@ class EditBase:
         sizer_tmp = self.property_window.GetSizer()
         sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
         child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
-        w = wxPyTypeCast(child.GetWindow(), "wxWindow")
+        w = child.GetWindow()
         if w is self.notebook: return
         w.Hide()
         child.SetWindow(self.notebook)
