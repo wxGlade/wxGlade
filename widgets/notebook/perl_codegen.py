@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxNotebook objects
-# $Id: perl_codegen.py,v 1.3 2004/09/17 13:09:52 agriggio Exp $
+# $Id: perl_codegen.py,v 1.4 2005/02/21 04:02:01 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -9,6 +9,11 @@ import common
 from codegen import TabsCodeHandler
 
 class PerlCodeGenerator:
+#wxNotebook(parent, id, pos, size, style, name)
+    new_signature = [
+        '$parent', '$id', '$pos', '$size', '$style', '$name'
+    ]
+
     def get_code(self, window):
         plgen = common.code_writers['perl']
         prop = window.properties
