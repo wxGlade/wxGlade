@@ -82,11 +82,12 @@ def load_code_writers():
     found in the 'codegen/' subdir
     """
     import sys
-    sys.path.insert(0, 'codegen')
-    for module in os.listdir('codegen'):
+    codegen_path = os.path.join(wxglade_path, 'codegen')
+    sys.path.insert(0, codegen_path)
+    for module in os.listdir(codegen_path):
         name, ext = os.path.splitext(module)
         if name not in sys.modules and \
-               os.path.isfile(os.path.join('codegen', module)):
+               os.path.isfile(os.path.join(codegen_path, module)):
             try: writer = __import__(name).writer
             except (ImportError, AttributeError, ValueError):
                 if use_gui:
@@ -102,7 +103,7 @@ def load_widgets():
     and returns a list of buttons to handle them
     """
     buttons = []
-    modules = open('widgets/widgets.txt')
+    modules = open(os.path.join(wxglade_path, 'widgets/widgets.txt'))
     if use_gui: print 'loading widget modules:'
     for line in modules:
         module = line.strip()
@@ -141,6 +142,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     from wxPython import wx
     from tree import WidgetTree
     id = wx.wxNewId()
+    icon_path = os.path.join(wxglade_path, icon_path)
     tmp = wx.wxBitmapButton(palette, id, wx.wxBitmap(icon_path,
                                                      wx.wxBITMAP_TYPE_XPM),
                             size=(31, 31))

@@ -24,14 +24,16 @@ def _fix_path(path):
     script)
     """
     if not os.path.isabs(path):
-        return os.path.join(os.getenv('WXGLADE_INVOKING_DIR', '.'), path)
+        return os.path.join(os.getcwd(), path) #getenv('WXGLADE_INVOKING_DIR', '.'), path)
     return path
 
 def parse_command_line():
     import getopt, common
-    try: options, args = getopt.getopt(sys.argv[1:], "g:o:", ['generate-code=',
-                                                              'output='])
-    except getopt.GetoptError: usage()
+    try: options, args = getopt.getopt(sys.argv[1:], "g:o:",
+                                       ['generate-code=', 'output='])
+    except getopt.GetoptError:
+        import traceback; traceback.print_exc()
+        usage()
     return options, args
 
 def command_line_code_generation(options, args):
@@ -100,10 +102,13 @@ if __name__ == "__main__":
     # prepend the widgets dir to the
     # app's search path
     #sys.path.insert(0, 'widgets')
-    sys.path = [os.getcwd(), os.path.join(os.getcwd(), 'widgets')] + sys.path
+    wxglade_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+    #print '\n\nPATH=', wxglade_path, '\n'
+    #sys.path = [os.getcwd(), os.path.join(os.getcwd(), 'widgets')] + sys.path
+    sys.path = [wxglade_path, os.path.join(wxglade_path, 'widgets')] + sys.path
     # set the program's path
     import common
-    common.wxglade_path = os.getcwd()
+    common.wxglade_path = wxglade_path #os.getcwd()
     # before running the GUI, let's see if there are command line options for
     # code generation
     if len(sys.argv) == 1:
@@ -114,8 +119,8 @@ if __name__ == "__main__":
         options, args = parse_command_line()
         if not options:
             # start the app in GUI mode, opening the given file
-            import main
             filename = _fix_path(args[0])
+            import main
             main.main(filename)
         else:
             command_line_code_generation(options, args)

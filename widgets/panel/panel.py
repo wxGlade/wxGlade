@@ -135,7 +135,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.skip_on_size = False
 
     def create_widget(self):
-        win = wxFrame(None, -1, self.name, size=(400, 300)) 
+        win = wxFrame(common.palette, -1, self.name, size=(400, 300)) 
         self.widget = wxPanel(win, self.id, style=0)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
@@ -238,7 +238,9 @@ def initialize():
 
     common.widgets_from_xml['EditTopLevelPanel'] = xml_toplevel_builder
     from tree import WidgetTree
-    WidgetTree.images['EditTopLevelPanel'] = 'icons/panel.xpm'
+    import os.path
+    WidgetTree.images['EditTopLevelPanel'] = os.path.join(common.wxglade_path,
+                                                          'icons/panel.xpm')
         
     return common.make_object_button('EditPanel', 'icons/panel.xpm')
     
