@@ -1,3 +1,6 @@
+2002-12-23: main.py, application.py: 
+                slightly better error messages
+
 2002-12-14: docs/tutorial.html: 
                 added notes
 

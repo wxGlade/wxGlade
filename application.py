@@ -311,8 +311,16 @@ class Application(object):
             CodeWriter(common.code_writers[cw], out.getvalue(), True) 
         except Exception, msg:
             import traceback; traceback.print_exc()
-            wxMessageBox("Error generating code:\n%s" % msg, "Error",
+            wxMessageBox("An exception occurred while generating the code "
+                         "for the application.\n"
+                         "This is the error message associated with it:\n"
+                         "        %s\n"
+                         "For more details, look at the full traceback "
+                         "on the console.\nIf you think this is a wxGlade bug,"
+                         " please report it." % msg, "Error",
                          wxOK|wxCENTRE|wxICON_ERROR)
+##             wxMessageBox("Error generating code:\n%s" % msg, "Error",
+##                          wxOK|wxCENTRE|wxICON_ERROR)
         else:
             wxMessageBox("Code generation completed successfully",
                          "Information", wxOK|wxCENTRE|wxICON_INFORMATION)

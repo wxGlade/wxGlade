@@ -302,7 +302,12 @@ class wxGladeFrame(wxFrame):
             common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
-            wxMessageBox("Error loading file:\n%s" % msg, "Error",
+            wxMessageBox("An exception occurred while loading file \"%s\".\n"
+                         "This is the error message associated with it:\n"
+                         "        %s\n"
+                         "For more details, look at the full traceback "
+                         "on the console.\nIf you think this is a wxGlade bug,"
+                         " please report it." % (infilename, msg), "Error",
                          wxOK|wxCENTRE|wxICON_ERROR)
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
@@ -345,8 +350,18 @@ class wxGladeFrame(wxFrame):
                 import traceback; traceback.print_exc()
                 if locals().has_key('f'): f.close()
                 common.app_tree.app.saved = False
-                wxMessageBox("Error saving app:\n%s" % msg, "Error",
-                             wxOK|wxCENTRE|wxICON_ERROR)
+                fn = common.app_tree.app.filename
+                wxMessageBox("An exception occurred while saving file \"%s\"."
+                             "\n"
+                             "This is the error message associated with it:\n"
+                             "        %s\n"
+                             "For more details, look at the full traceback "
+                             "on the console.\nIf you think this is a "
+                             "wxGlade bug,"
+                             " please report it." % (fn, msg), "Error",
+                         wxOK|wxCENTRE|wxICON_ERROR)
+##                 wxMessageBox("Error saving app:\n%s" % msg, "Error",
+##                              wxOK|wxCENTRE|wxICON_ERROR)
             else:
                 common.app_tree.app.saved = True
 
