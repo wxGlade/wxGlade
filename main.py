@@ -9,7 +9,7 @@ from wxPython.wx import *
 from widget_properties import *
 from tree import Tree, WidgetTree
 import edit_sizers
-import common, os.path, misc, config
+import common, os, os.path, misc, config
 
 class wxGladePropertyPanel(wxPanel):
     """\
@@ -287,7 +287,9 @@ class wxGladeFrame(wxFrame):
         # prevent the auto-expansion of nodes
         common.app_tree.auto_expand = False
 
+        old_dir = os.getcwd()
         try:
+            os.chdir(os.path.dirname(infilename))
             infile = open(infilename)
             if use_progress_dialog and config.preferences.show_progress:
                 p = ProgressXmlWidgetBuilder(input_file=infile)
@@ -304,6 +306,7 @@ class wxGladeFrame(wxFrame):
                          wxOK|wxCENTRE|wxICON_ERROR)
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
+            os.chdir(old_dir)
             return 
 
         infile.close()
@@ -313,6 +316,8 @@ class wxGladeFrame(wxFrame):
         # reset the auto-expansion of nodes
         common.app_tree.auto_expand = True
         common.app_tree.expand()
+
+        #os.chdir(old_dir)
 
         end = time.clock()
         print 'Loading time: %.5f' % (end-start)
@@ -330,8 +335,11 @@ class wxGladeFrame(wxFrame):
             self.save_app_as(event)
         else:
             try:
+                from cStringIO import StringIO
+                buffer = StringIO()
+                common.app_tree.write(buffer)
                 f = open(common.app_tree.app.filename, 'w')
-                common.app_tree.write(f)
+                f.write(buffer.getvalue())
                 f.close()
             except Exception, msg:
                 import traceback; traceback.print_exc()
