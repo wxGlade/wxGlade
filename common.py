@@ -146,6 +146,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     tmp.SetToolTip(wx.wxToolTip(tip))
 
     WidgetTree.images[widget] = icon_path
+
     return tmp
 
 

@@ -33,7 +33,7 @@ class wxGladeFrame(wxFrame):
     Main frame of wxGlade (palette)
     """
     def __init__(self, parent=None):
-        wxFrame.__init__(self, parent, -1, "wxGlade - Palette",
+        wxFrame.__init__(self, parent, -1, "wxGlade v%s" % common.version,
                          style=wxSYSTEM_MENU|wxCAPTION|wxMINIMIZE_BOX)
         if parent is None: parent = self
         common.palette = self # to provide a reference accessible
@@ -81,7 +81,7 @@ class wxGladeFrame(wxFrame):
         append_item(file_menu, GENERATE_CODE_ID, "&Generate Code...\tCtrl+G")
         EXIT_ID = wxNewId()
         file_menu.AppendSeparator()
-        append_item(file_menu, EXIT_ID, 'E&xit\tCtrl+X') #, 'icons/exit.xpm')
+        append_item(file_menu, EXIT_ID, 'E&xit\tCtrl+X') 
         menu_bar.Append(file_menu, "&File")
         menu_bar.Append(view_menu, "&View")
         TUT_ID = wxNewId()
@@ -121,7 +121,10 @@ class wxGladeFrame(wxFrame):
         self.SetSizer(sizer)
         sizer.Fit(self)
         # Properties window
-        self.frame2 = wxFrame(parent, -1, 'Properties - <app>')
+        frame_style = wxDEFAULT_FRAME_STYLE
+        if wxPlatform == '__WXMSW__': frame_style |= wxFRAME_TOOL_WINDOW
+        self.frame2 = wxFrame(parent, -1, 'Properties - <app>',
+                              style=frame_style)
         self.frame2.SetBackgroundColour(wxSystemSettings_GetSystemColour(
             wxSYS_COLOUR_BTNFACE))
         self.frame2.SetIcon(icon)
@@ -141,11 +144,13 @@ class wxGladeFrame(wxFrame):
         EVT_CLOSE(self, self.cleanup)
         common.property_panel = property_panel
         # Tree of widgets
-        self.tree_frame = wxFrame(parent, -1, 'wxGlade: Tree', size=(350, 200))
+        self.tree_frame = wxFrame(parent, -1, 'wxGlade: Tree',
+                                  style=frame_style)
         self.tree_frame.SetIcon(icon)
         import application
         app = application.Application(common.property_panel)
         common.app_tree = WidgetTree(self.tree_frame, app)
+        self.tree_frame.SetSize((300, 300))
 
         app.notebook.Show()
         sizer_tmp.Add(app.notebook, 1, wxEXPAND)
@@ -154,7 +159,7 @@ class wxGladeFrame(wxFrame):
         
         def on_tree_frame_close(event):
             self.tree_frame.Hide()
-            menu_bar.Check(TREE_ID, True)
+            menu_bar.Check(TREE_ID, False)
         EVT_CLOSE(self.tree_frame, on_tree_frame_close)
         self.frame2.SetSize((250, 350))
         self.SetPosition((0, 0))
@@ -171,6 +176,15 @@ class wxGladeFrame(wxFrame):
         self.Show()
         self.tree_frame.Show()
         self.frame2.Show()
+
+        # I'll pay a beer to anyone who can explain to me why this prevents
+        # a segfault on Win32 when you exit without doing anything!!
+        if wxPlatform == '__WXMSW__':
+            import about
+            self.about_box = about.wxGladeAboutBox(self.GetParent())
+        else:
+            self.about_box = None
+
         self.Raise()
 
     def show_tree(self, event):
@@ -297,6 +311,7 @@ class wxGladeFrame(wxFrame):
     def cleanup(self, event):
         if self.ask_save():
             common.app_tree.clear()
+            if self.about_box: self.about_box.Destroy()
             self.Destroy()
             raise SystemExit
 
@@ -319,8 +334,10 @@ class wxGladeFrame(wxFrame):
         common.app_tree.app.saved = False
 
     def show_about_box(self, event):
-        import about
-        about.wxGladeAboutBox(self.GetParent()).ShowModal()
+        if self.about_box is None:
+            import about
+            self.about_box = about.wxGladeAboutBox(self.GetParent())
+        self.about_box.ShowModal()
 
     def show_tutorial(self, event):
         if not self.tut_frame:
