@@ -1,3 +1,7 @@
+2002-08-27: codegen/cpp_codegen.py: fixed bug in id code generation
+	    widgets/frame/frame.py, widgets/dialog/dialog.py:
+				    fixed bug in get_style
+
 2002-08-26: widgets/*/codegen.py, codegen/py_codegen.py, 
 	    codegen/cpp_codegen.py: changed code generation to initialize 
 				    widgets in the right order, so as to
