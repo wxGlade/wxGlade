@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.14 2003/11/24 21:28:07 agriggio Exp $
+# $Id: codegen.py,v 1.15 2003/12/20 00:23:53 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -35,8 +35,8 @@ class PythonCodeGenerator:
                 bmp = (cn('wxBitmapFromXPMData') + '(%s)') % \
                       bmp_file[4:].strip()
         else:
-            bmp = ('wxBitmap(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \
-                  pygen.quote_str(bmp_file, False, False)
+            bmp = (cn('wxBitmap') + '(%s, ' + cn('wxBITMAP_TYPE_ANY') +
+                   ')') % pygen.quote_str(bmp_file, False, False)
         init = []
         if id_name: init.append(id_name)
         klass = obj.klass
