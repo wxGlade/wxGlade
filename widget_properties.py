@@ -8,6 +8,7 @@
 from wxPython.wx import *
 from wxPython.grid import *
 from xml.sax.saxutils import escape
+import misc
 try:
     from wxPython.lib.stattext import *
 except ImportError:
@@ -643,7 +644,6 @@ class FontDialogProperty(DialogProperty):
     font_weights_to = { 'normal': wxNORMAL, 'light': wxLIGHT, 'bold': wxBOLD }
     font_weights_from = _reverse_dict(font_weights_to)
     
-    import misc
     if misc.check_wx_version(2, 3, 3):
         font_families_to['teletype'] = wxTELETYPE 
         font_families_from[wxTELETYPE] = 'teletype' 
@@ -832,16 +832,20 @@ class GridProperty(wxPanel, Property):
         """
         self.panel = wxPanel(parent, -1)
         self.btn_id = wxNewId()
-        self.btn = wxButton(self.panel, self.btn_id, "Apply")
+        self.btn = wxButton(self.panel, self.btn_id, "  Apply  ")
         if self.can_add:
-            self.add_btn = wxButton(self.panel, self.btn_id+1, "Add")
+            self.add_btn = wxButton(self.panel, self.btn_id+1, "  Add  ")
         if self.can_insert:
-            self.insert_btn = wxButton(self.panel, self.btn_id+3, "Insert")
+            self.insert_btn = wxButton(self.panel, self.btn_id+3, "  Insert  ")
         if self.can_remove:
-            self.remove_btn = wxButton(self.panel, self.btn_id+2, "Remove")
+            self.remove_btn = wxButton(self.panel, self.btn_id+2, "  Remove  ")
         self.grid = wxGrid(self.panel, -1)
         self.grid.CreateGrid(self.rows, len(self.cols))
-        self.grid.SetMargins(0, 0)
+        if misc.check_wx_version(2, 3, 3):
+            self.grid.SetMargins(0, 0)
+        else:
+            # wx 2.3.2 seems to have some problems with grid scrollbars...
+            self.grid.SetMargins(0, self.grid.GetDefaultRowSize())
 
         for i in range(len(self.cols)):
             self.grid.SetColLabelValue(i, self.cols[i][0])
@@ -854,18 +858,22 @@ class GridProperty(wxPanel, Property):
         self.grid.SetColLabelSize(20)
 
         self.btn_sizer = wxBoxSizer(wxHORIZONTAL)
-        self.btn.SetSize((self.btn.GetCharWidth()*8, -1))
+        _w = self.btn.GetTextExtent(self.btn.GetLabel())[0]
+        self.btn.SetSize((_w, -1))
         self.btn_sizer.Add(self.btn)
         if self.can_add:
-            self.add_btn.SetSize((self.add_btn.GetCharWidth()*5, -1))
+            _w = self.add_btn.GetTextExtent(self.add_btn.GetLabel())[0]
+            self.add_btn.SetSize((_w, -1))
             self.btn_sizer.Add(self.add_btn, 0, wxLEFT|wxRIGHT, 4)
             EVT_BUTTON(self.add_btn, self.btn_id+1, self.add_row)
         if self.can_insert: 
-            self.insert_btn.SetSize((self.insert_btn.GetCharWidth()*8, -1))
+            _w = self.insert_btn.GetTextExtent(self.insert_btn.GetLabel())[0]
+            self.insert_btn.SetSize((_w, -1))
             self.btn_sizer.Add(self.insert_btn, 0, wxLEFT|wxRIGHT, 4)
             EVT_BUTTON(self.insert_btn, self.btn_id+3, self.insert_row)
         if self.can_remove:
-            self.remove_btn.SetSize((self.remove_btn.GetCharWidth()*8, -1))
+            _w = self.remove_btn.GetTextExtent(self.remove_btn.GetLabel())[0]
+            self.remove_btn.SetSize((_w, -1))
             self.btn_sizer.Add(self.remove_btn)
             EVT_BUTTON(self.remove_btn, self.btn_id+2, self.remove_row)
         sizer.Add(self.btn_sizer, 0, wxBOTTOM|wxEXPAND, 2)
@@ -913,6 +921,7 @@ class GridProperty(wxPanel, Property):
             
     def add_row(self, event):
         self.grid.AppendRows()
+        self.grid.MakeCellVisible(self.rows, 0)
         self.rows += 1
 
     def remove_row(self, event):
