@@ -203,9 +203,9 @@ class SizerBase:
         """\
         Setup of the Properties of self.
         """
-        self.flags_pos = [wxEXPAND, wxALIGN_RIGHT, wxALIGN_BOTTOM,
-                          wxALIGN_CENTER_HORIZONTAL, wxALIGN_CENTER_VERTICAL,
-                          wxLEFT, wxRIGHT, wxTOP, wxBOTTOM]
+        self.flags_pos = [ wxALL, wxLEFT, wxRIGHT, wxTOP, wxBOTTOM,
+                           wxEXPAND, wxALIGN_RIGHT, wxALIGN_BOTTOM,
+                           wxALIGN_CENTER_HORIZONTAL, wxALIGN_CENTER_VERTICAL ]
 
         self.access_functions = {
             'name' : (lambda : self.name, self.set_name),
@@ -221,10 +221,11 @@ class SizerBase:
         if not self.toplevel:
             prop = self.sizer_properties = {}
             prop['option'] = SpinProperty(self, 'option', None, 0, (0, 1000))
-            flag_labels = ['#section#Alignment', 'wxEXPAND', 'wxALIGN_RIGHT',
+            flag_labels = ['#section#Border', 'wxALL',
+                           'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM',
+                           '#section#Alignment', 'wxEXPAND', 'wxALIGN_RIGHT',
                            'wxALIGN_BOTTOM', 'wxALIGN_CENTER_HORIZONTAL',
-                           'wxALIGN_CENTER_VERTICAL', '#section#Border',
-                           'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM']
+                           'wxALIGN_CENTER_VERTICAL']
             prop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
             prop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
 
@@ -476,6 +477,11 @@ class SizerBase:
             flag = self.flag
             for i in range(len(self.flags_pos)):
                 if flag & self.flags_pos[i]: retval[i] = 1
+            # patch to make wxALL work
+            if retval[1:5] == [1, 1, 1, 1]:
+                retval[0] = 1; retval[1:5] = [0, 0, 0, 0]
+            else:
+                retval[0] = 0
         except AttributeError: pass
         return retval
 
@@ -655,7 +661,14 @@ class EditBoxSizer(SizerBase):
             else:
                 sp = c.item.properties.get('size')
                 if sp and sp.is_active():
-                    w, h = [ int(v) for v in sp.get_value().split(',') ]
+                    size = sp.get_value().strip()
+                    if size[-1] == 'd':
+                        size = size[:-1]
+                        use_dialog_units = True
+                    else: use_dialog_units = False
+                    w, h = [ int(v) for v in size.split(',') ]
+                    if use_dialog_units:
+                        w, h = wxDLG_SZE(c.item.widget, (w, h))
                 else: w, h = c.item.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.item.widget, w, h)
         if not self.toplevel:
@@ -710,7 +723,14 @@ class EditStaticBoxSizer(SizerBase):
             else:
                 sp = c.item.properties.get('size')
                 if sp and sp.is_active():
-                    w, h = [ int(v) for v in sp.get_value().split(',') ]
+                    size = sp.get_value().strip()
+                    if size[-1] == 'd':
+                        size = size[:-1]
+                        use_dialog_units = True
+                    else: use_dialog_units = False
+                    w, h = [ int(v) for v in size.split(',') ]
+                    if use_dialog_units:
+                        w, h = wxDLG_SZE(c.item.widget, (w, h))
                 else: w, h = c.item.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.item.widget, w, h)
         self.Layout()
@@ -825,7 +845,14 @@ class GridSizerBase(SizerBase):
             else:
                 sp = c.item.properties.get('size')
                 if sp and sp.is_active():
-                    w, h = [ int(v) for v in sp.get_value().split(',') ]
+                    size = sp.get_value().strip()
+                    if size[-1] == 'd':
+                        size = size[:-1]
+                        use_dialog_units = True
+                    else: use_dialog_units = False
+                    w, h = [ int(v) for v in size.split(',') ]
+                    if use_dialog_units:
+                        w, h = wxDLG_SZE(c.item.widget, (w, h))
                 else: w, h = c.item.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.item.widget, w, h)
 

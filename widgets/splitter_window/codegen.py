@@ -18,17 +18,14 @@ def python_code_generator(window):
         l = ['self.%s = %s(%s, %s)\n' % (window.name, window.klass, parent,id)]
         if id_name: l.append(id_name)
         return l, [], []
-    size = pygen.generate_code_size(window)
-    if size != '(-1, -1)': size = ', size=%s' % size
-    else: size = ''
     style = prop.get("style")
     if style and style != 'wxSP_3D': style = ", style=%s" % style
     else: style = ''
-    init = ['self.%s = wxSplitterWindow(%s, %s%s%s)\n' %
-            (window.name, parent, id, size, style) ]
+    init = ['self.%s = wxSplitterWindow(%s, %s%s)\n' %
+            (window.name, parent, id, style) ]
     if id_name: init.append(id_name)
 
-    props_buf = []
+    props_buf = pygen.generate_common_properties(window)
     win_1 = prop.get('window_1')
     win_2 = prop.get('window_2')
     orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -46,11 +43,6 @@ def python_code_generator(window):
         if win_1: add_sub(win_1)
         elif win_2: add_sub(win_2)
 
-    if prop.has_key('foreground'):
-        props_buf.append(pygen.generate_code_foreground(window))
-    if prop.has_key('background'):
-        props_buf.append(pygen.generate_code_background(window))
-    if prop.has_key('font'): props_buf.append(pygen.generate_code_font(window))
     sash_pos = prop.get('sash_pos')
     if sash_pos:
         props_buf.append('self.%s.SetSashPosition(%s)\n' % (window.name,

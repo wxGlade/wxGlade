@@ -20,19 +20,31 @@ def python_code_generator(obj):
                                              id, label)]
         if id_name: l.append(id_name) # init lines are written in reverse order
         return l , [], []    
-    size = pygen.generate_code_size(obj)
-    if size != '(-1, -1)': size = ', size=%s' % size
-    else: size = ''
-    init = [ 'self.%s = wxButton(%s, %s, %s%s)\n' % 
-             (obj.name, parent, id, label, size) ]
+    init = [ 'self.%s = wxButton(%s, %s, %s)\n' %
+             (obj.name, parent, id, label) ]
     if id_name: init.append(id_name) # init lines are written in reverse order
-    props_buf = []
-    if prop.has_key('foreground'):
-        props_buf.append(pygen.generate_code_foreground(obj))
-    if prop.has_key('background'):
-        props_buf.append(pygen.generate_code_background(obj))
-    if prop.has_key('font'): props_buf.append(pygen.generate_code_font(obj))
+    props_buf = pygen.generate_common_properties(obj)
     return init, props_buf, []
+
+
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+    class ButtonXrcObject(xrcgen.DefaultXrcObject):
+        def write_property(self, name, val, outfile, tabs):
+            if name == 'label':
+                # translate & into _ as accelerator marker
+                val2 = val.replace('&', '_')
+                if val.count('&&') > 0:
+                    while True:
+                        index = val.find('&&')
+                        if index < 0: break
+                        val = val2[:index] + '&&' + val2[index+2:]
+                else: val = val2
+            xrcgen.DefaultXrcObject.write_property(self, name, val,
+                                                   outfile, tabs)
+    # end of class ButtonXrcObject
+
+    return ButtonXrcObject(obj)
 
 
 def initialize():
@@ -40,3 +52,6 @@ def initialize():
     pygen = common.code_writers.get('python')
     if pygen:
         pygen.add_widget_handler('wxButton', python_code_generator)
+    xrcgen = common.code_writers.get("XRC")
+    if xrcgen:
+        xrcgen.add_widget_handler('wxButton', xrc_code_generator)

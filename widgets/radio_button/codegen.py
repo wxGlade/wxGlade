@@ -20,23 +20,15 @@ def python_code_generator(obj):
              (obj.name, obj.klass, parent, id, label)]
         if id_name: l.append(id_name)
         return l, [], []
-    size = pygen.generate_code_size(obj)
-    if size != '(-1, -1)': size = ', size=%s' % size
-    else: size = ''
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
-    init = ['self.%s = wxRadioButton(%s, %s, "%s"%s%s)\n' %
-            (obj.name, parent, id, label, size, style) ]
+    init = ['self.%s = wxRadioButton(%s, %s, "%s"%s)\n' %
+            (obj.name, parent, id, label, style) ]
     if id_name: init.append(id_name)
-    props_buf = []
+    props_buf = pygen.generate_common_properties(obj)
     clicked = prop.get('clicked')
     if clicked: props_buf.append('self.%s.SetValue(1)\n' % obj.name)
-    if prop.has_key('foreground'):
-        props_buf.append(pygen.generate_code_foreground(obj))
-    if prop.has_key('background'):
-        props_buf.append(pygen.generate_code_background(obj))
-    if prop.has_key('font'): props_buf.append(pygen.generate_code_font(obj))
     return init, props_buf, []
 
 

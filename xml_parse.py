@@ -638,7 +638,8 @@ class Stack:
 
 class Sizeritem:
     if common.use_gui:
-        flags = { 'wxEXPAND': wx.wxEXPAND, 'wxALIGN_RIGHT': wx.wxALIGN_RIGHT,
+        flags = { 'wxALL': wx.wxALL,
+                  'wxEXPAND': wx.wxEXPAND, 'wxALIGN_RIGHT': wx.wxALIGN_RIGHT,
                   'wxALIGN_BOTTOM': wx.wxALIGN_BOTTOM,
                   'wxALIGN_CENTER_HORIZONTAL': wx.wxALIGN_CENTER_HORIZONTAL,
                   'wxALIGN_CENTER_VERTICAL': wx.wxALIGN_CENTER_VERTICAL,
@@ -659,19 +660,29 @@ class Sizeritem:
                                          [Sizeritem.flags[t] for t in
                                           v.split("|")])))
 
-    def flag_list(self):
-        # returns the flag attribute as a list of boolean values, to
-        # update the appropriate CheckListProperty
-        return [ (v & self.flag) for v in self.flags.values() ]
-    
     def flag_str(self):
         # returns the flag attribute as a string of tokens separated
         # by a '|' (used during the code generation)
         if hasattr(self, 'flag_s'): return self.flag_s
         else:
             try:
-                tmp = '|'.join([ k for k in self.flags if \
-                                 self.flags[k] & self.flag ])
+                tmp = {}
+                for k in self.flags:
+                    if self.flags[k] & self.flag:
+                        tmp[k] = 1
+                # patch to make wxALL work
+                remove_wxall = 4
+                for k in ('wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM'):
+                    if k in tmp: remove_wxall -= 1
+                if remove_wxall:
+                    try: del tmp['wxALL']
+                    except KeyError: pass
+                else:
+                    for k in ('wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM'):
+                        try: del tmp[k]
+                        except KeyError: pass
+                    tmp['wxALL'] = 1
+                tmp = '|'.join(tmp.keys())
             except:
                 print 'EXCEPTION: self.flags = %s, self.flag = %s' % \
                       (self.flags, repr(self.flag))

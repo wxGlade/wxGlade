@@ -56,24 +56,15 @@ def python_code_generator(window):
         l = ['self.%s = %s(%s, %s)\n' % (window.name, window.klass, parent,id)]
         if id_name: l.append(id_name)
         return l, [], [] #layout_props #[]
-    size = pygen.generate_code_size(window)
-    if size != '(-1, -1)': size = ', size=%s' % size
-    else: size = ''
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
-    init = ['self.%s = wxNotebook(%s, %s%s%s)\n' %
-            (window.name, parent, id, size, style) ]
+    init = ['self.%s = wxNotebook(%s, %s%s)\n' %
+            (window.name, parent, id, style) ]
     if id_name: init.append(id_name)
 
-    props_buf = []
-    if prop.has_key('foreground'):
-        props_buf.append(pygen.generate_code_foreground(window))
-    if prop.has_key('background'):
-        props_buf.append(pygen.generate_code_background(window))
-    if prop.has_key('font'): props_buf.append(pygen.generate_code_font(window))
-
-    return init, props_buf, layout_props #[]
+    props_buf = pygen.generate_common_properties(window)
+    return init, props_buf, layout_props 
 
 
 def python_generate_properties(obj):

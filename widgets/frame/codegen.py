@@ -207,29 +207,35 @@ def xrc_menubar_code_generator(obj):
             write = outfile.write
             if item.name == '---': # item is a separator
                 write('    '*tabs + '<object class="separator"/>\n')
-            elif item.children:
-                if item.name:
-                    write('    '*tabs + '<object class="wxMenu" ' \
-                          'name=%s>\n' % quoteattr(item.name))
-                else:
-                    write('    '*tabs + '<object class="wxMenu">\n')
-                tab_s = '    ' * (tabs+1)
-                if item.label:
-                    write(tab_s + '<label>%s</label>\n' % \
-                          escape(item.label))
-                for c in item.children:
-                    self.append_item(c, outfile, tabs+1)
-                write('    '*tabs + '</object>\n')
             else:
-                if item.name:
-                    write('    '*tabs + '<object class="wxMenuItem" ' \
-                          'name=%s>\n' % quoteattr(item.name))
+                if item.children:
+                    if item.name:
+                        write('    '*tabs + '<object class="wxMenu" ' \
+                              'name=%s>\n' % quoteattr(item.name))
+                    else:
+                        write('    '*tabs + '<object class="wxMenu">\n')
                 else:
-                    write('    '*tabs + '<object class="wxMenuItem">\n')  
+                    if item.name:
+                        write('    '*tabs + '<object class="wxMenuItem" ' \
+                              'name=%s>\n' % quoteattr(item.name))
+                    else:
+                        write('    '*tabs + '<object class="wxMenuItem">\n')  
                 if item.label:
+                    # translate & into _ as accelerator marker
+                    val = item.label
+                    val2 = val.replace('&', '_')
+                    if val.count('&&') > 0:
+                        while True:
+                            index = val.find('&&')
+                            if index < 0: break
+                        val = val2[:index] + '&&' + val2[index+2:]
+                    else: val = val2
                     write('    '*(tabs+1) + '<label>%s</label>\n' % \
-                          escape(item.label))
-                if item.checkable == '1':
+                          escape(val))
+                if item.children:
+                    for c in item.children:
+                        self.append_item(c, outfile, tabs+1)
+                elif item.checkable == '1':
                     write('    '*(tabs+1) + '<checkable>1</checkable>\n')
                 write('    '*tabs + '</object>\n')
         

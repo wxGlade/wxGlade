@@ -22,20 +22,13 @@ def python_code_generator(obj):
              (obj.name, obj.klass, parent, id, value, min_v, max_v)]
         if id_name: l.append(id_name)
         return l, [], []
-    size = pygen.generate_code_size(obj)
-    if size != '(-1, -1)': size = ', size=%s' % size
-    else: size = ''
     style = prop.get("style")
     if style and style != 'wxSL_HORIZONTAL': style = ", style=%s" % style
     else: style = ''
-    init = ['self.%s = wxSlider(%s, %s, %s, %s, %s%s%s)\n' %
-            (obj.name, parent, id, value, min_v, max_v, size, style) ]
+    init = ['self.%s = wxSlider(%s, %s, %s, %s, %s%s)\n' %
+            (obj.name, parent, id, value, min_v, max_v, style) ]
     if id_name: init.append(id_name)
-    props_buf = []
-    if prop.has_key('foreground'):
-        props_buf.append(pygen.generate_code_foreground(obj))
-    if prop.has_key('background'):
-        props_buf.append(pygen.generate_code_background(obj))
+    props_buf = pygen.generate_common_properties(obj)
     return init, props_buf, []
 
 

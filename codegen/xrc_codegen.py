@@ -52,7 +52,7 @@ all the non-sizer objects that have children (i.e. frames, dialogs, panels,
 notebooks, etc.), while at the end of the code generation, before finalize
 is called, it contains only the true toplevel objects (frames and dialogs), and
 is used to write their XML code (see finalize). The other objects are deleted
-when add_object is called with argument their corresponding code_object (see
+when add_object is called with their corresponding code_object as argument (see
 add_object)
 """
 xrc_objects = None 
@@ -199,7 +199,7 @@ def initialize(out_path, multi_files):
                     ' on %s -->' % (common.version, asctime())]
     for line in header_lines:
         output_file.write(line + '\n')
-    output_file.write('\n<resource>\n')
+    output_file.write('\n<resource version="2.3.0.1">\n')
     curr_tab = 1
     xrc_objects = {}
 

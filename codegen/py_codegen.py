@@ -519,7 +519,14 @@ def generate_code_size(obj):
     """\
     returns the code fragment that sets the size of the given object.
     """
-    return '(' + obj.properties.get('size','-1, -1') + ')'
+    if obj.is_toplevel: name = 'self'
+    else: name = 'self.%s' % obj.name
+    size = obj.properties.get('size', '').strip()
+    use_dialog_units = (size[-1] == 'd')
+    if use_dialog_units:
+        return name + '.SetSize(wxDLG_SZE(%s, (%s)))\n' % (name, size[:-1])
+    else:
+        return name + '.SetSize((%s))\n' % size
 
 def _string_to_colour(s):
     return '%d, %d, %d' % (int(s[1:3], 16), int(s[3:5], 16), int(s[5:], 16))
@@ -581,8 +588,7 @@ def generate_common_properties(widget):
     """
     prop = widget.properties
     out = []
-    size = prop.get('size')
-    if size: out.append('self.SetSize((%s))\n' % size)
+    if prop.get('size', '').strip(): out.append(generate_code_size(widget))
     if prop.get('background'): out.append(generate_code_background(widget))
     if prop.get('foreground'): out.append(generate_code_foreground(widget))
     if prop.get('font'): out.append(generate_code_font(widget))

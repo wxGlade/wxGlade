@@ -690,9 +690,10 @@ class RadioProperty(Property, _activator):
         except AttributeError: pass 
 
     def set_str_value(self, value):
-        self.val = self.choices.index(value)
-        try: self.options.SetSelection(self.val)
-        except AttributeError: pass
+        try:
+            self.val = self.choices.index(value)
+            self.options.SetSelection(self.val)
+        except (AttributeError, ValueError): pass
 
     def write(self, outfile, tabs):
         if self.is_active():

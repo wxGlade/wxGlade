@@ -21,24 +21,16 @@ def python_code_generator(obj):
              (obj.name, obj.klass, parent, id, repr(choices))]
         if id_name: l.append(id_name)
         return l, [], []
-    size = pygen.generate_code_size(obj)
-    if size != '(-1, -1)': size = ', size=%s' % size
-    else: size = ''
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
-    init = ['self.%s = wxListBox(%s, %s, choices=%s%s%s)\n' %
-            (obj.name, parent, id, repr(choices), size, style) ]
+    init = ['self.%s = wxListBox(%s, %s, choices=%s%s)\n' %
+            (obj.name, parent, id, repr(choices), style) ]
     if id_name: init.append(id_name)
-    props_buf = []
+    props_buf = pygen.generate_common_properties(obj)
     selection = prop.get('selection')
     if selection is not None:
         props_buf.append('self.%s.SetSelection(%s)\n' % (obj.name, selection))
-    if prop.has_key('foreground'):
-        props_buf.append(pygen.generate_code_foreground(obj))
-    if prop.has_key('background'):
-        props_buf.append(pygen.generate_code_background(obj))
-    if prop.has_key('font'): props_buf.append(pygen.generate_code_font(obj))
     return init, props_buf, []
 
 
