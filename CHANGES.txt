@@ -1,3 +1,12 @@
+2002-08-02: main.py, edit_sizer.py, edit_windows.py, widgets/frame.py:
+		     fixed wxPython 2.3.3 incompatibilities
+
+2002-08-01: main.py: added a View->Show Properties menu item
+	    widgets/frame.py: experimental fix for menubar-related segfaults
+			      on GTK
+-------------------------------------------------------------------------------
+2002-08-01: version 0.1.2 released
+
 2002-08-01: clipboard.py: removed dirt at the end of xml_str when retrieved
 			  from the clipboard (this may happen on Windows)
 			  Removed renaming code

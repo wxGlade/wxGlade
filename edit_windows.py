@@ -103,8 +103,10 @@ class EditBase:
             if hasattr(self, 'sizer_properties'):
                 for p in self.sizer_properties.itervalues():
                     if p.panel: p.panel.Destroy()
+            nb_szr = self.notebook.sizer
             self.notebook.Destroy()
-            self.notebook.sizer.Destroy()
+            #self.notebook.sizer.Destroy()
+            nb_szr.Destroy()
         # ...finally, destroy our widget
         if self.widget: self.widget.Destroy()
             
