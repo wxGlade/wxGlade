@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.9 2003/07/19 12:06:02 agriggio Exp $
+# $Id: codegen.py,v 1.10 2003/07/26 09:15:56 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -63,7 +63,7 @@ class PythonCodeGenerator:
                     return 'wxBitmapFromXPMData(%s)' % bitmap[4:].strip()
             else:
                 return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
-                       pygen.quote_str(bitmap, False)
+                       pygen.quote_str(bitmap, False, False)
                 
         for tool in tools:
             if tool.id == '---': # item is a separator
@@ -291,7 +291,7 @@ class CppCodeGenerator:
                 return 'wxBitmap(%s)' % bitmap[4:].strip()
             else:
                 return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
-                       cppgen.quote_str(bitmap, False)
+                       cppgen.quote_str(bitmap, False, False)
                 
         for tool in tools:
             if tool.id == '---': # item is a separator
