@@ -1,7 +1,7 @@
 # MenuTree.py: A class to represent a menu on a wxMenuBar
-# $Id: MenuTree.py,v 1.7 2004/02/20 19:10:41 agriggio Exp $
+# $Id: MenuTree.py,v 1.8 2004/09/17 13:09:55 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

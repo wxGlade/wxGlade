@@ -1,7 +1,7 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.33 2004/01/30 10:01:38 agriggio Exp $
+# $Id: misc.py,v 1.34 2004/09/17 13:09:56 agriggio Exp $
 # 
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

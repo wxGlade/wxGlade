@@ -5,6 +5,9 @@
             edit_sizers/edit_sizers.py, edit_windows.py:
                 fixed segfault on wxGTK2 when removing a widget from the
                 popup menu
+            
+            *.py:
+                updated copyright information
 
 2004-09-04: version 0.3.4.1 released, due to the introduction of a workaround
             for a bug in wxPython 2.5.2.8 (about wxGrid and its default

@@ -1,8 +1,8 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.39 2004/04/26 20:16:35 agriggio Exp $
+# $Id: application.py,v 1.40 2004/09/17 13:09:56 agriggio Exp $
 # 
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

@@ -1,7 +1,7 @@
 # radio_box.py: wxRadioBox objects
-# $Id: radio_box.py,v 1.11 2003/07/08 17:44:24 agriggio Exp $
+# $Id: radio_box.py,v 1.12 2004/09/17 13:09:51 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

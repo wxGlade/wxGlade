@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for spacers
-# $Id: codegen.py,v 1.6 2003/05/13 10:05:09 agriggio Exp $
+# $Id: codegen.py,v 1.7 2004/09/17 13:09:50 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
