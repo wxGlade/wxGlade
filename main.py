@@ -221,19 +221,19 @@ class wxGladeFrame(wxFrame):
                                 flags=wxOPEN|wxFILE_MUST_EXIST)
         if infile: self._open_app(infile)
 
-    def _open_app(self, infile, use_progress_dialog=True):
+    def _open_app(self, infilename, use_progress_dialog=True):
         import time
         from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
         start = time.clock()
 
         common.app_tree.clear()
-        common.app_tree.app.filename = infile
+        common.app_tree.app.filename = infilename
         common.property_panel.Reparent(self.hidden_frame)
         # prevent the auto-expansion of nodes
         common.app_tree.auto_expand = False
 
         try:
-            infile = open(infile)
+            infile = open(infilename)
             if use_progress_dialog:
                 p = ProgressXmlWidgetBuilder(input_file=infile)
             else: p = XmlWidgetBuilder()
