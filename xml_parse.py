@@ -131,11 +131,6 @@ class XmlWidgetBuilder(XmlParser):
             if use_gettext:
                 app.use_gettext = True
                 app.use_gettext_prop.set_value(True)
-            try: indent_tabs = int(attrs["indent_tabs"])
-            except (KeyError, ValueError): indent_tabs = False
-            if indent_tabs:
-                app.indent_tabs = True
-                app.indent_tabs_prop.set_value(True)
             return
         if not self._appl_started:
             raise XmlParsingError("the root of the tree must be <application>")
@@ -435,6 +430,8 @@ class XmlWidgetObject:
             import sys
             print >> sys.stderr, "Warning: property '%s' not supported by " \
                   "this object ('%s') " % (name, self.obj)
+##             raise XmlParsingError("property '%s' not supported by this object"\
+##                                   " ('%s') " % (name, self.obj))
 
 #end of class XmlWidgetObject
 
