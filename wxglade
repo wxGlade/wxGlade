@@ -1,0 +1,2 @@
+#!/bin/bash
+exec python /usr/lib/python2.3/site-packages/wxglade/wxglade.py $@
