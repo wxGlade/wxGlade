@@ -12,9 +12,11 @@ from widget_properties import *
 
 from ChoicesProperty import *
 
-if wxPlatform == '__WXMSW__':
+if 0 and wxPlatform == '__WXMSW__':
     # why on Windows combo boxes give segfaults? Need to investigate, but
     # for now replace them with choices
+    # this seems to be because of the style of wxPanel: if there's a
+    # wxTAB_TRAVERSAL, we have troubles -- now it should be fixed...
     class wxComboBox2(wxChoice):
         # on windows GetBestSize considers also the drop down menu, while we
         # don't want it to be included
