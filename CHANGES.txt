@@ -1,3 +1,6 @@
+2003-03-15: widgets/frame/frame.py:
+                fixed bug #704091
+
 2003-03-14: config.py, main.py:
                 added new preference buttons_per_row, to control the geometry
                 of the main palette

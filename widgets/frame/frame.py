@@ -935,12 +935,20 @@ def statusbar_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditStatusBar objects from an xml file
     """
     parent.statusbar.set_fields([])
+    name = attrs.get('name')
+    if name:
+        parent.statusbar.set_name(name)
+        parent.statusbar.name_prop.set_value(name)
     return parent.statusbar
 
 def menubar_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditStatusBar objects from an xml file
+    factory to build EditMenuBar objects from an xml file
     """
+    name = attrs.get('name')
+    if name:
+        parent.menubar.set_name(name)
+        parent.menubar.name_prop.set_value(name)
     return parent.menubar
 
 
