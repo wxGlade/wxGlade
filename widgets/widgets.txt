@@ -25,4 +25,5 @@ list_ctrl
 tree_ctrl
 grid
 custom_widget
+menubar
 spacer

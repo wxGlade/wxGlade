@@ -113,9 +113,9 @@ def fix_properties(document):
 
 
 def fix_widgets(document):
+    fix_menubars(document)
     fix_custom_widgets(document)
     fix_sizeritems(document)
-    fix_menubars(document)
     fix_notebooks(document)
     fix_spacers(document)
     fix_sliders(document)
@@ -128,7 +128,8 @@ _widgets_list = [
     'wxSpinCtrl', 'wxSlider', 'wxGauge', 'wxStaticText', 'wxCheckBox',
     'wxRadioButton', 'wxRadioBox', 'wxChoice', 'wxComboBox', 'wxListBox',
     'wxStaticLine', 'wxStaticBitmap', 'wxGrid', 'wxMenuBar', 'wxStatusBar',
-    'wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer'
+    'wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer',
+    'wxTreeCtrl', 'wxListCtrl'
     ]
 _widgets = {}
 for w in _widgets_list: _widgets[w] = 1
@@ -172,9 +173,10 @@ def fix_menubars(document):
     menubars = filter(ok, document.getElementsByTagName('object'))
     for mb in menubars:
         fix_menus(document, mb)
-        mb_prop = document.createElement('menubar')
-        mb_prop.appendChild(document.createTextNode('1'))
-        mb.parentNode.insertBefore(mb_prop, mb)
+        if mb.parentNode is not document.documentElement:
+            mb_prop = document.createElement('menubar')
+            mb_prop.appendChild(document.createTextNode('1'))
+            mb.parentNode.insertBefore(mb_prop, mb)
 
 
 def fix_menus(document, menubar):

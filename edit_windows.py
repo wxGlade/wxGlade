@@ -795,6 +795,8 @@ class TopLevelBase(WindowBase):
     """\
     Base class for every non-managed window (i.e. Frames and Dialogs).
     """
+    _is_toplevel = True
+    
     def __init__(self, name, klass, parent, id, property_window, show=True,
                  has_title=True):
         WindowBase.__init__(self, name, klass, parent, id, property_window,

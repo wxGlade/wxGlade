@@ -351,7 +351,11 @@ def add_object(top_obj, sub_obj):
                            'no suitable writer found' % (sub_obj.name,
                                                          sub_obj.klass),'\n'])
     else:
-        init, props, layout = builder(sub_obj)
+        try:
+            init, props, layout = builder.get_code(sub_obj)
+        except:
+            print sub_obj
+            raise # this shouldn't happen
         if sub_obj.in_windows: # the object is a wxWindow instance
             # --- patch 2002-08-26 ------------------------------------------
             if sub_obj.is_container and not sub_obj.is_toplevel:
@@ -367,7 +371,9 @@ def add_object(top_obj, sub_obj):
                (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
             key = 'from %s import %s\n' % (sub_obj.klass, sub_obj.klass)
             klass.dependencies[key] = 1
-        for dep in _widget_extra_modules.get(sub_obj.base, []):
+##         for dep in _widget_extra_modules.get(sub_obj.base, []):
+        for dep in getattr(obj_builders.get(sub_obj.base),
+                           'extra_modules', []):
             klass.dependencies[dep] = 1
 
 
@@ -415,6 +421,12 @@ def add_class(code_obj):
     if classes.has_key(code_obj.klass) and classes[code_obj.klass].done:
         return # the code has already been generated
 
+    try:
+        builder = obj_builders[code_obj.base]
+    except KeyError:
+        print builder
+        raise # this is an error, let the exception be raised
+
     if prev_src is not None and prev_src.classes.has_key(code_obj.klass):
         is_new = False
         indentation = prev_src.spaces[code_obj.klass]
@@ -422,7 +434,8 @@ def add_class(code_obj):
         # this class wasn't in the previous version of the source (if any)
         is_new = True
         indentation = tabs(2)
-        mods = _widget_extra_modules.get(code_obj.base)
+##         mods = _widget_extra_modules.get(code_obj.base)
+        mods = getattr(builder, 'extra_modules', [])
         if mods:
             for m in mods: _current_extra_modules[m] = 1
 
@@ -432,6 +445,17 @@ def add_class(code_obj):
     if not classes.has_key(code_obj.klass):
         # if the class body was empty, create an empty ClassLines
         classes[code_obj.klass] = ClassLines()
+
+##     # first thing to do, call the property writer: we do this now because it
+##     # can have side effects that modify the ClassLines instance (this is used
+##     # in the toplevel menubar)
+##     props_builder = obj_properties.get(code_obj.base)
+##     write_body = len(classes[code_obj.klass].props)
+##     if props_builder:
+##         obj_p = obj_properties[code_obj.base](code_obj)
+##         if not write_body: write_body = len(obj_p)
+##     else: obj_p = []
+
     if is_new:
         write('class %s(%s):\n' % (code_obj.klass, code_obj.base))
         write(tabs(1) + 'def __init__(self, *args, **kwds):\n')
@@ -450,6 +474,11 @@ def add_class(code_obj):
     for l in parents_init: write(tab+l)
     # ------------------------------------------------------------------------
     for l in init_lines: write(tab + l)
+
+    # now check if there are extra lines to add to the init method
+    if hasattr(builder, 'get_init_code'):
+        for l in builder.get_init_code(code_obj): write(tab + l)
+    
     write('\n' + tab + 'self.__set_properties()\n')
     write(tab + 'self.__do_layout()\n')
     # end tag
@@ -468,12 +497,16 @@ def add_class(code_obj):
         write = buffer.append
 
     # __set_properties
-    props_builder = obj_properties.get(code_obj.base)
-    write_body = len(classes[code_obj.klass].props)
-    if props_builder:
-        obj_p = obj_properties[code_obj.base](code_obj)
-        if not write_body: write_body = len(obj_p)
-    else: obj_p = []
+##     props_builder = obj_properties.get(code_obj.base)
+##     write_body = len(classes[code_obj.klass].props)
+##     if props_builder:
+##         obj_p = obj_properties[code_obj.base](code_obj)
+##         if not write_body: write_body = len(obj_p)
+##     else: obj_p = []
+    obj_p = getattr(builder, 'get_properties_code',
+                    generate_common_properties)(code_obj)
+    write_body = len(obj_p)
+
     if is_new: write('\n%sdef __set_properties(self):\n' % tabs(1))
     # begin tag
     write(tab + '# begin wxGlade: %s.__set_properties\n' % code_obj.klass)
@@ -501,13 +534,21 @@ def add_class(code_obj):
     if is_new: write('\n' + tabs(1) + 'def __do_layout(self):\n')
     layout_lines = classes[code_obj.klass].layout
     sizers_init_lines = classes[code_obj.klass].sizers_init
+
+    # check if there are extra layout lines to add
+    if hasattr(builder, 'get_layout_code'):
+        extra_layout_lines = builder.get_layout_code(code_obj)
+    else:
+        extra_layout_lines = []
+    
     # begin tag
     write(tab + '# begin wxGlade: %s.__do_layout\n' % code_obj.klass)
-    if layout_lines or sizers_init_lines:
+    if layout_lines or sizers_init_lines or extra_layout_lines:
         sizers_init_lines.reverse()
         for l in sizers_init_lines: write(tab + l)
         for l in layout_lines: write(tab + l)
-        write(tab + 'self.Layout()\n')
+        #write(tab + 'self.Layout()\n')
+        for l in extra_layout_lines: write(tab + l)
     else: write(tab + 'pass\n')
     # end tag
     write(tab + '# end wxGlade\n')
@@ -876,20 +917,67 @@ def add_property_handler(property_name, handler, widget_name=None):
         except KeyError:
             _property_writers[widget_name] = { property_name: handler }
 
-def add_widget_handler(widget_name, handler,
-                       properties_handler=generate_common_properties,
-                       import_modules=None):
-    """\
-    sets the functions to generate the code for the widget whose base class
-    is 'widget_name':
-     - handler: function that writes the code
-     - properties_handler: function that writes extra code to set the
-                           properties of the widget if it is a toplevel class
-     - import_modules: list of modules to import
-                       (eg. ['from wxPython.grid import *\n'])
-    """
-    obj_builders[widget_name] = handler
-    obj_properties[widget_name] = properties_handler
-    if import_modules is not None:
-        _widget_extra_modules[widget_name] = import_modules
 
+class WidgetHandler:
+    """\
+    Interface the various code generators for the widgets must implement
+    """
+    
+    """list of modules to import (eg. ['from wxPython.grid import *\n'])"""
+    import_modules = []
+
+    def get_code(self, obj):
+        """\
+        Handler for normal widgets (non-toplevel): returns 3 lists of strings,
+        init, properties and layout, that contain the code for the
+        corresponding methods of the class to generate
+        """
+        return [], [], []
+
+    def get_properties_code(self, obj):
+        """\
+        Handler for the code of the set_properties method of toplevel objects.
+        Returns a list of strings containing the code to generate
+        """
+        return []
+
+    def get_init_code(self, obj):
+        """\
+        Handler for the code of the constructor of toplevel objects.  Returns a
+        list of strings containing the code to generate.  Usually the default
+        implementation is ok (i.e. there are no extra lines to add). The
+        generated lines are appended at the end of the constructor
+        """
+        return []
+
+    def get_layout_code(self, obj):
+        """\
+        Handler for the code of the do_layout method of toplevel objects.
+        Returns a list of strings containing the code to generate.
+        Usually the default implementation is ok (i.e. there are no
+        extra lines to add)
+        """
+        return []
+
+# end of class WidgetHandler
+
+
+## def add_widget_handler(widget_name, handler,
+##                        properties_handler=generate_common_properties,
+##                        import_modules=None):
+##     """\
+##     sets the functions to generate the code for the widget whose base class
+##     is 'widget_name':
+##      - handler: function that writes the code
+##      - properties_handler: function that writes extra code to set the
+##                            properties of the widget if it is a toplevel class
+##      - import_modules: list of modules to import
+##                        (eg. ['from wxPython.grid import *\n'])
+##     """
+##     obj_builders[widget_name] = handler
+##     obj_properties[widget_name] = properties_handler
+##     if import_modules is not None:
+##         _widget_extra_modules[widget_name] = import_modules
+
+def add_widget_handler(widget_name, handler):
+    obj_builders[widget_name] = handler

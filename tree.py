@@ -89,7 +89,8 @@ class Tree:
         child.parent = parent
         self.current = child
         self.names[str(child.widget.name)] = 1
-        if parent is self.root:
+        if parent is self.root and \
+               getattr(child.widget.__class__, '_is_toplevel', False):
             self.app.add_top_window(child.widget.name)
 
     def insert(self, child, parent, index):
@@ -321,7 +322,8 @@ class WidgetTree(wxTreeCtrl, Tree):
             item = node.widget
         if not item.widget or not item.is_visible():
             import edit_windows
-            if isinstance(item, edit_windows.TopLevelBase):
+            #if isinstance(item, edit_windows.TopLevelBase):
+            if node.parent is self.root:
                 self._show_menu.SetTitle(item.name)
                 self.PopupMenu(self._show_menu, event.GetPosition())
             return
@@ -412,27 +414,6 @@ class WidgetTree(wxTreeCtrl, Tree):
         Returns None if there's no match.
         If toplevels_only is True, scans only root's children
         """
-##         def inside(x, y, rect):
-##             return (rect.x <= x <= rect.x + rect.width) and \
-##                    (rect.y <= y <= rect.y + rect.height)
-##         def rec_find(node):
-##             if not node: return None
-##             rect = self.GetBoundingRect(node.item)
-##             if rect is not None and inside(x, y, rect): return node            
-##             if node.children: 
-##                 for c in node.children:
-##                     res = rec_find(c)
-##                     if res is not None: return res
-##             return None
-##         if not self.root.children: return None # root is not considered
-##         if not toplevels_only:
-##             for node in self.root.children:
-##                 res = rec_find(node)
-##                 if res is not None: return res
-##         else:
-##             for node in self.root.children:
-##                 rect = self.GetBoundingRect(node.item)
-##                 if rect is not None and inside(x, y, rect): return node
         item, flags = self.HitTest((x, y))
         if item and flags & (wxTREE_HITTEST_ONITEMLABEL |
                              wxTREE_HITTEST_ONITEMICON):
