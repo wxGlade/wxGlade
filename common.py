@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.21 2003/05/13 10:13:51 agriggio Exp $
+# $Id: common.py,v 1.22 2003/05/14 17:53:39 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -127,6 +127,28 @@ def load_sizers():
     return edit_sizers.init_all()
 
 
+def add_object(event):
+    """\
+    Adds a widget or a sizer to the current app.
+    """
+    global adding_widget, adding_sizer, widget_to_add
+    adding_widget = True
+    adding_sizer = False
+    tmp = event.GetId()
+    widget_to_add = refs[tmp]
+    # TODO: find a better way
+    if widget_to_add.find('Sizer') != -1:
+        adding_sizer = True
+
+
+def add_toplevel_object(event):
+    """\
+    Adds a toplevel widget (Frame or Dialog) to the current app.
+    """
+    widgets[refs[event.GetId()]](None, None, 0)
+    app_tree.app.saved = False
+
+
 # function used by the various widget modules to add a button to the widgets
 # toolbar
 def make_object_button(widget, icon_path, toplevel=False, tip=None):
@@ -148,9 +170,9 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
                                                      wx.wxBITMAP_TYPE_XPM),
                             size=(31, 31))
     if not toplevel:
-        wx.EVT_BUTTON(palette, id, palette.add_object)
+        wx.EVT_BUTTON(tmp, id, add_object)
     else:
-        wx.EVT_BUTTON(palette, id, palette.add_toplevel_object)
+        wx.EVT_BUTTON(tmp, id, add_toplevel_object)
     refs[id] = widget
     if not tip:
         tip = 'Add a %s' % widget.replace('Edit', '')
