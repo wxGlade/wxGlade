@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.7 2004/01/20 22:31:52 dinogen Exp $
+# $Id: perl_codegen.py,v 1.8 2004/02/01 11:56:57 agriggio Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)

@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.16 2004/01/29 09:11:33 dinogen Exp $
+# $Id: codegen.py,v 1.17 2004/02/01 11:56:57 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -55,18 +55,21 @@ class PythonCodeGenerator:
         else: obj_name = 'self.' + obj.name
 
         def _get_bitmap(bitmap):
-            bmp_preview_path = os.path.join(common.wxglade_path, "icons", "icon.xpm")
+            bmp_preview_path = os.path.join(common.wxglade_path, "icons",
+                                            "icon.xpm")
             if not bitmap:
                 return cn('wxNullBitmap')
             elif bitmap.startswith('var:'):
                 if obj.preview:
-                    return "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path, cn('wxBITMAP_TYPE_XPM') )
+                    return "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path,
+                                            cn('wxBITMAP_TYPE_XPM') )
                 else:
                     return (cn('wxBitmap') + '(%s,' + cn('wxBITMAP_TYPE_ANY') +
                             ')') % (bitmap[4:].strip())
             elif bitmap.startswith('code:'):
                 if obj.preview:
-                    return "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path, cn('wxBITMAP_TYPE_XPM') )
+                    return "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path,
+                                            cn('wxBITMAP_TYPE_XPM') )
                 else:
                     return '(%s)' % bitmap[5:].strip()
             else:
@@ -223,11 +226,6 @@ def xrc_code_generator(obj):
             if style:
                 style = style.split('|')
                 style.append('wxTB_HORIZONTAL')
-                # wxTB_TEXT and wxTB_NOICONS added in CVS
-##                 for s in 'wxTB_TEXT', 'wxTB_NOICONS':
-##                     # these two flags are (surprisingly) unsupported by XRC...
-##                     try: style.remove(s)
-##                     except ValueError: pass
                 write('    '*(tabs+1) + '<style>%s</style>\n' % \
                       escape('|'.join(style)))
             for t in tools:
