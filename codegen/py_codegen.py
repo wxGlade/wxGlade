@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.51 2004/11/01 18:01:38 georgesk Exp $
+# $Id: py_codegen.py,v 1.52 2004/11/02 11:08:38 georgesk Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -332,9 +332,6 @@ def initialize(app_attrs):
                 output_file.write(line)
             output_file.write('<%swxGlade extra_modules>\n' % nonce)
             output_file.write('\n')
-            if _use_gettext:
-                output_file.write("\nimport gettext\n")
-                output_file.write("_ = gettext.gettext\n\n");
     else:
         previous_source = None
         global out_dir
