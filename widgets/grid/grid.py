@@ -86,18 +86,18 @@ class EditGrid(ManagedBase):
         Class to handle wxGrid objects
         """
         # values of properties for the grid:
-        self.row_label_size     = 30
+        self.row_label_size = 30
         self.col_label_size = 30
-        self.enable_editing     = False
-        self.enable_grid_lines  = True
-        self.rows_number        = 10
-        self.enable_col_resize  = True
-        self.enable_row_resize  = True
+        self.enable_editing = False
+        self.enable_grid_lines = True
+        self.rows_number = 10
+        self.enable_col_resize = True
+        self.enable_row_resize = True
         self.enable_grid_resize = False
-        self.lines_color        = '#000000'
-        self.label_bg_color     = '#C0C0C0'
-        self.selection_mode     = wxGrid.wxGridSelectCells
-        self.create_grid        = True
+        self.lines_color = '#000000'
+        self.label_bg_color = '#C0C0C0'
+        self.selection_mode = wxGrid.wxGridSelectCells
+        self.create_grid = True
         self.columns = [ ['A','-1'] , ['B','-1'] , ['C','-1'] ]
         
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
@@ -105,7 +105,8 @@ class EditGrid(ManagedBase):
         props = self.properties
         af = self.access_functions
         af['create_grid'] = (self.get_create_grid, self.set_create_grid)
-        props['create_grid'] = CheckBoxProperty(self, 'create_grid', None)
+        props['create_grid'] = CheckBoxProperty(self, 'create_grid', None,
+                                                write_always=True)
         af['row_label_size'] = (self.get_row_label_size,
                                 self.set_row_label_size)
         props['row_label_size'] = SpinProperty(self, 'row_label_size',
