@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.24 2003/07/11 15:07:36 agriggio Exp $
+# $Id: frame.py,v 1.25 2003/07/19 12:06:03 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -212,7 +212,11 @@ class EditFrame(TopLevelBase):
         prop['centered'].display(panel)
         prop['menubar'].display(panel)
         prop['toolbar'].display(panel)
-        prop['statusbar'].display(panel)
+        try:
+            sbprop = prop['statusbar']
+            sbprop.display(panel)
+        except KeyError:
+            sbprop = None
         prop['style'].display(panel)
         
         szr = wxBoxSizer(wxVERTICAL)
@@ -221,7 +225,8 @@ class EditFrame(TopLevelBase):
         szr.Add(prop['centered'].panel, 0, wxEXPAND)
         szr.Add(prop['menubar'].panel, 0, wxEXPAND)
         szr.Add(prop['toolbar'].panel, 0, wxEXPAND)
-        szr.Add(prop['statusbar'].panel, 0, wxEXPAND)
+        if sbprop:
+            szr.Add(sbprop.panel, 0, wxEXPAND)
         szr.Add(prop['style'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
@@ -346,7 +351,12 @@ class EditFrame(TopLevelBase):
 class EditMDIChildFrame(EditFrame):
     _is_toplevel = False # used to avoid to appear in the "Top Window" property
                          # of the app
-    pass
+
+    def __init__(self, *args, **kwds):
+        EditFrame.__init__(self, *args, **kwds)
+        del self.properties['statusbar']
+
+# end of class EditMDIChildFrame
 
         
 def builder(parent, sizer, pos, number=[0]):
