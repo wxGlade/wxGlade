@@ -1,4 +1,8 @@
-2003-24-11: codegen/py_codegen.py, widgets/*/codegen.py,
+2003-12-06: widgets/panel/panel.py:
+                added ability to paste a sizer inside a panel, notebook page
+                and splitter pane
+
+2003-11-24: codegen/py_codegen.py, widgets/*/codegen.py,
             edit_sizers/sizers_codegen.py:
                 changes to the python code generator to support new wx 
                 namespace
