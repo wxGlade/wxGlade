@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.25 2003/07/05 14:32:40 agriggio Exp $
+# $Id: application.py,v 1.26 2003/07/08 17:44:25 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -181,19 +181,19 @@ class Application(object):
 
     def set_name(self, value):
         value = "%s" % value
-        if not re.match(self.set_name.pattern, value):
+        if not re.match(self.set_name_pattern, value):
             self.name_prop.set_value(self.name)
         else:
             self.name = value
-    set_name.pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')
+    set_name_pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')
 
     def set_klass(self, value):
         value = "%s" % value
-        if not re.match(self.set_klass.pattern, value):
+        if not re.match(self.set_klass_pattern, value):
             self.klass_prop.set_value(self.klass)
         else:
             self.klass = value
-    set_klass.pattern = re.compile('^[a-zA-Z]+[\w:.0-9]*$')
+    set_klass_pattern = re.compile('^[a-zA-Z]+[\w:.0-9]*$')
 
     def _get_default_encoding(self):
         """\

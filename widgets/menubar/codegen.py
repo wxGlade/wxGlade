@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.6 2003/07/08 14:52:35 agriggio Exp $
+# $Id: codegen.py,v 1.7 2003/07/08 17:44:25 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -154,15 +154,17 @@ def xrc_code_generator(obj):
                 write('    '*tabs + '<object class="separator"/>\n')
             else:
                 if item.children:
-                    if item.name:
+                    name = self.get_name(item)
+                    if name:
                         write('    '*tabs + '<object class="wxMenu" ' \
-                              'name=%s>\n' % quoteattr(item.name))
+                              'name=%s>\n' % quoteattr(name))
                     else:
                         write('    '*tabs + '<object class="wxMenu">\n')
                 else:
-                    if item.name:
+                    name = self.get_name(item)
+                    if name:
                         write('    '*tabs + '<object class="wxMenuItem" ' \
-                              'name=%s>\n' % quoteattr(item.name))
+                              'name=%s>\n' % quoteattr(name))
                     else:
                         write('    '*tabs + '<object class="wxMenuItem">\n')  
                 if item.label:
@@ -181,6 +183,11 @@ def xrc_code_generator(obj):
                 elif item.radio == '1':
                     write('    '*(tabs+1) + '<radio>1</radio>\n')
                 write('    '*tabs + '</object>\n')
+
+        def get_name(self, item):
+            if item.name: return item.name.strip()
+            tokens = item.id.split('=')
+            if tokens: return tokens[0].strip()
         
         def write(self, outfile, tabs):
             menus = self.code_obj.properties['menubar']

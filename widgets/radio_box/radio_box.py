@@ -1,5 +1,5 @@
 # radio_box.py: wxRadioBox objects
-# $Id: radio_box.py,v 1.10 2003/06/21 14:28:44 agriggio Exp $
+# $Id: radio_box.py,v 1.11 2003/07/08 17:44:24 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -29,7 +29,7 @@ class EditRadioBox(ManagedBase):
         self.buttons = None 
         self.major_dim = major_dim
 
-        if not style: self.style = wxRA_SPECIFY_COLS
+        if not style: self.style = wxRA_SPECIFY_ROWS
         else: self.style = style
         self.label = label
         # properties
@@ -152,7 +152,8 @@ class EditRadioBox(ManagedBase):
         else: return 1
 
     def set_style(self, value):
-        if value == 0: self.style = wxRA_SPECIFY_ROWS
+        if value == 0 or value == 'wxRA_SPECIFY_ROWS':
+            self.style = wxRA_SPECIFY_ROWS
         else: self.style = wxRA_SPECIFY_COLS
         self.do_layout()
 

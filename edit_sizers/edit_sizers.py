@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.36 2003/06/30 20:23:08 agriggio Exp $
+# $Id: edit_sizers.py,v 1.37 2003/07/08 17:44:25 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -8,6 +8,7 @@
 from widget_properties import *
 from tree import Tree, WidgetTree
 import common, math, misc, sys
+import re
 
 class SizerSlot:
     "a window to represent a slot in a sizer"
@@ -604,11 +605,16 @@ class SizerBase(Sizer):
         #self._btn.PopupMenu(self._btn._rmenu, event.GetPosition())
 
     def set_name(self, value):
-        self.name = value
-        self._btn.set_menu_title(value)
-        try: common.app_tree.set_name(self.node, self.name)
-        except AttributeError:
-            import traceback; traceback.print_exc()
+        value = "%s" % value
+        if not re.match(self.set_name_pattern, value):
+            self.name_prop.set_value(self.name)
+        else:
+            self.name = value
+            self._btn.set_menu_title(value)
+            try: common.app_tree.set_name(self.node, self.name)
+            except AttributeError:
+                import traceback; traceback.print_exc()
+    set_name_pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')
             
     def __getitem__(self, value):
         return self.access_functions[value]
