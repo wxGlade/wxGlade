@@ -362,10 +362,9 @@ class WindowBase(EditBase):
         sizer_tmp.Layout()
         sizer_tmp.Fit(panel)
 
-        self.notebook.AddPage(panel, "Common")
-
-        self.property_window.Layout()
         w, h = panel.GetClientSize()
+        self.notebook.AddPage(panel, "Common")
+        self.property_window.Layout()
         panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))        
 
     def on_size(self, event):
@@ -596,8 +595,8 @@ class ManagedBase(WindowBase):
         sizer_tmp.Layout()
         sizer_tmp.Fit(panel)
 
-        self.notebook.AddPage(panel, "Layout")
         w, h = panel.GetClientSize()
+        self.notebook.AddPage(panel, "Layout")
         panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
         
     def update_view(self, selected):

@@ -35,6 +35,11 @@ def python_generate_properties(obj):
     name = 'self'
     if not obj.is_toplevel: name += '.%s' % obj.name
     prop = obj.properties
+    
+    try: create_grid = int(prop['create_grid'])
+    except (KeyError, ValueError): create_grid = False
+    if not create_grid: return []
+    
     out.append('%s.CreateGrid(%s, %s)\n' % (name, prop.get('rows_number'),
                                             prop.get('columns_number')))
     if prop.get('row_label_size'):

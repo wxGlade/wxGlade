@@ -110,7 +110,7 @@ class SizerSlot:
         import clipboard
         if clipboard.paste(self.parent, self.sizer, self.pos):
             common.app_tree.app.saved = False # update the status of the app
-            print misc.focused_widget
+            #print misc.focused_widget
 
     def delete(self, delete_widget=True):
         if self.menu: self.menu.Destroy()
