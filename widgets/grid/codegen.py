@@ -106,7 +106,8 @@ def initialize():
     pygen = common.code_writers.get('python')
     if pygen:
         pygen.add_widget_handler('wxGrid', python_code_generator,
-                                 python_generate_properties)
+                                 python_generate_properties,
+                                ['from wxPython.grid import *\n'])
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
         xrcgen.add_widget_handler('wxGrid', xrc_code_generator)
