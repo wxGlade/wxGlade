@@ -1,5 +1,5 @@
 # splitter_window.py: wxSplitterWindow objects
-# $Id: splitter_window.py,v 1.21 2004/09/27 08:21:57 agriggio Exp $
+# $Id: splitter_window.py,v 1.22 2004/12/08 18:11:24 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -82,6 +82,14 @@ class SplitterWindowSizer(Sizer):
 
 
 class EditSplitterWindow(ManagedBase):
+
+    events = [
+        'EVT_SPLITTER_SASH_POS_CHANGING',
+        'EVT_SPLITTER_SASH_POS_CHANGED',
+        'EVT_SPLITTER_UNSPLIT',
+        'EVT_SPLITTER_DCLICK',
+        ]
+    
     def __init__(self, name, parent, id, style, win_1, win_2, orientation,
                  sizer, pos, property_window, show=True):
         """\

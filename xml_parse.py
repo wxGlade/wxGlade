@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.34 2004/11/02 09:52:03 agriggio Exp $
+# $Id: xml_parse.py,v 1.35 2004/12/08 18:11:31 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -145,6 +145,13 @@ class XmlWidgetBuilder(XmlParser):
             except (KeyError, ValueError): use_new_namespace = False
             app.set_use_new_namespace(use_new_namespace)
             app.use_new_namespace_prop.set_value(use_new_namespace)
+            # ALB 2004-12-05
+            try:
+                for_version = attrs['for_version']
+                app.for_version = for_version
+                app.for_version_prop.set_str_value(for_version)
+            except KeyError:
+                pass
             return
         if not self._appl_started:
             raise XmlParsingError("the root of the tree must be <application>")
@@ -390,6 +397,8 @@ class XmlWidgetObject:
                     pos = sizer.get_itempos(attrs)
             
             # build the widget
+            if pos is not None:
+                pos = int(pos)
             self.obj = common.widgets_from_xml[base](attrs, parent, sizer,
                                                      sizeritem, pos)
             try:
@@ -425,6 +434,9 @@ class XmlWidgetObject:
         was a custom handler for this property, and its char_data method
         returned False
         """
+        if name == 'pos': # sanity check, this shouldn't happen...
+            print 'add_property pos'
+            return 
         try:
             self.obj[name][1](val) # call the setter for this property
             try:

@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.49 2004/11/18 21:14:58 agriggio Exp $
+# $Id: widget_properties.py,v 1.50 2004/12/08 18:11:31 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -774,7 +774,7 @@ class RadioProperty(Property, _activator):
     properties controlled by a series of radio buttons.
     """
     def __init__(self, owner, name, parent, choices, can_disable=False,
-                 enabled=False, columns=1):
+                 enabled=False, columns=1, label=None):
         Property.__init__(self, owner, name, parent)
         self.can_disable = can_disable
         _activator.__init__(self)
@@ -782,6 +782,9 @@ class RadioProperty(Property, _activator):
         self.choices = choices
         self.columns = columns
         self.panel = None
+        self.label = label
+        if label is None:
+            self.label = _mangle(name)
         if parent is not None: self.display(parent)
         self.val = owner[name][0]()
 
@@ -796,9 +799,9 @@ class RadioProperty(Property, _activator):
             szr = wxBoxSizer(wxHORIZONTAL)
             style=wxRA_SPECIFY_COLS
         else: 
-            szr = wxStaticBoxSizer(wxStaticBox(parent, -1, _mangle(self.name)),
+            szr = wxStaticBoxSizer(wxStaticBox(parent, -1, self.label),
                                    wxHORIZONTAL)
-        self.options = wxRadioBox(parent, self.id, _mangle(self.name),
+        self.options = wxRadioBox(parent, self.id, self.label,
                                   choices=self.choices,
                                   majorDimension=self.columns,
                                   style=style)

@@ -1,5 +1,5 @@
 # checkbox.py: wxCheckBox objects
-# $Id: checkbox.py,v 1.9 2004/09/17 13:09:54 agriggio Exp $
+# $Id: checkbox.py,v 1.10 2004/12/08 18:11:29 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -12,6 +12,9 @@ from tree import Tree
 from widget_properties import *
 
 class EditCheckBox(ManagedBase):
+
+    events = ['EVT_CHECKBOX']
+    
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
         """\

@@ -1,5 +1,5 @@
 # tool.py: Tool objects
-# $Id: tool.py,v 1.4 2004/09/17 13:09:48 agriggio Exp $
+# $Id: tool.py,v 1.5 2004/12/08 18:11:23 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -10,7 +10,7 @@ from common import _encode_to_xml
 
 class Tool:
     def __init__(self, id='', label='', type=0, short_help='',
-                 long_help='', bitmap1='', bitmap2=''):
+                 long_help='', bitmap1='', bitmap2='', handler=''):
         self.id = id
         self.label = label
         self.type = type
@@ -18,6 +18,7 @@ class Tool:
         self.long_help = long_help
         self.bitmap1 = bitmap1
         self.bitmap2 = bitmap2
+        self.handler = handler
 
     def write(self, outfile, tabs):
         fwrite = outfile.write
@@ -35,6 +36,9 @@ class Tool:
                escape(_encode_to_xml(self.bitmap1)))
         fwrite(tab_s + '<bitmap2>%s</bitmap2>\n' % \
                escape(_encode_to_xml(self.bitmap2)))
+        if self.handler:
+            fwrite(tab_s + '<handler>%s</handler>\n' % \
+                   escape(_encode_to_xml(self.handler)))
         fwrite("    " * tabs + '</tool>\n')
 
 # end of class Tool

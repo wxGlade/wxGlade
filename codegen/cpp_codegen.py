@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.36 2004/11/16 10:22:48 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.37 2004/12/08 18:11:31 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -49,6 +49,10 @@ output_name = None
 out_dir = None
 
 
+# ALB 2004-12-05: wx version we are generating code for
+for_version = (2, 4)
+
+
 class ClassLines:
     """\
     Stores the lines of python code for a custom class
@@ -71,6 +75,9 @@ class ClassLines:
         self.done = False # if True, the code for this class has already
                           # been generated
 
+        # ALB 2004-12-08
+        self.event_handlers = [] # lines to bind events 
+
 # end of class ClassLines
 
 
@@ -87,6 +94,12 @@ class SourceFileContent:
         self.classes = {} # classes declared in the file
         self.new_classes = [] # new classes to add to the file (they are
                               # inserted BEFORE the old ones)
+
+        # ALB 2004-12-08
+        self.event_handlers = {} # list of event handlers for each class
+        self.event_table_decl = {}
+        self.event_table_def = {}
+
         if classes is None: self.classes = {}
         self.build_untouched_content()
 
@@ -113,6 +126,20 @@ class SourceFileContent:
         block_start = re.compile(r'^\s*//\s*begin\s+wxGlade:\s*'
                                  '(\w*)::(\w+)\s*$')
         block_end = re.compile(r'^\s*//\s*end\s+wxGlade\s*$')
+        # regexp to match event handlers
+        # ALB 2004-12-08
+        event_handler = re.compile(r'^\s*void\s+([A-Za-z_]+\w*)\s*'
+                                   '\([A-Za-z_:0-9]+\s*&\s*\w*\)\s*;\s*'
+                                   '//\s*wxGlade:\s*<event_handler>\s*$')
+        decl_event_table = re.compile(r'^\s*DECLARE_EVENT_TABLE\s*\(\s*\)'
+                                      '\s*;?\s*$')
+        def_event_table = re.compile(r'^\s*BEGIN_EVENT_TABLE\s*\(\s*(\w+)\s*,'
+                                     '\s*(\w+)\s*\)\s*$')
+        event_handlers_marker = re.compile(r'^\s*//\s*wxGlade:\s*add\s+'
+                                           '((?:\w|:)+)\s+event handlers\s*$')
+        prev_was_handler = False
+        events_tag_added = False
+
         inside_block = False
         inside_comment = False
         tmp_in = open(filename)
@@ -148,7 +175,48 @@ class SourceFileContent:
                     out_lines.append('<%swxGlade replace %s %s>' % \
                                      (nonce, result.group(1), result.group(2)))
                 else:
-                    out_lines.append(line)
+                    dont_append = False
+                    
+                    # ALB 2004-12-08 event handling support...
+                    if is_header and not inside_comment:
+                        result = event_handler.match(line)
+                        if result is not None:
+                            prev_was_handler = True
+                            which_handler = result.group(1)
+                            which_class = class_name #result.group(2)
+                            self.event_handlers.setdefault(
+                                which_class, {})[which_handler] = 1
+                        else:
+                            if prev_was_handler:
+                                # add extra event handlers here...
+                                out_lines.append('<%swxGlade event_handlers %s>'
+                                                 % (nonce, class_name))
+                                prev_was_handler = False
+                                events_tag_added = True
+                            elif not events_tag_added and \
+                                     self.is_end_of_class(line):
+                                out_lines.append('<%swxGlade event_handlers %s>'
+                                                 % (nonce, class_name))
+                            # now try to see if we already have a
+                            # DECLARE_EVENT_TABLE
+                            result = decl_event_table.match(line)
+                            if result is not None:
+                                self.event_table_decl[class_name] = True
+                    elif not inside_comment:
+                        result = event_handlers_marker.match(line)
+                        if result is not None:
+                            out_lines.append('<%swxGlade add %s event '
+                                             'handlers>' % \
+                                             (nonce, result.group(1)))
+                            dont_append = True
+                        result = def_event_table.match(line)
+                        if result is not None:
+                            which_class = result.group(1)
+                            self.event_table_def[which_class] = True
+                    # ----------------------------------------
+                    
+                    if not dont_append:
+                        out_lines.append(line)
             else:
                 # ignore all the lines inside a wxGlade block
                 if block_end.match(line) is not None:
@@ -163,6 +231,10 @@ class SourceFileContent:
         if is_header: self.header_content = "".join(out_lines)
         else: self.source_content = "".join(out_lines)
         
+    def is_end_of_class(self, line):
+        # not really, but for wxglade-generated code it should work...
+        return line[:2] == '};'
+
 # end of class SourceFileContent
 
 # if not None, it is an instance of SourceFileContent that keeps info about
@@ -217,6 +289,17 @@ def initialize(app_attrs):
     # overwrite added 2003-07-15
     try: _overwrite = int(app_attrs['overwrite'])
     except (KeyError, ValueError): _overwrite = False
+
+    # ALB 2004-12-05
+    global for_version
+    try:
+        for_version = tuple([int(t) for t in
+                             app_attrs['for_version'].split('.')[:2]])
+    except (KeyError, ValueError):
+        if common.app_tree is not None:
+            for_version = common.app_tree.app.for_version
+        else:
+            for_version = (2, 4) # default...
 
     # this is to be more sure to replace the right tags
     nonce = '%s%s' % (str(time.time()).replace('.', ''),
@@ -315,6 +398,17 @@ def finalize():
             comment = '// content of this block not found: ' \
                       'did you rename this class?\n'
             source_content = source_content.replace(tag[0], comment)
+
+        # ALB 2004-12-08
+        tags = re.findall('<%swxGlade event_handlers \w+>' % nonce,
+                          header_content)
+        for tag in tags:
+            header_content = header_content.replace(tag, "")
+        tags = re.findall('<%swxGlade add \w+ event_handlers>' % nonce,
+                          source_content)
+        for tag in tags:
+            source_content = source_content.replace(tag, "")
+        
         # write the new file contents to disk
         common.save_file(previous_source.name + '.h', header_content,
                          'codegen')
@@ -383,6 +477,16 @@ def add_object(top_obj, sub_obj):
                 klass.parents_init.extend(init)
             else: klass.init.extend(init)
             # ---------------------------------------------------------------
+            # -- ALB 2004-12-08 ---------------------------------------------
+            if hasattr(builder, 'get_events'):
+                klass.event_handlers.extend(builder.get_events(sub_obj))
+            elif 'events' in sub_obj.properties:
+                id_name, id = generate_code_id(sub_obj)
+                #if id == '-1': id = 'self.%s.GetId()' % sub_obj.name
+                for event, handler in sub_obj.properties['events'].iteritems():
+                    klass.event_handlers.append((id, event, handler))
+            # ---------------------------------------------------------------
+
             klass.ids.extend(ids)
             if sub_obj.klass != 'spacer':
                 # attribute is a special property which control whether
@@ -419,7 +523,7 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     try: klass = classes[toplevel.klass]
     except KeyError: klass = classes[toplevel.klass] = ClassLines()
     name = obj.name
-    if obj.base == 'wxNotebook':
+    if obj.base == 'wxNotebook' and for_version < (2, 5):
         name = 'new wxNotebookSizer(%s)' % obj.name
     buffer = '%s->Add(%s, %s, %s, %s);\n' % \
              (sizer.name, name, option, flag, border)
@@ -496,6 +600,12 @@ def add_class(code_obj):
     sign_decl1 = ', '.join(tmp_sign)
     sign_inst = ', '.join([ t[1] for t in sign])
 
+
+    # ALB 2004-12-08 event handling
+    event_handlers = classes[code_obj.klass].event_handlers
+    if hasattr(builder, 'get_events'):
+        event_handlers.extend(builder.get_events(code_obj))
+
     if is_new:
         # header file
         hwrite('\nclass %s: public %s {\n' % (code_obj.klass, code_obj.base))
@@ -529,7 +639,17 @@ def add_class(code_obj):
         for o_type, o_name in classes[code_obj.klass].sub_objs:
             hwrite(tabs(1) + '%s* %s;\n' % (o_type, o_name))
         hwrite(tabs(1) + '// end wxGlade\n')
-        hwrite('};\n\n')
+
+        # ALB 2004-12-08 event handling
+        if event_handlers:
+            t = tabs(1)
+            hwrite('\n' + t + 'DECLARE_EVENT_TABLE();\n')
+            hwrite('\npublic:\n')
+            for win_id, event, handler in event_handlers:
+                hwrite(t + 'void %s(wxCommandEvent &event); '
+                       '// wxGlade: <event_handler>\n' % handler)
+        
+        hwrite('}; // wxGlade: end class %s\n\n' % code_obj.klass)
         
     elif prev_src is not None:
         hwrite(tabs(1) + '// begin wxGlade: %s::ids\n' % code_obj.klass)
@@ -580,8 +700,29 @@ def add_class(code_obj):
         else:
             prev_src.header_content = prev_src.header_content.\
                                       replace(tag, "".join(header_buffer))
-        
 
+        header_buffer = []
+        hwrite = header_buffer.append
+        # ALB 2004-12-08 event handling
+        if event_handlers:
+            already_there = prev_src.event_handlers.get(code_obj.klass, {})
+            t = tabs(1)
+            for win_id, event, handler in event_handlers:
+                if handler not in already_there:
+                    hwrite(t + 'void %s(wxCommandEvent &event); '
+                           '// wxGlade: <event_handler>\n' % handler)
+            if code_obj.klass not in prev_src.event_table_def:
+                hwrite('\nprotected:\n')
+                hwrite(tabs(1) + 'DECLARE_EVENT_TABLE()\n')
+        tag = '<%swxGlade event_handlers %s>' % (nonce, code_obj.klass)
+        if prev_src.header_content.find(tag) < 0:
+            # no attributes tag found, issue a warning and do nothing
+            print >> sys.stderr, "WARNING: wxGlade events block " \
+                  "not found, event table code NOT generated"
+        else:
+            prev_src.header_content = prev_src.header_content.\
+                                      replace(tag, "".join(header_buffer))
+        
     # source file
     # set the window's style
     prop = code_obj.properties
@@ -632,6 +773,71 @@ def add_class(code_obj):
                                       replace(tag, "".join(source_buffer))
         source_buffer = []
         swrite = source_buffer.append
+
+    # ALB 2004-12-08 event handling code
+    if event_handlers:
+        # 1) event table declaration/definition...
+        if prev_src is not None and \
+               code_obj.klass in prev_src.event_table_decl:
+            has_event_table = True
+        else:
+            has_event_table = False
+        if is_new or not has_event_table:
+            swrite('\nBEGIN_EVENT_TABLE(%s, %s)\n' % \
+                   (code_obj.klass, code_obj.base))
+            
+        swrite(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
+        for win_id, event, handler in event_handlers:
+            swrite(tab + '%s(%s, %s::%s)\n' % \
+                   (event, win_id, code_obj.klass, handler))
+        swrite(tab + '// end wxGlade\n')
+        
+        if is_new or not has_event_table:
+            swrite('END_EVENT_TABLE();\n')
+
+        if prev_src is not None and not is_new:
+            tag = '<%swxGlade replace %s event_table>' % (nonce, code_obj.klass)
+            if prev_src.source_content.find(tag) < 0:
+                # no constructor tag found, issue a warning and do nothing
+                print >> sys.stderr, "WARNING: wxGlade %s::event_table block " \
+                      "not found, relative code NOT generated" % \
+                      (code_obj.klass)
+            else:
+                prev_src.source_content = prev_src.source_content.\
+                                          replace(tag, "".join(source_buffer))
+            source_buffer = []
+            swrite = source_buffer.append
+
+        # 2) event handler stubs...
+        if prev_src is not None:
+            already_there = prev_src.event_handlers.get(code_obj.klass, {})
+        else:
+            already_there = {}
+        for win_id, event, handler in event_handlers:
+            if handler not in already_there:
+                swrite('\n\nvoid %s::%s(wxCommandEvent &event)\n{\n' % \
+                       (code_obj.klass, handler))
+                swrite(tab + 'event.Skip();\n')
+                swrite('}\n')
+        if is_new or prev_src is None:
+            swrite('\n\n')
+        swrite('// wxGlade: add %s event handlers\n' % code_obj.klass)
+        if is_new or prev_src is None:
+            swrite('\n')
+
+        if prev_src is not None and not is_new:
+            tag = '<%swxGlade add %s event handlers>' % \
+                  (nonce, code_obj.klass)
+            if prev_src.source_content.find(tag) < 0:
+                # no constructor tag found, issue a warning and do nothing
+                print >> sys.stderr, "WARNING: wxGlade %s event handlers " \
+                      "marker not found, relative code NOT generated" % \
+                      (code_obj.klass)
+            else:
+                prev_src.source_content = prev_src.source_content.\
+                                          replace(tag, "".join(source_buffer))
+            source_buffer = []
+            swrite = source_buffer.append
     
 
     # set_properties
@@ -830,7 +1036,7 @@ def add_app(app_attrs, top_win_class):
     append('IMPLEMENT_APP(%s)\n\n' % klass)
     append('bool %s::OnInit()\n{\n' % klass)
     append(tab + 'wxInitAllImageHandlers();\n') # we add this to avoid troubles
-    append(tab + '%s* %s = new %s(0, -1, "");\n' % \
+    append(tab + '%s* %s = new %s(0, -1, wxT(""));\n' % \
            (top_win_class, top_win, top_win_class))
     append(tab + 'SetTopWindow(%s);\n' % top_win)
     append(tab + '%s->Show();\n' % top_win)
@@ -860,11 +1066,15 @@ def generate_code_size(obj):
     else: name1 = '%s->' % obj.name; name2 = obj.name
     size = obj.properties.get('size', '').strip()
     use_dialog_units = (size[-1] == 'd')
+    if for_version < (2, 5):
+        method = 'SetSize'
+    else:
+        method = 'SetMinSize'
     if use_dialog_units:
-        return name1 + 'SetSize(wxDLG_UNIT(%s, wxSize(%s)));\n' % \
+        return name1 + method + '(wxDLG_UNIT(%s, wxSize(%s)));\n' % \
                (name2, size[:-1])
     else:
-        return name1 + 'SetSize(wxSize(%s));\n' % size
+        return name1 + method + '(wxSize(%s));\n' % size
 
 
 def _string_to_colour(s):
@@ -1052,8 +1262,38 @@ class DummyPropertyHandler:
 # end of class DummyPropertyHandler
 
 
+class EventsPropertyHandler(object):
+    def __init__(self):
+        self.handlers = {}
+        self.event_name = None
+        self.curr_handler = []
+        
+    def start_elem(self, name, attrs):
+        if name == 'handler':
+            self.event_name = attrs['event']
+
+    def end_elem(self, name, code_obj):
+        if name == 'handler':
+            if self.event_name and self.curr_handler:
+                self.handlers[self.event_name] = ''.join(self.curr_handler)
+            self.event_name = None
+            self.curr_handler = []
+        elif name == 'events':
+            code_obj.properties['events'] = self.handlers
+            return True
+
+    def char_data(self, data):
+        data = data.strip()
+        if data:
+            self.curr_handler.append(data)
+
+# end of class EventsPropertyHandler
+    
+
 # dictionary whose items are custom handlers for widget properties
-_global_property_writers = { 'font': FontPropertyHandler }
+_global_property_writers = { 'font': FontPropertyHandler,
+                             'events': EventsPropertyHandler,
+                             }
 
 # dictionary of dictionaries of property handlers specific for a widget
 # the keys are the class names of the widgets

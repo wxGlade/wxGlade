@@ -1,5 +1,5 @@
 # list_box.py: wxListBox objects
-# $Id: list_box.py,v 1.15 2004/09/17 13:09:52 agriggio Exp $
+# $Id: list_box.py,v 1.16 2004/12/08 18:11:27 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -13,6 +13,9 @@ from widget_properties import *
 from ChoicesProperty import *
 
 class EditListBox(ManagedBase):
+
+    events = ['EVT_LISTBOX', 'EVT_LISTBOX_DCLICK']
+    
     def __init__(self, name, parent, id, choices, sizer, pos, property_window,
                  show=True):
         """\

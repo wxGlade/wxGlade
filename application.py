@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.43 2004/11/04 22:14:13 agriggio Exp $
+# $Id: application.py,v 1.44 2004/12/08 18:11:33 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -105,7 +105,7 @@ class Application(object):
         self.__filename = None # name of the output xml file
         self.klass = "MyApp"
         self.codegen_opt = 0 # if != 0, generates a separate file
-                             # for each class 
+                             # for each class
         def set_codegen_opt(value):
             try: opt = int(value)
             except ValueError: pass
@@ -115,6 +115,9 @@ class Application(object):
         def set_output_path(value): self.output_path = value
         self.use_gettext = False
         def set_use_gettext(value): self.use_gettext = bool(int(value))
+        self.for_version = wx.VERSION_STRING[:3]
+        def set_for_version(value):
+            self.for_version = self.for_version_prop.get_str_value()
         self.access_functions = {
             'name': (lambda : self.name, self.set_name),
             'class': (lambda : self.klass, self.set_klass), 
@@ -122,7 +125,8 @@ class Application(object):
             'output_path': (lambda : self.output_path, set_output_path),
             'language': (self.get_language, self.set_language),
             'encoding': (self.get_encoding, self.set_encoding),
-            'use_gettext': (lambda : self.use_gettext, set_use_gettext)
+            'use_gettext': (lambda : self.use_gettext, set_use_gettext),
+            'for_version': (lambda : self.for_version, set_for_version),
             }
         self.use_gettext_prop = CheckBoxProperty(self, "use_gettext", panel,
                                                  "Enable gettext support")
@@ -161,6 +165,11 @@ class Application(object):
                                               _writers, columns=columns)
 
         self.codewriters_prop.set_str_value('python')
+
+        self.for_version_prop = RadioProperty(self, "for_version", panel,
+                                              ['2.4', '2.5'], columns=2,
+                                              label="wxWidgets compatibility")
+        self.for_version_prop.set_str_value(self.for_version)
         
         # ALB 2004-01-18
         self.access_functions['use_new_namespace'] = (
@@ -197,6 +206,7 @@ class Application(object):
         sizer.Add(szr, 0, wxEXPAND)
         sizer.Add(self.codegen_prop.panel, 0, wxALL|wxEXPAND, 4)
         sizer.Add(self.codewriters_prop.panel, 0, wxALL|wxEXPAND, 4)
+        sizer.Add(self.for_version_prop.panel, 0, wxALL|wxEXPAND, 4)
         sizer.Add(self.use_new_namespace_prop.panel, 0, wxEXPAND)
         sizer.Add(self.overwrite_prop.panel, 0, wxEXPAND)
         sizer.Add(self.outpath_prop.panel, 0, wxEXPAND)

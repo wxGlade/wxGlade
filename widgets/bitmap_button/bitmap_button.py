@@ -1,5 +1,5 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.18 2004/11/02 09:52:02 agriggio Exp $
+# $Id: bitmap_button.py,v 1.19 2004/12/08 18:11:29 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -13,6 +13,9 @@ from widget_properties import *
 
 
 class EditBitmapButton(ManagedBase):
+
+    events = ['EVT_BUTTON']
+    
     def __init__(self, name, parent, id, bmp_file, sizer, pos, property_window,
                  show=True):
         """\

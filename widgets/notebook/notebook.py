@@ -1,5 +1,5 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.24 2004/09/17 13:09:52 agriggio Exp $
+# $Id: notebook.py,v 1.25 2004/12/08 18:11:26 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -167,6 +167,9 @@ class TabsHandler:
 
 
 class EditNotebook(ManagedBase):
+
+    events = ['EVT_NOTEBOOK_PAGE_CHANGED', 'EVT_NOTEBOOK_PAGE_CHANGING']
+    
     def __init__(self, name, parent, id, style, sizer, pos,
                  property_window, show=True):
         """\

@@ -1,5 +1,5 @@
 # spin_ctrl.py: wxSpinCtrl objects
-# $Id: spin_ctrl.py,v 1.11 2004/09/17 13:09:50 agriggio Exp $
+# $Id: spin_ctrl.py,v 1.12 2004/12/08 18:11:24 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -15,6 +15,9 @@ class EditSpinCtrl(ManagedBase):
     """\
     Class to handle wxSpinCtrl objects
     """
+
+    events = ['EVT_SPINCTRL']
+    
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
         import config

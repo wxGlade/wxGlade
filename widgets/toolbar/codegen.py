@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.18 2004/09/17 13:09:48 agriggio Exp $
+# $Id: codegen.py,v 1.19 2004/12/08 18:11:23 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -120,13 +120,30 @@ class PythonCodeGenerator:
         init.append('# Tool Bar end\n')
         return init, self.get_properties_code(obj), []
 
+    def get_events(self, obj):
+        pygen = common.code_writers['python']
+        cn = pygen.cn
+        out = []
+
+        def do_get(tool):
+            ret = []
+            name, val = pygen.generate_code_id(None, tool.id)
+            if not val: val = '-1' # but this is wrong anyway...
+            if tool.handler:
+                ret.append((val, 'EVT_TOOL', tool.handler))
+            return ret
+        
+        for tool in obj.properties['toolbar']:
+            out.extend(do_get(tool))
+        return out
+
 # end of class PythonCodeGenerator
 
 
 class ToolsHandler:
     """Handler for tools of a toolbar"""
     item_attrs = ('label', 'id', 'short_help', 'type', 'long_help',
-                  'bitmap1', 'bitmap2')
+                  'bitmap1', 'bitmap2', 'handler')
     def __init__(self):
         self.tools = []
         self.curr_tool = None

@@ -1,5 +1,5 @@
 # combo_box.py: wxComboBox objects
-# $Id: combo_box.py,v 1.19 2004/09/30 20:26:11 agriggio Exp $
+# $Id: combo_box.py,v 1.20 2004/12/08 18:11:28 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -30,6 +30,9 @@ else:
 
 
 class EditComboBox(ManagedBase):
+
+    events = ['EVT_COMBOBOX', 'EVT_TEXT']
+    
     def __init__(self, name, parent, id, choices, sizer, pos, property_window,
                  show=True):
         """\

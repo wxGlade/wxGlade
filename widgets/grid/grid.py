@@ -1,5 +1,5 @@
 # Grid.py: wxGrid objects
-# $Id: grid.py,v 1.27 2004/09/17 13:09:53 agriggio Exp $
+# $Id: grid.py,v 1.28 2004/12/08 18:11:27 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -81,6 +81,26 @@ class ColsHandler:
 
 
 class EditGrid(ManagedBase):
+
+    events = [
+        'EVT_GRID_CMD_CELL_LEFT_CLICK',
+        'EVT_GRID_CMD_CELL_RIGHT_CLICK',
+        'EVT_GRID_CMD_CELL_LEFT_DCLICK',
+        'EVT_GRID_CMD_CELL_RIGHT_DCLICK',
+        'EVT_GRID_CMD_LABEL_LEFT_CLICK',
+        'EVT_GRID_CMD_LABEL_RIGHT_CLICK',
+        'EVT_GRID_CMD_LABEL_LEFT_DCLICK',
+        'EVT_GRID_CMD_LABEL_RIGHT_DCLICK',
+        'EVT_GRID_CMD_CELL_CHANGE',
+        'EVT_GRID_CMD_SELECT_CELL',
+        'EVT_GRID_CMD_EDITOR_HIDDEN',
+        'EVT_GRID_CMD_EDITOR_SHOWN',
+        'EVT_GRID_CMD_COL_SIZE',
+        'EVT_GRID_CMD_ROW_SIZE',
+        'EVT_GRID_CMD_RANGE_SELECT',
+        'EVT_GRID_CMD_EDITOR_CREATED',
+        ]
+    
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
         """\

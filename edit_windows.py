@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.73 2004/11/18 21:25:47 agriggio Exp $
+# $Id: edit_windows.py,v 1.74 2004/12/08 18:11:32 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -11,8 +11,11 @@ from tree import Tree, WidgetTree
 import math, misc, common, sys, config
 import re
 
+# ALB 2004-12-05: event handling support
+from events_mixin import EventsMixin
 
-class EditBase:
+
+class EditBase(EventsMixin):
     """\
     Base class of every window available in the builder.
     """
@@ -72,6 +75,9 @@ class EditBase:
             self.show_widget(True)
             property_window.SetSize((250, 340))
             property_window.Show(True)
+
+        # ALB 2004-12-05
+        EventsMixin.__init__(self)
 
     def show_widget(self, yes):
         if yes and self.widget is None:
@@ -192,7 +198,10 @@ class EditBase:
         if not self.is_visible(): return # don't do anything if self is hidden
         # create the notebook the first time the function is called: this
         # allows us to create only the notebooks we really need
-        if self.notebook is None: self.create_properties()
+        if self.notebook is None:
+            self.create_properties()
+            # ALB 2004-12-05
+            self.create_events_property()
         sizer_tmp = self.property_window.GetSizer()
         sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
         child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
@@ -227,7 +236,8 @@ class EditBase:
         when loading this object from an xml file. handler must provide
         three methods: 'start_elem', 'end_elem' and 'char_data'
         """
-        return None
+        # ALB 2004-12-05
+        return EventsMixin.get_property_handler(self, prop_name)
 
     def clipboard_copy(self, *args):
         """\
@@ -603,7 +613,7 @@ class WindowBase(EditBase):
                     self.props[self.index] = str(data.strip())
             # end of class FontHandler
             return FontHandler(self)
-        return None
+        return EditBase.get_property_handler(self, name)
 
     def get_disabled(self):
         return self.disabled_p
@@ -673,7 +683,7 @@ class ManagedBase(WindowBase):
                        'wxADJUST_MINSIZE')
         # ALB 2004-08-16 - see the "wxPython migration guide" for details...
         if misc.check_wx_version(2, 5, 2):
-            self.flag = wxFIXED_MINSIZE
+            self.flag = wxADJUST_MINSIZE #wxFIXED_MINSIZE
             self.flags_pos += (wxFIXED_MINSIZE, )
             flag_labels += ('wxFIXED_MINSIZE', )
         sizer.add_item(self, pos)

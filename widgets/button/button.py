@@ -1,5 +1,5 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.16 2004/09/28 09:51:10 crazyinsomniac Exp $
+# $Id: button.py,v 1.17 2004/12/08 18:11:29 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -13,6 +13,9 @@ from widget_properties import *
 
 
 class EditButton(ManagedBase):
+
+    events = ['EVT_BUTTON']
+
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
         """\

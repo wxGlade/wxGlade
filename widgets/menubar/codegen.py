@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.15 2004/09/17 13:09:52 agriggio Exp $
+# $Id: codegen.py,v 1.16 2004/12/08 18:11:26 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -117,12 +117,36 @@ class PythonCodeGenerator:
         init.append('# Menu Bar end\n')
         return init, [], []
 
+    # 2004-12-05
+    def get_events(self, obj):
+        pygen = common.code_writers['python']
+        cn = pygen.cn
+        out = []
+
+        #print 'get_events', obj.properties['menubar']
+
+        def do_get(item):
+            ret = []
+            name, val = pygen.generate_code_id(None, item.id)
+            if not val: val = '-1' # but this is wrong anyway...
+            if item.handler:
+                ret.append((val, 'EVT_MENU', item.handler))
+            if item.children:
+                for c in item.children:
+                    ret.extend(do_get(c))
+            return ret
+        
+        for menu in obj.properties['menubar']:
+            out.extend(do_get(menu.root))
+        return out
+
 # end of class PythonCodeGenerator
 
 
 class MenuHandler:
     """Handler for menus and menu items of a menubar"""
-    item_attrs = ('label', 'id', 'name', 'help_str', 'checkable', 'radio')
+    item_attrs = ('label', 'id', 'name', 'help_str', 'checkable', 'radio',
+                  'handler')
     def __init__(self):
         self.menu_depth = 0
         self.menus = []
@@ -140,7 +164,9 @@ class MenuHandler:
                 self.menus.append(t)
                 return
             id = attrs.get('itemid', '')
-            node = MenuTree.Node(label=label, name=attrs['name'], id=id)
+            handler = attrs.get('handler', '')
+            node = MenuTree.Node(label=label, name=attrs['name'], id=id,
+                                 handler=handler)
             node.parent = self.curr_menu
             self.curr_menu.children.append(node)
             self.curr_menu = node
