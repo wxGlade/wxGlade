@@ -1,5 +1,6 @@
 # ChoicesProperty.py: defines a Property and two handlers used by choice,
 # combo_box, radio_box, list_box
+# $Id: ChoicesProperty.py,v 1.5 2003/05/13 10:05:15 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)

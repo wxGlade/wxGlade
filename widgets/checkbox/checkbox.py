@@ -1,4 +1,5 @@
 # checkbox.py: wxCheckBox objects
+# $Id: checkbox.py,v 1.6 2003/05/13 10:05:14 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -23,7 +24,8 @@ class EditCheckBox(ManagedBase):
 
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['checked'] = (self.get_value, self.set_value)
-        self.properties['label'] = TextProperty(self, 'label', None)
+        self.properties['label'] = TextProperty(self, 'label', None,
+                                                multiline=True)
         self.properties['checked'] = CheckBoxProperty(self, 'checked', None,
                                                       'Checked')
 
@@ -55,7 +57,7 @@ class EditCheckBox(ManagedBase):
         if value != self.label:
             self.label = value
             if self.widget:
-                self.widget.SetLabel(self.label)
+                self.widget.SetLabel(value.replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
                     self.sizer.set_item(self.pos,
                                         size=self.widget.GetBestSize())

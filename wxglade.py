@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # wxglade.py: entry point of wxGlade
+# $Id: wxglade.py,v 1.16 2003/05/13 10:05:15 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)

@@ -1,5 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
+# $Id: xml_parse.py,v 1.20 2003/05/13 10:05:15 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)

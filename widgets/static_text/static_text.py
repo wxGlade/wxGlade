@@ -1,4 +1,5 @@
 # static_text.py: wxStaticText objects
+# $Id: static_text.py,v 1.8 2003/05/13 10:05:07 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
