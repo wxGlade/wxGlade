@@ -190,8 +190,14 @@ class Preferences(ConfigParser):
 
     def __getattr__(self, attr):
         val = self.def_vals.get(attr, "")
+        # UGLY!!!
+        cast = type(val)
+        if cast is bool: cast = int
+        # ...but I haven't found a better way: the problem is that
+        # bool('0') == True, while int('0') == False, and we want the
+        # latter behaviour
         try:
-            return type(val)(self.get('wxglade', attr))
+            return cast(self.get('wxglade', attr))
         except (NoOptionError, ValueError):
             return val
 

@@ -300,7 +300,12 @@ class CheckBoxProperty(Property):
 
     def write(self, outfile, tabs):
         if self.write_always or self.get_value():
-            Property.write(self, outfile, tabs)
+            if self.getter: value = int(self.getter())
+            else: value = int(self.owner[self.name][0]())
+            fwrite = outfile.write
+            fwrite('    ' * tabs + '<%s>' % self.name)
+            fwrite(escape(_encode(value)))
+            fwrite('</%s>\n' % self.name)
 
 # end of class CheckBoxProperty
 
