@@ -93,10 +93,6 @@ class Application(object):
         def set_output_path(value): self.output_path = value
         self.use_gettext = False
         def set_use_gettext(value): self.use_gettext = bool(value)
-
-        self.indent_tabs = False
-        def set_indent_tabs(value): self.indent_tabs = bool(value)
-
         self.access_functions = {
             'name': (lambda : self.name, set_name),
             'class': (lambda : self.klass, set_klass), 
@@ -104,14 +100,10 @@ class Application(object):
             'output_path': (lambda : self.output_path, set_output_path),
             'language': (lambda : 0, self.set_language),
             'encoding': (self.get_encoding, self.set_encoding),
-            'use_gettext': (lambda : self.use_gettext, set_use_gettext),
-            'indent_tabs': (lambda : self.indent_tabs, set_indent_tabs)
+            'use_gettext': (lambda : self.use_gettext, set_use_gettext)
             }
         self.use_gettext_prop = CheckBoxProperty(self, "use_gettext", panel,
                                                  "Enable gettext support")
-        self.indent_tabs_prop = CheckBoxProperty(self, "indent_tabs", panel,
-                                                 "Indentation with tabs\n"
-                                                 "(instead of 4 spaces)")
         TOP_WIN_ID = wxNewId()
         self.top_win_prop = wxChoice(panel, TOP_WIN_ID, choices=[])
         self.top_window = '' # name of the top window of the generated app
@@ -152,7 +144,6 @@ class Application(object):
         sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
         sizer.Add(self.encoding_prop.panel, 0, wxEXPAND)
         sizer.Add(self.use_gettext_prop.panel, 0, wxEXPAND)
-        sizer.Add(self.indent_tabs_prop.panel, 0, wxEXPAND)
         szr = wxBoxSizer(wxHORIZONTAL)
         from widget_properties import _label_initial_width as _w
         label = wxGenStaticText(panel, -1, "Top window", size=(_w, -1))
@@ -326,7 +317,7 @@ class Application(object):
             CodeWriter(common.code_writers[cw], out.getvalue(), True)
         except (IOError, OSError), msg:
             wxMessageBox("Error generating code:\n%s" % msg, "Error",
-                         wxOK|wxCENTRE|wxICON_ERROR)            
+                         wxOK|wxCENTRE|wxICON_ERROR)
         except Exception, msg:
             import traceback; traceback.print_exc()
             wxMessageBox("An exception occurred while generating the code "
