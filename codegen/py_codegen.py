@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.31 2003/07/11 16:09:22 agriggio Exp $
+# $Id: py_codegen.py,v 1.32 2003/07/15 18:38:00 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -212,6 +212,10 @@ def tabs(number):
     return '    ' * number
 
 
+# if True, overwrite any previous version of the source file instead of
+# updating only the wxGlade blocks
+_overwrite = False
+
 # if True, enable gettext support
 _use_gettext = False
 
@@ -246,11 +250,15 @@ def initialize(app_attrs):
     multi_files = app_attrs['option']
 
     global classes, header_lines, multiple_files, previous_source, nonce, \
-           _current_extra_modules, _use_gettext
+           _current_extra_modules, _use_gettext, _overwrite
     import time, random
 
     try: _use_gettext = int(app_attrs['use_gettext'])
     except (KeyError, ValueError): _use_gettext = False
+
+    # overwrite added 2003-07-15
+    try: _overwrite = int(app_attrs['overwrite'])
+    except (KeyError, ValueError): _overwrite = False
 
     # this is to be more sure to replace the right tags
     nonce = '%s%s' % (str(time.time()).replace('.', ''),
@@ -264,7 +272,7 @@ def initialize(app_attrs):
     multiple_files = multi_files
     if not multiple_files:
         global output_file, output_file_name
-        if os.path.isfile(out_path):
+        if not _overwrite and os.path.isfile(out_path):
             # the file exists, we must keep all the lines not inside a wxGlade
             # block. NOTE: this may cause troubles if out_path is not a valid
             # python file, so be careful!
@@ -421,7 +429,7 @@ def add_class(code_obj):
         # let's see if the file to generate exists, and in this case
         # create a SourceFileContent instance
         filename = os.path.join(out_dir, code_obj.klass + '.py')
-        if not os.path.exists(filename): prev_src = None
+        if _overwrite or not os.path.exists(filename): prev_src = None
         else: prev_src = SourceFileContent(filename)
         _current_extra_modules = {}
     

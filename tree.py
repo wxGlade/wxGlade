@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.30 2003/06/26 15:09:24 agriggio Exp $
+# $Id: tree.py,v 1.31 2003/07/15 18:38:00 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -138,12 +138,14 @@ class Tree:
         language = self.app.get_language()
         encoding = self.app.get_encoding()
         use_gettext = str(int(self.app.use_gettext))
+        overwrite = str(int(self.app.overwrite))
         outfile.write('<application path=%s name=%s class=%s option=%s ' \
                       'language=%s top_window=%s encoding=%s ' \
-                      'use_gettext=%s>\n' \
+                      'use_gettext=%s overwrite=%s>\n' \
                       % tuple(map(quoteattr,
                                   [outpath, name, klass, option, language,
-                                  top_window, encoding, use_gettext]))
+                                   top_window, encoding, use_gettext,
+                                   overwrite]))
                       )
         if self.root.children is not None:
             for c in self.root.children:

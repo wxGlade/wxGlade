@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.23 2003/06/21 14:28:45 agriggio Exp $
+# $Id: xml_parse.py,v 1.24 2003/07/15 18:38:00 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -134,6 +134,11 @@ class XmlWidgetBuilder(XmlParser):
             if use_gettext:
                 app.use_gettext = True
                 app.use_gettext_prop.set_value(True)
+            try: overwrite = int(attrs['overwrite'])
+            except (KeyError, ValueError): overwrite = False
+            if overwrite:
+                app.overwrite = True
+                app.overwrite_prop.set_value(True)
             return
         if not self._appl_started:
             raise XmlParsingError("the root of the tree must be <application>")

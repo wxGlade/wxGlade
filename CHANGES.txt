@@ -1,3 +1,11 @@
+2003-07-15: application.py, tree.py, xml_parse.py, codegen/py_codegen.py,
+            codegen/cpp_codegen.py:
+                added "overwrite" property to Application, to allow 
+                re-generation of (C++ and python) code from scratch (as opposed
+                to updating wxGlade blocks).
+            docs/tutorial.html:
+                updated notes
+
 2003-07-11: codegen/py_codegen.py, codegen/cpp_codegen.py:
                 enhanced generate_code_id, to recognize ID_SOMETHING=? and
                 generate a "unique" id automatically

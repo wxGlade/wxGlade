@@ -138,7 +138,7 @@ their labels (don't forget to "Apply" the changes!).<br/>
 <p>We have now reached the last part of this short tutorial: the addition
 of some controls to the first page of our notebook. In particular, we'll add
 a text area and two buttons: these operations will allow us to show the layout
-options of the objects inside sizers, and the (currently limited) cut &amp;
+options of the objects inside sizers, and the cut &amp;
 paste support of wxGlade. <br/>
  </p>
     
@@ -272,6 +272,8 @@ the application: if this property is not active but the previous one (Name)
 is, the application object will be an instance of wxPySimpleApp (this applies
 to Python output only - for C++ output this property must be active if you
 want the startup code to be generated)</li>
+<li><u>Encoding</u>: encoding used to store the saved .wxg file (also for XRC);</li>
+  <li><u>Enable gettext support</u>: if checked, all the strings in the generated sources will be wrapped by a "_()", ready for gettext;</li>
    <li><u>Top window</u>: main window of the application to generate<br/>
  </li>
    <li><u>Code generation</u>: this controls the kind of output, and lets
@@ -285,6 +287,7 @@ that in this last case some of the properties of the application are ignored
 (Name, Class, Top window), and some are disallowed (you cannot set Code generation
 to multi-files)<br/>
   </li>
+  <li><u>Overwrite existing sources</u>: if checked, the code will be completely re-generated instead of updated (see the first note below for details);</li>
     <li><u>Output path</u>: in single-file mode, name of the output file;
 in   multi-file mode, path to the output directory: in this last case, every
 custom class will be placed in a file with the name of such class, except for
@@ -313,7 +316,8 @@ is loosely sorted by importance.
 
 <ul>
   <li>When you generate Python or C++ code, if the output file already exists,
-  wxGlade doesn't overwrite all its contents, but only the lines inside a
+  wxGlade by default doesn't overwrite all its contents, but only the lines
+  inside a 
   <pre>
   # begin wxGlade: ...
   # end wxGlade
@@ -418,9 +422,13 @@ wxGlade blocks nonetheless: this means that:
   <li>If you want to keep the class as is, you have to remove the wxGlade tags.</li>
 </ul>
   </ul>
-  It is possible that future versions of wxGlade will let you choose if you
-  want to overwrite or update the output file, but at the moment this is not
-  possible.<br/>&nbsp;</li>
+
+  <p>As of version 0.3, it is possible to turn off this "update contents"
+  feature, by checking the "Overwrite existing sources" property of the
+  Application: if the property value is <tt>True</tt>, wxGlade will always
+  re-generate the code from scratch (performing the appropriate backups,
+  according to the preferences you can set from
+  <tt>View->Preferences->Other</tt>).</p></li>
 
   <li>When you add new custom classes to an app, if there is a previous version
   of the generated code, the definitions of the new classes will be inserted
@@ -436,15 +444,15 @@ wxGlade blocks nonetheless: this means that:
   the window, so that its layout is recalculated and the new slots are shown.
   <br/>&nbsp;</li>
 
-  <li>XRC code generation has some differences wrt Python or C++; apart
-  those already mentioned in section 8, the most important ones are:
+  <li>XRC code generation has some differences wrt Python or C++; apart from
+    those already mentioned in section 8, the most important ones are:
   <ul>
     <li>At the moment there is no support for custom classes, which means that
     the Class property of widgets is ignored. There's a chance that future
     versions of wxGlade will support it, though, since XRC itself has something
     similar (but it seems that at the moment it can be used only by C++ progs).</li>
-    <li>Some widgets are not supported at all (e.g. splitter window, status
-    bar, grid): for them no code will be generated, but instead the XRC output
+    <li>Some widgets are not supported at all (e.g. status
+    bar and grid): for them no code will be generated, but instead the XRC output
     file will contain a comment like this:
     <pre>&lt;!-- code generator for wxStatusBar objects not available --&gt;
     </pre></li>
@@ -478,7 +486,7 @@ wxGlade blocks nonetheless: this means that:
   <ul>
     <li>First of all, it can handle correctly only "wxGlade-friendly" XRC
     files. This basically means that all windows but the toplevel ones must be
-    inside a sizer.</li>
+    inside a sizer (but there are other cases).</li>
     <li>All the widgets unknown to wxGlade will be replaced by the special
     <tt>CustomWidget</tt> component.</li>
     <li>Finally, <tt>xrc2wxg</tt> is very experimental, and so it probably
