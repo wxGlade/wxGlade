@@ -12,6 +12,7 @@ class Tree:
     A class to represent a hierarchy of widgets.
     """
     class Node:
+        __empty_win = None
         def __init__(self, widget=None, children=None):
             self.widget = widget
             self.children = children
@@ -26,8 +27,11 @@ class Tree:
                     # replace the just destroyed notebook with an empty window
                     pw = node.widget.property_window
                     pw.SetTitle('Properties - <>')
+                    if Tree.Node.__empty_win is None:
+                        Tree.Node.__empty_win = wxWindow(pw, -1)
                     pw.GetSizer().GetChildren()[0].SetWindow(
-                        wxNotebook(node.widget.property_window, -1))
+                        Tree.Node.__empty_win)
+                    #wxNotebook(node.widget.property_window, -1))
                     # call the widget's ``destructor''
                     node.widget.delete()
                 node.widget = None
