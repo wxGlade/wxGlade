@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.8 2003/07/09 09:19:14 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.9 2003/07/10 14:49:07 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -217,14 +217,17 @@ previous_source = None
 # if True, enable gettext support
 _use_gettext = False
 
+_quote_str_re = re.compile( r'\\(?![nrt])' )
+
+
 def quote_str(s):
     """\
     returns a quoted version of 's', suitable to insert in a perl source file
     as a string object. Takes care also of gettext support
     """
     if not s: return '""'
+    s = _quote_str_re.sub(r'\\\\', s )
     s = s.replace('"', r'\"')
-    s = s.replace('\\', '\\\\')
     if _use_gettext:
         return '_T("' + s + '")'
     else:
@@ -550,12 +553,9 @@ def add_class(code_obj):
 
     if prev_src is not None and prev_src.classes.has_key(code_obj.klass):
         is_new = False
-        indentation = prev_src.spaces[code_obj.klass]
     else:
         # this class wasn't in the previous version of the source (if any)
         is_new = True
-        indentation = '\t'
-##         mods = _widget_extra_modules.get(code_obj.base)
         mods = getattr(builder, 'extra_modules', [])
         if mods:
             for m in mods: _current_extra_modules[m] = 1
@@ -683,7 +683,9 @@ def add_class(code_obj):
         for l in extra_layout_lines : write('\t' +l)
     else: write('\treturn;\n')
 
-    write('\n# end wxGlade\n}\n')
+    write('\n# end wxGlade\n')
+
+    if is_new: write('}\n')
 
     if prev_src is not None and not is_new:
         # replace the lines inside the __do_layout wxGlade block
