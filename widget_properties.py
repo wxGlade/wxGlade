@@ -388,6 +388,7 @@ class SpinProperty(Property, _activator):
             EVT_CHECKBOX(self.panel, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
             self.spin.Enable(self.is_active())
+            self._enabler.SetValue(self.is_active())
             self._target = self.spin
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
@@ -460,6 +461,7 @@ class DialogProperty(Property, _activator):
                          lambda event: self.toggle_active(event.IsChecked()))
             self.text.Enable(self.is_active())
             self.btn.Enable(self.is_active())
+            self._enabler.SetValue(self.is_active())
             self._target = self.text
         label = wxStaticText(self.panel, -1, _mangle(self.name))
         EVT_BUTTON(self.panel, self.id+1, self.display_dialog)
@@ -514,7 +516,7 @@ class FileDialogProperty(DialogProperty):
         if not self.dialog[0]:
             self.dialog[0] = wxFileDialog(parent, message,
                                           wildcard=wildcard, style=style)
-            self.dialog[0].get_value = dialog.GetPath
+            self.dialog[0].get_value = self.dialog[0].GetPath
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
                                 can_disable)
 
@@ -529,7 +531,7 @@ class ColorDialogProperty(DialogProperty):
             def get_value():
                 return '#' + reduce(lambda a, b: a+b,
                                 map(lambda s: '%02x' % s,
-                                    self.dialog[0].GetColourData().
+                                    self.dialog.GetColourData().
                                     GetColour().Get()))
             self.dialog[0].get_value = get_value
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
@@ -562,7 +564,7 @@ class FontDialogProperty(DialogProperty):
             data = wxFontData()
             self.dialog[0] = wxFontDialog(parent, data)
             def get_value():
-                font = self.dialog[0].GetFontData().GetChosenFont()
+                font = self.dialog.GetFontData().GetChosenFont()
                 return "['%s', '%s', '%s', '%s', '%s', '%s']" % \
                        (font.GetPointSize(),
                         self.font_families_from[font.GetFamily()],

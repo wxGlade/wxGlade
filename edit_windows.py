@@ -456,12 +456,14 @@ class ManagedBase(WindowBase):
         WindowBase.finish_widget_creation(self)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         EVT_MOVE(self.widget, self.on_move)
-        # set the item layout inside the sizer
-##         self.sizer.set_item(self.pos, option=self.option, flag=self.flag,
-##                             border=self.border, size=self.widget.GetSize())
         # re-add the item to update it
         self.sizer.add_item(self, self.pos, self.option, self.flag,
                             self.border, self.widget.GetSize())
+        # set the value of the properties
+        szp = self.sizer_properties
+        szp['option'].set_value(self.get_option())
+        szp['flag'].set_value(self.get_flag())
+        szp['border'].set_value(self.get_border())
 
     def create_properties(self):
         WindowBase.create_properties(self)
@@ -659,6 +661,6 @@ class TopLevelBase(WindowBase):
 
     def on_size(self, event):
         WindowBase.on_size(self, event)
-        if self.sizer and self.widget: self.widget.GetSizer().Refresh()
+        if self.sizer and self.widget: self.sizer.Refresh()
 
 # end of class TopLevelBase

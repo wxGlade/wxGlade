@@ -309,6 +309,7 @@ class WidgetTree(wxTreeCtrl, Tree):
         if node.children:
             for c in node.children: self.show_widget(c)
         node.widget.show_widget(True)
+        node.widget.show_properties()
 
     def show_widget(self, node):
         """\

@@ -1,6 +1,6 @@
 wxGlade TODO list
 -----------------
-Last update: 2002-07-22
+Last update: 2002-07-27
 
 The list is more or less sorted by priority
 
@@ -37,6 +37,8 @@ Key:
 - Code generation from the command line, witout starting the GUI
 
 - Event handlers support
+
+- Undo/Redo
 
 - Edit -> Preferences... to customize some aspects of wxGlade
 
