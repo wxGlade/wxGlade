@@ -34,50 +34,50 @@ class TabsCodeHandler:
 # end of class TabsCodeHandler
 
 
-def python_code_generator(window):
-    """\
-    generates the python code for wxNotebook
-    """
-    pygen = common.code_writers['python']
-    prop = window.properties
-    id_name, id = pygen.generate_code_id(window)
+class PythonCodeGenerator:
+    def get_code(self, window):
+        pygen = common.code_writers['python']
+        prop = window.properties
+        id_name, id = pygen.generate_code_id(window)
 
-    layout_props = [] 
-    tabs = prop.get('tabs', [])
-    for label, tab_win in tabs:
-        layout_props.append('self.%s.AddPage(self.%s, %s)\n' % \
-                            (window.name, tab_win, pygen.quote_str(label)))
-        
-    if not window.parent.is_toplevel: parent = 'self.%s' % window.parent.name
-    else: parent = 'self'
-    if window.is_toplevel:
-        l = []
-        if id_name: l.append(id_name)
-        l.append('self.%s = %s(%s, %s)\n' %
-                 (window.name, window.klass, parent,id))
-        return l, [], [] 
-    style = prop.get("style")
-    if style: style = ", style=%s" % style
-    else: style = ''
-    init = []
-    if id_name: init.append(id_name)
-    init.append('self.%s = wxNotebook(%s, %s%s)\n' %
-                (window.name, parent, id, style))
+        layout_props = [] 
+        tabs = prop.get('tabs', [])
+        for label, tab_win in tabs:
+            layout_props.append('self.%s.AddPage(self.%s, %s)\n' % \
+                                (window.name, tab_win, pygen.quote_str(label)))
 
-    props_buf = pygen.generate_common_properties(window)
-    return init, props_buf, layout_props 
+        if not window.parent.is_toplevel:
+            parent = 'self.%s' % window.parent.name
+        else: parent = 'self'
+        if window.is_toplevel:
+            l = []
+            if id_name: l.append(id_name)
+            l.append('self.%s = %s(%s, %s)\n' %
+                     (window.name, window.klass, parent,id))
+            return l, [], [] 
+        style = prop.get("style")
+        if style: style = ", style=%s" % style
+        else: style = ''
+        init = []
+        if id_name: init.append(id_name)
+        init.append('self.%s = wxNotebook(%s, %s%s)\n' %
+                    (window.name, parent, id, style))
 
+        props_buf = pygen.generate_common_properties(window)
+        return init, props_buf, layout_props 
 
-def python_generate_properties(obj):
-    prop = obj.properties
-    pygen = common.code_writers['python']
-    props_buf = [] 
-    tabs = prop.get('tabs', [])
-    for label, window in tabs:
-        props_buf.append('self.AddPage(self.%s, %s)\n' % \
-                         (window, pygen.quote_str(label)))
-    props_buf.extend(pygen.generate_common_properties(obj))
-    return props_buf    
+    def get_properties_code(self, obj):
+        prop = obj.properties
+        pygen = common.code_writers['python']
+        props_buf = [] 
+        tabs = prop.get('tabs', [])
+        for label, window in tabs:
+            props_buf.append('self.AddPage(self.%s, %s)\n' % \
+                             (window, pygen.quote_str(label)))
+        props_buf.extend(pygen.generate_common_properties(obj))
+        return props_buf    
+
+# end of class PythonCodeGenerator
 
 
 def xrc_code_generator(obj):
@@ -111,48 +111,59 @@ def xrc_code_generator(obj):
 
 
 
-def cpp_code_generator(window):
-    """\
-    generates the C++ code for wxNotebook
-    """
-    cppgen = common.code_writers['C++']
-    prop = window.properties
-    id_name, id = cppgen.generate_code_id(window)
-    if id_name: ids = [ id_name ]
-    else: ids = []
+class CppCodeGenerator:
+    constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+                   ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+                   ('const wxSize&', 'size', 'wxDefaultSize'),
+                   ('long', 'style', '0')]
 
-    layout_props = []
-    tabs = prop.get('tabs', [])
-    for label, tab_win in tabs:
-        layout_props.append('%s->AddPage(%s, %s);\n' % \
-                            (window.name, tab_win, cppgen.quote_str(label)))
-        
-    if not window.parent.is_toplevel: parent = '%s' % window.parent.name
-    else: parent = 'this'
-    if window.is_toplevel:
-        l = ['%s = new %s(%s, %s);\n' % (window.name, window.klass, parent,id)]
-        return l, ids, [], []
-    extra = ''
-    style = prop.get('style')
-    if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-    init = ['%s = new wxNotebook(%s, %s%s);\n' %
-            (window.name, parent, id, extra) ]
+    extra_headers = ['<wx/notebook.h>']
 
-    props_buf = cppgen.generate_common_properties(window)
+    def get_code(self, window):
+        """\
+        generates the C++ code for wxNotebook
+        """
+        cppgen = common.code_writers['C++']
+        prop = window.properties
+        id_name, id = cppgen.generate_code_id(window)
+        if id_name: ids = [ id_name ]
+        else: ids = []
 
-    return init, ids, props_buf, layout_props 
+        layout_props = []
+        tabs = prop.get('tabs', [])
+        for label, tab_win in tabs:
+            layout_props.append('%s->AddPage(%s, %s);\n' % \
+                                (window.name, tab_win,
+                                 cppgen.quote_str(label)))
 
+        if not window.parent.is_toplevel: parent = '%s' % window.parent.name
+        else: parent = 'this'
+        if window.is_toplevel:
+            l = ['%s = new %s(%s, %s);\n' %
+                 (window.name, window.klass, parent, id)]
+            return l, ids, [], []
+        extra = ''
+        style = prop.get('style')
+        if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
+        init = ['%s = new wxNotebook(%s, %s%s);\n' %
+                (window.name, parent, id, extra) ]
 
-def cpp_generate_properties(obj):
-    prop = obj.properties
-    cppgen = common.code_writers['C++']
-    props_buf = [] 
-    tabs = prop.get('tabs', [])
-    for label, window in tabs:
-        props_buf.append('AddPage(%s, %s);\n' % \
-                         (window, cppgen.quote_str(label)))
-    props_buf.extend(cppgen.generate_common_properties(obj))
-    return props_buf    
+        props_buf = cppgen.generate_common_properties(window)
+
+        return init, ids, props_buf, layout_props
+
+    def get_properties_code(self, obj):
+        prop = obj.properties
+        cppgen = common.code_writers['C++']
+        props_buf = [] 
+        tabs = prop.get('tabs', [])
+        for label, window in tabs:
+            props_buf.append('AddPage(%s, %s);\n' % \
+                             (window, cppgen.quote_str(label)))
+        props_buf.extend(cppgen.generate_common_properties(obj))
+        return props_buf
+
+# end of class CppCodeGenerator
 
 
 def initialize():
@@ -164,8 +175,7 @@ def initialize():
     # python code generation functions
     pygen = common.code_writers.get('python')
     if pygen:
-        pygen.add_widget_handler('wxNotebook', python_code_generator,
-                                 python_generate_properties)
+        pygen.add_widget_handler('wxNotebook', PythonCodeGenerator())
         pygen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
@@ -173,12 +183,6 @@ def initialize():
         xrcgen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-                       ('const wxPoint&', 'pos', 'wxDefaultPosition'),
-                       ('const wxSize&', 'size', 'wxDefaultSize'),
-                       ('long', 'style', '0')]
-        cppgen.add_widget_handler('wxNotebook', cpp_code_generator,
-                                  constructor, cpp_generate_properties,
-                                  ['<wx/notebook.h>'])
+        cppgen.add_widget_handler('wxNotebook', CppCodeGenerator())
         cppgen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
 
