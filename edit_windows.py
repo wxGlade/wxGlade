@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.77 2005/02/12 16:14:08 agriggio Exp $
+# $Id: edit_windows.py,v 1.78 2005/04/04 18:59:39 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -701,12 +701,17 @@ class ManagedBase(WindowBase):
         sizer.add_item(self, pos)
 
         szprop = self.sizer_properties
-        szprop['option'] = SpinProperty(self, "option", None, 0, (0, 1000))
+        #szprop['option'] = SpinProperty(self, "option", None, 0, (0, 1000))
+        from layout_option_property import LayoutOptionProperty, \
+             LayoutPosProperty
+        szprop['option'] = LayoutOptionProperty(self, sizer)
+        
         szprop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
         szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
-        pos_p = szprop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
-        def write(*args, **kwds): pass
-        pos_p.write = write # no need to save the position
+##         pos_p = szprop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
+##         def write(*args, **kwds): pass
+##         pos_p.write = write # no need to save the position
+        szprop['pos'] = LayoutPosProperty(self, sizer)
 
     def finish_widget_creation(self, sel_marker_parent=None):
         if sel_marker_parent is None: sel_marker_parent = self.parent.widget

@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.55 2005/01/10 20:22:35 agriggio Exp $
+# $Id: py_codegen.py,v 1.56 2005/04/04 18:59:39 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -472,14 +472,17 @@ def add_object(top_obj, sub_obj):
             else: klass.init.extend(init)
             # ---------------------------------------------------------------
             # ALB 2004-12-05
+            mycn = getattr(builder, 'cn', cn)
             if hasattr(builder, 'get_events'):
-                klass.event_handlers.extend(builder.get_events(sub_obj))
+                evts = builder.get_events(sub_obj)
+                for id, event, handler in evts:
+                    klass.event_handlers.append((id, mycn(event), handler))
             elif 'events' in sub_obj.properties:
                 id_name, id = generate_code_id(sub_obj)
                 #if id == '-1': id = 'self.%s.GetId()' % sub_obj.name
                 if id == '-1': id = '#self.%s' % sub_obj.name
                 for event, handler in sub_obj.properties['events'].iteritems():
-                    klass.event_handlers.append((id, event, handler))
+                    klass.event_handlers.append((id, mycn(event), handler))
 
         else: # the object is a sizer
             # ALB 2004-09-17: workaround (hack) for static box sizers...
@@ -616,22 +619,23 @@ def add_class(code_obj):
     # ALB 2004-12-05 now let's write the "event table"...
     event_handlers = classes[code_obj.klass].event_handlers
     if hasattr(builder, 'get_events'):
-        event_handlers.extend(builder.get_events(code_obj))
+        for id, event, handler in builder.get_events(code_obj):
+            event_handlers.append((id, mycn(event), handler))
     if event_handlers: write('\n')
     if for_version < (2, 5) or not use_new_namespace:
         for win_id, event, handler in event_handlers:
             if win_id.startswith('#'):
                 win_id = win_id[1:] + '.GetId()'
             write(tab + '%s(self, %s, self.%s)\n' % \
-                  (mycn(event), win_id, handler))
+                  (event, win_id, handler))
     else:
         for win_id, event, handler in event_handlers:
             if win_id.startswith('#'):
                 write(tab + 'self.Bind(%s, self.%s, %s)\n' % \
-                      (mycn(event), handler, win_id[1:]))
+                      (event, handler, win_id[1:]))
             else:
                 write(tab + 'self.Bind(%s, self.%s, id=%s)\n' % \
-                      (mycn(event), handler, win_id))
+                      (event, handler, win_id))
         
     # end tag
     write(tab + '# end wxGlade\n')
