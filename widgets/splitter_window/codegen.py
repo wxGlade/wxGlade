@@ -15,15 +15,18 @@ def python_code_generator(window):
     if not window.parent.is_toplevel: parent = 'self.%s' % window.parent.name
     else: parent = 'self'
     if window.is_toplevel:
-        l = ['self.%s = %s(%s, %s)\n' % (window.name, window.klass, parent,id)]
+        l = []
         if id_name: l.append(id_name)
+        l.append('self.%s = %s(%s, %s)\n' %
+                 (window.name, window.klass, parent,id))
         return l, [], []
     style = prop.get("style")
     if style and style != 'wxSP_3D': style = ", style=%s" % style
     else: style = ''
-    init = ['self.%s = wxSplitterWindow(%s, %s%s)\n' %
-            (window.name, parent, id, style) ]
+    init = []
     if id_name: init.append(id_name)
+    init.append('self.%s = wxSplitterWindow(%s, %s%s)\n' %
+                (window.name, parent, id, style))
 
     props_buf = pygen.generate_common_properties(window)
     win_1 = prop.get('window_1')

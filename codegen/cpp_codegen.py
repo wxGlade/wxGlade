@@ -69,7 +69,9 @@ class ClassLines:
     Stores the lines of python code for a custom class
     """
     def __init__(self):
-        self.init = [] # lines of code to insert in the __init__ method
+        self.init = [] # lines of code to insert in the constructor
+        self.parents_init = [] # lines of code to insert in the constructor for
+                               # container widgets (panels, splitters, ...)
         self.ids = [] # ids declared in the source (to use for Event handling):
                       # these are grouped together into a public enum in
                       # the custom class
@@ -289,7 +291,12 @@ def add_object(top_obj, sub_obj):
             print sub_obj
             raise
         if sub_obj.in_windows: # the object is a wxWindow instance
-            klass.init.extend(init)
+            # --- patch 2002-08-26 ------------------------------------------
+            #init.reverse()
+            if sub_obj.is_container: klass.parents_init.extend(init)
+            else: klass.init.extend(init)
+            # ---------------------------------------------------------------
+            #klass.init.extend(init)
             klass.ids.extend(ids)
             if sub_obj.klass != 'spacer':
                 klass.sub_objs.append( (sub_obj.klass, sub_obj.name) )
@@ -454,7 +461,10 @@ def add_class(code_obj):
                                                      code_obj.klass))
     tab = tabs(1)
     init_lines = classes[code_obj.klass].init
-    init_lines.reverse()
+    # --- patch 2002-08-26 ---------------------------------------------------
+    #init_lines.reverse()
+    for l in classes[code_obj.klass].parents_init: swrite(tab+l)
+    # ------------------------------------------------------------------------
     for l in init_lines: swrite(tab + l)
     swrite('\n' + tab + 'set_properties();\n')
     swrite(tab + 'do_layout();\n')
@@ -752,7 +762,7 @@ def generate_code_id(obj):
     if len(tokens) > 1: name, val = tokens[:2]
     else: return '', tokens[0] # we assume name is declared elsewhere
     if not name: return '', val
-    return ('%s = %s\n' % (name, val), name)
+    return name, val
 
 def generate_code_tooltip(obj):
     """\

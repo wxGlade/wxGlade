@@ -62,7 +62,6 @@ def python_menubar_code_generator(obj):
         append('self.%s.Append(%s, "%s")\n' %
                (obj.name, name, menu.label.replace('"', r'\"')))
     append('# Menu Bar end\n')
-    init.reverse()
     return init, [], []
 
     
@@ -312,7 +311,7 @@ def cpp_menubar_code_generator(obj):
             append_items(name, menu.children)
         append('%s->Append(%s, "%s");\n' %
                (obj.name, name, menu.label.replace('"', r'\"')))
-    init.reverse()
+    #init.reverse()
     return init, ids, [], []
 
 

@@ -14,7 +14,6 @@ function accepts one argument, the CodeObject representing the object for
 which the code has to be written, and returns 3 lists of strings, representing
 the lines to add to the '__init__', '__set_properties' and '__do_layout'
 methods of the parent object.
-NOTE: the lines in the '__init__' list will be added in reverse order
 """
 
 import sys, os, os.path
@@ -67,6 +66,9 @@ class ClassLines:
     """
     def __init__(self):
         self.init = [] # lines of code to insert in the __init__ method
+                       # (for children widgets)
+        self.parents_init = [] # lines of code to insert in the __init__ for
+                               # container widgets (panels, splitters, ...)
         self.sizers_init = [] # lines related to sizer objects declarations
         self.props = [] # lines to insert in the __set_properties method
         self.layout = [] # lines to insert in the __do_layout method
@@ -239,7 +241,12 @@ def add_object(top_obj, sub_obj):
     else:
         init, props, layout = builder(sub_obj)
         if sub_obj.in_windows: # the object is a wxWindow instance
-            klass.init.extend(init)
+            # --- patch 2002-08-26 ------------------------------------------
+            #init.reverse()
+            if sub_obj.is_container: klass.parents_init.extend(init)
+            else: klass.init.extend(init)
+            # ---------------------------------------------------------------
+            #klass.init.extend(init)
         else: # the object is a sizer
             klass.sizers_init.extend(init)
         klass.props.extend(props)
@@ -309,7 +316,10 @@ def add_class(code_obj):
         classes[code_obj.klass] = ClassLines()
     tab = tabs(2)
     init_lines = classes[code_obj.klass].init
-    init_lines.reverse()
+    # --- patch 2002-08-26 ---------------------------------------------------
+    #init_lines.reverse()
+    for l in classes[code_obj.klass].parents_init: write(tab+l)
+    # ------------------------------------------------------------------------
     for l in init_lines: write(tab + l)
     write('\n' + tab + 'self.__set_properties()\n')
     write(tab + 'self.__do_layout()\n')
