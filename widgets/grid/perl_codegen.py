@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxGrid objects
-# $Id: perl_codegen.py,v 1.4 2003/07/18 16:49:14 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.5 2004/08/17 11:32:19 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)

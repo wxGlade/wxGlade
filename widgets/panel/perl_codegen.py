@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxPanel objects
-# $Id: perl_codegen.py,v 1.6 2004/01/20 12:54:26 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.7 2004/08/17 11:32:19 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
