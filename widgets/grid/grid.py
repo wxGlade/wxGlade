@@ -34,65 +34,59 @@ class EditGrid(ManagedBase):
         
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
                              property_window, show=show)
-        self.access_functions['row_label_size'] = (self.get_row_label_size,
-                                                 self.set_row_label_size)
-        self.properties['row_label_size'] = SpinProperty(self, 'row_label_size',
-                                                       None, can_disable=False)
-        self.access_functions['col_label_size'] = (self.get_col_label_size,
-                                                 self.set_col_label_size)
-        self.properties['col_label_size'] = SpinProperty(self, 'col_label_size',
-                                                       None,can_disable=False)
-        self.access_functions['enable_editing'] = (self.get_enable_editing,
-                                                  self.set_enable_editing)
-        self.properties['enable_editing'] = CheckBoxProperty(self,
-                                                            'enable_editing',
-                                                            None)
-        self.access_functions['enable_grid_lines'] = (self.get_enable_grid_lines,
-                                                    self.set_enable_grid_lines)
-        self.properties['enable_grid_lines']= CheckBoxProperty(self,
-                                                             'enable_grid_lines',
-                                                             None)
-        self.access_functions['columns_number'] = (self.get_columns_number,
-                                              self.set_columns_number)
-        self.properties['columns_number'] = SpinProperty(self, 'columns_number', None)
-        self.access_functions['rows_number'] = (self.get_rows_number,
-                                              self.set_rows_number)
-        self.properties['rows_number'] = SpinProperty(self, 'rows_number', None)
-        self.access_functions['enable_col_resize'] = (self.get_enable_col_resize,
-                                                    self.set_enable_col_resize)
-        self.properties['enable_col_resize']= CheckBoxProperty(self,
-                                                             'enable_col_resize',
-                                                             None)
-        self.access_functions['enable_row_resize'] = (self.get_enable_row_resize,
-                                                    self.set_enable_row_resize)
-        self.properties['enable_row_resize']= CheckBoxProperty(self,
-                                                             'enable_row_resize',
-                                                             None)
-        self.access_functions['enable_grid_resize'] = (self.get_enable_grid_resize,
-                                                    self.set_enable_grid_resize)
-        self.properties['enable_grid_resize']= CheckBoxProperty(self,
-                                                             'enable_grid_resize',
-                                                             None)
-        self.access_functions['lines_color'] = (self.get_lines_color,
-                                                    self.set_lines_color)
-        self.properties['lines_color']= ColorDialogProperty(self,
-                                                             'lines_color',
-                                                             None)
-        self.access_functions['label_bg_color'] = (self.get_label_bg_color,
-                                                    self.set_label_bg_color)
-        self.properties['label_bg_color']= ColorDialogProperty(self,
-                                                             'label_bg_color',
-                                                             None)
-        self.access_functions['selection_mode'] = (self.get_selection_mode,
-                                                    self.set_selection_mode)
-        self.properties['selection_mode']= RadioProperty(self, 'selection_mode', None, 
-                                                             ['wxGrid.wxGridSelectCells',
-                                                              'wxGrid.wxGridSelectRows',
-                                                              'wxGrid.wxGridSelectColumns'])
+        props = self.properties
+        af = self.access_functions
+        af['row_label_size'] = (self.get_row_label_size,
+                                self.set_row_label_size)
+        props['row_label_size'] = SpinProperty(self, 'row_label_size',
+                                               None, can_disable=False)
+        af['col_label_size'] = (self.get_col_label_size,
+                                self.set_col_label_size)
+        props['col_label_size'] = SpinProperty(self, 'col_label_size',
+                                               None, can_disable=False)
+        af['enable_editing'] = (self.get_enable_editing,
+                                self.set_enable_editing)
+        props['enable_editing'] = CheckBoxProperty(self, 'enable_editing',
+                                                   None, write_always=True)
+        af['enable_grid_lines'] = (self.get_enable_grid_lines,
+                                   self.set_enable_grid_lines)
+        props['enable_grid_lines']= CheckBoxProperty(self, 'enable_grid_lines',
+                                                     None, write_always=True)
+        af['columns_number'] = (self.get_columns_number,
+                                self.set_columns_number)
+        props['columns_number'] = SpinProperty(self, 'columns_number', None)
+        af['rows_number'] = (self.get_rows_number, self.set_rows_number)
+        props['rows_number'] = SpinProperty(self, 'rows_number', None)
+        af['enable_col_resize'] = (self.get_enable_col_resize,
+                                   self.set_enable_col_resize)
+        props['enable_col_resize']= CheckBoxProperty(self, 'enable_col_resize',
+                                                     None, write_always=True)
+        af['enable_row_resize'] = (self.get_enable_row_resize,
+                                   self.set_enable_row_resize)
+        props['enable_row_resize'] = CheckBoxProperty(self,
+                                                      'enable_row_resize',
+                                                      None, write_always=True)
+        af['enable_grid_resize'] = (self.get_enable_grid_resize,
+                                    self.set_enable_grid_resize)
+        props['enable_grid_resize'] = CheckBoxProperty(self,
+                                                       'enable_grid_resize',
+                                                       None, write_always=True)
+        af['lines_color'] = (self.get_lines_color, self.set_lines_color)
+        props['lines_color']= ColorDialogProperty(self, 'lines_color', None)
+        af['label_bg_color'] = (self.get_label_bg_color,
+                                self.set_label_bg_color)
+        props['label_bg_color']= ColorDialogProperty(self, 'label_bg_color',
+                                                     None)
+        af['selection_mode'] = (self.get_selection_mode,
+                                self.set_selection_mode)
+        props['selection_mode']= RadioProperty(self, 'selection_mode', None, 
+                                               ['wxGrid.wxGridSelectCells',
+                                                'wxGrid.wxGridSelectRows',
+                                                'wxGrid.wxGridSelectColumns'])
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1)
         self.properties['row_label_size'].display(panel)
         self.properties['col_label_size'].display(panel)
         self.properties['enable_editing'].display(panel)
@@ -117,15 +111,24 @@ class EditGrid(ManagedBase):
         szr.Add(self.properties['enable_col_resize'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_row_resize'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_grid_resize'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['selection_mode'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['selection_mode'].panel, 0, wxALL|wxEXPAND, 5)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
+        import math
+        w, h = panel.GetClientSize()
+        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
 
     def create_widget(self):
         self.widget = wxGrid(self.parent.widget, self.id,(200,200))
         self.widget.CreateGrid(self.rows_number, self.columns_number)
+        if not self.properties['label_bg_color'].is_active():
+            self.label_bg_color = misc.color_to_string(
+                self.widget.GetLabelBackgroundColour())
+        if not self.properties['lines_color'].is_active():
+            self.lines_color = misc.color_to_string(
+                self.widget.GetGridLineColour())
         self.widget.SetRowLabelSize(self.row_label_size)
         self.widget.SetColLabelSize(self.col_label_size)
         self.widget.EnableEditing(self.enable_editing)
@@ -134,7 +137,8 @@ class EditGrid(ManagedBase):
         self.widget.EnableDragRowSize(self.enable_row_resize)
         self.widget.EnableDragGridSize(self.enable_grid_resize)
         self.widget.SetGridLineColour(misc.string_to_color(self.lines_color))
-        self.widget.SetLabelBackgroundColour(misc.string_to_color(self.label_bg_color))
+        self.widget.SetLabelBackgroundColour(misc.string_to_color(
+            self.label_bg_color))
         # A grid should be wxEXPANDed and 'option' should be 1,
         # or you can't see it.
         self.set_option(1)  
@@ -143,8 +147,10 @@ class EditGrid(ManagedBase):
         # following two events are to permit select grid from designer frame
         EVT_GRID_CELL_LEFT_CLICK(self.widget, self.on_set_focus)  
         EVT_GRID_LABEL_LEFT_CLICK(self.widget, self.on_set_focus)
+        # these are to show the popup menu on right click
+        EVT_GRID_CELL_RIGHT_CLICK(self.widget, self.popup_menu)
+        EVT_GRID_LABEL_RIGHT_CLICK(self.widget, self.popup_menu)
     
-
     def get_row_label_size(self):
         return self.row_label_size
 
@@ -243,7 +249,8 @@ class EditGrid(ManagedBase):
     def set_lines_color(self, value):
         self.lines_color = str(value)
         if self.widget:
-            self.widget.SetGridLineColour(misc.string_to_color(self.lines_color))
+            self.widget.SetGridLineColour(misc.string_to_color(
+                self.lines_color))
 
     def get_label_bg_color(self):
         return self.label_bg_color
@@ -251,7 +258,8 @@ class EditGrid(ManagedBase):
     def set_label_bg_color(self, value):
         self.label_bg_color = str(value)
         if self.widget:
-            self.widget.SetLabelBackgroundColour(misc.string_to_color(self.label_bg_color))
+            self.widget.SetLabelBackgroundColour(misc.string_to_color(
+                self.label_bg_color))
 
     def get_selection_mode(self):
         if self.selection_mode == wxGrid.wxGridSelectCells:   return 0

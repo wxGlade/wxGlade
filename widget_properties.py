@@ -238,12 +238,14 @@ class CheckBoxProperty(Property):
     """\
     Properties whose values can be changed by one checkbox.
     """
-    def __init__(self, owner, name, parent=None, label=None):
+    def __init__(self, owner, name, parent=None, label=None,
+                 write_always=False):
         Property.__init__(self, owner, name, parent)
         self.val = int(owner[name][0]())
         if label is None: label = _mangle(name)
         self.label = label
         self.panel = None
+        self.write_always = write_always
         if parent is not None: self.display(parent)
 
     def display(self, parent):
@@ -278,7 +280,8 @@ class CheckBoxProperty(Property):
         except AttributeError: pass
 
     def write(self, outfile, tabs):
-        if self.get_value(): Property.write(self, outfile, tabs)
+        if self.write_always or self.get_value():
+            Property.write(self, outfile, tabs)
 
 # end of class CheckBoxProperty
 
