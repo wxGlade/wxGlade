@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for CustomWidget objects
-# $Id: codegen.py,v 1.7 2003/05/13 10:05:13 agriggio Exp $
+# $Id: codegen.py,v 1.8 2003/10/30 07:52:32 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -31,10 +31,15 @@ class ArgumentsCodeHandler:
 # end of class ArgumentsCodeHandler
 
 
-def _fix_arguments(arguments, parent, id):
+def _fix_arguments(arguments, parent, id, size):
+    # Dinogen, 29 oct 2003
+    # adding $width e $height:
+    vSize = size.split(',')
     for i in range(len(arguments)):
         if arguments[i] == '$parent': arguments[i] = parent
         elif arguments[i] == '$id': arguments[i] = id
+        elif arguments[i] == '$width': arguments[i] = vSize[0]
+        elif arguments[i] == '$height': arguments[i] = vSize[1]
     return arguments
 
 
@@ -50,7 +55,7 @@ class PythonCodeGenerator:
         else: parent = 'self'
         init = []
         if id_name: init.append(id_name)
-        arguments = _fix_arguments(prop.get('arguments', []), parent, id)
+        arguments = _fix_arguments(prop.get('arguments', []), parent, id, prop.get('size', '-1, -1').strip())
         init.append('self.%s = %s(%s)\n' % (widget.name, widget.klass,
                                             ", ".join(arguments)))
         props_buf = pygen.generate_common_properties(widget)
@@ -103,7 +108,7 @@ class CppCodeGenerator:
         else: ids = []
         if not widget.parent.is_toplevel: parent = '%s' % widget.parent.name
         else: parent = 'this'
-        arguments = _fix_arguments(prop.get('arguments', []), parent, id)
+        arguments = _fix_arguments(prop.get('arguments', []), parent, id, prop.get('size', '-1, -1').strip())
         init = ['%s = new %s(%s);\n' % (widget.name, widget.klass,
                                         ", ".join(arguments)) ]
         props_buf = cppgen.generate_common_properties(widget)
