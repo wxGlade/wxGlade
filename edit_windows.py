@@ -597,7 +597,7 @@ class TopLevelBase(WindowBase):
 
     def finish_widget_creation(self):
         WindowBase.finish_widget_creation(self)
-        self.widget.SetTitle(self.properties['title'].get_value()
+        self.widget.SetTitle(self.properties['title'].get_value())
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         EVT_CLOSE(self.widget, self.ask_remove)
@@ -621,7 +621,7 @@ class TopLevelBase(WindowBase):
 
     def set_sizer(self, sizer):
         self.sizer = sizer
-        if self.sizer and self.widget:
+        if self.sizer and self.sizer.widget and self.widget:
             self.widget.SetAutoLayout(True)
             self.widget.SetSizer(self.sizer.widget)
 
