@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxBitmapButton objects
-# $Id: perl_codegen.py,v 1.8 2004/09/17 13:09:55 agriggio Exp $
+# $Id: perl_codegen.py,v 1.9 2004/12/22 11:13:35 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge
 # License: MIT (see license.txt)
@@ -37,7 +37,7 @@ class PerlCodeGenerator:
             var = bmp_file[4:].strip()
             if var[0] != "$":
                 var = "$" + var
-            bmp = 'Wx::Bitmap->new(%s wxBITMAP_TYPE_ANY)' % var
+            bmp = 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % var
         elif bmp_file.startswith('code:'): # this is a code chunk
             bmp = '(%s)' % bmp_file[5:].strip()
         else:
