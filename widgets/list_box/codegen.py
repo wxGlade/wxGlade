@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxListBox objects
-# $Id: codegen.py,v 1.10 2003/11/24 21:28:06 agriggio Exp $
+# $Id: codegen.py,v 1.11 2004/08/06 13:20:28 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -29,7 +29,7 @@ class PythonCodeGenerator:
                     (obj.name, klass, parent, id, choices, style))
         props_buf = pygen.generate_common_properties(obj)
         selection = prop.get('selection')
-        if selection is not None:
+        if selection is not None and choices:
             props_buf.append('self.%s.SetSelection(%s)\n' %
                              (obj.name, selection))
         return init, props_buf, []
@@ -76,7 +76,7 @@ class CppCodeGenerator:
                     (obj.name, obj.klass, parent, id, number, obj.name, style))
         props_buf = cppgen.generate_common_properties(obj)
         selection = prop.get('selection')
-        if selection is not None:
+        if selection is not None and choices:
             props_buf.append('%s->SetSelection(%s);\n' % (obj.name, selection))
         return init, ids, props_buf, []
 
