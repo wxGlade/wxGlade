@@ -129,8 +129,9 @@ class MenuItemDialog(wxDialog):
         """
         index = self.selected_index = self.selected_index+1
         if not self.menu_items.GetItemCount():
-            [s.Enable(1) for s in (self.label, self.id, self.name, \
-                                   self.help_str, self.checkable)]
+            for s in (self.label, self.id, self.name, self.help_str,
+                      self.checkable):
+                s.Enable(True)
         if index < 0: index = self.menu_items.GetItemCount()
         elif index > 0: indent = "    " * self.item_level(index-1)
         else: indent = ""
@@ -139,6 +140,9 @@ class MenuItemDialog(wxDialog):
         self.menu_items.SetStringItem(index, 1, id)
         self.menu_items.SetStringItem(index, 2, name)
         self.menu_items.SetStringItem(index, 3, check)
+        # fix bug 698074
+        self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED,
+                                     wxLIST_STATE_SELECTED)
         self.name.SetValue(name)
         self.label.SetValue(label)
         self.id.SetValue(id)
@@ -150,14 +154,18 @@ class MenuItemDialog(wxDialog):
         """
         index = self.selected_index+1
         if not self.menu_items.GetItemCount():
-            [s.Enable(1) for s in (self.label, self.id, self.name, \
-                                   self.help_str, self.checkable)]
+            for s in (self.label, self.id, self.name, self.help_str,
+                      self.checkable):
+                s.Enable(True)
         if index < 0: index = self.menu_items.GetItemCount() 
         elif index > 0: label = "    " * self.item_level(index-1) + '---'
         else: label = '---'
         self.menu_items.InsertStringItem(index, label)
         self.menu_items.SetStringItem(index, 1, '---')
         self.menu_items.SetStringItem(index, 2, '---')
+        # fix bug 698074
+        self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED,
+                                     wxLIST_STATE_SELECTED)
 
     def show_menu_item(self, event):
         """\
@@ -286,13 +294,13 @@ class MenuItemDialog(wxDialog):
                 self.menu_items.SetStringItem(index, 0, label[4:])
                 self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED, 
                                              wxLIST_STATE_SELECTED)
-                self.menu_items.SetFocus()
                 
     def move_item_left(self, event):
         """\
         moves the selected menu item one level up in the hierarchy, i.e.
         shifts its label 4 spaces left in self.menu_items
         """
+        self.menu_items.SetFocus()
         self._move_item_left(self.selected_index)
 
     def _move_item_right(self, index):
@@ -301,22 +309,34 @@ class MenuItemDialog(wxDialog):
             self.menu_items.SetStringItem(index, 0, " " * 4 + label)
             self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED, \
                                          wxLIST_STATE_SELECTED)
-            self.menu_items.SetFocus()
 
     def move_item_right(self, event):
         """\
         moves the selected menu item one level down in the hierarchy, i.e.
         shifts its label 4 spaces right in self.menu_items
         """
+        self.menu_items.SetFocus()
         self._move_item_right(self.selected_index)
+
 
     def move_item_up(self, event):
         """\
         moves the selected menu item before the previous one at the same level
         in self.menu_items
         """
-        index = self.selected_index
-        if index <= 0: return
+        self.menu_items.SetFocus()
+        index = self._do_move_item(event, self.selected_index, False)
+        if index is not None:
+            state = wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED
+            self.menu_items.SetItemState(index, state, state)
+
+    def _do_move_item(self, event, index, is_down):
+        """\
+        internal function used by move_item_up and move_item_down.
+        Returns the new index of the moved item, or None if no change occurred
+        """
+        #index = self.selected_index
+        if index <= 0: return None
         def get(i, j): return self.menu_items.GetItem(i, j).m_text
         def getall(i): return [get(i, j) for j in range(4)]
         level = self.item_level(index)
@@ -332,7 +352,7 @@ class MenuItemDialog(wxDialog):
         while i >= 0:
             lvl = self.item_level(i)
             if level == lvl: break
-            elif level > lvl: return
+            elif level > lvl: return None
             i -= 1
         delete = self.menu_items.DeleteItem
         insert = self.menu_items.InsertStringItem
@@ -345,15 +365,16 @@ class MenuItemDialog(wxDialog):
             set(i, 1, id)
             set(i, 2, name)
             set(i, 3, checkable)
-        self.menu_items.SetItemState(i, wxLIST_STATE_SELECTED, \
-                                     wxLIST_STATE_SELECTED)
-        self.menu_items.SetFocus()
+        ret_idx = i
+        if is_down: ret_idx += len(items_to_move)
+        return ret_idx
         
     def move_item_down(self, event):
         """\
         moves the selected menu item after the next one at the same level
         in self.menu_items
         """
+        self.menu_items.SetFocus()
         index = self.selected_index
         self.selected_index = -1
         if index < 0: return
@@ -367,8 +388,16 @@ class MenuItemDialog(wxDialog):
                 i += 1
             else: break
         if i < self.menu_items.GetItemCount():
-            self.selected_index = i
-            self.move_item_up(event)
+            # _do_move_item works with selected_index, so we must assing to
+            # it the rigth value before the call
+            #self.selected_index = i
+            self.selected_index = self._do_move_item(event, i, True)
+            # fix bug 698071
+            state = wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED
+            self.menu_items.SetItemState(self.selected_index, state, state)
+        else:
+            # restore the selected index
+            self.selected_index = index
                                                   
 #end of class MenuItemDialog
 
