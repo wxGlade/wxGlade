@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.38 2003/11/24 21:28:07 agriggio Exp $
+# $Id: py_codegen.py,v 1.39 2003/11/27 19:37:21 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -826,9 +826,11 @@ def generate_code_font(obj):
     returns the code fragment that sets the font of the given object.
     """
     font = obj.properties['font'] 
-    size = font['size']; family = font['family']
+    size = font['size']
+    family = cn(font['family'])
     underlined = font['underlined']
-    style = font['style']; weight = font['weight']
+    style = cn(font['style'])
+    weight = cn(font['weight'])
     face = '"%s"' % font['face'].replace('"', r'\"')
     self = _get_code_name(obj)
     return self + '.SetFont(' + cn('wxFont') + '(%s, %s, %s, %s, %s, %s))\n' %\
@@ -916,15 +918,15 @@ def generate_common_properties(widget):
 # custom property handlers
 class FontPropertyHandler:
     """Handler for font properties"""
-    font_families = { 'default': cn('wxDEFAULT'),
-                      'decorative': cn('wxDECORATIVE'),
-                      'roman': cn('wxROMAN'), 'swiss': cn('wxSWISS'),
-                      'script': cn('wxSCRIPT'), 'modern': cn('wxMODERN'),
-                      'teletype': cn('wxTELETYPE') }
-    font_styles = { 'normal': cn('wxNORMAL'), 'slant': cn('wxSLANT'),
-                    'italic': cn('wxITALIC') }
-    font_weights = { 'normal': cn('wxNORMAL'), 'light': cn('wxLIGHT'),
-                     'bold': cn('wxBOLD') }
+    font_families = { 'default': 'wxDEFAULT',
+                      'decorative': 'wxDECORATIVE',
+                      'roman': 'wxROMAN', 'swiss': 'wxSWISS',
+                      'script': 'wxSCRIPT', 'modern': 'wxMODERN',
+                      'teletype': 'wxTELETYPE' }
+    font_styles = { 'normal': 'wxNORMAL', 'slant': 'wxSLANT',
+                    'italic': 'wxITALIC' }
+    font_weights = { 'normal': 'wxNORMAL', 'light': 'wxLIGHT',
+                     'bold': 'wxBOLD' }
     def __init__(self):
         self.dicts = { 'family': self.font_families, 'style': self.font_styles,
                        'weight': self.font_weights }
