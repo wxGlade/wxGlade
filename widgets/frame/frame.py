@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.35 2004/10/18 09:20:11 agriggio Exp $
+# $Id: frame.py,v 1.36 2004/10/18 12:11:58 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -95,12 +95,15 @@ class EditStatusBar(EditBase):
     def __getitem__(self, key):
         return self.access_functions[key]
 
-    def remove(self, *args):
-        if self.parent.widget: self.parent.widget.SetStatusBar(None)
-        try: self.parent.properties['statusbar'].set_value(0)
-        except KeyError: pass
-        if self.widget: self.widget.Hide()
-        EditBase.remove(self)
+    def remove(self, *args, **kwds):
+        if not kwds.get('do_nothing', False):
+            if self.parent.widget: self.parent.widget.SetStatusBar(None)
+            try: self.parent.properties['statusbar'].set_value(0)
+            except KeyError: pass
+            if self.widget: self.widget.Hide()
+            EditBase.remove(self)
+        else:
+            self.widget = None
 
     def popup_menu(self, *args): pass # to avoid strange segfault :)
 
@@ -342,7 +345,7 @@ class EditFrame(TopLevelBase):
         if self.menubar:
             self.menubar = self.menubar.remove(gtk_do_nothing=True)
         if self.statusbar:
-            self.statusbar = self.statusbar.remove()
+            self.statusbar = self.statusbar.remove(do_nothing=True)
         if self.toolbar:
             self.toolbar = self.toolbar.remove(do_nothing=True)
         TopLevelBase.remove(self, *args)
