@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.20 2003/08/30 09:46:10 agriggio Exp $
+# $Id: pl_codegen.py,v 1.21 2004/01/20 12:54:26 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -448,7 +448,7 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     except KeyError:
         klass = classes[toplevel.klass] = ClassLines()
 
-    buffer = '\t$self->{%s}->Add(%s, %s, %s, %s);\n' % \
+    buffer = '$self->{%s}->Add(%s, %s, %s, %s);\n' % \
              (sizer.name, obj_name, option, flag, border)
     klass.layout.append(buffer)
 
@@ -837,11 +837,11 @@ def generate_code_size(obj):
     size = obj.properties.get('size', '').strip()
     use_dialog_units = (size[-1] == 'd')
     if use_dialog_units:
-        return '\t' + name + \
+        return name + \
             '->SetSize(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n' % \
             ( name, size[:-1] )
 
-    return '\t' + name + '->SetSize(%s);\n' % size
+    return name + '->SetSize(%s);\n' % size
 
 
 def _string_to_colour(s):
@@ -860,7 +860,7 @@ def generate_code_foreground(obj):
     except (IndexError, ValueError): # the color is from system settings
         color = 'Wx::SystemSettings::GetColour(%s)' % \
                 obj.properties['foreground']
-    return '\t' + self + '->SetForegroundColour(%s);\n' % color
+    return self + '->SetForegroundColour(%s);\n' % color
 
 
 def generate_code_background(obj):
@@ -875,7 +875,7 @@ def generate_code_background(obj):
     except (IndexError, ValueError): # the color is from system settings
         color = 'Wx::SystemSettings::GetColour(%s)' % \
                 obj.properties['background']
-    return '\t' + self + '->SetBackgroundColour(%s);\n' % color
+    return self + '->SetBackgroundColour(%s);\n' % color
 
 
 def generate_code_font(obj):
@@ -888,7 +888,7 @@ def generate_code_font(obj):
     style = font['style']; weight = font['weight']
     face = '"%s"' % font['face'].replace('"', r'\"')
     self = _get_code_name(obj)
-    return '\t' + self + \
+    return self + \
         '->SetFont(Wx::Font->new(%s, %s, %s, %s, %s, %s));\n' % \
             (size, family, style, weight, underlined, face)
 
@@ -922,7 +922,7 @@ def generate_code_tooltip(obj):
     returns the code fragment that sets the tooltip of the given object.
     """
     self = _get_code_name(obj)
-    return '\t' + self + \
+    return self + \
         '->SetToolTipString(%s);\n' % quote_str(obj.properties['tooltip'])
 
 
@@ -934,7 +934,7 @@ def generate_code_disabled(obj):
         disabled = False
 
     if disabled:
-        return '\t' + self + '->Enable(0);\n' # Disable() is not available
+        return self + '->Enable(0);\n' # Disable() is not available
 
 
 def generate_code_focused(obj):
@@ -945,7 +945,7 @@ def generate_code_focused(obj):
         focused = False
 
     if focused:
-        return '\t' + self + '->SetFocus();\n'
+        return self + '->SetFocus();\n'
 
 
 def generate_code_hidden(obj):
@@ -956,7 +956,7 @@ def generate_code_hidden(obj):
         hidden = False
 
     if hidden:
-        return '\t' + self + '->Show(0);\n' # Hide() is not available
+        return  self + '->Show(0);\n' # Hide() is not available
     
 
 def generate_common_properties(widget):
