@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.32 2003/07/29 14:42:14 agriggio Exp $
+# $Id: application.py,v 1.33 2003/08/02 13:26:32 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -180,7 +180,7 @@ class Application(object):
         h = panel.GetSize()[1]
         self.notebook.AddPage(panel, "Application")
         import math
-        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
         EVT_BUTTON(btn, BTN_ID, self.generate_code)
         EVT_CHOICE(self.top_win_prop, TOP_WIN_ID, self.set_top_window)

@@ -1,5 +1,5 @@
 # static_bitmap.py: wxStaticBitmap objects
-# $Id: static_bitmap.py,v 1.12 2003/07/18 16:43:53 agriggio Exp $
+# $Id: static_bitmap.py,v 1.13 2003/08/02 13:26:31 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -76,7 +76,7 @@ class EditStaticBitmap(ManagedBase):
         self.notebook.AddPage(panel, "Widget")
         self.property_window.Layout()
         import math
-        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))        
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def get_bitmap(self):
         return self.bitmap

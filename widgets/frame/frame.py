@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.25 2003/07/19 12:06:03 agriggio Exp $
+# $Id: frame.py,v 1.26 2003/08/02 13:26:32 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -233,7 +233,7 @@ class EditFrame(TopLevelBase):
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
         w, h = panel.GetClientSizeTuple()
-        panel.SetScrollbars(5, 5, math.ceil(w/5.0), math.ceil(h/5.0))
+        panel.SetScrollbars(5, 5, int(math.ceil(w/5.0)), int(math.ceil(h/5.0)))
 
     def get_menubar(self):
         return self.menubar is not None

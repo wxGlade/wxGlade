@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.49 2003/07/18 07:50:07 agriggio Exp $
+# $Id: edit_windows.py,v 1.50 2003/08/02 13:26:32 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -401,7 +401,7 @@ class WindowBase(EditBase):
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, "Common")
         self.property_window.Layout()
-        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))        
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
 
     def on_size(self, event):
@@ -694,7 +694,7 @@ class ManagedBase(WindowBase):
 
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, "Layout")
-        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
         
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
@@ -838,7 +838,7 @@ class PreviewMixin:
         w, h = panel.GetClientSize()
         self.property_window.Layout()
         import math
-        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def preview(self, event):
         #print 'frame class _> ', self.klass
