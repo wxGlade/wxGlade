@@ -1,5 +1,5 @@
 # text_ctrl.py: wxTreeCtrl objects
-# $Id: tree_ctrl.py,v 1.4 2003/08/02 13:26:31 agriggio Exp $
+# $Id: tree_ctrl.py,v 1.5 2004/07/15 09:27:59 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -23,13 +23,22 @@ class EditTreeCtrl(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         # style property
         self.style_pos  = (wxTR_HAS_BUTTONS, wxTR_NO_LINES, wxTR_LINES_AT_ROOT,
-                           wxTR_EDIT_LABELS, wxTR_MULTIPLE, wxSIMPLE_BORDER,
-                           wxDOUBLE_BORDER, wxSUNKEN_BORDER, wxRAISED_BORDER,
-                           wxSTATIC_BORDER, wxNO_BORDER,
-                           wxWANTS_CHARS, wxNO_FULL_REPAINT_ON_RESIZE)
+                           wxTR_EDIT_LABELS, wxTR_MULTIPLE, wxTR_NO_BUTTONS,
+                           wxTR_TWIST_BUTTONS, wxTR_FULL_ROW_HIGHLIGHT,
+                           wxTR_HIDE_ROOT, wxTR_ROW_LINES, wxTR_HAS_VARIABLE_ROW_HEIGHT,
+                           wxTR_SINGLE, wxTR_MULTIPLE, wxTR_EXTENDED,
+                           wxTR_DEFAULT_STYLE, wxSIMPLE_BORDER, wxDOUBLE_BORDER,
+                           wxSUNKEN_BORDER, wxRAISED_BORDER, wxSTATIC_BORDER,
+                           wxNO_BORDER, wxWANTS_CHARS, 
+                           wxNO_FULL_REPAINT_ON_RESIZE)
         style_labels = ('#section#Style', 'wxTR_HAS_BUTTONS', 'wxTR_NO_LINES',
                         'wxTR_LINES_AT_ROOT', 'wxTR_EDIT_LABELS',
-                        'wxTR_MULTIPLE', 'wxSIMPLE_BORDER',
+                        'wxTR_MULTIPLE', 'wxTR_NO_BUTTONS',
+                        'wxTR_TWIST_BUTTONS', 'wxTR_FULL_ROW_HIGHLIGHT',
+                        'wxTR_HIDE_ROOT', 'wxTR_ROW_LINES', 
+                        'wxTR_HAS_VARIABLE_ROW_HEIGHT','wxTR_SINGLE', 
+                        'wxTR_MULTIPLE', 'wxTR_EXTENDED',
+                        'wxTR_DEFAULT_STYLE', 'wxSIMPLE_BORDER',
                         'wxDOUBLE_BORDER', 'wxSUNKEN_BORDER',
                         'wxRAISED_BORDER', 'wxSTATIC_BORDER', 'wxNO_BORDER',
                         'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE')
