@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.4 2003/07/11 07:30:26 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.5 2003/07/26 12:07:33 agriggio Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -67,33 +67,33 @@ class PerlCodeGenerator:
         else:
             obj_name = '$self->{%s}' % obj.name
 
+        def _get_bitmap(bitmap):
+            if not bitmap:
+                return 'wxNullBitmap'
+            elif bitmap.startswith('var:'):
+                # this is a variable holding XPM data
+                return 'Wx::Bitmap->newFromXPM(%s)' % bmp_file[4:].strip()
+            else:
+                return 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % \
+                       plgen.quote_path(bmp_file)
+
         for tool in tools:
             if tool.id == '---': # item is a separator
                 append('%s->AddSeparator();\n' % obj_name)
             else:
-                if not obj.preview and tool.id:
-                    tokens = tool.id.split('=')
-                    if len(tokens) > 1:
-                        id = tokens[0]
-                        ids.append(' = '.join(tokens) + '\n')
-                    else:
-                        id = tool.id
-                else: id = 'Wx::NewId()'
+                name, val = plgen.generate_code_id(None, tool.id)
+                if not name and (not val or val == '-1'):
+                    id = 'Wx::NewId()'
+                else:
+                    if name: ids.append(name)
+                    id = val
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                if tool.bitmap1:
-                    bmp1 = 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % \
-                        plgen.quote_path(tool.bitmap1)
-                else:
-                    bmp1 = 'wxNullBitmap'
-                if tool.bitmap2:
-                    bmp2 = 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % \
-                        plgen.quote_path(tool.bitmap2)
-                else:
-                    bmp2 = 'wxNullBitmap'
+                bmp1 = _get_bitmap(tool.bitmap1)
+                bmp2 = _get_bitmap(tool.bitmap2)
 #                append('%s->AddLabelTool(%s, %s, %s, %s, %s, %s, %s);\n' %
                 append('%s->AddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
                        (obj_name, id, plgen.quote_str(tool.label),

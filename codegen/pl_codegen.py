@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.12 2003/07/13 12:17:08 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.13 2003/07/26 12:07:33 agriggio Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -92,6 +92,8 @@ class SourceFileContent:
     
     WARNING: NOT YET COMPLETE
     (always overwrites destination file, ALWAYS) -- crazyinsomniac
+
+    alb - the warning above shouldn't be true anymore... but we need testing...
     """
     def __init__(self, name=None, content=None, classes=None):
         self.name = name # name of the file
@@ -112,50 +114,41 @@ class SourceFileContent:
         by the new wxGlade blocks
         
         WARNING: NOT YET COMPLETE -- crazyinsomniac
-        """
 
+        alb - almost done :)
+        WARNING: There is *NO* support for here documents: if you put wxGlade
+        blocks inside a here document, you're likely going into troubles...
+        """
         import re
         class_name = None
         new_classes_inserted = False
-# regexp to match class declarations
-#  package Foo; or package Foo::bar::baz   ;
-        class_decl = re.compile(r'^\s*package\s+[a-zA-Z]\w*(::\w+)*\s*;\w*$')
+        # regexp to match class declarations
+        #  package Foo; or package Foo::bar::baz   ;
+        #class_decl = re.compile(r'^\s*package\s+[a-zA-Z]\w*(::\w+)*\s*;\s*$')
+        # less precise regex, but working :-P
+        class_decl = re.compile(r'^\s*package\s+([a-zA-Z_][\w:]*)\s*;.*$')
         # regexps to match wxGlade blocks
         block_start = re.compile(r'^(\s*)#\s*begin\s+wxGlade:\s*'
-                                 '([A-Za-z_]+\w*)??[.]?(\w+)\s*$')
+                                 '([A-Za-z_]+\w*)??::(\w+)\s*$')
         block_end = re.compile(r'^\s*#\s*end\s+wxGlade\s*$')
+        pod_re = re.compile(r'^\s*=[A-Za-z_]+\w*.*$')
         inside_block = False
-        inside_triple_quote = False
-        triple_quote_str = None
+        inside_pod = False
         tmp_in = open(self.name)
         out_lines = []
         for line in tmp_in:
-            quote_index = -1
-            if not inside_triple_quote:
-                triple_dquote_index = line.find('"""')
-                triple_squote_index = line.find("'''")
-                if triple_squote_index == -1:
-                    quote_index = triple_dquote_index
-                    tmp_quote_str = '"""'
-                elif triple_dquote_index == -1:
-                    quote_index = triple_squote_index
-                    tmp_quote_str = "'''"
-                else:
-                    quote_index, tmp_quote_str = min(
-                        (triple_squote_index, "'''"),
-                        (triple_dquote_index, '"""'))
-
-            if not inside_triple_quote and quote_index != -1:
-                inside_triple_quote = True
-                triple_quote_str = tmp_quote_str
-            if inside_triple_quote:
-                end_index = line.rfind(triple_quote_str)
-                if quote_index < end_index and end_index != -1:
-                    inside_triple_quote = False
+            result = pod_re.match(line)
+            if result is not None:
+                inside_pod = True
+            if inside_pod:
+                out_lines.append(line)
+                if line.startswith('=cut'):
+                    inside_pod = False
+                continue
             
             result = class_decl.match(line)
-            if not inside_triple_quote and result is not None:
-##                 print ">> class %r" % result.group(1)
+            if result is not None:
+                #print ">> found class %s" % result.group(1)
                 if class_name is None:
                     # this is the first class declared in the file: insert the
                     # new ones before this
@@ -169,7 +162,7 @@ class SourceFileContent:
             elif not inside_block:
 #print >> sys.stderr, "WARNING: doing the block_start.match (", result, "\n"
                 result = block_start.match(line)
-                if not inside_triple_quote and result is not None:
+                if result is not None:
 ##                     print ">> block %r %r %r" % (
 ##                         result.group(1), result.group(2), result.group(3))
                     # replace the lines inside a wxGlade block with a tag that
@@ -187,10 +180,8 @@ class SourceFileContent:
                         out_lines.append('<%swxGlade replace %s %s>' % \
                                          (nonce, which_class, which_block))
                 else:
-##                     if inside_triple_quote:
-##                         print '>> inside_triple_quote:', line
                     out_lines.append(line)
-                    if line.startswith('from wxPython.wx import *'):
+                    if line.lstrip().startswith('use Wx'):
                         # add a tag to allow extra modules
                         out_lines.append('<%swxGlade extra_modules>\n'
                                          % nonce)
@@ -213,13 +204,15 @@ class SourceFileContent:
 # the previous version of the source to generate
 previous_source = None 
 
+# if True, overwrite any previous version of the source file instead of
+# updating only the wxGlade blocks
+_overwrite = False
 
 # if True, enable gettext support
 _use_gettext = False
 
 import re
 _quote_str_re = re.compile( r'\\(?![nrt])' )
-
 
 def quote_str(s):
     """\
@@ -257,102 +250,35 @@ def initialize(app_attrs):
     multi_files = app_attrs['option']
 
     global classes, header_lines, multiple_files, previous_source, nonce, \
-           _current_extra_modules, _use_gettext
+           _current_extra_modules, _use_gettext, _overwrite
     import time, random
 
-# import all perl generators and initialize them first -- yuck -- crazyinsomniac
-    import tree_ctrl.perl_codegen
-    tree_ctrl.perl_codegen.initialize()
-    
-    import toolbar.perl_codegen
-    toolbar.perl_codegen.initialize()
-    
-    import toggle_button.perl_codegen
-    toggle_button.perl_codegen.initialize()
-    
-    import text_ctrl.perl_codegen
-    text_ctrl.perl_codegen.initialize()
-    
-    import static_text.perl_codegen
-    static_text.perl_codegen.initialize()
-    
-    import static_line.perl_codegen
-    static_line.perl_codegen.initialize()
-    
-    import static_bitmap.perl_codegen
-    static_bitmap.perl_codegen.initialize()
-    
-    import splitter_window.perl_codegen
-    splitter_window.perl_codegen.initialize()
-    
-    import spin_ctrl.perl_codegen
-    spin_ctrl.perl_codegen.initialize()
-    
-    import spacer.perl_codegen
-    spacer.perl_codegen.initialize()
-    
-    import slider.perl_codegen
-    slider.perl_codegen.initialize()
-    
-    import radio_button.perl_codegen
-    radio_button.perl_codegen.initialize()
-    
-    import radio_box.perl_codegen
-    radio_box.perl_codegen.initialize()
-    
-    import panel.perl_codegen
-    panel.perl_codegen.initialize()
-    
-    import notebook.perl_codegen
-    notebook.perl_codegen.initialize()
-    
-    import menubar.perl_codegen
-    menubar.perl_codegen.initialize()
-    
-    import list_ctrl.perl_codegen
-    list_ctrl.perl_codegen.initialize()
-    
-    import list_box.perl_codegen
-    list_box.perl_codegen.initialize()
-    
-    import grid.perl_codegen
-    grid.perl_codegen.initialize()
-    
-    import gauge.perl_codegen
-    gauge.perl_codegen.initialize()
-    
-    import frame.perl_codegen
-    frame.perl_codegen.initialize()
-    
-    import dialog.perl_codegen
-    dialog.perl_codegen.initialize()
-    
-    import custom_widget.perl_codegen
-    custom_widget.perl_codegen.initialize()
-    
-    import combo_box.perl_codegen
-    combo_box.perl_codegen.initialize()
-    
-    import choice.perl_codegen
-    choice.perl_codegen.initialize()
-    
-    import checkbox.perl_codegen
-    checkbox.perl_codegen.initialize()
-    
-    import button.perl_codegen
-    button.perl_codegen.initialize()
-    
-    import bitmap_button.perl_codegen
-    bitmap_button.perl_codegen.initialize()
-    
+    # import all perl generators and initialize them first -- yuck
+    # -- crazyinsomniac
+
+    # alb: let's try to make this slightly less ugly...
+    # first, the widgets...
+    _widgets_dir = os.path.join(common.wxglade_path, 'widgets')
+    for name in os.listdir(_widgets_dir):
+        if os.path.isdir(os.path.join(_widgets_dir, name)):
+            try:
+                m = __import__(name + '.perl_codegen', {}, {}, ['initialize'])
+                m.initialize()
+            except ImportError:
+                pass
+##             else:
+##                 print 'initialized perl generator for', name
+    # ...then, the sizers
     import edit_sizers.perl_sizers_codegen
-    edit_sizers.perl_sizers_codegen.initialize()
-    
+    edit_sizers.perl_sizers_codegen.initialize()  
 
     try:
         _use_gettext = int(app_attrs['use_gettext'])
     except (KeyError, ValueError):
         _use_gettext = False
+
+    try: _overwrite = int(app_attrs['overwrite'])
+    except (KeyError, ValueError): _overwrite = False
 
     # this is to be more sure to replace the right tags
     nonce = '%s%s' % (str(time.time()).replace('.', ''),
@@ -369,8 +295,7 @@ def initialize(app_attrs):
     multiple_files = multi_files
     if not multiple_files:
         global output_file, output_file_name
-        # DON'T DO THIS YET -- crazyinsomniac
-        if False and os.path.isfile(out_path):
+        if not _overwrite and os.path.isfile(out_path):
             # the file exists, we must keep all the lines not inside a wxGlade
             # block. NOTE: this may cause troubles if out_path is not a valid
             # perl file, so be careful!
@@ -418,7 +343,7 @@ def finalize():
         for tag in tags:
             indent = previous_source.spaces.get(tag[1], '\t')
             comment = '%s# content of this block not found: ' \
-                      'did you rename this class?\n%spass\n' % (indent, indent)
+                      'did you rename this class?\n' % indent
             previous_source.content = previous_source.content.replace(tag[0],
                                                                       comment)
         # write the new file contents to disk
@@ -530,7 +455,7 @@ new_defaults = {
     '$title'  : '\t$title  = ""                 unless defined $title;\n' ,
     '$pos'    : '\t$pos    = wxDefaultPosition  unless defined $pos;\n' ,
     '$size'   : '\t$size   = wxDefaultSize      unless defined $size;\n' ,
-    '$name'   : '\t$name   = ""                 unless defined $name;\n\n'
+    '$name'   : '\t$name   = ""                 unless defined $name;\n\n',
 #   '$style' is a special case
 }
 
@@ -546,7 +471,7 @@ def add_class(code_obj):
     else:
         # let's see if the file to generate exists, and in this case
         # create a SourceFileContent instance
-        filename = os.path.join(out_dir, code_obj.klass + '.pl')
+        filename = os.path.join(out_dir, code_obj.klass + '.pm') # MODULE!!
         if not os.path.exists(filename): prev_src = None
         else: prev_src = SourceFileContent(filename)
         _current_extra_modules = {}
@@ -576,18 +501,25 @@ def add_class(code_obj):
         # if the class body was empty, create an empty ClassLines
         classes[code_obj.klass] = ClassLines()
 
+    new_signature = getattr(builder, 'new_signature', [] )
+
     if is_new:
         write('package %s;\n\n' % code_obj.klass )
         write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n'
                 % code_obj.base.replace('wx','Wx::',1) )
 
+        if multiple_files:
+            # write the module dependecies for this class (package)
+            write('# begin wxGlade: ::dependencies\n')
+            for module in classes[code_obj.klass].dependencies:
+                write(module)
+            write('# end wxGlade\n')
+            write('\n')
 
         if _use_gettext:
             write("use Wx::Locale gettext => '_T';\n")
 
         write('sub new {\n')
-
-        new_signature = getattr(builder, 'new_signature', [] )
 
         write("\tmy( $self, %s ) = @_;\n"
                 % ", ".join( new_signature  ) )
@@ -601,16 +533,16 @@ def add_class(code_obj):
             print code_obj.klass + " did not declare new_defaults "
 
 
-    # __init__ begin tag
+    # constructor (new) begin tag
     write('# begin wxGlade: %s::new\n\n' % code_obj.klass)
     prop = code_obj.properties
     style = prop.get("style", None)
     if style:
         write('\t$style = %s \n\t\tunless defined $style;\n\n' % style)
 
-    # __init__
+    # constructor (new)
     write('\t$self = $self->SUPER::new( %s );\n'
-        % ", ".join( new_signature ))
+          % ", ".join( new_signature ))
 
     init_lines = classes[code_obj.klass].init
 
@@ -627,16 +559,17 @@ def add_class(code_obj):
     write('\n\t$self->__set_properties();\n')
     write('\t$self->__do_layout();\n\n')
     write('\treturn $self;\n\n')
-    write('# end wxGlade\n}\n\n')
+    write('# end wxGlade\n')
+
+    if is_new: write('}\n\n')
 
     if prev_src is not None and not is_new:
-        # replace the lines inside the __init__ wxGlade block with the new ones
-        tag = '<%swxGlade replace %s %s>' % (nonce, code_obj.klass,
-                                             '__init__')
+        # replace the lines inside the ::new wxGlade block with the new ones
+        tag = '<%swxGlade replace %s %s>' % (nonce, code_obj.klass, 'new')
         if prev_src.content.find(tag) < 0:
             # no __init__ tag found, issue a warning and do nothing
-            print >> sys.stderr, "WARNING: wxGlade __init__ block not found," \
-                  " __init__ code NOT generated"
+            print >> sys.stderr, "WARNING: wxGlade ::new block not found," \
+                  " constructor code NOT generated"
         else:
             prev_src.content = prev_src.content.replace(tag, "".join(buffer))
         buffer = []
@@ -656,7 +589,9 @@ def add_class(code_obj):
     else:
         for l in obj_p: write('\t' +l)
 
-    write('\n# end wxGlade\n}\n')
+    write('\n# end wxGlade\n')
+
+    if is_new: write('}\n')
 
     if prev_src is not None and not is_new:
         # replace the lines inside the __set_properties wxGlade block
@@ -720,10 +655,10 @@ def add_class(code_obj):
         return
 
     if multiple_files:
-        return # not implemented yet -- crazyinsomniac
+        #return # not implemented yet -- crazyinsomniac
         if prev_src is not None:
             tag = '<%swxGlade insert new_classes>' % nonce
-            prev_src.content = prev_src.content.replace(tag, "") #code)
+            prev_src.content = prev_src.content.replace(tag, "")
 
             # insert the extra modules
             tag = '<%swxGlade extra_modules>\n' % nonce
@@ -732,7 +667,7 @@ def add_class(code_obj):
             
             # insert the module dependencies of this class
             extra_modules = classes[code_obj.klass].dependencies.keys()
-            deps = ['# begin wxGlade: dependencies\n'] + extra_modules + \
+            deps = ['# begin wxGlade: ::dependencies\n'] + extra_modules + \
                    ['# end wxGlade\n']
             tag = '<%swxGlade replace dependencies>' % nonce
             prev_src.content = prev_src.content.replace(tag, "".join(deps))
@@ -746,18 +681,11 @@ def add_class(code_obj):
             return
 
         # create the new source file
-        filename = os.path.join(out_dir, code_obj.klass + '.pl')
+        filename = os.path.join(out_dir, code_obj.klass + '.pm') # MODULE!!
         out = cStringIO.StringIO()
         write = out.write
         # write the common lines
         for line in header_lines: write(line)
-        
-        # write the module dependecies for this class
-        write('\n# begin wxGlade: dependencies\n')
-        for module in classes[code_obj.klass].dependencies:
-            write(module)
-        write('# end wxGlade\n')
-        write('\n')
         
         # write the class body
         for line in buffer: write(line)
@@ -798,8 +726,8 @@ def add_app(app_attrs, top_win_class):
             # case, as we do nothing if it is not None
             prev_src = 1
         
-#    if prev_src is not None:
-#        return # do nothing if the file existed
+    if prev_src is not None:
+        return # do nothing if the file existed
     
     klass = app_attrs.get('class')
     top_win = app_attrs.get('top_window')
@@ -808,10 +736,18 @@ def add_app(app_attrs, top_win_class):
     append = lines.append
 
     if klass:
-        append('package %s;\n\nuse base qw(Wx::App);\nuse strict;\n\n' % klass)
+        append('package %s;\n' % klass)
+        append('\nuse base qw(Wx::App);\nuse strict;\n\n')
+        if multiple_files:
+            # import the top window module
+            append('use %s qw[%s];\n\n' % (top_win_class, top_win_class))
         append('sub OnInit {\n\tmy( $self ) = shift;\n\n')
     else:
-        append('1;\n\npackage main;\n\nunless(caller){\n')
+        append('1;\n\npackage main;\n')
+        if multiple_files:
+            # import the top window module
+            append('\nuse %s qw[%s];\n\n' % (top_win_class, top_win_class))
+        append('\nunless(caller){\n')
         if _use_gettext:
             append('\tmy $local = Wx::Locale->new("English", "en", "en");'
                 + ' # replace with ??\n')
@@ -841,15 +777,13 @@ def add_app(app_attrs, top_win_class):
         append('\t$%s->Show(1);\n' % top_win)
     append('\t$%s->MainLoop();\n}\n' % name)
 
-    if False and multiple_files: # not read yet
+    if multiple_files: # not read yet
         filename = os.path.join(out_dir, name + '.pl')
         out = cStringIO.StringIO()
         write = out.write
         write('#!/usr/bin/perl -w -- \n')
         # write the common lines
         for line in header_lines: write(line)
-        # import the top window module
-        write('use %s qw[%s];\n\n' % (top_win_class, top_win_class))
         # write the wxApp code
         for line in lines: write(line)
         try:
@@ -945,17 +879,16 @@ def generate_code_font(obj):
             (size, family, style, weight, underlined, face)
 
 
-def generate_code_id(obj):
+def generate_code_id(obj, id=None):
     """\
     returns a 2-tuple of strings representing the LOC that sets the id of the
     given object: the first line is the declaration of the variable, and is
     empty if the object's id is a constant, and the second line is the value
     of the id
     """
-    if obj.preview:
-        return '', '-1' # never generate ids for preview code
-
-    id = obj.properties.get('id')
+    if obj and id is None:
+        id = obj.properties.get('id')
+        
     if id is None:
         return '', '-1'
     tokens = id.split('=')
@@ -965,6 +898,8 @@ def generate_code_id(obj):
         return '', tokens[0] # we assume name is declared elsewhere
     if not name:
         return '', val
+    if val.strip() == '?':
+        val = 'Wx::NewId()'
     return ('use constant %s => %s;\n' % (name, val), name)
 
 
