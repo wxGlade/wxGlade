@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.27 2004/09/23 10:26:49 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.28 2004/10/26 01:01:27 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -706,7 +706,8 @@ def add_class(code_obj):
             return
 
         # create the new source file
-        filename = os.path.join(out_dir, code_obj.klass + '.pm') # MODULE!!
+        filename = code_obj.klass.replace('::', os.sep ) + '.pm'  # MODULE!!
+        filename = os.path.join(out_dir, filename ) 
         out = cStringIO.StringIO()
         write = out.write
         # write the common lines
@@ -715,6 +716,9 @@ def add_class(code_obj):
         # write the class body
         for line in buffer: write(line)
         try:
+            dirname = os.path.dirname( filename ) # create Foo in Foo::Bar, Foo/Bar.pm
+            if not os.path.exists( dirname ):
+                os.mkdir( dirname )
             # store the contents to filename
             common.save_file(filename, out.getvalue(), 'codegen')
         except:
