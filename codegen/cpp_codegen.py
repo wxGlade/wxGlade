@@ -6,7 +6,7 @@
 
 import sys, os, os.path
 import common
-import cStringIO
+import cStringIO, re
 from xml_parse import XmlParsingError
 
 # these two globals must be defined for every code generator module
@@ -24,31 +24,10 @@ the lines are divided in 3 categories: lines in the constructor,
 classes = None
 
 """\
-dictionary of ``writers'' for the various objects
-NOTE: These are different from those of the Python generator, because they
-return 4 lists: init, ids, properties, layout (see ClassLines)
-ids is the list of the window ids declared, and must be an expression that
-is valid inside an enum, as:
-MY_ID
-MY_ID = 100
-but NOT: MY_ID = wxNewId()
-Note that there is no trailing ';'
+dictionary of ``writers'' for the various objects. These are objects that must
+implement the WidgetHandler interface (see below)
 """
 obj_builders = {}
-
-"""\
-dictionary of 'constructor signatures' for the various widgets: this is a
-list of 2-tuples (type, name) (or 3-tuples (type, name, default) for the
-constructor's args. if, when adding a custom class, the signature for the
-constructor is not fond, here, the one of wxWindow is used
-"""
-obj_constructors = {}
-
-"""\
-dictionary of ``property writer'' functions, used to set the properties of a
-toplevel object
-"""
-obj_properties = {}
 
 # random number used to be sure that the replaced tags in the sources are
 # the right ones (see SourceFileContent and add_class)
@@ -120,7 +99,6 @@ class SourceFileContent:
         self._build_untouched(self.name + '.cpp', False)
 
     def _build_untouched(self, filename, is_header):
-        import re
         class_name = None
         new_classes_inserted = False
         # regexp to match class declarations (this isn't very accurate -
@@ -246,16 +224,21 @@ def initialize(app_attrs):
             output_source = cStringIO.StringIO() 
             for line in header_lines:
                 output_header.write(line)
-                output_source.write(line)
+                #output_source.write(line)
             # isolation directives
             oh = os.path.basename(name + '.h').upper().replace('.', '_')
             # extra headers
             #for val in _obj_headers.itervalues():
-            for handler in obj_builders.itervalues():
-                for header in getattr(handler, 'extra_headers', []):
-                    output_header.write('#include %s\n' % header)
+##             for handler in obj_builders.itervalues():
+##                 for header in getattr(handler, 'extra_headers', []):
+##                     output_header.write('#include %s\n' % header)
+            # now, write the tag to store dependencies
+            output_header.write('<%swxGlade replace  dependencies>\n' % nonce)
+
             output_header.write('\n#ifndef %s\n#define %s\n' % (oh, oh))
             output_header.write('\n')
+
+            output_source.write(header_lines[0])
             output_source.write('#include "%s%s"\n\n' % \
                                 (os.path.basename(name), '.h'))
     else:
@@ -284,17 +267,30 @@ def finalize():
         # now remove all the remaining <123415wxGlade ...> tags from the
         # source: this may happen if we're not generating multiple files,
         # and one of the container class names is changed
-        import re
-        tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +(\w+)>)' %
+        tags = re.findall('(<%swxGlade replace ([a-zA-Z_]*\w*) (\w+)>)' %
                           nonce, header_content)
         for tag in tags:
-            if tag[2] == 'methods':
-                comment = '%svoid set_properties();\n%svoid do_layout();\n' \
-                          % (tabs(1), tabs(1))
+            if tag[2] == 'dependencies':
+                #print 'writing dependencies'
+                deps = []
+                for code in classes.itervalues():
+                    deps.extend(code.dependencies)
+                tmp = ["// begin wxGlade: ::dependencies\n"]
+                for dep in _unique(deps):
+                    if dep and ('"' != dep[0] != '<'):
+                        tmp.append('#include "%s.h"\n' % dep)
+                    else:
+                        tmp.append('#include %s\n' % dep)
+                tmp.append("// end wxGlade\n")
+                lines = "".join(tmp)
+            elif tag[2] == 'methods':
+                lines = '%svoid set_properties();\n%svoid do_layout();\n' \
+                        % (tabs(1), tabs(1))
             else:
-                comment = '// content of this block (%s) not found: ' \
-                          'did you rename this class?\n' % tag[2]
-            header_content = header_content.replace(tag[0], comment)
+                lines = '// content of this block (%s) not found: ' \
+                        'did you rename this class?\n' % tag[2]
+            header_content = header_content.replace(tag[0], lines)
+            
         tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +(\w+)>)' %
                           nonce, source_content)
         for tag in tags:
@@ -311,8 +307,24 @@ def finalize():
     elif not multiple_files:
         oh = os.path.basename(output_name).upper() + '_H'
         output_header.write('\n#endif // %s\n' % oh)
-        common.save_file(output_name + '.h', output_header.getvalue(),
-                         'codegen')
+        # write the list of include files
+        header_content = output_header.getvalue()
+        tags = re.findall('<%swxGlade replace  dependencies>' %
+                          nonce, header_content)
+        deps = []
+        for code in classes.itervalues():
+            deps.extend(code.dependencies)
+        tmp = ["// begin wxGlade: ::dependencies\n"]
+        for dep in _unique(deps):
+            if dep and ('"' != dep[0] != '<'):
+                tmp.append('#include "%s.h"\n' % dep)
+            else:
+                tmp.append('#include %s\n' % dep)
+        tmp.append("// end wxGlade\n")
+        header_content = header_content.replace(
+            '<%swxGlade replace  dependencies>' % nonce, "".join(tmp))
+            
+        common.save_file(output_name + '.h', header_content, 'codegen')
         common.save_file(output_name + '.cpp', output_source.getvalue(),
                          'codegen')
 
@@ -687,7 +699,10 @@ def add_class(code_obj):
                 else:
                     deps.append('#include %s\n' % module)
             deps.append('// end wxGlade\n')
-            tag = '<%swxGlade replace dependencies>' % nonce
+            # WARNING: there's a double space '  ' between 'replace' and
+            # 'dependencies' in the tag below, because there is no class name
+            # (see SourceFileContent, line ~147)
+            tag = '<%swxGlade replace  dependencies>' % nonce
             prev_src.header_content = prev_src.header_content.\
                                       replace(tag, "".join(deps))
             
@@ -727,7 +742,8 @@ def add_class(code_obj):
         # source file
         swrite = sout.write
         # write the common lines
-        for line in header_lines: swrite(line)
+        #for line in header_lines: swrite(line)
+        swrite(header_lines[0])
         swrite('#include "%s"\n\n' % os.path.basename(header_file))
         # write the class implementation
         for line in source_buffer: swrite(line)
@@ -1046,28 +1062,6 @@ class WidgetHandler:
 
 # end of class WidgetHandler
 
-
-## def add_widget_handler(widget_name, handler,
-##                        constructor=None,
-##                        properties_handler=generate_common_properties,
-##                        extra_headers=None,
-##                        extra_init_lines=None, extra_ids=None):
-##     """\
-##     sets the functions to generate the code for the widget whose base class
-##     is 'widget_name':
-##      - handler: function that writes the code
-##      - constructor: ``signature'' of the widget's constructor
-##      - properties_handler: function that writes extra code to set the
-##                            properties of the widget if it is a toplevel class
-##      - extra_headers: if not None, list of extra header file, in the form
-##        <header.h> or "header.h"
-##     """
-##     obj_builders[widget_name] = handler
-##     obj_properties[widget_name] = properties_handler
-##     if constructor is not None:
-##         obj_constructors[widget_name] = constructor
-##     if extra_headers is not None:
-##         _obj_headers[widget_name] = extra_headers
 
 def add_widget_handler(widget_name, handler):
     obj_builders[widget_name] = handler
