@@ -84,7 +84,7 @@ class EditBitmapButton(ManagedBase):
 
     def load_bitmap(self, type):
         if self.bitmap:
-            return wxBitmap(os.path.abspath(self.bitmap), type)
+            return wxBitmap(self.bitmap, type)
         else:
             return wxNullBitmap
 
