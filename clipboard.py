@@ -26,15 +26,18 @@ class _WidgetDataObject(wxCustomDataObject):
         *args contains option, flag, border, xml_str.
         """
         assert len(args) == 4
-        return ":".join([str(elem) for elem in args])
+        # we have to ``confine'' our string between two markers as is seems to
+        # be polluted inside the clipboard
+        return ":%s:" % ":".join([str(elem) for elem in args])
 
     def GetWidgetData(self):
         """\
         Convert a string into option, flag, border and xml_string
         and returns them in a list.
         """
-        ret = self.GetData().split(":", 4)
-        assert len(ret) == 4, "Invalid data in the clipboard"
+        ret = self.GetData().split(":", 6)
+        assert len(ret) == 6, "Invalid data in the clipboard"
+        ret = ret[1:-1] # remove the empty strings at both ends
         for i in range(3):
             # option, flag and border are integers.
             ret[i] = int(ret[i])
@@ -47,17 +50,7 @@ def copy(widget):
     """
     from cStringIO import StringIO
     xml_str = StringIO()
-    oldname = widget.name
-    newname = widget.name + '_copy'
-    # generate a unique name for the copy
-    import common
-    i = 1
-    while common.app_tree.has_name(newname):
-        newname = '%s_copy_%s' % (oldname, i)
-        i += 1
-    widget.name = newname
     widget.node.write(xml_str, 0)
-    widget.name = oldname
     flag = widget.get_int_flag() 
     option = widget.get_option()
     border = widget.get_border()
