@@ -1,6 +1,6 @@
 # codegen.py: code generator functions for wxRadioBox objects
 #
-# Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

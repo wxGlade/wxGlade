@@ -3,7 +3,7 @@
 # i.e. all windows inside sizers, no widget unknown to wxGlade, ...) into a
 # WXG file
 # 
-# Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

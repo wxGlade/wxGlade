@@ -1,6 +1,6 @@
 # sizers_codegen.py: code generation functions for the various wxSizerS
 #
-# Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
