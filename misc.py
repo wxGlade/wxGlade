@@ -250,3 +250,12 @@ accel_table = [(0, WXK_DELETE, _remove),
                (wxACCEL_CTRL, ord('X'), _cut),
                (wxACCEL_CTRL, ord('V'), _paste)]
 #-----------------------------------------------------------------------------
+
+def _reverse_dict(src):
+    """\
+    Returns a dictionary whose keys are 'src' values and values 'src' keys.
+    """
+    ret = {}
+    for key, val in src.iteritems():
+        ret[val] = key
+    return ret

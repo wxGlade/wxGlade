@@ -742,8 +742,13 @@ def generate_code_foreground(obj):
     """
     if not obj.is_toplevel: intro = '%s->' % obj.name
     else: intro = ''
-    return intro + 'SetForegroundColour(wxColour(%s));\n' % \
-           (_string_to_colour(obj.properties['foreground']))
+    try:
+        color = 'wxColour(%s)' % \
+                _string_to_colour(obj.properties['foreground'])
+    except (IndexError, ValueError): # the color is from system settings
+        color = 'wxSystemSettings::GetSystemColour(%s)' % \
+                obj.properties['foreground']
+    return intro + 'SetForegroundColour(%s);\n' % color
 
 def generate_code_background(obj):
     """\
@@ -752,8 +757,13 @@ def generate_code_background(obj):
     """
     if not obj.is_toplevel: intro = '%s->' % obj.name
     else: intro = ''
-    return intro + 'SetBackgroundColour(wxColour(%s));\n' % \
-           (_string_to_colour(obj.properties['background']))
+    try:
+        color = 'wxColour(%s)' % \
+                _string_to_colour(obj.properties['background'])
+    except (IndexError, ValueError): # the color is from system settings
+        color = 'wxSystemSettings::GetSystemColour(%s)' % \
+                obj.properties['background']
+    return intro + 'SetBackgroundColour(%s);\n' % color
 
 def generate_code_font(obj):
     """\

@@ -552,28 +552,60 @@ class FileDialogProperty(DialogProperty):
 # end of class FileDialogProperty
 
 
+from misc import _reverse_dict
+
+
 class ColorDialogProperty(DialogProperty):
+    str_to_colors = {
+        'wxSYS_COLOUR_SCROLLBAR': wxSYS_COLOUR_SCROLLBAR,
+        'wxSYS_COLOUR_BACKGROUND': wxSYS_COLOUR_BACKGROUND,
+        'wxSYS_COLOUR_ACTIVECAPTION': wxSYS_COLOUR_ACTIVECAPTION,
+        'wxSYS_COLOUR_INACTIVECAPTION': wxSYS_COLOUR_INACTIVECAPTION,
+        'wxSYS_COLOUR_MENU': wxSYS_COLOUR_MENU,
+        'wxSYS_COLOUR_WINDOW': wxSYS_COLOUR_WINDOW,
+        'wxSYS_COLOUR_WINDOWFRAME': wxSYS_COLOUR_WINDOWFRAME,
+        'wxSYS_COLOUR_MENUTEXT': wxSYS_COLOUR_MENUTEXT,
+        'wxSYS_COLOUR_WINDOWTEXT': wxSYS_COLOUR_WINDOWTEXT,
+        'wxSYS_COLOUR_CAPTIONTEXT': wxSYS_COLOUR_CAPTIONTEXT,
+        'wxSYS_COLOUR_ACTIVEBORDER': wxSYS_COLOUR_ACTIVEBORDER,
+        'wxSYS_COLOUR_INACTIVEBORDER': wxSYS_COLOUR_INACTIVEBORDER,
+        'wxSYS_COLOUR_APPWORKSPACE': wxSYS_COLOUR_APPWORKSPACE,
+        'wxSYS_COLOUR_HIGHLIGHT': wxSYS_COLOUR_HIGHLIGHT,
+        'wxSYS_COLOUR_HIGHLIGHTTEXT': wxSYS_COLOUR_HIGHLIGHTTEXT,
+        'wxSYS_COLOUR_BTNFACE': wxSYS_COLOUR_BTNFACE,
+        'wxSYS_COLOUR_BTNSHADOW': wxSYS_COLOUR_BTNSHADOW,
+        'wxSYS_COLOUR_GRAYTEXT': wxSYS_COLOUR_GRAYTEXT,
+        'wxSYS_COLOUR_BTNTEXT': wxSYS_COLOUR_BTNTEXT,
+        'wxSYS_COLOUR_INACTIVECAPTIONTEXT': wxSYS_COLOUR_INACTIVECAPTIONTEXT,
+        'wxSYS_COLOUR_BTNHIGHLIGHT': wxSYS_COLOUR_BTNHIGHLIGHT,
+        'wxSYS_COLOUR_3DDKSHADOW': wxSYS_COLOUR_3DDKSHADOW,
+        'wxSYS_COLOUR_3DLIGHT': wxSYS_COLOUR_3DLIGHT,
+        'wxSYS_COLOUR_INFOTEXT': wxSYS_COLOUR_INFOTEXT,
+        'wxSYS_COLOUR_INFOBK': wxSYS_COLOUR_INFOBK,
+        'wxSYS_COLOUR_DESKTOP': wxSYS_COLOUR_DESKTOP,
+        'wxSYS_COLOUR_3DFACE': wxSYS_COLOUR_3DFACE,
+        'wxSYS_COLOUR_3DSHADOW': wxSYS_COLOUR_3DSHADOW,
+        'wxSYS_COLOUR_3DHIGHLIGHT': wxSYS_COLOUR_3DHIGHLIGHT,
+        'wxSYS_COLOUR_3DHILIGHT': wxSYS_COLOUR_3DHILIGHT,
+        'wxSYS_COLOUR_BTNHILIGHT': wxSYS_COLOUR_BTNHILIGHT
+        }
+
+    colors_to_str = _reverse_dict(str_to_colors)
+
     dialog = [None]
     def __init__(self, owner, name, parent=None, can_disable=True):
         if not self.dialog[0]:
-            self.dialog[0] = wxColourDialog(parent)
-            def get_value():
-                return '#' + reduce(lambda a, b: a+b,
-                                map(lambda s: '%02x' % s,
-                                    self.dialog.GetColourData().
-                                    GetColour().Get()))
-            self.dialog[0].get_value = get_value
+            from color_dialog import wxGladeColorDialog
+            self.dialog[0] = wxGladeColorDialog(self.str_to_colors)
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
                                 can_disable)
 
+    def display_dialog(self, event):
+        self.dialog.set_value(self.get_value())
+        DialogProperty.display_dialog(self, event)
+
 # end of class ColorDialogProperty
 
-
-def _reverse_dict(src):
-    ret = {}
-    for key, val in src.iteritems():
-        ret[val] = key
-    return ret
 
 class FontDialogProperty(DialogProperty):
     font_families_to = { 'default': wxDEFAULT, 'decorative': wxDECORATIVE,
@@ -586,34 +618,50 @@ class FontDialogProperty(DialogProperty):
     font_weights_to = { 'normal': wxNORMAL, 'light': wxLIGHT, 'bold': wxBOLD }
     font_weights_from = _reverse_dict(font_weights_to)
     
+    import misc
+    if misc.check_wx_version(2, 3, 3):
+        font_families_to['teletype'] = wxTELETYPE 
+        font_families_from[wxTELETYPE] = 'teletype' 
+
     dialog = [None]
 
     def __init__(self, owner, name, parent=None, can_disable=True):
-        if not self.dialog[0]:
-            # check wxPython >= 2.3.3
-            import misc
-            if misc.check_wx_version(2, 3, 3):
-                FontDialogProperty.font_families_to['teletype'] = wxTELETYPE 
-                FontDialogProperty.font_families_from[wxTELETYPE] = 'teletype' 
+##         if not self.dialog[0]:
+##             # check wxPython >= 2.3.3
+##             import misc
+##             if misc.check_wx_version(2, 3, 3):
+##                 FontDialogProperty.font_families_to['teletype'] = wxTELETYPE 
+##                 FontDialogProperty.font_families_from[wxTELETYPE] = 'teletype' 
 
-            data = wxFontData()
-            self.dialog[0] = wxFontDialog(parent, data)
-            def get_value():
-                font = self.dialog.GetFontData().GetChosenFont()
-                family = font.GetFamily()
-                # check wxPython >= 2.3.3
-                if misc.check_wx_version(2, 3, 3):
-                    for f in (wxVARIABLE, wxFIXED):
-                        if family & f: family = family ^ f
-                return "['%s', '%s', '%s', '%s', '%s', '%s']" % \
-                       (font.GetPointSize(),
-                        self.font_families_from[family],
-                        self.font_styles_from[font.GetStyle()],
-                        self.font_weights_from[font.GetWeight()],
-                        font.GetUnderlined(), font.GetFaceName())
-            self.dialog[0].get_value = get_value
+##             data = wxFontData()
+##             self.dialog[0] = wxFontDialog(parent, data)
+##             def get_value():
+##                 font = self.dialog.GetFontData().GetChosenFont()
+##                 family = font.GetFamily()
+##                 # check wxPython >= 2.3.3
+##                 if misc.check_wx_version(2, 3, 3):
+##                     for f in (wxVARIABLE, wxFIXED):
+##                         if family & f: family = family ^ f
+##                 return "['%s', '%s', '%s', '%s', '%s', '%s']" % \
+##                        (font.GetPointSize(),
+##                         self.font_families_from[family],
+##                         self.font_styles_from[font.GetStyle()],
+##                         self.font_weights_from[font.GetWeight()],
+##                         font.GetUnderlined(), font.GetFaceName())
+##             self.dialog[0].get_value = get_value
+        if not self.dialog[0]:
+            import font_dialog
+            self.dialog[0] = font_dialog.wxGladeFontDialog(parent, -1, "")
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
                                 can_disable)
+
+    def display_dialog(self, event):
+        try: props = eval(self.get_value())
+        except:
+            import traceback; traceback.print_exc()
+        else:
+            if len(props) == 6: self.dialog.set_value(props)
+        DialogProperty.display_dialog(self, event)
 
     def write(self, outfile=None, tabs=0):
         if self.is_active():
@@ -759,7 +807,7 @@ class GridProperty(wxPanel, Property):
         """
         self.panel = wxPanel(parent, -1)
         self.btn_id = wxNewId()
-        self.btn = wxButton(self.panel, self.btn_id, "Update")
+        self.btn = wxButton(self.panel, self.btn_id, "Apply")
         if self.can_add:
             self.add_btn = wxButton(self.panel, self.btn_id+1, "Add")
         if self.can_insert:
