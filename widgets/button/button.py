@@ -1,5 +1,5 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.14 2004/09/17 13:09:54 agriggio Exp $
+# $Id: button.py,v 1.15 2004/09/28 09:44:26 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -69,7 +69,7 @@ class EditButton(ManagedBase):
             self.label = value
 
     def create_widget(self):
-        self.widget = wxButton(self.parent.widget, self.id, self.label)
+        self.widget = wxButton(self.parent.widget, self.id, self.label, style=self.style)
 
     def get_default(self):
         return self.default
