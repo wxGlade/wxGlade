@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.9 2004/09/17 13:09:48 agriggio Exp $
+# $Id: toolbar.py,v 1.10 2004/10/15 10:49:50 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -742,9 +742,12 @@ def builder(parent, sizer, pos, number=[0]):
     class Dialog(wxDialog):
         def __init__(self):
             wxDialog.__init__(self, None, -1, 'Select toolbar class')
-            if not number[0]: self.klass = 'MyToolBar'
-            else: self.klass = 'MyToolBar%s' % number[0]
-            number[0] += 1
+            if common.app_tree.app.get_language().lower() == 'xrc':
+                self.klass = 'wxToolBar'
+            else:
+                if not number[0]: self.klass = 'MyToolBar'
+                else: self.klass = 'MyToolBar%s' % number[0]
+                number[0] += 1
             klass_prop = TextProperty(self, 'class', self)
             szr = wxBoxSizer(wxVERTICAL)
             szr.Add(klass_prop.panel, 0, wxEXPAND)
@@ -758,7 +761,8 @@ def builder(parent, sizer, pos, number=[0]):
             #self.SetSize((150, -1))
 
         def undo(self):
-            number[0] -= 1
+            if number[0] > 0:
+                number[0] -= 1
 
         def __getitem__(self, value):
             if value == 'class':

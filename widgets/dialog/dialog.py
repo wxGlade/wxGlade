@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.18 2004/09/27 08:21:58 agriggio Exp $
+# $Id: dialog.py,v 1.19 2004/10/15 10:49:50 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -154,9 +154,12 @@ def builder(parent, sizer, pos, number=[0]):
             if has_panel: title = 'Select widget type'
             else: title = 'Select dialog class'
             wxDialog.__init__(self, None, -1, title)
-            if not number[0]: self.klass = 'MyDialog'
-            else: self.klass = 'MyDialog%s' % number[0]
-            number[0] += 1
+            if common.app_tree.app.get_language().lower() == 'xrc':
+                self.klass = 'wxDialog'
+            else:
+                if not number[0]: self.klass = 'MyDialog'
+                else: self.klass = 'MyDialog%s' % number[0]
+                number[0] += 1
             self.klass_prop = TextProperty(self, 'class', self)
             self.widget = 0
             szr = wxBoxSizer(wxVERTICAL)
@@ -179,7 +182,8 @@ def builder(parent, sizer, pos, number=[0]):
             self.klass_modified = False
 
         def undo(self):
-            number[0] -= 1
+            if number[0] > 0:
+                number[0] -= 1
 
         def set_klass(self, c):
             self.klass = c
@@ -190,8 +194,12 @@ def builder(parent, sizer, pos, number=[0]):
             if not self.klass_modified:
                 try: number = str(int(self.klass[-1]))
                 except ValueError: number = ''
-                if self.widget == 0: self.klass = 'MyDialog' + number
-                else: self.klass = 'MyPanel' + number
+                if common.app_tree.app.get_language().lower() == 'xrc':
+                    if self.widget == 0: self.klass = 'wxDialog'
+                    else: self.klass = 'wxPanel'
+                else:
+                    if self.widget == 0: self.klass = 'MyDialog' + number
+                    else: self.klass = 'MyPanel' + number                    
                 self.klass_prop.set_value(self.klass)
 
         def __getitem__(self, value):
