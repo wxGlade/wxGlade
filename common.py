@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.47 2004/12/08 18:11:33 agriggio Exp $
+# $Id: common.py,v 1.48 2005/01/20 09:31:48 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -267,13 +267,20 @@ def save_file(filename, content, which='wxg'):
             infile.close()
             outfile.close()
             _backed_up[filename] = 1
-        # save content to filename
-        outfile = open(filename, 'w')
-        outfile.write(content)
-        outfile.close()
+        # save content to file (but only if content has changed)
+        savecontent = 1
+        if os.path.isfile(filename):
+            oldfile = open(filename)
+            savecontent = (oldfile.read() != content)
+            oldfile.close()
+        if savecontent:
+            outfile = open(filename, 'w')
+            outfile.write(content)
+            outfile.close()
     finally:
         if 'infile' in locals(): infile.close()
         if 'outfile' in locals(): outfile.close()
+        if 'oldfile' in locals(): oldfile.close()
 
 
 #------------------------------------------------------------------------------
