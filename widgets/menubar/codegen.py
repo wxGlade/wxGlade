@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.9 2003/08/07 17:27:00 crazyinsomniac Exp $
+# $Id: codegen.py,v 1.10 2003/08/16 13:47:46 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -26,7 +26,7 @@ class PythonCodeGenerator:
                     append('%s.AppendSeparator()\n' % menu)
                     continue
                 name, val = pygen.generate_code_id(None, item.id)
-                if not name and ( not val or val == '-1'):
+                if obj.preview or (not name and ( not val or val == '-1')):
                     id = 'wxNewId()'
                 else:
                     if name: ids.append(name)
