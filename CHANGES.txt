@@ -1,3 +1,18 @@
+2002-12-07: color_dialog.py, widget_properties.py: changed ColorDialogProperty
+                                                   to use a new custom dialog,
+                                                   using wxPyColorChooser
+                                                   by Michael Gilfix (thanks!)
+
+2002-12-06: font_dialog.py, widget_properties.py: changed FontDialogProperty 
+                                                  to use a new custom dialog
+                                                  (made in wxGlade!)
+            edit_sizers/edit_sizers.py: changed set_growable_rows and
+                    set_growable_cols of EditFlexGridSizer to allow the 
+                    effective removal of growable rows/cols
+            edit_sizers/edit_sizers.py, edit_windows.py: restored 2.3.2.1 
+                    compatibility, broken by calls to wxCallAfter instead of
+                    misc.wxCallAfter
+
 2002-11-28: edit_sizers/edit_sizers.py, tree.py: fixed bug on change_item_pos
                                                  and change_node_pos
 

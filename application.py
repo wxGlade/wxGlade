@@ -18,7 +18,8 @@ class FileDirDialog:
     def __init__(self, owner, parent, wildcard="All Files|*",
                  file_message="Choose a file", dir_message=None, style=0):
         self.owner = owner
-        self.file_dialog = wxFileDialog(parent, file_message,
+        self.prev_dir = config.preferences.codegen_path
+        self.file_dialog = wxFileDialog(parent, file_message, self.prev_dir,
                                         wildcard=wildcard, style=style)
         if dir_message is None: dir_message = file_message
         log_null = wxLogNull() # to prevent popup messages about lack of
@@ -32,7 +33,6 @@ class FileDirDialog:
         self.parent = parent
         self.file_message = file_message
         self.style = style
-        self.prev_dir = config.preferences.codegen_path
 
     def ShowModal(self):
         if self.owner.codegen_opt == 0:
@@ -46,7 +46,7 @@ class FileDirDialog:
         ok = dialog.ShowModal()
         if ok == wxID_OK:
             self.prev_dir = dialog.GetPath()
-            if os.path.isfile(self.prev_dir):
+            if not os.path.isdir(self.prev_dir):
                 self.prev_dir = os.path.dirname(self.prev_dir)
         return ok
 

@@ -32,7 +32,7 @@ class SizerSlot:
             evt_key = event.GetKeyCode()
             for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
-                    wxCallAfter(function)
+                    misc.wxCallAfter(function)
                     break
             event.Skip()
         EVT_KEY_DOWN(self.widget, on_key_down)
@@ -146,7 +146,7 @@ class SizerHandleButton(wxButton):
             evt_key = event.GetKeyCode()
             for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
-                    wxCallAfter(function)
+                    misc.wxCallAfter(function)
                     break
             event.Skip()
         EVT_KEY_DOWN(self, on_key_down)
@@ -246,12 +246,14 @@ class SizerClassDialog:
 # end of class SizerClassDialog
             
 
-def change_sizer(old, new):
+def change_sizer(old, new, which_page=0):
     """\
     changes 'old' sizer to 'new'
     Params:
       - old: SizerBase instance to replace
       - new: string selection that identifies the new instance
+      - which_page: index of the notebook page of the property window to
+                    display: this is used only by set_growable_(rows|cols)
     """
     constructors = {
         'wxBoxSizer (wxVERTICAL)':
@@ -283,6 +285,22 @@ def change_sizer(old, new):
         szr.set_cols(getattr(old, 'cols', len(szr.children)-1))
         szr.set_hgap(getattr(old, 'hgap', 0))
         szr.set_vgap(getattr(old, 'vgap', 0))
+        if isinstance(szr, EditFlexGridSizer):
+            try:
+                grow_r = old.grow_rows
+                grow_c = old.grow_cols
+                if grow_r:
+                    szr.grow_rows = grow_r
+                    szr.properties['growable_rows'].toggle_active(True)
+                    szr.properties['growable_rows'].set_value(
+                        szr.get_growable_rows())
+                if grow_c:
+                    szr.grow_cols = grow_c
+                    szr.properties['growable_cols'].toggle_active(True)
+                    szr.properties['growable_cols'].set_value(
+                        szr.get_growable_cols())
+            except (AttributeError, KeyError):
+                pass
     szr.show_widget(True, dont_set=True)
     for c in szr.children[1:]:
         widget = c.item
@@ -305,6 +323,7 @@ def change_sizer(old, new):
     common.app_tree.change_node(szr.node, szr)
     old.toplevel = False
     szr.show_properties()
+    szr.notebook.SetSelection(which_page)
     for c in old.widget.GetChildren():
         if c and c.IsSizer(): c.SetSizer(None)
     old.widget.Clear()
@@ -512,6 +531,7 @@ class SizerBase:
         if self.widget and self.window.widget:
             self.widget.Fit(self.window.widget)
             self.widget.SetSizeHints(self.window.widget)
+            self.window.widget.Layout()
     
     def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None,
                  force_layout=True):
@@ -1414,7 +1434,6 @@ class CheckListDialogProperty(DialogProperty):
         self.dialog.set_choices(values)
 
 # end of class CheckListDialogProperty
-    
 
 class EditFlexGridSizer(GridSizerBase):
     """\
@@ -1475,27 +1494,45 @@ class EditFlexGridSizer(GridSizerBase):
         
     def set_growable_rows(self, value):
         try: self.grow_rows = [int(i) for i in value.split(',')]
-        except: return
-        if self.widget:
-            for i in range(self.widget.GetRows()):
-                self.widget.RemoveGrowableRow(i)
+        except:
+            if not value.strip(): self.grow_rows = []
             else:
-                for r in self.grow_rows:
-                    try: self.widget.AddGrowableRow(r)
-                    except:
-                        import traceback; traceback.print_exc()
+                self.properties['growable_rows'].set_value(
+                    self.get_growable_rows())
+                return
+        if self.widget:
+            if self.notebook: page = self.notebook.GetSelection()
+            else: page = 0
+            misc.wxCallAfter(change_sizer, self, self.klass_prop.get_value(),
+                             page)
+##             for i in range(self.widget.GetRows()):
+##                 self.widget.RemoveGrowableRow(i)
+##             else:
+##                 for r in self.grow_rows:
+##                     try: self.widget.AddGrowableRow(r)
+##                     except:
+##                         import traceback; traceback.print_exc()
 
     def set_growable_cols(self, value):
         try: self.grow_cols = [int(i) for i in value.split(',')]
-        except: return
-        if self.widget:
-            for i in range(self.widget.GetCols()):
-                self.widget.RemoveGrowableCol(i)
+        except:
+            if not value.strip(): self.grow_cols = []
             else:
-                for c in self.grow_cols:
-                    try: self.widget.AddGrowableCol(c)
-                    except:
-                        import traceback; traceback.print_exc()
+                self.properties['growable_cols'].set_value(
+                    self.get_growable_cols())
+                return
+        if self.widget:
+            if self.notebook: page = self.notebook.GetSelection()
+            else: page = 0
+            misc.wxCallAfter(change_sizer, self, self.klass_prop.get_value(),
+                             page)
+##             for i in range(self.widget.GetCols()):
+##                 self.widget.RemoveGrowableCol(i)
+##             else:
+##                 for c in self.grow_cols:
+##                     try: self.widget.AddGrowableCol(c)
+##                     except:
+##                         import traceback; traceback.print_exc()
 
     def get_growable_rows(self): return ','.join(map(str, self.grow_rows))
     def get_growable_cols(self): return ','.join(map(str, self.grow_cols))
