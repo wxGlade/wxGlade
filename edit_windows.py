@@ -512,7 +512,6 @@ class WindowBase(EditBase):
 
     def set_size(self, value):
         if not self.widget: return
-        print self.name, 'set_size:', value
         if self.properties['size'].is_active():
             v = self.properties['size'].get_value().strip()
             use_dialog_units = v and v[-1] == 'd'
