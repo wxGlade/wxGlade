@@ -116,8 +116,7 @@ def builder(parent, sizer, pos, number=[0]):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
-            h = self.GetTextExtent(title)[1]
-            if h > self.GetSize()[1]: self.SetSize((-1, h))
+            if self.GetSize()[0] < 150: self.SetSize((150, -1))
             self.klass_modified = False
 
         def set_klass(self, c):
