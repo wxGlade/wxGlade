@@ -71,7 +71,7 @@ class Application(object):
             'class': (lambda : self.klass, set_klass), 
             'code_generation': (lambda : self.codegen_opt, set_codegen_opt),
             'output_path': (lambda : self.output_path, set_output_path),
-            'language': (lambda : 0, lambda v: None)
+            'language': (lambda : 0, self.set_language)
             }
         TOP_WIN_ID = wxNewId()
         self.top_win_prop = wxChoice(panel, TOP_WIN_ID, choices=[])
@@ -83,7 +83,7 @@ class Application(object):
         self.codegen_prop = RadioProperty(self, "code_generation", panel,
                                           ["Single file", "Separate file for" \
                                            " each class"])
-        dialog = FileDirDialog(self, panel, "Python Files|*.py|All Files|*",
+        dialog = FileDirDialog(self, panel, "All Files|*",
                                "Select output file", "Select output directory",
                                wxSAVE|wxOVERWRITE_PROMPT)
         self.outpath_prop = DialogProperty(self, "output_path", panel,
@@ -121,6 +121,19 @@ class Application(object):
         # this is here to keep the interface similar to the various widgets
         # (to simplify Tree)
         self.widget = None # this is always None
+
+    def set_language(self, value):
+        language = self.codewriters_prop.get_str_value()
+        ext = getattr(common.code_writers[language], 'default_extensions', [])
+        wildcard = []
+        for e in ext:
+            wildcard.append('%s files (*.%s)|*.%s' % (language.capitalize(),
+                                                      e, e))
+        wildcard.append('All files|*')
+        self.outpath_prop.dialog.file_dialog.SetWildcard('|'.join(wildcard))
+
+    def get_language(self):
+        return self.codewriters_prop.get_str_value()
 
     def _get_saved(self): return self.__saved
     def _set_saved(self, value):
