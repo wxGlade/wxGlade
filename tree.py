@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.44 2005/01/10 20:22:36 agriggio Exp $
+# $Id: tree.py,v 1.45 2005/03/05 13:39:31 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -545,5 +545,65 @@ class WidgetTree(wxTreeCtrl, Tree):
         self.Delete(old_item)
         self.Thaw()
 
+    def get_selected_path(self):
+        """\
+        returns a list of widget names, from the toplevel to the selected one
+        Example:
+        ['frame_1', 'sizer_1', 'panel_1', 'sizer_2', 'button_1']
+        if button_1 is the currently selected widget.
+        """
+        from edit_sizers import SizerBase
+        ret = []
+        w = self.cur_widget
+        while w is not None:
+            ret.append(w.name)
+            sizer = getattr(w, 'sizer', None)
+            if getattr(w, 'parent', "") is None:
+                w = w.parent
+            elif sizer is not None and not sizer.is_virtual():
+                w = sizer
+            else:
+                if isinstance(w, SizerBase):
+                    w = w.window
+                else:
+                    w = w.parent
+        ret.reverse()
+        return ret
+
+    def select_path(self, path):
+        """\
+        sets the selected widget from a path_list, which should be in the
+        form returned by get_selected_path
+        """
+        index = 0
+        item, cookie = self._get_first_child(self.GetRootItem())
+        itemok = None
+        parent = None
+        while item.Ok() and index < len(path):
+            widget = self.GetPyData(item).widget
+            if misc.streq(widget.name, path[index]):
+                #print 'OK:', widget.name
+                #self.EnsureVisible(item)
+                itemok = item
+                if parent is None:
+                    parent = self.GetPyData(itemok)
+                self.cur_widget = widget
+                item, cookie = self._get_first_child(item)
+                index += 1
+            else:
+                #print 'NO:', widget.name
+                item = self.GetNextSibling(item)
+        if itemok is not None:
+            node = self.GetPyData(itemok)
+            if parent is not None:
+                self.show_widget(parent, True)
+            self.select_item(node)
+        
+    def _get_first_child(self, item):
+        if misc.check_wx_version(2, 5):
+            return self.GetFirstChild(item)
+        else:
+            return self.GetFirstChild(item, 1)
+        
 # end of class WidgetTree
 

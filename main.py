@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.66 2005/01/20 09:26:31 agriggio Exp $
+# $Id: main.py,v 1.67 2005/03/05 13:39:31 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -172,6 +172,8 @@ class wxGladeFrame(wxFrame):
         append_item(file_menu, SAVE_AS_ID, "Save As...\tShift+Ctrl+S",
                     'save_as.xpm')
         file_menu.AppendSeparator()
+        RELOAD_ID = wxNewId()
+        append_item(file_menu, RELOAD_ID, "&Refresh\tf5", 'refresh.xpm')
         GENERATE_CODE_ID = wxNewId()
         append_item(file_menu, GENERATE_CODE_ID, "&Generate Code\tCtrl+G",
                     'generate.xpm')
@@ -241,6 +243,7 @@ class wxGladeFrame(wxFrame):
         EVT_MENU(self, ABOUT_ID, self.show_about_box)
         EVT_MENU(self, PREFS_ID, self.edit_preferences)
         EVT_MENU(self, IMPORT_ID, self.import_xrc)
+        EVT_MENU(self, RELOAD_ID, self.reload_app)
 
         self.accel_table = wxAcceleratorTable([
             (wxACCEL_CTRL, ord('N'), NEW_ID),
@@ -251,6 +254,7 @@ class wxGladeFrame(wxFrame):
             (wxACCEL_CTRL, ord('I'), IMPORT_ID),
             (0, WXK_F1, TUT_ID),
             (wxACCEL_CTRL, ord('Q'), EXIT_ID),
+            (0, WXK_F5, RELOAD_ID),
             ])
 
         # Tutorial window
@@ -531,6 +535,17 @@ class wxGladeFrame(wxFrame):
             common.remove_autosaved()
             if config.preferences.autosave and self.autosave_timer is not None:
                 self.autosave_timer.Start()
+
+    def reload_app(self, event):
+        self.ask_save()
+        if not common.app_tree.app.filename:
+            wxMessageBox("Impossible to reload an unsaved application",
+                         "Alert", style=wxOK|wxICON_INFORMATION)
+            return
+        path = common.app_tree.get_selected_path()
+        print 'path:', path
+        self._open_app(common.app_tree.app.filename, add_to_history=False)
+        common.app_tree.select_path(path)
         
     def open_app(self, event_unused):
         """\
