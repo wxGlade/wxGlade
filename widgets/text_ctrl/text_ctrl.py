@@ -75,7 +75,8 @@ class EditTextCtrl(ManagedBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        if self.widget: self.widget.SetWindowStyleFlag(self.style)
+        # the next line caused troubles with 2.3.3pre5 on GTK
+        #if self.widget: self.widget.SetWindowStyleFlag(self.style)
 
 # end of class EditTextCtrl
 
