@@ -196,6 +196,13 @@ class TextProperty(Property, _activator):
         self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
         self.bind_event(self.on_change_val)
+        EVT_CHAR(self.text, self.on_char)
+
+    def on_char(self, event):
+        if event.GetKeyCode() == WXK_ESCAPE:
+            self.text.SetValue(self.val)
+            self.text.SetInsertionPointEnd()
+        event.Skip()
 
     def bind_event(self, function):
         def func_2(event):
@@ -508,6 +515,13 @@ class DialogProperty(Property, _activator):
         self.panel.SetSize(sizer.GetMinSize())
         
         self.bind_event(self.on_change_val)
+        EVT_CHAR(self.text, self.on_char)
+
+    def on_char(self, event):
+        if event.GetKeyCode() == WXK_ESCAPE:
+            self.text.SetValue(self.val)
+            self.text.SetInsertionPointEnd()
+        event.Skip()
 
     def display_dialog(self, event):
         if self.dialog.ShowModal() == wxID_OK:
