@@ -156,7 +156,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.widget.GetParent().Hide()
 
     def set_name(self, name):
-        super(EditTopLevelPanel, self).set_name()
+        super(EditTopLevelPanel, self).set_name(name)
         if self.widget: self.widget.GetParent().SetTitle(self.name)
 
     def delete(self):
