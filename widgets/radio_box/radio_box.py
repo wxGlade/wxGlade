@@ -79,10 +79,10 @@ class EditRadioBox(ManagedBase):
         self.properties['style'].set_value(self.get_style())
 
         szr.Add(self.properties['label'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['style'].panel, 0, wxALL|wxEXPAND, 3)
         szr.Add(self.properties['dimension'].panel, 0, wxEXPAND)
         szr.Add(self.properties['selection'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['choices'].panel, 1, wxEXPAND)
+        szr.Add(self.properties['choices'].panel, 1, wxALL|wxEXPAND, 3)
         self.properties['choices'].set_col_sizes([-1])
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)

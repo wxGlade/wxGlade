@@ -29,6 +29,7 @@ class EditListBox(ManagedBase):
                                                      len(choices))
         self.access_functions['selection'] = (self.get_selection,
                                               self.set_selection)
+        self.style = 0
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
                                                     r=(0, len(choices)-1))
