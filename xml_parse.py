@@ -491,7 +491,7 @@ class CodeWriter(XmlParser):
             topl = self._toplevels.top()
             if topl:
                 self.code_writer.add_object(topl, obj)
-                # if the object is not a sizeritem, check wether it
+                # if the object is not a sizeritem, check whether it
                 # belongs to some sizer (in this case,
                 # self._sizer_item.top() doesn't return None): if so,
                 # write the code to add it to the sizer at the top of
@@ -567,7 +567,7 @@ class CodeObject:
             if self.klass != self.base:
                 self.is_toplevel = True 
                 self.parser._toplevels.push(self)  
-            # temporary hack: to detect a sizer, check wether the name
+            # temporary hack: to detect a sizer, check whether the name
             # of its class contains the string 'Sizer': TODO: find a
             # better way!!
             if base.find('Sizer') != -1:

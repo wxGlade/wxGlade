@@ -142,7 +142,7 @@ class wxGladeFrame(wxFrame):
             self.tree_frame.Hide()
             menu_bar.Check(TREE_ID, True)
         EVT_CLOSE(self.tree_frame, on_tree_frame_close)
-        self.frame2.SetSize((250, 340))
+        self.frame2.SetSize((250, 350))
         self.SetPosition((0, 0))
         x, y = self.GetPosition()
         h = self.GetSize()[1]
@@ -157,6 +157,7 @@ class wxGladeFrame(wxFrame):
         self.Show()
         self.tree_frame.Show()
         self.frame2.Show()
+        self.Raise()
 
     def show_tree(self, event):
         self.tree_frame.Show(event.IsChecked())
@@ -171,8 +172,9 @@ class wxGladeFrame(wxFrame):
 
     def ask_save(self):
         """\
-        checks wether the current app has changed and needs to be saved: if so,
-        prompts the user; returns False if the operation has been cancelled
+        checks whether the current app has changed and needs to be saved:
+        if so, prompts the user;
+        returns False if the operation has been cancelled
         """
         if not common.app_tree.app.saved:
             ok = wxMessageBox("Save changes to the current app?", "Confirm",
