@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: perl_codegen.py,v 1.6 2004/03/11 11:20:05 agriggio Exp $
+# $Id: perl_codegen.py,v 1.7 2004/08/17 11:32:17 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
