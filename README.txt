@@ -1,6 +1,6 @@
 wxGlade: a GUI builder for wxPython
 version: 0.1.3
-license: GPL (see license.txt)
+license: Python2.2 license (see license.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -18,12 +18,9 @@ To start the program, enter ``python wxglade.py'' in your shell
 
 * Documentation:
 ----------------
-In the docs/ subdir there's a short introductory tutorial.
-In the samples/ subdir there are some sample wxGlade apps (in xml format) and 
-their equivalent Python code.
-For the brave, the docs/ subdir contains also a tech_notes.txt which tries to
-describe the internals of wxGlade (be warned, though, that some of its contents
-may be outdated).
+In the docs/ subdir there's a short introductory tutorial.  In the samples/
+subdir there are some sample wxGlade apps (in xml format, .wxg file extension)
+and their equivalent Python code.
 
 
 * Known Bugs:
