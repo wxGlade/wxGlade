@@ -351,7 +351,6 @@ class SizerBase:
 
     def change(self, *args):
         wxCallAfter(change_sizer, self, self.klass_prop.get_value())
-        #wxCallAfter(self.delete)
 
     def create_properties(self):
         """\
@@ -365,6 +364,7 @@ class SizerBase:
         sizer_tmp = wxBoxSizer(wxVERTICAL)
         self.name_prop.display(panel)
         self.klass_prop.display(panel)
+        self.klass_prop.text.SetEditable(False)
         sizer_tmp.Add(self.name_prop.panel, 0, wxEXPAND)
         sizer_tmp.Add(self.klass_prop.panel, 0, wxEXPAND)
         if not self.toplevel:
@@ -387,9 +387,9 @@ class SizerBase:
         panel.SetSizer(sizer_tmp)
         sizer_tmp.Fit(panel)
         
-        self.notebook.AddPage(panel, "Common")
         w, h = panel.GetClientSizeTuple()
-        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))        
+        self.notebook.AddPage(panel, "Common")
+        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
 
     def popup_menu(self, event):
         """\
@@ -600,17 +600,20 @@ class SizerBase:
             self.children.insert(new_pos+1, new_item)
         item.update_pos(new_pos)
 
-##         for c in self.children[1:]:
-##             print '(%s, %s)' % (c.item.name, c.item.pos),
-##         print
-
         elem = self.widget.GetChildren()[old_pos]
+        # always set the sizer to None because otherwise it will be Destroy'd
         elem.SetSizer(None)
-        self.widget.Remove(old_pos)
-        self.widget.Insert(new_pos, item.widget, new_item.option,
-                           new_item.flag, new_item.border)
+        # this fake_win trick seems necessary because wxSizer::Remove(int pos)
+        # doesn't seem to work with grid sizers :-\
+        fake_win = wxWindow(self.window.widget, -1)
+        elem.SetWindow(fake_win)
+        self.widget.Remove(fake_win)
+        fake_win.Destroy()
+        self.widget.Insert(new_pos, item.widget, int(item.get_option()),
+                           item.get_int_flag(), int(item.get_border()))
 
         common.app_tree.change_node_pos(item.node, new_pos-1)
+        common.app_tree.select_item(item.node)
 
         if force_layout:
             self.layout()
@@ -794,7 +797,7 @@ class SizerBase:
             elem.SetOption(1)
             elem.SetBorder(0)
             elem.SetFlag(wxEXPAND)
-            if force_layout: self.widget.layout()
+            if force_layout: self.layout()
 
     def is_visible(self):
         return self.window.is_visible()
