@@ -56,6 +56,13 @@ class EditStaticBitmap(ManagedBase):
     def create_widget(self):
         bmp = self.load_bitmap(self.guess_type(self.bitmap))
         self.widget = wxStaticBitmap(self.parent.widget, self.id, bmp)
+        if wxPlatform == '__WXMSW__':
+            def get_best_size():
+                bmp = self.widget.GetBitmap()
+                if bmp and bmp.Ok():
+                    return bmp.GetWidth(), bmp.GetHeight()
+                return wxStaticBitmap.GetBestSize(self.widget)
+            self.widget.GetBestSize = get_best_size
 
     def create_properties(self):
         ManagedBase.create_properties(self)
