@@ -63,7 +63,9 @@ class EditRadioButton(ManagedBase):
             self.label = value
             if self.widget:
                 self.widget.SetLabel(str(value))
-                self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+                if not self.properties['size'].is_active():
+                    self.sizer.set_item(self.pos,
+                                        size=self.widget.GetBestSize())
 
     def set_value(self, value):
         self.value = value
@@ -111,7 +113,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    radio = EditRadioButton(label, parent, wxNewId(), misc._encode(label),
+    radio = EditRadioButton(label, parent, wxNewId(), "",
                             sizer, pos, common.property_panel)
     sizer.set_item(radio.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
