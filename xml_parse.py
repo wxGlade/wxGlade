@@ -438,9 +438,14 @@ class CodeWriter(XmlParser):
 
     def startElement(self, name, attrs_impl):
         attrs = {}
+        try:
+            encoding = attrs['encoding']
+            unicode('a', encoding)
+        except (KeyError, LookupError):
+            encoding = 'latin-1'
         # turn all the attribute values from unicode to str objects
         for attr, val in attrs_impl.items():
-            attrs[attr] = common._encode_from_xml(val)
+            attrs[attr] = common._encode_from_xml(val, encoding)
         if name == 'application':
             # get the code generation options
             self._appl_started = True
@@ -514,7 +519,13 @@ class CodeWriter(XmlParser):
         else:
             # end of a property or error
             # 1: set _curr_prop value
-            data = common._encode_from_xml(u"".join(self._curr_prop_val))
+            try:
+                encoding = self.app_attrs['encoding']
+                unicode('a', encoding)
+            except (KeyError, LookupError):
+                encoding = 'latin-1'
+            data = common._encode_from_xml(u"".join(self._curr_prop_val),
+                                           encoding)
             if data:
                 handler = self.top().prop_handlers.top()
                 if not handler or handler.char_data(data):
@@ -550,8 +561,8 @@ class CodeObject:
     """
     def __init__(self, attrs, parser):
         self.parser = parser
-        self.in_windows = self.in_sizers = 0
-        self.is_toplevel = 0 # if True, the object is a toplevel one:
+        self.in_windows = self.in_sizers = False
+        self.is_toplevel = False # if True, the object is a toplevel one:
                              # for window objects, this means that they are
                              # instances of a custom class, for sizers, that
                              # they are at the top of the hierarchy
@@ -577,7 +588,9 @@ class CodeObject:
         if base is not None: # this is a ``real'' object, not a sizeritem
             self.name = attrs['name']
             self.base = common.class_names[base]
-            if self.klass != self.base:
+            if self.klass != self.base and self.base != 'CustomWidget':
+                # if the widget is a custom one, it is never a toplevel object
+                # this is another HACK, must find a better way!
                 self.is_toplevel = True 
                 self.parser._toplevels.push(self)  
             # temporary hack: to detect a sizer, check whether the name
