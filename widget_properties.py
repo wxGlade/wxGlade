@@ -922,6 +922,7 @@ class GridProperty(wxPanel, Property):
     def add_row(self, event):
         self.grid.AppendRows()
         self.grid.MakeCellVisible(self.rows, 0)
+        self.grid.ForceRefresh()
         self.rows += 1
 
     def remove_row(self, event):
@@ -931,6 +932,8 @@ class GridProperty(wxPanel, Property):
 
     def insert_row(self, event):
         self.grid.InsertRows(self.cur_row)
+        self.grid.MakeCellVisible(self.cur_row, 0)
+        self.grid.ForceRefresh()
         self.rows += 1
 
     def set_col_sizes(self, sizes):
