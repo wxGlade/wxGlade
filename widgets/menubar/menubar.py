@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.10 2004/09/17 13:09:52 agriggio Exp $
+# $Id: menubar.py,v 1.11 2004/09/20 22:10:12 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -495,7 +495,7 @@ class EditMenuBar(EditBase, PreviewMixin):
         if self.parent:
             self.widget = self._mb = wxMenuBar()
             if self.parent.widget: self.parent.widget.SetMenuBar(self.widget)
-            if wxPlatform == '__WXMSW__':
+            if wxPlatform == '__WXMSW__' or wxPlatform == '__WXMAC__':
                 self.widget.SetFocus = lambda : None
         else:
             # "top-level" menubar

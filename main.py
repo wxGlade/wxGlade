@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.53 2004/09/17 13:09:56 agriggio Exp $
+# $Id: main.py,v 1.54 2004/09/20 22:10:12 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -176,6 +176,11 @@ class wxGladeFrame(wxFrame):
         append_item(help_menu, ABOUT_ID, 'About...', 'about.xpm')
         menu_bar.Append(help_menu, '&Help')
         parent.SetMenuBar(menu_bar)
+        # Mac tweaks...
+        if wxPlatform == "__WXMAC__":
+            wxApp.SetMacAboutMenuItemId(ABOUT_ID)
+            wxApp.SetMacPreferencesMenuItemId(PREFS_ID)
+            wxApp.SetMacExitMenuItemId(EXIT_ID)
 
         # file history support
         if misc.check_wx_version(2, 3, 3):

@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.23 2004/09/17 13:09:51 agriggio Exp $
+# $Id: panel.py,v 1.24 2004/09/20 22:10:08 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -285,7 +285,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         if win is not None: win.Destroy()
 
     def on_size(self, event):
-        if wxPlatform == '__WXMSW__' and self.skip_on_size:
+        if (wxPlatform == '__WXMSW__' or wxPlatform == '__WXMAC__') \
+               and self.skip_on_size:
             self.skip_on_size = False
             return
         super(EditTopLevelPanel, self).on_size(event)
