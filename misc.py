@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.28 2003/06/24 15:07:27 agriggio Exp $
+# $Id: misc.py,v 1.29 2003/07/29 14:42:14 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -332,8 +332,7 @@ def streq(s1, s2):
 
 def wxstr(s):
     """\
-    Converts the string object s to str or unicode, according to what wxPython
-    expects
+    Converts the object s to str or unicode, according to what wxPython expects
     """
     if common.app_tree is None:
         return str(s)

@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.26 2003/07/23 14:46:25 agriggio Exp $
+# $Id: xml_parse.py,v 1.27 2003/07/29 14:42:14 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -623,7 +623,12 @@ class CodeObject:
             if (self.parent is None or self.klass != self.base) and \
                    can_be_toplevel:
                 #self.base != 'CustomWidget':
-                self.is_toplevel = True 
+                self.is_toplevel = True
+                # make a valid name for the class (this can be invalid for
+                # some sensible reasons...)
+                self.klass = self.klass[self.klass.rfind('.')+1:]
+                self.klass = self.klass[self.klass.rfind(':')+1:]
+                
                 self.parser._toplevels.push(self)
             #------------- 2003-05-07: preview --------------------------------
             elif self.preview and not can_be_toplevel:
