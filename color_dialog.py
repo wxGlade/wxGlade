@@ -4,25 +4,19 @@ from wxPython.wx import *
 from wxPyColourChooser import wxPyColourChooser
 import misc
 
-if wxPlatform == '__WXMSW__':
-    RadioBtn = wxCheckBox
-    EVT_RADIO = EVT_CHECKBOX
-else:
-    RadioBtn = wxRadioButton
-    EVT_RADIO = EVT_RADIOBUTTON
-
 class wxGladeColorDialog(wxDialog):
     def __init__(self, colors_dict):
         wxDialog.__init__(self, None, -1, "")
         self.colors_dict = colors_dict
-        # begin wxGlade: wxGladeColorDialog.__init__
-        self.use_sys_color = RadioBtn(self, -1, "System color")
         choices = self.colors_dict.keys()
         choices.sort()
-        self.sys_color = wxComboBox(self, -1, choices=choices,
+        # begin wxGlade: wxGladeColorDialog.__init__
+        self.panel_1 = wxPanel(self, -1)
+        self.use_sys_color = wxRadioButton(self.panel_1, -1, "System color")
+        self.sys_color = wxComboBox(self.panel_1, -1, choices=choices,
                                     style=wxCB_DROPDOWN|wxCB_READONLY)
-        self.static_line_1 = wxStaticLine(self, -1)
-        self.use_chooser = RadioBtn(self, -1, "Custom color")
+        self.static_line_1 = wxStaticLine(self.panel_1, -1)
+        self.use_chooser = wxRadioButton(self.panel_1, -1, "Custom color")
         self.color_chooser = wxPyColourChooser(self, -1)
         self.ok = wxButton(self, wxID_OK, "OK")
         self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
@@ -31,18 +25,19 @@ class wxGladeColorDialog(wxDialog):
         self.__do_layout()
         # end wxGlade
         
-        EVT_RADIO(self, self.use_sys_color.GetId(), self.on_use_sys_color)
-        EVT_RADIO(self, self.use_chooser.GetId(), self.on_use_chooser)
+        EVT_RADIOBUTTON(self, self.use_sys_color.GetId(),
+                        self.on_use_sys_color)
+        EVT_RADIOBUTTON(self, self.use_chooser.GetId(), self.on_use_chooser)
 
     def on_use_sys_color(self, event):
         self.sys_color.Enable(True)
         self.color_chooser.Enable(False)
-        self.use_chooser.SetValue(0)
+        #self.use_chooser.SetValue(0)
         
     def on_use_chooser(self, event):
         self.sys_color.Enable(False)
         self.color_chooser.Enable(True)
-        self.use_sys_color.SetValue(0)
+        #self.use_sys_color.SetValue(0)
 
     def get_value(self):
         if self.use_sys_color.GetValue():
@@ -65,7 +60,6 @@ class wxGladeColorDialog(wxDialog):
             except: pass
             self.sys_color.Enable(False)
             self.color_chooser.Enable(True)
-        #self.on_radio()
 
     def __set_properties(self):
         # begin wxGlade: wxGladeColorDialog.__set_properties
@@ -80,10 +74,15 @@ class wxGladeColorDialog(wxDialog):
         # begin wxGlade: wxGladeColorDialog.__do_layout
         sizer_1 = wxBoxSizer(wxVERTICAL)
         sizer_3 = wxBoxSizer(wxHORIZONTAL)
-        sizer_1.Add(self.use_sys_color, 0, wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5)
-        sizer_1.Add(self.sys_color, 0, wxALL|wxEXPAND, 5)
-        sizer_1.Add(self.static_line_1, 0, wxALL|wxEXPAND, 5)
-        sizer_1.Add(self.use_chooser, 0, wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5)
+        sizer_2 = wxBoxSizer(wxVERTICAL)
+        sizer_2.Add(self.use_sys_color, 0, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5)
+        sizer_2.Add(self.sys_color, 0, wxALL|wxEXPAND, 5)
+        sizer_2.Add(self.static_line_1, 0, wxALL|wxEXPAND, 5)
+        sizer_2.Add(self.use_chooser, 0, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5)
+        self.panel_1.SetAutoLayout(1)
+        self.panel_1.SetSizer(sizer_2)
+        sizer_2.Fit(self.panel_1)
+        sizer_1.Add(self.panel_1, 0, wxEXPAND, 0)
         sizer_1.Add(self.color_chooser, 0, wxALL, 5)
         sizer_3.Add(self.ok, 0, wxRIGHT, 13)
         sizer_3.Add(self.cancel, 0, 0, 5)
