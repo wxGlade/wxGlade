@@ -1,5 +1,5 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.12 2003/09/11 06:35:20 dinogen Exp $
+# $Id: button.py,v 1.13 2004/05/05 20:47:42 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -27,7 +27,14 @@ class EditButton(ManagedBase):
         self.properties['label'] = TextProperty(self, 'label', None,
                                                 multiline=True)
         self.access_functions['default'] = (self.get_default, self.set_default)
+        self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
+        self.style_pos = (wxBU_LEFT, wxBU_RIGHT, wxBU_TOP, wxBU_BOTTOM,
+            wxBU_EXACTFIT)
+        style_labels = ('#section#Style', 'wxBU_LEFT', 'wxBU_RIGHT', 
+            'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT') 
+        self.properties['style'] = CheckListProperty(self, 'style', None,
+            style_labels)
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -38,9 +45,11 @@ class EditButton(ManagedBase):
         panel = wxPanel(self.notebook, -1)
         self.properties['label'].display(panel)
         self.properties['default'].display(panel)
+        self.properties['style'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
         szr.Add(self.properties['label'].panel, 0, wxEXPAND)
         szr.Add(self.properties['default'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -67,6 +76,24 @@ class EditButton(ManagedBase):
 
     def set_default(self, value):
         self.default = bool(int(value))
+
+    def get_style(self):
+        retval = [0] * len(self.style_pos)
+        try:
+            for i in range(len(self.style_pos)):
+                if self.style & self.style_pos[i]:
+                    retval[i] = 1
+        except AttributeError:
+            pass
+        return retval
+
+    def set_style(self, value):
+        value = self.properties['style'].prepare_value(value)
+        self.style = 0
+        for v in range(len(value)):
+            if value[v]:
+                self.style |= self.style_pos[v]
+        if self.widget: self.widget.SetWindowStyleFlag(self.style)
 
 # end of class EditButton
         

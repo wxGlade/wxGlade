@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.16 2004/03/11 11:20:05 agriggio Exp $
+# $Id: codegen.py,v 1.17 2004/05/05 20:47:41 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -133,6 +133,22 @@ def xrc_frame_code_generator(obj):
     return FrameXrcObject(obj)
                 
 
+def xrc_statusbar_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+    class StatusbarXrcObject(xrcgen.DefaultXrcObject):
+        def write(self, outfile, tabs):
+            if 'statusbar' in self.properties:
+                fields, widths = self.properties['statusbar']
+                self.properties['fields'] = str(len(fields))
+                self.properties['widths'] = ', '.join([str(w) for w in widths])
+                del self.properties['statusbar']
+            xrcgen.DefaultXrcObject.write(self, outfile, tabs)
+
+    # end of class StatusbarXrcObject
+    
+    return StatusbarXrcObject(obj)
+
+
 class CppStatusBarCodeGenerator:
     def get_code(self, obj):
         """\
@@ -234,8 +250,9 @@ def initialize():
         xrcgen.add_widget_handler('wxFrame', xrc_frame_code_generator)
         xrcgen.add_widget_handler('wxMDIChildFrame',
                                   xrcgen.NotImplementedXrcObject)
-        xrcgen.add_widget_handler('wxStatusBar',
-                                  xrcgen.NotImplementedXrcObject)
+        xrcgen.add_widget_handler('wxStatusBar', xrc_statusbar_code_generator)
+        #xrcgen.NotImplementedXrcObject)
+        xrcgen.add_property_handler('fields', StatusFieldsHandler)
     cppgen = common.code_writers.get('C++')
     if cppgen:
         cppgen.add_widget_handler('wxFrame', CppFrameCodeGenerator())

@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.40 2004/02/09 07:58:53 agriggio Exp $
+# $Id: widget_properties.py,v 1.41 2004/05/05 20:47:42 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -476,6 +476,9 @@ class SpinProperty(Property, _activator):
             if self.is_active():
                 function(event)
         EVT_KILL_FOCUS(self.spin, func_2)
+        if wxPlatform == '__WXMAC__':
+            EVT_TEXT(self.spin, self.spin.GetId(), func_2)
+            EVT_SPINCTRL(self.spin, self.spin.GetId(), func_2)
 
     def get_value(self):
         try: return self.spin.GetValue()

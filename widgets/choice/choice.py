@@ -1,5 +1,5 @@
 # choice.py: wxChoice objects
-# $Id: choice.py,v 1.11 2004/04/26 20:16:33 agriggio Exp $
+# $Id: choice.py,v 1.12 2004/05/05 20:47:42 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -111,7 +111,8 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'choice_%d' % number[0]
-    choice = EditChoice(name, parent, wxNewId(), [misc._encode('choice 1')],
+    choice = EditChoice(name, parent, wxNewId(), [],
+                        #[misc._encode('choice 1')],
                         sizer, pos, common.property_panel)
     node = Tree.Node(choice)
     #sizer.set_item(pos, size=choice.GetBestSize())
