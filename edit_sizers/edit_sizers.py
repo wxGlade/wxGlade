@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.53 2004/10/24 16:12:49 agriggio Exp $
+# $Id: edit_sizers.py,v 1.54 2004/11/04 22:14:12 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -56,7 +56,7 @@ class SizerSlot:
                 (not common.adding_sizer or not self.sizer.is_virtual()):
             self.widget.SetCursor(wxCROSS_CURSOR)
         else:
-            self.widget.SetCursor(wxNullCursor)
+            self.widget.SetCursor(wxSTANDARD_CURSOR)
         event.Skip()
 
     def on_leave(self, event):

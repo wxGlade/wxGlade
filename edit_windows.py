@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.70 2004/11/02 09:52:03 agriggio Exp $
+# $Id: edit_windows.py,v 1.71 2004/11/04 22:14:13 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -443,7 +443,7 @@ class WindowBase(EditBase):
                 val = sz.get_value()
                 if use_dialog_units: val = val[:-1]
                 w_1, h_1 = [int(t) for t in val.split(',')]
-                skip = False
+                #skip = False
             else: use_dialog_units = config.preferences.use_dialog_units #False
             if use_dialog_units:
                 w, h = self.widget.ConvertPixelSizeToDialog(
@@ -454,12 +454,8 @@ class WindowBase(EditBase):
             if h_1 == -1: h = -1
             size = "%s, %s" % (w, h)
             if use_dialog_units: size += "d"
-            if not (sz.is_active() and
-                    (int(self.get_option()) != 0 or
-                     self.get_int_flag() & wxEXPAND)):
-                self.properties['size'].set_value(size)
-                self.size = size
-        except KeyError: pass
+        except KeyError:
+            pass
         if skip:
             event.Skip()
 
@@ -743,7 +739,13 @@ class ManagedBase(WindowBase):
         self.sel_marker.update()
         
     def on_size(self, event):
+        old = self.size
         WindowBase.on_size(self, event)
+        sz = self.properties['size']
+        if not (sz.is_active() and (int(self.get_option()) != 0 or
+                                    self.get_int_flag() & wxEXPAND)):
+            self.properties['size'].set_value(old)
+            self.size = old
         self.sel_marker.update()
 
     def set_option(self, value):
@@ -931,6 +933,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.widget.CenterOnScreen()
         # ALB 2004-10-15
         self.widget.SetAcceleratorTable(common.palette.accel_table)
+        self.properties['size'].set_value('%s, %s' %
+                                          tuple(self.widget.GetSize()))
 
     def show_widget(self, yes):
         WindowBase.show_widget(self, yes)
@@ -1007,14 +1011,14 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if not self.sizer and common.adding_sizer:
             self.widget.SetCursor(wxCROSS_CURSOR)
         else:
-            self.widget.SetCursor(wxNullCursor)
+            self.widget.SetCursor(wxSTANDARD_CURSOR)
 
     def drop_sizer(self, event):
         if self.sizer or not common.adding_sizer:
             self.on_set_focus(event) # default behaviour: call show_properties
             return
         common.adding_widget = common.adding_sizer = False
-        self.widget.SetCursor(wxNullCursor)
+        self.widget.SetCursor(wxSTANDARD_CURSOR)
         common.widgets[common.widget_to_add](self, None, None)
         common.widget_to_add = None
 

@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.26 2004/10/20 16:59:46 agriggio Exp $
+# $Id: panel.py,v 1.27 2004/11/04 22:14:09 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -78,7 +78,7 @@ class PanelBase(object):
         if not self.top_sizer and common.adding_sizer:
             self.widget.SetCursor(wxCROSS_CURSOR)
         else:
-            self.widget.SetCursor(wxNullCursor)
+            self.widget.SetCursor(wxSTANDARD_CURSOR)
 
     def set_sizer(self, sizer):
         self.top_sizer = sizer
