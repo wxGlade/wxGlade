@@ -1,3 +1,6 @@
+-------------------------------------------------------------------------------
+2003-08-29: version 0.3 released
+
 2003-07-26: codegen/pl_codegen.py, toolbar/perl_codegen.py,
             menubar/perl_codegen.py:
                 brought Perl code generator up to date:
