@@ -1,7 +1,7 @@
 # clipboard.py: support for cut & paste of wxGlade widgets
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 from wxPython.wx import *
 

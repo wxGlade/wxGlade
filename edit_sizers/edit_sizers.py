@@ -1,7 +1,7 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 from widget_properties import *
 from tree import Tree, WidgetTree

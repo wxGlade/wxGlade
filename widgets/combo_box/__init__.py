@@ -1,7 +1,7 @@
 # __init__.py: combo box widget module initialization
 #
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 def initialize():
     import common

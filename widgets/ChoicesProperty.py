@@ -2,7 +2,7 @@
 # combo_box, radio_box, list_box
 #
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 import widget_properties
 

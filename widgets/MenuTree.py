@@ -1,7 +1,7 @@
 # MenuTree.py: A class to represent a menu on a wxMenuBar
 #
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 class MenuTree:
     """\
