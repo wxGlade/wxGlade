@@ -32,6 +32,7 @@ class EditBase:
         self.id = id
         self.name = name
         self.klass = klass
+        self.base = klass
         self.custom_class = custom_class
 
         self.access_functions = {

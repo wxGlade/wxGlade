@@ -171,6 +171,7 @@ class SizerBase:
         self.id = wxNewId()
         self.name = name
         self.klass = klass
+        self.base = klass
         self.properties = {}
         self.property_window = window.property_window 
         self.window = window # window this sizer is responsible
