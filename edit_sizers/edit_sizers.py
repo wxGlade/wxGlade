@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.41 2004/01/20 11:09:52 agriggio Exp $
+# $Id: edit_sizers.py,v 1.42 2004/01/25 12:24:57 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -705,13 +705,19 @@ class SizerBase(Sizer):
         
         if elem.IsWindow(): # remove the previous item at pos
             w = elem.GetWindow()
-            elem.SetWindow(None)
+            if not misc.check_wx_version(2, 5):
+                elem.SetWindow(None)
+            else:
+                w.SetContainingSizer(None)
             w.Destroy()
         try: # let's see if the item to add is a window
             elem.SetWindow(item.widget)
         except TypeError: # suppose the item to add is a sizer
             elem.SetSizer(item.widget)
-        elem.SetOption(option)
+        if not misc.check_wx_version(2, 5):
+            elem.SetOption(option)
+        else:
+            elem.SetProportion(option)
         elem.SetFlag(flag)
         elem.SetBorder(border)
         try: # if the item was a window, set its size to a reasonable value
@@ -734,7 +740,12 @@ class SizerBase(Sizer):
         # no error checking at all, this is a "protected" method, so it should
         # be safe to assume the caller knows how to use it
         item = self.widget.GetChildren()[pos]
-        item.SetWindow(None)
+        if not misc.check_wx_version(2, 5):
+            item.SetWindow(None)
+        else:
+            if item.IsWindow():
+                w = item.GetWindow()
+                w.SetContainingSizer(None)
         item.SetSizer(notebook_sizer)
         if force_layout:
             self.layout()
@@ -766,10 +777,16 @@ class SizerBase(Sizer):
         
         try: elem = self.widget.GetChildren()[pos]
         except IndexError: return # this may happen during xml loading
-        
-        if option is not None: elem.SetOption(option)
-        if flag is not None: elem.SetFlag(flag)
-        if border is not None: elem.SetBorder(border)
+
+        if option is not None:
+            if not misc.check_wx_version(2, 5):
+                elem.SetOption(option)
+            else:
+                elem.SetProportion(option)
+        if flag is not None:
+            elem.SetFlag(flag)
+        if border is not None:
+            elem.SetBorder(border)
         if elem.IsWindow():
             if size is None: size = elem.GetSize()
             item = elem.GetWindow()
@@ -1030,7 +1047,10 @@ class SizerBase(Sizer):
             elem = self.widget.GetChildren()[pos]
             elem.SetWindow(tmp.widget)
             elem.SetSizer(None)
-            elem.SetOption(1)
+            if not misc.check_wx_version(2, 5):
+                elem.SetOption(1)
+            else:
+                elem.SetProportion(1)
             elem.SetBorder(0)
             elem.SetFlag(wxEXPAND)
             if force_layout: self.layout()

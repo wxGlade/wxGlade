@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.46 2003/08/27 18:24:50 agriggio Exp $
+# $Id: main.py,v 1.47 2004/01/25 12:25:28 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -113,8 +113,11 @@ class wxGladeFrame(wxFrame):
     Main frame of wxGlade (palette)
     """
     def __init__(self, parent=None):
+        style = wxSYSTEM_MENU|wxCAPTION|wxMINIMIZE_BOX
+        if misc.check_wx_version(2, 5):
+            style |= wxCLOSE_BOX
         wxFrame.__init__(self, parent, -1, "wxGlade v%s" % common.version,
-                         style=wxSYSTEM_MENU|wxCAPTION|wxMINIMIZE_BOX)
+                         style=style)
         if parent is None: parent = self
         common.palette = self # to provide a reference accessible
                               # by the various widget classes

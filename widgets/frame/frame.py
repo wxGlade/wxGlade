@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.28 2004/01/05 17:22:03 agriggio Exp $
+# $Id: frame.py,v 1.29 2004/01/25 12:24:54 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -148,21 +148,24 @@ class EditFrame(TopLevelBase):
 
         self.access_functions['icon'] = (self.get_icon, self.set_icon)
         prop = self.properties
-        style_labels = ('#section#Style', 'wxDEFAULT_FRAME_STYLE',
+        style_labels = ['#section#Style', 'wxDEFAULT_FRAME_STYLE',
                         'wxICONIZE', 'wxCAPTION',
                         'wxMINIMIZE', 'wxMINIMIZE_BOX', 'wxMAXIMIZE',
                         'wxMAXIMIZE_BOX', 'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
                         'wxSIMPLE_BORDER', 'wxRESIZE_BORDER',
                         'wxFRAME_TOOL_WINDOW', 'wxFRAME_NO_TASKBAR',
                         'wxNO_BORDER',
-                        'wxNO_FULL_REPAINT_ON_RESIZE')
-        self.style_pos = (wxDEFAULT_FRAME_STYLE,
+                        'wxNO_FULL_REPAINT_ON_RESIZE']
+        self.style_pos = [wxDEFAULT_FRAME_STYLE,
                           wxICONIZE, wxCAPTION, wxMINIMIZE,
                           wxMINIMIZE_BOX, wxMAXIMIZE, wxMAXIMIZE_BOX,
                           wxSTAY_ON_TOP, wxSYSTEM_MENU, wxSIMPLE_BORDER,
                           wxRESIZE_BORDER, wxFRAME_TOOL_WINDOW,
                           wxFRAME_NO_TASKBAR, wxNO_BORDER,
-                          wxNO_FULL_REPAINT_ON_RESIZE)
+                          wxNO_FULL_REPAINT_ON_RESIZE]
+        if misc.check_wx_version(2, 5):
+            style_labels.insert(4, 'wxCLOSE_BOX')
+            self.style_pos.insert(4, wxCLOSE_BOX)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # menubar property
         prop['menubar'] = CheckBoxProperty(self, 'menubar', None,
