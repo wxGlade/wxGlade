@@ -52,6 +52,34 @@ def xrc_code_generator(obj):
     return SliderXrcObject(obj)
 
 
+def cpp_code_generator(obj):
+    """\
+    generates the C++ code for wxSlider objects
+    """
+    cppgen = common.code_writers['C++']
+    prop = obj.properties
+    id_name, id = cppgen.generate_code_id(obj)
+    if id_name: ids = [ '%s = %s' % (id_name, id) ]
+    else: ids = []
+    value = prop.get('value', '0')
+    try: min_v, max_v = [ s.strip() for s in prop['range'].split() ]
+    except: min_v, max_v = '0', '10'
+    if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+    else: parent = 'this'
+    if obj.is_toplevel:
+        l = ['%s = new %s(%s, %s, %s, %s, %s);\n' % \
+             (obj.name, obj.klass, parent, id, value, min_v, max_v)]
+        return l, ids, [], []
+    extra = ''
+    style = prop.get("style")
+    if style and style != 'wxSL_HORIZONTAL':
+        extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
+    init = ['%s = new wxSlider(%s, %s, %s, %s, %s%s);\n' %
+            (obj.name, parent,id, value, min_v, max_v, extra)]
+    props_buf = cppgen.generate_common_properties(obj)
+    return init, ids, props_buf, []
+
+
 def initialize():
     common.class_names['EditSlider'] = 'wxSlider'
 
@@ -61,4 +89,13 @@ def initialize():
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
         xrcgen.add_widget_handler('wxSlider', xrc_code_generator)
+    cppgen = common.code_writers.get('C++')
+    if cppgen:
+        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+                       ('int', 'value'), ('int', 'minValue'),
+                       ('int', 'maxValue'),
+                       ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+                       ('const wxSize&', 'size', 'wxDefaultSize'),
+                       ('long', 'style', '0')]
+        cppgen.add_widget_handler('wxSlider', cpp_code_generator, constructor)
     

@@ -43,9 +43,6 @@ def xrc_code_generator(obj):
         def write_property(self, name, val, outfile, tabs):
             if name == 'choices':
                 xrc_write_choices_property(self, outfile, tabs)
-            elif name == 'major_dim' and val:
-                outfile.write('    '*tabs + '<dimension>%s</dimension>\n' % \
-                              val)
             else:
                 xrcgen.DefaultXrcObject.write_property(self, name, val,
                                                        outfile, tabs)
@@ -53,6 +50,41 @@ def xrc_code_generator(obj):
     # end of class RadioBoxXrcObject
 
     return RadioBoxXrcObject(obj)
+
+
+def cpp_code_generator(obj):
+    """\
+    generates the C++ code for wxRadioBox objects
+    """
+    cppgen = common.code_writers['C++']
+    prop = obj.properties
+    id_name, id = cppgen.generate_code_id(obj)
+    if id_name: ids = [ '%s = %s' % (id_name, id) ]
+    else: ids = []
+    choices = prop.get('choices', [])
+    major_dim = prop.get('dimension', '0')
+    if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+    else: parent = 'this'
+    number = len(choices)
+    ch_arr = '{ %s };\n' % ', '.join(['"' + c + '"' for c in choices])
+    label = prop.get('label', '').replace('"', r'\"')
+    if obj.is_toplevel:
+        l = ['%s = new %s(%s, %s, "%s", wxDefaultPosition, wxDefaultSize, %s, '
+             '%s_choices, %s);\n' % \
+             (obj.name, obj.klass, parent, id, label,
+              number, obj.name, major_dim)]
+        l.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+        return l, ids, [], []
+    style = prop.get("style", "0")
+    init = ['%s = new wxRadioBox(%s, %s, "%s", wxDefaultPosition, '
+            'wxDefaultSize, %s, %s_choices, %s, %s);\n' % \
+            (obj.name, parent, id, label, number, obj.name, major_dim, style) ]
+    init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+    props_buf = cppgen.generate_common_properties(obj)
+    selection = prop.get('selection')
+    if selection is not None:
+        props_buf.append('%s->SetSelection(%s);\n' % (obj.name, selection))
+    return init, ids, props_buf, []   
 
 
 def initialize():
@@ -66,3 +98,15 @@ def initialize():
     if xrcgen:
         xrcgen.add_widget_handler('wxRadioBox', xrc_code_generator)
         xrcgen.add_property_handler('choices', ChoicesCodeHandler)
+    cppgen = common.code_writers.get('C++')
+    if cppgen:
+        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+                       ('const wxString&', 'label'),
+                       ('const wxPoint&', 'pos'),
+                       ('const wxSize&', 'size'),
+                       ('int', 'n'), ('const wxString*', 'choices'),
+                       ('int', 'majorDimension', '0'),
+                       ('long', 'style', '0')]
+        cppgen.add_widget_handler('wxRadioBox', cpp_code_generator,
+                                  constructor)
+        cppgen.add_property_handler('choices', ChoicesCodeHandler)

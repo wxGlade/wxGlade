@@ -108,6 +108,51 @@ def xrc_code_generator(obj):
 
 
 
+def cpp_code_generator(window):
+    """\
+    generates the C++ code for wxNotebook
+    """
+    cppgen = common.code_writers['C++']
+    prop = window.properties
+    id_name, id = cppgen.generate_code_id(window)
+    if id_name: ids = [ '%s = %s' % (id_name, id) ]
+    else: ids = []
+
+    layout_props = ['wxNotebookSizer* %s_sizer = new wxNotebookSizer(%s);\n' %
+                    (window.name, window.name)]
+    tabs = prop.get('tabs', [])
+    for label, tab_win in tabs:
+        layout_props.append('%s->AddPage(%s, "%s");\n' % \
+                            (window.name, tab_win, label.replace('"', r'\"')))
+        
+    if not window.parent.is_toplevel: parent = '%s' % window.parent.name
+    else: parent = 'this'
+    if window.is_toplevel:
+        l = ['%s = new %s(%s, %s);\n' % (window.name, window.klass, parent,id)]
+        return l, ids, [], []
+    extra = ''
+    style = prop.get('style')
+    if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % (size, style)
+    init = ['%s = new wxNotebook(%s, %s%s);\n' %
+            (window.name, parent, id, extra) ]
+
+    props_buf = cppgen.generate_common_properties(window)
+
+    return init, ids, props_buf, layout_props 
+
+
+def cpp_generate_properties(obj):
+    prop = obj.properties
+    cppgen = common.code_writers['C++']
+    props_buf = ['wxNotebookSizer* nb_sizer = new wxNotebookSizer(this);\n']
+    tabs = prop.get('tabs', [])
+    for label, window in tabs:
+        props_buf.append('AddPage(%s, "%s");\n' % \
+                         (window, label.replace('"', r'\"')))
+    props_buf.extend(cppgen.generate_common_properties(obj))
+    return props_buf    
+
+
 def initialize():
     common.class_names['EditNotebook'] = 'wxNotebook'
     common.class_names['NotebookPane'] = 'wxPanel'
@@ -121,4 +166,14 @@ def initialize():
     if xrcgen:
         xrcgen.add_widget_handler('wxNotebook', xrc_code_generator)
         xrcgen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
+    cppgen = common.code_writers.get('C++')
+    if cppgen:
+        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+                       ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+                       ('const wxSize&', 'size', 'wxDefaultSize'),
+                       ('long', 'style', '0')]
+        cppgen.add_widget_handler('wxNotebook', cpp_code_generator,
+                                  constructor, cpp_generate_properties,
+                                  ['<wx/notebook.h>'])
+        cppgen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
 

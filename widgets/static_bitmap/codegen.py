@@ -44,10 +44,49 @@ def python_code_generator(obj):
     return init, props_buf, []
 
 
+def cpp_code_generator(obj):
+    """\
+    fuction that generates C++ code for wxStaticBitmap objects.
+    """
+    cppgen = common.code_writers['C++']
+    prop = obj.properties
+    id_name, id = cppgen.generate_code_id(obj) 
+    if id_name: ids = [ '%s = %s' % (id_name, id) ]
+    else: ids = []
+    bmp_file = prop.get('bitmap', '')
+    if not bmp_file: bmp = 'wxNullBitmap'
+    else:
+        type = _bmp_str_types.get(os.path.splitext(bmp_file)[1].lower())
+        if not type: bmp = 'wxNullBitmap'
+        else:
+            if os.sep == '\\': bmp_file = bmp_file.replace(os.sep, '/')
+            bmp = 'wxBitmap("%s", %s)' % (bmp_file.replace('"', r'\"'), type)
+    if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+    else: parent = 'this'
+    if obj.is_toplevel:
+        l = ['%s = new %s(%s, %s, %s);\n' %
+             (obj.name, parent, obj.klass, id, bmp)]
+        return l, ids, [], []    
+    init = [ '%s = new wxStaticBitmap(%s, %s, %s);\n' % 
+             (obj.name, parent, id, bmp) ]
+    props_buf = cppgen.generate_common_properties(obj)
+    return init, ids, props_buf, []
+
+
 def initialize():
     common.class_names['EditStaticBitmap'] = 'wxStaticBitmap'
 
     pygen = common.code_writers.get('python')
     if pygen:
         pygen.add_widget_handler('wxStaticBitmap', python_code_generator)
+    cppgen = common.code_writers.get('C++')
+    if cppgen:
+        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+                       ('const wxBitmap&', 'label'),
+                       ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+                       ('const wxSize&', 'size', 'wxDefaultSize'),
+                       ('long', 'style', '0')]
+        cppgen.add_widget_handler('wxStaticBitmap', cpp_code_generator,
+                                  constructor)
+
     
