@@ -296,7 +296,7 @@ appears: this says that the operation is over... like this short tutorial
 
 <p>This section contains a list of things that you should know about wxGlade
 (known bugs and/or limitations, "hidden" features, tips and tricks, ...) which
-I wasn't able to fit in the tutorial (I am definitely a bad writer :). The list
+I wasn't able to fit in the tutorial <!-- (I am definitely a bad writer :) -->. The list
 is loosely sorted by importance.
 </p>
 
@@ -401,6 +401,14 @@ which is clearly not what you intended.
   It is possible that future versions of wxGlade will let you choose if you
   want to overwrite or update the output file, but at the moment this is not
   possible.<br>&nbsp;
+
+  <li>When you add new custom classes to an app, if there is a previous version
+  of the generated code, the definitions of the new classes will be inserted
+  *before* the old ones: this usually is not a problem, but for C++ output
+  there could be occasions in which the generated code won't compile "out of
+  the box", but you'll have to perform some manual adjustments (e.g. add some
+  forward declarations before the new classes).
+  <br>&nbsp;
 
   <li>When you add slots to sizers, it may be possible that you don't see
   such new slots: this happens because the size of the window that contains the
