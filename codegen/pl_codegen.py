@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.18 2003/08/28 11:19:59 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.19 2003/08/29 09:23:11 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -53,7 +53,7 @@ obj_properties = {}
 # the right ones (see SourceFileContent and add_class)
 nonce = None
 
-# lines common to all the generated files (import of wxPython, ...)
+# lines common to all the generated files (use Wx [:everything], ...)
 header_lines = []
 
 # if True, generate a file for each custom class
@@ -412,7 +412,7 @@ def add_object(top_obj, sub_obj):
         klass.layout.extend(layout)
         if multiple_files and \
                (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
-            key = 'use %s qw[ %s ];\n' % (sub_obj.klass, sub_obj.klass)
+            key = 'use %s;\n' % sub_obj.klass
             klass.dependencies[key] = 1
 ##         for dep in _widget_extra_modules.get(sub_obj.base, []):
         for dep in getattr(obj_builders.get(sub_obj.base),
@@ -507,13 +507,21 @@ def add_class(code_obj):
 
     new_signature = getattr(builder, 'new_signature', [] )
 
-    if _use_gettext:
-        classes[code_obj.klass].dependencies["use Wx::Locale gettext => '_T';\n"]=1
+    if _use_gettext and not is_new:
+        classes[code_obj.klass].dependencies[
+            "use Wx::Locale gettext => '_T';\n"]=1
 
     if is_new:
         write('package %s;\n\n' % code_obj.klass )
         write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n'
                 % code_obj.base.replace('wx','Wx::',1) )
+
+        if _use_gettext:
+            if multiple_files:
+                classes[code_obj.klass].dependencies[
+                    "use Wx::Locale gettext => '_T';\n"]=1
+            else:
+                write("use Wx::Locale gettext => '_T';\n")
 
         if multiple_files:
             # write the module dependecies for this class (package)
@@ -745,21 +753,22 @@ def add_app(app_attrs, top_win_class):
         append('\nuse base qw(Wx::App);\nuse strict;\n\n')
         if multiple_files:
             # import the top window module
-            append('use %s qw[%s];\n\n' % (top_win_class, top_win_class))
+            append('use %s;\n\n' % top_win_class)
         append('sub OnInit {\n\tmy( $self ) = shift;\n\n')
     else:
         append('1;\n\npackage main;\n')
         if multiple_files:
             # import the top window module
-            append('\nuse %s qw[%s];\n\n' % (top_win_class, top_win_class))
+            append('\nuse %s;\n\n' % top_win_class )
         append('\nunless(caller){\n')
         if _use_gettext:
             append('\tmy $local = Wx::Locale->new("English", "en", "en");'
                 + ' # replace with ??\n')
-            append('\t$local->AddCatalog("%s");'+
-                + ' # replace with the appropriate catalog name\n\n' % name)
-        append('\tmy %s = Wx::PySimpleAppSNORKELS'
-            +'("this aint real -- no perl equivalent");\n' % name)
+            append('\t$local->AddCatalog("%s");' % name
+                + ' # replace with the appropriate catalog name\n\n' )
+# and now,  basically fake wxPySimpleApp
+        append('\tlocal *Wx::App::OnInit = sub{1};\n')
+        append('\tmy $%s = Wx::App->new();\n'% name)
         
     append('\tWx::InitAllImageHandlers();\n\n') # we add this to avoid troubles
     append('\tmy $%s = %s->new();\n\n' % (top_win, top_win_class))
@@ -778,7 +787,7 @@ def add_app(app_attrs, top_win_class):
                 + ' # replace with the appropriate catalog name\n\n')
         append('\tmy $%s = %s->new();\n' % (name, klass))
     else:
-        append('\t$%s->SetTopWindow(%s);\n' % (name, top_win))
+        append('\t$%s->SetTopWindow($%s);\n' % (name, top_win))
         append('\t$%s->Show(1);\n' % top_win)
     append('\t$%s->MainLoop();\n}\n' % name)
 
@@ -1035,7 +1044,7 @@ _property_writers = {}
 
 
 # map of widget class names to a list of extra modules needed for the
-# widget. Example: 'wxGrid': 'from wxPython.grid import *\n'
+# widget. Example: 'wxGrid': 'use Wx::Grid;\n'
 _widget_extra_modules = {}
 
 # set of lines of extra modules to add to the current file
@@ -1065,7 +1074,7 @@ class WidgetHandler:
     Interface the various code generators for the widgets must implement
     """
     
-    """list of modules to import (eg. ['from wxPython.grid import *\n'])"""
+    """list of modules to import (eg. ['use Wx::Grid;\n'])"""
     import_modules = []
     
     """constructor signature ($self->SUPER::new(@stuff), see new_defaults )"""
