@@ -438,6 +438,8 @@ class WindowBase(EditBase):
 ##         return misc.color_to_string(self.widget.GetForegroundColour())
 
     def set_background(self, value):
+        oldval = self.background
+        self.background = value        
         if not self.widget: return
         value = value.strip()
         if value in ColorDialogProperty.str_to_colors:
@@ -448,12 +450,14 @@ class WindowBase(EditBase):
                 color = misc.string_to_color(value)
                 self.widget.SetBackgroundColour(color)
             except:
+                self.background = oldval
                 self.properties['background'].set_value(self.get_background())
                 return
-        self.background = value
         self.widget.Refresh()
             
     def set_foreground(self, value):
+        oldval = self.foreground
+        self.foreground = value
         if not self.widget: return
         value = value.strip()
         if value in ColorDialogProperty.str_to_colors:
@@ -464,6 +468,7 @@ class WindowBase(EditBase):
                 color = misc.string_to_color(value)
                 self.widget.SetForegroundColour(color)
             except:
+                self.foreground = oldval
                 self.properties['foreground'].set_value(self.get_foreground())
                 return
         self.foreground = value

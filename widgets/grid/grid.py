@@ -247,7 +247,7 @@ class EditGrid(ManagedBase):
         return self.create_grid
 
     def set_create_grid(self, value):
-        self.create_grid = bool(value)
+        self.create_grid = bool(int(value))
 
     def get_row_label_size(self):
         return self.row_label_size
@@ -269,7 +269,7 @@ class EditGrid(ManagedBase):
         return self.enable_editing
 
     def set_enable_editing(self, value):
-        self.enable_editing = bool(value)
+        self.enable_editing = bool(int(value))
         # Do nothing.
 ##        if value and self.widget:
 ##            self.widget.EnableEditing(self.enable_editing) # NO!
@@ -278,7 +278,7 @@ class EditGrid(ManagedBase):
         return self.enable_grid_lines
 
     def set_enable_grid_lines(self, value):
-        self.enable_grid_lines = bool(value)
+        self.enable_grid_lines = bool(int(value))
         if self.widget:
             self.widget.EnableGridLines(self.enable_grid_lines)
             #self.widget.Update()
@@ -304,7 +304,7 @@ class EditGrid(ManagedBase):
         return self.enable_col_resize
 
     def set_enable_col_resize(self, value):
-        self.enable_col_resize = bool(value)
+        self.enable_col_resize = bool(int(value))
         if self.widget:
             self.widget.EnableDragColSize(self.enable_col_resize)
 
@@ -312,7 +312,7 @@ class EditGrid(ManagedBase):
         return self.enable_row_resize
 
     def set_enable_row_resize(self, value):
-        self.enable_row_resize = bool(value)
+        self.enable_row_resize = bool(int(value))
         if self.widget:
             self.widget.EnableDragRowSize(self.enable_row_resize)
 
@@ -320,7 +320,7 @@ class EditGrid(ManagedBase):
         return self.enable_grid_resize
 
     def set_enable_grid_resize(self, value):
-        self.enable_grid_resize = bool(value)
+        self.enable_grid_resize = bool(int(value))
         if self.widget:
             self.widget.EnableDragGridSize(self.enable_grid_resize)
 

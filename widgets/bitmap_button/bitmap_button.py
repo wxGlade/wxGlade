@@ -95,7 +95,7 @@ class EditBitmapButton(ManagedBase):
         return self.default
 
     def set_default(self, value):
-        self.default = bool(value)
+        self.default = bool(int(value))
 ##         if value and self.widget:
 ##             self.widget.SetDefault()
 
