@@ -4,6 +4,7 @@
  - Marcello Semboli <dinogen@supereva.it>
  - Richard Lawson <richard.lawson@colinx.com>
  - D.H. <crazyinsomniac@yahoo.com> (Perl code generation)
+ - Georges Khaznadar <gekhajofour@netinfo.fr> (debian package maintainer)
 
  Former Authors:
  ---------------------------------------------------------------------------

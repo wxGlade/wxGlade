@@ -1,3 +1,9 @@
+2004-11-02: kdefiledialog.py:
+                support for native file and dir dialogs on KDE
+
+            debian/:
+                support for Debian package (by Georges Khaznadar)
+
 2004-10-15: common.py, config.py, configUI.py, main.py, res/preferences.wxg:
                 auto save support (i.e. now wxg files can be saved
                 automatically periodically)
