@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.49 2004/02/19 09:09:53 agriggio Exp $
+# $Id: main.py,v 1.50 2004/02/21 12:07:35 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -358,8 +358,8 @@ class wxGladeFrame(wxFrame):
         # set a drop target for us...
         self._droptarget = clipboard.FileDropTarget(self)
         self.SetDropTarget(self._droptarget)
-        self.tree_frame.SetDropTarget(self._droptarget)
-        self.frame2.SetDropTarget(self._droptarget)
+        #self.tree_frame.SetDropTarget(self._droptarget)
+        #self.frame2.SetDropTarget(self._droptarget)
 
         self.Raise()
 
