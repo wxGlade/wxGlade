@@ -170,3 +170,18 @@ if not check_wx_version(2, 3, 3):
         wxPostEvent(app, evt)
 
 #----------------------------------------------------------------------
+
+# set to True if you want to use icons on menu items
+use_menu_icons = True
+
+def append_item(menu, id, text, xpm_file=None):
+    import common, os.path
+    item = wxMenuItem(menu, id, text)
+    if wxPlatform == '__WXMSW__': path = 'icons/msw/'
+    else: path = 'icons/gtk/'
+    if use_menu_icons and xpm_file is not None:
+        xpm_file = os.path.join(path, xpm_file)
+        if os.path.isfile(xpm_file):
+            try: item.SetBitmap(wxBitmap(xpm_file, wxBITMAP_TYPE_XPM))
+            except AttributeError: pass
+    menu.AppendItem(item)

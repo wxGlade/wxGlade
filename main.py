@@ -8,7 +8,7 @@ from wxPython.wx import *
 from widget_properties import *
 from tree import Tree, WidgetTree
 import edit_sizers
-import common, os.path 
+import common, os.path, misc 
 
 class wxGladePropertyPanel(wxPanel):
     """\
@@ -62,44 +62,41 @@ class wxGladeFrame(wxFrame):
         PROPS_ID = wxNewId()
         view_menu.Append(PROPS_ID, "Show &Properties\tCtrl+P", "", True)
         view_menu.Check(PROPS_ID, True)
-        def append_item(menu, id, text, xpm_file=None):
-            item = wxMenuItem(menu, id, text)
-            if xpm_file is not None:
-                try: item.SetBitmap(wxBitmap(xpm_file, wxBITMAP_TYPE_XPM))
-                except AttributeError: pass
-            menu.AppendItem(item)
+        append_item = misc.append_item
         NEW_ID = wxNewId()
-        append_item(file_menu, NEW_ID, "&New\tCtrl+N")
+        append_item(file_menu, NEW_ID, "&New\tCtrl+N", 'new.xpm')
         OPEN_ID = wxNewId()
-        append_item(file_menu, OPEN_ID, "&Open...\tCtrl+O") 
+        append_item(file_menu, OPEN_ID, "&Open...\tCtrl+O", 'open.xpm') 
         SAVE_ID = wxNewId()
-        append_item(file_menu, SAVE_ID, "&Save\tCtrl+S") 
+        append_item(file_menu, SAVE_ID, "&Save\tCtrl+S", 'save.xpm') 
         SAVE_AS_ID = wxNewId()
-        append_item(file_menu, SAVE_AS_ID, "Save As...\tShift+Ctrl+S")
+        append_item(file_menu, SAVE_AS_ID, "Save As...\tShift+Ctrl+S",
+                    'save_as.xpm')
         file_menu.AppendSeparator()
         GENERATE_CODE_ID = wxNewId()
-        append_item(file_menu, GENERATE_CODE_ID, "&Generate Code...\tCtrl+G")
+        append_item(file_menu, GENERATE_CODE_ID, "&Generate Code\tCtrl+G",
+                    'generate.xpm')
         EXIT_ID = wxNewId()
         file_menu.AppendSeparator()
-        append_item(file_menu, EXIT_ID, 'E&xit\tCtrl+X') 
+        append_item(file_menu, EXIT_ID, 'E&xit\tCtrl+Q', 'exit.xpm') 
         menu_bar.Append(file_menu, "&File")
         menu_bar.Append(view_menu, "&View")
         TUT_ID = wxNewId()
-        help_menu.Append(TUT_ID, 'Tutorial\tF1')
+        append_item(help_menu, TUT_ID, 'Tutorial\tF1', 'tutorial.xpm')
         ABOUT_ID = wxNewId()
-        help_menu.Append(ABOUT_ID, 'About...')
+        append_item(help_menu, ABOUT_ID, 'About...', 'about.xpm')
         menu_bar.Append(help_menu, '&Help')
         parent.SetMenuBar(menu_bar)
-        self.SetAcceleratorTable(wxAcceleratorTable([
-            (wxACCEL_CTRL, ord('t'), TREE_ID),
-            (wxACCEL_CTRL, ord('n'), NEW_ID),
-            (wxACCEL_CTRL, ord('o'), OPEN_ID),
-            (wxACCEL_CTRL, ord('s'), SAVE_ID),
-            (wxACCEL_CTRL, ord('p'), PROPS_ID),
-            (wxACCEL_CTRL|wxACCEL_SHIFT, ord('s'), SAVE_AS_ID),
-            (wxACCEL_CTRL, ord('g'), GENERATE_CODE_ID),
-            (wxACCEL_NORMAL, WXK_F1, TUT_ID)
-            ]))
+##         self.SetAcceleratorTable(wxAcceleratorTable([
+##             (wxACCEL_CTRL, ord('t'), TREE_ID),
+##             (wxACCEL_CTRL, ord('n'), NEW_ID),
+##             (wxACCEL_CTRL, ord('o'), OPEN_ID),
+##             (wxACCEL_CTRL, ord('s'), SAVE_ID),
+##             (wxACCEL_CTRL, ord('p'), PROPS_ID),
+##             (wxACCEL_CTRL|wxACCEL_SHIFT, ord('s'), SAVE_AS_ID),
+##             (wxACCEL_CTRL, ord('g'), GENERATE_CODE_ID),
+##             (wxACCEL_NORMAL, WXK_F1, TUT_ID)
+##             ]))
         EVT_MENU(parent, TREE_ID, self.show_tree)
         EVT_MENU(parent, PROPS_ID, self.show_props_window)
         EVT_MENU(parent, NEW_ID, self.new_app)
@@ -129,6 +126,7 @@ class wxGladeFrame(wxFrame):
         self.frame2.SetBackgroundColour(wxSystemSettings_GetSystemColour(
             wxSYS_COLOUR_BTNFACE))
         self.frame2.SetIcon(icon)
+        
         sizer_tmp = wxBoxSizer(wxVERTICAL)
         property_panel = wxGladePropertyPanel(self.frame2, -1)
         property_panel.SetAutoLayout(True)

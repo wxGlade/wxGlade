@@ -1,3 +1,8 @@
+2002-10-20: edit_windows.py, edit_sizers/edit_sizers.py, main.py, misc.py:
+		- added icons for menu items
+		- support for keyboard shortcuts for popup menus 
+		  (not on GTK yet)
+
 2002-10-19: widget_properties.py, widgets/static_text/static_text.py,
 	    widgets/text_ctrl/text_ctrl.py: 
 		added multiline option to TextProperty to edit long values
