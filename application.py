@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.46 2004/12/19 00:55:03 agriggio Exp $
+# $Id: application.py,v 1.47 2005/01/14 14:16:33 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -55,7 +55,7 @@ class FileDirDialog:
 ##                 self.dir_dialog.SetPath(self.prev_dir)
 ##             dialog = self.dir_dialog
             self.value = misc.DirSelector(self.dir_message,
-                                          flags=self.dir_style)
+                                          style=self.dir_style)
 ##         ok = dialog.ShowModal()
 ##         if ok == wxID_OK:
 ##             self.prev_dir = dialog.GetPath()

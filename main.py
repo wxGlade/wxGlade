@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.64 2005/01/10 20:22:36 agriggio Exp $
+# $Id: main.py,v 1.65 2005/01/14 14:16:32 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -706,11 +706,14 @@ class wxGladeFrame(wxFrame):
             # first, let's see if we have to save the geometry...
             prefs = config.preferences
             if prefs.remember_geometry:
-                prefs.set_geometry('main', misc.get_geometry(self))
-                prefs.set_geometry('tree',
-                                   misc.get_geometry(self.tree_frame))
-                prefs.set_geometry('properties',
-                                   misc.get_geometry(self.frame2))
+                if not self.IsIconized():
+                    prefs.set_geometry('main', misc.get_geometry(self))
+                if not self.tree_frame.IsIconized():
+                    prefs.set_geometry('tree',
+                                       misc.get_geometry(self.tree_frame))
+                if not self.frame2.IsIconized():
+                    prefs.set_geometry('properties',
+                                       misc.get_geometry(self.frame2))
                 prefs.changed = True
             common.app_tree.clear()
             if self.about_box: self.about_box.Destroy()
