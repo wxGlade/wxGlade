@@ -92,7 +92,7 @@ class Application(object):
         self.output_path = ""
         def set_output_path(value): self.output_path = value
         self.use_gettext = False
-        def set_use_gettext(value): self.use_gettext = bool(value)
+        def set_use_gettext(value): self.use_gettext = bool(int(value))
         self.access_functions = {
             'name': (lambda : self.name, set_name),
             'class': (lambda : self.klass, set_klass), 
