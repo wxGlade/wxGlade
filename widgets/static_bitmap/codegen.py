@@ -36,12 +36,6 @@ def python_code_generator(obj):
             bmp = 'wxBitmap("%s", %s)' % (bmp_file.replace('"', r'\"'), type)
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-##     if obj.is_toplevel:
-##         l = []
-##         if id_name: l.append(id_name)
-##         l.append('self.%s = %s(%s, %s, %s)\n' %
-##                  (obj.name, parent, obj.klass, id, bmp))
-##         return l , [], []    
     init = []
     if id_name: init.append(id_name)
     if attribute: prefix = 'self.'
@@ -78,10 +72,6 @@ def cpp_code_generator(obj):
             bmp = 'wxBitmap("%s", %s)' % (bmp_file.replace('"', r'\"'), type)
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
-##     if obj.is_toplevel:
-##         l = ['%s = new %s(%s, %s, %s);\n' %
-##              (obj.name, parent, obj.klass, id, bmp)]
-##         return l, ids, [], []    
     if attribute: prefix = ''
     else: prefix = '%s* ' % obj.klass
     init = [ '%s = new %s(%s, %s, %s);\n' % 
@@ -100,12 +90,6 @@ def initialize():
         pygen.add_widget_handler('wxStaticBitmap', python_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-##                        ('const wxBitmap&', 'label'),
-##                        ('const wxPoint&', 'pos', 'wxDefaultPosition'),
-##                        ('const wxSize&', 'size', 'wxDefaultSize'),
-##                        ('long', 'style', '0')]
-        cppgen.add_widget_handler('wxStaticBitmap', cpp_code_generator)#,
-                                  #constructor)
+        cppgen.add_widget_handler('wxStaticBitmap', cpp_code_generator)
 
     

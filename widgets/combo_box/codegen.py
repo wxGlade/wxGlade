@@ -17,12 +17,6 @@ def python_code_generator(obj):
     choices = prop.get('choices', [])
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-##     if obj.is_toplevel:
-##         l = []
-##         if id_name: l.append(id_name)
-##         l.append('self.%s = %s(%s, %s, choices=%s)\n' % \
-##                  (obj.name, obj.klass, parent, id, repr(choices)))
-##         return l, [], []
     style = prop.get("style", None)
     if not style: style = 'wxCB_DROPDOWN'
     else: style = 'wxCB_DROPDOWN|' + style
@@ -68,13 +62,6 @@ def cpp_code_generator(obj):
     number = len(choices)
     ch_arr = '{\n        %s\n    };\n' % \
              ',\n        '.join([cppgen.quote_str(c) for c in choices])
-##     if obj.is_toplevel:
-##         l = []
-##         l.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
-##         l.append('%s = new %s(%s, %s, "", wxDefaultPosition, wxDefaultSize, '
-##                  '%s, %s_choices);\n' % \
-##                  (obj.name, obj.klass, parent, id, number, obj.name))
-##         return l, ids, [], []
     style = prop.get("style")
     if not style: style = 'wxCB_DROPDOWN'
     else: style = 'wxCB_DROPDOWN|' + style
@@ -103,12 +90,5 @@ def initialize():
         xrcgen.add_property_handler('choices', ChoicesCodeHandler)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-##                        ('const wxString&', 'value'),
-##                        ('const wxPoint&', 'pos'),
-##                        ('const wxSize&', 'size'),
-##                        ('int', 'n'), ('const wxString*', 'choices'),
-##                        ('long', 'style', '0')]
-        cppgen.add_widget_handler('wxComboBox', cpp_code_generator)#,
-                                  #constructor)
+        cppgen.add_widget_handler('wxComboBox', cpp_code_generator)
         cppgen.add_property_handler('choices', ChoicesCodeHandler)

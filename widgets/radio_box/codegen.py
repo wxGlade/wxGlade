@@ -14,19 +14,11 @@ def python_code_generator(obj):
     pygen = common.code_writers['python']
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj) 
-    #label = prop.get('label', '').replace('"', r'\"')
     label = pygen.quote_str(prop.get('label', ''))
     choices = prop.get('choices', [])
     major_dim = prop.get('dimension', '0')
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-##     if obj.is_toplevel:
-##         l = []
-##         if id_name: l.append(id_name)
-##         l.append('self.%s = %s(%s, %s, "%s", choices=%s, majorDimension=%s)\n'
-##                  % (obj.name, obj.klass, parent,id, label, repr(choices),
-##                     major_dim))
-##         return l, [], []
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
@@ -75,16 +67,7 @@ def cpp_code_generator(obj):
     number = len(choices)
     ch_arr = '{\n        %s\n    };\n' % \
              ',\n        '.join([cppgen.quote_str(c) for c in choices])
-    #label = prop.get('label', '').replace('"', r'\"')
     label = cppgen.quote_str(prop.get('label', ''))
-##     if obj.is_toplevel:
-##         l = []
-##         l.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
-##         l.append('%s = new %s(%s, %s, "%s", wxDefaultPosition, wxDefaultSize, '
-##                  '%s, %s_choices, %s);\n' % \
-##                  (obj.name, obj.klass, parent, id, label,
-##                   number, obj.name, major_dim))
-##         return l, ids, [], []
     style = prop.get("style", "0")
     init = []
     init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
@@ -112,13 +95,5 @@ def initialize():
         xrcgen.add_property_handler('choices', ChoicesCodeHandler)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-##                        ('const wxString&', 'label'),
-##                        ('const wxPoint&', 'pos'),
-##                        ('const wxSize&', 'size'),
-##                        ('int', 'n'), ('const wxString*', 'choices'),
-##                        ('int', 'majorDimension', '0'),
-##                        ('long', 'style', '0')]
-        cppgen.add_widget_handler('wxRadioBox', cpp_code_generator)#,
-                                  #constructor)
+        cppgen.add_widget_handler('wxRadioBox', cpp_code_generator)
         cppgen.add_property_handler('choices', ChoicesCodeHandler)

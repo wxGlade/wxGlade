@@ -42,8 +42,7 @@ def python_code_generator(window):
     prop = window.properties
     id_name, id = pygen.generate_code_id(window)
 
-    layout_props = [] #'%s_sizer = wxNotebookSizer(self.%s)\n' % \
-                    #(window.name, window.name)]
+    layout_props = [] 
     tabs = prop.get('tabs', [])
     for label, tab_win in tabs:
         layout_props.append('self.%s.AddPage(self.%s, %s)\n' % \
@@ -56,7 +55,7 @@ def python_code_generator(window):
         if id_name: l.append(id_name)
         l.append('self.%s = %s(%s, %s)\n' %
                  (window.name, window.klass, parent,id))
-        return l, [], [] #layout_props #[]
+        return l, [], [] 
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
@@ -72,7 +71,7 @@ def python_code_generator(window):
 def python_generate_properties(obj):
     prop = obj.properties
     pygen = common.code_writers['python']
-    props_buf = [] #'nb_sizer = wxNotebookSizer(self)\n']
+    props_buf = [] 
     tabs = prop.get('tabs', [])
     for label, window in tabs:
         props_buf.append('self.AddPage(self.%s, %s)\n' % \
@@ -123,8 +122,6 @@ def cpp_code_generator(window):
     else: ids = []
 
     layout_props = []
-    #'wxNotebookSizer* %s_sizer = new wxNotebookSizer(%s);\n' %
-                    #(window.name, window.name)]
     tabs = prop.get('tabs', [])
     for label, tab_win in tabs:
         layout_props.append('%s->AddPage(%s, %s);\n' % \
@@ -149,7 +146,7 @@ def cpp_code_generator(window):
 def cpp_generate_properties(obj):
     prop = obj.properties
     cppgen = common.code_writers['C++']
-    props_buf = [] #'wxNotebookSizer* nb_sizer = new wxNotebookSizer(this);\n']
+    props_buf = [] 
     tabs = prop.get('tabs', [])
     for label, window in tabs:
         props_buf.append('AddPage(%s, %s);\n' % \

@@ -19,6 +19,7 @@ def python_generate_properties(dialog):
     out.extend(pygen.generate_common_properties(dialog))
     return out
 
+
 def cpp_generate_properties(dialog):
     """\
     generates the code for the various wxDialog specific properties.
@@ -31,6 +32,7 @@ def cpp_generate_properties(dialog):
     if title: out.append('SetTitle(%s);\n' % cppgen.quote_str(title))
     out.extend(cppgen.generate_common_properties(dialog))
     return out
+
 
 def initialize():
     cn = common.class_names

@@ -49,10 +49,6 @@ def python_code_generator(window):
         if win_1: add_sub(win_1)
         elif win_2: add_sub(win_2)
 
-##     sash_pos = prop.get('sash_pos')
-##     if sash_pos:
-##         props_buf.append('self.%s.SetSashPosition(%s)\n' % (window.name,
-##                                                             sash_pos))
     return init, props_buf, []
 
 
@@ -76,9 +72,6 @@ def python_generate_properties(obj):
             props_buf.append('self.Initialize(self.%s)\n' % win)
         if win_1: add_sub(win_1)
         elif win_2: add_sub(win_2)
-##     sash_pos = prop.get('sash_pos')
-##     if sash_pos:
-##         props_buf.append('self.SetSashPosition(%s)\n' % sash_pos)
     props_buf.extend(pygen.generate_common_properties(obj))
     return props_buf    
 

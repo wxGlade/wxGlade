@@ -206,13 +206,10 @@ def quote_str(s):
     else: return '"' + s + '"'
 
 
-def initialize(app_attrs): #out_path, multi_files):
+def initialize(app_attrs):
     """\
     Writer initialization function.
-    - out_path: output path for the generated code (a file (either .h or .cpp)
-      if multi_files is False, a dir otherwise)
-    - multi_files: if True, generate a separate file for each custom class,
-      otherwise generate only one header(.h) and one implementation(.cpp) file
+    See py_codegen.initialize for a description of the parameter.
     """
     out_path = app_attrs['path']
     multi_files = app_attrs['option']
@@ -244,16 +241,8 @@ def initialize(app_attrs): #out_path, multi_files):
             previous_source = SourceFileContent(name)
         else:
             previous_source = None
-##             try:
-            output_header = cStringIO.StringIO() #open(name + '.h', 'w')
-            output_source = cStringIO.StringIO() #open(name + '.cpp', 'w')
-##             except IOError:
-##                 if locals().has_key('output_header'):
-##                     output_header.close()
-##                     ext = '.h'
-##                 else: ext = '.cpp'
-##                 raise XmlParsingError("Error opening '%s%s' file" % \
-##                                       (name, ext))
+            output_header = cStringIO.StringIO() 
+            output_source = cStringIO.StringIO() 
             for line in header_lines:
                 output_header.write(line)
                 output_source.write(line)
@@ -311,26 +300,8 @@ def finalize():
                       'did you rename this class?\n'
             source_content = source_content.replace(tag[0], comment)
         # write the new file contents to disk
-##         out = open(previous_source.name + '.h', 'w')
-##         out.write(header_content)
-##         out.close()
         common.save_file(previous_source.name + '.h', header_content,
                          'codegen')
-##         out = open(previous_source.name + '.cpp', 'w')
-##         out.write(source_content)
-##         out.write('\n\n')
-##         out.write(extra_source)
-##         out.close()
-        common.save_file(previous_source.name + '.cpp', source_content +
-                         '\n\n' + extra_source, 'codegen')
-    
-    elif not multiple_files:
-        global output_header, output_source
-        oh = os.path.basename(output_name + '.h').upper().replace('.', '_')
-        output_header.write('\n#endif // %s\n' % oh)
-        #output_header.close()
-        #output_source.close()
-        # let the eventual exceptions be raised...
         common.save_file(output_name + '.h', output_header.getvalue(),
                          'codegen')
         common.save_file(output_name + '.cpp', output_source.getvalue(),
@@ -367,13 +338,11 @@ def add_object(top_obj, sub_obj):
             raise
         if sub_obj.in_windows: # the object is a wxWindow instance
             # --- patch 2002-08-26 ------------------------------------------
-            #init.reverse()
             if sub_obj.is_container and not sub_obj.is_toplevel:
                 init.reverse()
                 klass.parents_init.extend(init)
             else: klass.init.extend(init)
             # ---------------------------------------------------------------
-            #klass.init.extend(init)
             klass.ids.extend(ids)
             if sub_obj.klass != 'spacer':
                 # attribute is a special property which control whether
@@ -400,8 +369,7 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     try: klass = classes[toplevel.klass]
     except KeyError: klass = classes[toplevel.klass] = ClassLines()
     name = obj.name
-    if obj.base == 'wxNotebook': # and not obj.is_toplevel:
-        # this is an ugly TEMPORARY HACK! We must find a better way
+    if obj.base == 'wxNotebook':
         name = 'new wxNotebookSizer(%s)' % obj.name
     buffer = '%s->Add(%s, %s, %s, %s);\n' % \
              (sizer.name, name, option, flag, border)
@@ -470,7 +438,6 @@ def add_class(code_obj):
         hwrite(tabs(1) + '// end wxGlade\n\n')
         # constructor prototype
         hwrite(tabs(1) + '%s(%s);\n' % (code_obj.klass, sign_decl1))
-        #hwrite('\nprivate:\n')
         # 2002-11-12: changed private to protected to allow "customization
         #             by subclassing" as in QTDesigner
         hwrite('\nprotected:\n')
@@ -550,7 +517,6 @@ def add_class(code_obj):
     tab = tabs(1)
     init_lines = classes[code_obj.klass].init
     # --- patch 2002-08-26 ---------------------------------------------------
-    #init_lines.reverse()
     parents_init = classes[code_obj.klass].parents_init
     parents_init.reverse()    
     for l in parents_init: swrite(tab+l)
@@ -668,17 +634,6 @@ def add_class(code_obj):
                                       replace(tag, "".join(deps))
             
             # store the new file contents to disk
-##             try:
-##                 hout = open(os.path.join(out_dir, code_obj.klass + '.h'), 'w')
-##                 sout = open(os.path.join(out_dir, code_obj.klass + '.cpp'),'w')
-##             except:
-##                 if locals().has_key('hout'): hout.close()
-##                 raise IOError("cpp_codegen.add_class: %s, %s, %s" % \
-##                               (out_dir, prev_src.name, code_obj.klass))
-##             hout.write(prev_src.header_content)
-##             sout.write(prev_src.source_content)
-##             hout.close()
-##             sout.close()
             name = os.path.join(out_dir, code_obj.klass)
             common.save_file(name + '.h', prev_src.header_content, 'codegen')
             common.save_file(name + '.cpp', prev_src.source_content, 'codegen')
@@ -687,16 +642,6 @@ def add_class(code_obj):
         # create the new source file
         header_file = os.path.join(out_dir, code_obj.klass + '.h')
         source_file = os.path.join(out_dir, code_obj.klass + '.cpp')
-##         try:
-##             hout = open(header_file, 'w')
-##             sout = open(source_file, 'w')
-##         except:
-##             if locals().has_key(hout):
-##                 hout.close()
-##                 filename = header_file
-##             else: filename = source_file
-##             raise IOError("cpp_codegen.add_class: %s, %s, %s" % \
-##                           (out_dir, filename, code_obj.klass))
         hout = cStringIO.StringIO()
         sout = cStringIO.StringIO()
         # header file
@@ -781,8 +726,6 @@ def add_app(app_attrs, top_win_class):
 
     if multiple_files:
         filename = os.path.join(out_dir, 'main.cpp')
-##         try: out = open(filename, 'w')
-##         except: raise IOError("cpp_codegen.add_app: %s" % filename)
         out = cStringIO.StringIO()
         write = out.write
         # write the common lines
@@ -791,7 +734,6 @@ def add_app(app_attrs, top_win_class):
         write('#include "%s.h"\n\n' % top_win_class)
         # write the wxApp code
         for line in lines: write(line)
-        #out.close()
         common.save_file(filename, out.getvalue(), 'codegen')
     else:
         write = output_source.write
@@ -812,8 +754,10 @@ def generate_code_size(obj):
     else:
         return name1 + 'SetSize(wxSize(%s));\n' % size
 
+
 def _string_to_colour(s):
     return '%d, %d, %d' % (int(s[1:3], 16), int(s[3:5], 16), int(s[5:], 16))
+
 
 def generate_code_foreground(obj): 
     """\
@@ -830,6 +774,7 @@ def generate_code_foreground(obj):
                 obj.properties['foreground']
     return intro + 'SetForegroundColour(%s);\n' % color
 
+
 def generate_code_background(obj):
     """\
     returns the code fragment that sets the background colour of
@@ -845,6 +790,7 @@ def generate_code_background(obj):
                 obj.properties['background']
     return intro + 'SetBackgroundColour(%s);\n' % color
 
+
 def generate_code_font(obj):
     """\
     returns the code fragment that sets the font the given object.
@@ -858,6 +804,7 @@ def generate_code_font(obj):
     else: intro = '%s->' % obj.name
     return intro + 'SetFont(wxFont(%s, %s, %s, %s, %s, %s));\n' % \
            (size, family, style, weight, underlined, face)
+
 
 def generate_code_id(obj):
     """\
@@ -874,6 +821,7 @@ def generate_code_id(obj):
     if not name: return '', val
     return '%s = %s' % (name, val), name
 
+
 def generate_code_tooltip(obj):
     """\
     returns the code fragment that sets the tooltip of
@@ -882,6 +830,7 @@ def generate_code_tooltip(obj):
     if not obj.is_toplevel: intro = '%s->' % obj.name
     else: intro = ''
     return intro + 'SetToolTip(%s);\n' % quote_str(obj.properties['tooltip'])
+
 
 def generate_common_properties(widget):
     """\
@@ -966,6 +915,7 @@ def get_property_handler(property_name, widget_name):
     if cls: return cls()
     return None
 
+
 def add_property_handler(property_name, handler, widget_name=None):
     """\
     sets a function to parse a portion of XML to get the value of the property
@@ -977,6 +927,7 @@ def add_property_handler(property_name, handler, widget_name=None):
         try: _property_writers[widget_name][property_name] = handler
         except KeyError:
             _property_writers[widget_name] = { property_name: handler }
+
 
 def add_widget_handler(widget_name, handler,
                        constructor=None,
