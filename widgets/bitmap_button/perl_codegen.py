@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxBitmapButton objects
-# $Id: perl_codegen.py,v 1.4 2003/07/26 12:07:33 agriggio Exp $
+# $Id: perl_codegen.py,v 1.5 2003/08/07 12:22:01 agriggio Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge
 # License: MIT (see license.txt)
@@ -44,11 +44,26 @@ class PerlCodeGenerator:
                       parent, id, bmp) )
 
         props_buf = plgen.generate_common_properties(obj)
+
+        disabled_bmp = prop.get('disabled_bitmap')
+        if disabled_bmp:
+            if disabled_bmp.startswith('var:'):
+                var = disabled_bmp[4:].strip()
+                props_buf.append(
+                    '$self->{%s}->SetBitmapDisabled('
+                    'Wx::Bitmap->newFromXPM(%s));\n' % (obj.name, var))
+            else:
+                props_buf.append(
+                    '$self->{%s}->SetBitmapDisabled('
+                    'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY));\n' % \
+                    (obj.name, plgen.quote_path(disabled_bmp)))
+                
         if not prop.has_key('size'):
             props_buf.append(
                 '$self->{%s}->SetSize($self->{%s}->GetBestSize());\n' %
                 (obj.name, obj.name)
                 )
+
         if prop.get('default', False):
             props_buf.append('$self->{%s}->SetDefault();\n' % obj.name)
         return init, props_buf, []
