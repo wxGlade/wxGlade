@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.35 2003/07/26 09:15:57 agriggio Exp $
+# $Id: py_codegen.py,v 1.36 2003/07/26 12:06:36 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -111,8 +111,8 @@ class SourceFileContent:
         class_name = None
         new_classes_inserted = False
         # regexp to match class declarations
-#        class_decl = re.compile(r'^\s*class\s+([a-zA-Z_]\w*)\s*(\(\s*[a-zA-Z_]\w*\s*(,\s*[a-zA-Z_]\w*)*\s*\))?:\s*$')
-#jdubery - less precise regex, but matches definitions with base classes having module qualified names
+        # jdubery - less precise regex, but matches definitions with base
+        #           classes having module qualified names
         class_decl = re.compile(r'^\s*class\s+([a-zA-Z_]\w*)\s*'
                                 '(\([\s\w.,]*\))?:\s*$')
         # regexps to match wxGlade blocks
