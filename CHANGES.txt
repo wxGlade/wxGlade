@@ -1,4 +1,7 @@
 -------------------------------------------------------------------------------
+2003-08-30: version 0.3.1 released: sigh! we found an annoying bug on
+            pl_codegen.py right after releasing 0.3 :-(
+-------------------------------------------------------------------------------
 2003-08-29: version 0.3 released
 
 2003-07-26: codegen/pl_codegen.py, toolbar/perl_codegen.py,
