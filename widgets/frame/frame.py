@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.33 2004/09/30 20:35:34 agriggio Exp $
+# $Id: frame.py,v 1.34 2004/10/15 10:49:50 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -396,9 +396,12 @@ def builder(parent, sizer, pos, number=[0]):
     class Dialog(wxDialog):
         def __init__(self):
             wxDialog.__init__(self, None, -1, 'Select frame class')
-            if not number[0]: self.klass = 'MyFrame'
-            else: self.klass = 'MyFrame%s' % number[0]
-            number[0] += 1
+            if common.app_tree.app.get_language().lower() == 'xrc':
+                self.klass = 'wxFrame'
+            else:
+                if not number[0]: self.klass = 'MyFrame'
+                else: self.klass = 'MyFrame%s' % number[0]
+                number[0] += 1
             self.base = 0
             base_prop = RadioProperty(self, 'base class', self,
                                       ['wxFrame', 'wxMDIChildFrame'])
@@ -418,7 +421,8 @@ def builder(parent, sizer, pos, number=[0]):
             szr.Fit(self)
             
         def undo(self):
-            number[0] -= 1
+            if number[0] > 0:
+                number[0] -= 1
             
         def __getitem__(self, value):
             if value == 'class':
