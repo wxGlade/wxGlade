@@ -5,7 +5,7 @@
 <book>
   <title>wxGlade user manual</title>
   <bookinfo>
-    <date>$Date: 2004/01/27 11:55:36 $</date>
+    <date>$Date: 2004/01/27 12:27:21 $</date>
     <author>
       <firstname>documentation by Marcello</firstname>
       <surname>Semboli</surname>
@@ -812,6 +812,12 @@ the tree window.
         for the pushed status.</para>
         <para>Refer to <xref linkend="basic.bitmaps.section"/> for bitmap path 
         specifications.</para>
+    </section>
+    <section>
+        <title id="menu.statusbar.section">Statusbar</title>
+        <para>In the properties window you can edit the list of fields and his size, 
+        but remember to click on the <quote>Apply</quote> 
+        button to consolidate changes.</para>
     </section>
 </chapter>
   
