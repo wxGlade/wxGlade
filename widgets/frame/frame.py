@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.32 2004/09/17 13:09:53 agriggio Exp $
+# $Id: frame.py,v 1.33 2004/09/30 20:35:34 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -189,7 +189,7 @@ class EditFrame(TopLevelBase):
                           wxFRAME_NO_TASKBAR, wxNO_BORDER,
                           wxNO_FULL_REPAINT_ON_RESIZE]
         if misc.check_wx_version(2, 5):
-            style_labels.insert(4, 'wxCLOSE_BOX')
+            style_labels.insert(5, 'wxCLOSE_BOX')
             self.style_pos.insert(4, wxCLOSE_BOX)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # menubar property
