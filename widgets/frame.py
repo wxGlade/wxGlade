@@ -457,7 +457,7 @@ class EditMenuBar(EditBase):
                 else:
                     try: checkable = int(item.checkable)
                     except: checkable = 0
-                    menu.Append(wxNewId(), item.label, checkable=checkable)
+                    menu.Append(wxNewId(), item.label, "", checkable)
         first = self.widget.GetMenuCount()
         for menu in self.menus:
             m = wxMenu()
@@ -888,7 +888,7 @@ def menubar_code_generator(obj):
                         try: int(item.id)
                         except: append('%s = wxNewId()\n' % item.id)
                 if item.checkable == '1':
-                    append('%s.Append(%s, "%s", checkable=1)\n' %
+                    append('%s.Append(%s, "%s", "", 1)\n' %
                            (menu, item.id or 'wxNewId()',
                             item.label.replace('"', '\"')))
                 else:

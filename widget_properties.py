@@ -555,7 +555,8 @@ def _reverse_dict(src):
 class FontDialogProperty(DialogProperty):
     font_families_to = { 'default': wxDEFAULT, 'decorative': wxDECORATIVE,
                          'roman': wxROMAN, 'swiss': wxSWISS,
-                         'script':wxSCRIPT, 'modern': wxMODERN }
+                         'script':wxSCRIPT, 'modern': wxMODERN,
+                         'teletype': wxTELETYPE }
     font_families_from = _reverse_dict(font_families_to)
     font_styles_to = { 'normal': wxNORMAL, 'slant': wxSLANT,
                        'italic': wxITALIC }
@@ -571,9 +572,12 @@ class FontDialogProperty(DialogProperty):
             self.dialog[0] = wxFontDialog(parent, data)
             def get_value():
                 font = self.dialog.GetFontData().GetChosenFont()
+                family = font.GetFamily()
+                for f in (wxVARIABLE, wxFIXED):
+                    if family & f: family = family ^ f
                 return "['%s', '%s', '%s', '%s', '%s', '%s']" % \
                        (font.GetPointSize(),
-                        self.font_families_from[font.GetFamily()],
+                        self.font_families_from[family],
                         self.font_styles_from[font.GetStyle()],
                         self.font_weights_from[font.GetWeight()],
                         font.GetUnderlined(), font.GetFaceName())

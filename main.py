@@ -58,8 +58,11 @@ class wxGladeFrame(wxFrame):
         sizer_btns = self.load_sizers()
         
         TREE_ID = wxNewId()
-        view_menu.Append(TREE_ID, "Show &Tree\tCtrl+T", checkable=True)
+        view_menu.Append(TREE_ID, "Show &Tree\tCtrl+T", "", True)
         view_menu.Check(TREE_ID, True)
+        PROPS_ID = wxNewId()
+        view_menu.Append(PROPS_ID, "Show &Properties\tCtrl+P", "", True)
+        view_menu.Check(PROPS_ID, True)
         NEW_ID = wxNewId()
         file_menu.Append(NEW_ID, "&New\tCtrl+N")
         OPEN_ID = wxNewId()
@@ -81,9 +84,11 @@ class wxGladeFrame(wxFrame):
             (wxACCEL_CTRL, ord('t'), TREE_ID),
             (wxACCEL_CTRL, ord('n'), NEW_ID),
             (wxACCEL_CTRL, ord('o'), OPEN_ID),
-            (wxACCEL_CTRL, ord('s'), SAVE_ID)
+            (wxACCEL_CTRL, ord('s'), SAVE_ID),
+            (wxACCEL_CTRL, ord('p'), PROPS_ID)
             ]))
         EVT_MENU(parent, TREE_ID, self.show_tree)
+        EVT_MENU(parent, PROPS_ID, self.show_props_window)
         EVT_MENU(parent, NEW_ID, self.new_app)
         EVT_MENU(parent, OPEN_ID, self.open_app)
         EVT_MENU(parent, SAVE_ID, self.save_app)
@@ -109,7 +114,10 @@ class wxGladeFrame(wxFrame):
         self.frame2.SetAutoLayout(True)
         self.frame2.SetSizer(sizer_tmp)
         sizer_tmp = wxBoxSizer(wxVERTICAL)
-        EVT_CLOSE(self.frame2, self.hide_frame2)
+        def hide_frame2(event):
+            self.frame2.Hide()
+            menu_bar.Check(PROPS_ID, False)
+        EVT_CLOSE(self.frame2, hide_frame2)
         EVT_CLOSE(self, self.cleanup)
         common.property_panel = property_panel
         # setup of tree_frame
@@ -125,7 +133,7 @@ class wxGladeFrame(wxFrame):
         
         def on_tree_frame_close(event):
             self.tree_frame.Hide()
-            menu_bar.Check(TREE_ID, 0)
+            menu_bar.Check(TREE_ID, True)
         EVT_CLOSE(self.tree_frame, on_tree_frame_close)
         self.frame2.SetSize((250, 340))
         self.SetPosition((0, 0))
@@ -188,11 +196,14 @@ class wxGladeFrame(wxFrame):
                     common.code_writers[writer.language] = writer
                     print 'loaded code generator for %s' % writer.language
 
-    def hide_frame2(self, event):
-        self.frame2.Hide()
-
     def show_tree(self, event):
         self.tree_frame.Show(event.IsChecked())
+
+    def show_props_window(self, event):
+        self.frame2.Show(event.IsChecked())
+        common.app_tree.app.show_properties()
+        if common.app_tree.cur_widget:
+            common.app_tree.cur_widget.show_properties()
 
     def ask_save(self):
         """\
