@@ -5,7 +5,8 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 from wxPython.wx import *
-import common, misc
+
+import common, misc, config
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
@@ -53,7 +54,7 @@ class EditWidget(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         szr = wxBoxSizer(wxVERTICAL)
         for name in self.property_names:
             self.properties[name].display(panel)
@@ -61,7 +62,10 @@ class EditWidget(ManagedBase):
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
+        w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, 'Widget')
+        import math
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
 # end of class EditWidget
         
@@ -74,18 +78,31 @@ def increment_label(label, number=[1]):
     return _label
         
 
-def add_widget_node(widget, sizer, pos, from_xml=False):
+def add_widget_node(widget, sizer, pos, from_xml=False,
+                    option=0, flag=0, border=0):
     node = Tree.Node(widget)
     widget.node = node
+
+    if not border and config.preferences.default_border:
+        flag |= wxALL
+        border = config.preferences.default_border_size
+
+    if option: widget.set_option(option)
+    if flag: widget.set_int_flag(flag)
+    if border: widget.set_border(border)   
     if not from_xml: widget.show_widget(True)
+    sizer.set_item(widget.pos, option, flag, border)
+
     if pos is None: common.app_tree.add(node, sizer.node)
     else: common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def get_label_from_xml(attrs):
     from xml_parse import XmlParsingError
-    try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    try:
+        return attrs['name']
+    except KeyError:
+        raise XmlParsingError, "'name' attribute missing"
 
 
 def initialize(edit_klass, builder, xml_builder, icon_path):
