@@ -380,6 +380,14 @@ class XmlWidgetObject:
             if hasattr(sizeritem, 'pos'):
                 pos = sizeritem.pos
             else: pos = None
+			
+            if parent and hasattr(parent, 'virtual_sizer') and \
+                    parent.virtual_sizer:
+                sizer = parent.virtual_sizer
+                sizer.node = parent.node
+                sizeritem = Sizeritem()
+                if pos is None:
+                    pos = sizer.get_itempos(attrs)
             
             # build the widget
             self.obj = common.widgets_from_xml[base](attrs, parent, sizer,
@@ -390,7 +398,6 @@ class XmlWidgetObject:
             except AttributeError: pass
             
             # push the object on the appropriate stack
-            import edit_sizers
             if isinstance(self.obj, edit_sizers.SizerBase):
                 self.parser._sizers.push(self)
                 self.in_sizers = True

@@ -1,3 +1,7 @@
+2003-04-23: edit_sizers/edit_sizers.py, widgets/splitter_window/*,
+            widgets/notebook/*, xml_parse.py et al:
+                new "virtual sizers" interface
+
 2003-04-17: main.py, widgets/frame/frame.py, widgets/dialog/dialog.py, misc.py,
             config.py, common.py:
                 - added ability to cancel the addition of a widget

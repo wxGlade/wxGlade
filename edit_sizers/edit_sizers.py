@@ -46,8 +46,11 @@ class SizerSlot:
     def on_enter(self, event):
         # hack. definitely. but...
         misc._currently_under_mouse = self.widget
-        if common.adding_widget: self.widget.SetCursor(wxCROSS_CURSOR)
-        else: self.widget.SetCursor(wxNullCursor)
+        if common.adding_widget and \
+                (not common.adding_sizer or not self.sizer.is_virtual()):
+            self.widget.SetCursor(wxCROSS_CURSOR)
+        else:
+            self.widget.SetCursor(wxNullCursor)
         event.Skip()
 
     def on_leave(self, event):
@@ -73,15 +76,19 @@ class SizerSlot:
         if not self.menu:
             self.menu = wxMenu('Options')
             REMOVE_ID, PASTE_ID = wxNewId(), wxNewId()
-            misc.append_item(self.menu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
+            if not self.sizer.is_virtual():
+                # we cannot remove items from virtual sizers
+                misc.append_item(self.menu, REMOVE_ID, 'Remove\tDel',
+                                 'remove.xpm')
             misc.append_item(self.menu, PASTE_ID, 'Paste\tCtrl+V', 'paste.xpm')
             EVT_MENU(self.widget, REMOVE_ID, self.remove)
             EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)            
         self.widget.PopupMenu(self.menu, event.GetPosition())
 
     def remove(self, *args):
-        self.sizer.remove_item(self)
-        self.delete()
+        if not self.sizer.is_virtual():
+            self.sizer.remove_item(self)
+            self.delete()
 
     def drop_widget(self, event):
         """\
@@ -92,6 +99,8 @@ class SizerSlot:
         if not common.adding_widget:
             misc.focused_widget = self
             self.widget.SetFocus()
+            return
+        if common.adding_sizer and self.sizer.is_virtual():
             return
         common.adding_widget = False
         common.adding_sizer = False
@@ -378,24 +387,81 @@ class InsertDialog(wxDialog):
 # end of class InsertDialog
 
 
-class SizerBase:
+class Sizer:
     """\
     Base class for every Sizer handled by wxGlade
     """
+    def __init__(self, window):
+        self.window = window # window this sizer is responsible
+                             # for the layout of
+        
+    def set_item(self, pos, option=None, flag=None, border=None, size=None,
+                 force_layout=True):
+        """\
+        Updates the layout of the item at the given pos.
+        """
+        raise NotImplementedError
+        
+    def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None,
+                 force_layout=True):
+        """\
+        Adds an item to self.
+        """
+        raise NotImplementedError
+        
+    def remove_item(self, elem, force_layout=True):
+        """\
+        Removes elem from self.
+        """
+        pass
+    
+    def free_slot(self, pos, force_layout=True):
+        """\
+        Replaces the element at pos with an empty slot
+        """
+        raise NotImplementedError
+        
+    def _fix_notebook(self, pos, notebook_sizer, force_layout=True):
+        """\
+        Internal method used to replace a notebook widget with its notebook
+        sizer.
+        """
+        pass
+    
+    def is_virtual(self):
+        """\
+        Return true if sizer is virtual (f.e. SplitterWindowSizer)
+        """
+        return False
+
+    def get_itempos(self, attrs):
+        """\
+        For virtual sizers only, returns the position of the item
+        in the parent: this is used when loading a wxg file, to build the
+        tree of widgets correctly
+        """
+        raise NotImplementedError
+
+# end of class Sizer
+
+
+class SizerBase(Sizer):
+    """\
+    Base class for every non-virtual Sizer handled by wxGlade
+    """
     def __init__(self, name, klass, window, toplevel=True, show=True,
                  menu=None):
+        Sizer.__init__(self, window)
         self.id = wxNewId()
         self.name = name
         self.klass = klass
         self.base = klass
         self.pos = 0 # for sub-sizers, the position inside the parent
         self.properties = {}
-        self.property_window = window.property_window 
-        self.window = window # window this sizer is responsible
-                             # for the layout of
-
+        self.property_window = window.property_window
+        
         self.widget = None # this is the actual wxSizer instance
-
+        
         # toplevel: if True, self is not inside another sizer, but it is the
         # responsible of the layout of self.window
         self.toplevel = toplevel
@@ -474,7 +540,9 @@ class SizerBase:
             def write(*args, **kwds): pass
             pos_p.write = write
 
-    def get_pos(self): return self.pos - 1
+    def get_pos(self):
+        return self.pos - 1
+    
     def set_pos(self, value):
         self.sizer.change_item_pos(self, min(value + 1,
                                              len(self.sizer.children) - 1))
@@ -720,7 +788,8 @@ class SizerBase:
         if not self.widget: return
 
         from edit_windows import TopLevelBase
-        if self.toplevel and not isinstance(self.window, TopLevelBase):
+        if self.toplevel and not isinstance(self.window, TopLevelBase) and \
+                hasattr(self.window.sizer, 'widget'):
             if not self.window.properties['size'].is_active():
                 szr = self.window.sizer.widget
                 w, h = self.window.widget.GetBestSize()

@@ -47,6 +47,9 @@ class EditTreeCtrl(ManagedBase):
         self.widget.Expand(root)
         self.widget.Expand(self._item_with_name)
 
+    def finish_widget_creation(self):
+        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
+
     def set_name(self, name):
         ManagedBase.set_name(self, name)
         if self.widget and self._item_with_name:

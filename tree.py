@@ -42,7 +42,7 @@ class Tree:
                     
         def __repr__(self):
             try: return self.widget.name
-            except AttributeError: return `self.widget`
+            except AttributeError: return repr(self.widget)
 
         def write(self, outfile, tabs):
             """\
@@ -80,7 +80,8 @@ class Tree:
         self.app = app # reference to the app properties
         self.names = {} # dictionary of names of the widgets 
 
-    def has_name(self, name): return self.names.has_key(name)
+    def has_name(self, name):
+        return self.names.has_key(name)
 
     def add(self, child, parent=None):
         if parent is None: parent = self.root 
@@ -143,7 +144,8 @@ class Tree:
                                   top_window, encoding, use_gettext]))
                       )
         if self.root.children is not None:
-            [c.write(outfile, tabs+1) for c in self.root.children]
+            for c in self.root.children:
+                c.write(outfile, tabs+1)
         outfile.write('</application>\n')
 
     def change_node(self, node, widget):
@@ -254,9 +256,10 @@ class WidgetTree(wxTreeCtrl, Tree):
         Tree.insert(self, child, parent, index)
         child.item = self.InsertItemBefore(parent.item, index,
                                            child.widget.name, image_index)
-        if self.auto_expand: self.Expand(parent.item)
         self.SetPyData(child.item, child)
-        self.select_item(child)
+        if self.auto_expand:
+            self.Expand(parent.item)
+            self.select_item(child)
         child.widget.show_properties()
 
     def remove(self, node=None):

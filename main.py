@@ -440,6 +440,7 @@ class wxGladeFrame(wxFrame):
         Adds a widget or a sizer to the current app.
         """
         common.adding_widget = True
+        common.adding_sizer = False
         tmp = event.GetId()
         common.widget_to_add = common.refs[tmp]
         # TODO: find a better way

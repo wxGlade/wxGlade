@@ -49,6 +49,9 @@ class EditListCtrl(ManagedBase):
         self.widget.InsertColumn(1, self.name)
         EVT_LIST_COL_CLICK(self.widget, self.widget.GetId(), self.on_set_focus)
 
+    def finish_widget_creation(self):
+        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
+
     def set_name(self, name):
         ManagedBase.set_name(self, name)
         if self.widget:
