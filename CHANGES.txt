@@ -1,3 +1,6 @@
+2004-02-07: config.py: 
+                config path is now under APPDATA ok windows
+
 2004-01-25: widgets/bitmap_button/*, widgets/toolbar/*, 
             widgets/static_bitmap/*:
                 added "code:" tag
