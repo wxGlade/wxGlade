@@ -26,3 +26,18 @@ class ChoicesCodeHandler:
         self.curr_choice.append(data)
 
 # end of class ChoicesCodeHandler
+
+
+def xrc_write_choices_property(xrc_obj, outfile, tabs):
+    """\
+    function used to write the XRC code for a ``choices'' property
+    """
+    from xml.sax.saxutils import escape
+    choices = xrc_obj.properties['choices']
+    write = outfile.write
+    write('    '*tabs + '<content>\n')
+    tab_s = '    ' * (tabs+1)
+    for choice in choices:
+        write(tab_s + '<item>%s</item>\n' % escape(choice))
+    write('    '*tabs + '</content>\n')
+

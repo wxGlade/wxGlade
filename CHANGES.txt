@@ -1,3 +1,7 @@
+2002-08-04 / 2002-08-06: many bugfixes all around,
+	    codegen/xrc_codegen.py: first experimental code generator for 
+				    wxWindows' XRC resources
+
 2002-08-03: codegen/py_codegen.py, edit_sizers/sizers_codegen.py, xml_parse.py:
 		changes to separate sizers from windows in the generated code,
 		and to put sizers declarations in the __do_layout method

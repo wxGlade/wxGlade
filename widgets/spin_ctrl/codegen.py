@@ -41,10 +41,32 @@ def python_code_generator(obj):
     return init, props_buf, []
 
 
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+    class SpinCtrlXrcObject(xrcgen.DefaultXrcObject):
+        def write_property(self, name, val, outfile, tabs):
+            if name == 'range':
+                try: min, max = val.split(',')
+                except ValueError: pass
+                else:
+                    tab_s = '    '*tabs
+                    outfile.write(tab_s + '<min>%s</min>\n' % min)
+                    outfile.write(tab_s + '<max>%s</max>\n' % max)
+            else:
+                xrcgen.DefaultXrcObject.write_property(self, name, val,
+                                                       outfile, tabs)
+
+    # end of class SpinCtrlXrcObject
+    
+    return SpinCtrlXrcObject(obj)
+
+
 def initialize():
     common.class_names['EditSpinCtrl'] = 'wxSpinCtrl'
     
     pygen = common.code_writers.get('python')
     if pygen:
         pygen.add_widget_handler('wxSpinCtrl', python_code_generator)
-    
+    xrcgen = common.code_writers.get("XRC")
+    if xrcgen:
+        xrcgen.add_widget_handler('wxSpinCtrl', xrc_code_generator)
