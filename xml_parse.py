@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.28 2003/10/24 14:05:03 agriggio Exp $
+# $Id: xml_parse.py,v 1.29 2004/01/18 19:45:04 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -139,6 +139,11 @@ class XmlWidgetBuilder(XmlParser):
             if overwrite:
                 app.overwrite = True
                 app.overwrite_prop.set_value(True)
+            # ALB 2004-01-18
+            try: use_new_namespace = int(attrs['use_new_namespace'])
+            except (KeyError, ValueError): use_new_namespace = False
+            app.set_use_new_namespace(use_new_namespace)
+            app.use_new_namespace_prop.set_value(use_new_namespace)
             return
         if not self._appl_started:
             raise XmlParsingError("the root of the tree must be <application>")

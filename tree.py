@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.33 2003/12/07 13:10:19 agriggio Exp $
+# $Id: tree.py,v 1.34 2004/01/18 19:45:04 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -144,13 +144,16 @@ class Tree:
         encoding = self.app.get_encoding()
         use_gettext = str(int(self.app.use_gettext))
         overwrite = str(int(self.app.overwrite))
+        # ALB 2004-01-18
+        use_new_namespace = str(int(self.app.get_use_new_namespace()))
         outfile.write('<application path=%s name=%s class=%s option=%s ' \
                       'language=%s top_window=%s encoding=%s ' \
-                      'use_gettext=%s overwrite=%s>\n' \
+                      'use_gettext=%s overwrite=%s '
+                      'use_new_namespace=%s>\n' \
                       % tuple(map(quoteattr,
                                   [outpath, name, klass, option, language,
                                    top_window, encoding, use_gettext,
-                                   overwrite]))
+                                   overwrite, use_new_namespace]))
                       )
         if self.root.children is not None:
             for c in self.root.children:
@@ -356,6 +359,7 @@ class WidgetTree(wxTreeCtrl, Tree):
         else: self.Collapse(node.item)
 
     def set_title(self, value):
+        if value is None: value = ""
         self.title = value
         try: self.GetParent().SetTitle('wxGlade: Tree %s' % value)
         except: pass

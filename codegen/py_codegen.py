@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.41 2004/01/05 17:22:04 agriggio Exp $
+# $Id: py_codegen.py,v 1.42 2004/01/18 19:45:04 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -293,6 +293,11 @@ def initialize(app_attrs):
     # this is to be more sure to replace the right tags
     nonce = '%s%s' % (str(time.time()).replace('.', ''),
                       random.randrange(10**6, 10**7))
+
+    # ALB 2004-01-18
+    global use_new_namespace
+    try: use_new_namespace = int(app_attrs['use_new_namespace'])
+    except (KeyError, ValueError): pass # use the default value
     
     classes = {}
     _current_extra_modules = {}

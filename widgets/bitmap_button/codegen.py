@@ -1,21 +1,11 @@
 # codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.15 2003/12/20 00:23:53 agriggio Exp $
+# $Id: codegen.py,v 1.16 2004/01/18 19:45:04 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import common, os
-
-_bmp_str_types = {
-    '.bmp' : 'wxBITMAP_TYPE_BMP',
-    '.gif' : 'wxBITMAP_TYPE_GIF',
-    '.xpm' : 'wxBITMAP_TYPE_XPM',
-    '.jpg' : 'wxBITMAP_TYPE_JPEG',
-    '.jpeg': 'wxBITMAP_TYPE_JPEG',
-    '.png' : 'wxBITMAP_TYPE_PNG',
-    '.pcx' : 'wxBITMAP_TYPE_PCX'
-    }
 
 class PythonCodeGenerator:
     def get_code(self, obj):
@@ -32,8 +22,9 @@ class PythonCodeGenerator:
             if obj.preview:
                 bmp = cn('wxEmptyBitmap') + '(1, 1)'
             else:
-                bmp = (cn('wxBitmapFromXPMData') + '(%s)') % \
-                      bmp_file[4:].strip()
+                # ALB 2004-01-18: changed from wxBitmapFromXPMData to wxBitmap
+                bmp = (cn('wxBitmap') + '(%s, %s)') % \
+                      (bmp_file[4:].strip(), cn('wxBITMAP_TYPE_ANY'))
         else:
             bmp = (cn('wxBitmap') + '(%s, ' + cn('wxBITMAP_TYPE_ANY') +
                    ')') % pygen.quote_str(bmp_file, False, False)
@@ -52,8 +43,8 @@ class PythonCodeGenerator:
                     var = disabled_bmp[4:].strip()
                     props_buf.append(
                         ('self.%s.SetBitmapDisabled(' +
-                         cn('wxBitmapFromXPMData') +'(%s))\n') % \
-                        (obj.name, var))
+                         cn('wxBitmap') +'(%s, %s))\n') % \
+                        (obj.name, var, cn('wxBITMAP_TYPE_ANY')))
             else:
                 props_buf.append(('self.%s.SetBitmapDisabled(' +
                                   cn('wxBitmap') + '(%s, ' +

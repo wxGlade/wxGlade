@@ -1,5 +1,5 @@
 # about.py: about box with general info
-# $Id: about.py,v 1.15 2003/05/13 10:13:51 agriggio Exp $
+# $Id: about.py,v 1.16 2004/01/18 19:45:04 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -8,7 +8,7 @@
 from wxPython.wx import *
 from wxPython.html import *
 import wxPython.lib.wxpTag
-import common, misc, os.path
+import common, misc, os.path, sys
 
 class wxGladeAboutBox(wxDialog):
     text = '''
