@@ -1,5 +1,5 @@
 # events_mixin.py: mixin class for 'events' property
-# $Id: events_mixin.py,v 1.2 2004/12/10 12:30:53 agriggio Exp $
+# $Id: events_mixin.py,v 1.3 2004/12/10 18:45:59 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sf.net>
 # License: MIT (see license.txt)
@@ -51,14 +51,19 @@ class EventsProperty(GridProperty):
         else:
             handlers = self.owner[self.name][0]()
         if handlers:
+            written = False
             write = outfile.write
-            write('    ' * tabs + '<events>\n')
+            #write('    ' * tabs + '<events>\n')
             stab = '    ' * (tabs+1)
             for event, handler in handlers:
                 if handler:
+                    if not written:
+                        written = True
+                        write('    ' * tabs + '<events>\n')
                     write('%s<handler event=%s>%s</handler>\n' %
                           (stab, quoteattr(event), escape(handler.strip())))
-            write('    ' * tabs + '</events>\n')
+            if written:
+                write('    ' * tabs + '</events>\n')
 
     def on_change_val(self, event):
         val = self.get_value()
