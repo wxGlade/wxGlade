@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.11 2003/07/11 16:10:43 agriggio Exp $
+# $Id: pl_codegen.py,v 1.12 2003/07/13 12:17:08 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -965,7 +965,7 @@ def generate_code_id(obj):
         return '', tokens[0] # we assume name is declared elsewhere
     if not name:
         return '', val
-    return ('%s = %s\n' % (name, val), name)
+    return ('use constant %s => %s;\n' % (name, val), name)
 
 
 def generate_code_tooltip(obj):
