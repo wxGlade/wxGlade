@@ -17,7 +17,7 @@ class EditSpacer(ManagedBase):
         """
         ManagedBase.__init__(self, name, 'spacer', parent, id, sizer,
                              pos, property_window, show=show)
-        self.size = [width, height]
+        self.__size = [width, height]
 
         self.access_functions['width'] = (self.get_width, self.set_width)
         self.access_functions['height'] = (self.get_height, self.set_height)
@@ -26,7 +26,7 @@ class EditSpacer(ManagedBase):
         self.properties['height'] = SpinProperty(self, 'height', None)
 
     def create_widget(self):
-        self.widget = wxPanel(self.parent.widget, self.id, size=self.size)
+        self.widget = wxPanel(self.parent.widget, self.id, size=self.__size)
         self.widget.GetBestSize = self.widget.GetSize
         
     def create_properties(self):
@@ -48,26 +48,26 @@ class EditSpacer(ManagedBase):
         common_page.Hide()
         self.notebook.RemovePage(0)
         self.notebook.SetSelection(0)
-
+        
     def get_width(self):
-        return self.size[0]
+        return self.__size[0]
 
     def get_height(self):
-        return self.size[1]
+        return self.__size[1]
 
     def set_width(self, value):
         value = int(value)
-        self.size[0] = value
+        self.__size[0] = value
         if self.widget:
-            self.widget.SetSize(self.size)
-        self.sizer.set_item(self.pos, size=self.size)
+            self.widget.SetSize(self.__size)
+        self.sizer.set_item(self.pos, size=self.__size)
 
     def set_height(self, value):
         value = int(value)
-        self.size[1] = value
+        self.__size[1] = value
         if self.widget:
-            self.widget.SetSize(self.size)
-        self.sizer.set_item(self.pos, size=self.size)
+            self.widget.SetSize(self.__size)
+        self.sizer.set_item(self.pos, size=self.__size)
 
 # end of class EditSpacer
         

@@ -17,7 +17,7 @@ class wxGladeAboutBox(wxDialog):
     cellpadding="2" border="2">
     <tr>
         <td align="center">
-        <h3>wxGlade %s: a GUI builder for<br>wxPython</h3>
+        <h3>wxGlade %s: a GUI builder for<br>wxPython/wxWindows</h3>
         Running on Python %s and wxPython %s<br>
         </td>
     </tr>

@@ -985,6 +985,57 @@ class EditGridSizer(GridSizerBase):
 
 # end of class EditGridSizer
 
+class CheckListDialogProperty(DialogProperty):
+    dialog = [None]
+    def __init__(self, owner, name, parent, title, message, callback,
+                 can_disable=True):
+        if not self.dialog[0]:
+            class Dialog(wxDialog):
+                def __init__(self):
+                    wxDialog.__init__(self, parent, -1, title)
+                    sizer = wxBoxSizer(wxVERTICAL)
+                    sizer.Add(wxStaticText(self, -1, message), 0,
+                              wxTOP|wxLEFT|wxRIGHT, 10)
+                    self.choices = wxCheckListBox(self, -1, choices=[])
+                    sizer.Add(self.choices, 1, wxEXPAND|wxLEFT|wxRIGHT, 10)
+                    sizer.Add(wxStaticLine(self, -1), 0, wxEXPAND|wxALL, 10)
+                    sz2 = wxBoxSizer(wxHORIZONTAL)
+                    sz2.Add(wxButton(self, wxID_OK, "OK"), 0, wxALL, 10)
+                    sz2.Add(wxButton(self, wxID_CANCEL, "Cancel"), 0,wxALL, 10)
+                    sizer.Add(sz2, 0, wxALIGN_CENTER)
+                    self.SetAutoLayout(True)
+                    self.SetSizer(sizer)
+                    sizer.Fit(self)
+
+                def get_value(self):
+                    ret = []
+                    for c in range(self.choices.Number()):
+                        if self.choices.IsChecked(c): ret.append(str(c))
+                    return ",".join(ret)
+
+                def set_choices(self, values):
+                    if wxPlatform != '__WXGTK__':
+                        self.choices.Set(values)
+                    else:
+                        self.choices.Clear()
+                        for v in values:
+                            self.choices.Append(v)
+            # end of class Dialog
+            self.dialog[0] = Dialog()
+            
+        DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
+                                can_disable)
+        self.choices_setter = callback
+
+    def display_dialog(self, event):
+        self.set_choices(self.choices_setter())
+        DialogProperty.display_dialog(self, event)
+
+    def set_choices(self, values):
+        self.dialog.set_choices(values)
+
+# end of class CheckListDialogProperty
+    
 
 class EditFlexGridSizer(GridSizerBase):
     """\
@@ -999,6 +1050,10 @@ class EditFlexGridSizer(GridSizerBase):
         self.widget = CustomSizer(self, wxFlexGridSizer, self.rows, self.cols,
                                   self.vgap, self.hgap)
         GridSizerBase.create_widget(self)
+        for r in self.grow_rows:
+            self.widget.AddGrowableRow(r)
+        for c in self.grow_cols:
+            self.widget.AddGrowableCol(c)
         if not self.toplevel:
             self.sizer.add_item(self, self.pos, self.option, self.flag,
                                 self.border) #, self.widget.GetMinSize())
@@ -1006,6 +1061,40 @@ class EditFlexGridSizer(GridSizerBase):
             w, h = self.window.widget.GetClientSize()
             self._adjust_initial_size(w, h)
 
+    def _property_setup(self):
+        GridSizerBase._property_setup(self)
+        self.grow_rows = []
+        self.access_functions['growable_rows'] = (self.get_growable_rows,
+                                                  self.set_growable_rows)
+        self.grow_cols = []
+        self.access_functions['growable_cols'] = (self.get_growable_cols,
+                                                  self.set_growable_cols)
+        def rows_setter():
+            return map(str, range(self.get_rows()))
+        pr = CheckListDialogProperty(self, 'growable_rows', None,
+                                     'Growable Rows', 'Select growable rows',
+                                     rows_setter)
+        self.properties['growable_rows'] = pr
+        def cols_setter():
+            return map(str, range(self.get_cols()))
+        pr = CheckListDialogProperty(self, 'growable_cols', None,
+                                     'Growable Columns',
+                                     'Select growable columns',
+                                     cols_setter)
+        self.properties['growable_cols'] = pr
+
+    def create_properties(self):
+        GridSizerBase.create_properties(self)
+        page = self.notebook.GetPage(1)
+        sizer = page.GetSizer()
+        props = self.properties
+        props['growable_rows'].display(page)
+        props['growable_cols'].display(page)
+        sizer.Add(props['growable_rows'].panel, 0, wxEXPAND)
+        sizer.Add(props['growable_cols'].panel, 0, wxEXPAND)
+        sizer.Layout()
+        sizer.Fit(page)
+        
     def _adjust_initial_size(self, w, h):
         if self.widget:
             w = w/(self.widget.GetCols() or 1)
@@ -1013,6 +1102,33 @@ class EditFlexGridSizer(GridSizerBase):
             for c in self.children[1:]:
                 self.widget.SetItemMinSize(c.item.widget, w, h)
             self.Layout()
+
+    def set_growable_rows(self, value):
+        try: self.grow_rows = [int(i) for i in value.split(',')]
+        except: return
+        if self.widget:
+            for i in range(self.widget.GetRows()):
+                self.widget.RemoveGrowableRow(i)
+            else:
+                for r in self.grow_rows:
+                    try: self.widget.AddGrowableRow(r)
+                    except:
+                        import traceback; traceback.print_exc()
+
+    def set_growable_cols(self, value):
+        try: self.grow_cols = [int(i) for i in value.split(',')]
+        except: return
+        if self.widget:
+            for i in range(self.widget.GetCols()):
+                self.widget.RemoveGrowableCol(i)
+            else:
+                for c in self.grow_cols:
+                    try: self.widget.AddGrowableCol(c)
+                    except:
+                        import traceback; traceback.print_exc()
+
+    def get_growable_rows(self): return ','.join(map(str, self.grow_rows))
+    def get_growable_cols(self): return ','.join(map(str, self.grow_cols))
 
 # end of class EditFlexGridSizer
     

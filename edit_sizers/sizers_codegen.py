@@ -67,7 +67,15 @@ def wxFlexGridSizer_builder(obj):
     """\
     function used to generate the python code for wxFlexGridSizer objects.
     """
-    return _GridSizers_builder(obj, 'wxFlexGridSizer')
+    init, p, layout = _GridSizers_builder(obj, 'wxFlexGridSizer')
+    props = obj.properties
+    if props.has_key('growable_rows'):
+        for r in props['growable_rows'].split(','):
+            layout.append('%s.AddGrowableRow(%s)\n' % (obj.name, r.strip()))
+    if props.has_key('growable_cols'):
+        for r in props['growable_cols'].split(','):
+            layout.append('%s.AddGrowableCol(%s)\n' % (obj.name, r.strip()))
+    return init, p, layout
 
 
 def cpp_wxBoxSizer_builder(obj):
@@ -141,7 +149,35 @@ def cpp_wxFlexGridSizer_builder(obj):
     """\
     function used to generate the C++ code for wxFlexGridSizer objects.
     """
-    return _cpp_GridSizers_builder(obj, 'wxFlexGridSizer')
+    init, p, layout = _cpp_GridSizers_builder(obj, 'wxFlexGridSizer')
+    props = obj.properties
+    if props.has_key('growable_rows'):
+        for r in props['growable_rows'].split(','):
+            layout.append('%s->AddGrowableRow(%s);\n' % (obj.name, r.strip()))
+    if props.has_key('growable_cols'):
+        for r in props['growable_cols'].split(','):
+            layout.append('%s->AddGrowableCol(%s);\n' % (obj.name, r.strip()))
+    return init, p, layout
+
+
+def xrc_wxFlexGridSizer_builder(obj):
+    xrcgen = common.code_writers['XRC']
+    class FlexGridSizerXrcObject(xrcgen.DefaultXrcObject):
+        def write_property(self, name, val, outfile, tabs):
+            if val and name in ('growable_rows', 'growable_cols'):
+                if name == 'growable_rows': name2 = 'growablerows'
+                else: name2 = 'growablecols'
+                for v in val.split(','):
+                    outfile.write('    '*tabs + '<%s>%s</%s>\n' %
+                                  (name2, v.strip(), name2))
+            else:
+                xrcgen.DefaultXrcObject.write_property(self, name, val,
+                                                       outfile, tabs)
+
+    # end of class FlexGridSizerXrcObject
+
+    return FlexGridSizerXrcObject(obj)
+    
 
 
 def initialize():
@@ -165,3 +201,7 @@ def initialize():
         awh('wxStaticBoxSizer', cpp_wxStaticBoxSizer_builder)
         awh('wxGridSizer', cpp_wxGridSizer_builder)
         awh('wxFlexGridSizer', cpp_wxFlexGridSizer_builder)
+    xrcgen = common.code_writers.get("XRC")
+    if xrcgen:
+        xrcgen.add_widget_handler('wxFlexGridSizer',
+                                  xrc_wxFlexGridSizer_builder)
