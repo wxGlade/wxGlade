@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.15 2003/08/02 13:26:32 agriggio Exp $
+# $Id: dialog.py,v 1.16 2004/01/31 08:46:13 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -106,9 +106,10 @@ class EditDialog(TopLevelBase):
         return self.icon 
 
     def set_icon(self, value):
-        self.icon = value
+        self.icon = value.strip()
         if self.widget:
-            if self.icon:
+            if self.icon and not (self.icon.startswith('var:') or
+                                  self.icon.startswith('code:')):
                 bmp = wxBitmap(self.icon, wxBITMAP_TYPE_ANY)
                 if not bmp.Ok():
                     self.set_icon("")
