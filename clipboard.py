@@ -26,18 +26,18 @@ class _WidgetDataObject(wxCustomDataObject):
         *args contains option, flag, border, xml_str.
         """
         assert len(args) == 4
-        # we have to ``confine'' our string between two markers as is seems to
-        # be polluted inside the clipboard
-        return ":%s:" % ":".join([str(elem) for elem in args])
+        return ":".join([str(elem) for elem in args])
 
     def GetWidgetData(self):
         """\
         Convert a string into option, flag, border and xml_string
         and returns them in a list.
         """
-        ret = self.GetData().split(":", 6)
-        assert len(ret) == 6, "Invalid data in the clipboard"
-        ret = ret[1:-1] # remove the empty strings at both ends
+        ret = self.GetData().split(":", 4)
+        assert len(ret) == 4, "Invalid data in the clipboard"
+        # remove the dirt at the end of xml_str
+        bound = ret[3].rfind('>')+1
+        ret[3] = ret[3][:bound]
         for i in range(3):
             # option, flag and border are integers.
             ret[i] = int(ret[i])
