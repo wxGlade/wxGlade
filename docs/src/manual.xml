@@ -5,9 +5,9 @@
 <book>
   <title>wxGlade user manual</title>
   <bookinfo>
-    <date>$Date: 2003/09/24 07:18:45 $</date>
+    <date>$Date: 2003/10/01 07:08:30 $</date>
     <author>
-      <firstname>Marcello</firstname>
+      <firstname>documentation by Marcello</firstname>
       <surname>Semboli</surname>
     </author>
   </bookinfo>
@@ -16,7 +16,7 @@
 <preface>
   <title>Preface</title>
     <para>
-        This manual describes the wxGlade program, a Python, Perl,  C++
+        This manual describes the Alberto Griggio's wxGlade program, a Python, Perl,  C++
         and XRC Graphical User Interface (<quote>GUI</quote>) Editor for UNIX and
         Microsoft Windows. Each of the chapters in this manual is designed
         as a tutorial for using wxGlade and a referense for widgets
@@ -68,6 +68,7 @@ of the program at <quote>Alberto Griggio</quote> <email>albgrig@tiscalinet.it</e
 <para>        The mantainer of this document is Marcello Semboli.</para>
 <para>        You can address any message regarding this document to 
 <quote>Marcello Semboli</quote> <email>dinogen@siena.linux.it</email>.
+Please, report syntax errors to me, english isn't my native language.
       </para>
     </section>
 
@@ -380,7 +381,7 @@ OPTIONS:
     <para>
     You have a visual presentation of your widget tree that 
     you can navigate by mouse, expand and collapse sizers,
-    copy, cut or remove widgwts.
+    copy, cut or remove widgets.
     </para>
     <para>
     A click on the tree window, on an icon you display properties of the corresponding element
@@ -388,12 +389,12 @@ OPTIONS:
     A double click in a frame, dialog on panel icon, make the designer window to show the 
     corresponding 
     Clicking with the right button of the mouse you get a pop up menu.
-      <figure>
-        <title>The menu for a widget</title>
+      <figure id="label_menu.fig">
+        <title id="label_menu.title">The menu for a widget</title>
         <graphic fileref="label_menu.png" />
       </figure>
-      <figure>
-        <title>The menu for a sizer</title>
+      <figure id="sizer_menu.fig">
+        <title id="sizer_menu.title">The menu for a sizer</title>
         <graphic fileref="sizer_menu.png" />
       </figure>
       The pop up menu for a widget allow you to copy, cut or remove the element. 
@@ -404,7 +405,7 @@ OPTIONS:
   <section>
     <title>Design Window</title>
     <para>
-      The design window show the frame or panel you are creating in WYSIWYG mode and  
+      The design window shows the frame or panel you are creating in WYSIWYG mode and  
       allow you to select a widget from the main window and to put it on a empty slot of a sizer.
       <figure>
         <title>The Design Window</title>
@@ -412,8 +413,45 @@ OPTIONS:
       </figure>
     </para>
     <para>
-    Clicking 
+    Clicking whit the right-button of the mouse on a widget you
+    can access to the context-menu. Notice that the sizers, 
+    that are invisible elements,  have a 
+    little gray "handle", that you can click to select the sizer 
+    or let the pop up menu appear.
     </para>
+    <para>The pop up menu is the same as you get in the Tree Window,
+    as shown in <xref linkend="label_menu.fig" />
+    or in <xref linkend="sizer_menu.fig" />.
+    </para>
+    </section>
+  <section>
+    <title>Properties Window</title>
+    <para>
+      The properties window let you see and edit the 
+      properties that 
+      applies to the element that you select. This window
+      consist in three tabs. The first tab contains the 
+      common properties that apply to all widgets.
+      <figure id="properties_window_tab_1.fig">
+        <title>The Properties Window</title>
+        <graphic fileref="properties_window_tab_1.png" />
+      </figure>
+    </para>
+    <para>
+    As shown in <xref linkend="properties_window_tab_1.fig"/>
+    The common properties are related to name, size, 
+    colors and fonts. 
+    </para>
+    <para>
+    The second tab is related to properties that controls position
+    and resizing inside the sizer.
+      <figure id="properties_window_tab_2.fig">
+        <title>The Properties Window</title>
+        <graphic fileref="properties_window_tab_2.png" />
+      </figure>
+    </para>
+    
+    </section>
 </chapter>
   
   
