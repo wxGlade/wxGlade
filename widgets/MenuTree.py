@@ -10,12 +10,13 @@ class MenuTree:
     """
     class Node:
         def __init__(self, label="", id="", name="", help_str="",
-                     checkable=""):
+                     checkable="", radio=""):
             self.label = label
             self.id = id
             self.name = name
             self.help_str = help_str
             self.checkable = checkable
+            self.radio = radio
             self.children = []
             self.parent = None
             
@@ -39,7 +40,12 @@ class MenuTree:
                                                                      help_str))
                 try: checkable = int(self.checkable)
                 except: checkable = 0
-                fwrite('%s<checkable>%s</checkable>\n' % (tstr, checkable))
+                if checkable:
+                    fwrite('%s<checkable>%s</checkable>\n' % (tstr, checkable))
+                try: radio = int(self.radio)
+                except: radio = 0
+                if radio:
+                    fwrite('%s<radio>%s</radio>\n' % (tstr, radio))
                 fwrite('%s</item>\n' % ('    ' * tabs))
             else:
                 name = quoteattr(self.name)
