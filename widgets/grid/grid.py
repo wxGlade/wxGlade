@@ -32,6 +32,7 @@ class EditGrid(ManagedBase):
         self.label_bg_color = '#C0C0C0'
         self.selection_mode = wxGrid.wxGridSelectCells
         self.create_grid = True
+        self.column_labels = ''
         
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
                              property_window, show=show)
@@ -86,6 +87,11 @@ class EditGrid(ManagedBase):
                                                ['wxGrid.wxGridSelectCells',
                                                 'wxGrid.wxGridSelectRows',
                                                 'wxGrid.wxGridSelectColumns'])
+        af['column_labels'] = (self.get_column_labels,
+                                self.set_column_labels)
+        props['column_labels']= TextProperty(self, 'column_labels', None,
+                                             can_disable=True)
+
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -95,8 +101,9 @@ class EditGrid(ManagedBase):
         self.properties['col_label_size'].display(panel)
         self.properties['enable_editing'].display(panel)
         self.properties['enable_grid_lines'].display(panel)
-        self.properties['columns_number'].display(panel)
         self.properties['rows_number'].display(panel)
+        self.properties['columns_number'].display(panel)
+        self.properties['column_labels'].display(panel)
         self.properties['enable_col_resize'].display(panel)
         self.properties['enable_row_resize'].display(panel)
         self.properties['enable_grid_resize'].display(panel)
@@ -110,8 +117,9 @@ class EditGrid(ManagedBase):
                              "meaningful\nonly if 'Create grid' is selected"),
                 0, wxLEFT|wxRIGHT|wxEXPAND, 10)
         szr.Add(wxStaticLine(panel, -1), 0, wxALL|wxEXPAND, 5)
-        szr.Add(self.properties['columns_number'].panel, 0, wxEXPAND)
         szr.Add(self.properties['rows_number'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['columns_number'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['column_labels'].panel, 0, wxEXPAND)
         szr.Add(self.properties['row_label_size'].panel, 0, wxEXPAND)
         szr.Add(self.properties['col_label_size'].panel, 0, wxEXPAND)
         szr.Add(self.properties['lines_color'].panel, 0, wxEXPAND)
@@ -149,6 +157,13 @@ class EditGrid(ManagedBase):
         self.widget.SetGridLineColour(misc.string_to_color(self.lines_color))
         self.widget.SetLabelBackgroundColour(misc.string_to_color(
             self.label_bg_color))
+        v = misc.smart_split(self.column_labels)
+        i = 0
+        for s in v:
+            if s != '' and i < self.columns_number:
+                self.widget.SetColLabelValue(i,s)
+            i = i + 1
+
         # A grid should be wxEXPANDed and 'option' should be 1,
         # or you can't see it.
         self.set_option(1)  
@@ -160,6 +175,7 @@ class EditGrid(ManagedBase):
         # these are to show the popup menu on right click
         EVT_GRID_CELL_RIGHT_CLICK(self.widget, self.popup_menu)
         EVT_GRID_LABEL_RIGHT_CLICK(self.widget, self.popup_menu)
+
 
     def get_create_grid(self):
         return self.create_grid
@@ -281,6 +297,7 @@ class EditGrid(ManagedBase):
         if self.selection_mode == wxGrid.wxGridSelectCells:   return 0
         if self.selection_mode == wxGrid.wxGridSelectRows:    return 1
         if self.selection_mode == wxGrid.wxGridSelectColumns: return 2
+        print "GET_selection_mode:" + str(self.selection_mode) 
 
     def set_selection_mode(self, value):
         if value == 0:
@@ -290,6 +307,20 @@ class EditGrid(ManagedBase):
         else:
             self.selection_mode = wxGrid.wxGridSelectColumns
         # no operation on the grid.
+
+    def get_column_labels(self):
+        return self.column_labels
+
+    def set_column_labels(self, value):
+        self.column_labels = str(value)
+        if self.widget:
+            v = misc.smart_split(self.column_labels)
+            i = 0
+            for s in v:
+                if s != '':
+                    self.widget.SetColLabelValue(i,s)
+                    i = i + 1
+
 
 # end of class EditGrid
         
