@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.42 2004/11/02 09:52:03 agriggio Exp $
+# $Id: application.py,v 1.43 2004/11/04 22:14:13 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -390,6 +390,8 @@ class Application(object):
             if preview and cw == 'python': # of course cw == 'python', but...
                 old = common.code_writers[cw].use_new_namespace
                 common.code_writers[cw].use_new_namespace = False
+                overwrite = self.overwrite
+                self.overwrite = True
             common.app_tree.write(out) # write the xml onto a temporary buffer
             if not os.path.isabs(self.output_path) and \
                self.filename is not None:
@@ -401,6 +403,7 @@ class Application(object):
                        preview=preview, out_path=out_path)
             if preview and cw == 'python':
                 common.code_writers[cw].use_new_namespace = old
+                self.overwrite = overwrite
         except (IOError, OSError), msg:
             wxMessageBox("Error generating code:\n%s" % msg, "Error",
                          wxOK|wxCENTRE|wxICON_ERROR)
@@ -506,9 +509,11 @@ class Application(object):
                 name = self.output_path + ext
                 if os.path.isfile(name):
                     os.unlink(name)
-        except:
+        except Exception, e:
             #traceback.print_exc()
-            wxMessageBox("Problem previewing gui", "Error",
+            widget.preview_widget = None
+            widget.preview_button.SetLabel('Preview')
+            wxMessageBox("Problem previewing gui: %s" % str(e), "Error",
                          wxOK|wxCENTRE|wxICON_EXCLAMATION, self.notebook)
         # restore app state
         widget.klass = widget_class_name

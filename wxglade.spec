@@ -6,7 +6,7 @@ Summary: 	wxWidgets/wxPython/wxPerl GUI designer
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
-Source0: 	%{name}-%{version}.tgz
+Source0: 	%{name}-%{version}.tar.gz
 License: 	MIT
 Group: 		Development/Tools
 BuildRoot: 	%{_tmppath}/%{name}-buildroot
