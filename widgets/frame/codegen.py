@@ -28,29 +28,31 @@ def python_menubar_code_generator(obj):
                     tokens = item.id.split('=')
                     if len(tokens) > 1:
                         append('%s = %s\n' % tuple(tokens))
+                        id = tokens[0]
                     else:
-                        try: int(item.id)
-                        except: append('%s = wxNewId()\n' % item.id)
+                        id = item.id
+                else: id = 'wxNewId()'
                 append_items(name, item.children)
-                append('%s.AppendMenu(%s, %s, %s)\n' %
-                       (menu, item.id or 'wxNewId()', '"%s"' %
-                        item.label.replace('"', '\"'), name))
+                append('%s.AppendMenu(%s, %s, %s, "%s")\n' %
+                       (menu, id, '"%s"' % item.label.replace('"', r'\"'),
+                        name, item.help_str.replace('"', r'\"')))
             else:
                 if item.id:
                     tokens = item.id.split('=')
                     if len(tokens) > 1:
                         append('%s = %s\n' % tuple(tokens))
+                        id = tokens[0]
                     else:
-                        try: int(item.id)
-                        except: append('%s = wxNewId()\n' % item.id)
+                        id = item.id
+                else: id = 'wxNewId()'
                 if item.checkable == '1':
-                    append('%s.Append(%s, "%s", "", 1)\n' %
-                           (menu, item.id or 'wxNewId()',
-                            item.label.replace('"', '\"')))
+                    append('%s.Append(%s, "%s", "%s", 1)\n' %
+                           (menu, id, item.label.replace('"', r'\"'),
+                            item.help_str.replace('"', r'\"')))
                 else:
-                    append('%s.Append(%s, "%s")\n' %
-                           (menu, item.id or 'wxNewId()',
-                            item.label.replace('"', '\"')))
+                    append('%s.Append(%s, "%s", "%s")\n' %
+                           (menu, id, item.label.replace('"', r'\"'),
+                            item.help_str.replace('"', r'\"')))
     #print 'menus = %s' % menus
     for m in menus:
         menu = m.root
@@ -60,7 +62,7 @@ def python_menubar_code_generator(obj):
         if menu.children:
             append_items(name, menu.children)
         append('self.%s.Append(%s, "%s")\n' %
-               (obj.name, name, menu.label.replace('"', '\"')))
+               (obj.name, name, menu.label.replace('"', r'\"')))
     append('# Menu Bar end\n')
     init.reverse()
     return init, [], []
@@ -126,7 +128,7 @@ class StatusFieldsHandler:
 
 class MenuHandler:
     """Handler for menus and menu items of a menubar"""
-    item_attrs = ('label', 'id', 'name', 'checkable')
+    item_attrs = ('label', 'id', 'name', 'help_str', 'checkable')
     def __init__(self):
         self.menu_depth = 0
         self.menus = []

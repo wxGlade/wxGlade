@@ -3,7 +3,7 @@
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
 # License: GPL (see license.txt)
 
-import common
+import common, os
 
 _bmp_str_types = {
     '.bmp' : 'wxBITMAP_TYPE_BMP',
@@ -29,7 +29,7 @@ def python_code_generator(obj):
         if not type: bmp = 'wxNullBitmap'
         else:
             if os.sep == '\\': bmp_file = bmp_file.replace(os.sep, '/')
-            bmp = 'wxBitmap("%s", %s)' % (bmp_file.replace('"', '\"'), type)
+            bmp = 'wxBitmap("%s", %s)' % (bmp_file.replace('"', r'\"'), type)
     if obj.is_toplevel:
         l = ['self.%s = %s(self, %s, %s)\n' % (obj.name, obj.klass, id, bmp)]
         if id_name: l.append(id_name) # init lines are written in reverse order

@@ -10,15 +10,15 @@ def wxBoxSizer_builder(obj):
     function used to generate the python code for wxBoxSizer objects.
     """
     orient = obj.properties.get('orient', 'wxHORIZONTAL')
-    init = ['self.%s = wxBoxSizer(%s)\n' % (obj.name, orient)]
+    init = ['%s = wxBoxSizer(%s)\n' % (obj.name, orient)]
     layout = []
     if obj.is_toplevel:
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         layout.append('%s.SetAutoLayout(1)\n' % parent)
-        layout.append('%s.SetSizer(self.%s)\n' % (parent, obj.name))
+        layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
         if not obj.parent.properties.has_key('size'):
-            layout.append('self.%s.Fit(%s)\n' % (obj.name, parent))
+            layout.append('%s.Fit(%s)\n' % (obj.name, parent))
     return init, [], layout
 
 def wxStaticBoxSizer_builder(obj):
@@ -29,14 +29,14 @@ def wxStaticBoxSizer_builder(obj):
     label = obj.properties.get('label', '')
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-    init = ['self.%s = wxStaticBoxSizer(wxStaticBox(%s, -1, "%s"), %s)\n' %
-            (obj.name, parent, label.replace('"', '\"'), orient)]
+    init = ['%s = wxStaticBoxSizer(wxStaticBox(%s, -1, "%s"), %s)\n' %
+            (obj.name, parent, label.replace('"', r'\"'), orient)]
     layout = []
     if obj.is_toplevel:
         layout.append('%s.SetAutoLayout(1)\n' % parent)
-        layout.append('%s.SetSizer(self.%s)\n' % (parent, obj.name))
+        layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
         if not obj.parent.properties.has_key('size'):
-            layout.append('self.%s.Fit(%s)\n' % (obj.name, parent))
+            layout.append('%s.Fit(%s)\n' % (obj.name, parent))
     return init, [], layout
 
 def _GridSizers_builder(obj, klass):
@@ -47,14 +47,14 @@ def _GridSizers_builder(obj, klass):
     cols = props.get('cols', '0')
     vgap = props.get('vgap', '0')
     hgap = props.get('hgap', '0')
-    init = [ 'self.%s = %s(%s, %s, %s, %s)\n' % (obj.name, klass, rows, cols,
+    init = [ '%s = %s(%s, %s, %s, %s)\n' % (obj.name, klass, rows, cols,
                                                  vgap, hgap) ]
     layout = []
     if obj.is_toplevel:
         layout.append('%s.SetAutoLayout(1)\n' % parent)
-        layout.append('%s.SetSizer(self.%s)\n' % (parent, obj.name))
+        layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
         if not obj.parent.properties.has_key('size'):
-            layout.append('self.%s.Fit(%s)\n' % (obj.name, parent))
+            layout.append('%s.Fit(%s)\n' % (obj.name, parent))
     return init, [], layout   
 
 def wxGridSizer_builder(obj):

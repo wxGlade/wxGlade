@@ -1,3 +1,11 @@
+2002-08-03: codegen/py_codegen.py, edit_sizers/sizers_codegen.py, xml_parse.py:
+		changes to separate sizers from windows in the generated code,
+		and to put sizers declarations in the __do_layout method
+	    application.py, widget_properties.py: fix for a just introduced
+						  wxPython 2.3.2.1 
+						  incompatibility
+            widgets/MenuTree.py: added support for help strings on menu items
+
 2002-08-02: widgets/* edit_sizers: turned into packages with two modules,
 				   to decouple code generation functions
 				   from the rest

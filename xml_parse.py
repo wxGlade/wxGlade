@@ -498,7 +498,7 @@ class CodeWriter(XmlParser):
                 if si is not None and si.parent == obj.parent:
                     szr = self._sizers.top()
                     if not szr: return
-                    self.code_writer.add_sizeritem(topl, szr.name, obj.name,
+                    self.code_writer.add_sizeritem(topl, szr, obj,
                                                    si.obj.option,
                                                    si.obj.flag_str(),
                                                    si.obj.border)

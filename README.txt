@@ -1,14 +1,13 @@
 wxGlade: a GUI builder for wxPython
 version: 0.1.3
-license: Python 2.2 license (see license.txt)
+license: GPL (see license.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
 
 * Requirements:
 ---------------
 Python >= 2.2
-wxPython 2.3.2.1 (It may work also with 2.3.3 prerelease, but it has not been 
-		  tested)
+wxPython >= 2.3.2.1 
 
 
 * Installation:

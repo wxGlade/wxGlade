@@ -13,7 +13,7 @@ def python_code_generator(obj):
     pygen = common.code_writers['python']
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj) 
-    label = prop.get('label', '').replace('"', '\"')
+    label = prop.get('label', '').replace('"', r'\"')
     choices = prop.get('choices', [])
     major_dim = prop.get('dimension', '0')
     if obj.is_toplevel:

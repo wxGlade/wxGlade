@@ -46,7 +46,7 @@ def command_line_code_generation():
         writer = common.code_writers[language]
         CodeWriter(writer, args[0], out_path=out_path)
     except KeyError:
-        print >> sys.stder, 'Error: no writer for language "%s" available' % \
+        print >> sys.stderr, 'Error: no writer for language "%s" available' % \
               language
         sys.exit(1)
     except Exception, e:
