@@ -32,7 +32,8 @@ class wxGladeAboutBox(wxDialog):
     <font size="-1"><b>
     <p>Copyright (c) 2002 Alberto Griggio<br>
     License: Python 2.2 license (see license.txt)</b>
-    <p>Home page: <a href="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</a>
+    <p>Home page:
+    <a href="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</a>
     <p>Authors:<br>
     &nbsp;&nbsp;&nbsp;Alberto Griggio &lt;albgrig@tiscalinet.it&gt;<br>
     &nbsp;&nbsp;&nbsp;Marco Barisione &lt;marco.bari@vene.ws&gt;
@@ -61,7 +62,10 @@ class wxGladeAboutBox(wxDialog):
         btn = wxButton(self, wxID_OK, "OK")
         btn.SetDefault()
         szr2.Add(btn)
-        szr.Add(szr2, 0, wxALL|wxALIGN_RIGHT, 20)
+        if wxPlatform == '__WXGTK__':
+            extra_border = 5 # border around a default button
+        else: extra_border = 0
+        szr.Add(szr2, 0, wxALL|wxALIGN_RIGHT, 20 + extra_border)
         self.SetAutoLayout(True)
         self.SetSizer(szr)
         szr.Fit(self)
