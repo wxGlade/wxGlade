@@ -324,6 +324,7 @@ class WidgetTree(wxTreeCtrl, Tree):
                 node.widget.sizer.fit_parent(node.widget)
             node.widget.show_widget(True)
             node.widget.show_properties()
+            node.widget.widget.Raise()
         else:
             def show_rec(node):
                 node.widget.show_widget(True)
