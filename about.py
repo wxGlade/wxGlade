@@ -32,7 +32,9 @@ class wxGladeAboutBox(wxDialog):
     <tr><td width="50"></td><td>
     <font size="-1"><b>
     <p>Copyright (c) 2002 Alberto Griggio<br>
-    License: MIT (see <a href="show_license">license.txt</a>)</b>
+    License: MIT (see <a href="show_license">license.txt</a>)</b><br>
+    wxPyColourChooser code copyright (c) 2002 Michael Gilfix<br>
+    (wxWindows license)
     <p>Home page:
     <a href="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</a>
     <p>Authors:<br>
