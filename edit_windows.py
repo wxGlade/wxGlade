@@ -470,6 +470,7 @@ class ManagedBase(WindowBase):
         self.access_functions['option'] = (self.get_option, self.set_option)
         self.access_functions['flag'] = (self.get_flag, self.set_flag)
         self.access_functions['border'] = (self.get_border, self.set_border)
+        self.access_functions['pos'] = (self.get_pos, self.set_pos)
         self.flags_pos = (wxALL,
                           wxLEFT, wxRIGHT, wxTOP, wxBOTTOM,
                           wxEXPAND, wxALIGN_RIGHT, wxALIGN_BOTTOM,
@@ -487,6 +488,9 @@ class ManagedBase(WindowBase):
                        'wxALIGN_CENTER_VERTICAL')
         szprop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
         szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
+        pos_p = szprop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
+        def write(*args, **kwds): pass
+        pos_p.write = write # no need to save the position
 
     def finish_widget_creation(self):
         self.sel_marker = misc.SelectionMarker(self.widget, self.parent.widget)
@@ -501,6 +505,7 @@ class ManagedBase(WindowBase):
         szp['option'].set_value(self.get_option())
         szp['flag'].set_value(self.get_flag())
         szp['border'].set_value(self.get_border())
+        szp['pos'].set_value(self.pos-1)
 
     def create_properties(self):
         WindowBase.create_properties(self)
@@ -515,8 +520,10 @@ class ManagedBase(WindowBase):
         szprop['option'].display(panel)
         szprop['flag'].display(panel)
         szprop['border'].display(panel)
+        szprop['pos'].display(panel)
 
         sizer_tmp = wxBoxSizer(wxVERTICAL)
+        sizer_tmp.Add(szprop['pos'].panel, 0, wxEXPAND)
         sizer_tmp.Add(szprop['option'].panel, 0, wxEXPAND)
         sizer_tmp.Add(szprop['border'].panel, 0, wxEXPAND)
         sizer_tmp.Add(szprop['flag'].panel, 0, wxEXPAND, 5)
@@ -633,6 +640,20 @@ class ManagedBase(WindowBase):
     def remove(self, *args):
         self.sizer.free_slot(self.pos)        
         WindowBase.remove(self)
+
+    def get_pos(self): return self.pos-1
+    def set_pos(self, value):
+        """setter for the 'pos' property: calls self.sizer.change_item_pos"""
+        self.sizer.change_item_pos(self, min(value + 1,
+                                             len(self.sizer.children) - 1))
+        
+    def update_pos(self, value):
+        """\
+        called by self.sizer.change_item_pos to update the item's position
+        when another widget is moved
+        """
+        self.sizer_properties['pos'].set_value(value-1)
+        self.pos = value
 
 # end of class ManagedBase
 

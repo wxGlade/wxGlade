@@ -145,6 +145,15 @@ class Tree:
         node.widget = widget
         self.names[widget.name] = 1
 
+    def change_node_pos(self, node, new_pos, index=None):
+        if index is None: index = node.parent.children.index(node)
+        if index > new_pos:
+            node.parent.children.insert(new_pos, node)
+            del node.parent.children[index+1]
+        else:
+            del node.parent.children[index]
+            node.parent.children.insert(new_pos+1, node)
+
 # end of class Tree
 
 
@@ -396,7 +405,35 @@ class WidgetTree(wxTreeCtrl, Tree):
         Tree.change_node(self, node, widget)
         self.SetItemImage(node.item, self.images.get(
             widget.__class__.__name__, -1))
-        self.SetItemText(node.item, widget.name)           
+        self.SetItemText(node.item, widget.name)
+
+    def change_node_pos(self, node, new_pos):
+        index = node.parent.children.index(node)
+        Tree.change_node_pos(self, node, new_pos, index)
+        old_item = node.item
+        image = self.GetItemImage(node.item)
+        self.Freeze()
+        if index > new_pos:
+            node.item = self.InsertItemBefore(node.parent.item, new_pos,
+                                              node.widget.name, image)
+        else:
+            node.item = self.InsertItemBefore(node.parent.item, new_pos+1,
+                                              node.widget.name, image)
+        self.SetPyData(node.item, node)
+        def append(parent, node):
+            idx = WidgetTree.images.get(node.widget.__class__.__name__, -1)
+            node.item = self.AppendItem(parent.item, node.widget.name, idx)
+            self.SetPyData(node.item, node)
+            if node.children:
+                for c in node.children:
+                    append(node, c)
+            self.Expand(node.item)
+        if node.children:
+            for c in node.children:
+                append(node, c)
+        self.Expand(node.item)
+        self.Delete(old_item)
+        self.Thaw()
         
 # end of class WidgetTree
 

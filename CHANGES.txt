@@ -1,3 +1,14 @@
+2002-10-12: edit_sizers/edit_sizers.py:
+		added method SizerBase.change_item_pos to change the position
+		of an item in the sizer
+	    tree.py: added method Tree.change_node_pos to change the position
+		     of a node (and all its sub-nodes) on the tree
+	    edit_windows.py: added 'pos' property to ManagedBase instances to
+			     change the position of a widget inside its sizer
+
+2002-10-10: widgets/button/*, widgets/bitmap_button/*:
+	        added 'default' property to implement wxButton.SetDefault
+
 2002-10-08: edit_sizers/edit_sizers.py: 
 		- added function change_sizer (and related SizerBase.change
 		  event handler) to change the type of a sizer without deleting

@@ -1,6 +1,6 @@
 wxGlade TODO list
 -----------------
-Last update: 2002-10-09
+Last update: 2002-10-12
 
 The list is more or less sorted by priority
 
@@ -37,7 +37,8 @@ Real TODO (# = Partially done):
 - Possibility to chane the type of a sizer after its creation (#: almost done,
   but needs *A LOT* of testing)
  
-- Possibility to change the position of a widget inside its sizer
+- Possibility to change the position of a widget inside its sizer (#: almost
+  done, needs testing)
 
 - Event handlers support
 
