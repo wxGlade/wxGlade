@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.60 2004/08/26 12:03:28 agriggio Exp $
+# $Id: edit_windows.py,v 1.61 2004/09/17 11:40:06 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -171,9 +171,11 @@ class EditBase:
                                  'copy.xpm')
                 misc.append_item(self._rmenu, CUT_ID, 'Cut\tCtrl+X',
                                  'cut.xpm')
-                EVT_MENU(self.widget, REMOVE_ID, self.remove)
-                EVT_MENU(self.widget, COPY_ID, self.clipboard_copy)
-                EVT_MENU(self.widget, CUT_ID, self.clipboard_cut)
+                def bind(method):
+                    return lambda e: misc.wxCallAfter(method)
+                EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+                EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
+                EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
                 
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
