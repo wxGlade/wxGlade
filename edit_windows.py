@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.58 2004/08/17 12:07:25 agriggio Exp $
+# $Id: edit_windows.py,v 1.59 2004/08/18 10:03:23 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -664,7 +664,7 @@ class ManagedBase(WindowBase):
         if misc.check_wx_version(2, 5, 2):
             self.flag = wxFIXED_MINSIZE
             self.flags_pos += (wxFIXED_MINSIZE, )
-            flag_labels += ('wxFIXED_MISIZE', )
+            flag_labels += ('wxFIXED_MINSIZE', )
         sizer.add_item(self, pos)
 
         szprop = self.sizer_properties
