@@ -1,5 +1,5 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.13 2003/07/18 16:43:53 agriggio Exp $
+# $Id: bitmap_button.py,v 1.14 2003/08/07 12:22:01 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -30,14 +30,22 @@ class EditBitmapButton(ManagedBase):
                                                        can_disable=False)
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
+        # 2003-08-07: added 'disabled_bitmap' property
+        self.disabled_bitmap = ""
+        self.access_functions['disabled_bitmap'] = (self.get_disabled_bitmap,
+                                                    self.set_disabled_bitmap)
+        self.properties['disabled_bitmap'] = FileDialogProperty(
+            self, 'disabled_bitmap', None, style=wxOPEN|wxFILE_MUST_EXIST)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
         self.properties['bitmap'].display(panel)
+        self.properties['disabled_bitmap'].display(panel)
         self.properties['default'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
         szr.Add(self.properties['bitmap'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['disabled_bitmap'].panel, 0, wxEXPAND)
         szr.Add(self.properties['default'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
@@ -56,13 +64,24 @@ class EditBitmapButton(ManagedBase):
             self.widget.SetBitmapFocus(bmp)
             self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
+    def get_disabled_bitmap(self):
+        return self.disabled_bitmap
+
+    def set_disabled_bitmap(self, value):
+        self.disabled_bitmap = value
+        if self.widget:
+            bmp = self.load_bitmap(self.disabled_bitmap)
+            self.widget.SetBitmapDisabled(bmp)
+            self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
+
     def create_widget(self):
         bmp = self.load_bitmap()
         self.widget = wxBitmapButton(self.parent.widget, self.id, bmp)
 
-    def load_bitmap(self):
-        if self.bitmap:
-            return wxBitmap(self.bitmap, wxBITMAP_TYPE_ANY)
+    def load_bitmap(self, which=None):
+        if which is None: which = self.bitmap
+        if which:
+            return wxBitmap(which, wxBITMAP_TYPE_ANY)
         else:
             return wxNullBitmap
 

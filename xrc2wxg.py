@@ -2,7 +2,7 @@
 # xrc2wxg.py: Converts an XRC resource file (in a format wxGlade likes,
 # i.e. all windows inside sizers, no widget unknown to wxGlade, ...) into a
 # WXG file
-# $Id: xrc2wxg.py,v 1.12 2003/06/21 14:28:45 agriggio Exp $
+# $Id: xrc2wxg.py,v 1.13 2003/08/07 12:22:01 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -102,10 +102,14 @@ _props = {
     'content': 'choices',
     'item': 'choice',
     'growablerows': 'growable_rows',
-    'growablecols': 'growable_cols'
+    'growablecols': 'growable_cols',
+    'enabled': 'disabled',
     }
 
 def fix_properties(document):
+    # special case...
+    for elem in document.getElementsByTagName('disabled'):
+        elem.tagName = 'disabled_bitmap'
     for prop in _props:
         for elem in document.getElementsByTagName(prop):
             elem.tagName = _props[prop]

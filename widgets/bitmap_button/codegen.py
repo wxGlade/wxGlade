@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.12 2003/07/26 09:15:57 agriggio Exp $
+# $Id: codegen.py,v 1.13 2003/08/07 12:22:01 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -40,6 +40,21 @@ class PythonCodeGenerator:
         init.append('self.%s = %s(%s, %s, %s)\n' % 
                     (obj.name, obj.klass, parent, id, bmp))
         props_buf = pygen.generate_common_properties(obj)
+
+        disabled_bmp = prop.get('disabled_bitmap')
+        if disabled_bmp:
+            if disabled_bmp.startswith('var:'):
+                if not obj.preview:
+                    var = disabled_bmp[4:].strip()
+                    props_buf.append(
+                        'self.%s.SetBitmapDisabled('
+                        'wxBitmapFromXPMData(%s))\n' % (obj.name, var))
+            else:
+                props_buf.append(
+                    'self.%s.SetBitmapDisabled('
+                    'wxBitmap(%s, wxBITMAP_TYPE_ANY))\n' % \
+                    (obj.name, pygen.quote_str(disabled_bmp, False, False)))
+                
         if not prop.has_key('size'):
             props_buf.append('self.%s.SetSize(self.%s.GetBestSize())\n' % \
                              (obj.name, obj.name))
@@ -73,6 +88,19 @@ class CppCodeGenerator:
         init = [ '%s = new %s(%s, %s, %s);\n' % 
                  (obj.name, obj.klass, parent, id, bmp) ]
         props_buf = cppgen.generate_common_properties(obj)
+
+        disabled_bmp = prop.get('disabled_bitmap')
+        if disabled_bmp:
+            if disabled_bmp.startswith('var:'):
+                var = disabled_bmp[4:].strip()
+                props_buf.append('%s->SetBitmapDisabled('
+                                 'wxBitmap(%s));\n' % (obj.name, var))
+            else:
+                props_buf.append(
+                    '%s->SetBitmapDisabled('
+                    'wxBitmap(%s, wxBITMAP_TYPE_ANY));\n' % \
+                    (obj.name, cppgen.quote_str(disabled_bmp, False, False)))
+                
         if not prop.has_key('size'):
             props_buf.append('%s->SetSize(%s->GetBestSize());\n' % \
                              (obj.name, obj.name))
@@ -83,6 +111,20 @@ class CppCodeGenerator:
 # end of class CppCodeGenerator
 
 
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+    class BitmapButtonXrcObject(xrcgen.DefaultXrcObject):
+        def write_property(self, name, val, outfile, tabs):
+            if name == 'disabled_bitmap':
+                name = 'disabled'
+            xrcgen.DefaultXrcObject.write_property(
+                self, name, val, outfile, tabs)
+
+    # end of class BitmapButtonXrcObject
+
+    return BitmapButtonXrcObject(obj)
+
+
 def initialize():
     common.class_names['EditBitmapButton'] = 'wxBitmapButton'
     pygen = common.code_writers.get('python')
@@ -91,3 +133,6 @@ def initialize():
     cppgen = common.code_writers.get('C++')
     if cppgen:
         cppgen.add_widget_handler('wxBitmapButton', CppCodeGenerator())
+    xrcgen = common.code_writers.get("XRC")
+    if xrcgen:
+        xrcgen.add_widget_handler('wxBitmapButton', xrc_code_generator)
