@@ -6,8 +6,9 @@ Many thanks to:
 
 - Guido van Rossum and all the people at PSF for the excellent language
 - Robin Dunn and the wxWindows team for their great libary
-- Glade developers for the inspiration they gave me and for some of the icons
+- Glade developers for the inspiration they gave me and for the icons
 - Boa-constructor developers for some of the icons
+- Vaclav Slavik for the suggestions about XRC
 
 - ... and, of course, all the people who provided feedback, comments, critics
   and support.
