@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.48 2004/11/02 09:52:03 agriggio Exp $
+# $Id: widget_properties.py,v 1.49 2004/11/18 21:14:58 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -886,6 +886,8 @@ class GridProperty(Property): #wxPanel, Property):
         """
         self.panel = wxPanel(parent, -1) # why if the grid is not on this panel
                                          # it is not displayed???
+        sizer = wxStaticBoxSizer(wxStaticBox(self.panel, -1,
+                                             _mangle(self.name)), wxVERTICAL)
         self.btn_id = wxNewId()
         self.btn = wxButton(self.panel, self.btn_id, "  Apply  ",
                             style=wxBU_EXACTFIT)
@@ -909,8 +911,7 @@ class GridProperty(Property): #wxPanel, Property):
         for i in range(len(self.cols)):
             self.grid.SetColLabelValue(i, misc.wxstr(self.cols[i][0]))
             GridProperty.col_format[self.cols[i][1]](self.grid, i)
-        sizer = wxStaticBoxSizer(wxStaticBox(self.panel, -1,
-                                             _mangle(self.name)), wxVERTICAL)
+
         self.cols = len(self.cols)
         self.grid.SetRowLabelSize(0)
         self.grid.SetColLabelSize(20)

@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.17 2004/11/02 09:52:02 agriggio Exp $
+# $Id: menubar.py,v 1.18 2004/11/18 21:14:58 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -20,6 +20,9 @@ class MenuItemDialog(wxDialog):
         ADD_ID, REMOVE_ID, NAME_ID, LABEL_ID, ID_ID, CHECK_RADIO_ID, LIST_ID, \
                 ADD_SEP_ID, MOVE_LEFT_ID, MOVE_RIGHT_ID, MOVE_UP_ID, \
                 MOVE_DOWN_ID, HELP_STR_ID = [wxNewId() for i in range(13)]
+
+        self._staticbox = wxStaticBox(self, -1, "Menu item:")
+        
         self.menu_items = wxListCtrl(self, LIST_ID, style=wxLC_REPORT | \
                                      wxLC_SINGLE_SEL|wxSUNKEN_BORDER)
         # ALB 2004-09-26: workaround to make the scroll wheel work...
@@ -85,8 +88,7 @@ class MenuItemDialog(wxDialog):
         self.check_radio.Enable(False)
         
         sizer = wxBoxSizer(wxVERTICAL)
-        sizer2 = wxStaticBoxSizer(wxStaticBox(self, -1, "Menu item:"), \
-                                  wxVERTICAL)
+        sizer2 = wxStaticBoxSizer(self._staticbox, wxVERTICAL)
         self.label.SetSize((150, -1))
         self.id.SetSize((150, -1))
         self.name.SetSize((150, -1))

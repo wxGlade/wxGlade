@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.14 2004/11/02 09:52:01 agriggio Exp $
+# $Id: toolbar.py,v 1.15 2004/11/18 21:14:57 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -55,6 +55,9 @@ class ToolsDialog(wxDialog):
                 ADD_SEP_ID, MOVE_UP_ID, MOVE_DOWN_ID, HELP_STR_ID, \
                 LONG_HELP_STR_ID, BITMAP1_ID, BITMAP2_ID \
                 = [wxNewId() for i in range(14)]
+
+        self._staticbox = wxStaticBox(self, -1, "Tool:")
+        
         self.tool_items = wxListCtrl(self, LIST_ID, style=wxLC_REPORT | \
                                      wxLC_SINGLE_SEL|wxSUNKEN_BORDER,
                                      size=(300, -1))
@@ -125,8 +128,7 @@ class ToolsDialog(wxDialog):
         self.check_radio.Enable(False)
         
         sizer = wxBoxSizer(wxVERTICAL)
-        sizer2 = wxStaticBoxSizer(wxStaticBox(self, -1, "Tool:"), \
-                                  wxVERTICAL)
+        sizer2 = wxStaticBoxSizer(self._staticbox, wxVERTICAL)
         self.label.SetSize((150, -1))
         self.id.SetSize((150, -1))
         self.help_str.SetSize((150, -1))
