@@ -1,11 +1,15 @@
 all: pdf html
 
-pdf: src/manual.xml src/main_window.png
-	xmlto -o pdf/wxGlade-User-Reference.pdf pdf src/manual.xml
+BITMAPS=src/main_window.png src/tree_window.png
 
-html: src/manual.xml src/main_window.png
+pdf: src/manual.xml $(BITMAPS)
+	xmlto -o pdf pdf src/manual.xml
+
+html: src/manual.xml $(BITMAPS)
+	cp src/*.png html/
 	xmlto -o html html src/manual.xml
 
 clean:
 	rm html/*.html
-	rm pdf/wxGlade-User-Reference.pdf
+	rm html/*.png
+	rm pdf/manual.pdf
