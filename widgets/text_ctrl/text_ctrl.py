@@ -23,7 +23,8 @@ class EditTextCtrl(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         prop = self.properties
         # value property
-        prop['value'] = TextProperty(self, 'value', None)
+        prop['value'] = TextProperty(self, 'value', None,
+                                     multiline=True)
         # style property
         self.style_pos  = (wxTE_PROCESS_ENTER, wxTE_PROCESS_TAB,
                            wxTE_MULTILINE,wxTE_PASSWORD, wxTE_READONLY,
@@ -34,7 +35,10 @@ class EditTextCtrl(ManagedBase):
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
 
     def create_widget(self):
-        self.widget = wxTextCtrl(self.parent.widget, self.id, value=self.value)
+        value = self.value
+        if self.style & wxTE_MULTILINE:
+            value = value.replace('\\n', '\n')
+        self.widget = wxTextCtrl(self.parent.widget, self.id, value=value)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -57,6 +61,8 @@ class EditTextCtrl(ManagedBase):
         value = str(value)
         if value != self.value:
             self.value = value
+            if self.style & wxTE_MULTILINE:
+                value = value.replace('\\n', '\n')
             if self.widget: self.widget.SetValue(value)
 
     def get_style(self):
