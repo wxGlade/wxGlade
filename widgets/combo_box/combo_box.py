@@ -1,5 +1,5 @@
 # combo_box.py: wxComboBox objects
-# $Id: combo_box.py,v 1.13 2003/05/13 10:05:13 agriggio Exp $
+# $Id: combo_box.py,v 1.14 2003/06/21 14:28:45 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -94,7 +94,7 @@ class EditComboBox(ManagedBase):
         return zip(self.choices)
 
     def set_choices(self, values):
-        self.choices = [ v[0] for v in values ]
+        self.choices = [ misc.wxstr(v[0]) for v in values ]
         self.properties['selection'].set_range(0, len(self.choices)-1)
         if self.widget:
             self.widget.Clear()

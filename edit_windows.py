@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.42 2003/05/15 19:05:01 agriggio Exp $
+# $Id: edit_windows.py,v 1.43 2003/06/21 14:28:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -154,14 +154,14 @@ class EditBase:
         return self.access_functions[value]
 
     def set_name(self, value):
-        self.name = str(value)
+        self.name = "%s" % value
         if self._rmenu: self._rmenu.SetTitle(self.name)
         try: common.app_tree.set_name(self.node, self.name)
         except AttributeError: pass
         self.property_window.SetTitle('Properties - <%s>' % self.name)
 
     def set_klass(self, value):
-        self.klass = str(value)
+        self.klass = "%s" % value
 
     def popup_menu(self, event):
         if self.widget:
@@ -442,9 +442,11 @@ class WindowBase(EditBase):
         except KeyError: pass
         event.Skip()
 
-    def get_tooltip(self): return self.tooltip
+    def get_tooltip(self):
+        return self.tooltip
+
     def set_tooltip(self, value):
-        self.tooltip = value
+        self.tooltip = misc.wxstr(value)
 
     def get_background(self):
         return self.background
@@ -912,8 +914,23 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 misc.append_item(self._rmenu, HIDE_ID, 'Hide')
                 EVT_MENU(self.widget, REMOVE_ID, self.remove)
                 EVT_MENU(self.widget, HIDE_ID, self.hide_widget)
+                # paste
+                PASTE_ID = wxNewId()
+                misc.append_item(self._rmenu, PASTE_ID, 'Paste\tCtrl+V',
+                                 'paste.xpm')
+                EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
                 
-            self.widget.PopupMenu(self._rmenu, event.GetPosition())        
+            self.widget.PopupMenu(self._rmenu, event.GetPosition())
+
+    def clipboard_paste(self, *args):
+        import clipboard, xml_parse
+        size = self.widget.GetSize()
+        try:
+            if clipboard.paste(self, None, 0):
+                common.app_tree.app.saved = False
+                self.widget.SetSize(size)
+        except xml_parse.XmlParsingError, e:
+            print '\nwxGlade-WARNING: only sizers can be pasted here'
 
     def create_properties(self):
         WindowBase.create_properties(self)
@@ -930,7 +947,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         return self.title
 
     def set_title(self, value):
-        self.title = value
+        self.title = misc.wxstr(value)
         if self.widget:
             self.widget.SetTitle(value)
 
@@ -968,7 +985,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.sizer.refresh()
 
     def set_name(self, name):
-        if self.name != name:
+        if not misc.streq(self.name, name):
             common.app_tree.app.update_top_window_name(self.name, name)
         WindowBase.set_name(self, name)
 

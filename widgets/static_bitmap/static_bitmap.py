@@ -1,5 +1,5 @@
 # static_bitmap.py: wxStaticBitmap objects
-# $Id: static_bitmap.py,v 1.10 2003/05/13 10:05:08 agriggio Exp $
+# $Id: static_bitmap.py,v 1.11 2003/06/21 14:28:44 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -41,7 +41,7 @@ class EditStaticBitmap(ManagedBase):
         self.attribute = True
         ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer,
                              pos, property_window, show=show)
-        self.set_bitmap(str(bmp_file))
+        self.set_bitmap(bmp_file)
         # bitmap property
         self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
         def set_attribute(v): self.attribute = int(v)

@@ -1,3 +1,11 @@
+2003-06-21: nearly all around:
+                fixed various Unicode-related bugs
+            misc.py
+                added functions, streq and wxstr, to fix some Unicode issues
+
+2003-06-20: edit_windows.py, edit_sizers/edit_sizers.py, xml_parse.py:
+                added cut&paste support for toplevel sizers
+
 2003-06-02: common.py, main.py:
                 added ToggleButtonBox to separate the "core" components from
                 the "custom" ones (similar to Glade and QT-Designer)

@@ -1,5 +1,5 @@
 # Grid.py: wxGrid objects
-# $Id: grid.py,v 1.23 2003/05/13 10:05:12 agriggio Exp $
+# $Id: grid.py,v 1.24 2003/06/21 14:28:44 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -386,7 +386,7 @@ class EditGrid(ManagedBase):
         for l, s in cols:
             try: s1 = int(s)
             except: s1 = 0
-            self.widget.SetColLabelValue(i, l)
+            self.widget.SetColLabelValue(i, misc.wxstr(l))
             if s1 > 0:
                 self.widget.SetColSize(i, s1)
             i += 1

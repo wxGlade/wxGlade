@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.6 2003/05/13 10:05:11 agriggio Exp $
+# $Id: menubar.py,v 1.7 2003/06/21 14:28:44 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -179,7 +179,7 @@ class MenuItemDialog(wxDialog):
         Event handler called when a menu item in the list is selected
         """        
         self.selected_index = index = event.GetIndex()
-        if not self.menu_items.GetItem(index, 2).m_text == '---':
+        if not misc.streq(self.menu_items.GetItem(index, 2).m_text, '---'):
             # skip if the selected item is a separator
             for (s, i) in ((self.label, 0), (self.id, 1), (self.name, 2),
                            (self.help_str, 3)):
@@ -245,10 +245,10 @@ class MenuItemDialog(wxDialog):
         index = [0]
         def add(node, level):
             i = index[0]
-            add_item(i, indent * level + node.label.lstrip())
-            set_item(i, 1, node.id)
-            set_item(i, 2, node.name)
-            set_item(i, 3, node.help_str)
+            add_item(i, misc.wxstr(indent * level + node.label.lstrip()))
+            set_item(i, 1, misc.wxstr(node.id))
+            set_item(i, 2, misc.wxstr(node.name))
+            set_item(i, 3, misc.wxstr(node.help_str))
             item_type = 0
             try:
                 if node.checkable and int(node.checkable):
@@ -257,7 +257,7 @@ class MenuItemDialog(wxDialog):
                     item_type = 2
             except ValueError:
                 pass
-            set_item(i, 4, str(item_type))
+            set_item(i, 4, misc.wxstr(item_type))
             index[0] += 1
             for item in node.children:
                 add(item, level+1)
@@ -285,8 +285,8 @@ class MenuItemDialog(wxDialog):
                 item_type = int(get(index, 4))
             except ValueError:
                 item_type = 0
-            checkable = item_type == 1 and "1" or ""
-            radio = item_type == 2 and "1" or ""
+            checkable = item_type == 1 and misc.wxstr("1") or misc.wxstr("")
+            radio = item_type == 2 and misc.wxstr("1") or misc.wxstr("")
             n = MenuTree.Node(label, id, name, help_str, checkable, radio)
             node.children.append(n)
             n.parent = node
@@ -319,7 +319,7 @@ class MenuItemDialog(wxDialog):
                 (self.item_level(index) < self.item_level(index+1))):
                 return
             label = self.menu_items.GetItem(index, 0).m_text
-            if label[:4] == " " * 4:
+            if misc.streq(label[:4], " " * 4):
                 self.menu_items.SetStringItem(index, 0, label[4:])
                 self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED, 
                                              wxLIST_STATE_SELECTED)
@@ -335,7 +335,8 @@ class MenuItemDialog(wxDialog):
     def _move_item_right(self, index):
         if index > 0 and (self.item_level(index) <= self.item_level(index-1)): 
             label = self.menu_items.GetItem(index, 0).m_text
-            self.menu_items.SetStringItem(index, 0, " " * 4 + label)
+            self.menu_items.SetStringItem(index, 0, misc.wxstr(" " * 4)
+                                          + label)
             self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED, \
                                          wxLIST_STATE_SELECTED)
 
@@ -541,12 +542,13 @@ class EditMenuBar(EditBase, PreviewMixin):
             self._mb.Remove(0)
         def append(menu, items):
             for item in items:
-                if item.name == '---': # item is a separator
+                if misc.streq(item.name, '---'): # item is a separator
                     menu.AppendSeparator()
                 elif item.children:
                     m = wxMenu()
                     append(m, item.children)
-                    menu.AppendMenu(wxNewId(), item.label, m, item.help_str)
+                    menu.AppendMenu(wxNewId(), misc.wxstr(item.label), m,
+                                    misc.wxstr(item.help_str))
                 else:
                     check_radio = 0
                     try:
@@ -560,16 +562,16 @@ class EditMenuBar(EditBase, PreviewMixin):
                                 check_radio = 2
                         except:
                             check_radio = 0
-                    menu.Append(wxNewId(), item.label, item.help_str,
-                                check_radio)
+                    menu.Append(wxNewId(), misc.wxstr(item.label),
+                                misc.wxstr(item.help_str), check_radio)
         first = self._mb.GetMenuCount()
         for menu in self.menus:
             m = wxMenu()
             append(m, menu.root.children)
             if first:
-                self._mb.Replace(0, m, menu.root.label)
+                self._mb.Replace(0, m, misc.wxstr(menu.root.label))
                 first = 0
-            else: self._mb.Append(m, menu.root.label)
+            else: self._mb.Append(m, misc.wxstr(menu.root.label))
         self._mb.Refresh()
       
     def remove(self, *args, **kwds):
@@ -622,7 +624,7 @@ class EditMenuBar(EditBase, PreviewMixin):
     def set_name(self, name):
         EditBase.set_name(self, name)
         if self.widget is not self._mb:
-            self.widget.SetTitle(self.name)
+            self.widget.SetTitle(misc.wxstr(self.name))
 
     def get_property_handler(self, name):
         class MenuHandler:
@@ -702,7 +704,8 @@ def builder(parent, sizer, pos, number=[0]):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
-            self.SetSize((150, -1))
+            if self.GetBestSize()[0] < 150:
+                self.SetSize((150, -1))
 
         def undo(self):
             number[0] -= 1

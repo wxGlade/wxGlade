@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.11 2003/05/15 19:04:57 agriggio Exp $
+# $Id: codegen.py,v 1.12 2003/06/21 14:28:45 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -143,7 +143,7 @@ class CppStatusBarCodeGenerator:
 
 class CppFrameCodeGenerator:
     constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-                   ('const char*', 'title'),
+                   ('const wxString&', 'title'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
                    ('long', 'style', 'wxDEFAULT_FRAME_STYLE')]

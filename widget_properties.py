@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.36 2003/05/13 10:13:51 agriggio Exp $
+# $Id: widget_properties.py,v 1.37 2003/06/21 14:28:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -14,7 +14,7 @@ _label_initial_width = 5
 from wxPython.wx import *
 from wxPython.grid import *
 from xml.sax.saxutils import escape
-import misc
+import common, misc
 try:
     from wxPython.lib.stattext import *
 except ImportError:
@@ -26,7 +26,7 @@ def _mangle(label):
     returns a mangled version of the str label, suitable for displaying
     the name of a property
     """
-    return label.capitalize().replace('_', ' ')
+    return misc.wxstr(label.capitalize().replace('_', ' '))
 
 import common
 _encode = common._encode_to_xml
@@ -57,8 +57,7 @@ class Property:
         has changed
         """
         val = self.get_value()
-        if self.val != val:
-            import common
+        if not misc.streq(self.val, val):
             common.app_tree.app.saved = False # update the status of the app
             if self.setter: self.setter(val)
             else:
@@ -73,7 +72,7 @@ class Property:
         """
         if self.getter: value = self.getter()
         else: value = self.owner[self.name][0]() 
-        if value != '':
+        if not misc.streq(value, ''):
             fwrite = outfile.write
             fwrite('    ' * tabs + '<%s>' % self.name)
             fwrite(escape(_encode(value)))
@@ -164,7 +163,7 @@ class TextProperty(Property, _activator):
     def __init__(self, owner, name, parent=None, can_disable=False,
                  enabled=False, readonly=False, multiline=False):
         Property.__init__(self, owner, name, parent)
-        self.val = str(owner[name][0]())
+        self.val = misc.wxstr(owner[name][0]())
         self.can_disable = can_disable
         self.readonly = readonly
         self.multiline = multiline
@@ -243,7 +242,7 @@ class TextProperty(Property, _activator):
             return self.val
 
     def set_value(self, value):
-        value = str(value)
+        value = misc.wxstr(value)
         if self.multiline:
             self.val = value.replace('\n', '\\n')
             value = value.replace('\\n', '\n')
@@ -516,7 +515,7 @@ class DialogProperty(Property, _activator):
         _activator.__init__(self)
         if can_disable: self.toggle_active(enabled)
         if parent is not None: self.display(parent)
-        self.val = str(owner[name][0]())
+        self.val = "%s" % owner[name][0]()
 
     def display(self, parent):
         """\
@@ -525,7 +524,7 @@ class DialogProperty(Property, _activator):
         """
         self.id = wxNewId()
         #self.panel = wxPanel(parent, -1)
-        val = str(self.owner[self.name][0]())
+        val = misc.wxstr(self.owner[self.name][0]())
         self.text = wxTextCtrl(parent, self.id, val, size=(1, -1))
         self.btn = wxButton(parent, self.id+1, " ... ",
                             size=(_label_initial_width, -1))
@@ -572,7 +571,7 @@ class DialogProperty(Property, _activator):
 
     def display_dialog(self, event):
         if self.dialog.ShowModal() == wxID_OK:
-            self.text.SetValue(self.dialog.get_value())
+            self.text.SetValue(misc.wxstr(self.dialog.get_value()))
         self.text.ProcessEvent(wxFocusEvent(wxEVT_KILL_FOCUS, self.id))
 
     def bind_event(self, function):
@@ -583,7 +582,7 @@ class DialogProperty(Property, _activator):
         except AttributeError: return self.val
 
     def set_value(self, value):
-        self.val = str(value)
+        self.val = misc.wxstr(value)
         try: self.text.SetValue(self.val)
         except AttributeError: pass
 
@@ -725,7 +724,8 @@ class FontDialogProperty(DialogProperty):
 
     def write(self, outfile=None, tabs=0):
         if self.is_active():
-            try: props = [ _encode(s) for s in eval(self.get_value().strip()) ]
+            try:
+                props = [_encode(s) for s in eval(self.get_value().strip())]
             except:
                 import traceback
                 traceback.print_exc()
@@ -886,7 +886,7 @@ class GridProperty(wxPanel, Property):
             self.grid.SetMargins(0, self.grid.GetDefaultRowSize())
 
         for i in range(len(self.cols)):
-            self.grid.SetColLabelValue(i, self.cols[i][0])
+            self.grid.SetColLabelValue(i, misc.wxstr(self.cols[i][0]))
             GridProperty.col_format[self.cols[i][1]](self.grid, i)
         sizer = wxStaticBoxSizer(wxStaticBox(self.panel, -1,
                                              _mangle(self.name)), wxVERTICAL)
@@ -944,8 +944,30 @@ class GridProperty(wxPanel, Property):
             l.append(l2)
         return l
 
+    def on_change_val(self, event, first=[True]):
+        """\
+        Event handler called to notify owner that the value of the Property
+        has changed
+        """
+        val = self.get_value()
+        def ok():
+            if len(self.val) != len(val): return True
+            for i in range(len(val)):
+                for j in range(len(val[i])):
+                    if not misc.streq(val[i][j], self.val[i][j]): return True
+            return False
+        if ok():
+            common.app_tree.app.saved = False # update the status of the app
+            if self.setter: self.setter(val)
+            else:
+                self.owner[self.name][1](val)
+            self.val = val
+        first[0] = False
+        event.Skip()
+
     def set_value(self, values):
-        self.val = values
+        #self.val = values
+        self.val = [[misc.wxstr(v) for v in val] for val in values]
         if not hasattr(self, 'grid'): return
         # values is a list of lists with the values of the cells
         size = len(values)
@@ -953,9 +975,9 @@ class GridProperty(wxPanel, Property):
             self.grid.AppendRows(size-self.rows)
             self.rows = size
         elif self.rows != size: self.grid.DeleteRows(size, self.rows-size)
-        for i in range(len(values)):
-            for j in range(len(values[i])):
-                self.grid.SetCellValue(i, j, values[i][j])
+        for i in range(len(self.val)):
+            for j in range(len(self.val[i])):
+                self.grid.SetCellValue(i, j, self.val[i][j])
             
     def add_row(self, event):
         self.grid.AppendRows()

@@ -1,5 +1,5 @@
 # radio_box.py: wxRadioBox objects
-# $Id: radio_box.py,v 1.9 2003/05/13 10:05:10 agriggio Exp $
+# $Id: radio_box.py,v 1.10 2003/06/21 14:28:44 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -138,10 +138,11 @@ class EditRadioBox(ManagedBase):
         return self.label
     
     def set_label(self, value):
-        if value != self.label:
+        value = misc.wxstr(value)
+        if not misc.streq(value, self.label):
             self.label = value
             if self.static_box:
-                self.static_box.SetLabel(str(value))
+                self.static_box.SetLabel(value)
                 if not self.properties['size'].is_active():
                     self.sizer.set_item(self.pos,
                                         size=self.widget.GetBestSize())
@@ -166,7 +167,7 @@ class EditRadioBox(ManagedBase):
         return zip(self.choices)
 
     def set_choices(self, values):
-        self.choices = [ v[0] for v in values ]
+        self.choices = [ misc.wxstr(v[0]) for v in values ]
         self.properties['selection'].set_range(0, len(self.choices)-1)
         if not self.widget: return
         

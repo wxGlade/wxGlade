@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.21 2003/05/13 10:13:51 agriggio Exp $
+# $Id: application.py,v 1.22 2003/06/21 14:28:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -82,9 +82,11 @@ class Application(object):
         self.name = "app" # name of the wxApp instance to generate
         self.__saved = True # if True, there are no changes to save
         self.__filename = None # name of the output xml file
-        def set_name(value): self.name = str(value)
+        def set_name(value):
+            self.name = "%s" % value
         self.klass = "MyApp"
-        def set_klass(value): self.klass = str(value)
+        def set_klass(value):
+            self.klass = "%s" % value
         self.codegen_opt = 0 # if != 0, generates a separate file
                              # for each class 
         def set_codegen_opt(value):
@@ -222,7 +224,7 @@ class Application(object):
 
     def _get_filename(self): return self.__filename
     def _set_filename(self, value):
-        if self.__filename != value:
+        if not misc.streq(self.__filename, value):
             self.__filename = value
             if self.__saved: flag = ' '
             else: flag = '* '
@@ -235,10 +237,10 @@ class Application(object):
         self.top_window = self.top_win_prop.GetStringSelection()
 
     def add_top_window(self, name):
-        self.top_win_prop.Append(str(name))
+        self.top_win_prop.Append("%s" % name)
 
     def remove_top_window(self, name):
-        index = self.top_win_prop.FindString(str(name))
+        index = self.top_win_prop.FindString("%s" % name)
         if index != -1:
             if wxPlatform == '__WXGTK__':
                 choices = [ self.top_win_prop.GetString(i) for i in \
