@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.35 2003/06/26 15:11:55 agriggio Exp $
+# $Id: edit_sizers.py,v 1.36 2003/06/30 20:23:08 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -806,8 +806,10 @@ class SizerBase(Sizer):
             return
         elif self.toplevel and isinstance(self.window, TopLevelBase):
             self.window.widget.Layout()
-             # don't change the size of the window
-            self.widget.FitInside(self.window.widget)
+            # don't change the size of the window
+            if misc.check_wx_version(2, 4, 1):
+                # this seems to work bad for 2.4.0
+                self.widget.FitInside(self.window.widget)
             return
         self.widget.SetMinSize(self.widget.CalcMin())
         self.widget.Layout()
