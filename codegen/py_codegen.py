@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.33 2003/07/18 16:43:53 agriggio Exp $
+# $Id: py_codegen.py,v 1.34 2003/07/22 08:49:10 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -816,7 +816,7 @@ def generate_code_id(obj, id=None):
     if not name: return '', val
     if val.strip() == '?':
         val = 'wxNewId()'
-    return ('%s = %s\n' % (name, val), name)
+    return ('global %s; %s = %s\n' % (name, name, val), name)
 
 
 def generate_code_tooltip(obj):
