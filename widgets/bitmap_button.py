@@ -29,23 +29,15 @@ _bmp_str_types = {
     '.pcx' : 'wxBITMAP_TYPE_PCX'
     }
 
-class EditBitmapButton(wxBitmapButton, ManagedBase):
+class EditBitmapButton(ManagedBase):
     def __init__(self, name, parent, id, bmp_file, sizer, pos, property_window,
                  show=True):
         """\
         Class to handle wxBitmapButton objects
         """
-        bmp_file = str(bmp_file)
-        type = _bmp_types.get(os.path.splitext(bmp_file)[1], None)
-        if type is not None:
-            bmp = wxBitmap(bmp_file, type)
-            self.bitmap = bmp_file
-        else:
-            bmp = wxNullBitmap
-            self.bitmap = ''
-        wxBitmapButton.__init__(self, parent, id, bmp)
         ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer,
                              pos, property_window, show=show)
+        self.set_bitmap(str(bmp_file))
         # bitmap property
         self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
         self.properties['bitmap'] = FileDialogProperty(self, 'bitmap', None,
@@ -64,18 +56,32 @@ class EditBitmapButton(wxBitmapButton, ManagedBase):
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 
-    def get_bitmap(self): return self.bitmap
+    def get_bitmap(self):
+        return self.bitmap
 
     def set_bitmap(self, value):
-        type = _bmp_types.get(os.path.splitext(str(value))[1], None)
+        type = self.guess_type(value)
         if type is None:
             self.bitmap = ''
-            bmp = wxNullBitmap
         else:
-            bmp = wxBitmap(value, type)
-            self.bitmap = value
-        self.SetBitmapLabel(bmp)
-        self.set_size("%s, %s" % tuple(self.GetBestSize()))
+            self.bitmap = filename
+        if self.widget:
+            bmp = self.load_bitmap(type)
+            self.widget.SetBitmapLabel(bmp)
+            self.widget.set_size("%s, %s" % tuple(self.GetBestSize()))
+
+    def create_widget(self):
+        bmp = self.load_bitmap(self.guess_type(self.bitmap))
+        self.widget = wxBitmapButton(self.parent, self.id, bmp)
+
+    def load_bitmap(self, type):
+        if self.bitmap:
+            return wxBitmap(self.bitmap, type)
+        else:
+            return wxNullBitmap
+
+    def guess_type(self, filename):
+        return _bmp_types.get(os.path.splitext(str(filename))[1], None)
 
 # end of class EditBitmapButton
         
