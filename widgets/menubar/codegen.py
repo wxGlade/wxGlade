@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.16 2004/12/08 18:11:26 agriggio Exp $
+# $Id: codegen.py,v 1.17 2004/12/10 18:22:52 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -127,8 +127,11 @@ class PythonCodeGenerator:
 
         def do_get(item):
             ret = []
-            name, val = pygen.generate_code_id(None, item.id)
-            if not val: val = '-1' # but this is wrong anyway...
+            if item.name and pygen.for_version > (2, 4):
+                val = '#self.%s' % item.name # see py_codegen.py, ~480
+            else:
+                name, val = pygen.generate_code_id(None, item.id)
+                if not val: val = '-1' # but this is wrong anyway...
             if item.handler:
                 ret.append((val, 'EVT_MENU', item.handler))
             if item.children:

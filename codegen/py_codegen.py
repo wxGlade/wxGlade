@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.53 2004/12/08 18:11:31 agriggio Exp $
+# $Id: py_codegen.py,v 1.54 2004/12/10 18:22:55 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -476,7 +476,8 @@ def add_object(top_obj, sub_obj):
                 klass.event_handlers.extend(builder.get_events(sub_obj))
             elif 'events' in sub_obj.properties:
                 id_name, id = generate_code_id(sub_obj)
-                if id == '-1': id = 'self.%s.GetId()' % sub_obj.name
+                #if id == '-1': id = 'self.%s.GetId()' % sub_obj.name
+                if id == '-1': id = '#self.%s' % sub_obj.name
                 for event, handler in sub_obj.properties['events'].iteritems():
                     klass.event_handlers.append((id, event, handler))
 
@@ -619,12 +620,18 @@ def add_class(code_obj):
     if event_handlers: write('\n')
     if for_version < (2, 5) or not use_new_namespace:
         for win_id, event, handler in event_handlers:
+            if win_id.startswith('#'):
+                win_id = win_id[1:] + '.GetId()'
             write(tab + '%s(self, %s, self.%s)\n' % \
                   (mycn(event), win_id, handler))
     else:
         for win_id, event, handler in event_handlers:
-            write(tab + 'self.Bind(%s, self.%s, id=%s)\n' % \
-                  (mycn(event), handler, win_id))
+            if win_id.startswith('#'):
+                write(tab + 'self.Bind(%s, self.%s, %s)\n' % \
+                      (mycn(event), handler, win_id[1:]))
+            else:
+                write(tab + 'self.Bind(%s, self.%s, id=%s)\n' % \
+                      (mycn(event), handler, win_id))
         
     # end tag
     write(tab + '# end wxGlade\n')
