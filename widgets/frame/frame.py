@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.26 2003/08/02 13:26:32 agriggio Exp $
+# $Id: frame.py,v 1.27 2003/08/07 12:05:59 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -155,13 +155,15 @@ class EditFrame(TopLevelBase):
                         'wxMAXIMIZE_BOX', 'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
                         'wxSIMPLE_BORDER', 'wxRESIZE_BORDER',
                         'wxFRAME_TOOL_WINDOW', 'wxFRAME_NO_TASKBAR',
+                        'wxNO_BORDER',
                         'wxNO_FULL_REPAINT_ON_RESIZE')
         self.style_pos = (wxDEFAULT_FRAME_STYLE,
                           wxICONIZE, wxCAPTION, wxMINIMIZE,
                           wxMINIMIZE_BOX, wxMAXIMIZE, wxMAXIMIZE_BOX,
                           wxSTAY_ON_TOP, wxSYSTEM_MENU, wxSIMPLE_BORDER,
                           wxRESIZE_BORDER, wxFRAME_TOOL_WINDOW,
-                          wxFRAME_NO_TASKBAR, wxNO_FULL_REPAINT_ON_RESIZE)
+                          wxFRAME_NO_TASKBAR, wxNO_BORDER,
+                          wxNO_FULL_REPAINT_ON_RESIZE)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # menubar property
         prop['menubar'] = CheckBoxProperty(self, 'menubar', None,
