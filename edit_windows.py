@@ -33,22 +33,6 @@ class EditBase:
         self.name = name
         self.klass = klass
         self.custom_class = custom_class
-        COPY_ID, REMOVE_ID, CUT_ID = [ wxNewId() for i in range(3) ]
-        if wxPlatform == '__WXGTK__':
-            self._rmenu = wxMenu()
-            self.RMENU_TITLE_ID = wxNewId()
-            self._rmenu.Append(self.RMENU_TITLE_ID, self.name)
-            self._rmenu.AppendSeparator()
-        else:
-            self._rmenu = wxMenu(self.name)
-        self._rmenu.Append(REMOVE_ID, 'Remove')
-        self._rmenu.Append(COPY_ID, 'Copy')
-        self._rmenu.Append(CUT_ID, 'Cut')
-
-        EVT_RIGHT_DOWN(self, self.popup_menu)
-        EVT_MENU(self, REMOVE_ID, self.remove)
-        EVT_MENU(self, COPY_ID, self.clipboard_copy)
-        EVT_MENU(self, CUT_ID, self.clipboard_cut)
 
         self.access_functions = {
             'name' : (lambda : self.name, self.set_name),
@@ -63,10 +47,50 @@ class EditBase:
         self.notebook = None
         self.property_window = property_window
 
+        # popup menu
+        self._rmenu = None
+
+        # this is the reference to the actual wxWindow widget; it is created
+        # only if needed, i.e. when it should become visible
+        self.widget = None
+
         if show:
-            self.SetFocus()
+            self.show_widget(True)
+            #self.SetFocus()
             property_window.SetSize((250, 340))
             property_window.Show(True)
+
+    def show_widget(self, yes):
+        if yes and self.widget is None:
+            self.create_widget()
+            self.finish_widget_creation()
+        if self.widget: self.widget.Show(yes)
+    
+    def create_widget(self):
+        """\
+        Initializes self.widget and shows it
+        """
+        raise NotImplementedError
+
+    def finish_widget_creation(self):
+        """\
+        Creates the popup menu and connects some event handlers to self.widgets
+        """
+        COPY_ID, REMOVE_ID, CUT_ID = [ wxNewId() for i in range(3) ]
+        if wxPlatform == '__WXGTK__':
+            self._rmenu = wxMenu()
+            self.RMENU_TITLE_ID = wxNewId()
+            self._rmenu.Append(self.RMENU_TITLE_ID, self.name)
+            self._rmenu.AppendSeparator()
+        else:
+            self._rmenu = wxMenu(self.name)
+        self._rmenu.Append(REMOVE_ID, 'Remove')
+        self._rmenu.Append(COPY_ID, 'Copy')
+        self._rmenu.Append(CUT_ID, 'Cut')
+        EVT_RIGHT_DOWN(self.widget, self.popup_menu)
+        EVT_MENU(self.widget, REMOVE_ID, self.remove)
+        EVT_MENU(self.widget, COPY_ID, self.clipboard_copy)
+        EVT_MENU(self.widget, CUT_ID, self.clipboard_cut)
 
     def delete(self):
         """\
@@ -74,7 +98,9 @@ class EditBase:
         properties. Why we need explicit deallocation? Well, basically because
         otherwise we get a lot of memory leaks... :)
         """
-        self._rmenu.Destroy()
+        # first, destroy the popup menu...
+        if self._rmenu: self._rmenu.Destroy()
+        # ...then, destroy the property notebook...
         if self.notebook:
             for p in self.properties.itervalues():
                 if p.panel: p.panel.Destroy()
@@ -85,7 +111,8 @@ class EditBase:
                     if p.panel: p.panel.Destroy()
             self.notebook.Destroy()
             self.notebook.sizer.Destroy()
-        self.Destroy()
+        # ...finally, destroy our widget
+        if self.widget: self.widget.Destroy()
             
     def create_properties(self):
         """\
@@ -117,7 +144,7 @@ class EditBase:
         self.klass = str(value)
 
     def popup_menu(self, event):
-        self.PopupMenu(self._rmenu, event.GetPosition())
+        if self.widget: self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
     def remove(self, *args):
         common.app_tree.remove(self.node)
@@ -172,11 +199,12 @@ class EditBase:
         clipboard.cut(self)
 
     def is_visible(self):
-        if not self.IsShown(): return False
-        if self.IsTopLevel(): return self.IsShown()
+        if not self.widget: return False
+        if not self.widget.IsShown(): return False
+        if self.widget.IsTopLevel(): return self.widget.IsShown()
         parent = self.parent
         if parent: return parent.is_visible()
-        return self.IsShown()
+        return self.widget.IsShown()
 
     def update_view(self, selected):
         """\
@@ -199,7 +227,7 @@ class WindowBase(EditBase):
         # 'property' id (editable by the user) 
         self.window_id = -1
 
-        def set_id(value, self=self):
+        def set_id(value):
             self.window_id = value
         self.access_functions['id'] = (lambda s=self: s.window_id, set_id)
         self.access_functions['size'] = (self.get_size, self.set_size)
@@ -215,18 +243,29 @@ class WindowBase(EditBase):
         max_y = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_Y)
 
         prop = self.properties
-        prop['id'] = TextProperty(self, 'id', None, can_disable=1)
-        prop['size'] = TextProperty(self, 'size', None, can_disable=1)
+        prop['id'] = TextProperty(self, 'id', None, can_disable=True)
+        prop['size'] = TextProperty(self, 'size', None, can_disable=True)
         prop['background'] = ColorDialogProperty(self, "background", None)
         prop['foreground'] = ColorDialogProperty(self, "foreground", None)
         prop['font'] = FontDialogProperty(self, "font", None)
 
-        EVT_SIZE(self, self.on_size)
-      
-        if show:
-            self.SetFocus()
-            property_window.SetSize((250, 340))
-            property_window.Show()
+    def finish_widget_creation(self):
+        prop = self.properties
+        size = prop['size'].get_value()
+        if size: self.widget.SetSize([int(s) for s in size.split(',')])
+        background = prop['background'].get_value()
+        if background:
+            self.widget.SetBackgroundColour(misc.string_to_color(background))
+        foreground = prop['foreground'].get_value()
+        if foreground:
+            self.widget.SetForegroundColour(misc.string_to_color(foreground))
+        font = prop['font'].get_value()
+        if font: self.set_font(font)
+        EditBase.finish_widget_creation(self)
+        EVT_SIZE(self.widget, self.on_size)
+        # after setting various Properties, we must Refresh widget in order to
+        # see changes
+        self.widget.Refresh()
 
     def create_properties(self):
         EditBase.create_properties(self)
@@ -269,32 +308,38 @@ class WindowBase(EditBase):
         """\
         update the value of the 'size' property
         """
-        try: self.properties['size'].set_value("%s, %s" % self.GetSizeTuple())
+        try: self.properties['size'].set_value("%s, %s" % \
+                                               self.widget.GetSizeTuple())
         except KeyError: pass
         event.Skip()
 
     def get_background(self):
-        return misc.color_to_string(self.GetBackgroundColour())
+        if not self.widget: return '' # this is an invalid color
+        return misc.color_to_string(self.widget.GetBackgroundColour())
 
     def get_foreground(self):
-        return misc.color_to_string(self.GetForegroundColour())
+        if not self.widget: return '' # this is an invalid color
+        return misc.color_to_string(self.widget.GetForegroundColour())
 
     def set_background(self, value):
+        if not self.widget: return
         try: color = misc.string_to_color(value)
         except: self.properties['background'].set_value(self.get_background())
         else:
-            self.SetBackgroundColour(color)
-            self.Refresh()
+            self.widget.SetBackgroundColour(color)
+            self.widget.Refresh()
             
     def set_foreground(self, value):
+        if not self.widget: return
         try: color = misc.string_to_color(value)
         except: self.properties['background'].set_value(self.get_background())
         else:
-            self.SetForegroundColour(color)
-            self.Refresh()
+            self.widget.SetForegroundColour(color)
+            self.widget.Refresh()
 
     def get_font(self):
-        font = self.GetFont()
+        if not self.widget: return '' # this is an invalid font
+        font = self.widget.GetFont()
         families = FontDialogProperty.font_families_from
         styles = FontDialogProperty.font_styles_from
         weights = FontDialogProperty.font_weights_from
@@ -304,6 +349,7 @@ class WindowBase(EditBase):
                 font.GetUnderlined(), font.GetFaceName())
 
     def set_font(self, value):
+        if not self.widget: return
         families = FontDialogProperty.font_families_to
         styles = FontDialogProperty.font_styles_to
         weights = FontDialogProperty.font_weights_to
@@ -312,7 +358,7 @@ class WindowBase(EditBase):
             f = wxFont(int(value[0]), families[value[1]], styles[value[2]],
                        weights[value[3]], int(value[4]), str(value[5]))
         except: self.properties['font'].set_value(self.get_font())
-        else: self.SetFont(f)
+        else: self.widget.SetFont(f)
 
     def set_width(self, value):
         self.set_size((int(value), -1))
@@ -321,38 +367,43 @@ class WindowBase(EditBase):
         self.set_size((-1, int(value)))
 
     def set_size(self, value):
+        if not self.widget: return
         try:
             size = [int(t.strip()) for t in value.split(',')]
         except:
-            self.properties['size'].set_value('%s, %s' % tuple(self.GetSize()))
+            self.properties['size'].set_value('%s, %s' % \
+                                              tuple(self.widget.GetSize()))
         else:
-            self.SetSize(size)
-            try: self.sizer.set_item(self.pos, size=self.GetSize())
+            self.widget.SetSize(size)
+            try: self.sizer.set_item(self.pos, size=self.widget.GetSize())
             except AttributeError: pass
 
     def get_size(self):
-        return "%s, %s" % tuple(self.GetSize())
+        if not self.widget: return '' # invalid size
+        return "%s, %s" % tuple(self.widget.GetSize())
 
     def get_property_handler(self, name):
         if name == 'font':
             class FontHandler:
-                def __init__(s):
-                    s.props = range(6)
-                    s.index = 0
-                def start_elem(s, name, attrs):
+                def __init__(self, owner):
+                    self.owner = owner
+                    self.props = range(6)
+                    self.index = 0
+                def start_elem(self, name, attrs):
                     index = { 'size': 0, 'family': 1, 'style': 2, 'weight': 3,
                               'underlined': 4, 'face': 5 }
-                    s.index = index.get(name, 5)
-                def end_elem(s, name):
+                    self.index = index.get(name, 5)
+                def end_elem(self, name):
                     if name == 'font':
-                        self.properties['font'].set_value(repr(s.props))
-                        self.properties['font'].toggle_active(1)
-                        self.set_font(repr(s.props))
+                        self.owner.properties['font'].set_value(
+                            repr(self.props))
+                        self.owner.properties['font'].toggle_active(True)
+                        self.owner.set_font(repr(self.props))
                         return True # to remove this handler
-                def char_data(s, data):
-                    s.props[s.index] = str(data.strip())
-
-            return FontHandler()
+                def char_data(self, data):
+                    self.props[self.index] = str(data.strip())
+            # end of class FontHandler
+            return FontHandler(self)
         return None
 
 # end of class WindowBase
@@ -369,10 +420,15 @@ class ManagedBase(WindowBase):
         WindowBase.__init__(self, name, klass, parent, id, property_window,
                             show=show)
         # selection markers
-        self.sel_marker = misc.SelectionMarker(self, parent)
+        self.sel_marker = None
         # dictionary of properties relative to the sizer which
         # controls this window
         self.sizer_properties = {}
+        # attributes to keep the values of the sizer_properties
+        self.option = 0
+        self.flag = 0
+        self.border = 0
+        
         self.sizer = sizer
         self.pos = pos
         self.access_functions['option'] = (self.get_option, self.set_option)
@@ -392,8 +448,14 @@ class ManagedBase(WindowBase):
         szprop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
         szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
 
-        EVT_LEFT_DOWN(self, self.on_set_focus)
-        EVT_MOVE(self, self.on_move)
+    def finish_widget_creation(self):
+        self.sel_marker = misc.SelectionMarker(self, parent)
+        WindowBase.finish_widget_creation(self)
+        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        EVT_MOVE(self.widget, self.on_move)
+        # set the item layout inside the sizer
+        self.sizer.set_item(self.pos, option=self.option, flag=self.flag,
+                            border=self.border, size=self.widget.GetSize())
 
     def create_properties(self):
         WindowBase.create_properties(self)
@@ -431,12 +493,13 @@ class ManagedBase(WindowBase):
         self.sel_marker.update()
 
     def set_option(self, value):
-        value = int(value)
+        self.option = value = int(value)
+        if not self.widget: return
         try:
             sz = self.properties['size']
             if value or sz.is_active():
                 size = [int(s.strip()) for s in sz.get_value().split(',')]
-            else: size = self.GetBestSize()
+            else: size = self.widget.GetBestSize()
             self.sizer.set_item(self.pos, option=value, size=size)
         except AttributeError, e:
             print e
@@ -447,6 +510,8 @@ class ManagedBase(WindowBase):
         for v in range(len(value)):
             if value[v]:
                 flags |= self.flags_pos[v]
+        self.flag = flags
+        if not self.widget: return
         try:
             try:
                 size = [ int(s) for s in
@@ -455,12 +520,14 @@ class ManagedBase(WindowBase):
                 size = None
             if not (flags & wxEXPAND) and \
                not self.properties['size'].is_active():
-                size = self.GetBestSize()
+                size = self.widget.GetBestSize()
             self.sizer.set_item(self.pos, flag=flags, size=size)
         except AttributeError, e:
             import traceback; traceback.print_exc()
 
     def set_border(self, value):
+        self.border = int(value)
+        if not self.widget: return
         try:
             size = [ int(s) for s in
                      self.properties['size'].get_value().split(',') ]
@@ -469,44 +536,48 @@ class ManagedBase(WindowBase):
             import traceback; traceback.print_exc()
 
     def get_option(self):
-        try: return self.sizer.GetChildren()[self.pos].GetOption()
-        except AttributeError: return 0
+##         try: return self.sizer.GetChildren()[self.pos].GetOption()
+##         except AttributeError: return 0
+        return self.option
 
     def get_flag(self):
         retval = [0] * len(self.flags_pos)
         try:
-            flag = self.sizer.GetChildren()[self.pos].GetFlag()
+            #flag = self.sizer.GetChildren()[self.pos].GetFlag()
             for i in range(len(self.flags_pos)):
-                if flag & self.flags_pos[i]:
+                if self.flag & self.flags_pos[i]:
                     retval[i] = 1
         except AttributeError: pass
         return retval
 
     def get_int_flag(self):
-        return self.sizer.GetChildren()[self.pos].GetFlag()        
+        #return self.sizer.GetChildren()[self.pos].GetFlag()
+        return self.flag
 
     def get_border(self):
-        try: return self.sizer.GetChildren()[self.pos].GetBorder()
-        except AttributeError: return 0
+##         try: return self.sizer.GetChildren()[self.pos].GetBorder()
+##         except AttributeError: return 0
+        return self.border
 
     def delete(self):
-        self.sel_marker.Destroy() # destroy the selection markers
+        if self.sel_marker:
+            self.sel_marker.Destroy() # destroy the selection markers
         WindowBase.delete(self)
 
     def remove(self, *args):
-        from edit_sizers import SizerSlot
-        elem = self.sizer.GetChildren()[self.pos]
-        w = SizerSlot(self.parent, self.sizer, self.pos)
-        try:
-            self.sizer.elements[self.sizer.elements.index(self)] = w
-        except (IndexError, KeyError):
-            pass        
-        elem.SetWindow(w)
-        elem.SetOption(1)
-        elem.SetBorder(0)
-        elem.SetFlag(wxEXPAND)
-        self.sizer.Layout()
-        
+##         from edit_sizers import SizerSlot
+##         elem = self.sizer.GetChildren()[self.pos]
+##         w = SizerSlot(self.parent, self.sizer, self.pos)
+##         try:
+##             self.sizer.elements[self.sizer.elements.index(self)] = w
+##         except (IndexError, KeyError):
+##             pass        
+##         elem.SetWindow(w)
+##         elem.SetOption(1)
+##         elem.SetBorder(0)
+##         elem.SetFlag(wxEXPAND)
+##         self.sizer.Layout()
+        self.sizer.free_slot(self.pos)        
         WindowBase.remove(self)
 
 # end of class ManagedBase
@@ -519,8 +590,17 @@ class TopLevelBase(WindowBase):
     def __init__(self, name, klass, parent, id, property_window, show=1):
         WindowBase.__init__(self, name, klass, parent, id, property_window,
                             show=show)
-        self.access_functions['title'] = (self.GetTitle, self.SetTitle)
-        self.properties['title'] = TextProperty(self, 'title', None) 
+        self.access_functions['title'] = (self.get_title, self.set_title)
+        self.properties['title'] = TextProperty(self, 'title', None)
+        self.sizer = None # sizer that controls the layout of the children
+                          # of the window
+
+    def finish_widget_creation(self):
+        WindowBase.finish_widget_creation(self)
+        self.widget.SetTitle(self.properties['title'].get_value()
+        EVT_LEFT_DOWN(self.widget, self.drop_sizer)
+        EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        EVT_CLOSE(self.widget, self.ask_remove)
 
     def create_properties(self):
         WindowBase.create_properties(self)
@@ -529,6 +609,53 @@ class TopLevelBase(WindowBase):
         sizer_tmp = panel.GetSizer()
         sizer_tmp.Add(self.properties['title'].panel, 0, wxEXPAND)
         sizer_tmp.Layout()
-        sizer_tmp.Fit(panel)        
+        sizer_tmp.Fit(panel)
+
+    def get_title(self):
+        if not self.widget: return self.name
+        return self.widget.GetTitle()
+
+    def set_title(self, value):
+        if not self.widget: return
+        self.widget.SetTitle(value)
+
+    def set_sizer(self, sizer):
+        self.sizer = sizer
+        if self.sizer and self.widget:
+            self.widget.SetAutoLayout(True)
+            self.widget.SetSizer(self.sizer.widget)
+
+    def on_enter(self, event):
+        if not self.sizer and common.adding_sizer:
+            self.widget.SetCursor(wxCROSS_CURSOR)
+        else:
+            self.widget.SetCursor(wxNullCursor)
+
+    def drop_sizer(self, event):
+        if self.sizer or not common.adding_sizer:
+            self.on_set_focus(event) # default behaviour: call show_properties
+            return
+        common.adding_widget = common.adding_sizer = False
+        self.widget.SetCursor(wxNullCursor)
+        common.widgets[common.widget_to_add](self, None, None)
+        common.widget_to_add = None
+        self.sizer = True # in this case, self.sizer is used only as a flag
+                          # (this is really ugly, I must find a better way)
+
+    def ask_remove(self, event):
+        if wxPlatform == '__WXMSW__':
+            # this msgbox causes a segfault on GTK... and I don't know why :-(
+            if wxMessageBox("Do you want to remove this dialog\n"
+                            "from the current app?", "Are you sure?",
+                            wxYES_NO|wxCENTRE|wxICON_QUESTION) == wxYES:
+                self.remove()
+        else:
+            wxMessageBox("To remove the dialog, right-click on it on the "
+                         "tree\nand select the 'remove' option", "Information",
+                         wxOK|wxCENTRE|wxICON_INFORMATION, self.widget)
+
+    def on_size(self, event):
+        WindowBase.on_size(self, event)
+        if self.sizer and self.widget: self.widget.GetSizer().Refresh()
 
 # end of class TopLevelBase
