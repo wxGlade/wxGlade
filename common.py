@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.43 2004/10/18 09:19:20 agriggio Exp $
+# $Id: common.py,v 1.44 2004/10/18 12:10:17 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -303,8 +303,8 @@ def autosave_current():
     return True
 
 
-def remove_autosaved():
-    autosaved = get_name_for_autosave()
+def remove_autosaved(filename=None):
+    autosaved = get_name_for_autosave(filename)
     if os.path.exists(autosaved):
         try:
             os.unlink(autosaved)

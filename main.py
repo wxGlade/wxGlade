@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.58 2004/10/18 09:19:40 agriggio Exp $
+# $Id: main.py,v 1.59 2004/10/18 12:10:17 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -221,6 +221,8 @@ class wxGladeFrame(wxFrame):
                                     "Auto save detected",
                                     style=wxICON_QUESTION|wxYES_NO) == wxYES:
                     common.restore_from_autosaved(infile)
+                else:
+                    common.remove_autosaved(infile)
                 self._open_app(infile)
                 
             EVT_MENU_RANGE(self, wxID_FILE1, wxID_FILE9, open_from_history)
@@ -468,7 +470,9 @@ class wxGladeFrame(wxFrame):
                 common.app_tree.app.saved = False
                 common.app_tree.app.filename = None
                 self.user_message("Recovery from auto save complete")
-                common.remove_autosaved(None)
+                common.remove_autosaved()
+        else:
+            common.remove_autosaved()
 
     def on_autosave_timer(self, event):
         if common.autosave_current():
@@ -547,6 +551,8 @@ class wxGladeFrame(wxFrame):
                                 "Auto save detected",
                                 style=wxICON_QUESTION|wxYES_NO) == wxYES:
                 common.restore_from_autosaved(infile)
+            else:
+                common.remove_autosaved(infile)
             self._open_app(infile)
             self.cur_dir = os.path.dirname(infile)
 
