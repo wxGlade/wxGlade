@@ -127,6 +127,9 @@ class EditPanel(PanelBase, ManagedBase):
 
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
+    _is_toplevel = False # used to avoid to appear in the "Top Window" property
+                         # of the app
+    
     def __init__(self, name, parent, id, property_window, klass='wxPanel',
                  show=True, style=wxTAB_TRAVERSAL):
         TopLevelBase.__init__(self, name, klass, parent, id,

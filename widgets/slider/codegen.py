@@ -6,27 +6,29 @@
 
 import common
 
-def python_code_generator(obj):
-    """\
-    generates the python code for wxSlider objects
-    """
-    pygen = common.code_writers['python']
-    prop = obj.properties
-    id_name, id = pygen.generate_code_id(obj)
-    value = prop.get('value', '0')
-    try: min_v, max_v = [ s.strip() for s in prop['range'].split(',') ]
-    except: min_v, max_v = '0', '10'
-    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-    else: parent = 'self'
-    style = prop.get("style")
-    if style and style != 'wxSL_HORIZONTAL': style = ", style=%s" % style
-    else: style = ''
-    init = []
-    if id_name: init.append(id_name)
-    init.append('self.%s = %s(%s, %s, %s, %s, %s%s)\n' %
-                (obj.name, obj.klass, parent, id, value, min_v, max_v, style))
-    props_buf = pygen.generate_common_properties(obj)
-    return init, props_buf, []
+
+class PythonCodeGenerator:
+    def get_code(self, obj):
+        pygen = common.code_writers['python']
+        prop = obj.properties
+        id_name, id = pygen.generate_code_id(obj)
+        value = prop.get('value', '0')
+        try: min_v, max_v = [ s.strip() for s in prop['range'].split(',') ]
+        except: min_v, max_v = '0', '10'
+        if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
+        else: parent = 'self'
+        style = prop.get("style")
+        if style and style != 'wxSL_HORIZONTAL': style = ", style=%s" % style
+        else: style = ''
+        init = []
+        if id_name: init.append(id_name)
+        init.append('self.%s = %s(%s, %s, %s, %s, %s%s)\n' %
+                    (obj.name, obj.klass, parent, id, value, min_v,
+                     max_v, style))
+        props_buf = pygen.generate_common_properties(obj)
+        return init, props_buf, []
+
+# end of class PythonCodeGenerator
 
 
 def xrc_code_generator(obj):
@@ -49,28 +51,31 @@ def xrc_code_generator(obj):
     return SliderXrcObject(obj)
 
 
-def cpp_code_generator(obj):
-    """\
-    generates the C++ code for wxSlider objects
-    """
-    cppgen = common.code_writers['C++']
-    prop = obj.properties
-    id_name, id = cppgen.generate_code_id(obj)
-    if id_name: ids = [ id_name ]
-    else: ids = []
-    value = prop.get('value', '0')
-    try: min_v, max_v = [ s.strip() for s in prop['range'].split(',') ]
-    except: min_v, max_v = '0', '10'
-    if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-    else: parent = 'this'
-    extra = ''
-    style = prop.get("style")
-    if style and style != 'wxSL_HORIZONTAL':
-        extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-    init = ['%s = new %s(%s, %s, %s, %s, %s%s);\n' %
-            (obj.name, obj.klass, parent, id, value, min_v, max_v, extra)]
-    props_buf = cppgen.generate_common_properties(obj)
-    return init, ids, props_buf, []
+class CppCodeGenerator:
+    def get_code(self, obj):
+        """\
+        generates the C++ code for wxSlider objects
+        """
+        cppgen = common.code_writers['C++']
+        prop = obj.properties
+        id_name, id = cppgen.generate_code_id(obj)
+        if id_name: ids = [ id_name ]
+        else: ids = []
+        value = prop.get('value', '0')
+        try: min_v, max_v = [ s.strip() for s in prop['range'].split(',') ]
+        except: min_v, max_v = '0', '10'
+        if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+        else: parent = 'this'
+        extra = ''
+        style = prop.get("style")
+        if style and style != 'wxSL_HORIZONTAL':
+            extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
+        init = ['%s = new %s(%s, %s, %s, %s, %s%s);\n' %
+                (obj.name, obj.klass, parent, id, value, min_v, max_v, extra)]
+        props_buf = cppgen.generate_common_properties(obj)
+        return init, ids, props_buf, []
+
+# end of class CppCodeGenerator
 
 
 def initialize():
@@ -78,11 +83,10 @@ def initialize():
 
     pygen = common.code_writers.get("python")
     if pygen:
-        pygen.add_widget_handler('wxSlider', python_code_generator)
+        pygen.add_widget_handler('wxSlider', PythonCodeGenerator())
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
         xrcgen.add_widget_handler('wxSlider', xrc_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        cppgen.add_widget_handler('wxSlider', cpp_code_generator)
-
+        cppgen.add_widget_handler('wxSlider', CppCodeGenerator())
