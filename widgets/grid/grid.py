@@ -29,7 +29,8 @@ class EditGrid(ManagedBase):
         self.enable_row_resize = True
         self.enable_grid_resize = False
         self.lines_color = '#000000'
-        self.label_bg_color = '#333333'
+        self.label_bg_color = '#C0C0C0'
+        self.selection_mode = wxGrid.wxGridSelectCells
         
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
                              property_window, show=show)
@@ -82,6 +83,12 @@ class EditGrid(ManagedBase):
         self.properties['label_bg_color']= ColorDialogProperty(self,
                                                              'label_bg_color',
                                                              None)
+        self.access_functions['selection_mode'] = (self.get_selection_mode,
+                                                    self.set_selection_mode)
+        self.properties['selection_mode']= RadioProperty(self, 'selection_mode', None, 
+                                                             ['wxGrid.wxGridSelectCells',
+                                                              'wxGrid.wxGridSelectRows',
+                                                              'wxGrid.wxGridSelectColumns'])
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -97,6 +104,7 @@ class EditGrid(ManagedBase):
         self.properties['enable_grid_resize'].display(panel)
         self.properties['lines_color'].display(panel)
         self.properties['label_bg_color'].display(panel)
+        self.properties['selection_mode'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
         szr.Add(self.properties['columns_number'].panel, 0, wxEXPAND)
         szr.Add(self.properties['rows_number'].panel, 0, wxEXPAND)
@@ -109,6 +117,7 @@ class EditGrid(ManagedBase):
         szr.Add(self.properties['enable_col_resize'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_row_resize'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_grid_resize'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['selection_mode'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -130,14 +139,11 @@ class EditGrid(ManagedBase):
         # or you can't see it.
         self.set_option(1)  
         self.set_flag("wxEXPAND")
+        self.set_selection_mode(self.selection_mode)
         # following two events are to permit select grid from designer frame
         EVT_GRID_CELL_LEFT_CLICK(self.widget, self.on_set_focus)  
         EVT_GRID_LABEL_LEFT_CLICK(self.widget, self.on_set_focus)
     
-    def click_on_grid(self, e):
-        print "click\n"
-        self.update_view(True)
-
 
     def get_row_label_size(self):
         return self.row_label_size
@@ -246,6 +252,20 @@ class EditGrid(ManagedBase):
         self.label_bg_color = str(value)
         if self.widget:
             self.widget.SetLabelBackgroundColour(misc.string_to_color(self.label_bg_color))
+
+    def get_selection_mode(self):
+        if self.selection_mode == wxGrid.wxGridSelectCells:   return 0
+        if self.selection_mode == wxGrid.wxGridSelectRows:    return 1
+        if self.selection_mode == wxGrid.wxGridSelectColumns: return 2
+
+    def set_selection_mode(self, value):
+        if value == 0:
+            self.selection_mode = wxGrid.wxGridSelectCells
+        elif value == 1:
+            self.selection_mode = wxGrid.wxGridSelectRows
+        else:
+            self.selection_mode = wxGrid.wxGridSelectColumns
+        # no operation on the grid.
 
 # end of class EditGrid
         

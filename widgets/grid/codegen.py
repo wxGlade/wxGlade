@@ -4,6 +4,7 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
+
 import common,misc
 
 def python_code_generator(obj):
@@ -48,12 +49,18 @@ def python_generate_properties(obj):
     if prop.get('enable_col_resize', False):
         out.append('%s.EnableDragColSize(%s)\n' %
                    (name, prop['enable_col_resize']))
+    else: #HELP# default is enabled, I try to fix in this way
+        out.append(name + '.EnableDragColSize(0)\n')
     if prop.get('enable_row_resize', False):
         out.append('%s.EnableDragRowSize(%s)\n' %
                    (name, prop['enable_row_resize']))
+    else: #HELP# default is enabled, I try to fix in this way
+        out.append(name + '.EnableDragRowSize(0)\n')
     if prop.get('enable_grid_resize', False):
         out.append('%s.EnableDragGridSize(%s)\n' %
                    (name, prop['enable_grid_resize']))
+    else: #HELP# default is enabled, I try to fix in this way
+        out.append(name + '.EnableDragGridSize(0)\n')
     if prop.get('lines_color', False):
         c = misc.string_to_color(prop['lines_color'])
         out.append('%s.SetGridLineColour(wxColour(%d,%d,%d))\n' %
@@ -62,6 +69,9 @@ def python_generate_properties(obj):
         c = misc.string_to_color(prop['label_bg_color'])
         out.append('%s.SetLabelBackgroundColour(wxColour(%d,%d,%d))\n' %
                    (name, int(c.Red()), int(c.Green()), int(c.Blue()) ) )
+    if prop.get('selection_mode', False):
+        out.append('%s.SetSelectionMode(%s)\n' %
+                   (name, prop['selection_mode']))
     out.extend(pygen.generate_common_properties(obj))
     return out
 
