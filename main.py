@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.44 2003/08/11 15:20:44 agriggio Exp $
+# $Id: main.py,v 1.45 2003/08/16 13:50:16 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -625,6 +625,11 @@ def main(filename=None):
     from wxPython import wx
     if wx.__version__ == '2.4.0.2':
         wxSizerPtr.Insert = misc.sizer_fixed_Insert
+
+    # now, silence a deprecation warining for py2.3
+    import warnings
+    warnings.filterwarnings("ignore", "integer", DeprecationWarning,
+                            "wxPython.gdi")
     
     app = wxGlade()
     if filename is not None:
