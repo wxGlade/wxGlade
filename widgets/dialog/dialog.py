@@ -31,7 +31,7 @@ class EditDialog(TopLevelBase):
 
     def create_widget(self):
         if self.parent: w = self.parent.widget
-        else: w = None
+        else: w = common.palette
         # we set always a default style because this is the best one for
         # editing the dialog (for example, a dialog without a caption would
         # be hard to move, etc.)
@@ -39,7 +39,7 @@ class EditDialog(TopLevelBase):
         # change 2002-10-09: now we create a wxFrame instead of a wxDialog,
         # because the latter gives troubles I wasn't able to solve when using
         # wxPython 2.3.3.1 :-/
-        self.widget = wxFrame(None, self.id, "", style=default_style)
+        self.widget = wxFrame(w, self.id, "", style=default_style)
         self.widget.SetBackgroundColour(wxSystemSettings_GetSystemColour(
             wxSYS_COLOUR_BTNFACE))
 

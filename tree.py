@@ -6,7 +6,7 @@
 
 from wxPython.wx import *
 from xml.sax.saxutils import quoteattr
-import misc, common
+import misc, common, os.path
 
 class Tree:
     """\
@@ -178,7 +178,8 @@ class WidgetTree(wxTreeCtrl, Tree):
         self.cur_widget = None # reference to the selected widget
         Tree.__init__(self, root_node, application)
         image_list = wxImageList(21, 21)
-        image_list.Add(wxBitmap('icons/application.xpm',
+        image_list.Add(wxBitmap(os.path.join(common.wxglade_path,
+                                             'icons/application.xpm'),
                                 wxBITMAP_TYPE_XPM))
         for w in WidgetTree.images:
             WidgetTree.images[w] = image_list.Add(wxBitmap(

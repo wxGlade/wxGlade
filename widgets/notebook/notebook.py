@@ -415,7 +415,9 @@ def initialize():
     common.widgets_from_xml['NotebookPane'] = xml_builder_pane
 
     from tree import WidgetTree
-    WidgetTree.images['NotebookPane'] = 'icons/panel.xpm'
+    import os.path
+    WidgetTree.images['NotebookPane'] = os.path.join(common.wxglade_path,
+                                                     'icons/panel.xpm')
 
     return common.make_object_button('EditNotebook', 'icons/notebook.xpm')
     

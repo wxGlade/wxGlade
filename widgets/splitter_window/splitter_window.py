@@ -397,7 +397,9 @@ def initialize():
     common.widgets_from_xml['SplitterPane'] = xml_builder_pane
 
     from tree import WidgetTree
-    WidgetTree.images['SplitterPane'] = 'icons/panel.xpm'
+    import os.path
+    WidgetTree.images['SplitterPane'] = os.path.join(common.wxglade_path,
+                                                     'icons/panel.xpm')
 
     return common.make_object_button('EditSplitterWindow',
                                      'icons/splitter_window.xpm')

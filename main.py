@@ -41,7 +41,8 @@ class wxGladeFrame(wxFrame):
         common.palette = self # to provide a reference accessible
                               # by the various widget classes
         icon = wxEmptyIcon()
-        bmp = wxBitmap("icons/icon.xpm", wxBITMAP_TYPE_XPM)
+        bmp = wxBitmap(os.path.join(common.wxglade_path, "icons/icon.xpm"),
+                       wxBITMAP_TYPE_XPM)
         icon.CopyFromBitmap(bmp)
         self.SetIcon(icon)
         self.SetBackgroundColour(wxSystemSettings_GetSystemColour(
@@ -135,6 +136,7 @@ class wxGladeFrame(wxFrame):
         frame_tool_win = config.preferences.frame_tool_win
         if wxPlatform == '__WXMSW__' and frame_tool_win:
             frame_style |= wxFRAME_TOOL_WINDOW|wxFRAME_NO_TASKBAR
+        
         self.frame2 = wxFrame(self, -1, 'Properties - <app>',
                               style=frame_style)
         self.frame2.SetBackgroundColour(wxSystemSettings_GetSystemColour(
@@ -190,14 +192,15 @@ class wxGladeFrame(wxFrame):
         self.tree_frame.Show()
         self.frame2.Show()
 
+        self._skip_activate = False
         if wxPlatform == '__WXMSW__':
             import about
             # I'll pay a beer to anyone who can explain to me why this prevents
             # a segfault on Win32 when you exit without doing anything!!
             self.about_box = about.wxGladeAboutBox(self.GetParent())
-            def on_activate(event, _skip=[False]):
-                if _skip[0] or not event.GetActive():
-                    _skip[0] = False
+            def on_activate(event):
+                if self._skip_activate or not event.GetActive():
+                    self._skip_activate = False
                     event.Skip()
                     return
                 hide = self.IsIconized()
@@ -206,7 +209,7 @@ class wxGladeFrame(wxFrame):
                     self.frame2.Raise()
                     self.tree_frame.Show(menu_bar.IsChecked(TREE_ID))
                     self.tree_frame.Raise()
-                    _skip[0] = True
+                    self._skip_activate = True
                 else:
                     self.frame2.Hide()
                     self.tree_frame.Hide()
@@ -388,14 +391,16 @@ class wxGladeFrame(wxFrame):
         if self.ask_save():
             common.app_tree.clear()
             if self.about_box: self.about_box.Destroy()
-            #self.tree_frame.Destroy()
-            #self.frame2.Destroy()
-            #self.Destroy()
             try: config.save_preferences()
             except Exception, e:
                 wxMessageBox('Error saving preferences:\n%s' % e, 'Error',
                              wxOK|wxCENTRE|wxICON_ERROR)
-            raise SystemExit
+##             self.tree_frame.Destroy()
+##             self.frame2.Destroy()
+            self._skip_activate = True
+            self.Destroy()
+            wxCallAfter(lambda : wxGetApp().ExitMainLoop())
+            #raise SystemExit
 
     def add_object(self, event):
         """\
@@ -464,6 +469,7 @@ class wxGlade(wxApp):
         config.init_preferences()
         frame = wxGladeFrame()
         self.SetTopWindow(frame)
+        self.SetExitOnFrameDelete(True)
         return True
 
 # end of class wxGlade

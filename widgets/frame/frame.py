@@ -717,7 +717,7 @@ class EditFrame(TopLevelBase):
 
     def create_widget(self):
         if self.parent: w = self.parent.widget
-        else: w = None
+        else: w = common.palette
         self.widget = wxFrame(w, self.id, self.get_title())
 
     def finish_widget_creation(self):
@@ -930,8 +930,12 @@ def initialize():
     
     # add statusbar and menubar icons to WidgetTree
     from tree import WidgetTree
-    WidgetTree.images['EditStatusBar'] = 'icons/statusbar.xpm'
-    WidgetTree.images['EditMenuBar'] = 'icons/menubar.xpm'
-    WidgetTree.images['EditMDIChildFrame'] = 'icons/frame.xpm'
+    import os.path
+    WidgetTree.images['EditStatusBar'] = os.path.join(common.wxglade_path,
+                                                      'icons/statusbar.xpm')
+    WidgetTree.images['EditMenuBar'] = os.path.join(common.wxglade_path,
+                                                    'icons/menubar.xpm')
+    WidgetTree.images['EditMDIChildFrame'] = os.path.join(common.wxglade_path,
+                                                          'icons/frame.xpm')
        
     return common.make_object_button('EditFrame', 'icons/frame.xpm', 1)
