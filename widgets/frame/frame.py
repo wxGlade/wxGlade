@@ -507,8 +507,8 @@ class EditMenuBar(EditBase):
                 if name == 'menus': return
                 if name == 'menu':
                     self.menu_depth += 1
+                    label = misc._encode(attrs['label'])
                     if self.menu_depth == 1:
-                        label = misc._encode(attrs['label'])
                         t = MenuTree(attrs['name'], label)
                         self.curr_menu.append( (t.root,) )
                         self.owner.menus.append(t)
