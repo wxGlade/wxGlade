@@ -191,13 +191,14 @@ class Preferences(ConfigParser):
         self.changed = True
 
     def set_geometry(self, name, geometry):
-        section = 'geometry_%s' % name
-        if not self.has_section(section):
-            self.add_section(section)
-        self.set(section, 'x', geometry[0])
-        self.set(section, 'y', geometry[1])
-        self.set(section, 'w', geometry[2])
-        self.set(section, 'h', geometry[3])
+        if geometry is not None:
+            section = 'geometry_%s' % name
+            if not self.has_section(section):
+                self.add_section(section)
+            self.set(section, 'x', geometry[0])
+            self.set(section, 'y', geometry[1])
+            self.set(section, 'w', geometry[2])
+            self.set(section, 'h', geometry[3])
 
     def get_geometry(self, name):
         section = 'geometry_%s' % name

@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.39 2004/12/19 00:55:03 agriggio Exp $
+# $Id: misc.py,v 1.40 2005/01/20 09:26:31 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -287,9 +287,13 @@ _currently_under_mouse = None
 
 #-----------------------------------------------------------------------------
 def get_geometry(win):
-    x, y = win.GetPositionTuple()
-    w, h = win.GetSizeTuple()
-    return (x, y, w, h)
+    x, y = win.GetPosition()
+    w, h = win.GetSize()
+    if 0 <= x <= wxSystemSettings_GetMetric(wxSYS_SCREEN_X) and \
+       0 <= y <= wxSystemSettings_GetMetric(wxSYS_SCREEN_Y):
+        return (x, y, w, h)
+    return None
+
 
 def set_geometry(win, geometry):
     if geometry is None: return

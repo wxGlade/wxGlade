@@ -2,7 +2,7 @@
 # xrc2wxg.py: Converts an XRC resource file (in a format wxGlade likes,
 # i.e. all windows inside sizers, no widget unknown to wxGlade, ...) into a
 # WXG file
-# $Id: xrc2wxg.py,v 1.16 2004/09/27 08:21:59 agriggio Exp $
+# $Id: xrc2wxg.py,v 1.17 2005/01/20 09:26:30 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -402,16 +402,17 @@ def fix_sliders(document):
         klass = node.getAttribute('class')
         return klass == 'wxSlider' or klass == 'wxSpinCtrl'
     for slider in filter(isslider, document.getElementsByTagName('object')):
+        v1, v2 = 0, 100
         for child in get_child_elems(slider):
-            if child.tagName == 'range':
-                m1, m2 = [s.strip() for s in child.firstChild.data.split(',')]
-                min = document.createElement('min')
-                min.appendChild(document.createTextNode(m1))
-                max = document.createElement('max')
-                max.appendChild(document.createTextNode(m2))
+            if child.tagName == 'min':
+                v1 = child.firstChild.data.strip()
                 slider.removeChild(child).unlink()
-                slider.appendChild(min)
-                slider.appendChild(max)
+            elif child.tagName == 'max':
+                v2 = child.firstChild.data.strip()
+                slider.removeChild(child).unlink()
+        rng = document.createElement('range')
+        rng.appendChild(document.createTextNode('%s, %s' % (v1, v2)))
+        slider.appendChild(rng)
 
 
 def fix_encoding(filename, document):
