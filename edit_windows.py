@@ -202,7 +202,8 @@ class EditBase:
     def is_visible(self):
         if not self.widget: return False
         if not self.widget.IsShown(): return False
-        if self.widget.IsTopLevel(): return self.widget.IsShown()
+        if self.widget.IsTopLevel():
+            return self.widget.IsShown()
         parent = self.parent
         if parent: return parent.is_visible()
         return self.widget.IsShown()
@@ -254,6 +255,7 @@ class WindowBase(EditBase):
         prop = self.properties
         size = prop['size'].get_value()
         if size: self.widget.SetSize([int(s) for s in size.split(',')])
+        else: prop['size'].set_value('%s, %s' % tuple(self.widget.GetSize()))
         background = prop['background'].get_value()
         if background:
             self.widget.SetBackgroundColour(misc.string_to_color(background))
@@ -450,13 +452,16 @@ class ManagedBase(WindowBase):
         szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
 
     def finish_widget_creation(self):
-        self.sel_marker = misc.SelectionMarker(self, parent)
+        self.sel_marker = misc.SelectionMarker(self.widget, self.parent.widget)
         WindowBase.finish_widget_creation(self)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         EVT_MOVE(self.widget, self.on_move)
         # set the item layout inside the sizer
-        self.sizer.set_item(self.pos, option=self.option, flag=self.flag,
-                            border=self.border, size=self.widget.GetSize())
+##         self.sizer.set_item(self.pos, option=self.option, flag=self.flag,
+##                             border=self.border, size=self.widget.GetSize())
+        # re-add the item to update it
+        self.sizer.add_item(self, self.pos, self.option, self.flag,
+                            self.border, self.widget.GetSize())
 
     def create_properties(self):
         WindowBase.create_properties(self)
@@ -486,7 +491,7 @@ class ManagedBase(WindowBase):
         panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
         
     def update_view(self, selected):
-        self.sel_marker.Show(selected)
+        if self.sel_marker: self.sel_marker.Show(selected)
 
     def on_move(self, event): self.sel_marker.update()
     def on_size(self, event):
@@ -598,10 +603,16 @@ class TopLevelBase(WindowBase):
 
     def finish_widget_creation(self):
         WindowBase.finish_widget_creation(self)
+        for label in ("Copy", "Cut"):
+            item_id = self._rmenu.FindItem(label)
+            self._rmenu.Delete(item_id)
+        HIDE_ID = wxNewId()
+        self._rmenu.Append(HIDE_ID, 'Hide')
         self.widget.SetTitle(self.properties['title'].get_value())
+        EVT_MENU(self.widget, HIDE_ID, self.hide_widget)
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
-        EVT_CLOSE(self.widget, self.ask_remove)
+        EVT_CLOSE(self.widget, self.hide_widget)
 
     def create_properties(self):
         WindowBase.create_properties(self)
@@ -643,17 +654,8 @@ class TopLevelBase(WindowBase):
         self.sizer = True # in this case, self.sizer is used only as a flag
                           # (this is really ugly, I must find a better way)
 
-    def ask_remove(self, event):
-        if wxPlatform == '__WXMSW__':
-            # this msgbox causes a segfault on GTK... and I don't know why :-(
-            if wxMessageBox("Do you want to remove this dialog\n"
-                            "from the current app?", "Are you sure?",
-                            wxYES_NO|wxCENTRE|wxICON_QUESTION) == wxYES:
-                self.remove()
-        else:
-            wxMessageBox("To remove the dialog, right-click on it on the "
-                         "tree\nand select the 'remove' option", "Information",
-                         wxOK|wxCENTRE|wxICON_INFORMATION, self.widget)
+    def hide_widget(self, event):
+        self.widget.Hide()
 
     def on_size(self, event):
         WindowBase.on_size(self, event)
