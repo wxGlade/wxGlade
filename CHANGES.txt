@@ -1,4 +1,14 @@
+2002-10-24: application.py, xml_parse.py, tree.py: added new encoding property
+		to Application objects, which controls the encoding for the xml
+		generation
+
+2002-10-23: widgets/panel/panel.py, widgets/dialog/dialog.py:
+		added new class EditTopLevelPanel to create panels without 
+		the need to create a container frame/dialog (the new class is
+		available from the Dialog button in the palette)
+
 2002-10-22: config.py: added config.py to configure some aspects of wxGlade
+		       (through View->Preferences... menu)
 
 2002-10-20: edit_windows.py, edit_sizers/edit_sizers.py, main.py, misc.py:
 		- added icons for menu items

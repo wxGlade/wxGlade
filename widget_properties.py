@@ -15,12 +15,14 @@ def _mangle(label):
     """
     return label.capitalize().replace('_', ' ')
 
-def _encode(label, encoding='latin-1'):
-    """\
-    returns a utf-8 encoded representation of label. This is equivalent to:
-    str(label).decode(encoding).encode('utf-8')
-    """
-    return str(label).decode(encoding).encode('utf-8')
+import common
+_encode = common._encode_to_xml
+## def _encode(label, encoding='latin-1'):
+##     """\
+##     returns a utf-8 encoded representation of label. This is equivalent to:
+##     str(label).decode(encoding).encode('utf-8')
+##     """
+##     return str(label).decode(encoding).encode('utf-8')
 
 
 class Property:

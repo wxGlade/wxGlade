@@ -699,24 +699,21 @@ class TopLevelBase(WindowBase):
     """\
     Base class for every non-managed window (i.e. Frames and Dialogs).
     """
-    def __init__(self, name, klass, parent, id, property_window, show=1):
+    def __init__(self, name, klass, parent, id, property_window, show=True,
+                 has_title=True):
         WindowBase.__init__(self, name, klass, parent, id, property_window,
                             show=show)
-        self.access_functions['title'] = (self.get_title, self.set_title)
-        self.properties['title'] = TextProperty(self, 'title', None)
+        self.has_title = has_title
+        if self.has_title:
+            self.access_functions['title'] = (self.get_title, self.set_title)
+            self.properties['title'] = TextProperty(self, 'title', None)
         self.sizer = None # sizer that controls the layout of the children
                           # of the window
 
     def finish_widget_creation(self):
         WindowBase.finish_widget_creation(self)
-        self.widget.SetTitle(self.properties['title'].get_value())
-##         for label in ("Copy", "Cut"):
-##             item_id = self._rmenu.FindItem(label)
-##             self._rmenu.Delete(item_id)
-##         HIDE_ID = wxNewId()
-##         #self._rmenu.Append(HIDE_ID, 'Hide')
-##         misc.append_item(self._rmenu, HIDE_ID, 'Hide')
-##         EVT_MENU(self.widget, HIDE_ID, self.hide_widget)
+        if self.has_title:
+            self.widget.SetTitle(self.properties['title'].get_value())
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         EVT_CLOSE(self.widget, self.hide_widget)
@@ -740,12 +737,13 @@ class TopLevelBase(WindowBase):
 
     def create_properties(self):
         WindowBase.create_properties(self)
-        panel = self.notebook.GetPage(0)
-        self.properties['title'].display(panel)
-        sizer_tmp = panel.GetSizer()
-        sizer_tmp.Add(self.properties['title'].panel, 0, wxEXPAND)
-        sizer_tmp.Layout()
-        sizer_tmp.Fit(panel)
+        if self.has_title:
+            panel = self.notebook.GetPage(0)
+            sizer_tmp = panel.GetSizer()
+            self.properties['title'].display(panel)
+            sizer_tmp.Add(self.properties['title'].panel, 0, wxEXPAND)
+            sizer_tmp.Layout()
+            sizer_tmp.Fit(panel)
 
     def get_title(self):
         if not self.widget: return self.name
