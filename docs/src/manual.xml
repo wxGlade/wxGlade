@@ -5,7 +5,7 @@
 <book>
   <title>wxGlade user manual</title>
   <bookinfo>
-    <date>$Date: 2003/10/02 07:04:33 $</date>
+    <date>$Date: 2003/10/07 07:28:44 $</date>
     <author>
       <firstname>documentation by Marcello</firstname>
       <surname>Semboli</surname>
@@ -374,6 +374,10 @@ OPTIONS:
       </figure>
     </para>
     <para>
+    You can show or hide the tree window by the menu item View/Show Tree
+    or with the Ctrl-T shortcut.
+    </para>
+    <para>
       Usually a frame or a panel contains a sizer, so you
       often see a sort of panel-sizer-widgets structure.
       The tree get more complex while you nest sizers on sizers. 
@@ -400,6 +404,8 @@ OPTIONS:
       The pop up menu for a widget allow you to copy, cut or remove the element. 
       The pop up menu for a sizer allow you to copy, cut or remove the element 
       and add or insert an empty slot as well. 
+      <emphasis>Warning</emphasis>: Often wher you add a empty slot, you have to make the designer window
+      larger, to show the new slot.
     </para>
   </section>
   <section>
@@ -407,6 +413,7 @@ OPTIONS:
     <para>
       The design window shows the frame or panel you are creating in WYSIWYG mode and  
       allow you to select a widget from the main window and to put it on a empty slot of a sizer.
+      You can show the design window double-clicking in a frame's icon or dialog's icon in the tree window.
       <figure>
         <title>The Design Window</title>
         <graphic fileref="design_window_empty_slot.png" />
@@ -467,6 +474,14 @@ OPTIONS:
     a big lot of method and properties (grids, treeviews). In this case, wxGlade, 
     greatly simplify the process of designing forms.
     </para>
+    <para>
+    You can show or hide the properties window by the menu item 
+    <menuchoice>
+        <shortcut><keysym>Ctrl-P</keysym></shortcut>
+        <guimenu>View</guimenu>
+        <guimenuitem>Show Properties</guimenuitem>
+    </menuchoice>.
+    </para>
         <section>
             <title>Editing properties</title>
             <para>
@@ -476,11 +491,39 @@ OPTIONS:
             that you find writing C++ code.
             </para>
             <para>
+            Usually you get the changes in the design window in real time. 
+            In some cases you have to push he "Apply" button.
+            For example, the wxNotebook widget
+            show in his properties window a list of child wxPanels.
+            You have to press the apply button to show changes you make
+            when you add or remove panels.
+            </para>
+            <para>
+            </para>
+            <para>
+            </para>
+            <para>
+            </para>
+            <para>
+            </para>
+            <para>
             </para>
         </section>    
     </section>
     <section>
     <title id="preferences.section">Preferences Dialog</title>
+    <para>
+    Bla bla bla.
+    </para>
+    </section>
+    <section>
+    <title id="menu.section">The wxGlade Menu</title>
+    <para>
+    Bla bla bla.
+    </para>
+    </section>
+    <section>
+    <title id="widgets.section">Supported Widgets</title>
     <para>
     Bla bla bla.
     </para>
