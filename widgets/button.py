@@ -10,17 +10,17 @@ from tree import Tree
 from widget_properties import *
 
 
-class EditButton(wxButton, ManagedBase):
+class EditButton(ManagedBase):
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
         """\
         Class to handle wxButton objects
         """
-        wxButton.__init__(self, parent, id, label)
-        self.old_label = label        
+        #wxButton.__init__(self, parent, id, label)
+        self.label = label
         ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
                              property_window, show=show)
-        self.access_functions['label'] = (self.GetLabel, self.set_label)
+        self.access_functions['label'] = (self.get_label, self.set_label)
         self.properties['label'] = TextProperty(self, 'label', None) 
 
     def create_properties(self):
@@ -33,13 +33,22 @@ class EditButton(wxButton, ManagedBase):
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
-        
+
+    def get_label(self):
+        return self.label
+
     def set_label(self, value):
-        if value != self.old_label:
-            self.SetLabel(value)
-            self.set_width(self.GetBestSize()[0])
+        if value != self.label:
+            if self.widget:
+                self.SetLabel(value)
+                self.set_width(self.GetBestSize()[0])
+            self.label = value
             self.old_label = value
-            
+
+    def create_widget(self):
+        self.widget = wxButton(self, parent, id, label)
+
+
 # end of class EditButton
         
 def builder(parent, sizer, pos, number=[1]):
