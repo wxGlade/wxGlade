@@ -16,6 +16,21 @@ class SplitterPane(WindowBase):
         self.sizer = None
         self.sel_marker = None 
 
+        self.style = wxTAB_TRAVERSAL
+        self.access_functions['style'] = (self.get_style, self.set_style)
+        self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
+                           wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
+                           wxTAB_TRAVERSAL, wxWANTS_CHARS,
+                           wxNO_FULL_REPAINT_ON_RESIZE, wxCLIP_CHILDREN)
+
+        style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
+                        'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
+                        'wxSTATIC_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
+                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
+                        'wxCLIP_CHILDREN')
+        self.properties['style'] = CheckListProperty(self, 'style', None,
+                                                     style_labels)  
+
     def create_widget(self):
         self.widget = wxPanel(self.parent.widget, self.id)
         self.sel_marker = misc.SelectionMarker(self.widget, self.parent.widget)
@@ -27,6 +42,34 @@ class SplitterPane(WindowBase):
                 return self.widget.GetSizer().GetMinSize()
             return wxPanel.GetBestSize(self.widget)
         self.widget.GetBestSize = GetBestSize
+
+    def create_properties(self):
+        WindowBase.create_properties(self)
+        panel = wxPanel(self.notebook, -1)
+        szr = wxBoxSizer(wxVERTICAL)
+        self.properties['style'].display(panel)
+        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
+        panel.SetAutoLayout(True)
+        panel.SetSizer(szr)
+        szr.Fit(panel)
+        self.notebook.AddPage(panel, 'Widget')
+       
+    def get_style(self):
+        retval = [0] * len(self.style_pos)
+        try:
+            for i in range(len(self.style_pos)):
+                if self.style & self.style_pos[i]:
+                    retval[i] = 1
+        except AttributeError:
+            pass
+        return retval
+
+    def set_style(self, value):
+        value = self.properties['style'].prepare_value(value)
+        self.style = 0
+        for v in range(len(value)):
+            if value[v]:
+                self.style |= self.style_pos[v]    
         
     def set_sizer(self, sizer):
         self.sizer = sizer
