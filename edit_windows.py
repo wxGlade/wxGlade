@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.44 2003/06/24 15:07:27 agriggio Exp $
+# $Id: edit_windows.py,v 1.45 2003/06/27 16:01:38 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -517,7 +517,7 @@ class WindowBase(EditBase):
                 use_dialog_units = True
                 value = value[:-1]
         try:
-            size = [int(t.strip()) for t in value.split(',')]
+            size = [int(t.strip()) for t in value.split(',', 1)]
         except:
             self.properties['size'].set_value(self.size)
         else:
