@@ -171,6 +171,7 @@ class EditSplitterWindow(ManagedBase):
         sp = self.properties['sash_pos']
         if sp.is_active():
             sp.set_value(self.sash_pos)
+            self.widget.SetSashPosition(self.sash_pos)
         else:
             sp.set_value(self.widget.GetSashPosition())
         
