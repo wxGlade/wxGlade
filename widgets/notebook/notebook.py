@@ -123,6 +123,15 @@ class NotebookPane(WindowBase):
             self.widget = None
         WindowBase.delete(self)
 
+    def on_set_focus(self, event):
+        """\
+        Override the default impl because we don't want to set
+        misc.focused_widget to self: the user must not be able to del/cut/paste
+        this widget directly!
+        """
+        WindowBase.on_set_focus(self, event)
+        misc.focused_widget = None
+
 # end of class NotebookPane
 
 
