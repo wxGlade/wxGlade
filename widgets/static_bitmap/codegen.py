@@ -39,8 +39,13 @@ class PythonCodeGenerator:
         if id_name: init.append(id_name)
         if attribute: prefix = 'self.'
         else: prefix = ''
-        init.append('%s%s = %s(%s, %s, %s)\n' % 
-                    (prefix, obj.name, obj.klass, parent, id, bmp))
+        style = prop.get('style')
+        if style:
+            style = ', style=' + style
+        else:
+            style = ''
+        init.append('%s%s = %s(%s, %s, %s%s)\n' % 
+                    (prefix, obj.name, obj.klass, parent, id, bmp, style))
         props_buf = pygen.generate_common_properties(obj)
         if not attribute:
             # the object doesn't have to be stored as an attribute of the
@@ -74,8 +79,13 @@ class CppCodeGenerator:
         else: parent = 'this'
         if attribute: prefix = ''
         else: prefix = '%s* ' % obj.klass
-        init = [ '%s%s = new %s(%s, %s, %s);\n' %
-                 (prefix, obj.name, obj.klass, parent, id, bmp) ]
+        style = prop.get('style')
+        if style:
+            style = ', wxDefaultPosition, wxDefaultSize, ' + style
+        else:
+            style = ''
+        init = [ '%s%s = new %s(%s, %s, %s%s);\n' %
+                 (prefix, obj.name, obj.klass, parent, id, bmp, style) ]
         props_buf = cppgen.generate_common_properties(obj)
         if not attribute:
             return [], ids, [], init + props_buf
