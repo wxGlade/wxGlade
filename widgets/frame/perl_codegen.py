@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: perl_codegen.py,v 1.1 2003/06/23 21:25:55 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:26 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -17,16 +17,19 @@ class PerlStatusBarCodeGenerator:
         """
         plgen = common.code_writers['perl']
         labels, widths = obj.properties['statusbar']
-        init = [ '\t$self->{%s} = $self->CreateStatusBar(%s);\n' % (obj.name, len(labels)) ]
+        init = [ '\t$self->{%s} = $self->CreateStatusBar(%s);\n'
+            % (obj.name, len(labels)) ]
         props = []
         append = props.append
-        append('\t$self->{%s}->SetStatusWidths(%s);\n'%  (obj.name, ','.join(map(str, widths))))
+        append('\t$self->{%s}->SetStatusWidths(%s);\n'
+            %  (obj.name, ','.join(map(str, widths))))
         labels = ',\n\t\t'.join([plgen.quote_str(l) for l in labels])
         append('\n\tmy( @%s_fields ) = (\n\t\t%s\n\t);\n\n' %
                (obj.name, labels))
         append('\tif( @%s_fields ) {\n' % obj.name)
-        append('\t\t$self->{%s}->SetStatusText($%s_fields[$_], $_)\n\t\t\tfor 0 .. $#%s_fields ;\n\t}\n' % \
-               (obj.name, obj.name, obj.name))
+        append('\t\t$self->{%s}->SetStatusText($%s_fields[$_], $_) '
+            % (obj.name, obj.name) )
+        append('\n\t\t\tfor 0 .. $#%s_fields ;\n\t}\n' % obj.name)
         return init, props, []
 
 # end of class PerlStatusBarCodeGenerator
@@ -45,7 +48,8 @@ class PerlFrameCodeGenerator:
         plgen = common.code_writers['perl']
         out = []
         title = prop.get('title')
-        if title: out.append('\t$self->SetTitle(%s);\n' % plgen.quote_str(title))
+        if title:
+            out.append('\t$self->SetTitle(%s);\n' % plgen.quote_str(title))
 
         icon = prop.get('icon')
         if icon:

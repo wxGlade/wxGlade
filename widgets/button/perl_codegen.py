@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxButton objects
-# $Id: perl_codegen.py,v 1.1 2003/06/23 21:35:05 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:26 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -27,7 +27,8 @@ class PerlCodeGenerator:
         if id_name: init.append(id_name)
 
         init.append('\t$self->{%s} = %s->new(%s, %s, %s);\n' %
-                    (obj.name, obj.klass.replace('wx','Wx::',1), parent, id, label))
+                    (obj.name, obj.klass.replace('wx','Wx::',1),
+                    parent, id, label))
         props_buf = plgen.generate_common_properties(obj)
 
         if prop.get('default', False):

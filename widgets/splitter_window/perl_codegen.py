@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxSplitterWindow objects
-# $Id: perl_codegen.py,v 1.1 2003/06/23 21:35:10 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:26 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -22,11 +22,12 @@ class PerlCodeGenerator:
             l = []
             if id_name: l.append(id_name)
             l.append('$self->{%s} = %s->new(%s, %s);\n' %
-                     (window.name, window.klass.replace('wx','Wx::',1), parent,id))
+                (window.name, window.klass.replace('wx','Wx::',1), parent,id))
             return l, [], []
 
         style = prop.get("style")
-        if not( style and style != 'wxSP_3D' ): style = ''
+        if not( style and style != 'wxSP_3D' ): # default style
+            style = ''
 
         init = []
         if id_name: init.append(id_name)
@@ -47,14 +48,14 @@ class PerlCodeGenerator:
             else:
                 f_name = 'SplitHorizontally'
 
-            props_buf.append('$self->{%s}->%s($self->{%s}, $self->{%s}, %s);\n' % \
-                             (window.name, f_name, win_1, win_2, sash_pos))
+            props_buf.append('$self->{%s}->%s($self->{%s}, $self->{%s}, %s);\n'
+                % (window.name, f_name, win_1, win_2, sash_pos))
         else:
             def add_sub(win):
-                props_buf.append('$self->{%s}->SetSplitMode(%s);\n' % (window.name,
-                                                                 orientation))
-                props_buf.append('$self->{%s}->Initialize($self->{%s});\n' % \
-                                 (window.name, win))
+                props_buf.append('$self->{%s}->SetSplitMode(%s);\n'
+                    % (window.name, orientation))
+                props_buf.append('$self->{%s}->Initialize($self->{%s});\n'
+                    % (window.name, win))
             if win_1:
                 add_sub(win_1)
             elif win_2:

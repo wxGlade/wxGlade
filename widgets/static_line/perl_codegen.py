@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxStaticLine objects
-# $Id: perl_codegen.py,v 1.1 2003/06/23 21:35:10 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:27 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -23,7 +23,8 @@ class PerlCodeGenerator:
 
         style = prop.get("style")
 
-        if not( style and style != 'wxLI_HORIZONTAL' ): style = ''
+        if not( style and style != 'wxLI_HORIZONTAL' ): # default style
+            style = ''
 
         init = []
 
@@ -35,8 +36,8 @@ class PerlCodeGenerator:
             prefix = 'my $%s' % obj.name
             obj.name = '$' + obj.name    # the yuck (needed for pl_codegen.py)
 
-        init.append('%s = %s->new(%s, %s, wxDefaultPosition, wxDefaultSize, %s);\n' %
-                    (prefix, obj.klass.replace('wx','Wx::',1), parent, id, style))
+        init.append('%s = %s->new(%s, %s, wxDefaultPosition, wxDefaultSize, \
+%s);\n' % (prefix, obj.klass.replace('wx','Wx::',1), parent, id, style))
         props_buf = plgen.generate_common_properties(obj)
 
         if not attribute:
