@@ -638,6 +638,7 @@ class TopLevelBase(WindowBase):
         if self.sizer and self.sizer.widget and self.widget:
             self.widget.SetAutoLayout(True)
             self.widget.SetSizer(self.sizer.widget)
+            self.widget.Layout()
 
     def on_enter(self, event):
         if not self.sizer and common.adding_sizer:
@@ -653,8 +654,6 @@ class TopLevelBase(WindowBase):
         self.widget.SetCursor(wxNullCursor)
         common.widgets[common.widget_to_add](self, None, None)
         common.widget_to_add = None
-        self.sizer = True # in this case, self.sizer is used only as a flag
-                          # (this is really ugly, I must find a better way)
 
     def hide_widget(self, *args):
         self.widget.Hide()
@@ -664,6 +663,7 @@ class TopLevelBase(WindowBase):
 
     def on_size(self, event):
         WindowBase.on_size(self, event)
-        if self.sizer and self.widget: self.sizer.Refresh()
+        if self.sizer and self.widget:
+            self.sizer.Refresh()
 
 # end of class TopLevelBase

@@ -36,6 +36,7 @@ class NotebookPane(WindowBase):
         if self.sizer and self.sizer.widget and self.widget:
             self.widget.SetAutoLayout(True)
             self.widget.SetSizer(self.sizer.widget)    
+            self.widget.Layout()
         
     def popup_menu(self, *args): pass
 
@@ -49,12 +50,10 @@ class NotebookPane(WindowBase):
         if self.sizer or not common.adding_sizer:
             self.on_set_focus(event) # default behaviour: call show_properties
             return
-        self.SetCursor(wxNullCursor)
+        self.widget.SetCursor(wxNullCursor)
         common.widgets[common.widget_to_add](self, None, None)
         common.adding_widget = common.adding_sizer = False
         common.widget_to_add = None
-        self.sizer = True # in this case, self.sizer is used only as a flag
-                          # (this is really ugly, I must find a better way)
         common.app_tree.app.saved = False
 
     def on_parent_size(self, event):
