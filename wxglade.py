@@ -75,7 +75,7 @@ def usage():
     """
     msg = """\
 wxGlade usage:
-- to start the GUI: python wxglade.py [XML_FILE]
+- to start the GUI: python wxglade.py [WXG_FILE]
 - to generate code from the command line: python wxglade.py OPTIONS... FILE
   OPTIONS are the following:
   -g, --generate-code=LANGUAGE  (required) give the output language
