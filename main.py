@@ -165,8 +165,7 @@ class wxGladeFrame(wxFrame):
             menu_bar.Check(TREE_ID, False)
             self.tree_frame.Hide()
         EVT_CLOSE(self.tree_frame, on_tree_frame_close)
-        h = app.notebook.sizer.GetMinSize()[1]
-        self.frame2.SetSize((250, h+5))
+        self.frame2.SetSize((250, 350))
         self.SetPosition((0, 0))
         x, y = self.GetPosition()
         h = self.GetSize()[1]
