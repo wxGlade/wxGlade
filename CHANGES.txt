@@ -1,4 +1,10 @@
-2002-12-28: edit_sizers/edit_sizers.py:
+2003-01-01: main.py, common.py, config.py, codegen/*:
+                added support for automatic backup
+            application.py, codegen/*:
+                added gettext support for the generated code (python and C++)
+-------------------------------------------------------------------------------
+2002-12-28: version 0.2 released
+            edit_sizers/edit_sizers.py:
                 better (hopefully) implementation of SizerBase.layout
 
 2002-12-23: main.py, application.py: 

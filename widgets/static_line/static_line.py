@@ -17,11 +17,17 @@ class EditStaticLine(ManagedBase):
         Class to handle wxStaticLine objects
         """
         self.orientation = orientation
+        self.attribute = True
         ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer,
                              pos, property_window, show=show)
         self.access_functions['style'] = (self.get_orientation,
                                           self.set_orientation)
+        def set_attribute(v): self.attribute = int(v)
+        self.access_functions['attribute'] = (lambda : self.attribute,
+                                              set_attribute)
         self.properties['style'] = HiddenProperty(self, 'style')
+        self.properties['attribute'] = CheckBoxProperty(
+            self, 'attribute', None, 'Store as attribute', write_always=True)
         self.removed_p = self.properties['font']
 
     def create_widget(self):
@@ -38,6 +44,14 @@ class EditStaticLine(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         if self.removed_p.panel: self.removed_p.panel.Hide()
+        panel = wxPanel(self.notebook, -1)
+        szr = wxBoxSizer(wxVERTICAL)
+        self.properties['attribute'].display(panel)
+        szr.Add(self.properties['attribute'].panel, 0, wxEXPAND)
+        panel.SetAutoLayout(True)
+        panel.SetSizer(szr)
+        szr.Fit(panel)
+        self.notebook.AddPage(panel, 'Widget')        
 
     def __getitem__(self, key):
         if key != 'font': return ManagedBase.__getitem__(self, key)

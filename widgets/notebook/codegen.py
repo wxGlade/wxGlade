@@ -42,12 +42,12 @@ def python_code_generator(window):
     prop = window.properties
     id_name, id = pygen.generate_code_id(window)
 
-    layout_props = ['%s_sizer = wxNotebookSizer(self.%s)\n' % \
-                    (window.name, window.name)]
+    layout_props = [] #'%s_sizer = wxNotebookSizer(self.%s)\n' % \
+                    #(window.name, window.name)]
     tabs = prop.get('tabs', [])
     for label, tab_win in tabs:
-        layout_props.append('self.%s.AddPage(self.%s, "%s")\n' % \
-                            (window.name, tab_win, label.replace('"', r'\"')))
+        layout_props.append('self.%s.AddPage(self.%s, %s)\n' % \
+                            (window.name, tab_win, pygen.quote_str(label)))
         
     if not window.parent.is_toplevel: parent = 'self.%s' % window.parent.name
     else: parent = 'self'
@@ -72,11 +72,11 @@ def python_code_generator(window):
 def python_generate_properties(obj):
     prop = obj.properties
     pygen = common.code_writers['python']
-    props_buf = ['nb_sizer = wxNotebookSizer(self)\n']
+    props_buf = [] #'nb_sizer = wxNotebookSizer(self)\n']
     tabs = prop.get('tabs', [])
     for label, window in tabs:
-        props_buf.append('self.AddPage(self.%s, "%s")\n' % \
-                         (window, label.replace('"', r'\"')))
+        props_buf.append('self.AddPage(self.%s, %s)\n' % \
+                         (window, pygen.quote_str(label)))
     props_buf.extend(pygen.generate_common_properties(obj))
     return props_buf    
 
@@ -122,12 +122,13 @@ def cpp_code_generator(window):
     if id_name: ids = [ id_name ]
     else: ids = []
 
-    layout_props = ['wxNotebookSizer* %s_sizer = new wxNotebookSizer(%s);\n' %
-                    (window.name, window.name)]
+    layout_props = []
+    #'wxNotebookSizer* %s_sizer = new wxNotebookSizer(%s);\n' %
+                    #(window.name, window.name)]
     tabs = prop.get('tabs', [])
     for label, tab_win in tabs:
-        layout_props.append('%s->AddPage(%s, "%s");\n' % \
-                            (window.name, tab_win, label.replace('"', r'\"')))
+        layout_props.append('%s->AddPage(%s, %s);\n' % \
+                            (window.name, tab_win, cppgen.quote_str(label)))
         
     if not window.parent.is_toplevel: parent = '%s' % window.parent.name
     else: parent = 'this'
@@ -148,11 +149,11 @@ def cpp_code_generator(window):
 def cpp_generate_properties(obj):
     prop = obj.properties
     cppgen = common.code_writers['C++']
-    props_buf = ['wxNotebookSizer* nb_sizer = new wxNotebookSizer(this);\n']
+    props_buf = [] #'wxNotebookSizer* nb_sizer = new wxNotebookSizer(this);\n']
     tabs = prop.get('tabs', [])
     for label, window in tabs:
-        props_buf.append('AddPage(%s, "%s");\n' % \
-                         (window, label.replace('"', r'\"')))
+        props_buf.append('AddPage(%s, %s);\n' % \
+                         (window, cppgen.quote_str(label)))
     props_buf.extend(cppgen.generate_common_properties(obj))
     return props_buf    
 

@@ -6,6 +6,7 @@
 
 import sys, os, os.path
 import common
+import cStringIO
 from xml_parse import XmlParsingError
 
 # these two globals must be defined for every code generator module
@@ -61,6 +62,9 @@ multiple_files = False
 
 # if not None, they are the header and source file to write into
 output_header, output_source = None, None
+# if not None, name (without extension) of the file to write into
+output_name = None
+
 # if not None, it is the directory inside which the output files are saved
 out_dir = None
 
@@ -188,7 +192,21 @@ def tabs(number):
     return '    ' * number
 
 
-def initialize(out_path, multi_files):
+# if True, enable gettext support
+_use_gettext = False
+
+def quote_str(s):
+    """\
+    returns a quoted version of 's', suitable to insert in a python source file
+    as a string object. Takes care also of gettext support
+    """
+    if not s: return '""'
+    s = s.replace('"', r'\"')
+    if _use_gettext: return '_("' + s + '")'
+    else: return '"' + s + '"'
+
+
+def initialize(app_attrs): #out_path, multi_files):
     """\
     Writer initialization function.
     - out_path: output path for the generated code (a file (either .h or .cpp)
@@ -196,8 +214,15 @@ def initialize(out_path, multi_files):
     - multi_files: if True, generate a separate file for each custom class,
       otherwise generate only one header(.h) and one implementation(.cpp) file
     """
-    global classes, header_lines, multiple_files, previous_source, nonce
+    out_path = app_attrs['path']
+    multi_files = app_attrs['option']
+    
+    global classes, header_lines, multiple_files, previous_source, nonce, \
+           _use_gettext
     import time, random
+
+    try: _use_gettext = int(app_attrs['use_gettext'])
+    except (KeyError, ValueError): _use_gettext = False
 
     # this is to be more sure to replace the right tags
     nonce = '%s%s' % (str(time.time()).replace('.', ''),
@@ -209,8 +234,9 @@ def initialize(out_path, multi_files):
                     '#include <wx/wx.h>\n', '#include <wx/image.h>\n']
     multiple_files = multi_files
     if not multiple_files:
-        global output_header, output_source
+        global output_header, output_source, output_name
         name, ext = os.path.splitext(out_path)
+        output_name = name
         if os.path.isfile(name + '.h'):
             # the file exists, we must keep all the lines not inside a wxGlade
             # block. NOTE: this may cause troubles if out_path is not a valid
@@ -218,21 +244,21 @@ def initialize(out_path, multi_files):
             previous_source = SourceFileContent(name)
         else:
             previous_source = None
-            try:
-                output_header = open(name + '.h', 'w')
-                output_source = open(name + '.cpp', 'w')
-            except IOError:
-                if locals().has_key('output_header'):
-                    output_header.close()
-                    ext = '.h'
-                else: ext = '.cpp'
-                raise XmlParsingError("Error opening '%s%s' file" % \
-                                      (name, ext))
+##             try:
+            output_header = cStringIO.StringIO() #open(name + '.h', 'w')
+            output_source = cStringIO.StringIO() #open(name + '.cpp', 'w')
+##             except IOError:
+##                 if locals().has_key('output_header'):
+##                     output_header.close()
+##                     ext = '.h'
+##                 else: ext = '.cpp'
+##                 raise XmlParsingError("Error opening '%s%s' file" % \
+##                                       (name, ext))
             for line in header_lines:
                 output_header.write(line)
                 output_source.write(line)
             # isolation directives
-            oh = os.path.basename(output_header.name).upper().replace('.', '_')
+            oh = os.path.basename(name + '.h').upper().replace('.', '_')
             # extra headers
             for val in _obj_headers.itervalues():
                 for header in val:
@@ -285,21 +311,40 @@ def finalize():
                       'did you rename this class?\n'
             source_content = source_content.replace(tag[0], comment)
         # write the new file contents to disk
-        out = open(previous_source.name + '.h', 'w')
-        out.write(header_content)
-        out.close()
-        out = open(previous_source.name + '.cpp', 'w')
-        out.write(source_content)
-        out.write('\n\n')
-        out.write(extra_source)
-        out.close()
+##         out = open(previous_source.name + '.h', 'w')
+##         out.write(header_content)
+##         out.close()
+        common.save_file(previous_source.name + '.h', header_content,
+                         'codegen')
+##         out = open(previous_source.name + '.cpp', 'w')
+##         out.write(source_content)
+##         out.write('\n\n')
+##         out.write(extra_source)
+##         out.close()
+        common.save_file(previous_source.name + '.cpp', source_content +
+                         '\n\n' + extra_source, 'codegen')
     
     elif not multiple_files:
         global output_header, output_source
-        oh = os.path.basename(output_header.name).upper().replace('.', '_')
+        oh = os.path.basename(output_name + '.h').upper().replace('.', '_')
         output_header.write('\n#endif // %s\n' % oh)
-        output_header.close()
-        output_source.close()
+        #output_header.close()
+        #output_source.close()
+        # let the eventual exceptions be raised...
+        common.save_file(output_name + '.h', output_header.getvalue(),
+                         'codegen')
+        common.save_file(output_name + '.cpp', output_source.getvalue(),
+                         'codegen')
+        
+
+def test_attribute(obj):
+    """\
+    Returns True if 'obj' should be added as an attribute of its parent's
+    class, False if it should be created as a local variable of __do_layout.
+    To do so, tests for the presence of the special property 'attribute'
+    """
+    try: return int(obj.properties['attribute'])
+    except (KeyError, ValueError): return True # this is the default
 
 
 def add_object(top_obj, sub_obj):
@@ -331,7 +376,11 @@ def add_object(top_obj, sub_obj):
             #klass.init.extend(init)
             klass.ids.extend(ids)
             if sub_obj.klass != 'spacer':
-                klass.sub_objs.append( (sub_obj.klass, sub_obj.name) )
+                # attribute is a special property which control whether
+                # sub_obj must be accessible as an attribute of top_obj,
+                # or as a local variable in the do_layout method
+                if test_attribute(sub_obj):
+                    klass.sub_objs.append( (sub_obj.klass, sub_obj.name) )
         else: # the object is a sizer
             klass.sizers_init.extend(init)
         klass.props.extend(props)
@@ -351,9 +400,9 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     try: klass = classes[toplevel.klass]
     except KeyError: klass = classes[toplevel.klass] = ClassLines()
     name = obj.name
-    if obj.base == 'wxNotebook' and not obj.is_toplevel:
+    if obj.base == 'wxNotebook': # and not obj.is_toplevel:
         # this is an ugly TEMPORARY HACK! We must find a better way
-        name += '_sizer'
+        name = 'new wxNotebookSizer(%s)' % obj.name
     buffer = '%s->Add(%s, %s, %s, %s);\n' % \
              (sizer.name, name, option, flag, border)
     klass.layout.append(buffer)
@@ -619,32 +668,37 @@ def add_class(code_obj):
                                       replace(tag, "".join(deps))
             
             # store the new file contents to disk
-            try:
-                hout = open(os.path.join(out_dir, code_obj.klass + '.h'), 'w')
-                sout = open(os.path.join(out_dir, code_obj.klass + '.cpp'),'w')
-            except:
-                if locals().has_key('hout'): hout.close()
-                raise IOError("cpp_codegen.add_class: %s, %s, %s" % \
-                              (out_dir, prev_src.name, code_obj.klass))
-            hout.write(prev_src.header_content)
-            sout.write(prev_src.source_content)
-            hout.close()
-            sout.close()
+##             try:
+##                 hout = open(os.path.join(out_dir, code_obj.klass + '.h'), 'w')
+##                 sout = open(os.path.join(out_dir, code_obj.klass + '.cpp'),'w')
+##             except:
+##                 if locals().has_key('hout'): hout.close()
+##                 raise IOError("cpp_codegen.add_class: %s, %s, %s" % \
+##                               (out_dir, prev_src.name, code_obj.klass))
+##             hout.write(prev_src.header_content)
+##             sout.write(prev_src.source_content)
+##             hout.close()
+##             sout.close()
+            name = os.path.join(out_dir, code_obj.klass)
+            common.save_file(name + '.h', prev_src.header_content, 'codegen')
+            common.save_file(name + '.cpp', prev_src.source_content, 'codegen')
             return
 
         # create the new source file
         header_file = os.path.join(out_dir, code_obj.klass + '.h')
         source_file = os.path.join(out_dir, code_obj.klass + '.cpp')
-        try:
-            hout = open(header_file, 'w')
-            sout = open(source_file, 'w')
-        except:
-            if locals().has_key(hout):
-                hout.close()
-                filename = header_file
-            else: filename = source_file
-            raise IOError("cpp_codegen.add_class: %s, %s, %s" % \
-                          (out_dir, filename, code_obj.klass))
+##         try:
+##             hout = open(header_file, 'w')
+##             sout = open(source_file, 'w')
+##         except:
+##             if locals().has_key(hout):
+##                 hout.close()
+##                 filename = header_file
+##             else: filename = source_file
+##             raise IOError("cpp_codegen.add_class: %s, %s, %s" % \
+##                           (out_dir, filename, code_obj.klass))
+        hout = cStringIO.StringIO()
+        sout = cStringIO.StringIO()
         # header file
         hwrite = hout.write
         # write the common lines
@@ -677,6 +731,10 @@ def add_class(code_obj):
         for line in source_buffer: swrite(line)
         sout.close()
 
+        # store source to disk
+        common.save_file(header_file, hout.getvalue(), 'codegen')
+        common.save_file(source_file, sout.getvalue(), 'codegen')
+
     else: # not multiple_files
         # write the class body onto the single source file 
         hwrite = output_header.write
@@ -690,7 +748,6 @@ def add_app(app_attrs, top_win_class):
     Generates the code for a wxApp instance.
     if the 'class' property has no value, the function does nothing
     """
-   
     if not multiple_files: prev_src = previous_source
     else:
         filename = os.path.join(out_dir, 'main.cpp')
@@ -724,8 +781,9 @@ def add_app(app_attrs, top_win_class):
 
     if multiple_files:
         filename = os.path.join(out_dir, 'main.cpp')
-        try: out = open(filename, 'w')
-        except: raise IOError("cpp_codegen.add_app: %s" % filename)
+##         try: out = open(filename, 'w')
+##         except: raise IOError("cpp_codegen.add_app: %s" % filename)
+        out = cStringIO.StringIO()
         write = out.write
         # write the common lines
         for line in header_lines: write(line)
@@ -733,7 +791,8 @@ def add_app(app_attrs, top_win_class):
         write('#include "%s.h"\n\n' % top_win_class)
         # write the wxApp code
         for line in lines: write(line)
-        out.close()
+        #out.close()
+        common.save_file(filename, out.getvalue(), 'codegen')
     else:
         write = output_source.write
         for line in lines: write(line)
@@ -822,8 +881,7 @@ def generate_code_tooltip(obj):
     """
     if not obj.is_toplevel: intro = '%s->' % obj.name
     else: intro = ''
-    return intro + 'SetToolTip("%s");\n' % \
-           obj.properties['tooltip'].replace('"', r'\"')
+    return intro + 'SetToolTip(%s);\n' % quote_str(obj.properties['tooltip'])
 
 def generate_common_properties(widget):
     """\

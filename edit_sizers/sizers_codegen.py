@@ -27,12 +27,13 @@ def wxStaticBoxSizer_builder(obj):
     """\
     function used to generate the python code for wxStaticBoxSizer objects.
     """
+    pygen = common.code_writers['python']
     orient = obj.properties.get('orient', 'wxHORIZONTAL')
     label = obj.properties.get('label', '')
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-    init = ['%s = wxStaticBoxSizer(wxStaticBox(%s, -1, "%s"), %s)\n' %
-            (obj.name, parent, label.replace('"', r'\"'), orient)]
+    init = ['%s = wxStaticBoxSizer(wxStaticBox(%s, -1, %s), %s)\n' %
+            (obj.name, parent, pygen.quote_str(label), orient)]
     layout = []
     if obj.is_toplevel:
         layout.append('%s.SetAutoLayout(1)\n' % parent)
@@ -105,13 +106,14 @@ def cpp_wxStaticBoxSizer_builder(obj):
     """\
     function used to generate the C++ code for wxStaticBoxSizer objects.
     """
+    cppgen = common.code_writers['C++']
     orient = obj.properties.get('orient', 'wxHORIZONTAL')
     label = obj.properties.get('label', '')
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
     init = ['wxStaticBoxSizer* %s = new wxStaticBoxSizer('
-            'new wxStaticBox(%s, -1, "%s"), %s);\n' %
-            (obj.name, parent, label.replace('"', r'\"'), orient)]
+            'new wxStaticBox(%s, -1, %s), %s);\n' %
+            (obj.name, parent, cppgen.quote_str(label), orient)]
     layout = []
     if obj.is_toplevel:
         if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name

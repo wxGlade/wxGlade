@@ -14,7 +14,8 @@ def python_code_generator(obj):
     pygen = common.code_writers['python']
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj) 
-    label = prop.get('label', '').replace('"', r'\"')
+    #label = prop.get('label', '').replace('"', r'\"')
+    label = pygen.quote_str(prop.get('label', ''))
     choices = prop.get('choices', [])
     major_dim = prop.get('dimension', '0')
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
@@ -31,10 +32,11 @@ def python_code_generator(obj):
     else: style = ''
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = %s(%s, %s, "%s", choices=%s, '
+    choices = ', '.join([pygen.quote_str(c) for c in choices])
+    init.append('self.%s = %s(%s, %s, %s, choices=[%s], '
                 'majorDimension=%s%s)\n' % (obj.name, obj.klass,
                                             parent, id, label,
-                                            repr(choices), major_dim, style))
+                                            choices, major_dim, style))
     props_buf = pygen.generate_common_properties(obj)
     selection = prop.get('selection')
     if selection is not None:
@@ -72,8 +74,9 @@ def cpp_code_generator(obj):
     else: parent = 'this'
     number = len(choices)
     ch_arr = '{\n        %s\n    };\n' % \
-             ',\n        '.join(['"' + c + '"' for c in choices])
-    label = prop.get('label', '').replace('"', r'\"')
+             ',\n        '.join([cppgen.quote_str(c) for c in choices])
+    #label = prop.get('label', '').replace('"', r'\"')
+    label = cppgen.quote_str(prop.get('label', ''))
 ##     if obj.is_toplevel:
 ##         l = []
 ##         l.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
@@ -85,7 +88,7 @@ def cpp_code_generator(obj):
     style = prop.get("style", "0")
     init = []
     init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
-    init.append('%s = new %s(%s, %s, "%s", wxDefaultPosition, '
+    init.append('%s = new %s(%s, %s, %s, wxDefaultPosition, '
                 'wxDefaultSize, %s, %s_choices, %s, %s);\n' % \
                 (obj.name, obj.klass, parent, id, label, number, obj.name,
                  major_dim, style))

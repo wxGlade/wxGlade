@@ -22,6 +22,9 @@ def python_code_generator(obj):
     """
     pygen = common.code_writers['python']
     prop = obj.properties
+
+    attribute = pygen.test_attribute(obj)
+
     id_name, id = pygen.generate_code_id(obj) 
     bmp_file = prop.get('bitmap', '')
     if not bmp_file: bmp = 'wxNullBitmap'
@@ -41,9 +44,15 @@ def python_code_generator(obj):
 ##         return l , [], []    
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = %s(%s, %s, %s)\n' % 
-                (obj.name, obj.klass, parent, id, bmp))
+    if attribute: prefix = 'self.'
+    else: prefix = ''
+    init.append('%s%s = %s(%s, %s, %s)\n' % 
+                (prefix, obj.name, obj.klass, parent, id, bmp))
     props_buf = pygen.generate_common_properties(obj)
+    if not attribute:
+        # the object doesn't have to be stored as an attribute of the custom
+        # class, but it is just considered part of the layout
+        return [], [], init + props_buf
     return init, props_buf, []
 
 
@@ -53,6 +62,9 @@ def cpp_code_generator(obj):
     """
     cppgen = common.code_writers['C++']
     prop = obj.properties
+
+    attribute = cppgen.test_attribute(obj)
+
     id_name, id = cppgen.generate_code_id(obj) 
     if id_name: ids = [ id_name ]
     else: ids = []
@@ -70,9 +82,13 @@ def cpp_code_generator(obj):
 ##         l = ['%s = new %s(%s, %s, %s);\n' %
 ##              (obj.name, parent, obj.klass, id, bmp)]
 ##         return l, ids, [], []    
+    if attribute: prefix = ''
+    else: prefix = '%s* ' % obj.klass
     init = [ '%s = new %s(%s, %s, %s);\n' % 
              (obj.name, obj.klass, parent, id, bmp) ]
     props_buf = cppgen.generate_common_properties(obj)
+    if not attribute:
+        return [], ids, [], init + props_buf    
     return init, ids, props_buf, []
 
 

@@ -11,7 +11,7 @@ import os
 use_gui = True
 
 # version identification string
-version = '0.2'
+version = '0.2.1cvs'
 
 # program path, set in wxglade.py
 wxglade_path = '.'
@@ -175,25 +175,33 @@ def _encode_to_xml(label, encoding=None):
         encoding = app_tree.app.encoding
     return str(label).decode(encoding).encode('utf-8')
 
-def smart_split(s, b_codegen=0):
+
+_backed_up = {} # set of filenames already backed up during this session
+
+def save_file(filename, content, which='wxg'):
     """\
-    Split a string in a smart way.
-    Split by spaces or commas or semicolon.
-    If b_codegen is true, also set ticks to be displayed
-    (e.g. b_codegen=1 in codegen.py). 
+    Saves 'filename' and, if user's preferences say so and 'filename' exists,
+    makes a backup copy of it. Exceptions that may occur while performing the
+    operations are not handled.
+    'content' is the string to store into 'filename'
+    'which' is the kind of backup: 'wxg' or 'codegen'
     """
-    if b_codegen:
-        s1 = s.replace('"', '\\"')
-        s2 = s1.replace("'", "\\'")
-    else:
-        s2 = s
-    if s2.find(',') != -1:
-        separator = ','
-    elif s2.find(';') != -1:
-        separator = ';'
-    else:
-        separator = ' '
-
-    return s2.split(separator)
-
-#------------------------------------------------#
+    import os, os.path, config
+    if which == 'wxg': ok = config.preferences.wxg_backup
+    else: ok = config.preferences.codegen_backup
+    try:
+        if ok and filename not in _backed_up and os.path.isfile(filename):
+            # make a backup copy of filename
+            infile = open(filename)
+            outfile = open(filename + config.preferences.backup_suffix, 'w')
+            outfile.write(infile.read())
+            infile.close()
+            outfile.close()
+            _backed_up[filename] = 1
+        # save content to filename
+        outfile = open(filename, 'w')
+        outfile.write(content)
+        outfile.close()
+    finally:
+        if 'infile' in locals(): infile.close()
+        if 'outfile' in locals(): outfile.close()

@@ -15,7 +15,7 @@ def python_generate_properties(dialog):
     pygen = common.code_writers['python']
     out = []
     title = prop.get('title')
-    if title: out.append('self.SetTitle("%s")\n' % title.replace('"', r'\"'))
+    if title: out.append('self.SetTitle(%s)\n' % pygen.quote_str(title))
     out.extend(pygen.generate_common_properties(dialog))
     return out
 
@@ -28,7 +28,7 @@ def cpp_generate_properties(dialog):
     cppgen = common.code_writers['C++']
     out = []
     title = prop.get('title')
-    if title: out.append('SetTitle("%s");\n' % title.replace('"', r'\"'))
+    if title: out.append('SetTitle(%s);\n' % cppgen.quote_str(title))
     out.extend(cppgen.generate_common_properties(dialog))
     return out
 

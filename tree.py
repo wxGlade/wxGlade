@@ -133,12 +133,14 @@ class Tree:
         top_window = self.app.get_top_window()
         language = self.app.get_language()
         encoding = self.app.get_encoding()
+        use_gettext = str(self.app.use_gettext)
         outfile.write('<application path=%s name=%s class=%s option=%s ' \
-                      'language=%s top_window=%s encoding=%s>\n' \
-                      % (quoteattr(outpath), quoteattr(name),
-                         quoteattr(klass), quoteattr(option),
-                         quoteattr(language), quoteattr(top_window),
-                         quoteattr(encoding)))
+                      'language=%s top_window=%s encoding=%s ' \
+                      'use_gettext=%s>\n' \
+                      % tuple(map(quoteattr,
+                                  [outpath, name, klass, option, language,
+                                  top_window, encoding, use_gettext]))
+                      )
         if self.root.children is not None:
             [c.write(outfile, tabs+1) for c in self.root.children]
         outfile.write('</application>\n')
