@@ -38,7 +38,7 @@ class EditCheckBox(ManagedBase):
         panel = wxPanel(self.notebook, -1)
         self.properties['label'].display(panel)
         self.properties['checked'].display(panel)
-        szr = misc.Sizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         szr.Add(self.properties['label'].panel, 0, wxEXPAND)
         szr.Add(self.properties['checked'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)

@@ -43,7 +43,7 @@ class EditSlider(ManagedBase):
         ManagedBase.create_properties(self)
         panel = wxScrolledWindow(self.notebook, -1)
         prop = self.properties
-        szr = misc.Sizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         prop['range'].display(panel)
         prop['value'].display(panel)
         prop['style'].display(panel)

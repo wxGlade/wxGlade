@@ -248,7 +248,7 @@ class SizerBase:
         self.notebook.sizer = nb_sizer
         self.notebook.SetAutoLayout(True)
         panel = wxScrolledWindow(self.notebook, -1)
-        sizer_tmp = misc.Sizer(wxVERTICAL)
+        sizer_tmp = wxBoxSizer(wxVERTICAL)
         self.name_prop.display(panel)
         self.klass_prop.display(panel)
         sizer_tmp.Add(self.name_prop.panel, 0, wxEXPAND)

@@ -16,7 +16,6 @@ class EditButton(ManagedBase):
         """\
         Class to handle wxButton objects
         """
-        #wxButton.__init__(self, parent, id, label)
         self.label = label
         ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
                              property_window, show=show)
@@ -27,7 +26,7 @@ class EditButton(ManagedBase):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
         self.properties['label'].display(panel)
-        szr = misc.Sizer(wxVERTICAL) #wxBoxSizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         szr.Add(self.properties['label'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)

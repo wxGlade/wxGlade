@@ -168,7 +168,7 @@ class EditNotebook(ManagedBase):
         panel = wxScrolledWindow(self.notebook, -1)
         self.properties['tabs'].display(panel)
         self.properties['tabs'].set_col_sizes([-1])
-        sizer = misc.Sizer(wxVERTICAL)
+        sizer = wxBoxSizer(wxVERTICAL)
         sizer.Add(self.properties['tabs'].panel, 1, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer)
@@ -250,7 +250,6 @@ class EditNotebook(ManagedBase):
     def set_tab_pos(self, value):
         styles = { 'wxNB_LEFT': wxNB_LEFT, 'wxNB_RIGHT': wxNB_RIGHT,
                    'wxNB_BOTTOM': wxNB_BOTTOM }
-        print 'self.set_tab_pos: value = %s' % value
         self.style = styles.get(value, 0)
 
 # end of class EditNotebook

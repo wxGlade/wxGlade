@@ -43,7 +43,7 @@ class EditTextCtrl(ManagedBase):
         prop = self.properties
         prop['value'].display(panel)
         prop['style'].display(panel)
-        szr = misc.Sizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         szr.Add(prop['value'].panel, 0, wxEXPAND)
         szr.Add(prop['style'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)

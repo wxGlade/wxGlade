@@ -9,6 +9,7 @@ from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase
 
+
 class EditPanel(ManagedBase):
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):

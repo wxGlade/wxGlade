@@ -39,7 +39,7 @@ class EditSpinCtrl(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxScrolledWindow(self.notebook, -1)
-        szr = misc.Sizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         prop = self.properties
         prop['range'].display(panel)
         prop['value'].display(panel)

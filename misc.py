@@ -89,12 +89,6 @@ class SelectionMarker:
 
 #----------------------------------------------------------------------------
 
-if 1 or wxPlatform != '__WXMSW__': Sizer = wxBoxSizer
-else:
-    class Sizer(wxBoxSizer):
-        def Fit(self, win): pass
-
-
 def _encode(label, encoding='latin-1'):
     """\
     Returns a str which is the encoded version of the unicode label

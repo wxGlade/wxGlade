@@ -413,6 +413,8 @@ class EditMenuBar(EditBase):
 
     def create_widget(self):
         self.widget = wxMenuBar()
+        def Destroy(): pass
+        self.widget.Destroy = Destroy
         if self.parent.widget: self.parent.widget.SetMenuBar(self.widget)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         self.set_menus(self.menus) # show the menus
@@ -423,7 +425,7 @@ class EditMenuBar(EditBase):
         sizer = page.GetSizer()
         self.properties['menus'].display(page)
         if not sizer:
-            sizer = misc.Sizer(wxVERTICAL)
+            sizer = wxBoxSizer(wxVERTICAL)
             sizer.Add(self.name_prop.panel, 0, wxEXPAND)
             sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
             page.SetAutoLayout(1)
@@ -469,10 +471,9 @@ class EditMenuBar(EditBase):
       
     def remove(self, *args):
         self.parent.properties['menubar'].set_value(0)
-        if self.parent.widget: self.parent.widget.SetMenuBar(None)
+        if self.parent.widget:
+            self.parent.widget.SetMenuBar(None)
         EditBase.remove(self)
-
-    def Destroy(self): pass
 
     def popup_menu(self, *args): pass
 
@@ -594,7 +595,7 @@ class EditStatusBar(EditBase):
         prop.display(page)
         sizer = page.GetSizer()
         if not sizer:
-            sizer = misc.Sizer(wxVERTICAL)
+            sizer = wxBoxSizer(wxVERTICAL)
             sizer.Add(self.name_prop.panel, 0, wxEXPAND)
             sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
             page.SetAutoLayout(1)
@@ -724,7 +725,7 @@ class EditFrame(TopLevelBase):
         prop['menubar'].display(panel)
         prop['statusbar'].display(panel)
         
-        szr = misc.Sizer(wxVERTICAL) #wxBoxSizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         szr.Add(prop['style'].panel, 0, wxEXPAND)
         szr.Add(prop['menubar'].panel, 0, wxEXPAND)
         szr.Add(prop['statusbar'].panel, 0, wxEXPAND)

@@ -49,7 +49,7 @@ class EditBitmapButton(ManagedBase):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
         self.properties['bitmap'].display(panel)
-        szr = misc.Sizer(wxVERTICAL) #wxBoxSizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         szr.Add(self.properties['bitmap'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
