@@ -114,8 +114,8 @@ class EditComboBox(ManagedBase):
             if value[v]:
                 self.style |= self.style_pos[v]
         self.style = value
-        if self.widget:
-            self.SetWindowStyleFlag(value)
+##         if self.widget:
+##             self.SetWindowStyleFlag(style)
 
     def create_widget(self):
         self.widget = wxComboBox2(self.parent.widget, self.id,

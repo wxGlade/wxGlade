@@ -195,11 +195,18 @@ class wxGladeFrame(wxFrame):
             # I'll pay a beer to anyone who can explain to me why this prevents
             # a segfault on Win32 when you exit without doing anything!!
             self.about_box = about.wxGladeAboutBox(self.GetParent())
-            def on_activate(event):
+            def on_activate(event, _skip=[False]):
+                if _skip[0] or not event.GetActive():
+                    _skip[0] = False
+                    event.Skip()
+                    return
                 hide = self.IsIconized()
                 if not hide:
                     self.frame2.Show(menu_bar.IsChecked(PROPS_ID))
+                    self.frame2.Raise()
                     self.tree_frame.Show(menu_bar.IsChecked(TREE_ID))
+                    self.tree_frame.Raise()
+                    _skip[0] = True
                 else:
                     self.frame2.Hide()
                     self.tree_frame.Hide()
