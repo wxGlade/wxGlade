@@ -1,5 +1,5 @@
 # text_ctrl.py: wxListCtrl objects
-# $Id: list_ctrl.py,v 1.3 2003/05/13 10:05:11 agriggio Exp $
+# $Id: list_ctrl.py,v 1.4 2003/08/02 13:26:31 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -74,7 +74,7 @@ class EditListCtrl(ManagedBase):
         self.notebook.AddPage(panel, 'Widget')
         self.property_window.Layout()
         import math
-        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))        
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def get_style(self):
         retval = [0] * len(self.style_pos)

@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.7 2003/07/18 16:43:52 agriggio Exp $
+# $Id: toolbar.py,v 1.8 2003/08/02 13:26:31 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -505,7 +505,7 @@ class EditToolBar(EditBase, PreviewMixin):
         self.notebook.AddPage(page, "Common")
         if self.parent is not None:
             self.property_window.Layout()
-            page.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+            page.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
         else:
             PreviewMixin.create_properties(self)
         

@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.14 2003/05/15 19:05:00 agriggio Exp $
+# $Id: dialog.py,v 1.15 2003/08/02 13:26:32 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -80,7 +80,7 @@ class EditDialog(TopLevelBase):
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
         w, h = panel.GetClientSizeTuple()
-        panel.SetScrollbars(5, 5, math.ceil(w/5.0), math.ceil(h/5.0))
+        panel.SetScrollbars(5, 5, int(math.ceil(w/5.0)), int(math.ceil(h/5.0)))
 
     def get_style(self):
         retval = [0] * len(self.style_pos)

@@ -1,5 +1,5 @@
 # spacer.py: spacers to use in sizers
-# $Id: spacer.py,v 1.6 2003/05/13 10:05:09 agriggio Exp $
+# $Id: spacer.py,v 1.7 2003/08/02 13:26:31 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -45,7 +45,7 @@ class EditSpacer(ManagedBase):
         szr.Fit(page)
         import math
         w, h = page.GetClientSize()
-        page.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+        page.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
         common_page = self.notebook.GetPage(0)
         common_page.Hide()
         self.notebook.RemovePage(0)

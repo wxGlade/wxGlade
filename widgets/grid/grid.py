@@ -1,5 +1,5 @@
 # Grid.py: wxGrid objects
-# $Id: grid.py,v 1.25 2003/07/29 14:42:13 agriggio Exp $
+# $Id: grid.py,v 1.26 2003/08/02 13:26:31 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -199,7 +199,7 @@ class EditGrid(ManagedBase):
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, 'Widget')
         import math
-        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
         self.properties['columns'].set_col_sizes([-1, 0])
 
     def create_widget(self):

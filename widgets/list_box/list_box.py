@@ -1,5 +1,5 @@
 # list_box.py: wxListBox objects
-# $Id: list_box.py,v 1.12 2003/06/27 16:01:38 agriggio Exp $
+# $Id: list_box.py,v 1.13 2003/08/02 13:26:31 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -66,7 +66,7 @@ class EditListBox(ManagedBase):
         szr.Fit(panel)
         w, h = panel.GetSize()
         from math import ceil
-        panel.SetScrollbars(5, 5, ceil(w/5.0), ceil(h/5.0))
+        panel.SetScrollbars(5, 5, int(ceil(w/5.0)), int(ceil(h/5.0)))
         self.notebook.AddPage(panel, 'Widget')
         self.properties['choices'].set_col_sizes([-1])
         

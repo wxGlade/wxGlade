@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.37 2003/07/08 17:44:25 agriggio Exp $
+# $Id: edit_sizers.py,v 1.38 2003/08/02 13:26:32 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -594,7 +594,7 @@ class SizerBase(Sizer):
         
         w, h = panel.GetClientSizeTuple()
         self.notebook.AddPage(panel, "Common")
-        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def popup_menu(self, event):
         """\
@@ -1231,7 +1231,7 @@ class EditStaticBoxSizer(SizerBase):
         sizer.Add(self.properties['label'].panel, 0, wxEXPAND)
         sizer.Layout()
         w, h = sizer.GetMinSize()
-        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def set_label(self, value):
         """\
