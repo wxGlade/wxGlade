@@ -1,5 +1,5 @@
 # splitter_window.py: wxSplitterWindow objects
-# $Id: splitter_window.py,v 1.20 2004/09/17 13:09:50 agriggio Exp $
+# $Id: splitter_window.py,v 1.21 2004/09/27 08:21:57 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -54,13 +54,16 @@ class SplitterWindowSizer(Sizer):
                     self.window.window_1 and self.window.window_1.widget:
                 self.window.widget.Unsplit(self.window.window_1.widget)
             self.window.window_1 = SizerSlot(self.window, self, pos)
+            w = self.window.window_1
         else:
             if self.window.widget and \
                     self.window.window_2 and self.window.window_2.widget:
                 self.window.widget.Unsplit()
             self.window.window_2 = SizerSlot(self.window, self, pos)
+            w = self.window.window_2
         self.window.split()
-    
+        w.widget.SetFocus()
+        
     def get_itempos(self, attrs):
         """\
         Get position of sizer item (used in xml_parse)

@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.24 2004/09/20 22:10:08 agriggio Exp $
+# $Id: panel.py,v 1.25 2004/09/27 08:21:58 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -215,14 +215,16 @@ class EditPanel(PanelBase, ManagedBase):
                                  'copy.xpm')
                 misc.append_item(self._rmenu, CUT_ID, 'Cut\tCtrl+X',
                                  'cut.xpm')
-                EVT_MENU(self.widget, REMOVE_ID, self.remove)
-                EVT_MENU(self.widget, COPY_ID, self.clipboard_copy)
-                EVT_MENU(self.widget, CUT_ID, self.clipboard_cut)
+                def bind(method):
+                    return lambda e: misc.wxCallAfter(method)
+                EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+                EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
+                EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
                 # paste
                 PASTE_ID = wxNewId()
                 misc.append_item(self._rmenu, PASTE_ID, 'Paste\tCtrl+V',
                                  'paste.xpm')
-                EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
+                EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
                 
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 

@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.17 2004/09/17 13:09:53 agriggio Exp $
+# $Id: dialog.py,v 1.18 2004/09/27 08:21:58 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -22,14 +22,20 @@ class EditDialog(TopLevelBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         style_labels = ('#section#Style', 'wxDEFAULT_DIALOG_STYLE',
                         'wxDIALOG_MODAL', 'wxCAPTION',
-                        'wxRESIZE_BORDER', 'wxSYSTEM_MENU', 'wxTHICK_FRAME',
-                        'wxSTAY_ON_TOP', 'wxNO_3D', 'wxDIALOG_NO_PARENT',
-                        'wxNO_FULL_REPAINT_ON_RESIZE', 'wxCLIP_CHILDREN')
+                        'wxRESIZE_BORDER', 'wxSYSTEM_MENU')
+        if misc.check_wx_version(2, 5):
+            style_labels += ('wxCLOSE_BOX', 'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX')
+        style_labels += ('wxTHICK_FRAME',
+                         'wxSTAY_ON_TOP', 'wxNO_3D', 'wxDIALOG_NO_PARENT',
+                         'wxNO_FULL_REPAINT_ON_RESIZE', 'wxCLIP_CHILDREN')
         self.style_pos = (wxDEFAULT_DIALOG_STYLE,
                           wxDIALOG_MODAL, wxCAPTION, wxRESIZE_BORDER,
-                          wxSYSTEM_MENU, wxTHICK_FRAME, wxSTAY_ON_TOP, wxNO_3D,
-                          wxDIALOG_NO_PARENT, wxNO_FULL_REPAINT_ON_RESIZE,
-                          wxCLIP_CHILDREN)
+                          wxSYSTEM_MENU)
+        if misc.check_wx_version(2, 5):
+            self.style_pos += (wxCLOSE_BOX, wxMAXIMIZE_BOX, wxMINIMIZE_BOX)
+        self.style_pos += (wxTHICK_FRAME, wxSTAY_ON_TOP, wxNO_3D,
+                           wxDIALOG_NO_PARENT, wxNO_FULL_REPAINT_ON_RESIZE,
+                           wxCLIP_CHILDREN)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # icon property
         self.icon = ""
@@ -49,7 +55,7 @@ class EditDialog(TopLevelBase):
         # we set always a default style because this is the best one for
         # editing the dialog (for example, a dialog without a caption would
         # be hard to move, etc.)
-        default_style = wxCAPTION|wxSYSTEM_MENU|wxRESIZE_BORDER
+        default_style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
         # change 2002-10-09: now we create a wxFrame instead of a wxDialog,
         # because the latter gives troubles I wasn't able to solve when using
         # wxPython 2.3.3.1 :-/
@@ -84,12 +90,15 @@ class EditDialog(TopLevelBase):
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
+        style = self.style
         try:
-            if self.style == wxDEFAULT_DIALOG_STYLE: retval[0] = 1
-            else:
-                for i in range(len(self.style_pos)):
-                    if self.style & self.style_pos[i]: retval[i] = 1
-                retval[0] = 0
+            default = 0
+            if style & wxDEFAULT_DIALOG_STYLE == wxDEFAULT_DIALOG_STYLE:
+                default = 1
+                style = style & ~wxDEFAULT_DIALOG_STYLE
+            for i in range(len(self.style_pos)):
+                if style & self.style_pos[i]: retval[i] = 1
+            retval[0] = default
         except AttributeError:
             pass
         return retval

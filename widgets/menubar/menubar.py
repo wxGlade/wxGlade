@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.11 2004/09/20 22:10:12 agriggio Exp $
+# $Id: menubar.py,v 1.12 2004/09/27 08:21:58 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -22,6 +22,9 @@ class MenuItemDialog(wxDialog):
                 MOVE_DOWN_ID, HELP_STR_ID = [wxNewId() for i in range(13)]
         self.menu_items = wxListCtrl(self, LIST_ID, style=wxLC_REPORT | \
                                      wxLC_SINGLE_SEL|wxSUNKEN_BORDER)
+        # ALB 2004-09-26: workaround to make the scroll wheel work...
+        EVT_MOUSEWHEEL(self.menu_items, lambda e: e.Skip())
+        
         self.menu_items.InsertColumn(0, "Label")
         self.menu_items.InsertColumn(1, "Id")
         self.menu_items.InsertColumn(2, "Name")
