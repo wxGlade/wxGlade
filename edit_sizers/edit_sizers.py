@@ -24,6 +24,7 @@ class SizerSlot:
         EVT_PAINT(self.widget, self.on_paint)
         EVT_RIGHT_DOWN(self.widget, self.popup_menu)
         EVT_LEFT_DOWN(self.widget, self.drop_widget)
+        EVT_MIDDLE_DOWN(self.widget, self.select_and_paste)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
 
         def on_key_down(event):
@@ -94,6 +95,15 @@ class SizerSlot:
         if clipboard.paste(self.parent, self.sizer, self.pos):
             common.app_tree.app.saved = False # update the status of the app
             #print misc.focused_widget
+
+    def select_and_paste(self, *args):
+        """\
+        Middle-click event handler: selects the slot and, if the clipboard is
+        not empty, pastes its content here
+        """
+        misc.focused_widget = self
+        self.widget.SetFocus()
+        self.clipboard_paste()
 
     def delete(self, delete_widget=True):
         if self.menu: self.menu.Destroy()
@@ -334,6 +344,25 @@ def change_sizer(old, new, which_page=0):
     szr.layout(True)
 
 #------------------------------------------------------------------------------
+
+
+class InsertDialog(wxDialog):
+    def __init__(self, max_val):
+        wxDialog.__init__(self, None, -1, "Select a position")
+        self.pos = 0
+        pos_prop = SpinProperty(self, 'position', self, r=(0, max_val))
+        szr = wxBoxSizer(wxVERTICAL)
+        szr.Add(pos_prop.panel, 0, wxEXPAND)
+        szr.Add(wxButton(self, wxID_OK, "OK"), 0, wxALL|wxALIGN_CENTER, 3)
+        self.SetAutoLayout(True)
+        self.SetSizer(szr)
+        szr.Fit(self)
+
+    def __getitem__(self, name):
+        def set_pos(v): self.pos = int(v)
+        return (lambda : self.pos, set_pos)
+
+# end of class InsertDialog
 
 
 class SizerBase:
@@ -857,25 +886,7 @@ class SizerBase:
         """
         if not self.widget: return
 
-        class Dialog(wxDialog):
-            def __init__(self, max_val):
-                wxDialog.__init__(self, None, -1, "Select a position")
-                self.pos = 0
-                pos_prop = SpinProperty(self, 'position', self, r=(0, max_val))
-                szr = wxBoxSizer(wxVERTICAL)
-                szr.Add(pos_prop.panel, 0, wxEXPAND)
-                szr.Add(wxButton(self, wxID_OK, "OK"), 0, wxALL|wxALIGN_CENTER,
-                        3)
-                self.SetAutoLayout(True)
-                self.SetSizer(szr)
-                szr.Fit(self)
-            def __getitem__(self, name):
-                def set_pos(v): self.pos = int(v)
-                return (lambda : self.pos, set_pos)
-            
-        # end of inner class
-
-        dialog = Dialog(len(self.children)-1)
+        dialog = InsertDialog(len(self.children)-1)
         dialog.ShowModal()
         pos = dialog.pos + 1
         tmp = SizerSlot(self.window, self, pos)
@@ -888,6 +899,7 @@ class SizerBase:
         force_layout = kwds.get('force_layout', True)
         if force_layout: self.layout(True)
         common.app_tree.app.saved = False
+        dialog.Destroy()
 
     def free_slot(self, pos, force_layout=True):
         """\
@@ -1187,7 +1199,9 @@ class GridSizerBase(SizerBase):
         menu = [('Add slot', self.add_slot),
                 ('Insert slot...', self.insert_slot),
                 ('Add row', self.add_row),
-                ('Add column', self.add_col)]
+                ('Add column', self.add_col),
+                ('Insert row...', self.insert_row),
+                ('Insert column...', self.insert_col)]
         SizerBase.__init__(self, name, klass, window, toplevel, show, menu)
 
         class Dummy: widget = None
@@ -1294,29 +1308,11 @@ class GridSizerBase(SizerBase):
         before which to insert the SizerSlot object
         """
         if not self.widget: return
-        
-        class Dialog(wxDialog):
-            def __init__(self, max_val):
-                wxDialog.__init__(self, None, -1, "Select a position")
-                self.pos = 0
-                pos_prop = SpinProperty(self, 'position', self, r=(0, max_val))
-                szr = wxBoxSizer(wxVERTICAL)
-                szr.Add(pos_prop.panel, 0, wxEXPAND)
-                szr.Add(wxButton(self, wxID_OK, "OK"), 0, wxALL|wxALIGN_CENTER,
-                        3)
-                self.SetAutoLayout(True)
-                self.SetSizer(szr)
-                szr.Fit(self)
-            def __getitem__(self, name):
-                def set_pos(v): self.pos = int(v)
-                return (lambda : self.pos, set_pos)
-            
-        # end of inner class
 
         if kwds.get('interactive', True):
-            dialog = Dialog(len(self.children))
+            dialog = InsertDialog(len(self.children))
             dialog.ShowModal()
-            pos = dialog.pos
+            pos = dialog.pos+1
         else: pos = kwds['pos']
         tmp = SizerSlot(self.window, self, pos)
         for c in self.children[pos:]:
@@ -1331,35 +1327,74 @@ class GridSizerBase(SizerBase):
 
     def add_row(self, *args, **kwds):
         if not self.widget: return
-        self.set_rows(self.rows+1)
+##         self.set_rows(self.rows+1)
+##         self.properties['rows'].set_value(self.rows)
+##         slots = [SizerSlot(self.window, self, len(self.children)+i) for i in
+##                  range(self.cols)]
+##         items = [SizerItem(slots[i], len(self.children)+i, 1, wxEXPAND) for i
+##                  in range(self.cols)]
+##         self.children.extend(items)
+##         for s in slots:
+##             s.show_widget(True) # create the actual SizerSlot widget
+##             self.widget.Add(s.widget, 1, wxEXPAND)
+##             self.widget.SetItemMinSize(s.widget, 20, 20)
+##         force_layout = kwds.get('force_layout', True)
+##         if force_layout: self.layout(True)
+##         common.app_tree.app.saved = False
+        self._insert_row(self.widget.GetRows()+1)
+
+    def insert_row(self, *args):
+        if not self.widget: return
+        dialog = InsertDialog(self.widget.GetRows())
+        dialog.ShowModal()
+        self._insert_row(dialog.pos + 1)
+        dialog.Destroy()
+        
+    def _insert_row(self, pos):
+        rows = self.widget.GetRows()
+        cols = self.widget.GetCols()
+        pos = (pos-1) * cols + 1
+        self.set_rows(rows+1)
+        for i in range(cols):
+            self.insert_slot(interactive=False, pos=pos+i, force_layout=False)
         self.properties['rows'].set_value(self.rows)
-        slots = [SizerSlot(self.window, self, len(self.children)+i) for i in
-                 range(self.cols)]
-        items = [SizerItem(slots[i], len(self.children)+i, 1, wxEXPAND) for i
-                 in range(self.cols)]
-        self.children.extend(items)
-        for s in slots:
-            s.show_widget(True) # create the actual SizerSlot widget
-            self.widget.Add(s.widget, 1, wxEXPAND)
-            self.widget.SetItemMinSize(s.widget, 20, 20)
-        force_layout = kwds.get('force_layout', True)
-        if force_layout: self.layout(True)
+        self.layout(True)
         common.app_tree.app.saved = False
 
     def add_col(self, *args, **kwds):
+##         if not self.widget: return
+##         rows = self.widget.GetRows()
+##         cols = self.widget.GetCols()
+##         self.set_cols(self.cols+1)
+##         for i in range(rows):
+##             self.insert_slot(interactive=False, pos=self.cols * (i+1),
+##                              #pos=cols + self.cols * i,
+##                              force_layout=False)
+##         self.properties['cols'].set_value(self.cols)
+##         force_layout = kwds.get('force_layout', True)
+##         if force_layout: self.layout(True)
         if not self.widget: return
+        self._insert_col(self.widget.GetCols()+1)
+
+    def insert_col(self, *args):
+        if not self.widget: return
+        dialog = InsertDialog(self.widget.GetCols())
+        dialog.ShowModal()
+        self._insert_col(dialog.pos + 1)
+        dialog.Destroy()
+
+    def _insert_col(self, pos):
         rows = self.widget.GetRows()
         cols = self.widget.GetCols()
-        self.set_cols(self.cols+1)
-        print rows, cols
+        self.set_cols(cols+1)
         for i in range(rows):
-            self.insert_slot(interactive=False, pos=self.cols * (i+1),
+            self.insert_slot(interactive=False, pos=pos + self.cols * i,
                              #pos=cols + self.cols * i,
                              force_layout=False)
         self.properties['cols'].set_value(self.cols)
-        force_layout = kwds.get('force_layout', True)
-        if force_layout: self.layout(True)
-
+        self.layout(True)
+        common.app_tree.app.saved = False
+        
 # end of class GridSizerBase
 
 
@@ -1388,13 +1423,16 @@ class CheckListDialogProperty(DialogProperty):
     dialog = [None]
     def __init__(self, owner, name, parent, title, message, callback,
                  can_disable=True):
+        self.title = title
+        self.message = message
         if not self.dialog[0]:
             class Dialog(wxDialog):
                 def __init__(self):
                     wxDialog.__init__(self, parent, -1, title)
                     sizer = wxBoxSizer(wxVERTICAL)
-                    sizer.Add(wxStaticText(self, -1, message), 0,
-                              wxTOP|wxLEFT|wxRIGHT, 10)
+                    self.message = wxStaticText(self, -1, "")
+                    sizer.Add(self.message, 0, wxTOP|wxLEFT|wxRIGHT|wxEXPAND,
+                              10)
                     self.choices = wxCheckListBox(self, -1, choices=[])
                     sizer.Add(self.choices, 1, wxEXPAND|wxLEFT|wxRIGHT, 10)
                     sizer.Add(wxStaticLine(self, -1), 0, wxEXPAND|wxALL, 10)
@@ -1419,6 +1457,11 @@ class CheckListDialogProperty(DialogProperty):
                         self.choices.Clear()
                         for v in values:
                             self.choices.Append(v)
+
+                def set_descriptions(self, title, message):
+                    self.SetTitle(title)
+                    self.message.SetLabel(message)
+                    
             # end of class Dialog
             self.dialog[0] = Dialog()
             
@@ -1428,6 +1471,7 @@ class CheckListDialogProperty(DialogProperty):
 
     def display_dialog(self, event):
         self.set_choices(self.choices_setter())
+        self.dialog.set_descriptions(self.title, self.message)
         DialogProperty.display_dialog(self, event)
 
     def set_choices(self, values):
