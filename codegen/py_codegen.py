@@ -373,7 +373,7 @@ def add_object(top_obj, sub_obj):
             klass.dependencies[key] = 1
 ##         for dep in _widget_extra_modules.get(sub_obj.base, []):
         for dep in getattr(obj_builders.get(sub_obj.base),
-                           'extra_modules', []):
+                           'import_modules', []):
             klass.dependencies[dep] = 1
 
 
