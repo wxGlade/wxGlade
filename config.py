@@ -19,11 +19,14 @@ class wxGladePreferences(wxDialog):
         self.use_menu_icons = wxCheckBox(self.notebook_1_pane_1, -1,
                                          "Use icons in menu items")
         self.frame_tool_win = wxCheckBox(self.notebook_1_pane_1, -1,
-                                         "Show properties and tree windows"
-                                         " as small frames (Win32 only)")
+                                         "Show properties and tree windows "
+                                         "as small frames (Win32 only)")
         self.use_dialog_units = wxCheckBox(self.notebook_1_pane_1, -1,
-                                           "Use dialog units by default "
-                                           "for size properties")
+                                           "Use dialog units by default for "
+                                           "size properties")
+        self.show_progress = wxCheckBox(self.notebook_1_pane_1, -1,
+                                        "Show progress dialog when loading "
+                                        "wxg files")
         self.label_1 = wxStaticText(self.notebook_1_pane_1, -1,
                                     "Initial path for \nfile opening/saving "
                                     "dialogs:")
@@ -36,7 +39,7 @@ class wxGladePreferences(wxDialog):
                                     "Number of items in file history\n"
                                     "(wxPython >= 2.3.3)")
         self.number_history = wxSpinCtrl(self.notebook_1_pane_1, -1, min=0,
-                                         max=9)
+                                         max=100)
         self.ok = wxButton(self, wxID_OK, "OK")
         self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
         self.apply = wxButton(self, -1, "Apply")
@@ -57,6 +60,7 @@ class wxGladePreferences(wxDialog):
             self.codegen_path.SetValue(self.preferences.codegen_path)
             self.use_dialog_units.SetValue(self.preferences.use_dialog_units)
             self.number_history.SetValue(self.preferences.number_history)
+            self.show_progress.SetValue(self.preferences.show_progress)
         except Exception, e:
             wxMessageBox('Error reading config file:\n%s' % e, 'Error',
                          wxOK|wxCENTRE|wxICON_ERROR)
@@ -68,12 +72,14 @@ class wxGladePreferences(wxDialog):
         self.preferences['codegen_path'] = self.codegen_path.GetValue()
         self.preferences['use_dialog_units'] = self.use_dialog_units.GetValue()
         self.preferences['number_history'] = self.number_history.GetValue()
+        self.preferences['show_progress'] = self.show_progress.GetValue()
 
     def __set_properties(self):
         # begin wxGlade: wxGladePreferences.__set_properties
         self.SetTitle("wxGlade: preferences")
         self.use_menu_icons.SetValue(1)
         self.frame_tool_win.SetValue(1)
+        self.show_progress.SetValue(1)
         self.open_save_path.SetSize((196, -1))
         self.codegen_path.SetSize((196, -1))
         self.number_history.SetSize((196, -1))
@@ -89,6 +95,7 @@ class wxGladePreferences(wxDialog):
         sizer_3.Add(self.use_menu_icons, 0, wxALL|wxEXPAND, 5)
         sizer_3.Add(self.frame_tool_win, 0, wxALL|wxEXPAND, 5)
         sizer_3.Add(self.use_dialog_units, 0, wxALL|wxEXPAND, 5)
+        sizer_3.Add(self.show_progress, 0, wxALL|wxEXPAND, 5)
         sizer_4.Add(self.label_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
         sizer_4.Add(self.open_save_path, 1, wxALL|wxALIGN_CENTER_VERTICAL, 5)
         sizer_4.Add(self.label_2_copy, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
@@ -126,7 +133,8 @@ class Preferences(ConfigParser):
         'codegen_path': (os.path.expanduser('~') != '~' and
                          os.path.expanduser('~') or os.getcwd()),
         'use_dialog_units': False,
-        'number_history': 4
+        'number_history': 4,
+        'show_progress': True
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults
