@@ -45,6 +45,15 @@ def python_generate_properties(obj):
     if prop.get('enable_grid_lines', False):
         out.append('%s.EnableGridLines(%s)\n' %
                    (name, prop['enable_grid_lines']))
+    if prop.get('enable_col_resize', False):
+        out.append('%s.EnableDragColSize(%s)\n' %
+                   (name, prop['enable_col_resize']))
+    if prop.get('enable_row_resize', False):
+        out.append('%s.EnableDragRowSize(%s)\n' %
+                   (name, prop['enable_row_resize']))
+    if prop.get('enable_grid_resize', False):
+        out.append('%s.EnableDragGridSize(%s)\n' %
+                   (name, prop['enable_grid_resize']))
     out.extend(pygen.generate_common_properties(obj))
     return out
 

@@ -25,6 +25,9 @@ class EditGrid(ManagedBase):
         self.enable_grid_lines = True
         self.rows_number = 10
         self.columns_number = 3
+        self.enable_col_resize = True
+        self.enable_row_resize = True
+        self.enable_grid_resize = False
         
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
                              property_window, show=show)
@@ -52,6 +55,21 @@ class EditGrid(ManagedBase):
         self.access_functions['rows_number'] = (self.get_rows_number,
                                               self.set_rows_number)
         self.properties['rows_number'] = SpinProperty(self, 'rows_number', None)
+        self.access_functions['enable_col_resize'] = (self.get_enable_col_resize,
+                                                    self.set_enable_col_resize)
+        self.properties['enable_col_resize']= CheckBoxProperty(self,
+                                                             'enable_col_resize',
+                                                             None)
+        self.access_functions['enable_row_resize'] = (self.get_enable_row_resize,
+                                                    self.set_enable_row_resize)
+        self.properties['enable_row_resize']= CheckBoxProperty(self,
+                                                             'enable_row_resize',
+                                                             None)
+        self.access_functions['enable_grid_resize'] = (self.get_enable_grid_resize,
+                                                    self.set_enable_grid_resize)
+        self.properties['enable_grid_resize']= CheckBoxProperty(self,
+                                                             'enable_grid_resize',
+                                                             None)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -62,13 +80,19 @@ class EditGrid(ManagedBase):
         self.properties['enable_grid_lines'].display(panel)
         self.properties['columns_number'].display(panel)
         self.properties['rows_number'].display(panel)
+        self.properties['enable_col_resize'].display(panel)
+        self.properties['enable_row_resize'].display(panel)
+        self.properties['enable_grid_resize'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
+        szr.Add(self.properties['columns_number'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['rows_number'].panel, 0, wxEXPAND)
         szr.Add(self.properties['row_label_size'].panel, 0, wxEXPAND)
         szr.Add(self.properties['col_label_size'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_editing'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_grid_lines'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['columns_number'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['rows_number'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['enable_col_resize'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['enable_row_resize'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['enable_grid_resize'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -81,11 +105,14 @@ class EditGrid(ManagedBase):
         self.widget.SetColLabelSize(self.col_label_size)
         self.widget.EnableEditing(self.enable_editing)
         self.widget.EnableGridLines(self.enable_grid_lines)
+        self.widget.EnableDragColSize(self.enable_col_resize)
+        self.widget.EnableDragRowSize(self.enable_row_resize)
+        self.widget.EnableDragGridSize(self.enable_grid_resize)
         # A grid should be wxEXPANDed and 'option' should be 1,
         # or you can't see it.
-        self.set_option(1)  #HELP#
+        self.set_option(1)  
         self.set_flag("wxEXPAND")
-        #EVT_LEFT_DOWN(self.widget, self.click_on_grid)  doesn't work
+        # following two events are to permit select grid from designer frame
         EVT_GRID_CELL_LEFT_CLICK(self.widget, self.on_set_focus)  
         EVT_GRID_LABEL_LEFT_CLICK(self.widget, self.on_set_focus)
     
@@ -161,6 +188,30 @@ class EditGrid(ManagedBase):
                 self.widget.DeleteRows(self.rows_number,
                                        actual_rows_number - self.rows_number)
             #self.widget.Update()
+
+    def get_enable_col_resize(self):
+        return self.enable_col_resize
+
+    def set_enable_col_resize(self, value):
+        self.enable_col_resize = bool(value)
+        if self.widget:
+            self.widget.EnableDragColSize(self.enable_col_resize)
+
+    def get_enable_row_resize(self):
+        return self.enable_row_resize
+
+    def set_enable_row_resize(self, value):
+        self.enable_row_resize = bool(value)
+        if self.widget:
+            self.widget.EnableDragRowSize(self.enable_row_resize)
+
+    def get_enable_grid_resize(self):
+        return self.enable_grid_resize
+
+    def set_enable_grid_resize(self, value):
+        self.enable_grid_resize = bool(value)
+        if self.widget:
+            self.widget.EnableDragGridSize(self.enable_grid_resize)
 
 # end of class EditGrid
         
