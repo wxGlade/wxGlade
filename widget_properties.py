@@ -388,7 +388,10 @@ class SpinProperty(Property, _activator):
         if self.val_range is None: self.val_range = (0, 1000)
         self.spin = wxSpinCtrl(self.panel, self.id, min=self.val_range[0],
                                max=self.val_range[1])
-        self.spin.SetValue(int(self.owner[self.name][0]()))
+        val = int(self.owner[self.name][0]())
+        if not val:
+            self.spin.SetValue(1) # needed for GTK to display a '0'
+        self.spin.SetValue(val) #int(self.owner[self.name][0]()))
         label = wxStaticText(self.panel, -1, _mangle(self.name))
         if self.can_disable:
             self._enabler = wxCheckBox(self.panel, self.id+1, '')

@@ -228,7 +228,6 @@ def change_sizer(old, new):
         if szr.sizer.widget:
             elem = szr.sizer.widget.GetChildren()[szr.pos]
             elem.SetSizer(szr.widget)
-            #szr.sizer.widget.Layout()
     import common
     common.app_tree.change_node(szr.node, szr)
     old.toplevel = False
@@ -241,7 +240,6 @@ def change_sizer(old, new):
     if szr.toplevel:
         szr.window.set_sizer(szr)
     szr.layout(True)
-    #szr.window.widget.Layout()
 
 #------------------------------------------------------------------------------
 
@@ -568,10 +566,10 @@ class SizerBase:
                 #if not self.toplevel: self.sizer.Layout()
     Remove = remove_item # maybe this is needed, I have to check...
 
-    def layout(self, recursive=False):
+    def layout(self, recursive=True):
         #if not self.widget or not self.window.is_visible(): return
         if not self.widget: return
-        self.widget.SetMinSize(self.widget.GetMinSize())
+        self.widget.SetMinSize(self.widget.CalcMin())
         self.widget.Layout()
         for c in self.children:
             try: c.item.widget.Refresh()
@@ -1103,13 +1101,13 @@ class GridSizerBase(SizerBase):
         self.rows = int(rows)
         if self.widget:
             self.widget.SetRows(self.rows)
-            self.layout()
+            self.layout(True)
 
     def set_cols(self, cols):
         self.cols = int(cols)
         if self.widget:
             self.widget.SetCols(self.cols)
-            self.layout()
+            self.layout(True)
 
     def set_hgap(self, hgap):
         self.hgap = int(hgap)
