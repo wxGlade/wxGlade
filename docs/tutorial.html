@@ -6,8 +6,9 @@
  content="text/html; charset=iso-8859-1">
   <title>wxGlade tutorial</title>
                      
-  <style type="text/css"><!--// body { font-family: Arial, Helvetica,
-sans-serif } //-->
+  <style type="text/css"><!--//
+body { font-family: Arial, Helvetica, sans-serif }
+//-->
   </style>
 </head>
 <body bgcolor="#ffffff">
@@ -29,9 +30,9 @@ language (I'm Italian), so it is very far from perfection.<br>
     
 <p>To create a new frame, click on the appropriate button of the "palette"
 (<img src="img/frame_button.gif" align="middle" width="31" height="31"
-border="0" alt="Frame">): a dialog asking for the name of the class of the new window is
-displayed: choose the name you prefer, but remember that it must be a valid
-name for a Python (or C++) class.<br>
+ border="0">): a dialog asking for the name of the class of the new window
+is displayed: choose the name you prefer, but remember that it must be a
+valid name for a Python (or C++) class.<br>
  </p>
     
 <p>Now the frame is displayed, and the properties window changes to show the
@@ -83,9 +84,9 @@ button to reflect the changes on the widget.<br>
 <h3>4. Creation of the notebook</h3>
     
 <p>Now it's time to add a notebook to our frame. You should have noticed that
-the frame you've just added contains a BoxSizer (<img
+the frame you've just added contain a BoxSizer (<img
 src="img/box_sizer_button.gif" align="middle" width="31" height="31"
-border="0" alt="BoxSizer">). This is because with wxGlade every container widget must have a
+border="0">). This is because with wxGlade every container widget must have a
 Sizer before you can add sub-widgets to it, and since it is very common for
 frames to have just one child window, wxGlade adds an 1-slot BoxSizer
 automatically for you. This doesn't happen for other containers, for which
@@ -94,12 +95,12 @@ addition of the notebook to the frame.<br>
 
 <p>Let's add such notebook, then: to do so, click on the Notebook button (<img
  src="img/notebook_button.gif" align="middle" border="0" width="30"
- height="30" alt="Notebook">) on the palette: now when you move the mouse inside the sizer's
+ height="30">) on the palette: now when you move the mouse inside the sizer's
  area (<img src="img/sizer_slot.gif" align="middle" border="0" width="30"
- height="30" alt="slot">), the pointer changes its shape and becomes a cross: this tells
- us that we can drop the notebook on the sizer's only slot.<br> A left-click
- starts the operation, and a dialog asking for the placement of the notebook's
- tabs appears: choose what you like best.
+ height="30">), the pointer changes its shape and becomes a cross: this tells
+ us that we can drop the notebook on the sizer's only slot.<br>
+A left-click starts the operation, and a dialog asking for the placement of the
+ notebook's tabs appears: choose what you like best.
 
 
 <p>Now let's select the <tt>Common</tt> tab of the properties of the object
@@ -122,7 +123,7 @@ assumes that you have a subclass of <tt>wxButton</tt> called
 compatible with that of the "regular" <tt>wxButton</tt>, and so when it
 generates the code for the object, it writes:
 <pre>button_1 = MyCustomButton(parent, id, "Label")</pre> instead of
-<pre>button_1 = wxButton(parent, id, "Label")</pre>
+<pre>button_1 = wxButton(parent, id, "Label")</pre> 
     
 <h3>5. Adding and removing notebook pages</h3>
     
@@ -133,9 +134,9 @@ their labels.<br>
     
 <h3>6. Addition of some controls</h3>
     
-<p>We have now reached the last part of this short tutorial: the addition of
-some controls to the first page of our notebook. In particular, we'll add a
-text area and two buttons: these operations will allow us to show the layout
+<p>We have now reached the last part of this short tutorial: the addition
+of some controls to the first page of our notebook. In particular, we'll add
+a text area and two buttons: these operations will allow us to show the layout
 options of the objects inside sizers, and the (currently limited) cut &amp;
 paste support of wxGlade. <br>
  </p>
@@ -144,7 +145,7 @@ paste support of wxGlade. <br>
 is to set its sizer.  Let's start with the addition of a sizer to the first
 page of the notebook, which is where we are going to put our controls, then: to
 do so, click on the BoxSizer button (<img src="img/box_sizer_button.gif"
-align="middle" width="31" height="31" border="0" alt="BoxSizer">) on the palette, and then
+align="middle" width="31" height="31" border="0">) on the palette, and then
 move the mouse inside the page. Again, the pointer is now a cross, and so we
 can drop the sizer on our page: if everything is OK, you should see a dialog
 asking for some features of the sizer to add. We have to change the default
@@ -159,9 +160,9 @@ the menu of almost every object handled by wxGlade).<br>
 
 <p><font size="4"><b>6.1 Text area</b></font></p>
     
-<p>Let's click on the TextCtrl button (<img src="img/text_ctrl_button.gif"
- align="middle" width="30" height="30" alt="TextCtrl">) and insert the text area in the first
- slot of our sizer. </p>
+<p>Let's click on the TextCtrl button (<img
+ src="img/text_ctrl_button.gif" align="middle" width="30" height="30">) and
+insert the text area in the first slot of our sizer. </p>
     
 <p>The default dimension isn't right, as we want to display a long and
 multiline text: to edit the layout, let's select the <tt>Layout</tt> tab of the
@@ -181,7 +182,7 @@ between the two buttons (so as they won't appear too close to each other).<br>
  
 <p>Replace then the first slot with a new button, as usually with the
 approprate button (<img src="img/button_button.gif" align="middle" width="30"
-height="30" alt="Button">).<br> To add the second button, instead, we will use the
+height="30">).<br> To add the second button, instead, we will use the
 clipboard: let's click on the <tt>Copy</tt> item of the popup menu of the first
 button (or select it and press <tt>Ctrl+C</tt>), then move the mouse inside the
 third slot, and finally click on the <tt>Paste</tt> item of the popup menu of
@@ -191,8 +192,8 @@ just click on the empty slot with the middle button).<br>
  </p>
 
 <p> Now add a spacer (<img src="img/spacer_button.gif" align="middle"
- width="30" height="30" alt="Spacer">) of the appropriate dimension between the buttons, to
- keep them at a reasonable distance.<br>
+ width="30" height="30">) of the appropriate dimension between the buttons,
+to keep them at a reasonable distance.<br>
      
 <p>Finally, the last operation we have to do is to edit the layout of the
 horizontal Sizer that contains the buttons: set to 0 the value of "Option",
@@ -251,40 +252,33 @@ code generation:<br>
  </p>
     
 <ul>
-  <li><u>Name</u>: name to give to the wxApp object which represents the
-application: if this property and the next one (Class) are not active, there
-will be no code for the application startup, but only that of the various
-widgets<br>
+  <li><u>Name</u>: name to give to the wxApp object which represents the application:
+if this property and the next one (Class) are not active, there will be no
+code for the application startup, but only that of the various  widgets<br>
  </li>
-   <li><u>Class</u>: name of the class derived from wxApp which represents the
-application: if this property is not active but the previous one (Name) is, the
-application object will be an instance of wxPySimpleApp (this applies to Python
-output only - for C++ output this property must be active if you want the
-startup code to be generated)<br></li>
-   <li><u>Encoding</u>: encoding used to store strings in the wxg
-   file. Normally, the default value should be OK, unless you need to use some
-   "strange" characters.<br>
-   <li><u>Enable gettext support</u>: if checked, string constants in the
-   generated source files will be wrapped by the special <tt>_()</tt> gettext
-   function, to support internationalization of your app.<br>
+   <li><u>Class</u>: name of the class derived from wxApp which represents
+the application: if this property is not active but the previous one (Name)
+is, the application object will be an instance of wxPySimpleApp (this applies
+to Python output only - for C++ output this property must be active if you
+want the startup code to be generated)</li>
    <li><u>Top window</u>: main window of the application to generate<br>
  </li>
-   <li><u>Code generation</u>: this controls the kind of output, and lets you
-choose between a single source file containing all the widgets, or a separate
+   <li><u>Code generation</u>: this controls the kind of output, and lets
+you choose between a single source file containing all the widgets, or a separate
 file for each custom class defined (for C++ output, the single-file mode
 actually generates two files, a ".h" and a ".cpp")<br>
   </li>
  <li><u>Language</u>: this lets you choose the language of the generated code:
 at the moment, Python, C++ and XRC, i.e. wxWindows resources xml format. Note
 that in this last case some of the properties of the application are ignored
-(Name, Class, Top window), and some are disallowed (you cannot set Code
-generation to multi-files)<br>
+(Name, Class, Top window), and some are disallowed (you cannot set Code generation
+to multi-files)<br>
   </li>
-    <li><u>Output path</u>: in single-file mode, name of the output file; in
-multi-file mode, path to the output directory: in this last case, every custom
-class will be placed in a file with the name of such class, except for the
-(eventual) wxApp class, which is placed in a file whose name is given by the
-Name property described above. For example, for our notebook, we'll have
+    <li><u>Output path</u>: in single-file mode, name of the output file;
+in   multi-file mode, path to the output directory: in this last case, every
+custom class will be placed in a file with the name of such class, except for
+the (eventual) wxApp class, which is placed in a file whose name is given by
+the Name property described above. For example, for our notebook, we'll have 
 <tt>MyFrame.py</tt>, <tt>MyNotebook.py</tt> and <tt>app.py</tt> (assuming
 you're generating Python code, of course).<br>
   </li>
@@ -302,20 +296,21 @@ appears: this says that the operation is over... like this short tutorial
 
 <p>This section contains a list of things that you should know about wxGlade
 (known bugs and/or limitations, "hidden" features, tips and tricks, ...) which
-I wasn't able to fit in the tutorial <!-- (I am definitely a bad writer :)
--->. The list is loosely sorted by importance.
+I wasn't able to fit in the tutorial <!-- (I am definitely a bad writer :) -->. The list
+is loosely sorted by importance.
 </p>
 
 <ul>
   <li>When you generate Python or C++ code, if the output file already exists,
   wxGlade doesn't overwrite all its contents, but only the lines inside a
   <pre>
-  # begin wxGlade: ...  # end wxGlade
+  # begin wxGlade: ...
+  # end wxGlade
   </pre>
-  block. This is a desirable feature in most occasions, since it lets you add
-  your code to the file without worrying of losing it when re-generating the
-  GUI code, but there are situations in which a little attention is
-  required. In particular, you should be aware of the following:
+  block. This is a desirable feature in most occasions,
+  since it lets you add your code to the file without worrying of losing it
+  when re-generating the GUI code, but there are situations in which a little
+  attention is required. In particular, you should be aware of the following:
   <ul>
     <li>If the output file contains a class whose name is the same as that of
     one of your custom classes, but its body has no wxGlade block, the code for
@@ -325,57 +320,79 @@ I wasn't able to fit in the tutorial <!-- (I am definitely a bad writer :)
     wxGlade tags), because wxGlade has no way of determining the previous name
     of such class, and will treat it like a brand new one (this means that it
     will generate a new class declaration instead of updating the old one). Let
-    me explain this with an example:<br> Suppose you have a class called
-    <tt>MyFrame</tt>, and the corresponding generated file
-    <tt>frame.py</tt>:<br><pre> #!/usr/bin/env python # generated by wxGlade
-    0.2 on Sat Dec 14 15:15:06 2002
+    me explain this with an example:<br>
+    Suppose you have a class called <tt>MyFrame</tt>, and the corresponding
+    generated file <tt>frame.py</tt>:<br><pre>
+#!/usr/bin/env python
+# generated by wxGlade 0.2 on Sat Dec 14 15:15:06 2002
 
 from wxPython.wx import *
 
-class MyFrame(wxFrame): def __init__(self, *args, **kwds): # begin wxGlade:
-    MyFrame.__init__ kwds["style"] = wxDEFAULT_FRAME_STYLE
-    wxFrame.__init__(self, *args, **kwds)
+class MyFrame(wxFrame):
+    def __init__(self, *args, **kwds):
+        # begin wxGlade: MyFrame.__init__
+        kwds["style"] = wxDEFAULT_FRAME_STYLE
+        wxFrame.__init__(self, *args, **kwds)
 
-        self.__set_properties() self.__do_layout() # end wxGlade
+        self.__set_properties()
+        self.__do_layout()
+        # end wxGlade
 
-    def __set_properties(self): # begin wxGlade: MyFrame.__set_properties
-        self.SetTitle("frame_1") # end wxGlade
+    def __set_properties(self):
+        # begin wxGlade: MyFrame.__set_properties
+        self.SetTitle("frame_1")
+        # end wxGlade
 
-    def __do_layout(self): # begin wxGlade: MyFrame.__do_layout pass # end
-        wxGlade
+    def __do_layout(self):
+        # begin wxGlade: MyFrame.__do_layout
+        pass
+        # end wxGlade
 
 # end of class MyFrame
 </pre>
    Now suppose you rename <tt>MyFrame</tt> to <tt>RenamedFrame</tt>. If you
    don't care to fix <tt>frame.py</tt> accordingly, if you re-generate it you
-   will get something like:<br><pre> #!/usr/bin/env python # generated by
-   wxGlade 0.2 on Sat Dec 14 15:15:06 2002
+   will get something like:<br><pre>
+#!/usr/bin/env python
+# generated by wxGlade 0.2 on Sat Dec 14 15:15:06 2002
 
 from wxPython.wx import *
 
-class RenamedFrame(wxFrame): def __init__(self, *args, **kwds): # begin
-    wxGlade: RenamedFrame.__init__ kwds["style"] = wxDEFAULT_FRAME_STYLE
-    wxFrame.__init__(self, *args, **kwds)
+class RenamedFrame(wxFrame):
+    def __init__(self, *args, **kwds):
+        # begin wxGlade: RenamedFrame.__init__
+        kwds["style"] = wxDEFAULT_FRAME_STYLE
+        wxFrame.__init__(self, *args, **kwds)
 
-        self.__set_properties() self.__do_layout() # end wxGlade
+        self.__set_properties()
+        self.__do_layout()
+        # end wxGlade
 
-    def __set_properties(self): # begin wxGlade: RenamedFrame.__set_properties
-        self.SetTitle("frame_1") # end wxGlade
+    def __set_properties(self):
+        # begin wxGlade: RenamedFrame.__set_properties
+        self.SetTitle("frame_1")
+        # end wxGlade
 
-    def __do_layout(self): # begin wxGlade: RenamedFrame.__do_layout pass # end
-        wxGlade
+    def __do_layout(self):
+        # begin wxGlade: RenamedFrame.__do_layout
+        pass
+        # end wxGlade
 
 # end of class RenamedFrame
 
 
-class MyFrame(wxFrame): def __init__(self, *args, **kwds): # content of this
-    block not found: did you rename this class?  pass
+class MyFrame(wxFrame):
+    def __init__(self, *args, **kwds):
+        # content of this block not found: did you rename this class?
+        pass
 
-    def __set_properties(self): # content of this block not found: did you
-        rename this class?  pass
+    def __set_properties(self):
+        # content of this block not found: did you rename this class?
+        pass
 
-    def __do_layout(self): # content of this block not found: did you rename
-        this class?  pass
+    def __do_layout(self):
+        # content of this block not found: did you rename this class?
+        pass
 
 # end of class MyFrame
 </pre>
@@ -402,23 +419,22 @@ wxGlade blocks nonetheless: this means that:
   forward declarations before the new classes).
   <br>&nbsp;
 
-  <li>When you add slots to sizers, it may be possible that you don't see such
-  new slots: this happens because the size of the window that contains the
+  <li>When you add slots to sizers, it may be possible that you don't see
+  such new slots: this happens because the size of the window that contains the
   sizer is too small, and so new slots are hidden. The solution is to resize
   the window, so that its layout is recalculated and the new slots are shown.
   <br>&nbsp;
 
-  <li>XRC code generation has some differences wrt Python or C++; apart those
-  already mentioned in section 8, the most important ones are:
+  <li>XRC code generation has some differences wrt Python or C++; apart
+  those already mentioned in section 8, the most important ones are:
   <ul>
     <li>At the moment there is no support for custom classes, which means that
     the Class property of widgets is ignored. There's a chance that future
     versions of wxGlade will support it, though, since XRC itself has something
     similar (but it seems that at the moment it can be used only by C++ progs).
     <li>Some widgets are not supported at all (e.g. splitter window, status
-    bar, grid and the special <tt>CustomWidget</tt>, see below): for them no
-    code will be generated, but instead the XRC output file will contain a
-    comment like this:
+    bar, grid): for them no code will be generated, but instead the XRC output
+    file will contain a comment like this:
     <pre>&lt;!-- code generator for wxStatusBar objects not available --&gt;
     </pre>
     <li>Output files are always overwritten, so if you manually edit the XRC
@@ -427,26 +443,32 @@ wxGlade blocks nonetheless: this means that:
 
   <li>Starting from version 0.2, there's a special component called
   <tt>CustomWidget</tt> (<img src="img/custom_widget.gif" align="middle"
-  border="0" alt="CustomWidget">). This is different from the others because it can be used to
+  border="0">). This is different from the others because it can be used to
   include in a wxg file any widget, even if it is not directly supported by
-  wxGlade. The key feature for this is the Arguments property, which lets you
-  define the constructor parameters for the object. Such property has two
-  special parameters, <tt>$parent</tt> and <tt>$id</tt>, which as you can guess
-  by their names are placeholders for the actual parent and id of the
-  object.<br>&nbsp;
+  wxGlade. The key feature for this is the Arguments property, which has two
+  different meanings: for Python or C++ output, it lets you define the
+  constructor parameters for the object. In this case it has two special
+  parameters, <tt>$parent</tt> and <tt>$id</tt>, which as you can guess by
+  their names are placeholders for the actual parent and id of the object. For
+  XRC output, instead, it lets you specify additional properties of the
+  object. In this case each entry should be in the form 
+  <blockquote><tt>name: value</tt></blockquote> 
+  (invalid entries will be silently ignored): for each of these lines, the
+  output will contain a
+  <blockquote><tt>&lt;name&gt;value&lt;/name&gt;</tt></blockquote>
+  property of the XRC object.<br>&nbsp;
 
   <li>Starting from version 0.2, there's a script called <tt>xrc2wxg.py</tt>
-  shipped with wxGlade. You can use this script to convert an XRC file to a
-  wxGlade resource, so that you can edit it with wxGlade itself. Its usage is
-  straightforward:
-  <pre>python xrc2wxg.py xrc_file.xrc wxg_file.wxg</pre> (if
-  <tt>wxg_file.wxg</tt> is omitted, it defaults to <tt>xrc_file.wxg</tt>), but
-  there are some limitations you should be aware of:
+  shipped with wxGlade. You can use this script to convert an XRC file to
+  a wxGlade resource, so that you can edit it with wxGlade itself. Its usage is
+  straightforward: 
+  <pre>python xrc2wxg.py xrc_file.xrc wxg_file.wxg</pre>
+  (if <tt>wxg_file.wxg</tt> is omitted, it defaults to <tt>xrc_file.wxg</tt>),
+  but there are some limitations you should be aware of:
   <ul>
     <li>First of all, it can handle correctly only "wxGlade-friendly" XRC
     files. This basically means that all windows but the toplevel ones must be
-    inside a sizer, and that there must not be menubars or toolbars defined
-    outside frames (and at the moment, there must be no toolbar at all).
+    inside a sizer.
     <li>All the widgets unknown to wxGlade will be replaced by the special
     <tt>CustomWidget</tt> component.
     <li>Finally, <tt>xrc2wxg</tt> is very experimental, and so it probably
@@ -457,11 +479,11 @@ wxGlade blocks nonetheless: this means that:
   <li>You can invoke code generation also from the command line, without
   starting the GUI. For the details, type
   <pre>python wxglade.py -h</pre> at your shell's prompt.
-</ul>
+</ul>    
   
-<p>I hope the contents are clear (and my English not too ridicule), anyway for
-questions, comments, critics you can reach me by e-mail at <a
-href="mailto:albgrig@tiscalinet.it">albgrig@tiscalinet.it</a>.<br>
+<p>I hope the contents are clear (and my English not too ridicule), anyway
+for questions, comments, critics you can reach me by e-mail at <a
+ href="mailto:albgrig@tiscalinet.it">albgrig@tiscalinet.it</a>.<br>
      
 <p>Alberto Griggio<br>
  </p>
