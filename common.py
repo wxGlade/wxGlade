@@ -171,3 +171,26 @@ def _encode_to_xml(label, encoding=None):
     if encoding is None:
         encoding = app_tree.app.encoding
     return str(label).decode(encoding).encode('utf-8')
+
+def smart_split(s, b_codegen=0):
+    """\
+    Split a string in a smart way.
+    Split by spaces or commas or semicolon.
+    If b_codegen is true, also set ticks to be displayed
+    (e.g. b_codegen=1 in codegen.py). 
+    """
+    if b_codegen:
+        s1 = s.replace('"', '\\"')
+        s2 = s1.replace("'", "\\'")
+    else:
+        s2 = s
+    if s2.find(',') != -1:
+        separator = ','
+    elif s2.find(';') != -1:
+        separator = ';'
+    else:
+        separator = ' '
+
+    return s2.split(separator)
+
+#------------------------------------------------#
