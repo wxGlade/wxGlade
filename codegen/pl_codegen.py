@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.5 2003/06/25 19:57:15 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.6 2003/06/25 23:01:39 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -558,15 +558,15 @@ def add_class(code_obj):
     if is_new:
         write('package %s;\n\n' % code_obj.klass )
         write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n'
-                % (code_obj.klass, code_obj.base.replace('wx','Wx::',1) )
-            )
+                % code_obj.base.replace('wx','Wx::',1) )
+
         tab = indentation
 
         if _use_gettext:
             write("use Wx::Locale gettext => '_T';\n")
 
         write('sub new {\n\tmy( $self, $parent, $id, $title, $pos, $siz,'
-            + '$style, $name ) = @_;\n\n' +
+            + '$style, $name ) = @_;\n\n'
             + '\t$parent = undef              unless defined $parent;\n'
             + '\t$id     = -1                 unless defined $id;\n'
             + '\t$title  = ""                 unless defined $title;\n'
@@ -858,9 +858,9 @@ def generate_code_size(obj):
     size = obj.properties.get('size', '').strip()
     use_dialog_units = (size[-1] == 'd')
     if use_dialog_units:
-        return '\t' + name
-            + '->SetSize(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n'
-            % ( name, size[:-1] )
+        return '\t' + name + \
+            '->SetSize(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n' % \
+            ( name, size[:-1] )
 
     return '\t' + name + '->SetSize(%s);\n' % size
 
@@ -909,7 +909,7 @@ def generate_code_font(obj):
     style = font['style']; weight = font['weight']
     face = '"%s"' % font['face'].replace('"', r'\"')
     self = _get_code_name(obj)
-    return '\t' + self +
+    return '\t' + self + \
         '->SetFont(Wx::Font->new(%s, %s, %s, %s, %s, %s));\n' % \
             (size, family, style, weight, underlined, face)
 
@@ -942,8 +942,8 @@ def generate_code_tooltip(obj):
     returns the code fragment that sets the tooltip of the given object.
     """
     self = _get_code_name(obj)
-    return '\t' + self
-        + '->SetToolTipString(%s);\n' % quote_str(obj.properties['tooltip'])
+    return '\t' + self + \
+        '->SetToolTipString(%s);\n' % quote_str(obj.properties['tooltip'])
 
 
 def generate_code_disabled(obj):
