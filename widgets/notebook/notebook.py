@@ -1,5 +1,5 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.25 2004/12/08 18:11:26 agriggio Exp $
+# $Id: notebook.py,v 1.26 2005/01/10 20:22:30 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -199,7 +199,7 @@ class EditNotebook(ManagedBase):
 
     def show_widget(self, yes):
         ManagedBase.show_widget(self, yes)
-        if yes and wxPlatform == '__WXMSW__':
+        if yes and wxPlatform in ('__WXMSW__', '__WXMAC__'):
             misc.wxCallAfter(_ugly_hack_for_win32_notebook_bug, self.widget)
 
     def finish_widget_creation(self):

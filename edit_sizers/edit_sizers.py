@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.56 2004/12/19 00:55:03 agriggio Exp $
+# $Id: edit_sizers.py,v 1.57 2005/01/10 20:22:34 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -149,14 +149,18 @@ class SizerSlot:
 
 # end of class SizerSlot
 
+if wxPlatform != '__WXMAC__':
+    Button = wxButton
+else:
+    from wxPython.lib.buttons import wxGenButton as Button
 
-class SizerHandleButton(wxButton):
+class SizerHandleButton(Button):
     """\
     Provides a ``handle'' to activate a Sizer and to access its popup menu 
     """
     def __init__(self, parent, id, sizer, menu):
         # menu: list of 2-tuples: (label, function)
-        wxButton.__init__(self, parent.widget, id, '', size=(5, 5))
+        Button.__init__(self, parent.widget, id, '', size=(5, 5))
         self.sizer = sizer
         self.menu = menu
         self._rmenu = None
@@ -235,7 +239,7 @@ class SizerHandleButton(wxButton):
 
     def Destroy(self):
         if self._rmenu: self._rmenu.Destroy()
-        wxButton.Destroy(self)
+        Button.Destroy(self)
         if misc.focused_widget is self: misc.focused_widget = None
 
 # end of class SizerHandleButton
@@ -640,7 +644,8 @@ class SizerBase(Sizer):
             try: common.app_tree.refresh_name(self.node, oldname) #, self.name)
             except AttributeError:
                 import traceback; traceback.print_exc()
-    set_name_pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')
+            self.property_window.SetTitle('Properties - <%s>' % self.name)
+    set_name_pattern = re.compile('^[a-zA-Z_]+[\w0-9]*$')
             
     def __getitem__(self, value):
         return self.access_functions[value]

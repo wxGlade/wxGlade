@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.43 2004/12/08 18:11:31 agriggio Exp $
+# $Id: tree.py,v 1.44 2005/01/10 20:22:36 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -113,7 +113,9 @@ class Tree:
         child.parent = parent
         self.current = child
         #self.names[str(child.widget.name)] = 1
-        self.names.setdefault(parent, {})[str(child.widget.name)] = 1
+        #self.names.setdefault(parent, {})[str(child.widget.name)] = 1
+        self.names.setdefault(self._find_toplevel(child), {})[
+            str(child.widget.name)] = 1
         if parent is self.root and \
                getattr(child.widget.__class__, '_is_toplevel', False):
             self.app.add_top_window(child.widget.name)
@@ -126,7 +128,9 @@ class Tree:
         child.parent = parent
         self.current = child
         #self.names[str(child.widget.name)] = 1
-        self.names.setdefault(parent, {})[str(child.widget.name)] = 1
+        #self.names.setdefault(parent, {})[str(child.widget.name)] = 1
+        self.names.setdefault(self._find_toplevel(child), {})[
+            str(child.widget.name)] = 1
         if parent is self.root:
             self.app.add_top_window(child.widget.name)
 
@@ -220,8 +224,12 @@ class WidgetTree(wxTreeCtrl, Tree):
     images = {} # dictionary of icons of the widgets displayed
     def __init__(self, parent, application):
         id = wxNewId()
-        wxTreeCtrl.__init__(self, parent, id, style=wxTR_DEFAULT_STYLE |
-                            wxTR_HAS_VARIABLE_ROW_HEIGHT)
+        style = wxTR_DEFAULT_STYLE|wxTR_HAS_VARIABLE_ROW_HEIGHT
+        if wxPlatform == '__WXGTK__':
+            style |= wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT
+        elif wxPlatform == '__WXMAC__':
+            style &= ~wxTR_ROW_LINES
+        wxTreeCtrl.__init__(self, parent, id, style=style)
         root_node = Tree.Node(application)
         self.cur_widget = None # reference to the selected widget
         Tree.__init__(self, root_node, application)

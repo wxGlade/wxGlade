@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.22 2004/11/02 09:52:02 agriggio Exp $
+# $Id: dialog.py,v 1.23 2005/01/10 20:22:34 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -62,7 +62,7 @@ class EditDialog(TopLevelBase):
         # because the latter gives troubles I wasn't able to solve when using
         # wxPython 2.3.3.1 :-/
         self.widget = wxFrame(w, self.id, "", style=default_style)
-        self.widget.SetBackgroundColour(wxSystemSettings_GetSystemColour(
+        self.widget.SetBackgroundColour(wxSystemSettings_GetColour(
             wxSYS_COLOUR_BTNFACE))
         self.set_icon(self.icon)
 
