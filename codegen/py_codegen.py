@@ -26,6 +26,9 @@ from xml_parse import XmlParsingError
 language = 'python'
 writer = sys.modules[__name__] # the writer is the module itself
 
+# default extensions for generated files: a list of file extensions
+default_extensions = ['py']
+
 """\
 dictionary that maps the lines of code of a class to the name of such class:
 the lines are divided in 3 categories: '__init__', '__set_properties' and

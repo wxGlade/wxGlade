@@ -571,6 +571,7 @@ class FontDialogProperty(DialogProperty):
             v = wx.__version__.split('.', 2)[-1]
             if v and int(v[0]) > 2:
                 FontDialogProperty.font_families_to['teletype'] = wxTELETYPE 
+                FontDialogProperty.font_families_from[wxTELETYPE] = 'teletype' 
 
             data = wxFontData()
             self.dialog[0] = wxFontDialog(parent, data)
@@ -580,6 +581,7 @@ class FontDialogProperty(DialogProperty):
                 # check wxPython >= 2.3.3
                 v = wx.__version__.split('.', 2)[-1]
                 if v and int(v[0]) > 2:
+                    print 'Version: %s' % v
                     for f in (wxVARIABLE, wxFIXED):
                         if family & f: family = family ^ f
                 return "['%s', '%s', '%s', '%s', '%s', '%s']" % \

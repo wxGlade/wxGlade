@@ -438,7 +438,7 @@ class SizerBase:
         self.option = int(value)
         try:
             self.sizer.set_item(self.pos, option=self.option)
-        except AttributeError, e: print e
+        except AttributeError, e: pass
         self.finish_set()
 
     def set_flag(self, value):
@@ -453,7 +453,7 @@ class SizerBase:
                 flags |= self.flags_pos[v]
         self.flag = flags
         try: self.sizer.set_item(self.pos, flag=flags)
-        except AttributeError, e: print 'Errore: ' + str(e)
+        except AttributeError, e: pass
         self.finish_set()
 
     def set_border(self, value):
@@ -969,17 +969,13 @@ class EditFlexGridSizer(GridSizerBase):
     def create_widget(self):
         self.widget = CustomSizer(self, wxFlexGridSizer, self.rows, self.cols,
                                   self.vgap, self.hgap)
+        GridSizerBase.create_widget(self)
         if not self.toplevel:
             self.sizer.add_item(self, self.pos, self.option, self.flag,
                                 self.border) #, self.widget.GetMinSize())
         else:
             w, h = self.window.widget.GetClientSize()
-            self._adjust_initial_size(w, h)                
-        GridSizerBase.create_widget(self)
-##             else:
-##                 w, h = self.sizer.widget.GetChildren()[self.pos].GetSize()
-##         except (IndexError, AttributeError): pass # if some .widget was None
-##         else: self._adjust_initial_size(w, h)
+            self._adjust_initial_size(w, h)
 
     def _adjust_initial_size(self, w, h):
         if self.widget:
@@ -1076,7 +1072,8 @@ def builder(parent, sizer, pos, number=[1]):
             sz.pos = pos
 
     sz.show_widget(True)
-    
+    if sizer is not None:
+        sz.sizer_properties['flag'].set_value('wxEXPAND')
     dialog.Destroy()
 
 
@@ -1185,6 +1182,8 @@ def grid_builder(parent, sizer, pos, number=[1]):
             sz.pos = pos
 
     sz.show_widget(True)
+    if sizer is not None:
+        sz.sizer_properties['flag'].set_value('wxEXPAND')
     
     dialog.Destroy()
 

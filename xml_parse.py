@@ -113,6 +113,9 @@ class XmlWidgetBuilder(XmlParser):
                 except ValueError: option = 0
                 app.codegen_opt = option
                 app.codegen_prop.set_value(option)
+            language = attrs.get('language')
+            if language:
+                app.codewriters_prop.set_str_value(language)
             top_win = attrs.get("top_window")
             if top_win: self.top_window = top_win
             return
@@ -415,7 +418,6 @@ class CodeWriter(XmlParser):
         self.out_path = out_path # this allows to override the output path
                                  # specified in the xml file
         
-        self.tabs = 0 # current indentation level
         self.code_writer = writer
 
         if from_string: self.parse_string(input)

@@ -75,6 +75,8 @@ class wxGladeFrame(wxFrame):
         file_menu.Append(EXIT_ID, 'E&xit\tCtrl+X')
         menu_bar.Append(file_menu, "&File")
         menu_bar.Append(view_menu, "&View")
+        TUT_ID = wxNewId()
+        help_menu.Append(TUT_ID, 'Tutorial\tF1')
         ABOUT_ID = wxNewId()
         help_menu.Append(ABOUT_ID, 'About...')
         menu_bar.Append(help_menu, '&Help')
@@ -84,7 +86,8 @@ class wxGladeFrame(wxFrame):
             (wxACCEL_CTRL, ord('n'), NEW_ID),
             (wxACCEL_CTRL, ord('o'), OPEN_ID),
             (wxACCEL_CTRL, ord('s'), SAVE_ID),
-            (wxACCEL_CTRL, ord('p'), PROPS_ID)
+            (wxACCEL_CTRL, ord('p'), PROPS_ID),
+            (wxACCEL_NORMAL, WXK_F1, TUT_ID)
             ]))
         EVT_MENU(parent, TREE_ID, self.show_tree)
         EVT_MENU(parent, PROPS_ID, self.show_props_window)
@@ -93,13 +96,17 @@ class wxGladeFrame(wxFrame):
         EVT_MENU(parent, SAVE_ID, self.save_app)
         EVT_MENU(parent, SAVE_AS_ID, self.save_app_as)
         EVT_MENU(parent, EXIT_ID, lambda e: self.Close())
+        EVT_MENU(parent, TUT_ID, self.show_tutorial)
         EVT_MENU(parent, ABOUT_ID, self.show_about_box)
+        # Tutorial window
+        self.tut_frame = None
         # layout
         self.SetAutoLayout(True)
         for b in buttons: sizer.Add(b)
         for sb in sizer_btns: sizer.Add(sb)
         self.SetSizer(sizer)
         sizer.Fit(self)
+        # Properties window
         self.frame2 = wxFrame(parent, -1, 'Properties - <app>')
         self.frame2.SetBackgroundColour(wxSystemSettings_GetSystemColour(
             wxSYS_COLOUR_BTNFACE))
@@ -119,7 +126,7 @@ class wxGladeFrame(wxFrame):
         EVT_CLOSE(self.frame2, hide_frame2)
         EVT_CLOSE(self, self.cleanup)
         common.property_panel = property_panel
-        # setup of tree_frame
+        # Tree of widgets
         self.tree_frame = wxFrame(parent, -1, 'wxGlade: Tree', size=(350, 200))
         self.tree_frame.SetIcon(icon)
         import application
@@ -267,7 +274,6 @@ class wxGladeFrame(wxFrame):
     def cleanup(self, event):
         if self.ask_save():
             common.app_tree.clear()
-            common.app_tree.remove()
             self.Destroy()
             raise SystemExit
 
@@ -292,6 +298,20 @@ class wxGladeFrame(wxFrame):
     def show_about_box(self, event):
         import about
         about.wxGladeAboutBox(self.GetParent()).ShowModal()
+
+    def show_tutorial(self, event):
+        if not self.tut_frame:
+            from wxPython.html import wxHtmlWindow
+            self.tut_frame = wxFrame(self, -1, "wxGlade Tutorial")
+            html = wxHtmlWindow(self.tut_frame, -1)
+            html.LoadPage('docs/tutorial.html')
+            self.tut_frame.SetSize((640, 480))
+            EVT_CLOSE(self.tut_frame, lambda e: self.tut_frame.Hide())
+            if wxPlatform == '__WXMSW__':
+                self.tut_frame.CenterOnScreen() # on Unix, WM are smart enough
+                                                # to place the frame at a
+                                                # reasonable position
+        self.tut_frame.Show()
 
 # end of class wxGladeFrame
 

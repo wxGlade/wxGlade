@@ -126,10 +126,12 @@ class Tree:
         klass = self.app.get_class()
         option = str(self.app.codegen_opt)
         top_window = self.app.get_top_window()
+        language = self.app.get_language()
         outfile.write('<application path=%s name=%s class=%s option=%s ' \
-                      'top_window=%s>\n'% (quoteattr(outpath), quoteattr(name),
-                                           quoteattr(klass), quoteattr(option),
-                                           quoteattr(top_window)))
+                      'language=%s top_window=%s>\n' \
+                      % (quoteattr(outpath), quoteattr(name),
+                         quoteattr(klass), quoteattr(option),
+                         quoteattr(language), quoteattr(top_window)))
         if self.root.children is not None:
             [c.write(outfile, tabs+1) for c in self.root.children]
         outfile.write('</application>\n')

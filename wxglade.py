@@ -28,7 +28,7 @@ def command_line_code_generation():
     if not options: usage()
     if not options[0]:
         usage() # a language for code generation must be provided
-    if len(args) != 1: usage() # at least an input file name must be provided
+    if len(args) != 1: usage() # an input file name must be provided
     
     common.use_gui = False # don't import wxPython.wx
     common.load_code_writers()
@@ -70,6 +70,12 @@ wxGlade usage:
                                 multi-file mode)
     """
     print msg
+    print 'Valid LANGUAGE values:',
+    import common
+    common.use_gui = False
+    common.load_code_writers()
+    for value in common.code_writers: print value,
+    print '\n'
     sys.exit(1)
 
 
@@ -82,7 +88,6 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         # if there was no option, start the app in GUI mode
         import main
-        # start the whole app
         main.main()
     else:
         command_line_code_generation()
