@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.57 2005/01/10 20:22:34 agriggio Exp $
+# $Id: edit_sizers.py,v 1.58 2005/02/12 16:14:07 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -659,12 +659,25 @@ class SizerBase(Sizer):
         if not self.notebook:
             self.create_properties()
         sizer_tmp = self.property_window.GetSizer()
-        sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
-        child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
-        w = wxPyTypeCast(child.GetWindow(), "wxWindow")
+        #sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
+        #child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
+        child = sizer_tmp.GetChildren()[0]
+        #w = wxPyTypeCast(child.GetWindow(), "wxWindow")
+        w = child.GetWindow()
         if w is self.notebook: return
+        try:
+            index = -1
+            title = w.GetPageText(w.GetSelection())
+            for i in range(self.notebook.GetPageCount()):
+                if self.notebook.GetPageText(i) == title:
+                    index = i
+                    break
+        except AttributeError, e:
+            print e
+            index = -1
         w.Hide()
-
+        if 0 <= index < self.notebook.GetPageCount():
+            self.notebook.SetSelection(index)
         self.notebook.Reparent(self.property_window)
         child.SetWindow(self.notebook)
         w.Reparent(misc.hidden_property_panel)

@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.76 2005/02/07 12:47:04 agriggio Exp $
+# $Id: edit_windows.py,v 1.77 2005/02/12 16:14:08 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -203,12 +203,24 @@ class EditBase(EventsMixin):
             # ALB 2004-12-05
             self.create_events_property()
         sizer_tmp = self.property_window.GetSizer()
-        sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
-        child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
+        #sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
+        #child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
+        child = sizer_tmp.GetChildren()[0]
         w = child.GetWindow()
         if w is self.notebook: return
+        try:
+            index = -1
+            title = w.GetPageText(w.GetSelection())
+            for i in range(self.notebook.GetPageCount()):
+                if self.notebook.GetPageText(i) == title:
+                    index = i
+                    break
+        except AttributeError, e:
+            print e
+            index = -1
         w.Hide()
-
+        if 0 <= index < self.notebook.GetPageCount():
+            self.notebook.SetSelection(index)
         self.notebook.Reparent(self.property_window)
         child.SetWindow(self.notebook)
         w.Reparent(misc.hidden_property_panel)
