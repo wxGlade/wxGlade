@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.33 2003/06/21 14:28:45 agriggio Exp $
+# $Id: edit_sizers.py,v 1.34 2003/06/24 15:07:27 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -627,7 +627,11 @@ class SizerBase(Sizer):
         w = wxPyTypeCast(child.GetWindow(), "wxWindow")
         if w is self.notebook: return
         w.Hide()
+
+        self.notebook.Reparent(self.property_window)
         child.SetWindow(self.notebook)
+        w.Reparent(misc.hidden_property_panel)
+
         self.property_window.Layout()
         self.property_window.SetTitle('Properties - <%s>' % self.name)
         if hasattr(self, 'node'): common.app_tree.select_item(self.node)

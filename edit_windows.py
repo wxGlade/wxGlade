@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.43 2003/06/21 14:28:45 agriggio Exp $
+# $Id: edit_windows.py,v 1.44 2003/06/24 15:07:27 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -81,32 +81,6 @@ class EditBase:
         Creates the popup menu and connects some event handlers to self.widgets
         """
         EVT_RIGHT_DOWN(self.widget, self.popup_menu)
-##         COPY_ID, REMOVE_ID, CUT_ID = [wxNewId() for i in range(3)]
-##         self._rmenu = misc.wxGladePopupMenu(self.name)
-##         #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
-##         #self._rmenu.Append(COPY_ID, 'Copy\tCtrl+C')
-##         #self._rmenu.Append(CUT_ID, 'Cut\tCtrl+X')
-##         misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
-##         misc.append_item(self._rmenu, COPY_ID, 'Copy\tCtrl+C', 'copy.xpm')
-##         misc.append_item(self._rmenu, CUT_ID, 'Cut\tCtrl+X', 'cut.xpm')
-##         EVT_MENU(self.widget, REMOVE_ID, self.remove)
-##         EVT_MENU(self.widget, COPY_ID, self.clipboard_copy)
-##         EVT_MENU(self.widget, CUT_ID, self.clipboard_cut)
-##         def remove():
-##             if misc.focused_widget is not None:
-##                 print misc.focused_widget
-##                 misc.focused_widget.remove()
-##         def cut():
-##             if misc.focused_widget is not None:
-##                 try: misc.focused_widget.clipboard_cut()
-##                 except AttributeError: pass
-##         def copy():
-##             if misc.focused_widget is not None:
-##                 try: misc.focused_widget.clipboard_copy()
-##                 except AttributeError: pass
-##         self.accel_table = [(0, WXK_DELETE, remove),
-##                             (wxACCEL_CTRL, ord('C'), copy),
-##                             (wxACCEL_CTRL, ord('X'), cut)]
 
     def delete(self):
         """\
@@ -118,13 +92,6 @@ class EditBase:
         if self._rmenu: self._rmenu.Destroy()
         # ...then, destroy the property notebook...
         if self.notebook:
-##             for p in self.properties.itervalues():
-##                 if p.panel: p.panel.Destroy()
-##             if self.name_prop.panel: self.name_prop.panel.Destroy()
-##             if self.klass_prop.panel: self.klass_prop.panel.Destroy()
-##             if hasattr(self, 'sizer_properties'):
-##                 for p in self.sizer_properties.itervalues():
-##                     if p.panel: p.panel.Destroy()
             nb_szr = self.notebook.sizer
             self.notebook.DeleteAllPages()
             self.notebook.Destroy()
@@ -139,6 +106,7 @@ class EditBase:
         Creates the notebook with the properties of self
         """
         self.notebook = wxNotebook(self.property_window, -1)
+
         nb_sizer = wxNotebookSizer(self.notebook)
         self.notebook.SetAutoLayout(True)
         self.notebook.sizer = nb_sizer
@@ -198,7 +166,11 @@ class EditBase:
         w = child.GetWindow()
         if w is self.notebook: return
         w.Hide()
+
+        self.notebook.Reparent(self.property_window)
         child.SetWindow(self.notebook)
+        w.Reparent(misc.hidden_property_panel)
+        
         self.property_window.Layout()
         self.property_window.SetTitle('Properties - <%s>' % self.name)
         try: common.app_tree.select_item(self.node)

@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.41 2003/06/02 12:41:31 agriggio Exp $
+# $Id: main.py,v 1.42 2003/06/24 15:07:27 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -203,7 +203,7 @@ class wxGladeFrame(wxFrame):
         EVT_MENU(self, PREFS_ID, self.edit_preferences) 
 
         # Tutorial window
-        self.tut_frame = None
+##         self.tut_frame = None
         # layout
         # if there are custom components, add the toggle box...
         if custom_btns:
@@ -258,6 +258,16 @@ class wxGladeFrame(wxFrame):
         
         sizer_tmp = wxBoxSizer(wxVERTICAL)
         property_panel = wxGladePropertyPanel(self.frame2, -1)
+
+        #---- 2003-06-22 Fix for what seems to be a GTK2 bug (notebooks)
+        misc.hidden_property_panel = wxPanel(self.frame2, -1)
+        sz = wxBoxSizer(wxVERTICAL)
+        sz.Add(property_panel, 1, wxEXPAND)
+        sz.Add(misc.hidden_property_panel, 1, wxEXPAND)
+        self.frame2.SetSizer(sz)
+        sz.Show(misc.hidden_property_panel, False)
+        #--------------------------------------------------------
+        
         property_panel.SetAutoLayout(True)
         self.hidden_frame = wxFrame(self, -1, "")
         self.hidden_frame.Hide()
@@ -535,32 +545,35 @@ class wxGladeFrame(wxFrame):
         self.about_box.ShowModal()
 
     def show_tutorial(self, event):
-        if not self.tut_frame:
-            from wxPython.html import wxHtmlWindow
-            self.tut_frame = wxFrame(self, -1, "wxGlade Tutorial")
-            self.tut_frame.SetIcon(self.GetIcon())
-            panel = wxPanel(self.tut_frame, -1)
-            sizer = wxBoxSizer(wxVERTICAL)
-            html = wxHtmlWindow(panel, -1, (0, 0), (-1, -1), wxSUNKEN_BORDER)
-            html.LoadPage(os.path.join(common.wxglade_path,
-                                       'docs/tutorial.html'))
-            sizer.Add(html, 1, wxEXPAND)
-            btn = wxButton(panel, -1, 'OK')
-            btn.SetDefault()
-            sizer.Add(btn, 0, wxALL|wxALIGN_RIGHT, 10)
-            panel.SetAutoLayout(True)
-            panel.SetSizer(sizer)
-            w = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_X)
-            h = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_Y)
-            w, h = min(560, w), min(600, h)
-            self.tut_frame.SetSize((w, h))
-            EVT_CLOSE(self.tut_frame, lambda e: self.tut_frame.Hide())
-            EVT_BUTTON(btn, btn.GetId(), lambda e: self.tut_frame.Hide())
-            if wxPlatform == '__WXMSW__':
-                self.tut_frame.CenterOnScreen() # on Unix, WM are smart enough
-                                                # to place the frame at a
-                                                # reasonable position
-        self.tut_frame.Show()
+        import webbrowser
+        webbrowser.open_new(os.path.join(common.wxglade_path, 'docs',
+                                         'tutorial.html'))
+##         if not self.tut_frame:
+##             from wxPython.html import wxHtmlWindow
+##             self.tut_frame = wxFrame(self, -1, "wxGlade Tutorial")
+##             self.tut_frame.SetIcon(self.GetIcon())
+##             panel = wxPanel(self.tut_frame, -1)
+##             sizer = wxBoxSizer(wxVERTICAL)
+##             html = wxHtmlWindow(panel, -1, (0, 0), (-1, -1), wxSUNKEN_BORDER)
+##             html.LoadPage(os.path.join(common.wxglade_path,
+##                                        'docs/tutorial.html'))
+##             sizer.Add(html, 1, wxEXPAND)
+##             btn = wxButton(panel, -1, 'OK')
+##             btn.SetDefault()
+##             sizer.Add(btn, 0, wxALL|wxALIGN_RIGHT, 10)
+##             panel.SetAutoLayout(True)
+##             panel.SetSizer(sizer)
+##             w = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_X)
+##             h = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_Y)
+##             w, h = min(560, w), min(600, h)
+##             self.tut_frame.SetSize((w, h))
+##             EVT_CLOSE(self.tut_frame, lambda e: self.tut_frame.Hide())
+##             EVT_BUTTON(btn, btn.GetId(), lambda e: self.tut_frame.Hide())
+##             if wxPlatform == '__WXMSW__':
+##                 self.tut_frame.CenterOnScreen() # on Unix, WM are smart enough
+##                                                 # to place the frame at a
+##                                                 # reasonable position
+##         self.tut_frame.Show()
 
     def show_and_raise(self):
         self.frame2.Show(self.GetMenuBar().IsChecked(self.PROPS_ID))

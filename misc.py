@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.27 2003/06/21 14:28:45 agriggio Exp $
+# $Id: misc.py,v 1.28 2003/06/24 15:07:27 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -347,3 +347,10 @@ def wxstr(s):
             return s.encode(common.app_tree.app.encoding)
         else:
             return str(s)
+
+
+#------------------------------------------------------------------------------
+# wxPanel used to reparent the property-notebooks when they are hidden. This
+# has been added on 2003-06-22 to fix what seems to me a (wx)GTK2 bug
+#------------------------------------------------------------------------------
+hidden_property_panel = None
