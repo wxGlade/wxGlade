@@ -29,6 +29,7 @@ class wxGladePropertyPanel(wxPanel):
 
 # end of class wxGladePropertyPanel
 
+
 class wxGladeFrame(wxFrame):
     """\
     Main frame of wxGlade (palette)
@@ -260,8 +261,8 @@ class wxGladeFrame(wxFrame):
         """
         if not self.ask_save(): return
         from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
-        infile = wxFileSelector("Open file", wildcard="wxGlade files|*.wxg|"
-                                "XML files|*.xml|All files|*",
+        infile = wxFileSelector("Open file", wildcard="wxGlade files (*.wxg)"
+                                "|*.wxg|XML files (*.xml)|*.xml|All files|*",
                                 flags=wxOPEN|wxFILE_MUST_EXIST,
                                 default_path=self.cur_dir)
         if infile:
@@ -339,14 +340,16 @@ class wxGladeFrame(wxFrame):
         saves a wxGlade project onto an xml file chosen by the user
         """
         fn = wxFileSelector("Save project as...",
-                            wildcard="wxGlade files|*.wxg|XML files|*.xml|"
-                            "All files|*",
+                            wildcard="wxGlade files (*.wxg)|*.wxg|"
+                            "XML files (*.xml)|*.xml|All files|*",
                             flags=wxSAVE|wxOVERWRITE_PROMPT,
                             default_path=self.cur_dir)
         common.app_tree.app.filename = fn
         if fn:
             self.save_app(event)
             self.cur_dir = os.path.dirname(fn)
+            if misc.check_wx_version(2, 3, 3):
+                self.file_history.AddFileToHistory(fn)
 
     def cleanup(self, event):
         if self.ask_save():
