@@ -1,49 +1,47 @@
 wxGlade TODO list
 -----------------
-Last update: 2002-08-27
+Last update: 2002-09-07
 
 The list is more or less sorted by priority
 
-Key: 
-     (*) Done, needs testing  
-     (#) Working on it...
-     All the others are open issues
+Things Done:
+------------
 
-
-- Code generation on separate files (*)
+- Code generation on separate files
 
 - "tags" on the generated code, to detect the portions of code to replace and
-  those to keep as is, when updating an existing file (*)
+  those to keep as is, when updating an existing file
 
 - better support of custom classes, that is to say:
   - Avoid double class declaration on the generated files when using
-    multiple instances of the same custom class (*)
-  - Avoid xml code duplication (in the same case as above): this may be hard
+    multiple instances of the same custom class
 
-- International characters support (#)
+- Investigation of the many memory leaks 
 
-- Investigation of the many memory leaks (*)
+- speedup of the xml loading 
 
-- speedup of the xml loading (*)
+- separation between window objects and sizer ones in the generated code 
 
-- separation between window objects and sizer ones in the generated code (*)
+- Code generation from the command line, witout starting the GUI
 
-- custom wxDirDialog (to choose the destination dir for the generated
-  code, as the Windows default one doesn't allow to create a new dir)
-  (with wxPython 2.3.3 this seems unnecessary)
+- support wxWindows xml resources (XRC) through a code generator
 
-- Checks on the values of some properties (name, class,...), maybe with
-  wxValidator 
+- support for C++ code generation
 
-- MDI
 
-- Code generation from the command line, witout starting the GUI (*)
-
-- Event handlers support
+Real TODO (# = Partially done):
+-------------------------------
 
 - Undo/Redo
 
+- Event handlers support
+
 - Edit -> Preferences... to customize some aspects of wxGlade
+
+- International characters support (#)
+
+- Checks on the values of some properties (name, class,...), maybe with
+  wxValidator 
 
 - ListCtrl and TreeCtrl
 
@@ -52,8 +50,6 @@ Key:
 - ToolBar for frames 
 
 - complete MenuBar with icons and StatusBar messages support (#)
-
-- support wxWindows xml resources (XRC) through a code generator (*)
 
 - Grid
 
@@ -65,12 +61,12 @@ Key:
 
 - gettext support
 
-- support for C++ code generation (and maybe other languages, if someone wants
-  to do the work) (* C++)
-
 - ``Templates'' for particular windows (for example, something as a dialog with
   an image, a centered label and a couple of buttons)
 
 - TabOrder property (this may be hard though)
+
+- better support of custom classes, that is to say:
+  - Avoid xml code duplication (in the same case as above): this may be hard
 
 - ...
