@@ -4,13 +4,15 @@
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
 # License: GPL (see license.txt)
 
-# check to see if the Python release
-# supports boolean identifiers (>= Python 2.2.1)
+# check to see if the Python release supports boolean identifiers
+# and bool built-in function (>= Python 2.2.1).
 try:
-    True, False
+    True, False, bool
 except NameError:
     setattr(__builtins__, 'True', 1)
     setattr(__builtins__, 'False', not True)
+    def bool(value): return not not value
+    setattr(__builtins__, 'bool', bool)
 
 if __name__ == "__main__":
     import sys
