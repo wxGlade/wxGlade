@@ -1,0 +1,108 @@
+# perl_codegen.py : perl generator functions for wxMenuBar objects
+# $Id: perl_codegen.py,v 1.1 2003/06/23 21:29:26 crazyinsomniac Exp $
+#
+# Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
+# License: MIT (see license.txt)
+# THIS PROGRAM COMES WITH NO WARRANTY
+
+import common
+from MenuTree import *
+from codegen import MenuHandler
+
+class PerlCodeGenerator:
+    def get_properties_code(self, obj):
+        return []
+        
+    def get_init_code(self, obj):
+        prop = obj.properties
+        plgen = common.code_writers['perl']
+        out = []
+        append = out.append
+        menus = obj.properties['menubar']
+        ids = []
+
+        def append_items(menu, items):
+            for item in items:
+                if item.name == '---': # item is a separator
+                    append('%s->AppendSeparator();\n' % menu)
+                elif item.children:
+                    if item.name:
+                        name = item.name
+                    else:
+                        name = '%s_sub' % menu
+
+                    append('%s = Wx::Menu->new();\n' % name)
+                    if not obj.preview and item.id: # generating id
+                        tokens = item.id.split('=')
+                        if len(tokens) > 1:
+                            id = tokens[0]
+                            ids.append(' = '.join(tokens) + '\n')
+                        else:
+                            id = item.id
+                    else: id = 'Wx::NewId()'
+                    append_items(name, item.children)
+                    append('%s->AppendMenu(%s, %s, %s, %s);\n' %
+                           (menu, id, plgen.quote_str(item.label),
+                            name, plgen.quote_str(item.help_str)))
+                else:
+                    if not obj.preview and item.id: # no ids for preview
+                        tokens = item.id.split('=')
+                        if len(tokens) > 1:
+                            id = tokens[0]
+                            ids.append(' = '.join(tokens) + '\n')
+                        else:
+                            id = item.id
+                    else: id = 'Wx::NewId()'
+                    item_type = 0
+                    if item.checkable == '1':
+                        item_type = 1
+                    elif item.radio == '1':
+                        item_type = 2
+                    if item_type:
+                        append('%s->Append(%s, %s, %s, %s);\n' %
+                               (menu, id, plgen.quote_str(item.label),
+                                plgen.quote_str(item.help_str), item_type))
+                    else:
+                        append('%s->Append(%s, %s, %s);\n' %
+                               (menu, id, plgen.quote_str(item.label),
+                                plgen.quote_str(item.help_str)))
+        #print 'menus = %s' % menus
+
+        if obj.is_toplevel: obj_name = '$self'
+        else: obj_name = '$self->{%s}' % obj.name
+
+        append('my $wxglade_tmp_menu;\n') # NOTE below name =
+        for m in menus:
+            menu = m.root
+            if menu.name: name = '$self->{%s}' % menu.name
+            else: name = '$wxglade_tmp_menu'
+            append('%s = Wx::Menu->new();\n' % name)
+            if menu.children:
+                append_items(name, menu.children)
+            append('%s->Append(%s, %s);\n' %
+                   (obj_name, name, plgen.quote_str(menu.label)))
+
+        return ids + out
+
+    def get_code(self, obj):
+        """\
+        function that generates Perl code for the menubar of a wxFrame.
+        """
+        plgen = common.code_writers['perl']
+        init = [ '\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' %
+                 (obj.name, obj.klass.replace('wx','Wx::',1)),
+                 '$self->SetMenuBar($self->{%s});\n' % obj.name ]
+        init.extend(self.get_init_code(obj))
+        init.append('\n# Menu Bar end\n\n')
+        return init, [], []
+
+# end of class PerlCodeGenerator
+
+def initialize():
+    common.class_names['EditMenuBar'] = 'wxMenuBar'
+    common.toplevels['EditMenuBar'] = 1
+
+    plgen = common.code_writers.get('perl')
+    if plgen:
+        plgen.add_widget_handler('wxMenuBar', PerlCodeGenerator())
+        plgen.add_property_handler('menus', MenuHandler)
