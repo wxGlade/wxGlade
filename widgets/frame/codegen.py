@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.9 2003/05/13 10:05:13 agriggio Exp $
+# $Id: codegen.py,v 1.10 2003/05/13 14:10:07 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -39,6 +39,22 @@ class PythonFrameCodeGenerator:
         out = []
         title = prop.get('title')
         if title: out.append('self.SetTitle(%s)\n' % pygen.quote_str(title))
+        icon = prop.get('icon')
+        if icon: 
+            type = ''
+            if icon[-4:] == ".bmp": type = 'wxBITMAP_TYPE_BMP'
+            if icon[-4:] == ".gif": type = 'wxBITMAP_TYPE_GIF'
+            if icon[-4:] == ".xpm": type = 'wxBITMAP_TYPE_XPM'
+            if icon[-4:] == ".jpg": type = 'wxBITMAP_TYPE_JPEG'
+            if icon[-5:] == ".jpeg": type = 'wxBITMAP_TYPE_JPEG'
+            if icon[-4:] == ".png": type = 'wxBITMAP_TYPE_PNG'
+            if icon[-4:] == ".pcx": type = 'wxBITMAP_TYPE_PCX'
+            if type != '':
+                out.append('bmp = wxBitmap(' + pygen.quote_str(icon) + ', ' + type + ')\n')
+                out.append('icon = wxEmptyIcon()\n')
+                out.append('icon.CopyFromBitmap(bmp)\n')
+                out.append('self.SetIcon(icon)\n') 
+
         out.extend(pygen.generate_common_properties(frame))
         return out
 
@@ -94,6 +110,8 @@ def xrc_frame_code_generator(obj):
                 del self.properties['statusbar']
             if self.properties.has_key('toolbar'):
                 del self.properties['toolbar']
+            if self.properties.has_key('icon'):  #HELP#
+                del self.properties['icon']      #HELP#
             xrcgen.DefaultXrcObject.write(self, outfile, tabs)
 
     # end of class FrameXrcObject
@@ -146,6 +164,21 @@ class CppFrameCodeGenerator:
         out = []
         title = prop.get('title')
         if title: out.append('SetTitle(%s);\n' % cppgen.quote_str(title))
+        icon = prop.get('icon')
+        if icon: 
+            type = ''
+            if icon[-4:] == ".bmp": type = 'wxBITMAP_TYPE_BMP'
+            if icon[-4:] == ".gif": type = 'wxBITMAP_TYPE_GIF'
+            if icon[-4:] == ".xpm": type = 'wxBITMAP_TYPE_XPM'
+            if icon[-4:] == ".jpg": type = 'wxBITMAP_TYPE_JPEG'
+            if icon[-5:] == ".jpeg": type = 'wxBITMAP_TYPE_JPEG'
+            if icon[-4:] == ".png": type = 'wxBITMAP_TYPE_PNG'
+            if icon[-4:] == ".pcx": type = 'wxBITMAP_TYPE_PCX'
+            if type != '':
+                out.append('wxBitmap * bmp = new wxBitmap(' + cppgen.quote_str(icon) + ', ' + type + ');\n')
+                out.append('wxIcon * icon = wxIcon(32,32);\n')
+                out.append('icon->CopyFromBitmap(bmp);\n')
+                out.append('SetIcon(icon);\n') 
         out.extend(cppgen.generate_common_properties(frame))
         return out
 

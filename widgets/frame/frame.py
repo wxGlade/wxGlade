@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.20 2003/05/13 10:05:13 agriggio Exp $
+# $Id: frame.py,v 1.21 2003/05/13 14:10:07 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -137,6 +137,7 @@ class EditFrame(TopLevelBase):
                               property_window, show=show)
         self.style = style
         self.statusbar = None
+        self.icon = ''
         self.access_functions['statusbar'] = (self.get_statusbar,
                                               self.set_statusbar)
         self.menubar = None
@@ -145,6 +146,8 @@ class EditFrame(TopLevelBase):
         self.access_functions['toolbar'] = (self.get_toolbar, self.set_toolbar)
 
         self.access_functions['style'] = (self.get_style, self.set_style)
+
+        self.access_functions['icon'] = (self.get_icon, self.set_icon)
         prop = self.properties
         style_labels = ('#section#Style', 'wxDEFAULT_FRAME_STYLE',
                         'wxICONIZE', 'wxCAPTION',
@@ -169,6 +172,11 @@ class EditFrame(TopLevelBase):
         # toolbar property
         prop['toolbar'] = CheckBoxProperty(self, 'toolbar', None,
                                            'Has ToolBar')
+        # icon property
+        prop['icon'] = FileDialogProperty(self, 'icon', None,
+                                               style=wxOPEN |
+                                               wxFILE_MUST_EXIST,
+                                               can_disable=True)
 
     def create_widget(self):
         if self.parent: w = self.parent.widget
@@ -198,12 +206,14 @@ class EditFrame(TopLevelBase):
         prop['menubar'].display(panel)
         prop['statusbar'].display(panel)
         prop['toolbar'].display(panel)
+        prop['icon'].display(panel)
         
         szr = wxBoxSizer(wxVERTICAL)
         szr.Add(prop['style'].panel, 0, wxEXPAND)
         szr.Add(prop['menubar'].panel, 0, wxEXPAND)
         szr.Add(prop['statusbar'].panel, 0, wxEXPAND)
         szr.Add(prop['toolbar'].panel, 0, wxEXPAND)
+        szr.Add(prop['icon'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -293,6 +303,30 @@ class EditFrame(TopLevelBase):
         if self.toolbar:
             self.toolbar = self.toolbar.remove(do_nothing=True)
         TopLevelBase.remove(self, *args)
+    
+    def get_icon(self): # is a string that hold the filename (for example: icon.png)
+        return self.icon 
+
+    def set_icon(self, value):
+        self.icon = value
+        if self.widget:
+            if self.icon != '':
+                # setting icon
+                type = ''
+                if self.icon[-4:] == ".bmp": type = wxBITMAP_TYPE_BMP
+                if self.icon[-4:] == ".gif": type = wxBITMAP_TYPE_GIF
+                if self.icon[-4:] == ".xpm": type = wxBITMAP_TYPE_XPM
+                if self.icon[-4:] == ".jpg": type = wxBITMAP_TYPE_JPEG
+                if self.icon[-5:] == ".jpeg": type = wxBITMAP_TYPE_JPEG
+                if self.icon[-4:] == ".png": type = wxBITMAP_TYPE_PNG
+                if self.icon[-4:] == ".pcx": type = wxBITMAP_TYPE_PCX
+                bmp = wxBitmap(self.icon, type)
+                tmp_icon = wxEmptyIcon()
+                tmp_icon.CopyFromBitmap(bmp)
+                self.widget.SetIcon(tmp_icon) 
+            #else:
+                # removing icon
+                # self.widget.SetIcon(None) doesn't works
 
 # end of class EditFrame
 
