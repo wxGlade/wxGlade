@@ -9,7 +9,7 @@ from edit_windows import ManagedBase
 from tree import Tree
 import common, misc
 from widget_properties import *
-
+   
 class EditSpinCtrl(ManagedBase):
     """\
     Class to handle wxSpinCtrl objects
@@ -36,7 +36,7 @@ class EditSpinCtrl(ManagedBase):
         self.widget = wxSpinCtrl(self.parent.widget, self.id,
                                  min=self.range[0], max=self.range[1],
                                  initial=self.value)
-        
+
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxScrolledWindow(self.notebook, -1)

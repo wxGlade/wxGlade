@@ -114,7 +114,7 @@ class EditPanel(PanelBase, ManagedBase):
         PanelBase.__init__(self)
 
     def create_widget(self):
-        self.widget = wxPanel(self.parent.widget, self.id)
+        self.widget = wxPanel(self.parent.widget, self.id, style=0)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
 
@@ -136,7 +136,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
 
     def create_widget(self):
         win = wxFrame(None, -1, self.name, size=(400, 300)) 
-        self.widget = wxPanel(win, self.id)
+        self.widget = wxPanel(win, self.id, style=0)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         self.widget.SetSize = win.SetSize
