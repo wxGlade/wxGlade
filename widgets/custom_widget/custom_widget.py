@@ -136,8 +136,10 @@ def builder(parent, sizer, pos, number=[1]):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
-            w = self.GetTextExtent(title)[0] + 10
-            if self.GetSize()[0] < w: self.SetSize((w, -1))
+            w = self.GetTextExtent(title)[0] + 50
+            if self.GetSize()[0] < w:
+                self.SetSize((w, -1))
+                
         def __getitem__(self, value):
             def set_klass(c): self.klass = c
             return (lambda : self.klass, set_klass)

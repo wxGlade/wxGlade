@@ -496,7 +496,8 @@ class EditMenuBar(EditBase):
                 self.widget.SetFocus = lambda : None
         else:
             # "top-level" menubar
-            self.widget = wxFrame(None, -1, self.name, size=(400, 30))
+            self.widget = wxFrame(None, -1, self.name)
+            self.widget.SetClientSize((400, 30))
             self._mb = wxMenuBar()
             self.widget.SetMenuBar(self._mb)
             self.widget.SetBackgroundColour(self._mb.GetBackgroundColour())

@@ -26,6 +26,7 @@ class SizerSlot:
         EVT_LEFT_DOWN(self.widget, self.drop_widget)
         EVT_MIDDLE_DOWN(self.widget, self.select_and_paste)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        EVT_LEAVE_WINDOW(self.widget, self.on_leave)
 
         def on_key_down(event):
             evt_flags = 0
@@ -43,8 +44,18 @@ class SizerSlot:
         if self.widget: self.widget.Show(yes)
 
     def on_enter(self, event):
+        # hack. definitely. but...
+        misc._currently_under_mouse = self.widget
         if common.adding_widget: self.widget.SetCursor(wxCROSS_CURSOR)
         else: self.widget.SetCursor(wxNullCursor)
+        event.Skip()
+
+    def on_leave(self, event):
+        # _currently_under_mouse is used to restore the normal cursor, if the
+        # user cancelled the addition of a widget and the cursor is over this
+        # slot
+        misc._currently_under_mouse = None
+        event.Skip()
         
     def on_paint(self, event):
         dc = wxPaintDC(self.widget)
@@ -107,6 +118,8 @@ class SizerSlot:
 
     def delete(self, delete_widget=True):
         if self.menu: self.menu.Destroy()
+        if misc._currently_under_mouse is self.widget:
+            misc._currently_under_mouse = None
         if delete_widget and self.widget: self.widget.Destroy()
         if misc.focused_widget is self: misc.focused_widget = None
 
