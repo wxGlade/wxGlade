@@ -681,12 +681,14 @@ class EditFrame(TopLevelBase):
 
         self.access_functions['style'] = (self.get_style, self.set_style)
         prop = self.properties
-        style_labels = ('#section#Style', 'wxICONIZE', 'wxCAPTION',
+        style_labels = ('#section#Style', 'wxDEFAULT_FRAME_STYLE',
+                        'wxICONIZE', 'wxCAPTION',
                         'wxMINIMIZE', 'wxMINIMIZE_BOX', 'wxMAXIMIZE',
                         'wxMAXIMIZE_BOX', 'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
                         'wxSIMPLE_BORDER', 'wxRESIZE_BORDER',
                         'wxFRAME_TOOL_WINDOW', 'wxFRAME_NO_TASKBAR')
-        self.style_pos = (wxICONIZE, wxCAPTION, wxMINIMIZE,
+        self.style_pos = (wxDEFAULT_FRAME_STYLE,
+                          wxICONIZE, wxCAPTION, wxMINIMIZE,
                           wxMINIMIZE_BOX, wxMAXIMIZE, wxMAXIMIZE_BOX,
                           wxSTAY_ON_TOP, wxSYSTEM_MENU, wxSIMPLE_BORDER,
                           wxRESIZE_BORDER, wxFRAME_TOOL_WINDOW,
@@ -767,27 +769,15 @@ class EditFrame(TopLevelBase):
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.style #self.GetWindowStyleFlag()
-            for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]:
-                    retval[i] = 1
+            if self.style == wxDEFAULT_FRAME_STYLE: retval[0] = 1
+            else:
+                for i in range(len(self.style_pos)):
+                    if self.style & self.style_pos[i]: retval[i] = 1
         except AttributeError:
             pass
         return retval
 
     def set_style(self, value):
-        style_lookup = { 'wxICONIZE': wxICONIZE,
-                         'wxCAPTION': wxCAPTION,
-                         'wxMINIMIZE': wxMINIMIZE,
-                         'wxMINIMIZE_BOX': wxMINIMIZE_BOX,
-                         'wxMAXIMIZE': wxMAXIMIZE,
-                         'wxMAXIMIZE_BOX': wxMAXIMIZE_BOX,
-                         'wxSTAY_ON_TOP': wxSTAY_ON_TOP,
-                         'wxSYSTEM_MENU': wxSYSTEM_MENU,
-                         'wxSIMPLE_BORDER': wxSIMPLE_BORDER,
-                         'wxRESIZE_BORDER': wxRESIZE_BORDER,
-                         'wxFRAME_TOOL_WINDOW': wxFRAME_TOOL_WINDOW,
-                         'wxFRAME_NO_TASKBAR': wxFRAME_NO_TASKBAR }
         value = self.properties['style'].prepare_value(value)
         style = 0
         for v in range(len(value)):

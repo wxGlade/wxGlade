@@ -18,10 +18,12 @@ class EditDialog(TopLevelBase):
         prop = self.properties
         # style property
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = ('#section#Style', 'wxDIALOG_MODAL', 'wxCAPTION',
+        style_labels = ('#section#Style', 'wxDEFAULT_DIALOG_STYLE',
+                        'wxDIALOG_MODAL', 'wxCAPTION',
                         'wxRESIZE_BORDER', 'wxSYSTEM_MENU', 'wxTHICK_FRAME',
                         'wxSTAY_ON_TOP', 'wxNO_3D', 'wxDIALOG_NO_PARENT')
-        self.style_pos = (wxDIALOG_MODAL, wxCAPTION, wxRESIZE_BORDER,
+        self.style_pos = (wxDEFAULT_DIALOG_STYLE,
+                          wxDIALOG_MODAL, wxCAPTION, wxRESIZE_BORDER,
                           wxSYSTEM_MENU, wxTHICK_FRAME, wxSTAY_ON_TOP, wxNO_3D,
                           wxDIALOG_NO_PARENT)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
@@ -56,9 +58,10 @@ class EditDialog(TopLevelBase):
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
+            if self.style == wxDEFAULT_DIALOG_STYLE: retval[0] = 1
+            else:
+                for i in range(len(self.style_pos)):
+                    if self.style & self.style_pos[i]: retval[i] = 1
         except AttributeError:
             pass
         return retval

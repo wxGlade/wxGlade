@@ -32,6 +32,33 @@ def python_code_generator(obj):
     return init, props_buf, []
 
 
+def cpp_code_generator(obj):
+    """\
+    generates the C++ code for wxRadioButton objects
+    """
+    cppgen = common.code_writers['C++']
+    prop = obj.properties
+    id_name, id = cppgen.generate_code_id(obj)
+    if id_name: ids = [ '%s = %s' % (id_name, id) ]
+    else: ids = []
+    label = prop.get('label', '').replace('"', r'\"')
+    if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+    else: parent = 'this'
+    if obj.is_toplevel:
+        l = ['%s = new %s(%s, %s, "%s");\n' %
+             (obj.name, obj.klass, parent, id, label)]
+        return l, ids, [], []
+    extra = ''
+    style = prop.get("style")
+    if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
+    init = ['%s = new wxRadioButton(%s, %s, "%s"%s);\n' %
+            (obj.name, parent, id, label, extra) ]
+    props_buf = cppgen.generate_common_properties(obj)
+    clicked = prop.get('clicked')
+    if clicked: props_buf.append('%s->SetValue(1);\n' % obj.name)
+    return init, ids, props_buf, []
+
+
 def initialize():
     common.class_names['EditRadioButton'] = 'wxRadioButton'
 
@@ -39,3 +66,12 @@ def initialize():
     pygen = common.code_writers.get("python")
     if pygen:
         pygen.add_widget_handler('wxRadioButton', python_code_generator)
+    cppgen = common.code_writers.get('C++')
+    if cppgen:
+        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+                       ('const wxString&', 'label'),
+                       ('const wxPoint&', 'pos'),
+                       ('const wxSize&', 'size'),
+                       ('long', 'style', '0')]
+        cppgen.add_widget_handler('wxRadioButton', cpp_code_generator,
+                                  constructor)

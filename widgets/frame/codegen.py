@@ -253,6 +253,105 @@ def xrc_menubar_code_generator(obj):
     return MenuBarXrcObject(obj)
 
 
+def cpp_menubar_code_generator(obj):
+    """\
+    function that generates C++ code for the menubar of a wxFrame.
+    """
+    menus = obj.properties['menubar']
+    init = [ '%s = new wxMenuBar();\n' % \
+             obj.name, 'SetMenuBar(%s);\n' % obj.name ]
+    ids = []
+    append = init.append
+    def append_items(menu, items):
+        for item in items:
+            if item.name == '---': # item is a separator
+                append('%s->AppendSeparator();\n' % menu)
+            elif item.children:
+                if item.name: name = item.name
+                else: name = '%s_sub' % menu
+                append('wxMenu* %s = new wxMenu();\n' % name)
+                if item.id: # generating id
+                    tokens = item.id.split('=')
+                    if len(tokens) > 1:
+                        id = tokens[0]
+                        ids.append(' = '.join(tokens))
+                    else:
+                        id = item.id
+                else: id = 'wxNewId()'
+                append_items(name, item.children)
+                append('%s->Append(%s, %s, %s, "%s");\n' %
+                       (menu, id, '"%s"' % item.label.replace('"', r'\"'),
+                        name, item.help_str.replace('"', r'\"')))
+            else:
+                if item.id:
+                    tokens = item.id.split('=')
+                    if len(tokens) > 1:
+                        id = tokens[0]
+                        ids.append(' = '.join(tokens))
+                    else:
+                        id = item.id
+                else: id = 'wxNewId()'
+                if item.checkable == '1':
+                    append('%s->Append(%s, "%s", "%s", 1);\n' %
+                           (menu, id, item.label.replace('"', r'\"'),
+                            item.help_str.replace('"', r'\"')))
+                else:
+                    append('%s->Append(%s, "%s", "%s");\n' %
+                           (menu, id, item.label.replace('"', r'\"'),
+                            item.help_str.replace('"', r'\"')))
+    #print 'menus = %s' % menus
+    i = 1
+    for m in menus:
+        menu = m.root
+        if menu.name: name = menu.name
+        else:
+            name = 'wxglade_tmp_menu_%s' % i
+            i += 1
+        append('wxMenu* %s = new wxMenu();\n' % name)
+        if menu.children:
+            append_items(name, menu.children)
+        append('%s->Append(%s, "%s");\n' %
+               (obj.name, name, menu.label.replace('"', r'\"')))
+    init.reverse()
+    return init, ids, [], []
+
+
+def cpp_statusbar_code_generator(obj):
+    """\
+    function that generates code for the statusbar of a wxFrame.
+    """
+    labels, widths = obj.properties['statusbar']
+    init = [ '%s = CreateStatusBar(%s);\n' % (obj.name, len(labels)) ]
+    props = []
+    append = props.append
+    append('int %s_widths[] = { %s };\n' % (obj.name,
+                                            ', '.join(map(str, widths))))
+    append('%s->SetStatusWidths(%s, %s_widths);\n' % \
+           (obj.name, len(widths), obj.name))
+    labels = ',\n        '.join(['"' +  l.replace('"', r'\"') + '"'
+                                 for l in labels])
+    append('const wxString %s_fields[] = {\n        %s\n    };\n' %
+           (obj.name, labels))
+    append('for(int i = 0; i < %s->GetFieldsCount(); ++i) {\n' % obj.name)
+    append('    %s->SetStatusText(%s_fields[i], i);\n    }\n' % \
+           (obj.name, obj.name))
+    return init, [], props, []
+    
+
+def cpp_generate_frame_properties(frame):
+    """\
+    generates the code for the various wxFrame specific properties.
+    Returns a list of strings containing the generated code
+    """
+    prop = frame.properties
+    cppgen = common.code_writers['C++']
+    out = []
+    title = prop.get('title')
+    if title: out.append('SetTitle("%s");\n' % title.replace('"', r'\"'))
+    out.extend(cppgen.generate_common_properties(frame))
+    return out
+
+
 def initialize():
     cn = common.class_names
     cn['EditFrame'] = 'wxFrame'
@@ -278,4 +377,19 @@ def initialize():
         xrcgen.add_property_handler('menus', MenuHandler)
         xrcgen.add_widget_handler('wxStatusBar',
                                   xrcgen.NotImplementedXrcObject)
-
+    cppgen = common.code_writers.get('C++')
+    if cppgen:
+        frame_constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+                             ('const char*', 'title'),
+                             ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+                             ('const wxSize&', 'size', 'wxDefaultSize'),
+                             ('long', 'style', 'wxDEFAULT_FRAME_STYLE')]
+        cppgen.add_widget_handler('wxFrame', lambda o: None,
+                                  frame_constructor,
+                                  cpp_generate_frame_properties)
+        cppgen.add_widget_handler('wxMenuBar', cpp_menubar_code_generator)
+        cppgen.add_widget_handler('wxStatusBar', cpp_statusbar_code_generator)
+        cppgen.add_property_handler('menus', MenuHandler)
+        cppgen.add_property_handler('fields', StatusFieldsHandler)
+        cppgen.add_property_handler('menubar', cppgen.DummyPropertyHandler)
+        cppgen.add_property_handler('statusbar', cppgen.DummyPropertyHandler)
