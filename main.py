@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.43 2003/07/29 14:42:14 agriggio Exp $
+# $Id: main.py,v 1.44 2003/08/11 15:20:44 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -514,8 +514,8 @@ class wxGladeFrame(wxFrame):
                             "XML files (*.xml)|*.xml|All files|*",
                             flags=wxSAVE|wxOVERWRITE_PROMPT,
                             default_path=self.cur_dir)
-        common.app_tree.app.filename = fn
         if fn:
+            common.app_tree.app.filename = fn
             self.save_app(event)
             self.cur_dir = os.path.dirname(fn)
             if misc.check_wx_version(2, 3, 3):
