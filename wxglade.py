@@ -94,9 +94,9 @@ wxGlade usage:
 
 
 if __name__ == "__main__":
-    # append the widgets dir to the
+    # prepend the widgets dir to the
     # app's search path
-    sys.path.append('widgets')
+    sys.path.insert(0, 'widgets')
     # before running the GUI, let's see if there are command line options for
     # code generation
     if len(sys.argv) == 1:
