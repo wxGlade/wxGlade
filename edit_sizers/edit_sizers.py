@@ -224,6 +224,7 @@ def change_sizer(old, new):
         szr.flag = old.flag
         szr.border = old.border
         szr.pos = old.pos
+        szr.sizer.children[szr.pos].item = szr
         if szr.sizer.widget:
             elem = szr.sizer.widget.GetChildren()[szr.pos]
             elem.SetSizer(szr.widget)
@@ -350,7 +351,8 @@ class SizerBase:
         self.pos = value
 
     def change(self, *args):
-        wxCallAfter(change_sizer, self, self.klass_prop.get_value())
+        # if wxPython < 2.3.3, wxCallAfter is defined in misc.py
+        misc.wxCallAfter(change_sizer, self, self.klass_prop.get_value())
 
     def create_properties(self):
         """\
