@@ -765,7 +765,7 @@ class EditFrame(TopLevelBase):
     def create_properties(self):
         TopLevelBase.create_properties(self)
         prop = self.properties
-        panel = wxScrolledWindow(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         prop['style'].display(panel)
         prop['menubar'].display(panel)
         prop['statusbar'].display(panel)

@@ -140,7 +140,8 @@ class EditBase:
         self.notebook.sizer = nb_sizer
         self.notebook.Hide()
 
-        self._common_panel = panel = wxScrolledWindow(self.notebook, -1)
+        self._common_panel = panel = wxScrolledWindow(self.notebook, -1,
+                                                      style=wxTAB_TRAVERSAL)
 
         self.name_prop.display(panel)
         self.klass_prop.display(panel)
@@ -630,7 +631,7 @@ class ManagedBase(WindowBase):
 
     def create_properties(self):
         WindowBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
 
         min_x = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_X)
         min_y = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_Y)

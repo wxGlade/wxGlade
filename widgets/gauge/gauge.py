@@ -37,7 +37,7 @@ class EditGauge(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         prop = self.properties
         szr = wxBoxSizer(wxVERTICAL)
         prop['range'].display(panel)

@@ -195,7 +195,7 @@ class EditSplitterWindow(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         sizer = wxBoxSizer(wxVERTICAL)
         self.properties['style'].display(panel)
         self.properties['sash_pos'].display(panel)

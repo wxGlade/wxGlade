@@ -43,7 +43,7 @@ class EditTextCtrl(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1) 
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL) 
         prop = self.properties
         prop['value'].display(panel)
         prop['style'].display(panel)

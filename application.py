@@ -76,7 +76,7 @@ class Application(object):
         self.notebook.sizer = nb_sizer
         self.notebook.Hide()
         #panel = wxPanel(self.notebook, -1)
-        panel = wxScrolledWindow(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         self.name = "app" # name of the wxApp instance to generate
         self.__saved = True # if True, there are no changes to save
         self.__filename = None # name of the output xml file

@@ -158,7 +158,7 @@ class EditGrid(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         self.properties['create_grid'].display(panel)
         self.properties['columns'].display(panel)
         self.properties['rows_number'].display(panel)

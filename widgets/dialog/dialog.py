@@ -50,7 +50,7 @@ class EditDialog(TopLevelBase):
 
     def create_properties(self):
         TopLevelBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         szr = wxBoxSizer(wxVERTICAL)
         self.properties['style'].display(panel)
         szr.Add(self.properties['style'].panel, 0, wxEXPAND)

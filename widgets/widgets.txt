@@ -21,6 +21,8 @@ combo_box
 list_box
 static_line
 static_bitmap
+list_ctrl
+tree_ctrl
 grid
 custom_widget
 spacer

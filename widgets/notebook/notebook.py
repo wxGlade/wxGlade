@@ -256,7 +256,7 @@ class EditNotebook(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         self.properties['tabs'].display(panel)
         sizer = wxBoxSizer(wxVERTICAL)
         sizer.Add(self.properties['tabs'].panel, 1, wxEXPAND)
