@@ -1,3 +1,6 @@
+2003-03-11: widgets/list_ctrl/*, widgets/tree_ctrl/*:
+                first support for wxListCtrl and wxTreeCtrl
+
 2003-03-10: widget_properties.py, widgets/... (various modules),
                 fixed some UI bugs (horizontal scrollbars - bug #701088,
                  size of columns in some GridProperty)
