@@ -1,3 +1,6 @@
+2003-07-16: codegen/xrc_codegen.py, xml_parse.py, docs/turorial.html:
+                added subclass support to XRC output
+
 2003-07-15: application.py, tree.py, xml_parse.py, codegen/py_codegen.py,
             codegen/cpp_codegen.py:
                 added "overwrite" property to Application, to allow 

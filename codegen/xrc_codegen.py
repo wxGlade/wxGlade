@@ -1,5 +1,5 @@
 # xrc_codegen.py: wxWindows resources XRC code generator
-# $Id: xrc_codegen.py,v 1.13 2003/05/20 18:06:13 agriggio Exp $
+# $Id: xrc_codegen.py,v 1.14 2003/07/16 20:14:43 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -131,6 +131,7 @@ class DefaultXrcObject(XrcObject):
         self.code_obj = code_obj
         self.name = code_obj.name
         self.klass = code_obj.base # custom classes aren't allowed in XRC
+        self.subclass = code_obj.klass
 
     def write_property(self, name, val, outfile, ntabs):
         if val:
@@ -143,8 +144,14 @@ class DefaultXrcObject(XrcObject):
         if self.code_obj.in_sizers:
             write(tabs(ntabs) + '<object class=%s>\n' % quoteattr(self.klass))
         else:
-            write(tabs(ntabs) + '<object class=%s name=%s>\n' % \
-                  (quoteattr(self.klass), quoteattr(self.name)))
+            if self.subclass and self.subclass != self.klass:
+                write(tabs(ntabs) +
+                      '<object class=%s name=%s subclass=%s>\n' % \
+                      (quoteattr(self.klass), quoteattr(self.name),
+                       quoteattr(self.subclass)))
+            else:
+                write(tabs(ntabs) + '<object class=%s name=%s>\n' % \
+                      (quoteattr(self.klass), quoteattr(self.name)))
         tab_str = tabs(ntabs+1)
         # write the properties
         if self.properties.has_key('foreground'):
