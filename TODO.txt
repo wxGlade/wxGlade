@@ -15,12 +15,12 @@ Key:
 - "tags" on the generated code, to detect the portions of code to replace and
   those to keep as is, when updating an existing file (*)
 
-- better support to custom classes, that is to say:
+- better support of custom classes, that is to say:
   - Avoid double class declaration on the generated files when using
     multiple instances of the same custom class (*)
   - Avoid xml code duplication (in the same case as above): this may be hard
 
-- full Unicode support (#)
+- Unicode support (#)
 
 - Investigation of the many memory leaks (#)
 
@@ -40,7 +40,7 @@ Key:
 
 - Edit -> Preferences... to customize some aspects of wxGlade
 
-- ListCtrl e TreeCtrl
+- ListCtrl and TreeCtrl
 
 - More basic properties for widgets (enabled for example)
 
@@ -56,7 +56,7 @@ Key:
 
 - on-line help (with wxHtmlHelpController)
 
-- test of the various modules with unittest
+- test of the various modules with unittest (this might come earlier...)
 
 - gettext support
 
