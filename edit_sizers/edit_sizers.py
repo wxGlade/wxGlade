@@ -423,7 +423,8 @@ class SizerBase:
     Remove = remove_item # maybe this is needed, I have to check...
 
     def Layout(self):
-        if not self.widget or not self.window.is_visible(): return
+        #if not self.widget or not self.window.is_visible(): return
+        if not self.widget: return
         self.widget.Layout()
         for c in self.children:
             try: c.item.widget.Refresh()
@@ -649,9 +650,12 @@ class EditBoxSizer(SizerBase):
             if isinstance(c.item, SizerSlot):
                 self.widget.Add(c.item.widget, 1, wxEXPAND)
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
-            if c.size: w, h = c.size
-            else: w, h = c.item.widget.GetBestSize()
-            self.widget.SetItemMinSize(c.item.widget, w, h)
+            else:
+                sp = c.item.properties.get('size')
+                if sp and sp.is_active():
+                    w, h = [ int(v) for v in sp.get_value().split(',') ]
+                else: w, h = c.item.widget.GetBestSize()
+                self.widget.SetItemMinSize(c.item.widget, w, h)
         if not self.toplevel:
             self.sizer.add_item(self, self.pos, self.option, self.flag,
                                 self.border, self.widget.GetMinSize())
@@ -698,10 +702,19 @@ class EditStaticBoxSizer(SizerBase):
         self.widget.Add(self._btn, 0, wxEXPAND)
         for c in self.children[1:]: # we've already added self._btn
             c.item.show_widget(True)
-            self.widget.Add(c.item.widget, c.option, c.flag, c.border)
-            if c.size: w, h = c.size
-            else: w, h = c.item.widget.GetBestSize()
-            self.widget.SetItemMinSize(c.item.widget, w, h)
+            if isinstance(c.item, SizerSlot):
+                self.widget.Add(c.item.widget, 1, wxEXPAND)
+                self.widget.SetItemMinSize(c.item.widget, 20, 20)
+            else:
+                sp = c.item.properties.get('size')
+                if sp and sp.is_active():
+                    w, h = [ int(v) for v in sp.get_value().split(',') ]
+                else: w, h = c.item.widget.GetBestSize()
+                self.widget.SetItemMinSize(c.item.widget, w, h)
+        self.Layout()
+        if not self.toplevel:
+            self.sizer.add_item(self, self.pos, self.option, self.flag,
+                                self.border, self.widget.GetMinSize())
 
     def _property_setup(self):
         SizerBase._property_setup(self)
@@ -759,6 +772,9 @@ class CustomSizer(wxBoxSizer):
     def __getattr__(self, name):
         return getattr(self._grid, name)
 
+    def GetBestSize(self):
+        return self._grid.GetMinSize()
+    
     def Add(self, *args, **kwds): self._grid.Add(*args, **kwds)
     def Insert(self, *args, **kwds): self._grid.Insert(*args, **kwds)
     def Remove(self, *args, **kwds): self._grid.Remove(*args, **kwds)
@@ -803,10 +819,13 @@ class GridSizerBase(SizerBase):
             c.item.show_widget(True)
             if isinstance(c.item, SizerSlot):
                 self.widget.Add(c.item.widget, 1, wxEXPAND)
-                self.widget.SetItemMinSize(c.item.widget, 20, 20)            
-            if c.size: w, h = c.size
-            else: w, h = c.item.widget.GetBestSize()
-            self.widget.SetItemMinSize(c.item.widget, w, h)
+                self.widget.SetItemMinSize(c.item.widget, 20, 20)
+            else:
+                sp = c.item.properties.get('size')
+                if sp and sp.is_active():
+                    w, h = [ int(v) for v in sp.get_value().split(',') ]
+                else: w, h = c.item.widget.GetBestSize()
+                self.widget.SetItemMinSize(c.item.widget, w, h)
 
     def _property_setup(self):
         SizerBase._property_setup(self)
@@ -930,6 +949,9 @@ class EditGridSizer(GridSizerBase):
     def create_widget(self):
         self.widget = CustomSizer(self, wxGridSizer, self.rows, self.cols,
                                   self.vgap, self.hgap)
+        if not self.toplevel:
+            self.sizer.add_item(self, self.pos, self.option, self.flag,
+                                self.border) #, self.widget.GetMinSize())
         GridSizerBase.create_widget(self)
 
 # end of class EditGridSizer
@@ -947,14 +969,17 @@ class EditFlexGridSizer(GridSizerBase):
     def create_widget(self):
         self.widget = CustomSizer(self, wxFlexGridSizer, self.rows, self.cols,
                                   self.vgap, self.hgap)
+        if not self.toplevel:
+            self.sizer.add_item(self, self.pos, self.option, self.flag,
+                                self.border) #, self.widget.GetMinSize())
+        else:
+            w, h = self.window.widget.GetClientSize()
+            self._adjust_initial_size(w, h)                
         GridSizerBase.create_widget(self)
-        try:
-            if self.toplevel:
-                w, h = self.window.widget.GetClientSize()
-            else:
-                w, h = self.sizer.widget.GetChildren()[self.pos].GetSize()
-        except AttributeError: pass # if some .widget was None
-        else: self._adjust_initial_size(w, h)
+##             else:
+##                 w, h = self.sizer.widget.GetChildren()[self.pos].GetSize()
+##         except (IndexError, AttributeError): pass # if some .widget was None
+##         else: self._adjust_initial_size(w, h)
 
     def _adjust_initial_size(self, w, h):
         if self.widget:
@@ -1035,7 +1060,6 @@ def builder(parent, sizer, pos, number=[1]):
                                 dialog.label.GetValue(), num, topl)
     else:
         sz = EditBoxSizer(name, parent, orientation, num, topl)
-        
     if sizer is not None:
         sizer.add_item(sz, pos, 1, wxEXPAND)
         node = Tree.Node(sz)
