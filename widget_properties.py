@@ -143,7 +143,9 @@ class _activator:
         self._active = active
         if not self._target: return
         self._target.Enable(active)
-        import common; common.app_tree.app.saved = False
+        import common
+        try: common.app_tree.app.saved = False
+        except AttributeError: pass # why does this happen on win at startup?
         try: self._enabler.SetValue(active)
         except AttributeError: pass
 
@@ -183,13 +185,13 @@ class TextProperty(Property, _activator):
         if self.multiline: style |= wxTE_MULTILINE
         val = self.get_value()
         if self.multiline: val = val.replace('\\n', '\n')
-        self.text = wxTextCtrl(parent, self.id, val, style=style)
+        self.text = wxTextCtrl(parent, self.id, val, style=style, size=(1, -1))
         #label = wxStaticText(self.panel, -1, _mangle(self.name))
         label = wxGenStaticText(parent, -1, _mangle(self.name),
                                 size=(_label_initial_width, -1))
         label.SetToolTip(wxToolTip(_mangle(self.name)))
         if self.can_disable:
-            self._enabler = wxCheckBox(parent, self.id+1, '')
+            self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
             EVT_CHECKBOX(self._enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
             self.text.Enable(self.is_active())
@@ -447,7 +449,7 @@ class SpinProperty(Property, _activator):
                                 size=(_label_initial_width, -1))
         label.SetToolTip(wxToolTip(_mangle(self.name)))
         if self.can_disable:
-            self._enabler = wxCheckBox(parent, self.id+1, '')
+            self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
             EVT_CHECKBOX(self._enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
             self.spin.Enable(self.is_active())
@@ -523,11 +525,11 @@ class DialogProperty(Property, _activator):
         self.id = wxNewId()
         #self.panel = wxPanel(parent, -1)
         val = str(self.owner[self.name][0]())
-        self.text = wxTextCtrl(parent, self.id, val)
+        self.text = wxTextCtrl(parent, self.id, val, size=(1, -1))
         self.btn = wxButton(parent, self.id+1, " ... ",
                             size=(_label_initial_width, -1))
         if self.can_disable:
-            self._enabler = wxCheckBox(parent, self.id+1, '')
+            self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
             EVT_CHECKBOX(self._enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
             self.text.Enable(self.is_active())
@@ -862,16 +864,17 @@ class GridProperty(wxPanel, Property):
         Actually builds the grid to set the value of the property
         interactively
         """
-        #self.panel = wxPanel(parent, -1)
+        self.panel = wxPanel(parent, -1) # why if the grid is not on this panel
+                                         # it is not displayed???
         self.btn_id = wxNewId()
-        self.btn = wxButton(parent, self.btn_id, "  Apply  ")
+        self.btn = wxButton(self.panel, self.btn_id, "  Apply  ")
         if self.can_add:
-            self.add_btn = wxButton(parent, self.btn_id+1, "  Add  ")
+            self.add_btn = wxButton(self.panel, self.btn_id+1, "  Add  ")
         if self.can_insert:
-            self.insert_btn = wxButton(parent, self.btn_id+3, "  Insert  ")
+            self.insert_btn = wxButton(self.panel, self.btn_id+3, "  Insert  ")
         if self.can_remove:
-            self.remove_btn = wxButton(parent, self.btn_id+2, "  Remove  ")
-        self.grid = wxGrid(parent, -1)
+            self.remove_btn = wxButton(self.panel, self.btn_id+2, "  Remove  ")
+        self.grid = wxGrid(self.panel, -1)
         self.grid.CreateGrid(self.rows, len(self.cols))
         if misc.check_wx_version(2, 3, 3):
             self.grid.SetMargins(0, 0)
@@ -882,8 +885,8 @@ class GridProperty(wxPanel, Property):
         for i in range(len(self.cols)):
             self.grid.SetColLabelValue(i, self.cols[i][0])
             GridProperty.col_format[self.cols[i][1]](self.grid, i)
-        sizer = wxStaticBoxSizer(wxStaticBox(parent, -1, _mangle(self.name)),
-                                 wxVERTICAL)
+        sizer = wxStaticBoxSizer(wxStaticBox(self.panel, -1,
+                                             _mangle(self.name)), wxVERTICAL)
         self.cols = len(self.cols)
         self.grid.SetRowLabelSize(0)
         self.grid.SetColLabelSize(20)
@@ -909,10 +912,10 @@ class GridProperty(wxPanel, Property):
             EVT_BUTTON(self.remove_btn, self.btn_id+2, self.remove_row)
         sizer.Add(self.btn_sizer, 0, wxBOTTOM|wxEXPAND, 2)
         sizer.Add(self.grid, 1, wxEXPAND)
-##         self.panel.SetAutoLayout(1)
-##         self.panel.SetSizer(sizer)
-##         self.panel.SetSize(sizer.GetMinSize())
-        self.panel = sizer
+        self.panel.SetAutoLayout(1)
+        self.panel.SetSizer(sizer)
+        self.panel.SetSize(sizer.GetMinSize())
+##         self.panel = sizer
 
         EVT_GRID_SELECT_CELL(self.grid, self.on_select_cell)
         self.bind_event(self.on_change_val)

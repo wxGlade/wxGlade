@@ -57,13 +57,13 @@ class EditChoice(ManagedBase):
         szr = wxBoxSizer(wxVERTICAL)
         self.properties['choices'].display(panel)
         self.properties['selection'].display(panel)
-        self.properties['choices'].set_col_sizes([-1])
         szr.Add(self.properties['selection'].panel, 0, wxEXPAND)
         szr.Add(self.properties['choices'].panel, 1, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
+        self.properties['choices'].set_col_sizes([-1])
 
     def get_choices(self):
         return zip(self.choices)

@@ -55,7 +55,6 @@ class EditListBox(ManagedBase):
         self.properties['choices'].display(panel)
         self.properties['style'].display(panel)
         self.properties['selection'].display(panel)
-        self.properties['choices'].set_col_sizes([-1])
         szr.Add(self.properties['style'].panel, 0, wxEXPAND)
         szr.Add(self.properties['selection'].panel, 0, wxEXPAND)
         ch = self.properties['choices'].panel
@@ -68,6 +67,7 @@ class EditListBox(ManagedBase):
         from math import ceil
         panel.SetScrollbars(5, 5, ceil(w/5.0), ceil(h/5.0))
         self.notebook.AddPage(panel, 'Widget')
+        self.properties['choices'].set_col_sizes([-1])
         
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':

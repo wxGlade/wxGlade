@@ -98,12 +98,12 @@ class CustomWidget(ManagedBase):
         szr = wxBoxSizer(wxVERTICAL)
         args = self.properties['arguments']
         args.display(panel)
-        args.set_col_sizes([-1])
         szr.Add(args.panel, 1, wxALL|wxEXPAND, 5)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
+        args.set_col_sizes([-1])
 
     def get_arguments(self):
         return self.arguments

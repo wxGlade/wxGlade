@@ -1,3 +1,10 @@
+2003-03-10: widget_properties.py, widgets/... (various modules),
+                fixed some UI bugs (horizontal scrollbars - bug #701088,
+                 size of columns in some GridProperty)
+            widgets/notebook/notebook.py:
+                fixed serious bug on win32 (added the function
+                _ugly_hack_for_win32_notebook_bug)
+
 2003-03-08: codegen/cpp_codegen.py, codegen/py_codegen.py:
                 fixed a couple of bugs in the regex to match class decl (still
                 not 100% accurate, but better...)

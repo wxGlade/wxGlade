@@ -10,6 +10,33 @@ from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase, WindowBase
 
+def _ugly_hack_for_win32_notebook_bug(notebook_widget):
+    """\
+    The name should say all. The problem is hard to explain, so let me
+    just illustrate a way to reproduce the bug:
+    1. create a frame in wxGlade, add a notebook with two pages
+    2. put a button on the first page, and a text ctrl on the second one
+    3. save the app
+    4. exit wxGlade, and comment out the body of this function
+    5. restart wxGlade and load the previous app
+    6. Try to click on the button on the first page of the notebook, and see
+       what happens...
+
+    If you don't see what I mean, please drop me an email with your version of
+    Windows, Python and wxPython, because I really want to understand what's
+    going on...
+
+    So far I've not been able to reproduce the problem on a standalone minimal
+    app, but as time permits I'll try again... if you succeed, please let me
+    know.
+    """
+    #print '_ugly_hack_for_win32_notebook_bug'
+    index_ok = notebook_widget.GetSelection()
+    for i in range(notebook_widget.GetPageCount()):
+        notebook_widget.GetPage(i).Hide()
+    notebook_widget.GetPage(index_ok).Show()
+    
+    
 class NotebookPane(WindowBase):
     def __init__(self, name, parent, id, property_window, show=True,
                  style=wxTAB_TRAVERSAL):
@@ -152,9 +179,8 @@ class NotebookPagesProperty(GridProperty):
                 if t[0] == val[0]: window = t[1]
             except: pass
             if window:
-                write('%s<tab window=%s>%s</tab>\n' % (tab_s,
-                                                       quoteattr(window.name),
-                                                       v))
+                write('%s<tab window=%s>%s</tab>\n' %
+                      (tab_s, quoteattr(window.name), v))
         write('    ' * tabs + '</tabs>\n')
 
 # end of class NotebookPagesProperty
@@ -218,6 +244,11 @@ class EditNotebook(ManagedBase):
                 window.show_widget(True)
                 self.widget.AddPage(window.widget, name)
 
+    def show_widget(self, yes):
+        ManagedBase.show_widget(self, yes)
+        if yes and wxPlatform == '__WXMSW__':
+            misc.wxCallAfter(_ugly_hack_for_win32_notebook_bug, self.widget)
+
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
         # replace 'self' with 'self.nb_sizer' in 'self.sizer'
@@ -227,13 +258,13 @@ class EditNotebook(ManagedBase):
         ManagedBase.create_properties(self)
         panel = wxScrolledWindow(self.notebook, -1)
         self.properties['tabs'].display(panel)
-        self.properties['tabs'].set_col_sizes([-1])
         sizer = wxBoxSizer(wxVERTICAL)
         sizer.Add(self.properties['tabs'].panel, 1, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer)
         sizer.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
+        self.properties['tabs'].set_col_sizes([-1])
 
     def on_set_focus(self, event):
         self.show_properties()
