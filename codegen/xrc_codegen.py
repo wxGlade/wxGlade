@@ -223,7 +223,7 @@ def add_object(unused, sub_obj):
     top_obj = sub_obj.parent
     builder = obj_builders.get(sub_obj.base, DefaultXrcObject)
     try:
-        # check wether we already created the xrc_obj
+        # check whether we already created the xrc_obj
         xrc_obj = sub_obj.xrc
     except AttributeError:
         xrc_obj = builder(sub_obj) # builder functions must return a subclass
