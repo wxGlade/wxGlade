@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.21 2004/01/20 12:54:26 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.22 2004/09/17 03:31:59 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -407,6 +407,8 @@ def add_object(top_obj, sub_obj):
             else: klass.init.extend(init)
             # ---------------------------------------------------------------
         else: # the object is a sizer
+            if sub_obj.base == 'wxStaticBoxSizer':
+                klass.parents_init.insert( 1, init.pop(0) ) # ${staticboxsizername}_staticbox
             klass.sizers_init.extend(init)
         klass.props.extend(props)
         klass.layout.extend(layout)

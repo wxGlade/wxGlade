@@ -1,5 +1,5 @@
 # perl_sizers_codegen.py : perl generator functions for the various wxSizerS
-# $Id: perl_sizers_codegen.py,v 1.4 2004/01/20 12:54:26 crazyinsomniac Exp $
+# $Id: perl_sizers_codegen.py,v 1.5 2004/09/17 03:32:31 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -42,9 +42,11 @@ class PerlStaticBoxSizerBuilder:
         if not obj.parent.is_toplevel: parent = '$self->{%s}' % obj.parent.name
         else: parent = '$self'
         init = [
-            '$self->{%s}= Wx::StaticBoxSizer->new(Wx::StaticBox->new(%s, -1,\
-%s), %s);\n' % (obj.name, parent, plgen.quote_str(label), orient)
-            ]
+          '$self->{%s_staticbox} = Wx::StaticBox->new(%s, -1, %s );\n'
+          % (obj.name, parent, plgen.quote_str(label)), # this get
+          '$self->{%s}= Wx::StaticBoxSizer->new($self->{%s_staticbox}, %s);\n'
+          % (obj.name,obj.name, orient)
+        ]
         layout = []
         if obj.is_toplevel:
             layout.append('%s->SetAutoLayout(1);\n' % parent)
