@@ -57,7 +57,6 @@ class ToolsDialog(wxDialog):
         # tool fields
         self.id = wxTextCtrl(self, ID_ID)
         self.label = wxTextCtrl(self, LABEL_ID)
-        #self.name = wxTextCtrl(self, NAME_ID)
         self.help_str = wxTextCtrl(self, HELP_STR_ID)
         self.long_help_str = wxTextCtrl(self, LONG_HELP_STR_ID)
         self.bitmap1 = _MyBrowseButton(#FileBrowseButtonWithHistory(
@@ -66,7 +65,6 @@ class ToolsDialog(wxDialog):
         self.bitmap2 = _MyBrowseButton(#FileBrowseButtonWithHistory(
             self, BITMAP2_ID, labelText='Second Bitmap', buttonText='...',
             changeCallback=self.update_tool)
-        #self.checkable = wxCheckBox(self, CHECK_ID, "") #Checkable")
         self.check_radio = wxRadioBox(
             self, CHECK_RADIO_ID, "Type",
             choices=['Normal', 'Checkable', 'Radio'], majorDimension=3)
@@ -78,8 +76,6 @@ class ToolsDialog(wxDialog):
         # tools navigation
         self.move_up = wxButton(self, MOVE_UP_ID, "Up")
         self.move_down = wxButton(self, MOVE_DOWN_ID, "Down")
-        #self.move_left = wxButton(self, MOVE_LEFT_ID, " < ")
-        #self.move_right = wxButton(self, MOVE_RIGHT_ID, " > ")
 
         self.ok = wxButton(self, wxID_OK, " OK ")
         self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
@@ -89,16 +85,12 @@ class ToolsDialog(wxDialog):
         EVT_BUTTON(self, ADD_ID, self.add_tool)
         EVT_BUTTON(self, REMOVE_ID, self.remove_tool)
         EVT_BUTTON(self, ADD_SEP_ID, self.add_separator)
-        #EVT_BUTTON(self, MOVE_LEFT_ID, self.move_item_left)
-        #EVT_BUTTON(self, MOVE_RIGHT_ID, self.move_item_right)
         EVT_BUTTON(self, MOVE_UP_ID, self.move_item_up)
         EVT_BUTTON(self, MOVE_DOWN_ID, self.move_item_down)
-        #EVT_KILL_FOCUS(self.name, self.update_tool)
         EVT_KILL_FOCUS(self.label, self.update_tool)
         EVT_KILL_FOCUS(self.id, self.update_tool)
         EVT_KILL_FOCUS(self.help_str, self.update_tool)
         EVT_KILL_FOCUS(self.long_help_str, self.update_tool)
-        #EVT_CHECKBOX(self, CHECK_ID, self.update_tool)
         EVT_RADIOBOX(self, CHECK_RADIO_ID, self.update_tool)
         EVT_LIST_ITEM_SELECTED(self, LIST_ID, self.show_tool)
         if items:
@@ -107,7 +99,6 @@ class ToolsDialog(wxDialog):
     def do_layout(self):
         self.label.Enable(False)
         self.id.Enable(False)
-        #self.name.Enable(False)
         self.help_str.Enable(False)
         self.long_help_str.Enable(False)
         self.bitmap1.Enable(False)
@@ -119,7 +110,6 @@ class ToolsDialog(wxDialog):
                                   wxVERTICAL)
         self.label.SetSize((150, -1))
         self.id.SetSize((150, -1))
-        #self.name.SetSize((150, -1))
         self.help_str.SetSize((150, -1))
         self.long_help_str.SetSize((150, -1))
         szr = wxFlexGridSizer(0, 2)
@@ -127,8 +117,6 @@ class ToolsDialog(wxDialog):
         szr.Add(self.id)
         szr.Add(wxStaticText(self, -1, "Label  "))
         szr.Add(self.label)
-##         szr.Add(wxStaticText(self, -1, "Name  "))
-##         szr.Add(self.name)
         szr.Add(wxStaticText(self, -1, "Short Help  "))
         szr.Add(self.help_str)
         szr.Add(wxStaticText(self, -1, "Long Help  "))
@@ -151,8 +139,6 @@ class ToolsDialog(wxDialog):
 
         sizer4.Add(self.move_up, 0, wxLEFT|wxRIGHT, 3)
         sizer4.Add(self.move_down, 0, wxLEFT|wxRIGHT, 5)
-        #sizer4.Add(self.move_left, 0, wxLEFT|wxRIGHT, 5)
-        #sizer4.Add(self.move_right, 0, wxLEFT|wxRIGHT, 5)
         sizer3.Add(sizer4, 0, wxALIGN_CENTER|wxALL, 5)
         szr = wxBoxSizer(wxHORIZONTAL)
         szr.Add(sizer3, 1, wxALL|wxEXPAND, 5) 
@@ -207,8 +193,6 @@ class ToolsDialog(wxDialog):
                       self.bitmap1, self.bitmap2, self.check_radio):
                 s.Enable(True)
         if index < 0: index = self.tool_items.GetItemCount() 
-##         elif index > 0: label = "    " * self.item_level(index-1) + '---'
-##         else: label = '---'
         self.tool_items.InsertStringItem(index, '---')#label)
         for i in range(1, 5):
             self.tool_items.SetStringItem(index, i, '---')
@@ -243,8 +227,6 @@ class ToolsDialog(wxDialog):
         set_item = self.tool_items.SetStringItem
         index = self.selected_index
         if index < 0: return
-##         set_item(index, 0, "    " * self.item_level(index) + \
-##                  self.label.GetValue().lstrip())
         set_item(index, 0, self.label.GetValue())
         set_item(index, 1, self.id.GetValue())
         set_item(index, 2, self.bitmap1.GetValue())
@@ -252,25 +234,17 @@ class ToolsDialog(wxDialog):
         set_item(index, 4, self.help_str.GetValue())
         set_item(index, 5, self.long_help_str.GetValue())
         set_item(index, 6, str(self.check_radio.GetSelection()))
-        event.Skip()
+        try:
+            event.Skip()
+        except AttributeError:
+            # this happens on wx2.4.0.1 for FileBrowseButton events
+            pass
 
-##     def item_level(self, index, label=None):
-##         """\
-##         returns the indentation level of the menu item at the given index
-##         """
-##         label = self.tool_items.GetItem(index, 0).m_text
-##         return (len(label) - len(label.lstrip())) / 4
-    
     def remove_tool(self, event):
         """\
         Event handler called when the Remove button is clicked
         """        
         if self.selected_index >= 0:
-##             index = self.selected_index+1
-##             if index < self.tool_items.GetItemCount() and \
-##                (self.item_level(self.selected_index) < self.item_level(index)):
-##                 self._move_item_left(index)
-##                 self.selected_index = index-1
             for s in (self.id, self.label, self.help_str, self.long_help_str):
                 s.SetValue("")
             for s in (self.bitmap1, self.bitmap2):
@@ -418,8 +392,6 @@ class ToolsProperty(Property):
 
 
 class EditToolBar(EditBase):
-    __hidden_frame = None # used on GTK to reparent a menubar before deletion
-    
     def __init__(self, name, klass, parent, property_window):
         custom_class = parent is None
         EditBase.__init__(self, name, klass,
@@ -452,20 +424,13 @@ class EditToolBar(EditBase):
                                                   can_disable=True)
         self.access_functions['tools'] = (self.get_tools, self.set_tools)
         prop = self.properties['tools'] = ToolsProperty(self, 'tools', None) 
-##         self.node = Tree.Node(self)
-##         common.app_tree.add(self.node, parent.node)
 
     def create_widget(self):
-        if 0 and wxPlatform == '__WXGTK__' and not EditMenuBar.__hidden_frame:
-            EditMenuBar.__hidden_frame = wxFrame(common.palette, -1, "")
-            EditMenuBar.__hidden_frame.Hide()
         tb_style = wxTB_HORIZONTAL|wxTB_DOCKABLE|wxTB_FLAT
         if self.parent:
             self.widget = self._tb = wxToolBar(
                 self.parent.widget, -1, style=tb_style)
             self.parent.widget.SetToolBar(self.widget)
-##             if wxPlatform == '__WXMSW__':
-##                 self.widget.SetFocus = lambda : None
         else:
             # "top-level" toolbar
             self.widget = wxFrame(None, -1, self.name)
@@ -474,6 +439,11 @@ class EditToolBar(EditBase):
             self.widget.SetToolBar(self._tb)
             self.widget.SetBackgroundColour(self._tb.GetBackgroundColour())
             EVT_CLOSE(self.widget, lambda e: self.hide_widget())
+            EVT_LEFT_DOWN(self._tb, self.on_set_focus)
+            if wxPlatform == '__WXMSW__':
+                # MSW isn't smart enough to avoid overlapping windows, so
+                # at least move it away from the 3 wxGlade frames
+                self.widget.CenterOnScreen()
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         self.set_tools(self.tools) # show the menus
 
@@ -522,7 +492,9 @@ class EditToolBar(EditBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        if self._tb: self._tb.SetWindowStyleFlag(self.style)
+        if self._tb:
+            self._tb.SetWindowStyleFlag(self.style)
+            self._refresh_widget()
 
     def get_margins(self):
         return self.margins
@@ -536,6 +508,7 @@ class EditToolBar(EditBase):
             self.margins = value
             if self._tb:
                 self._tb.SetMargins(margins)
+                self._refresh_widget()
 
     def get_bitmapsize(self):
         return self.bitmapsize
@@ -549,6 +522,7 @@ class EditToolBar(EditBase):
             self.bitmapsize = value
             if self._tb:
                 self._tb.SetToolBitmapSize(size)
+                self._refresh_widget()
 
     def get_tools(self):
         return self.tools
@@ -592,31 +566,32 @@ class EditToolBar(EditBase):
                     self._tb.AddLabelTool(wxNewId(), tool.label, bmp1, bmp2,
                                           kind, tool.short_help,
                                           tool.long_help)
-        self._tb.Realize()
         # this is required to refresh the toolbar properly
+        self._refresh_widget()
+
+    def _refresh_widget(self):
+        #print self._tb.GetSize(), self._tb.GetBestSize()
+        self._tb.Realize()
+        self._tb.SetSize((-1, self._tb.GetBestSize()[1]))
         if self.parent:
             widget = self.parent.widget
-            h = widget.GetClientSize()[1]
-            widget.SetClientSize((-1, h+1))
-            widget.SetClientSize((-1, h))
+            w, h = widget.GetClientSize()
+            widget.SetClientSize((w, h+1))
+            widget.SetClientSize((w, h))
         else:
             widget = self.widget
+            w = widget.GetClientSize()[0]
             h = self._tb.GetSize()[1] / 2
-            widget.SetClientSize((-1, h))
-      
+            widget.SetClientSize((w, h))
+        
     def remove(self, *args, **kwds):
         if self.parent is not None:
             self.parent.properties['toolbar'].set_value(0)
-            if kwds.get('gtk_do_nothing', False) and wxPlatform == '__WXGTK__':
-                # workaround to prevent some segfaults on GTK: unfortunately,
-                # I'm not sure that this works in all cases, and moreover it
-                # could probably leak some memory (but I'm not sure)
+            if kwds.get('do_nothing', False): # and wxPlatform == '__WXGTK__':
+                # this probably leaks memory, but avoids segfaults
                 self.widget = None
             else:
                 if self.parent.widget:
-                    if 0 and wxPlatform == '__WXGTK__':
-                        self.widget.Reparent(EditMenuBar.__hidden_frame)
-                        self.widget.Hide()
                     self.parent.widget.SetToolBar(None)
         else:
             if self.widget:

@@ -56,13 +56,13 @@ class PythonCodeGenerator:
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
                 if tool.bitmap1:
-                    bmp1 = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
-                           pygen.quote_str(tool.bitmap1)
+                    bmp1 = 'wxBitmap("%s", wxBITMAP_TYPE_ANY)' % \
+                           tool.bitmap1.replace('"', r'\"')
                 else:
                     bmp1 = 'wxNullBitmap'
                 if tool.bitmap2:
-                    bmp2 = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
-                           pygen.quote_str(tool.bitmap2)
+                    bmp2 = 'wxBitmap("%s", wxBITMAP_TYPE_ANY)' % \
+                           tool.bitmap2.replace('"', r'\"')
                 else:
                     bmp2 = 'wxNullBitmap'
                 append('%s.AddLabelTool(%s, %s, %s, %s, %s, %s, %s)\n' %
@@ -259,13 +259,13 @@ class CppCodeGenerator:
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
                 if tool.bitmap1:
-                    bmp1 = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
-                           cppgen.quote_str(tool.bitmap1)
+                    bmp1 = 'wxBitmap("%s", wxBITMAP_TYPE_ANY)' % \
+                           tool.bitmap1.replace('"', r'\"')
                 else:
                     bmp1 = 'wxNullBitmap'
                 if tool.bitmap2:
-                    bmp2 = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
-                           cppgen.quote_str(tool.bitmap2)
+                    bmp2 = 'wxBitmap("%s", wxBITMAP_TYPE_ANY)' % \
+                           tool.bitmap2.replace('"', r'\"')
                 else:
                     bmp2 = 'wxNullBitmap'
                 append('%sAddTool(%s, %s, %s, %s, %s, %s, %s);\n' %

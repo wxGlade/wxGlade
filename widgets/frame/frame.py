@@ -290,7 +290,7 @@ class EditFrame(TopLevelBase):
         if self.statusbar:
             self.statusbar = self.statusbar.remove()
         if self.toolbar:
-            self.toolbar = self.toolbar.remove(gtk_do_nothing=True)
+            self.toolbar = self.toolbar.remove(do_nothing=True)
         TopLevelBase.remove(self, *args)
 
 # end of class EditFrame
