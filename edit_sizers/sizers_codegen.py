@@ -1,5 +1,5 @@
 # sizers_codegen.py: code generation functions for the various wxSizerS
-# $Id: sizers_codegen.py,v 1.10 2003/11/24 21:28:07 agriggio Exp $
+# $Id: sizers_codegen.py,v 1.11 2004/09/17 08:17:13 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -37,9 +37,12 @@ class PythonStaticBoxSizerBuilder:
         label = obj.properties.get('label', '')
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
-        init = [('%s = ' + cn('wxStaticBoxSizer') + '(' + cn('wxStaticBox') + \
-                 '(%s, -1, %s), %s)\n') %
-                (obj.name, parent, pygen.quote_str(label), cn(orient))]
+        init = [
+            ('self.%s_staticbox = ' + cn('wxStaticBox') + '(%s, -1, %s)\n') %
+            (obj.name, parent, pygen.quote_str(label)),
+            ('%s = ' + cn('wxStaticBoxSizer') + '(self.%s_staticbox, %s)\n') %
+            (obj.name, obj.name, cn(orient))
+            ]
         layout = []
         if obj.is_toplevel:
             layout.append('%s.SetAutoLayout(1)\n' % parent)
@@ -131,9 +134,11 @@ class CppStaticBoxSizerBuilder:
         label = obj.properties.get('label', '')
         if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
         else: parent = 'this'
-        init = ['wxStaticBoxSizer* %s = new wxStaticBoxSizer('
-                'new wxStaticBox(%s, -1, %s), %s);\n' %
-                (obj.name, parent, cppgen.quote_str(label), orient)]
+        init = [
+            '%s_staticbox = new wxStaticBox(%s, -1, %s);\n' %
+            (obj.name, parent, cppgen.quote_str(label)),
+            'wxStaticBoxSizer* %s = new wxStaticBoxSizer(%s_staticbox, %s);\n'
+            % (obj.name, obj.name, orient)]
         layout = []
         if obj.is_toplevel:
             if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name

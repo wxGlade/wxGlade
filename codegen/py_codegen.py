@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.44 2004/06/29 20:09:02 agriggio Exp $
+# $Id: py_codegen.py,v 1.45 2004/09/17 08:17:18 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -424,6 +424,9 @@ def add_object(top_obj, sub_obj):
             else: klass.init.extend(init)
             # ---------------------------------------------------------------
         else: # the object is a sizer
+            # ALB 2004-09-17: workaround (hack) for static box sizers...
+            if sub_obj.base == 'wxStaticBoxSizer':
+                klass.parents_init.insert(1, init.pop(0))
             klass.sizers_init.extend(init)
         klass.props.extend(props)
         klass.layout.extend(layout)
