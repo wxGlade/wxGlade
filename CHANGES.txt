@@ -1,3 +1,9 @@
+2004-09-04: version 0.3.4.1 released, due to the introduction of a workaround
+            for a bug in wxPython 2.5.2.8 (about wxGrid and its default
+            size...)
+-------------------------------------------------------------------------------
+2004-09-01: version 0.3.4 released
+
 2004-08-12: common.py: 
                 minor UI tweak
             edit_windows.py, config.py, configUI.py:
