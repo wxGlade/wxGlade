@@ -133,7 +133,7 @@ class Tree:
         top_window = self.app.get_top_window()
         language = self.app.get_language()
         encoding = self.app.get_encoding()
-        use_gettext = str(self.app.use_gettext)
+        use_gettext = str(int(self.app.use_gettext))
         outfile.write('<application path=%s name=%s class=%s option=%s ' \
                       'language=%s top_window=%s encoding=%s ' \
                       'use_gettext=%s>\n' \
