@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.19 2003/06/27 16:01:37 agriggio Exp $
+# $Id: panel.py,v 1.20 2003/08/07 12:06:01 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -21,12 +21,14 @@ class PanelBase(object):
         self.style = style
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
-                           wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
+                           wxRAISED_BORDER, wxSTATIC_BORDER,
+                           wxNO_BORDER, wxNO_3D,
                            wxTAB_TRAVERSAL, wxWANTS_CHARS,
                            wxNO_FULL_REPAINT_ON_RESIZE, wxCLIP_CHILDREN)
         style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
                         'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
-                        'wxSTATIC_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
+                        'wxSTATIC_BORDER',
+                        'wxNO_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
                         'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
                         'wxCLIP_CHILDREN')
         self.properties['style'] = CheckListProperty(self, 'style', None,
