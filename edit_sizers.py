@@ -112,8 +112,9 @@ class SizerHandleButton(wxButton):
     def _remove(self, *args):
         # removes the sizer from his parent, if it has one
         if self.sizer.toplevel:
+            window = self.sizer.window
             common.app_tree.remove(self.sizer.node)
-            self.sizer.window.set_sizer(None)
+            window.set_sizer(None)
             return
         self.sizer.sizer.free_slot(self.sizer.pos)
         common.app_tree.remove(self.sizer.node)
@@ -969,13 +970,13 @@ class EditFlexGridSizer(GridSizerBase):
     def create_widget(self):
         self.widget = CustomSizer(self, wxFlexGridSizer, self.rows, self.cols,
                                   self.vgap, self.hgap)
+        GridSizerBase.create_widget(self)
         if not self.toplevel:
             self.sizer.add_item(self, self.pos, self.option, self.flag,
                                 self.border) #, self.widget.GetMinSize())
         else:
             w, h = self.window.widget.GetClientSize()
             self._adjust_initial_size(w, h)
-        GridSizerBase.create_widget(self)
 
     def _adjust_initial_size(self, w, h):
         if self.widget:
