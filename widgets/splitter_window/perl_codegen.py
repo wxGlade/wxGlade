@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxSplitterWindow objects
-# $Id: perl_codegen.py,v 1.3 2003/07/06 06:08:18 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.4 2004/01/20 12:27:55 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -8,6 +8,11 @@
 import common
 
 class PerlCodeGenerator:
+#wxSplitterWindow(  parent, id, pos , size , style , name )
+    new_signature = [
+        '$parent', '$id', '$pos', '$size', '$style', '$name'
+    ]
+
     def get_code(self, window):
         plgen = common.code_writers['perl']
         prop = window.properties
@@ -32,8 +37,9 @@ class PerlCodeGenerator:
         init = []
         if id_name: init.append(id_name)
 
-        init.append('$self->{%s} = Wx::SplitterWindow->new(%s, %s, %s);\n' %
-                    (window.name, parent, id, style))
+        init.append('$self->{%s} = Wx::SplitterWindow->new(%s, %s, \
+wxDefaultPosition, wxDefaultSize, %s);\n'
+            % (window.name, parent, id, style))
 
         props_buf = plgen.generate_common_properties(window)
         win_1 = prop.get('window_1')
