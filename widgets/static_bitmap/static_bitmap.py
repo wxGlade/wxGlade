@@ -1,5 +1,5 @@
 # static_bitmap.py: wxStaticBitmap objects
-# $Id: static_bitmap.py,v 1.14 2004/09/17 13:09:49 agriggio Exp $
+# $Id: static_bitmap.py,v 1.15 2004/09/27 09:02:46 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -88,11 +88,13 @@ class EditStaticBitmap(ManagedBase):
             self.widget.SetBitmap(bmp)
             self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
-    def load_bitmap(self):
+    def load_bitmap(self, empty=[None]):
         if self.bitmap:
             return wxBitmap(os.path.abspath(self.bitmap), wxBITMAP_TYPE_ANY)
         else:
-            return wxNullBitmap
+            if empty[0] is None:
+                empty[0] = wxEmptyBitmap(1, 1)
+            return empty[0]
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
