@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.15 2003/08/07 17:26:56 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.16 2003/08/23 10:21:12 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -222,6 +222,8 @@ def quote_str(s):
     if not s: return '""'
     s = _quote_str_re.sub(r'\\\\', s )
     s = s.replace('"', r'\"')
+    s = s.replace('$', r'\$')
+    s = s.replace('@', r'\@')
     if _use_gettext:
         return '_T("' + s + '")'
     else:
