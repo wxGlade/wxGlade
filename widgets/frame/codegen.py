@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.15 2004/01/29 09:46:31 dinogen Exp $
+# $Id: codegen.py,v 1.16 2004/03/11 11:20:05 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -13,8 +13,11 @@ class PythonStatusbarCodeGenerator:
     def get_code(self, obj):
         pygen = common.code_writers['python']
         labels, widths = obj.properties['statusbar']
-        init = [ 'self.%s = self.CreateStatusBar(%s)\n' % \
-                 (obj.name, len(labels)) ]
+        style = obj.properties.get("style")
+        if style: style = pygen.cn_f(style)
+        else: style = '0'
+        init = [ 'self.%s = self.CreateStatusBar(%s, %s)\n' % \
+                 (obj.name, len(labels), style) ]
         props = []
         append = props.append
         append('self.%s.SetStatusWidths(%s)\n' % (obj.name, repr(widths)))
@@ -41,12 +44,11 @@ class PythonFrameCodeGenerator:
         title = prop.get('title')
         if title: out.append('self.SetTitle(%s)\n' % pygen.quote_str(title))
         icon = prop.get('icon')
-        print icon
         if icon: 
             if icon.startswith('var:'):
                 out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
-                out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') + '(%s, ' +
-                            cn('wxBITMAP_TYPE_ANY') + '))\n') % \
+                out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
+                            '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') % \
                            icon[4:].strip())
                 out.append('self.SetIcon(_icon)\n')
             elif icon.startswith('code:'):
@@ -56,8 +58,8 @@ class PythonFrameCodeGenerator:
                 out.append('self.SetIcon(_icon)\n')
             else:
                 out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
-                out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') + '(%s, ' +
-                            cn('wxBITMAP_TYPE_ANY') + '))\n') % \
+                out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
+                            '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') % \
                            pygen.quote_str(icon, False, False))
                 out.append('self.SetIcon(_icon)\n')
 
@@ -138,7 +140,10 @@ class CppStatusBarCodeGenerator:
         """
         cppgen = common.code_writers['C++']
         labels, widths = obj.properties['statusbar']
-        init = [ '%s = CreateStatusBar(%s);\n' % (obj.name, len(labels)) ]
+        style = obj.properties.get("style")
+        if not style: style = '0'
+        init = [ '%s = CreateStatusBar(%s, %s);\n' %
+                 (obj.name, len(labels), style) ]
         props = []
         append = props.append
         append('int %s_widths[] = { %s };\n' % (obj.name,

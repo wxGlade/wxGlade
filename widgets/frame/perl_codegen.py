@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: perl_codegen.py,v 1.5 2004/01/20 12:54:26 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.6 2004/03/11 11:20:05 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -17,8 +17,10 @@ class PerlStatusBarCodeGenerator:
         """
         plgen = common.code_writers['perl']
         labels, widths = obj.properties['statusbar']
-        init = [ '$self->{%s} = $self->CreateStatusBar(%s);\n'
-            % (obj.name, len(labels)) ]
+        style = obj.properties.get("style")
+        if not style: style = '0'
+        init = [ '$self->{%s} = $self->CreateStatusBar(%s, %s);\n'
+                 % (obj.name, len(labels), style) ]
         props = []
         append = props.append
         append('$self->{%s}->SetStatusWidths(%s);\n'
