@@ -52,10 +52,6 @@ class SplitterPane(WindowBase):
         common.adding_widget = common.adding_sizer = False
         common.widget_to_add = None
         common.app_tree.app.saved = False
-
-    def on_parent_size(self, event):
-        if self.has_sizer:
-            self.GetSizer().Layout()
     
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
@@ -205,10 +201,10 @@ class EditSplitterWindow(ManagedBase):
         except ValueError: return
         self.sash_pos = value
         if self.widget:
-            w, h = self.widget.GetClientSize()
-            if self.orientation == wxSPLIT_VERTICAL:
-                if w < value: self.widget.SetClientSize((value, -1))
-            elif h < value: self.widget.SetClientSize((-1, value))
+##             w, h = self.widget.GetClientSize()
+##             if self.orientation == wxSPLIT_VERTICAL:
+##                 if w < value: self.widget.SetClientSize((value, -1))
+##             elif h < value: self.widget.SetClientSize((-1, value))
             self.widget.SetSashPosition(value)
 
     def on_size(self, event):

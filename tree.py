@@ -5,6 +5,7 @@
 
 from wxPython.wx import *
 from xml.sax.saxutils import quoteattr
+import misc
 
 class Tree:
     """\
@@ -158,14 +159,20 @@ class WidgetTree(wxTreeCtrl, Tree):
         self.SetPyData(root_node.item, root_node)
         self.skip_select = 0 # necessary to avoid an infinite loop on win32, as
                              # SelectItem fires an EVT_TREE_SEL_CHANGED event
-        EVT_TREE_SEL_CHANGED(self, id, self.on_change_selection)
-        EVT_RIGHT_DOWN(self, self.popup_menu)
-        EVT_LEFT_DCLICK(self, self.show_toplevel)
         self.title = ' '
         self.set_title(self.title)
         
         self.auto_expand = True # this control the automatic expansion of
                                 # nodes: it is set to False during xml loading
+        self._show_menu = misc.wxGladePopupMenu('widget') # popup menu to
+                                                          # show toplevel
+                                                          # widgets
+        SHOW_ID = wxNewId()
+        self._show_menu.Append(SHOW_ID, 'Show')
+        EVT_TREE_SEL_CHANGED(self, id, self.on_change_selection)
+        EVT_RIGHT_DOWN(self, self.popup_menu)
+        EVT_LEFT_DCLICK(self, self.show_toplevel)
+        EVT_MENU(self, SHOW_ID, self.show_toplevel)
 
     def add(self, child, parent=None, image=None): # is image still used?
         """\
@@ -245,6 +252,7 @@ class WidgetTree(wxTreeCtrl, Tree):
         if self.cur_widget: self.cur_widget.update_view(False)
         self.cur_widget = node.widget
         self.cur_widget.update_view(True)
+        self.cur_widget.show_properties()
 
     def on_change_selection(self, event):
         if not self.skip_select:
@@ -261,8 +269,17 @@ class WidgetTree(wxTreeCtrl, Tree):
                 traceback.print_exc()
 
     def popup_menu(self, event):
-        item = self.GetPyData(self.GetSelection()).widget
-        if not item.widget or not item.is_visible(): return
+        node = self._find_item_by_pos(*event.GetPosition())
+        if not node: return
+        else:
+            self.select_item(node)
+            item = node.widget
+        if not item.widget or not item.is_visible():
+            import edit_windows
+            if isinstance(item, edit_windows.TopLevelBase):
+                self._show_menu.SetTitle(item.name)
+                self.PopupMenu(self._show_menu, event.GetPosition())
+            return
         try:
             x, y = self.ClientToScreen(event.GetPosition())
             x, y = item.widget.ScreenToClient((x, y))
@@ -298,6 +315,10 @@ class WidgetTree(wxTreeCtrl, Tree):
                 node.widget.finish_widget_creation()
             if node.children:
                 for c in node.children: self.show_widget(c)
+            # set the best size for the widget (if no one is given) before
+            # showing it
+            if not node.widget.properties['size'].is_active():
+                node.widget.sizer.fit_parent(node.widget)
             node.widget.show_widget(True)
             node.widget.show_properties()
         else:
@@ -313,21 +334,50 @@ class WidgetTree(wxTreeCtrl, Tree):
         Event handler for left double-clicks: if the click is above a toplevel
         widget and this is hidden, shows it
         """
+        try: x, y = event.GetPosition()
+        except AttributeError:
+            # if we are here, event is a CommandEvent and not a MouseEvent
+            node = self.GetPyData(self.GetSelection())
+            self.expand(node) # if we are here, the widget must be shown
+        else:
+            node = self._find_item_by_pos(x, y, True)
+        if node is not None:
+            if not node.widget.is_visible():
+                self.show_widget(node, True)
+            else:
+                node.widget.show_widget(False)
+                self.select_item(self.root)
+                self.app.show_properties()                    
+        event.Skip()
+
+    def _find_item_by_pos(self, x, y, toplevels_only=False):
+        """\
+        Finds the node which is displayed at the given coordinates.
+        Returns None if there's no match.
+        If toplevels_only is True, scans only root's children
+        """
         def inside(x, y, rect):
             return (rect.x <= x <= rect.x + rect.width) and \
                    (rect.y <= y <= rect.y + rect.height)
-        x, y = event.GetPosition()
-        for node in self.root.children:
+        def rec_find(node):
+            if not node: return None
             rect = self.GetBoundingRect(node.item)
-            if rect is not None and inside(x, y, rect):
-                if not node.widget.is_visible():
-                    self.show_widget(node, True)
-                else:
-                    node.widget.show_widget(False)
-                    self.select_item(self.root)
-                    self.app.show_properties()                    
-                break
-        event.Skip()
+            if rect is not None and inside(x, y, rect): return node            
+            if node.children: 
+                for c in node.children:
+                    res = rec_find(c)
+                    if res is not None: return res
+            return None
+        if not self.root.children: return None # root is not considered
+        if not toplevels_only:
+            for node in self.root.children:
+                res = rec_find(node)
+                if res is not None: return res
+        else:
+            for node in self.root.children:
+                rect = self.GetBoundingRect(node.item)
+                if rect is not None and inside(x, y, rect): return node
+        return None     
         
 # end of class WidgetTree
 

@@ -126,3 +126,18 @@ def get_toplevel_parent(obj):
     while window and not window.IsTopLevel():
         window = window.GetParent()
     return window
+
+
+if wxPlatform == '__WXGTK__':
+    # default wxMenu seems to have probles with SetTitle on GTK
+    class wxGladePopupMenu(wxMenu):
+        def __init__(self, title):
+            wxMenu.__init__(self)
+            self.TITLE_ID = wxNewId()
+            self.Append(self.TITLE_ID, title)
+            self.AppendSeparator()
+
+        def SetTitle(self, title):
+            self.SetLabel(self.TITLE_ID, title)
+
+else: wxGladePopupMenu = wxMenu

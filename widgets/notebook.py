@@ -56,10 +56,6 @@ class NotebookPane(WindowBase):
         common.widget_to_add = None
         common.app_tree.app.saved = False
 
-    def on_parent_size(self, event):
-        if self.sizer and self.widget:
-            self.widget.GetSizer().Layout()
-    
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
 

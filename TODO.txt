@@ -1,6 +1,6 @@
 wxGlade TODO list
 -----------------
-Last update: 2002-07-27
+Last update: 2002-07-29
 
 The list is more or less sorted by priority
 
@@ -20,11 +20,11 @@ Key:
     multiple instances of the same custom class (*)
   - Avoid xml code duplication (in the same case as above): this may be hard
 
-- Unicode support (#)
+- International characters support (#)
 
 - Investigation of the many memory leaks (#)
 
-- speedup of the xml loading (#)
+- speedup of the xml loading (*)
 
 - custom wxDirDialog (to choose the destination dir for the generated
   code, as the Windows default one doesn't allow to create a new dir)

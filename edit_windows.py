@@ -78,13 +78,7 @@ class EditBase:
         Creates the popup menu and connects some event handlers to self.widgets
         """
         COPY_ID, REMOVE_ID, CUT_ID = [ wxNewId() for i in range(3) ]
-        if wxPlatform == '__WXGTK__':
-            self._rmenu = wxMenu()
-            self.RMENU_TITLE_ID = wxNewId()
-            self._rmenu.Append(self.RMENU_TITLE_ID, self.name)
-            self._rmenu.AppendSeparator()
-        else:
-            self._rmenu = wxMenu(self.name)
+        self._rmenu = misc.wxGladePopupMenu(self.name)
         self._rmenu.Append(REMOVE_ID, 'Remove')
         self._rmenu.Append(COPY_ID, 'Copy')
         self._rmenu.Append(CUT_ID, 'Cut')
@@ -135,9 +129,7 @@ class EditBase:
 
     def set_name(self, value):
         self.name = str(value)
-        if wxPlatform == '__WXGTK__':
-            self._rmenu.SetLabel(self.RMENU_TITLE_ID, self.name)
-        else: self._rmenu.SetTitle(self.name)
+        self._rmenu.SetTitle(self.name)
         try: common.app_tree.set_name(self.node, self.name)
         except AttributeError: pass
 
@@ -615,6 +607,10 @@ class TopLevelBase(WindowBase):
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         EVT_CLOSE(self.widget, self.hide_widget)
+        if wxPlatform == '__WXMSW__':
+            # MSW isn't smart enough to avoid overlapping windows, so
+            # at least move it away from the 3 wxGlade frames
+            self.widget.CenterOnScreen()
 
     def create_properties(self):
         WindowBase.create_properties(self)
@@ -664,6 +660,6 @@ class TopLevelBase(WindowBase):
     def on_size(self, event):
         WindowBase.on_size(self, event)
         if self.sizer and self.widget:
-            self.sizer.Refresh()
+            self.sizer.refresh()
 
 # end of class TopLevelBase
