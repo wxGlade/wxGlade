@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.31 2003/07/15 18:38:00 agriggio Exp $
+# $Id: tree.py,v 1.32 2003/10/29 22:29:39 lawson89 Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -378,6 +378,8 @@ class WidgetTree(wxTreeCtrl, Tree):
             node.widget.show_widget(True)
             node.widget.show_properties()
             node.widget.widget.Raise()
+
+
         else:
             import edit_sizers
             def show_rec(node):
@@ -408,12 +410,17 @@ class WidgetTree(wxTreeCtrl, Tree):
             node = self._find_item_by_pos(x, y, True)
         if node is not None:
             if not node.widget.is_visible():
+                # added by rlawson to expand node on showing top level widget
+                self.expand(node)
                 self.show_widget(node, True)
             else:
                 node.widget.show_widget(False)
-                self.select_item(self.root)
-                self.app.show_properties()                    
-        event.Skip()
+                #self.select_item(self.root)
+                # added by rlawson to collapse only the toplevel node, not collapse back to root node
+                self.select_item(node)
+                self.app.show_properties()
+                event.Skip()
+        #event.Skip()
 
     def _find_item_by_pos(self, x, y, toplevels_only=False):
         """\
