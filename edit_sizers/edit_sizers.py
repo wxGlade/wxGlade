@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.42 2004/01/25 12:24:57 agriggio Exp $
+# $Id: edit_sizers.py,v 1.43 2004/04/21 14:07:44 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -702,24 +702,27 @@ class SizerBase(Sizer):
             if h == -1: h = item.widget.GetBestSize()[1]
             self.widget.SetItemMinSize(item.widget, w, h)
             return
-        
-        if elem.IsWindow(): # remove the previous item at pos
-            w = elem.GetWindow()
-            if not misc.check_wx_version(2, 5):
-                elem.SetWindow(None)
-            else:
-                w.SetContainingSizer(None)
-            w.Destroy()
-        try: # let's see if the item to add is a window
-            elem.SetWindow(item.widget)
-        except TypeError: # suppose the item to add is a sizer
-            elem.SetSizer(item.widget)
+
         if not misc.check_wx_version(2, 5):
+            if elem.IsWindow(): # remove the previous item at pos
+                w = elem.GetWindow()
+                elem.SetWindow(None)
+                w.Destroy()
+            try: # let's see if the item to add is a window
+                elem.SetWindow(item.widget)
+            except TypeError: # suppose the item to add is a sizer
+                elem.SetSizer(item.widget)
             elem.SetOption(option)
+            elem.SetFlag(flag)
+            elem.SetBorder(border)
         else:
-            elem.SetProportion(option)
-        elem.SetFlag(flag)
-        elem.SetBorder(border)
+            self.widget.Insert(pos, item.widget, option, flag, border)
+            self.widget.RemovePos(pos+1)
+            if elem.IsWindow():
+                w = elem.GetWindow()
+                w.SetContainingSizer(None)
+                w.Destroy()
+                
         try: # if the item was a window, set its size to a reasonable value
             if size: w, h = size
             else: w, h = item.widget.GetBestSize()
