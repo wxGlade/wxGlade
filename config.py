@@ -1,5 +1,5 @@
 # config.py: wxGlade configuration handling
-# $Id: config.py,v 1.13 2003/05/13 10:13:51 agriggio Exp $
+# $Id: config.py,v 1.14 2003/05/22 11:12:19 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -43,12 +43,15 @@ if common.use_gui:
             self.wxg_backup = wxCheckBox(self.notebook_1_pane_2, -1,
                                          "Create backup wxg files")
             self.codegen_backup = wxCheckBox(self.notebook_1_pane_2, -1,
-                                             "Create backup files "
-                                             "for generated source")
+                                             "Create backup files for "
+                                             "generated source")
             self.backup_suffix = wxRadioBox(
                 self.notebook_1_pane_2, -1, "Backup options",
                 choices=["append ~ to filename", "append .bak to filename"],
                 majorDimension=2, style=wxRA_SPECIFY_COLS)
+            self.local_widget_path = wxTextCtrl(self.notebook_1_pane_2, -1, "")
+            self.choose_widget_path = wxButton(self.notebook_1_pane_2, -1,
+                                               "...")
             self.ok = wxButton(self, wxID_OK, "OK")
             self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
             self.apply = wxButton(self, -1, "Apply")
@@ -58,10 +61,13 @@ if common.use_gui:
             # end wxGlade
             EVT_BUTTON(self, self.apply.GetId(),
                        lambda e: self.set_preferences())
+            
+            EVT_BUTTON(self, self.choose_widget_path.GetId(),
+                       self.on_widget_path)
 
             self.preferences = preferences
             self.set_values()
-
+            
         def set_values(self):
             try:
                 self.use_menu_icons.SetValue(self.preferences.use_menu_icons)
@@ -79,6 +85,8 @@ if common.use_gui:
                 self.buttons_per_row.SetValue(self.preferences.buttons_per_row)
                 self.remember_geometry.SetValue(
                     self.preferences.remember_geometry)
+                self.local_widget_path.SetValue(
+                    self.preferences.local_widget_path)
             except Exception, e:
                 wxMessageBox('Error reading config file:\n%s' % e, 'Error',
                              wxOK|wxCENTRE|wxICON_ERROR)
@@ -99,6 +107,18 @@ if common.use_gui:
             else: prefs['backup_suffix'] = '~'
             prefs['buttons_per_row'] = self.buttons_per_row.GetValue()
             prefs['remember_geometry'] = self.remember_geometry.GetValue()
+            prefs['local_widget_path'] = self.local_widget_path.GetValue()
+            
+        def on_widget_path(self, event):
+            # create a file choice dialog
+            dlg = wxDirDialog(self, "Choose a directory:", os.getcwd(),
+                              style=wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON)
+            if dlg.ShowModal() == wxID_OK:
+                wxMessageBox('Changes to local widget path take effect '
+                             'on restart of wxGlade', 'wxGlade',
+                             wxOK|wxICON_INFORMATION|wxCENTRE)
+                self.local_widget_path.SetValue(dlg.GetPath())
+            dlg.Destroy()
             
         def __set_properties(self):
             # begin wxGlade: wxGladePreferences.__set_properties
@@ -114,6 +134,8 @@ if common.use_gui:
             self.wxg_backup.SetValue(1)
             self.codegen_backup.SetValue(1)
             self.backup_suffix.SetSelection(0)
+            self.choose_widget_path.SetSize(wxDLG_SZE(self.choose_widget_path,
+                                                      (12, -1)))
             self.ok.SetDefault()
             # end wxGlade
 
@@ -122,6 +144,9 @@ if common.use_gui:
             sizer_1 = wxBoxSizer(wxVERTICAL)
             sizer_2 = wxBoxSizer(wxHORIZONTAL)
             sizer_5 = wxBoxSizer(wxVERTICAL)
+            sizer_6 = wxStaticBoxSizer(
+                wxStaticBox(self.notebook_1_pane_2, -1, "Local widget path"),
+                wxHORIZONTAL)
             sizer_3 = wxBoxSizer(wxVERTICAL)
             sizer_4 = wxFlexGridSizer(4, 2, 0, 0)
             sizer_3.Add(self.use_menu_icons, 0, wxALL|wxEXPAND, 5)
@@ -146,8 +171,8 @@ if common.use_gui:
             sizer_4.Add(self.number_history, 0,
                         wxALL|wxALIGN_CENTER_VERTICAL, 5)
             label_2_copy_1 = wxStaticText(self.notebook_1_pane_1, -1,
-                                          "Number of buttons per row\nin "
-                                          "the main palette")
+                                          "Number of buttons per row\nin the "
+                                          "main palette")
             sizer_4.Add(label_2_copy_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
             sizer_4.Add(self.buttons_per_row, 0,
                         wxALL|wxALIGN_CENTER_VERTICAL, 5)
@@ -161,6 +186,10 @@ if common.use_gui:
             sizer_5.Add(self.wxg_backup, 0, wxALL|wxEXPAND, 5)
             sizer_5.Add(self.codegen_backup, 0, wxALL|wxEXPAND, 5)
             sizer_5.Add(self.backup_suffix, 0, wxALL|wxEXPAND, 5)
+            sizer_6.Add(self.local_widget_path, 1, wxALL, 3)
+            sizer_6.Add(self.choose_widget_path, 0,
+                        wxALL|wxALIGN_CENTER_VERTICAL, 3)
+            sizer_5.Add(sizer_6, 0, wxALL|wxEXPAND, 5)
             self.notebook_1_pane_2.SetAutoLayout(1)
             self.notebook_1_pane_2.SetSizer(sizer_5)
             sizer_5.Fit(self.notebook_1_pane_2)
@@ -184,13 +213,14 @@ if common.use_gui:
 
 
 class Preferences(ConfigParser):
+    _has_home = os.path.expanduser('~') != '~'
     _defaults = {
         'use_menu_icons': common.use_gui and wxPlatform != '__WXGTK__',
         'frame_tool_win': True,
-        'open_save_path': (os.path.expanduser('~') != '~' and
-                           os.path.expanduser('~') or common.wxglade_path),
-        'codegen_path': (os.path.expanduser('~') != '~' and
-                         os.path.expanduser('~') or common.wxglade_path),
+        'open_save_path': (_has_home and os.path.expanduser('~') or \
+                           common.wxglade_path),
+        'codegen_path': (_has_home and os.path.expanduser('~') or \
+                         common.wxglade_path),
         'use_dialog_units': False,
         'number_history': 4,
         'show_progress': True,
@@ -199,6 +229,8 @@ class Preferences(ConfigParser):
         'backup_suffix': sys.platform == 'win32' and '.bak' or '~',
         'buttons_per_row': 5,
         'remember_geometry': False,
+        'local_widget_path': (_has_home and \
+                              os.path.expanduser('~/.wxglade/widgets') or '')
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults
@@ -326,3 +358,4 @@ def load_history():
     except IOError:
         # don't consider this an error
         return [] 
+    
