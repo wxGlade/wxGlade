@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.32 2004/01/25 12:25:28 agriggio Exp $
+# $Id: misc.py,v 1.33 2004/01/30 10:01:38 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -235,12 +235,16 @@ def _paste():
         try: focused_widget.clipboard_paste()
         except AttributeError: pass
 
+def _generate():
+    common.app_tree.app.generate_code()
+    
 # accelerator table to enable keyboard shortcuts for the popup menus of the
 # various widgets (remove, cut, copy, paste)
 accel_table = [(0, WXK_DELETE, _remove),
                (wxACCEL_CTRL, ord('C'), _copy),
                (wxACCEL_CTRL, ord('X'), _cut),
-               (wxACCEL_CTRL, ord('V'), _paste)]
+               (wxACCEL_CTRL, ord('V'), _paste),
+               (wxACCEL_CTRL, ord('G'), _generate)]
 #-----------------------------------------------------------------------------
 
 def _reverse_dict(src):
