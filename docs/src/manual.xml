@@ -5,7 +5,7 @@
 <book>
   <title>wxGlade user manual</title>
   <bookinfo>
-    <date>$Date: 2004/01/27 12:27:21 $</date>
+    <date>$Date: 2004/01/28 10:18:40 $</date>
     <author>
       <firstname>documentation by Marcello</firstname>
       <surname>Semboli</surname>
@@ -604,174 +604,180 @@ the tree window.
 <chapter>  
   <title>Supported widgets</title>  
     <section>
-    <title id="widgets.section">Introduction</title>
+    <title id="widgets.intro.section">Introduction</title>
+        <para>wxGlade have a number of widgets you can use. For each widget
+        wxGlade help you to edit his properties and visual look.</para>
+    </section>
+    <section>
+        <title id="widgets.wlist.section">Widget list</title>
         <para>Follow the widget list as it appear in the wxGlade main window.</para>
-    </section>
-    <section>
-    <title id="widgets.frame.section">Frame</title>
-    <para>This prompt for a wxFrame or a wxMDIChildFrame. 
-    A vertical wxBoxSizer is appended.
-    In the properties window you can choice the styles and you can add an icon.</para>
-    </section>
-    <section>
-    <title id="widgets.dialog.section">Dialog or Panel</title>
-    <para>This prompt for a wxDialog or a wxPanel in top level. 
-    In the properties window you can choice the styles and, for the dialog, 
-    you can add an icon.</para>
-    </section>
-    <section>
-    <title id="widgets.panel.section">Panel</title>
-    <para>This allow to add a panel into a sizer.</para>
-    <para>In the properties window you can choice the styles.</para>
-    </section>
-    <section>
-    <title id="widgets.splitter.section">Splitter window</title>
-    <para>This produce a wxSplitterWindow and two associated panels as well. 
-    You can choice vertical or horizontal splitting.</para>
-    <para>In the properties window you can choice the styles and
-    the sash position.</para>
-    <para>Be aware to do not put in a panel under a splitter, a widget too long or big, 
-    because in the design window you cannot notice nothing abnormal, but
-    when you run your program, one of two panels will takes all the avalaible space
-    and the other panel will shrink to the minimum size possible.</para>
-    </section>
-    <section>
-    <title id="widgets.notebook.section">Notebook</title>
-    <para>This produce a wxNotebook and one panel for each tab.</para>
-    <para>In the properties window you can add and remove tabs, that 
-    appears in a list.</para>
-    <para>Don't forget to click on the <quote>Apply</quote> button to transfer changes
-    that you have made in the list to the design window.</para>
-    </section>
-    <section>
-        <title id="widgets.button.section">Button</title>
-        <para>This produce a wxButton. You can enter a caption and the 
-        <quote>default</quote> flag. You cannot add an image because for this 
-        you need a bitmap button (see <xref linkend="widgets.bitmap_button.section"/>).</para>
-    </section>
-    <section>
-        <title id="widgets.toggle_button.section">Toggle button</title>
-        <para>This produce a wxToggleButton. You can enter a caption and 
-        the status (clicked or not) of the button.</para>
-    </section>
-    <section>
-        <title id="widgets.bitmap_button.section">Bitmap button</title>
-        <para>This produce a wxBitmapButton. You can set the 
-        <quote>default</quote> flag on or off. You also can choose the bitmap for the button
-        and, optionally, the bitmap for the disabled status. Refer to 
-        <xref linkend="basic.bitmaps.section"/> for bitmap path specifications.</para>
-    </section>
-    <section>
-    <title id="widgets.textctrl.section">Text control</title>
-    <para>This produce a wxTextCtrl. In the properties window you can enter 
-    the text and also set the style.</para>
-    </section>
-    <section>
-    <title id="widgets.spinctrl.section">Spin control</title>
-    <para>This produce a wxSpinCtrl. In the properties window you can enter 
-    the value, the  range  and also set the style.</para>
-    </section>
-    <section>
-    <title id="widgets.slider.section">Slider</title>
-    <para>This produce a wxSlider. In the properties window you can enter 
-    the value, the  range  and also set the style.</para>
-    </section>
-    <section>
-    <title id="widgets.gauge.section">Gauge</title>
-    <para>This produce a wxGauge. In the properties window you can enter 
-    the  range  and set the style.</para>
-    </section>
-    <section>
-    <title id="widgets.static_text.section">Static text</title>
-    <para>This produce a wxStaticText. In the properties window you can enter 
-    the  text, set the style and tell to wxGlade to store the control as attribute
-    or not.</para>
-    </section>
-    <section>
-    <title id="widgets.checkbox.section">Check box</title>
-    <para>This produce a wxCheckBox. In the properties window you can enter 
-    the  text, and the status, checked or not, of the button.</para>
-    </section>
-    <section>
-    <title id="widgets.radio.section">Radio button</title>
-    <para>This produce a wxRadioButton. In the properties window you can enter 
-    the  text, and the status, clicked or not, and the style.</para>
-    </section>
-    <section>
-    <title id="widgets.radiobox.section">Radio box</title>
-    <para>This produce a wxRadioBox. In the properties window you can enter
-    the dimension. The style tell if the dimension is the number of rows or columns.</para>
-    <para>You also can set wich one button is selected with the <quote>Selection</quote>
-    spin starting from 0. You can edit the list of choice, but remember to click on the <quote>Apply</quote> 
-    button to consolidate changes.</para>
-    </section>
-    <section>
-    <title id="widgets.choice.section">Choice</title>
-    <para>This produce a wxChoice. In the properties window you can enter 
-    the position of the selected item starting from 0. You can edit the list of 
-    choices, but remember to click on the <quote>Apply</quote> 
-    button to consolidate changes.</para>
-    </section>
-    <section>
-    <title id="widgets.combo.section">Combo Box</title>
-    <para>This produce a wxComboBox. In the properties window you can enter 
-    the position of the selected item starting from 0. You can edit the list of 
-    choices, but remember to click on the <quote>Apply</quote> 
-    button to consolidate changes.</para>
-    </section>
-    <section>
-    <title id="widgets.listbox.section">List Box</title>
-    <para>This produce a wxListBox. In the properties window you can enter 
-    the position of the selected item starting from 0. You can edit the list of 
-    choices, but remember to click on the <quote>Apply</quote> 
-    button to consolidate changes.</para>
-    </section>
-    <section>
-    <title id="widgets.staticline.section">StaticLine</title>
-    <para>This produce a wxStaticLine vertical or horizontal. 
-    In the properties window you can tell to wxGlade to store or not 
-    the object as attribute of the frame class.</para>
-    </section>
-    <section>
-        <title id="widgets.static_bitmap.section">Static bitmap</title>
-        <para>This produce a wxStaticBitmap. You will be prompt for the bitmap path. Refer to 
-        <xref linkend="basic.bitmaps.section"/> for bitmap path specifications.
-        In the properties window you can set the style and you can tell to wxGlade to store or not 
+        <section>
+        <title id="widgets.frame.section">Frame</title>
+        <para>This prompt for a wxFrame or a wxMDIChildFrame. 
+        A vertical wxBoxSizer is appended.
+        In the properties window you can choice the styles and you can add an icon.</para>
+        </section>
+        <section>
+        <title id="widgets.dialog.section">Dialog or Panel</title>
+        <para>This prompt for a wxDialog or a wxPanel in top level. 
+        In the properties window you can choice the styles and, for the dialog, 
+        you can add an icon.</para>
+        </section>
+        <section>
+        <title id="widgets.panel.section">Panel</title>
+        <para>This allow to add a panel into a sizer.</para>
+        <para>In the properties window you can choice the styles.</para>
+        </section>
+        <section>
+        <title id="widgets.splitter.section">Splitter window</title>
+        <para>This produce a wxSplitterWindow and two associated panels as well. 
+        You can choice vertical or horizontal splitting.</para>
+        <para>In the properties window you can choice the styles and
+        the sash position.</para>
+        <para>Be aware to do not put in a panel under a splitter, a widget too long or big, 
+        because in the design window you cannot notice nothing abnormal, but
+        when you run your program, one of two panels will takes all the avalaible space
+        and the other panel will shrink to the minimum size possible.</para>
+        </section>
+        <section>
+        <title id="widgets.notebook.section">Notebook</title>
+        <para>This produce a wxNotebook and one panel for each tab.</para>
+        <para>In the properties window you can add and remove tabs, that 
+        appears in a list.</para>
+        <para>Don't forget to click on the <quote>Apply</quote> button to transfer changes
+        that you have made in the list to the design window.</para>
+        </section>
+        <section>
+            <title id="widgets.button.section">Button</title>
+            <para>This produce a wxButton. You can enter a caption and the 
+            <quote>default</quote> flag. You cannot add an image because for this 
+            you need a bitmap button (see <xref linkend="widgets.bitmap_button.section"/>).</para>
+        </section>
+        <section>
+            <title id="widgets.toggle_button.section">Toggle button</title>
+            <para>This produce a wxToggleButton. You can enter a caption and 
+            the status (clicked or not) of the button.</para>
+        </section>
+        <section>
+            <title id="widgets.bitmap_button.section">Bitmap button</title>
+            <para>This produce a wxBitmapButton. You can set the 
+            <quote>default</quote> flag on or off. You also can choose the bitmap for the button
+            and, optionally, the bitmap for the disabled status. Refer to 
+            <xref linkend="basic.bitmaps.section"/> for bitmap path specifications.</para>
+        </section>
+        <section>
+        <title id="widgets.textctrl.section">Text control</title>
+        <para>This produce a wxTextCtrl. In the properties window you can enter 
+        the text and also set the style.</para>
+        </section>
+        <section>
+        <title id="widgets.spinctrl.section">Spin control</title>
+        <para>This produce a wxSpinCtrl. In the properties window you can enter 
+        the value, the  range  and also set the style.</para>
+        </section>
+        <section>
+        <title id="widgets.slider.section">Slider</title>
+        <para>This produce a wxSlider. In the properties window you can enter 
+        the value, the  range  and also set the style.</para>
+        </section>
+        <section>
+        <title id="widgets.gauge.section">Gauge</title>
+        <para>This produce a wxGauge. In the properties window you can enter 
+        the  range  and set the style.</para>
+        </section>
+        <section>
+        <title id="widgets.static_text.section">Static text</title>
+        <para>This produce a wxStaticText. In the properties window you can enter 
+        the  text, set the style and tell to wxGlade to store the control as attribute
+        or not.</para>
+        </section>
+        <section>
+        <title id="widgets.checkbox.section">Check box</title>
+        <para>This produce a wxCheckBox. In the properties window you can enter 
+        the  text, and the status, checked or not, of the button.</para>
+        </section>
+        <section>
+        <title id="widgets.radio.section">Radio button</title>
+        <para>This produce a wxRadioButton. In the properties window you can enter 
+        the  text, and the status, clicked or not, and the style.</para>
+        </section>
+        <section>
+        <title id="widgets.radiobox.section">Radio box</title>
+        <para>This produce a wxRadioBox. In the properties window you can enter
+        the dimension. The style tell if the dimension is the number of rows or columns.</para>
+        <para>You also can set wich one button is selected with the <quote>Selection</quote>
+        spin starting from 0. You can edit the list of choice, but remember to click on the <quote>Apply</quote> 
+        button to consolidate changes.</para>
+        </section>
+        <section>
+        <title id="widgets.choice.section">Choice</title>
+        <para>This produce a wxChoice. In the properties window you can enter 
+        the position of the selected item starting from 0. You can edit the list of 
+        choices, but remember to click on the <quote>Apply</quote> 
+        button to consolidate changes.</para>
+        </section>
+        <section>
+        <title id="widgets.combo.section">Combo Box</title>
+        <para>This produce a wxComboBox. In the properties window you can enter 
+        the position of the selected item starting from 0. You can edit the list of 
+        choices, but remember to click on the <quote>Apply</quote> 
+        button to consolidate changes.</para>
+        </section>
+        <section>
+        <title id="widgets.listbox.section">List Box</title>
+        <para>This produce a wxListBox. In the properties window you can enter 
+        the position of the selected item starting from 0. You can edit the list of 
+        choices, but remember to click on the <quote>Apply</quote> 
+        button to consolidate changes.</para>
+        </section>
+        <section>
+        <title id="widgets.staticline.section">StaticLine</title>
+        <para>This produce a wxStaticLine vertical or horizontal. 
+        In the properties window you can tell to wxGlade to store or not 
         the object as attribute of the frame class.</para>
-    </section>
-    <section>
-        <title id="widgets.listctrl.section">List Control</title>
-        <para>This produce a wxListCtrl. 
-        In the properties window you can set the style.</para>
-    </section>
-    <section>
-        <title id="widgets.treectrl.section">Tree Control</title>
-        <para>This produce a wxListCtrl. 
-        In the properties window you can set the style.</para>
-    </section>
-    <section>
-        <title id="widgets.grid.section">Grid</title>
-        <para>This produce a wxGrid. 
-        In the properties window you can set the style, the row number, 
-        the label size, the line and background color and the selection mode.
-        You can edit the list of columns, but remember to click on the <quote>Apply</quote> 
-        button to consolidate changes. Also you can choose to let wxGlade to
-        create the grid or leave it to the user code.</para>
-    </section>
-    <section>
-        <title id="widgets.custom.section">Custom Widget</title>
-        <para>When you put a custom widget in the design window yuo will be
-        prompt for a class name. 
-        In the properties window you can set a number of custom attributes in the form
-        <emphasis>attribute:value</emphasis>. These attributes have different effect in 
-        C++, perl, python or XRC code generation. Four special attributes, <emphasis>$id, $parent,
-        $width and $height</emphasis> are used in the constructor of the custom widget.</para>
-    </section>
-    <section>
-        <title id="widgets.spacer.section">Spacer</title>
-        <para>When you put a spacer into a sizer slot in the design window you will be
-        prompt for the size; wxGlade will generate the code to set a empty space in that slot
-        of the sizer.</para>
+        </section>
+        <section>
+            <title id="widgets.static_bitmap.section">Static bitmap</title>
+            <para>This produce a wxStaticBitmap. You will be prompt for the bitmap path. Refer to 
+            <xref linkend="basic.bitmaps.section"/> for bitmap path specifications.
+            In the properties window you can set the style and you can tell to wxGlade to store or not 
+            the object as attribute of the frame class.</para>
+        </section>
+        <section>
+            <title id="widgets.listctrl.section">List Control</title>
+            <para>This produce a wxListCtrl. 
+            In the properties window you can set the style.</para>
+        </section>
+        <section>
+            <title id="widgets.treectrl.section">Tree Control</title>
+            <para>This produce a wxListCtrl. 
+            In the properties window you can set the style.</para>
+        </section>
+        <section>
+            <title id="widgets.grid.section">Grid</title>
+            <para>This produce a wxGrid. 
+            In the properties window you can set the style, the row number, 
+            the label size, the line and background color and the selection mode.
+            You can edit the list of columns, but remember to click on the <quote>Apply</quote> 
+            button to consolidate changes. Also you can choose to let wxGlade to
+            create the grid or leave it to the user code.</para>
+        </section>
+        <section>
+            <title id="widgets.custom.section">Custom Widget</title>
+            <para>When you put a custom widget in the design window you will be
+            prompt for a class name. 
+            In the properties window you can set a number of custom attributes that
+            will appear in the costructor call. These attributes have different effect in 
+            C++, perl, python or XRC code generation. Four special attributes, <emphasis>$id, $parent,
+            $width and $height</emphasis> returns his value you specify in the <quote>common</quote> tab 
+            of the custom widget.</para>
+        </section>
+        <section>
+            <title id="widgets.spacer.section">Spacer</title>
+            <para>When you put a spacer into a sizer slot in the design window you will be
+            prompt for the size; wxGlade will generate the code to set a empty space in that slot
+            of the sizer.</para>
+        </section>
     </section>
 </chapter>  
 <chapter>  
