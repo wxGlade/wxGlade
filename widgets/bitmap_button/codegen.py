@@ -33,13 +33,15 @@ def python_code_generator(obj):
             if os.sep == '\\': bmp_file = bmp_file.replace(os.sep, '/')
             bmp = 'wxBitmap("%s", %s)' % (bmp_file.replace('"', r'\"'), type)
     if obj.is_toplevel:
-        l = ['self.%s = %s(%s, %s, %s)\n' % (obj.name, obj.klass, parent,
-                                             id, bmp)]
-        if id_name: l.append(id_name) # init lines are written in reverse order
+        l = []
+        if id_name: l.append(id_name) 
+        l.append('self.%s = %s(%s, %s, %s)\n' % (obj.name, obj.klass, parent,
+                                                 id, bmp))
         return l , [], []    
-    init = [ 'self.%s = wxBitmapButton(%s, %s, %s)\n' % 
-             (obj.name, parent, id, bmp) ]
-    if id_name: init.append(id_name) # init lines are written in reverse order
+    init = []
+    if id_name: init.append(id_name)
+    init.append('self.%s = wxBitmapButton(%s, %s, %s)\n' % 
+                (obj.name, parent, id, bmp))
     props_buf = pygen.generate_common_properties(obj)
     if not prop.has_key(size):
         props_buf.append('self.%s.SetSize(self.%s.GetBestSize())\n' % \

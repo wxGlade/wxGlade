@@ -15,11 +15,14 @@ def python_code_generator(panel):
     if not panel.parent.is_toplevel: parent = 'self.%s' % panel.parent.name
     else: parent = 'self'
     if panel.is_toplevel:
-        l = ['self.%s = %s(%s, %s)\n' % (panel.name, panel.klass, parent, id)]
+        l = []
         if id_name: l.append(id_name)
+        l.append('self.%s = %s(%s, %s)\n' %
+                 (panel.name, panel.klass, parent, id))
         return l, [], []
-    init = ['self.%s = wxPanel(%s, %s)\n' % (panel.name, parent, id) ]
+    init = []
     if id_name: init.append(id_name)
+    init.append('self.%s = wxPanel(%s, %s)\n' % (panel.name, parent, id))
     props_buf = pygen.generate_common_properties(panel)
     return init, props_buf, []
 

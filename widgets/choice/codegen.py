@@ -17,16 +17,18 @@ def python_code_generator(obj):
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
     if obj.is_toplevel:
-        l = ['self.%s = %s(%s, %s, choices=%s)\n' % \
-             (obj.name, obj.klass, parent, id, repr(choices))]
+        l = []
         if id_name: l.append(id_name)
+        l.append('self.%s = %s(%s, %s, choices=%s)\n' % \
+                 (obj.name, obj.klass, parent, id, repr(choices)))
         return l, [], []
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
-    init = ['self.%s = wxChoice(%s, %s, choices=%s%s)\n' %
-            (obj.name, parent, id, repr(choices), style) ]
+    init = []
     if id_name: init.append(id_name)
+    init.append('self.%s = wxChoice(%s, %s, choices=%s%s)\n' %
+                (obj.name, parent, id, repr(choices), style))
     props_buf = pygen.generate_common_properties(obj)
     selection = prop.get('selection')
     if selection is not None:
@@ -65,16 +67,18 @@ def cpp_code_generator(obj):
     ch_arr = '{\n        %s\n    };\n' % \
              ',\n        '.join(['"' + c + '"' for c in choices])
     if obj.is_toplevel:
-        l = ['%s = new %s(%s, %s, wxDefaultPosition, wxDefaultSize, %s, '
-             '%s_choices);\n' % \
-             (obj.name, obj.klass, parent, id, number, obj.name)]
+        l = []
         l.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+        l.append('%s = new %s(%s, %s, wxDefaultPosition, wxDefaultSize, %s, '
+                 '%s_choices);\n' % \
+                 (obj.name, obj.klass, parent, id, number, obj.name))
         return l, ids, [], []
     style = prop.get("style", "0")
-    init = ['%s = new wxChoice(%s, %s, wxDefaultPosition, wxDefaultSize, %s, '
-            '%s_choices, %s);\n' % \
-            (obj.name, parent, id, number, obj.name, style) ]
+    init = []
     init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+    init.append('%s = new wxChoice(%s, %s, wxDefaultPosition, wxDefaultSize, '
+                '%s, %s_choices, %s);\n' % \
+                (obj.name, parent, id, number, obj.name, style))
     props_buf = cppgen.generate_common_properties(obj)
     selection = prop.get('selection')
     if selection is not None:

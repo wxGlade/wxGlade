@@ -15,15 +15,17 @@ def python_code_generator(obj):
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
     if obj.is_toplevel:
-        l = ['self.%s = %s(%s, %s)\n' % (obj.name, obj.klass, parent, id)]
+        l = []
         if id_name: l.append(id_name)
+        l.append('self.%s = %s(%s, %s)\n' % (obj.name, obj.klass, parent, id))
         return l, [], []
     style = prop.get("style")
     if style and style != 'wxLI_HORIZONTAL': style = ", style=%s" % style
     else: style = ''
-    init = ['self.%s = wxStaticLine(%s, %s%s)\n' %
-            (obj.name, parent, id, style) ]
+    init = []
     if id_name: init.append(id_name)
+    init.append('self.%s = wxStaticLine(%s, %s%s)\n' %
+                (obj.name, parent, id, style))
     props_buf = pygen.generate_common_properties(obj)
     return init, props_buf, []
     

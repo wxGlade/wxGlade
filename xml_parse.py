@@ -548,6 +548,8 @@ class CodeObject:
                              # for window objects, this means that they are
                              # instances of a custom class, for sizers, that
                              # they are at the top of the hierarchy
+        self.is_container = False # if True, the widget is a container
+                                  # (frame, dialog, panel, ...)
         self.properties = {} # properties of the widget/sizer
         # prop_handlers is a stack of custom handler functions to set
         # properties of this object
@@ -560,6 +562,10 @@ class CodeObject:
                                   "attribute")
         self.parser._objects.push(self)
         self.parent = self.parser._windows.top()
+        # -------- added 2002-08-26 to detect container widgets --------------
+        if self.parent is not None:
+            self.parent.is_container = True
+        # -------- end added 2002-08-26 --------------------------------------
         self.base = None
         if base is not None: # this is a ``real'' object, not a sizeritem
             self.name = attrs['name']
