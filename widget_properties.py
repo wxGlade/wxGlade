@@ -220,9 +220,10 @@ class CheckBoxProperty(Property):
     """\
     Properties whose values can be changed by one checkbox.
     """
-    def __init__(self, owner, name, parent, label):
+    def __init__(self, owner, name, parent, label=None):
         Property.__init__(self, owner, name, parent)
         self.val = int(owner[name][0]())
+        if label is None: label = _mangle(name)
         self.label = label
         self.panel = None
         if parent is not None: self.display(parent)

@@ -136,6 +136,15 @@ class Tree:
             [c.write(outfile, tabs+1) for c in self.root.children]
         outfile.write('</application>\n')
 
+    def change_node(self, node, widget):
+        """\
+        Changes the node 'node' so that it refers to 'widget'
+        """
+        try: del self.names[node.widget.name]
+        except KeyError: pass
+        node.widget = widget
+        self.names[widget.name] = 1
+
 # end of class Tree
 
 
@@ -381,7 +390,13 @@ class WidgetTree(wxTreeCtrl, Tree):
             for node in self.root.children:
                 rect = self.GetBoundingRect(node.item)
                 if rect is not None and inside(x, y, rect): return node
-        return None     
+        return None
+
+    def change_node(self, node, widget):
+        Tree.change_node(self, node, widget)
+        self.SetItemImage(node.item, self.images.get(
+            widget.__class__.__name__, -1))
+        self.SetItemText(node.item, widget.name)           
         
 # end of class WidgetTree
 

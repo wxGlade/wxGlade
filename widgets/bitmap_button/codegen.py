@@ -46,6 +46,8 @@ def python_code_generator(obj):
     if not prop.has_key('size'):
         props_buf.append('self.%s.SetSize(self.%s.GetBestSize())\n' % \
                          (obj.name, obj.name))
+    if prop.get('default', False):
+        props_buf.append('self.%s.SetDefault()\n' % obj.name)
     return init, props_buf, []
 
 def python_generate_properties(obj):
@@ -53,6 +55,8 @@ def python_generate_properties(obj):
     out = []
     if not obj.properties.has_key('size'):
         out.append('self.SetSize(self.GetBestSize())\n')
+    if obj.properties.get('default', False):
+        out.append('self.SetDefault()\n')
     out.extend(pygen.generate_common_properties(obj))
     return out
 
@@ -86,6 +90,8 @@ def cpp_code_generator(obj):
     if not prop.has_key('size'):
         props_buf.append('%s->SetSize(%s->GetBestSize());\n' % \
                          (obj.name, obj.name))
+    if prop.get('default', False):
+        props_buf.append('%s->SetDefault();\n' % obj.name)
     return init, ids, props_buf, []
 
 def cpp_generate_properties(obj):
@@ -93,6 +99,8 @@ def cpp_generate_properties(obj):
     out = []
     if not obj.properties.has_key('size'):
         out.append('SetSize(GetBestSize());\n')
+    if obj.properties.get('default', False):
+        out.append('SetDefault();\n')
     out.extend(cppgen.generate_common_properties(obj))
     return out
 

@@ -69,6 +69,11 @@ class EditSpacer(ManagedBase):
             self.widget.SetSize(self.__size)
         self.sizer.set_item(self.pos, size=self.__size)
 
+    def set_flag(self, value):
+        ManagedBase.set_flag(self, value)
+        if not (self.get_int_flag() & wxEXPAND):
+            self.sizer.set_item(self.pos, size=self.__size)
+
 # end of class EditSpacer
         
 

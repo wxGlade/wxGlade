@@ -37,6 +37,7 @@ class EditBitmapButton(ManagedBase):
         """
         ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer,
                              pos, property_window, show=show)
+        self.default = False
         self.set_bitmap(str(bmp_file))
         # bitmap property
         self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
@@ -44,13 +45,17 @@ class EditBitmapButton(ManagedBase):
                                                        style=wxOPEN |
                                                        wxFILE_MUST_EXIST,
                                                        can_disable=False)
+        self.access_functions['default'] = (self.get_default, self.set_default)
+        self.properties['default'] = CheckBoxProperty(self, 'default', None)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
         self.properties['bitmap'].display(panel)
+        self.properties['default'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
         szr.Add(self.properties['bitmap'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['default'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -82,6 +87,14 @@ class EditBitmapButton(ManagedBase):
 
     def guess_type(self, filename):
         return _bmp_types.get(os.path.splitext(str(filename))[1], None)
+
+    def get_default(self):
+        return self.default
+
+    def set_default(self, value):
+        self.default = bool(value)
+        if value and self.widget:
+            self.widget.SetDefault()
 
 # end of class EditBitmapButton
         

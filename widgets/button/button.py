@@ -17,17 +17,22 @@ class EditButton(ManagedBase):
         Class to handle wxButton objects
         """
         self.label = label
+        self.default = False
         ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
                              property_window, show=show)
         self.access_functions['label'] = (self.get_label, self.set_label)
-        self.properties['label'] = TextProperty(self, 'label', None) 
+        self.properties['label'] = TextProperty(self, 'label', None)
+        self.access_functions['default'] = (self.get_default, self.set_default)
+        self.properties['default'] = CheckBoxProperty(self, 'default', None)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
         self.properties['label'].display(panel)
+        self.properties['default'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
         szr.Add(self.properties['label'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['default'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -47,6 +52,13 @@ class EditButton(ManagedBase):
     def create_widget(self):
         self.widget = wxButton(self.parent.widget, self.id, self.label)
 
+    def get_default(self):
+        return self.default
+
+    def set_default(self, value):
+        self.default = bool(value)
+        if value and self.widget:
+            self.widget.SetDefault()
 
 # end of class EditButton
         

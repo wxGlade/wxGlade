@@ -1,3 +1,11 @@
+2002-10-08: edit_sizers/edit_sizers.py: 
+		- added function change_sizer (and related SizerBase.change
+		  event handler) to change the type of a sizer without deleting
+		  its contents  
+		- renamed SizerBase.Layout to SizerBase.layout for consistency
+		- added optional recursive argument to SizerBase.Layout to
+		  call the method recursively on the sizer's sizer (if any)
+
 2002-10-06: codegen/cpp_codegen.py, codegen/py_codegen.py, 
                edit_sizers/edit_sizers.py: fixed bug related to notebook sizers
 	    edit_sizers/edit_sizers.py: fixed layout update on GridSizerBase,
