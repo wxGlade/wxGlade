@@ -317,7 +317,8 @@ class WidgetTree(wxTreeCtrl, Tree):
                 for c in node.children: self.show_widget(c)
             # set the best size for the widget (if no one is given) before
             # showing it
-            if not node.widget.properties['size'].is_active():
+            if not node.widget.properties['size'].is_active() and \
+                   node.widget.sizer:
                 node.widget.sizer.fit_parent(node.widget)
             node.widget.show_widget(True)
             node.widget.show_properties()
