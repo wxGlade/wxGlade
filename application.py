@@ -24,8 +24,10 @@ class FileDirDialog:
                                # permissions to view the contents of
                                # some directories
         style = 0
-        v = wx.__version__.split('.', 2)[-1]
-        if v and int(v[0]) > 2: style = wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON
+        if misc.check_wx_version(2, 3, 3):
+##         v = wx.__version__.split('.', 2)[-1]
+##         if v and int(v[0]) > 2:
+            style = wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON
         self.dir_dialog = wxDirDialog(parent, dir_message, style=style)
         del log_null
         self.parent = parent
