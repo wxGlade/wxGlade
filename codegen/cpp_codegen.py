@@ -672,7 +672,6 @@ def add_class(code_obj):
         # write the class body
         for line in header_buffer: hwrite(line)
         hwrite('\n#endif // %s\n' % hn)
-        hout.close()
 
         # source file
         swrite = sout.write
@@ -681,11 +680,13 @@ def add_class(code_obj):
         swrite('#include "%s"\n\n' % os.path.basename(header_file))
         # write the class implementation
         for line in source_buffer: swrite(line)
-        sout.close()
 
         # store source to disk
         common.save_file(header_file, hout.getvalue(), 'codegen')
         common.save_file(source_file, sout.getvalue(), 'codegen')
+
+        hout.close()
+        sout.close()
 
     else: # not multiple_files
         # write the class body onto the single source file 

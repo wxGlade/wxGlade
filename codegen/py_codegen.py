@@ -543,15 +543,12 @@ def add_class(code_obj):
         
         # write the class body
         for line in buffer: write(line)
-        out.close()
-
         try:
             # store the contents to filename
             common.save_file(filename, out.getvalue(), 'codegen')
         except:
-            raise IOError("py_codegen.add_class: %s, %s, %s" % \
-                          (out_dir, filename, code_obj.klass))
-        
+            import traceback; traceback.print_exc()
+        out.close()
     else: # not multiple_files
         # write the class body onto the single source file
         for dep in classes[code_obj.klass].dependencies:
@@ -632,13 +629,14 @@ def add_app(app_attrs, top_win_class):
         write('from %s import %s\n\n' % (top_win_class, top_win_class))
         # write the wxApp code
         for line in lines: write(line)
-        out.close()
         try:
             common.save_file(filename, out.getvalue(), 'codegen')
-        except: raise IOError("py_codegen.add_app: %s, %s" % (out_dir, name))
+        except:
+            import traceback; traceback.print_wexc()
         # make the file executable
         try: os.chmod(filename, 0755)
         except OSError: pass # this is not a bad error
+        out.close()
     else:
         write = output_file.write
         for line in lines: write(line)
