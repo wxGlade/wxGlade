@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxStaticBitmap objects
-# $Id: codegen.py,v 1.15 2003/11/24 21:28:05 agriggio Exp $
+# $Id: codegen.py,v 1.16 2003/12/09 08:37:35 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -35,7 +35,7 @@ class PythonCodeGenerator:
             else:
                 bmp = cn('wxBitmapFromXPMData') + '(%s)' % bmp_file[4:].strip()
         else:
-            bmp = ('wxBitmap(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \
+            bmp = ('wx.Bitmap(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \
                   pygen.quote_str(bmp_file, False, False)
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
@@ -78,9 +78,9 @@ class CppCodeGenerator:
         if not bmp_file:
             bmp = 'wxNullBitmap'
         elif bmp_file.startswith('var:'):
-            bmp = 'wxBitmap(%s)' % bmp_file[4:].strip()
+            bmp = 'wx.Bitmap(%s)' % bmp_file[4:].strip()
         else:
-            bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
+            bmp = 'wx.Bitmap(%s, wxBITMAP_TYPE_ANY)' % \
                   cppgen.quote_str(bmp_file, False, False)
         if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
         else: parent = 'this'
