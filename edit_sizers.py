@@ -30,7 +30,6 @@ class SizerSlot:
         EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
         EVT_LEFT_DOWN(self.widget, self.drop_widget)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
-        #self.sizer.add_item(self, self.pos, 1, wxEXPAND, size=(20, 20))
 
     def show_widget(self, yes):
         if yes and not self.widget: self.create_widget()
@@ -110,29 +109,14 @@ class SizerHandleButton(wxButton):
     def set_menu_title(self, title):
         self._rmenu.SetTitle(title)
 
-    def _remove(self, event):
+    def _remove(self, *args):
         # removes the sizer from his parent, if it has one
         if self.sizer.toplevel:
             common.app_tree.remove(self.sizer.node)
-##             self.sizer.window.SetSizer(None)
-##             self.sizer.window.has_sizer = False
             self.sizer.window.set_sizer(None)
             return
-##         szr = self.sizer
-##         elem = szr.sizer.GetChildren()[szr.pos]
-##         w = SizerSlot(szr.window, szr.sizer, szr.pos)
-##         try:
-##             szr.sizer.elements[szr.sizer.elements.index(self)] = w
-##         except (IndexError, ValueError):
-##             szr.sizer.elements.append(w)
-##         elem.SetWindow(w)
-##         elem.SetSizer(None)
-##         elem.SetOption(1)
-##         elem.SetBorder(0)
-##         elem.SetFlag(wxEXPAND)
-##         szr.sizer.Layout()
         self.sizer.sizer.free_slot(self.sizer.pos)
-        common.app_tree.remove(szr.node)
+        common.app_tree.remove(self.sizer.node)
 
     def Destroy(self):
         self._rmenu.Destroy()
@@ -176,13 +160,19 @@ class SizerBase:
         # toplevel: if True, self is not inside another sizer, but it is the
         # responsible of the layout of self.window
         self.toplevel = toplevel
-##         if menu is None: menu = [('Add slot', self.add_slot),
-##                                  ('Insert slot...', self.insert_slot)]
         if not self.toplevel:
             self.option = 1
             self.flag = wxEXPAND
             self.border = 0
             
+        self.menu = menu
+        if self.menu is None:
+            self.menu = [('Add slot', self.add_slot),
+                         ('Insert slot...', self.insert_slot)]
+        if not self.toplevel:
+            self.menu.extend([ ('Copy', self.clipboard_copy),
+                               ('Cut', self.clipboard_cut) ])
+
         self._btn = None # SizerHandleButton
 
         self.notebook = None
@@ -199,9 +189,7 @@ class SizerBase:
     def show_widget(self, yes):
         if not yes or self.widget:
             return # nothing to do if the sizer has already been created
-        menu = [('Add slot', self.add_slot),
-                ('Insert slot...', self.insert_slot)]
-        self._btn = SizerHandleButton(self.window, self.id, self, menu)
+        self._btn = SizerHandleButton(self.window, self.id, self, self.menu)
         # ScreenToClient used by WidgetTree for the popup menu
         EVT_BUTTON(self._btn, self.id, self.show_properties)
         self.create_widget()
@@ -483,9 +471,16 @@ class SizerBase:
         except AttributeError: pass
         return retval
 
+    def get_int_flag(self): return self.flag
+
     def get_border(self):
         if not hasattr(self, 'sizer'): return '0'
         return str(self.border)
+
+    def remove(self):
+        # this function is here for clipboard compatibility
+        if not self._btn: return
+        self._btn._remove()
 
     def delete(self):
         """\
@@ -604,6 +599,17 @@ class SizerBase:
     def is_visible(self):
         return self.window.is_visible()
             
+    def clipboard_copy(self, event):
+        """\
+        returns a copy of self to be inserted in the clipboard
+        """
+        import clipboard
+        clipboard.copy(self)
+
+    def clipboard_cut(self, event):
+        import clipboard
+        clipboard.cut(self)
+
 # end of class SizerBase
 
 
