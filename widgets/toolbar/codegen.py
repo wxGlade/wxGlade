@@ -1,5 +1,5 @@
-# codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.7 2003/07/11 16:09:21 agriggio Exp $
+# codegen.py: code generator functions for wxToolBar objects
+# $Id: codegen.py,v 1.8 2003/07/18 16:43:52 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -41,7 +41,7 @@ class PythonCodeGenerator:
         append('%s.Realize()\n' % obj_name)
 
         return out
-        
+
     def get_init_code(self, obj):
         prop = obj.properties
         pygen = common.code_writers['python']
@@ -53,18 +53,22 @@ class PythonCodeGenerator:
         if obj.is_toplevel: obj_name = 'self'
         else: obj_name = 'self.' + obj.name
 
+        def _get_bitmap(bitmap):
+            if not bitmap:
+                return 'wxNullBitmap'
+            elif bitmap.startswith('var:'):
+                if obj.preview:
+                    return 'wxEmptyBitmap(1, 1)'
+                else:
+                    return 'wxBitmapFromXPMData(%s)' % bitmap[4:].strip()
+            else:
+                return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
+                       pygen.quote_str(bitmap, False)
+                
         for tool in tools:
             if tool.id == '---': # item is a separator
                 append('%s.AddSeparator()\n' % obj_name)
             else:
-##                 if not obj.preview and tool.id:
-##                     tokens = tool.id.split('=')
-##                     if len(tokens) > 1:
-##                         id = tokens[0]
-##                         ids.append(' = '.join(tokens) + '\n')
-##                     else:
-##                         id = tool.id
-##                 else: id = 'wxNewId()'
                 name, val = pygen.generate_code_id(None, tool.id)
                 if not name and val == '-1':
                     id = 'wxNewId()'
@@ -76,16 +80,8 @@ class PythonCodeGenerator:
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                if tool.bitmap1:
-                    bmp1 = 'wxBitmap("%s", wxBITMAP_TYPE_ANY)' % \
-                           tool.bitmap1.replace('"', r'\"')
-                else:
-                    bmp1 = 'wxNullBitmap'
-                if tool.bitmap2:
-                    bmp2 = 'wxBitmap("%s", wxBITMAP_TYPE_ANY)' % \
-                           tool.bitmap2.replace('"', r'\"')
-                else:
-                    bmp2 = 'wxNullBitmap'
+                bmp1 = _get_bitmap(tool.bitmap1)
+                bmp2 = _get_bitmap(tool.bitmap2)
                 append('%s.AddLabelTool(%s, %s, %s, %s, %s, %s, %s)\n' %
                        (obj_name, id, pygen.quote_str(tool.label),
                         bmp1, bmp2, kind, pygen.quote_str(tool.short_help),
@@ -288,6 +284,15 @@ class CppCodeGenerator:
         if separation:
             append('%sSetToolSeparation(%s);\n' % (obj_name, separation))
 
+        def _get_bitmap(bitmap):
+            if not bitmap:
+                return 'wxNullBitmap'
+            elif bitmap.startswith('var:'):
+                return 'wxBitmap(%s)' % bitmap[4:].strip()
+            else:
+                return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
+                       cppgen.quote_str(bitmap, False)
+                
         for tool in tools:
             if tool.id == '---': # item is a separator
                 append('%sAddSeparator();\n' % obj_name)
@@ -297,29 +302,13 @@ class CppCodeGenerator:
                     id = 'wxNewId()'
                 else:
                     id = val
-##                 if tool.id:
-##                     tokens = tool.id.split('=')
-##                     if len(tokens) > 1:
-##                         id = tokens[0]
-##                     else:
-##                         id = tool.id
-##                 else:
-##                     id = 'wxNewId()'
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                if tool.bitmap1:
-                    bmp1 = 'wxBitmap("%s", wxBITMAP_TYPE_ANY)' % \
-                           tool.bitmap1.replace('"', r'\"')
-                else:
-                    bmp1 = 'wxNullBitmap'
-                if tool.bitmap2:
-                    bmp2 = 'wxBitmap("%s", wxBITMAP_TYPE_ANY)' % \
-                           tool.bitmap2.replace('"', r'\"')
-                else:
-                    bmp2 = 'wxNullBitmap'
+                bmp1 = _get_bitmap(tool.bitmap1)
+                bmp2 = _get_bitmap(tool.bitmap2)
                 append('%sAddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
                        (obj_name, id, cppgen.quote_str(tool.label),
                         bmp1, bmp2, kind, cppgen.quote_str(tool.short_help),
