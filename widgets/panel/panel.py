@@ -19,6 +19,20 @@ class EditPanel(ManagedBase):
         ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer,
                              pos, property_window, show=show)
         self.top_sizer = None # sizer to handle the layout of children
+        self.style = 0
+        self.access_functions['style'] = (self.get_style, self.set_style)
+        self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
+                           wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
+                           wxTAB_TRAVERSAL, wxWANTS_CHARS,
+                           wxNO_FULL_REPAINT_ON_RESIZE, wxCLIP_CHILDREN)
+
+        style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
+                        'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
+                        'wxSTATIC_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
+                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
+                        'wxCLIP_CHILDREN')
+        self.properties['style'] = CheckListProperty(self, 'style', None,
+                                                     style_labels)  
 
     def create_widget(self):
         self.widget = wxPanel(self.parent.widget, self.id)
@@ -33,6 +47,16 @@ class EditPanel(ManagedBase):
             print "EditPanel: Unable to disconnect the event hanlder"
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
 
+    def create_properties(self):
+        ManagedBase.create_properties(self)
+        panel = wxPanel(self.notebook, -1)
+        szr = wxBoxSizer(wxVERTICAL)
+        self.properties['style'].display(panel)
+        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
+        panel.SetAutoLayout(True)
+        panel.SetSizer(szr)
+        szr.Fit(panel)
+        self.notebook.AddPage(panel, 'Widget')
         
     def on_enter(self, event):
         if not self.top_sizer and common.adding_sizer:
@@ -62,6 +86,24 @@ class EditPanel(ManagedBase):
         if self.top_sizer and self.widget.GetSizer():
             return self.widget.GetSizer().GetMinSize()
         return wxPanel.GetBestSize(self.widget)
+
+    def get_style(self):
+        retval = [0] * len(self.style_pos)
+        try:
+            for i in range(len(self.style_pos)):
+                if self.style & self.style_pos[i]:
+                    retval[i] = 1
+        except AttributeError:
+            pass
+        return retval
+
+    def set_style(self, value):
+        value = self.properties['style'].prepare_value(value)
+        self.style = 0
+        for v in range(len(value)):
+            if value[v]:
+                self.style |= self.style_pos[v]
+        #if self.widget: self.widget.SetWindowStyleFlag(self.style)    
 
 # end of class EditPanel
         

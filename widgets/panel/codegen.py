@@ -22,7 +22,11 @@ def python_code_generator(panel):
         return l, [], []
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = wxPanel(%s, %s)\n' % (panel.name, parent, id))
+    style = prop.get("style")
+    if style: style = ", style=%s" % style
+    else: style = ''
+    init.append('self.%s = wxPanel(%s, %s%s)\n' % \
+                (panel.name, parent, id, style))
     props_buf = pygen.generate_common_properties(panel)
     return init, props_buf, []
 
@@ -41,8 +45,11 @@ def cpp_code_generator(panel):
     if panel.is_toplevel:
         l = ['%s = new %s(%s, %s);\n' % (panel.name, panel.klass, parent, id)]
         return l, ids, [], []
-    init = ['%s = new wxPanel(%s, %s);\n' %
-            (panel.name, parent, id) ]
+    extra = ''
+    style = prop.get("style")
+    if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
+    init = ['%s = new wxPanel(%s, %s%s);\n' %
+            (panel.name, parent, id, extra) ]
     props_buf = cppgen.generate_common_properties(panel)
     return init, ids, props_buf, []
 
