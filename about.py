@@ -11,54 +11,59 @@ import common, misc
 class wxGladeAboutBox(wxDialog):
     text = '''
     <html>
-    <body bgcolor="%s"><center>
+    <body bgcolor="%s">
     <font size="-1">
-    <table bgcolor="#458154" width="100%%" cellspacing="0"
-    cellpadding="2" border="2">
-    <tr>
-        <td align="center">
-        <h3>wxGlade %s: a GUI builder for<br>wxPython/wxWindows</h3>
-        Running on Python %s and wxPython %s<br>
-        </td>
-    </tr>
-    </table>
-    </font>
-    </center>
-    <table border="0">
-    <tr><td width="50">&nbsp;</td><td>
-    <font size="-1"><b>&nbsp;<br>
-    Copyright (c) 2002 Alberto Griggio<br>
-    License: Python 2.2 license (see license.txt)</b></font>
-    </td></tr>
-    <tr><td width="50">&nbsp;</td><td>
-    <font size="-1">
-    <br>Authors:<br>
-    &nbsp;&nbsp;&nbsp;Alberto Griggio &lt;albgrig@tiscalinet.it&gt;<br>
-    &nbsp;&nbsp;&nbsp;Marco Barisione &lt;marco.bari@vene.ws&gt;<br><br>
-    For credits, see credits.txt
-    </font>
-    </td></tr></table>
     <center>
-    <hr><div align="right">
-    <wxp class="wxButton">
-        <param name="label" value="OK">
-        <param name="id" value="wxID_OK">
-    </wxp>&nbsp;&nbsp;&nbsp;</div>
+    <table align="center" width="380" border="2" cellspacing="0">
+    <tr>
+    <td align="center" valign="center"><img src="icons/wxglade_small.png"
+    border="0">
+    </td></tr>
+    <tr><td bgcolor="#000000"
+    align="center">
+    <font color="#ffffff">Version %s &nbsp;&nbsp;on Python %s and wxPython %s
+    </font>
+    </td></tr>
+    </table>
     </center>
+    </font>
+    <table border="0" cellpadding="0" cellspacing="0">
+    <tr><td width="50"></td><td>
+    <font size="-1"><b>
+    <p>Copyright (c) 2002 Alberto Griggio<br>
+    License: Python 2.2 license (see license.txt)</b>
+    <p>Home page: <a href="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</a>
+    <p>Authors:<br>
+    &nbsp;&nbsp;&nbsp;Alberto Griggio &lt;albgrig@tiscalinet.it&gt;<br>
+    &nbsp;&nbsp;&nbsp;Marco Barisione &lt;marco.bari@vene.ws&gt;
+    <p>For credits, see credits.txt</font></td></tr></table>
     </body>
     </html>
     '''
+
     def __init__(self, parent=None):
         wxDialog.__init__(self, parent, -1, 'About wxGlade')
-        html = wxHtmlWindow(self, -1, size=(430, -1))
+        class HtmlWin(wxHtmlWindow):
+            def OnLinkClicked(self, linkinfo):
+                import webbrowser
+                webbrowser.open(linkinfo.GetHref(), new=True)
+        html = HtmlWin(self, -1, size=(430, -1))
         py_version = sys.version.split()[0]
         bgcolor = misc.color_to_string(self.GetBackgroundColour())
         html.SetPage(self.text % (bgcolor, common.version, py_version,
                                   wx.__version__))
         ir = html.GetInternalRepresentation()
-        html.SetSize((ir.GetWidth()+5, ir.GetHeight()+10))
-        w, h = html.GetSize()
-        self.SetClientSize((w, h))
+        html.SetSize((ir.GetWidth(), ir.GetHeight()+5))
+        szr = wxBoxSizer(wxVERTICAL)
+        szr.Add(html, 0, wxALIGN_CENTER)
+        szr.Add(wxStaticLine(self, -1), 0, wxLEFT|wxRIGHT|wxEXPAND, 20)
+        szr2 = wxBoxSizer(wxHORIZONTAL)
+        szr2.Add(wxButton(self, wxID_OK, "OK"))
+        szr.Add(szr2, 0, wxALL|wxALIGN_RIGHT, 20)
+        self.SetAutoLayout(True)
+        self.SetSizer(szr)
+        szr.Fit(self)
+        self.Layout()
         if parent: self.CenterOnParent()
         else: self.CenterOnScreen()
 
@@ -66,6 +71,7 @@ class wxGladeAboutBox(wxDialog):
 
 
 if __name__ == '__main__':
+    wxInitAllImageHandlers()
     app = wxPySimpleApp()
     d = wxGladeAboutBox()
     app.SetTopWindow(d)
