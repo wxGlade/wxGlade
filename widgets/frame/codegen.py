@@ -355,13 +355,18 @@ def cpp_generate_frame_properties(frame):
 def initialize():
     cn = common.class_names
     cn['EditFrame'] = 'wxFrame'
+    cn['EditMDIChildFrame'] = 'wxMDIChildFrame'
     cn['EditStatusBar'] = 'wxStatusBar'
     cn['EditMenuBar'] = 'wxMenuBar'
+    common.toplevels['EditFrame'] = 1
+    common.toplevels['EditMDIChildFrame'] = 1
 
     pygen = common.code_writers.get('python')
     if pygen:
         awh = pygen.add_widget_handler
         awh('wxFrame', lambda o: None, python_generate_frame_properties)
+        awh('wxMDIChildFrame', lambda o: None,
+            python_generate_frame_properties)
         awh('wxStatusBar', python_statusbar_code_generator)
         awh('wxMenuBar', python_menubar_code_generator)
         aph = pygen.add_property_handler
@@ -373,6 +378,8 @@ def initialize():
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
         xrcgen.add_widget_handler('wxFrame', xrc_frame_code_generator)
+        xrcgen.add_widget_handler('wxMDIChildFrame',
+                                  xrcgen.NotImplementedXrcObject)
         xrcgen.add_widget_handler('wxMenuBar', xrc_menubar_code_generator)
         xrcgen.add_property_handler('menus', MenuHandler)
         xrcgen.add_widget_handler('wxStatusBar',
@@ -387,6 +394,10 @@ def initialize():
         cppgen.add_widget_handler('wxFrame', lambda o: None,
                                   frame_constructor,
                                   cpp_generate_frame_properties)
+        cppgen.add_widget_handler('wxMDIChildFrame', lambda o: None,
+                                  frame_constructor,
+                                  cpp_generate_frame_properties,
+                                  extra_headers=['<wx/mdi.h>'])
         cppgen.add_widget_handler('wxMenuBar', cpp_menubar_code_generator)
         cppgen.add_widget_handler('wxStatusBar', cpp_statusbar_code_generator)
         cppgen.add_property_handler('menus', MenuHandler)

@@ -16,19 +16,19 @@ def python_code_generator(obj):
     value = '"' + prop.get('value', '').replace('"', r'\"') + '"'
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-    if obj.is_toplevel:
-        l = []
-        if id_name: l.append(id_name)
-        l.append('self.%s = %s(%s, %s, %s)\n' %
-                 (obj.name, obj.klass, parent, id, value))
-        return l , [], []
+##     if obj.is_toplevel:
+##         l = []
+##         if id_name: l.append(id_name)
+##         l.append('self.%s = %s(%s, %s, %s)\n' %
+##                  (obj.name, obj.klass, parent, id, value))
+##         return l , [], []
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = wxTextCtrl(%s, %s, %s%s)\n' %
-                (obj.name, parent, id, value, style))
+    init.append('self.%s = %s(%s, %s, %s%s)\n' %
+                (obj.name, obj.klass, parent, id, value, style))
     props_buf = pygen.generate_common_properties(obj)
     return init, props_buf, []
 
@@ -45,15 +45,15 @@ def cpp_code_generator(obj):
     value = '"' + prop.get('value', '').replace('"', r'\"') + '"'
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
-    if obj.is_toplevel:
-        l = ['%s = new %s(%s, %s, %s);\n' %
-             (obj.name, obj.klass, parent, id, value)]
-        return l, ids, [], []
+##     if obj.is_toplevel:
+##         l = ['%s = new %s(%s, %s, %s);\n' %
+##              (obj.name, obj.klass, parent, id, value)]
+##         return l, ids, [], []
     extra = ''
     style = prop.get('style')
     if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-    init = ['%s = new wxTextCtrl(%s, %s, %s%s);\n' %
-            (obj.name, parent, id, value, extra)]
+    init = ['%s = new %s(%s, %s, %s%s);\n' %
+            (obj.name, obj.klass, parent, id, value, extra)]
     props_buf = cppgen.generate_common_properties(obj)
     return init, ids, props_buf, []
 
@@ -66,11 +66,11 @@ def initialize():
         pygen.add_widget_handler('wxTextCtrl', python_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-                       ('const wxString&', 'value', '""'),
-                       ('const wxPoint&', 'pos', 'wxDefaultPosition'),
-                       ('const wxSize&', 'size', 'wxDefaultSize'),
-                       ('long', 'style', '0')]
-        cppgen.add_widget_handler('wxTextCtrl', cpp_code_generator,
-                                  constructor)
+##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+##                        ('const wxString&', 'value', '""'),
+##                        ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+##                        ('const wxSize&', 'size', 'wxDefaultSize'),
+##                        ('long', 'style', '0')]
+        cppgen.add_widget_handler('wxTextCtrl', cpp_code_generator) #,
+                                  #constructor)
     

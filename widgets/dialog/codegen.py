@@ -35,6 +35,7 @@ def cpp_generate_properties(dialog):
 def initialize():
     cn = common.class_names
     cn['EditDialog'] = 'wxDialog'
+    common.toplevels['EditDialog'] = 1
     
     pygen = common.code_writers.get('python')
     if pygen:

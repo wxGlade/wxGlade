@@ -1,3 +1,18 @@
+2002-11-27: codegen/py_codegen.py: if the output file for code generation
+                                   already exists, honor the indentation. This
+                                   is desirable for instance for conditional
+                                   code, e.g. if you have to change behaviour
+                                   if your app is invoked in GUI or non-GUI
+                                   mode. 
+            about.py: updated developers credits
+
+2002-11-24: widgets/*/codegen.py, xml_parse.py, edit_windows.py:
+               changed code generation for "contol" widgets: now if you 
+               change the "Class" property, no extra code is generated, but
+               it is assumed that you have a declaration of such a custom class
+               somewhere. This makes much more sense than the previous
+               behaviour (which I considered broken)
+
 2002-11-17: codegen/py_codegen.py: added import_modules argument to 
                                    add_widget_handler to allow widgets that
                                    need extra modules imported

@@ -33,16 +33,16 @@ def python_code_generator(obj):
         else:
             if os.sep == '\\': bmp_file = bmp_file.replace(os.sep, '/')
             bmp = 'wxBitmap("%s", %s)' % (bmp_file.replace('"', r'\"'), type)
-    if obj.is_toplevel:
-        l = []
-        if id_name: l.append(id_name) 
-        l.append('self.%s = %s(%s, %s, %s)\n' % (obj.name, obj.klass, parent,
-                                                 id, bmp))
-        return l , [], []    
+##     if obj.is_toplevel:
+##         l = []
+##         if id_name: l.append(id_name) 
+##         l.append('self.%s = %s(%s, %s, %s)\n' % (obj.name, obj.klass, parent,
+##                                                  id, bmp))
+##         return l , [], []    
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = wxBitmapButton(%s, %s, %s)\n' % 
-                (obj.name, parent, id, bmp))
+    init.append('self.%s = %s(%s, %s, %s)\n' % 
+                (obj.name, obj.klass, parent, id, bmp))
     props_buf = pygen.generate_common_properties(obj)
     if not prop.has_key('size'):
         props_buf.append('self.%s.SetSize(self.%s.GetBestSize())\n' % \
@@ -51,15 +51,15 @@ def python_code_generator(obj):
         props_buf.append('self.%s.SetDefault()\n' % obj.name)
     return init, props_buf, []
 
-def python_generate_properties(obj):
-    pygen = common.code_writers['python']
-    out = []
-    if not obj.properties.has_key('size'):
-        out.append('self.SetSize(self.GetBestSize())\n')
-    if obj.properties.get('default', False):
-        out.append('self.SetDefault()\n')
-    out.extend(pygen.generate_common_properties(obj))
-    return out
+## def python_generate_properties(obj):
+##     pygen = common.code_writers['python']
+##     out = []
+##     if not obj.properties.has_key('size'):
+##         out.append('self.SetSize(self.GetBestSize())\n')
+##     if obj.properties.get('default', False):
+##         out.append('self.SetDefault()\n')
+##     out.extend(pygen.generate_common_properties(obj))
+##     return out
 
 
 def cpp_code_generator(obj):
@@ -81,12 +81,12 @@ def cpp_code_generator(obj):
         else:
             if os.sep == '\\': bmp_file = bmp_file.replace(os.sep, '/')
             bmp = 'wxBitmap("%s", %s)' % (bmp_file.replace('"', r'\"'), type)
-    if obj.is_toplevel:
-        l = ['%s = new %s(%s, %s, %s);\n' % (obj.name, obj.klass, parent,
-                                            id, bmp)]
-        return l, ids, [], []    
-    init = [ '%s = new wxBitmapButton(%s, %s, %s);\n' % 
-             (obj.name, parent, id, bmp) ]
+##     if obj.is_toplevel:
+##         l = ['%s = new %s(%s, %s, %s);\n' % (obj.name, obj.klass, parent,
+##                                             id, bmp)]
+##         return l, ids, [], []    
+    init = [ '%s = new %s(%s, %s, %s);\n' % 
+             (obj.name, obj.klass, parent, id, bmp) ]
     props_buf = cppgen.generate_common_properties(obj)
     if not prop.has_key('size'):
         props_buf.append('%s->SetSize(%s->GetBestSize());\n' % \
@@ -95,29 +95,29 @@ def cpp_code_generator(obj):
         props_buf.append('%s->SetDefault();\n' % obj.name)
     return init, ids, props_buf, []
 
-def cpp_generate_properties(obj):
-    cppgen = common.code_writers['C++']
-    out = []
-    if not obj.properties.has_key('size'):
-        out.append('SetSize(GetBestSize());\n')
-    if obj.properties.get('default', False):
-        out.append('SetDefault();\n')
-    out.extend(cppgen.generate_common_properties(obj))
-    return out
+## def cpp_generate_properties(obj):
+##     cppgen = common.code_writers['C++']
+##     out = []
+##     if not obj.properties.has_key('size'):
+##         out.append('SetSize(GetBestSize());\n')
+##     if obj.properties.get('default', False):
+##         out.append('SetDefault();\n')
+##     out.extend(cppgen.generate_common_properties(obj))
+##     return out
 
 
 def initialize():
     common.class_names['EditBitmapButton'] = 'wxBitmapButton'
     pygen = common.code_writers.get('python')
     if pygen:
-        pygen.add_widget_handler('wxBitmapButton', python_code_generator,
-                                 python_generate_properties)        
+        pygen.add_widget_handler('wxBitmapButton', python_code_generator) #,
+                                 #python_generate_properties)        
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-                       ('const wxBitmap&', 'bitmap'),
-                       ('const wxPoint&', 'pos', 'wxDefaultPosition'),
-                       ('const wxSize&', 'size', 'wxDefaultSize'),
-                       ('long', 'style', '0')]
-        cppgen.add_widget_handler('wxBitmapButton', cpp_code_generator,
-                                  constructor, cpp_generate_properties)
+##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+##                        ('const wxBitmap&', 'bitmap'),
+##                        ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+##                        ('const wxSize&', 'size', 'wxDefaultSize'),
+##                        ('long', 'style', '0')]
+        cppgen.add_widget_handler('wxBitmapButton', cpp_code_generator) #,
+                                  #constructor, cpp_generate_properties)
