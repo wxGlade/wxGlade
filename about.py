@@ -1,5 +1,5 @@
 # about.py: about box with general info
-# $Id: about.py,v 1.18 2004/09/17 13:09:56 agriggio Exp $
+# $Id: about.py,v 1.19 2004/11/02 09:52:03 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -18,11 +18,9 @@ class wxGladeAboutBox(wxDialog):
     <center>
     <table align="center" width="380" border="2" cellspacing="0">
     <tr>
-    <td align="center" valign="center"><img src="%s"
-    border="0">
+    <td align="center"><img src="%s">
     </td></tr>
-    <tr><td bgcolor="#000000"
-    align="center">
+    <tr><td bgcolor="#000000" align="center">
     <font color="#ffffff">Version %s on Python %s and wxPython %s
     </font>
     </td></tr>

@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.21 2004/10/20 16:59:47 agriggio Exp $
+# $Id: dialog.py,v 1.22 2004/11/02 09:52:02 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -162,13 +162,14 @@ def builder(parent, sizer, pos, number=[0]):
                 if not number[0]: self.klass = 'MyDialog'
                 else: self.klass = 'MyDialog%s' % number[0]
                 number[0] += 1
-            self.klass_prop = TextProperty(self, 'class', self)
+            self.klass_prop = TextProperty(self, 'class', None) #self)
             self.widget = 0
             szr = wxBoxSizer(wxVERTICAL)
             if has_panel:
                 widget_prop = RadioProperty(self, 'widget', self,
                                             ['wxDialog', 'wxPanel'])
                 szr.Add(widget_prop.panel, 0, wxALL|wxEXPAND, 5)
+            self.klass_prop.display(self)
             szr.Add(self.klass_prop.panel, 0, wxALL|wxEXPAND, 5)
             btnbox = wxBoxSizer(wxHORIZONTAL)
             btnOK = wxButton(self, wxID_OK, 'OK')

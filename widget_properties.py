@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.47 2004/10/18 09:19:19 agriggio Exp $
+# $Id: widget_properties.py,v 1.48 2004/11/02 09:52:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -595,12 +595,34 @@ class DialogProperty(Property, _activator):
 
 class FileDialogProperty(DialogProperty):
     dialog = [None]
+
+    class FileDialog:
+        def __init__(self, parent, message, wildcard, style):
+            self.parent = parent
+            self.message = message
+            self.wildcard = wildcard
+            self.style = style
+            self.value = None
+
+        def ShowModal(self):
+            self.value = misc.FileSelector(
+                self.message, wildcard=self.wildcard, flags=self.style)
+            if self.value:
+                return wxID_OK
+
+        def get_value(self):
+            return self.value
+
+    # end of class FileDialog
+    
     def __init__(self, owner, name, parent=None, wildcard="All Files|*",
                  message="Choose a file", can_disable=True, style=0):
         if not self.dialog[0]:
-            self.dialog[0] = wxFileDialog(parent, message,
-                                          wildcard=wildcard, style=style)
-            self.dialog[0].get_value = self.dialog[0].GetPath
+##             self.dialog[0] = wxFileDialog(parent, message,
+##                                           wildcard=wildcard, style=style)
+##             self.dialog[0].get_value = self.dialog[0].GetPath
+            self.dialog[0] = self.FileDialog(
+                parent, message, wildcard, style)
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
                                 can_disable)
 

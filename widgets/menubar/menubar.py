@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.16 2004/10/20 16:59:46 agriggio Exp $
+# $Id: menubar.py,v 1.17 2004/11/02 09:52:02 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -92,17 +92,18 @@ class MenuItemDialog(wxDialog):
         self.name.SetSize((150, -1))
         self.help_str.SetSize((150, -1))
         szr = wxFlexGridSizer(0, 2)
+        if misc.check_wx_version(2, 5, 2):
+            flag = wxFIXED_MINSIZE
+        else:
+            flag = 0
         szr.Add(wxStaticText(self, -1, "Id   "))
-        szr.Add(self.id)
+        szr.Add(self.id, flag=flag)
         szr.Add(wxStaticText(self, -1, "Label  "))
-        szr.Add(self.label)
+        szr.Add(self.label, flag=flag)
         szr.Add(wxStaticText(self, -1, "Name  "))
-        szr.Add(self.name)
+        szr.Add(self.name, flag=flag)
         szr.Add(wxStaticText(self, -1, "Help String  "))
-        szr.Add(self.help_str)
-##         szr.Add(wxStaticText(self, -1, "Checkable  "), 0,
-##                 wxALIGN_CENTER_VERTICAL)
-##         szr.Add(self.check_radio, 0, wxTOP|wxBOTTOM, 2)
+        szr.Add(self.help_str, flag=flag)
         sizer2.Add(szr, 1, wxALL|wxEXPAND, 5)
         sizer2.Add(self.check_radio, 0, wxLEFT|wxRIGHT|wxBOTTOM, 4)
         szr = wxGridSizer(0, 2, 3, 3)
@@ -610,8 +611,10 @@ class EditMenuBar(EditBase, PreviewMixin):
                 misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
                                  'remove.xpm')
                 misc.append_item(self._rmenu, HIDE_ID, 'Hide')
-                EVT_MENU(self.widget, REMOVE_ID, self.remove)
-                EVT_MENU(self.widget, HIDE_ID, self.hide_widget)
+                def bind(method):
+                    return lambda e: misc.wxCallAfter(method)
+                EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+                EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 

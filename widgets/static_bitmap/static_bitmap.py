@@ -1,5 +1,5 @@
 # static_bitmap.py: wxStaticBitmap objects
-# $Id: static_bitmap.py,v 1.15 2004/09/27 09:02:46 agriggio Exp $
+# $Id: static_bitmap.py,v 1.16 2004/11/02 09:52:01 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -124,7 +124,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'bitmap_%s' % number[0]
-    bitmap = wxFileSelector("Select the image")
+    bitmap = misc.FileSelector("Select the image")
     static_bitmap = EditStaticBitmap(name, parent, wxNewId(), bitmap, sizer,
                                      pos, common.property_panel)
     node = Tree.Node(static_bitmap)

@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.41 2004/10/05 08:49:11 agriggio Exp $
+# $Id: application.py,v 1.42 2004/11/02 09:52:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -21,48 +21,69 @@ class FileDirDialog:
                  file_message="Choose a file", dir_message=None, style=0):
         self.owner = owner
         self.prev_dir = config.preferences.codegen_path
-        self.file_dialog = wxFileDialog(parent, file_message, self.prev_dir,
-                                        wildcard=wildcard, style=style)
-        if dir_message is None: dir_message = file_message
-        log_null = wxLogNull() # to prevent popup messages about lack of
-                               # permissions to view the contents of
-                               # some directories
-        style = 0
-        if misc.check_wx_version(2, 3, 3):
-            style = wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON
-        self.dir_dialog = wxDirDialog(parent, dir_message, style=style)
-        del log_null
-        self.parent = parent
+        self.wildcard = wildcard
         self.file_message = file_message
-        self.style = style
+        self.dir_message = dir_message
+        self.file_style = style
+        self.dir_style = wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON
+##         self.file_dialog = wxFileDialog(parent, file_message, self.prev_dir,
+##                                         wildcard=wildcard, style=style)
+##         if dir_message is None: dir_message = file_message
+##         log_null = wxLogNull() # to prevent popup messages about lack of
+##                                # permissions to view the contents of
+##                                # some directories
+##         style = 0
+##         if misc.check_wx_version(2, 3, 3):
+##             style = wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON
+##         self.dir_dialog = wxDirDialog(parent, dir_message, style=style)
+##         del log_null
+        self.parent = parent
+##         self.file_message = file_message
+##         self.style = style
+        self.value = None
 
     def ShowModal(self):
         if self.owner.codegen_opt == 0:
-            if self.prev_dir is not None:
-                self.file_dialog.SetDirectory(self.prev_dir)
-            dialog = self.file_dialog
+##             if self.prev_dir is not None:
+##                 self.file_dialog.SetDirectory(self.prev_dir)
+##             dialog = self.file_dialog
+            self.value = misc.FileSelector(
+                self.file_message, self.prev_dir or "",
+                wildcard=self.wildcard, flags=self.file_style)
         else:
-            if self.prev_dir is not None:
-                self.dir_dialog.SetPath(self.prev_dir)
-            dialog = self.dir_dialog
-        ok = dialog.ShowModal()
-        if ok == wxID_OK:
-            self.prev_dir = dialog.GetPath()
+##             if self.prev_dir is not None:
+##                 self.dir_dialog.SetPath(self.prev_dir)
+##             dialog = self.dir_dialog
+            self.value = misc.DirSelector(self.dir_message,
+                                          flags=self.dir_style)
+##         ok = dialog.ShowModal()
+##         if ok == wxID_OK:
+##             self.prev_dir = dialog.GetPath()
+##             if not os.path.isdir(self.prev_dir):
+##                 self.prev_dir = os.path.dirname(self.prev_dir)
+##         return ok
+        if self.value:
+            self.prev_dir = self.value
             if not os.path.isdir(self.prev_dir):
                 self.prev_dir = os.path.dirname(self.prev_dir)
-        return ok
+            return wxID_OK
+        return wxID_CANCEL
 
     def get_value(self):
-        if self.owner.codegen_opt == 0: return self.file_dialog.GetPath()
-        else: return self.dir_dialog.GetPath()
+##         if self.owner.codegen_opt == 0: return self.file_dialog.GetPath()
+##         else: return self.dir_dialog.GetPath()
+        return self.value
 
     def set_wildcard(self, wildcard):
-        if wxPlatform == '__WXMSW__': self.file_dialog.SetWildcard(wildcard)
-        else:
-            # on GTK SetWildcard has no effect, so we recreate the dialog
-            self.file_dialog = wxFileDialog(self.parent, self.file_message,
-                                            wildcard=wildcard,
-                                            style=self.style)
+##         if wxPlatform == '__WXMSW__':
+##             self.file_dialog.SetWildcard(wildcard)
+##         else:
+##             # on GTK SetWildcard has no effect, so we recreate the dialog
+##             self.file_dialog = wxFileDialog(self.parent, self.file_message,
+##                                             wildcard=wildcard,
+##                                             style=self.style)
+        self.wildcard = wildcard
+        
 # end of class FileDirDialog
 
 

@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.13 2004/10/20 16:59:45 agriggio Exp $
+# $Id: toolbar.py,v 1.14 2004/11/02 09:52:01 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -22,9 +22,27 @@ class _MyBrowseButton(FileBrowseButton):
         button =wxButton(self, ID, misc.wxstr(self.buttonText))
         button.SetToolTipString(misc.wxstr(self.toolTip))
         w = button.GetTextExtent(self.buttonText)[0] + 10
-        button.SetSize((w, -1))
+        if not misc.check_wx_version(2, 5, 2): button.SetSize((w, -1))
+        else: button.SetMinSize((w, -1))
         EVT_BUTTON(button, ID, self.OnBrowse)
         return button
+
+    def OnBrowse (self, event=None):
+        """ Going to browse for file... """
+        current = self.GetValue()
+        directory = os.path.split(current)
+        if os.path.isdir(current):
+            directory = current
+            current = ''
+        elif directory and os.path.isdir(directory[0]):
+            current = directory[1]
+            directory = directory [0]
+        else:
+            directory = self.startDirectory
+        value = misc.FileSelector(self.dialogTitle, directory, current,
+                                  wildcard=self.fileMask, flags=self.fileMode)
+        if value:
+            self.SetValue(value)
 
 # end of class _MyBrowseButton
 
@@ -114,20 +132,22 @@ class ToolsDialog(wxDialog):
         self.help_str.SetSize((150, -1))
         self.long_help_str.SetSize((150, -1))
         szr = wxFlexGridSizer(0, 2)
+        if misc.check_wx_version(2, 5, 2):
+            flag = wxFIXED_MINSIZE
+        else:
+            flag = 0
         szr.Add(wxStaticText(self, -1, "Id   "))
-        szr.Add(self.id)
+        szr.Add(self.id, flag=flag)
         szr.Add(wxStaticText(self, -1, "Label  "))
-        szr.Add(self.label)
+        szr.Add(self.label, flag=flag)
         szr.Add(wxStaticText(self, -1, "Short Help  "))
-        szr.Add(self.help_str)
+        szr.Add(self.help_str, flag=flag)
         szr.Add(wxStaticText(self, -1, "Long Help  "))
-        szr.Add(self.long_help_str)
+        szr.Add(self.long_help_str, flag=flag)
         sizer2.Add(szr, 1, wxALL|wxEXPAND, 5)
         label_w = self.bitmap1.browseButton.GetTextExtent('...')[0]
         sizer2.Add(self.bitmap1, 0, wxEXPAND)
         sizer2.Add(self.bitmap2, 0, wxEXPAND)
-        self.bitmap1.browseButton.SetSize((label_w + 4, -1))
-        self.bitmap2.browseButton.SetSize((label_w + 4, -1))
         sizer2.Add(self.check_radio, 0, wxLEFT|wxRIGHT|wxBOTTOM, 4)
         szr = wxGridSizer(0, 2, 3, 3)
         szr.Add(self.add, 0, wxEXPAND); szr.Add(self.remove, 0, wxEXPAND)
@@ -684,9 +704,11 @@ class EditToolBar(EditBase, PreviewMixin):
                 self._rmenu = misc.wxGladePopupMenu(self.name)
                 misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
                                  'remove.xpm')
-                misc.append_item(self._rmenu, HIDE_ID, 'Hide')
-                EVT_MENU(self.widget, REMOVE_ID, self.remove)
-                EVT_MENU(self.widget, HIDE_ID, self.hide_widget)
+                misc.append_item(self._rmenu, HIDE_ID, 'Hide') 
+                def bind(method):
+                    return lambda e: misc.wxCallAfter(method)
+                EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+                EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
