@@ -302,11 +302,18 @@ def finalize():
         # write the new file contents to disk
         common.save_file(previous_source.name + '.h', header_content,
                          'codegen')
+        common.save_file(previous_source.name + '.cpp',
+                         source_content + '\n\n' + extra_source,
+                         'codegen')
+        
+    elif not multiple_files:
+        oh = os.path.basename(output_name).upper() + '_H'
+        output_header.write('\n#endif // %s\n' % oh)
         common.save_file(output_name + '.h', output_header.getvalue(),
                          'codegen')
         common.save_file(output_name + '.cpp', output_source.getvalue(),
                          'codegen')
-        
+
 
 def test_attribute(obj):
     """\
