@@ -28,6 +28,11 @@ should know.
 
 * Known Bugs/Issues:
 --------------------
+- If you have PyXML installed, be sure to use at least version 0.8.1, as
+  otherwise you will not be able to generate code and load saved wxg
+  files. This seems to be a PyXML bug, see
+  http://sourceforge.net/tracker/?func=detail&atid=106473&aid=573011&group_id=6473 
+
 - I don't know if it works on the Mac (OS X): if you try it on such platform,
   please let me know if it works.
 
