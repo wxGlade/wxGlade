@@ -1,3 +1,7 @@
+2003-06-26: tree.py, widgets/panel/*:
+                added scrolled window support (this required a small change
+                in Tree.Node.write in tree.py)
+
 2003-06-23: perl generation support added
 
 2003-06-21: nearly all around:
