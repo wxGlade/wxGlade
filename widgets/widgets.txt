@@ -1,0 +1,23 @@
+# list of widget modules available (one per line, without extension)
+# lines starting with a '#' are comments
+frame
+dialog
+panel
+splitter_window
+notebook
+button
+toggle_button
+bitmap_button
+text_ctrl
+spin_ctrl
+slider
+static_text
+checkbox
+radio_button
+radio_box
+choice
+combo_box
+list_box
+static_line
+static_bitmap
+spacer
