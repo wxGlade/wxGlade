@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.27 2003/05/15 19:05:00 agriggio Exp $
+# $Id: py_codegen.py,v 1.28 2003/06/11 17:10:39 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -816,7 +816,7 @@ def generate_code_disabled(obj):
     try: disabled = int(obj.properties['disabled'])
     except: disabled = False
     if disabled:
-        return self + '.Disable()\n'
+        return self + '.Enable(0)\n'
 
 
 def generate_code_focused(obj):
