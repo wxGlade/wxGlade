@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.59 2004/08/18 10:03:23 agriggio Exp $
+# $Id: edit_windows.py,v 1.60 2004/08/26 12:03:28 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -145,7 +145,7 @@ class EditBase:
         else:
             self.name = value
             if self._rmenu: self._rmenu.SetTitle(self.name)
-            try: common.app_tree.set_name(self.node, self.name)
+            try: common.app_tree.refresh_name(self.node) #, self.name)
             except AttributeError: pass
             self.property_window.SetTitle('Properties - <%s>' % self.name)
     set_name_pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')
@@ -156,6 +156,8 @@ class EditBase:
             self.klass_prop.set_value(self.klass)
         else:
             self.klass = value
+            try: common.app_tree.refresh_name(self.node) #, self.name)
+            except AttributeError: pass
     set_klass_pattern = re.compile('^[a-zA-Z]+[\w:.0-9]*$')
 
     def popup_menu(self, event):

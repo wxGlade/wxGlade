@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.45 2004/08/12 12:14:13 agriggio Exp $
+# $Id: edit_sizers.py,v 1.46 2004/08/26 12:03:27 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -617,7 +617,7 @@ class SizerBase(Sizer):
         else:
             self.name = value
             self._btn.set_menu_title(value)
-            try: common.app_tree.set_name(self.node, self.name)
+            try: common.app_tree.refresh_name(self.node) #, self.name)
             except AttributeError:
                 import traceback; traceback.print_exc()
     set_name_pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')

@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxPanel objects
-# $Id: codegen.py,v 1.13 2003/11/24 21:28:06 agriggio Exp $
+# $Id: codegen.py,v 1.14 2004/08/26 12:03:17 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -111,7 +111,12 @@ def xrc_code_generator(obj):
 
     class XrcCodeGenerator(xrcgen.DefaultXrcObject):
         def write(self, *args, **kwds):
-            for prop in ('scollable', 'scroll_rate'):
+            if 'scrollable' in self.properties:
+                style = self.properties.get('style', '').split('|')
+                try: style.remove('wxTAB_TRAVERSAL')
+                except ValueError: pass
+                self.properties['style'] = '|'.join(style)
+            for prop in ('scrollable', 'scroll_rate'):
                 try: del self.properties[prop]
                 except KeyError: pass
             xrcgen.DefaultXrcObject.write(self, *args, **kwds)
