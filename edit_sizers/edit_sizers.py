@@ -18,7 +18,7 @@ class SizerSlot:
         self.menu = None
 
     def create_widget(self):
-        self.widget = wxPanel(self.parent.widget, -1)
+        self.widget = wxPanel(self.parent.widget, -1, size=(20, 20))
         self.widget.SetBackgroundColour(wxLIGHT_GREY)
         self.widget.SetAutoLayout(True)
         EVT_PAINT(self.widget, self.on_paint)
@@ -705,13 +705,29 @@ class SizerBase:
     def layout(self, recursive=True):
         #if not self.widget or not self.window.is_visible(): return
         if not self.widget: return
+
+        from edit_windows import TopLevelBase
+        if self.toplevel and not isinstance(self.window, TopLevelBase):
+            if not self.window.properties['size'].is_active():
+                szr = self.window.sizer.widget
+                w, h = self.window.widget.GetBestSize()
+                szr.SetItemMinSize(self.window.widget, w, h)            
+            if self.window.sizer is not self:
+                self.window.sizer.layout(False)
+            else:
+                szr.Layout()
+            return
         self.widget.SetMinSize(self.widget.CalcMin())
         self.widget.Layout()
         for c in self.children:
-            try: c.item.widget.Refresh()
-            except: pass
-        if recursive and hasattr(self, 'sizer'):
-            self.sizer.layout(recursive)
+            try:
+##                 w, h = c.item.widget.GetBestSize()
+##                 self.widget.SetItemMinSize(c.item.widget, w, h)
+                c.item.widget.Refresh()
+            except Exception, e: pass
+        if recursive:
+            if hasattr(self, 'sizer'):
+                self.sizer.layout(recursive)
 
     # 2002-10-09 -------------------------------------------------------------
     def change_item_pos(self, item, new_pos, force_layout=True):
@@ -870,12 +886,11 @@ class SizerBase:
         tmp = SizerSlot(self.window, self, len(self.children))
         item = SizerItem(tmp, len(self.children), 1, wxEXPAND)
         self.children.append(item)
-        if self.widget:
-            tmp.show_widget(True) # create the actual SizerSlot widget
-            self.widget.Add(tmp.widget, 1, wxEXPAND)
-            self.widget.SetItemMinSize(tmp.widget, 20, 20)
-            force_layout = kwds.get('force_layout', True)
-            if force_layout: self.layout(True)
+        tmp.show_widget(True) # create the actual SizerSlot widget
+        self.widget.Add(tmp.widget, 1, wxEXPAND)
+        self.widget.SetItemMinSize(tmp.widget, 20, 20)
+        force_layout = kwds.get('force_layout', True)
+        if force_layout: self.layout(True)
         common.app_tree.app.saved = False
 
     def insert_slot(self, *args, **kwds):
