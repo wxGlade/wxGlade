@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.16 2003/08/23 10:21:12 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.17 2003/08/28 11:07:34 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -236,6 +236,8 @@ def quote_path(s):
     """ # " alb: comment needed to avoid emacs going insane with colorization..
     s = s.replace('\\', '\\\\')
     s = s.replace('"', r'\"')
+    s = s.replace('$', r'\$') # sigh
+    s = s.replace('@', r'\@')
     return '"' + s + '"'
 
 def initialize(app_attrs): 
