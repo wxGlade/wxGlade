@@ -298,6 +298,17 @@ class wxGladeFrame(wxFrame):
                 p = ProgressXmlWidgetBuilder(input_file=infile)
             else: p = XmlWidgetBuilder()
             p.parse(infile)
+        except (IOError, OSError), msg:
+            if locals().has_key('infile'): infile.close()
+            common.app_tree.clear()
+            common.property_panel.Reparent(self.frame2)
+            common.app_tree.app.saved = True
+            wxMessageBox("Error loading file %s: %s" % (infilename, msg),
+                         "Error", wxOK|wxCENTRE|wxICON_ERROR)
+            # reset the auto-expansion of nodes
+            common.app_tree.auto_expand = True
+            os.chdir(old_dir)
+            return             
         except Exception, msg:
             import traceback; traceback.print_exc()
 
@@ -352,6 +363,11 @@ class wxGladeFrame(wxFrame):
 ##                 f.close()
                 common.save_file(common.app_tree.app.filename,
                                  buffer.getvalue(), 'wxg')
+            except (IOError, OSError), msg:
+                common.app_tree.app.saved = False
+                fn = common.app_tree.app.filename
+                wxMessageBox("Error saving app:\n%s" % msg, "Error",
+                             wxOK|wxCENTRE|wxICON_ERROR)
             except Exception, msg:
                 import traceback; traceback.print_exc()
 ##                 if locals().has_key('f'): f.close()
