@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.47 2004/10/05 08:49:10 agriggio Exp $
+# $Id: py_codegen.py,v 1.48 2004/10/14 16:34:09 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -743,7 +743,7 @@ def add_app(app_attrs, top_win_class):
             append(tab + 'import gettext\n')
             append(tab + 'gettext.install("%s") # replace with the appropriate'
                    ' catalog name\n\n' % name)
-        append(tab + '%s = %s(0)\n' % (cn('wxPySimpleApp'), name))
+        append(tab + '%s = %s(0)\n' % (name, cn('wxPySimpleApp')))
     append(tab + cn('wxInitAllImageHandlers') + '()\n') # to avoid troubles
     append(tab + '%s = %s(None, -1, "")\n' % (top_win, top_win_class))
     if klass:
