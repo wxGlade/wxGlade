@@ -256,7 +256,7 @@ def _reverse_dict(src):
 #-----------------------------------------------------------------------------
 def sizer_fixed_Insert(self, *args, **kw):
     """\
-    These function fixes a bug in wxPython 2.4, which fails to call
+    These function fixes a bug in wxPython 2.4.0.2, which fails to call
     InsertSizer when the 2nd argument is a Sizer
     """
     if type(args[1]) == type(1):
