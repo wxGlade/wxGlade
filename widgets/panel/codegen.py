@@ -47,7 +47,7 @@ def cpp_code_generator(panel):
         return l, ids, [], []
     extra = ''
     style = prop.get("style", 'wxTAB_TRAVERSAL')
-    if style != wxTAB_TRAVERSAL:
+    if style != 'wxTAB_TRAVERSAL':
         extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
     init = ['%s = new wxPanel(%s, %s%s);\n' %
             (panel.name, parent, id, extra) ]
