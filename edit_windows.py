@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.66 2004/10/18 09:53:59 agriggio Exp $
+# $Id: edit_windows.py,v 1.67 2004/10/18 12:11:30 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -939,13 +939,15 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
                                  'remove.xpm')
                 misc.append_item(self._rmenu, HIDE_ID, 'Hide')
-                EVT_MENU(self.widget, REMOVE_ID, self.remove)
-                EVT_MENU(self.widget, HIDE_ID, self.hide_widget)
+                def bind(method):
+                    return lambda e: misc.wxCallAfter(method)
+                EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+                EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 # paste
                 PASTE_ID = wxNewId()
                 misc.append_item(self._rmenu, PASTE_ID, 'Paste\tCtrl+V',
                                  'paste.xpm')
-                EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
+                EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
                 
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
