@@ -28,21 +28,26 @@ class MenuItemDialog(wxDialog):
         self.menu_items.SetColumnWidth(0, 250)
         self.menu_items.SetColumnWidth(2, 250)
         self.menu_items.SetColumnWidth(3, 250)
+        # menu item fields
+        self.id = wxTextCtrl(self, ID_ID)
+        self.label = wxTextCtrl(self, LABEL_ID)
+        self.name = wxTextCtrl(self, NAME_ID)
+        self.help_str = wxTextCtrl(self, HELP_STR_ID)
+        self.checkable = wxCheckBox(self, CHECK_ID, "") #Checkable")
+
         self.add = wxButton(self, ADD_ID, "Add")
         self.remove = wxButton(self, REMOVE_ID, "Remove")
         self.add_sep = wxButton(self, ADD_SEP_ID, "Add separator")
-        self.move_left = wxButton(self, MOVE_LEFT_ID, " < ")
-        self.move_right = wxButton(self, MOVE_RIGHT_ID, " > ")
+
+        # menu items navigation
         self.move_up = wxButton(self, MOVE_UP_ID, "Up")
         self.move_down = wxButton(self, MOVE_DOWN_ID, "Down")
-        self.name = wxTextCtrl(self, NAME_ID)
-        self.id = wxTextCtrl(self, ID_ID)
-        self.label = wxTextCtrl(self, LABEL_ID)
-        self.help_str = wxTextCtrl(self, HELP_STR_ID)
-        self.checkable = wxCheckBox(self, CHECK_ID, "Checkable")
+        self.move_left = wxButton(self, MOVE_LEFT_ID, " < ")
+        self.move_right = wxButton(self, MOVE_RIGHT_ID, " > ")
+
         self.ok = wxButton(self, wxID_OK, " OK ")
-        #self.ok.SetDefault()
         self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
+
         self.do_layout()
         self.selected_index = -1 # index of the selected element in the 
                                  # wxListCtrl menu_items
@@ -86,10 +91,10 @@ class MenuItemDialog(wxDialog):
         szr.Add(self.name)
         szr.Add(wxStaticText(self, -1, "Help String  "))
         szr.Add(self.help_str)
+        szr.Add(wxStaticText(self, -1, "Checkable  "), 0,
+                wxALIGN_CENTER_VERTICAL)
+        szr.Add(self.checkable, 0, wxTOP|wxBOTTOM, 2)
         sizer2.Add(szr, 1, wxALL|wxEXPAND, 5)
-        szr = wxBoxSizer(wxHORIZONTAL)
-        szr.Add(self.checkable)
-        sizer2.Add(szr, 0, wxEXPAND)
         szr = wxGridSizer(0, 2, 3, 3)
         szr.Add(self.add, 0, wxEXPAND); szr.Add(self.remove, 0, wxEXPAND)
         sizer2.Add(szr, 0, wxEXPAND)
@@ -427,6 +432,8 @@ class EditMenuBar(EditBase):
             EditMenuBar.__hidden_frame = wxFrame(common.palette, -1, "")
             EditMenuBar.__hidden_frame.Hide()
         self.widget = wxMenuBar()
+        if wxPlatform == '__WXMSW__':
+            self.widget.SetFocus = lambda : None
         if self.parent.widget: self.parent.widget.SetMenuBar(self.widget)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         self.set_menus(self.menus) # show the menus
