@@ -1,5 +1,5 @@
 # text_ctrl.py: wxListCtrl objects
-# $Id: list_ctrl.py,v 1.5 2004/05/01 23:09:57 agriggio Exp $
+# $Id: list_ctrl.py,v 1.6 2004/05/05 20:47:41 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -26,7 +26,8 @@ class EditListCtrl(ManagedBase):
                            wxLC_SMALL_ICON, wxLC_ALIGN_TOP, wxLC_ALIGN_LEFT,
                            wxLC_AUTOARRANGE, wxLC_EDIT_LABELS, wxLC_NO_HEADER,
                            wxLC_SINGLE_SEL, wxLC_SORT_ASCENDING,
-                           wxLC_SORT_DESCENDING, wxSIMPLE_BORDER,
+                           wxLC_SORT_DESCENDING, wxLC_HRULES, wxLC_VRULES,
+                           wxSIMPLE_BORDER,
                            wxDOUBLE_BORDER, wxSUNKEN_BORDER, wxRAISED_BORDER,
                            wxSTATIC_BORDER, wxNO_BORDER,
                            wxWANTS_CHARS, wxNO_FULL_REPAINT_ON_RESIZE)
@@ -36,8 +37,8 @@ class EditListCtrl(ManagedBase):
                         'wxLC_ALIGN_TOP', 'wxLC_ALIGN_LEFT',
                         'wxLC_AUTOARRANGE', 'wxLC_EDIT_LABELS',
                         'wxLC_NO_HEADER', 'wxLC_SINGLE_SEL',
-                        'wxLC_SORT_ASCENDING',
-                        'wxLC_SORT_DESCENDING', 'wxSIMPLE_BORDER',
+                        'wxLC_SORT_ASCENDING', 'wxLC_SORT_DESCENDING',
+                        'wxLC_HRULES', 'wxLC_VRULES', 'wxSIMPLE_BORDER',
                         'wxDOUBLE_BORDER', 'wxSUNKEN_BORDER',
                         'wxRAISED_BORDER', 'wxSTATIC_BORDER', 'wxNO_BORDER',
                         'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE')

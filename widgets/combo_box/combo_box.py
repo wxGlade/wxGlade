@@ -1,5 +1,5 @@
 # combo_box.py: wxComboBox objects
-# $Id: combo_box.py,v 1.16 2004/04/07 12:19:18 agriggio Exp $
+# $Id: combo_box.py,v 1.17 2004/05/05 20:47:42 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -146,8 +146,8 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'combo_box_%d' % number[0]
-    choice = EditComboBox(name, parent, wxNewId(), [misc._encode('choice 1')],
-                          sizer, pos, common.property_panel)
+    choice = EditComboBox(name, parent, wxNewId(), #[misc._encode('choice 1')],
+                          [], sizer, pos, common.property_panel)
     node = Tree.Node(choice)
 #    sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
@@ -164,7 +164,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     choice = EditComboBox(name, parent, wxNewId(), [], sizer, pos,
-                        common.property_panel)
+                          common.property_panel)
     sizer.set_item(choice.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
 ##                    size=choice.GetBestSize())

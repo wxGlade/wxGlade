@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxButton objects
-# $Id: codegen.py,v 1.11 2003/11/24 21:28:07 agriggio Exp $
+# $Id: codegen.py,v 1.12 2004/05/05 20:47:42 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -16,12 +16,15 @@ class PythonCodeGenerator:
         label = pygen.quote_str(prop.get('label', ''))
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
+        style = prop.get("style")
+        if style: style = ", style=%s" % pygen.cn_f(style)
+        else: style = ''
         init = []
         if id_name: init.append(id_name)
         klass = obj.klass
         if klass == obj.base: klass = cn(klass)
-        init.append('self.%s = %s(%s, %s, %s)\n' %
-                    (obj.name, klass, parent, id, label))
+        init.append('self.%s = %s(%s, %s, %s%s)\n' %
+                    (obj.name, klass, parent, id, label, style))
         props_buf = pygen.generate_common_properties(obj)
         if prop.get('default', False):
             props_buf.append('self.%s.SetDefault()\n' % obj.name)
@@ -62,9 +65,12 @@ class CppCodeGenerator:
         else: ids = []
         if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
         else: parent = 'this'
+        extra = ''
+        style = prop.get("style")
+        if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
         label = cppgen.quote_str(prop.get('label', ''))
-        init = [ '%s = new %s(%s, %s, %s);\n' % 
-                 (obj.name, obj.klass, parent, id, label) ]
+        init = [ '%s = new %s(%s, %s, %s%s);\n' % 
+                 (obj.name, obj.klass, parent, id, label, extra) ]
         props_buf = cppgen.generate_common_properties(obj)
         if prop.get('default', False):
             props_buf.append('%s->SetDefault();\n' % obj.name)

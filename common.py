@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.32 2004/03/01 22:20:15 agriggio Exp $
+# $Id: common.py,v 1.33 2004/05/05 20:47:42 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -12,7 +12,7 @@ import os
 use_gui = True
 
 # version identification string
-version = '0.3.2'
+version = '0.3.3'
 
 # program path, set in wxglade.py
 wxglade_path = '.'
@@ -61,19 +61,17 @@ class_names = {}
 # generate a class declaration in the code
 toplevels = {}
 
-"""
-dictionary of objects used to generate the code in a given language.
-NOTE: a code writer object must implement this interface:
-  - initialize(out_path, multi_files)
-  - language
-  - add_widget_handler(widget_name, handler[, properties_handler])
-  - add_property_handler(property_name, handler[, widget_name])
-  - add_object(top_obj, sub_obj)
-  - add_class(obj)
-  - add_sizeritem(toplevel, sizer, obj_name, option, flag, border)
-  - add_app(app_attrs, top_win_class)
-  - ...
-"""
+# dictionary of objects used to generate the code in a given language.
+# NOTE: a code writer object must implement this interface:
+#   - initialize(out_path, multi_files)
+#   - language
+#   - add_widget_handler(widget_name, handler[, properties_handler])
+#   - add_property_handler(property_name, handler[, widget_name])
+#   - add_object(top_obj, sub_obj)
+#   - add_class(obj)
+#   - add_sizeritem(toplevel, sizer, obj_name, option, flag, border)
+#   - add_app(app_attrs, top_win_class)
+#   - ...
 code_writers = {}
 
 

@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.52 2004/03/11 11:20:05 agriggio Exp $
+# $Id: edit_windows.py,v 1.53 2004/05/05 20:47:42 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -98,7 +98,8 @@ class EditBase:
         otherwise we get a lot of memory leaks... :)
         """
         # first, destroy the popup menu...
-        if self._rmenu: self._rmenu.Destroy()
+        if wxPlatform != '__WXMAC__':
+            if self._rmenu: self._rmenu.Destroy()
         # ...then, destroy the property notebook...
         if self.notebook:
             nb_szr = self.notebook.sizer

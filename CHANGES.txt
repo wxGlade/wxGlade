@@ -1,3 +1,17 @@
+2004-05-05: edit_windows.py, widget_properties.py:
+                fixed a couple of wxMac issues
+            widgets/frame/codegen.py:
+                added xrc code generator for wxStatusBar
+            widgets/choice/choice.py, widgets/combo_box/combo_box.py,
+            widgets/list_box/list_box.py:
+                removed default entry in Choices property
+            widgets/combo_box/codegen.py, widgets/spin_ctrl/codegen.py:
+                applied patch #944642
+            widgets/list_ctrl/list_ctrl.py:
+                added a couple of extra styles
+            widgets/button/*:
+                added wxButton styles
+
 2004-03-06: widgets/panel/panel.py:
                 fixed (hopefully) bug #880674
 

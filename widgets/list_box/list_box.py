@@ -1,5 +1,5 @@
 # list_box.py: wxListBox objects
-# $Id: list_box.py,v 1.13 2003/08/02 13:26:31 agriggio Exp $
+# $Id: list_box.py,v 1.14 2004/05/05 20:47:41 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -128,7 +128,8 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'list_box_%d' % number[0]
     list_box = EditListBox(name, parent, wxNewId(),
-                           [misc._encode('choice 1')], sizer, pos,
+                           #[misc._encode('choice 1')], sizer, pos,
+                           [], sizer, pos,
                            common.property_panel)
     node = Tree.Node(list_box)
 ##     sizer.set_item(pos, size=list_box.GetBestSize())

@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxComboBox objects
-# $Id: codegen.py,v 1.10 2003/11/24 21:28:06 agriggio Exp $
+# $Id: codegen.py,v 1.11 2004/05/05 20:47:42 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -72,7 +72,7 @@ class CppCodeGenerator:
         else: style = 'wxCB_DROPDOWN|' + style
         init = []
         init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
-        init.append('%s = new %s(%s, %s, "", wxDefaultPosition, '
+        init.append('%s = new %s(%s, %s, wxT(""), wxDefaultPosition, '
                     'wxDefaultSize, %s, %s_choices, %s);\n' % \
                     (obj.name, obj.klass, parent, id, number, obj.name, style))
         props_buf = cppgen.generate_common_properties(obj)
