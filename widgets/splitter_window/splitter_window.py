@@ -21,7 +21,7 @@ class SplitterWindowSizer(Sizer):
         """\
         Updates the layout of the item at the given pos.
         """
-        print 'set_item'
+        #print 'set_item'
         if self.window.widget and \
                 self.window.window_old and self.window.window_old.widget:
             self.window.widget.Unsplit(self.window.window_old.widget)
@@ -34,7 +34,7 @@ class SplitterWindowSizer(Sizer):
         """\
         Adds an item to self.window.
         """
-        print 'add_item', item.name
+        #print 'add_item', item.name
         if pos == 1:
             self.window.window_old = self.window.window_1
             self.window.window_1 = item

@@ -91,6 +91,8 @@ def xrc_frame_code_generator(obj):
                 del self.properties['menubar']
             if self.properties.has_key('statusbar'):
                 del self.properties['statusbar']
+            if self.properties.has_key('toolbar'):
+                del self.properties['toolbar']
             xrcgen.DefaultXrcObject.write(self, outfile, tabs)
 
     # end of class FrameXrcObject

@@ -52,6 +52,19 @@ class EditStaticBitmap(ManagedBase):
         self.properties['bitmap'] = self.bitmap_prop
         self.properties['attribute'] = CheckBoxProperty(
             self, 'attribute', None, 'Store as attribute', write_always=True)
+        self.style = 0
+        self.access_functions['style'] = (self.get_style, self.set_style)
+        self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
+                           wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
+                           wxTAB_TRAVERSAL, wxWANTS_CHARS,
+                           wxNO_FULL_REPAINT_ON_RESIZE, wxCLIP_CHILDREN)
+        style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
+                        'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
+                        'wxSTATIC_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
+                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
+                        'wxCLIP_CHILDREN')
+        self.properties['style'] = CheckListProperty(self, 'style', None,
+                                                     style_labels)  
 
     def create_widget(self):
         bmp = self.load_bitmap(self.guess_type(self.bitmap))
@@ -66,16 +79,22 @@ class EditStaticBitmap(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
+        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         szr = wxBoxSizer(wxVERTICAL)
         self.properties['bitmap'].display(panel)
         self.properties['attribute'].display(panel)
+        self.properties['style'].display(panel)
         szr.Add(self.properties['bitmap'].panel, 0, wxEXPAND)
         szr.Add(self.properties['attribute'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')
+        w, h = panel.GetClientSize()
+        self.notebook.AddPage(panel, "Widget")
+        self.property_window.Layout()
+        import math
+        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))        
 
     def get_bitmap(self):
         return self.bitmap
@@ -99,6 +118,23 @@ class EditStaticBitmap(ManagedBase):
 
     def guess_type(self, filename):
         return _bmp_types.get(os.path.splitext(str(filename))[1].lower(), None)
+
+    def get_style(self):
+        retval = [0] * len(self.style_pos)
+        try:
+            for i in range(len(self.style_pos)):
+                if self.style & self.style_pos[i]:
+                    retval[i] = 1
+        except AttributeError:
+            pass
+        return retval
+
+    def set_style(self, value):
+        value = self.properties['style'].prepare_value(value)
+        self.style = 0
+        for v in range(len(value)):
+            if value[v]:
+                self.style |= self.style_pos[v]
 
 # end of class EditStaticBitmap
         

@@ -35,7 +35,7 @@ if common.use_gui:
             self.number_history = wxSpinCtrl(self.notebook_1_pane_1, -1, "4",
                                              min=0, max=100)
             self.buttons_per_row = wxSpinCtrl(self.notebook_1_pane_1, -1, "5",
-                                              min=1, max=10)
+                                              min=1, max=100)
             self.use_dialog_units = wxCheckBox(self.notebook_1_pane_2, -1,
                                                "Use dialog units by default "
                                                "for size properties")
@@ -262,8 +262,12 @@ def init_preferences():
     global preferences
     if preferences is None:
         preferences = Preferences()
-        preferences.read([_rc_name,
-                          os.path.expanduser('~/.wxglade/%s' % _rc_name)])
+        search_path = [os.path.join(common.wxglade_path, _rc_name),
+                       os.path.expanduser('~/.wxglade/%s' % _rc_name)]
+        if 'WXGLADE_CONFIG_PATH' in os.environ:
+            search_path.append(
+                os.path.expandvars('$WXGLADE_CONFIG_PATH/%s' % _rc_name))
+        preferences.read(search_path)
         if not preferences.has_section('wxglade'):
             preferences.add_section('wxglade')
 
@@ -275,12 +279,16 @@ def edit_preferences():
 
 def save_preferences():
     # let the exception be raised
-    path = os.path.expanduser('~')
-    if path == '~': path = '.'
+    if 'WXGLADE_CONFIG_PATH' in os.environ:
+        path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
     else:
-        path = os.path.join(path, '.wxglade')
-        if not os.path.isdir(path):
-            os.mkdir(path)
+        path = os.path.expanduser('~')
+        if path == '~':
+            path = common.wxglade_path
+        else:
+            path = os.path.join(path, '.wxglade')
+    if not os.path.isdir(path):
+        os.mkdir(path)
     # always save the file history
     if _use_file_history:
         fh = common.palette.file_history
@@ -301,9 +309,14 @@ def load_history():
     """\
     Loads the file history and returns a list of paths
     """
-    path = os.path.expanduser('~')
-    if path == '~': path = '.'
-    else: path = os.path.join(path, '.wxglade')
+    if 'WXGLADE_CONFIG_PATH' in os.environ:
+        path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
+    else:
+        path = os.path.expanduser('~')
+        if path == '~':
+            path = common.wxglade_path
+        else:
+            path = os.path.join(path, '.wxglade')
     try:
         history = open(os.path.join(path, 'file_history.txt'))
         l = history.readlines()

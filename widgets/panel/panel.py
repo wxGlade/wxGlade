@@ -23,7 +23,6 @@ class PanelBase(object):
                            wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
                            wxTAB_TRAVERSAL, wxWANTS_CHARS,
                            wxNO_FULL_REPAINT_ON_RESIZE, wxCLIP_CHILDREN)
-
         style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
                         'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
                         'wxSTATIC_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',

@@ -962,22 +962,5 @@ class WidgetHandler:
 # end of class WidgetHandler
 
 
-## def add_widget_handler(widget_name, handler,
-##                        properties_handler=generate_common_properties,
-##                        import_modules=None):
-##     """\
-##     sets the functions to generate the code for the widget whose base class
-##     is 'widget_name':
-##      - handler: function that writes the code
-##      - properties_handler: function that writes extra code to set the
-##                            properties of the widget if it is a toplevel class
-##      - import_modules: list of modules to import
-##                        (eg. ['from wxPython.grid import *\n'])
-##     """
-##     obj_builders[widget_name] = handler
-##     obj_properties[widget_name] = properties_handler
-##     if import_modules is not None:
-##         _widget_extra_modules[widget_name] = import_modules
-
 def add_widget_handler(widget_name, handler):
     obj_builders[widget_name] = handler

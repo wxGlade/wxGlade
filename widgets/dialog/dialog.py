@@ -22,11 +22,13 @@ class EditDialog(TopLevelBase):
         style_labels = ('#section#Style', 'wxDEFAULT_DIALOG_STYLE',
                         'wxDIALOG_MODAL', 'wxCAPTION',
                         'wxRESIZE_BORDER', 'wxSYSTEM_MENU', 'wxTHICK_FRAME',
-                        'wxSTAY_ON_TOP', 'wxNO_3D', 'wxDIALOG_NO_PARENT')
+                        'wxSTAY_ON_TOP', 'wxNO_3D', 'wxDIALOG_NO_PARENT',
+                        'wxNO_FULL_REPAINT_ON_RESIZE', 'wxCLIP_CHILDREN')
         self.style_pos = (wxDEFAULT_DIALOG_STYLE,
                           wxDIALOG_MODAL, wxCAPTION, wxRESIZE_BORDER,
                           wxSYSTEM_MENU, wxTHICK_FRAME, wxSTAY_ON_TOP, wxNO_3D,
-                          wxDIALOG_NO_PARENT)
+                          wxDIALOG_NO_PARENT, wxNO_FULL_REPAINT_ON_RESIZE,
+                          wxCLIP_CHILDREN)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
 
     def create_widget(self):
