@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxStaticLine objects
-# $Id: codegen.py,v 1.9 2003/05/13 10:05:08 agriggio Exp $
+# $Id: codegen.py,v 1.10 2003/05/24 09:59:39 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -69,6 +69,18 @@ class CppCodeGenerator:
 # end of class CppCodeGenerator
 
 
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+
+    class XrcCodeGenerator(xrcgen.DefaultXrcObject):
+        def write(self, *args, **kwds):
+            try: del self.properties['attribute']
+            except KeyError: pass
+            xrcgen.DefaultXrcObject.write(self, *args, **kwds)
+
+    return XrcCodeGenerator(obj)
+
+
 def initialize():
     common.class_names['EditStaticLine'] = 'wxStaticLine'
 
@@ -78,3 +90,6 @@ def initialize():
     cppgen = common.code_writers.get("C++")
     if cppgen:
         cppgen.add_widget_handler('wxStaticLine', CppCodeGenerator())
+    xrcgen = common.code_writers.get('XRC')
+    if xrcgen:
+        xrcgen.add_widget_handler('wxStaticLine', xrc_code_generator)
