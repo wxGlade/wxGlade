@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.34 2003/07/22 08:49:10 agriggio Exp $
+# $Id: py_codegen.py,v 1.35 2003/07/26 09:15:57 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -225,14 +225,15 @@ def _do_replace(match):
     if match.group(0) == '\\': return '\\\\'
     else: return match.group(0)
 
-def quote_str(s, translate=True):
+def quote_str(s, translate=True, escape_chars=True):
     """\
     returns a quoted version of 's', suitable to insert in a python source file
     as a string object. Takes care also of gettext support
     """
     if not s: return '""'
     s = s.replace('"', r'\"')
-    s = _quote_str_pattern.sub(_do_replace, s)
+    if escape_chars: s = _quote_str_pattern.sub(_do_replace, s)
+    else: s = s.replace('\\', r'\\') # just quote the backslashes
     if _use_gettext and translate: return '_("' + s + '")'
     else: return '"' + s + '"'
 
