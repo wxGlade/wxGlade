@@ -20,16 +20,16 @@ class SizerSlot:
         self.widget = wxPanel(self.parent.widget, -1)
         self.widget.SetBackgroundColour(wxLIGHT_GREY)
         self.widget.SetAutoLayout(True)
-        self.menu = wxMenu('Options')
-        REMOVE_ID, PASTE_ID = wxNewId(), wxNewId()
-        #self.menu.Append(REMOVE_ID, 'Remove\tDel')
-        #self.menu.Append(PASTE_ID, 'Paste\tCtrl+V')
-        misc.append_item(self.menu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
-        misc.append_item(self.menu, PASTE_ID, 'Paste\tCtrl+V', 'paste.xpm')
+##         self.menu = wxMenu('Options')
+##         REMOVE_ID, PASTE_ID = wxNewId(), wxNewId()
+##         #self.menu.Append(REMOVE_ID, 'Remove\tDel')
+##         #self.menu.Append(PASTE_ID, 'Paste\tCtrl+V')
+##         misc.append_item(self.menu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
+##         misc.append_item(self.menu, PASTE_ID, 'Paste\tCtrl+V', 'paste.xpm')
+##         EVT_MENU(self.widget, REMOVE_ID, self.remove)
+##         EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
         EVT_PAINT(self.widget, self.on_paint)
         EVT_RIGHT_DOWN(self.widget, self.popup_menu)
-        EVT_MENU(self.widget, REMOVE_ID, self.remove)
-        EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
         EVT_LEFT_DOWN(self.widget, self.drop_widget)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
 
@@ -67,6 +67,13 @@ class SizerSlot:
         self.widget.Refresh()
 
     def popup_menu(self, event):
+        if not self.menu:
+            self.menu = wxMenu('Options')
+            REMOVE_ID, PASTE_ID = wxNewId(), wxNewId()
+            misc.append_item(self.menu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
+            misc.append_item(self.menu, PASTE_ID, 'Paste\tCtrl+V', 'paste.xpm')
+            EVT_MENU(self.widget, REMOVE_ID, self.remove)
+            EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)            
         self.widget.PopupMenu(self.menu, event.GetPosition())
 
     def remove(self, *args):
@@ -110,22 +117,23 @@ class SizerHandleButton(wxButton):
         # menu: list of 2-tuples: (label, function)
         wxButton.__init__(self, parent.widget, id, '', size=(5, 5))
         self.sizer = sizer
-        # provide popup menu for removal
-        REMOVE_ID = wxNewId() 
-        self._rmenu = misc.wxGladePopupMenu(sizer.name)
-        #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
-        misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
-        for item in menu:
-            id = wxNewId()
-            #self._rmenu.Append(id, item[0])
-            bmp = None
-            if len(item) > 2: bmp = item[2]
-            misc.append_item(self._rmenu, id, item[0], bmp)
-            EVT_MENU(self, id, item[1])
-        self.sizer._rmenu = self._rmenu
-        EVT_RIGHT_DOWN(self, lambda event: self.PopupMenu(self._rmenu,
-                                                          event.GetPosition()))
-        EVT_MENU(self, REMOVE_ID, self._remove)
+        self.menu = menu
+        self._rmenu = None
+##         # provide popup menu for removal
+##         REMOVE_ID = wxNewId() 
+##         self._rmenu = misc.wxGladePopupMenu(sizer.name)
+##         #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
+##         misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
+##         EVT_MENU(self, REMOVE_ID, self._remove)
+##         for item in menu:
+##             id = wxNewId()
+##             #self._rmenu.Append(id, item[0])
+##             bmp = None
+##             if len(item) > 2: bmp = item[2]
+##             misc.append_item(self._rmenu, id, item[0], bmp)
+##             EVT_MENU(self, id, item[1])
+##         self.sizer._rmenu = self._rmenu
+        EVT_RIGHT_DOWN(self, self.popup_menu)
         
         table = [(0, WXK_DELETE, self._remove)]
         def on_key_down(event):
@@ -142,6 +150,26 @@ class SizerHandleButton(wxButton):
     def set_menu_title(self, title):
         self._rmenu.SetTitle(title)
 
+    def popup_menu(self, event):
+        if not self._rmenu:
+            # provide popup menu for removal
+            REMOVE_ID = wxNewId() 
+            self._rmenu = misc.wxGladePopupMenu(self.sizer.name)
+            #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
+            misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
+                             'remove.xpm')
+            EVT_MENU(self, REMOVE_ID, self._remove)
+            for item in self.menu:
+                id = wxNewId()
+                #self._rmenu.Append(id, item[0])
+                bmp = None
+                if len(item) > 2: bmp = item[2]
+                misc.append_item(self._rmenu, id, item[0], bmp)
+                EVT_MENU(self, id, item[1])
+            self.sizer._rmenu = self._rmenu
+            del self.menu
+        self.PopupMenu(self._rmenu, event.GetPosition())
+
     def _remove(self, *args):
         # removes the sizer from his parent, if it has one
         if self.sizer.toplevel:
@@ -153,7 +181,7 @@ class SizerHandleButton(wxButton):
         common.app_tree.remove(self.sizer.node)
 
     def Destroy(self):
-        self._rmenu.Destroy()
+        if self._rmenu: self._rmenu.Destroy()
         wxButton.Destroy(self)
 
 # end of class SizerHandleButton
@@ -430,8 +458,8 @@ class SizerBase:
         pops up a menu to add or remove slots from self, or to remove self
         from the application.
         """
-        if self._btn:
-            self._btn.PopupMenu(self._btn._rmenu, event.GetPosition())
+        if self._btn: self._btn.popup_menu(event)
+        #self._btn.PopupMenu(self._btn._rmenu, event.GetPosition())
 
     def set_name(self, value):
         self.name = value

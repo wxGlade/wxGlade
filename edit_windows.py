@@ -76,18 +76,18 @@ class EditBase:
         """\
         Creates the popup menu and connects some event handlers to self.widgets
         """
-        COPY_ID, REMOVE_ID, CUT_ID = [ wxNewId() for i in range(3) ]
-        self._rmenu = misc.wxGladePopupMenu(self.name)
-        #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
-        #self._rmenu.Append(COPY_ID, 'Copy\tCtrl+C')
-        #self._rmenu.Append(CUT_ID, 'Cut\tCtrl+X')
-        misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
-        misc.append_item(self._rmenu, COPY_ID, 'Copy\tCtrl+C', 'copy.xpm')
-        misc.append_item(self._rmenu, CUT_ID, 'Cut\tCtrl+X', 'cut.xpm')
         EVT_RIGHT_DOWN(self.widget, self.popup_menu)
-        EVT_MENU(self.widget, REMOVE_ID, self.remove)
-        EVT_MENU(self.widget, COPY_ID, self.clipboard_copy)
-        EVT_MENU(self.widget, CUT_ID, self.clipboard_cut)
+##         COPY_ID, REMOVE_ID, CUT_ID = [wxNewId() for i in range(3)]
+##         self._rmenu = misc.wxGladePopupMenu(self.name)
+##         #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
+##         #self._rmenu.Append(COPY_ID, 'Copy\tCtrl+C')
+##         #self._rmenu.Append(CUT_ID, 'Cut\tCtrl+X')
+##         misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
+##         misc.append_item(self._rmenu, COPY_ID, 'Copy\tCtrl+C', 'copy.xpm')
+##         misc.append_item(self._rmenu, CUT_ID, 'Cut\tCtrl+X', 'cut.xpm')
+##         EVT_MENU(self.widget, REMOVE_ID, self.remove)
+##         EVT_MENU(self.widget, COPY_ID, self.clipboard_copy)
+##         EVT_MENU(self.widget, CUT_ID, self.clipboard_cut)
         self.accel_table = [(0, WXK_DELETE, self.remove),
                             (wxACCEL_CTRL, ord('C'), self.clipboard_copy),
                             (wxACCEL_CTRL, ord('X'), self.clipboard_cut)]
@@ -143,7 +143,21 @@ class EditBase:
         self.klass = str(value)
 
     def popup_menu(self, event):
-        if self.widget: self.widget.PopupMenu(self._rmenu, event.GetPosition())
+        if self.widget:
+            if not self._rmenu:
+                COPY_ID, REMOVE_ID, CUT_ID = [wxNewId() for i in range(3)]
+                self._rmenu = misc.wxGladePopupMenu(self.name)
+                misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
+                                 'remove.xpm')
+                misc.append_item(self._rmenu, COPY_ID, 'Copy\tCtrl+C',
+                                 'copy.xpm')
+                misc.append_item(self._rmenu, CUT_ID, 'Cut\tCtrl+X',
+                                 'cut.xpm')
+                EVT_MENU(self.widget, REMOVE_ID, self.remove)
+                EVT_MENU(self.widget, COPY_ID, self.clipboard_copy)
+                EVT_MENU(self.widget, CUT_ID, self.clipboard_cut)
+                
+            self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
     def remove(self, *args):
         common.app_tree.remove(self.node)
@@ -690,14 +704,14 @@ class TopLevelBase(WindowBase):
 
     def finish_widget_creation(self):
         WindowBase.finish_widget_creation(self)
-        for label in ("Copy", "Cut"):
-            item_id = self._rmenu.FindItem(label)
-            self._rmenu.Delete(item_id)
-        HIDE_ID = wxNewId()
-        #self._rmenu.Append(HIDE_ID, 'Hide')
-        misc.append_item(self._rmenu, HIDE_ID, 'Hide')
         self.widget.SetTitle(self.properties['title'].get_value())
-        EVT_MENU(self.widget, HIDE_ID, self.hide_widget)
+##         for label in ("Copy", "Cut"):
+##             item_id = self._rmenu.FindItem(label)
+##             self._rmenu.Delete(item_id)
+##         HIDE_ID = wxNewId()
+##         #self._rmenu.Append(HIDE_ID, 'Hide')
+##         misc.append_item(self._rmenu, HIDE_ID, 'Hide')
+##         EVT_MENU(self.widget, HIDE_ID, self.hide_widget)
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         EVT_CLOSE(self.widget, self.hide_widget)
@@ -705,6 +719,19 @@ class TopLevelBase(WindowBase):
             # MSW isn't smart enough to avoid overlapping windows, so
             # at least move it away from the 3 wxGlade frames
             self.widget.CenterOnScreen()
+
+    def popup_menu(self, event):
+        if self.widget:
+            if not self._rmenu:
+                REMOVE_ID, HIDE_ID = [wxNewId() for i in range(2)]
+                self._rmenu = misc.wxGladePopupMenu(self.name)
+                misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
+                                 'remove.xpm')
+                misc.append_item(self._rmenu, HIDE_ID, 'Hide')
+                EVT_MENU(self.widget, REMOVE_ID, self.remove)
+                EVT_MENU(self.widget, HIDE_ID, self.hide_widget)
+                
+            self.widget.PopupMenu(self._rmenu, event.GetPosition())        
 
     def create_properties(self):
         WindowBase.create_properties(self)
