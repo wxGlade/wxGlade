@@ -553,7 +553,7 @@ def generate_code_background(obj):
 
 def generate_code_font(obj):
     """\
-    returns the code fragment that sets the font the given object.
+    returns the code fragment that sets the font of the given object.
     """
     font = obj.properties['font'] 
     size = font['size']; family = font['family']
@@ -580,6 +580,15 @@ def generate_code_id(obj):
     if not name: return '', val
     return ('%s = %s\n' % (name, val), name)
 
+def generate_code_tooltip(obj):
+    """\
+    returns the code fragment that sets the tooltip of the given object.
+    """
+    if obj.is_toplevel: self = 'self'
+    else: self = 'self.%s' % obj.name
+    return self + '.SetToolTipString("%s")\n' % \
+           obj.properties['tooltip'].replace('"', r'\"')
+
 def generate_common_properties(widget):
     """\
     generates the code for various properties common to all widgets (background
@@ -592,6 +601,8 @@ def generate_common_properties(widget):
     if prop.get('background'): out.append(generate_code_background(widget))
     if prop.get('foreground'): out.append(generate_code_foreground(widget))
     if prop.get('font'): out.append(generate_code_font(widget))
+    # tooltip
+    if prop.get('tooltip'): out.append(generate_code_tooltip(widget))
     return out
 
 

@@ -16,15 +16,17 @@ except NameError:
     def bool(value): return not not value
     setattr(__builtins__, 'bool', bool)
 
-def command_line_code_generation():
-    """\
-    Parses the command line and eventually starts a code generator without
-    starting the GUI.
-    """
+def parse_command_line():
     import getopt, common
     try: options, args = getopt.getopt(sys.argv[1:], "g:o:", ['generate-code=',
                                                               'output='])
     except getopt.GetoptError: usage()
+    return options, args
+
+def command_line_code_generation(options, args):
+    """\
+    tarts a code generator without starting the GUI.
+    """
     if not options: usage()
     if not options[0]:
         usage() # a language for code generation must be provided
@@ -61,7 +63,7 @@ def usage():
     """
     msg = """\
 wxGlade usage:
-- to start the GUI: python wxglade.py
+- to start the GUI: python wxglade.py [XML_FILE]
 - to generate code from the command line: python wxglade.py OPTIONS... FILE
   OPTIONS are the following:
   -g, --generate-code=LANGUAGE  (required) give the output language
@@ -90,4 +92,10 @@ if __name__ == "__main__":
         import main
         main.main()
     else:
-        command_line_code_generation()
+        options, args = parse_command_line()
+        if not options:
+            # start the app in GUI mode, opening the given file
+            import main
+            main.main(args[0])
+        else:
+            command_line_code_generation(options, args)
