@@ -119,21 +119,28 @@ class EditSplitterWindow(ManagedBase):
         self.widget = wxSplitterWindow(self.parent.widget, self.id,
                                        style=self.style)
         self.split()
-        EVT_SPLITTER_SASH_POS_CHANGED(self.widget, self.widget.GetId(),
-                                      self.on_sash_pos_changed)
+        
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
         sp = self.properties['sash_pos']
-        if not sp.is_active():
-            if self.orientation == wxSPLIT_HORIZONTAL:
-                max_pos = self.widget.GetClientSize()[1]
-            else: max_pos = self.widget.GetClientSize()[0]
-            sp.set_range(0, max_pos)
-            sp.set_value(max_pos/2)
-            self.set_sash_pos(max_pos/2)
+        if sp.is_active():
+            sp.set_value(self.sash_pos)
         else:
-            self.set_sash_pos(sp.get_value())
+            sp.set_value(self.widget.GetSashPosition())
+        
+        EVT_SPLITTER_SASH_POS_CHANGED(self.widget, self.widget.GetId(),
+                                      self.on_sash_pos_changed)
+##         sp = self.properties['sash_pos']
+##         if not sp.is_active():
+##             if self.orientation == wxSPLIT_HORIZONTAL:
+##                 max_pos = self.widget.GetClientSize()[1]
+##             else: max_pos = self.widget.GetClientSize()[0]
+##             sp.set_range(0, max_pos)
+##             sp.set_value(max_pos/2)
+##             self.set_sash_pos(max_pos/2)
+##         else:
+##             self.set_sash_pos(sp.get_value())
         
     def on_set_focus(self, event):
         self.show_properties()
@@ -159,19 +166,20 @@ class EditSplitterWindow(ManagedBase):
         if self.window_1 and self.window_2:
             self.window_1.show_widget(True)
             self.window_2.show_widget(True)
+            sp = self.properties['sash_pos'].get_value()
             if self.orientation == wxSPLIT_VERTICAL:
                 self.widget.SplitVertically(self.window_1.widget,
-                                            self.window_2.widget)
+                                            self.window_2.widget, sp)
             else:
                 self.widget.SplitHorizontally(self.window_1.widget,
-                                              self.window_2.widget)
-            sp = self.properties['sash_pos'].get_value()
-            if not sp:
-                w, h = self.widget.GetClientSize()
-                if self.orientation == wxSPLIT_VERTICAL:
-                    self.widget.SetSashPosition(w/2)
-                else: self.widget.SetSashPosition(h/2)
-            else: self.widget.SetSashPosition(sp)
+                                              self.window_2.widget, sp)
+##             sp = self.properties['sash_pos'].get_value()
+##             if not sp:
+##                 w, h = self.widget.GetClientSize()
+##                 if self.orientation == wxSPLIT_VERTICAL:
+##                     self.widget.SetSashPosition(w/2)
+##                 else: self.widget.SetSashPosition(h/2)
+##             else: self.widget.SetSashPosition(sp)
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
@@ -211,6 +219,7 @@ class EditSplitterWindow(ManagedBase):
         ManagedBase.on_size(self, event)
 
     def on_sash_pos_changed(self, event):
+        print 'on_sash_pos_changed'
         self.sash_pos = self.widget.GetSashPosition()
         self.properties['sash_pos'].set_value(self.sash_pos)
         event.Skip()

@@ -33,10 +33,12 @@ def python_code_generator(window):
     win_2 = prop.get('window_2')
     orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
     if win_1 and win_2:
+        sash_pos = prop.get('sash_pos', '')
+        if sash_pos: sash_pos = ', %s' % sash_pos
         if orientation == 'wxSPLIT_VERTICAL': f_name = 'SplitVertically'
         else: f_name = 'SplitHorizontally'
-        props_buf.append('self.%s.%s(self.%s, self.%s)\n' % \
-                         (window.name, f_name, win_1, win_2))
+        props_buf.append('self.%s.%s(self.%s, self.%s%s)\n' % \
+                         (window.name, f_name, win_1, win_2, sash_pos))
     else:
         def add_sub(win):
             props_buf.append('self.%s.SetSplitMode(%s)\n' % (window.name,
@@ -46,10 +48,10 @@ def python_code_generator(window):
         if win_1: add_sub(win_1)
         elif win_2: add_sub(win_2)
 
-    sash_pos = prop.get('sash_pos')
-    if sash_pos:
-        props_buf.append('self.%s.SetSashPosition(%s)\n' % (window.name,
-                                                            sash_pos))
+##     sash_pos = prop.get('sash_pos')
+##     if sash_pos:
+##         props_buf.append('self.%s.SetSashPosition(%s)\n' % (window.name,
+##                                                             sash_pos))
     return init, props_buf, []
 
 
@@ -61,19 +63,21 @@ def python_generate_properties(obj):
     orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
     props_buf = []
     if win_1 and win_2:
+        sash_pos = prop.get('sash_pos', '')
+        if sash_pos: sash_pos = ', %s' % sash_pos
         if orientation == 'wxSPLIT_VERTICAL': f_name = 'SplitVertically'
         else: f_name = 'SplitHorizontally'
-        props_buf.append('self.%s(self.%s, self.%s)\n' %
-                         (f_name, win_1, win_2))
+        props_buf.append('self.%s(self.%s, self.%s%s)\n' %
+                         (f_name, win_1, win_2, sash_pos))
     else:
         def add_sub(win):
             props_buf.append('self.SetSplitMode(%s)\n' % orientation)
             props_buf.append('self.Initialize(self.%s)\n' % win)
         if win_1: add_sub(win_1)
         elif win_2: add_sub(win_2)
-    sash_pos = prop.get('sash_pos')
-    if sash_pos:
-        props_buf.append('self.SetSashPosition(%s)\n' % sash_pos)
+##     sash_pos = prop.get('sash_pos')
+##     if sash_pos:
+##         props_buf.append('self.SetSashPosition(%s)\n' % sash_pos)
     props_buf.extend(pygen.generate_common_properties(obj))
     return props_buf    
 
