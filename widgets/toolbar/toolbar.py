@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.17 2004/12/10 12:30:49 agriggio Exp $
+# $Id: toolbar.py,v 1.18 2004/12/19 00:54:58 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -512,7 +512,7 @@ class EditToolBar(EditBase, PreviewMixin):
             self.parent.widget.SetToolBar(self.widget)
         else:
             # "top-level" toolbar
-            self.widget = wxFrame(None, -1, self.name)
+            self.widget = wxFrame(None, -1, misc.design_title(self.name))
             self.widget.SetClientSize((400, 30))
             self._tb = wxToolBar(self.widget, -1, style=tb_style)
             self.widget.SetToolBar(self._tb)
@@ -754,7 +754,7 @@ class EditToolBar(EditBase, PreviewMixin):
     def set_name(self, name):
         EditBase.set_name(self, name)
         if self.widget is not self._tb:
-            self.widget.SetTitle(misc.wxstr(self.name))
+            self.widget.SetTitle(misc.design_title(misc.wxstr(self.name)))
 
     def get_property_handler(self, name):
         class ToolsHandler:

@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.27 2004/11/04 22:14:09 agriggio Exp $
+# $Id: panel.py,v 1.28 2004/12/19 00:55:02 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -254,7 +254,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.skip_on_size = False
 
     def create_widget(self):
-        win = wxFrame(common.palette, -1, self.name, size=(400, 300)) 
+        win = wxFrame(common.palette, -1, misc.design_title(self.name),
+                      size=(400, 300)) 
         #self.widget = wxPanel(win, self.id, style=0)
         self.widget = wxScrolledWindow(win, self.id, style=0)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
@@ -279,7 +280,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
 
     def set_name(self, name):
         super(EditTopLevelPanel, self).set_name(name)
-        if self.widget: self.widget.GetParent().SetTitle(self.name)
+        if self.widget:
+            self.widget.GetParent().SetTitle(misc.design_title(self.name))
 
     def delete(self):
         win = None
