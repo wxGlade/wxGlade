@@ -29,7 +29,11 @@ class EditDialog(TopLevelBase):
     def create_widget(self):
         if self.parent: w = self.parent.widget
         else: w = None
-        self.widget = wxDialog(w, self.id, "", style=self.style)
+        # we set always a default style because this is the best one for
+        # editing the dialog (for example, a dialog without a caption would
+        # be hard to move, etc.)
+        default_style = wxCAPTION|wxSYSTEM_MENU|wxRESIZE_BORDER
+        self.widget = wxDialog(w, self.id, "", style=default_style)
 
     def finish_widget_creation(self):
         TopLevelBase.finish_widget_creation(self)
