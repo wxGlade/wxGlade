@@ -29,7 +29,7 @@ language (I'm Italian), so it is very far from perfection.<br>
     
 <p>To create a new frame, click on the appropriate button of the "palette"
 (<img src="img/frame_button.gif" align="middle" width="31" height="31"
-border="0">): a dialog asking for the name of the class of the new window is
+border="0" alt="Frame">): a dialog asking for the name of the class of the new window is
 displayed: choose the name you prefer, but remember that it must be a valid
 name for a Python (or C++) class.<br>
  </p>
@@ -85,7 +85,7 @@ button to reflect the changes on the widget.<br>
 <p>Now it's time to add a notebook to our frame. You should have noticed that
 the frame you've just added contains a BoxSizer (<img
 src="img/box_sizer_button.gif" align="middle" width="31" height="31"
-border="0">). This is because with wxGlade every container widget must have a
+border="0" alt="BoxSizer">). This is because with wxGlade every container widget must have a
 Sizer before you can add sub-widgets to it, and since it is very common for
 frames to have just one child window, wxGlade adds an 1-slot BoxSizer
 automatically for you. This doesn't happen for other containers, for which
@@ -94,9 +94,9 @@ addition of the notebook to the frame.<br>
 
 <p>Let's add such notebook, then: to do so, click on the Notebook button (<img
  src="img/notebook_button.gif" align="middle" border="0" width="30"
- height="30">) on the palette: now when you move the mouse inside the sizer's
+ height="30" alt="Notebook">) on the palette: now when you move the mouse inside the sizer's
  area (<img src="img/sizer_slot.gif" align="middle" border="0" width="30"
- height="30">), the pointer changes its shape and becomes a cross: this tells
+ height="30" alt="slot">), the pointer changes its shape and becomes a cross: this tells
  us that we can drop the notebook on the sizer's only slot.<br> A left-click
  starts the operation, and a dialog asking for the placement of the notebook's
  tabs appears: choose what you like best.
@@ -144,7 +144,7 @@ paste support of wxGlade. <br>
 is to set its sizer.  Let's start with the addition of a sizer to the first
 page of the notebook, which is where we are going to put our controls, then: to
 do so, click on the BoxSizer button (<img src="img/box_sizer_button.gif"
-align="middle" width="31" height="31" border="0">) on the palette, and then
+align="middle" width="31" height="31" border="0" alt="BoxSizer">) on the palette, and then
 move the mouse inside the page. Again, the pointer is now a cross, and so we
 can drop the sizer on our page: if everything is OK, you should see a dialog
 asking for some features of the sizer to add. We have to change the default
@@ -160,7 +160,7 @@ the menu of almost every object handled by wxGlade).<br>
 <p><font size="4"><b>6.1 Text area</b></font></p>
     
 <p>Let's click on the TextCtrl button (<img src="img/text_ctrl_button.gif"
- align="middle" width="30" height="30">) and insert the text area in the first
+ align="middle" width="30" height="30" alt="TextCtrl">) and insert the text area in the first
  slot of our sizer. </p>
     
 <p>The default dimension isn't right, as we want to display a long and
@@ -181,7 +181,7 @@ between the two buttons (so as they won't appear too close to each other).<br>
  
 <p>Replace then the first slot with a new button, as usually with the
 approprate button (<img src="img/button_button.gif" align="middle" width="30"
-height="30">).<br> To add the second button, instead, we will use the
+height="30" alt="Button">).<br> To add the second button, instead, we will use the
 clipboard: let's click on the <tt>Copy</tt> item of the popup menu of the first
 button (or select it and press <tt>Ctrl+C</tt>), then move the mouse inside the
 third slot, and finally click on the <tt>Paste</tt> item of the popup menu of
@@ -191,7 +191,7 @@ just click on the empty slot with the middle button).<br>
  </p>
 
 <p> Now add a spacer (<img src="img/spacer_button.gif" align="middle"
- width="30" height="30">) of the appropriate dimension between the buttons, to
+ width="30" height="30" alt="Spacer">) of the appropriate dimension between the buttons, to
  keep them at a reasonable distance.<br>
      
 <p>Finally, the last operation we have to do is to edit the layout of the
@@ -427,7 +427,7 @@ wxGlade blocks nonetheless: this means that:
 
   <li>Starting from version 0.2, there's a special component called
   <tt>CustomWidget</tt> (<img src="img/custom_widget.gif" align="middle"
-  border="0">). This is different from the others because it can be used to
+  border="0" alt="CustomWidget">). This is different from the others because it can be used to
   include in a wxg file any widget, even if it is not directly supported by
   wxGlade. The key feature for this is the Arguments property, which lets you
   define the constructor parameters for the object. Such property has two
