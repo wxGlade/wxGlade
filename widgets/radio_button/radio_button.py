@@ -1,5 +1,5 @@
 # radio_button.py: wxRadioButton objects
-# $Id: radio_button.py,v 1.8 2003/06/21 14:28:44 agriggio Exp $
+# $Id: radio_button.py,v 1.9 2003/08/11 15:21:14 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -31,10 +31,10 @@ class EditRadioButton(ManagedBase):
                                                 multiline=True)
         self.properties['clicked'] = CheckBoxProperty(self, 'clicked', None,
                                                       'Clicked')
-        self.style_pos = [wxRB_GROUP]
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     ['#section#Style',
-                                                      'wxRB_GROUP'])
+        self.style_pos = [wxRB_GROUP, wxRB_SINGLE]
+        self.properties['style'] = CheckListProperty(
+            self, 'style', None, ['#section#Style',
+                                  'wxRB_GROUP', 'wxRB_SINGLE'])
 
     def create_widget(self):
         self.widget = wxGladeRadioButton(self.parent.widget, self.id,
@@ -47,11 +47,11 @@ class EditRadioButton(ManagedBase):
         panel = wxPanel(self.notebook, -1)
         szr = wxBoxSizer(wxVERTICAL)
         self.properties['label'].display(panel)
-        self.properties['style'].display(panel)
         self.properties['clicked'].display(panel)
+        self.properties['style'].display(panel)
         szr.Add(self.properties['label'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
         szr.Add(self.properties['clicked'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -90,7 +90,6 @@ class EditRadioButton(ManagedBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        if self.widget: self.SetWindowStyleFlag(self.style)
 
 # end of class EditRadioButton
 
