@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.30 2004/05/11 23:39:31 agriggio Exp $
+# $Id: xml_parse.py,v 1.31 2004/08/26 12:03:27 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -392,7 +392,8 @@ class XmlWidgetObject:
             self.obj = common.widgets_from_xml[base](attrs, parent, sizer,
                                                      sizeritem, pos)
             try:
-                self.obj.klass = self.klass
+                #self.obj.klass = self.klass
+                self.obj.set_klass(self.klass)
                 self.obj.klass_prop.set_value(self.klass)
             except AttributeError: pass
             
@@ -724,6 +725,11 @@ class Sizeritem:
                   'wxBOTTOM': wx.wxBOTTOM,
                   'wxSHAPED': wx.wxSHAPED,
                   'wxADJUST_MINSIZE': wx.wxADJUST_MINSIZE, }
+        import misc
+        if misc.check_wx_version(2, 5, 2):
+            flags['wxFIXED_MINSIZE'] = wx.wxFIXED_MINSIZE
+        else:
+            flags['wxFIXED_MINSIZE'] = 0
 
     def __init__(self):
         self.option = self.border = 0
@@ -732,11 +738,16 @@ class Sizeritem:
     def __getitem__(self, name):
         if name != 'flag':
             return (None, lambda v: setattr(self, name, v))
-        return (None,
-                lambda v: setattr(self, name,
-                                  reduce(lambda a,b: a|b,
-                                         [Sizeritem.flags[t] for t in
-                                          v.split("|")])))
+
+        def get_flag(v):
+            val = reduce(lambda a, b: a|b,
+                         [Sizeritem.flags[t] for t in v.split("|")])
+            setattr(self, name, val)
+        return (None, get_flag)
+##                 lambda v: setattr(self, name,
+##                                   reduce(lambda a,b: a|b,
+##                                          [Sizeritem.flags[t] for t in
+##                                           v.split("|")])))
 
     def flag_str(self):
         # returns the flag attribute as a string of tokens separated

@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.36 2004/01/30 10:05:01 agriggio Exp $
+# $Id: tree.py,v 1.37 2004/08/26 12:03:28 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -228,6 +228,12 @@ class WidgetTree(wxTreeCtrl, Tree):
                     break
             event.Skip()
         EVT_KEY_DOWN(self, on_key_down)
+
+    def _build_label(self, node):
+        s = node.widget.name
+        if node.widget.klass != node.widget.base:
+            s += ' (%s)' % node.widget.klass
+        return s
         
     def add(self, child, parent=None, image=None): # is image still used?
         """\
@@ -238,7 +244,8 @@ class WidgetTree(wxTreeCtrl, Tree):
         name = child.widget.__class__.__name__
         index = WidgetTree.images.get(name, -1)
         if parent is None: parent = parent.item = self.GetRootItem()
-        child.item = self.AppendItem(parent.item, child.widget.name, index)
+        child.item = self.AppendItem(parent.item, self._build_label(child),
+                                     index)
         self.SetPyData(child.item, child)
         if self.auto_expand:
             self.Expand(parent.item)
@@ -270,7 +277,8 @@ class WidgetTree(wxTreeCtrl, Tree):
 
         Tree.insert(self, child, parent, index)
         child.item = self.InsertItemBefore(parent.item, index,
-                                           child.widget.name, image_index)
+                                           self._build_label(child),
+                                           image_index)
         self.SetPyData(child.item, child)
         if self.auto_expand:
             self.Expand(parent.item)
@@ -301,11 +309,13 @@ class WidgetTree(wxTreeCtrl, Tree):
         app = self.GetPyData(self.GetRootItem())
         app.widget.show_properties()
 
-    def set_name(self, node, name):
+    def refresh_name(self, node): #, name=None):
         try: del self.names[self.GetItemText(node.item)]
         except KeyError: pass
-        self.names[name] = 1
-        self.SetItemText(node.item, name)
+        #self.names[name] = 1
+        #self.SetItemText(node.item, name)
+        self.names[node.widget.name] = 1
+        self.SetItemText(node.item, self._build_label(node))
 
     def select_item(self, node):
         self.skip_select = True
@@ -428,7 +438,8 @@ class WidgetTree(wxTreeCtrl, Tree):
             else:
                 node.widget.show_widget(False)
                 #self.select_item(self.root)
-                # added by rlawson to collapse only the toplevel node, not collapse back to root node
+                # added by rlawson to collapse only the toplevel node,
+                # not collapse back to root node
                 self.select_item(node)
                 self.app.show_properties()
                 event.Skip()
@@ -452,7 +463,7 @@ class WidgetTree(wxTreeCtrl, Tree):
         Tree.change_node(self, node, widget)
         self.SetItemImage(node.item, self.images.get(
             widget.__class__.__name__, -1))
-        self.SetItemText(node.item, widget.name)
+        self.SetItemText(node.item, self._build_label(node)) #widget.name)
 
     def change_node_pos(self, node, new_pos):
         if new_pos >= self.GetChildrenCount(node.parent.item, False):
@@ -463,15 +474,16 @@ class WidgetTree(wxTreeCtrl, Tree):
         image = self.GetItemImage(node.item)
         self.Freeze()
         if index > new_pos:
-            node.item = self.InsertItemBefore(node.parent.item, new_pos,
-                                              node.widget.name, image)
+            node.item = self.InsertItemBefore(
+                node.parent.item, new_pos, self._build_label(node), image)
         else:
-            node.item = self.InsertItemBefore(node.parent.item, new_pos+1,
-                                              node.widget.name, image)
+            node.item = self.InsertItemBefore(
+                node.parent.item, new_pos+1, self._build_label(node), image)
         self.SetPyData(node.item, node)
         def append(parent, node):
             idx = WidgetTree.images.get(node.widget.__class__.__name__, -1)
-            node.item = self.AppendItem(parent.item, node.widget.name, idx)
+            node.item = self.AppendItem(parent.item,
+                                        self._build_label(node), idx)
             self.SetPyData(node.item, node)
             if node.children:
                 for c in node.children:
