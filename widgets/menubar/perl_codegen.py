@@ -1,7 +1,7 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.4 2003/08/07 17:27:00 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.5 2004/09/17 13:09:52 agriggio Exp $
 #
-# Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
+# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

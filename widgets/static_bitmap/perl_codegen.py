@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxStaticBitmap objects
-# $Id: perl_codegen.py,v 1.6 2004/02/01 11:56:57 agriggio Exp $
+# $Id: perl_codegen.py,v 1.7 2004/09/17 13:09:50 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

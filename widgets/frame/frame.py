@@ -1,7 +1,7 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.31 2004/03/11 11:20:05 agriggio Exp $
+# $Id: frame.py,v 1.32 2004/09/17 13:09:53 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

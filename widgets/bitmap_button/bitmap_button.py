@@ -1,7 +1,7 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.15 2003/09/11 06:35:20 dinogen Exp $
+# $Id: bitmap_button.py,v 1.16 2004/09/17 13:09:55 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

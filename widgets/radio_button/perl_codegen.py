@@ -1,7 +1,7 @@
 # perl_codegen.py : perl generator functions for wxRadioButton objects
-# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:26 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.3 2004/09/17 13:09:51 agriggio Exp $
 #
-# Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
+# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

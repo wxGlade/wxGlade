@@ -1,7 +1,7 @@
 # text_ctrl.py: wxTreeCtrl objects
-# $Id: tree_ctrl.py,v 1.5 2004/07/15 09:27:59 agriggio Exp $
+# $Id: tree_ctrl.py,v 1.6 2004/09/17 13:09:48 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

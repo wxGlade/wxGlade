@@ -1,7 +1,7 @@
 # static_bitmap.py: wxStaticBitmap objects
-# $Id: static_bitmap.py,v 1.13 2003/08/02 13:26:31 agriggio Exp $
+# $Id: static_bitmap.py,v 1.14 2004/09/17 13:09:49 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

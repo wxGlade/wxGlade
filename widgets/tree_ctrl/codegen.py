@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxTreeCtrl objects
-# $Id: codegen.py,v 1.4 2003/11/24 21:28:05 agriggio Exp $
+# $Id: codegen.py,v 1.5 2004/09/17 13:09:48 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

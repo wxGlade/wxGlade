@@ -1,7 +1,7 @@
 # xrc_codegen.py: wxWidgets resources XRC code generator
-# $Id: xrc_codegen.py,v 1.15 2004/05/05 20:47:42 agriggio Exp $
+# $Id: xrc_codegen.py,v 1.16 2004/09/17 13:09:55 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

@@ -1,7 +1,7 @@
 # gauge.py: wxGauge objects
-# $Id: gauge.py,v 1.5 2003/05/13 10:05:12 agriggio Exp $
+# $Id: gauge.py,v 1.6 2004/09/17 13:09:53 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

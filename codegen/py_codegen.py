@@ -1,7 +1,7 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.45 2004/09/17 08:17:18 agriggio Exp $
+# $Id: py_codegen.py,v 1.46 2004/09/17 13:09:55 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxGrid objects
-# $Id: codegen.py,v 1.19 2004/09/01 08:31:10 agriggio Exp $
+# $Id: codegen.py,v 1.20 2004/09/17 13:09:53 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

@@ -1,7 +1,7 @@
 # custom_widget.py: custom wxWindow objects
-# $Id: custom_widget.py,v 1.14 2004/05/11 08:05:13 agriggio Exp $
+# $Id: custom_widget.py,v 1.15 2004/09/17 13:09:53 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

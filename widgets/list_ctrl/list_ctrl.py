@@ -1,7 +1,7 @@
 # text_ctrl.py: wxListCtrl objects
-# $Id: list_ctrl.py,v 1.6 2004/05/05 20:47:41 agriggio Exp $
+# $Id: list_ctrl.py,v 1.7 2004/09/17 13:09:52 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

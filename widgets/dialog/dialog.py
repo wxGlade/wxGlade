@@ -1,7 +1,7 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.16 2004/01/31 08:46:13 agriggio Exp $
+# $Id: dialog.py,v 1.17 2004/09/17 13:09:53 agriggio Exp $
 #
-# Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
+# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
