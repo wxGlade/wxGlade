@@ -977,8 +977,8 @@ class GridProperty(wxPanel, Property):
         """\
         sets the width of the columns.
         sizes is a list of integers with the size of each column: a value of 0
-          stands for a default size, while -1 means to expand the column to fit
-          the available space (at most one column can have size -1)
+        stands for a default size, while -1 means to expand the column to fit
+        the available space (at most one column can have size -1)
         """
         col_to_expand = -1
         total_w = 0
@@ -993,9 +993,10 @@ class GridProperty(wxPanel, Property):
                 self.grid.SetColSize(i, w)
                 total_w += w
         if col_to_expand >= 0:
+            self.grid.AutoSizeColumn(col_to_expand)
             w = self.grid.GetSize()[0] - total_w
-            if w >= 0: self.grid.SetColSize(col_to_expand, w)
-            else: self.grid.AutoSizeColumn(col_to_expand)
+            if w >= self.grid.GetColSize(col_to_expand):
+                self.grid.SetColSize(col_to_expand, w)
 
 # end of class GridProperty
 

@@ -129,8 +129,8 @@ class DefaultXrcObject(XrcObject):
         self.klass = code_obj.base # custom classes aren't allowed in XRC
 
     def write_property(self, name, val, outfile, ntabs):
-        if val and name not in ('id', 'attribute'):
-            # 'id' and 'attribute' properties have no meaning for XRC
+        if val:
+            name = escape(name)
             outfile.write(tabs(ntabs) + '<%s>%s</%s>\n' % \
                           (name, escape(val), name))        
 
@@ -160,6 +160,9 @@ class DefaultXrcObject(XrcObject):
         style = str(self.properties.get('style', ''))
         if style and style == '0':
             del self.properties['style']
+
+        if 'id' in self.properties:
+            del self.properties['id'] # id has no meaning for XRC
             
         for name, val in self.properties.iteritems():
             self.write_property(name, val, out_file, ntabs+1)

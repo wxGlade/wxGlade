@@ -34,6 +34,7 @@ def convert(input, output):
     set_base_classes(document)
     fix_properties(document)
     fix_widgets(document)
+    fix_encoding(document)
     output = open(output, 'w')
     write_output(document, output)
 
@@ -130,22 +131,34 @@ _widgets_list = [
     'wxRadioButton', 'wxRadioBox', 'wxChoice', 'wxComboBox', 'wxListBox',
     'wxStaticLine', 'wxStaticBitmap', 'wxGrid', 'wxMenuBar', 'wxStatusBar',
     'wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer',
-    'wxTreeCtrl', 'wxListCtrl', 'wxToolBar'
+    'wxTreeCtrl', 'wxListCtrl', 'wxToolBar',
     ]
-_widgets = {}
-for w in _widgets_list: _widgets[w] = 1
+_widgets = dict(zip(_widgets_list, [1] * len(_widgets_list)))
+
+_special_class_names = [
+    'notebookpage', 'sizeritem', 'separator', 'tool', 'spacer',
+    ]
+_special_class_names = dict(zip(_special_class_names,
+                                [1] * len(_special_class_names)))
 
 def fix_custom_widgets(document):
     for elem in document.getElementsByTagName('object'):
         klass = elem.getAttribute('class')
-        if (klass.startswith('wx') and klass not in _widgets) or \
-               klass == 'unknown':
+        if klass not in _widgets and klass not in _special_class_names:
             elem.setAttribute('base', 'CustomWidget')
             args = document.createElement('arguments')
-            for argument in '$parent', '$id':
-                arg = document.createElement('argument')
-                arg.appendChild(document.createTextNode(argument))
-                args.appendChild(arg)
+            for child in get_child_elems(elem):
+                # if child is a 'simple' attribute, i.e
+                # <child>value</child>, convert it to an 'argument'
+                if len(child.childNodes) == 1 and \
+                       child.firstChild.nodeType == child.TEXT_NODE:
+                    arg = document.createElement('argument')
+                    arg.appendChild(document.createTextNode(
+                        child.tagName + ': ' + child.firstChild.data))
+                    args.appendChild(arg)
+                    # and remove it
+                    elem.removeChild(child)
+                # otherwise, leave it where it is (it shouldn't hurt)
             elem.appendChild(args)
 
 
@@ -342,6 +355,8 @@ def fix_toplevel_names(document):
     names = {}
     for widget in get_child_elems(document.documentElement):
         klass = widget.getAttribute('class')
+        if not klass:
+            continue # don't add a new 'class' attribute if it doesn't exist 
         if klass == 'wxPanel':
             widget.setAttribute('base', 'EditTopLevelPanel')
         klass_name = kn = klass.replace('wx', 'My')
@@ -368,7 +383,18 @@ def fix_sliders(document):
                 slider.removeChild(child).unlink()
                 slider.appendChild(min)
                 slider.appendChild(max)
-        
+
+
+def fix_encoding(document):
+    for child in document.documentElement.childNodes:
+        if child.nodeType == child.ELEMENT_NODE and \
+               child.tagName == 'encoding':
+            if child.firstChild is not None and \
+               child.firstChild.nodeType == child.TEXT_NODE:
+                document.documentElement.setAttribute(
+                    'encoding', child.firstChild.data)
+            document.documentElement.removeChild(child)
+
 
 def usage():
     msg = """\
