@@ -1,5 +1,5 @@
 # text_ctrl.py: wxListCtrl objects
-# $Id: list_ctrl.py,v 1.4 2003/08/02 13:26:31 agriggio Exp $
+# $Id: list_ctrl.py,v 1.5 2004/05/01 23:09:57 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -22,19 +22,21 @@ class EditListCtrl(ManagedBase):
         self.style = style
         self.access_functions['style'] = (self.get_style, self.set_style)
         # style property
-        self.style_pos  = (wxLC_LIST, wxLC_REPORT, wxLC_ICON, wxLC_SMALL_ICON,
-                           wxLC_ALIGN_TOP, wxLC_ALIGN_LEFT, wxLC_AUTOARRANGE,
-                           wxLC_USER_TEXT, wxLC_EDIT_LABELS, wxLC_NO_HEADER,
+        self.style_pos  = (wxLC_LIST, wxLC_REPORT, wxLC_ICON, wxLC_VIRTUAL,
+                           wxLC_SMALL_ICON, wxLC_ALIGN_TOP, wxLC_ALIGN_LEFT,
+                           wxLC_AUTOARRANGE, wxLC_EDIT_LABELS, wxLC_NO_HEADER,
                            wxLC_SINGLE_SEL, wxLC_SORT_ASCENDING,
                            wxLC_SORT_DESCENDING, wxSIMPLE_BORDER,
                            wxDOUBLE_BORDER, wxSUNKEN_BORDER, wxRAISED_BORDER,
                            wxSTATIC_BORDER, wxNO_BORDER,
                            wxWANTS_CHARS, wxNO_FULL_REPAINT_ON_RESIZE)
-        style_labels = ('#section#Style', 'wxLC_LIST', 'wxLC_REPORT',
-                        'wxLC_ICON', 'wxLC_SMALL_ICON', 'wxLC_ALIGN_TOP',
-                        'wxLC_ALIGN_LEFT', 'wxLC_AUTOARRANGE',
-                        'wxLC_USER_TEXT', 'wxLC_EDIT_LABELS', 'wxLC_NO_HEADER',
-                        'wxLC_SINGLE_SEL', 'wxLC_SORT_ASCENDING',
+        style_labels = ('#section#Style',
+                        'wxLC_LIST', 'wxLC_REPORT', 'wxLC_ICON',
+                        'wxLC_VIRTUAL', 'wxLC_SMALL_ICON',
+                        'wxLC_ALIGN_TOP', 'wxLC_ALIGN_LEFT',
+                        'wxLC_AUTOARRANGE', 'wxLC_EDIT_LABELS',
+                        'wxLC_NO_HEADER', 'wxLC_SINGLE_SEL',
+                        'wxLC_SORT_ASCENDING',
                         'wxLC_SORT_DESCENDING', 'wxSIMPLE_BORDER',
                         'wxDOUBLE_BORDER', 'wxSUNKEN_BORDER',
                         'wxRAISED_BORDER', 'wxSTATIC_BORDER', 'wxNO_BORDER',
