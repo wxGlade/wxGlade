@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.45 2004/12/10 12:30:53 agriggio Exp $
+# $Id: application.py,v 1.46 2004/12/19 00:55:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -484,7 +484,7 @@ class Application(object):
             if issubclass(FrameClass, wxMDIChildFrame):
                 frame = wxMDIParentFrame(None, -1, '')
                 child = FrameClass(frame, -1, '')
-                child.SetTitle('<Preview> ' + child.GetTitle())
+                child.SetTitle('<Preview> - ' + child.GetTitle())
                 w, h = child.GetSize()
                 frame.SetClientSize((w+20, h+20))
             elif not (issubclass(FrameClass, wxFrame) or
@@ -510,7 +510,7 @@ class Application(object):
                 widget.preview_widget = None
                 widget.preview_button.SetLabel('Preview')
             EVT_CLOSE(frame, on_close)
-            frame.SetTitle('<Preview> %s' % frame.GetTitle())
+            frame.SetTitle('<Preview> - %s' % frame.GetTitle())
             # raise the frame
             frame.Center()
             frame.Show()

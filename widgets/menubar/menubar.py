@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.20 2004/12/10 12:30:52 agriggio Exp $
+# $Id: menubar.py,v 1.21 2004/12/19 00:55:03 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -551,7 +551,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                 self.widget.SetFocus = lambda : None
         else:
             # "top-level" menubar
-            self.widget = wxFrame(None, -1, self.name)
+            self.widget = wxFrame(None, -1, misc.design_title(self.name))
             self.widget.SetClientSize((400, 30))
             self._mb = wxMenuBar()
             self.widget.SetMenuBar(self._mb)
@@ -679,7 +679,7 @@ class EditMenuBar(EditBase, PreviewMixin):
     def set_name(self, name):
         EditBase.set_name(self, name)
         if self.widget is not self._mb:
-            self.widget.SetTitle(misc.wxstr(self.name))
+            self.widget.SetTitle(misc.design_title(misc.wxstr(self.name)))
 
     def get_property_handler(self, name):
         class MenuHandler:

@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.55 2004/11/06 12:14:14 agriggio Exp $
+# $Id: edit_sizers.py,v 1.56 2004/12/19 00:55:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -928,6 +928,7 @@ class SizerBase(Sizer):
         self.option = int(value)
         try:
             self.sizer.set_item(self.pos, option=self.option)
+            #print self.name, 'set_option', self.option
         except AttributeError, e: pass
         self.finish_set()
 

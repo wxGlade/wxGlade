@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.38 2004/12/08 18:11:32 agriggio Exp $
+# $Id: misc.py,v 1.39 2004/12/19 00:55:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -41,7 +41,7 @@ DirSelector = wxDirSelector
 
 #---------------------  Selection Markers  ----------------------------------
 
-class SelectionTag(wxPanel):
+class SelectionTag(wxWindow):
     """\
     This is one of the small black squares that appear at the corners of the
     active widgets
@@ -49,11 +49,12 @@ class SelectionTag(wxPanel):
     def __init__(self, parent, pos=None):
         kwds = { 'size': (7, 7) }
         if pos: kwds['position'] = pos
-        wxPanel.__init__(self, parent, -1, **kwds)
+        wxWindow.__init__(self, parent, -1, **kwds)
         self.SetBackgroundColour(wxBLACK)
         self.Hide()
 
 # end of class SelectionTag
+
 
 class SelectionMarker:
     """\
@@ -389,3 +390,7 @@ except NameError:
             return self.index, val
 
     # end of class enumerate
+
+
+def design_title(title):
+    return '<Design> - ' + title

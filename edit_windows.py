@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.74 2004/12/08 18:11:32 agriggio Exp $
+# $Id: edit_windows.py,v 1.75 2004/12/19 00:55:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -934,7 +934,10 @@ class TopLevelBase(WindowBase, PreviewMixin):
         WindowBase.finish_widget_creation(self)
         self.widget.SetMinSize = self.widget.SetSize
         if self.has_title:
-            self.widget.SetTitle(self.properties['title'].get_value())
+            self.widget.SetTitle(misc.design_title(
+                self.properties['title'].get_value()))
+        elif hasattr(self.widget, 'SetTitle'):
+            self.widget.SetTitle(misc.design_title(self.name))
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         EVT_CLOSE(self.widget, self.hide_widget)
@@ -1007,7 +1010,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
     def set_title(self, value):
         self.title = misc.wxstr(value)
         if self.widget:
-            self.widget.SetTitle(value)
+            self.widget.SetTitle(misc.design_title(value))
 
     def set_sizer(self, sizer):
         self.sizer = sizer
