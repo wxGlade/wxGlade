@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.4 2003/06/24 15:37:44 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.5 2003/06/25 19:57:15 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -78,7 +78,7 @@ class ClassLines:
         self.props = [] # lines to insert in the __set_properties method
         self.layout = [] # lines to insert in the __do_layout method
         
-        self.dependencies = {} #[] # names of the modules this class depends on
+        self.dependencies = {} # names of the modules this class depends on
         self.done = False # if True, the code for this class has already
                           # been generated
 
@@ -90,7 +90,8 @@ class SourceFileContent:
     Keeps info about an existing file that has to be updated, to replace only
     the lines inside a wxGlade block, an to keep the rest of the file as it was
     
-    WARNING: NOT YET COMPLETE (always overwrites destination file, ALWAYS) -- crazyinsomniac
+    WARNING: NOT YET COMPLETE
+    (always overwrites destination file, ALWAYS) -- crazyinsomniac
     """
     def __init__(self, name=None, content=None, classes=None):
         self.name = name # name of the file
@@ -116,9 +117,7 @@ class SourceFileContent:
         import re
         class_name = None
         new_classes_inserted = False
-        # regexp to match class declarations
-#        class_decl = re.compile(r'^\s*class\s+([a-zA-Z_]\w*)\s*(\(\s*[a-zA-Z_]\w*\s*(,\s*[a-zA-Z_]\w*)*\s*\))?:\s*$')
-#jdubery - less precise regex, but matches definitions with base classes having module qualified names
+# regexp to match class declarations
 #  package Foo; or package Foo::bar::baz   ;
         class_decl = re.compile(r'^\s*package\s+[a-zA-Z]\w*(::\w+)*\s*;\w*$')
         # regexps to match wxGlade blocks
@@ -168,7 +167,7 @@ class SourceFileContent:
                                              # of classes of this module
                 out_lines.append(line)
             elif not inside_block:
-                #print >> sys.stderr, "WARNING: doing the block_start.match (", result, "\n"
+#print >> sys.stderr, "WARNING: doing the block_start.match (", result, "\n"
                 result = block_start.match(line)
                 if not inside_triple_quote and result is not None:
 ##                     print ">> block %r %r %r" % (
@@ -557,7 +556,8 @@ def add_class(code_obj):
         classes[code_obj.klass] = ClassLines()
 
     if is_new:
-        write('package %s;\n\nuse Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n'
+        write('package %s;\n\n' % code_obj.klass )
+        write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n'
                 % (code_obj.klass, code_obj.base.replace('wx','Wx::',1) )
             )
         tab = indentation
@@ -565,7 +565,8 @@ def add_class(code_obj):
         if _use_gettext:
             write("use Wx::Locale gettext => '_T';\n")
 
-        write('sub new {\n\tmy( $self, $parent, $id, $title, $pos, $siz, $style, $name ) = @_;\n\n'
+        write('sub new {\n\tmy( $self, $parent, $id, $title, $pos, $siz,'
+            + '$style, $name ) = @_;\n\n' +
             + '\t$parent = undef              unless defined $parent;\n'
             + '\t$id     = -1                 unless defined $id;\n'
             + '\t$title  = ""                 unless defined $title;\n'
@@ -579,7 +580,8 @@ def add_class(code_obj):
     style = prop.get("style", None)
     if style: write('\t$style = %s \n\t\tunless defined $style;\n\n' % style)
     # __init__
-    write('\t$self = $self->SUPER::new($parent, $id,$title, $pos, $siz, $style, $name);\n')
+    write('\t$self = $self->SUPER::new($parent, $id, $title, $pos, $siz, '
+        + '$style, $name);\n')
 
     init_lines = classes[code_obj.klass].init
     # --- patch 2002-08-26 ---------------------------------------------------
@@ -780,9 +782,12 @@ def add_app(app_attrs, top_win_class):
     else:
         append('1;\n\npackage main;\n\nunless(caller){\n')
         if _use_gettext:
-            append('\tmy $local = Wx::Locale->new("English", "en", "en"); # replace with ??\n')
-            append('\t$local->AddCatalog("%s"); # replace with the appropriate catalog name\n\n' % name)
-        append('\tmy %s = Wx::PySimpleAppSNORKELS("this aint real -- no perl equivalent");\n' % name)
+            append('\tmy $local = Wx::Locale->new("English", "en", "en");'
+                + ' # replace with ??\n')
+            append('\t$local->AddCatalog("%s");'+
+                + ' # replace with the appropriate catalog name\n\n' % name)
+        append('\tmy %s = Wx::PySimpleAppSNORKELS'
+            +'("this aint real -- no perl equivalent");\n' % name)
         
     append('\tWx::InitAllImageHandlers();\n\n') # we add this to avoid troubles
     append('\tmy $%s = %s->new();\n\n' % (top_win, top_win_class))
@@ -795,8 +800,10 @@ def add_app(app_attrs, top_win_class):
         append('package main;\n\nunless(caller){\n')
 
         if _use_gettext:
-            append('\tmy $local = Wx::Locale->new("English", "en", "en"); # replace with ??\n')
-            append('\t$local->AddCatalog("%s"); # replace with the appropriate catalog name\n\n' % name)
+            append('\tmy $local = Wx::Locale->new("English", "en", "en");'
+                + ' # replace with ??\n')
+            append('\t$local->AddCatalog("%s");'
+                + ' # replace with the appropriate catalog name\n\n' % name)
         append('\tmy $%s = %s->new();\n' % (name, klass))
     else:
         append('\t$%s->SetTopWindow(%s);\n' % (name, top_win))
@@ -851,7 +858,9 @@ def generate_code_size(obj):
     size = obj.properties.get('size', '').strip()
     use_dialog_units = (size[-1] == 'd')
     if use_dialog_units:
-        return '\t' + name + '->SetSize(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n' % ( name, size[:-1] )
+        return '\t' + name
+            + '->SetSize(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n'
+            % ( name, size[:-1] )
 
     return '\t' + name + '->SetSize(%s);\n' % size
 
@@ -900,7 +909,8 @@ def generate_code_font(obj):
     style = font['style']; weight = font['weight']
     face = '"%s"' % font['face'].replace('"', r'\"')
     self = _get_code_name(obj)
-    return '\t' + self + '->SetFont(Wx::Font->new(%s, %s, %s, %s, %s, %s));\n' % \
+    return '\t' + self +
+        '->SetFont(Wx::Font->new(%s, %s, %s, %s, %s, %s));\n' % \
             (size, family, style, weight, underlined, face)
 
 
@@ -932,7 +942,8 @@ def generate_code_tooltip(obj):
     returns the code fragment that sets the tooltip of the given object.
     """
     self = _get_code_name(obj)
-    return '\t' + self + '->SetToolTipString(%s);\n' % quote_str(obj.properties['tooltip'])
+    return '\t' + self
+        + '->SetToolTipString(%s);\n' % quote_str(obj.properties['tooltip'])
 
 
 def generate_code_disabled(obj):
@@ -1124,4 +1135,3 @@ class WidgetHandler:
 
 def add_widget_handler(widget_name, handler):
     obj_builders[widget_name] = handler
-
