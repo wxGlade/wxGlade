@@ -282,7 +282,7 @@ class wxGladeFrame(wxFrame):
 
         try:
             infile = open(infilename)
-            if use_progress_dialog:
+            if use_progress_dialog and config.preferences.show_progress:
                 p = ProgressXmlWidgetBuilder(input_file=infile)
             else: p = XmlWidgetBuilder()
             p.parse(infile)
