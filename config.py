@@ -76,6 +76,7 @@ if common.use_gui:
                 self.local_widget_path.SetValue(dlg.GetPath())
             dlg.Destroy()
 
+    # end of class wxGladePreferences
 
 
 def _get_home(default=common.wxglade_path):
@@ -85,6 +86,14 @@ def _get_home(default=common.wxglade_path):
     if os.name == 'nt' and h == '%USERPROFILE%':
         return os.environ.get('USERPROFILE', default)
     return default
+
+
+def _get_appdatapath(default=common.wxglade_path):
+    if os.name == 'nt':
+        result = os.environ.get('APPDATA')
+        if result:
+            return result
+    return _get_home(default)
 
 
 class Preferences(ConfigParser):
@@ -102,8 +111,9 @@ class Preferences(ConfigParser):
         'backup_suffix': sys.platform == 'win32' and '.bak' or '~',
         'buttons_per_row': 5,
         'remember_geometry': False,
-        'local_widget_path': (_get_home('') and \
-                              os.path.join(_get_home(), '.wxglade', 'widgets')
+        'local_widget_path': (_get_appdatapath('') and \
+                              os.path.join(_get_appdatapath(),
+                                           '.wxglade', 'widgets')
                               or ''),
         'default_border' : False,
         'default_border_size' : 3
@@ -172,7 +182,7 @@ def init_preferences():
     global preferences
     if preferences is None:
         preferences = Preferences()
-        h = _get_home('')
+        h = _get_appdatapath('')
         search_path = [os.path.join(common.wxglade_path, _rc_name)]
         if h:
             search_path.append(os.path.join(h, '.wxglade', _rc_name))
@@ -194,7 +204,7 @@ def save_preferences():
     if 'WXGLADE_CONFIG_PATH' in os.environ:
         path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
     else:
-        path = _get_home()
+        path = _get_appdatapath()
         if path != common.wxglade_path:
             path = os.path.join(path, '.wxglade')
     if not os.path.isdir(path):
@@ -225,7 +235,7 @@ def load_history():
     if 'WXGLADE_CONFIG_PATH' in os.environ:
         path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
     else:
-        path = _get_home()
+        path = _get_appdatapath()
         if path != common.wxglade_path:
             path = os.path.join(path, '.wxglade')
     try:
@@ -236,4 +246,3 @@ def load_history():
     except IOError:
         # don't consider this an error
         return [] 
-    
