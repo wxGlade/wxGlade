@@ -115,7 +115,6 @@ class EditComboBox(ManagedBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        self.style = value
 ##         if self.widget:
 ##             self.SetWindowStyleFlag(style)
 
