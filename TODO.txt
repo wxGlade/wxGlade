@@ -1,6 +1,6 @@
 wxGlade TODO list
 -----------------
-Last update: 2002-07-29
+Last update: 2002-08-01
 
 The list is more or less sorted by priority
 
@@ -25,6 +25,8 @@ Key:
 - Investigation of the many memory leaks (*)
 
 - speedup of the xml loading (*)
+
+- separation between window objects and sizer ones in the generated code
 
 - custom wxDirDialog (to choose the destination dir for the generated
   code, as the Windows default one doesn't allow to create a new dir)
