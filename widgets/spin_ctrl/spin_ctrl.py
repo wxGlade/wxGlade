@@ -81,7 +81,7 @@ class EditSpinCtrl(ManagedBase):
         else:
             self.range = (min_v, max_v)
             self.properties['value'].set_range(min_v, max_v)
-        if self.widget: self.widget.SetRange(min_v, max_v)
+            if self.widget: self.widget.SetRange(min_v, max_v)
 
     def get_value(self):
         return self.value

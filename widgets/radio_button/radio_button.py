@@ -88,6 +88,9 @@ class EditRadioButton(ManagedBase):
             if value[v]:
                 self.style |= self.style_pos[v]
         if self.widget: self.SetWindowStyleFlag(self.style)
+
+# end of class EditRadioButton
+
         
 def builder(parent, sizer, pos, number=[1]):
     """\

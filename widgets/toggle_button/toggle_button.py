@@ -62,6 +62,7 @@ class EditToggleButton(ManagedBase):
 
     def set_value(self, value):
         # !!! This should be done with bool.
+        # 2003-03-21 NO! bools are evil here: bool('0') == True != int('0')
         value = int(value)
         if value != self.value:
             self.value = value
