@@ -27,7 +27,7 @@
  - Michael Gilfix for his wxPyColorChooser, used in the color dialog
  
  - ... and, of course, all the people who provided feedback, comments, critics
-   and support.
+   and support (John Dubery in particular for his huge amount of bug reports).
  
  
  (We apologize with all the people that should be mentioned here but in fact

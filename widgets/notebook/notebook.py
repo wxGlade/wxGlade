@@ -143,6 +143,8 @@ class TabsHandler:
     def end_elem(self, name):
         if name == 'tabs':
             self.parent.tabs = [[name, None] for name in self.tab_names]
+            self.parent.properties['tabs'].set_value([[name] for name in \
+                                                      self.tab_names])
             return True
         elif name == 'tab':
             self.tab_names.append("".join(self.curr_tab))

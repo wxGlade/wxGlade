@@ -1,3 +1,9 @@
+2003-04-24: widgets/toolbar/*:
+               first ToolBar support (only tools, not controls yet)
+            config.py:
+               added test to check for the WXGLADE_CONFIG_PATH env var, to
+               fix issue #726563
+
 2003-04-23: edit_sizers/edit_sizers.py, widgets/splitter_window/*,
             widgets/notebook/*, xml_parse.py et al:
                 new "virtual sizers" interface

@@ -7,7 +7,7 @@
 from wxPython.wx import *
 import common, math, misc
 from tree import Tree
-from MenuTree import *
+#from MenuTree import *
 from widget_properties import *
 from edit_windows import EditBase, TopLevelBase
 
@@ -140,6 +140,8 @@ class EditFrame(TopLevelBase):
                                               self.set_statusbar)
         self.menubar = None
         self.access_functions['menubar'] = (self.get_menubar, self.set_menubar)
+        self.toolbar = None
+        self.access_functions['toolbar'] = (self.get_toolbar, self.set_toolbar)
 
         self.access_functions['style'] = (self.get_style, self.set_style)
         prop = self.properties
@@ -148,13 +150,14 @@ class EditFrame(TopLevelBase):
                         'wxMINIMIZE', 'wxMINIMIZE_BOX', 'wxMAXIMIZE',
                         'wxMAXIMIZE_BOX', 'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
                         'wxSIMPLE_BORDER', 'wxRESIZE_BORDER',
-                        'wxFRAME_TOOL_WINDOW', 'wxFRAME_NO_TASKBAR')
+                        'wxFRAME_TOOL_WINDOW', 'wxFRAME_NO_TASKBAR',
+                        'wxNO_FULL_REPAINT_ON_RESIZE')
         self.style_pos = (wxDEFAULT_FRAME_STYLE,
                           wxICONIZE, wxCAPTION, wxMINIMIZE,
                           wxMINIMIZE_BOX, wxMAXIMIZE, wxMAXIMIZE_BOX,
                           wxSTAY_ON_TOP, wxSYSTEM_MENU, wxSIMPLE_BORDER,
                           wxRESIZE_BORDER, wxFRAME_TOOL_WINDOW,
-                          wxFRAME_NO_TASKBAR)
+                          wxFRAME_NO_TASKBAR, wxNO_FULL_REPAINT_ON_RESIZE)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # menubar property
         prop['menubar'] = CheckBoxProperty(self, 'menubar', None,
@@ -162,6 +165,9 @@ class EditFrame(TopLevelBase):
         # statusbar property
         prop['statusbar'] = CheckBoxProperty(self, 'statusbar', None,
                                              'Has StatusBar')
+        # toolbar property
+        prop['toolbar'] = CheckBoxProperty(self, 'toolbar', None,
+                                           'Has ToolBar')
 
     def create_widget(self):
         if self.parent: w = self.parent.widget
@@ -180,6 +186,8 @@ class EditFrame(TopLevelBase):
             self.widget.SetMenuBar(self.menubar.widget)
         if self.statusbar and self.statusbar.widget:
             self.widget.SetStatusBar(self.statusbar.widget)
+        if self.toolbar and self.toolbar.widget:
+            self.widget.SetToolBar(self.toolbar.widget)
 
     def create_properties(self):
         TopLevelBase.create_properties(self)
@@ -188,11 +196,13 @@ class EditFrame(TopLevelBase):
         prop['style'].display(panel)
         prop['menubar'].display(panel)
         prop['statusbar'].display(panel)
+        prop['toolbar'].display(panel)
         
         szr = wxBoxSizer(wxVERTICAL)
         szr.Add(prop['style'].panel, 0, wxEXPAND)
         szr.Add(prop['menubar'].panel, 0, wxEXPAND)
         szr.Add(prop['statusbar'].panel, 0, wxEXPAND)
+        szr.Add(prop['toolbar'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -235,6 +245,24 @@ class EditFrame(TopLevelBase):
             wxPostEvent(self.widget, wxSizeEvent(self.widget.GetSize(),
                                                  self.widget.GetId()))
         
+    def get_toolbar(self):
+        return self.toolbar is not None
+
+    def set_toolbar(self, value):
+        if value:
+            from toolbar import EditToolBar
+            self.toolbar = EditToolBar(self.name + '_toolbar', 'wxToolBar',
+                                       self, common.property_panel)
+            self.toolbar.node = Tree.Node(self.toolbar)
+            common.app_tree.add(self.toolbar.node, self.node)
+            
+            if self.widget:
+                self.toolbar.show_widget(True)
+                self.toolbar.show_properties()
+        else:
+            self.toolbar = self.toolbar.remove()
+            self.show_properties(None)
+
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
@@ -259,7 +287,10 @@ class EditFrame(TopLevelBase):
     def remove(self, *args):
         if self.menubar:
             self.menubar = self.menubar.remove(gtk_do_nothing=True)
-        if self.statusbar: self.statusbar = self.statusbar.remove()
+        if self.statusbar:
+            self.statusbar = self.statusbar.remove()
+        if self.toolbar:
+            self.toolbar = self.toolbar.remove(gtk_do_nothing=True)
         TopLevelBase.remove(self, *args)
 
 # end of class EditFrame
@@ -389,19 +420,16 @@ def initialize():
     """
     cwx = common.widgets_from_xml
     cwx['EditStatusBar'] = statusbar_xml_builder
-##     cwx['EditMenuBar'] = menubar_xml_builder
-    cwx['EditFrame'] = _make_builder(EditFrame) #xml_builder
+    cwx['EditFrame'] = _make_builder(EditFrame)
     cwx['EditMDIChildFrame'] = _make_builder(EditMDIChildFrame)
 
     common.widgets['EditFrame'] = builder
     
-    # add statusbar and menubar icons to WidgetTree
+    # add statusbar icon to WidgetTree
     from tree import WidgetTree
     import os.path
     WidgetTree.images['EditStatusBar'] = os.path.join(common.wxglade_path,
                                                       'icons/statusbar.xpm')
-##     WidgetTree.images['EditMenuBar'] = os.path.join(common.wxglade_path,
-##                                                     'icons/menubar.xpm')
     WidgetTree.images['EditMDIChildFrame'] = os.path.join(common.wxglade_path,
                                                           'icons/frame.xpm')
        

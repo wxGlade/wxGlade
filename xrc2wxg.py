@@ -10,7 +10,7 @@
 import xml.dom.minidom
 import sys, getopt, os.path, time
 
-_version = '0.0.1'
+_version = '0.0.2'
 _name = os.path.basename(sys.argv[0])
 
 try: True, False
@@ -114,6 +114,7 @@ def fix_properties(document):
 
 def fix_widgets(document):
     fix_menubars(document)
+    fix_toolbars(document)
     fix_custom_widgets(document)
     fix_sizeritems(document)
     fix_notebooks(document)
@@ -129,7 +130,7 @@ _widgets_list = [
     'wxRadioButton', 'wxRadioBox', 'wxChoice', 'wxComboBox', 'wxListBox',
     'wxStaticLine', 'wxStaticBitmap', 'wxGrid', 'wxMenuBar', 'wxStatusBar',
     'wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer',
-    'wxTreeCtrl', 'wxListCtrl'
+    'wxTreeCtrl', 'wxListCtrl', 'wxToolBar'
     ]
 _widgets = {}
 for w in _widgets_list: _widgets[w] = 1
@@ -228,6 +229,51 @@ def fix_sub_menus(document, menu, new_menu):
             elem.setAttribute('label', label)
             fix_sub_menus(document, child, elem)
         if elem.tagName: new_menu.appendChild(elem)
+
+
+def fix_toolbars(document):
+    def ok(elem): return elem.getAttribute('class') == 'wxToolBar'
+    toolbars = filter(ok, document.getElementsByTagName('object'))
+    for tb in toolbars:
+        fix_tools(document, tb)
+        if tb.parentNode is not document.documentElement:
+            tb_prop = document.createElement('toolbar')
+            tb_prop.appendChild(document.createTextNode('1'))
+            tb.parentNode.insertBefore(tb_prop, tb)
+
+
+def fix_tools(document, toolbar):
+    tools = document.createElement('tools')
+    for tool in [c for c in get_child_elems(toolbar) if c.tagName == 'object']:
+        if tool.getAttribute('class') == 'tool':
+            new_tool = document.createElement('tool')
+            id = document.createElement('id')
+            id.appendChild(document.createTextNode(
+                tool.getAttribute('name')))
+            new_tool.appendChild(id)
+            for c in get_child_elems(tool):
+                if c.tagName == 'bitmap':
+                    c.tagName = 'bitmap1'
+                elif c.tagName == 'tooltip':
+                    c.tagName = 'short_help'
+                elif c.tagName == 'longhelp':
+                    c.tagName = 'long_help'
+                elif c.tagName == 'toggle':
+                    c.tagName = 'type'
+                new_tool.appendChild(c)
+            tools.appendChild(new_tool)
+            toolbar.removeChild(tool).unlink()
+        elif tool.getAttribute('class') == 'separator':
+            new_tool = document.createElement('tool')
+            id = document.createElement('id')
+            id.appendChild(document.createTextNode('---'))
+            new_tool.appendChild(id)
+            tools.appendChild(new_tool)
+            toolbar.removeChild(tool).unlink()
+        else:
+            # some kind of control, unsupported at the moment, just remove it
+            toolbar.removeChild(tool).unlink()
+    toolbar.appendChild(tools)
 
 
 def fix_notebooks(document):

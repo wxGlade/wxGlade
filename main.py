@@ -187,7 +187,11 @@ class wxGladeFrame(wxFrame):
         prefs = config.preferences
         if prefs.remember_geometry:
             #print 'initializing geometry'
-            misc.set_geometry(self, prefs.get_geometry('main'))
+            try:
+                x, y, w, h = prefs.get_geometry('main')
+                misc.set_geometry(self, [x, y, -1, -1])
+            except Exception, e:
+                pass
             misc.set_geometry(self.frame2, prefs.get_geometry('properties'))
             misc.set_geometry(self.tree_frame, prefs.get_geometry('tree'))
         else:

@@ -690,11 +690,18 @@ def builder(parent, sizer, pos, number=[0]):
             klass_prop = TextProperty(self, 'class', self)
             szr = wxBoxSizer(wxVERTICAL)
             szr.Add(klass_prop.panel, 0, wxEXPAND)
-            szr.Add(wxButton(self, wxID_OK, 'OK'), 0, wxALL|wxALIGN_CENTER, 3)
+            sz2 = wxBoxSizer(wxHORIZONTAL)
+            sz2.Add(wxButton(self, wxID_OK, 'OK'), 0, wxALL, 3)
+            sz2.Add(wxButton(self, wxID_CANCEL, 'Cancel'), 0, wxALL, 3)
+            szr.Add(sz2, 0, wxALL|wxALIGN_CENTER, 3)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
             self.SetSize((150, -1))
+
+        def undo(self):
+            number[0] -= 1
+
         def __getitem__(self, value):
             if value == 'class':
                 def set_klass(c): self.klass = c
@@ -702,7 +709,11 @@ def builder(parent, sizer, pos, number=[0]):
     # end of inner class
 
     dialog = Dialog()
-    dialog.ShowModal()
+    if dialog.ShowModal() == wxID_CANCEL:
+        # cancel the operation
+        dialog.undo()
+        dialog.Destroy()
+        return
     
     name = 'menubar_%d' % number[0]
     while common.app_tree.has_name(name):
