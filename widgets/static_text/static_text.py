@@ -25,10 +25,10 @@ class EditStaticText(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['label'] = TextProperty(self, 'label', None,
                                                 multiline=True)
-        self.style_pos  = (wxALIGN_LEFT, wxALIGN_RIGHT, wxALIGN_CENTER,
+        self.style_pos  = (wxALIGN_LEFT, wxALIGN_RIGHT, wxALIGN_CENTRE,
                            wxST_NO_AUTORESIZE)
         style_labels = ('#section#Style', 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
-                        'wxALIGN_CENTER', 'wxST_NO_AUTORESIZE')
+                        'wxALIGN_CENTRE', 'wxST_NO_AUTORESIZE')
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)  
 
