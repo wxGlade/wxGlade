@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.3 2003/08/02 13:26:31 agriggio Exp $
+# $Id: perl_codegen.py,v 1.4 2003/08/07 17:27:00 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -27,11 +27,12 @@ class PerlCodeGenerator:
                     append('%s->AppendSeparator();\n' % menu)
                     continue
                 name, val = plgen.generate_code_id(None, item.id)
-                if not name and val == '-1':
+                if not name and ( not val or val == '-1'):
                     id = 'Wx::NewId()'
                 else:
                     if name: ids.append(name)
-                    id = val                
+                    id = val
+
                 if item.children:
                     if item.name:
                         name = item.name
