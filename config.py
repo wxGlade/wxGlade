@@ -1,5 +1,5 @@
 # config.py: wxGlade configuration handling
-# $Id: config.py,v 1.15 2003/07/23 15:35:55 agriggio Exp $
+# $Id: config.py,v 1.16 2003/09/11 06:35:20 dinogen Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -55,6 +55,9 @@ if common.use_gui:
             self.ok = wxButton(self, wxID_OK, "OK")
             self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
             self.apply = wxButton(self, -1, "Apply")
+            #MARCELLO
+            self.default_border = wxCheckBox(self.notebook_1_pane_2, -1,
+                                         "Create widgets with a default border")
 
             self.__set_properties()
             self.__do_layout()
@@ -80,6 +83,8 @@ if common.use_gui:
                 self.show_progress.SetValue(self.preferences.show_progress)
                 self.wxg_backup.SetValue(self.preferences.wxg_backup)
                 self.codegen_backup.SetValue(self.preferences.codegen_backup)
+                #MARCELLO
+                self.default_border.SetValue(self.preferences.default_border)
                 if self.preferences.backup_suffix == '.bak':
                     self.backup_suffix.SetSelection(1)
                 self.buttons_per_row.SetValue(self.preferences.buttons_per_row)
@@ -102,6 +107,8 @@ if common.use_gui:
             prefs['show_progress'] = self.show_progress.GetValue()
             prefs['wxg_backup'] = self.wxg_backup.GetValue()
             prefs['codegen_backup'] = self.codegen_backup.GetValue()
+            #MARCELLO
+            prefs['default_border'] = self.default_border.GetValue()
             if self.backup_suffix.GetSelection():
                 prefs['backup_suffix'] = '.bak'
             else: prefs['backup_suffix'] = '~'
@@ -133,6 +140,7 @@ if common.use_gui:
             self.buttons_per_row.SetSize((196, -1))
             self.wxg_backup.SetValue(1)
             self.codegen_backup.SetValue(1)
+            self.default_border.SetValue(1)
             self.backup_suffix.SetSelection(0)
             self.choose_widget_path.SetSize(wxDLG_SZE(self.choose_widget_path,
                                                       (12, -1)))
@@ -185,6 +193,8 @@ if common.use_gui:
             sizer_5.Add(self.use_dialog_units, 0, wxALL|wxEXPAND, 5)
             sizer_5.Add(self.wxg_backup, 0, wxALL|wxEXPAND, 5)
             sizer_5.Add(self.codegen_backup, 0, wxALL|wxEXPAND, 5)
+            #MARCELLO
+            sizer_5.Add(self.default_border, 0, wxALL|wxEXPAND, 5)
             sizer_5.Add(self.backup_suffix, 0, wxALL|wxEXPAND, 5)
             sizer_6.Add(self.local_widget_path, 1, wxALL, 3)
             sizer_6.Add(self.choose_widget_path, 0,
@@ -238,7 +248,8 @@ class Preferences(ConfigParser):
         'remember_geometry': False,
         'local_widget_path': (_get_home('') and \
                               os.path.join(_get_home(), '.wxglade', 'widgets')
-                              or '')
+                              or ''),
+        'default_border' : False
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults
@@ -246,6 +257,9 @@ class Preferences(ConfigParser):
             self.def_vals = Preferences._defaults
         self.changed = False
         ConfigParser.__init__(self)
+        # Maybe this will be an option. 
+        # For now I fix it to 3
+        self.default_border_size = 3
 
     def __getattr__(self, attr):
         val = self.def_vals.get(attr, "")

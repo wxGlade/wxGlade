@@ -1,5 +1,5 @@
 # spin_ctrl.py: wxSpinCtrl objects
-# $Id: spin_ctrl.py,v 1.9 2003/05/13 10:05:09 agriggio Exp $
+# $Id: spin_ctrl.py,v 1.10 2003/09/11 06:35:20 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -17,6 +17,7 @@ class EditSpinCtrl(ManagedBase):
     """
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
+        import config
         ManagedBase.__init__(self, name, 'wxSpinCtrl', parent, id, sizer, pos,
                              property_window, show=show)
         self.style = 0
@@ -32,6 +33,10 @@ class EditSpinCtrl(ManagedBase):
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         prop['range'] = TextProperty(self, 'range', None, can_disable=True)
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
+        # 2003-09-04 added default_border
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wxALL
 
     def create_widget(self):
         self.widget = wxSpinCtrl(self.parent.widget, self.id,

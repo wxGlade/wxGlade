@@ -1,5 +1,5 @@
 # static_text.py: wxStaticText objects
-# $Id: static_text.py,v 1.9 2003/06/21 14:28:44 agriggio Exp $
+# $Id: static_text.py,v 1.10 2003/09/11 06:35:20 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -17,6 +17,7 @@ class EditStaticText(ManagedBase):
         """\
         Class to handle wxStaticText objects
         """
+        import config
         ManagedBase.__init__(self, name, 'wxStaticText', parent, id, sizer,
                              pos, property_window, show=show)
         self.label = label
@@ -39,6 +40,10 @@ class EditStaticText(ManagedBase):
                                                      style_labels)
         self.properties['attribute'] = CheckBoxProperty(
             self, 'attribute', None, 'Store as attribute', write_always=True)
+        # 2003-09-04 added default_border
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wxALL
 
     def create_widget(self):
         self.widget = wxStaticText(self.parent.widget, self.id,

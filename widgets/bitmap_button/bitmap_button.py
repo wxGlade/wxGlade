@@ -1,5 +1,5 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.14 2003/08/07 12:22:01 agriggio Exp $
+# $Id: bitmap_button.py,v 1.15 2003/09/11 06:35:20 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -18,6 +18,7 @@ class EditBitmapButton(ManagedBase):
         """\
         Class to handle wxBitmapButton objects
         """
+        import config
         ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer,
                              pos, property_window, show=show)
         self.default = False
@@ -36,6 +37,10 @@ class EditBitmapButton(ManagedBase):
                                                     self.set_disabled_bitmap)
         self.properties['disabled_bitmap'] = FileDialogProperty(
             self, 'disabled_bitmap', None, style=wxOPEN|wxFILE_MUST_EXIST)
+        # 2003-09-04 added default_border
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wxALL
 
     def create_properties(self):
         ManagedBase.create_properties(self)

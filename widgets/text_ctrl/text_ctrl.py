@@ -1,5 +1,5 @@
 # text_ctrl.py: wxTextCtrl objects
-# $Id: text_ctrl.py,v 1.8 2003/06/21 14:28:44 agriggio Exp $
+# $Id: text_ctrl.py,v 1.9 2003/09/11 06:35:21 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -17,6 +17,7 @@ class EditTextCtrl(ManagedBase):
     """
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
+        import config
         ManagedBase.__init__(self, name, 'wxTextCtrl', parent, id, sizer, pos,
                              property_window, show=show)
         self.value = ""
@@ -35,6 +36,10 @@ class EditTextCtrl(ManagedBase):
                         'wxTE_PROCESS_TAB', 'wxTE_MULTILINE', 'wxTE_PASSWORD',
                         'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH')
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
+        # 2003-09-04 added default_border
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wxALL
 
     def create_widget(self):
         value = self.value

@@ -1,5 +1,5 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.11 2003/07/17 15:51:26 agriggio Exp $
+# $Id: button.py,v 1.12 2003/09/11 06:35:20 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -18,6 +18,7 @@ class EditButton(ManagedBase):
         """\
         Class to handle wxButton objects
         """
+        import config
         self.label = label
         self.default = False
         ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
@@ -27,6 +28,10 @@ class EditButton(ManagedBase):
                                                 multiline=True)
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
+        # 2003-09-04 added default_border
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wxALL
 
     def create_properties(self):
         ManagedBase.create_properties(self)

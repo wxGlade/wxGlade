@@ -1,5 +1,5 @@
 # radio_button.py: wxRadioButton objects
-# $Id: radio_button.py,v 1.9 2003/08/11 15:21:14 agriggio Exp $
+# $Id: radio_button.py,v 1.10 2003/09/11 06:35:20 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -18,6 +18,7 @@ class EditRadioButton(ManagedBase):
         """\
         Class to handle wxRadioButton objects
         """
+        import config
         ManagedBase.__init__(self, name, 'wxRadioButton', parent, id, sizer,
                              pos, property_window, show=show)
         self.label = label
@@ -35,6 +36,10 @@ class EditRadioButton(ManagedBase):
         self.properties['style'] = CheckListProperty(
             self, 'style', None, ['#section#Style',
                                   'wxRB_GROUP', 'wxRB_SINGLE'])
+        # 2003-09-04 added default_border
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wxALL
 
     def create_widget(self):
         self.widget = wxGladeRadioButton(self.parent.widget, self.id,

@@ -1,5 +1,5 @@
 # checkbox.py: wxCheckBox objects
-# $Id: checkbox.py,v 1.7 2003/06/21 14:28:45 agriggio Exp $
+# $Id: checkbox.py,v 1.8 2003/09/11 06:35:20 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -17,6 +17,7 @@ class EditCheckBox(ManagedBase):
         """\
         Class to handle wxCheckBox objects
         """
+        import config
         ManagedBase.__init__(self, name, 'wxCheckBox', parent, id, sizer,
                              pos, property_window, show=show)
         self.label = label
@@ -28,6 +29,10 @@ class EditCheckBox(ManagedBase):
                                                 multiline=True)
         self.properties['checked'] = CheckBoxProperty(self, 'checked', None,
                                                       'Checked')
+        # 2003-09-04 added default_border
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wxALL
 
     def create_widget(self):
         self.widget = wxCheckBox(self.parent.widget, self.id, self.label)
