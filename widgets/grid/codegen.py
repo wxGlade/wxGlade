@@ -7,6 +7,34 @@
 
 import common
 
+class ColsCodeHandler:
+    def __init__(self):
+        self.columns = []
+        self.col_name = ''
+        self.col_size = ''
+
+    def start_elem(self, name, attrs):
+        if name == 'column':
+            s = attrs.get('size')
+            if not s: return
+            self.col_size = s
+            self.col_name = ''
+    
+    def end_elem(self, name, code_obj):
+        if name == 'columns':
+            code_obj.properties['columns'] = self.columns
+            return True
+        elif name == 'column':
+            self.columns.append((self.col_name,self.col_size))
+
+        return False
+
+    def char_data(self, data):
+        self.col_name = self.col_name + data
+
+# end of class TabsCodeHandler
+
+
 def python_code_generator(obj):
     """\
     fuction that generates python code for wxGrid objects.
@@ -39,9 +67,10 @@ def python_generate_properties(obj):
     try: create_grid = int(prop['create_grid'])
     except (KeyError, ValueError): create_grid = False
     if not create_grid: return []
-    
-    out.append('%s.CreateGrid(%s, %s)\n' % (name, prop.get('rows_number'),
-                                            prop.get('columns_number')))
+    print "GRID-CODEGEN-1: "
+    print prop.get('columns')
+    out.append('%s.CreateGrid(%s, %d)\n' % (name, prop.get('rows_number'),
+                                            len(prop.get('columns') )))
     if prop.get('row_label_size'):
         out.append('%s.SetRowLabelSize(%s)\n' % (name, prop['row_label_size']))
     if prop.get('col_label_size'):
@@ -70,15 +99,17 @@ def python_generate_properties(obj):
     sel_mode = prop.get('selection_mode')
     if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
         out.append('%s.SetSelectionMode(%s)\n' % (name, sel_mode))
+    if prop.get('columns', False):
+        v = prop.get('columns')
+        for i in range(len(v)):
+            out.append('%s.SetColLabelValue(%d,\'%s\')\n' %
+                           (name, i, v[i][0]))
+            try: m = int(v[i][1])
+            except: m = 0
+            if m > 0:
+                out.append('%s.SetColSize(%d,%d)\n' %
+                           (name, i, m))
     out.extend(pygen.generate_common_properties(obj))
-    if prop.get('column_labels', False):
-        v = common.smart_split(prop.get('column_labels'), 1)
-        i = 0
-        for s in v:
-            if s != '' and i < prop.get('columns_number'):
-                out.append('%s.SetColLabelValue(%d,\'%s\')\n' %
-                           (name, i, s))
-            i = i + 1
 
     return out
 
@@ -168,6 +199,7 @@ def initialize():
         pygen.add_widget_handler('wxGrid', python_code_generator,
                                  python_generate_properties,
                                  ['from wxPython.grid import *\n'])
+        pygen.add_property_handler('columns', ColsCodeHandler, 'wxGrid')
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
         xrcgen.add_widget_handler('wxGrid', xrcgen.NotImplementedXrcObject)
@@ -179,3 +211,4 @@ def initialize():
                        ('long', 'style', '0')]
         cppgen.add_widget_handler('wxGrid', cpp_code_generator, constructor,
                                   cpp_generate_properties)
+        pygen.add_property_handler('columns', ColsCodeHandler, 'wxGrid')
