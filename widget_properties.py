@@ -18,12 +18,6 @@ def _mangle(label):
 
 import common
 _encode = common._encode_to_xml
-## def _encode(label, encoding='latin-1'):
-##     """\
-##     returns a utf-8 encoded representation of label. This is equivalent to:
-##     str(label).decode(encoding).encode('utf-8')
-##     """
-##     return str(label).decode(encoding).encode('utf-8')
 
 
 class Property:
@@ -188,7 +182,7 @@ class TextProperty(Property, _activator):
             self._target = self.text
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
-        sizer.SetItemMinSize(label, *label.GetBestSize())
+        #sizer.SetItemMinSize(label, *label.GetBestSize())
         try:
             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
             option = 4
@@ -202,7 +196,6 @@ class TextProperty(Property, _activator):
         self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
         self.bind_event(self.on_change_val)
-
 
     def bind_event(self, function):
         def func_2(event):
@@ -774,10 +767,10 @@ class GridProperty(wxPanel, Property):
         self.btn = wxButton(self.panel, self.btn_id, "Update")
         if self.can_add:
             self.add_btn = wxButton(self.panel, self.btn_id+1, "Add")
-        if self.can_remove:
-            self.remove_btn = wxButton(self.panel, self.btn_id+2, "Remove")
         if self.can_insert:
             self.insert_btn = wxButton(self.panel, self.btn_id+3, "Insert")
+        if self.can_remove:
+            self.remove_btn = wxButton(self.panel, self.btn_id+2, "Remove")
         self.grid = wxGrid(self.panel, -1)
         self.grid.CreateGrid(self.rows, len(self.cols))
         self.grid.SetMargins(0, 0)
