@@ -26,8 +26,6 @@ class EditWidget(ManagedBase):
         # and widgets
         self.property_names = []
         attrs = dir(self)
-        module = getattr(self, '__module__')
-        print 'module -> ', dir(module)
         for attr in attrs:
             prefix = attr[0:4]
             if prefix == 'get_':
