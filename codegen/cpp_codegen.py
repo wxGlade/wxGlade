@@ -250,8 +250,9 @@ def initialize(app_attrs):
             # isolation directives
             oh = os.path.basename(name + '.h').upper().replace('.', '_')
             # extra headers
-            for val in _obj_headers.itervalues():
-                for header in val:
+            #for val in _obj_headers.itervalues():
+            for handler in obj_builders.itervalues():
+                for header in getattr(handler, 'extra_headers', []):
                     output_header.write('#include %s\n' % header)
             output_header.write('\n#ifndef %s\n#define %s\n' % (oh, oh))
             output_header.write('\n')
@@ -340,7 +341,8 @@ def add_object(top_obj, sub_obj):
                                                          sub_obj.klass),'\n'])
     else:
         try:
-            init, ids, props, layout = builder(sub_obj)
+            init, ids, props, layout = builder.get_code(sub_obj)
+            #builder(sub_obj)
         except:
             print sub_obj
             raise
@@ -365,8 +367,11 @@ def add_object(top_obj, sub_obj):
         if sub_obj.is_toplevel and sub_obj.base != sub_obj.klass:
             klass.dependencies.append(sub_obj.klass)
         else:
-            headers = _obj_headers.get(sub_obj.base, [])
-            klass.dependencies.extend(headers)
+##             headers = _obj_headers.get(sub_obj.base, [])
+            if sub_obj.base in obj_builders:
+                headers = getattr(obj_builders[sub_obj.base],
+                                  'extra_headers', [])
+                klass.dependencies.extend(headers)
 
 
 def add_sizeritem(toplevel, sizer, obj, option, flag, border):
@@ -417,8 +422,28 @@ def add_class(code_obj):
         # if the class body was empty, create an empty ClassLines
         classes[code_obj.klass] = ClassLines()
 
+
+##     # first thing to do, call the property writer: we do this here because it
+##     # is admissible for the property code generator to have side effects (i.e.
+##     # to operate on the ClassLines instance): this is actually done in the
+##     # toplevel menubar
+##     props_builder = obj_properties.get(code_obj.base)
+##     write_body = len(classes[code_obj.klass].props)
+##     if props_builder:
+##         obj_p = props_builder(code_obj)#obj_properties[code_obj.base](code_obj)
+##         if not write_body: write_body = len(obj_p)
+##     else: obj_p = []
+
+    try:
+        builder = obj_builders[code_obj.base]
+    except KeyError:
+        print code_obj
+        raise # this shouldn't happen
+
     default_sign = [('wxWindow*', 'parent'), ('int', 'id')]
-    sign = obj_constructors.get(code_obj.base, default_sign)
+##     sign = obj_constructors.get(code_obj.base, default_sign)
+    sign = getattr(builder, 'constructor', default_sign)
+    
     defaults = []
     for t in sign:
         if len(t) == 3: defaults.append(t[2])
@@ -438,6 +463,11 @@ def add_class(code_obj):
         # the first thing to add it the enum of the various ids
         hwrite(tabs(1) + '// begin wxGlade: %s::ids\n' % code_obj.klass)
         ids = classes[code_obj.klass].ids
+
+        # let's try to see if there are extra ids to add to the enum
+        if hasattr(builder, 'get_ids_code'):
+            ids.extend(builder.get_ids_code(code_obj))
+        
         if ids:
             hwrite(tabs(1) + 'enum {\n')
             ids = (',\n' + tabs(2)).join(ids)
@@ -460,6 +490,7 @@ def add_class(code_obj):
             hwrite(tabs(1) + '%s* %s;\n' % (o_type, o_name))
         hwrite(tabs(1) + '// end wxGlade\n')
         hwrite('};\n\n')
+        
     elif prev_src is not None:
         hwrite(tabs(1) + '// begin wxGlade: %s::ids\n' % code_obj.klass)
         ids = classes[code_obj.klass].ids
@@ -526,9 +557,15 @@ def add_class(code_obj):
     # --- patch 2002-08-26 ---------------------------------------------------
     parents_init = classes[code_obj.klass].parents_init
     parents_init.reverse()    
-    for l in parents_init: swrite(tab+l)
+    for l in parents_init: swrite(tab + l)
     # ------------------------------------------------------------------------
     for l in init_lines: swrite(tab + l)
+
+    # now see if there are extra init lines to add
+    if hasattr(builder, 'get_init_code'):
+        for l in builder.get_init_code(code_obj):
+            swrite(tab + l)
+    
     swrite('\n' + tab + 'set_properties();\n')
     swrite(tab + 'do_layout();\n')
     # end tag
@@ -553,17 +590,24 @@ def add_class(code_obj):
     
 
     # set_properties
-    props_builder = obj_properties.get(code_obj.base)
-    write_body = len(classes[code_obj.klass].props)
-    if props_builder:
-        obj_p = obj_properties[code_obj.base](code_obj)
-        if not write_body: write_body = len(obj_p)
-    else: obj_p = []
+##     props_builder = obj_properties.get(code_obj.base)
+##     #write_body = len(classes[code_obj.klass].props)
+##     if props_builder:
+##         obj_p = props_builder(code_obj)#obj_properties[code_obj.base](code_obj)
+##         #if not write_body: write_body = len(obj_p)
+##     else: obj_p = []
+    if hasattr(builder, 'get_properties_code'):
+        obj_p = builder.get_properties_code(code_obj)
+    else:
+        obj_p = generate_common_properties(code_obj)
+
+    # set_properties
     if is_new:
         swrite('\nvoid %s::set_properties()\n{\n' % code_obj.klass)
     swrite(tab + '// begin wxGlade: %s::set_properties\n' % code_obj.klass)
     for l in obj_p: swrite(tab + l)
-    for l in classes[code_obj.klass].props: swrite(tab); swrite(l)
+    for l in classes[code_obj.klass].props:
+        swrite(tab + l)
     swrite(tab + '// end wxGlade\n')
     if is_new:
         swrite('}\n\n')
@@ -592,7 +636,14 @@ def add_class(code_obj):
     sizers_init_lines.reverse()
     for l in sizers_init_lines: swrite(tab + l)
     for l in layout_lines: swrite(tab + l)
-    swrite(tab + 'Layout();\n')
+
+    #if sizers_init_lines or layout_lines: swrite(tab + 'Layout();\n')
+
+    # now, check if there are extra layout lines to add
+    if hasattr(builder, 'get_layout_code'):
+        for l in builder.get_layout_code(code_obj):
+            swrite(tab + l)
+    
     swrite(tab + '// end wxGlade\n')
     if is_new:
         swrite('}\n\n')
@@ -937,26 +988,89 @@ def add_property_handler(property_name, handler, widget_name=None):
             _property_writers[widget_name] = { property_name: handler }
 
 
-def add_widget_handler(widget_name, handler,
-                       constructor=None,
-                       properties_handler=generate_common_properties,
-                       extra_headers=None):
+class WidgetHandler:
     """\
-    sets the functions to generate the code for the widget whose base class
-    is 'widget_name':
-     - handler: function that writes the code
-     - constructor: ``signature'' of the widget's constructor
-     - properties_handler: function that writes extra code to set the
-                           properties of the widget if it is a toplevel class
-     - extra_headers: if not None, list of extra header file, in the form
-       <header.h> or "header.h"
+    Interface the various code generators for the widgets must implement
     """
+
+    """``signature'' of the widget's constructor"""
+    constructor = []
+    
+    """
+    if not None, list of extra header file, in the form
+    <header.h> or "header.h"
+    """
+    extra_headers = []
+    
+    def get_code(self, obj):
+        """\
+        Handler for normal widgets (non-toplevel): returns 4 lists of strings,
+        init, ids, properties and layout, that contain the code for the
+        corresponding parts/methods of the class to generate
+        """
+        return [], [], [], []
+
+    def get_properties_code(self, obj):
+        """\
+        Handler for the code of the set_properties method of toplevel objects.
+        Returns a list of strings containing the code to generate
+        """
+        return []
+
+    def get_init_code(self, obj):
+        """\
+        Handler for the code of the constructor of toplevel objects.  Returns a
+        list of strings containing the code to generate.  Usually the default
+        implementation is ok (i.e. there are no extra lines to add). The
+        generated lines are appended at the end of the constructor
+        """
+        return []
+        
+    def get_ids_code(self, obj):
+        """\
+        Handler for the code of the ids enum of toplevel objects.
+        Returns a list of strings containing the code to generate.
+        Usually the default implementation is ok (i.e. there are no
+        extra lines to add)
+        """
+        return []
+
+    def get_layout_code(self, obj):
+        """\
+        Handler for the code of the do_layout method of toplevel objects.
+        Returns a list of strings containing the code to generate.
+        Usually the default implementation is ok (i.e. there are no
+        extra lines to add)
+        """
+        return []
+
+# end of class WidgetHandler
+
+
+## def add_widget_handler(widget_name, handler,
+##                        constructor=None,
+##                        properties_handler=generate_common_properties,
+##                        extra_headers=None,
+##                        extra_init_lines=None, extra_ids=None):
+##     """\
+##     sets the functions to generate the code for the widget whose base class
+##     is 'widget_name':
+##      - handler: function that writes the code
+##      - constructor: ``signature'' of the widget's constructor
+##      - properties_handler: function that writes extra code to set the
+##                            properties of the widget if it is a toplevel class
+##      - extra_headers: if not None, list of extra header file, in the form
+##        <header.h> or "header.h"
+##     """
+##     obj_builders[widget_name] = handler
+##     obj_properties[widget_name] = properties_handler
+##     if constructor is not None:
+##         obj_constructors[widget_name] = constructor
+##     if extra_headers is not None:
+##         _obj_headers[widget_name] = extra_headers
+
+def add_widget_handler(widget_name, handler):
     obj_builders[widget_name] = handler
-    obj_properties[widget_name] = properties_handler
-    if constructor is not None:
-        obj_constructors[widget_name] = constructor
-    if extra_headers is not None:
-        _obj_headers[widget_name] = extra_headers
 
 
 def _unique(sequence):

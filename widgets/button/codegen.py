@@ -6,24 +6,24 @@
 
 import common
 
-def python_code_generator(obj):
-    """\
-    fuction that generates python code for wxButton objects.
-    """
-    pygen = common.code_writers['python']
-    prop = obj.properties
-    id_name, id = pygen.generate_code_id(obj)
-    label = pygen.quote_str(prop.get('label', ''))
-    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-    else: parent = 'self'
-    init = []
-    if id_name: init.append(id_name)
-    init.append('self.%s = %s(%s, %s, %s)\n' %
-                (obj.name, obj.klass, parent, id, label))
-    props_buf = pygen.generate_common_properties(obj)
-    if prop.get('default', False):
-        props_buf.append('self.%s.SetDefault()\n' % obj.name)
-    return init, props_buf, []
+class PythonCodeGenerator:
+    def get_code(self, obj):
+        pygen = common.code_writers['python']
+        prop = obj.properties
+        id_name, id = pygen.generate_code_id(obj)
+        label = pygen.quote_str(prop.get('label', ''))
+        if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
+        else: parent = 'self'
+        init = []
+        if id_name: init.append(id_name)
+        init.append('self.%s = %s(%s, %s, %s)\n' %
+                    (obj.name, obj.klass, parent, id, label))
+        props_buf = pygen.generate_common_properties(obj)
+        if prop.get('default', False):
+            props_buf.append('self.%s.SetDefault()\n' % obj.name)
+        return init, props_buf, []
+
+# end of class PythonCodeGenerator
 
 
 def xrc_code_generator(obj):
@@ -46,34 +46,37 @@ def xrc_code_generator(obj):
     return ButtonXrcObject(obj)
 
 
-def cpp_code_generator(obj):
-    """\
-    fuction that generates python code for wxButton objects.
-    """
-    cppgen = common.code_writers['C++']
-    prop = obj.properties
-    id_name, id = cppgen.generate_code_id(obj)
-    if id_name: ids = [ id_name ]
-    else: ids = []
-    if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-    else: parent = 'this'
-    label = cppgen.quote_str(prop.get('label', ''))
-    init = [ '%s = new %s(%s, %s, %s);\n' % 
-             (obj.name, obj.klass, parent, id, label) ]
-    props_buf = cppgen.generate_common_properties(obj)
-    if prop.get('default', False):
-        props_buf.append('%s->SetDefault();\n' % obj.name)
-    return init, ids, props_buf, []
+class CppCodeGenerator:
+    def get_code(self, obj):
+        """\
+        fuction that generates python code for wxButton objects.
+        """
+        cppgen = common.code_writers['C++']
+        prop = obj.properties
+        id_name, id = cppgen.generate_code_id(obj)
+        if id_name: ids = [ id_name ]
+        else: ids = []
+        if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+        else: parent = 'this'
+        label = cppgen.quote_str(prop.get('label', ''))
+        init = [ '%s = new %s(%s, %s, %s);\n' % 
+                 (obj.name, obj.klass, parent, id, label) ]
+        props_buf = cppgen.generate_common_properties(obj)
+        if prop.get('default', False):
+            props_buf.append('%s->SetDefault();\n' % obj.name)
+        return init, ids, props_buf, []
+
+# end of class CppCodeGenerator
 
 
 def initialize():
     common.class_names['EditButton'] = 'wxButton'
     pygen = common.code_writers.get('python')
     if pygen:
-        pygen.add_widget_handler('wxButton', python_code_generator)
+        pygen.add_widget_handler('wxButton', PythonCodeGenerator())
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
         xrcgen.add_widget_handler('wxButton', xrc_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        cppgen.add_widget_handler('wxButton', cpp_code_generator)
+        cppgen.add_widget_handler('wxButton', CppCodeGenerator())

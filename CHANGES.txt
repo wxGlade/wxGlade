@@ -1,3 +1,8 @@
+2003-03-30: codegen/*, widgets/*/codegen.py:
+                change of API to cleanup code
+            widgets/menubar:
+                added toplevel menubar support
+
 2003-03-20: edit_windows.py:
                 fixed bug #706890
 
