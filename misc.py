@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.29 2003/07/29 14:42:14 agriggio Exp $
+# $Id: misc.py,v 1.30 2003/08/30 09:50:29 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -185,6 +185,8 @@ def append_item(menu, id, text, xpm_file=None):
     if use_menu_icons is None:
         import config
         use_menu_icons = config.preferences.use_menu_icons
+    if wxPlatform == '__WXGTK__' and wxVERSION == (2, 4, 1, 2, ''):
+        use_menu_icons = 0
     import common, os.path
     item = wxMenuItem(menu, id, text)
     if wxPlatform == '__WXMSW__': path = 'icons/msw/'
