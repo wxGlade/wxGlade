@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.23 2003/05/15 19:05:00 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.24 2003/06/11 17:12:02 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -920,7 +920,7 @@ def generate_code_disabled(obj):
     try: disabled = int(obj.properties['disabled'])
     except: disabled = False
     if disabled:
-        return self + 'Disable();\n'
+        return self + 'Enable(false);\n'
 
 
 def generate_code_focused(obj):
