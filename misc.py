@@ -256,7 +256,7 @@ def _reverse_dict(src):
 #-----------------------------------------------------------------------------
 def sizer_fixed_Insert(self, *args, **kw):
     """\
-    These function fixes a bug in wxPython 2.4.0.2, which fails to call
+    This function fixes a bug in wxPython 2.4.0.2, which fails to call
     InsertSizer when the 2nd argument is a Sizer
     """
     if type(args[1]) == type(1):
@@ -265,3 +265,23 @@ def sizer_fixed_Insert(self, *args, **kw):
         apply(self.InsertSizer, args, kw)
     else:
         apply(self.InsertWindow, args, kw)
+
+#-----
+# if not None, this is the SizerSlot wich has the "mouse focus": this is used
+# to restore the mouse cursor if the user cancelled the addition of a widget
+_currently_under_mouse = None
+
+
+#-----------------------------------------------------------------------------
+def get_geometry(win):
+    x, y = win.GetPositionTuple()
+    w, h = win.GetSizeTuple()
+    return (x, y, w, h)
+
+def set_geometry(win, geometry):
+    if geometry is None: return
+    try:
+        x, y, w, h = geometry
+        win.SetDimensions(int(x), int(y), int(w), int(h))
+    except Exception, e:
+        pass

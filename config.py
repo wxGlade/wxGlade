@@ -27,6 +27,9 @@ if common.use_gui:
             self.show_progress = wxCheckBox(self.notebook_1_pane_1, -1,
                                             "Show progress dialog when loading"
                                             " wxg files")
+            self.remember_geometry = wxCheckBox(self.notebook_1_pane_1, -1,
+                                                "Remember position and size "
+                                                "of wxGlade windows")
             self.open_save_path = wxTextCtrl(self.notebook_1_pane_1, -1, "")
             self.codegen_path = wxTextCtrl(self.notebook_1_pane_1, -1, "")
             self.number_history = wxSpinCtrl(self.notebook_1_pane_1, -1, "4",
@@ -39,13 +42,12 @@ if common.use_gui:
             self.wxg_backup = wxCheckBox(self.notebook_1_pane_2, -1,
                                          "Create backup wxg files")
             self.codegen_backup = wxCheckBox(self.notebook_1_pane_2, -1,
-                                             "Create backup files for "
-                                             "generated source")
-            self.backup_suffix = wxRadioBox(self.notebook_1_pane_2, -1,
-                                            "Backup options", choices=[
-                "append ~ to filename", "append .bak to filename"],
-                                            majorDimension=2,
-                                            style=wxRA_SPECIFY_COLS)
+                                             "Create backup files "
+                                             "for generated source")
+            self.backup_suffix = wxRadioBox(
+                self.notebook_1_pane_2, -1, "Backup options",
+                choices=["append ~ to filename", "append .bak to filename"],
+                majorDimension=2, style=wxRA_SPECIFY_COLS)
             self.ok = wxButton(self, wxID_OK, "OK")
             self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
             self.apply = wxButton(self, -1, "Apply")
@@ -74,6 +76,8 @@ if common.use_gui:
                 if self.preferences.backup_suffix == '.bak':
                     self.backup_suffix.SetSelection(1)
                 self.buttons_per_row.SetValue(self.preferences.buttons_per_row)
+                self.remember_geometry.SetValue(
+                    self.preferences.remember_geometry)
             except Exception, e:
                 wxMessageBox('Error reading config file:\n%s' % e, 'Error',
                              wxOK|wxCENTRE|wxICON_ERROR)
@@ -93,13 +97,15 @@ if common.use_gui:
                 prefs['backup_suffix'] = '.bak'
             else: prefs['backup_suffix'] = '~'
             prefs['buttons_per_row'] = self.buttons_per_row.GetValue()
-
+            prefs['remember_geometry'] = self.remember_geometry.GetValue()
+            
         def __set_properties(self):
             # begin wxGlade: wxGladePreferences.__set_properties
             self.SetTitle("wxGlade: preferences")
             self.use_menu_icons.SetValue(1)
             self.frame_tool_win.SetValue(1)
             self.show_progress.SetValue(1)
+            self.remember_geometry.SetValue(1)
             self.open_save_path.SetSize((196, -1))
             self.codegen_path.SetSize((196, -1))
             self.number_history.SetSize((196, -1))
@@ -120,6 +126,7 @@ if common.use_gui:
             sizer_3.Add(self.use_menu_icons, 0, wxALL|wxEXPAND, 5)
             sizer_3.Add(self.frame_tool_win, 0, wxALL|wxEXPAND, 5)
             sizer_3.Add(self.show_progress, 0, wxALL|wxEXPAND, 5)
+            sizer_3.Add(self.remember_geometry, 0, wxALL|wxEXPAND, 5)
             label_1 = wxStaticText(self.notebook_1_pane_1, -1,
                                    "Initial path for \nfile opening/saving "
                                    "dialogs:")
@@ -138,8 +145,8 @@ if common.use_gui:
             sizer_4.Add(self.number_history, 0,
                         wxALL|wxALIGN_CENTER_VERTICAL, 5)
             label_2_copy_1 = wxStaticText(self.notebook_1_pane_1, -1,
-                                          "Number of buttons per row\nin the "
-                                          "main palette")
+                                          "Number of buttons per row\nin "
+                                          "the main palette")
             sizer_4.Add(label_2_copy_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
             sizer_4.Add(self.buttons_per_row, 0,
                         wxALL|wxALIGN_CENTER_VERTICAL, 5)
@@ -190,6 +197,7 @@ class Preferences(ConfigParser):
         'codegen_backup': True,
         'backup_suffix': sys.platform == 'win32' and '.bak' or '~',
         'buttons_per_row': 5,
+        'remember_geometry': False,
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults
@@ -217,6 +225,28 @@ class Preferences(ConfigParser):
     def __setitem__(self, attr, val):
         self.set('wxglade', attr, str(val))
         self.changed = True
+
+    def set_geometry(self, name, geometry):
+        section = 'geometry_%s' % name
+        if not self.has_section(section):
+            self.add_section(section)
+        self.set(section, 'x', geometry[0])
+        self.set(section, 'y', geometry[1])
+        self.set(section, 'w', geometry[2])
+        self.set(section, 'h', geometry[3])
+
+    def get_geometry(self, name):
+        section = 'geometry_%s' % name
+        if self.has_section(section):
+            x = self.get(section, 'x')
+            y = self.get(section, 'y')
+            w = self.get(section, 'w')
+            h = self.get(section, 'h')
+            return (x, y, w, h)
+        else:
+            return None
+
+# end of class Preferences
         
 preferences = None
 

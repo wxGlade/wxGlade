@@ -110,14 +110,21 @@ def builder(parent, sizer, pos, number=[0]):
                                             ['wxDialog', 'wxPanel'])
                 szr.Add(widget_prop.panel, 0, wxALL|wxEXPAND, 5)
             szr.Add(self.klass_prop.panel, 0, wxALL|wxEXPAND, 5)
-            btn = wxButton(self, wxID_OK, 'OK')
-            szr.Add(btn, 0, wxALL|wxALIGN_CENTER, 3)
-            btn.SetFocus()
+            btnbox = wxBoxSizer(wxHORIZONTAL)
+            btnOK = wxButton(self, wxID_OK, 'OK')
+            btnCANCEL = wxButton(self, wxID_CANCEL, 'Cancel')
+            btnbox.Add(btnOK, 0, wxALL, 3)
+            btnbox.Add(btnCANCEL, 0, wxALL, 3)
+            btnOK.SetFocus()
+            szr.Add(btnbox, 0, wxALL|wxALIGN_CENTER, 3)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
             if self.GetSize()[0] < 150: self.SetSize((150, -1))
             self.klass_modified = False
+
+        def undo(self):
+            number[0] -= 1
 
         def set_klass(self, c):
             self.klass = c
@@ -140,7 +147,13 @@ def builder(parent, sizer, pos, number=[0]):
     # end of inner class
 
     class_dialog = Dialog()
-    class_dialog.ShowModal()
+    # Check if the user hit Cancel, if so then bail out
+    if class_dialog.ShowModal() == wxID_CANCEL:
+        # restore state
+        class_dialog.undo()
+        # clean up resources
+        class_dialog.Destroy()
+        return
     if class_dialog.widget == 0: name = 'dialog'
     else: name = 'panel'
     label = '%s_%d' % (name, number[0])

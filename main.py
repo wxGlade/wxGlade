@@ -123,6 +123,13 @@ class wxGladeFrame(wxFrame):
         EVT_MENU(self, TUT_ID, self.show_tutorial)
         EVT_MENU(self, ABOUT_ID, self.show_about_box)
         EVT_MENU(self, PREFS_ID, self.edit_preferences) 
+##         ESC_ID = wxNewId()
+##         EVT_MENU(self, ESC_ID, self.cancel_add_object)
+##         accTable = wxAcceleratorTable([(wxACCEL_CTRL, ord('K'), #WXK_ESCAPE,
+##                                         ESC_ID),])
+##         self.SetAcceleratorTable(accTable)
+        EVT_CHAR(self, self.cancel_add_object)
+
         # Tutorial window
         self.tut_frame = None
         # layout
@@ -176,21 +183,29 @@ class wxGladeFrame(wxFrame):
             menu_bar.Check(TREE_ID, False)
             self.tree_frame.Hide()
         EVT_CLOSE(self.tree_frame, on_tree_frame_close)
-        self.frame2.SetSize((250, 350))
-        self.SetPosition((0, 0))
-        x, y = self.GetPosition()
-        h = self.GetSize()[1]
-        w = self.frame2.GetSize()[0]
-        if wxPlatform != '__WXMSW__':
-            # under X, IceWM (and Sawfish, too), GetSize seems to ignore
-            # window decorations
-            h += 60
-            w += 10
-        self.frame2.SetPosition((x, y+h))
-        self.tree_frame.SetPosition((x+w, y))
+        # check to see if there are some remembered values
+        prefs = config.preferences
+        if prefs.remember_geometry:
+            #print 'initializing geometry'
+            misc.set_geometry(self, prefs.get_geometry('main'))
+            misc.set_geometry(self.frame2, prefs.get_geometry('properties'))
+            misc.set_geometry(self.tree_frame, prefs.get_geometry('tree'))
+        else:
+            self.frame2.SetSize((250, 350))
+            self.SetPosition((0, 0))
+            x, y = self.GetPosition()
+            h = self.GetSize()[1]
+            w = self.frame2.GetSize()[0]
+            if wxPlatform != '__WXMSW__':
+                # under X, IceWM (and Sawfish, too), GetSize seems to ignore
+                # window decorations
+                h += 60
+                w += 10
+            self.frame2.SetPosition((x, y+h))
+            self.tree_frame.SetPosition((x+w, y))
         self.Show()
         self.tree_frame.Show()
-        self.frame2.Show()
+        self.frame2.Show()    
 
         self._skip_activate = False
         if wxPlatform == '__WXMSW__':
@@ -394,6 +409,19 @@ class wxGladeFrame(wxFrame):
 
     def cleanup(self, event):
         if self.ask_save():
+            # first, let's see if we have to save the geometry...
+            prefs = config.preferences
+            if prefs.remember_geometry:
+                #print 'saving geometry'
+                # main frame
+                prefs.set_geometry('main', misc.get_geometry(self))
+                # widget tree
+                prefs.set_geometry('tree',
+                                   misc.get_geometry(self.tree_frame))
+                # properties
+                prefs.set_geometry('properties',
+                                   misc.get_geometry(self.frame2))
+                prefs.changed = True
             common.app_tree.clear()
             if self.about_box: self.about_box.Destroy()
             try: config.save_preferences()
@@ -469,6 +497,39 @@ class wxGladeFrame(wxFrame):
     def hide_all(self):
         self.tree_frame.Hide()
         self.frame2.Hide()
+
+    def cancel_add_object(self, event):
+        '''
+        Cancels addition of widget/sizer
+        '''
+        print 'cancel_add_object'
+        if event.HasModifiers() or event.GetKeyCode() != WXK_ESCAPE:
+            event.Skip()
+            return
+        common.adding_widget = False
+        common.adding_sizer = False
+        common.widget_to_add = None
+##         # restore the cursor on the toplevels
+##         root = common.app_tree.root
+##         children = root.children
+##         if children == None: children = []
+##         for node in children:
+##             # this looks kind of weird but we have to chain 2 levels to
+##             # get to the real wxWindow
+##             win = node.widget.widget
+##             try:
+##                 wxPostEvent(win, wxMouseEvent(wxEVT_ENTER_WINDOW))
+##                 # not sure why we have to do this
+##                 # but otherwise when you move the mouse it turns
+##                 # back to the crosshairs ??
+##                 mousePos = wxGetMousePosition()
+##                 x,y = win.ScreenToClient(mousePos)
+##                 # if the mouse is in the client window then zero it
+##                 if x > 0 and y > 0:
+##                     win.WarpPointer(0, 0)
+##             except:
+##                 pass
+        event.Skip()
 
 # end of class wxGladeFrame
 

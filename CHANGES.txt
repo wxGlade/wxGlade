@@ -1,3 +1,12 @@
+2003-04-17: main.py, widgets/frame/frame.py, widgets/dialog/dialog.py, misc.py,
+            config.py, common.py:
+                - added ability to cancel the addition of a widget
+                - added new config option to remember the geometry of 
+                  wxGlade windows
+
+2003-04-14: widgets/menubar/*:
+                added support for radio menu items
+
 2003-03-30: codegen/*, widgets/*/codegen.py:
                 change of API to cleanup code
             widgets/menubar:
