@@ -76,7 +76,7 @@ class EditGrid(ManagedBase):
         self.label_bg_color = '#C0C0C0'
         self.selection_mode = wxGrid.wxGridSelectCells
         self.create_grid = True
-        self.columns = [ ['COL1',100] , ['COL2',100] , ['COL3',100] ]
+        self.columns = [ ['COL1','100'] , ['COL2','100'] , ['COL3','100'] ]
         
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
                              property_window, show=show)
