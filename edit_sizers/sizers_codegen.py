@@ -149,7 +149,7 @@ def cpp_wxFlexGridSizer_builder(obj):
     """\
     function used to generate the C++ code for wxFlexGridSizer objects.
     """
-    init, p, layout = _cpp_GridSizers_builder(obj, 'wxFlexGridSizer')
+    init, ids, p, layout = _cpp_GridSizers_builder(obj, 'wxFlexGridSizer')
     props = obj.properties
     if props.has_key('growable_rows'):
         for r in props['growable_rows'].split(','):
@@ -157,7 +157,7 @@ def cpp_wxFlexGridSizer_builder(obj):
     if props.has_key('growable_cols'):
         for r in props['growable_cols'].split(','):
             layout.append('%s->AddGrowableCol(%s);\n' % (obj.name, r.strip()))
-    return init, p, layout
+    return init, ids, p, layout
 
 
 def xrc_wxFlexGridSizer_builder(obj):

@@ -773,6 +773,7 @@ class EditFrame(TopLevelBase):
             else:
                 for i in range(len(self.style_pos)):
                     if self.style & self.style_pos[i]: retval[i] = 1
+                retval[0] = 0
         except AttributeError:
             pass
         return retval
