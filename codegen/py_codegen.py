@@ -505,6 +505,7 @@ def add_class(code_obj):
 ##     else: obj_p = []
     obj_p = getattr(builder, 'get_properties_code',
                     generate_common_properties)(code_obj)
+    obj_p.extend(classes[code_obj.klass].props)
     write_body = len(obj_p)
 
     if is_new: write('\n%sdef __set_properties(self):\n' % tabs(1))
@@ -513,7 +514,6 @@ def add_class(code_obj):
     if not write_body: write(tab + 'pass\n')
     else:
         for l in obj_p: write(tab + l)
-        for l in classes[code_obj.klass].props: write(tab); write(l)
     # end tag
     write(tab + '# end wxGlade\n')
     if prev_src is not None and not is_new:
