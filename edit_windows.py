@@ -78,13 +78,19 @@ class EditBase:
         """
         COPY_ID, REMOVE_ID, CUT_ID = [ wxNewId() for i in range(3) ]
         self._rmenu = misc.wxGladePopupMenu(self.name)
-        self._rmenu.Append(REMOVE_ID, 'Remove')
-        self._rmenu.Append(COPY_ID, 'Copy')
-        self._rmenu.Append(CUT_ID, 'Cut')
+        #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
+        #self._rmenu.Append(COPY_ID, 'Copy\tCtrl+C')
+        #self._rmenu.Append(CUT_ID, 'Cut\tCtrl+X')
+        misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
+        misc.append_item(self._rmenu, COPY_ID, 'Copy\tCtrl+C', 'copy.xpm')
+        misc.append_item(self._rmenu, CUT_ID, 'Cut\tCtrl+X', 'cut.xpm')
         EVT_RIGHT_DOWN(self.widget, self.popup_menu)
         EVT_MENU(self.widget, REMOVE_ID, self.remove)
         EVT_MENU(self.widget, COPY_ID, self.clipboard_copy)
         EVT_MENU(self.widget, CUT_ID, self.clipboard_cut)
+        self.accel_table = [(0, WXK_DELETE, self.remove),
+                            (wxACCEL_CTRL, ord('C'), self.clipboard_copy),
+                            (wxACCEL_CTRL, ord('X'), self.clipboard_cut)]
 
     def delete(self):
         """\
@@ -162,6 +168,7 @@ class EditBase:
         try: common.app_tree.select_item(self.node)
         except AttributeError: pass
         self.notebook.Show()
+        self.widget.SetFocus()
         
     def on_set_focus(self, event):
         """\
@@ -180,14 +187,14 @@ class EditBase:
         """
         return None
 
-    def clipboard_copy(self, event):
+    def clipboard_copy(self, *args):
         """\
         returns a copy of self to be inserted in the clipboard
         """
         import clipboard
         clipboard.copy(self)
 
-    def clipboard_cut(self, event):
+    def clipboard_cut(self, *args):
         import clipboard
         clipboard.cut(self)
 
@@ -271,6 +278,17 @@ class WindowBase(EditBase):
         # after setting various Properties, we must Refresh widget in order to
         # see changes
         self.widget.Refresh()
+
+        def on_key_down(event):
+            evt_flags = 0
+            if event.ControlDown(): evt_flags = wxACCEL_CTRL
+            evt_key = event.GetKeyCode()
+            for flags, key, function in self.accel_table:
+                if evt_flags == flags and evt_key == key:
+                    wxCallAfter(function)
+                    break
+            event.Skip()
+        EVT_KEY_DOWN(self.widget, on_key_down)
 
     def create_properties(self):
         EditBase.create_properties(self)
@@ -676,7 +694,8 @@ class TopLevelBase(WindowBase):
             item_id = self._rmenu.FindItem(label)
             self._rmenu.Delete(item_id)
         HIDE_ID = wxNewId()
-        self._rmenu.Append(HIDE_ID, 'Hide')
+        #self._rmenu.Append(HIDE_ID, 'Hide')
+        misc.append_item(self._rmenu, HIDE_ID, 'Hide')
         self.widget.SetTitle(self.properties['title'].get_value())
         EVT_MENU(self.widget, HIDE_ID, self.hide_widget)
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)

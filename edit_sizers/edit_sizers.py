@@ -22,14 +22,29 @@ class SizerSlot:
         self.widget.SetAutoLayout(True)
         self.menu = wxMenu('Options')
         REMOVE_ID, PASTE_ID = wxNewId(), wxNewId()
-        self.menu.Append(REMOVE_ID, 'Remove')
-        self.menu.Append(PASTE_ID, 'Paste')
+        #self.menu.Append(REMOVE_ID, 'Remove\tDel')
+        #self.menu.Append(PASTE_ID, 'Paste\tCtrl+V')
+        misc.append_item(self.menu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
+        misc.append_item(self.menu, PASTE_ID, 'Paste\tCtrl+V', 'paste.xpm')
         EVT_PAINT(self.widget, self.on_paint)
         EVT_RIGHT_DOWN(self.widget, self.popup_menu)
         EVT_MENU(self.widget, REMOVE_ID, self.remove)
         EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
         EVT_LEFT_DOWN(self.widget, self.drop_widget)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
+
+        table = [(0, WXK_DELETE, self.remove),
+                 (wxACCEL_CTRL, ord('V'), self.clipboard_paste)]
+        def on_key_down(event):
+            evt_flags = 0
+            if event.ControlDown(): evt_flags = wxACCEL_CTRL
+            evt_key = event.GetKeyCode()
+            for flags, key, function in table:
+                if evt_flags == flags and evt_key == key:
+                    wxCallAfter(function)
+                    break
+            event.Skip()
+        EVT_KEY_DOWN(self.widget, on_key_down)
 
     def show_widget(self, yes):
         if yes and not self.widget: self.create_widget()
@@ -54,7 +69,7 @@ class SizerSlot:
     def popup_menu(self, event):
         self.widget.PopupMenu(self.menu, event.GetPosition())
 
-    def remove(self, event):
+    def remove(self, *args):
         self.sizer.remove_item(self)
         self.delete()
 
@@ -64,7 +79,9 @@ class SizerSlot:
         to add every non-toplevel widget or sizer, and in turn calls the
         appropriate builder function (found in the ``common.widgets'' dict)
         """
-        if not common.adding_widget: return
+        if not common.adding_widget:
+            self.widget.SetFocus()
+            return
         common.adding_widget = False
         common.adding_sizer = False
         self.widget.SetCursor(wxNullCursor)
@@ -73,7 +90,7 @@ class SizerSlot:
         common.widget_to_add = None
         common.app_tree.app.saved = False # update the status of the app
 
-    def clipboard_paste(self, event):
+    def clipboard_paste(self, *args):
         import clipboard
         if clipboard.paste(self.parent, self.sizer, self.pos):
             common.app_tree.app.saved = False # update the status of the app
@@ -96,15 +113,31 @@ class SizerHandleButton(wxButton):
         # provide popup menu for removal
         REMOVE_ID = wxNewId() 
         self._rmenu = misc.wxGladePopupMenu(sizer.name)
-        self._rmenu.Append(REMOVE_ID, 'Remove')
+        #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
+        misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
         for item in menu:
             id = wxNewId()
-            self._rmenu.Append(id, item[0])
+            #self._rmenu.Append(id, item[0])
+            bmp = None
+            if len(item) > 2: bmp = item[2]
+            misc.append_item(self._rmenu, id, item[0], bmp)
             EVT_MENU(self, id, item[1])
         self.sizer._rmenu = self._rmenu
         EVT_RIGHT_DOWN(self, lambda event: self.PopupMenu(self._rmenu,
                                                           event.GetPosition()))
         EVT_MENU(self, REMOVE_ID, self._remove)
+        
+        table = [(0, WXK_DELETE, self._remove)]
+        def on_key_down(event):
+            evt_flags = 0
+            if event.ControlDown(): evt_flags = wxACCEL_CTRL
+            evt_key = event.GetKeyCode()
+            for flags, key, function in table:
+                if evt_flags == flags and evt_key == key:
+                    wxCallAfter(function)
+                    break
+            event.Skip()
+        EVT_KEY_DOWN(self, on_key_down)
 
     def set_menu_title(self, title):
         self._rmenu.SetTitle(title)
@@ -275,8 +308,9 @@ class SizerBase:
             self.menu = [('Add slot', self.add_slot),
                          ('Insert slot...', self.insert_slot)]
         if not self.toplevel:
-            self.menu.extend([ ('Copy', self.clipboard_copy),
-                               ('Cut', self.clipboard_cut) ])
+            self.menu.extend([('Copy\tCtrl+C', self.clipboard_copy,'copy.xpm'),
+                              ('Cut\tCtrl+X', self.clipboard_cut, 'cut.xpm')
+                              ])
 
         self._btn = None # SizerHandleButton
 
@@ -428,6 +462,8 @@ class SizerBase:
         self.property_window.SetTitle('Properties - <%s>' % self.name)
         if hasattr(self, 'node'): common.app_tree.select_item(self.node)
         self.notebook.Show()
+        try: self.btn.SetFocus()
+        except AttributeError: pass
         
     def fit_parent(self, *args):
         """\
