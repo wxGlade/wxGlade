@@ -42,22 +42,24 @@ Real TODO (# = Partially done):
 
 - Event handlers support
 
-- Edit -> Preferences... to customize some aspects of wxGlade
+- Edit -> Preferences... to customize some aspects of wxGlade (#)
 
 - International characters support (#)
 
-- Checks on the values of some properties (name, class,...), maybe with
-  wxValidator 
+- Grid (#)
 
 - ListCtrl and TreeCtrl
+
+- ScrolledWindow
+
+- Checks on the values of some properties (name, class,...), maybe with
+  wxValidator 
 
 - More basic properties for widgets (enabled for example)
 
 - ToolBar for frames 
 
 - complete MenuBar with icons and StatusBar messages support (#)
-
-- Grid
 
 - Less frequently used controls
 

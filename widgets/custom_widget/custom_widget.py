@@ -59,13 +59,38 @@ class CustomWidget(ManagedBase):
         self.arguments = [['$parent'], ['$id']]
         self.access_functions['arguments'] = (self.get_arguments,
                                               self.set_arguments)
+        
         cols = [('Constructor Parameters', GridProperty.STRING)]
         self.properties['arguments'] = ArgumentsProperty(self, 'arguments',
                                                          None, cols, 2)
 
+    def set_klass(self, value):
+        ManagedBase.set_klass(self, value)
+        if self.widget: self.widget.Refresh()
+
     def create_widget(self):
         self.widget = wxWindow(self.parent.widget, self.id,
                                style=wxSUNKEN_BORDER)
+        EVT_PAINT(self.widget, self.on_paint)
+
+    def on_paint(self, event):
+        dc = wxPaintDC(self.widget)
+        dc.BeginDrawing()
+        dc.SetBrush(wxWHITE_BRUSH)
+        dc.SetPen(wxBLACK_PEN)
+        dc.SetBackground(wxWHITE_BRUSH)
+        dc.Clear()
+        w, h = self.widget.GetClientSize()
+        dc.DrawLine(0, 0, w, h)
+        dc.DrawLine(w, 0, 0, h)
+        text = 'Custom Widget: %s' % self.klass
+        tw, th = dc.GetTextExtent(text)
+        x = (w - tw)/2
+        y = (h - th)/2
+        dc.SetPen(wxThePenList.FindOrCreatePen(wxBLACK, 0, wxTRANSPARENT))
+        dc.DrawRectangle(x-1, y-1, tw+2, th+2)
+        dc.DrawText(text, x, y)
+        dc.EndDrawing()
 
     def create_properties(self):
         ManagedBase.create_properties(self)
