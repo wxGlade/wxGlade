@@ -58,8 +58,8 @@ class EditButton(ManagedBase):
 
     def set_default(self, value):
         self.default = bool(value)
-        if value and self.widget:
-            self.widget.SetDefault()
+##         if value and self.widget:
+##             self.widget.SetDefault()
 
 # end of class EditButton
         

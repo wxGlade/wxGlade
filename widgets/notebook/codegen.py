@@ -138,7 +138,7 @@ def cpp_code_generator(window):
         return l, ids, [], []
     extra = ''
     style = prop.get('style')
-    if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % (size, style)
+    if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
     init = ['%s = new wxNotebook(%s, %s%s);\n' %
             (window.name, parent, id, extra) ]
 
