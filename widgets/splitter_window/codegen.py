@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxSplitterWindow objects
-# $Id: codegen.py,v 1.14 2004/09/17 13:09:50 agriggio Exp $
+# $Id: codegen.py,v 1.15 2004/12/13 18:45:09 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -154,6 +154,10 @@ class CppCodeGenerator:
             if win_1: add_sub(win_1)
             elif win_2: add_sub(win_2)
         return props_buf
+
+    def get_events(self, obj):
+        cppgen = common.code_writers['C++']
+        return cppgen.get_events_with_type(obj, 'wxSplitterEvent')
 
 # end of class CppCodeGenerator
 

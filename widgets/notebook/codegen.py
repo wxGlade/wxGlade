@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxNotebook objects
-# $Id: codegen.py,v 1.17 2004/09/17 13:09:52 agriggio Exp $
+# $Id: codegen.py,v 1.18 2004/12/13 18:45:13 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -164,6 +164,10 @@ class CppCodeGenerator:
                              (window, cppgen.quote_str(label)))
         props_buf.extend(cppgen.generate_common_properties(obj))
         return props_buf
+
+    def get_events(self, obj):
+        cppgen = common.code_writers['C++']
+        return cppgen.get_events_with_type(obj, 'wxNotebookEvent')
 
 # end of class CppCodeGenerator
 

@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxListCtrl objects
-# $Id: codegen.py,v 1.5 2004/09/17 13:09:52 agriggio Exp $
+# $Id: codegen.py,v 1.6 2004/12/13 18:45:22 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -54,6 +54,10 @@ class CppCodeGenerator:
         props_buf = cppgen.generate_common_properties(obj)
         return init, ids, props_buf, []
 
+    def get_events(self, obj):
+        cppgen = common.code_writers['C++']
+        return cppgen.get_events_with_type(obj, 'wxListEvent')
+        
 # end of class CppCodeGenerator
 
 

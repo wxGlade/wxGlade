@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxGrid objects
-# $Id: codegen.py,v 1.21 2004/12/08 18:11:27 agriggio Exp $
+# $Id: codegen.py,v 1.22 2004/12/13 18:45:22 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -229,6 +229,10 @@ class CppCodeGenerator:
 
         out.extend(cppgen.generate_common_properties(obj))
         return out
+
+    def get_events(self, obj):
+        cppgen = common.code_writers['C++']
+        return cppgen.get_events_with_type(obj, 'wxGridEvent')
 
 # end of class CppCodeGenerator
         
