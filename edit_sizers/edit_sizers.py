@@ -148,7 +148,7 @@ class SizerHandleButton(wxButton):
         EVT_KEY_DOWN(self, on_key_down)
 
     def set_menu_title(self, title):
-        self._rmenu.SetTitle(title)
+        if self._rmenu: self._rmenu.SetTitle(title)
 
     def popup_menu(self, event):
         if not self._rmenu:
@@ -490,7 +490,7 @@ class SizerBase:
         self.property_window.SetTitle('Properties - <%s>' % self.name)
         if hasattr(self, 'node'): common.app_tree.select_item(self.node)
         self.notebook.Show()
-        try: self.btn.SetFocus()
+        try: self._btn.SetFocus()
         except AttributeError: pass
         
     def fit_parent(self, *args):

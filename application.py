@@ -7,7 +7,7 @@
 from wxPython.wx import *
 from widget_properties import *
 from tree import Tree, WidgetTree
-import common, math, misc, os.path
+import common, math, misc, os.path, config
 
 class FileDirDialog:
     """\
@@ -33,8 +33,9 @@ class FileDirDialog:
         self.parent = parent
         self.file_message = file_message
         self.style = style
-        self.prev_dir = os.path.expanduser('~')
-        if self.prev_dir == '~': self.prev_dir = None
+        self.prev_dir = config.preferences.codegen_path
+##         self.prev_dir = os.path.expanduser('~')
+##         if self.prev_dir == '~': self.prev_dir = None
 
     def ShowModal(self):
         if self.owner.codegen_opt == 0:
