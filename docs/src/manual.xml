@@ -5,7 +5,7 @@
 <book>
   <title>wxGlade user manual</title>
   <bookinfo>
-    <date>$Date: 2003/10/01 07:08:30 $</date>
+    <date>$Date: 2003/10/02 07:04:33 $</date>
     <author>
       <firstname>documentation by Marcello</firstname>
       <surname>Semboli</surname>
@@ -433,7 +433,7 @@ OPTIONS:
       consist in three tabs. The first tab contains the 
       common properties that apply to all widgets.
       <figure id="properties_window_tab_1.fig">
-        <title>The Properties Window</title>
+        <title>Common Properties</title>
         <graphic fileref="properties_window_tab_1.png" />
       </figure>
     </para>
@@ -443,14 +443,47 @@ OPTIONS:
     colors and fonts. 
     </para>
     <para>
-    The second tab is related to properties that controls position
+    The second tab is related to layout properties that controls position
     and resizing inside the sizer.
       <figure id="properties_window_tab_2.fig">
-        <title>The Properties Window</title>
+        <title>Layout Properties</title>
         <graphic fileref="properties_window_tab_2.png" />
       </figure>
+    These properties apply to any widget.
+    You can check or uncheck any option related to the placement
+    in the sizer. Many widgets may have a default value of 3 in the "Border" 
+    property in the preferences dialog, see <xref linkend="preferences.section"/>.
+    If you let widget to have a default border, also the <option>wxALL</option> option
+    is checked.
     </para>
-    
+    <para>
+    The third tab, named "Widget", is different for each widget, and let
+    you edit properties for the specific element you have selected.
+      <figure id="properties_window_tab_3.fig">
+        <title>Widget Properties</title>
+        <graphic fileref="properties_window_tab_3.png" />
+      </figure>
+    The set of option may be also quite complex, in case of widget that have 
+    a big lot of method and properties (grids, treeviews). In this case, wxGlade, 
+    greatly simplify the process of designing forms.
+    </para>
+        <section>
+            <title>Editing properties</title>
+            <para>
+            Editing properties is quite simple; Properties are represented
+            by buttons, text boxes and checks.
+            Usually they are refferred by the same name or symbol
+            that you find writing C++ code.
+            </para>
+            <para>
+            </para>
+        </section>    
+    </section>
+    <section>
+    <title id="preferences.section">Preferences Dialog</title>
+    <para>
+    Bla bla bla.
+    </para>
     </section>
 </chapter>
   
