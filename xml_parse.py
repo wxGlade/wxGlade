@@ -286,6 +286,17 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                                   # clipboard
 
     def startElement(self, name, attrs):
+        if name == 'object' and attrs.has_key('name'):
+            # generate a unique name for the copy
+            oldname = str(attrs['name'])
+            newname = oldname
+            i = 0
+            while common.app_tree.has_name(newname):
+                if not i: newname = '%s_copy' % oldname
+                else: newname = '%s_copy_%s' % (oldname, i)
+                i += 1
+            attrs = dict(attrs)
+            attrs['name'] = newname
         XmlWidgetBuilder.startElement(self, name, attrs)
         if name == 'object':
             if not self.depth_level:
@@ -300,16 +311,18 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         if name == 'object':
             # generate a unique name for the copy
             obj = self.top()
-            if obj.klass != 'sizeritem':
-                widget = obj.obj
-                newname = widget.name + '_copy'
-                i = 1
-                while common.app_tree.has_name(newname):
-                    newname = '%s_copy_%s' % (widget.name, i)
-                    i += 1
-                widget.name = newname
-                widget.name_prop.set_value(newname)
-                common.app_tree.set_name(widget.node, newname)
+##             if obj.klass != 'sizeritem':
+##                 widget = obj.obj
+##                 newname = widget.name #+ '_copy'
+##                 i = 0
+##                 while common.app_tree.has_name(newname) and \
+##                           self._has_current_name:
+##                     if not i: newname = '%s_copy' % widget.name
+##                     else: newname = '%s_copy_%s' % (widget.name, i)
+##                     i += 1
+##                 widget.name = newname
+##                 widget.name_prop.set_value(newname)
+##                 common.app_tree.set_name(widget.node, newname)
             
             self.depth_level -= 1
             if not self.depth_level:
