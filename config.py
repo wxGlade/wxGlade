@@ -8,8 +8,6 @@ if common.use_gui:
     class wxGladePreferences(wxGladePreferencesUI):
         def __init__(self, preferences):
             wxGladePreferencesUI.__init__(self, None, -1, "")
-            EVT_BUTTON(self, self.apply.GetId(),
-                       lambda e: self.set_preferences())
             
             EVT_BUTTON(self, self.choose_widget_path.GetId(),
                        self.on_widget_path)
@@ -40,6 +38,11 @@ if common.use_gui:
                     self.preferences.remember_geometry)
                 self.local_widget_path.SetValue(
                     self.preferences.local_widget_path)
+                # ALB 2004-08-11
+                self.show_sizer_handle.SetValue(
+                    self.preferences.show_sizer_handle)
+                self.allow_duplicate_names.SetValue(
+                    self.preferences.allow_duplicate_names)
             except Exception, e:
                 wxMessageBox('Error reading config file:\n%s' % e, 'Error',
                              wxOK|wxCENTRE|wxICON_ERROR)
@@ -64,6 +67,10 @@ if common.use_gui:
             prefs['buttons_per_row'] = self.buttons_per_row.GetValue()
             prefs['remember_geometry'] = self.remember_geometry.GetValue()
             prefs['local_widget_path'] = self.local_widget_path.GetValue()
+            # ALB 2004-08-11
+            prefs['show_sizer_handle'] = self.show_sizer_handle.GetValue()
+            prefs['allow_duplicate_names'] = self.allow_duplicate_names.\
+                                             GetValue()
             
         def on_widget_path(self, event):
             # create a file choice dialog
@@ -116,7 +123,9 @@ class Preferences(ConfigParser):
                                            '.wxglade', 'widgets')
                               or ''),
         'default_border' : False,
-        'default_border_size' : 3
+        'default_border_size' : 3,
+        'show_sizer_handle': True,
+        'allow_duplicate_names': False,
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults
@@ -205,6 +214,8 @@ def init_preferences():
 def edit_preferences():
     dialog = wxGladePreferences(preferences)
     if dialog.ShowModal() == wxID_OK:
+        wxMessageBox('Changes will take effect after wxGlade is restarted',
+                     'Preferences saved', wxOK|wxCENTRE|wxICON_INFORMATION)
         dialog.set_preferences()
     dialog.Destroy()
 

@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.44 2004/04/26 20:16:34 agriggio Exp $
+# $Id: edit_sizers.py,v 1.45 2004/08/12 12:14:13 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -7,8 +7,9 @@
 
 from widget_properties import *
 from tree import Tree, WidgetTree
-import common, math, misc, sys
-import re
+import common, config, misc
+import math, sys, re
+
 
 class SizerSlot:
     "a window to represent a slot in a sizer"
@@ -376,8 +377,8 @@ class InsertDialog(wxDialog):
         self.pos = 0
         pos_prop = SpinProperty(self, 'position', self, r=(0, max_val))
         szr = wxBoxSizer(wxVERTICAL)
-        szr.Add(pos_prop.panel, 0, wxEXPAND)
-        szr.Add(wxButton(self, wxID_OK, "OK"), 0, wxALL|wxALIGN_CENTER, 3)
+        szr.Add(pos_prop.panel, 0, wxALL|wxEXPAND, 5)
+        szr.Add(wxButton(self, wxID_OK, "OK"), 0, wxALL|wxALIGN_CENTER, 5)
         self.SetAutoLayout(True)
         self.SetSizer(szr)
         szr.Fit(self)
@@ -505,6 +506,9 @@ class SizerBase(Sizer):
         self.widget.GetBestSize = self.widget.GetMinSize
         self.widget.ScreenToClient = self._btn.ScreenToClient
         if self.toplevel and not dont_set: self.window.set_sizer(self)
+        # ALB 2004-08-11
+        if not config.preferences.show_sizer_handle:
+            self.widget.Show(self._btn, False)
 
     def _property_setup(self):
         """\
