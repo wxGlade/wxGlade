@@ -1,5 +1,5 @@
 # perl_sizers_codegen.py : perl generator functions for the various wxSizerS
-# $Id: perl_sizers_codegen.py,v 1.3 2003/06/26 07:59:58 crazyinsomniac Exp $
+# $Id: perl_sizers_codegen.py,v 1.4 2004/01/20 12:54:26 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -12,7 +12,7 @@ class PerlBoxSizerBuilder:
     def get_code(self, obj):
         orient = obj.properties.get('orient', 'wxHORIZONTAL')
         init = [
-            '\t$self->{%s} = Wx::BoxSizer->new(%s);\n' % (obj.name, orient)
+            '$self->{%s} = Wx::BoxSizer->new(%s);\n' % (obj.name, orient)
             ]
         layout = []
 
@@ -22,12 +22,12 @@ class PerlBoxSizerBuilder:
             else:
                 parent = '$self'
 
-            layout.append('\t%s->SetAutoLayout(1);\n' % parent)
-            layout.append('\t%s->SetSizer($self->{%s});\n' % (parent, obj.name))
+            layout.append('%s->SetAutoLayout(1);\n' % parent)
+            layout.append('%s->SetSizer($self->{%s});\n' % (parent, obj.name))
 
             if not obj.parent.properties.has_key('size'):
-                layout.append('\t$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-                layout.append('\t$self->{%s}->SetSizeHints(%s);\n'
+                layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
+                layout.append('$self->{%s}->SetSizeHints(%s);\n'
                     % (obj.name, parent))
         return init, [], layout
 
@@ -42,16 +42,16 @@ class PerlStaticBoxSizerBuilder:
         if not obj.parent.is_toplevel: parent = '$self->{%s}' % obj.parent.name
         else: parent = '$self'
         init = [
-            '\t$self->{%s}= Wx::StaticBoxSizer->new(Wx::StaticBox->new(%s, -1,\
+            '$self->{%s}= Wx::StaticBoxSizer->new(Wx::StaticBox->new(%s, -1,\
 %s), %s);\n' % (obj.name, parent, plgen.quote_str(label), orient)
             ]
         layout = []
         if obj.is_toplevel:
-            layout.append('\t%s->SetAutoLayout(1);\n' % parent)
-            layout.append('\t%s->SetSizer($self->{%s});\n' % (parent, obj.name))
+            layout.append('%s->SetAutoLayout(1);\n' % parent)
+            layout.append('%s->SetSizer($self->{%s});\n' % (parent, obj.name))
             if not obj.parent.properties.has_key('size'):
-                layout.append('\t$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-                layout.append('\t$self->{%s}->SetSizeHints(%s);\n'
+                layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
+                layout.append('$self->{%s}->SetSizeHints(%s);\n'
                     % (obj.name, parent))
         return init, [], layout
 
@@ -72,18 +72,18 @@ class PerlGridSizerBuilder:
         vgap = props.get('vgap', '0')
         hgap = props.get('hgap', '0')
         init = [
-            '\t$self->{%s} = %s->new(%s, %s, %s, %s);\n' %
+            '$self->{%s} = %s->new(%s, %s, %s, %s);\n' %
                 (obj.name, self.klass.replace('wx','Wx::',1), rows,
                     cols, vgap, hgap)
             ]
         layout = []
         if obj.is_toplevel:
-            layout.append('\t%s->SetAutoLayout(1);\n' % parent)
-            layout.append('\t%s->SetSizer($self->{%s});\n'
+            layout.append('%s->SetAutoLayout(1);\n' % parent)
+            layout.append('%s->SetSizer($self->{%s});\n'
                 % (parent, obj.name))
             if not obj.parent.properties.has_key('size'):
-                layout.append('\t$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-                layout.append('\t$self->{%s}->SetSizeHints(%s);\n'
+                layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
+                layout.append('$self->{%s}->SetSizeHints(%s);\n'
                     % (obj.name, parent))
         return init, [], layout   
 
