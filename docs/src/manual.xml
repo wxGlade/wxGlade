@@ -5,7 +5,7 @@
 <book>
   <title>wxGlade user manual</title>
   <bookinfo>
-    <date>$Date: 2003/09/09 07:16:01 $</date>
+    <date>$Date: 2003/09/24 07:18:45 $</date>
     <author>
       <firstname>Marcello</firstname>
       <surname>Semboli</surname>
@@ -405,12 +405,14 @@ OPTIONS:
     <title>Design Window</title>
     <para>
       The design window show the frame or panel you are creating in WYSIWYG mode and  
-      allow you to select a widget from the main window and to put it on a empty slot of a sizer
+      allow you to select a widget from the main window and to put it on a empty slot of a sizer.
       <figure>
         <title>The Design Window</title>
         <graphic fileref="design_window_empty_slot.png" />
       </figure>
-      
+    </para>
+    <para>
+    Clicking 
     </para>
 </chapter>
   

@@ -1,5 +1,5 @@
 # sizers_codegen.py: code generation functions for the various wxSizerS
-# $Id: sizers_codegen.py,v 1.8 2003/05/13 10:05:15 agriggio Exp $
+# $Id: sizers_codegen.py,v 1.9 2003/09/24 07:18:46 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -199,9 +199,8 @@ def xrc_wxFlexGridSizer_builder(obj):
             if val and name in ('growable_rows', 'growable_cols'):
                 if name == 'growable_rows': name2 = 'growablerows'
                 else: name2 = 'growablecols'
-                for v in val.split(','):
-                    outfile.write('    '*tabs + '<%s>%s</%s>\n' %
-                                  (name2, v.strip(), name2))
+                outfile.write('    '*tabs + '<%s>%s</%s>\n' %
+                                  (name2, val, name2))
             else:
                 xrcgen.DefaultXrcObject.write_property(self, name, val,
                                                        outfile, tabs)
