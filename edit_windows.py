@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.55 2004/06/04 01:12:15 agriggio Exp $
+# $Id: edit_windows.py,v 1.56 2004/08/12 12:14:14 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -133,7 +133,8 @@ class EditBase:
 
     def set_name(self, value):
         value = "%s" % value
-        if self.widget and common.app_tree.has_name(value):
+        if not config.preferences.allow_duplicate_names and \
+               (self.widget and common.app_tree.has_name(value)):
             wxMessageBox('Name "%s" is already in use.\n'
                          'Please enter a different one.' % value, "Error",
                          wxOK|wxICON_ERROR)
