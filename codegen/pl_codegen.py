@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.29 2004/10/26 11:07:15 agriggio Exp $
+# $Id: pl_codegen.py,v 1.30 2004/12/12 12:41:57 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -129,7 +129,7 @@ class SourceFileContent:
         class_decl = re.compile(r'^\s*package\s+([a-zA-Z_][\w:]*)\s*;.*$')
         # regexps to match wxGlade blocks
         block_start = re.compile(r'^(\s*)#\s*begin\s+wxGlade:\s*'
-                                 '([A-Za-z_]+\w*)??::(\w+)\s*$')
+                                 '([a-zA-Z_][\w:]*?)::(\w+)\s*$')
         block_end = re.compile(r'^\s*#\s*end\s+wxGlade\s*$')
         pod_re = re.compile(r'^\s*=[A-Za-z_]+\w*.*$')
         inside_block = False
@@ -160,11 +160,8 @@ class SourceFileContent:
                                              # of classes of this module
                 out_lines.append(line)
             elif not inside_block:
-#print >> sys.stderr, "WARNING: doing the block_start.match (", result, "\n"
                 result = block_start.match(line)
                 if result is not None:
-##                     print ">> block %r %r %r" % (
-##                         result.group(1), result.group(2), result.group(3))
                     # replace the lines inside a wxGlade block with a tag that
                     # will be used later by add_class
                     spaces = result.group(1)
