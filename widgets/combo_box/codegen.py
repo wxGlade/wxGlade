@@ -14,18 +14,20 @@ def python_code_generator(obj):
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj)
     choices = prop.get('choices', [])
+    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
+    else: parent = 'self'
     if obj.is_toplevel:
-        l = ['self.%s = %s(self, %s, choices=%s)\n' % (obj.name, obj.klass,
-                                                       id, repr(choices))]
+        l = ['self.%s = %s(%s, %s, choices=%s)\n' % \
+             (obj.name, obj.klass, parent, id, repr(choices))]
         if id_name: l.append(id_name)
         return l, [], []
     size = pygen.generate_code_size(obj)
-    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-    else: parent = 'self'
+    if size != '(-1, -1)': size = ', size=%s' % size
+    else: size = ''
     style = prop.get("style", None)
     if not style: style = 'wxCB_DROPDOWN'
     else: style = 'wxCB_DROPDOWN|' + style
-    init = ['self.%s = wxComboBox(%s, %s, choices=%s, size=%s, style=%s)\n' %
+    init = ['self.%s = wxComboBox(%s, %s, choices=%s%s, style=%s)\n' %
             (obj.name, parent, id, repr(choices), size, style) ]
     if id_name: init.append(id_name)
     props_buf = []

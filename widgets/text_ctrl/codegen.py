@@ -13,17 +13,21 @@ def python_code_generator(obj):
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj)
     value = '"' + prop.get('value', '').replace('"', r'\"') + '"'
+    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
+    else: parent = 'self'
     if obj.is_toplevel:
-        l = ['self.%s = %s(self, %s, %s)\n' % (obj.name, obj.klass, id, value)]
+        l = ['self.%s = %s(%s, %s, %s)\n' %
+             (obj.name, obj.klass, parent, id, value)]
         if id_name: l.append(id_name) # init lines are written in reverse order
         return l , [], []
     size = pygen.generate_code_size(obj)
-    style = prop.get('style', '0')
-    if not style: style = '0'
-    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-    else: parent = 'self'
-    init = ['self.%s = wxTextCtrl(%s, %s, %s, size=%s,' \
-            ' style=%s)\n' % (obj.name, parent, id, value, size, style)]
+    if size != '(-1, -1)': size = ', size=%s' % size
+    else: size = ''
+    style = prop.get("style")
+    if style: style = ", style=%s" % style
+    else: style = ''
+    init = ['self.%s = wxTextCtrl(%s, %s, %s%s%s)\n' %
+            (obj.name, parent, id, value, size, style)]
     if id_name: init.append(id_name)
     props_buf = []
     if prop.has_key('foreground'):

@@ -34,8 +34,7 @@ class EditTextCtrl(ManagedBase):
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
 
     def create_widget(self):
-        self.widget = wxTextCtrl(self.parent.widget, self.id, value=self.value,
-                                 style=self.style)
+        self.widget = wxTextCtrl(self.parent.widget, self.id, value=self.value)
 
     def create_properties(self):
         ManagedBase.create_properties(self)

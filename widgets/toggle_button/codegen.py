@@ -13,14 +13,17 @@ def python_code_generator(obj):
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj)
     label = '"' + prop.get('label', '').replace('"', r'\"') + '"'
-    if obj.is_toplevel:
-        l = ['self.%s = %s(self, %s, %s)\n' % (obj.name, obj.klass, id, label)]
-        if id_name: l.append(id_name) # init lines are written in reverse order
-        return l , [], []    
-    size = pygen.generate_code_size(obj)
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-    init = [ 'self.%s = wxToggleButton(%s, %s, %s, size=%s)\n' % 
+    if obj.is_toplevel:
+        l = ['self.%s = %s(%s, %s, %s)\n' %
+             (obj.name, obj.klass, parent, id, label)]
+        if id_name: l.append(id_name) # init lines are written in reverse order
+        return l, [], []    
+    size = pygen.generate_code_size(obj)
+    if size != '(-1, -1)': size = ', size=%s' % size
+    else: size = ''
+    init = [ 'self.%s = wxToggleButton(%s, %s, %s%s)\n' % 
              (obj.name, parent, id, label, size) ]
     if id_name: init.append(id_name) # init lines are written in reverse order
     props_buf = []

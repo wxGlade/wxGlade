@@ -77,7 +77,6 @@ def initialize():
     cn['EditGridSizer'] = 'wxGridSizer'
     cn['EditFlexGridSizer'] = 'wxFlexGridSizer'
 
-    # python code generation functions
     pygen = common.code_writers.get("python")
     if pygen:
         awh = pygen.add_widget_handler

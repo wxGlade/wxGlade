@@ -16,19 +16,22 @@ def python_code_generator(obj):
     label = prop.get('label', '').replace('"', r'\"')
     choices = prop.get('choices', [])
     major_dim = prop.get('dimension', '0')
+    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
+    else: parent = 'self'
     if obj.is_toplevel:
-        l = ['self.%s = %s(self, %s, "%s", choices=%s, majorDimension=%s)\n'  %
-             (obj.name, obj.klass, id, label, repr(choices), major_dim)]
+        l = ['self.%s = %s(%s, %s, "%s", choices=%s, majorDimension=%s)\n'  %
+             (obj.name, obj.klass, parent,id, label, repr(choices), major_dim)]
         if id_name: l.append(id_name)
         return l, [], []
     size = pygen.generate_code_size(obj)
-    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-    else: parent = 'self'
-    style = prop.get("style", "wxRA_SPECIFY_COLS")
-    if not style: style = "wxRA_SPECIFY_COLS"
-    init = ['self.%s = wxRadioBox(%s, %s, "%s", choices=%s, majorDimension=%s,'
-            ' size=%s, style=%s)\n' % (obj.name, parent, id, label,
-                                      repr(choices), major_dim, size, style) ]
+    if size != '(-1, -1)': size = ', size=%s' % size
+    else: size = ''
+    style = prop.get("style")
+    if style: style = ", style=%s" % style
+    else: style = ''
+    init = ['self.%s = wxRadioBox(%s, %s, "%s", choices=%s, majorDimension=%s'
+            '%s%s)\n' % (obj.name, parent, id, label,
+                         repr(choices), major_dim, size, style) ]
     if id_name: init.append(id_name)
     props_buf = []
     selection = prop.get('selection')

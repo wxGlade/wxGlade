@@ -611,12 +611,14 @@ class SizerBase:
         """\
         returns a copy of self to be inserted in the clipboard
         """
-        import clipboard
-        clipboard.copy(self)
+        if not self.toplevel:
+            import clipboard
+            clipboard.copy(self)
 
     def clipboard_cut(self, event):
-        import clipboard
-        clipboard.cut(self)
+        if not self.toplevel:
+            import clipboard
+            clipboard.cut(self)
 
 # end of class SizerBase
 

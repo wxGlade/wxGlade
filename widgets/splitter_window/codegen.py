@@ -12,15 +12,19 @@ def python_code_generator(window):
     pygen = common.code_writers['python']
     prop = window.properties
     id_name, id = pygen.generate_code_id(window)
+    if not window.parent.is_toplevel: parent = 'self.%s' % window.parent.name
+    else: parent = 'self'
     if window.is_toplevel:
-        l = ['self.%s = %s(self, %s)\n' % (window.name, window.klass, id)]
+        l = ['self.%s = %s(%s, %s)\n' % (window.name, window.klass, parent,id)]
         if id_name: l.append(id_name)
         return l, [], []
     size = pygen.generate_code_size(window)
-    if not window.parent.is_toplevel: parent = 'self.%s' % window.parent.name
-    else: parent = 'self'
-    style = prop.get('style', 'wxSP_3D')
-    init = ['self.%s = wxSplitterWindow(%s, %s, size=%s, style=%s)\n' %
+    if size != '(-1, -1)': size = ', size=%s' % size
+    else: size = ''
+    style = prop.get("style")
+    if style and style != 'wxSP_3D': style = ", style=%s" % style
+    else: style = ''
+    init = ['self.%s = wxSplitterWindow(%s, %s%s%s)\n' %
             (window.name, parent, id, size, style) ]
     if id_name: init.append(id_name)
 

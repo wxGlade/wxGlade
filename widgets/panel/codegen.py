@@ -12,15 +12,16 @@ def python_code_generator(panel):
     pygen = common.code_writers['python']
     prop = panel.properties
     id_name, id = pygen.generate_code_id(panel)
+    if not panel.parent.is_toplevel: parent = 'self.%s' % panel.parent.name
+    else: parent = 'self'
     if panel.is_toplevel:
-        l = ['self.%s = %s(self, %s)\n' % (panel.name, panel.klass, id)]
+        l = ['self.%s = %s(%s, %s)\n' % (panel.name, panel.klass, parent, id)]
         if id_name: l.append(id_name)
         return l, [], []
     size = pygen.generate_code_size(panel)
-    if not panel.parent.is_toplevel: parent = 'self.%s' % panel.parent.name
-    else: parent = 'self'
-    init = ['self.%s = wxPanel(%s, %s, size=%s)\n' % (panel.name, parent, id,
-                                                      size) ]
+    if size != '(-1, -1)': size = ', size=%s' % size
+    else: size = ''
+    init = ['self.%s = wxPanel(%s, %s%s)\n' % (panel.name, parent, id, size) ]
     if id_name: init.append(id_name)
     props_buf = []
     if prop.has_key('foreground'):

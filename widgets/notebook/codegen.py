@@ -50,15 +50,19 @@ def python_code_generator(window):
         layout_props.append('self.%s.AddPage(self.%s, "%s")\n' % \
                             (window.name, tab_win, label.replace('"', r'\"')))
         
+    if not window.parent.is_toplevel: parent = 'self.%s' % window.parent.name
+    else: parent = 'self'
     if window.is_toplevel:
-        l = ['self.%s = %s(self, %s)\n' % (window.name, window.klass, id)]
+        l = ['self.%s = %s(%s, %s)\n' % (window.name, window.klass, parent,id)]
         if id_name: l.append(id_name)
         return l, [], [] #layout_props #[]
     size = pygen.generate_code_size(window)
-    if not window.parent.is_toplevel: parent = 'self.%s' % window.parent.name
-    else: parent = 'self'
-    style = prop.get('style', '0')
-    init = ['self.%s = wxNotebook(%s, %s, size=%s, style=%s)\n' %
+    if size != '(-1, -1)': size = ', size=%s' % size
+    else: size = ''
+    style = prop.get("style")
+    if style: style = ", style=%s" % style
+    else: style = ''
+    init = ['self.%s = wxNotebook(%s, %s%s%s)\n' %
             (window.name, parent, id, size, style) ]
     if id_name: init.append(id_name)
 
