@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.34 2004/09/17 13:09:55 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.35 2004/10/21 17:42:54 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -439,7 +439,8 @@ def add_class(code_obj):
     else:
         # let's see if the file to generate exists, and in this case
         # create a SourceFileContent instance
-        filename = os.path.join(out_dir, code_obj.klass + '.h')
+        filename = os.path.join(out_dir,
+                                code_obj.klass.replace('::', '_') + '.h')
         if _overwrite or not os.path.exists(filename): prev_src = None
         else: prev_src = SourceFileContent(os.path.join(out_dir,
                                                         code_obj.klass))

@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.49 2004/10/15 23:30:34 agriggio Exp $
+# $Id: py_codegen.py,v 1.50 2004/10/21 17:42:54 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -477,7 +477,8 @@ def add_class(code_obj):
     else:
         # let's see if the file to generate exists, and in this case
         # create a SourceFileContent instance
-        filename = os.path.join(out_dir, code_obj.klass + '.py')
+        filename = os.path.join(out_dir,
+                                code_obj.klass.replace('.', '_') + '.py')
         if _overwrite or not os.path.exists(filename): prev_src = None
         else: prev_src = SourceFileContent(filename)
         _current_extra_modules = {}
