@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.37 2004/12/08 18:11:31 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.38 2004/12/10 18:22:55 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -99,6 +99,7 @@ class SourceFileContent:
         self.event_handlers = {} # list of event handlers for each class
         self.event_table_decl = {}
         self.event_table_def = {}
+        self.end_class_re = re.compile('^\s*};\s*//\s+wxGlade:\s+end class\s*$')
 
         if classes is None: self.classes = {}
         self.build_untouched_content()
@@ -233,7 +234,7 @@ class SourceFileContent:
         
     def is_end_of_class(self, line):
         # not really, but for wxglade-generated code it should work...
-        return line[:2] == '};'
+        return self.end_class_re.match(line) is not None #[:2] == '};'
 
 # end of class SourceFileContent
 
@@ -649,7 +650,7 @@ def add_class(code_obj):
                 hwrite(t + 'void %s(wxCommandEvent &event); '
                        '// wxGlade: <event_handler>\n' % handler)
         
-        hwrite('}; // wxGlade: end class %s\n\n' % code_obj.klass)
+        hwrite('}; // wxGlade: end class\n\n')
         
     elif prev_src is not None:
         hwrite(tabs(1) + '// begin wxGlade: %s::ids\n' % code_obj.klass)
