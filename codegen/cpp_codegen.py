@@ -263,12 +263,29 @@ def finalize():
             code = ""
         header_content = previous_source.header_content.replace(tag, code)
         extra_source = "".join([ c[1] for c in previous_source.new_classes])
+        source_content = previous_source.source_content
+        # now remove all the remaining <123415wxGlade ...> tags from the
+        # source: this may happen if we're not generating multiple files,
+        # and one of the container class names is changed
+        import re
+        tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +(\w+)>)' %
+                          nonce, header_content)
+        for tag in tags:
+            comment = '// content of this block (%s) not found: ' \
+                      'did you rename this class?\n' % tag[2]
+            header_content = header_content.replace(tag[0], comment)
+        tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +(\w+)>)' %
+                          nonce, source_content)
+        for tag in tags:
+            comment = '// content of this block not found: ' \
+                      'did you rename this class?\n'
+            source_content = source_content.replace(tag[0], comment)
         # write the new file contents to disk
         out = open(previous_source.name + '.h', 'w')
         out.write(header_content)
         out.close()
         out = open(previous_source.name + '.cpp', 'w')
-        out.write(previous_source.source_content)
+        out.write(source_content)
         out.write('\n\n')
         out.write(extra_source)
         out.close()

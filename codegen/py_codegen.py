@@ -244,6 +244,18 @@ def finalize():
         tag = '<%swxGlade extra_modules>\n' % nonce
         code = "".join(_current_extra_modules.keys())
         previous_source.content = previous_source.content.replace(tag, code)
+        # now remove all the remaining <123415wxGlade ...> tags from the
+        # source: this may happen if we're not generating multiple files,
+        # and one of the container class names is changed
+        import re
+        tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +\w+>)' % nonce,
+                          previous_source.content)
+        for tag in tags:
+            indent = previous_source.spaces.get(tag[1], tabs(2))
+            comment = '%s# content of this block not found: ' \
+                      'did you rename this class?\n%spass\n' % (indent, indent)
+            previous_source.content = previous_source.content.replace(tag[0],
+                                                                      comment)
         # write the new file contents to disk
         out = open(previous_source.name, 'w')
         out.write(previous_source.content)
@@ -471,6 +483,11 @@ def add_class(code_obj):
         if prev_src is not None:
             tag = '<%swxGlade insert new_classes>' % nonce
             prev_src.content = prev_src.content.replace(tag, "") #code)
+
+            # insert the extra modules
+            tag = '<%swxGlade extra_modules>\n' % nonce
+            code = "".join(_current_extra_modules.keys())
+            prev_src.content = prev_src.content.replace(tag, code)
             
             # insert the module dependencies of this class
             extra_modules = classes[code_obj.klass].dependencies.keys()
