@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.39 2004/09/17 13:09:56 agriggio Exp $
+# $Id: tree.py,v 1.40 2004/09/27 09:02:49 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -188,7 +188,8 @@ class WidgetTree(wxTreeCtrl, Tree):
     images = {} # dictionary of icons of the widgets displayed
     def __init__(self, parent, application):
         id = wxNewId()
-        wxTreeCtrl.__init__(self, parent, id)
+        wxTreeCtrl.__init__(self, parent, id, style=wxTR_DEFAULT_STYLE |
+                            wxTR_HAS_VARIABLE_ROW_HEIGHT)
         root_node = Tree.Node(application)
         self.cur_widget = None # reference to the selected widget
         Tree.__init__(self, root_node, application)
