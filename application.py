@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.33 2003/08/02 13:26:32 agriggio Exp $
+# $Id: application.py,v 1.34 2003/11/13 00:02:30 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -397,10 +397,13 @@ class Application(object):
         # some sensible reasons...)
         widget.klass = widget.klass[widget.klass.rfind('.')+1:]
         widget.klass = widget.klass[widget.klass.rfind(':')+1:]
-        if widget.klass == widget.base:
-            import random
-            widget.klass = '_%d_%s' % \
-                           (random.randrange(10**8, 10**9), widget.klass)
+        #if widget.klass == widget.base:
+        # ALB 2003-11-08: always randomize the class name: this is to make
+        # preview work even when there are multiple classes with the same name
+        # (which makes sense for XRC output...)
+        import random
+        widget.klass = '_%d_%s' % \
+                       (random.randrange(10**8, 10**9), widget.klass)
             
         real_path = self.output_path
         self.output_path = out_name[0]
