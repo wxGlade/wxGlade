@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.47 2003/07/08 17:44:25 agriggio Exp $
+# $Id: edit_windows.py,v 1.48 2003/07/16 20:14:43 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -50,6 +50,14 @@ class EditBase:
         self.name_prop = TextProperty(self, 'name', None)
         self.klass_prop = TextProperty(self, 'class', None,
                                        readonly=not custom_class)
+        if custom_class:
+            self.klass_prop.tooltip = "If you change the default value, " \
+                                      "it will be interpreted as the name " \
+                                      "of the subclass of the widget. " \
+                                      "How this name affects code generation "\
+                                      "depends on the kind (i.e. language) " \
+                                      "of output. See the docs for " \
+                                      "more details."
         self.notebook = None
         self.property_window = property_window
 

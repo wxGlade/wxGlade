@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.38 2003/06/27 16:01:38 agriggio Exp $
+# $Id: widget_properties.py,v 1.39 2003/07/16 20:14:43 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -191,7 +191,10 @@ class TextProperty(Property, _activator):
         if self.can_disable:
             self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
         self.text = wxTextCtrl(parent, self.id, val, style=style, size=(1, -1))
-        label.SetToolTip(wxToolTip(_mangle(self.name)))
+        if hasattr(self, 'tooltip'):
+            label.SetToolTip(wxToolTip(self.tooltip))
+        else:
+            label.SetToolTip(wxToolTip(_mangle(self.name)))
         if self.can_disable:
             #self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
             EVT_CHECKBOX(self._enabler, self.id+1,

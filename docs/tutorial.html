@@ -117,14 +117,27 @@ class.</p>
 <p><b>NOTE:</b> The above is true only for "container" widgets, i.e. those that
 can have children. For controls, instead, the meaning is slightly different;
 let me illustrate it with an example.<br/>
-<p>Suppose you have a button inside a panel, its <tt>Class</tt> is
+
+<blockquote>Suppose you have a button inside a panel, its <tt>Class</tt> is
 <tt>wxButton</tt>. If you change such value to <tt>MyCustomButton</tt>, wxGlade
 assumes that you have a subclass of <tt>wxButton</tt> called
 <tt>MyCustomButton</tt> defined somewhere, and that such class has a costructor
 compatible with that of the "regular" <tt>wxButton</tt>, and so when it
 generates the code for the object, it writes:
 <pre>button_1 = MyCustomButton(parent, id, "Label")</pre> instead of
-<pre>button_1 = wxButton(parent, id, "Label")</pre> </p>
+<pre>button_1 = wxButton(parent, id, "Label")</pre> </blockquote>
+
+<p><b>NOTE 2:</b> For XRC output, if the value of <tt>Class</tt> is different
+from the default one, the object will have a <tt>subclass</tt> attribute. For
+the example above, the code generated would be: 
+<blockquote> 
+&lt;object class="wxButton" name="button_1" subclass="MyCustomButton"/&gt; 
+</blockquote>
+This means that you should be a little careful with XRC output, in that you
+have to remember to reset the <tt>Class</tt> value to the default one when
+adding a "top-level" widget (frame, dialog,...), because by default wxGlade
+assumes they are custom classes.
+</p>
     
 <h3>5. Adding and removing notebook pages</h3>
     
@@ -447,10 +460,13 @@ wxGlade blocks nonetheless: this means that:
   <li>XRC code generation has some differences wrt Python or C++; apart from
     those already mentioned in section 8, the most important ones are:
   <ul>
+<!--
     <li>At the moment there is no support for custom classes, which means that
     the Class property of widgets is ignored. There's a chance that future
     versions of wxGlade will support it, though, since XRC itself has something
-    similar (but it seems that at the moment it can be used only by C++ progs).</li>
+    similar (but it seems that at the moment it can be used only by C++
+    progs).</li>
+-->
     <li>Some widgets are not supported at all (e.g. status
     bar and grid): for them no code will be generated, but instead the XRC output
     file will contain a comment like this:
