@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.54 2004/11/04 22:14:12 agriggio Exp $
+# $Id: edit_sizers.py,v 1.55 2004/11/06 12:14:14 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -385,7 +385,10 @@ class InsertDialog(wxDialog):
         pos_prop = SpinProperty(self, 'position', self, r=(0, max_val))
         szr = wxBoxSizer(wxVERTICAL)
         szr.Add(pos_prop.panel, 0, wxALL|wxEXPAND, 5)
-        szr.Add(wxButton(self, wxID_OK, "OK"), 0, wxALL|wxALIGN_CENTER, 5)
+        szr2 = wxBoxSizer(wxHORIZONTAL)
+        szr2.Add(wxButton(self, wxID_OK, "OK"), 0, wxALL, 5)
+        szr2.Add(wxButton(self, wxID_CANCEL, "Cancel"), 0, wxALL, 5)
+        szr.Add(szr2, 0, wxALIGN_CENTER)
         self.SetAutoLayout(True)
         self.SetSizer(szr)
         szr.Fit(self)
@@ -1050,18 +1053,18 @@ class SizerBase(Sizer):
         if not self.widget: return
 
         dialog = InsertDialog(len(self.children)-1)
-        dialog.ShowModal()
-        pos = dialog.pos + 1
-        tmp = SizerSlot(self.window, self, pos)
-        for c in self.children[pos:]:
-            c.item.pos += 1
-        self.children.insert(pos, SizerItem(tmp, pos, 1, wxEXPAND, 0))
-        tmp.show_widget(True) # create the actual SizerSlot
-        self.widget.Insert(pos, tmp.widget, 1, wxEXPAND)
-        self.widget.SetItemMinSize(tmp.widget, 20, 20)
-        force_layout = kwds.get('force_layout', True)
-        if force_layout: self.layout(True)
-        common.app_tree.app.saved = False
+        if dialog.ShowModal() == wxID_OK:
+            pos = dialog.pos + 1
+            tmp = SizerSlot(self.window, self, pos)
+            for c in self.children[pos:]:
+                c.item.pos += 1
+            self.children.insert(pos, SizerItem(tmp, pos, 1, wxEXPAND, 0))
+            tmp.show_widget(True) # create the actual SizerSlot
+            self.widget.Insert(pos, tmp.widget, 1, wxEXPAND)
+            self.widget.SetItemMinSize(tmp.widget, 20, 20)
+            force_layout = kwds.get('force_layout', True)
+            if force_layout: self.layout(True)
+            common.app_tree.app.saved = False
         dialog.Destroy()
 
     def free_slot(self, pos, force_layout=True):
@@ -1504,19 +1507,23 @@ class GridSizerBase(SizerBase):
 
         if kwds.get('interactive', True):
             dialog = InsertDialog(len(self.children))
-            dialog.ShowModal()
+            ok = dialog.ShowModal() == wxID_OK
             pos = dialog.pos+1
-        else: pos = kwds['pos']
-        tmp = SizerSlot(self.window, self, pos)
-        for c in self.children[pos:]:
-            c.item.pos += 1
-        self.children.insert(pos, SizerItem(tmp, pos, 1, wxEXPAND, 0))
-        tmp.show_widget(True) # create the actual SizerSlot
-        self.widget.Insert(pos, tmp.widget, 1, wxEXPAND)
-        self.widget.SetItemMinSize(tmp.widget, 20, 20)
-        force_layout = kwds.get('force_layout', True)
-        if force_layout: self.layout(True)
-        common.app_tree.app.saved = False
+            dialog.Destroy()
+        else:
+            pos = kwds['pos']
+            ok = True
+        if ok:
+            tmp = SizerSlot(self.window, self, pos)
+            for c in self.children[pos:]:
+                c.item.pos += 1
+            self.children.insert(pos, SizerItem(tmp, pos, 1, wxEXPAND, 0))
+            tmp.show_widget(True) # create the actual SizerSlot
+            self.widget.Insert(pos, tmp.widget, 1, wxEXPAND)
+            self.widget.SetItemMinSize(tmp.widget, 20, 20)
+            force_layout = kwds.get('force_layout', True)
+            if force_layout: self.layout(True)
+            common.app_tree.app.saved = False
 
     def add_row(self, *args, **kwds):
         if not self.widget: return
@@ -1525,8 +1532,8 @@ class GridSizerBase(SizerBase):
     def insert_row(self, *args):
         if not self.widget: return
         dialog = InsertDialog(self.widget.GetRows())
-        dialog.ShowModal()
-        self._insert_row(dialog.pos + 1)
+        if dialog.ShowModal() == wxID_OK:
+            self._insert_row(dialog.pos + 1)
         dialog.Destroy()
         
     def _insert_row(self, pos):
@@ -1559,8 +1566,8 @@ class GridSizerBase(SizerBase):
     def insert_col(self, *args):
         if not self.widget: return
         dialog = InsertDialog(self.widget.GetCols())
-        dialog.ShowModal()
-        self._insert_col(dialog.pos + 1)
+        if dialog.ShowModal() == wxID_OK:
+            self._insert_col(dialog.pos + 1)
         dialog.Destroy()
 
     def _insert_col(self, pos):
