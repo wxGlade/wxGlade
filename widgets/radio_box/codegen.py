@@ -69,7 +69,8 @@ def cpp_code_generator(obj):
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
     number = len(choices)
-    ch_arr = '{ %s };\n' % ', '.join(['"' + c + '"' for c in choices])
+    ch_arr = '{\n        %s\n    };\n' % \
+             ',\n        '.join(['"' + c + '"' for c in choices])
     label = prop.get('label', '').replace('"', r'\"')
     if obj.is_toplevel:
         l = []
