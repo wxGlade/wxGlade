@@ -1,20 +1,23 @@
  Authors:
  ---------------------------------------------------------------------------
  - Alberto Griggio <albgrig@tiscalinet.it>
- - Marco Barisione <marco.bari@vene.ws>
  - Marcello Semboli <dinogen@supereva.it>
  - Richard Lawson <richard.lawson@colinx.com>
  - D.H. <crazyinsomniac@yahoo.com> (Perl code generation)
 
+ Former Authors:
+ ---------------------------------------------------------------------------
+ - Marco Barisione <marco.bari@vene.ws>
+
  Contributors:
  ---------------------------------------------------------------------------
- 
  - Alex Thuering <ntalex@web.de>: general virtual sizers support and
    porting of the SplitterWindow to this new model
+ - Brendan Oakley <pradoderobles@angelfire.com>: editor of the new user's
+   manual 
  
  Many thanks to:
  ---------------------------------------------------------------------------
- 
  - Guido van Rossum and all the people at PSF for the excellent language
  - Robin Dunn, Julian Smart, Vadim Zeitlin, Robert Roebling and the wxWidgets
    team for their great libary 
@@ -25,7 +28,6 @@
  
  - ... and, of course, all the people who provided feedback, comments, critics
    and support (John Dubery in particular for his huge amount of bug reports).
- 
  
  (We apologize with all the people that should be mentioned here but in fact
  aren't: if you think you are one of them, tell us and your name will be added
