@@ -514,7 +514,7 @@ class WindowBase(EditBase):
         self.set_size((-1, int(value)))
 
     def set_size(self, value):
-        if not self.widget: return
+        #if not self.widget: return
         if self.properties['size'].is_active():
             v = self.properties['size'].get_value().strip()
             use_dialog_units = v and v[-1] == 'd'
@@ -531,12 +531,13 @@ class WindowBase(EditBase):
         except:
             self.properties['size'].set_value(self.size)
         else:
-            if use_dialog_units: size = wxDLG_SZE(self.widget, size)
-            self.widget.SetSize(size)
             self.size = value
-            try:
-                self.sizer.set_item(self.pos, size=self.widget.GetSize())
-            except AttributeError: pass
+            if self.widget:
+                if use_dialog_units: size = wxDLG_SZE(self.widget, size)
+                self.widget.SetSize(size)
+                try:
+                    self.sizer.set_item(self.pos, size=self.widget.GetSize())
+                except AttributeError: pass
 
     def get_size(self):
         return self.size
@@ -793,6 +794,7 @@ class TopLevelBase(WindowBase):
                             show=show)
         self.has_title = has_title
         if self.has_title:
+            self.title = self.name
             self.access_functions['title'] = (self.get_title, self.set_title)
             self.properties['title'] = TextProperty(self, 'title', None)
         self.sizer = None # sizer that controls the layout of the children
@@ -846,12 +848,16 @@ class TopLevelBase(WindowBase):
             sizer_tmp.Fit(panel)
 
     def get_title(self):
-        if not self.widget: return self.name
-        return self.widget.GetTitle()
+        return self.title
+##         if not self.widget: return self.name
+##         return self.widget.GetTitle()
 
     def set_title(self, value):
-        if not self.widget: return
-        self.widget.SetTitle(value)
+        self.title = value
+        if self.widget:
+            self.widget.SetTitle(value)
+##         if not self.widget: return
+##         self.widget.SetTitle(value)
 
     def set_sizer(self, sizer):
         self.sizer = sizer
