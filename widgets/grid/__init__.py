@@ -4,8 +4,6 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-# Dinogen: first try to create a widget handler
-# obviously disonnected from CVS.
 
 def initialize():
     import common
