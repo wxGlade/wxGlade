@@ -20,6 +20,7 @@ def wxBoxSizer_builder(obj):
         layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
         if not obj.parent.properties.has_key('size'):
             layout.append('%s.Fit(%s)\n' % (obj.name, parent))
+            layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
     return init, [], layout
 
 def wxStaticBoxSizer_builder(obj):
@@ -38,6 +39,7 @@ def wxStaticBoxSizer_builder(obj):
         layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
         if not obj.parent.properties.has_key('size'):
             layout.append('%s.Fit(%s)\n' % (obj.name, parent))
+            layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
     return init, [], layout
 
 def _GridSizers_builder(obj, klass):
@@ -56,6 +58,7 @@ def _GridSizers_builder(obj, klass):
         layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
         if not obj.parent.properties.has_key('size'):
             layout.append('%s.Fit(%s)\n' % (obj.name, parent))
+            layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
     return init, [], layout   
 
 def wxGridSizer_builder(obj):
@@ -95,6 +98,7 @@ def cpp_wxBoxSizer_builder(obj):
             if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
             else: parent = 'this'
             layout.append('%s->Fit(%s);\n' % (obj.name, parent))
+            layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
     return init, [], [], layout
 
 def cpp_wxStaticBoxSizer_builder(obj):
@@ -118,6 +122,7 @@ def cpp_wxStaticBoxSizer_builder(obj):
             if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
             else: parent = 'this'
             layout.append('%s->Fit(%s);\n' % (obj.name, parent))
+            layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
     return init, [], [], layout
 
 def _cpp_GridSizers_builder(obj, klass):
@@ -138,6 +143,7 @@ def _cpp_GridSizers_builder(obj, klass):
             if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
             else: parent = 'this'
             layout.append('%s->Fit(%s);\n' % (obj.name, parent))
+            layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
     return init, [], [], layout   
 
 def cpp_wxGridSizer_builder(obj):

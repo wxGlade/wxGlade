@@ -530,7 +530,7 @@ class SizerBase:
         """
         if self.widget and self.window.widget:
             self.widget.Fit(self.window.widget)
-            self.widget.SetSizeHints(self.window.widget)
+            #self.widget.SetSizeHints(self.window.widget)
             self.window.widget.Layout()
     
     def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None,
