@@ -74,11 +74,11 @@ def cpp_code_generator(obj):
     else: parent = 'this'
     if attribute: prefix = ''
     else: prefix = '%s* ' % obj.klass
-    init = [ '%s = new %s(%s, %s, %s);\n' % 
-             (obj.name, obj.klass, parent, id, bmp) ]
+    init = [ '%s%s = new %s(%s, %s, %s);\n' %
+             (prefix, obj.name, obj.klass, parent, id, bmp) ]
     props_buf = cppgen.generate_common_properties(obj)
     if not attribute:
-        return [], ids, [], init + props_buf    
+        return [], ids, [], init + props_buf
     return init, ids, props_buf, []
 
 
