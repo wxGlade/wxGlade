@@ -12,6 +12,8 @@ from misc import wxGladeRadioButton
 
 from ChoicesProperty import *
 
+#!!! Why is this derived from wxPanel?
+# What are the problems with wxRadioBox and wxRadioButton?
 class EditRadioBox(wxPanel, ManagedBase):
     def __init__(self, name, parent, id, label, choices, major_dim, style,
                  sizer, pos, property_window, show=True):

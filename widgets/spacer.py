@@ -9,15 +9,16 @@ from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase
 
-class EditSpacer(wxPanel, ManagedBase):
+class EditSpacer(ManagedBase):
     def __init__(self, name, parent, id, width, height, sizer, pos,
                  property_window, show=True):
         """\
         Class to handle spacers for sizers
         """
-        wxPanel.__init__(self, parent, id, size=(width, height))
         ManagedBase.__init__(self, name, 'spacer', parent, id, sizer,
                              pos, property_window, show=show)
+
+        self.size = (widht, height)
 
         self.access_functions['width'] = (self.get_width, self.set_width)
         self.access_functions['height'] = (self.get_height, self.set_height)
@@ -45,19 +46,30 @@ class EditSpacer(wxPanel, ManagedBase):
         self.notebook.RemovePage(0)
         self.notebook.SetSelection(0)
 
-    def get_width(self): return self.GetSize()[0]
-    def get_height(self): return self.GetSize()[1]
+    def get_width(self):
+        return self.size[0]
+
+    def get_height(self):
+        return self.size[1]
 
     def set_width(self, value):
-        self.SetSize((int(value), -1))
-        self.sizer.set_item(self.pos, size=self.GetSize())
+        value = int(value)
+        self.size[0] = value
+        if self.widget:
+            self.widget.SetSize(self.size)
+        self.sizer.set_item(self.pos, size=self.size)
 
     def set_height(self, value):
-        self.SetSize((-1, int(value)))
-        self.sizer.set_item(self.pos, size=self.GetSize())
+        value = int(value)
+        self.size[1] = value
+        if self.widget:
+            self.widget.SetSize(self.size)
+        self.sizer.set_item(self.pos, size=self.size)
 
-    def GetBestSize(self): return self.GetSize()
-        
+    def create_widget(self):
+        self.widget = wxPanel(self.parent, self.id, size=self.size)
+        self.widget.GetBestSize = self.GetSize
+
 # end of class EditSpacer
         
 

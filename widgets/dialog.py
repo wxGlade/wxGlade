@@ -9,10 +9,9 @@ from tree import Tree, MenuTree
 from widget_properties import *
 from edit_windows import TopLevelBase
 
-class EditDialog(wxDialog, TopLevelBase):
+class EditDialog(TopLevelBase):
     def __init__(self, name, parent, id, title, property_window,
                  style=wxDEFAULT_DIALOG_STYLE, show=True, klass='wxDialog'):
-        wxDialog.__init__(self, parent, id, title, style=style)
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show)
         prop = self.properties
@@ -29,15 +28,7 @@ class EditDialog(wxDialog, TopLevelBase):
             item_id = self._rmenu.FindItem(label)
             self._rmenu.Delete(item_id)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
-        # event handlers
-        EVT_LEFT_DOWN(self, self.drop_sizer)
-        EVT_ENTER_WINDOW(self, self.on_enter)
-        EVT_CLOSE(self, self.ask_remove)
-
         self.has_sizer = False # if True, the dialog already has a sizer
-        self.SetAutoLayout(True)
-        self.SetSize((400, 300))
-        self.Show(show)
 
     def create_properties(self):
         TopLevelBase.create_properties(self)
@@ -63,7 +54,7 @@ class EditDialog(wxDialog, TopLevelBase):
             self.on_set_focus(event) # default behaviour: call show_properties
             return
         common.adding_widget = common.adding_sizer = False
-        self.SetCursor(wxNullCursor)
+        self.widget.SetCursor(wxNullCursor)
         common.widgets[common.widget_to_add](self, None, None)
         common.widget_to_add = None
         self.has_sizer = True
@@ -71,9 +62,8 @@ class EditDialog(wxDialog, TopLevelBase):
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.GetWindowStyleFlag()
             for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]:
+                if self.style & self.style_pos[i]:
                     retval[i] = 1
         except AttributeError:
             pass
@@ -81,11 +71,25 @@ class EditDialog(wxDialog, TopLevelBase):
 
     def set_style(self, value):
         value = self.properties['style'].prepare_value(value)
-        style = 0
+        self.style = 0
         for v in range(len(value)):
             if value[v]:
-                style |= self.style_pos[v]
-        self.SetWindowStyleFlag(style)
+                self.style |= self.style_pos[v]
+        if self.widget:
+            self.SetWindowStyleFlag(self.style)
+
+    def create_widget(self):
+        self.widget = wxDialog(self.parent, self.id, self.title, style=self.style)
+        # event handlers
+        EVT_LEFT_DOWN(self.widget, self.drop_sizer)
+        EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        EVT_CLOSE(self.widget, self.ask_remove)
+        self.widget.SetAutoLayout(True)
+        self.widget.SetSize((400, 300))
+        # !!! Show is always False (sse WindowBase). However EditBase wants
+        # to show the widget, without checking if it's created, so this
+        # must be modified.
+        # self.widget.Show(self.show)
 
     def ask_remove(self, event):
         if wxPlatform == '__WXMSW__':
@@ -101,7 +105,7 @@ class EditDialog(wxDialog, TopLevelBase):
 
     def on_size(self, event):
         TopLevelBase.on_size(self, event)
-        if self.has_sizer: self.GetSizer().Refresh()
+        if self.has_sizer: self.widget.GetSizer().Refresh()
 
 # end of class EditFrame
 

@@ -9,26 +9,28 @@ from tree import Tree
 import common, misc
 from widget_properties import *
 
-class EditSpinCtrl(wxSpinCtrl, ManagedBase):
+class EditSpinCtrl(ManagedBase):
     """\
     Class to handle wxSpinCtrl objects
     """
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
-        wxSpinCtrl.__init__(self, parent, id)
         ManagedBase.__init__(self, name, 'wxSpinCtrl', parent, id, sizer, pos,
                              property_window, show=show)
 
         prop = self.properties
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.access_functions['value'] = (self.GetValue, lambda v:
-                                          self.SetValue(int(v)))
+        self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
         style_labels = ('#section#Style', 'wxSP_ARROW_KEYS', 'wxSP_WRAP')
         self.style_pos = (wxSP_ARROW_KEYS, wxSP_WRAP)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         prop['range'] = TextProperty(self, 'range', None, can_disable=True)
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
+
+        self.style = style
+        self.value = 0
+        self.range = (0, 100) # Default values in wxSpinCtrl constructor.
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -49,28 +51,44 @@ class EditSpinCtrl(wxSpinCtrl, ManagedBase):
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.GetWindowStyleFlag()
             for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]:
+                if self.style & self.style_pos[i]:
                     retval[i] = 1
         except AttributeError: pass
         return retval
 
     def set_style(self, value):
         value = self.properties['style'].prepare_value(value)
-        style = 0
+        self.style = 0
         for v in range(len(value)):
             if value[v]:
-                style |= self.style_pos[v]
-        self.SetWindowStyleFlag(style)
+                self.style |= self.style_pos[v]
+        if self.widget:
+            self.SetWindowStyleFlag(style)
 
-    def get_range(self): return (self.GetMin(), self.GetMax())
+    def get_range(self):
+        return self.range
 
     def set_range(self, val):
         try: min_v, max_v = map(int, val.split(','))
         except: self.properties['range'].set_value('%s, %s', self.get_range())
-        self.SetRange(min_v, max_v)
+        # !!!
+        self.set_range(min_v, max_v)
         self.properties['value'].set_range(min_v, max_v)
+
+    def get_value(self):
+        return self.value
+
+    def set_value(self, value):
+        value = int(value)
+        if self.value != value:
+            self.value = value
+            if self.widget:
+                self.widget.SetValue(self.value)
+
+    def create_widget(self):
+        self.widget = wxSpinCtrl(self.parent, self.id, min=self.range[0],
+                                 max=self.range[1], initial=self.value)
 
 # end of class EditSpinCtrl
 

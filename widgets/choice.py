@@ -11,14 +11,25 @@ from widget_properties import *
 
 from ChoicesProperty import *
 
-class EditChoice(wxChoice, ManagedBase):
+
+if wxPlatform == '__WXMSW__':
+    # On windows GetBestSize considers also the drop down menu, while we
+    # don't want it to be included.
+    class wxChoice2(wxChoice):
+        def GetBestSize(self):
+            w, h = wxChoice.GetBestSize(self)
+            n = self.Number()
+            return w, h/(n+1)
+else:
+    wxChoice2 = wxChoice
+
+
+class EditChoice(ManagedBase):
     def __init__(self, name, parent, id, choices, sizer, pos, property_window,
                  show=True):
         """\
         Class to handle wxChoice objects
         """
-        wxChoice.__init__(self, parent, id, choices=choices)
-        if choices: self.SetSelection(0)
         ManagedBase.__init__(self, name, 'wxChoice', parent, id, sizer,
                              pos, property_window, show=show)
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
@@ -26,12 +37,16 @@ class EditChoice(wxChoice, ManagedBase):
                                                      [('Label',
                                                        GridProperty.STRING)],
                                                      len(choices))
-        self.access_functions['selection'] = (self.GetSelection,
-                                              lambda v:
-                                              self.SetSelection(int(v)))
+        self.access_functions['selection'] = (self.get_selection,
+                                              self.set_selection)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
-                                                    r=(0, self.Number()-1))
-        EVT_LEFT_DOWN(self, self.on_set_focus)
+                                                    r=(0, len(self.choices-1)))
+        # self.choices must use a copy of choices.
+        self.choices = list(choices)
+        if self.choices:
+            self.selection = 0
+        else:
+            self.selection = -1
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -46,29 +61,44 @@ class EditChoice(wxChoice, ManagedBase):
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
-        
+
     def get_choices(self):
-        return zip([ self.GetString(i) for i in range(self.Number()) ])
+        # A copy of self.choice is returned, otherwise the caller
+        # could be able to change self.choice but not what is shown
+        # by self.widget.
+        return list(self.choices)
 
     def set_choices(self, values):
-        self.Clear()
-        for value in values:
-            self.Append(value[0])
-        self.sizer.set_item(self.pos, size=self.GetBestSize())
-        self.properties['selection'].set_range(0, self.Number()-1)
-        self.SetSelection(int(self.properties['selection'].get_value()))
+        self.choices = list(values)
+        self.properties['selection'].set_range(0, len(self.choices)-1)
+        if self.widget:
+            self.widget.Clear()
+            for value in values:
+                # !!! I can't understand what you are doing,
+                # why value[0]?
+                self.widget.Append(value[0])
+            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+            self.widget.SetSelection(int(self.properties['selection'].get_value()))
+
+    def get_selection(self):
+        return self.selection
+
+    def set_selection(self, value):
+        value = int(value)
+        if value != self.selection:
+            self.selection = value
+            if self.widget:
+                self.widget.SetSelection(value)
 
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
             return ChoicesHandler(self)
 
-    if wxPlatform == '__WXMSW__':
-        # on windows GetBestSize considers also the drop down menu, while we
-        # don't want it to be included
-        def GetBestSize(self):
-            w, h = wxChoice.GetBestSize(self)
-            n = self.Number()
-            return w, h/(n+1)
+    def create_widget(self):
+        self.widget = wxChoice2(self.parent, self.id, choices=self.choices)
+        if self.choices:
+            self.widget.SetSelection(0)
+        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
 # end of class EditChoice
 

@@ -9,16 +9,15 @@ from tree import Tree
 import common, misc
 from widget_properties import *
 
-class EditTextCtrl(wxTextCtrl, ManagedBase):
+class EditTextCtrl(ManagedBase):
     """\
     Class to handle wxTextCtrl objects
     """
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
-        wxTextCtrl.__init__(self, parent, id)
         ManagedBase.__init__(self, name, 'wxTextCtrl', parent, id, sizer, pos,
                              property_window, show=show)
-        self.access_functions['value'] = (self.GetValue, self.SetValue)
+        self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['style'] = (self.get_style, self.set_style)
         prop = self.properties
         # value property
@@ -31,6 +30,8 @@ class EditTextCtrl(wxTextCtrl, ManagedBase):
                         'wxTE_PROCESS_TAB', 'wxTE_MULTILINE', 'wxTE_PASSWORD',
                         'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH')
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
+
+        self.value = ""
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -46,22 +47,36 @@ class EditTextCtrl(wxTextCtrl, ManagedBase):
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 
+    def get_value(self):
+        return self.value
+
+    def set_value(self, value):
+        value = str(value)
+        if value != self.value:
+            self.value = value
+            if self.widget:
+                self.widget.SetValue(value)
+
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.GetWindowStyleFlag()
             for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]: retval[i] = 1
+                if self.style & self.style_pos[i]:
+                    retval[i] = 1
         except AttributeError: pass
         return retval
 
     def set_style(self, value):
         value = self.properties['style'].prepare_value(value)
-        style = 0
+        self.style = 0
         for v in range(len(value)):
             if value[v]:
-                style |= self.style_pos[v]
-        self.SetWindowStyleFlag(style)
+                self.style |= self.style_pos[v]
+        if self.widget:
+            self.widget.SetWindowStyleFlag(style)
+
+    def create_widget(self):
+        self.widget = wxTextCtrl(self.parent, self.id, self.value)
 
 # end of class EditTextCtrl
 
