@@ -171,11 +171,14 @@ if not check_wx_version(2, 3, 3):
 
 #----------------------------------------------------------------------
 
-# set to True if you want to use icons on menu items
-use_menu_icons = True
+use_menu_icons = None
 
 _item_bitmaps = {}
 def append_item(menu, id, text, xpm_file=None):
+    global use_menu_icons
+    if use_menu_icons is None:
+        import config
+        use_menu_icons = config.preferences.use_menu_icons
     import common, os.path
     item = wxMenuItem(menu, id, text)
     if wxPlatform == '__WXMSW__': path = 'icons/msw/'

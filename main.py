@@ -8,7 +8,7 @@ from wxPython.wx import *
 from widget_properties import *
 from tree import Tree, WidgetTree
 import edit_sizers
-import common, os.path, misc 
+import common, os.path, misc, config
 
 class wxGladePropertyPanel(wxPanel):
     """\
@@ -78,7 +78,10 @@ class wxGladeFrame(wxFrame):
                     'generate.xpm')
         EXIT_ID = wxNewId()
         file_menu.AppendSeparator()
-        append_item(file_menu, EXIT_ID, 'E&xit\tCtrl+Q', 'exit.xpm') 
+        append_item(file_menu, EXIT_ID, 'E&xit\tCtrl+Q', 'exit.xpm')
+        PREFS_ID = wxNewId()
+        view_menu.AppendSeparator()
+        append_item(view_menu, PREFS_ID, 'Preferences...', 'prefs.xpm')
         menu_bar.Append(file_menu, "&File")
         menu_bar.Append(view_menu, "&View")
         TUT_ID = wxNewId()
@@ -97,18 +100,19 @@ class wxGladeFrame(wxFrame):
 ##             (wxACCEL_CTRL, ord('g'), GENERATE_CODE_ID),
 ##             (wxACCEL_NORMAL, WXK_F1, TUT_ID)
 ##             ]))
-        EVT_MENU(parent, TREE_ID, self.show_tree)
-        EVT_MENU(parent, PROPS_ID, self.show_props_window)
-        EVT_MENU(parent, NEW_ID, self.new_app)
-        EVT_MENU(parent, OPEN_ID, self.open_app)
-        EVT_MENU(parent, SAVE_ID, self.save_app)
-        EVT_MENU(parent, SAVE_AS_ID, self.save_app_as)
+        EVT_MENU(self, TREE_ID, self.show_tree)
+        EVT_MENU(self, PROPS_ID, self.show_props_window)
+        EVT_MENU(self, NEW_ID, self.new_app)
+        EVT_MENU(self, OPEN_ID, self.open_app)
+        EVT_MENU(self, SAVE_ID, self.save_app)
+        EVT_MENU(self, SAVE_AS_ID, self.save_app_as)
         def generate_code(event):
             common.app_tree.app.generate_code()
-        EVT_MENU(parent, GENERATE_CODE_ID, generate_code)
-        EVT_MENU(parent, EXIT_ID, lambda e: self.Close())
-        EVT_MENU(parent, TUT_ID, self.show_tutorial)
-        EVT_MENU(parent, ABOUT_ID, self.show_about_box)
+        EVT_MENU(self, GENERATE_CODE_ID, generate_code)
+        EVT_MENU(self, EXIT_ID, lambda e: self.Close())
+        EVT_MENU(self, TUT_ID, self.show_tutorial)
+        EVT_MENU(self, ABOUT_ID, self.show_about_box)
+        EVT_MENU(self, PREFS_ID, self.edit_preferences) 
         # Tutorial window
         self.tut_frame = None
         # layout
@@ -119,7 +123,8 @@ class wxGladeFrame(wxFrame):
         sizer.Fit(self)
         # Properties window
         frame_style = wxDEFAULT_FRAME_STYLE
-        if wxPlatform == '__WXMSW__':
+        frame_tool_win = config.preferences.frame_tool_win
+        if wxPlatform == '__WXMSW__' and frame_tool_win:
             frame_style |= wxFRAME_TOOL_WINDOW|wxFRAME_NO_TASKBAR
         self.frame2 = wxFrame(self, -1, 'Properties - <app>',
                               style=frame_style)
@@ -160,7 +165,8 @@ class wxGladeFrame(wxFrame):
             menu_bar.Check(TREE_ID, False)
             self.tree_frame.Hide()
         EVT_CLOSE(self.tree_frame, on_tree_frame_close)
-        self.frame2.SetSize((250, 350))
+        h = app.notebook.sizer.GetMinSize()[1]
+        self.frame2.SetSize((250, h+5))
         self.SetPosition((0, 0))
         x, y = self.GetPosition()
         h = self.GetSize()[1]
@@ -190,15 +196,20 @@ class wxGladeFrame(wxFrame):
                     self.frame2.Hide()
                     self.tree_frame.Hide()
                 event.Skip()
-            EVT_ACTIVATE(self, on_activate)
+            if frame_tool_win:
+                EVT_ACTIVATE(self, on_activate)
         else:
             self.about_box = None
 
         # last visited directory, used on GTK for wxFileDialog
-        self.cur_dir = os.path.expanduser('~')
-        if self.cur_dir == '~': self.cur_dir = os.getcwd() 
+        self.cur_dir = config.preferences.open_save_path
+##         self.cur_dir = os.path.expanduser('~')
+##         if self.cur_dir == '~': self.cur_dir = os.getcwd() 
 
         self.Raise()
+
+    def edit_preferences(self, event):
+        config.edit_preferences()
 
     def show_tree(self, event):
         self.tree_frame.Show(event.IsChecked())
@@ -334,6 +345,10 @@ class wxGladeFrame(wxFrame):
             #self.tree_frame.Destroy()
             #self.frame2.Destroy()
             #self.Destroy()
+            try: config.save_preferences()
+            except Exception, e:
+                wxMessageBox('Error saving preferences:\n%s' % e, 'Error',
+                             wxOK|wxCENTRE|wxICON_ERROR)
             raise SystemExit
 
     def add_object(self, event):
@@ -393,6 +408,7 @@ class wxGlade(wxApp):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         wxInitAllImageHandlers()
+        config.init_preferences()
         frame = wxGladeFrame()
         self.SetTopWindow(frame)
         return True

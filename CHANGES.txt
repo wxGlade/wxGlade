@@ -1,3 +1,5 @@
+2002-10-22: config.py: added config.py to configure some aspects of wxGlade
+
 2002-10-20: edit_windows.py, edit_sizers/edit_sizers.py, main.py, misc.py:
 		- added icons for menu items
 		- support for keyboard shortcuts for popup menus 

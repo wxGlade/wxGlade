@@ -6,7 +6,7 @@
 from wxPython.wx import *
 from widget_properties import *
 from tree import Tree, WidgetTree
-import math, misc, common, sys
+import math, misc, common, sys, config
 
 
 class EditBase:
@@ -135,7 +135,7 @@ class EditBase:
 
     def set_name(self, value):
         self.name = str(value)
-        self._rmenu.SetTitle(self.name)
+        if self._rmenu: self._rmenu.SetTitle(self.name)
         try: common.app_tree.set_name(self.node, self.name)
         except AttributeError: pass
 
@@ -350,16 +350,25 @@ class WindowBase(EditBase):
         update the value of the 'size' property
         """
         try:
+            w_1, h_1 = 0, 0
             sz = self.properties['size']
             if sz.is_active():
                 # try to preserve the user's choice
                 try: use_dialog_units = (sz.get_value().strip()[-1] == 'd')
                 except IndexError: use_dialog_units = False
-            else: use_dialog_units = False
+                val = sz.get_value()
+                if use_dialog_units: val = val[:-1]
+                w_1, h_1 = [int(t) for t in val.split(',')]
+            else: use_dialog_units = config.preferences.use_dialog_units #False
             if use_dialog_units:
-                size = "%s, %sd" % tuple(self.widget.ConvertPixelSizeToDialog(
-                    self.widget.GetSize()))
-            else: size = "%s, %s" % tuple(self.widget.GetSize())
+                w, h = self.widget.ConvertPixelSizeToDialog(
+                    self.widget.GetSize())
+            else:
+                w, h = self.widget.GetSize()
+            if w_1 == -1: w = -1
+            if h_1 == -1: h = -1
+            size = "%s, %s" % (w, h)
+            if use_dialog_units: size += "d"
             self.properties['size'].set_value(size)
             self.size = size
         except KeyError: pass
@@ -425,7 +434,7 @@ class WindowBase(EditBase):
 
     def set_size(self, value):
         if not self.widget: return
-        use_dialog_units = False
+        use_dialog_units = config.preferences.use_dialog_units #False
         try: "" + value
         except TypeError: pass
         else: # value is a string-like object
@@ -435,8 +444,7 @@ class WindowBase(EditBase):
         try:
             size = [int(t.strip()) for t in value.split(',')]
         except:
-            #size = wxDLG_SZE(self.widget, self.widget.GetSize())
-            self.properties['size'].set_value(self.size) #'%s, %sd' % tuple(size))
+            self.properties['size'].set_value(self.size)
         else:
             if use_dialog_units: size = wxDLG_SZE(self.widget, size)
             self.widget.SetSize(size)
@@ -446,9 +454,6 @@ class WindowBase(EditBase):
 
     def get_size(self):
         return self.size
-##         if not self.widget: return '' # invalid size
-##         size = self.widget.ConvertPixelSizeToDialog(self.widget.GetSize())
-##         return "%s, %sd" % tuple(size)
 
     def get_property_handler(self, name):
         if name == 'font':
