@@ -567,7 +567,8 @@ class FontPropertyHandler:
     """Handler for font properties"""
     font_families = { 'default': 'wxDEFAULT', 'decorative': 'wxDECORATIVE',
                       'roman': 'wxROMAN', 'swiss': 'wxSWISS',
-                      'script': 'wxSCRIPT', 'modern': 'wxMODERN' }
+                      'script': 'wxSCRIPT', 'modern': 'wxMODERN',
+                      'teletype': 'wxTELETYPE' }
     font_styles = { 'normal': 'wxNORMAL', 'slant': 'wxSLANT',
                     'italic': 'wxITALIC' }
     font_weights = { 'normal': 'wxNORMAL', 'light': 'wxLIGHT',
