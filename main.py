@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.48 2004/02/17 18:24:46 agriggio Exp $
+# $Id: main.py,v 1.49 2004/02/19 09:09:53 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -11,6 +11,8 @@ from widget_properties import *
 from tree import Tree, WidgetTree
 import edit_sizers
 import common, os, os.path, misc, config
+import clipboard
+
 
 class wxGladePropertyPanel(wxPanel):
     """\
@@ -353,6 +355,12 @@ class wxGladeFrame(wxFrame):
         # last visited directory, used on GTK for wxFileDialog
         self.cur_dir = config.preferences.open_save_path
 
+        # set a drop target for us...
+        self._droptarget = clipboard.FileDropTarget(self)
+        self.SetDropTarget(self._droptarget)
+        self.tree_frame.SetDropTarget(self._droptarget)
+        self.frame2.SetDropTarget(self._droptarget)
+
         self.Raise()
 
     def edit_preferences(self, event):
@@ -410,7 +418,10 @@ class wxGladeFrame(wxFrame):
 
     def _open_app(self, infilename, use_progress_dialog=True):
         import time
-        from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
+        from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, \
+             XmlParsingError
+        from xml.sax import SAXParseException
+
         start = time.clock()
 
         common.app_tree.clear()
@@ -428,7 +439,7 @@ class wxGladeFrame(wxFrame):
             else:
                 p = XmlWidgetBuilder()
             p.parse(infile)
-        except (IOError, OSError), msg:
+        except (IOError, OSError, SAXParseException, XmlParsingError), msg:
             if locals().has_key('infile'): infile.close()
             common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)

@@ -1,3 +1,7 @@
+2004-02-19: clipboard.py, main.py:
+                added Drag&Drop of wxg files for opening them (thanks to Chris
+                Liechti)
+
 2004-02-17: main.py, docs/index.html, docs/html/*:
                 new manual added
 

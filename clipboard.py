@@ -1,5 +1,5 @@
 # clipboard.py: support for cut & paste of wxGlade widgets
-# $Id: clipboard.py,v 1.9 2003/05/13 10:13:51 agriggio Exp $
+# $Id: clipboard.py,v 1.10 2004/02/19 09:09:53 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -112,3 +112,24 @@ def paste(parent, sizer, pos):
         parser.parse_string(xml_str)
         return True # Widget hierarchy pasted.
     return False # There's nothing to paste.
+
+
+#-----------------------------------------------------------------------------
+# 2004-02-19 ALB: D&D support (thanks to Chris Liechti)
+#-----------------------------------------------------------------------------
+
+class FileDropTarget(wxFileDropTarget):
+    def __init__(self, parent):
+        wxFileDropTarget.__init__(self)
+        self.parent = parent
+
+    def OnDropFiles(self, x, y, filenames):
+        if len(filenames) > 1:
+            wxMessageBox("Please only drop one file at a time",
+                "wxGlade", wxICON_ERROR)
+        else:
+            path = filenames[0]
+            if self.parent.ask_save(): 
+                self.parent._open_app(path)
+
+# end of class FileDropTarget
