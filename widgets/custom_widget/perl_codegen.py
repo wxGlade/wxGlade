@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for CustomWidget objects
-# $Id: perl_codegen.py,v 1.2 2003/07/18 17:00:53 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.3 2003/10/30 07:52:32 dinogen Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -24,7 +24,7 @@ class PerlCodeGenerator:
 
         
         if id_name: init.append(id_name)
-        arguments = _fix_arguments(prop.get('arguments', []), parent, id)
+        arguments = _fix_arguments(prop.get('arguments', []), parent, id, prop.get('size', "-1, -1"))
         init.append('use %s;\n' % widget.klass ) # yuck
         init.append('$self->{%s} = %s->new(%s);\n' %
             (widget.name, widget.klass, ", ".join(arguments)))

@@ -1,5 +1,5 @@
 # config.py: wxGlade configuration handling
-# $Id: config.py,v 1.16 2003/09/11 06:35:20 dinogen Exp $
+# $Id: config.py,v 1.17 2003/10/30 07:52:32 dinogen Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -59,6 +59,8 @@ if common.use_gui:
             self.default_border = wxCheckBox(self.notebook_1_pane_2, -1,
                                          "Create widgets with a default border")
 
+            self.default_border_size = wxSpinCtrl(self.notebook_1_pane_2, -1, "3",
+                                              min=1, max=25)
             self.__set_properties()
             self.__do_layout()
             # end wxGlade
@@ -85,6 +87,7 @@ if common.use_gui:
                 self.codegen_backup.SetValue(self.preferences.codegen_backup)
                 #MARCELLO
                 self.default_border.SetValue(self.preferences.default_border)
+                self.default_border_size.SetValue(self.preferences.default_border_size)
                 if self.preferences.backup_suffix == '.bak':
                     self.backup_suffix.SetSelection(1)
                 self.buttons_per_row.SetValue(self.preferences.buttons_per_row)
@@ -109,6 +112,7 @@ if common.use_gui:
             prefs['codegen_backup'] = self.codegen_backup.GetValue()
             #MARCELLO
             prefs['default_border'] = self.default_border.GetValue()
+            prefs['default_border_size'] = self.default_border_size.GetValue()
             if self.backup_suffix.GetSelection():
                 prefs['backup_suffix'] = '.bak'
             else: prefs['backup_suffix'] = '~'
@@ -195,6 +199,7 @@ if common.use_gui:
             sizer_5.Add(self.codegen_backup, 0, wxALL|wxEXPAND, 5)
             #MARCELLO
             sizer_5.Add(self.default_border, 0, wxALL|wxEXPAND, 5)
+            sizer_5.Add(self.default_border_size, 0, wxALL|wxEXPAND, 5)
             sizer_5.Add(self.backup_suffix, 0, wxALL|wxEXPAND, 5)
             sizer_6.Add(self.local_widget_path, 1, wxALL, 3)
             sizer_6.Add(self.choose_widget_path, 0,
@@ -249,7 +254,8 @@ class Preferences(ConfigParser):
         'local_widget_path': (_get_home('') and \
                               os.path.join(_get_home(), '.wxglade', 'widgets')
                               or ''),
-        'default_border' : False
+        'default_border' : False,
+        'default_border_size' : 3
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults
@@ -257,9 +263,7 @@ class Preferences(ConfigParser):
             self.def_vals = Preferences._defaults
         self.changed = False
         ConfigParser.__init__(self)
-        # Maybe this will be an option. 
-        # For now I fix it to 3
-        self.default_border_size = 3
+        #self.default_border_size = 3
 
     def __getattr__(self, attr):
         val = self.def_vals.get(attr, "")
