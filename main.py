@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.67 2005/03/05 13:39:31 agriggio Exp $
+# $Id: main.py,v 1.68 2005/03/11 00:03:33 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -12,6 +12,8 @@ from tree import Tree, WidgetTree
 import edit_sizers
 import common, os, os.path, misc, config
 import clipboard
+
+import xml_parse
 
 
 class wxGladePropertyPanel(wxPanel):
