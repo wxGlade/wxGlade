@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.24 2004/09/22 08:04:50 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.25 2004/09/22 08:12:12 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -277,7 +277,7 @@ def initialize(app_attrs):
             print 'ERROR loading "%s"' % module
             import traceback;
             traceback.print_exc()
-        else:
+#        else:
 #            print 'initialized perl generator for ', module_name
     modules.close()
 
