@@ -549,9 +549,14 @@ class SizerBase:
         try:
             elem = self.widget.GetChildren()[pos]
         except IndexError: # this happens after loading from xml
+            # I have to set wxADJUST_MINSIZE to handle a bug that I'm not
+            # able to detect (yet): if the width or height of a widget is -1,
+            # the layout is messed up!
             self.widget.Add(item.widget, option, flag, border)
             if size: w, h = size
             else: w, h = item.widget.GetBestSize()
+            if w == -1: w = item.widget.GetBestSize()[0]
+            if h == -1: h = item.widget.GetBestSize()[1]
             self.widget.SetItemMinSize(item.widget, w, h)
             return
         
@@ -569,6 +574,8 @@ class SizerBase:
         try: # if the item was a window, set its size to a reasonable value
             if size: w, h = size
             else: w, h = item.widget.GetBestSize()
+            if w == -1: w = item.widget.GetBestSize()[0]
+            if h == -1: h = item.widget.GetBestSize()[1]
             self.widget.SetItemMinSize(item.widget, w, h)
         except: pass
         if force_layout: self.layout() # update the layout of self
@@ -623,7 +630,10 @@ class SizerBase:
         if elem.IsWindow():
             if size is None: size = elem.GetSize()
             item = elem.GetWindow()
-            self.widget.SetItemMinSize(item, size[0], size[1])
+            w, h = size
+            if w == -1: w = item.GetBestSize()[0]
+            if h == -1: h = item.GetBestSize()[1]
+            self.widget.SetItemMinSize(item, w, h)
         if force_layout:
             self.layout(True)
             #try: self.sizer.Layout()
@@ -914,6 +924,19 @@ class SizerBase:
 # end of class SizerBase
 
 
+class wxGladeBoxSizer(wxBoxSizer):
+    def SetItemMinSize(self, item, w, h):
+        try:
+            w2, h2 = item.GetBestSize()
+            if w == -1: w = w2
+            if h == -1: h = h2
+        except AttributeError:
+            pass
+        wxBoxSizer.SetItemMinSize(self, item, w, h)
+
+# end of class wxGladeBoxSizer
+
+
 class EditBoxSizer(SizerBase):
     """\
     Class to handle wxBoxSizer objects
@@ -936,7 +959,7 @@ class EditBoxSizer(SizerBase):
         self.orient = orient
 
     def create_widget(self):
-        self.widget = wxBoxSizer(self.orient)
+        self.widget = wxGladeBoxSizer(self.orient)
         self.widget.Add(self._btn, 0, wxEXPAND)
         for c in self.children[1:]: # we've already added self._btn
             c.item.show_widget(True)
@@ -975,6 +998,19 @@ class EditBoxSizer(SizerBase):
 # end of class EditBoxSizer
 
 
+class wxGladeStaticBoxSizer(wxStaticBoxSizer):
+    def SetItemMinSize(self, item, w, h):
+        try:
+            w2, h2 = item.GetBestSize()
+            if w == -1: w = w2
+            if h == -1: h = h2
+        except AttributeError:
+            pass
+        wxStaticBoxSizer.SetItemMinSize(self, item, w, h)
+
+# end of class wxGladeStaticBoxSizer
+    
+
 class EditStaticBoxSizer(SizerBase):
     """\
     Class to handle wxStaticBoxSizer objects
@@ -998,8 +1034,9 @@ class EditStaticBoxSizer(SizerBase):
             self.children.append(SizerItem(tmp, i, 1, wxEXPAND))
 
     def create_widget(self):
-        self.widget = wxStaticBoxSizer(wxStaticBox(self.window.widget, -1,
-                                                   self.label), self.orient)
+        self.widget = wxGladeStaticBoxSizer(wxStaticBox(self.window.widget, -1,
+                                                        self.label),
+                                            self.orient)
         self.widget.Add(self._btn, 0, wxEXPAND)
         for c in self.children[1:]: # we've already added self._btn
             c.item.show_widget(True)
@@ -1097,8 +1134,14 @@ class CustomSizer(wxBoxSizer):
     def Insert(self, pos, *args, **kwds):
         self._grid.Insert(pos-1, *args, **kwds)
     def Remove(self, *args, **kwds): self._grid.Remove(*args, **kwds)
-    def SetItemMinSize(self, *args, **kwds):
-        self._grid.SetItemMinSize(*args, **kwds)
+    def SetItemMinSize(self, item, w, h): #*args, **kwds):
+        try:
+            w2, h2 = item.GetBestSize()
+            if w == -1: w = w2
+            if h == -1: h = h2
+        except AttributeError:
+            pass
+        self._grid.SetItemMinSize(item, w, h)
 
     def GetChildren(self):
         return [None] + self._grid.GetChildren()
@@ -1217,7 +1260,7 @@ class GridSizerBase(SizerBase):
             self.widget.SetVGap(self.vgap)
             self.layout()
 
-    def fit_parent(self, event):
+    def fit_parent(self, *args):
         """\
         Tell the sizer to resize the window to match the sizer's minimal size
         """

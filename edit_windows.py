@@ -294,6 +294,7 @@ class WindowBase(EditBase):
 
         # properties added 2002-08-15
         prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True)
+        self.__size = None
 
     def finish_widget_creation(self):
         prop = self.properties
@@ -301,7 +302,10 @@ class WindowBase(EditBase):
         if size:
             #self.widget.SetSize([int(s) for s in size.split(',')])
             self.set_size(size)
-        else: prop['size'].set_value('%s, %s' % tuple(self.widget.GetSize()))
+            self.__size = size
+        else:
+            # HACK!! see create_properties below
+            prop['size'].set_value('%s, %s' % tuple(self.widget.GetSize()))
         background = prop['background'].get_value()
         if background:
             self.widget.SetBackgroundColour(misc.string_to_color(background))
@@ -339,6 +343,11 @@ class WindowBase(EditBase):
         prop = self.properties
         prop['id'].display(panel)
         prop['size'].display(panel)
+        # This is a HACK! I **MUST** find the reason why setting size before
+        # gives toubles if w or h are -1 !!!
+##         if self.__size:
+##             prop['size'].set_value(self.__size)
+        
         prop['background'].display(panel) 
         prop['foreground'].display(panel)
         try: prop['font'].display(panel) 
@@ -366,6 +375,7 @@ class WindowBase(EditBase):
         self.notebook.AddPage(panel, "Common")
         self.property_window.Layout()
         panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))        
+
 
     def on_size(self, event):
         """\
@@ -450,7 +460,8 @@ class WindowBase(EditBase):
             old_size = self.widget.GetSize()
             self.widget.SetFont(f)
             size = self.widget.GetSize()
-            if size != old_size: self.sizer.set_item(self.pos, size=size)
+            if size != old_size:
+                self.sizer.set_item(self.pos, size=size)
 
     def set_width(self, value):
         self.set_size((int(value), -1))
@@ -475,7 +486,8 @@ class WindowBase(EditBase):
             if use_dialog_units: size = wxDLG_SZE(self.widget, size)
             self.widget.SetSize(size)
             self.size = value
-            try: self.sizer.set_item(self.pos, size=self.widget.GetSize())
+            try:
+                self.sizer.set_item(self.pos, size=self.widget.GetSize())
             except AttributeError: pass
 
     def get_size(self):
@@ -651,8 +663,6 @@ class ManagedBase(WindowBase):
             if not (flags & wxEXPAND) and \
                not self.properties['size'].is_active():
                 size = list(self.widget.GetBestSize())
-            if size[0] == -1: size[0] = self.widget.GetSize()[0]
-            if size[1] == -1: size[1] = self.widget.GetSize()[1]
             self.sizer.set_item(self.pos, flag=flags, size=size)
         except AttributeError, e:
             import traceback; traceback.print_exc()
@@ -670,6 +680,8 @@ class ManagedBase(WindowBase):
             w, h = [ int(v) for v in size.split(',') ]
             if use_dialog_units:
                 w, h = wxDLG_SZE(self.widget, (w, h))
+            if w == -1: w = self.widget.GetSize()[0]
+            if h == -1: h = self.widget.GetSize()[1]
             self.sizer.set_item(self.pos, border=int(value), size=(w, h))
         except AttributeError, e:
             import traceback; traceback.print_exc()
