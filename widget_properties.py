@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.42 2004/05/17 09:50:20 agriggio Exp $
+# $Id: widget_properties.py,v 1.43 2004/06/16 21:04:02 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -660,7 +660,7 @@ class ColorDialogProperty(DialogProperty):
         DialogProperty.toggle_active(self, active)
         if not active:
             # restore the original value if toggled off
-            color = self.owner._original[self.name]
+            color = self.owner._original.get(self.name, None)
             if color is not None and self.owner.widget is not None:
                 which = 'Set%sColour' % self.name.capitalize()
                 func = getattr(self.owner.widget, which, lambda c: None)
