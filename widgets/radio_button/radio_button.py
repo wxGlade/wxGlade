@@ -1,5 +1,5 @@
 # radio_button.py: wxRadioButton objects
-# $Id: radio_button.py,v 1.12 2004/10/02 10:22:38 crazyinsomniac Exp $
+# $Id: radio_button.py,v 1.13 2004/10/18 09:20:11 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -81,7 +81,7 @@ class EditRadioButton(ManagedBase):
                                         size=self.widget.GetBestSize())
 
     def set_value(self, value):
-        self.value = value
+        self.value = int(value)
         if self.widget: self.widget.SetValue(self.value)
    
     def get_style(self):

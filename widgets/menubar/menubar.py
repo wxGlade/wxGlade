@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.13 2004/10/15 10:49:50 agriggio Exp $
+# $Id: menubar.py,v 1.14 2004/10/18 09:20:11 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -733,7 +733,7 @@ def builder(parent, sizer, pos, number=[0]):
         dialog.Destroy()
         return
     
-    name = 'menubar_%d' % number[0]
+    name = 'menubar_%d' % (number[0] or 1)
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'menubar_%d' % number[0]

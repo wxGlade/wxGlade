@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.34 2004/10/15 10:49:50 agriggio Exp $
+# $Id: frame.py,v 1.35 2004/10/18 09:20:11 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -441,7 +441,7 @@ def builder(parent, sizer, pos, number=[0]):
         # clean up resources
         dialog.Destroy()
         return
-    label = 'frame_%d' % number[0]
+    label = 'frame_%d' % (number[0] or 1)
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'frame_%d' % number[0]

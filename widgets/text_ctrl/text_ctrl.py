@@ -1,12 +1,12 @@
 # text_ctrl.py: wxTextCtrl objects
-# $Id: text_ctrl.py,v 1.12 2004/09/17 13:09:49 agriggio Exp $
+# $Id: text_ctrl.py,v 1.13 2004/10/18 09:20:10 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 from wxPython.wx import *
-from edit_windows import ManagedBase
+from edit_windows import ManagedBase, WindowBase
 from tree import Tree
 import common, misc
 from widget_properties import *
@@ -50,7 +50,8 @@ class EditTextCtrl(ManagedBase):
         value = self.value
         if self.style & wxTE_MULTILINE:
             value = value.replace('\\n', '\n')
-        self.widget = wxTextCtrl(self.parent.widget, self.id, value=value)
+        self.widget = wxTextCtrl(self.parent.widget, self.id, value=value,
+                                 style=self.style & wxTE_MULTILINE)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -90,13 +91,27 @@ class EditTextCtrl(ManagedBase):
         return retval
 
     def set_style(self, value):
+        old = self.style & wxTE_MULTILINE
         value = self.properties['style'].prepare_value(value)
         self.style = 0
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        # the next line caused troubles with 2.3.3pre5 on GTK
-        #if self.widget: self.widget.SetWindowStyleFlag(self.style)
+        if self.widget:
+            new = self.style & wxTE_MULTILINE
+            if old != new:
+                focused = misc.focused_widget is self
+                self.sel_marker.Destroy()
+                w = self.widget
+                self.create_widget()
+                if not self.properties['size'].is_active():
+                    self.widget.SetSize(self.widget.GetBestSize())
+                self.finish_widget_creation()
+                self.sizer.layout()
+                
+                if focused:
+                    misc.focused_widget = self
+                    self.sel_marker.Show(True)
 
 # end of class EditTextCtrl
 
