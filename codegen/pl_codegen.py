@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.28 2004/10/26 01:01:27 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.29 2004/10/26 11:07:15 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -1134,3 +1134,4 @@ class WidgetHandler:
 
 def add_widget_handler(widget_name, handler):
     obj_builders[widget_name] = handler
+
