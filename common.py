@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.36 2004/08/12 12:14:14 agriggio Exp $
+# $Id: common.py,v 1.37 2004/08/19 10:51:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -192,7 +192,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     else: style = wx.wxBU_AUTODRAW
     tmp = wx.wxBitmapButton(palette, id, wx.wxBitmap(icon_path,
                                                      wx.wxBITMAP_TYPE_XPM),
-                            size=(31, 31), style=wx.wxNO_BORDER)
+                            size=(31, 31), style=style)
     if not toplevel:
         wx.EVT_BUTTON(tmp, id, add_object)
     else:
