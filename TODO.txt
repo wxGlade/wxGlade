@@ -22,7 +22,7 @@ Key:
 
 - International characters support (#)
 
-- Investigation of the many memory leaks (#)
+- Investigation of the many memory leaks (*)
 
 - speedup of the xml loading (*)
 
