@@ -117,7 +117,19 @@ def get_toplevel_parent(obj):
     while window and not window.IsTopLevel():
         window = window.GetParent()
     return window
+#---------2002-11-29---------------------------------------#
+# Added this function to split a string in a smart way:
+def smart_split(s):
+    if s.find(',') != -1:
+        separator = ','
+    elif s.find(';') != -1:
+        separator = ';'
+    else:
+        separator = ' '
 
+    return s.split(separator)
+
+#------------------------------------------------#
 
 if wxPlatform == '__WXGTK__':
     # default wxMenu seems to have probles with SetTitle on GTK
