@@ -43,6 +43,9 @@ if common.use_gui:
                     self.preferences.show_sizer_handle)
                 self.allow_duplicate_names.SetValue(
                     self.preferences.allow_duplicate_names)
+                # ALB 2004-10-15
+                self.autosave.SetValue(self.preferences.autosave)
+                self.autosave_delay.SetValue(self.preferences.autosave_delay)
             except Exception, e:
                 wxMessageBox('Error reading config file:\n%s' % e, 'Error',
                              wxOK|wxCENTRE|wxICON_ERROR)
@@ -71,6 +74,9 @@ if common.use_gui:
             prefs['show_sizer_handle'] = self.show_sizer_handle.GetValue()
             prefs['allow_duplicate_names'] = self.allow_duplicate_names.\
                                              GetValue()
+            # ALB 2004-10-15
+            prefs['autosave'] = self.autosave.GetValue()
+            prefs['autosave_delay'] = self.autosave_delay.GetValue()
             
         def on_widget_path(self, event):
             # create a file choice dialog
@@ -126,6 +132,8 @@ class Preferences(ConfigParser):
         'default_border_size' : 3,
         'show_sizer_handle': True,
         'allow_duplicate_names': False,
+        'autosave': True,
+        'autosave_delay': 120, # in seconds
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults
@@ -196,6 +204,7 @@ if common.use_gui:
     import misc
     if misc.check_wx_version(2, 3, 3): _use_file_history = True
 
+
 def init_preferences():
     global preferences
     if preferences is None:
@@ -211,6 +220,7 @@ def init_preferences():
         if not preferences.has_section('wxglade'):
             preferences.add_section('wxglade')
 
+
 def edit_preferences():
     dialog = wxGladePreferences(preferences)
     if dialog.ShowModal() == wxID_OK:
@@ -218,6 +228,7 @@ def edit_preferences():
                      'Preferences saved', wxOK|wxCENTRE|wxICON_INFORMATION)
         dialog.set_preferences()
     dialog.Destroy()
+
 
 def save_preferences():
     # let the exception be raised
@@ -247,6 +258,7 @@ def save_preferences():
         # let the exception be raised to signal abnormal behaviour
         preferences.write(outfile)
         outfile.close()
+
 
 def load_history():
     """\
