@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.14 2003/08/07 09:45:24 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.15 2003/08/07 17:26:56 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -503,6 +503,9 @@ def add_class(code_obj):
 
     new_signature = getattr(builder, 'new_signature', [] )
 
+    if _use_gettext:
+        classes[code_obj.klass].dependencies["use Wx::Locale gettext => '_T';\n"]=1
+
     if is_new:
         write('package %s;\n\n' % code_obj.klass )
         write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n'
@@ -515,9 +518,6 @@ def add_class(code_obj):
                 write(module)
             write('# end wxGlade\n')
             write('\n')
-
-        if _use_gettext:
-            write("use Wx::Locale gettext => '_T';\n")
 
         write('sub new {\n')
 
