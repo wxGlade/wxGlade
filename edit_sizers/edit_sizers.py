@@ -112,8 +112,9 @@ class SizerHandleButton(wxButton):
     def _remove(self, *args):
         # removes the sizer from his parent, if it has one
         if self.sizer.toplevel:
+            window = self.sizer.window
             common.app_tree.remove(self.sizer.node)
-            self.sizer.window.set_sizer(None)
+            window.set_sizer(None)
             return
         self.sizer.sizer.free_slot(self.sizer.pos)
         common.app_tree.remove(self.sizer.node)
@@ -1191,71 +1192,6 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         common.app_tree.add(node, parent.node)
     return sz
         
-
-def wxBoxSizer_builder(obj):
-    """\
-    function used to generate the python code for wxBoxSizer objects.
-    """
-    orient = obj.properties.get('orient', 'wxHORIZONTAL')
-    init = ['self.%s = wxBoxSizer(%s)\n' % (obj.name, orient)]
-    layout = []
-    if obj.is_toplevel:
-        if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-        else: parent = 'self'
-        layout.append('%s.SetAutoLayout(1)\n' % parent)
-        layout.append('%s.SetSizer(self.%s)\n' % (parent, obj.name))
-        if not obj.parent.properties.has_key('size'):
-            layout.append('self.%s.Fit(%s)\n' % (obj.name, parent))
-    return init, [], layout
-
-## def wxStaticBoxSizer_builder(obj):
-##     """\
-##     function used to generate the python code for wxStaticBoxSizer objects.
-##     """
-##     orient = obj.properties.get('orient', 'wxHORIZONTAL')
-##     label = obj.properties.get('label', '')
-##     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-##     else: parent = 'self'
-##     init = ['self.%s = wxStaticBoxSizer(wxStaticBox(%s, -1, "%s"), %s)\n' %
-##             (obj.name, parent, label.replace('"', '\"'), orient)]
-##     layout = []
-##     if obj.is_toplevel:
-##         layout.append('%s.SetAutoLayout(1)\n' % parent)
-##         layout.append('%s.SetSizer(self.%s)\n' % (parent, obj.name))
-##         if not obj.parent.properties.has_key('size'):
-##             layout.append('self.%s.Fit(%s)\n' % (obj.name, parent))
-##     return init, [], layout
-
-## def _GridSizers_builder(obj, klass):
-##     props = obj.properties
-##     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-##     else: parent = 'self'
-##     rows = props.get('rows', '0')
-##     cols = props.get('cols', '0')
-##     vgap = props.get('vgap', '0')
-##     hgap = props.get('hgap', '0')
-##     init = [ 'self.%s = %s(%s, %s, %s, %s)\n' % (obj.name, klass, rows, cols,
-##                                                  vgap, hgap) ]
-##     layout = []
-##     if obj.is_toplevel:
-##         layout.append('%s.SetAutoLayout(1)\n' % parent)
-##         layout.append('%s.SetSizer(self.%s)\n' % (parent, obj.name))
-##         if not obj.parent.properties.has_key('size'):
-##             layout.append('self.%s.Fit(%s)\n' % (obj.name, parent))
-##     return init, [], layout   
-
-## def wxGridSizer_builder(obj):
-##     """\
-##     function used to generate the python code for wxGridSizer objects.
-##     """
-##     return _GridSizers_builder(obj, 'wxGridSizer')
-
-## def wxFlexGridSizer_builder(obj):
-##     """\
-##     function used to generate the python code for wxFlexGridSizer objects.
-##     """
-##     return _GridSizers_builder(obj, 'wxFlexGridSizer')
-
 
 def init_all():
     """\

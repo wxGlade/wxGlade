@@ -28,7 +28,6 @@ class wxGladePropertyPanel(wxPanel):
 
 # end of class wxGladePropertyPanel
 
-
 class wxGladeFrame(wxFrame):
     """\
     Main frame of wxGlade (palette)
@@ -52,11 +51,8 @@ class wxGladeFrame(wxFrame):
         sizer = wxGridSizer(0, 5)
         wxToolTip_SetDelay(1000)
         # load the available code generators
-        #self.load_code_writers()
         common.load_code_writers()
         # load the available widgets and sizers
-        #buttons = self.load_widgets()
-        #sizer_btns = self.load_sizers()
         buttons = common.load_widgets()
         sizer_btns = common.load_sizers()
         
@@ -155,58 +151,16 @@ class wxGladeFrame(wxFrame):
         self.tree_frame.Show()
         self.frame2.Show()
 
-##     def load_widgets(self):
-##         """\
-##         Scans the 'widgets/' directory to find the installed widgets,
-##         and returns a list of buttons to handle them
-##         """
-##         buttons = []
-##         modules = open('widgets/widgets.txt')
-##         print 'loading widget modules:'
-##         for line in modules:
-##             module = line.strip()
-##             if not module or module.startswith('#'): continue
-##             module = module.split('#')[0].strip()
-##             try:
-##                 b = __import__(module).initialize()
-##             except (ImportError, AttributeError):
-##                 print 'ERROR loading "%s"' % module
-##                 import traceback; traceback.print_exc()
-##             else:
-##                 print '\t' + module
-##                 buttons.append(b)
-##         modules.close()
-##         return buttons
-
-##     def load_sizers(self):
-##         import edit_sizers
-##         return edit_sizers.init_all()
-
-##     def load_code_writers(self):
-##         """\
-##         Fills the common.code_writers dictionary: to do so, loads the modules
-##         found in the 'codegen/' subdir
-##         """
-##         import imp
-##         sys.path.append('codegen')
-##         for module in os.listdir('codegen'):
-##             name, ext = os.path.splitext(module)
-##             if name not in sys.modules and \
-##                    os.path.isfile(os.path.join('codegen', module)):
-##                 try: writer = __import__(name).writer
-##                 except (ImportError, AttributeError):
-##                     print '"%s" is not a valid code generator module' % module
-##                 else:
-##                     common.code_writers[writer.language] = writer
-##                     print 'loaded code generator for %s' % writer.language
-
     def show_tree(self, event):
         self.tree_frame.Show(event.IsChecked())
 
     def show_props_window(self, event):
-        self.frame2.Show(event.IsChecked())
-        common.app_tree.app.show_properties()
-        common.app_tree.cur_widget.show_properties()
+        show = event.IsChecked()
+        self.frame2.Show(show)
+        if show:
+            common.app_tree.app.show_properties()
+            if common.app_tree.cur_widget:
+                common.app_tree.cur_widget.show_properties()
 
     def ask_save(self):
         """\

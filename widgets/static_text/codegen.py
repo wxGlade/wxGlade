@@ -12,7 +12,7 @@ def python_code_generator(obj):
     pygen = common.code_writers['python']
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj) 
-    label = prop.get('label', '').replace('"', '\"')
+    label = prop.get('label', '').replace('"', r'\"')
     if obj.is_toplevel:
         l = ['self.%s = %s(self, %s, "%s")\n' %
              (obj.name, obj.klass, id, label)]

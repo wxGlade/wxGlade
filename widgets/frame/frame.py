@@ -16,15 +16,17 @@ class MenuItemDialog(wxDialog):
                           style=wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
         ADD_ID, REMOVE_ID, NAME_ID, LABEL_ID, ID_ID, CHECK_ID, LIST_ID, \
                 ADD_SEP_ID, MOVE_LEFT_ID, MOVE_RIGHT_ID, MOVE_UP_ID, \
-                MOVE_DOWN_ID = [wxNewId() for i in range(12)]
+                MOVE_DOWN_ID, HELP_STR_ID = [wxNewId() for i in range(13)]
         self.menu_items = wxListCtrl(self, LIST_ID, style=wxLC_REPORT | \
                                      wxLC_SINGLE_SEL|wxSUNKEN_BORDER)
         self.menu_items.InsertColumn(0, "Label")
         self.menu_items.InsertColumn(1, "Id")
         self.menu_items.InsertColumn(2, "Name")
-        self.menu_items.InsertColumn(3, "Checkable")
+        self.menu_items.InsertColumn(3, "Help String")
+        self.menu_items.InsertColumn(4, "Checkable")
         self.menu_items.SetColumnWidth(0, 250)
         self.menu_items.SetColumnWidth(2, 250)
+        self.menu_items.SetColumnWidth(3, 250)
         self.add = wxButton(self, ADD_ID, "Add")
         self.remove = wxButton(self, REMOVE_ID, "Remove")
         self.add_sep = wxButton(self, ADD_SEP_ID, "Add separator")
@@ -35,6 +37,7 @@ class MenuItemDialog(wxDialog):
         self.name = wxTextCtrl(self, NAME_ID)
         self.id = wxTextCtrl(self, ID_ID)
         self.label = wxTextCtrl(self, LABEL_ID)
+        self.help_str = wxTextCtrl(self, HELP_STR_ID)
         self.checkable = wxCheckBox(self, CHECK_ID, "Checkable")
         self.ok = wxButton(self, wxID_OK, " OK ")
         self.ok.SetDefault()
@@ -53,6 +56,7 @@ class MenuItemDialog(wxDialog):
         EVT_KILL_FOCUS(self.name, self.update_menu_item)
         EVT_KILL_FOCUS(self.label, self.update_menu_item)
         EVT_KILL_FOCUS(self.id, self.update_menu_item)
+        EVT_KILL_FOCUS(self.help_str, self.update_menu_item)
         EVT_CHECKBOX(self, CHECK_ID, self.update_menu_item)
         EVT_LIST_ITEM_SELECTED(self, LIST_ID, self.show_menu_item)
         if items:
@@ -62,6 +66,7 @@ class MenuItemDialog(wxDialog):
         self.label.Enable(0)
         self.id.Enable(0)
         self.name.Enable(0)
+        self.help_str.Enable(0)
         self.checkable.Enable(0)
         
         sizer = wxBoxSizer(wxVERTICAL)
@@ -70,6 +75,7 @@ class MenuItemDialog(wxDialog):
         self.label.SetSize((150, -1))
         self.id.SetSize((150, -1))
         self.name.SetSize((150, -1))
+        self.help_str.SetSize((150, -1))
         szr = wxFlexGridSizer(0, 2)
         szr.Add(wxStaticText(self, -1, "Id   "))
         szr.Add(self.id)
@@ -77,6 +83,8 @@ class MenuItemDialog(wxDialog):
         szr.Add(self.label)
         szr.Add(wxStaticText(self, -1, "Name  "))
         szr.Add(self.name)
+        szr.Add(wxStaticText(self, -1, "Help String  "))
+        szr.Add(self.help_str)
         sizer2.Add(szr, 1, wxALL|wxEXPAND, 5)
         szr = wxBoxSizer(wxHORIZONTAL)
         szr.Add(self.checkable)
@@ -116,7 +124,7 @@ class MenuItemDialog(wxDialog):
         index = self.selected_index = self.selected_index+1
         if not self.menu_items.GetItemCount():
             [s.Enable(1) for s in (self.label, self.id, self.name, \
-                                   self.checkable)]
+                                   self.help_str, self.checkable)]
         if index < 0: index = self.menu_items.GetItemCount()
         elif index > 0: indent = "    " * self.item_level(index-1)
         else: indent = ""
@@ -137,7 +145,7 @@ class MenuItemDialog(wxDialog):
         index = self.selected_index+1
         if not self.menu_items.GetItemCount():
             [s.Enable(1) for s in (self.label, self.id, self.name, \
-                                   self.checkable)]
+                                   self.help_str, self.checkable)]
         if index < 0: index = self.menu_items.GetItemCount() 
         elif index > 0: label = "    " * self.item_level(index-1) + '---'
         else: label = '---'
@@ -173,7 +181,8 @@ class MenuItemDialog(wxDialog):
                  self.label.GetValue().lstrip())
         set_item(index, 1, self.id.GetValue())
         set_item(index, 2, self.name.GetValue())
-        set_item(index, 3, str(self.checkable.GetValue()))
+        set_item(index, 3, self.help_str.GetValue())
+        set_item(index, 4, str(self.checkable.GetValue()))
         event.Skip()
 
     def item_level(self, index, label=None):
@@ -198,7 +207,7 @@ class MenuItemDialog(wxDialog):
             self.menu_items.DeleteItem(self.selected_index)
             if not self.menu_items.GetItemCount():
                 [s.Enable(0) for s in (self.name, self.id, self.label, \
-                                       self.checkable)]
+                                       self.help_str, self.checkable)]
 
     def add_items(self, menus):
         """\
@@ -214,7 +223,8 @@ class MenuItemDialog(wxDialog):
             add_item(i, indent * level + node.label.lstrip())
             set_item(i, 1, node.id)
             set_item(i, 2, node.name)
-            set_item(i, 3, node.checkable)
+            set_item(i, 3, node.help_str)
+            set_item(i, 4, node.checkable)
             index[0] += 1
             [add(item, level+1) for item in node.children]
         for tree in menus:
@@ -233,7 +243,7 @@ class MenuItemDialog(wxDialog):
         trees = []
         def add(node, index):
             n = MenuTree.Node(get(index, 0).lstrip(), *[ get(index, i) for i \
-                                                         in range(1, 4) ])
+                                                         in range(1, 5) ])
             node.children.append(n)
             n.parent = node
             return n
@@ -454,11 +464,12 @@ class EditMenuBar(EditBase):
                 elif item.children:
                     m = wxMenu()
                     append(m, item.children)
-                    menu.AppendMenu(wxNewId(), item.label, m)
+                    menu.AppendMenu(wxNewId(), item.label, m, item.help_str)
                 else:
                     try: checkable = int(item.checkable)
                     except: checkable = 0
-                    menu.Append(wxNewId(), item.label, "", checkable)
+                    menu.Append(wxNewId(), item.label, item.help_str,
+                                checkable)
         first = self.widget.GetMenuCount()
         for menu in self.menus:
             m = wxMenu()
@@ -482,7 +493,7 @@ class EditMenuBar(EditBase):
 
     def get_property_handler(self, name):
         class MenuHandler:
-            itemattrs = ['label', 'id', 'name', 'checkable']
+            itemattrs = ['label', 'id', 'name', 'help_str', 'checkable']
             def __init__(self, owner):
                 self.owner = owner
                 self.menu_items = []
@@ -728,7 +739,9 @@ class EditFrame(TopLevelBase):
     def set_menubar(self, value):
         if value:
             self.menubar = EditMenuBar(self, common.property_panel)
-            if self.widget: self.menubar.show_widget(True)
+            if self.widget:
+                self.menubar.show_widget(True)
+                self.menubar.show_properties()
         else:
             self.menubar = self.menubar.remove()
             self.show_properties(None)
@@ -739,7 +752,9 @@ class EditFrame(TopLevelBase):
     def set_statusbar(self, value):
         if value:
             self.statusbar = EditStatusBar(self, common.property_panel)
-            if self.widget: self.statusbar.show_widget(True)
+            if self.widget:
+                self.statusbar.show_widget(True)
+                self.statusbar.show_properties()
         else:
             self.statusbar = self.statusbar.remove()
             self.show_properties(None)
@@ -823,6 +838,9 @@ def builder(parent, sizer, pos, number=[0]):
     frame.show_widget(True)
     common.app_tree.add(node)
     dialog.Destroy()
+    if wxPlatform == '__WXMSW__':
+        frame.widget.CenterOnScreen()
+        frame.widget.Raise()
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\

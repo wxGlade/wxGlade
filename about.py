@@ -34,7 +34,8 @@ class wxGladeAboutBox(wxDialog):
     <font size="-1">
     <br>Authors:<br>
     &nbsp;&nbsp;&nbsp;Alberto Griggio &lt;albgrig@tiscalinet.it&gt;<br>
-    &nbsp;&nbsp;&nbsp;Marco Barisione &lt;marco.bari@vene.ws&gt;
+    &nbsp;&nbsp;&nbsp;Marco Barisione &lt;marco.bari@vene.ws&gt;<br><br>
+    For credits, see credits.txt
     </font>
     </td></tr></table>
     <center>

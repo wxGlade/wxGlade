@@ -48,7 +48,7 @@ def python_code_generator(window):
     tabs = prop.get('tabs', [])
     for label, tab_win in tabs:
         layout_props.append('self.%s.AddPage(self.%s, "%s")\n' % \
-                            (window.name, tab_win, label.replace('"', '\"')))
+                            (window.name, tab_win, label.replace('"', r'\"')))
         
     if window.is_toplevel:
         l = ['self.%s = %s(self, %s)\n' % (window.name, window.klass, id)]
@@ -79,7 +79,7 @@ def python_generate_properties(obj):
     tabs = prop.get('tabs', [])
     for label, window in tabs:
         props_buf.append('self.AddPage(self.%s, "%s")\n' % \
-                         (window, label.replace('"', '\"')))
+                         (window, label.replace('"', r'\"')))
     props_buf.extend(pygen.generate_common_properties(obj))
     return props_buf    
 

@@ -2,7 +2,7 @@
 #                 being created
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: Python 2.2 license (see license.txt)
+# License: GPL (see license.txt)
 
 from wxPython.wx import *
 from widget_properties import *

@@ -10,7 +10,7 @@ import os
 use_gui = True
 
 # version identification string
-version = '0.1.2'
+version = '0.1.3'
 
 # widgets dictionary: each key is the name of some EditWidget class; the mapped
 # value is a 'factory' function which actually builds the object. Each of these
