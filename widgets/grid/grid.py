@@ -31,19 +31,22 @@ class EditGrid(ManagedBase):
         self.lines_color = '#000000'
         self.label_bg_color = '#C0C0C0'
         self.selection_mode = wxGrid.wxGridSelectCells
+        self.create_grid = True
         
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
                              property_window, show=show)
         props = self.properties
         af = self.access_functions
+        af['create_grid'] = (self.get_create_grid, self.set_create_grid)
+        props['create_grid'] = CheckBoxProperty(self, 'create_grid', None)
         af['row_label_size'] = (self.get_row_label_size,
                                 self.set_row_label_size)
         props['row_label_size'] = SpinProperty(self, 'row_label_size',
-                                               None, can_disable=False)
+                                               None, can_disable=True)
         af['col_label_size'] = (self.get_col_label_size,
                                 self.set_col_label_size)
         props['col_label_size'] = SpinProperty(self, 'col_label_size',
-                                               None, can_disable=False)
+                                               None, can_disable=True)
         af['enable_editing'] = (self.get_enable_editing,
                                 self.set_enable_editing)
         props['enable_editing'] = CheckBoxProperty(self, 'enable_editing',
@@ -87,6 +90,7 @@ class EditGrid(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxScrolledWindow(self.notebook, -1)
+        self.properties['create_grid'].display(panel)
         self.properties['row_label_size'].display(panel)
         self.properties['col_label_size'].display(panel)
         self.properties['enable_editing'].display(panel)
@@ -100,6 +104,12 @@ class EditGrid(ManagedBase):
         self.properties['label_bg_color'].display(panel)
         self.properties['selection_mode'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
+        szr.Add(self.properties['create_grid'].panel, 0, wxEXPAND)
+        szr.Add(wxStaticLine(panel, -1), 0, wxALL|wxEXPAND, 5)
+        szr.Add(wxStaticText(panel, -1, "The following properties are "
+                             "meaningful\nonly if 'Create grid' is selected"),
+                0, wxLEFT|wxRIGHT|wxEXPAND, 10)
+        szr.Add(wxStaticLine(panel, -1), 0, wxALL|wxEXPAND, 5)
         szr.Add(self.properties['columns_number'].panel, 0, wxEXPAND)
         szr.Add(self.properties['rows_number'].panel, 0, wxEXPAND)
         szr.Add(self.properties['row_label_size'].panel, 0, wxEXPAND)
@@ -115,9 +125,9 @@ class EditGrid(ManagedBase):
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
+        w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, 'Widget')
         import math
-        w, h = panel.GetClientSize()
         panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
 
     def create_widget(self):
@@ -150,7 +160,13 @@ class EditGrid(ManagedBase):
         # these are to show the popup menu on right click
         EVT_GRID_CELL_RIGHT_CLICK(self.widget, self.popup_menu)
         EVT_GRID_LABEL_RIGHT_CLICK(self.widget, self.popup_menu)
-    
+
+    def get_create_grid(self):
+        return self.create_grid
+
+    def set_create_grid(self, value):
+        self.create_grid = bool(value)
+
     def get_row_label_size(self):
         return self.row_label_size
 
