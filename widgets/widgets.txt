@@ -8,6 +8,7 @@ notebook
 button
 toggle_button
 bitmap_button
+spin_button
 text_ctrl
 spin_ctrl
 slider
