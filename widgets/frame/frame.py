@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.29 2004/01/25 12:24:54 agriggio Exp $
+# $Id: frame.py,v 1.30 2004/01/31 08:46:12 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -327,9 +327,10 @@ class EditFrame(TopLevelBase):
         return self.icon 
 
     def set_icon(self, value):
-        self.icon = value
+        self.icon = value.strip()
         if self.widget:
-            if self.icon:
+            if self.icon and not (self.icon.startswith('var:') or
+                                  self.icon.startswith('code:')):
                 # setting icon
                 bmp = wxBitmap(self.icon, wxBITMAP_TYPE_ANY)
                 if not bmp.Ok():
