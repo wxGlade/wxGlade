@@ -154,6 +154,7 @@ class EditBase:
         if self._rmenu: self._rmenu.SetTitle(self.name)
         try: common.app_tree.set_name(self.node, self.name)
         except AttributeError: pass
+        self.property_window.SetTitle('Properties - <%s>' % self.name)
 
     def set_klass(self, value):
         self.klass = str(value)
