@@ -56,6 +56,9 @@ class EditCheckBox(ManagedBase):
             self.label = value
             if self.widget:
                 self.widget.SetLabel(self.label)
+                if not self.properties['size'].is_active():
+                    self.sizer.set_item(self.pos,
+                                        size=self.widget.GetBestSize())
 
     def get_value(self):
         return self.value
@@ -94,7 +97,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     checkbox = EditCheckBox(label, parent, wxNewId(),
-                            misc._encode(label), sizer, pos,
+                            "", sizer, pos,
                             common.property_panel, show=False) 
     sizer.set_item(checkbox.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border) #,

@@ -1331,8 +1331,10 @@ class GridSizerBase(SizerBase):
         rows = self.widget.GetRows()
         cols = self.widget.GetCols()
         self.set_cols(self.cols+1)
+        print rows, cols
         for i in range(rows):
-            self.insert_slot(interactive=False, pos=cols + self.cols * i,
+            self.insert_slot(interactive=False, pos=self.cols * (i+1),
+                             #pos=cols + self.cols * i,
                              force_layout=False)
         self.properties['cols'].set_value(self.cols)
         force_layout = kwds.get('force_layout', True)

@@ -591,8 +591,6 @@ class FontDialogProperty(DialogProperty):
     def __init__(self, owner, name, parent=None, can_disable=True):
         if not self.dialog[0]:
             # check wxPython >= 2.3.3
-##             v = wx.__version__.split('.', 2)[-1]
-##             if v and int(v[0]) > 2:
             import misc
             if misc.check_wx_version(2, 3, 3):
                 FontDialogProperty.font_families_to['teletype'] = wxTELETYPE 
@@ -604,9 +602,6 @@ class FontDialogProperty(DialogProperty):
                 font = self.dialog.GetFontData().GetChosenFont()
                 family = font.GetFamily()
                 # check wxPython >= 2.3.3
-##                 v = wx.__version__.split('.', 2)[-1]
-##                 if v and int(v[0]) > 2:
-##                     print 'Version: %s' % v
                 if misc.check_wx_version(2, 3, 3):
                     for f in (wxVARIABLE, wxFIXED):
                         if family & f: family = family ^ f
