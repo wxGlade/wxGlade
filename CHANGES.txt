@@ -1,3 +1,13 @@
+2002-08-01: clipboard.py: "confined" the string inside the clipboard to 
+			  prevent pollution. Removed renaming code
+	    xml_parse.py: added code to rename copied widgets in 
+			  ClipboardXmlWidgetBuilder
+	    tree.py: fixed bug when a toplevel window is shown and it doesn't
+		     have a sizer
+	    widgets/dialog.py: changed create_widget to
+			       use a default style and not the current one,
+			       to avoid for example frames without a caption
+
 2002-07-30: xml_parse.py: removed fake obj replacement in 
 			  XmlWidgetObject.add_property since it is not
 			  necessary anymore
