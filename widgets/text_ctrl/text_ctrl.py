@@ -1,5 +1,5 @@
 # text_ctrl.py: wxTextCtrl objects
-# $Id: text_ctrl.py,v 1.10 2003/11/27 21:18:50 agriggio Exp $
+# $Id: text_ctrl.py,v 1.11 2004/03/11 11:20:04 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -33,13 +33,13 @@ class EditTextCtrl(ManagedBase):
                            wxTE_MULTILINE,wxTE_PASSWORD, wxTE_READONLY,
                            wxHSCROLL, wxTE_RICH, wxTE_RICH2, wxTE_AUTO_URL,
                            wxTE_NOHIDESEL, wxTE_CENTRE, wxTE_RIGHT,
-                           wxTE_LINEWRAP, wxTE_WORDWRAP)
+                           wxTE_LINEWRAP, wxTE_WORDWRAP, wxNO_BORDER)
         style_labels = ('#section#Style', 'wxTE_PROCESS_ENTER',
                         'wxTE_PROCESS_TAB', 'wxTE_MULTILINE', 'wxTE_PASSWORD',
                         'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH',
                         'wxTE_RICH2', 'wxTE_AUTO_URL', 'wxTE_NOHIDESEL',
                         'wxTE_CENTRE', 'wxTE_RIGHT', 'wxTE_LINEWRAP',
-                        'wxTE_WORDWRAP')
+                        'wxTE_WORDWRAP', 'wxNO_BORDER')
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # 2003-09-04 added default_border
         if config.preferences.default_border:

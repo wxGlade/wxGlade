@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.30 2004/01/31 08:46:12 agriggio Exp $
+# $Id: frame.py,v 1.31 2004/03/11 11:20:05 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -17,6 +17,16 @@ class EditStatusBar(EditBase):
         EditBase.__init__(self, parent.name + '_statusbar',
                           'wxStatusBar', parent, id, property_window,
                           custom_class=False, show=False)
+        # style property
+        self.style_pos  = (wxST_SIZEGRIP,)
+        style_labels = ('#section#Style', 'wxST_SIZEGRIP')
+        self.access_functions['style'] = (self.get_style, self.set_style)
+        self.properties['style'] = CheckListProperty(self, 'style', None,
+                                                     style_labels)
+
+        self.node = Tree.Node(self)
+        common.app_tree.add(self.node, parent.node)
+
         self.fields = [ [self.name, "-1"] ] # list of 2-lists label, size
                                             # for the statusbar fields
         self.access_functions['fields'] = (self.get_fields, self.set_fields) 
@@ -38,9 +48,6 @@ class EditStatusBar(EditBase):
             fwrite('    ' * tabs + '</fields>\n')
         prop.write = write_prop
 
-        self.node = Tree.Node(self)
-        common.app_tree.add(self.node, parent.node)
-
     def create_widget(self):
         self.widget = wxStatusBar(self.parent.widget, wxNewId())
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
@@ -50,6 +57,7 @@ class EditStatusBar(EditBase):
     def create_properties(self):
         EditBase.create_properties(self)
         page = self._common_panel 
+        self.properties['style'].display(page)
         prop = self.properties['fields']
         prop.display(page)
         sizer = page.GetSizer()
@@ -59,6 +67,7 @@ class EditStatusBar(EditBase):
             sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
             page.SetAutoLayout(1)
             page.SetSizer(sizer)
+        sizer.Add(self.properties['style'].panel, 0, wxEXPAND)
         sizer.Add(prop.panel, 1, wxALL|wxEXPAND, 3)
         sizer.Fit(page)
         page.SetSize(self.notebook.GetClientSize())
@@ -125,6 +134,22 @@ class EditStatusBar(EditBase):
 
         if name == 'fields': return FieldsHandler(self)
         return None
+
+    def get_style(self):
+        retval = [0] * len(self.style_pos)
+        try:
+            for i in range(len(self.style_pos)):
+                if self.style & self.style_pos[i]:
+                    retval[i] = 1
+        except AttributeError: pass
+        return retval
+
+    def set_style(self, value):
+        value = self.properties['style'].prepare_value(value)
+        self.style = 0
+        for v in range(len(value)):
+            if value[v]:
+                self.style |= self.style_pos[v]
 
 # end of class EditStatusBar
 
