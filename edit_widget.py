@@ -12,8 +12,8 @@ from widget_properties import *
 
 
 class EditWidget(ManagedBase):
-    def __init__(self, name, klass, parent, id, label, sizer, pos, property_window,
- show=True):
+    def __init__(self, name, klass, parent, id, label, sizer, pos,
+                 property_window, show=True):
         """\
         Class to handle wxFoo objects
         """
@@ -46,7 +46,8 @@ class EditWidget(ManagedBase):
                     continue
                 #print 'adding property: %s' % name
                 self.property_names.append(name)
-                self.access_functions[name] = (getattr(self, getter), getattr(self, setter))
+                self.access_functions[name] = (getattr(self, getter),
+                                               getattr(self, setter))
                 self.properties[name] = getattr(self, getter_widget)()
         
 
@@ -65,7 +66,7 @@ class EditWidget(ManagedBase):
     
 def increment_label(label, number=[1]):
     _label = '%s_%d' % (label, number[0])
-    while common.app_tree.has_name(label):
+    while common.app_tree.has_name(_label):
         number[0] += 1
         _label = '%s_%d' % (label, number[0])
     return _label
