@@ -600,9 +600,9 @@ class SizerBase:
             self.children.insert(new_pos+1, new_item)
         item.update_pos(new_pos)
 
-        for c in self.children[1:]:
-            print '(%s, %s)' % (c.item.name, c.item.pos),
-        print
+##         for c in self.children[1:]:
+##             print '(%s, %s)' % (c.item.name, c.item.pos),
+##         print
 
         elem = self.widget.GetChildren()[old_pos]
         elem.SetSizer(None)
@@ -612,7 +612,9 @@ class SizerBase:
 
         common.app_tree.change_node_pos(item.node, new_pos-1)
 
-        if force_layout: self.layout()
+        if force_layout:
+            self.layout()
+            if wxPlatform == '__WXMSW__': self.window.widget.Refresh()
     # ------------------------------------------------------------------------
 
     def set_option(self, value):
