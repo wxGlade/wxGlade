@@ -2,7 +2,7 @@
 # (name, size, color, etc.)
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 from wxPython.wx import *
 from wxPython.grid import *
@@ -571,6 +571,7 @@ class FontDialogProperty(DialogProperty):
             v = wx.__version__.split('.', 2)[-1]
             if v and int(v[0]) > 2:
                 FontDialogProperty.font_families_to['teletype'] = wxTELETYPE 
+                FontDialogProperty.font_families_from[wxTELETYPE] = 'teletype' 
 
             data = wxFontData()
             self.dialog[0] = wxFontDialog(parent, data)
@@ -580,6 +581,7 @@ class FontDialogProperty(DialogProperty):
                 # check wxPython >= 2.3.3
                 v = wx.__version__.split('.', 2)[-1]
                 if v and int(v[0]) > 2:
+                    print 'Version: %s' % v
                     for f in (wxVARIABLE, wxFIXED):
                         if family & f: family = family ^ f
                 return "['%s', '%s', '%s', '%s', '%s', '%s']" % \
@@ -688,9 +690,10 @@ class RadioProperty(Property, _activator):
         except AttributeError: pass 
 
     def set_str_value(self, value):
-        self.val = self.choices.index(value)
-        try: self.options.SetSelection(self.val)
-        except AttributeError: pass
+        try:
+            self.val = self.choices.index(value)
+            self.options.SetSelection(self.val)
+        except (AttributeError, ValueError): pass
 
     def write(self, outfile, tabs):
         if self.is_active():
