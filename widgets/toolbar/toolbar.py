@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.12 2004/10/18 17:13:42 agriggio Exp $
+# $Id: toolbar.py,v 1.13 2004/10/20 16:59:45 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -405,6 +405,8 @@ class EditToolBar(EditBase, PreviewMixin):
         EditBase.__init__(self, name, klass,
                           parent, wxNewId(), property_window,
                           custom_class=custom_class, show=False)
+        self.base = 'wxToolBar'
+        
         def nil(*args): return ()
         self.tools = [] # list of Tool objects
         self._tb = None # the real toolbar

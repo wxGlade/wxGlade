@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.36 2004/10/18 12:11:58 agriggio Exp $
+# $Id: frame.py,v 1.37 2004/10/20 16:59:46 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -162,6 +162,7 @@ class EditFrame(TopLevelBase):
                  style=wxDEFAULT_FRAME_STYLE, show=True, klass='wxFrame'):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show)
+        self.base = 'wxFrame'
         self.style = style
         self.statusbar = None
         self.icon = ''
@@ -388,6 +389,7 @@ class EditMDIChildFrame(EditFrame):
     def __init__(self, *args, **kwds):
         EditFrame.__init__(self, *args, **kwds)
         del self.properties['statusbar']
+        self.base = 'wxFrame'
 
 # end of class EditMDIChildFrame
 
