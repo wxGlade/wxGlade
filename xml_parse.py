@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.21 2003/05/15 19:05:00 agriggio Exp $
+# $Id: xml_parse.py,v 1.22 2003/05/18 12:02:22 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -8,7 +8,8 @@
 #
 # NOTE: custom tag handler interface (called by XmlWidgetBuilder)
 # class CustomTagHandler:
-#     def start_elem(self, name, attrs): pass
+#     def start_elem(self, name, attrs):
+#         pass
 #     def end_elem(self, name):
 #         return True -> the handler must be removed from the Stack
 #     def char_data(self, data):
@@ -174,12 +175,6 @@ class XmlWidgetBuilder(XmlParser):
                 obj.obj['option'][1](si.obj.option)
                 obj.obj['flag'][1](si.obj.flag_str())
                 obj.obj['border'][1](si.obj.border)
-##                 if not int(si.obj.option):
-##                     sz = obj.obj.properties.get('size')
-##                     if sz is not None and not sz.is_active():
-##                         # update the item size, if it was not specified
-##                         obj.obj.sizer.set_item(obj.obj.pos,
-##                                                size=obj.obj.GetBestSize())
         else:
             # end of a property or error
             # 1: set _curr_prop value
@@ -439,8 +434,6 @@ class XmlWidgetObject:
             import sys
             print >> sys.stderr, "Warning: property '%s' not supported by " \
                   "this object ('%s') " % (name, self.obj)
-##             raise XmlParsingError("property '%s' not supported by this object"\
-##                                   " ('%s') " % (name, self.obj))
 
 #end of class XmlWidgetObject
 
@@ -478,7 +471,7 @@ class CodeWriter(XmlParser):
             encoding = attrs['encoding']
             unicode('a', encoding)
         except (KeyError, LookupError):
-            encoding = 'latin-1'
+            encoding = 'ISO-8859-1'
         # turn all the attribute values from unicode to str objects
         for attr, val in attrs_impl.items():
             attrs[attr] = common._encode_from_xml(val, encoding)
@@ -563,7 +556,7 @@ class CodeWriter(XmlParser):
                 encoding = self.app_attrs['encoding']
                 unicode('a', encoding)
             except (KeyError, LookupError):
-                encoding = 'latin-1'
+                encoding = 'ISO-8859-1'
             data = common._encode_from_xml(u"".join(self._curr_prop_val),
                                            encoding)
             if data:
