@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxPanel objects
-# $Id: codegen.py,v 1.11 2003/05/13 10:05:11 agriggio Exp $
+# $Id: codegen.py,v 1.12 2003/06/26 15:09:24 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -12,6 +12,8 @@ class PythonCodeGenerator:
     def get_code(self, panel):
         pygen = common.code_writers['python']
         prop = panel.properties
+        try: scrollable = int(prop['scrollable'])
+        except: scrollable = False
         id_name, id = pygen.generate_code_id(panel)
         if not panel.parent.is_toplevel: parent = 'self.%s' % panel.parent.name
         else: parent = 'self'
@@ -24,12 +26,29 @@ class PythonCodeGenerator:
         init = []
         if id_name: init.append(id_name)
         style = prop.get("style", 'wxTAB_TRAVERSAL')
-        if style != 'wxTAB_TRAVERSAL': style = ", style=%s" % style
+        if scrollable or style != 'wxTAB_TRAVERSAL':
+            style = ", style=%s" % style
         else: style = ''
-        init.append('self.%s = wxPanel(%s, %s%s)\n' % \
-                    (panel.name, parent, id, style))
+        if scrollable: klass = 'wxScrolledWindow'
+        else: klass = 'wxPanel'
+        init.append('self.%s = %s(%s, %s%s)\n' % \
+                    (panel.name, klass, parent, id, style))
         props_buf = pygen.generate_common_properties(panel)
+        if scrollable:
+            sr = prop.get('scroll_rate', '0, 0')
+            props_buf.append('self.%s.SetScrollRate(%s)\n' % (panel.name, sr))
         return init, props_buf, []
+
+    def get_properties_code(self, obj):
+        pygen = common.code_writers['python']
+        prop = obj.properties
+        try: scrollable = int(prop['scrollable'])
+        except: scrollable = False
+        props_buf = pygen.generate_common_properties(obj)
+        if scrollable:
+            sr = prop.get('scroll_rate', '0, 0')
+            props_buf.append('self.SetScrollRate(%s)\n' % sr)
+        return props_buf
 
 # end of class PythonCodeGenerator
 
@@ -46,6 +65,8 @@ class CppCodeGenerator:
         """
         cppgen = common.code_writers['C++']
         prop = panel.properties
+        try: scrollable = int(prop['scrollable'])
+        except: scrollable = False
         id_name, id = cppgen.generate_code_id(panel)
         if id_name: ids = [ id_name ]
         else: ids = []
@@ -57,14 +78,43 @@ class CppCodeGenerator:
             return l, ids, [], []
         extra = ''
         style = prop.get("style", 'wxTAB_TRAVERSAL')
-        if style != 'wxTAB_TRAVERSAL':
+        if scrollable or style != 'wxTAB_TRAVERSAL':
             extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        init = ['%s = new wxPanel(%s, %s%s);\n' %
-                (panel.name, parent, id, extra) ]
+        if scrollable: klass = 'wxScrolledWindow'
+        else: klass = 'wxPanel'
+        init = ['%s = new %s(%s, %s%s);\n' %
+                (panel.name, klass, parent, id, extra) ]
         props_buf = cppgen.generate_common_properties(panel)
+        if scrollable:
+            sr = prop.get('scroll_rate', '0, 0')
+            props_buf.append('%s->SetScrollRate(%s);\n' % (panel.name, sr))
         return init, ids, props_buf, []
 
+    def get_properties_code(self, obj):
+        cppgen = common.code_writers['C++']
+        prop = obj.properties
+        try: scrollable = int(prop['scrollable'])
+        except: scrollable = False
+        props_buf = cppgen.generate_common_properties(obj)
+        if scrollable:
+            sr = prop.get('scroll_rate', '0, 0')
+            props_buf.append('SetScrollRate(%s);\n' % sr)
+        return props_buf
+
 # end of class CppCodeGenerator
+
+
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+
+    class XrcCodeGenerator(xrcgen.DefaultXrcObject):
+        def write(self, *args, **kwds):
+            for prop in ('scollable', 'scroll_rate'):
+                try: del self.properties[prop]
+                except KeyError: pass
+            xrcgen.DefaultXrcObject.write(self, *args, **kwds)
+
+    return XrcCodeGenerator(obj)
 
 
 def initialize():
@@ -73,10 +123,21 @@ def initialize():
     common.toplevels['EditPanel'] = 1
     common.toplevels['EditTopLevelPanel'] = 1
 
+    common.class_names['EditScrolledWindow'] = 'wxScrolledWindow'
+    common.class_names['EditTopLevelScrolledWindow'] = 'wxScrolledWindow'
+    common.toplevels['EditScrolledWindow'] = 1
+    common.toplevels['EditTopLevelScrolledWindow'] = 1
+
     # python code generation functions
     pygen = common.code_writers.get('python')
     if pygen:
         pygen.add_widget_handler('wxPanel', PythonCodeGenerator())
+        pygen.add_widget_handler('wxScrolledWindow', PythonCodeGenerator())
     cppgen = common.code_writers.get('C++')
     if cppgen:
         cppgen.add_widget_handler('wxPanel', CppCodeGenerator())
+        cppgen.add_widget_handler('wxScrolledWindow', CppCodeGenerator())
+    xrcgen = common.code_writers.get('XRC')
+    if xrcgen:
+        xrcgen.add_widget_handler('wxPanel', xrc_code_generator)
+        xrcgen.add_widget_handler('wxScrolledWindow', xrc_code_generator)

@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.29 2003/05/13 10:13:51 agriggio Exp $
+# $Id: tree.py,v 1.30 2003/06/26 15:09:24 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -53,9 +53,10 @@ class Tree:
             fwrite = outfile.write
             assert self.widget is not None
             w = self.widget
+            classname = getattr(w, '_classname', w.__class__.__name__)
             fwrite('    ' * tabs + '<object class=%s name=%s base=%s>\n'
                    % (quoteattr(w.klass), quoteattr(w.name),
-                      quoteattr(w.__class__.__name__)))
+                      quoteattr(classname)))
             for p in w.properties:
                 w.properties[p].write(outfile, tabs+1)
 
