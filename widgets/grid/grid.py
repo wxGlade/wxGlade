@@ -88,12 +88,12 @@ class EditGrid(ManagedBase):
         # values of properties for the grid:
         self.row_label_size = 30
         self.col_label_size = 30
-        self.enable_editing = False
+        self.enable_editing = True
         self.enable_grid_lines = True
         self.rows_number = 10
         self.enable_col_resize = True
         self.enable_row_resize = True
-        self.enable_grid_resize = False
+        self.enable_grid_resize = True
         self.lines_color = '#000000'
         self.label_bg_color = '#C0C0C0'
         self.selection_mode = wxGrid.wxGridSelectCells
