@@ -70,6 +70,80 @@ def wxFlexGridSizer_builder(obj):
     return _GridSizers_builder(obj, 'wxFlexGridSizer')
 
 
+def cpp_wxBoxSizer_builder(obj):
+    """\
+    function used to generate the C++ code for wxBoxSizer objects.
+    """
+    orient = obj.properties.get('orient', 'wxHORIZONTAL')
+    init = ['wxBoxSizer* %s = new wxBoxSizer(%s);\n' % (obj.name, orient)]
+    layout = []
+    if obj.is_toplevel:
+        if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name
+        else: parent = ''
+        layout.append('%sSetAutoLayout(true);\n' % parent)
+        layout.append('%sSetSizer(%s);\n' % (parent, obj.name))
+        if not obj.parent.properties.has_key('size'):
+            if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+            else: parent = 'this'
+            layout.append('%s->Fit(%s);\n' % (obj.name, parent))
+    return init, [], [], layout
+
+def cpp_wxStaticBoxSizer_builder(obj):
+    """\
+    function used to generate the C++ code for wxStaticBoxSizer objects.
+    """
+    orient = obj.properties.get('orient', 'wxHORIZONTAL')
+    label = obj.properties.get('label', '')
+    if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+    else: parent = 'this'
+    init = ['wxStaticBoxSizer* %s = new wxStaticBoxSizer('
+            'new wxStaticBox(%s, -1, "%s"), %s);\n' %
+            (obj.name, parent, label.replace('"', r'\"'), orient)]
+    layout = []
+    if obj.is_toplevel:
+        if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name
+        else: parent = ''
+        layout.append('%sSetAutoLayout(true);\n' % parent)
+        layout.append('%sSetSizer(%s);\n' % (parent, obj.name))
+        if not obj.parent.properties.has_key('size'):
+            if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+            else: parent = 'this'
+            layout.append('%s->Fit(%s);\n' % (obj.name, parent))
+    return init, [], [], layout
+
+def _cpp_GridSizers_builder(obj, klass):
+    props = obj.properties
+    rows = props.get('rows', '0')
+    cols = props.get('cols', '0')
+    vgap = props.get('vgap', '0')
+    hgap = props.get('hgap', '0')
+    init = [ '%s* %s = new %s(%s, %s, %s, %s);\n' % \
+             (klass, obj.name, klass, rows, cols, vgap, hgap) ]
+    layout = []
+    if obj.is_toplevel:
+        if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name
+        else: parent = ''
+        layout.append('%sSetAutoLayout(true);\n' % parent)
+        layout.append('%sSetSizer(%s);\n' % (parent, obj.name))
+        if not obj.parent.properties.has_key('size'):
+            if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+            else: parent = 'this'
+            layout.append('%s->Fit(%s);\n' % (obj.name, parent))
+    return init, [], [], layout   
+
+def cpp_wxGridSizer_builder(obj):
+    """\
+    function used to generate the C++ code for wxGridSizer objects.
+    """
+    return _cpp_GridSizers_builder(obj, 'wxGridSizer')
+
+def cpp_wxFlexGridSizer_builder(obj):
+    """\
+    function used to generate the C++ code for wxFlexGridSizer objects.
+    """
+    return _cpp_GridSizers_builder(obj, 'wxFlexGridSizer')
+
+
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
@@ -84,3 +158,10 @@ def initialize():
         awh('wxStaticBoxSizer', wxStaticBoxSizer_builder)
         awh('wxGridSizer', wxGridSizer_builder)
         awh('wxFlexGridSizer', wxFlexGridSizer_builder)
+    cppgen = common.code_writers.get("C++")
+    if cppgen:
+        awh = cppgen.add_widget_handler
+        awh('wxBoxSizer', cpp_wxBoxSizer_builder)
+        awh('wxStaticBoxSizer', cpp_wxStaticBoxSizer_builder)
+        awh('wxGridSizer', cpp_wxGridSizer_builder)
+        awh('wxFlexGridSizer', cpp_wxFlexGridSizer_builder)

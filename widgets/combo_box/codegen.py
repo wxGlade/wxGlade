@@ -49,6 +49,41 @@ def xrc_code_generator(obj):
     return ComboBoxXrcObject(obj)
 
 
+def cpp_code_generator(obj):
+    """\
+    generates the C++ code for wxComboBox objects
+    """
+    cppgen = common.code_writers['C++']
+    prop = obj.properties
+    id_name, id = cppgen.generate_code_id(obj)
+    if id_name: ids = [ '%s = %s' % (id_name, id) ]
+    else: ids = []
+    choices = prop.get('choices', [])
+    if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+    else: parent = 'this'
+    number = len(choices)
+    ch_arr = '{\n        %s\n    };\n' % \
+             ',\n        '.join(['"' + c + '"' for c in choices])
+    if obj.is_toplevel:
+        l = ['%s = new %s(%s, %s, "", wxDefaultPosition, wxDefaultSize, %s, '
+             '%s_choices);\n' % \
+             (obj.name, obj.klass, parent, id, number, obj.name)]
+        l.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+        return l, ids, [], []
+    style = prop.get("style")
+    if not style: style = 'wxCB_DROPDOWN'
+    else: style = 'wxCB_DROPDOWN|' + style
+    init = ['%s = new wxComboBox(%s, %s, "", wxDefaultPosition, wxDefaultSize,'
+            '%s, %s_choices, %s);\n' % \
+            (obj.name, parent, id, number, obj.name, style) ]
+    init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+    props_buf = cppgen.generate_common_properties(obj)
+    selection = prop.get('selection')
+    if selection is not None:
+        props_buf.append('%s->SetSelection(%s);\n' % (obj.name, selection))
+    return init, ids, props_buf, []   
+
+
 def initialize():
     common.class_names['EditComboBox'] = 'wxComboBox'
 
@@ -60,4 +95,14 @@ def initialize():
     if xrcgen:
         xrcgen.add_widget_handler('wxComboBox', xrc_code_generator)
         xrcgen.add_property_handler('choices', ChoicesCodeHandler)
-
+    cppgen = common.code_writers.get('C++')
+    if cppgen:
+        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+                       ('const wxString&', 'value'),
+                       ('const wxPoint&', 'pos'),
+                       ('const wxSize&', 'size'),
+                       ('int', 'n'), ('const wxString*', 'choices'),
+                       ('long', 'style', '0')]
+        cppgen.add_widget_handler('wxComboBox', cpp_code_generator,
+                                  constructor)
+        cppgen.add_property_handler('choices', ChoicesCodeHandler)

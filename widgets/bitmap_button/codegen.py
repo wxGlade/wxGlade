@@ -55,9 +55,58 @@ def python_generate_properties(obj):
     return out
 
 
+def cpp_code_generator(obj):
+    """\
+    fuction that generates C++ code for wxBitmapButton objects.
+    """
+    cppgen = common.code_writers['C++']
+    prop = obj.properties
+    id_name, id = cppgen.generate_code_id(obj) 
+    if id_name: ids = [ '%s = %s' % (id_name, id) ]
+    else: ids = []
+    bmp_file = prop.get('bitmap', '')
+    if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+    else: parent = 'this'
+    if not bmp_file: bmp = 'wxNullBitmap'
+    else:
+        type = _bmp_str_types.get(os.path.splitext(bmp_file)[1].lower())
+        if not type: bmp = 'wxNullBitmap'
+        else:
+            if os.sep == '\\': bmp_file = bmp_file.replace(os.sep, '/')
+            bmp = 'wxBitmap("%s", %s)' % (bmp_file.replace('"', r'\"'), type)
+    if obj.is_toplevel:
+        l = ['%s = new %s(%s, %s, %s);\n' % (obj.name, obj.klass, parent,
+                                            id, bmp)]
+        return l, ids, [], []    
+    init = [ '%s = new wxBitmapButton(%s, %s, %s);\n' % 
+             (obj.name, parent, id, bmp) ]
+    props_buf = cppgen.generate_common_properties(obj)
+    if not prop.has_key(size):
+        props_buf.append('%s->SetSize(%s->GetBestSize());\n' % \
+                         (obj.name, obj.name))
+    return init, ids, props_buf, []
+
+def cpp_generate_properties(obj):
+    cppgen = common.code_writers['C++']
+    out = []
+    if not obj.properties.has_key('size'):
+        out.append('SetSize(GetBestSize());\n')
+    out.extend(cppgen.generate_common_properties(obj))
+    return out
+
+
 def initialize():
     common.class_names['EditBitmapButton'] = 'wxBitmapButton'
     pygen = common.code_writers.get('python')
     if pygen:
         pygen.add_widget_handler('wxBitmapButton', python_code_generator,
                                  python_generate_properties)        
+    cppgen = common.code_writers.get('C++')
+    if cppgen:
+        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+                       ('const wxBitmap&', 'bitmap'),
+                       ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+                       ('const wxSize&', 'size', 'wxDefaultSize'),
+                       ('long', 'style', '0')]
+        cppgen.add_widget_handler('wxBitmapButton', cpp_code_generator,
+                                  constructor, cpp_generate_properties)
