@@ -1,5 +1,5 @@
 # spacer.py: spacers to use in sizers
-# $Id: spacer.py,v 1.7 2003/08/02 13:26:31 agriggio Exp $
+# $Id: spacer.py,v 1.8 2003/08/26 09:21:47 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -102,6 +102,7 @@ def builder(parent, sizer, pos):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
+            self.Centre()
 
         def __getitem__(self, name):
             return (lambda : 0, lambda v: None)
