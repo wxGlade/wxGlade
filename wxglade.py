@@ -36,7 +36,7 @@ def parse_command_line():
 
 def command_line_code_generation(options, args):
     """\
-    tarts a code generator without starting the GUI.
+    starts a code generator without starting the GUI.
     """
     import common
     if not options: usage()

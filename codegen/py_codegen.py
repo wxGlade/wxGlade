@@ -297,7 +297,7 @@ def add_object(top_obj, sub_obj):
         if sub_obj.in_windows: # the object is a wxWindow instance
             # --- patch 2002-08-26 ------------------------------------------
             #init.reverse()
-            if sub_obj.is_container:
+            if sub_obj.is_container and not sub_obj.is_toplevel:
                 init.reverse()
                 klass.parents_init.extend(init)
             else: klass.init.extend(init)
@@ -307,7 +307,8 @@ def add_object(top_obj, sub_obj):
             klass.sizers_init.extend(init)
         klass.props.extend(props)
         klass.layout.extend(layout)
-        if sub_obj.is_toplevel and sub_obj.base != sub_obj.klass:
+        if multiple_files and \
+               (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
             key = 'from %s import %s\n' % (sub_obj.klass, sub_obj.klass)
             klass.dependencies[key] = 1
         for dep in _widget_extra_modules.get(sub_obj.base, []):

@@ -271,8 +271,12 @@ def finalize():
         tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +(\w+)>)' %
                           nonce, header_content)
         for tag in tags:
-            comment = '// content of this block (%s) not found: ' \
-                      'did you rename this class?\n' % tag[2]
+            if tag[2] == 'methods':
+                comment = '%svoid set_properties();\n%svoid do_layout();\n' \
+                          % (tabs(1), tabs(1))
+            else:
+                comment = '// content of this block (%s) not found: ' \
+                          'did you rename this class?\n' % tag[2]
             header_content = header_content.replace(tag[0], comment)
         tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +(\w+)>)' %
                           nonce, source_content)
@@ -319,7 +323,7 @@ def add_object(top_obj, sub_obj):
         if sub_obj.in_windows: # the object is a wxWindow instance
             # --- patch 2002-08-26 ------------------------------------------
             #init.reverse()
-            if sub_obj.is_container:
+            if sub_obj.is_container and not sub_obj.is_toplevel:
                 init.reverse()
                 klass.parents_init.extend(init)
             else: klass.init.extend(init)

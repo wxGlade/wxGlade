@@ -921,7 +921,7 @@ class SizerBase:
     def is_visible(self):
         return self.window.is_visible()
             
-    def clipboard_copy(self, event):
+    def clipboard_copy(self, *args):
         """\
         returns a copy of self to be inserted in the clipboard
         """
@@ -929,7 +929,7 @@ class SizerBase:
             import clipboard
             clipboard.copy(self)
 
-    def clipboard_cut(self, event):
+    def clipboard_cut(self, *args):
         if not self.toplevel:
             import clipboard
             clipboard.cut(self)
