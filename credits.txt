@@ -16,7 +16,7 @@
  ---------------------------------------------------------------------------
  
  - Guido van Rossum and all the people at PSF for the excellent language
- - Robin Dunn, Julian Smart, Vadim Zeitlin, Robert Roebling and the wxWindows
+ - Robin Dunn, Julian Smart, Vadim Zeitlin, Robert Roebling and the wxWidgets
    team for their great libary 
  - Glade developers for the inspiration they gave me and for the icons
  - Boa-constructor developers for some of the icons
