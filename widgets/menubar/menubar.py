@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.15 2004/10/18 12:11:15 agriggio Exp $
+# $Id: menubar.py,v 1.16 2004/10/20 16:59:46 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -482,6 +482,8 @@ class EditMenuBar(EditBase, PreviewMixin):
         EditBase.__init__(self, name, klass,
                           parent, wxNewId(), property_window,
                           custom_class=custom_class, show=False)
+        self.base = 'wxMenuBar'
+        
         def nil(*args): return ()
         self.menus = [] # list of MenuTree objects
         self._mb = None # the real menubar

@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.25 2004/09/27 08:21:58 agriggio Exp $
+# $Id: panel.py,v 1.26 2004/10/20 16:59:46 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -250,6 +250,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, has_title=False)
         PanelBase.__init__(self, style)
+        self.base = 'wxPanel'
         self.skip_on_size = False
 
     def create_widget(self):

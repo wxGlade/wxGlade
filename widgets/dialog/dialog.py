@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.20 2004/10/18 09:20:11 agriggio Exp $
+# $Id: dialog.py,v 1.21 2004/10/20 16:59:47 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -16,6 +16,8 @@ class EditDialog(TopLevelBase):
                  style=wxDEFAULT_DIALOG_STYLE, show=True, klass='wxDialog'):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show)
+        self.base = 'wxDialog'
+        
         self.style = style
         prop = self.properties
         # style property
