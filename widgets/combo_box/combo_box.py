@@ -12,11 +12,13 @@ from widget_properties import *
 from ChoicesProperty import *
 
 if wxPlatform == '__WXMSW__':
-    class wxComboBox2(wxComboBox):
+    # why on Windows combo boxes give segfaults? Need to investigate, but
+    # for now replace them with choices
+    class wxComboBox2(wxChoice):
         # on windows GetBestSize considers also the drop down menu, while we
         # don't want it to be included
         def GetBestSize(self):
-            w, h = wxComboBox.GetBestSize(self)
+            w, h = wxChoice.GetBestSize(self)
             n = self.Number()
             return w, h/(n+1)
 else:
