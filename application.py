@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.30 2003/07/23 14:46:26 agriggio Exp $
+# $Id: application.py,v 1.31 2003/07/23 15:35:55 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -392,7 +392,7 @@ class Application(object):
             out_name[0] = os.tempnam(None, 'wxg') + '.py'
             #print 'Temporary name:', out_name[0]
         widget_class_name = widget.klass
-        
+
         if widget.klass == widget.base:
             import random
             widget.klass = '_%d_%s' % \
@@ -432,6 +432,9 @@ class Application(object):
                 frame.Fit()
             else:
                 frame = FrameClass(None, -1, '')
+                # make sure we don't get a modal dialog...
+                s = frame.GetWindowStyleFlag()
+                frame.SetWindowStyleFlag(s & ~wxDIALOG_MODAL)
             def on_close(event):
                 frame.Destroy()
                 widget.preview_widget = None
