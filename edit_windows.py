@@ -231,6 +231,10 @@ class WindowBase(EditBase):
                                                self.set_foreground)
         self.access_functions['font'] = (self.get_font, self.set_font)
 
+        # properties added 2002-08-15
+        self.tooltip = ''
+        self.access_functions['tooltip'] = (self.get_tooltip, self.set_tooltip)
+
         min_x = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_X)
         min_y = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_Y)
         max_x = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_X)
@@ -242,6 +246,9 @@ class WindowBase(EditBase):
         prop['background'] = ColorDialogProperty(self, "background", None)
         prop['foreground'] = ColorDialogProperty(self, "foreground", None)
         prop['font'] = FontDialogProperty(self, "font", None)
+
+        # properties added 2002-08-15
+        prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True)
 
     def finish_widget_creation(self):
         prop = self.properties
@@ -280,6 +287,8 @@ class WindowBase(EditBase):
         prop['foreground'].display(panel)
         try: prop['font'].display(panel) 
         except KeyError: pass
+        # new properties 2002-08-15
+        prop['tooltip'].display(panel)
 
         sizer_tmp = wxBoxSizer(wxVERTICAL)
         sizer_tmp.Add(self.name_prop.panel, 0, wxEXPAND)
@@ -290,6 +299,8 @@ class WindowBase(EditBase):
         sizer_tmp.Add(prop['foreground'].panel, 0, wxEXPAND)
         try: sizer_tmp.Add(prop['font'].panel, 0, wxEXPAND)
         except KeyError: pass
+        sizer_tmp.Add(prop['tooltip'].panel, 0, wxEXPAND)
+        
         panel.SetAutoLayout(1)
         panel.SetSizer(sizer_tmp)
         sizer_tmp.Layout()
@@ -319,6 +330,11 @@ class WindowBase(EditBase):
             self.properties['size'].set_value(size)
         except KeyError: pass
         event.Skip()
+
+    def get_tooltip(self): return self.tooltip
+    def set_tooltip(self, value):
+        self.tooltip = value
+        #if self.widget: self.widget.SetTooltip(value)
 
     def get_background(self):
         if not self.widget: return '' # this is an invalid color
