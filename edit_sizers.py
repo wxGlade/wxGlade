@@ -615,6 +615,7 @@ class EditBoxSizer(SizerBase):
                  toplevel=True, show=True):
         #wxBoxSizer.__init__(self, orient)
         SizerBase.__init__(self, name, 'wxBoxSizer', window, toplevel, show)
+        self.access_functions['orient'] = (self.get_orient, self.set_orient)
         self.properties = {'orient': HiddenProperty(self, 'orient',
                                                     (orient==wxHORIZONTAL and
                                                      'wxHORIZONTAL' or
@@ -643,6 +644,16 @@ class EditBoxSizer(SizerBase):
             self.sizer.add_item(self, self.pos, self.option, self.flag,
                                 self.border, self.widget.GetMinSize())
 
+    def get_orient(self):
+        od = { wxHORIZONTAL: 'wxHORIZONTAL',
+               wxVERTICAL: 'wxVERTICAL' }
+        return od.get(self.orient)
+    
+    def set_orient(self, value):
+        od = { 'wxHORIZONTAL': wxHORIZONTAL,
+               'wxVERTICAL': wxVERTICAL }
+        self.orient = od.get(value, wxVERTICAL)
+
 # end of class EditBoxSizer
 
 
@@ -654,8 +665,10 @@ class EditStaticBoxSizer(SizerBase):
                  toplevel=True, show=True):
         if not label: label = name
         self.label = label
+        self.orient = orient
         SizerBase.__init__(self, name, 'wxStaticBoxSizer', window, toplevel,
                            show)
+        self.access_functions['orient'] = (self.get_orient, self.set_orient)
         self.properties['orient'] = HiddenProperty(self, 'orient',
                                                    (orient==wxHORIZONTAL and
                                                     'wxHORIZONTAL' or
@@ -666,8 +679,6 @@ class EditStaticBoxSizer(SizerBase):
         for i in range(1, elements+1):
             tmp = SizerSlot(self.window, self, i)
             self.children.append(SizerItem(tmp, i, 1, wxEXPAND))
-
-        self.orient = orient
 
     def create_widget(self):
         self.widget = wxStaticBoxSizer(wxStaticBox(self.window.widget, -1,
@@ -708,6 +719,16 @@ class EditStaticBoxSizer(SizerBase):
         if self.widget: self.widget.GetStaticBox().Destroy()
         SizerBase.delete(self)
         
+    def get_orient(self):
+        od = { wxHORIZONTAL: 'wxHORIZONTAL',
+               wxVERTICAL: 'wxVERTICAL' }
+        return od.get(self.orient)
+    
+    def set_orient(self, value):
+        od = { 'wxHORIZONTAL': wxHORIZONTAL,
+               'wxVERTICAL': wxVERTICAL }
+        self.orient = od.get(value, wxVERTICAL)
+
 # end of class EditStaticBoxSizer
 
 
@@ -1016,9 +1037,6 @@ def builder(parent, sizer, pos, number=[1]):
         common.app_tree.insert(node, sizer.node, pos-1)
         common.adding_sizer = False
     else:
-##         parent.widget.SetAutoLayout(True)
-##         parent.widegt.SetSizer(sz.widget)
-##         parent.widget.Layout()
         parent.set_sizer(sz)
         node = Tree.Node(sz)
         sz.node = node
@@ -1032,72 +1050,36 @@ def builder(parent, sizer, pos, number=[1]):
     dialog.Destroy()
 
 
-## class SizerItem:
-##     def __init__(self, sizer, obj):
-##         pass
-
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
-                tmp_szr=[None]):
+def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory function to build EditBoxSizer objects from an xml file
     """
-    # we can't build an EditBoxSizer object until we know the orientation,
-    # so we build a temporary fake sizer, and then complete it when we have
-    # enough information
-    class FakeSizer(SizerBase):
-        # the inheritance from SizerBase is necessary to make the things work:
-        # see xml_parse.XmlWidgetObject's __init__
-        orientations = { 'wxHORIZONTAL': wxHORIZONTAL,
-                         'wxVERTICAL': wxVERTICAL }
-        def __init__(self, attrs, parent, sizer, sizeritem, pos):
-            self.attrs = attrs
-            self.parent = parent
-            self.sizer = sizer
-            self.sizeritem = sizeritem
-            self.pos = pos
-        def __getitem__(self, value):
-            if value != 'orient': raise KeyError
-            def set_orient(val):
-                self.orient = FakeSizer.orientations[val]
-                return xml_builder(self.attrs, self.parent, self.sizer,
-                                   self.sizeritem, self.pos, True)
-            return (None, set_orient)
-    # end of class FakeSizer
-
-    if not complete:
-        tmp_szr[0] = FakeSizer(attrs, parent, sizer, sizeritem, pos)
-        return tmp_szr[0]
+    from xml_parse import XmlParsingError
+    try: name = attrs['name']
+    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    orientation = wxVERTICAL # default value
+    if sizer is not None: topl = False
+    else: topl = True
+    if attrs['base'] == 'EditStaticBoxSizer':
+        sz = EditStaticBoxSizer(name, parent, orientation,
+                                name, 0, topl)
     else:
-        from xml_parse import XmlParsingError
-        try: name = attrs['name']
-        except KeyError: raise XmlParsingError, "'name' attribute missing"
-        orientation = tmp_szr[0].orient
-        if sizer is not None: topl = False
-        else: topl = True
-        if attrs['base'] == 'EditStaticBoxSizer':
-            sz = EditStaticBoxSizer(name, parent, orientation,
-                                    name, 0, topl)
-        else:
-            sz = EditBoxSizer(name, parent, orientation, 0, topl)
-        if sizer is not None:
-            if sizeritem is None:
-                raise XmlParsingError, "'sizeritem' object not found"
-            sizer.add_item(sz, pos=pos, option=sizeritem.option,
-                           flag=sizeritem.flag, border=sizeritem.border) 
-            node = Tree.Node(sz)
-            sz.node = node
-            if pos is None: common.app_tree.add(node, sizer.node)
-            else: common.app_tree.insert(node, sizer.node, pos-1)
-        else:
-##             parent.SetAutoLayout(True)
-##             parent.SetSizer(sz)
-##             parent.has_sizer = True
-##             parent.Layout()
-            parent.set_sizer(sz)
-            node = Tree.Node(sz)
-            sz.node = node
-            common.app_tree.add(node, parent.node)
-        return sz
+        sz = EditBoxSizer(name, parent, orientation, 0, topl)
+    if sizer is not None:
+        if sizeritem is None:
+            raise XmlParsingError, "'sizeritem' object not found"
+        sizer.add_item(sz, pos=pos, option=sizeritem.option,
+                       flag=sizeritem.flag, border=sizeritem.border) 
+        node = Tree.Node(sz)
+        sz.node = node
+        if pos is None: common.app_tree.add(node, sizer.node)
+        else: common.app_tree.insert(node, sizer.node, pos-1)
+    else:
+        parent.set_sizer(sz)
+        node = Tree.Node(sz)
+        sz.node = node
+        common.app_tree.add(node, parent.node)
+    return sz
 
 
 def grid_builder(parent, sizer, pos, number=[1]):
@@ -1158,18 +1140,12 @@ def grid_builder(parent, sizer, pos, number=[1]):
     if sizer is not None: topl = False
     sz = constructor(name, parent, rows, cols, vgap, hgap, topl)
     if sizer is not None:
-##         slot_size = sizer.GetChildren()[pos].GetSize()
         sizer.add_item(sz, pos, 1, wxEXPAND)
-##         sz._adjust_initial_size(*slot_size)
         node = Tree.Node(sz)
         sz.node = node
         common.app_tree.insert(node, sizer.node, pos-1)
         common.adding_sizer = False
     else:
-##         parent.SetAutoLayout(True)
-##         parent.SetSizer(sz._the_sizer)
-##         sz._adjust_initial_size(*parent.GetClientSize())
-##         parent.Layout()
         parent.set_sizer(sz)
         node = Tree.Node(sz)
         sz.node = node
@@ -1204,10 +1180,6 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         else: common.app_tree.insert(node, sizer.node, pos-1)
     else: 
         sz = constructor(name, parent, rows=0, cols=0, toplevel=True)
-##         parent.SetAutoLayout(True)
-##         parent.SetSizer(sz._the_sizer)
-##         parent.has_sizer = True
-##         parent.Layout()
         parent.set_sizer(sz)
         node = Tree.Node(sz)
         sz.node = node

@@ -89,16 +89,18 @@ class HiddenProperty(Property):
     """\
     Properties not associated to any control, i.e. not editable by the user.
     """
-    def __init__(self, owner, name, value):
-        if callable(value):
-            getter = value
-        else: 
-            def getter(): return value
-        def setter(v): pass
-        self.value = getter()
+    def __init__(self, owner, name, value=None):
+        try: getter, setter = owner[name]
+        except KeyError:
+            if callable(value): getter = value
+            else:
+                def getter(): return value
+            def setter(v): pass
+            
         self.panel = None # this is needed to provide an uniform treatment,
                           # but is always None
         Property.__init__(self, owner, name, None, getter, setter)
+        if value is not None: self.value = value
 
     def bind_event(self, function):
         pass
@@ -107,7 +109,7 @@ class HiddenProperty(Property):
         return self.value
 
     def set_value(self, val):
-        pass
+        self.value = val
 
 # end of class HiddenProperty
 

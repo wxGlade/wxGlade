@@ -18,14 +18,13 @@ class EditStaticLine(ManagedBase):
         self.orientation = orientation
         ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer,
                              pos, property_window, show=show)
-        od = { wxLI_HORIZONTAL: 'wxLI_HORIZONTAL',
-               wxLI_VERTICAL: 'wxLI_VERTICAL' }
-        self.properties['style'] = HiddenProperty(self, 'style',
-                                                  od.get(orientation,
-                                                         'wxLI_HORIZONTAL'))
+        self.access_functions['style'] = (self.get_orientation,
+                                          self.set_orientation)
+        self.properties['style'] = HiddenProperty(self, 'style')
         self.removed_p = self.properties['font']
 
     def create_widget(self):
+        #self.orientation = int(self.property['style'].get_value())
         self.widget = wxStaticLine(self.parent.widget, self.id,
                                    style=self.orientation)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
@@ -43,8 +42,19 @@ class EditStaticLine(ManagedBase):
         if key != 'font': return ManagedBase.__getitem__(self, key)
         return (lambda : "", lambda v: None)
 
+    def get_orientation(self): 
+        od = { wxLI_HORIZONTAL: 'wxLI_HORIZONTAL',
+               wxLI_VERTICAL: 'wxLI_VERTICAL' }
+        return od.get(self.orientation, 'wxLI_HORIZONTAL')
+    
+    def set_orientation(self, value):
+        od = { 'wxLI_HORIZONTAL': wxLI_HORIZONTAL,
+               'wxLI_VERTICAL': wxLI_VERTICAL }
+        self.orientation = od.get(value, wxLI_HORIZONTAL)
+
 # end of class EditStaticLine
         
+
 def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditStaticLine objects.
@@ -81,53 +91,21 @@ def builder(parent, sizer, pos, number=[1]):
     static_line.set_flag("wxEXPAND")
     static_line.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1) 
-#    sizer.set_item(pos, flag=wxEXPAND)
-#    static_line.sizer_properties['flag'].set_value("wxEXPAND")
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
-                tmp_line=[None]):
+def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build EditStaticLine objects from an xml file
     """
-    class FakeLine:
-        orientations = { 'wxLI_HORIZONTAL': wxLI_HORIZONTAL,
-                         'wxLI_VERTICAL': wxLI_VERTICAL }
-        def __init__(self, attrs, parent, sizer, sizeritem, pos):
-            self.attrs = attrs
-            self.parent = parent
-            self.sizer = sizer
-            self.sizeritem = sizeritem
-            self.pos = pos
-        def __getitem__(self, value):
-            if value != 'style': raise KeyError
-            def set_orient(val):
-                self.orient = FakeLine.orientations[val]
-                return xml_builder(self.attrs, self.parent, self.sizer,
-                                   self.sizeritem, self.pos, True)
-            return (None, set_orient)
-    # end of class FakeLine
-
-    if not complete:
-        tmp_line[0] = FakeLine(attrs, parent, sizer, sizeritem, pos)
-        return tmp_line[0]
     from xml_parse import XmlParsingError
     try: name = attrs['name']
     except KeyError: raise XmlParsingError, "'name' attribute missing"
-    orientation = tmp_line[0].orient    
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    static_line = EditStaticLine(name, parent, wxNewId(), orientation, sizer,
+    static_line = EditStaticLine(name, parent, wxNewId(), 0, sizer,
                                  pos, common.property_panel)
-    # see if the static line is an instance of a custom class,
-    # and set its klass property 
-    if hasattr(tmp_line[0], 'klass'):
-        static_line.klass = tmp_line[0].klass
-        static_line.klass_prop.set_value(static_line.klass)
-        
     sizer.set_item(static_line.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
-##                    size=static_line.GetBestSize())
     node = Tree.Node(static_line)
     static_line.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

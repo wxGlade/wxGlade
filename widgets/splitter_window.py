@@ -102,7 +102,9 @@ class EditSplitterWindow(ManagedBase):
         if self.orientation == wxSPLIT_HORIZONTAL:
             od = 'wxSPLIT_HORIZONTAL'
         else: od = 'wxSPLIT_VERTICAL'
-        self.properties['orientation'] = HiddenProperty(self, 'orientation',od)
+        self.access_functions['orientation'] = (self.get_orientation,
+                                                self.set_orientation)
+        self.properties['orientation'] = HiddenProperty(self, 'orientation')
 
         def get_window(win):
             try: return win.name
@@ -175,7 +177,10 @@ class EditSplitterWindow(ManagedBase):
                                               self.window_2.widget)
             sp = self.properties['sash_pos'].get_value()
             if not sp:
-                self.widget.SetSashPosition(self.widget.GetClientSize()[0]/2)
+                w, h = self.widget.GetClientSize()
+                if self.orientation == wxSPLIT_VERTICAL:
+                    self.widget.SetSashPosition(w/2)
+                else: self.widget.SetSashPosition(h/2)
             else: self.widget.SetSashPosition(sp)
 
     def get_style(self):
@@ -201,10 +206,6 @@ class EditSplitterWindow(ManagedBase):
         except ValueError: return
         self.sash_pos = value
         if self.widget:
-##             w, h = self.widget.GetClientSize()
-##             if self.orientation == wxSPLIT_VERTICAL:
-##                 if w < value: self.widget.SetClientSize((value, -1))
-##             elif h < value: self.widget.SetClientSize((-1, value))
             self.widget.SetSashPosition(value)
 
     def on_size(self, event):
@@ -214,6 +215,8 @@ class EditSplitterWindow(ManagedBase):
                 max_pos = self.widget.GetClientSize()[0]
             else: max_pos = self.widget.GetClientSize()[1]
             self.properties['sash_pos'].set_range(0, max_pos)
+            if not self.properties['sash_pos'].is_active():
+                self.widget.SetSashPosition(max_pos/2)
         except (AttributeError, KeyError): pass
         ManagedBase.on_size(self, event)
 
@@ -221,6 +224,16 @@ class EditSplitterWindow(ManagedBase):
         self.sash_pos = self.widget.GetSashPosition()
         self.properties['sash_pos'].set_value(self.sash_pos)
         event.Skip()
+
+    def get_orientation(self):
+        od = { wxSPLIT_HORIZONTAL: 'wxSPLIT_HORIZONTAL',
+               wxSPLIT_VERTICAL: 'wxSPLIT_VERTICAL' }
+        return od.get(self.orientation, 'wxSPLIT_VERTICAL')
+
+    def set_orientation(self, value):
+        od = { 'wxSPLIT_HORIZONTAL': wxSPLIT_HORIZONTAL,
+               'wxSPLIT_VERTICAL': wxSPLIT_VERTICAL }
+        self.orientation = od.get(value, wxSPLIT_VERTICAL)
 
 # end of class EditSplitterWindow
         
@@ -288,66 +301,18 @@ def builder(parent, sizer, pos, number=[1]):
 ##     window.Show()
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
-                tmp_win=[None]):
+def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build EditSplitterWindow objects from an xml file
     """
-    class FakeSplitter:
-        orientations = { 'wxSPLIT_HORIZONTAL': wxSPLIT_HORIZONTAL,
-                         'wxSPLIT_VERTICAL': wxSPLIT_VERTICAL }
-        def __init__(self, attrs, parent, sizer, sizeritem, pos):
-            self.attrs = attrs
-            self.parent = parent
-            self.sizer = sizer
-            self.sizeritem = sizeritem
-            self.pos = pos
-            self.functions = { 'style': self.set_style,
-                               'sash_pos': self.set_sash_pos,
-                               'orientation': self.set_orient,
-                               'window_1': lambda v: None,
-                               'window_2': lambda v: None }
-        def __getitem__(self, value):
-            return (None, self.functions[value])
-                
-        def set_style(self, val):
-            try: self.style = eval(val)
-            except: self.style = 0
-
-        def set_sash_pos(self, val):
-            try: self.sash_pos = int(val)
-            except ValueError: self.sash_pos = 0
-
-        def set_orient(self, val):
-            self.orientation = FakeSplitter.orientations[val]
-            return xml_builder(self.attrs, self.parent, self.sizer,
-                               self.sizeritem, self.pos, True)
-        
-    # end of class FakeSplitter
-    
-    if not complete:
-        tmp_win[0] = FakeSplitter(attrs, parent, sizer, sizeritem, pos)
-        return tmp_win[0]
     from xml_parse import XmlParsingError
     try: name = attrs['name']
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if not sizer or not sizeritem:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    if hasattr(tmp_win[0], 'style'): style = tmp_win[0].style
-    else: style=None
-    window = EditSplitterWindow(name, parent, wxNewId(), style, None, None,
-                                tmp_win[0].orientation,
+    window = EditSplitterWindow(name, parent, wxNewId(), None, None, None,
+                                wxSPLIT_VERTICAL,
                                 sizer, pos, common.property_panel, True)
-    if hasattr(tmp_win[0], 'sash_pos'):
-        sp = tmp_win[0].sash_pos
-        window.properties['sash_pos'].set_value(sp)
-        window['sash_pos'][1](sp)
-    # see if the window is an instance of a custom class, and set its klass
-    # property 
-    if hasattr(tmp_win[0], 'klass'):
-        window.klass = tmp_win[0].klass
-        window.klass_prop.set_value(window.klass)
-        
     sizer.set_item(window.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
     node = Tree.Node(window)
