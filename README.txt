@@ -1,4 +1,4 @@
-wxGlade: a GUI builder for wxPython
+wxGlade: a GUI builder for wxPython/wxWindows
 version: 0.1.3
 license: Python2.2 license (see license.txt)
 

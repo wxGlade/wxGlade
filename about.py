@@ -1,7 +1,7 @@
 # about.py: about box with general info
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 from wxPython.wx import *
 from wxPython.html import *
@@ -28,7 +28,7 @@ class wxGladeAboutBox(wxDialog):
     <tr><td width="50">&nbsp;</td><td>
     <font size="-1"><b>&nbsp;<br>
     Copyright (c) 2002 Alberto Griggio<br>
-    License: GPL (see license.txt)</b></font>
+    License: Python 2.2 license (see license.txt)</b></font>
     </td></tr>
     <tr><td width="50">&nbsp;</td><td>
     <font size="-1">
