@@ -1,5 +1,5 @@
 # radio_button.py: wxRadioButton objects
-# $Id: radio_button.py,v 1.11 2004/09/17 13:09:51 agriggio Exp $
+# $Id: radio_button.py,v 1.12 2004/10/02 10:22:38 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -44,6 +44,11 @@ class EditRadioButton(ManagedBase):
     def create_widget(self):
         self.widget = wxGladeRadioButton(self.parent.widget, self.id,
                                          self.label)
+        try:
+            self.widget.SetValue(self.value) # self.clicked?
+        except AttributeError:
+            raise
+
         EVT_CHECKBOX(self.widget, self.id,
                      lambda e: self.widget.SetValue(self.value))        
 
