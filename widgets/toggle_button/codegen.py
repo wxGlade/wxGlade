@@ -20,18 +20,10 @@ def python_code_generator(obj):
              (obj.name, obj.klass, parent, id, label)]
         if id_name: l.append(id_name) # init lines are written in reverse order
         return l, [], []    
-    size = pygen.generate_code_size(obj)
-    if size != '(-1, -1)': size = ', size=%s' % size
-    else: size = ''
-    init = [ 'self.%s = wxToggleButton(%s, %s, %s%s)\n' % 
-             (obj.name, parent, id, label, size) ]
+    init = [ 'self.%s = wxToggleButton(%s, %s, %s)\n' % 
+             (obj.name, parent, id, label) ]
     if id_name: init.append(id_name) # init lines are written in reverse order
-    props_buf = []
-    if prop.has_key('foreground'):
-        props_buf.append(pygen.generate_code_foreground(obj))
-    if prop.has_key('background'):
-        props_buf.append(pygen.generate_code_background(obj))
-    if prop.has_key('font'): props_buf.append(pygen.generate_code_font(obj))
+    props_buf = pygen.generate_common_properties(obj)
     value = prop.get('value')
     if value: props_buf.append('self.%s.SetValue(%s)\n' % (obj.name, value))
     return init, props_buf, []

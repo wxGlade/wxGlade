@@ -246,7 +246,9 @@ class WindowBase(EditBase):
     def finish_widget_creation(self):
         prop = self.properties
         size = prop['size'].get_value()
-        if size: self.widget.SetSize([int(s) for s in size.split(',')])
+        if size:
+            #self.widget.SetSize([int(s) for s in size.split(',')])
+            self.set_size(size)
         else: prop['size'].set_value('%s, %s' % tuple(self.widget.GetSize()))
         background = prop['background'].get_value()
         if background:
@@ -303,8 +305,18 @@ class WindowBase(EditBase):
         """\
         update the value of the 'size' property
         """
-        try: self.properties['size'].set_value("%s, %s" % \
-                                               self.widget.GetSizeTuple())
+        try:
+            sz = self.properties['size']
+            if sz.is_active():
+                # try to preserve the user's choice
+                try: use_dialog_units = (sz.get_value().strip()[-1] == 'd')
+                except IndexError: use_dialog_units = False
+            else: use_dialog_units = True
+            if use_dialog_units:
+                size = "%s, %sd" % tuple(self.widget.ConvertPixelSizeToDialog(
+                    self.widget.GetSize()))
+            else: size = "%s, %s" % tuple(self.widget.GetSize())
+            self.properties['size'].set_value(size)
         except KeyError: pass
         event.Skip()
 
@@ -363,19 +375,28 @@ class WindowBase(EditBase):
 
     def set_size(self, value):
         if not self.widget: return
+        use_dialog_units = False
+        try: "" + value
+        except TypeError: pass
+        else: # value is a string-like object
+            if value and value.strip()[-1] == 'd':
+                use_dialog_units = True
+                value = value[:-1]
         try:
             size = [int(t.strip()) for t in value.split(',')]
         except:
-            self.properties['size'].set_value('%s, %s' % \
-                                              tuple(self.widget.GetSize()))
+            size = wxDLG_SZE(self.widget, self.widget.GetSize())
+            self.properties['size'].set_value('%s, %sd' % tuple(size))
         else:
+            if use_dialog_units: size = wxDLG_SZE(self.widget, size)
             self.widget.SetSize(size)
             try: self.sizer.set_item(self.pos, size=self.widget.GetSize())
             except AttributeError: pass
 
     def get_size(self):
         if not self.widget: return '' # invalid size
-        return "%s, %s" % tuple(self.widget.GetSize())
+        size = self.widget.ConvertPixelSizeToDialog(self.widget.GetSize())
+        return "%s, %sd" % tuple(size)
 
     def get_property_handler(self, name):
         if name == 'font':
@@ -429,17 +450,21 @@ class ManagedBase(WindowBase):
         self.access_functions['option'] = (self.get_option, self.set_option)
         self.access_functions['flag'] = (self.get_flag, self.set_flag)
         self.access_functions['border'] = (self.get_border, self.set_border)
-        self.flags_pos = (wxEXPAND, wxALIGN_RIGHT, wxALIGN_BOTTOM,
-                          wxALIGN_CENTER_HORIZONTAL, wxALIGN_CENTER_VERTICAL,
-                          wxLEFT, wxRIGHT, wxTOP, wxBOTTOM)
+        self.flags_pos = (wxALL,
+                          wxLEFT, wxRIGHT, wxTOP, wxBOTTOM,
+                          wxEXPAND, wxALIGN_RIGHT, wxALIGN_BOTTOM,
+                          wxALIGN_CENTER_HORIZONTAL, wxALIGN_CENTER_VERTICAL)
         sizer.add_item(self, pos)
 
         szprop = self.sizer_properties
         szprop['option'] = SpinProperty(self, "option", None, 0, (0, 1000))
-        flag_labels = ('#section#Alignment', 'wxEXPAND', 'wxALIGN_RIGHT',
+        flag_labels = ('#section#Border',
+                       'wxALL',
+                       'wxLEFT', 'wxRIGHT',
+                       'wxTOP', 'wxBOTTOM',
+                       '#section#Alignment', 'wxEXPAND', 'wxALIGN_RIGHT',
                        'wxALIGN_BOTTOM', 'wxALIGN_CENTER_HORIZONTAL',
-                       'wxALIGN_CENTER_VERTICAL', '#section#Border',
-                       'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM')
+                       'wxALIGN_CENTER_VERTICAL')
         szprop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
         szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
 
@@ -498,9 +523,16 @@ class ManagedBase(WindowBase):
         try:
             sz = self.properties['size']
             if value or sz.is_active():
-                size = [int(s.strip()) for s in sz.get_value().split(',')]
-            else: size = self.widget.GetBestSize()
-            self.sizer.set_item(self.pos, option=value, size=size)
+                size = sz.get_value().strip()
+                if size[-1] == 'd':
+                    size = size[:-1]
+                    use_dialog_units = True
+                else: use_dialog_units = False
+                w, h = [ int(v) for v in size.split(',') ]
+                if use_dialog_units:
+                    w, h = wxDLG_SZE(self.widget, (w, h))
+            else: w, h = self.widget.GetBestSize()
+            self.sizer.set_item(self.pos, option=value, size=(w, h))
         except AttributeError, e:
             print e
 
@@ -514,8 +546,16 @@ class ManagedBase(WindowBase):
         if not self.widget: return
         try:
             try:
-                size = [ int(s) for s in
-                         self.properties['size'].get_value().split(',') ]
+                sp = self.properties['size']
+                size = sp.get_value().strip()
+                if size[-1] == 'd':
+                    size = size[:-1]
+                    use_dialog_units = True
+                else: use_dialog_units = False
+                w, h = [ int(v) for v in size.split(',') ]
+                if use_dialog_units:
+                    w, h = wxDLG_SZE(self.widget, (w, h))
+                size = (w, h)
             except ValueError:
                 size = None
             if not (flags & wxEXPAND) and \
@@ -529,9 +569,16 @@ class ManagedBase(WindowBase):
         self.border = int(value)
         if not self.widget: return
         try:
-            size = [ int(s) for s in
-                     self.properties['size'].get_value().split(',') ]
-            self.sizer.set_item(self.pos, border=int(value), size=size)
+            sp = self.properties['size']
+            size = sp.get_value().strip()
+            if size[-1] == 'd':
+                size = size[:-1]
+                use_dialog_units = True
+            else: use_dialog_units = False
+            w, h = [ int(v) for v in size.split(',') ]
+            if use_dialog_units:
+                w, h = wxDLG_SZE(self.widget, (w, h))
+            self.sizer.set_item(self.pos, border=int(value), size=(w, h))
         except AttributeError, e:
             import traceback; traceback.print_exc()
 
@@ -544,6 +591,11 @@ class ManagedBase(WindowBase):
             for i in range(len(self.flags_pos)):
                 if self.flag & self.flags_pos[i]:
                     retval[i] = 1
+            # patch to make wxALL work
+            if retval[1:5] == [1, 1, 1, 1]:
+                retval[0] = 1; retval[1:5] = [0, 0, 0, 0]
+            else:
+                retval[0] = 0
         except AttributeError: pass
         return retval
 

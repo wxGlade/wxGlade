@@ -203,7 +203,7 @@ class Application(object):
     def __getitem__(self, name):
         return self.access_functions[name]
 
-    def generate_code(self, event):
+    def generate_code(self, *args):
         if not self.output_path:
             return wxMessageDialog(self.notebook, "You must specify an output "
                                    "file\nbefore generating any code", "Error",

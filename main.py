@@ -69,7 +69,10 @@ class wxGladeFrame(wxFrame):
         SAVE_ID = wxNewId()
         file_menu.Append(SAVE_ID, "&Save\tCtrl+S")
         SAVE_AS_ID = wxNewId()
-        file_menu.Append(SAVE_AS_ID, "Save As...")
+        file_menu.Append(SAVE_AS_ID, "Save As...\tShift+Ctrl+S")
+        file_menu.AppendSeparator()
+        GENERATE_CODE_ID = wxNewId()
+        file_menu.Append(GENERATE_CODE_ID, "&Generate Code...\tCtrl+G")
         EXIT_ID = wxNewId()
         file_menu.AppendSeparator()
         file_menu.Append(EXIT_ID, 'E&xit\tCtrl+X')
@@ -87,6 +90,8 @@ class wxGladeFrame(wxFrame):
             (wxACCEL_CTRL, ord('o'), OPEN_ID),
             (wxACCEL_CTRL, ord('s'), SAVE_ID),
             (wxACCEL_CTRL, ord('p'), PROPS_ID),
+            (wxACCEL_CTRL|wxACCEL_SHIFT, ord('s'), SAVE_AS_ID),
+            (wxACCEL_CTRL, ord('g'), GENERATE_CODE_ID),
             (wxACCEL_NORMAL, WXK_F1, TUT_ID)
             ]))
         EVT_MENU(parent, TREE_ID, self.show_tree)
@@ -95,6 +100,9 @@ class wxGladeFrame(wxFrame):
         EVT_MENU(parent, OPEN_ID, self.open_app)
         EVT_MENU(parent, SAVE_ID, self.save_app)
         EVT_MENU(parent, SAVE_AS_ID, self.save_app_as)
+        def generate_code(event):
+            common.app_tree.app.generate_code()
+        EVT_MENU(parent, GENERATE_CODE_ID, generate_code)
         EVT_MENU(parent, EXIT_ID, lambda e: self.Close())
         EVT_MENU(parent, TUT_ID, self.show_tutorial)
         EVT_MENU(parent, ABOUT_ID, self.show_about_box)

@@ -20,22 +20,13 @@ def python_code_generator(obj):
              (obj.name, obj.klass, parent, id, value)]
         if id_name: l.append(id_name) # init lines are written in reverse order
         return l , [], []
-    size = pygen.generate_code_size(obj)
-    if size != '(-1, -1)': size = ', size=%s' % size
-    else: size = ''
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
-    init = ['self.%s = wxTextCtrl(%s, %s, %s%s%s)\n' %
-            (obj.name, parent, id, value, size, style)]
+    init = ['self.%s = wxTextCtrl(%s, %s, %s%s)\n' %
+            (obj.name, parent, id, value, style)]
     if id_name: init.append(id_name)
-    props_buf = []
-    if prop.has_key('foreground'):
-        props_buf.append(pygen.generate_code_foreground(obj))
-    if prop.has_key('background'):
-        props_buf.append(pygen.generate_code_background(obj))
-    if prop.has_key('font'):
-        props_buf.append(pygen.generate_code_font(obj))
+    props_buf = pygen.generate_common_properties(obj)
     return init, props_buf, []
 
 

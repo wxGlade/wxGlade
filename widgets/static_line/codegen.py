@@ -18,20 +18,13 @@ def python_code_generator(obj):
         l = ['self.%s = %s(%s, %s)\n' % (obj.name, obj.klass, parent, id)]
         if id_name: l.append(id_name)
         return l, [], []
-    size = pygen.generate_code_size(obj)
-    if size != '(-1, -1)': size = ', size=%s' % size
-    else: size = ''
     style = prop.get("style")
     if style and style != 'wxLI_HORIZONTAL': style = ", style=%s" % style
     else: style = ''
-    init = ['self.%s = wxStaticLine(%s, %s%s%s)\n' %
-            (obj.name, parent, id, size, style) ]
+    init = ['self.%s = wxStaticLine(%s, %s%s)\n' %
+            (obj.name, parent, id, style) ]
     if id_name: init.append(id_name)
-    props_buf = []
-    if prop.has_key('foreground'):
-        props_buf.append(pygen.generate_code_foreground(obj))
-    if prop.has_key('background'):
-        props_buf.append(pygen.generate_code_background(obj))
+    props_buf = pygen.generate_common_properties(obj)
     return init, props_buf, []
     
 

@@ -18,17 +18,9 @@ def python_code_generator(panel):
         l = ['self.%s = %s(%s, %s)\n' % (panel.name, panel.klass, parent, id)]
         if id_name: l.append(id_name)
         return l, [], []
-    size = pygen.generate_code_size(panel)
-    if size != '(-1, -1)': size = ', size=%s' % size
-    else: size = ''
-    init = ['self.%s = wxPanel(%s, %s%s)\n' % (panel.name, parent, id, size) ]
+    init = ['self.%s = wxPanel(%s, %s)\n' % (panel.name, parent, id) ]
     if id_name: init.append(id_name)
-    props_buf = []
-    if prop.has_key('foreground'):
-        props_buf.append(pygen.generate_code_foreground(panel))
-    if prop.has_key('background'):
-        props_buf.append(pygen.generate_code_background(panel))
-    if prop.has_key('font'): props_buf.append(pygen.generate_code_font(panel))
+    props_buf = pygen.generate_common_properties(panel)
     return init, props_buf, []
 
 

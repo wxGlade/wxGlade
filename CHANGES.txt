@@ -1,4 +1,10 @@
+2002-08-11: edit_windows.py, codegen/py_codegen.py: support of dialog units
+
 2002-08-10: widgets/*/codegen.py: better python code generator functions
+	    widgets/button/codegen.py, widgets/frame/codegen.py:
+	            translation from "&" to "_" as accelerator marker in XRC
+		    output
+	    main.py: added "Generate Code..." menu item to the File menu
 
 2002-08-09: widgets/*: fixed bug in the python code generation function 
 			  when the object is an instance of a custom class
