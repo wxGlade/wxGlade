@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.40 2003/10/24 14:05:02 agriggio Exp $
+# $Id: edit_sizers.py,v 1.41 2004/01/20 11:09:52 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -1596,6 +1596,7 @@ class CheckListDialogProperty(DialogProperty):
 
 # end of class CheckListDialogProperty
 
+
 class EditFlexGridSizer(GridSizerBase):
     """\
     Class to handle wxFlexGridSizer objects
@@ -1681,8 +1682,25 @@ class EditFlexGridSizer(GridSizerBase):
             misc.wxCallAfter(change_sizer, self, self.klass_prop.get_value(),
                              page)
 
-    def get_growable_rows(self): return ','.join(map(str, self.grow_rows))
-    def get_growable_cols(self): return ','.join(map(str, self.grow_cols))
+    def get_growable_rows(self):
+        return ','.join(map(str, self.grow_rows))
+    
+    def get_growable_cols(self):
+        return ','.join(map(str, self.grow_cols))
+
+    def _insert_row(self, pos):
+        for i in range(len(self.grow_rows)):
+            if self.grow_rows[i] >= pos-1:
+                self.grow_rows[i] += 1
+        GridSizerBase._insert_row(self, pos)
+        self.set_growable_rows(self.get_growable_rows())
+
+    def _insert_col(self, pos):
+        for i in range(len(self.grow_cols)):
+            if self.grow_cols[i] >= pos-1:
+                self.grow_cols[i] += 1
+        GridSizerBase._insert_col(self, pos)
+        self.set_growable_cols(self.get_growable_cols())
 
 # end of class EditFlexGridSizer
 
