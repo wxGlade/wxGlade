@@ -495,9 +495,10 @@ def main(filename=None):
     """\
     if filename is not None, loads it
     """
-    # first thing to do, patch wxSizerPtr's Insert...
-    import misc
-    wxSizerPtr.Insert = misc.sizer_fixed_Insert
+    # first thing to do, patch wxSizerPtr's Insert if needed...
+    from wxPython import wx
+    if wx.__version__ == '2.4.0.2':
+        wxSizerPtr.Insert = misc.sizer_fixed_Insert
     
     app = wxGlade()
     if filename is not None:
