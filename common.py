@@ -80,7 +80,7 @@ def load_code_writers():
         if name not in sys.modules and \
                os.path.isfile(os.path.join('codegen', module)):
             try: writer = __import__(name).writer
-            except (ImportError, AttributeError):
+            except (ImportError, AttributeError, ValueError):
                 if use_gui:
                     print '"%s" is not a valid code generator module' % module
             else:

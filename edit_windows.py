@@ -224,6 +224,7 @@ class WindowBase(EditBase):
         def set_id(value):
             self.window_id = value
         self.access_functions['id'] = (lambda s=self: s.window_id, set_id)
+        self.size = '-1, -1'
         self.access_functions['size'] = (self.get_size, self.set_size)
         self.access_functions['background'] = (self.get_background,
                                                self.set_background)
@@ -328,6 +329,7 @@ class WindowBase(EditBase):
                     self.widget.GetSize()))
             else: size = "%s, %s" % tuple(self.widget.GetSize())
             self.properties['size'].set_value(size)
+            self.size = size
         except KeyError: pass
         event.Skip()
 
@@ -401,18 +403,20 @@ class WindowBase(EditBase):
         try:
             size = [int(t.strip()) for t in value.split(',')]
         except:
-            size = wxDLG_SZE(self.widget, self.widget.GetSize())
-            self.properties['size'].set_value('%s, %sd' % tuple(size))
+            #size = wxDLG_SZE(self.widget, self.widget.GetSize())
+            self.properties['size'].set_value(self.size) #'%s, %sd' % tuple(size))
         else:
             if use_dialog_units: size = wxDLG_SZE(self.widget, size)
             self.widget.SetSize(size)
+            self.size = value
             try: self.sizer.set_item(self.pos, size=self.widget.GetSize())
             except AttributeError: pass
 
     def get_size(self):
-        if not self.widget: return '' # invalid size
-        size = self.widget.ConvertPixelSizeToDialog(self.widget.GetSize())
-        return "%s, %sd" % tuple(size)
+        return self.size
+##         if not self.widget: return '' # invalid size
+##         size = self.widget.ConvertPixelSizeToDialog(self.widget.GetSize())
+##         return "%s, %sd" % tuple(size)
 
     def get_property_handler(self, name):
         if name == 'font':

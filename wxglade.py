@@ -27,6 +27,7 @@ def command_line_code_generation(options, args):
     """\
     tarts a code generator without starting the GUI.
     """
+    import common
     if not options: usage()
     if not options[0]:
         usage() # a language for code generation must be provided
