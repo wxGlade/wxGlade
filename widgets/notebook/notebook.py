@@ -116,8 +116,10 @@ class NotebookPane(WindowBase):
         if not self.widget: return
         if self.sel_marker: self.sel_marker.Destroy()
         if self.remove_page_from_parent:
-            index = self.parent.find_page(self)
-            if index >= 0: self.parent.widget.RemovePage(index)
+##             index = self.parent.find_page(self)
+##             if index >= 0:
+##                 self.parent.widget.RemovePage(index)
+            self.widget = None
         WindowBase.delete(self)
 
 # end of class NotebookPane
@@ -270,8 +272,9 @@ class EditNotebook(ManagedBase):
 
     def delete(self):
         if self.widget:
-            for i in range(self.widget.GetPageCount()):
-                self.widget.RemovePage(i)
+##             for i in range(self.widget.GetPageCount()):
+##                 self.widget.RemovePage(i)
+            self.widget.DeleteAllPages()
             #self.nb_sizer.Destroy()
         ManagedBase.delete(self)
 
