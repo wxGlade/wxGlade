@@ -1,3 +1,6 @@
+2003-01-24: widget_properties.py:
+                fixed segfault caused by a change (bug?) in wxPython 2.4.0.2
+
 2003-01-01: main.py, common.py, config.py, codegen/*:
                 added support for automatic backup
             application.py, codegen/*:

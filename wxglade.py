@@ -17,6 +17,7 @@ except NameError:
     def bool(value): return not not value
     setattr(__builtins__, 'bool', bool)
 
+
 def _fix_path(path):
     """\
     Returns an absolute version of path, accroding to the invoking dir of
@@ -24,8 +25,10 @@ def _fix_path(path):
     script)
     """
     if not os.path.isabs(path):
-        return os.path.join(os.getcwd(), path) #getenv('WXGLADE_INVOKING_DIR', '.'), path)
+        return os.path.join(os.getcwd(), path)
+        #getenv('WXGLADE_INVOKING_DIR', '.'), path)
     return path
+
 
 def parse_command_line():
     import getopt, common
@@ -35,6 +38,7 @@ def parse_command_line():
         import traceback; traceback.print_exc()
         usage()
     return options, args
+
 
 def command_line_code_generation(options, args):
     """\
@@ -74,6 +78,7 @@ def command_line_code_generation(options, args):
         sys.exit(1)
     sys.exit(0)
 
+
 def usage():
     """\
     Prints a help message about the usage of wxGlade from the command line.
@@ -101,9 +106,7 @@ wxGlade usage:
 if __name__ == "__main__":
     # prepend the widgets dir to the
     # app's search path
-    #sys.path.insert(0, 'widgets')
     wxglade_path = os.path.abspath(os.path.dirname(sys.argv[0]))
-    #print '\n\nPATH=', wxglade_path, '\n'
     #sys.path = [os.getcwd(), os.path.join(os.getcwd(), 'widgets')] + sys.path
     sys.path = [wxglade_path, os.path.join(wxglade_path, 'widgets')] + sys.path
     # set the program's path
