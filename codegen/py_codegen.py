@@ -272,7 +272,8 @@ def finalize():
             output_file.write(content)
             output_file.close()
             # make the file executable
-            os.chmod(output_file_name, 0755)
+            if _app_added:
+                os.chmod(output_file_name, 0755)
         except IOError, e:
             raise XmlParsingError(str(e))
         except OSError: pass # this isn't necessary a bad error
@@ -540,11 +541,16 @@ def add_class(code_obj):
         for line in buffer: write(line)
         
 
+_app_added = False
+
 def add_app(app_attrs, top_win_class):
     """\
     Generates the code for a wxApp instance.
     If the file to write into already exists, this function does nothing.
     """
+    global _app_added
+    _app_added = True
+    
     name = app_attrs.get('name')
     if not name: name = 'app'
 
