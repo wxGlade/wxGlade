@@ -786,4 +786,9 @@ class TopLevelBase(WindowBase):
         if self.sizer and self.widget:
             self.sizer.refresh()
 
+    def set_name(self, name):
+        if self.name != name:
+            common.app_tree.app.update_top_window_name(self.name, name)
+        WindowBase.set_name(self, name)
+
 # end of class TopLevelBase
