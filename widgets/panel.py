@@ -22,7 +22,6 @@ class EditPanel(ManagedBase):
     def create_widget(self):
         self.widget = wxPanel(self.parent.widget, self.id)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
-        EVT_SIZE(self.parent.widget, self.on_parent_size)
         self.widget.GetBestSize = self.get_widget_best_size
 
     def finish_widget_creation(self):
@@ -46,6 +45,7 @@ class EditPanel(ManagedBase):
             self.widget.SetAutoLayout(True)
             self.widget.SetSizer(self.top_sizer.widget)
             self.widget.Layout()
+            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def drop_sizer(self, event):
         if self.top_sizer or not common.adding_sizer:
@@ -56,10 +56,6 @@ class EditPanel(ManagedBase):
         common.adding_widget = common.adding_sizer = False
         common.widget_to_add = None
         common.app_tree.app.saved = False
-
-    def on_parent_size(self, event):
-        if self.top_sizer and self.widget:
-            self.top_sizer.Refresh()
 
     def get_widget_best_size(self):
         if self.top_sizer and self.widget.GetSizer():

@@ -1,3 +1,26 @@
+2002-07-29: tree.py, main.py: prevention of auto expansion of tree nodes 
+	                      during xml loading
+            widget_properties.py: fixed bug in self._enabler for many 
+				  Properties
+	    edit_sizers.py: - fixed bug on EditStaticBoxSizer
+			    - changed self._rmenu to be an instance of 
+			      wxGladePopupMenu
+			    - renamed Refresh to refresh for consistency
+			      with the implicit coding conventions
+	    edit_windows.py: changed self._rmenu to be an instance of 
+			     wxGladePopupMenu	 
+	    misc.py: added wxGladePopupMenu
+	    tree.py: added popup menu to show hidden toplevel widgets
+	    widgets/panel.py, widgets/notebook.py, widgets/splitter_window.py:
+			      removed obsolete on_parent_size methods
+	    widgets/panel.py: fixed bug that caused a bad layout of the panel
+			      when resized
+
+2002-07-28: about.py: updated developers credits
+
+2002-07-26 / 2002-07-28: transition to the new implementation, i.e. (partial)
+	                 separation of the GUI from the core logic
+
 2002-07-22: TODO.txt: updated
 	    docs/tech_notes.txt: added (incomplete)
 
@@ -24,8 +47,6 @@
                                              the notebook inside which 
                                              Properties are displayed is
                                              built only when needed
-            xml_parse.py: nothing special, but thanks to the new behaviour
-                          of Properties, loading from an xml is MUCH faster!
 
 2002-07-17: codegen/py_codegen.py: - support for multiple output files
                                    - initial support for tags in the generated

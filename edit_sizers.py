@@ -96,13 +96,7 @@ class SizerHandleButton(wxButton):
         self.sizer = sizer
         # provide popup menu for removal
         REMOVE_ID = wxNewId() 
-        if wxPlatform == '__WXGTK__':
-            self._rmenu = wxMenu() 
-            self.TITLE_ID = wxNewId()
-            self._rmenu.Append(self.TITLE_ID, sizer.name)
-            self._rmenu.AppendSeparator()
-        else:
-            self._rmenu = wxMenu(sizer.name)
+        self._rmenu = misc.wxGladePopupMenu(sizer.name)
         self._rmenu.Append(REMOVE_ID, 'Remove')
         for item in menu:
             id = wxNewId()
@@ -114,9 +108,7 @@ class SizerHandleButton(wxButton):
         EVT_MENU(self, REMOVE_ID, self._remove)
 
     def set_menu_title(self, title):
-        if wxPlatform == '__WXGTK__':
-            self._rmenu.SetLabel(self.TITLE_ID, title)
-        else: self._rmenu.SetTitle(title)
+        self._rmenu.SetTitle(title)
 
     def _remove(self, event):
         # removes the sizer from his parent, if it has one
@@ -213,7 +205,7 @@ class SizerBase:
         # ScreenToClient used by WidgetTree for the popup menu
         EVT_BUTTON(self._btn, self.id, self.show_properties)
         self.create_widget()
-        self.widget.Refresh = self.Refresh
+        self.widget.Refresh = self.refresh
         self.widget.GetBestSize = self.widget.GetMinSize
         self.widget.ScreenToClient = self._btn.ScreenToClient
         if self.toplevel: self.window.set_sizer(self)
@@ -526,7 +518,7 @@ class SizerBase:
     else:
         def finish_set(self): pass
 
-    def Refresh(self, *args):
+    def refresh(self, *args):
         # this will be self.widget.Refresh
         for c in self.children:
             if c.item.widget: 

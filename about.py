@@ -14,31 +14,34 @@ class wxGladeAboutBox(wxDialog):
     <body bgcolor="%s"><center>
     <font size="-1">
     <table bgcolor="#458154" width="100%%" cellspacing="0"
-    cellpadding="0" border="2">
+    cellpadding="2" border="2">
     <tr>
         <td align="center">
-        <h3>wxGlade %s: a GUI builder for wxPython</h3>
+        <h3>wxGlade %s: a GUI builder for<br>wxPython</h3>
         Running on Python %s and wxPython %s<br>
         </td>
     </tr>
     </table>
     </font>
     </center>
-    <blockquote><font size="-1"><b>
-    <p>Copyright (c) 2002 Alberto Griggio<br>
-    License: GPL (see license.txt)</b>
-    </p>
-    <p><!-- name of the authors -->
-    Authors:<br>
+    <table border="0">
+    <tr><td width="50">&nbsp;</td><td>
+    <font size="-1"><b>&nbsp;<br>
+    Copyright (c) 2002 Alberto Griggio<br>
+    License: GPL (see license.txt)</b></font>
+    </td></tr>
+    <tr><td width="50">&nbsp;</td><td>
+    <font size="-1">
+    <br>Authors:<br>
     &nbsp;&nbsp;&nbsp;Alberto Griggio &lt;albgrig@tiscalinet.it&gt;<br>
     &nbsp;&nbsp;&nbsp;Marco Barisione &lt;marco.bari@vene.ws&gt;
-    </p>
-    </font></blockquote>
+    </font>
+    </td></tr></table>
     <center>
     <hr><div align="right">
     <wxp class="wxButton">
         <param name="label" value="OK">
-        <param name="id"    value="wxID_OK">
+        <param name="id" value="wxID_OK">
     </wxp>&nbsp;&nbsp;&nbsp;</div>
     </center>
     </body>
