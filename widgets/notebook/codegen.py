@@ -92,6 +92,8 @@ def xrc_code_generator(obj):
             else:
                 self.tabs = []
             self.index = 0
+            # always use a wxNotebookSizer
+            self.properties['usenotebooksizer'] = '1'
             xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
 
         def write_child_prologue(self, child, outfile, ntabs):

@@ -1,3 +1,6 @@
+2002-10-25: codegen/py_codegen.py: changed wxGlade tags to fix bug caused
+				   by nested classes
+
 2002-10-24: application.py, xml_parse.py, tree.py: added new encoding property
 		to Application objects, which controls the encoding for the xml
 		generation
