@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.11 2003/11/24 21:28:06 agriggio Exp $
+# $Id: codegen.py,v 1.12 2003/12/17 23:13:34 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -93,8 +93,10 @@ class PythonCodeGenerator:
         function that generates Python code for the menubar of a wxFrame.
         """
         pygen = common.code_writers['python']
+        if obj.klass == obj.base: klass = pygen.cn(obj.klass)
+        else: klass = obj.klass
         init = [ '\n', '# Menu Bar\n', 'self.%s = %s()\n' %
-                 (obj.name, obj.klass),
+                 (obj.name, klass),
                  'self.SetMenuBar(self.%s)\n' % obj.name ]
         init.extend(self.get_init_code(obj))
         init.append('# Menu Bar end\n')
