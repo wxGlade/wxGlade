@@ -35,7 +35,7 @@ def parse_command_line():
     try: options, args = getopt.getopt(sys.argv[1:], "g:o:",
                                        ['generate-code=', 'output='])
     except getopt.GetoptError:
-        import traceback; traceback.print_exc()
+        #import traceback; traceback.print_exc()
         usage()
     return options, args
 
