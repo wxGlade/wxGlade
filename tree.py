@@ -5,7 +5,7 @@
 
 from wxPython.wx import *
 from xml.sax.saxutils import quoteattr
-import misc
+import misc, common
 
 class Tree:
     """\
@@ -269,6 +269,9 @@ class WidgetTree(wxTreeCtrl, Tree):
         app.widget.show_properties()
 
     def set_name(self, node, name):
+        try: del self.names[self.GetItemText(node.item)]
+        except KeyError: pass
+        self.names[name] = 1
         self.SetItemText(node.item, name)
 
     def select_item(self, node):
@@ -279,6 +282,7 @@ class WidgetTree(wxTreeCtrl, Tree):
         self.cur_widget = node.widget
         self.cur_widget.update_view(True)
         self.cur_widget.show_properties()
+        misc.focused_widget = self.cur_widget
 
     def on_change_selection(self, event):
         if not self.skip_select:
@@ -286,6 +290,7 @@ class WidgetTree(wxTreeCtrl, Tree):
             try:
                 if self.cur_widget: self.cur_widget.update_view(False)
                 self.cur_widget = self.GetPyData(item).widget
+                misc.focused_widget = self.cur_widget
                 self.cur_widget.show_properties(None)
                 self.cur_widget.update_view(True)
             except AttributeError:
@@ -341,20 +346,29 @@ class WidgetTree(wxTreeCtrl, Tree):
                 node.widget.finish_widget_creation()
             if node.children:
                 for c in node.children: self.show_widget(c)
-            # set the best size for the widget (if no one is given) before
-            # showing it
-            if not node.widget.properties['size'].is_active() and \
-                   node.widget.sizer:
-                node.widget.sizer.fit_parent(node.widget)
+##             # set the best size for the widget (if no one is given) before
+##             # showing it
+##             if not node.widget.properties['size'].is_active() and \
+##                    node.widget.sizer:
+##                 node.widget.sizer.fit_parent() #node.widget)
+            node.widget.post_load()
             node.widget.show_widget(True)
             node.widget.show_properties()
             node.widget.widget.Raise()
         else:
+            import edit_sizers
             def show_rec(node):
                 node.widget.show_widget(True)
                 self.expand(node, True)
                 if node.children:
                     for c in node.children: show_rec(c)
+                node.widget.post_load()
+##                 w = node.widget
+##                 if isinstance(w, edit_sizers.SizerBase): return
+##                 elif not w.properties['size'].is_active() and \
+##                          w.sizer and w.sizer.toplevel:
+##                     w.sizer.fit_parent()
+                    
             show_rec(node)
 
     def show_toplevel(self, event):
@@ -440,6 +454,6 @@ class WidgetTree(wxTreeCtrl, Tree):
         self.Expand(node.item)
         self.Delete(old_item)
         self.Thaw()
-        
+
 # end of class WidgetTree
 
