@@ -1,5 +1,5 @@
 # xrc_codegen.py: wxWindows resources XRC code generator
-# $Id: xrc_codegen.py,v 1.10 2003/05/13 10:05:15 agriggio Exp $
+# $Id: xrc_codegen.py,v 1.11 2003/05/15 19:05:00 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -164,6 +164,14 @@ class DefaultXrcObject(XrcObject):
 
         if 'id' in self.properties:
             del self.properties['id'] # id has no meaning for XRC
+
+        # 'disabled' property is actually 'enabled' for XRC
+        if 'disabled' in self.properties:
+            try: val = int(self.properties['disabled'])
+            except: val = False
+            if val:
+                self.properties['enabled'] = '0'
+            del self.properties['disabled']
             
         for name, val in self.properties.iteritems():
             self.write_property(name, val, out_file, ntabs+1)

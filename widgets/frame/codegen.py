@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.10 2003/05/13 14:10:07 dinogen Exp $
+# $Id: codegen.py,v 1.11 2003/05/15 19:04:57 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -41,26 +41,23 @@ class PythonFrameCodeGenerator:
         if title: out.append('self.SetTitle(%s)\n' % pygen.quote_str(title))
         icon = prop.get('icon')
         if icon: 
-            type = ''
-            if icon[-4:] == ".bmp": type = 'wxBITMAP_TYPE_BMP'
-            if icon[-4:] == ".gif": type = 'wxBITMAP_TYPE_GIF'
-            if icon[-4:] == ".xpm": type = 'wxBITMAP_TYPE_XPM'
-            if icon[-4:] == ".jpg": type = 'wxBITMAP_TYPE_JPEG'
-            if icon[-5:] == ".jpeg": type = 'wxBITMAP_TYPE_JPEG'
-            if icon[-4:] == ".png": type = 'wxBITMAP_TYPE_PNG'
-            if icon[-4:] == ".pcx": type = 'wxBITMAP_TYPE_PCX'
-            if type != '':
-                out.append('bmp = wxBitmap(' + pygen.quote_str(icon) + ', ' + type + ')\n')
-                out.append('icon = wxEmptyIcon()\n')
-                out.append('icon.CopyFromBitmap(bmp)\n')
-                out.append('self.SetIcon(icon)\n') 
+            out.append('_icon = wxEmptyIcon()\n')
+            out.append('_icon.CopyFromBitmap(wxBitmap(%s, '
+                       'wxBITMAP_TYPE_ANY))\n' % pygen.quote_str(icon))
+            out.append('self.SetIcon(_icon)\n')
 
         out.extend(pygen.generate_common_properties(frame))
         return out
 
     def get_layout_code(self, frame):
-        return ['self.Layout()\n']
-
+        ret = ['self.Layout()\n']
+        try:
+            if int(frame.properties['centered']):
+                ret.append('self.Centre()\n')
+        except (KeyError, ValueError):
+            pass
+        return ret
+    
 # end of class PythonFrameCodeGenerator
 
 
@@ -104,14 +101,14 @@ def xrc_frame_code_generator(obj):
                 out_file.write('    '*tabs + '</object>\n')
 
         def write(self, outfile, tabs):
-            if self.properties.has_key('menubar'):
+            if 'menubar' in self.properties:
                 del self.properties['menubar']
-            if self.properties.has_key('statusbar'):
+            if 'statusbar' in self.properties:
                 del self.properties['statusbar']
-            if self.properties.has_key('toolbar'):
+            if 'toolbar' in self.properties:
                 del self.properties['toolbar']
-            if self.properties.has_key('icon'):  #HELP#
-                del self.properties['icon']      #HELP#
+            if 'icon' in self.properties:
+                del self.properties['icon']
             xrcgen.DefaultXrcObject.write(self, outfile, tabs)
 
     # end of class FrameXrcObject
@@ -165,25 +162,23 @@ class CppFrameCodeGenerator:
         title = prop.get('title')
         if title: out.append('SetTitle(%s);\n' % cppgen.quote_str(title))
         icon = prop.get('icon')
-        if icon: 
-            type = ''
-            if icon[-4:] == ".bmp": type = 'wxBITMAP_TYPE_BMP'
-            if icon[-4:] == ".gif": type = 'wxBITMAP_TYPE_GIF'
-            if icon[-4:] == ".xpm": type = 'wxBITMAP_TYPE_XPM'
-            if icon[-4:] == ".jpg": type = 'wxBITMAP_TYPE_JPEG'
-            if icon[-5:] == ".jpeg": type = 'wxBITMAP_TYPE_JPEG'
-            if icon[-4:] == ".png": type = 'wxBITMAP_TYPE_PNG'
-            if icon[-4:] == ".pcx": type = 'wxBITMAP_TYPE_PCX'
-            if type != '':
-                out.append('wxBitmap * bmp = new wxBitmap(' + cppgen.quote_str(icon) + ', ' + type + ');\n')
-                out.append('wxIcon * icon = wxIcon(32,32);\n')
-                out.append('icon->CopyFromBitmap(bmp);\n')
-                out.append('SetIcon(icon);\n') 
+        if icon:
+            out.append('wxIcon _icon;\n')
+            out.append('_icon.CopyFromBitmap(wxBitmap(%s, '
+                       'wxBITMAP_TYPE_ANY));\n' % cppgen.quote_str(icon))
+            out.append('SetIcon(_icon);\n')
+            
         out.extend(cppgen.generate_common_properties(frame))
         return out
 
     def get_layout_code(self, frame):
-        return ['Layout();\n']
+        ret = ['Layout();\n']
+        try:
+            if int(frame.properties['centered']):
+                ret.append('Centre();\n')
+        except (KeyError, ValueError):
+            pass
+        return ret
 
 # end of class CppFrameCodeGenerator
 

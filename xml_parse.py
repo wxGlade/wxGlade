@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.20 2003/05/13 10:05:15 agriggio Exp $
+# $Id: xml_parse.py,v 1.21 2003/05/15 19:05:00 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -125,6 +125,7 @@ class XmlWidgetBuilder(XmlParser):
             language = attrs.get('language')
             if language:
                 app.codewriters_prop.set_str_value(language)
+                app.set_language(language)
             top_win = attrs.get("top_window")
             if top_win: self.top_window = top_win
             try: use_gettext = int(attrs["use_gettext"])

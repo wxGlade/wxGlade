@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.41 2003/05/13 10:13:51 agriggio Exp $
+# $Id: edit_windows.py,v 1.42 2003/05/15 19:05:01 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -311,6 +311,20 @@ class WindowBase(EditBase):
         # properties added 2002-08-15
         prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True)
 
+        # properties added 2003-05-15
+        self.disabled_p = False
+        self.access_functions['disabled'] = (self.get_disabled,
+                                             self.set_disabled)
+        prop['disabled'] = CheckBoxProperty(self, 'disabled', None)
+        
+        self.focused_p = False
+        self.access_functions['focused'] = (self.get_focused, self.set_focused)
+        prop['focused'] = CheckBoxProperty(self, 'focused', None)
+
+        self.hidden_p = False
+        self.access_functions['hidden'] = (self.get_hidden, self.set_hidden)
+        prop['hidden'] = CheckBoxProperty(self, 'hidden', None)
+
     def finish_widget_creation(self, *args, **kwds):
         prop = self.properties
         size = prop['size'].get_value()
@@ -331,12 +345,6 @@ class WindowBase(EditBase):
             color = misc.color_to_string(self.widget.GetForegroundColour())
             self.foreground = color
             prop['foreground'].set_value(color)
-##         background = prop['background'].get_value()
-##         if background:
-##             self.widget.SetBackgroundColour(misc.string_to_color(background))
-##         foreground = prop['foreground'].get_value()
-##         if foreground:
-##             self.widget.SetForegroundColour(misc.string_to_color(foreground))
         if prop['font'].is_active():
             self.set_font(prop['font'].get_value())
         EditBase.finish_widget_creation(self)
@@ -375,6 +383,10 @@ class WindowBase(EditBase):
         except KeyError: pass
         # new properties 2002-08-15
         prop['tooltip'].display(panel)
+        # new properties 2003-05-15
+        prop['disabled'].display(panel)
+        prop['focused'].display(panel)
+        prop['hidden'].display(panel)
 
         sizer_tmp = wxBoxSizer(wxVERTICAL)
         sizer_tmp.Add(self.name_prop.panel, 0, wxEXPAND)
@@ -386,6 +398,9 @@ class WindowBase(EditBase):
         try: sizer_tmp.Add(prop['font'].panel, 0, wxEXPAND)
         except KeyError: pass
         sizer_tmp.Add(prop['tooltip'].panel, 0, wxEXPAND)
+        sizer_tmp.Add(prop['disabled'].panel, 0, wxEXPAND)
+        sizer_tmp.Add(prop['focused'].panel, 0, wxEXPAND)
+        sizer_tmp.Add(prop['hidden'].panel, 0, wxEXPAND)
         
         panel.SetAutoLayout(1)
         panel.SetSizer(sizer_tmp)
@@ -430,17 +445,12 @@ class WindowBase(EditBase):
     def get_tooltip(self): return self.tooltip
     def set_tooltip(self, value):
         self.tooltip = value
-        #if self.widget: self.widget.SetTooltip(value)
 
     def get_background(self):
         return self.background
-##         if not self.widget: return '' # this is an invalid color
-##         return misc.color_to_string(self.widget.GetBackgroundColour())
 
     def get_foreground(self):
         return self.foreground
-##         if not self.widget: return '' # this is an invalid color
-##         return misc.color_to_string(self.widget.GetForegroundColour())
 
     def set_background(self, value):
         oldval = self.background
@@ -483,15 +493,9 @@ class WindowBase(EditBase):
         return str(self.font)
     
     def _build_from_font(self, font):
-##         if not self.widget: return '' # this is an invalid font
-##         font = self.widget.GetFont()
         families = FontDialogProperty.font_families_from
         styles = FontDialogProperty.font_styles_from
         weights = FontDialogProperty.font_weights_from
-##         return "['%s', '%s', '%s', '%s', '%s', '%s']" % \
-##                (font.GetPointSize(), family,
-##                 styles[font.GetStyle()], weights[font.GetWeight()],
-##                 font.GetUnderlined(), font.GetFaceName())
         return [ str(font.GetPointSize()),
                  families.get(font.GetFamily(), 'default'),
                  styles.get(font.GetStyle(), 'normal'),
@@ -577,6 +581,27 @@ class WindowBase(EditBase):
             # end of class FontHandler
             return FontHandler(self)
         return None
+
+    def get_disabled(self):
+        return self.disabled_p
+
+    def set_disabled(self, value):
+        try: self.disabled_p = bool(int(value))
+        except ValueError: pass
+
+    def get_focused(self):
+        return self.focused_p
+
+    def set_focused(self, value):
+        try: self.focused_p = bool(int(value))
+        except ValueError: pass
+
+    def get_hidden(self):
+        return self.hidden_p
+
+    def set_hidden(self, value):
+        try: self.hidden_p = bool(int(value))
+        except ValueError: pass
 
 # end of class WindowBase
 
@@ -892,11 +917,13 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def create_properties(self):
         WindowBase.create_properties(self)
-        if self.has_title:
-            panel = self.notebook.GetPage(0)
-            sizer_tmp = panel.GetSizer()
-            self.properties['title'].display(panel)
-            sizer_tmp.Add(self.properties['title'].panel, 0, wxEXPAND)
+        # don't display the title ourselves anymore, now it's a
+        # duty of the subclass!
+##         if self.has_title:
+##             panel = self.notebook.GetPage(0)
+##             sizer_tmp = panel.GetSizer()
+##             self.properties['title'].display(panel)
+##             sizer_tmp.Add(self.properties['title'].panel, 0, wxEXPAND)
         PreviewMixin.create_properties(self)
             
     def get_title(self):

@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.26 2003/05/13 10:05:15 agriggio Exp $
+# $Id: py_codegen.py,v 1.27 2003/05/15 19:05:00 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -716,14 +716,18 @@ def add_app(app_attrs, top_win_class):
         for line in lines: write(line)
 
 
+def _get_code_name(obj):
+    if obj.is_toplevel: return 'self'
+    else:
+        if test_attribute(obj): return 'self.%s' % obj.name
+        else: return obj.name
+
+
 def generate_code_size(obj):
     """\
     returns the code fragment that sets the size of the given object.
     """
-    if obj.is_toplevel: name = 'self'
-    else:
-        if test_attribute(obj): name = 'self.%s' % obj.name
-        else: name = obj.name
+    name = _get_code_name(obj)
     size = obj.properties.get('size', '').strip()
     use_dialog_units = (size[-1] == 'd')
     if use_dialog_units:
@@ -741,10 +745,7 @@ def generate_code_foreground(obj):
     returns the code fragment that sets the foreground colour of
     the given object.
     """
-    if obj.is_toplevel: self = 'self'
-    else:
-        if test_attribute(obj): self = 'self.%s' % obj.name
-        else: self = obj.name
+    self = _get_code_name(obj)
     try:
         color = 'wxColour(%s)' % \
                 _string_to_colour(obj.properties['foreground'])
@@ -759,10 +760,7 @@ def generate_code_background(obj):
     returns the code fragment that sets the background colour of
     the given object.
     """
-    if obj.is_toplevel: self = 'self'
-    else:
-        if test_attribute(obj): self = 'self.%s' % obj.name
-        else: self = obj.name
+    self = _get_code_name(obj)
     try:
         color = 'wxColour(%s)' % \
                 _string_to_colour(obj.properties['background'])
@@ -781,10 +779,7 @@ def generate_code_font(obj):
     underlined = font['underlined']
     style = font['style']; weight = font['weight']
     face = '"%s"' % font['face'].replace('"', r'\"')
-    if obj.is_toplevel: self = 'self'
-    else:
-        if test_attribute(obj): self = 'self.%s' % obj.name
-        else: self = obj.name
+    self = _get_code_name(obj)
     return self + '.SetFont(wxFont(%s, %s, %s, %s, %s, %s))\n' % \
             (size, family, style, weight, underlined, face)
 
@@ -811,13 +806,34 @@ def generate_code_tooltip(obj):
     """\
     returns the code fragment that sets the tooltip of the given object.
     """
-    if obj.is_toplevel: self = 'self'
-    else:
-        if test_attribute(obj): self = 'self.%s' % obj.name
-        else: self = obj.name
+    self = _get_code_name(obj)
     return self + '.SetToolTipString(%s)\n' % \
            quote_str(obj.properties['tooltip'])
 
+
+def generate_code_disabled(obj):
+    self = _get_code_name(obj)
+    try: disabled = int(obj.properties['disabled'])
+    except: disabled = False
+    if disabled:
+        return self + '.Disable()\n'
+
+
+def generate_code_focused(obj):
+    self = _get_code_name(obj)
+    try: focused = int(obj.properties['focused'])
+    except: focused = False
+    if focused:
+        return self + '.SetFocus()\n'
+
+
+def generate_code_hidden(obj):
+    self = _get_code_name(obj)
+    try: hidden = int(obj.properties['hidden'])
+    except: hidden = False
+    if hidden:
+        return self + '.Hide()\n'
+    
 
 def generate_common_properties(widget):
     """\
@@ -833,6 +849,10 @@ def generate_common_properties(widget):
     if prop.get('font'): out.append(generate_code_font(widget))
     # tooltip
     if prop.get('tooltip'): out.append(generate_code_tooltip(widget))
+    # trivial boolean properties
+    if prop.get('disabled'): out.append(generate_code_disabled(widget))
+    if prop.get('focused'): out.append(generate_code_focused(widget))
+    if prop.get('hidden'): out.append(generate_code_hidden(widget))
     return out
 
 
