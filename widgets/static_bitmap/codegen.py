@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxStaticBitmap objects
-# $Id: codegen.py,v 1.18 2004/01/18 19:45:03 agriggio Exp $
+# $Id: codegen.py,v 1.19 2004/01/20 22:31:52 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -23,9 +23,13 @@ class PythonCodeGenerator:
             if obj.preview:
                 bmp = cn('wxEmptyBitmap(1, 1)')
             else:
-                # ALB 2004-01-18: changed from wxBitmapFromXPMData to wxBitmap
-                bmp = cn('wxBitmap') + '(%s, %s)' % \
-                      (bmp_file[4:].strip(), cn('wxBITMAP_TYPE_ANY'))
+                #bmp = cn('wxBitmapFromXPMData') + '(%s)' % bmp_file[4:].strip()
+                bmp = cn('wxBitmap') + '(%s,%s)' % (bmp_file[4:].strip(), cn('wxBITMAP_TYPE_ANY'))
+        elif bmp_file.startswith('code:'):
+            if obj.preview:
+                bmp = cn('wxEmptyBitmap(1, 1)')
+            else:
+                bmp = '(%s)' % bmp_file[5:].strip()
         else:
             bmp = (cn('wxBitmap') + '(%s, ' + cn('wxBITMAP_TYPE_ANY') +
                    ')') % pygen.quote_str(bmp_file, False, False)
@@ -70,9 +74,11 @@ class CppCodeGenerator:
         if not bmp_file:
             bmp = 'wxNullBitmap'
         elif bmp_file.startswith('var:'):
-            bmp = 'wx.Bitmap(%s)' % bmp_file[4:].strip()
+            bmp = 'wxBitmap(%s,wxBITMAP_TYPE_ANY)' % bmp_file[4:].strip()
+        elif bmp_file.startswith('code:'):
+            bmp = '(%s)' % bmp_file[5:].strip()
         else:
-            bmp = 'wx.Bitmap(%s, wxBITMAP_TYPE_ANY)' % \
+            bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
                   cppgen.quote_str(bmp_file, False, False)
         if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
         else: parent = 'this'

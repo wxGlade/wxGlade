@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.13 2004/01/18 19:45:03 agriggio Exp $
+# $Id: codegen.py,v 1.14 2004/01/20 22:31:52 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -61,10 +61,13 @@ class PythonCodeGenerator:
                 if obj.preview:
                     return cn('wxEmptyBitmap(1, 1)')
                 else:
-                    # ALB 2004-01-18: changed from wxBitmapFromXPMData
-                    # to wxBitmap
-                    return cn('wxBitmap') + '(%s, %s)' % \
-                           (bitmap[4:].strip(), cn('wxBITMAP_TYPE_ANY'))
+                    return (cn('wxBitmap') + \
+                           '(%s,' + cn('wxBITMAP_TYPE_ANY') + ')') % (bitmap[4:].strip())
+            elif bitmap.startswith('code:'):
+                if obj.preview:
+                    return cn('wxEmptyBitmap(1, 1)')
+                else:
+                    return '(%s)' % bitmap[5:].strip()
             else:
                 return cn('wxBitmap') + \
                        ('(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \
@@ -295,7 +298,9 @@ class CppCodeGenerator:
             if not bitmap:
                 return 'wxNullBitmap'
             elif bitmap.startswith('var:'):
-                return 'wxBitmap(%s)' % bitmap[4:].strip()
+                return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % bitmap[4:].strip()
+            elif bitmap.startswith('code:'):
+                return '(%s)' % bitmap[5:].strip()
             else:
                 return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
                        cppgen.quote_str(bitmap, False, False)
