@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # wxglade.py: entry point of wxGlade
-# $Id: wxglade.py,v 1.16 2003/05/13 10:05:15 agriggio Exp $
+# $Id: wxglade.py,v 1.17 2004/08/16 18:34:10 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -104,10 +104,16 @@ wxGlade usage:
     sys.exit(1)
 
 
+def determine_wxglade_path():
+    root = __file__
+    if os.path.islink(root):
+        root = os.path.realpath(root)
+    return os.path.dirname(os.path.abspath(root))
+
 if __name__ == "__main__":
     # prepend the widgets dir to the
     # app's search path
-    wxglade_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+    wxglade_path = determine_wxglade_path()
     #sys.path = [os.getcwd(), os.path.join(os.getcwd(), 'widgets')] + sys.path
     sys.path = [wxglade_path, os.path.join(wxglade_path, 'widgets')] + sys.path
     # set the program's path
