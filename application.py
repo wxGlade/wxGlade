@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.27 2003/07/14 17:48:48 agriggio Exp $
+# $Id: application.py,v 1.28 2003/07/15 18:38:00 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -119,6 +119,7 @@ class Application(object):
         self.codegen_prop = RadioProperty(self, "code_generation", panel,
                                           ["Single file", "Separate file for" \
                                            " each class"])
+        
         ext = getattr(common.code_writers.get('python'),
                       'default_extensions', [])
         wildcard = []
@@ -140,6 +141,14 @@ class Application(object):
 
         self.codewriters_prop.set_str_value('python')
         
+        # `overwrite' property - added 2003-07-15
+        self.overwrite = False
+        def get_overwrite(): return self.overwrite
+        def set_overwrite(val): self.overwrite = bool(int(val))
+        self.access_functions['overwrite'] = (get_overwrite, set_overwrite)
+        self.overwrite_prop = CheckBoxProperty(self, 'overwrite', panel,
+                                               'Overwrite existing sources')
+
         self.outpath_prop = DialogProperty(self, "output_path", panel,
                                            dialog)
         BTN_ID = wxNewId()
@@ -160,6 +169,7 @@ class Application(object):
         sizer.Add(szr, 0, wxEXPAND)
         sizer.Add(self.codegen_prop.panel, 0, wxALL|wxEXPAND, 4)
         sizer.Add(self.codewriters_prop.panel, 0, wxALL|wxEXPAND, 4)
+        sizer.Add(self.overwrite_prop.panel, 0, wxEXPAND)
         sizer.Add(self.outpath_prop.panel, 0, wxEXPAND)
         sizer.Add(btn, 0, wxALL|wxEXPAND, 5)
         
@@ -232,10 +242,10 @@ class Application(object):
     def _set_saved(self, value):
         if self.__saved != value:
             self.__saved = value
-            t = common.app_tree.get_title()
+            t = common.app_tree.get_title().strip()
             if not value: common.app_tree.set_title('* ' + t)
             else:
-                if t[0] == '*': common.app_tree.set_title(t[1:])
+                if t[0] == '*': common.app_tree.set_title(t[1:].strip())
     saved = property(_get_saved, _set_saved)
 
     def _get_filename(self): return self.__filename
