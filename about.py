@@ -31,16 +31,11 @@ class wxGladeAboutBox(wxDialog):
     <table border="0" cellpadding="0" cellspacing="0">
     <tr><td width="50"></td><td>
     <font size="-1"><b>
-    <p>Copyright (c) 2002-2003 Alberto Griggio<br>
-    License: MIT (see <a href="show_license">license.txt</a>)</b><br>
+    <p>License: MIT (see <a href="show_license">license.txt</a>)</b><br>
     wxPyColourChooser code copyright (c) 2002-2003 <br>Michael Gilfix 
     (wxWindows license)
     <p>Home page:
     <a href="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</a>
-    <p>Authors:<br>
-    &nbsp;&nbsp;&nbsp;Alberto Griggio &lt;albgrig@tiscalinet.it&gt;<br>
-    &nbsp;&nbsp;&nbsp;Marco Barisione &lt;marco.bari@vene.ws&gt;<br>
-    &nbsp;&nbsp;&nbsp;Marcello Semboli &lt;dinogen@supereva.it&gt;
     <p>For credits, see
     <a href="show_credits">credits.txt</a>.</font></td>
     </tr></table>
