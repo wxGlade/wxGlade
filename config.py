@@ -130,7 +130,7 @@ class Preferences(ConfigParser):
         val = self.def_vals.get(attr, "")
         # UGLY!!!
         cast = type(val)
-        if cast is bool: cast = int
+        if cast is bool: cast = self._cast_to_bool
         # ...but I haven't found a better way: the problem is that
         # bool('0') == True, while int('0') == False, and we want the
         # latter behaviour
@@ -138,6 +138,15 @@ class Preferences(ConfigParser):
             return cast(self.get('wxglade', attr))
         except (NoOptionError, ValueError):
             return val
+
+    def _cast_to_bool(self, val):
+        try:
+            return int(val)
+        except ValueError:
+            val = val.lower().strip()
+            if val in ('true', 'on'): return 1
+            elif val in ('false', 'off'): return 0
+            else: raise
 
     def __getitem__(self, attr):
         return self.__getattr__(attr)
