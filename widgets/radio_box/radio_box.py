@@ -83,11 +83,11 @@ class EditRadioBox(ManagedBase):
         szr.Add(self.properties['dimension'].panel, 0, wxEXPAND)
         szr.Add(self.properties['selection'].panel, 0, wxEXPAND)
         szr.Add(self.properties['choices'].panel, 1, wxALL|wxEXPAND, 3)
-        self.properties['choices'].set_col_sizes([-1])
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
+        self.properties['choices'].set_col_sizes([-1])
 
     def create_button(self, label):
         r = wxGladeRadioButton(self.widget, -1, label)

@@ -192,7 +192,6 @@ class EditGrid(ManagedBase):
         szr.Add(self.properties['enable_row_resize'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_grid_resize'].panel, 0, wxEXPAND)
         szr.Add(self.properties['selection_mode'].panel, 0, wxALL|wxEXPAND, 5)
-        self.properties['columns'].set_col_sizes([-1, 0])
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -200,6 +199,7 @@ class EditGrid(ManagedBase):
         self.notebook.AddPage(panel, 'Widget')
         import math
         panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+        self.properties['columns'].set_col_sizes([-1, 0])
 
     def create_widget(self):
         self.widget = wxGrid(self.parent.widget, self.id,(200,200))
