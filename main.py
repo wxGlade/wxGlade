@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.50 2004/02/21 12:07:35 agriggio Exp $
+# $Id: main.py,v 1.51 2004/05/11 15:51:37 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -215,29 +215,61 @@ class wxGladeFrame(wxFrame):
             main_sizer = wxBoxSizer(wxVERTICAL)
             show_core_custom = ToggleButtonBox(
                 self, -1, ["Core components", "Custom components"], 0)
-            core_sizer = wxGridSizer(0, config.preferences.buttons_per_row)
-            custom_sizer = wxGridSizer(0, config.preferences.buttons_per_row)
+
+            if misc.check_wx_version(2, 5):
+                core_sizer = wxFlexGridSizer(
+                    0, config.preferences.buttons_per_row)
+                custom_sizer = wxFlexGridSizer(
+                    0, config.preferences.buttons_per_row)
+            else:
+                core_sizer = wxGridSizer(
+                    0, config.preferences.buttons_per_row)
+                custom_sizer = wxGridSizer(
+                    0, config.preferences.buttons_per_row)                
             self.SetAutoLayout(True)
             # core components
             for b in core_btns: core_sizer.Add(b)
             for sb in sizer_btns: core_sizer.Add(sb)
             # custom components
-            for b in custom_btns: custom_sizer.Add(b)
+            for b in custom_btns:
+                custom_sizer.Add(b)
+                if misc.check_wx_version(2, 5):
+                    custom_sizer.Show(b, False)
+            custom_sizer.Layout()
             main_sizer.Add(show_core_custom, 0, wxEXPAND)
-            main_sizer.Add(core_sizer, 1, wxEXPAND)
-            main_sizer.Add(custom_sizer, 1, wxEXPAND)
-            main_sizer.Show(custom_sizer, False)
+            main_sizer.Add(core_sizer, 0, wxEXPAND)
+            main_sizer.Add(custom_sizer, 0, wxEXPAND)
             self.SetSizer(main_sizer)
+            if not misc.check_wx_version(2, 5):
+                main_sizer.Show(custom_sizer, False)
+            #main_sizer.Show(1, False)
             main_sizer.Fit(self)
             # events to display core/custom components
-            def on_show_core_custom(event):
-                to_show = core_sizer
-                to_hide = custom_sizer
-                if event.GetValue() == 1:
-                    to_show, to_hide = to_hide, to_show
-                main_sizer.Show(to_show, True)
-                main_sizer.Show(to_hide, False)
-                main_sizer.Layout()           
+            if misc.check_wx_version(2, 5):
+                def on_show_core_custom(event):
+                    show_core = True
+                    show_custom = False
+                    if event.GetValue() == 1:
+                        show_core = False
+                        show_custom = True
+                    for b in custom_btns:
+                        custom_sizer.Show(b, show_custom)
+                    for b in core_btns:
+                        core_sizer.Show(b, show_core)
+                    for b in sizer_btns:
+                        core_sizer.Show(b, show_core)
+                    core_sizer.Layout()
+                    custom_sizer.Layout()
+                    main_sizer.Layout()
+            else:
+                def on_show_core_custom(event):
+                    to_show = core_sizer
+                    to_hide = custom_sizer
+                    if event.GetValue() == 1:
+                        to_show, to_hide = to_hide, to_show
+                    main_sizer.Show(to_show, True)
+                    main_sizer.Show(to_hide, False)
+                    main_sizer.Layout()           
             EVT_TOGGLE_BOX(self, show_core_custom.GetId(), on_show_core_custom)
         # ... otherwise (the common case), just add the palette of core buttons
         else:
