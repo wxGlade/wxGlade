@@ -1,3 +1,10 @@
+2003-03-06: misc.py:
+                added sizer_fixed_Insert to fix bug in wxPython 2.4
+
+2003-03-05: widget_properties.py:
+                modified the display function of each property, to get rid of
+                useless wxPanels
+
 2003-02-14: main.py, application.py: 
                 better error messages in case of IOError or OSError exceptions
 

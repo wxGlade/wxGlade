@@ -251,3 +251,17 @@ def _reverse_dict(src):
     for key, val in src.iteritems():
         ret[val] = key
     return ret
+
+
+#-----------------------------------------------------------------------------
+def sizer_fixed_Insert(self, *args, **kw):
+    """\
+    These function fixes a bug in wxPython 2.4, which fails to call
+    InsertSizer when the 2nd argument is a Sizer
+    """
+    if type(args[1]) == type(1):
+        apply(self.InsertSpacer, args, kw)
+    elif isinstance(args[1], wxSizerPtr):
+        apply(self.InsertSizer, args, kw)
+    else:
+        apply(self.InsertWindow, args, kw)
