@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.43 2004/06/16 21:04:02 agriggio Exp $
+# $Id: widget_properties.py,v 1.44 2004/08/16 18:34:10 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -62,7 +62,7 @@ class Property:
             if self.setter: self.setter(val)
             else:
                 self.owner[self.name][1](val)
-            self.val = val
+            self.val = self.get_value()
         first[0] = False
         event.Skip()
         
