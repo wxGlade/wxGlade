@@ -11,13 +11,14 @@ from widget_properties import *
 from edit_windows import ManagedBase, WindowBase, EditBase
 
 class SplitterPane(WindowBase):
-    def __init__(self, name, parent, id, pos, property_window, show=True):
+    def __init__(self, name, parent, id, pos, property_window, show=True,
+                 style=wxTAB_TRAVERSAL):
         WindowBase.__init__(self, name, 'wxPanel', parent,
                             id, property_window, show)
         self.sizer = None
         self.sel_marker = None 
 
-        self.style = wxTAB_TRAVERSAL
+        self.style = style
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
                            wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
@@ -33,7 +34,7 @@ class SplitterPane(WindowBase):
                                                      style_labels)  
 
     def create_widget(self):
-        self.widget = wxPanel(self.parent.widget, self.id)
+        self.widget = wxPanel(self.parent.widget, self.id, style=0)
         self.sel_marker = misc.SelectionMarker(self.widget, self.parent.widget)
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
@@ -369,7 +370,8 @@ def xml_builder_pane(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if not parent.window_1: pos = 1
     else: pos = 2
-    pane = SplitterPane(name, parent, wxNewId(), 1, common.property_panel)
+    pane = SplitterPane(name, parent, wxNewId(), 1, common.property_panel,
+                        style=0)
     if not parent.window_1:
         parent.window_1 = pane
         parent.properties['window_1'].set_value(pane.name)
