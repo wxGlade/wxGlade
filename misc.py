@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.36 2004/10/24 16:12:50 agriggio Exp $
+# $Id: misc.py,v 1.37 2004/11/02 09:52:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -30,7 +30,14 @@ if wxPlatform == '__WXMSW__':
             return w, h
 
     # end of class wxGladeRadioButton
-else: wxGladeRadioButton = wxRadioButton
+
+else:
+    wxGladeRadioButton = wxRadioButton
+
+
+# ALB 2004-10-27
+FileSelector = wxFileSelector
+DirSelector = wxDirSelector
 
 #---------------------  Selection Markers  ----------------------------------
 

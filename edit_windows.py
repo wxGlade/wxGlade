@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.69 2004/10/24 16:12:50 agriggio Exp $
+# $Id: edit_windows.py,v 1.70 2004/11/02 09:52:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -454,8 +454,11 @@ class WindowBase(EditBase):
             if h_1 == -1: h = -1
             size = "%s, %s" % (w, h)
             if use_dialog_units: size += "d"
-            self.properties['size'].set_value(size)
-            self.size = size
+            if not (sz.is_active() and
+                    (int(self.get_option()) != 0 or
+                     self.get_int_flag() & wxEXPAND)):
+                self.properties['size'].set_value(size)
+                self.size = size
         except KeyError: pass
         if skip:
             event.Skip()

@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.44 2004/10/18 12:10:17 agriggio Exp $
+# $Id: common.py,v 1.45 2004/11/02 09:52:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -187,7 +187,8 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     from wxPython import wx
     from tree import WidgetTree
     id = wx.wxNewId()
-    icon_path = os.path.join(wxglade_path, icon_path)
+    if not os.path.isabs(icon_path):
+        icon_path = os.path.join(wxglade_path, icon_path)
     if wx.wxPlatform == '__WXGTK__': style = wx.wxNO_BORDER
     else: style = wx.wxBU_AUTODRAW
     tmp = wx.wxBitmapButton(palette, id, wx.wxBitmap(icon_path,
@@ -316,6 +317,9 @@ def check_autosaved(filename):
     """\
     Returns True iff there are some auto saved data for filename
     """
+    if filename is not None and filename == app_tree.app.filename:
+        # this happens when reloading, no autosave-restoring in this case...
+        return False
     autosaved = get_name_for_autosave(filename)
     try:
         if filename:

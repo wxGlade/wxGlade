@@ -3,6 +3,7 @@ import common, sys, os, os.path
 
 if common.use_gui:
     from wxPython.wx import *
+    import misc
 
     try:
         wxFIXED_MINSIZE
@@ -53,6 +54,8 @@ if common.use_gui:
                 # ALB 2004-10-15
                 self.autosave.SetValue(self.preferences.autosave)
                 self.autosave_delay.SetValue(self.preferences.autosave_delay)
+                # ALB 2004-10-27
+                self.use_kde_dialogs.SetValue(self.preferences.use_kde_dialogs)
             except Exception, e:
                 wxMessageBox('Error reading config file:\n%s' % e, 'Error',
                              wxOK|wxCENTRE|wxICON_ERROR)
@@ -84,17 +87,24 @@ if common.use_gui:
             # ALB 2004-10-15
             prefs['autosave'] = self.autosave.GetValue()
             prefs['autosave_delay'] = self.autosave_delay.GetValue()
+            # ALB 2004-10-27
+            prefs['use_kde_dialogs'] = self.use_kde_dialogs.GetValue()
             
         def on_widget_path(self, event):
             # create a file choice dialog
-            dlg = wxDirDialog(self, "Choose a directory:", os.getcwd(),
-                              style=wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON)
-            if dlg.ShowModal() == wxID_OK:
-                wxMessageBox('Changes to local widget path take effect '
-                             'on restart of wxGlade', 'wxGlade',
-                             wxOK|wxICON_INFORMATION|wxCENTRE)
-                self.local_widget_path.SetValue(dlg.GetPath())
-            dlg.Destroy()
+##             dlg = wxDirDialog(self, "Choose a directory:", os.getcwd(),
+##                               style=wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON)
+##             if dlg.ShowModal() == wxID_OK:
+##                 wxMessageBox('Changes to local widget path take effect '
+##                              'on restart of wxGlade', 'wxGlade',
+##                              wxOK|wxICON_INFORMATION|wxCENTRE)
+##                 self.local_widget_path.SetValue(dlg.GetPath())
+##             dlg.Destroy()
+            pth = misc.DirSelector("Choose a directory:", os.getcwd(),
+                                   style=wxDD_DEFAULT_STYLE |
+                                   wxDD_NEW_DIR_BUTTON)
+            if pth:
+                self.local_widget_path.SetValue(pth)
 
     # end of class wxGladePreferences
 
@@ -141,6 +151,7 @@ class Preferences(ConfigParser):
         'allow_duplicate_names': False,
         'autosave': True,
         'autosave_delay': 120, # in seconds
+        'use_kde_dialogs': False,
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults

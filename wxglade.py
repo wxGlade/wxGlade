@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # wxglade.py: entry point of wxGlade
-# $Id: wxglade.py,v 1.20 2004/10/27 11:11:40 agriggio Exp $
+# $Id: wxglade.py,v 1.21 2004/11/02 09:52:03 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import os, os.path, sys
+import os, sys
 
 # check to see if the Python release supports boolean identifiers
 # and bool built-in function (>= Python 2.2.1).
@@ -112,7 +112,8 @@ def determine_wxglade_path():
         return os.path.dirname(os.path.abspath(root))
     except:
         # __file__ is not defined when building an .exe with McMillan
-        return os.getcwd()
+        return os.path.dirname(sys.argv[0])
+
 
 def run_main():
     """\

@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.33 2004/10/18 17:13:20 agriggio Exp $
+# $Id: xml_parse.py,v 1.34 2004/11/02 09:52:03 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -15,6 +15,7 @@
 #     def char_data(self, data):
 #         return False -> no further processing needed
 
+import os
 import common, edit_sizers
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
@@ -493,6 +494,18 @@ class CodeWriter(XmlParser):
                     raise XmlParsingError("'path' attribute missing: could "
                                           "not generate code")
             else: attrs['path'] = self.out_path
+
+            # ALB 2004-11-01: check if the values of
+            # use_multiple_files and out_path agree
+            if use_multiple_files:
+                if not os.path.isdir(self.out_path):
+                    raise IOError("Output path must be an existing directory"
+                                  " when generating multiple files")
+            else:
+                if os.path.isdir(self.out_path):
+                    raise IOError("Output path can't be a directory when "
+                                  "generating a single file")
+            
             # initialize the writer
             self.code_writer.initialize(attrs)
             return

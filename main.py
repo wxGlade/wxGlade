@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.59 2004/10/18 12:10:17 agriggio Exp $
+# $Id: main.py,v 1.60 2004/11/02 09:52:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -539,10 +539,10 @@ class wxGladeFrame(wxFrame):
         """
         if not self.ask_save(): return
         from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
-        infile = wxFileSelector("Open file", wildcard="wxGlade files (*.wxg)"
-                                "|*.wxg|XML files (*.xml)|*.xml|All files|*",
-                                flags=wxOPEN|wxFILE_MUST_EXIST,
-                                default_path=self.cur_dir)
+        infile = misc.FileSelector("Open file", wildcard="wxGlade files (*.wxg)"
+                                   "|*.wxg|XML files (*.xml)|*.xml|All files|*",
+                                   flags=wxOPEN|wxFILE_MUST_EXIST,
+                                   default_path=self.cur_dir)
         if infile:
             # ALB 2004-10-15 try to restore possible autosave content...
             if common.check_autosaved(infile) and \
@@ -688,11 +688,11 @@ class wxGladeFrame(wxFrame):
         """\
         saves a wxGlade project onto an xml file chosen by the user
         """
-        fn = wxFileSelector("Save project as...",
-                            wildcard="wxGlade files (*.wxg)|*.wxg|"
-                            "XML files (*.xml)|*.xml|All files|*",
-                            flags=wxSAVE|wxOVERWRITE_PROMPT,
-                            default_path=self.cur_dir)
+        fn = misc.FileSelector("Save project as...",
+                               wildcard="wxGlade files (*.wxg)|*.wxg|"
+                               "XML files (*.xml)|*.xml|All files|*",
+                               flags=wxSAVE|wxOVERWRITE_PROMPT,
+                               default_path=self.cur_dir)
         if fn:
             common.app_tree.app.filename = fn
             self.save_app(event)
@@ -756,10 +756,10 @@ class wxGladeFrame(wxFrame):
         if not self.ask_save():
             return
         
-        infile = wxFileSelector("Import file", wildcard="XRC files (*.xrc)"
-                                "|*.xrc|All files|*",
-                                flags=wxOPEN|wxFILE_MUST_EXIST,
-                                default_path=self.cur_dir)
+        infile = misc.FileSelector("Import file", wildcard="XRC files (*.xrc)"
+                                   "|*.xrc|All files|*",
+                                   flags=wxOPEN|wxFILE_MUST_EXIST,
+                                   default_path=self.cur_dir)
         if infile:
             buf = cStringIO.StringIO()
             try:
@@ -790,6 +790,13 @@ class wxGlade(wxApp):
             self.SetAssertMode(0)
         wxInitAllImageHandlers()
         config.init_preferences()
+
+        # ALB 2004-10-27
+        if wxPlatform == '__WXGTK__' and config.preferences.use_kde_dialogs:
+            import kdefiledialog
+            if kdefiledialog.test_kde():
+                misc.FileSelector = kdefiledialog.kde_file_selector
+                misc.DirSelector = kdefiledialog.kde_dir_selector
 
         wxArtProvider_PushProvider(wxGladeArtProvider())
 
