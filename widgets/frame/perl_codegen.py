@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: perl_codegen.py,v 1.3 2003/06/26 08:48:11 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.4 2003/07/09 09:19:16 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -36,6 +36,11 @@ class PerlStatusBarCodeGenerator:
 
 
 class PerlFrameCodeGenerator:
+#wxFrame(  parent, id, title, pos , size , style , name )
+    new_signature = [
+        '$parent', '$id', '$title', '$pos', '$size', '$style', '$name'
+    ]
+
     def get_code(self, obj):
         return [], [], [], [] # the frame can't be a children
 
@@ -75,6 +80,7 @@ class PerlFrameCodeGenerator:
 
 class PerlMDIChildFrameCodeGenerator(PerlFrameCodeGenerator):
     extra_headers = ['Wx::MDI']
+#wxMDIChildFrame(parent, id, title, pos, size, style, name )
 
 # end of class PerlMDIChildFrameCodeGenerator
 

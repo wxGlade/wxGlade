@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxPanel objects
-# $Id: perl_codegen.py,v 1.3 2003/06/27 05:56:55 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.4 2003/07/09 09:19:16 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -8,6 +8,13 @@
 import common
 
 class PerlCodeGenerator:
+#wxPanel(  parent, id, pos , size , style ,   name )
+#wxScrolledWindow(parent, id, pos, size, style, name )
+#wxMDIChildFrame(parent, id, title, pos, size, style, name )
+    new_signature = [
+        '$parent', '$id', '$title', '$pos', '$size', '$style', '$name'
+    ]
+
     def get_code(self, panel):
         plgen = common.code_writers['perl']
         prop = panel.properties

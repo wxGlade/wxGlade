@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.7 2003/06/27 05:56:23 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.8 2003/07/09 09:19:14 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -219,14 +219,16 @@ _use_gettext = False
 
 def quote_str(s):
     """\
-    returns a quoted version of 's', suitable to insert in a python source file
+    returns a quoted version of 's', suitable to insert in a perl source file
     as a string object. Takes care also of gettext support
     """
     if not s: return '""'
     s = s.replace('"', r'\"')
     s = s.replace('\\', '\\\\')
-    if _use_gettext: return '_T("' + s + '")'
-    else: return '"' + s + '"'
+    if _use_gettext:
+        return '_T("' + s + '")'
+    else:
+        return '"' + s + '"'
 
 
 def initialize(app_attrs): 
@@ -510,6 +512,16 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     klass.layout.append(buffer)
 
 
+new_defaults = {
+    '$parent' : '\t$parent = undef              unless defined $parent;\n' ,
+    '$id'     : '\t$id     = -1                 unless defined $id;\n' ,
+    '$title'  : '\t$title  = ""                 unless defined $title;\n' ,
+    '$pos'    : '\t$pos    = wxDefaultPosition  unless defined $pos;\n' ,
+    '$size'   : '\t$size   = wxDefaultSize      unless defined $size;\n' ,
+    '$name'   : '\t$name   = ""                 unless defined $name;\n\n'
+#   '$style' is a special case
+}
+
 def add_class(code_obj):
     """\
     Generates the code for a custom class.
@@ -533,6 +545,7 @@ def add_class(code_obj):
     try:
         builder = obj_builders[code_obj.base]
     except KeyError:
+        print code_obj
         raise # this is an error, let the exception be raised
 
     if prev_src is not None and prev_src.classes.has_key(code_obj.klass):
@@ -559,35 +572,43 @@ def add_class(code_obj):
         write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n'
                 % code_obj.base.replace('wx','Wx::',1) )
 
-        tab = indentation
 
         if _use_gettext:
             write("use Wx::Locale gettext => '_T';\n")
 
-        write('sub new {\n\tmy( $self, $parent, $id, $title, $pos, $siz,'
-            + '$style, $name ) = @_;\n\n'
-            + '\t$parent = undef              unless defined $parent;\n'
-            + '\t$id     = -1                 unless defined $id;\n'
-            + '\t$title  = ""                 unless defined $title;\n'
-            + '\t$pos    = wxDefaultPosition  unless defined $pos;\n'
-            + '\t$siz    = wxDefaultSize      unless defined $siz;\n'
-            + '\t$name   = ""                 unless defined $name;\n\n')
+        write('sub new {\n')
+
+        new_signature = getattr(builder, 'new_signature', [] )
+
+        write("\tmy( $self, %s ) = @_;\n"
+                % ", ".join( new_signature  ) )
+
+        if new_signature:
+            for k in new_signature :
+                if new_defaults.has_key(k) :
+                    write( new_defaults[k] )
+        else:
+            new_signature = [ '@_[1 .. $#_]' ] # shift(@_)->SUPER::new(@_);
+            print code_obj.klass + " did not declare new_defaults "
+
 
     # __init__ begin tag
     write('# begin wxGlade: %s::new\n\n' % code_obj.klass)
     prop = code_obj.properties
     style = prop.get("style", None)
-    if style: write('\t$style = %s \n\t\tunless defined $style;\n\n' % style)
+    if style:
+        write('\t$style = %s \n\t\tunless defined $style;\n\n' % style)
+
     # __init__
-    write('\t$self = $self->SUPER::new($parent, $id, $title, $pos, $siz, '
-        + '$style, $name);\n')
+    write('\t$self = $self->SUPER::new( %s );\n'
+        % ", ".join( new_signature ))
 
     init_lines = classes[code_obj.klass].init
-    # --- patch 2002-08-26 ---------------------------------------------------
+
     parents_init = classes[code_obj.klass].parents_init
     parents_init.reverse()
+
     for l in parents_init: write('\t' +l)
-    # ------------------------------------------------------------------------
     for l in init_lines: write('\t' +l)
 
     # now check if there are extra lines to add to the init method
@@ -709,7 +730,7 @@ def add_class(code_obj):
                 # store the new file contents to disk
                 common.save_file(filename, prev_src.content, 'codegen')
             except:
-                raise IOError("py_codegen.add_class: %s, %s, %s" % \
+                raise IOError("pl_codegen.add_class: %s, %s, %s" % \
                               (out_dir, prev_src.name, code_obj.klass))
             return
 
@@ -801,8 +822,8 @@ def add_app(app_attrs, top_win_class):
         if _use_gettext:
             append('\tmy $local = Wx::Locale->new("English", "en", "en");'
                 + ' # replace with ??\n')
-            append('\t$local->AddCatalog("%s");'
-                + ' # replace with the appropriate catalog name\n\n' % name)
+            append('\t$local->AddCatalog("%s");'  % name
+                + ' # replace with the appropriate catalog name\n\n')
         append('\tmy $%s = %s->new();\n' % (name, klass))
     else:
         append('\t$%s->SetTopWindow(%s);\n' % (name, top_win))
@@ -1095,6 +1116,9 @@ class WidgetHandler:
     
     """list of modules to import (eg. ['from wxPython.grid import *\n'])"""
     import_modules = []
+    
+    """constructor signature ($self->SUPER::new(@stuff), see new_defaults )"""
+    new_signature = []
 
     def get_code(self, obj):
         """\
