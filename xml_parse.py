@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.35 2004/12/08 18:11:31 agriggio Exp $
+# $Id: xml_parse.py,v 1.36 2005/03/11 00:03:33 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -20,6 +20,12 @@ import common, edit_sizers
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
 import traceback
+
+# ALB 2005-03-10: importing the module here prevents a segfault with python 2.4
+# hmmm... need to investigate this more (it seems that import of
+# xml.sax.expatreader should happen before something else... but what?)
+import xml.sax.expatreader
+
 
 if common.use_gui:
     from wxPython import wx

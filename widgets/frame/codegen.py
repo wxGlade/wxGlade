@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.21 2004/11/02 11:59:04 agriggio Exp $
+# $Id: codegen.py,v 1.22 2005/03/11 00:03:29 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -221,7 +221,7 @@ class CppFrameCodeGenerator:
 class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
     extra_headers = ['<wx/mdi.h>']
 
-    constructor = [('wxMDIParentFraome*', 'parent'), ('int', 'id'),
+    constructor = [('wxMDIParentFrame*', 'parent'), ('int', 'id'),
                    ('const wxString&', 'title'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
@@ -257,6 +257,7 @@ def initialize():
         xrcgen.add_widget_handler('wxStatusBar', xrc_statusbar_code_generator)
         #xrcgen.NotImplementedXrcObject)
         xrcgen.add_property_handler('fields', StatusFieldsHandler)
+
     cppgen = common.code_writers.get('C++')
     if cppgen:
         cppgen.add_widget_handler('wxFrame', CppFrameCodeGenerator())
