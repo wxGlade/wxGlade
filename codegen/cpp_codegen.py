@@ -149,7 +149,7 @@ class SourceFileContent:
                     out_lines.append('\n<%swxGlade insert new_classes>' %
                                      nonce)
                     new_classes_inserted = True
-                 class_name = result.group(1)
+                class_name = result.group(1)
                 self.classes[class_name] = 1 # add the found class to the list
                                              # of classes of this module
                 out_lines.append(line)
