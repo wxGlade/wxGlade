@@ -1,5 +1,5 @@
 # sizers_codegen.py: code generation functions for the various wxSizerS
-# $Id: sizers_codegen.py,v 1.9 2003/09/24 07:18:46 dinogen Exp $
+# $Id: sizers_codegen.py,v 1.10 2003/11/24 21:28:07 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -10,8 +10,11 @@ import common
 
 class PythonBoxSizerBuilder:
     def get_code(self, obj):
+        pygen = common.code_writers['python']
+        cn = pygen.cn
         orient = obj.properties.get('orient', 'wxHORIZONTAL')
-        init = ['%s = wxBoxSizer(%s)\n' % (obj.name, orient)]
+        init = [('%s = ' + cn('wxBoxSizer') + '(%s)\n') % \
+                (obj.name, cn(orient))]
         layout = []
         if obj.is_toplevel:
             if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
@@ -29,12 +32,14 @@ class PythonBoxSizerBuilder:
 class PythonStaticBoxSizerBuilder:
     def get_code(self, obj):
         pygen = common.code_writers['python']
+        cn = pygen.cn
         orient = obj.properties.get('orient', 'wxHORIZONTAL')
         label = obj.properties.get('label', '')
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
-        init = ['%s = wxStaticBoxSizer(wxStaticBox(%s, -1, %s), %s)\n' %
-                (obj.name, parent, pygen.quote_str(label), orient)]
+        init = [('%s = ' + cn('wxStaticBoxSizer') + '(' + cn('wxStaticBox') + \
+                 '(%s, -1, %s), %s)\n') %
+                (obj.name, parent, pygen.quote_str(label), cn(orient))]
         layout = []
         if obj.is_toplevel:
             layout.append('%s.SetAutoLayout(1)\n' % parent)
@@ -51,6 +56,8 @@ class PythonGridSizerBuilder:
     klass = 'wxGridSizer'
 
     def get_code(self, obj):
+        pygen = common.code_writers['python']
+        cn = pygen.cn
         props = obj.properties
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
@@ -59,7 +66,7 @@ class PythonGridSizerBuilder:
         vgap = props.get('vgap', '0')
         hgap = props.get('hgap', '0')
         init = [ '%s = %s(%s, %s, %s, %s)\n' %
-                 (obj.name, self.klass, rows, cols, vgap, hgap) ]
+                 (obj.name, cn(self.klass), rows, cols, vgap, hgap) ]
         layout = []
         if obj.is_toplevel:
             layout.append('%s.SetAutoLayout(1)\n' % parent)

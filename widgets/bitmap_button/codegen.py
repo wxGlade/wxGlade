@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.13 2003/08/07 12:22:01 agriggio Exp $
+# $Id: codegen.py,v 1.14 2003/11/24 21:28:07 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -20,25 +20,29 @@ _bmp_str_types = {
 class PythonCodeGenerator:
     def get_code(self, obj):
         pygen = common.code_writers['python']
+        cn = pygen.cn
         prop = obj.properties
         id_name, id = pygen.generate_code_id(obj) 
         bmp_file = prop.get('bitmap', '')
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         if not bmp_file:
-            bmp = 'wxNullBitmap'
+            bmp = cn('wxNullBitmap')
         elif bmp_file.startswith('var:'):
             if obj.preview:
-                bmp = 'wxEmptyBitmap(1, 1)'
+                bmp = cn('wxEmptyBitmap') + '(1, 1)'
             else:
-                bmp = 'wxBitmapFromXPMData(%s)' % bmp_file[4:].strip()
+                bmp = (cn('wxBitmapFromXPMData') + '(%s)') % \
+                      bmp_file[4:].strip()
         else:
-            bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
+            bmp = ('wxBitmap(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \
                   pygen.quote_str(bmp_file, False, False)
         init = []
         if id_name: init.append(id_name)
+        klass = obj.klass
+        if klass == obj.base: klass = cn(klass)
         init.append('self.%s = %s(%s, %s, %s)\n' % 
-                    (obj.name, obj.klass, parent, id, bmp))
+                    (obj.name, klass, parent, id, bmp))
         props_buf = pygen.generate_common_properties(obj)
 
         disabled_bmp = prop.get('disabled_bitmap')
@@ -47,13 +51,15 @@ class PythonCodeGenerator:
                 if not obj.preview:
                     var = disabled_bmp[4:].strip()
                     props_buf.append(
-                        'self.%s.SetBitmapDisabled('
-                        'wxBitmapFromXPMData(%s))\n' % (obj.name, var))
+                        ('self.%s.SetBitmapDisabled(' +
+                         cn('wxBitmapFromXPMData') +'(%s))\n') % \
+                        (obj.name, var))
             else:
-                props_buf.append(
-                    'self.%s.SetBitmapDisabled('
-                    'wxBitmap(%s, wxBITMAP_TYPE_ANY))\n' % \
-                    (obj.name, pygen.quote_str(disabled_bmp, False, False)))
+                props_buf.append(('self.%s.SetBitmapDisabled(' +
+                                  cn('wxBitmap') + '(%s, ' +
+                                  cn('wxBITMAP_TYPE_ANY') + '))\n') % \
+                                 (obj.name,
+                                  pygen.quote_str(disabled_bmp, False, False)))
                 
         if not prop.has_key('size'):
             props_buf.append('self.%s.SetSize(self.%s.GetBestSize())\n' % \

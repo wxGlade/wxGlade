@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxPanel objects
-# $Id: codegen.py,v 1.12 2003/06/26 15:09:24 agriggio Exp $
+# $Id: codegen.py,v 1.13 2003/11/24 21:28:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -11,6 +11,8 @@ import common
 class PythonCodeGenerator:
     def get_code(self, panel):
         pygen = common.code_writers['python']
+        cn = pygen.cn
+        cn_f = pygen.cn_f
         prop = panel.properties
         try: scrollable = int(prop['scrollable'])
         except: scrollable = False
@@ -27,10 +29,10 @@ class PythonCodeGenerator:
         if id_name: init.append(id_name)
         style = prop.get("style", 'wxTAB_TRAVERSAL')
         if scrollable or style != 'wxTAB_TRAVERSAL':
-            style = ", style=%s" % style
+            style = ", style=%s" % cn_f(style)
         else: style = ''
-        if scrollable: klass = 'wxScrolledWindow'
-        else: klass = 'wxPanel'
+        if scrollable: klass = cn('wxScrolledWindow')
+        else: klass = cn('wxPanel')
         init.append('self.%s = %s(%s, %s%s)\n' % \
                     (panel.name, klass, parent, id, style))
         props_buf = pygen.generate_common_properties(panel)

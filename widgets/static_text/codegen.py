@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxStaticText objects
-# $Id: codegen.py,v 1.10 2003/05/24 09:59:38 agriggio Exp $
+# $Id: codegen.py,v 1.11 2003/11/24 21:28:05 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -20,14 +20,16 @@ class PythonCodeGenerator:
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         style = prop.get("style")
-        if style: style = ", style=%s" % style
+        if style: style = ", style=%s" % pygen.cn_f(style)
         else: style = ''
         init = []
         if id_name: init.append(id_name)
         if attribute: prefix = 'self.'
         else: prefix = ''
+        klass = obj.klass
+        if klass == obj.base: klass = pygen.cn(klass)
         init.append('%s%s = %s(%s, %s, %s%s)\n' %
-                    (prefix, obj.name, obj.klass, parent, id, label, style))
+                    (prefix, obj.name, klass, parent, id, label, style))
         props_buf = pygen.generate_common_properties(obj)
         if not attribute:
             # the object doesn't have to be stored as an attribute of the
