@@ -1,5 +1,5 @@
 # static_text.py: wxStaticText objects
-# $Id: static_text.py,v 1.8 2003/05/13 10:05:07 agriggio Exp $
+# $Id: static_text.py,v 1.9 2003/06/21 14:28:44 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -62,7 +62,8 @@ class EditStaticText(ManagedBase):
     def get_label(self): return self.label
 
     def set_label(self, value):
-        if value != self.label:
+        value = misc.wxstr(value)
+        if not misc.streq(value, self.label):
             self.label = value
             if self.widget:
                 self.widget.SetLabel(value.replace('\\n', '\n'))

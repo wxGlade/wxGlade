@@ -1,5 +1,5 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.11 2003/05/13 10:05:15 agriggio Exp $
+# $Id: bitmap_button.py,v 1.12 2003/06/21 14:28:45 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -40,7 +40,7 @@ class EditBitmapButton(ManagedBase):
         ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer,
                              pos, property_window, show=show)
         self.default = False
-        self.set_bitmap(str(bmp_file))
+        self.set_bitmap(bmp_file)
         # bitmap property
         self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
         self.properties['bitmap'] = FileDialogProperty(self, 'bitmap', None,

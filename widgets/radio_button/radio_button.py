@@ -1,5 +1,5 @@
 # radio_button.py: wxRadioButton objects
-# $Id: radio_button.py,v 1.7 2003/05/13 10:05:10 agriggio Exp $
+# $Id: radio_button.py,v 1.8 2003/06/21 14:28:44 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -61,10 +61,11 @@ class EditRadioButton(ManagedBase):
     def get_value(self): return self.value
 
     def set_label(self, value):
-        if value != self.label:
+        value = misc.wxstr(value)
+        if not misc.streq(value, self.label):
             self.label = value
             if self.widget:
-                self.widget.SetLabel(str(value).replace('\\n', '\n'))
+                self.widget.SetLabel(value.replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
                     self.sizer.set_item(self.pos,
                                         size=self.widget.GetBestSize())

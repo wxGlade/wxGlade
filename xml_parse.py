@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.22 2003/05/18 12:02:22 agriggio Exp $
+# $Id: xml_parse.py,v 1.23 2003/06/21 14:28:45 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -271,18 +271,22 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         class XmlClipboardObject:
             def __init__(self, **kwds):
                 self.__dict__.update(kwds)
-        szr = XmlClipboardObject(obj=sizer, parent=parent) # fake sizer object
         par = XmlClipboardObject(obj=parent, parent=parent) # fake window obj
-        sizeritem = Sizeritem()
-        sizeritem.option = option
-        sizeritem.flag = flag
-        sizeritem.border = border
-        sizeritem.pos = pos
-        si = XmlClipboardObject(obj=sizeritem, parent=parent) # fake sizer item
+        if sizer is not None:
+            # fake sizer object
+            szr = XmlClipboardObject(obj=sizer, parent=parent)
+            sizeritem = Sizeritem()
+            sizeritem.option = option
+            sizeritem.flag = flag
+            sizeritem.border = border
+            sizeritem.pos = pos
+            # fake sizer item            
+            si = XmlClipboardObject(obj=sizeritem, parent=parent) 
         # push the fake objects on the stacks
         self._objects.push(par); self._windows.push(par)
-        self._objects.push(szr); self._sizers.push(szr)
-        self._objects.push(si); self._sizer_item.push(si)
+        if sizer is not None:
+            self._objects.push(szr); self._sizers.push(szr)
+            self._objects.push(si); self._sizer_item.push(si)
         self.depth_level = 0
         self._appl_started = True # no application tag when parsing from the
                                   # clipboard
@@ -302,6 +306,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         XmlWidgetBuilder.startElement(self, name, attrs)
         if name == 'object':
             if not self.depth_level:
+                common.app_tree.auto_expand = False
                 try:
                     self.top_obj = self.top().obj
                 except AttributeError:
@@ -311,23 +316,10 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
     def endElement(self, name):
         if name == 'object':
-            # generate a unique name for the copy
             obj = self.top()
-##             if obj.klass != 'sizeritem':
-##                 widget = obj.obj
-##                 newname = widget.name #+ '_copy'
-##                 i = 0
-##                 while common.app_tree.has_name(newname) and \
-##                           self._has_current_name:
-##                     if not i: newname = '%s_copy' % widget.name
-##                     else: newname = '%s_copy_%s' % (widget.name, i)
-##                     i += 1
-##                 widget.name = newname
-##                 widget.name_prop.set_value(newname)
-##                 common.app_tree.set_name(widget.node, newname)
-            
             self.depth_level -= 1
             if not self.depth_level:
+                common.app_tree.auto_expand = True
                 try:
                     # show the first object and update its layout
                     common.app_tree.show_widget(self.top_obj.node)

@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.24 2003/06/11 17:12:02 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.25 2003/06/21 14:28:45 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -177,13 +177,13 @@ _use_gettext = False
 
 def quote_str(s):
     """\
-    returns a quoted version of 's', suitable to insert in a python source file
+    returns a quoted version of 's', suitable to insert in a C++ source file
     as a string object. Takes care also of gettext support
     """
-    if not s: return '""'
+    if not s: return 'wxT("")'
     s = s.replace('"', r'\"')
     if _use_gettext: return '_("' + s + '")'
-    else: return '"' + s + '"'
+    else: return 'wxT("' + s + '")'
 
 
 def initialize(app_attrs):

@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.22 2003/05/15 19:04:57 agriggio Exp $
+# $Id: frame.py,v 1.23 2003/06/21 14:28:45 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -76,7 +76,7 @@ class EditStatusBar(EditBase):
         for i in range(len(values)):
             try: v = int(values[i][1])
             except: v = 0
-            s = values[i][0]
+            s = misc.wxstr(values[i][0])
             self.fields.append([s, str(v)])
             if self.widget: self.widget.SetStatusText(s, i)
         if self.widget:

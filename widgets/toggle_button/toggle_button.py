@@ -1,5 +1,5 @@
 # toggle_button.py: wxToggleButton objects
-# $Id: toggle_button.py,v 1.6 2003/05/13 10:05:06 agriggio Exp $
+# $Id: toggle_button.py,v 1.7 2003/06/21 14:28:44 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -52,7 +52,8 @@ class EditToggleButton(ManagedBase):
         return self.label
 
     def set_label(self, value):
-        if value != self.label:
+        value = misc.wxstr(value)
+        if not misc.streq(value, self.label):
             self.label = value
             if self.widget:
                 self.widget.SetLabel(value.replace('\\n', '\n'))

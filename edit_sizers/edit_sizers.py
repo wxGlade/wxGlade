@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.32 2003/05/14 17:53:30 agriggio Exp $
+# $Id: edit_sizers.py,v 1.33 2003/06/21 14:28:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -475,10 +475,10 @@ class SizerBase(Sizer):
         if self.menu is None:
             self.menu = [('Add slot', self.add_slot),
                          ('Insert slot...', self.insert_slot)]
-        if not self.toplevel:
-            self.menu.extend([('Copy\tCtrl+C', self.clipboard_copy,'copy.xpm'),
-                              ('Cut\tCtrl+X', self.clipboard_cut, 'cut.xpm')
-                              ])
+        #if not self.toplevel:
+        self.menu.extend([('Copy\tCtrl+C', self.clipboard_copy,'copy.xpm'),
+                          ('Cut\tCtrl+X', self.clipboard_cut, 'cut.xpm')
+                          ])
 
         self._btn = None # SizerHandleButton
 
@@ -890,7 +890,7 @@ class SizerBase(Sizer):
         except AttributeError, e: print e
 
     def get_option(self):
-        if not hasattr(self, 'sizer'): return '0'
+        if not hasattr(self, 'sizer'): return '1'
         return str(self.option)
 
     def get_flag(self):
@@ -908,7 +908,9 @@ class SizerBase(Sizer):
         except AttributeError: pass
         return retval
 
-    def get_int_flag(self): return self.flag
+    def get_int_flag(self):
+        try: return self.flag
+        except AttributeError: return wxEXPAND
 
     def get_border(self):
         if not hasattr(self, 'sizer'): return '0'
@@ -1023,14 +1025,14 @@ class SizerBase(Sizer):
         """\
         returns a copy of self to be inserted in the clipboard
         """
-        if not self.toplevel:
-            import clipboard
-            clipboard.copy(self)
+        #if not self.toplevel:
+        import clipboard
+        clipboard.copy(self)
 
     def clipboard_cut(self, *args):
-        if not self.toplevel:
-            import clipboard
-            clipboard.cut(self)
+        #if not self.toplevel:
+        import clipboard
+        clipboard.cut(self)
 
     def post_load(self):
         """\
@@ -1220,7 +1222,7 @@ class EditStaticBoxSizer(SizerBase):
         """\
         Sets the label of the static box
         """
-        self.label = str(value)
+        self.label = misc.wxstr(value)
         if self.widget: self.widget.GetStaticBox().SetLabel(self.label)
 
     def get_label(self): return self.label

@@ -1,5 +1,5 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.21 2003/05/13 10:05:11 agriggio Exp $
+# $Id: notebook.py,v 1.22 2003/06/21 14:28:44 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -131,8 +131,9 @@ class NotebookPagesProperty(GridProperty):
                 if t[0] == val[0]: window = t[1]
             except: pass
             if window:
-                write('%s<tab window=%s>%s</tab>\n' %
-                      (tab_s, quoteattr(window.name), v))
+                write('%s<tab window=%s>' % (tab_s, quoteattr(window.name)))
+                write(v)
+                write('</tab>\n')
         write('    ' * tabs + '</tabs>\n')
 
 # end of class NotebookPagesProperty
@@ -207,7 +208,7 @@ class EditNotebook(ManagedBase):
         panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         self.properties['tabs'].display(panel)
         sizer = wxBoxSizer(wxVERTICAL)
-        sizer.Add(self.properties['tabs'].panel, 1, wxEXPAND)
+        sizer.Add(self.properties['tabs'].panel, 1, wxALL|wxEXPAND, 3)
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer)
         sizer.Fit(panel)
@@ -273,9 +274,10 @@ class EditNotebook(ManagedBase):
                 self.widget.SetSelection(self.widget.GetPageCount()-1)
         # finally, we must update the labels of the tabs
         for i in range(len(tabs)):
+            tt = misc.wxstr(tabs[i][0])
             if self.widget:
-                self.widget.SetPageText(i, tabs[i][0])
-            self.tabs[i][0] = tabs[i][0]
+                self.widget.SetPageText(i, tt)
+            self.tabs[i][0] = tt
 
     def delete(self):
         if self.widget:

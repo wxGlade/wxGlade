@@ -2,7 +2,7 @@
 # xrc2wxg.py: Converts an XRC resource file (in a format wxGlade likes,
 # i.e. all windows inside sizers, no widget unknown to wxGlade, ...) into a
 # WXG file
-# $Id: xrc2wxg.py,v 1.11 2003/05/24 10:00:25 agriggio Exp $
+# $Id: xrc2wxg.py,v 1.12 2003/06/21 14:28:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -37,7 +37,7 @@ def convert(input, output):
     set_base_classes(document)
     fix_properties(document)
     fix_widgets(document)
-    fix_encoding(document)
+    fix_encoding(input, document)
     output = open(output, 'w')
     write_output(document, output)
 
@@ -386,7 +386,20 @@ def fix_sliders(document):
                 slider.appendChild(max)
 
 
-def fix_encoding(document):
+def fix_encoding(filename, document):
+    # first try to find the encoding of the xml doc
+    import re
+    enc = re.compile(r'^\s*<\?xml\s+.*(encoding\s*=\s*"(.*?)").*\?>')
+    tag = re.compile(r'<.+?>')
+    for line in open(filename):
+        match = re.match(enc, line)
+        if match is not None:
+            document.documentElement.setAttribute('encoding', match.group(2))
+            return
+        elif re.match(tag, line) is not None:
+            break
+    # if it's not specified, try to find a child of the root called 'encoding':
+    # I don't know why, but XRCed does this
     for child in document.documentElement.childNodes:
         if child.nodeType == child.ELEMENT_NODE and \
                child.tagName == 'encoding':

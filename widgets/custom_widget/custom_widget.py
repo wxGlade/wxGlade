@@ -1,5 +1,5 @@
 # custom_widget.py: custom wxWindow objects
-# $Id: custom_widget.py,v 1.11 2003/05/13 10:05:13 agriggio Exp $
+# $Id: custom_widget.py,v 1.12 2003/06/21 14:28:45 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -129,7 +129,7 @@ Invalid entries are silently ignored"""
         return self.arguments
 
     def set_arguments(self, value):
-        self.arguments = value
+        self.arguments = [[misc.wxstr(v) for v in val] for val in value]
 
     def get_property_handler(self, name):
         if name == 'arguments': return ArgumentsHandler(self)

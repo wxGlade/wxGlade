@@ -1,5 +1,5 @@
 # choice.py: wxChoice objects
-# $Id: choice.py,v 1.8 2003/05/13 10:05:14 agriggio Exp $
+# $Id: choice.py,v 1.9 2003/06/21 14:28:45 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -70,7 +70,7 @@ class EditChoice(ManagedBase):
         return zip(self.choices)
 
     def set_choices(self, values):
-        self.choices = [ v[0] for v in values ]
+        self.choices = [ misc.wxstr(v[0]) for v in values ]
         self.properties['selection'].set_range(0, len(self.choices)-1)
         if self.widget:
             self.widget.Clear()

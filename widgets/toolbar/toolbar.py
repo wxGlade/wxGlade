@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.5 2003/05/13 10:05:06 agriggio Exp $
+# $Id: toolbar.py,v 1.6 2003/06/21 14:28:44 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -19,8 +19,8 @@ class _MyBrowseButton(FileBrowseButton):
     def createBrowseButton( self):
         """Create the browse-button control"""
         ID = wxNewId()
-        button =wxButton(self, ID, self.buttonText)
-        button.SetToolTipString(self.toolTip)
+        button =wxButton(self, ID, misc.wxstr(self.buttonText))
+        button.SetToolTipString(misc.wxstr(self.toolTip))
         w = button.GetTextExtent(self.buttonText)[0] + 10
         button.SetSize((w, -1))
         EVT_BUTTON(button, ID, self.OnBrowse)
@@ -276,14 +276,14 @@ class ToolsDialog(wxDialog):
         index = [0]
         def add(tool):
             i = index[0]
-            add_item(i, tool.label)
-            set_item(i, 1, tool.id)
-            set_item(i, 2, tool.bitmap1)
-            set_item(i, 3, tool.bitmap2)
-            set_item(i, 4, tool.short_help)
-            set_item(i, 5, tool.long_help)
+            add_item(i, misc.wxstr(tool.label))
+            set_item(i, 1, misc.wxstr(tool.id))
+            set_item(i, 2, misc.wxstr(tool.bitmap1))
+            set_item(i, 3, misc.wxstr(tool.bitmap2))
+            set_item(i, 4, misc.wxstr(tool.short_help))
+            set_item(i, 5, misc.wxstr(tool.long_help))
             item_type = 0
-            set_item(i, 6, str(tool.type))
+            set_item(i, 6, misc.wxstr(tool.type))
             index[0] += 1
         for tool in tools:
             add(tool)
@@ -598,15 +598,17 @@ class EditToolBar(EditBase, PreviewMixin):
             pass # clear the toolbar
         # now add all the tools
         for tool in self.tools:
-            if tool.id == '---': # the tool is a separator
+            if misc.streq(tool.id, '---'): # the tool is a separator
                 self._tb.AddSeparator()
             else:
                 if tool.bitmap1:
-                    bmp1 = wxBitmap(tool.bitmap1, wxBITMAP_TYPE_ANY)
+                    bmp1 = wxBitmap(misc.wxstr(tool.bitmap1),
+                                    wxBITMAP_TYPE_ANY)
                 else:
                     bmp1 = wxNullBitmap
                 if tool.bitmap2:
-                    bmp2 = wxBitmap(tool.bitmap2, wxBITMAP_TYPE_ANY)
+                    bmp2 = wxBitmap(misc.wxstr(tool.bitmap2),
+                                    wxBITMAP_TYPE_ANY)
                 else:
                     bmp2 = wxNullBitmap
                 # signature of AddTool for 2.3.2.1:
@@ -619,17 +621,19 @@ class EditToolBar(EditBase, PreviewMixin):
                 if not misc.check_wx_version(2, 3, 3):
                     # use the old signature, some of the entries are ignored
                     self._tb.AddTool(wxNewId(), bmp1, bmp2, tool.type == 1,
-                                     shortHelpString=tool.short_help,
-                                     longHelpString=tool.long_help)
+                                     shortHelpString=\
+                                     misc.wxstr(tool.short_help),
+                                     longHelpString=misc.wxstr(tool.long_help))
                 else:
                     kinds = [wxITEM_NORMAL, wxITEM_CHECK, wxITEM_RADIO]
                     try:
                         kind = kinds[int(tool.type)]
                     except (ValueError, IndexError):
                         kind = wxITEM_NORMAL
-                    self._tb.AddLabelTool(wxNewId(), tool.label, bmp1, bmp2,
-                                          kind, tool.short_help,
-                                          tool.long_help)
+                    self._tb.AddLabelTool(wxNewId(), misc.wxstr(tool.label),
+                                          bmp1, bmp2, kind,
+                                          misc.wxstr(tool.short_help),
+                                          misc.wxstr(tool.long_help))
         # this is required to refresh the toolbar properly
         self._refresh_widget()
 
@@ -688,7 +692,7 @@ class EditToolBar(EditBase, PreviewMixin):
     def set_name(self, name):
         EditBase.set_name(self, name)
         if self.widget is not self._tb:
-            self.widget.SetTitle(self.name)
+            self.widget.SetTitle(misc.wxstr(self.name))
 
     def get_property_handler(self, name):
         class ToolsHandler:

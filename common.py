@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.24 2003/06/02 12:42:20 agriggio Exp $
+# $Id: common.py,v 1.25 2003/06/21 14:28:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -239,6 +239,8 @@ def _encode_to_xml(label, encoding=None):
     """
     if encoding is None:
         encoding = app_tree.app.encoding
+    if type(label) == type(u''):
+        return label.encode('utf-8')
     return str(label).decode(encoding).encode('utf-8')
 
 

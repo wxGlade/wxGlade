@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.26 2003/05/13 10:13:51 agriggio Exp $
+# $Id: misc.py,v 1.27 2003/06/21 14:28:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -308,3 +308,42 @@ def import_name(module_path, name):
         import traceback; traceback.print_exc()
         return None
     return vars(module)[name]
+
+
+#------------------------------------------------------------------------------
+# helper functions to work with a Unicode-enabled wxPython
+#------------------------------------------------------------------------------
+
+def streq(s1, s2):
+    """\
+    Returns True if the strings or unicode objects s1 and s2 are equal, i.e.
+    contain the same text. Appropriate encoding/decoding are performed to
+    make the comparison
+    """
+    try:
+        return s1 == s2
+    except UnicodeError:
+        if type(s1) == type(u''):
+            s1 = s1.encode(common.app_tree.app.encoding)
+        else:
+            s2 = s2.encode(common.app_tree.app.encoding)
+        return s1 == s2
+
+
+def wxstr(s):
+    """\
+    Converts the string object s to str or unicode, according to what wxPython
+    expects
+    """
+    if common.app_tree is None:
+        return str(s)
+    if wxUSE_UNICODE:
+        if type(s) != type(u''):
+            return unicode(str(s), common.app_tree.app.encoding)
+        else:
+            return s
+    else:
+        if type(s) == type(u''):
+            return s.encode(common.app_tree.app.encoding)
+        else:
+            return str(s)
