@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.36 2003/07/26 12:06:36 agriggio Exp $
+# $Id: py_codegen.py,v 1.37 2003/08/03 13:59:36 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -817,6 +817,8 @@ def generate_code_id(obj, id=None):
     if not name: return '', val
     if val.strip() == '?':
         val = 'wxNewId()'
+    # check to see if we have to make the var global or not...
+    if '.' in name: return ('%s = %s\n' % (name, val), name)
     return ('global %s; %s = %s\n' % (name, name, val), name)
 
 
