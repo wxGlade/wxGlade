@@ -31,7 +31,8 @@ if common.use_gui:
                 self.codegen_backup.SetValue(self.preferences.codegen_backup)
                 #MARCELLO
                 self.default_border.SetValue(self.preferences.default_border)
-                self.default_border_size.SetValue(self.preferences.default_border_size)
+                self.default_border_size.SetValue(
+                    self.preferences.default_border_size)
                 if self.preferences.backup_suffix == '.bak':
                     self.backup_suffix.SetSelection(1)
                 self.buttons_per_row.SetValue(self.preferences.buttons_per_row)
