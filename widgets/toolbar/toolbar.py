@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.11 2004/10/18 09:20:10 agriggio Exp $
+# $Id: toolbar.py,v 1.12 2004/10/18 17:13:42 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -521,7 +521,7 @@ class EditToolBar(EditBase, PreviewMixin):
         retval = [0] * len(self.style_pos)
         try:
             for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
+                if (self.style & self.style_pos[i]) == self.style_pos[i]:
                     retval[i] = 1
         except AttributeError:
             pass
@@ -645,7 +645,6 @@ class EditToolBar(EditBase, PreviewMixin):
         self._refresh_widget()
 
     def _refresh_widget(self):
-        #print self._tb.GetSize(), self._tb.GetBestSize()
         self._tb.Realize()
         self._tb.SetSize((-1, self._tb.GetBestSize()[1]))
         if self.parent:
