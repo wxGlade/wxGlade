@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.28 2003/07/15 18:38:00 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.29 2003/07/18 16:43:53 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -184,7 +184,7 @@ def _do_replace(match):
     if match.group(0) == '\\': return '\\\\'
     else: return match.group(0)
 
-def quote_str(s):
+def quote_str(s, translate=True):
     """\
     returns a quoted version of 's', suitable to insert in a C++ source file
     as a string object. Takes care also of gettext support
@@ -192,7 +192,7 @@ def quote_str(s):
     if not s: return 'wxT("")'
     s = s.replace('"', r'\"')
     s = _quote_str_pattern.sub(_do_replace, s)
-    if _use_gettext: return '_("' + s + '")'
+    if _use_gettext and translate: return '_("' + s + '")'
     else: return 'wxT("' + s + '")'
 
 

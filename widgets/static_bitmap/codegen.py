@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxStaticBitmap objects
-# $Id: codegen.py,v 1.12 2003/05/24 09:59:39 agriggio Exp $
+# $Id: codegen.py,v 1.13 2003/07/18 16:43:53 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -26,14 +26,16 @@ class PythonCodeGenerator:
 
         id_name, id = pygen.generate_code_id(obj) 
         bmp_file = prop.get('bitmap', '')
-        if not bmp_file: bmp = 'wxNullBitmap'
-        else:
-            type = _bmp_str_types.get(os.path.splitext(bmp_file)[1].lower())
-            if not type: bmp = 'wxNullBitmap'
+        if not bmp_file:
+            bmp = 'wxNullBitmap'
+        elif bmp_file.startswith('var:'):
+            if obj.preview:
+                bmp = 'wxEmptyBitmap(1, 1)'
             else:
-                if os.sep == '\\': bmp_file = bmp_file.replace(os.sep, '/')
-                bmp = 'wxBitmap("%s", %s)' % \
-                      (bmp_file.replace('"', r'\"'), type)
+                bmp = 'wxBitmapFromXPMData(%s)' % bmp_file[4:].strip()
+        else:
+            bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
+                  pygen.quote_str(bmp_file, False)
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         init = []
@@ -68,14 +70,15 @@ class CppCodeGenerator:
         if id_name: ids = [ id_name ]
         else: ids = []
         bmp_file = prop.get('bitmap', '')
-        if not bmp_file: bmp = 'wxNullBitmap'
+        if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
+        else: parent = 'this'
+        if not bmp_file:
+            bmp = 'wxNullBitmap'
+        elif bmp_file.startswith('var:'):
+            bmp = 'wxBitmap(%s)' % bmp_file[4:].strip()
         else:
-            type = _bmp_str_types.get(os.path.splitext(bmp_file)[1].lower())
-            if not type: bmp = 'wxNullBitmap'
-            else:
-                if os.sep == '\\': bmp_file = bmp_file.replace(os.sep, '/')
-                bmp = 'wxBitmap("%s", %s)' % \
-                      (bmp_file.replace('"', r'\"'), type)
+            bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
+                  cppgen.quote_str(bmp_file, False)
         if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
         else: parent = 'this'
         if attribute: prefix = ''

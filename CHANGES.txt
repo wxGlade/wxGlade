@@ -1,3 +1,9 @@
+2003-07-18: widgets/toolbar/codegen.py, widgets/bitmap_button/codegen.py,
+            widgets/static_bitmap/codegen.py:
+                added (limited) support to xpm data (not on files). I.e. if 
+                the bitmap property is something like var:variable_name, 
+                variable_name is taken to be a variable that holds xpm data
+
 2003-07-16: codegen/xrc_codegen.py, xml_parse.py, docs/turorial.html:
                 added subclass support to XRC output
 

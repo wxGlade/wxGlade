@@ -1,5 +1,5 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.12 2003/06/21 14:28:45 agriggio Exp $
+# $Id: bitmap_button.py,v 1.13 2003/07/18 16:43:53 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -11,25 +11,6 @@ from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
 
-_bmp_types = {
-    '.bmp' : wxBITMAP_TYPE_BMP,
-    '.gif' : wxBITMAP_TYPE_GIF,
-    '.xpm' : wxBITMAP_TYPE_XPM,
-    '.jpg' : wxBITMAP_TYPE_JPEG,
-    '.jpeg': wxBITMAP_TYPE_JPEG,
-    '.png' : wxBITMAP_TYPE_PNG,
-    '.pcx' : wxBITMAP_TYPE_PCX
-    }
-
-_bmp_str_types = {
-    '.bmp' : 'wxBITMAP_TYPE_BMP',
-    '.gif' : 'wxBITMAP_TYPE_GIF',
-    '.xpm' : 'wxBITMAP_TYPE_XPM',
-    '.jpg' : 'wxBITMAP_TYPE_JPEG',
-    '.jpeg': 'wxBITMAP_TYPE_JPEG',
-    '.png' : 'wxBITMAP_TYPE_PNG',
-    '.pcx' : 'wxBITMAP_TYPE_PCX'
-    }
 
 class EditBitmapButton(ManagedBase):
     def __init__(self, name, parent, id, bmp_file, sizer, pos, property_window,
@@ -67,30 +48,23 @@ class EditBitmapButton(ManagedBase):
         return self.bitmap
 
     def set_bitmap(self, value):
-        type = self.guess_type(value)
-        if type is None:
-            self.bitmap = ''
-        else:
-            self.bitmap = value
+        self.bitmap = value
         if self.widget:
-            bmp = self.load_bitmap(type)
+            bmp = self.load_bitmap()
             self.widget.SetBitmapLabel(bmp)
             self.widget.SetBitmapSelected(bmp)
             self.widget.SetBitmapFocus(bmp)
             self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
     def create_widget(self):
-        bmp = self.load_bitmap(self.guess_type(self.bitmap))
+        bmp = self.load_bitmap()
         self.widget = wxBitmapButton(self.parent.widget, self.id, bmp)
 
-    def load_bitmap(self, type):
+    def load_bitmap(self):
         if self.bitmap:
-            return wxBitmap(self.bitmap, type)
+            return wxBitmap(self.bitmap, wxBITMAP_TYPE_ANY)
         else:
             return wxNullBitmap
-
-    def guess_type(self, filename):
-        return _bmp_types.get(os.path.splitext(str(filename))[1].lower(), None)
 
     def get_default(self):
         return self.default

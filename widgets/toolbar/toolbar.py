@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.6 2003/06/21 14:28:44 agriggio Exp $
+# $Id: toolbar.py,v 1.7 2003/07/18 16:43:52 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -604,11 +604,13 @@ class EditToolBar(EditBase, PreviewMixin):
                 if tool.bitmap1:
                     bmp1 = wxBitmap(misc.wxstr(tool.bitmap1),
                                     wxBITMAP_TYPE_ANY)
+                    if not bmp1.Ok(): bmp1 = wxEmptyBitmap(1, 1)
                 else:
                     bmp1 = wxNullBitmap
                 if tool.bitmap2:
                     bmp2 = wxBitmap(misc.wxstr(tool.bitmap2),
                                     wxBITMAP_TYPE_ANY)
+                    if not bmp1.Ok(): bmp1 = wxEmptyBitmap(1, 1)
                 else:
                     bmp2 = wxNullBitmap
                 # signature of AddTool for 2.3.2.1:
