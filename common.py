@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.23 2003/05/22 11:12:19 agriggio Exp $
+# $Id: common.py,v 1.24 2003/06/02 12:42:20 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -101,7 +101,8 @@ def load_code_writers():
 def load_widgets():
     """\
     Scans the 'widgets/' directory to find the installed widgets,
-    and returns a list of buttons to handle them
+    and returns 2 lists of buttons to handle them: the first contains the
+    ``core'' components, the second the user-defined ones
     """
     import config
     buttons = []
@@ -111,8 +112,8 @@ def load_widgets():
     
     # load the "local" widgets
     local_widgets_dir = config.preferences.local_widget_path
-    buttons.extend(__load_widgets(local_widgets_dir))
-    return buttons
+    return buttons, __load_widgets(local_widgets_dir)
+
 
 def __load_widgets(widget_dir):
     buttons = []
