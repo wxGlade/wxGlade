@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.41 2004/05/05 20:47:42 agriggio Exp $
+# $Id: widget_properties.py,v 1.42 2004/05/17 09:50:20 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -656,6 +656,20 @@ class ColorDialogProperty(DialogProperty):
         self.dialog.set_value(self.get_value())
         DialogProperty.display_dialog(self, event)
 
+    def toggle_active(self, active):
+        DialogProperty.toggle_active(self, active)
+        if not active:
+            # restore the original value if toggled off
+            color = self.owner._original[self.name]
+            if color is not None and self.owner.widget is not None:
+                which = 'Set%sColour' % self.name.capitalize()
+                func = getattr(self.owner.widget, which, lambda c: None)
+                func(color)
+        else:
+            # restore the saved value
+            getval, setval = self.owner[self.name]
+            setval(getval())
+
 # end of class ColorDialogProperty
 
 
@@ -713,6 +727,19 @@ class FontDialogProperty(DialogProperty):
                                                         escape(props[4])))
             fwrite('%s<face>%s</face>\n' % (tstr, escape(props[5])))
             fwrite('    ' * tabs + '</%s>\n' % self.name)
+
+    def toggle_active(self, active):
+        DialogProperty.toggle_active(self, active)
+        if not active:
+            # restore the original value if toggled off
+            font = self.owner._original['font']
+            if font is not None and self.owner.widget is not None:
+                self.owner.widget.SetFont(font)
+                self.owner.widget.Refresh()
+        else:
+            # restore the saved value
+            getval, setval = self.owner[self.name]
+            setval(getval())
 
 # end of class FontDialogProperty
 
