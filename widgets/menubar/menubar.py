@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.14 2004/10/18 09:20:11 agriggio Exp $
+# $Id: menubar.py,v 1.15 2004/10/18 12:11:15 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -587,7 +587,8 @@ class EditMenuBar(EditBase, PreviewMixin):
                 self.widget = None
             else:
                 if self.parent.widget:
-                    if wxPlatform == '__WXGTK__':
+                    if wxPlatform == '__WXGTK__' and \
+                           not misc.check_wx_version(2, 5):
                         self.widget.Reparent(EditMenuBar.__hidden_frame)
                         self.widget.Hide()
                     self.parent.widget.SetMenuBar(None)
