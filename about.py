@@ -1,5 +1,5 @@
 # about.py: about box with general info
-# $Id: about.py,v 1.19 2004/11/02 09:52:03 agriggio Exp $
+# $Id: about.py,v 1.20 2005/01/10 20:22:36 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -14,7 +14,7 @@ class wxGladeAboutBox(wxDialog):
     text = '''
     <html>
     <body bgcolor="%s">
-    <font size="-1">
+    <!-- <font size="-1"> -->
     <center>
     <table align="center" width="380" border="2" cellspacing="0">
     <tr>
@@ -26,17 +26,17 @@ class wxGladeAboutBox(wxDialog):
     </td></tr>
     </table>
     </center>
-    </font>
+    <!-- </font> -->
     <table border="0" cellpadding="0" cellspacing="0">
     <tr><td width="50"></td><td>
-    <font size="-1"><b>
-    <p>License: MIT (see <a href="show_license">license.txt</a>)</b><br>
+    <!-- <font size="-1"> -->
+    <b><p>License: MIT (see <a href="show_license">license.txt</a>)</b><br>
     <!-- wxPyColourChooser code copyright (c) 2002-2004 <br>Michael Gilfix 
     (wxWindows license) -->
     <p>Home page:
     <a href="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</a>
     <p>For credits, see
-    <a href="show_credits">credits.txt</a>.</font></td>
+    <a href="show_credits">credits.txt</a>.<!-- </font> --></td>
     </tr></table>
     </body>
     </html>
@@ -80,6 +80,11 @@ class wxGladeAboutBox(wxDialog):
                     import webbrowser
                     webbrowser.open(linkinfo.GetHref(), new=True)
         html = HtmlWin(self, -1, size=(400, -1))
+        if misc.check_wx_version(2, 5, 3):
+            try:
+                html.SetStandardFonts()
+            except AttributeError:
+                pass
         py_version = sys.version.split()[0]
         bgcolor = misc.color_to_string(self.GetBackgroundColour())
         icon_path = os.path.join(common.wxglade_path,

@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.39 2004/12/13 18:45:23 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.40 2005/01/10 20:22:35 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1109,7 +1109,7 @@ def generate_code_foreground(obj):
         color = 'wxColour(%s)' % \
                 _string_to_colour(obj.properties['foreground'])
     except (IndexError, ValueError): # the color is from system settings
-        color = 'wxSystemSettings::GetSystemColour(%s)' % \
+        color = 'wxSystemSettings::GetColour(%s)' % \
                 obj.properties['foreground']
     return intro + 'SetForegroundColour(%s);\n' % color
 
@@ -1125,7 +1125,7 @@ def generate_code_background(obj):
         color = 'wxColour(%s)' % \
                 _string_to_colour(obj.properties['background'])
     except (IndexError, ValueError): # the color is from system settings
-        color = 'wxSystemSettings::GetSystemColour(%s)' % \
+        color = 'wxSystemSettings::GetColour(%s)' % \
                 obj.properties['background']
     return intro + 'SetBackgroundColour(%s);\n' % color
 
@@ -1141,7 +1141,7 @@ def generate_code_font(obj):
     face = '"%s"' % font['face'].replace('"', r'\"')
     if obj.is_toplevel: intro = ''
     else: intro = '%s->' % obj.name
-    return intro + 'SetFont(wxFont(%s, %s, %s, %s, %s, %s));\n' % \
+    return intro + 'SetFont(wxFont(%s, %s, %s, %s, %s, wxT(%s)));\n' % \
            (size, family, style, weight, underlined, face)
 
 

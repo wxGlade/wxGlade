@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.54 2004/12/10 18:22:55 agriggio Exp $
+# $Id: py_codegen.py,v 1.55 2005/01/10 20:22:35 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -931,7 +931,7 @@ def generate_code_foreground(obj):
         color = cn('wxColour') + '(%s)' % \
                 _string_to_colour(obj.properties['foreground'])
     except (IndexError, ValueError): # the color is from system settings
-        color = cn('wxSystemSettings_GetSystemColour') + '(%s)' % \
+        color = cn('wxSystemSettings_GetColour') + '(%s)' % \
                 cn(obj.properties['foreground'])
     return self + '.SetForegroundColour(%s)\n' % color
 
@@ -946,7 +946,7 @@ def generate_code_background(obj):
         color = cn('wxColour') + '(%s)' % \
                 _string_to_colour(obj.properties['background'])
     except (IndexError, ValueError): # the color is from system settings
-        color = cn('wxSystemSettings_GetSystemColour') + '(%s)' % \
+        color = cn('wxSystemSettings_GetColour') + '(%s)' % \
                 cn(obj.properties['background'])
     return self + '.SetBackgroundColour(%s)\n' % color
 
