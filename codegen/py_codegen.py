@@ -64,6 +64,7 @@ class ClassLines:
     """
     def __init__(self):
         self.init = [] # lines of code to insert in the __init__ method
+        self.sizers_init = [] # lines related to sizer objects declarations
         self.props = [] # lines to insert in the __set_properties method
         self.layout = [] # lines to insert in the __do_layout method
         
@@ -102,7 +103,7 @@ class SourceFileContent:
         class_decl = re.compile(r'^\s*class\s+([a-zA-Z_]\w*)\s*'
                                 '(\(\s*[a-zA-Z_]\w*\s*(,\s*[a-zA-Z_]\w*)*'
                                 '\s*\))?:\s*$')
-        # regexps to mathc wxGlade blocks
+        # regexps to match wxGlade blocks
         block_start = re.compile(r'^\s*#\s*begin\s+wxGlade:\s*(\w+)\s*$')
         block_end = re.compile(r'^\s*#\s*end\s+wxGlade\s*$')
         inside_block = False
@@ -234,27 +235,33 @@ def add_object(top_obj, sub_obj):
                                                          sub_obj.klass),'\n'])
     else:
         init, props, layout = builder(sub_obj)
-        klass.init.extend(init)
+        if sub_obj.in_windows: # the object is a wxWindow instance
+            klass.init.extend(init)
+        else: # the object is a sizer
+            klass.sizers_init.extend(init)
         klass.props.extend(props)
         klass.layout.extend(layout)
         if sub_obj.is_toplevel and sub_obj.base != sub_obj.klass:
             klass.dependencies.append(sub_obj.klass)
 
 
-def add_sizeritem(toplevel, sizer, obj_name, option, flag, border):
+def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     """\
-    writes the code to add the object named 'name' to the sizer 'sizer'
+    writes the code to add the object 'obj' to the sizer 'sizer'
     in the 'toplevel' object.
     """
     # an ugly hack to allow the addition of spacers: if obj_name can be parsed
-    # as a couple of integers, it is the size of the spacer to add 
+    # as a couple of integers, it is the size of the spacer to add
+    obj_name = obj.name
     try: w, h = [ int(s) for s in obj_name.split(',') ]
-    except ValueError: obj_name = 'self.' + obj_name # it's a real name
+    except ValueError:
+        if obj.in_windows:
+            obj_name = 'self.' + obj_name # it's a real name
     else: pass # it was the dimension of a spacer
     try: klass = classes[toplevel.klass]
     except KeyError: klass = classes[toplevel.klass] = ClassLines()
-    buffer = 'self.%s.Add(%s, %s, %s, %s)\n' % \
-             (sizer, obj_name, option, flag, border)
+    buffer = '%s.Add(%s, %s, %s, %s)\n' % \
+             (sizer.name, obj_name, option, flag, border)
     klass.layout.append(buffer)
 
 
@@ -309,7 +316,12 @@ def add_class(code_obj):
         # replace the lines inside the __init__ wxGlade block with the new ones
         tag = '<%swxGlade replace %s %s>' % (nonce, code_obj.klass,
                                              '__init__')
-        prev_src.content = prev_src.content.replace(tag, "".join(buffer))
+        if prev_src.content.find(tag) < 0:
+            # no __init__ tag found, issue a warning and do nothing
+            print >> sys.stderr, "WARNING: wxGlade __init__ block not found," \
+                  " __init__ code NOT generated"
+        else:
+            prev_src.content = prev_src.content.replace(tag, "".join(buffer))
         buffer = []
         write = buffer.append
 
@@ -334,16 +346,24 @@ def add_class(code_obj):
         # with the new ones
         tag = '<%swxGlade replace %s %s>' % (nonce, code_obj.klass,
                                              '__set_properties')
-        prev_src.content = prev_src.content.replace(tag, "".join(buffer))
+        if prev_src.content.find(tag) < 0:
+            # no __set_properties tag found, issue a warning and do nothing
+            print >> sys.stderr, "WARNING: wxGlade __set_properties block " \
+                  "not found, __set_properties code NOT generated"
+        else:
+            prev_src.content = prev_src.content.replace(tag, "".join(buffer))
         buffer = []
         write = buffer.append
 
     # __do_layout
     if is_new: write('\n' + tabs(1) + 'def __do_layout(self):\n')
     layout_lines = classes[code_obj.klass].layout
+    sizers_init_lines = classes[code_obj.klass].sizers_init
     # begin tag
     write(tab + '# begin wxGlade: __do_layout\n')
-    if layout_lines:
+    if layout_lines or sizers_init_lines:
+        sizers_init_lines.reverse()
+        for l in sizers_init_lines: write(tab + l)
         for l in layout_lines: write(tab + l)
     else: write(tab + 'pass\n')
     # end tag
@@ -353,7 +373,12 @@ def add_class(code_obj):
         # with the new ones
         tag = '<%swxGlade replace %s %s>' % (nonce, code_obj.klass,
                                              '__do_layout')
-        prev_src.content = prev_src.content.replace(tag, "".join(buffer))
+        if prev_src.content.find(tag) < 0:
+            # no __do_layout tag found, issue a warning and do nothing
+            print >> sys.stderr, "WARNING: wxGlade __do_layout block " \
+                  "not found, __do_layout code NOT generated"
+        else:
+            prev_src.content = prev_src.content.replace(tag, "".join(buffer))
 
     # the code has been generated
     classes[code_obj.klass].done = True
@@ -369,8 +394,6 @@ def add_class(code_obj):
     if multiple_files:
         if prev_src is not None:
             tag = '<%swxGlade insert new_classes>' % nonce
-##             if prev_src.new_classes: code = "".join(prev_src.new_classes)
-##             else: code = ""
             prev_src.content = prev_src.content.replace(tag, "") #code)
             
             # insert the module dependencies of this class
@@ -525,7 +548,7 @@ def generate_code_font(obj):
     size = font['size']; family = font['family']
     underlined = font['underlined']
     style = font['style']; weight = font['weight']
-    face = '"%s"' % font['face'].replace('"', '\"')
+    face = '"%s"' % font['face'].replace('"', r'\"')
     if obj.is_toplevel: self = 'self'
     else: self = 'self.%s' % obj.name
     return self + '.SetFont(wxFont(%s, %s, %s, %s, %s, %s))\n' % \
