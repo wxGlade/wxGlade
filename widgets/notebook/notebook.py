@@ -42,7 +42,7 @@ class NotebookPane(WindowBase):
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         EVT_MOVE(self.widget, self.on_move)
         def GetBestSize():
-            if self.sizer and self.widget:
+            if self.widget and self.widget.GetSizer():
                 return self.widget.GetSizer().GetMinSize()
             return wxPanel.GetBestSize(self.widget)
         self.widget.GetBestSize = GetBestSize
