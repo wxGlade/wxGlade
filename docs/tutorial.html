@@ -10,7 +10,7 @@
 body { font-family: Arial, Helvetica, sans-serif }
   </style>
 </head>
-<body bgcolor="#ffffff">
+<body bgcolor="#ffffff" style="padding: 10px">
 
 <h1>wxGlade Tutorial</h1>
     
@@ -130,7 +130,7 @@ generates the code for the object, it writes:
     
 <p>This operation is almost identical to the handling of statusbar fields: the
 <tt>Tabs</tt> property of our notebook controls the number of pages (tabs) and
-their labels.<br/>
+their labels (don't forget to "Apply" the changes!).<br/>
  </p>
     
 <h3>6. Addition of some controls</h3>
@@ -210,20 +210,28 @@ widget has an <tt>Id</tt> property. This may have the following values:<br/>
  </p>
  
 <ul>
+   
    <li><u>a number</u>: this will be the integer which will be passed to the
-constructor of the widget</li>
+   constructor of the widget</li>
+
    <li><u>a name</u>: in this case wxGlade assumes it is the name of an id
-declared somewhere in the program, and uses it. For example, you can set the
-value of <tt>Id</tt> to <tt>wxID_OK</tt> for the default OK button of a
-dialog</li>
+   declared somewhere in the program, and uses it. For example, you can set the
+   value of <tt>Id</tt> to <tt>wxID_OK</tt> for the default OK button of a
+   dialog</li>
+   
    <li><u>a pair name=value</u>: in this case before the constructor of the
-widget the declaration of the variable is generated. For example you could
-write <tt>TEST_BUTTON=wxNewId()</tt> to generate the id of a button called
-"Test" (note for C++ code generation: since ids are stored in an anonymous
-enum, only constant initializers are allowed, so the assigment above is not
-legal - but you can use, for instance, <tt>TEST_BUTTON=100</tt>)<br/>
-     <br/>
-   </li>
+   widget the declaration of the variable is generated. For example you could
+   write <tt>TEST_BUTTON=wxNewId()</tt> to generate the id of a button called
+   "Test" (note for C++ code generation: since ids are stored in an anonymous
+   enum, only constant initializers are allowed, so the assigment above is not
+   legal - but you can use, for instance, <tt>TEST_BUTTON=100</tt>) </li>
+
+   <li><u>a pair name=?</u>: this special form means that the code will contain
+   the definition of a varable "name" with an auto-assigned unique id. For
+   python output, this is the same as "name=wxNewId()", while for C++ output,
+   it's the equivalent of "name=1000" (of course, 1000 is just an example
+   here). In this latter case, wxGlade will start generating ids exacly from
+   1000, so you can safely use ids below that for your own purposes.</li>
  
 </ul>
  
