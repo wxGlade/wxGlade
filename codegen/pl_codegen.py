@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.13 2003/07/26 12:07:33 agriggio Exp $
+# $Id: pl_codegen.py,v 1.14 2003/08/07 09:45:24 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -152,7 +152,7 @@ class SourceFileContent:
                 if class_name is None:
                     # this is the first class declared in the file: insert the
                     # new ones before this
-                    out_lines.append('<%swxGlade insert new_classes>' %
+                    out_lines.append('#<%swxGlade insert new_classes>' %
                                      nonce)
                     new_classes_inserted = True
                 class_name = result.group(1)
@@ -174,16 +174,16 @@ class SourceFileContent:
                     self.spaces[which_class] = spaces
                     inside_block = True
                     if class_name is None:
-                        out_lines.append('<%swxGlade replace %s>' % \
+                        out_lines.append('#<%swxGlade replace %s>' % \
                                          (nonce, which_block))
                     else:
-                        out_lines.append('<%swxGlade replace %s %s>' % \
+                        out_lines.append('#<%swxGlade replace %s %s>' % \
                                          (nonce, which_class, which_block))
                 else:
                     out_lines.append(line)
                     if line.lstrip().startswith('use Wx'):
                         # add a tag to allow extra modules
-                        out_lines.append('<%swxGlade extra_modules>\n'
+                        out_lines.append('#<%swxGlade extra_modules>\n'
                                          % nonce)
             else:
                 # ignore all the lines inside a wxGlade block
@@ -193,7 +193,7 @@ class SourceFileContent:
             # if we are here, the previous ``version'' of the file did not
             # contain any class, so we must add the new_classes tag at the
             # end of the file
-            out_lines.append('<%swxGlade insert new_classes>' % nonce)
+            out_lines.append('#<%swxGlade insert new_classes>' % nonce)
         tmp_in.close()
         # set the ``persistent'' content of the file
         self.content = "".join(out_lines)
@@ -308,7 +308,7 @@ def initialize(app_attrs):
             output_file.write('#!/usr/bin/perl -w -- \n')
             for line in header_lines:
                 output_file.write(line)
-            output_file.write('<%swxGlade extra_modules>\n' % nonce)
+            output_file.write('#<%swxGlade extra_modules>\n' % nonce)
             output_file.write('\n')
     else:
         previous_source = None
@@ -325,20 +325,20 @@ def finalize():
     """
     if previous_source is not None:
         # insert all the new custom classes inside the old file
-        tag = '<%swxGlade insert new_classes>' % nonce
+        tag = '#<%swxGlade insert new_classes>' % nonce
         if previous_source.new_classes:
             code = "".join(previous_source.new_classes)
         else:
             code = ""
         previous_source.content = previous_source.content.replace(tag, code)
-        tag = '<%swxGlade extra_modules>\n' % nonce
+        tag = '#<%swxGlade extra_modules>\n' % nonce
         code = "".join(_current_extra_modules.keys())
         previous_source.content = previous_source.content.replace(tag, code)
         # now remove all the remaining <123415wxGlade ...> tags from the
         # source: this may happen if we're not generating multiple files,
         # and one of the container class names is changed
         import re
-        tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +\w+>)' % nonce,
+        tags = re.findall('(#<%swxGlade replace ([a-zA-Z_]\w*) +\w+>)' % nonce,
                           previous_source.content)
         for tag in tags:
             indent = previous_source.spaces.get(tag[1], '\t')
@@ -354,7 +354,7 @@ def finalize():
         global output_file
         em = "".join(_current_extra_modules.keys())
         content = output_file.getvalue().replace(
-            '<%swxGlade extra_modules>\n' % nonce, em)
+            '#<%swxGlade extra_modules>\n' % nonce, em)
         output_file.close()
         try:
             common.save_file(output_file_name, content, 'codegen')
@@ -565,7 +565,7 @@ def add_class(code_obj):
 
     if prev_src is not None and not is_new:
         # replace the lines inside the ::new wxGlade block with the new ones
-        tag = '<%swxGlade replace %s %s>' % (nonce, code_obj.klass, 'new')
+        tag = '#<%swxGlade replace %s %s>' % (nonce, code_obj.klass, 'new')
         if prev_src.content.find(tag) < 0:
             # no __init__ tag found, issue a warning and do nothing
             print >> sys.stderr, "WARNING: wxGlade ::new block not found," \
@@ -596,7 +596,7 @@ def add_class(code_obj):
     if prev_src is not None and not is_new:
         # replace the lines inside the __set_properties wxGlade block
         # with the new ones
-        tag = '<%swxGlade replace %s %s>' % (nonce, code_obj.klass,
+        tag = '#<%swxGlade replace %s %s>' % (nonce, code_obj.klass,
                                              '__set_properties')
         if prev_src.content.find(tag) < 0:
             # no __set_properties tag found, issue a warning and do nothing
@@ -634,7 +634,7 @@ def add_class(code_obj):
     if prev_src is not None and not is_new:
         # replace the lines inside the __do_layout wxGlade block
         # with the new ones
-        tag = '<%swxGlade replace %s %s>' % (nonce, code_obj.klass,
+        tag = '#<%swxGlade replace %s %s>' % (nonce, code_obj.klass,
                                              '__do_layout')
         if prev_src.content.find(tag) < 0:
             # no __do_layout tag found, issue a warning and do nothing
@@ -657,11 +657,11 @@ def add_class(code_obj):
     if multiple_files:
         #return # not implemented yet -- crazyinsomniac
         if prev_src is not None:
-            tag = '<%swxGlade insert new_classes>' % nonce
+            tag = '#<%swxGlade insert new_classes>' % nonce
             prev_src.content = prev_src.content.replace(tag, "")
 
             # insert the extra modules
-            tag = '<%swxGlade extra_modules>\n' % nonce
+            tag = '#<%swxGlade extra_modules>\n' % nonce
             code = "".join(_current_extra_modules.keys())
             prev_src.content = prev_src.content.replace(tag, code)
             
@@ -669,7 +669,7 @@ def add_class(code_obj):
             extra_modules = classes[code_obj.klass].dependencies.keys()
             deps = ['# begin wxGlade: ::dependencies\n'] + extra_modules + \
                    ['# end wxGlade\n']
-            tag = '<%swxGlade replace dependencies>' % nonce
+            tag = '#<%swxGlade replace dependencies>' % nonce
             prev_src.content = prev_src.content.replace(tag, "".join(deps))
             
             try:
