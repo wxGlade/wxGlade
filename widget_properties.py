@@ -197,10 +197,15 @@ class TextProperty(Property, _activator):
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
         #sizer.SetItemMinSize(label, *label.GetBestSize())
-        try:
+##         try:
+##             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
+##             option = 4
+##         except AttributeError:
+##             option = 5
+        if getattr(self, '_enabler', None) is not None:
             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
             option = 4
-        except AttributeError:
+        else:
             option = 5
         sizer.Add(self.text, option, wxALL|wxALIGN_CENTER, 3)
         if self.multiline:
@@ -441,10 +446,15 @@ class SpinProperty(Property, _activator):
             self._target = self.spin
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
-        try:
+##         try:
+##             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
+##             option = 4
+##         except AttributeError:
+##             option = 5
+        if getattr(self, '_enabler', None) is not None:
             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
             option = 4
-        except AttributeError:
+        else:
             option = 5
         sizer.Add(self.spin, option, wxALL|wxALIGN_CENTER, 3)
         self.panel.SetAutoLayout(1)
@@ -521,10 +531,15 @@ class DialogProperty(Property, _activator):
         EVT_BUTTON(self.panel, self.id+1, self.display_dialog)
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
-        try:
+##         try:
+##             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
+##             option = 3
+##         except AttributeError:
+##             option = 4
+        if getattr(self, '_enabler', None) is not None:
             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
             option = 3
-        except AttributeError:
+        else:
             option = 4
         sizer.Add(self.text, option, wxALL|wxALIGN_CENTER, 3)
         sizer.Add(self.btn, 1, wxALL|wxALIGN_CENTER, 3)
