@@ -487,8 +487,10 @@ class WindowBase(EditBase):
 ##                (font.GetPointSize(), family,
 ##                 styles[font.GetStyle()], weights[font.GetWeight()],
 ##                 font.GetUnderlined(), font.GetFaceName())
-        return [ str(font.GetPointSize()), families[font.GetFamily()],
-                 styles[font.GetStyle()], weights[font.GetWeight()],
+        return [ str(font.GetPointSize()),
+                 families.get(font.GetFamily(), 'default'),
+                 styles.get(font.GetStyle(), 'normal'),
+                 weights.get(font.GetWeight(), 'normal'),
                  str(font.GetUnderlined()), font.GetFaceName() ]
 
     def set_font(self, value):

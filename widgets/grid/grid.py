@@ -96,7 +96,7 @@ class EditGrid(ManagedBase):
         self.enable_grid_resize = True
         self.lines_color = '#000000'
         self.label_bg_color = '#C0C0C0'
-        self.selection_mode = wxGrid.wxGridSelectCells
+        self.selection_mode = 0 # == wxGrid.wxGridSelectCells
         self.create_grid = True
         self.columns = [ ['A','-1'] , ['B','-1'] , ['C','-1'] ]
         
@@ -343,17 +343,29 @@ class EditGrid(ManagedBase):
                 self.label_bg_color))
 
     def get_selection_mode(self):
-        if self.selection_mode == wxGrid.wxGridSelectCells:   return 0
-        if self.selection_mode == wxGrid.wxGridSelectRows:    return 1
-        if self.selection_mode == wxGrid.wxGridSelectColumns: return 2
+        return self.selection_mode
+##         if self.selection_mode == wxGrid.wxGridSelectCells:   return 0
+##         if self.selection_mode == wxGrid.wxGridSelectRows:    return 1
+##         if self.selection_mode == wxGrid.wxGridSelectColumns: return 2
 
     def set_selection_mode(self, value):
-        if value == 0:
-            self.selection_mode = wxGrid.wxGridSelectCells
-        elif value == 1:
-            self.selection_mode = wxGrid.wxGridSelectRows
+        _sel_modes = {
+            'wxGrid.wxGridSelectCells': 0,
+            'wxGrid.wxGridSelectRows': 1,
+            'wxGrid.wxGridSelectColumns': 2,
+            }
+        if value in _sel_modes:
+            self.selection_mode = _sel_modes[value]
         else:
-            self.selection_mode = wxGrid.wxGridSelectColumns
+            try: value = int(value)
+            except: pass
+            else: self.selection_mode = value
+##         if value == 0:
+##             self.selection_mode = wxGrid.wxGridSelectCells
+##         elif value == 1:
+##             self.selection_mode = wxGrid.wxGridSelectRows
+##         else:
+##             self.selection_mode = wxGrid.wxGridSelectColumns
         # no operation on the grid.
 
     def get_columns(self):

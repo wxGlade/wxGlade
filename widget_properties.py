@@ -782,6 +782,8 @@ class RadioProperty(Property, _activator):
                                   choices=self.choices,
                                   majorDimension=self.columns,
                                   style=style)
+        try: self.options.SetSelection(int(self.val))
+        except: pass
         if self.can_disable:
             self._enabler = wxCheckBox(parent, self.id+1, "")
             szr.Add(self._enabler)
@@ -817,7 +819,7 @@ class RadioProperty(Property, _activator):
         try: self.val = int(value)
         except ValueError: self.val = self.choices.index(value)
         try: self.options.SetSelection(self.val)
-        except AttributeError: pass 
+        except AttributeError: pass
 
     def set_str_value(self, value):
         try:
