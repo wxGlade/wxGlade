@@ -6,7 +6,8 @@
 			  removed obsolete use of Fake* objects during xml
 			  loading
 	    widgets/splitter_window.py: fixed bug in set_size regarding the
-					position of the sash
+			  position of the sash
+	    clipboard.py: changes to use system clipboard with wxTheClipboard 
 
 2002-07-29: tree.py, main.py: prevention of auto expansion of tree nodes 
 	                      during xml loading
