@@ -1,3 +1,7 @@
+2003-03-08: codegen/cpp_codegen.py, codegen/py_codegen.py:
+                fixed a couple of bugs in the regex to match class decl (still
+                not 100% accurate, but better...)
+
 2003-03-06: misc.py:
                 added sizer_fixed_Insert to fix bug in wxPython 2.4
 
