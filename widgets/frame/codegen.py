@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.17 2004/05/05 20:47:41 agriggio Exp $
+# $Id: codegen.py,v 1.18 2004/09/15 17:14:29 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -107,15 +107,15 @@ class StatusFieldsHandler:
 def xrc_frame_code_generator(obj):
     xrcgen = common.code_writers['XRC']
     class FrameXrcObject(xrcgen.DefaultXrcObject):
-        def write_child_prologue(self, child, out_file, tabs):
-            if child.code_obj.in_sizers:
-                # XRC doesn't like sizers for Frames, so we add a Panel
-                out_file.write('    '*tabs + '<object class="wxPanel">\n')
+##         def write_child_prologue(self, child, out_file, tabs):
+##             if child.code_obj.in_sizers:
+##                 # XRC doesn't like sizers for Frames, so we add a Panel
+##                 out_file.write('    '*tabs + '<object class="wxPanel">\n')
 
-        def write_child_epilogue(self, child, out_file, tabs):
-            if child.code_obj.in_sizers:
-                # end of the fake panel
-                out_file.write('    '*tabs + '</object>\n')
+##         def write_child_epilogue(self, child, out_file, tabs):
+##             if child.code_obj.in_sizers:
+##                 # end of the fake panel
+##                 out_file.write('    '*tabs + '</object>\n')
 
         def write(self, outfile, tabs):
             if 'menubar' in self.properties:
