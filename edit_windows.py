@@ -270,10 +270,18 @@ class WindowBase(EditBase):
         self.access_functions['id'] = (lambda s=self: s.window_id, set_id)
         self.size = '-1, -1'
         self.access_functions['size'] = (self.get_size, self.set_size)
+        self.background = ''
         self.access_functions['background'] = (self.get_background,
                                                self.set_background)
+        self.foreground = ''
         self.access_functions['foreground'] = (self.get_foreground,
                                                self.set_foreground)
+        # this is True if the user has selected a custom font
+        self._font_changed = False
+        self.font = self._build_from_font(wxSystemSettings_GetSystemFont(
+            wxSYS_DEFAULT_GUI_FONT))
+        self.font[1] = 'default'
+        
         self.access_functions['font'] = (self.get_font, self.set_font)
 
         # properties added 2002-08-15
@@ -294,7 +302,6 @@ class WindowBase(EditBase):
 
         # properties added 2002-08-15
         prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True)
-        self.__size = None
 
     def finish_widget_creation(self):
         prop = self.properties
@@ -302,18 +309,28 @@ class WindowBase(EditBase):
         if size:
             #self.widget.SetSize([int(s) for s in size.split(',')])
             self.set_size(size)
-            self.__size = size
         else:
-            # HACK!! see create_properties below
             prop['size'].set_value('%s, %s' % tuple(self.widget.GetSize()))
-        background = prop['background'].get_value()
-        if background:
-            self.widget.SetBackgroundColour(misc.string_to_color(background))
-        foreground = prop['foreground'].get_value()
-        if foreground:
-            self.widget.SetForegroundColour(misc.string_to_color(foreground))
-        font = prop['font'].get_value()
-        if font: self.set_font(font)
+        if prop['background'].is_active():
+            self.set_background(prop['background'].get_value())
+        else:
+            color = misc.color_to_string(self.widget.GetBackgroundColour())
+            self.background = color
+            prop['background'].set_value(color)
+        if prop['foreground'].is_active():
+            self.set_foreground(prop['foreground'].get_value())
+        else:
+            color = misc.color_to_string(self.widget.GetForegroundColour())
+            self.foreground = color
+            prop['foreground'].set_value(color)
+##         background = prop['background'].get_value()
+##         if background:
+##             self.widget.SetBackgroundColour(misc.string_to_color(background))
+##         foreground = prop['foreground'].get_value()
+##         if foreground:
+##             self.widget.SetForegroundColour(misc.string_to_color(foreground))
+        if prop['font'].is_active():
+            self.set_font(prop['font'].get_value())
         EditBase.finish_widget_creation(self)
         EVT_SIZE(self.widget, self.on_size)
         # after setting various Properties, we must Refresh widget in order to
@@ -326,7 +343,7 @@ class WindowBase(EditBase):
             evt_key = event.GetKeyCode()
             for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
-                    wxCallAfter(function)
+                    misc.wxCallAfter(function)
                     break
             event.Skip()
         EVT_KEY_DOWN(self.widget, on_key_down)
@@ -343,10 +360,6 @@ class WindowBase(EditBase):
         prop = self.properties
         prop['id'].display(panel)
         prop['size'].display(panel)
-        # This is a HACK! I **MUST** find the reason why setting size before
-        # gives toubles if w or h are -1 !!!
-##         if self.__size:
-##             prop['size'].set_value(self.__size)
         
         prop['background'].display(panel) 
         prop['foreground'].display(panel)
@@ -412,56 +425,84 @@ class WindowBase(EditBase):
         #if self.widget: self.widget.SetTooltip(value)
 
     def get_background(self):
-        if not self.widget: return '' # this is an invalid color
-        return misc.color_to_string(self.widget.GetBackgroundColour())
+        return self.background
+##         if not self.widget: return '' # this is an invalid color
+##         return misc.color_to_string(self.widget.GetBackgroundColour())
 
     def get_foreground(self):
-        if not self.widget: return '' # this is an invalid color
-        return misc.color_to_string(self.widget.GetForegroundColour())
+        return self.foreground
+##         if not self.widget: return '' # this is an invalid color
+##         return misc.color_to_string(self.widget.GetForegroundColour())
 
     def set_background(self, value):
         if not self.widget: return
-        try: color = misc.string_to_color(value)
-        except: self.properties['background'].set_value(self.get_background())
+        value = value.strip()
+        if value in ColorDialogProperty.str_to_colors:
+            self.widget.SetBackgroundColour(wxSystemSettings_GetSystemColour(
+                ColorDialogProperty.str_to_colors[value]))
         else:
-            self.widget.SetBackgroundColour(color)
-            self.widget.Refresh()
+            try:
+                color = misc.string_to_color(value)
+                self.widget.SetBackgroundColour(color)
+            except:
+                self.properties['background'].set_value(self.get_background())
+                return
+        self.background = value
+        self.widget.Refresh()
             
     def set_foreground(self, value):
         if not self.widget: return
-        try: color = misc.string_to_color(value)
-        except: self.properties['background'].set_value(self.get_background())
+        value = value.strip()
+        if value in ColorDialogProperty.str_to_colors:
+            self.widget.SetForegroundColour(wxSystemSettings_GetSystemColour(
+                ColorDialogProperty.str_to_colors[value]))
         else:
-            self.widget.SetForegroundColour(color)
-            self.widget.Refresh()
+            try:
+                color = misc.string_to_color(value)
+                self.widget.SetForegroundColour(color)
+            except:
+                self.properties['foreground'].set_value(self.get_foreground())
+                return
+        self.foreground = value
+        self.widget.Refresh()
 
     def get_font(self):
-        if not self.widget: return '' # this is an invalid font
-        font = self.widget.GetFont()
+        return str(self.font)
+    
+    def _build_from_font(self, font):
+##         if not self.widget: return '' # this is an invalid font
+##         font = self.widget.GetFont()
         families = FontDialogProperty.font_families_from
         styles = FontDialogProperty.font_styles_from
         weights = FontDialogProperty.font_weights_from
-        return "['%s', '%s', '%s', '%s', '%s', '%s']" % \
-               (font.GetPointSize(), families[font.GetFamily()],
-                styles[font.GetStyle()], weights[font.GetWeight()],
-                font.GetUnderlined(), font.GetFaceName())
+##         return "['%s', '%s', '%s', '%s', '%s', '%s']" % \
+##                (font.GetPointSize(), family,
+##                 styles[font.GetStyle()], weights[font.GetWeight()],
+##                 font.GetUnderlined(), font.GetFaceName())
+        return [ str(font.GetPointSize()), families[font.GetFamily()],
+                 styles[font.GetStyle()], weights[font.GetWeight()],
+                 str(font.GetUnderlined()), font.GetFaceName() ]
 
     def set_font(self, value):
-        if not self.widget: return
+        #if not self.widget: return
         families = FontDialogProperty.font_families_to
         styles = FontDialogProperty.font_styles_to
         weights = FontDialogProperty.font_weights_to
         try:
             value = eval(value)
             f = wxFont(int(value[0]), families[value[1]], styles[value[2]],
-                       weights[value[3]], int(value[4]), str(value[5]))
-        except: self.properties['font'].set_value(self.get_font())
+                       weights[value[3]], int(value[4]), value[5])
+        except:
+            #import traceback; traceback.print_exc()
+            self.properties['font'].set_value(self.get_font())
         else:
-            old_size = self.widget.GetSize()
-            self.widget.SetFont(f)
-            size = self.widget.GetSize()
-            if size != old_size:
-                self.sizer.set_item(self.pos, size=size)
+            self.font = value
+            if self.widget:
+                old_size = self.widget.GetSize()
+                self.widget.SetFont(f)
+                size = self.widget.GetSize()
+                if size != old_size:
+                    self.sizer.set_item(self.pos, size=size)
 
     def set_width(self, value):
         self.set_size((int(value), -1))
@@ -498,7 +539,7 @@ class WindowBase(EditBase):
             class FontHandler:
                 def __init__(self, owner):
                     self.owner = owner
-                    self.props = range(6)
+                    self.props = [ '' for i in range(6) ]
                     self.index = 0
                 def start_elem(self, name, attrs):
                     index = { 'size': 0, 'family': 1, 'style': 2, 'weight': 3,

@@ -135,10 +135,14 @@ class DefaultXrcObject(XrcObject):
         tab_str = tabs(ntabs+1)
         # write the properties
         if self.properties.has_key('foreground'):
-            self.properties['fg'] = self.properties['foreground']
+            if self.properties['foreground'].startswith('#'):
+                # XRC does not support colors from system settings
+                self.properties['fg'] = self.properties['foreground']
             del self.properties['foreground']
         if self.properties.has_key('background'):
-            self.properties['bg'] = self.properties['background']
+            if self.properties['background'].startswith('#'):
+                # XRC does not support colors from system settings
+                self.properties['bg'] = self.properties['background']
             del self.properties['background']
         if self.properties.has_key('font'):
             font = self.properties['font']
@@ -298,7 +302,7 @@ def add_app(app_attrs, top_win_class):
 class FontPropertyHandler:
     def __init__(self):
         self.props = {'size': '', 'family': '', 'style': '', 'weight': '',
-                      'underlined': '', 'face': '', 'encoding': 'iso-8859-1'}
+                      'underlined': '', 'face': ''}
         self.current = None
 
     def start_elem(self, name, attrs):

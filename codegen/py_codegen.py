@@ -615,8 +615,13 @@ def generate_code_foreground(obj):
     """
     if obj.is_toplevel: self = 'self'
     else: self = 'self.%s' % obj.name
-    return self + '.SetForegroundColour(wxColour(%s))\n' % \
-           (_string_to_colour(obj.properties['foreground']))
+    try:
+        color = 'wxColour(%s)' % \
+                _string_to_colour(obj.properties['foreground'])
+    except (IndexError, ValueError): # the color is from system settings
+        color = 'wxSystemSettings_GetSystemColour(%s)' % \
+                obj.properties['foreground']
+    return self + '.SetForegroundColour(%s)\n' % color
 
 def generate_code_background(obj):
     """\
@@ -625,8 +630,13 @@ def generate_code_background(obj):
     """
     if obj.is_toplevel: self = 'self'
     else: self = 'self.%s' % obj.name
-    return self + '.SetBackgroundColour(wxColour(%s))\n' % \
-           (_string_to_colour(obj.properties['background']))
+    try:
+        color = 'wxColour(%s)' % \
+                _string_to_colour(obj.properties['background'])
+    except (IndexError, ValueError): # the color is from system settings
+        color = 'wxSystemSettings_GetSystemColour(%s)' % \
+                obj.properties['background']
+    return self + '.SetBackgroundColour(%s)\n' % color
 
 def generate_code_font(obj):
     """\
@@ -640,7 +650,7 @@ def generate_code_font(obj):
     if obj.is_toplevel: self = 'self'
     else: self = 'self.%s' % obj.name
     return self + '.SetFont(wxFont(%s, %s, %s, %s, %s, %s))\n' % \
-           (size, family, style, weight, underlined, face)
+            (size, family, style, weight, underlined, face)
 
 def generate_code_id(obj):
     """\
@@ -664,7 +674,7 @@ def generate_code_tooltip(obj):
     if obj.is_toplevel: self = 'self'
     else: self = 'self.%s' % obj.name
     return self + '.SetToolTipString("%s")\n' % \
-           obj.properties['tooltip'].replace('"', r'\"')
+            obj.properties['tooltip'].replace('"', r'\"')
 
 def generate_common_properties(widget):
     """\
