@@ -386,7 +386,6 @@ class MenuProperty(Property):
 
     def write(self, outfile, tabs):
         fwrite = outfile.write
-        #import widget_properties
         fwrite('    ' * tabs + '<menus>\n')
         for menu in self.owner[self.name][0]():
             menu.write(outfile, tabs+1)
@@ -396,6 +395,8 @@ class MenuProperty(Property):
 
 
 class EditMenuBar(EditBase):
+    __hidden_frame = None # used on GTK to reparent a menubar before deletion
+    
     def __init__(self, parent, property_window):
         #wxMenuBar.__init__(self)
         EditBase.__init__(self, parent.name + '_menubar', 'wxMenuBar',
@@ -405,16 +406,14 @@ class EditMenuBar(EditBase):
         self.menus = [] # list of MenuTree objects
         self.access_functions['menus'] = (self.get_menus, self.set_menus)
         prop = self.properties['menus'] = MenuProperty(self, 'menus', None) 
-        #self.Show()
         self.node = Tree.Node(self)
         common.app_tree.add(self.node, parent.node)
-        #parent.SetMenuBar(self)
-        #EVT_LEFT_DOWN(self, self.on_set_focus)
 
     def create_widget(self):
+        if wxPlatform == '__WXGTK__' and not EditMenuBar.__hidden_frame:
+            EditMenuBar.__hidden_frame = wxFrame(common.palette, -1, "")
+            EditMenuBar.__hidden_frame.Hide()
         self.widget = wxMenuBar()
-        def Destroy(): pass
-        self.widget.Destroy = Destroy
         if self.parent.widget: self.parent.widget.SetMenuBar(self.widget)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         self.set_menus(self.menus) # show the menus
@@ -459,7 +458,7 @@ class EditMenuBar(EditBase):
                     try: checkable = int(item.checkable)
                     except: checkable = 0
                     menu.Append(wxNewId(), item.label, checkable=checkable)
-        first = self.widget.GetMenuCount() #0 #1
+        first = self.widget.GetMenuCount()
         for menu in self.menus:
             m = wxMenu()
             append(m, menu.root.children)
@@ -472,6 +471,9 @@ class EditMenuBar(EditBase):
     def remove(self, *args):
         self.parent.properties['menubar'].set_value(0)
         if self.parent.widget:
+            if wxPlatform == '__WXGTK__':
+                self.widget.Reparent(EditMenuBar.__hidden_frame)
+                self.widget.Hide()
             self.parent.widget.SetMenuBar(None)
         EditBase.remove(self)
 
@@ -494,16 +496,14 @@ class EditMenuBar(EditBase):
                     if self.menu_depth == 1:
                         label = misc._encode(attrs['label'])
                         t = MenuTree(attrs['name'], label)
-                        self.curr_menu.append( (t.root,) ) #wxMenu()) )
+                        self.curr_menu.append( (t.root,) )
                         self.owner.menus.append(t)
-                        #self.owner.Append(self.curr_menu[0][1], label)
                         return
                     node = MenuTree.Node(label=label, name=attrs['name'])
                     cm = self.curr_menu[-1]
                     cm[0].children.append(node)
                     node.parent = cm[0]
                     menu = wxMenu()
-                    #cm[1].AppendMenu(wxNewId(), label, menu)
                     self.curr_menu.append( (node, menu) )
                 elif name == 'item':
                     self.curr_item = MenuTree.Node()
@@ -520,13 +520,6 @@ class EditMenuBar(EditBase):
                         raise XmlParsingError, "menu item outside a menu"
                     cm[0].children.append(self.curr_item)
                     self.curr_item.parent = cm[0]
-##                     if self.curr_item.name == '---':
-##                         cm[1].AppendSeparator()
-##                     else:
-##                         try: checkable = int(self.curr_item.checkable)
-##                         except: checkable = 0
-##                         cm[1].Append(wxNewId(), self.curr_item.label,
-##                                      checkable=checkable)
                 elif name == 'menu':
                     self.menu_depth -= 1
                     self.curr_menu.pop()
@@ -545,15 +538,11 @@ class EditMenuBar(EditBase):
 
 class EditStatusBar(EditBase):
     def __init__(self, parent, property_window):
-        #id = wxNewId()
-        #wxStatusBar.__init__(self, parent, id)
         EditBase.__init__(self, parent.name + '_statusbar',
                           'wxStatusBar', parent, id, property_window,
                           custom_class=False, show=False)
         self.fields = [ [self.name, "-1"] ] # list of 2-lists label, size
                                             # for the statusbar fields
-##         self.SetFieldsCount(1)
-##         self.SetStatusText(self.name)
         self.access_functions['fields'] = (self.get_fields, self.set_fields) 
         prop = self.properties['fields'] = GridProperty(self, 'fields', None,
                                                         [("Text",
@@ -574,10 +563,6 @@ class EditStatusBar(EditBase):
             tabs -= 1
             fwrite('    ' * tabs + '</fields>\n')
         prop.write = write_prop
-
-##         EVT_LEFT_DOWN(self, self.on_set_focus)
-
-##         parent.SetStatusBar(self)
 
         self.node = Tree.Node(self)
         common.app_tree.add(self.node, parent.node)
