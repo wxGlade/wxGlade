@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.25 2004/09/22 08:12:12 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.26 2004/09/23 10:26:01 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -581,10 +581,11 @@ def add_class(code_obj):
     
     write('\n\t$self->__set_properties();\n')
     write('\t$self->__do_layout();\n\n')
-    write('\treturn $self;\n\n')
     write('# end wxGlade\n')
 
-    if is_new: write('}\n\n')
+    if is_new:
+        write('\treturn $self;\n\n')
+        write('}\n\n')
 
     if prev_src is not None and not is_new:
         # replace the lines inside the ::new wxGlade block with the new ones
