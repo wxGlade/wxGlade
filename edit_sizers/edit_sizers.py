@@ -1582,7 +1582,41 @@ class EditFlexGridSizer(GridSizerBase):
     def get_growable_cols(self): return ','.join(map(str, self.grow_cols))
 
 # end of class EditFlexGridSizer
-    
+
+
+def _builder(parent, sizer, pos, orientation=wxVERTICAL, slots=1,
+             is_static=False, label="", number=[1], show=True):
+    num = slots
+    name = 'sizer_%d' % number[0]
+    while common.app_tree.has_name(name):
+        number[0] += 1
+        name = 'sizer_%d' % number[0]
+    if sizer is not None: topl = 0
+    else: topl = 1
+    if is_static:
+        sz = EditStaticBoxSizer(name, parent, orientation, label, num, topl)
+    else:
+        sz = EditBoxSizer(name, parent, orientation, num, topl)
+    if sizer is not None:
+        sizer.add_item(sz, pos, 1, wxEXPAND)
+        node = Tree.Node(sz)
+        sz.node = node
+        common.app_tree.insert(node, sizer.node, pos-1)
+        common.adding_sizer = False
+    else:
+        parent.set_sizer(sz)
+        node = Tree.Node(sz)
+        sz.node = node
+        if pos is None: common.app_tree.add(node, parent.node)
+        else:
+            common.app_tree.insert(node, parent.node, pos-1)
+            sz.pos = pos
+
+    sz.show_widget(show) #True)
+    if sizer is not None:
+        sz.sizer_properties['flag'].set_value('wxEXPAND')
+        sz.sizer_properties['pos'].set_value(pos-1)
+   
 
 def builder(parent, sizer, pos, number=[1], show=True):
     """\
@@ -1643,36 +1677,39 @@ def builder(parent, sizer, pos, number=[1], show=True):
         orientation = wxHORIZONTAL
     else: orientation = wxVERTICAL
     num = dialog.num.GetValue()
-    name = 'sizer_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'sizer_%d' % number[0]
-    if sizer is not None: topl = 0
-    else: topl = 1
-    if dialog.check.GetValue():
-        sz = EditStaticBoxSizer(name, parent, orientation,
-                                dialog.label.GetValue(), num, topl)
-    else:
-        sz = EditBoxSizer(name, parent, orientation, num, topl)
-    if sizer is not None:
-        sizer.add_item(sz, pos, 1, wxEXPAND)
-        node = Tree.Node(sz)
-        sz.node = node
-        common.app_tree.insert(node, sizer.node, pos-1)
-        common.adding_sizer = False
-    else:
-        parent.set_sizer(sz)
-        node = Tree.Node(sz)
-        sz.node = node
-        if pos is None: common.app_tree.add(node, parent.node)
-        else:
-            common.app_tree.insert(node, parent.node, pos-1)
-            sz.pos = pos
+    
+    _builder(parent, sizer, pos, orientation, num, dialog.check.GetValue(),
+             dialog.label.GetValue())
+##     name = 'sizer_%d' % number[0]
+##     while common.app_tree.has_name(name):
+##         number[0] += 1
+##         name = 'sizer_%d' % number[0]
+##     if sizer is not None: topl = 0
+##     else: topl = 1
+##     if dialog.check.GetValue():
+##         sz = EditStaticBoxSizer(name, parent, orientation,
+##                                 dialog.label.GetValue(), num, topl)
+##     else:
+##         sz = EditBoxSizer(name, parent, orientation, num, topl)
+##     if sizer is not None:
+##         sizer.add_item(sz, pos, 1, wxEXPAND)
+##         node = Tree.Node(sz)
+##         sz.node = node
+##         common.app_tree.insert(node, sizer.node, pos-1)
+##         common.adding_sizer = False
+##     else:
+##         parent.set_sizer(sz)
+##         node = Tree.Node(sz)
+##         sz.node = node
+##         if pos is None: common.app_tree.add(node, parent.node)
+##         else:
+##             common.app_tree.insert(node, parent.node, pos-1)
+##             sz.pos = pos
 
-    sz.show_widget(show) #True)
-    if sizer is not None:
-        sz.sizer_properties['flag'].set_value('wxEXPAND')
-        sz.sizer_properties['pos'].set_value(pos-1)
+##     sz.show_widget(show) #True)
+##     if sizer is not None:
+##         sz.sizer_properties['flag'].set_value('wxEXPAND')
+##         sz.sizer_properties['pos'].set_value(pos-1)
     dialog.Destroy()
 
 

@@ -720,6 +720,8 @@ class EditFrame(TopLevelBase):
             #if self.sizer: self.sizer.fit_parent()
             #else:
             self.widget.SetSize((400, 300))
+        if wxPlatform == '__WXMSW__':
+            self.widget.CenterOnScreen()
         if self.menubar and self.menubar.widget:
             self.widget.SetMenuBar(self.menubar.widget)
         if self.statusbar and self.statusbar.widget:
@@ -849,11 +851,18 @@ def builder(parent, sizer, pos, number=[0]):
                        klass=dialog.klass)
     node = Tree.Node(frame)
     frame.node = node
-    frame.show_widget(True)
     common.app_tree.add(node)
+    frame.show_widget(True)
+
+    # add a default vertical sizer to the frame
+    import edit_sizers
+    edit_sizers._builder(frame, None, 0)
+    # now select the frame's node in the tree
+    common.app_tree.select_item(node)
+    
     dialog.Destroy()
     if wxPlatform == '__WXMSW__':
-        frame.widget.CenterOnScreen()
+        #frame.widget.CenterOnScreen()
         frame.widget.Raise()
 
 
