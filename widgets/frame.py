@@ -785,7 +785,11 @@ class EditFrame(TopLevelBase):
             self.SetWindowStyleFlag(style)
 
     def create_widget(self):
-        self.widget = wxFrame(self.parent, self.id, self.title, style=self.style)
+        if self.parent:
+            parent = self.parent.widget
+        else:
+            parent = None
+        self.widget = wxFrame(parent, self.id, self.title, style=self.style)
         # event handlers
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)

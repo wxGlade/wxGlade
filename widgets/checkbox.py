@@ -58,7 +58,7 @@ class EditCheckBox(ManagedBase):
             self.widget.SetValue(self.value)
 
     def create_widget(self):
-        self.widget = wxCheckBox(self.parent, self.id, self.label)
+        self.widget = wxCheckBox(self.parent.widget, self.id, self.label)
         def on_checkbox(event):
             self.set_value(self.value)
         EVT_CHECKBOX(self.widget, self.id, on_checkbox)

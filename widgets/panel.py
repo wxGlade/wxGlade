@@ -46,7 +46,7 @@ class EditPanel(ManagedBase):
         return wxPanel.GetBestSize(self)
 
     def create_widget(self):
-        self.widget = wxPanel(self.parent, self.id)
+        self.widget = wxPanel(self.parent.widget, self.id)
         # event handlers
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)

@@ -95,7 +95,7 @@ class EditChoice(ManagedBase):
             return ChoicesHandler(self)
 
     def create_widget(self):
-        self.widget = wxChoice2(self.parent, self.id, choices=self.choices)
+        self.widget = wxChoice2(self.parent.widget, self.id, choices=self.choices)
         if self.choices:
             self.widget.SetSelection(0)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)

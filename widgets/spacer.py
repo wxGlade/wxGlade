@@ -67,7 +67,7 @@ class EditSpacer(ManagedBase):
         self.sizer.set_item(self.pos, size=self.size)
 
     def create_widget(self):
-        self.widget = wxPanel(self.parent, self.id, size=self.size)
+        self.widget = wxPanel(self.parent.widget, self.id, size=self.size)
         self.widget.GetBestSize = self.GetSize
 
 # end of class EditSpacer

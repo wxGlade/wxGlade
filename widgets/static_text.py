@@ -74,7 +74,7 @@ class EditStaticText(wxStaticText, ManagedBase):
             self.widget.SetWindowStyleFlag(style)
 
     def create_widget(self):
-        self.widget = wxStaticText(self.parent, self.id, self.label)
+        self.widget = wxStaticText(self.parent.widget, self.id, self.label)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
 # end of class EditStaticText

@@ -229,7 +229,7 @@ class EditNotebook(ManagedBase):
         return -1
 
     def create_widget(self):
-        self.widget = wxNotebook(self.parent, self.id, style=self.style)
+        self.widget = wxNotebook(self.parent.widget, self.id, style=self.style)
         self.nb_sizer = wxNotebookSizer(self.widget)
         self.widget.Destroy = self.destroy_widget
 

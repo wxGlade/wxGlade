@@ -119,7 +119,7 @@ class EditComboBox(ManagedBase):
 ##            self.SetWindowStyleFlag(style)
 
     def create_widget(self):
-        self.widget = wxComboBox2(self.parent, self.id, choices=self.choices)
+        self.widget = wxComboBox2(self.parent.widget, self.id, choices=self.choices)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
     def get_property_handler(self, prop_name):

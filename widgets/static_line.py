@@ -36,7 +36,8 @@ class EditStaticLine(wxStaticLine, ManagedBase):
         return (lambda : "", lambda v: None)
 
     def create_widget(self):
-        self.widget = wxStaticLine(self.parent, self.id, style=self.orientation)
+        self.widget = wxStaticLine(self.parent.widget, self.id,
+                                   style=self.orientation)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
 # end of class EditStaticLine

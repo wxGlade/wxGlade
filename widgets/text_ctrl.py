@@ -76,7 +76,7 @@ class EditTextCtrl(ManagedBase):
             self.widget.SetWindowStyleFlag(style)
 
     def create_widget(self):
-        self.widget = wxTextCtrl(self.parent, self.id, self.value)
+        self.widget = wxTextCtrl(self.parent.widget, self.id, self.value)
 
 # end of class EditTextCtrl
 
