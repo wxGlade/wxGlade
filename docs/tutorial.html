@@ -396,7 +396,16 @@ class MyFrame(wxFrame):
 
 # end of class MyFrame
 </pre>
-which is clearly not what you intended.    
+which is clearly not what you intended.<br>&nbsp;
+    
+<li>If you remove a custom class from the wxg file, wxGlade won't automatically
+remove it from the source when it is re-generated (this does not apply if there
+is no old version of such source), but it will try to update the parts inside
+wxGlade blocks nonetheless: this means that:
+<ul>
+  <li>If you want to remove the class, you have to do it manually,</li>
+  <li>If you want to keep the class as is, you have to remove the wxGlade tags.
+</ul>
   </ul>
   It is possible that future versions of wxGlade will let you choose if you
   want to overwrite or update the output file, but at the moment this is not
