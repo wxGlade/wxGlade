@@ -285,11 +285,26 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
     def endElement(self, name):
         if name == 'object':
+            # generate a unique name for the copy
+            obj = self.top()
+            if obj.klass != 'sizeritem':
+                widget = obj.obj
+                newname = widget.name + '_copy'
+                i = 1
+                while common.app_tree.has_name(newname):
+                    newname = '%s_copy_%s' % (widget.name, i)
+                    i += 1
+                widget.name = newname
+                widget.name_prop.set_value(newname)
+                common.app_tree.set_name(widget.node, newname)
+            
             self.depth_level -= 1
             if not self.depth_level:
                 try:
                     # show the first object and update its layout
                     common.app_tree.show_widget(self.top_obj.node)
+                    self.top_obj.show_properties()
+                    common.app_tree.select_item(self.top_obj.node)
                 except AttributeError:
                     print 'Exception! obj: %s' % self.top_obj
                     traceback.print_exc()
