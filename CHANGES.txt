@@ -1,3 +1,6 @@
+2002-11-28: edit_sizers/edit_sizers.py, tree.py: fixed bug on change_item_pos
+                                                 and change_node_pos
+
 2002-11-27: codegen/py_codegen.py: if the output file for code generation
                                    already exists, honor the indentation. This
                                    is desirable for instance for conditional

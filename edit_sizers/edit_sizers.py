@@ -21,28 +21,11 @@ class SizerSlot:
         self.widget = wxPanel(self.parent.widget, -1)
         self.widget.SetBackgroundColour(wxLIGHT_GREY)
         self.widget.SetAutoLayout(True)
-##         self.menu = wxMenu('Options')
-##         REMOVE_ID, PASTE_ID = wxNewId(), wxNewId()
-##         #self.menu.Append(REMOVE_ID, 'Remove\tDel')
-##         #self.menu.Append(PASTE_ID, 'Paste\tCtrl+V')
-##         misc.append_item(self.menu, REMOVE_ID, 'Remove\tDel', 'remove.xpm')
-##         misc.append_item(self.menu, PASTE_ID, 'Paste\tCtrl+V', 'paste.xpm')
-##         EVT_MENU(self.widget, REMOVE_ID, self.remove)
-##         EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
         EVT_PAINT(self.widget, self.on_paint)
         EVT_RIGHT_DOWN(self.widget, self.popup_menu)
         EVT_LEFT_DOWN(self.widget, self.drop_widget)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
 
-##         def remove():
-##             if common.focused_widget is not None:
-##                 common.focused_widget.remove()
-##         def paste():
-##             if common.focused_widget is not None:
-##                 try: common.focused_widget.clipboard_paste()
-##                 except AttributeError: pass
-##         table = [(0, WXK_DELETE, remove),
-##                  (wxACCEL_CTRL, ord('V'), paste)]
         def on_key_down(event):
             evt_flags = 0
             if event.ControlDown(): evt_flags = wxACCEL_CTRL
@@ -116,6 +99,13 @@ class SizerSlot:
         if self.menu: self.menu.Destroy()
         if delete_widget and self.widget: self.widget.Destroy()
         if misc.focused_widget is self: misc.focused_widget = None
+
+    def update_pos(self, value):
+        """\
+        called by self.sizer.change_item_pos to update the item's position
+        when another widget is moved
+        """
+        self.pos = value
 
 # end of class SizerSlot
 
