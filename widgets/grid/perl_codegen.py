@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxGrid objects
-# $Id: perl_codegen.py,v 1.3 2003/07/18 16:44:03 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.4 2003/07/18 16:49:14 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -69,7 +69,8 @@ class PerlCodeGenerator:
                        (name, plgen._string_to_colour(prop['label_bg_color'])))
         sel_mode = prop.get('selection_mode')
         if sel_mode and sel_mode != 'wxGridSelectCells':
-            out.append('%s->SetSelectionMode(%s);\n' % (name, sel_mode))
+            out.append('%s->SetSelectionMode(%s);\n' %
+                (name, sel_mode.replace('wxGrid.','')))
 
         i = 0
         for label, size in columns:
