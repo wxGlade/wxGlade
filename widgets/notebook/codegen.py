@@ -161,6 +161,7 @@ def initialize():
     common.class_names['EditNotebook'] = 'wxNotebook'
     common.class_names['NotebookPane'] = 'wxPanel'
     common.toplevels['EditNotebook'] = 1
+    common.toplevels['NotebookPane'] = 1
     
     # python code generation functions
     pygen = common.code_writers.get('python')

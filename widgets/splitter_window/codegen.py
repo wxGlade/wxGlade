@@ -156,6 +156,7 @@ def initialize():
     common.class_names['EditSplitterWindow'] = 'wxSplitterWindow'
     common.class_names['SplitterPane'] = 'wxPanel'
     common.toplevels['EditSplitterWindow'] = 1
+    common.toplevels['SplitterPane'] = 1
 
     pygen = common.code_writers.get('python')
     if pygen:
