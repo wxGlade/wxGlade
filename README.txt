@@ -51,7 +51,9 @@ should know.
 For any kind of question, there's a mailing list at 
     https://lists.sourceforge.net/lists/listinfo/wxglade-general
 If you don't want to follow the list, you can reach me at 
-    albgrig@tiscalinet.it
+    agriggio@users.sourceforge.net
 
 Enjoy!
 Alberto Griggio
+
+$Id: README.txt,v 1.12 2004/12/11 13:24:31 agriggio Exp $
