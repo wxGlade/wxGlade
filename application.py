@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.37 2004/01/18 19:45:04 agriggio Exp $
+# $Id: application.py,v 1.38 2004/02/17 18:24:46 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -370,8 +370,14 @@ class Application(object):
                 old = common.code_writers[cw].use_new_namespace
                 common.code_writers[cw].use_new_namespace = False
             common.app_tree.write(out) # write the xml onto a temporary buffer
+            if not os.path.isabs(self.output_path) and \
+               self.filename is not None:
+                out_path = os.path.join(os.path.dirname(self.filename),
+                                        self.output_path)
+            else:
+                out_path = None
             CodeWriter(common.code_writers[cw], out.getvalue(), True,
-                       preview=preview)
+                       preview=preview, out_path=out_path)
             if preview and cw == 'python':
                 common.code_writers[cw].use_new_namespace = old
         except (IOError, OSError), msg:
