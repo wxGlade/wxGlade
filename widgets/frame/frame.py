@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.23 2003/06/21 14:28:45 agriggio Exp $
+# $Id: frame.py,v 1.24 2003/07/11 15:07:36 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -344,6 +344,8 @@ class EditFrame(TopLevelBase):
 
 
 class EditMDIChildFrame(EditFrame):
+    _is_toplevel = False # used to avoid to appear in the "Top Window" property
+                         # of the app
     pass
 
         
