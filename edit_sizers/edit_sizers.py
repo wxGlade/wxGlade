@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.31 2003/05/13 10:13:49 agriggio Exp $
+# $Id: edit_sizers.py,v 1.32 2003/05/14 17:53:30 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -1598,7 +1598,7 @@ class EditFlexGridSizer(GridSizerBase):
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer'
             # call
             self.sizer.add_item(self, self.pos, self.option, self.flag,
-                                self.border) #, self.widget.GetMinSize())
+                                self.border)
 
     def _property_setup(self):
         GridSizerBase._property_setup(self)
@@ -1647,13 +1647,6 @@ class EditFlexGridSizer(GridSizerBase):
             else: page = 0
             misc.wxCallAfter(change_sizer, self, self.klass_prop.get_value(),
                              page)
-##             for i in range(self.widget.GetRows()):
-##                 self.widget.RemoveGrowableRow(i)
-##             else:
-##                 for r in self.grow_rows:
-##                     try: self.widget.AddGrowableRow(r)
-##                     except:
-##                         import traceback; traceback.print_exc()
 
     def set_growable_cols(self, value):
         try: self.grow_cols = [int(i) for i in value.split(',')]
@@ -1668,13 +1661,6 @@ class EditFlexGridSizer(GridSizerBase):
             else: page = 0
             misc.wxCallAfter(change_sizer, self, self.klass_prop.get_value(),
                              page)
-##             for i in range(self.widget.GetCols()):
-##                 self.widget.RemoveGrowableCol(i)
-##             else:
-##                 for c in self.grow_cols:
-##                     try: self.widget.AddGrowableCol(c)
-##                     except:
-##                         import traceback; traceback.print_exc()
 
     def get_growable_rows(self): return ','.join(map(str, self.grow_rows))
     def get_growable_cols(self): return ','.join(map(str, self.grow_cols))
@@ -1724,21 +1710,19 @@ def builder(parent, sizer, pos, number=[1], show=True):
         def __init__(self, parent):
             wxDialog.__init__(self, misc.get_toplevel_parent(parent), -1,
                               'Select sizer type')
-            tmp = wxFlexGridSizer(2, 2)
-            tmp.Add(wxStaticText(self, -1, 'Orientation'), 0,
-                    wxALL|wxALIGN_CENTER_VERTICAL, 3)
-            self.orientation = wxChoice(self, -1, choices=['Horizontal',
-                                                           'Vertical'])
+            self.orientation = wxRadioBox(self, -1, 'Orientation',
+                                          choices=['Horizontal', 'Vertical'])
             self.orientation.SetSelection(0)
-            tmp.Add(self.orientation, 0, wxALL|wxEXPAND, 3)
-            tmp.Add(wxStaticText(self, -1, 'Slots'), 0,
+            tmp = wxBoxSizer(wxHORIZONTAL)
+            tmp.Add(wxStaticText(self, -1, 'Slots: '), 0,
                     wxALL|wxALIGN_CENTER_VERTICAL, 3)
             self.num = wxSpinCtrl(self, -1)
             self.num.SetRange(1, 100)
             self.num.SetValue(1)
-            tmp.Add(self.num, 0, wxALL, 3)
+            tmp.Add(self.num, 1, wxALL, 3)
             szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(tmp)
+            szr.Add(self.orientation, 0, wxALL|wxEXPAND, 4)
+            szr.Add(tmp, 0, wxEXPAND)
             CHECK_ID = wxNewId()
             self.check = wxCheckBox(self, CHECK_ID, 'Has a Static Box')
             self.label = wxTextCtrl(self, -1, "")
@@ -1746,7 +1730,7 @@ def builder(parent, sizer, pos, number=[1], show=True):
             EVT_CHECKBOX(self, CHECK_ID, self.on_check_statbox)
             szr.Add(self.check, 0, wxALL|wxEXPAND, 4)
             tmp = wxBoxSizer(wxHORIZONTAL)
-            tmp.Add(wxStaticText(self, -1, "Label: "))
+            tmp.Add(wxStaticText(self, -1, "Label: "), 0, wxALIGN_CENTER)
             tmp.Add(self.label, 1)
             szr.Add(tmp, 0, wxALL|wxEXPAND, 4)
             
@@ -1756,9 +1740,11 @@ def builder(parent, sizer, pos, number=[1], show=True):
             self.SetAutoLayout(1)
             self.SetSizer(szr)
             szr.Fit(self)
+            self.Layout()
+            self.CentreOnParent()
 
         def reset(self):
-            self.orientation.SetSelection(0);
+            self.orientation.SetSelection(0)
             self.num.SetValue(1)
             self.check.SetValue(0)
             self.label.SetValue("")
@@ -1778,36 +1764,7 @@ def builder(parent, sizer, pos, number=[1], show=True):
     
     _builder(parent, sizer, pos, orientation, num, dialog.check.GetValue(),
              dialog.label.GetValue())
-##     name = 'sizer_%d' % number[0]
-##     while common.app_tree.has_name(name):
-##         number[0] += 1
-##         name = 'sizer_%d' % number[0]
-##     if sizer is not None: topl = 0
-##     else: topl = 1
-##     if dialog.check.GetValue():
-##         sz = EditStaticBoxSizer(name, parent, orientation,
-##                                 dialog.label.GetValue(), num, topl)
-##     else:
-##         sz = EditBoxSizer(name, parent, orientation, num, topl)
-##     if sizer is not None:
-##         sizer.add_item(sz, pos, 1, wxEXPAND)
-##         node = Tree.Node(sz)
-##         sz.node = node
-##         common.app_tree.insert(node, sizer.node, pos-1)
-##         common.adding_sizer = False
-##     else:
-##         parent.set_sizer(sz)
-##         node = Tree.Node(sz)
-##         sz.node = node
-##         if pos is None: common.app_tree.add(node, parent.node)
-##         else:
-##             common.app_tree.insert(node, parent.node, pos-1)
-##             sz.pos = pos
 
-##     sz.show_widget(show) #True)
-##     if sizer is not None:
-##         sz.sizer_properties['flag'].set_value('wxEXPAND')
-##         sz.sizer_properties['pos'].set_value(pos-1)
     dialog.Destroy()
 
 
@@ -1880,6 +1837,8 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
             self.SetAutoLayout(True)
             self.SetSizer(sizer)
             sizer.Fit(self)
+            self.Layout()
+            self.CentreOnParent()
 
         def __getitem__(self, name):
             return (lambda : 0, lambda v: None)

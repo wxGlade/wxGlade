@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.38 2003/05/13 10:13:51 agriggio Exp $
+# $Id: main.py,v 1.39 2003/05/14 17:53:38 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -124,12 +124,6 @@ class wxGladeFrame(wxFrame):
         EVT_MENU(self, TUT_ID, self.show_tutorial)
         EVT_MENU(self, ABOUT_ID, self.show_about_box)
         EVT_MENU(self, PREFS_ID, self.edit_preferences) 
-##         ESC_ID = wxNewId()
-##         EVT_MENU(self, ESC_ID, self.cancel_add_object)
-##         accTable = wxAcceleratorTable([(wxACCEL_CTRL, ord('K'), #WXK_ESCAPE,
-##                                         ESC_ID),])
-##         self.SetAcceleratorTable(accTable)
-        EVT_CHAR(self, self.cancel_add_object)
 
         # Tutorial window
         self.tut_frame = None
@@ -230,8 +224,6 @@ class wxGladeFrame(wxFrame):
 
         # last visited directory, used on GTK for wxFileDialog
         self.cur_dir = config.preferences.open_save_path
-##         self.cur_dir = os.path.expanduser('~')
-##         if self.cur_dir == '~': self.cur_dir = os.getcwd() 
 
         self.Raise()
 
@@ -305,7 +297,8 @@ class wxGladeFrame(wxFrame):
             infile = open(infilename)
             if use_progress_dialog and config.preferences.show_progress:
                 p = ProgressXmlWidgetBuilder(input_file=infile)
-            else: p = XmlWidgetBuilder()
+            else:
+                p = XmlWidgetBuilder()
             p.parse(infile)
         except (IOError, OSError), msg:
             if locals().has_key('infile'): infile.close()
@@ -345,8 +338,6 @@ class wxGladeFrame(wxFrame):
         common.app_tree.auto_expand = True
         common.app_tree.expand()
 
-        #os.chdir(old_dir)
-
         end = time.clock()
         print 'Loading time: %.5f' % (end-start)
 
@@ -366,10 +357,6 @@ class wxGladeFrame(wxFrame):
                 from cStringIO import StringIO
                 buffer = StringIO()
                 common.app_tree.write(buffer)
-##                 common.make_backup(common.app_tree.app.filename, 'wxg')
-##                 f = open(common.app_tree.app.filename, 'w')
-##                 f.write(buffer.getvalue())
-##                 f.close()
                 common.save_file(common.app_tree.app.filename,
                                  buffer.getvalue(), 'wxg')
             except (IOError, OSError), msg:
@@ -379,7 +366,6 @@ class wxGladeFrame(wxFrame):
                              wxOK|wxCENTRE|wxICON_ERROR)
             except Exception, msg:
                 import traceback; traceback.print_exc()
-##                 if locals().has_key('f'): f.close()
                 common.app_tree.app.saved = False
                 fn = common.app_tree.app.filename
                 wxMessageBox("An exception occurred while saving file \"%s\"."
@@ -391,8 +377,6 @@ class wxGladeFrame(wxFrame):
                              "wxGlade bug,"
                              " please report it." % (fn, msg), "Error",
                          wxOK|wxCENTRE|wxICON_ERROR)
-##                 wxMessageBox("Error saving app:\n%s" % msg, "Error",
-##                              wxOK|wxCENTRE|wxICON_ERROR)
             else:
                 common.app_tree.app.saved = True
 
@@ -417,13 +401,9 @@ class wxGladeFrame(wxFrame):
             # first, let's see if we have to save the geometry...
             prefs = config.preferences
             if prefs.remember_geometry:
-                #print 'saving geometry'
-                # main frame
                 prefs.set_geometry('main', misc.get_geometry(self))
-                # widget tree
                 prefs.set_geometry('tree',
                                    misc.get_geometry(self.tree_frame))
-                # properties
                 prefs.set_geometry('properties',
                                    misc.get_geometry(self.frame2))
                 prefs.changed = True
@@ -433,31 +413,9 @@ class wxGladeFrame(wxFrame):
             except Exception, e:
                 wxMessageBox('Error saving preferences:\n%s' % e, 'Error',
                              wxOK|wxCENTRE|wxICON_ERROR)
-##             self.tree_frame.Destroy()
-##             self.frame2.Destroy()
             self._skip_activate = True
             self.Destroy()
-            misc.wxCallAfter(lambda : wxGetApp().ExitMainLoop())
-            #raise SystemExit
-
-    def add_object(self, event):
-        """\
-        Adds a widget or a sizer to the current app.
-        """
-        common.adding_widget = True
-        common.adding_sizer = False
-        tmp = event.GetId()
-        common.widget_to_add = common.refs[tmp]
-        # TODO: find a better way
-        if common.widget_to_add.find('Sizer') != -1:
-            common.adding_sizer = True
-        
-    def add_toplevel_object(self, event):
-        """\
-        Adds a toplevel widget (Frame or Dialog) to the current app.
-        """
-        common.widgets[common.refs[event.GetId()]](None, None, 0)
-        common.app_tree.app.saved = False
+            misc.wxCallAfter(wxGetApp().ExitMainLoop)
 
     def show_about_box(self, event):
         if self.about_box is None:
@@ -503,39 +461,6 @@ class wxGladeFrame(wxFrame):
     def hide_all(self):
         self.tree_frame.Hide()
         self.frame2.Hide()
-
-    def cancel_add_object(self, event):
-        '''
-        Cancels addition of widget/sizer
-        '''
-        print 'cancel_add_object'
-        if event.HasModifiers() or event.GetKeyCode() != WXK_ESCAPE:
-            event.Skip()
-            return
-        common.adding_widget = False
-        common.adding_sizer = False
-        common.widget_to_add = None
-##         # restore the cursor on the toplevels
-##         root = common.app_tree.root
-##         children = root.children
-##         if children == None: children = []
-##         for node in children:
-##             # this looks kind of weird but we have to chain 2 levels to
-##             # get to the real wxWindow
-##             win = node.widget.widget
-##             try:
-##                 wxPostEvent(win, wxMouseEvent(wxEVT_ENTER_WINDOW))
-##                 # not sure why we have to do this
-##                 # but otherwise when you move the mouse it turns
-##                 # back to the crosshairs ??
-##                 mousePos = wxGetMousePosition()
-##                 x,y = win.ScreenToClient(mousePos)
-##                 # if the mouse is in the client window then zero it
-##                 if x > 0 and y > 0:
-##                     win.WarpPointer(0, 0)
-##             except:
-##                 pass
-        event.Skip()
 
 # end of class wxGladeFrame
 
