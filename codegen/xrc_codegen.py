@@ -1,5 +1,5 @@
 # xrc_codegen.py: wxWindows resources XRC code generator
-# $Id: xrc_codegen.py,v 1.12 2003/05/18 12:02:22 agriggio Exp $
+# $Id: xrc_codegen.py,v 1.13 2003/05/20 18:06:13 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -135,7 +135,8 @@ class DefaultXrcObject(XrcObject):
     def write_property(self, name, val, outfile, ntabs):
         if val:
             name = escape(name)
-            outfile.write(tabs(ntabs) + '<%s>%s</%s>\n' % (name, val, name))
+            outfile.write(tabs(ntabs) + '<%s>%s</%s>\n' % \
+                          (name, escape(val), name))
 
     def write(self, out_file, ntabs):
         write = out_file.write
@@ -224,6 +225,8 @@ def initialize(app_attrs): #out_path, multi_files):
     # first, set the app encoding
     if 'encoding' in app_attrs:
         app_encoding = app_attrs['encoding']
+        # wx doesn't like latin-1
+        if app_encoding == 'latin-1': app_encoding = 'ISO-8859-1'
     if multi_files:
         # for now we handle only single-file code generation
         raise IOError("XRC code cannot be split into multiple files")
