@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.35 2004/10/21 17:42:54 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.36 2004/11/16 10:22:48 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -147,7 +147,8 @@ class SourceFileContent:
                     inside_block = True
                     out_lines.append('<%swxGlade replace %s %s>' % \
                                      (nonce, result.group(1), result.group(2)))
-                else: out_lines.append(line)
+                else:
+                    out_lines.append(line)
             else:
                 # ignore all the lines inside a wxGlade block
                 if block_end.match(line) is not None:
@@ -400,7 +401,7 @@ def add_object(top_obj, sub_obj):
         klass.layout.extend(layout)
         if multiple_files and \
                (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
-            print top_obj.name, sub_obj.name
+            #print top_obj.name, sub_obj.name
             klass.dependencies.append(sub_obj.klass)
         else:
 ##             headers = _obj_headers.get(sub_obj.base, [])
@@ -441,14 +442,16 @@ def add_class(code_obj):
         # create a SourceFileContent instance
         filename = os.path.join(out_dir,
                                 code_obj.klass.replace('::', '_') + '.h')
-        if _overwrite or not os.path.exists(filename): prev_src = None
-        else: prev_src = SourceFileContent(os.path.join(out_dir,
-                                                        code_obj.klass))
+        if _overwrite or not os.path.exists(filename):
+            prev_src = None
+        else:
+            prev_src = SourceFileContent(os.path.join(out_dir, code_obj.klass))
 
     if prev_src is not None and prev_src.classes.has_key(code_obj.klass):
         # this class wasn't in the previous version of the source (if any)
         is_new = False 
-    else: is_new = True
+    else:
+        is_new = True
 
     header_buffer = []
     source_buffer = []
@@ -716,12 +719,16 @@ def add_class(code_obj):
         return
 
     if multiple_files:
+        if code_obj.base in obj_builders:
+            classes[code_obj.klass].dependencies.extend(
+                getattr(obj_builders[code_obj.base], 'extra_headers', []))
         if prev_src is not None:
             tag = '<%swxGlade insert new_classes>' % nonce
             prev_src.header_content = prev_src.header_content.replace(tag, "")
             
             # insert the module dependencies of this class
             extra_modules = classes[code_obj.klass].dependencies
+            #print 'extra_modules:', extra_modules, code_obj.base
             deps = ['// begin wxGlade: ::dependencies\n']
             for module in _unique(extra_modules):
                 if module and ('"' != module[0] != '<'):
@@ -755,8 +762,8 @@ def add_class(code_obj):
         hn = os.path.basename(header_file).upper().replace('.', '_')
         hwrite('\n#ifndef %s\n#define %s\n' % (hn, hn))
         # write the module dependecies for this class
-        extra_headers = classes[code_obj.klass].dependencies
-        hwrite('\n// begin wxGlade: dependencies\n')
+        #extra_headers = classes[code_obj.klass].dependencies
+        hwrite('\n// begin wxGlade: ::dependencies\n')
         extra_modules = classes[code_obj.klass].dependencies
         for module in _unique(extra_modules):
             if module and ('"' != module[0] != '<'):
