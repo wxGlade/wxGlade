@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.7 2003/07/08 17:44:25 agriggio Exp $
+# $Id: codegen.py,v 1.8 2003/07/11 16:09:22 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -24,31 +24,39 @@ class PythonCodeGenerator:
             for item in items:
                 if item.name == '---': # item is a separator
                     append('%s.AppendSeparator()\n' % menu)
-                elif item.children:
+                    continue
+                name, val = pygen.generate_code_id(None, item.id)
+                if not name and val == '-1':
+                    id = 'wxNewId()'
+                else:
+                    if name: ids.append(name)
+                    id = val
+                if item.children:
                     if item.name: name = item.name
                     else: name = '%s_sub' % menu
                     append('%s = wxMenu()\n' % name)
-                    if not obj.preview and item.id: # generating id
-                        tokens = item.id.split('=')
-                        if len(tokens) > 1:
-                            id = tokens[0]
-                            ids.append(' = '.join(tokens) + '\n')
-                        else:
-                            id = item.id
-                    else: id = 'wxNewId()'
+##                     if not obj.preview and item.id: # generating id
+##                         tokens = item.id.split('=')
+##                         if len(tokens) > 1:
+##                             id = tokens[0]
+##                             ids.append(' = '.join(tokens) + '\n')
+##                         else:
+##                             id = item.id
+##                     else: id = 'wxNewId()'
                     append_items(name, item.children)
                     append('%s.AppendMenu(%s, %s, %s, %s)\n' %
                            (menu, id, pygen.quote_str(item.label),
                             name, pygen.quote_str(item.help_str)))
                 else:
-                    if not obj.preview and item.id: # no ids for preview
-                        tokens = item.id.split('=')
-                        if len(tokens) > 1:
-                            id = tokens[0]
-                            ids.append(' = '.join(tokens) + '\n')
-                        else:
-                            id = item.id
-                    else: id = 'wxNewId()'
+##                     if not obj.preview and item.id: # no ids for preview
+##                         tokens = item.id.split('=')
+##                         if len(tokens) > 1:
+##                             id = tokens[0]
+##                             ids.append(' = '.join(tokens) + '\n')
+##                         else:
+##                             id = item.id
+##                     else: id = 'wxNewId()'
+
                     item_type = 'wxITEM_NORMAL'
                     if item.checkable == '1':
                         item_type = 'wxITEM_CHECK'
@@ -228,30 +236,37 @@ class CppCodeGenerator:
             for item in items:
                 if item.name == '---': # item is a separator
                     append('%s->AppendSeparator();\n' % menu)
-                elif item.children:
+                    continue
+                name, val = cppgen.generate_code_id(None, item.id)
+                if not name and val == '-1':
+                    id = 'wxNewId()'
+                else:
+                    #if name: ids.append(name)
+                    id = val                
+                if item.children:
                     if item.name: name = item.name
                     else: name = '%s_sub' % menu
                     append('wxMenu* %s = new wxMenu();\n' % name)
-                    if item.id: # generating id
-                        tokens = item.id.split('=')
-                        if len(tokens) > 1:
-                            id = tokens[0]
-                        else:
-                            id = item.id
-                    else: id = 'wxNewId()'
+##                     if item.id: # generating id
+##                         tokens = item.id.split('=')
+##                         if len(tokens) > 1:
+##                             id = tokens[0]
+##                         else:
+##                             id = item.id
+##                     else: id = 'wxNewId()'
                     append_items(name, item.children)
                     append('%s->Append(%s, %s, %s, %s);\n' %
                            (menu, id, cppgen.quote_str(item.label),
                             name, cppgen.quote_str(item.help_str)))
                 else:
-                    if item.id:
-                        tokens = item.id.split('=')
-                        if len(tokens) > 1:
-                            id = tokens[0]
-                        else:
-                            id = item.id
-                    else:
-                        id = 'wxNewId()'
+##                     if item.id:
+##                         tokens = item.id.split('=')
+##                         if len(tokens) > 1:
+##                             id = tokens[0]
+##                         else:
+##                             id = item.id
+##                     else:
+##                         id = 'wxNewId()'
                     item_type = 'wxITEM_NORMAL'
                     if item.checkable == '1':
                         item_type = 'wxITEM_CHECK'
@@ -286,26 +301,30 @@ class CppCodeGenerator:
         return out
 
     def get_ids_code(self, obj):
+        cppgen = common.code_writers['C++']
         ids = []
         menus = obj.properties['menubar']
         
         def collect_ids(items):
             for item in items:
                 if item.name == '---': # item is a separator
-                    pass # do nothing
-                elif item.children:
-                    if item.id: # generating id
-                        tokens = item.id.split('=')
-                        if len(tokens) > 1:
-                            id = tokens[0]
-                            ids.append(' = '.join(tokens))
+                    continue # do nothing
+                name, val = cppgen.generate_code_id(None, item.id)
+                if name.find('=') != -1:
+                    ids.append(name)
+                if item.children:
+##                     if item.id: # generating id
+##                         tokens = item.id.split('=')
+##                         if len(tokens) > 1:
+##                             id = tokens[0]
+##                             ids.append(' = '.join(tokens))
                     collect_ids(item.children)
-                else:
-                    if item.id:
-                        tokens = item.id.split('=')
-                        if len(tokens) > 1:
-                            id = tokens[0]
-                            ids.append(' = '.join(tokens))
+##                 else:
+##                     if item.id:
+##                         tokens = item.id.split('=')
+##                         if len(tokens) > 1:
+##                             id = tokens[0]
+##                             ids.append(' = '.join(tokens))
 
         for m in menus:
             if m.root.children:

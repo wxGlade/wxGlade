@@ -1,3 +1,13 @@
+2003-07-11: codegen/py_codegen.py, codegen/cpp_codegen.py:
+                enhanced generate_code_id, to recognize ID_SOMETHING=? and
+                generate a "unique" id automatically
+            codegen/cpp_codegen.py:
+                fixed ids code generation when the output file already exists
+            widgets/toolbar.py:
+                fixed xrc code generation
+            common.py:
+                updated version number to 0.3pre1
+
 2003-07-05: edit_windows.py, application.py:
                 added validation code for `name' and `class' properties
                 (fixed bug #764186)

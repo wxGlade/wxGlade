@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.6 2003/05/22 11:13:43 agriggio Exp $
+# $Id: codegen.py,v 1.7 2003/07/11 16:09:21 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -57,14 +57,20 @@ class PythonCodeGenerator:
             if tool.id == '---': # item is a separator
                 append('%s.AddSeparator()\n' % obj_name)
             else:
-                if not obj.preview and tool.id:
-                    tokens = tool.id.split('=')
-                    if len(tokens) > 1:
-                        id = tokens[0]
-                        ids.append(' = '.join(tokens) + '\n')
-                    else:
-                        id = tool.id
-                else: id = 'wxNewId()'
+##                 if not obj.preview and tool.id:
+##                     tokens = tool.id.split('=')
+##                     if len(tokens) > 1:
+##                         id = tokens[0]
+##                         ids.append(' = '.join(tokens) + '\n')
+##                     else:
+##                         id = tool.id
+##                 else: id = 'wxNewId()'
+                name, val = pygen.generate_code_id(None, tool.id)
+                if not name and val == '-1':
+                    id = 'wxNewId()'
+                else:
+                    if name: ids.append(name)
+                    id = val
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
                     kind = kinds[int(tool.type)]
@@ -150,8 +156,12 @@ def xrc_code_generator(obj):
                 write('    '*tabs + '<object class="separator"/>\n')
             else:
                 if item.id:
-                    write('    '*tabs + '<object class="tool" ' \
-                          'name=%s>\n' % quoteattr(item.id))
+                    name = item.id.split('=', 1)[0]
+                    if name:
+                        write('    '*tabs + '<object class="tool" ' \
+                              'name=%s>\n' % quoteattr(name))
+                    else:
+                        write('    '*tabs + '<object class="tool">\n')
                 else:
                     write('    '*tabs + '<object class="tool">\n')
                 # why XRC seems to ignore label??
@@ -282,14 +292,19 @@ class CppCodeGenerator:
             if tool.id == '---': # item is a separator
                 append('%sAddSeparator();\n' % obj_name)
             else:
-                if tool.id:
-                    tokens = tool.id.split('=')
-                    if len(tokens) > 1:
-                        id = tokens[0]
-                    else:
-                        id = tool.id
-                else:
+                name, val = cppgen.generate_code_id(None, tool.id)
+                if not name and val == '-1':
                     id = 'wxNewId()'
+                else:
+                    id = val
+##                 if tool.id:
+##                     tokens = tool.id.split('=')
+##                     if len(tokens) > 1:
+##                         id = tokens[0]
+##                     else:
+##                         id = tool.id
+##                 else:
+##                     id = 'wxNewId()'
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
                     kind = kinds[int(tool.type)]
@@ -315,6 +330,7 @@ class CppCodeGenerator:
         return out
 
     def get_ids_code(self, obj):
+        cppgen = common.code_writers['C++']
         ids = []
         tools = obj.properties['toolbar']
         
@@ -322,12 +338,14 @@ class CppCodeGenerator:
             if item.id == '---': # item is a separator
                 pass # do nothing
             else:
-                if item.id:
-                    tokens = item.id.split('=')
-                    if len(tokens) > 1:
-                        id = tokens[0]
-                        ids.append(' = '.join(tokens))
-
+                name, val = cppgen.generate_code_id(None, item.id)
+                if name.find('=') != -1:
+                    ids.append(name)
+##                 if item.id:
+##                     tokens = item.id.split('=')
+##                     if len(tokens) > 1:
+##                         id = tokens[0]
+##                         ids.append(' = '.join(tokens))
         return ids
 
 # end of class CppCodeGenerator
