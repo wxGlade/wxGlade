@@ -1,5 +1,5 @@
 # text_ctrl.py: wxTextCtrl objects
-# $Id: text_ctrl.py,v 1.9 2003/09/11 06:35:21 dinogen Exp $
+# $Id: text_ctrl.py,v 1.10 2003/11/27 21:18:50 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -31,10 +31,15 @@ class EditTextCtrl(ManagedBase):
         # style property
         self.style_pos  = (wxTE_PROCESS_ENTER, wxTE_PROCESS_TAB,
                            wxTE_MULTILINE,wxTE_PASSWORD, wxTE_READONLY,
-                           wxHSCROLL, wxTE_RICH)
+                           wxHSCROLL, wxTE_RICH, wxTE_RICH2, wxTE_AUTO_URL,
+                           wxTE_NOHIDESEL, wxTE_CENTRE, wxTE_RIGHT,
+                           wxTE_LINEWRAP, wxTE_WORDWRAP)
         style_labels = ('#section#Style', 'wxTE_PROCESS_ENTER',
                         'wxTE_PROCESS_TAB', 'wxTE_MULTILINE', 'wxTE_PASSWORD',
-                        'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH')
+                        'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH',
+                        'wxTE_RICH2', 'wxTE_AUTO_URL', 'wxTE_NOHIDESEL',
+                        'wxTE_CENTRE', 'wxTE_RIGHT', 'wxTE_LINEWRAP',
+                        'wxTE_WORDWRAP')
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # 2003-09-04 added default_border
         if config.preferences.default_border:
@@ -60,6 +65,9 @@ class EditTextCtrl(ManagedBase):
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
+        import math
+        panel.SetScrollbars(
+            1, 5, 1, int(math.ceil(panel.GetClientSize()[1]/5.0)))
 
     def get_value(self):
         return self.value
