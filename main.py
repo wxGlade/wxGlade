@@ -189,10 +189,10 @@ class wxGladeFrame(wxFrame):
         self.tree_frame.Show()
         self.frame2.Show()
 
-        # I'll pay a beer to anyone who can explain to me why this prevents
-        # a segfault on Win32 when you exit without doing anything!!
         if wxPlatform == '__WXMSW__':
             import about
+            # I'll pay a beer to anyone who can explain to me why this prevents
+            # a segfault on Win32 when you exit without doing anything!!
             self.about_box = about.wxGladeAboutBox(self.GetParent())
             def on_activate(event):
                 hide = self.IsIconized()

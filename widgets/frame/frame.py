@@ -41,7 +41,7 @@ class MenuItemDialog(wxDialog):
         self.help_str = wxTextCtrl(self, HELP_STR_ID)
         self.checkable = wxCheckBox(self, CHECK_ID, "Checkable")
         self.ok = wxButton(self, wxID_OK, " OK ")
-        self.ok.SetDefault()
+        #self.ok.SetDefault()
         self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
         self.do_layout()
         self.selected_index = -1 # index of the selected element in the 

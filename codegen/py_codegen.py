@@ -198,7 +198,7 @@ def initialize(out_path, multi_files):
                     'from wxPython.wx import *\n']
     multiple_files = multi_files
     if not multiple_files:
-        global output_file
+        global output_file, output_file_name
         if os.path.isfile(out_path):
             # the file exists, we must keep all the lines not inside a wxGlade
             # block. NOTE: this may cause troubles if out_path is not a valid
@@ -211,7 +211,7 @@ def initialize(out_path, multi_files):
 ##             except: raise XmlParsingError("Error opening '%s' file" % out_path)
             import cStringIO
             output_file = cStringIO.StringIO()
-            output_file.name = out_path
+            output_file_name = out_path
             output_file.write('#!/usr/bin/env python\n')
             for line in header_lines:
                 output_file.write(line)
@@ -249,15 +249,15 @@ def finalize():
     elif not multiple_files:
         global output_file
         em = "".join(_current_extra_modules.keys())
-        content = output_file.getvalue().replace('<%swxGlade extra_modules>\n',
-                                                 em)
+        content = output_file.getvalue().replace(
+            '<%swxGlade extra_modules>\n' % nonce, em)
         output_file.close()
         try:
-            output_file = open(output_file.name, 'w')
+            output_file = open(output_file_name, 'w')
             output_file.write(content)
             output_file.close()
             # make the file executable
-            os.chmod(output_file.name, 0755)
+            os.chmod(output_file_name, 0755)
         except IOError, e:
             raise XmlParsingError(str(e))
         except OSError: pass # this isn't necessary a bad error
