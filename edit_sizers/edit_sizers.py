@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.43 2004/04/21 14:07:44 agriggio Exp $
+# $Id: edit_sizers.py,v 1.44 2004/04/26 20:16:34 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -1302,10 +1302,18 @@ class CustomSizer(wxBoxSizer):
     def GetBestSize(self):
         return self._grid.GetMinSize()
     
-    def Add(self, *args, **kwds): self._grid.Add(*args, **kwds)
+    def Add(self, *args, **kwds):
+        self._grid.Add(*args, **kwds)
+        
     def Insert(self, pos, *args, **kwds):
         self._grid.Insert(pos-1, *args, **kwds)
-    def Remove(self, *args, **kwds): self._grid.Remove(*args, **kwds)
+        
+    def Remove(self, *args, **kwds):
+        self._grid.Remove(*args, **kwds)
+
+    def RemovePos(self, pos):
+        self._grid.Remove(pos-1)
+        
     def SetItemMinSize(self, item, w, h): #*args, **kwds):
         try:
             w2, h2 = item.GetBestSize()
@@ -1586,7 +1594,7 @@ class CheckListDialogProperty(DialogProperty):
 
                 def get_value(self):
                     ret = []
-                    for c in range(self.choices.Number()):
+                    for c in range(self.choices.GetCount()):
                         if self.choices.IsChecked(c): ret.append(str(c))
                     return ",".join(ret)
 
