@@ -1,5 +1,5 @@
 # spin_button.py: wxSpinButton objects
-# $Id: spin_button.py,v 1.1 2004/09/23 11:47:56 crazyinsomniac Exp $
+# $Id: spin_button.py,v 1.2 2004/09/23 12:04:56 crazyinsomniac Exp $
 #
 # Copyright (c) 2004 D.H. aka crazyinsomniac at users.sourceforge.net
 # License: MIT (see license.txt)
@@ -40,7 +40,8 @@ class EditSpinButton(ManagedBase):
             self.flag = wxALL
 
     def create_widget(self):
-        self.widget = wxSpinButton(self.parent.widget, self.id )
+        self.widget = wxSpinButton(self.parent.widget, self.id , style=self.style)
+
 
     def create_properties(self):
         ManagedBase.create_properties(self)
