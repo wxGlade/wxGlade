@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.48 2004/09/17 13:09:55 agriggio Exp $
+# $Id: edit_sizers.py,v 1.49 2004/09/30 21:34:22 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1317,7 +1317,11 @@ class CustomSizer(wxBoxSizer):
         self._grid.Insert(pos-1, *args, **kwds)
         
     def Remove(self, *args, **kwds):
-        self._grid.Remove(*args, **kwds)
+        try:
+            pos = int(args[0])-1
+            self._grid.Remove(pos)
+        except TypeError:
+            self._grid.Remove(*args, **kwds)
 
     def RemovePos(self, pos):
         self._grid.Remove(pos-1)
@@ -1574,6 +1578,7 @@ class EditGridSizer(GridSizerBase):
         GridSizerBase.create_widget(self)
 
 # end of class EditGridSizer
+
 
 class CheckListDialogProperty(DialogProperty):
     dialog = [None]
