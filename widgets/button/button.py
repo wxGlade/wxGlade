@@ -1,5 +1,5 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.10 2003/06/21 14:28:45 agriggio Exp $
+# $Id: button.py,v 1.11 2003/07/17 15:51:26 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -91,7 +91,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    button = EditButton(label, parent, wxNewId(), misc._encode(label), sizer,
+    button = EditButton(label, parent, wxNewId(), '', sizer,
                         pos, common.property_panel, show=False)
     node = Tree.Node(button)
     button.node = node
