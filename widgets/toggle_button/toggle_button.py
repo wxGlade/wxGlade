@@ -1,4 +1,5 @@
 # toggle_button.py: wxToggleButton objects
+# $Id: toggle_button.py,v 1.6 2003/05/13 10:05:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -24,7 +25,8 @@ class EditToggleButton(ManagedBase):
 
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['value'] = (self.get_value, self.set_value)
-        self.properties['label'] = TextProperty(self, 'label', None)
+        self.properties['label'] = TextProperty(self, 'label', None,
+                                                multiline=True)
         self.properties['value'] = CheckBoxProperty(self, 'value', None,
                                                     'Clicked')
 
@@ -53,9 +55,10 @@ class EditToggleButton(ManagedBase):
         if value != self.label:
             self.label = value
             if self.widget:
-                self.widget.SetLabel(value)
+                self.widget.SetLabel(value.replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
-                    self.set_width(self.widget.GetBestSize()[0])
+                    self.sizer.set_item(self.pos,
+                                        size=self.widget.GetBestSize())
 
     def get_value(self):
         return self.value

@@ -1,4 +1,5 @@
 # toolbar.py: wxToolBar objects
+# $Id: toolbar.py,v 1.5 2003/05/13 10:05:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -480,11 +481,11 @@ class EditToolBar(EditBase, PreviewMixin):
         EditBase.create_properties(self)
         page = self._common_panel
         sizer = page.GetSizer()
-        self.properties['style'].display(page)
         self.properties['bitmapsize'].display(page)
         self.properties['margins'].display(page)
         self.properties['packing'].display(page)
         self.properties['separation'].display(page)
+        self.properties['style'].display(page)
         self.properties['tools'].display(page)
         if not sizer:
             sizer = wxBoxSizer(wxVERTICAL)
@@ -492,11 +493,11 @@ class EditToolBar(EditBase, PreviewMixin):
             sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
             page.SetAutoLayout(1)
             page.SetSizer(sizer)
-        sizer.Add(self.properties['style'].panel, 0, wxEXPAND)
         sizer.Add(self.properties['bitmapsize'].panel, 0, wxEXPAND)
         sizer.Add(self.properties['margins'].panel, 0, wxEXPAND)
         sizer.Add(self.properties['packing'].panel, 0, wxEXPAND)
         sizer.Add(self.properties['separation'].panel, 0, wxEXPAND)
+        sizer.Add(self.properties['style'].panel, 0, wxEXPAND)
         sizer.Add(self.properties['tools'].panel, 0, wxALL|wxEXPAND, 3)
         sizer.Layout()
         sizer.Fit(page)

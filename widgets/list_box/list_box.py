@@ -1,4 +1,5 @@
 # list_box.py: wxListBox objects
+# $Id: list_box.py,v 1.10 2003/05/13 10:05:11 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)

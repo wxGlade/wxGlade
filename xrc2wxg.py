@@ -428,7 +428,7 @@ contain widgets unknown to wxGlade.
     sys.exit(1)
 
 
-if __name__ == '__main__':
+def main():
     try: options, args = getopt.getopt(sys.argv[1:], "d", ['debug'])
     except getopt.GetoptError: usage()
     if not args: usage()
@@ -441,3 +441,6 @@ if __name__ == '__main__':
             print_exception(e)
     else: # if in debug mode, let the traceback be printed
         convert(input, output)
+
+if __name__ == '__main__':
+    main()

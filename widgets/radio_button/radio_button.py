@@ -1,4 +1,5 @@
 # radio_button.py: wxRadioButton objects
+# $Id: radio_button.py,v 1.7 2003/05/13 10:05:10 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -26,7 +27,8 @@ class EditRadioButton(ManagedBase):
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['clicked'] = (self.get_value, self.set_value)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['label'] = TextProperty(self, 'label', None)
+        self.properties['label'] = TextProperty(self, 'label', None,
+                                                multiline=True)
         self.properties['clicked'] = CheckBoxProperty(self, 'clicked', None,
                                                       'Clicked')
         self.style_pos = [wxRB_GROUP]
@@ -62,7 +64,7 @@ class EditRadioButton(ManagedBase):
         if value != self.label:
             self.label = value
             if self.widget:
-                self.widget.SetLabel(str(value))
+                self.widget.SetLabel(str(value).replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
                     self.sizer.set_item(self.pos,
                                         size=self.widget.GetBestSize())

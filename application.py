@@ -369,9 +369,6 @@ class Application(object):
         self.codegen_opt = 0
         frame = None
         try:
-            # cleanup old preview file if still hanging around
-            if os.path.isfile(self.output_path):
-                os.unlink(self.output_path)
             self.generate_code(preview=True)
             # dynamically import the generated module
             FrameClass = misc.import_name(self.output_path, widget_class_name)
@@ -399,6 +396,13 @@ class Application(object):
             # raise the frame
             frame.Center()
             frame.Show()
+            # remove the temporary file (and the .pyc one too)
+            if os.path.isfile(self.output_path):
+                os.unlink(self.output_path)
+            for ext in 'c', 'o': # remove eventual .pyc and .pyo files
+                name = self.output_path + ext
+                if os.path.isfile(name):
+                    os.unlink(name)
         except:
             traceback.print_exc()
             wxMessageBox("Problem previewing gui", "Error",

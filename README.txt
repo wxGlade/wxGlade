@@ -1,5 +1,5 @@
 wxGlade: a GUI builder for wxPython/wxWindows
-version: 0.2.1
+version: 0.2.3
 license: MIT (see license.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
@@ -7,7 +7,8 @@ THIS PROGRAM COMES WITH NO WARRANTY
 * Requirements:
 ---------------
 Python >= 2.2
-wxPython >= 2.3.2.1 
+wxPython >= 2.4 (versions between 2.3.2.1 and 2.4 should still work, but aren't
+tested anymore)  
 
 
 * Installation:
@@ -18,7 +19,7 @@ To start the program, enter ``python wxglade.py'' in your shell
 
 * Documentation:
 ----------------
-In the docs/ subdir there's a short introductory tutorial.  In the samples/
+In the docs/ subdir there's a short introductory tutorial.  In the examples/
 subdir there are some sample wxGlade apps (in xml format, .wxg file extension).
 
 NOTE FOR OLD USERS: even if you already know wxGlade, you should probably read
@@ -37,11 +38,6 @@ should know.
   please let me know if it works.
 
 - On Windows, selection tags may not be shown properly in some cases.
-
-- On Windows, the program exits always "abnormally", i.e. it prints something
-  like:
-  16:54:51: Debug: c:\projects\wx\src\msw\app.cpp(439): 'UnregisterClass(canvas)' failed with error 0x00000584 (class has open windows).
-  Anyway, this doesn't seem to affect the program behaviour.
 
 - On GTK, if your last operation before exiting is a paste from the clipboard,
   wxGlade exits with a segfault.

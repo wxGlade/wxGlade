@@ -1,4 +1,5 @@
 # button.py: wxButton objects
+# $Id: button.py,v 1.9 2003/05/13 10:05:14 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -22,7 +23,8 @@ class EditButton(ManagedBase):
         ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
                              property_window, show=show)
         self.access_functions['label'] = (self.get_label, self.set_label)
-        self.properties['label'] = TextProperty(self, 'label', None)
+        self.properties['label'] = TextProperty(self, 'label', None,
+                                                multiline=True)
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
 
@@ -45,10 +47,11 @@ class EditButton(ManagedBase):
     def set_label(self, value):
         if value != self.label:
             if self.widget:
-                self.widget.SetLabel(value)
-                self.set_width(self.widget.GetBestSize()[0])
+                self.widget.SetLabel(value.replace('\\n', '\n'))
+                if not self.properties['size'].is_active():
+                    self.sizer.set_item(self.pos,
+                                        size=self.widget.GetBestSize())
             self.label = value
-            self.old_label = value
 
     def create_widget(self):
         self.widget = wxButton(self.parent.widget, self.id, self.label)

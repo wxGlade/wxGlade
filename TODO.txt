@@ -1,6 +1,6 @@
 wxGlade TODO list
 -----------------
-Last update: 2002-12-02
+Last update: 2003-05-13
 
 The list is more or less sorted by priority
 
@@ -24,29 +24,35 @@ Things Done:
 
 - support for C++ code generation
 
+- Possibility to chane the type of a sizer after its creation
+ 
+- Possibility to change the position of a widget inside its sizer
+
+- Edit -> Preferences... to customize some aspects of wxGlade
+
+- International characters support
+
+- Grid
+
+- Auto saving/backup of wxg files (and possibly also of generated sources)
+
+- Import of "wxGlade-friendly" XRC files
+
+- Preview of toplevel widgets
+
 
 Real TODO (# = Partially done):
 -------------------------------
 
 - Undo/Redo
 
-- Possibility to chane the type of a sizer after its creation (#: almost done,
-  but needs *A LOT* of testing)
- 
-- Possibility to change the position of a widget inside its sizer (#: almost
-  done, needs testing)
+- Better XRC support (custom classes, separate files, ...)
 
-- Edit -> Preferences... to customize some aspects of wxGlade (#)
-
-- International characters support (#)
-
-- Grid (#)
-
-- Auto saving/backup of wxg files (and possibly also of generated sources)
+- widgets path, to let the user add new widget modules
 
 - Event handlers support
 
-- ListCtrl and TreeCtrl
+- ListCtrl and TreeCtrl (#: need to add more properties)
 
 - ScrolledWindow
 
@@ -55,7 +61,7 @@ Real TODO (# = Partially done):
 
 - More basic properties for widgets (enabled for example)
 
-- ToolBar for frames 
+- ToolBar for frames (#: no controls yet)
 
 - complete MenuBar with icons and StatusBar messages support (#)
 
@@ -65,7 +71,7 @@ Real TODO (# = Partially done):
 
 - test of the various modules with unittest (this might come earlier...)
 
-- gettext support
+- gettext support (#: done for code generation, todo for wxGlade itself)
 
 - ``Templates'' for particular windows (for example, something as a dialog with
   an image, a centered label and a couple of buttons)

@@ -1,4 +1,5 @@
 # splitter_window.py: wxSplitterWindow objects
+# $Id: splitter_window.py,v 1.18 2003/05/13 10:05:08 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)

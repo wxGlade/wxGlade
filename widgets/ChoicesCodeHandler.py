@@ -1,4 +1,5 @@
 # ChoicesCodeHandler.py: handler for the 'choices' property of various elements
+# $Id: ChoicesCodeHandler.py,v 1.5 2003/05/13 10:05:15 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
