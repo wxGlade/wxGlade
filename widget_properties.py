@@ -173,6 +173,7 @@ class TextProperty(Property, _activator):
             EVT_CHECKBOX(self.panel, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
             self.text.Enable(self.is_active())
+            self._enabler.SetValue(self.is_active())
             self._target = self.text
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
@@ -641,6 +642,7 @@ class RadioProperty(Property, _activator):
                          lambda e: self.toggle_active(e.IsChecked()))
             self.options.Enable(self.is_active())
             self.options.SetLabel("")
+            self._enabler.SetValue(self.is_active())
         szr.Add(self.options, 1, wxEXPAND)
         self.panel.SetSizer(szr)
         self.panel.SetSize(szr.GetMinSize())
