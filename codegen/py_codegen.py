@@ -74,7 +74,7 @@ class ClassLines:
         self.props = [] # lines to insert in the __set_properties method
         self.layout = [] # lines to insert in the __do_layout method
         
-        self.dependencies = [] # names of the modules this class depends on
+        self.dependencies = {} #[] # names of the modules this class depends on
         self.done = False # if True, the code for this class has already
                           # been generated
 
@@ -94,6 +94,7 @@ class SourceFileContent:
         self.new_classes = [] # new classes to add to the file (they are
                               # inserted BEFORE the old ones)
         if classes is None: self.classes = {}
+        self.spaces = {} # indentation level for each class
         if self.content is None:
             self.build_untouched_content()
 
@@ -111,7 +112,7 @@ class SourceFileContent:
                                 '(\(\s*[a-zA-Z_]\w*\s*(,\s*[a-zA-Z_]\w*)*'
                                 '\s*\))?:\s*$')
         # regexps to match wxGlade blocks
-        block_start = re.compile(r'^\s*#\s*begin\s+wxGlade:\s*'
+        block_start = re.compile(r'^(\s*)#\s*begin\s+wxGlade:\s*'
                                  '([A-Za-z_]+\w*)??[.]?(\w+)\s*$')
         block_end = re.compile(r'^\s*#\s*end\s+wxGlade\s*$')
         inside_block = False
@@ -135,9 +136,11 @@ class SourceFileContent:
                 if result is not None:
                     # replace the lines inside a wxGlade block with a tag that
                     # will be used later by add_class
-                    which_class = result.group(1)
-                    which_block = result.group(2)
+                    spaces = result.group(1)
+                    which_class = result.group(2) #1)
+                    which_block = result.group(3) #2)
                     if which_class is None: which_class = class_name
+                    self.spaces[which_class] = spaces
                     inside_block = True
                     if class_name is None:
                         out_lines.append('<%swxGlade replace %s>' % \
@@ -292,7 +295,10 @@ def add_object(top_obj, sub_obj):
         klass.props.extend(props)
         klass.layout.extend(layout)
         if sub_obj.is_toplevel and sub_obj.base != sub_obj.klass:
-            klass.dependencies.append(sub_obj.klass)
+            key = 'from %s import %s\n' % (sub_obj.klass, sub_obj.klass)
+            klass.dependencies[key] = 1
+        for dep in _widget_extra_modules.get(sub_obj.base, []):
+            klass.dependencies[dep] = 1
 
 
 def add_sizeritem(toplevel, sizer, obj, option, flag, border):
@@ -339,10 +345,12 @@ def add_class(code_obj):
         return # the code has already been generated
 
     if prev_src is not None and prev_src.classes.has_key(code_obj.klass):
-        # this class wasn't in the previous version of the source (if any)
-        is_new = False 
+        is_new = False
+        indentation = prev_src.spaces[code_obj.klass]
     else:
+        # this class wasn't in the previous version of the source (if any)
         is_new = True
+        indentation = tabs(2)
         mods = _widget_extra_modules.get(code_obj.base)
         if mods:
             for m in mods: _current_extra_modules[m] = 1
@@ -350,20 +358,23 @@ def add_class(code_obj):
     buffer = []
     write = buffer.append
 
+    if not classes.has_key(code_obj.klass):
+        # if the class body was empty, create an empty ClassLines
+        classes[code_obj.klass] = ClassLines()
     if is_new:
         write('class %s(%s):\n' % (code_obj.klass, code_obj.base))
         write(tabs(1) + 'def __init__(self, *args, **kwds):\n')
     # __init__ begin tag
-    write(tabs(2) + '# begin wxGlade: %s.__init__\n' % code_obj.klass)
+    write(indentation + '# begin wxGlade: %s.__init__\n' % code_obj.klass)
     prop = code_obj.properties
     style = prop.get("style", None)
-    if style: write(tabs(2) + 'kwds["style"] = %s\n' % style)
+    if style: write(indentation + 'kwds["style"] = %s\n' % style)
     # __init__
-    write(tabs(2) + '%s.__init__(self, *args, **kwds)\n' % code_obj.base)
-    if not classes.has_key(code_obj.klass):
-        # if the class body was empty, create an empty ClassLines
-        classes[code_obj.klass] = ClassLines()
-    tab = tabs(2)
+    write(indentation + '%s.__init__(self, *args, **kwds)\n' % code_obj.base)
+##     if not classes.has_key(code_obj.klass):
+##         # if the class body was empty, create an empty ClassLines
+##         classes[code_obj.klass] = ClassLines()
+    tab = indentation #tabs(2)
     init_lines = classes[code_obj.klass].init
     # --- patch 2002-08-26 ---------------------------------------------------
     #init_lines.reverse()
@@ -462,11 +473,12 @@ def add_class(code_obj):
             prev_src.content = prev_src.content.replace(tag, "") #code)
             
             # insert the module dependencies of this class
-            extra_modules = classes[code_obj.klass].dependencies
-            deps = ['# begin wxGlade: dependencies\n']
-            for module in extra_modules:
-                deps.append('from %s import %s\n' % (module, module))
-            deps.append('# end wxGlade\n')
+            extra_modules = classes[code_obj.klass].dependencies.keys()
+            deps = ['# begin wxGlade: dependencies\n'] + extra_modules + \
+                   ['# end wxGlade\n']
+##             for module in extra_modules:
+##                 deps.append('from %s import %s\n' % (module, module))
+##             deps.append('# end wxGlade\n')
             tag = '<%swxGlade replace dependencies>' % nonce
             prev_src.content = prev_src.content.replace(tag, "".join(deps))
             
@@ -490,10 +502,12 @@ def add_class(code_obj):
         for line in header_lines: write(line)
         
         # write the module dependecies for this class
-        extra_modules = classes[code_obj.klass].dependencies
+        #extra_modules = classes[code_obj.klass].dependencies
         write('\n# begin wxGlade: dependencies\n')
-        for module in extra_modules:
-            write('from %s import %s\n' % (module, module))
+        for module in classes[code_obj.klass].dependencies:
+            write(module)
+## extra_modules: write(module)
+##             write('from %s import %s\n' % (module, module))
         write('# end wxGlade\n')
         write('\n')
         
@@ -502,7 +516,9 @@ def add_class(code_obj):
         out.close()
 
     else: # not multiple_files
-        # write the class body onto the single source file 
+        # write the class body onto the single source file
+        for dep in classes[code_obj.klass].dependencies:
+            _current_extra_modules[dep] = 1
         write = output_file.write
         for line in buffer: write(line)
         

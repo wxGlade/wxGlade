@@ -17,19 +17,19 @@ def python_code_generator(obj):
     choices = prop.get('choices', [])
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-    if obj.is_toplevel:
-        l = []
-        if id_name: l.append(id_name)
-        l.append('self.%s = %s(%s, %s, choices=%s)\n' % \
-                 (obj.name, obj.klass, parent, id, repr(choices)))
-        return l, [], []
+##     if obj.is_toplevel:
+##         l = []
+##         if id_name: l.append(id_name)
+##         l.append('self.%s = %s(%s, %s, choices=%s)\n' % \
+##                  (obj.name, obj.klass, parent, id, repr(choices)))
+##         return l, [], []
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = wxListBox(%s, %s, choices=%s%s)\n' %
-                (obj.name, parent, id, repr(choices), style))
+    init.append('self.%s = %s(%s, %s, choices=%s%s)\n' %
+                (obj.name, obj.klass, parent, id, repr(choices), style))
     props_buf = pygen.generate_common_properties(obj)
     selection = prop.get('selection')
     if selection is not None:
@@ -67,19 +67,19 @@ def cpp_code_generator(obj):
     number = len(choices)
     ch_arr = '{\n        %s\n    };\n' % \
              ',\n        '.join(['"' + c + '"' for c in choices])
-    if obj.is_toplevel:
-        l = []
-        l.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
-        l.append('%s = new %s(%s, %s, wxDefaultPosition, wxDefaultSize, %s, '
-                 '%s_choices);\n' % \
-                 (obj.name, obj.klass, parent, id, number, obj.name))
-        return l, ids, [], []
+##     if obj.is_toplevel:
+##         l = []
+##         l.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+##         l.append('%s = new %s(%s, %s, wxDefaultPosition, wxDefaultSize, %s, '
+##                  '%s_choices);\n' % \
+##                  (obj.name, obj.klass, parent, id, number, obj.name))
+##         return l, ids, [], []
     style = prop.get("style", "0")
     init = []
     init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
-    init.append('%s = new wxListBox(%s, %s, wxDefaultPosition, wxDefaultSize, '
+    init.append('%s = new %s(%s, %s, wxDefaultPosition, wxDefaultSize, '
                 '%s, %s_choices, %s);\n' % \
-                (obj.name, parent, id, number, obj.name, style))
+                (obj.name, obj.klass, parent, id, number, obj.name, style))
     props_buf = cppgen.generate_common_properties(obj)
     selection = prop.get('selection')
     if selection is not None:
@@ -100,10 +100,10 @@ def initialize():
         xrcgen.add_property_handler('choices', ChoicesCodeHandler)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-                       ('const wxPoint&', 'pos'),
-                       ('const wxSize&', 'size'),
-                       ('int', 'n'), ('const wxString*', 'choices'),
-                       ('long', 'style', '0')]
-        cppgen.add_widget_handler('wxListBox', cpp_code_generator, constructor)
+##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+##                        ('const wxPoint&', 'pos'),
+##                        ('const wxSize&', 'size'),
+##                        ('int', 'n'), ('const wxString*', 'choices'),
+##                        ('long', 'style', '0')]
+        cppgen.add_widget_handler('wxListBox', cpp_code_generator)#, constructor)
         cppgen.add_property_handler('choices', ChoicesCodeHandler)

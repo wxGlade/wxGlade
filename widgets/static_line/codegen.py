@@ -15,18 +15,18 @@ def python_code_generator(obj):
     id_name, id = pygen.generate_code_id(obj)
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-    if obj.is_toplevel:
-        l = []
-        if id_name: l.append(id_name)
-        l.append('self.%s = %s(%s, %s)\n' % (obj.name, obj.klass, parent, id))
-        return l, [], []
+##     if obj.is_toplevel:
+##         l = []
+##         if id_name: l.append(id_name)
+##         l.append('self.%s = %s(%s, %s)\n' % (obj.name, obj.klass, parent, id))
+##         return l, [], []
     style = prop.get("style")
     if style and style != 'wxLI_HORIZONTAL': style = ", style=%s" % style
     else: style = ''
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = wxStaticLine(%s, %s%s)\n' %
-                (obj.name, parent, id, style))
+    init.append('self.%s = %s(%s, %s%s)\n' %
+                (obj.name, obj.klass, parent, id, style))
     props_buf = pygen.generate_common_properties(obj)
     return init, props_buf, []
     
@@ -42,16 +42,16 @@ def cpp_code_generator(obj):
     else: ids = []
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
-    if obj.is_toplevel:
-        l = ['%s = new %s(%s, %s);\n' % (obj.name, obj.klass, parent, id)]
-        if id_name: l.append(id_name)
-        return l, ids, [], []
+##     if obj.is_toplevel:
+##         l = ['%s = new %s(%s, %s);\n' % (obj.name, obj.klass, parent, id)]
+##         if id_name: l.append(id_name)
+##         return l, ids, [], []
     extra = ''
     style = prop.get("style")
     if style and style != 'wxLI_HORIZONTAL':
         extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-    init = ['%s = new wxStaticLine(%s, %s%s);\n' %
-            (obj.name, parent, id, extra) ]
+    init = ['%s = new %s(%s, %s%s);\n' %
+            (obj.name, obj.klass, parent, id, extra) ]
     if id_name: init.append(id_name)
     props_buf = cppgen.generate_common_properties(obj)
     return init, ids, props_buf, []
@@ -65,11 +65,11 @@ def initialize():
         pygen.add_widget_handler('wxStaticLine', python_code_generator)
     cppgen = common.code_writers.get("C++")
     if cppgen:
-        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-                       ('const wxPoint&', 'pos', 'wxDefaultPosition'),
-                       ('const wxSize&', 'size', 'wxDefaultSize'),
-                       ('long', 'style', 'wxLI_HORIZONTAL')]
+##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+##                        ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+##                        ('const wxSize&', 'size', 'wxDefaultSize'),
+##                        ('long', 'style', 'wxLI_HORIZONTAL')]
         cppgen.add_widget_handler('wxStaticLine', cpp_code_generator,
-                                  constructor,
+                                  #constructor,
                                   extra_headers=['<wx/statline.h>'])
     

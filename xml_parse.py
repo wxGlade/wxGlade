@@ -589,9 +589,9 @@ class CodeObject:
         if base is not None: # this is a ``real'' object, not a sizeritem
             self.name = attrs['name']
             self.base = common.class_names[base]
-            if self.klass != self.base and self.base != 'CustomWidget':
-                # if the widget is a custom one, it is never a toplevel object
-                # this is another HACK, must find a better way!
+            can_be_toplevel = common.toplevels.has_key(base)
+            if self.klass != self.base and can_be_toplevel:
+                #self.base != 'CustomWidget':
                 self.is_toplevel = True 
                 self.parser._toplevels.push(self)  
             # temporary hack: to detect a sizer, check whether the name

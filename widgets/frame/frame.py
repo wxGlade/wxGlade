@@ -795,6 +795,10 @@ class EditFrame(TopLevelBase):
 
 # end of class EditFrame
 
+
+class EditMDIChildFrame(EditFrame):
+    pass
+
         
 def builder(parent, sizer, pos, number=[0]):
     """\
@@ -806,16 +810,24 @@ def builder(parent, sizer, pos, number=[0]):
             if not number[0]: self.klass = 'MyFrame'
             else: self.klass = 'MyFrame%s' % number[0]
             number[0] += 1
+            self.base = 0
+            base_prop = RadioProperty(self, 'base class', self,
+                                      ['wxFrame', 'wxMDIChildFrame'])
             klass_prop = TextProperty(self, 'class', self)
             szr = wxBoxSizer(wxVERTICAL)
+            szr.Add(base_prop.panel, 0, wxALL|wxEXPAND, 5)
             szr.Add(klass_prop.panel, 0, wxEXPAND)
             szr.Add(wxButton(self, wxID_OK, 'OK'), 0, wxALL|wxALIGN_CENTER, 3)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
         def __getitem__(self, value):
-            def set_klass(c): self.klass = c
-            return (lambda : self.klass, set_klass)
+            if value == 'class':
+                def set_klass(c): self.klass = c
+                return (lambda : self.klass, set_klass)
+            else:
+                def set_base(b): self.base = b
+                return (lambda : self.base, set_base)
     # end of inner class
 
     dialog = Dialog()
@@ -824,8 +836,10 @@ def builder(parent, sizer, pos, number=[0]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'frame_%d' % number[0]
-    frame = EditFrame(label, parent, wxNewId(), label, common.property_panel,
-                      klass=dialog.klass)
+    if dialog.base == 0: base_class = EditFrame
+    else: base_class = EditMDIChildFrame
+    frame = base_class(label, parent, wxNewId(), label, common.property_panel,
+                       klass=dialog.klass)
     node = Tree.Node(frame)
     frame.node = node
     frame.show_widget(True)
@@ -835,19 +849,34 @@ def builder(parent, sizer, pos, number=[0]):
         frame.widget.CenterOnScreen()
         frame.widget.Raise()
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditFrame objects from an xml file
-    """
-    from xml_parse import XmlParsingError
-    try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
-    frame = EditFrame(label, parent, wxNewId(), label, common.property_panel,
-                      show=False)
-    node = Tree.Node(frame)
-    frame.node = node
-    common.app_tree.add(node)
-    return frame
+
+def _make_builder(base_class):
+    def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+        from xml_parse import XmlParsingError
+        try: label = attrs['name']
+        except KeyError: raise XmlParsingError, "'name' attribute missing"
+        frame = base_class(label, parent, wxNewId(), label,
+                           common.property_panel,
+                           show=False)
+        node = Tree.Node(frame)
+        frame.node = node
+        common.app_tree.add(node)
+        return frame
+    return xml_builder
+        
+## def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+##     """\
+##     factory to build EditFrame objects from an xml file
+##     """
+##     from xml_parse import XmlParsingError
+##     try: label = attrs['name']
+##     except KeyError: raise XmlParsingError, "'name' attribute missing"
+##     frame = EditFrame(label, parent, wxNewId(), label, common.property_panel,
+##                       show=False)
+##     node = Tree.Node(frame)
+##     frame.node = node
+##     common.app_tree.add(node)
+##     return frame
 
 def statusbar_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
@@ -871,7 +900,8 @@ def initialize():
     cwx = common.widgets_from_xml
     cwx['EditStatusBar'] = statusbar_xml_builder
     cwx['EditMenuBar'] = menubar_xml_builder
-    cwx['EditFrame'] = xml_builder
+    cwx['EditFrame'] = _make_builder(EditFrame) #xml_builder
+    cwx['EditMDIChildFrame'] = _make_builder(EditMDIChildFrame)
 
     common.widgets['EditFrame'] = builder
     
@@ -879,5 +909,6 @@ def initialize():
     from tree import WidgetTree
     WidgetTree.images['EditStatusBar'] = 'icons/statusbar.xpm'
     WidgetTree.images['EditMenuBar'] = 'icons/menubar.xpm'
+    WidgetTree.images['EditMDIChildFrame'] = 'icons/frame.xpm'
        
     return common.make_object_button('EditFrame', 'icons/frame.xpm', 1)

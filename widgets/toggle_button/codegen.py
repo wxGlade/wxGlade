@@ -16,16 +16,16 @@ def python_code_generator(obj):
     label = '"' + prop.get('label', '').replace('"', r'\"') + '"'
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-    if obj.is_toplevel:
-        l = []
-        if id_name: l.append(id_name)
-        l.append('self.%s = %s(%s, %s, %s)\n' %
-                 (obj.name, obj.klass, parent, id, label))
-        return l, [], []    
+##     if obj.is_toplevel:
+##         l = []
+##         if id_name: l.append(id_name)
+##         l.append('self.%s = %s(%s, %s, %s)\n' %
+##                  (obj.name, obj.klass, parent, id, label))
+##         return l, [], []    
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = wxToggleButton(%s, %s, %s)\n' % 
-                (obj.name, parent, id, label))
+    init.append('self.%s = %s(%s, %s, %s)\n' % 
+                (obj.name, obj.klass, parent, id, label))
     props_buf = pygen.generate_common_properties(obj)
     value = prop.get('value')
     if value: props_buf.append('self.%s.SetValue(%s)\n' % (obj.name, value))
@@ -44,12 +44,12 @@ def cpp_code_generator(obj):
     label = '"' + prop.get('label', '').replace('"', r'\"') + '"'
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
-    if obj.is_toplevel:
-        l = ['%s = new %s(%s, %s, %s);\n' %
-             (obj.name, obj.klass, parent, id, label)]
-        return l, ids, [], []    
-    init = [ '%s = new wxToggleButton(%s, %s, %s);\n' % 
-             (obj.name, parent, id, label) ]
+##     if obj.is_toplevel:
+##         l = ['%s = new %s(%s, %s, %s);\n' %
+##              (obj.name, obj.klass, parent, id, label)]
+##         return l, ids, [], []    
+    init = [ '%s = new %s(%s, %s, %s);\n' % 
+             (obj.name, obj.klass, parent, id, label) ]
     props_buf = cppgen.generate_common_properties(obj)
     value = prop.get('value')
     if value: props_buf.append('%s->SetValue(%s);\n' % (obj.name, value))
@@ -64,11 +64,11 @@ def initialize():
         pygen.add_widget_handler('wxToggleButton', python_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-                       ('const wxString&', 'label'),
-                       ('const wxPoint&', 'pos', 'wxDefaultPosition'),
-                       ('const wxSize&', 'size', 'wxDefaultSize'),
-                       ('long', 'style', '0')]
+##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+##                        ('const wxString&', 'label'),
+##                        ('const wxPoint&', 'pos', 'wxDefaultPosition'),
+##                        ('const wxSize&', 'size', 'wxDefaultSize'),
+##                        ('long', 'style', '0')]
         cppgen.add_widget_handler('wxToggleButton', cpp_code_generator,
-                                  constructor,
+                                  #constructor,
                                   extra_headers=['<wx/tglbtn.h>'])

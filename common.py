@@ -53,6 +53,10 @@ refs = {}
 # correspondent classes of wxWindows
 class_names = {}
 
+# names of the Edit* classes that can be toplevels, i.e. widgets for which to
+# generate a class declaration in the code
+toplevels = {}
+
 """
 dictionary of objects used to generate the code in a given language.
 NOTE: a code writer object must implement this interface:
