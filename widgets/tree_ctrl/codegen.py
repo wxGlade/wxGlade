@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxTreeCtrl objects
-# $Id: codegen.py,v 1.5 2004/09/17 13:09:48 agriggio Exp $
+# $Id: codegen.py,v 1.6 2004/12/13 18:44:59 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -53,6 +53,10 @@ class CppCodeGenerator:
                 (obj.name, obj.klass, parent, id, extra)]
         props_buf = cppgen.generate_common_properties(obj)
         return init, ids, props_buf, []
+
+    def get_events(self, obj):
+        cppgen = common.code_writers['C++']
+        return cppgen.get_events_with_type(obj, 'wxTreeEvent')
 
 # end of class CppCodeGenerator
 

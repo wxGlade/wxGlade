@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxSpinCtrl objects
-# $Id: codegen.py,v 1.12 2004/09/17 13:09:50 agriggio Exp $
+# $Id: codegen.py,v 1.13 2004/12/13 18:45:12 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -77,11 +77,15 @@ class CppCodeGenerator:
         else: parent = 'this'
         style = prop.get('style')
         if not style: style = 'wxSP_ARROW_KEYS'
-        init = ['%s = new %s(%s, %s, wxT("%s"), wxDefaultPosition, wxDefaultSize,'
-                ' %s, %s, %s);\n' %
+        init = ['%s = new %s(%s, %s, wxT("%s"), wxDefaultPosition, '
+                'wxDefaultSize, %s, %s, %s);\n' %
                 (obj.name, obj.klass, parent, id, value, style, min_v, max_v)]
         props_buf = cppgen.generate_common_properties(obj)
         return init, ids, props_buf, []
+
+    def get_events(self, obj):
+        cppgen = common.code_writers['C++']
+        return cppgen.get_events_with_type(obj, 'wxSpinEvent')
 
 # end of class CppCodeGenerator
 

@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxSpinButton objects
-# $Id: codegen.py,v 1.1 2004/09/23 11:47:56 crazyinsomniac Exp $
+# $Id: codegen.py,v 1.2 2004/12/13 18:45:13 agriggio Exp $
 #
 # Copyright (c) 2004 D.H. aka crazyinsomniac at users.sourceforge.net
 # License: MIT (see license.txt)
@@ -82,6 +82,10 @@ class CppCodeGenerator:
                 (obj.name, obj.klass, parent, id, style)]
         props_buf = cppgen.generate_common_properties(obj)
         return init, ids, props_buf, []
+
+    def get_events(self, obj):
+        cppgen = common.code_writers['C++']
+        return cppgen.get_events_with_type(obj, 'wxSpinEvent')
 
 # end of class CppCodeGenerator
 

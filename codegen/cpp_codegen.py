@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.38 2004/12/10 18:22:55 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.39 2004/12/13 18:45:23 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -646,9 +646,14 @@ def add_class(code_obj):
             t = tabs(1)
             hwrite('\n' + t + 'DECLARE_EVENT_TABLE();\n')
             hwrite('\npublic:\n')
-            for win_id, event, handler in event_handlers:
-                hwrite(t + 'void %s(wxCommandEvent &event); '
-                       '// wxGlade: <event_handler>\n' % handler)
+            for tpl in event_handlers:
+                if len(tpl) == 4:
+                    win_id, event, handler, evt_type = tpl
+                else:
+                    win_id, event, handler = tpl
+                    evt_type = 'wxCommandEvent'
+                hwrite(t + 'void %s(%s &event); '
+                       '// wxGlade: <event_handler>\n' % (handler, evt_type))
         
         hwrite('}; // wxGlade: end class\n\n')
         
@@ -708,10 +713,15 @@ def add_class(code_obj):
         if event_handlers:
             already_there = prev_src.event_handlers.get(code_obj.klass, {})
             t = tabs(1)
-            for win_id, event, handler in event_handlers:
+            for tpl in event_handlers:
+                if len(tpl) == 4:
+                    win_id, event, handler, evt_type = tpl
+                else:
+                    win_id, event, handler = tpl
+                    evt_type = 'wxCommandEvent'
                 if handler not in already_there:
-                    hwrite(t + 'void %s(wxCommandEvent &event); '
-                           '// wxGlade: <event_handler>\n' % handler)
+                    hwrite(t + 'void %s(%s &event); // wxGlade: '
+                           '<event_handler>\n' % (handler, evt_type))
             if code_obj.klass not in prev_src.event_table_def:
                 hwrite('\nprotected:\n')
                 hwrite(tabs(1) + 'DECLARE_EVENT_TABLE()\n')
@@ -788,7 +798,8 @@ def add_class(code_obj):
                    (code_obj.klass, code_obj.base))
             
         swrite(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
-        for win_id, event, handler in event_handlers:
+        for tpl in event_handlers:
+            win_id, event, handler = tpl[:3]
             swrite(tab + '%s(%s, %s::%s)\n' % \
                    (event, win_id, code_obj.klass, handler))
         swrite(tab + '// end wxGlade\n')
@@ -814,10 +825,15 @@ def add_class(code_obj):
             already_there = prev_src.event_handlers.get(code_obj.klass, {})
         else:
             already_there = {}
-        for win_id, event, handler in event_handlers:
+        for tpl in event_handlers:
+            if len(tpl) == 4:
+                win_id, event, handler, evt_type = tpl
+            else:
+                win_id, event, handler = tpl
+                evt_type = 'wxCommandEvent'
             if handler not in already_there:
-                swrite('\n\nvoid %s::%s(wxCommandEvent &event)\n{\n' % \
-                       (code_obj.klass, handler))
+                swrite('\n\nvoid %s::%s(%s &event)\n{\n' % \
+                       (code_obj.klass, handler, evt_type))
                 swrite(tab + 'event.Skip();\n')
                 swrite('}\n')
         if is_new or prev_src is None:
@@ -1395,3 +1411,17 @@ def _unique(sequence):
     tmp = {}
     for item in sequence: tmp[item] = 1
     return tmp.keys()
+
+
+def get_events_with_type(obj, evt_type):
+    """\
+    Returns the list of event handlers defined for `obj', setting the type of
+    the argument of the handlers (i.e. the event parameter) to `evt_type'
+    """
+    ret = []
+    if 'events' not in obj.properties:
+        return ret
+    id_name, id = generate_code_id(obj)
+    for event, handler in obj.properties['events'].iteritems():
+        ret.append((id, event, handler, evt_type))
+    return ret
