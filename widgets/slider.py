@@ -17,7 +17,6 @@ class EditSlider(ManagedBase):
         """
         ManagedBase.__init__(self, name, 'wxSlider', parent, id, sizer,
                              pos, property_window, show=show)
-
         self.style = style
         self.value = 0
         self.range = (0, 10)
@@ -35,6 +34,10 @@ class EditSlider(ManagedBase):
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         prop['range'] = TextProperty(self, 'range', None, can_disable=True)
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
+
+    def create_widget(self):
+        self.widget = wxSlider(self.parent.widget, self.id, self.value,
+                               self.range[0], self.range[1], style=self.style)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -67,20 +70,17 @@ class EditSlider(ManagedBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        if self.widget:
-            self.SetWindowStyleFlag(style)
+        if self.widget: self.widget.SetWindowStyleFlag(self.style)
 
     def get_range(self):
-        return self.range
+        return "%s, %s" % self.range
 
     def set_range(self, val):
         try: min_v, max_v = map(int, val.split(','))
-        except: self.properties['range'].set_value('%s, %s', self.get_range())
-        # !!!
-        self.range = (min_v, max_v)
-        if self.widget:
-            self.SetRange(min_v, max_v)
+        except: self.properties['range'].set_value(self.get_range())
+        else: self.range = (min_v, max_v)
         self.properties['value'].set_range(min_v, max_v)
+        if self.widget: self.widget.SetRange(min_v, max_v)
 
     def get_value(self):
         return self.value
@@ -89,13 +89,7 @@ class EditSlider(ManagedBase):
         value = int(value)
         if value != self.value:
             self.value = value
-            if self.widget:
-                self.SetValue(value)
-
-    def create_widget(self):
-        self.widget = wxSlider(self.parent.widget, self.id, self.value,
-                               self.range[0], self.range[1],
-                               style=self.style)
+            if self.widget: self.widget.SetValue(value)
 
 # end of class EditSlider
 
@@ -163,6 +157,7 @@ def builder(parent, sizer, pos, number=[1]):
                         dialog.style, sizer, pos, common.property_panel)
     node = Tree.Node(slider)
     slider.node = node
+    slider.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1) 
 
 
@@ -213,8 +208,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
         slider.klass = tmp_slider[0].klass
         slider.klass_prop.set_value(slider.klass)
     sizer.set_item(slider.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border,
-                   size=slider.GetBestSize())
+                   flag=sizeritem.flag, border=sizeritem.border)
+##                    size=slider.GetBestSize())
     node = Tree.Node(slider)
     slider.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

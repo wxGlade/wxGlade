@@ -12,25 +12,26 @@ from misc import wxGladeRadioButton
 
 from ChoicesProperty import *
 
+
+class EditRadioBox(ManagedBase):
 #!!! Why is this derived from wxPanel?
 # What are the problems with wxRadioBox and wxRadioButton?
-class EditRadioBox(wxPanel, ManagedBase):
     def __init__(self, name, parent, id, label, choices, major_dim, style,
                  sizer, pos, property_window, show=True):
         """\
         Class to handle wxRadioBox objects
         """
-        wxPanel.__init__(self, parent, id)
         ManagedBase.__init__(self, name, 'wxRadioBox', parent, id, sizer,
                              pos, property_window, show=show)
-        self.static_box = wxStaticBox(self, -1, label)
+        self.static_box = None #wxStaticBox(self, -1, label)
         self.selection = 0
-        self.buttons = [ self.create_button(c) for c in choices ]
-        if self.buttons: self.buttons[0].SetValue(True)
+        self.choices = choices
+        self.buttons = None #[ self.create_button(c) for c in choices ]
         self.major_dim = major_dim
 
         if not style: self.style = wxRA_SPECIFY_COLS
         else: self.style = style
+        self.label = label
         # properties
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
@@ -41,25 +42,31 @@ class EditRadioBox(wxPanel, ManagedBase):
                                               self.set_selection)
         self.properties['label'] = TextProperty(self, 'label', None)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
-                                                    r=(0, len(self.buttons)-1))
+                                                    r=(0, len(choices)-1))
         self.properties['choices'] = ChoicesProperty(self, 'choices', None,
                                                      [('Label',
                                                        GridProperty.STRING)],
                                                      len(choices))
-        self.properties['choices'].set_col_sizes([-1])
         self.style_pos = [wxRA_SPECIFY_ROWS, wxRA_SPECIFY_COLS]
         self.properties['style'] = RadioProperty(self, 'style', None,
                                                  ['wxRA_SPECIFY_ROWS',
                                                   'wxRA_SPECIFY_COLS'])
         self.properties['dimension'] = SpinProperty(self, 'dimension', None)
 
-        self.old_label = label
-
+    def create_widget(self):
+        self.widget = wxPanel(self.parent.widget, self.id)
+        self.static_box = wxStaticBox(self.widget, -1, self.label)        
+        self.buttons = [ self.create_button(c) for c in self.choices ]
+        if self.buttons: self.buttons[0].SetValue(True)
         EVT_LEFT_DOWN(self.static_box, self.on_set_focus)
         EVT_RIGHT_DOWN(self.static_box, self.popup_menu)
-
+        self.widget.GetBestSize = self.GetBestSize
+        self.widget.SetForegroundColour = self.SetForegroundColour
+        self.widget.SetBackgroundColour = self.SetBackgroundColour
+        self.widget.SetFont = self.SetFont
+        self.set_selection(self.selection)
         self.do_layout()
-
+        
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
@@ -69,18 +76,22 @@ class EditRadioBox(wxPanel, ManagedBase):
         self.properties['dimension'].display(panel)
         self.properties['selection'].display(panel)
         self.properties['choices'].display(panel)
+
+        self.properties['style'].set_value(self.get_style())
+
         szr.Add(self.properties['label'].panel, 0, wxEXPAND)
         szr.Add(self.properties['style'].panel, 0, wxEXPAND)
         szr.Add(self.properties['dimension'].panel, 0, wxEXPAND)
         szr.Add(self.properties['selection'].panel, 0, wxEXPAND)
         szr.Add(self.properties['choices'].panel, 1, wxEXPAND)
+        self.properties['choices'].set_col_sizes([-1])
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 
     def create_button(self, label):
-        r = wxGladeRadioButton(self, -1, label)
+        r = wxGladeRadioButton(self.widget, -1, label)
         EVT_LEFT_DOWN(r, self.on_set_focus)
         EVT_RIGHT_DOWN(r, self.popup_menu)
         return r
@@ -90,6 +101,7 @@ class EditRadioBox(wxPanel, ManagedBase):
         Lays out the radio buttons according to the values of self.style and
         self.major_dim
         """
+        if not self.widget: return
         buttons_layout = self.buttons
         if self.major_dim:
             if self.style & wxRA_SPECIFY_COLS: cols = self.major_dim; rows = 0
@@ -113,32 +125,28 @@ class EditRadioBox(wxPanel, ManagedBase):
             w, h = button.GetBestSize()
             sizer.Add(button, 0, wxEXPAND)
             sizer.SetItemMinSize(button, w, h)
-        self.SetAutoLayout(True)
+        self.widget.SetAutoLayout(True)
         sb_sizer = wxStaticBoxSizer(self.static_box, wxVERTICAL)
-        self.SetSizer(sb_sizer)
+        self.widget.SetSizer(sb_sizer)
         sb_sizer.Add(sizer, 1, wxEXPAND)
         sb_sizer.SetMinSize(sizer.GetMinSize())
-        sb_sizer.Fit(self)
+        sb_sizer.Fit(self.widget)
         sp = self.sizer_properties
-        self.sizer.set_item(self.pos, size=self.GetBestSize())
+        #self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def get_label(self):
-        return self.static_box.GetLabel()
+        #return self.static_box.GetLabel()
+        return self.label
     
     def set_label(self, value):
-        if value != self.old_label:
-            self.static_box.SetLabel(str(value))
-            self.old_label = value
-        if not self.properties['size'].is_active():
-            self.sizer.set_item(self.pos, size=self.GetBestSize())
+        if value != self.label:
+            self.label = value
+            if self.static_box:
+                self.static_box.SetLabel(str(value))
+                if not self.properties['size'].is_active():
+                    self.sizer.set_item(self.pos,
+                                        size=self.widget.GetBestSize())
 
-    def set_value(self, value):
-        try: self.value = int(value[0])
-        except:
-            if value: self.value = 1
-            else: self.value = 0
-        self.SetValue(self.value)
-   
     def get_style(self):
         if self.style == wxRA_SPECIFY_ROWS: return 0
         else: return 1
@@ -156,9 +164,13 @@ class EditRadioBox(wxPanel, ManagedBase):
         self.do_layout()
 
     def get_choices(self):
-        return zip([ b.GetLabel() for b in self.buttons ])
+        return zip(self.choices)
 
     def set_choices(self, values):
+        self.choices = [ v[0] for v in values ]
+        self.properties['selection'].set_range(0, len(self.choices)-1)
+        if not self.widget: return
+        
         delta = len(values) - len(self.buttons)
         if delta > 0:
             self.buttons.extend([ self.create_button("")
@@ -170,41 +182,42 @@ class EditRadioBox(wxPanel, ManagedBase):
         for i in range(len(values)):
             self.buttons[i].SetLabel(values[i][0])
         self.do_layout()
-        self.properties['selection'].set_range(0, len(self.buttons)-1)
 
     def get_selection(self): return self.selection
 
     def set_selection(self, index):
-        for b in self.buttons: b.SetValue(False)
-        try: self.buttons[int(index)].SetValue(True)
-        except IndexError: pass
-
-    def GetBestSize(self):
-        w, h = self.GetSizer().GetMinSize()
-        w2, h2 = self.static_box.GetBestSize()
-        return max(w, w2), h
+        self.selection = int(index)
+        if self.widget:
+            for b in self.buttons: b.SetValue(False)
+            try: self.buttons[self.selection].SetValue(True)
+            except IndexError: pass
 
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
             return ChoicesHandler(self)
 
+    def GetBestSize(self):
+        w, h = self.widget.GetSizer().GetMinSize()
+        w2, h2 = self.static_box.GetBestSize()
+        return max(w, w2), h
+
     def SetBackgroundColour(self, colour):
-        wxPanel.SetBackgroundColour(self, colour)
+        wxPanel.SetBackgroundColour(self.widget, colour)
         self.static_box.SetBackgroundColour(colour)
         for b in self.buttons: b.SetBackgroundColour(colour)
-        self.Refresh()
+        self.widget.Refresh()
         
     def SetForegroundColour(self, colour):
-        wxPanel.SetForegroundColour(self, colour)
+        wxPanel.SetForegroundColour(self.widget, colour)
         self.static_box.SetForegroundColour(colour)
         for b in self.buttons: b.SetForegroundColour(colour)
-        self.Refresh()
+        self.widget.Refresh()
 
     def SetFont(self, font):
-        wxPanel.SetFont(self, font)
+        wxPanel.SetFont(self.widget, font)
         self.static_box.SetFont(font)
         for b in self.buttons: b.SetFont(font)
-        self.Refresh()
+        self.widget.Refresh()
 
 # end of class EditRadioBox
 
@@ -220,9 +233,10 @@ def builder(parent, sizer, pos, number=[1]):
     radio_box = EditRadioBox(label, parent, wxNewId(), label,
                              [misc._encode('choice 1')],
                              0, 0, sizer, pos, common.property_panel)
-    sizer.set_item(pos, 0, 0, size=radio_box.GetSize())
+    #sizer.set_item(pos, 0, 0, size=radio_box.GetSize())
     node = Tree.Node(radio_box)
     radio_box.node = node
+    radio_box.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -237,8 +251,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     radio_box = EditRadioBox(label, parent, wxNewId(), label, [], 0, 0,
                              sizer, pos, common.property_panel) 
     sizer.set_item(radio_box.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border,
-                   size=radio_box.GetBestSize())
+                   flag=sizeritem.flag, border=sizeritem.border)
+##                    size=radio_box.GetBestSize())
     node = Tree.Node(radio_box)
     radio_box.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

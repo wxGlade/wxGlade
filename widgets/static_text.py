@@ -9,7 +9,7 @@ from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
 
-class EditStaticText(wxStaticText, ManagedBase):
+class EditStaticText(ManagedBase):
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
         """\
@@ -17,6 +17,8 @@ class EditStaticText(wxStaticText, ManagedBase):
         """
         ManagedBase.__init__(self, name, 'wxStaticText', parent, id, sizer,
                              pos, property_window, show=show)
+        self.label = label
+        self.style = 0
         # label property
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['style'] = (self.get_style, self.set_style)
@@ -28,8 +30,8 @@ class EditStaticText(wxStaticText, ManagedBase):
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)  
 
-        self.label = label
-        self.style = style
+    def create_widget(self):
+        self.widget = wxStaticText(self.parent.widget, self.id, self.label)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -44,19 +46,20 @@ class EditStaticText(wxStaticText, ManagedBase):
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 
+    def get_label(self): return self.label
+
     def set_label(self, value):
-        value = str(value)
         if value != self.label:
             self.label = value
             if self.widget:
                 self.widget.SetLabel(value)
                 if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+                    self.sizer.set_item(self.pos,
+                                        size=self.widget.GetBestSize())
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.style
             for i in range(len(self.style_pos)):
                 if self.style & self.style_pos[i]:
                     retval[i] = 1
@@ -70,12 +73,7 @@ class EditStaticText(wxStaticText, ManagedBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        if self.widget:
-            self.widget.SetWindowStyleFlag(style)
-
-    def create_widget(self):
-        self.widget = wxStaticText(self.parent.widget, self.id, self.label)
-        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        if self.widget: self.widget.SetWindowStyleFlag(self.style)
 
 # end of class EditStaticText
 
@@ -93,6 +91,7 @@ def builder(parent, sizer, pos, number=[1]):
                                  common.property_panel)
     node = Tree.Node(static_text)
     static_text.node = node
+    static_text.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -108,8 +107,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
                                  misc._encode(label), sizer, pos,
                                  common.property_panel)
     sizer.set_item(static_text.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border,
-                   size=static_text.GetBestSize())
+                   flag=sizeritem.flag, border=sizeritem.border)
+##                    size=static_text.GetBestSize())
     node = Tree.Node(static_text)
     static_text.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

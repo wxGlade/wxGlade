@@ -9,7 +9,7 @@ from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
 
-class EditStaticLine(wxStaticLine, ManagedBase):
+class EditStaticLine(ManagedBase):
     def __init__(self, name, parent, id, orientation, sizer, pos,
                  property_window, show=True):
         """\
@@ -18,13 +18,21 @@ class EditStaticLine(wxStaticLine, ManagedBase):
         self.orientation = orientation
         ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer,
                              pos, property_window, show=show)
-        self.sel_marker.Reparent(parent)
         od = { wxLI_HORIZONTAL: 'wxLI_HORIZONTAL',
                wxLI_VERTICAL: 'wxLI_VERTICAL' }
         self.properties['style'] = HiddenProperty(self, 'style',
                                                   od.get(orientation,
                                                          'wxLI_HORIZONTAL'))
         self.removed_p = self.properties['font']
+
+    def create_widget(self):
+        self.widget = wxStaticLine(self.parent.widget, self.id,
+                                   style=self.orientation)
+        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+
+    def finish_widget_creation(self):
+        ManagedBase.finish_widget_creation(self)
+        self.sel_marker.Reparent(self.parent.widget)        
         del self.properties['font']
 
     def create_properties(self):
@@ -34,11 +42,6 @@ class EditStaticLine(wxStaticLine, ManagedBase):
     def __getitem__(self, key):
         if key != 'font': return ManagedBase.__getitem__(self, key)
         return (lambda : "", lambda v: None)
-
-    def create_widget(self):
-        self.widget = wxStaticLine(self.parent.widget, self.id,
-                                   style=self.orientation)
-        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
 # end of class EditStaticLine
         
@@ -75,9 +78,11 @@ def builder(parent, sizer, pos, number=[1]):
                                  sizer, pos, common.property_panel)
     node = Tree.Node(static_line)
     static_line.node = node
+    static_line.set_flag("wxEXPAND")
+    static_line.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1) 
-    sizer.set_item(pos, flag=wxEXPAND)
-    static_line.sizer_properties['flag'].set_value("wxEXPAND")
+#    sizer.set_item(pos, flag=wxEXPAND)
+#    static_line.sizer_properties['flag'].set_value("wxEXPAND")
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
@@ -121,8 +126,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
         static_line.klass_prop.set_value(static_line.klass)
         
     sizer.set_item(static_line.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border,
-                   size=static_line.GetBestSize())
+                   flag=sizeritem.flag, border=sizeritem.border)
+##                    size=static_line.GetBestSize())
     node = Tree.Node(static_line)
     static_line.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

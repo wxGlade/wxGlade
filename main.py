@@ -250,7 +250,8 @@ class wxGladeFrame(wxFrame):
                 return 
 
             infile.close()
-##             for w in common.app_tree.root.children:
+            for node in common.app_tree.root.children:
+                common.app_tree.expand(node, False)
 ##                 ww = w.widget
 ##                 ww.Show()
 ##                 if ww.has_sizer:

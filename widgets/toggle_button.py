@@ -18,6 +18,8 @@ class EditToggleButton(ManagedBase):
         """
         ManagedBase.__init__(self, name, 'wxToggleButton', parent, id, sizer,
                              pos, property_window, show=show)
+        self.label = label
+        self.value = 0
 
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['value'] = (self.get_value, self.set_value)
@@ -25,8 +27,10 @@ class EditToggleButton(ManagedBase):
         self.properties['value'] = CheckBoxProperty(self, 'value', None,
                                                     'Clicked')
 
-        self.value = 0
-        self.label = label
+    def create_widget(self):
+        self.widget = wxToggleButton(self.parent.widget, self.id, self.label)
+        self.widget.SetValue(self.value)
+        EVT_TOGGLEBUTTON(self.widget, self.id, self.on_set_focus)        
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -45,12 +49,12 @@ class EditToggleButton(ManagedBase):
         return self.label
 
     def set_label(self, value):
-        value = str(value)
         if value != self.label:
             self.label = value
             if self.widget:
-                self.SetLabel(value)
-                self.set_width(self.GetBestSize()[0])
+                self.widget.SetLabel(value)
+                if not self.properties['size'].is_active():
+                    self.set_width(self.widget.GetBestSize()[0])
 
     def get_value(self):
         return self.value
@@ -60,12 +64,7 @@ class EditToggleButton(ManagedBase):
         value = int(value)
         if value != self.value:
             self.value = value
-            if self.widget:
-                self.SetValue(value)
-
-    def create_widget(self):
-        self.widget = wxToggleButton(self.parent.widget, self.id, self.label)
-        EVT_TOGGLEBUTTON(self.widget, self.id, self.on_set_focus)
+            if self.widget: self.widget.SetValue(value)
 
 # end of class EditToggleButton
 
@@ -82,6 +81,7 @@ def builder(parent, sizer, pos, number=[1]):
                               sizer, pos, common.property_panel)
     node = Tree.Node(button)
     button.node = node
+    button.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -96,7 +96,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     button = EditToggleButton(label, parent, wxNewId(), misc._encode(label),
                               sizer, pos, common.property_panel)
     sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border, size=button.GetBestSize())
+                   border=sizeritem.border) #, size=button.GetBestSize())
     node = Tree.Node(button)
     button.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

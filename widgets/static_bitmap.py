@@ -46,6 +46,10 @@ class EditStaticBitmap(ManagedBase):
                                               can_disable=False)
         self.properties['bitmap'] = self.bitmap_prop
 
+    def create_widget(self):
+        bmp = self.load_bitmap(self.guess_type(self.bitmap))
+        self.widget = wxStaticBitmap(self.parent.widget, self.id, bmp)        
+
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
@@ -65,15 +69,11 @@ class EditStaticBitmap(ManagedBase):
         if type is None:
             self.bitmap = ''
         else:
-            self.bitmap = filename
+            self.bitmap = value
         if self.widget:
             bmp = self.load_bitmap(type)
-            self.widget.SetBitmap(bmp)
-            self.widget.set_size("%s, %s" % tuple(self.GetBestSize()))
-
-    def create_widget(self):
-        bmp = self.load_bitmap(self.guess_type(self.bitmap))
-        self.widget = wxStaticBitmap(self.parent.widget, self.id, bmp)
+            self.widget.SetBitmapLabel(bmp)
+            self.widget.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
     def load_bitmap(self, type):
         if self.bitmap:
@@ -96,10 +96,11 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'bitmap_%s' % number[0]
     bitmap = wxFileSelector("Select the image")
-    button = EditStaticBitmap(name, parent, wxNewId(), bitmap, sizer, pos,
-                              common.property_panel)
-    node = Tree.Node(button)
-    button.node = node
+    static_bitmap = EditStaticBitmap(name, parent, wxNewId(), bitmap, sizer,
+                                     pos, common.property_panel)
+    node = Tree.Node(static_bitmap)
+    static_bitmap.node = node
+    static_bitmap.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -114,7 +115,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     bitmap = EditStaticBitmap(label, parent, wxNewId(), '', sizer, pos,
                               common.property_panel)
     sizer.set_item(bitmap.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border, size=bitmap.GetBestSize())
+                   border=sizeritem.border) #, size=bitmap.GetBestSize())
     node = Tree.Node(bitmap)
     bitmap.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

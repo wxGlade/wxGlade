@@ -160,19 +160,9 @@ class WidgetTree(wxTreeCtrl, Tree):
                              # SelectItem fires an EVT_TREE_SEL_CHANGED event
         EVT_TREE_SEL_CHANGED(self, id, self.on_change_selection)
         EVT_RIGHT_DOWN(self, self.popup_menu)
+        EVT_LEFT_DCLICK(self, self.show_toplevel)
         self.title = ' '
         self.set_title(self.title)
-
-        # menu used to show hidden toplevel widgets
-        self._show_remove_menu = wxMenu("Widget")
-        SHOW_ID = wxNewId()
-        REMOVE_ID = wxNewId()
-        self._show_remove_menu.Append(SHOW_ID, "Show")
-        self._show_remove_menu.Append(REMOVE_ID, "Remove")
-        self._remove_menu = wxMenu("Widget")
-        self._remove_menu.Append(REMOVE_ID, "Remove")
-        EVT_MENU(self, SHOW_ID, self.show_selected_widget)
-        EVT_MENU(self, REMOVE_ID, self.remove_selected_widget)
 
     def add(self, child, parent=None, image=None): # is image still used?
         """\
@@ -268,12 +258,7 @@ class WidgetTree(wxTreeCtrl, Tree):
 
     def popup_menu(self, event):
         item = self.GetPyData(self.GetSelection()).widget
-        if not item.is_visible(): #item.widget:
-            import edit_windows
-            if isinstance(item, edit_windows.TopLevelBase):
-                self.PopupMenu(self._show_remove_menu, event.GetPosition())
-            else: self.PopupMenu(self._remove_menu, event.GetPosition())
-            return
+        if not item.widget or not item.is_visible(): return
         try:
             x, y = self.ClientToScreen(event.GetPosition())
             x, y = item.widget.ScreenToClient((x, y))
@@ -288,6 +273,13 @@ class WidgetTree(wxTreeCtrl, Tree):
         """
         self.ExpandAll(self.GetRootItem())
 
+    def expand(self, node, yes):
+        """\
+        expands or collapses the given node
+        """
+        if yes: self.Expand(node.item)
+        else: self.Collapse(node.item)
+
     def set_title(self, value):
         self.title = value
         try: self.GetParent().SetTitle('wxGlade: Tree %s' % value)
@@ -297,36 +289,45 @@ class WidgetTree(wxTreeCtrl, Tree):
         if not self.title: self.title = ' '
         return self.title
 
-    def show_selected_widget(self, event):
-        """\
-        Shows the current selected (toplevel) widget and all its children
-        """
-        #self.show_widget(self.GetPyData(self.GetSelection()))
-        node = self.GetPyData(self.GetSelection())
-        if not node.widget.widget:
-            node.widget.create_widget()
-            node.widget.finish_widget_creation()
-        if node.children:
-            for c in node.children: self.show_widget(c)
-        node.widget.show_widget(True)
-        node.widget.show_properties()
-
-    def show_widget(self, node):
+    def show_widget(self, node, toplevel=False):
         """\
         Shows the widget of the given node and all its children
         """
-        def show_rec(node):
-            node.widget.show_widget(True)
+        if toplevel:
+            if not node.widget.widget:
+                node.widget.create_widget()
+                node.widget.finish_widget_creation()
             if node.children:
-                for c in node.children: show_rec(c)
-        show_rec(node)
+                for c in node.children: self.show_widget(c)
+            node.widget.show_widget(True)
+            node.widget.show_properties()
+        else:
+            def show_rec(node):
+                node.widget.show_widget(True)
+                if node.children:
+                    for c in node.children: show_rec(c)
+            show_rec(node)
 
-    def remove_selected_widget(self, event):
+    def show_toplevel(self, event):
         """\
-        Removes the current selected widget and all its children
+        Event handler for left double-clicks: if the click is above a toplevel
+        widget and this is hidden, shows it
         """
-        node = self.GetPyData(self.GetSelection())
-        self.remove(node)
+        def inside(x, y, rect):
+            return (rect.x <= x <= rect.x + rect.width) and \
+                   (rect.y <= y <= rect.y + rect.height)
+        x, y = event.GetPosition()
+        for node in self.root.children:
+            rect = self.GetBoundingRect(node.item)
+            if rect is not None and inside(x, y, rect):
+                if not node.widget.is_visible():
+                    self.show_widget(node, True)
+                else:
+                    node.widget.show_widget(False)
+                    self.select_item(self.root)
+                    self.app.show_properties()                    
+                break
+        event.Skip()
         
 # end of class WidgetTree
 

@@ -204,7 +204,7 @@ class Application(object):
 
         # this is here to keep the interface similar to the various widgets
         # (to simplify Tree)
-        widget = None # this is always None
+        self.widget = None # this is always None
 
     def _get_saved(self): return self.__saved
     def _set_saved(self, value):

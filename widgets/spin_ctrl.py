@@ -17,6 +17,9 @@ class EditSpinCtrl(ManagedBase):
                  show=True):
         ManagedBase.__init__(self, name, 'wxSpinCtrl', parent, id, sizer, pos,
                              property_window, show=show)
+        self.style = 0
+        self.value = 0
+        self.range = (0, 100) # Default values in wxSpinCtrl constructor.
 
         prop = self.properties
         self.access_functions['style'] = (self.get_style, self.set_style)
@@ -28,10 +31,11 @@ class EditSpinCtrl(ManagedBase):
         prop['range'] = TextProperty(self, 'range', None, can_disable=True)
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
 
-        self.style = style
-        self.value = 0
-        self.range = (0, 100) # Default values in wxSpinCtrl constructor.
-
+    def create_widget(self):
+        self.widget = wxSpinCtrl(self.parent.widget, self.id,
+                                 min=self.range[0], max=self.range[1],
+                                 initial=self.value)
+        
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxScrolledWindow(self.notebook, -1)
@@ -63,18 +67,20 @@ class EditSpinCtrl(ManagedBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        if self.widget:
-            self.SetWindowStyleFlag(style)
+        if self.widget: self.widget.SetWindowStyleFlag(self.style)
 
     def get_range(self):
-        return self.range
+        # we cannot return self.range since this would become a "(0, 100)"
+        # string, and we don't want the parens
+        return "%s, %s" % self.range
 
     def set_range(self, val):
         try: min_v, max_v = map(int, val.split(','))
-        except: self.properties['range'].set_value('%s, %s', self.get_range())
-        # !!!
-        self.set_range(min_v, max_v)
-        self.properties['value'].set_range(min_v, max_v)
+        except: self.properties['range'].set_value(self.get_range())
+        else:
+            self.spin_range = (min_v, max_v)
+            self.properties['value'].set_range(min_v, max_v)
+        if self.widget: self.widget.SetRange(min_v, max_v)
 
     def get_value(self):
         return self.value
@@ -83,13 +89,7 @@ class EditSpinCtrl(ManagedBase):
         value = int(value)
         if self.value != value:
             self.value = value
-            if self.widget:
-                self.widget.SetValue(self.value)
-
-    def create_widget(self):
-        self.widget = wxSpinCtrl(self.parent.widget, self.id,
-                                 min=self.range[0], max=self.range[1],
-                                 initial=self.value)
+            if self.widget: self.widget.SetValue(self.value)
 
 # end of class EditSpinCtrl
 
@@ -106,6 +106,7 @@ def builder(parent, sizer, pos, number=[1]):
                         common.property_panel)
     node = Tree.Node(text)
     text.node = node
+    text.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):

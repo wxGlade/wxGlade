@@ -17,33 +17,7 @@ class EditPanel(ManagedBase):
         """
         ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer,
                              pos, property_window, show=show)
-        self.has_sizer = False
-
-    def on_enter(self, event):
-        if not self.has_sizer and common.adding_sizer:
-            self.widget.SetCursor(wxCROSS_CURSOR)
-        else:
-            self.widget.SetCursor(wxNullCursor)
-
-    def drop_sizer(self, event):
-        if self.has_sizer or not common.adding_sizer:
-            self.on_set_focus(event) # default behaviour: call show_properties
-            return
-        self.widget.SetCursor(wxNullCursor)
-        common.adding_widget = common.adding_sizer = 0
-        common.widgets[common.widget_to_add](self, None, None)
-        common.widget_to_add = None
-        self.has_sizer = True
-        common.app_tree.app.saved = False
-
-    def on_parent_size(self, event):
-        print 'on_parent_size'
-        if self.has_sizer:
-            self.widget.GetSizer().Layout()
-
-    def get_widget_best_size(self):
-        if self.has_sizer: return self.GetSizer().GetMinSize()
-        return wxPanel.GetBestSize(self)
+        self.top_sizer = None # sizer to handle the layout of children
 
     def create_widget(self):
         self.widget = wxPanel(self.parent.widget, self.id)
@@ -52,9 +26,43 @@ class EditPanel(ManagedBase):
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         EVT_SIZE(self.parent.widget, self.on_parent_size)
         # !!! Why self.widget.Disconnect?
-        #if not self.widget.Disconnect(-1, -1, wxEVT_LEFT_DOWN):
-        #    print "EditPanel: Unable to disconnect the event hanlder"
+        if not self.widget.Disconnect(-1, -1, wxEVT_LEFT_DOWN):
+            print "EditPanel: Unable to disconnect the event hanlder"
         self.widget.GetBestSize = self.get_widget_best_size
+        
+    def on_enter(self, event):
+        if not self.top_sizer and common.adding_sizer:
+            self.widget.SetCursor(wxCROSS_CURSOR)
+        else:
+            self.widget.SetCursor(wxNullCursor)
+
+    def set_sizer(self, sizer):
+        self.top_sizer = sizer
+        if self.top_sizer and self.top_sizer.widget and self.widget:
+            self.widget.SetAutoLayout(True)
+            self.widget.SetSizer(self.top_sizer.widget)    
+
+    def drop_sizer(self, event):
+        if self.top_sizer or not common.adding_sizer:
+            self.on_set_focus(event) # default behaviour: call show_properties
+            return
+        self.SetCursor(wxNullCursor)
+        common.widgets[common.widget_to_add](self, None, None)
+        common.adding_widget = common.adding_sizer = False
+        common.widget_to_add = None
+        self.top_sizer = True # in this case, self.top_sizer is used only
+                              # as a flag (this is really ugly,
+                              # I must find a better way)
+        common.app_tree.app.saved = False
+
+    def on_parent_size(self, event):
+        if self.top_sizer and self.widget:
+            self.widget.GetSizer().Layout()
+
+    def get_widget_best_size(self):
+        if self.top_sizer and self.widget.GetSizer():
+            return self.widget.GetSizer().GetMinSize()
+        return wxPanel.GetBestSize(self.widget)
 
 # end of class EditPanel
         
@@ -71,10 +79,15 @@ def builder(parent, sizer, pos, number=[1]):
                       common.property_panel)
     node = Tree.Node(panel)
     panel.node = node
+
+    panel.set_option(1)
+    panel.set_flag("wxEXPAND")
+    panel.show_widget(True)
+
     common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(panel.pos, 1, wxEXPAND)
-    panel.sizer_properties['option'].set_value(1)
-    panel.sizer_properties['flag'].set_value("wxEXPAND")
+##     panel.sizer_properties['option'].set_value(1)
+##     panel.sizer_properties['flag'].set_value("wxEXPAND")
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\

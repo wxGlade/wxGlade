@@ -10,21 +10,20 @@ from tree import Tree
 from widget_properties import *
 from misc import wxGladeRadioButton
 
-# !!! ?
-class EditRadioButton(wxGladeRadioButton, ManagedBase):
+class EditRadioButton(ManagedBase):
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
         """\
         Class to handle wxRadioButton objects
         """
-        wxGladeRadioButton.__init__(self, parent, id, label)
         ManagedBase.__init__(self, name, 'wxRadioButton', parent, id, sizer,
                              pos, property_window, show=show)
-
+        self.label = label
+        self.value = 0 # if nonzero, che radio button is selected
+        self.style = 0
         # label and checked properties
-        self.access_functions['label'] = (self.GetLabel, self.set_label)
-        self.access_functions['clicked'] = (lambda : self.GetValue(),
-                                            self.set_value)
+        self.access_functions['label'] = (self.get_label, self.set_label)
+        self.access_functions['clicked'] = (self.get_value, self.set_value)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['label'] = TextProperty(self, 'label', None)
         self.properties['clicked'] = CheckBoxProperty(self, 'clicked', None,
@@ -33,9 +32,12 @@ class EditRadioButton(wxGladeRadioButton, ManagedBase):
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      ['#section#Style',
                                                       'wxRB_GROUP'])
-        self.old_label = label
-        self.value = 0 # if nonzero, che radio button is selected
-        EVT_CHECKBOX(self, id, lambda e: self.SetValue(self.value))
+
+    def create_widget(self):
+        self.widget = wxGladeRadioButton(self.parent.widget, self.id,
+                                         self.label)
+        EVT_CHECKBOX(self.widget, self.id,
+                     lambda e: self.widget.SetValue(self.value))        
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -52,21 +54,25 @@ class EditRadioButton(wxGladeRadioButton, ManagedBase):
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 
+    def get_label(self): return self.label
+    def get_value(self): return self.value
+
     def set_label(self, value):
-        if value != self.old_label:
-            self.SetLabel(str(value))
-            self.old_label = value
+        if value != self.label:
+            self.label = value
+            if self.widget:
+                self.widget.SetLabel(str(value))
+                self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def set_value(self, value):
         self.value = value
-        self.SetValue(self.value)
+        if self.widget: self.widget.SetValue(self.value)
    
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.GetWindowStyleFlag()
             for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]:
+                if self.style & self.style_pos[i]:
                     retval[i] = 1
         except AttributeError:
             pass
@@ -74,11 +80,11 @@ class EditRadioButton(wxGladeRadioButton, ManagedBase):
 
     def set_style(self, value):
         value = self.properties['style'].prepare_value(value)
-        style = 0
+        self.style = 0
         for v in range(len(value)):
             if value[v]:
-                style |= self.style_pos[v]
-        self.SetWindowStyleFlag(style)
+                self.style |= self.style_pos[v]
+        if self.widget: self.SetWindowStyleFlag(self.style)
         
 def builder(parent, sizer, pos, number=[1]):
     """\
@@ -92,6 +98,7 @@ def builder(parent, sizer, pos, number=[1]):
                             sizer, pos, common.property_panel)
     node = Tree.Node(radio)
     radio.node = node
+    radio.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -106,8 +113,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     radio = EditRadioButton(label, parent, wxNewId(), misc._encode(label),
                             sizer, pos, common.property_panel)
     sizer.set_item(radio.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border,
-                   size=radio.GetBestSize())
+                   flag=sizeritem.flag, border=sizeritem.border)
+##                    size=radio.GetBestSize())
     node = Tree.Node(radio)
     radio.node = node
     if pos is None: common.app_tree.add(node, sizer.node)
