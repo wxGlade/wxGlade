@@ -247,7 +247,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    radio_box = EditRadioBox(label, parent, wxNewId(), label, [], 0, 0,
+    radio_box = EditRadioBox(label, parent, wxNewId(), '', [], 0, 0,
                              sizer, pos, common.property_panel) 
     sizer.set_item(radio_box.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
