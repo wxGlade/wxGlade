@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.56 2004/08/12 12:14:14 agriggio Exp $
+# $Id: edit_windows.py,v 1.57 2004/08/15 12:01:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -511,7 +511,7 @@ class WindowBase(EditBase):
                  families.get(font.GetFamily(), 'default'),
                  styles.get(font.GetStyle(), 'normal'),
                  weights.get(font.GetWeight(), 'normal'),
-                 str(font.GetUnderlined()), font.GetFaceName() ]
+                 str(int(font.GetUnderlined())), font.GetFaceName() ]
 
     def set_font(self, value):
         #if not self.widget: return
