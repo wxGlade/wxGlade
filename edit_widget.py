@@ -62,6 +62,8 @@ class EditWidget(ManagedBase):
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
+
+# end of class EditWidget
         
     
 def increment_label(label, number=[1]):
@@ -72,10 +74,10 @@ def increment_label(label, number=[1]):
     return _label
         
 
-def add_widget_node(widget, sizer, pos):
+def add_widget_node(widget, sizer, pos, from_xml=False):
     node = Tree.Node(widget)
     widget.node = node
-    widget.show_widget(True)
+    if not from_xml: widget.show_widget(True)
     if pos is None: common.app_tree.add(node, sizer.node)
     else: common.app_tree.insert(node, sizer.node, pos-1)
 
