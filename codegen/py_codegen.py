@@ -104,12 +104,14 @@ class SourceFileContent:
         """
         import re
         class_name = None
+        new_classes_inserted = False
         # regexp to match class declarations
         class_decl = re.compile(r'^\s*class\s+([a-zA-Z_]\w*)\s*'
                                 '(\(\s*[a-zA-Z_]\w*\s*(,\s*[a-zA-Z_]\w*)*'
                                 '\s*\))?:\s*$')
         # regexps to match wxGlade blocks
-        block_start = re.compile(r'^\s*#\s*begin\s+wxGlade:\s*(\w+)\s*$')
+        block_start = re.compile(r'^\s*#\s*begin\s+wxGlade:\s*'
+                                 '([A-Za-z_]+\w*)??[.]?(\w+)\s*$')
         block_end = re.compile(r'^\s*#\s*end\s+wxGlade\s*$')
         inside_block = False
         tmp_in = open(self.name)
@@ -120,7 +122,9 @@ class SourceFileContent:
                 if class_name is None:
                     # this is the first class declared in the file: insert the
                     # new ones before this
-                    out_lines.append('<%swxGlade insert new_classes>' % nonce)
+                    out_lines.append('\n<%swxGlade insert new_classes>' %
+                                     nonce)
+                    new_classes_inserted = True
                 class_name = result.group(1)
                 self.classes[class_name] = 1 # add the found class to the list
                                              # of classes of this module
@@ -130,18 +134,28 @@ class SourceFileContent:
                 if result is not None:
                     # replace the lines inside a wxGlade block with a tag that
                     # will be used later by add_class
+                    which_class = result.group(1)
+                    which_block = result.group(2)
+                    if which_class is None: which_class = class_name
                     inside_block = True
                     if class_name is None:
                         out_lines.append('<%swxGlade replace %s>' % \
-                                         (nonce, result.group(1)))
+                                         (nonce, which_block))
+                        #result.group(1)))
                     else:
                         out_lines.append('<%swxGlade replace %s %s>' % \
-                                         (nonce, class_name, result.group(1)))
+                                         (nonce, which_class, which_block))
+                        #class_name, result.group(1)))
                 else: out_lines.append(line)
             else:
                 # ignore all the lines inside a wxGlade block
                 if block_end.match(line) is not None:
                     inside_block = False
+        if not new_classes_inserted:
+            # if we are here, the previous ``version'' of the file did not
+            # contain any class, so we must add the new_classes tag at the
+            # end of the file
+            out_lines.append('\n<%swxGlade insert new_classes>' % nonce)
         tmp_in.close()
         # set the ``persistent'' content of the file
         self.content = "".join(out_lines)
@@ -310,7 +324,7 @@ def add_class(code_obj):
         write('class %s(%s):\n' % (code_obj.klass, code_obj.base))
         write(tabs(1) + 'def __init__(self, *args, **kwds):\n')
     # __init__ begin tag
-    write(tabs(2) + '# begin wxGlade: __init__\n')
+    write(tabs(2) + '# begin wxGlade: %s.__init__\n' % code_obj.klass)
     prop = code_obj.properties
     style = prop.get("style", None)
     if style: write(tabs(2) + 'kwds["style"] = %s\n' % style)
@@ -354,7 +368,7 @@ def add_class(code_obj):
     else: obj_p = []
     if is_new: write('\n%sdef __set_properties(self):\n' % tabs(1))
     # begin tag
-    write(tab + '# begin wxGlade: __set_properties\n')
+    write(tab + '# begin wxGlade: %s.__set_properties\n' % code_obj.klass)
     if not write_body: write(tab + 'pass\n')
     else:
         for l in obj_p: write(tab + l)
@@ -380,7 +394,7 @@ def add_class(code_obj):
     layout_lines = classes[code_obj.klass].layout
     sizers_init_lines = classes[code_obj.klass].sizers_init
     # begin tag
-    write(tab + '# begin wxGlade: __do_layout\n')
+    write(tab + '# begin wxGlade: %s.__do_layout\n' % code_obj.klass)
     if layout_lines or sizers_init_lines:
         sizers_init_lines.reverse()
         for l in sizers_init_lines: write(tab + l)

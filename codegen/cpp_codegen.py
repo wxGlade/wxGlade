@@ -117,6 +117,7 @@ class SourceFileContent:
     def _build_untouched(self, filename, is_header):
         import re
         class_name = None
+        new_classes_inserted = False
         # regexp to match class declarations (this isn't very accurate -
         # doesn't match template classes, nor virtual inheritance, but
         # should be enough for most cases)
@@ -145,8 +146,10 @@ class SourceFileContent:
                 if class_name is None:
                     # this is the first class declared in the file: insert the
                     # new ones before this
-                    out_lines.append('<%swxGlade insert new_classes>' % nonce)
-                class_name = result.group(1)
+                    out_lines.append('\n<%swxGlade insert new_classes>' %
+                                     nonce)
+                    new_classes_inserted = True
+                 class_name = result.group(1)
                 self.classes[class_name] = 1 # add the found class to the list
                                              # of classes of this module
                 out_lines.append(line)
@@ -163,6 +166,11 @@ class SourceFileContent:
                 # ignore all the lines inside a wxGlade block
                 if block_end.match(line) is not None:
                     inside_block = False
+        if is_header and not new_classes_inserted:
+            # if we are here, the previous ``version'' of the file did not
+            # contain any class, so we must add the new_classes tag at the
+            # end of the file
+            out_lines.append('\n<%swxGlade insert new_classes>' % nonce)
         tmp_in.close()
         # set the ``persistent'' content of the file
         if is_header: self.header_content = "".join(out_lines)
