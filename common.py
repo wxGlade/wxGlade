@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.22 2003/05/14 17:53:39 agriggio Exp $
+# $Id: common.py,v 1.23 2003/05/22 11:12:19 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -103,9 +103,31 @@ def load_widgets():
     Scans the 'widgets/' directory to find the installed widgets,
     and returns a list of buttons to handle them
     """
+    import config
     buttons = []
-    modules = open(os.path.join(wxglade_path, 'widgets/widgets.txt'))
-    if use_gui: print 'loading widget modules:'
+    # load the "built-in" widgets
+    built_in_dir = os.path.join(wxglade_path, 'widgets')
+    buttons.extend(__load_widgets(built_in_dir))
+    
+    # load the "local" widgets
+    local_widgets_dir = config.preferences.local_widget_path
+    buttons.extend(__load_widgets(local_widgets_dir))
+    return buttons
+
+def __load_widgets(widget_dir):
+    buttons = []
+    # test if the "widgets.txt" file exists
+    widgets_file = os.path.join(widget_dir, 'widgets.txt')
+    if not os.path.isfile(widgets_file):
+        return buttons
+        
+    # add the dir to the sys.path
+    import sys
+    sys.path.append(widget_dir)
+    modules = open(widgets_file)
+    if use_gui:
+        print 'Found widgets listing -> %s' % widgets_file 
+        print 'loading widget modules:'
     for line in modules:
         module = line.strip()
         if not module or module.startswith('#'): continue
@@ -121,6 +143,7 @@ def load_widgets():
             buttons.append(b)
     modules.close()
     return buttons
+    
 
 def load_sizers():
     import edit_sizers
