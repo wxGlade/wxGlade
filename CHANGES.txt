@@ -1,3 +1,7 @@
+2002-11-01: misc.py: added focused_widget, accel_table, _remove, _cut,
+                     _copy, _paste to support keyboard shortcuts for some
+                     widgets' popup menu items in a cross-platform way
+
 2002-10-28: widgets/custom_widget/*: added custom_widget module, to build
 				     apps which host widgets unknown to wxGlade
 

@@ -88,9 +88,21 @@ class EditBase:
 ##         EVT_MENU(self.widget, REMOVE_ID, self.remove)
 ##         EVT_MENU(self.widget, COPY_ID, self.clipboard_copy)
 ##         EVT_MENU(self.widget, CUT_ID, self.clipboard_cut)
-        self.accel_table = [(0, WXK_DELETE, self.remove),
-                            (wxACCEL_CTRL, ord('C'), self.clipboard_copy),
-                            (wxACCEL_CTRL, ord('X'), self.clipboard_cut)]
+##         def remove():
+##             if misc.focused_widget is not None:
+##                 print misc.focused_widget
+##                 misc.focused_widget.remove()
+##         def cut():
+##             if misc.focused_widget is not None:
+##                 try: misc.focused_widget.clipboard_cut()
+##                 except AttributeError: pass
+##         def copy():
+##             if misc.focused_widget is not None:
+##                 try: misc.focused_widget.clipboard_copy()
+##                 except AttributeError: pass
+##         self.accel_table = [(0, WXK_DELETE, remove),
+##                             (wxACCEL_CTRL, ord('C'), copy),
+##                             (wxACCEL_CTRL, ord('X'), cut)]
 
     def delete(self):
         """\
@@ -114,6 +126,7 @@ class EditBase:
             nb_szr.Destroy()
         # ...finally, destroy our widget
         if self.widget: self.widget.Destroy()
+        if misc.focused_widget is self: misc.focused_widget = None
             
     def create_properties(self):
         """\
@@ -191,6 +204,7 @@ class EditBase:
         is the same
         """
         self.show_properties()
+        misc.focused_widget = self
         #if wxPlatform != '__WXMSW__': event.Skip()
 
     def get_property_handler(self, prop_name):
@@ -224,7 +238,15 @@ class EditBase:
     def update_view(self, selected):
         """\
         updates the widget's view to reflect its state, i.e. shows which widget
-        is currently selected; the default implementation does nothing
+        is currently selected; the default implementation does nothing.
+        """
+        pass
+
+    def post_load(self):
+        """\
+        Called after the loading of an app from an XML file, before showing
+        the hierarchy of widget for the first time. The default implementation
+        does nothing.
         """
         pass
 
@@ -297,7 +319,7 @@ class WindowBase(EditBase):
             evt_flags = 0
             if event.ControlDown(): evt_flags = wxACCEL_CTRL
             evt_key = event.GetKeyCode()
-            for flags, key, function in self.accel_table:
+            for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
                     wxCallAfter(function)
                     break
@@ -424,7 +446,11 @@ class WindowBase(EditBase):
             f = wxFont(int(value[0]), families[value[1]], styles[value[2]],
                        weights[value[3]], int(value[4]), str(value[5]))
         except: self.properties['font'].set_value(self.get_font())
-        else: self.widget.SetFont(f)
+        else:
+            old_size = self.widget.GetSize()
+            self.widget.SetFont(f)
+            size = self.widget.GetSize()
+            if size != old_size: self.sizer.set_item(self.pos, size=size)
 
     def set_width(self, value):
         self.set_size((int(value), -1))
@@ -619,12 +645,14 @@ class ManagedBase(WindowBase):
                 w, h = [ int(v) for v in size.split(',') ]
                 if use_dialog_units:
                     w, h = wxDLG_SZE(self.widget, (w, h))
-                size = (w, h)
+                size = [w, h]
             except ValueError:
                 size = None
             if not (flags & wxEXPAND) and \
                not self.properties['size'].is_active():
-                size = self.widget.GetBestSize()
+                size = list(self.widget.GetBestSize())
+            if size[0] == -1: size[0] = self.widget.GetSize()[0]
+            if size[1] == -1: size[1] = self.widget.GetSize()[1]
             self.sizer.set_item(self.pos, flag=flags, size=size)
         except AttributeError, e:
             import traceback; traceback.print_exc()

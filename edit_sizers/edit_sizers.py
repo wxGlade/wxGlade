@@ -33,13 +33,20 @@ class SizerSlot:
         EVT_LEFT_DOWN(self.widget, self.drop_widget)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
 
-        table = [(0, WXK_DELETE, self.remove),
-                 (wxACCEL_CTRL, ord('V'), self.clipboard_paste)]
+##         def remove():
+##             if common.focused_widget is not None:
+##                 common.focused_widget.remove()
+##         def paste():
+##             if common.focused_widget is not None:
+##                 try: common.focused_widget.clipboard_paste()
+##                 except AttributeError: pass
+##         table = [(0, WXK_DELETE, remove),
+##                  (wxACCEL_CTRL, ord('V'), paste)]
         def on_key_down(event):
             evt_flags = 0
             if event.ControlDown(): evt_flags = wxACCEL_CTRL
             evt_key = event.GetKeyCode()
-            for flags, key, function in table:
+            for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
                     wxCallAfter(function)
                     break
@@ -87,6 +94,7 @@ class SizerSlot:
         appropriate builder function (found in the ``common.widgets'' dict)
         """
         if not common.adding_widget:
+            misc.focused_widget = self
             self.widget.SetFocus()
             return
         common.adding_widget = False
@@ -101,10 +109,12 @@ class SizerSlot:
         import clipboard
         if clipboard.paste(self.parent, self.sizer, self.pos):
             common.app_tree.app.saved = False # update the status of the app
+            print misc.focused_widget
 
     def delete(self, delete_widget=True):
         if self.menu: self.menu.Destroy()
         if delete_widget and self.widget: self.widget.Destroy()
+        if misc.focused_widget is self: misc.focused_widget = None
 
 # end of class SizerSlot
 
@@ -134,18 +144,26 @@ class SizerHandleButton(wxButton):
 ##             EVT_MENU(self, id, item[1])
 ##         self.sizer._rmenu = self._rmenu
         EVT_RIGHT_DOWN(self, self.popup_menu)
-        
-        table = [(0, WXK_DELETE, self._remove)]
+
+##         def remove():
+##             if common.focused_widget is not None:
+##                 common.focused_widget.remove()
+##         table = [(0, WXK_DELETE, remove)]
         def on_key_down(event):
             evt_flags = 0
             if event.ControlDown(): evt_flags = wxACCEL_CTRL
             evt_key = event.GetKeyCode()
-            for flags, key, function in table:
+            for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
                     wxCallAfter(function)
                     break
             event.Skip()
         EVT_KEY_DOWN(self, on_key_down)
+
+        def on_set_focus(event):
+            misc.focused_widget = self
+            event.Skip()
+        EVT_SET_FOCUS(self, on_set_focus)
 
     def set_menu_title(self, title):
         if self._rmenu: self._rmenu.SetTitle(title)
@@ -179,10 +197,13 @@ class SizerHandleButton(wxButton):
             return
         self.sizer.sizer.free_slot(self.sizer.pos)
         common.app_tree.remove(self.sizer.node)
+    # needed for consistency (common.focused_widget.remove)
+    remove = _remove
 
     def Destroy(self):
         if self._rmenu: self._rmenu.Destroy()
         wxButton.Destroy(self)
+        if misc.focused_widget is self: misc.focused_widget = None
 
 # end of class SizerHandleButton
 
@@ -499,6 +520,7 @@ class SizerBase:
         """
         if self.widget and self.window.widget:
             self.widget.Fit(self.window.widget)
+            self.widget.SetSizeHints(self.window.widget)
     
     def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None,
                  force_layout=True):
@@ -879,6 +901,25 @@ class SizerBase:
             import clipboard
             clipboard.cut(self)
 
+    def post_load(self):
+        """\
+        Called after the loading of an app from an XML file, before showing
+        the hierarchy of widget for the first time. 
+        This is used only for container widgets, to adjust their size
+        appropriately.
+        """
+        if not self.toplevel: return
+        if not self.window.properties['size'].is_active():
+            self.fit_parent()
+            import config
+            w, h = self.widget.GetSize()
+            prefix = ''
+            if config.preferences.use_dialog_units:
+                w, h = self.window.widget.ConvertPixelSizeToDialog(
+                    self.widget.GetSize())
+                prefix = 'd'
+            self.window.set_size('%s, %s%s' % (w, h, prefix))
+
 # end of class SizerBase
 
 
@@ -1191,6 +1232,7 @@ class GridSizerBase(SizerBase):
         """
         if self.widget and self.window.widget:
             self.widget.Fit(self.window.widget)
+            self.widget.SetSizeHints(self.window.widget)
         
     def insert_slot(self, *args, **kwds):
         """\

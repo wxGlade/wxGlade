@@ -195,3 +195,41 @@ def append_item(menu, id, text, xpm_file=None):
             try: item.SetBitmap(bmp)
             except AttributeError: pass
     menu.AppendItem(item)
+
+
+#----------- 2002-11-01 ------------------------------------------------------
+# if not None, this is the currently selected widget - This is different from
+# tree.WidgetTree.cur_widget because it takes into account also SizerSlot
+# objects
+# this is an implementation hack, used to handle keyboard shortcuts for
+# popup menus properly (for example, to ensure that the object to remove is
+# the currently highlighted one, ecc...)
+focused_widget = None
+
+
+def _remove():
+    if focused_widget is not None:
+        focused_widget.remove()
+        
+def _cut():
+    if focused_widget is not None:
+        try: focused_widget.clipboard_cut()
+        except AttributeError: pass
+        
+def _copy():
+    if focused_widget is not None:
+        try: focused_widget.clipboard_copy()
+        except AttributeError: pass
+
+def _paste():
+    if focused_widget is not None:
+        try: focused_widget.clipboard_paste()
+        except AttributeError: pass
+
+# accelerator table to enable keyboard shortcuts for the popup menus of the
+# various widgets (remove, cut, copy, paste)
+accel_table = [(0, WXK_DELETE, _remove),
+               (wxACCEL_CTRL, ord('C'), _copy),
+               (wxACCEL_CTRL, ord('X'), _cut),
+               (wxACCEL_CTRL, ord('V'), _paste)]
+#-----------------------------------------------------------------------------
