@@ -1,7 +1,8 @@
 # cpp_codegen.py: C++ code generator
 #
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: Python 2.2 license (see license.txt)
+# License: MIT (see license.txt)
+# THIS PROGRAM COMES WITH NO WARRANTY
 
 import sys, os, os.path
 import common
@@ -399,7 +400,10 @@ def add_class(code_obj):
         hwrite(tabs(1) + '// end wxGlade\n\n')
         # constructor prototype
         hwrite(tabs(1) + '%s(%s);\n' % (code_obj.klass, sign_decl1))
-        hwrite('\nprivate:\n')
+        #hwrite('\nprivate:\n')
+        # 2002-11-12: changed private to protected to allow "customization
+        #             by subclassing" as in QTDesigner
+        hwrite('\nprotected:\n')
         # set_properties and do_layout prototypes
         hwrite(tabs(1) + '// begin wxGlade: %s::methods\n' % code_obj.klass)
         hwrite(tabs(1) + 'void set_properties();\n')

@@ -1,7 +1,8 @@
 # common.py: global variables
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: Python 2.2 license (see license.txt)
+# License: MIT (see license.txt)
+# THIS PROGRAM COMES WITH NO WARRANTY
 
 import os
 
@@ -10,7 +11,7 @@ import os
 use_gui = True
 
 # version identification string
-version = '0.1.3'
+version = '0.2'
 
 # widgets dictionary: each key is the name of some EditWidget class; the mapped
 # value is a 'factory' function which actually builds the object. Each of these
