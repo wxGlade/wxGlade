@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.37 2004/08/26 12:03:28 agriggio Exp $
+# $Id: tree.py,v 1.38 2004/09/01 17:56:40 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -231,7 +231,8 @@ class WidgetTree(wxTreeCtrl, Tree):
 
     def _build_label(self, node):
         s = node.widget.name
-        if node.widget.klass != node.widget.base:
+        if node.widget.klass != node.widget.base and \
+               node.widget.klass != 'wxScrolledWindow': # special case...
             s += ' (%s)' % node.widget.klass
         return s
         
