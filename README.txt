@@ -1,6 +1,6 @@
 wxGlade: a GUI builder for wxPython/wxWindows
 version: 0.1.3
-license: Python 2.2 license (see license.txt)
+license: MIT (see license.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -25,9 +25,6 @@ and their equivalent Python code.
 
 * Known Bugs:
 -------------
-- On Windows, sometimes the Properties window's layout is corrupted, especially
-  when the active object is a sizer
-
 - On Windows, selection tags may not be shown properly in some case
 
 - On Windows, splitter windows in the generated code may not update their 

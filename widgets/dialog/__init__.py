@@ -1,7 +1,8 @@
 # __init__.py: dialog widget module initialization
 #
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: Python 2.2 license (see license.txt)
+# License: MIT (see license.txt)
+# THIS PROGRAM COMES WITH NO WARRANTY
 
 def initialize():
     import common

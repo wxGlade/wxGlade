@@ -2,7 +2,8 @@
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: Python 2.2 license (see license.txt)
+# License: MIT (see license.txt)
+# THIS PROGRAM COMES WITH NO WARRANTY
 
 from wxPython.wx import *
 from widget_properties import *
@@ -90,20 +91,11 @@ class wxGladeFrame(wxFrame):
         append_item(help_menu, ABOUT_ID, 'About...', 'about.xpm')
         menu_bar.Append(help_menu, '&Help')
         parent.SetMenuBar(menu_bar)
-##         self.SetAcceleratorTable(wxAcceleratorTable([
-##             (wxACCEL_CTRL, ord('t'), TREE_ID),
-##             (wxACCEL_CTRL, ord('n'), NEW_ID),
-##             (wxACCEL_CTRL, ord('o'), OPEN_ID),
-##             (wxACCEL_CTRL, ord('s'), SAVE_ID),
-##             (wxACCEL_CTRL, ord('p'), PROPS_ID),
-##             (wxACCEL_CTRL|wxACCEL_SHIFT, ord('s'), SAVE_AS_ID),
-##             (wxACCEL_CTRL, ord('g'), GENERATE_CODE_ID),
-##             (wxACCEL_NORMAL, WXK_F1, TUT_ID)
-##             ]))
 
         # file history support
         if misc.check_wx_version(2, 3, 3):
-            self.file_history = wxFileHistory()
+            self.file_history = wxFileHistory(
+                config.preferences.number_history)
             self.file_history.UseMenu(file_menu)
             for path in config.load_history():
                 self.file_history.AddFileToHistory(path.strip())

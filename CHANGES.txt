@@ -1,3 +1,12 @@
+2002-11-12: change (hopefully the last!) of license, from the Python2.2 one to
+            MIT (for the reasons, see
+            http://groups.google.com/groups?hl=en&lr=&ie=UTF-8&oe=UTF-8&frame=right&th=f37858bb262e4cff&seekm=918bc22f.0211051301.2010d077%40posting.google.com
+            and following)
+
+2002-11-11: codegen/cpp_codegen.py: modified attribute scope from private to
+                                    protected in the generated code, to allow
+                                    attribute access from a subclass
+
 2002-11-05: misc.py: fixed bug in check_wx_version
             config.py, main.py: added support for wxFileHistory on wxPython >=
                                 2.3.3 
