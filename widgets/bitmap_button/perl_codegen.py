@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxBitmapButton objects
-# $Id: perl_codegen.py,v 1.1 2003/06/23 21:21:11 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:26 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge
 # License: MIT (see license.txt)
@@ -41,12 +41,15 @@ class PerlCodeGenerator:
         init = []
         if id_name: init.append(id_name)
         init.append('\t$self->{%s} = %s->new(%s, %s, %s);\n' % 
-                    (obj.name, obj.klass.replace('wx','Wx::',1), parent, id, bmp))
+                    ( obj.name, obj.klass.replace('wx','Wx::',1),
+                    parent, id, bmp) )
 
         props_buf = plgen.generate_common_properties(obj)
         if not prop.has_key('size'):
-            props_buf.append('\t$self->{%s}->SetSize($self->{%s}->GetBestSize());\n' % \
-                             (obj.name, obj.name))
+            props_buf.append(
+                '\t$self->{%s}->SetSize($self->{%s}->GetBestSize());\n' %
+                             (obj.name, obj.name)
+                         )
         if prop.get('default', False):
             props_buf.append('\t$self->{%s}->SetDefault();\n' % obj.name)
         return init, props_buf, []

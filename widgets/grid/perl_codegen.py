@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxGrid objects
-# $Id: perl_codegen.py,v 1.1 2003/06/23 21:29:06 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:26 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -15,8 +15,10 @@ class PerlCodeGenerator:
         plgen = common.code_writers['perl']
         prop = obj.properties
         id_name, id = plgen.generate_code_id(obj)
-        if not obj.parent.is_toplevel: parent = '$self->{%s}' % obj.parent.name
-        else: parent = '$self'
+        if not obj.parent.is_toplevel:
+            parent = '$self->{%s}' % obj.parent.name
+        else:
+            parent = '$self'
         init = []
         if id_name: init.append(id_name)
         init.append('$self->{%s} = %s->new(%s, %s);\n' %

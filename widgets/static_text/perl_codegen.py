@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxStaticText objects
-# $Id: perl_codegen.py,v 1.1 2003/06/23 21:35:10 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:27 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D. H. aka crazyinsomniac on sourceforge
 # License: MIT (see license.txt)
@@ -9,6 +9,7 @@ import common
 
 class PerlCodeGenerator:
     def get_code(self, obj):
+        init = []
         plgen = common.code_writers['perl']
         prop = obj.properties
 
@@ -16,20 +17,24 @@ class PerlCodeGenerator:
 
         id_name, id = plgen.generate_code_id(obj) 
         label = plgen.quote_str(prop.get('label', ''))
-        if not obj.parent.is_toplevel: parent = '$self->{%s}' % obj.parent.name
-        else: parent = '$self'
+        if not obj.parent.is_toplevel:
+            parent = '$self->{%s}' % obj.parent.name
+        else:
+            parent = '$self'
+
         style = prop.get("style")
-        if style: style = "%s" % style
-        else: style = ''
-        init = []
+        if not style: style = ''
+
         if id_name: init.append(id_name)
-        if attribute: prefix = '$self->{%s}' % obj.name
+        if attribute:
+            prefix = '$self->{%s}' % obj.name
         else:
             prefix = 'my $%s' % obj.name
             obj.name = '$' + obj.name
 
-        init.append('%s = %s->new(%s, %s, %s, wxDefaultPosition, wxDefaultSize, %s);\n' %
-                    (prefix, obj.klass.replace('wx','Wx::',1), parent, id, label, style))
+        init.append('%s = %s->new(%s, %s, %s, wxDefaultPosition, \
+wxDefaultSize, %s);\n' % (prefix, obj.klass.replace('wx','Wx::',1),
+            parent, id, label, style))
 
         props_buf = plgen.generate_common_properties(obj)
         if not attribute:
