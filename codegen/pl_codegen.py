@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.26 2004/09/23 10:26:01 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.27 2004/09/23 10:26:49 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
