@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.40 2003/11/30 14:20:25 agriggio Exp $
+# $Id: py_codegen.py,v 1.41 2004/01/05 17:22:04 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -77,12 +77,9 @@ out_dir = None
 use_new_namespace = True
 
 def cn(class_name):
-    if use_new_namespace:
-        if class_name[:2] == 'wx':
-            return 'wx.' + class_name[2:]
-        return class_name
-    else:
-        return class_name
+    if use_new_namespace and class_name[:2] == 'wx':
+        return 'wx.' + class_name[2:]
+    return class_name
 
 def cn_f(flags):
     if use_new_namespace:
@@ -104,7 +101,7 @@ class ClassLines:
         self.props = [] # lines to insert in the __set_properties method
         self.layout = [] # lines to insert in the __do_layout method
         
-        self.dependencies = {} #[] # names of the modules this class depends on
+        self.dependencies = {} # names of the modules this class depends on
         self.done = False # if True, the code for this class has already
                           # been generated
 
@@ -1047,5 +1044,4 @@ class WidgetHandler:
 
 def add_widget_handler(widget_name, handler):
     obj_builders[widget_name] = handler
-
 
