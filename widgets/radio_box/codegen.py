@@ -62,7 +62,7 @@ def cpp_code_generator(obj):
     cppgen = common.code_writers['C++']
     prop = obj.properties
     id_name, id = cppgen.generate_code_id(obj)
-    if id_name: ids = [ '%s = %s' % (id_name, id) ]
+    if id_name: ids = [ id_name ]
     else: ids = []
     choices = prop.get('choices', [])
     major_dim = prop.get('dimension', '0')

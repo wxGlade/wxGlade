@@ -293,7 +293,9 @@ def add_object(top_obj, sub_obj):
         if sub_obj.in_windows: # the object is a wxWindow instance
             # --- patch 2002-08-26 ------------------------------------------
             #init.reverse()
-            if sub_obj.is_container: klass.parents_init.extend(init)
+            if sub_obj.is_container:
+                init.reverse()
+                klass.parents_init.extend(init)
             else: klass.init.extend(init)
             # ---------------------------------------------------------------
             #klass.init.extend(init)
@@ -463,7 +465,9 @@ def add_class(code_obj):
     init_lines = classes[code_obj.klass].init
     # --- patch 2002-08-26 ---------------------------------------------------
     #init_lines.reverse()
-    for l in classes[code_obj.klass].parents_init: swrite(tab+l)
+    parents_init = classes[code_obj.klass].parents_init
+    parents_init.reverse()    
+    for l in parents_init: swrite(tab+l)
     # ------------------------------------------------------------------------
     for l in init_lines: swrite(tab + l)
     swrite('\n' + tab + 'set_properties();\n')
@@ -762,7 +766,7 @@ def generate_code_id(obj):
     if len(tokens) > 1: name, val = tokens[:2]
     else: return '', tokens[0] # we assume name is declared elsewhere
     if not name: return '', val
-    return name, val
+    return '%s = %s' % (name, val), name
 
 def generate_code_tooltip(obj):
     """\
