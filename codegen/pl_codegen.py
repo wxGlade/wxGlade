@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.1 2003/06/23 22:25:18 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.2 2003/06/23 22:41:37 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -861,9 +861,9 @@ def generate_code_size(obj):
     size = obj.properties.get('size', '').strip()
     use_dialog_units = (size[-1] == 'd')
     if use_dialog_units:
-        return '\t' + name + '->SetSize(wxDLG_SZE(%s, (%s))); # WARNING - not yet supported in wxPerl\n' % (name, size[:-1])
-    else:
-        return '\t' + name + '->SetSize(%s);\n' % size
+        size = size[:-1]
+
+    return '\t' + name + '->SetSize(%s);\n' % size
 
 
 def _string_to_colour(s):
