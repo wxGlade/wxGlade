@@ -1,5 +1,5 @@
 # combo_box.py: wxComboBox objects
-# $Id: combo_box.py,v 1.18 2004/09/17 13:09:54 agriggio Exp $
+# $Id: combo_box.py,v 1.19 2004/09/30 20:26:11 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -45,7 +45,8 @@ class EditComboBox(ManagedBase):
         # properties
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = ('#section#Style', 'wxCB_READONLY', 'wxCB_SORT')
+        style_labels = ('#section#Style', 'wxCB_SIMPLE',
+                        'wxCB_READONLY', 'wxCB_SORT')
         self.style_pos = [ eval(s) for s in style_labels[1:] ]
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
