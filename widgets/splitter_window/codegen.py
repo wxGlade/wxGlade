@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxSplitterWindow objects
-# $Id: codegen.py,v 1.12 2003/11/24 21:28:06 agriggio Exp $
+# $Id: codegen.py,v 1.13 2004/03/30 14:59:53 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -33,6 +33,7 @@ class PythonCodeGenerator:
                      '(%s, %s%s)\n') % (window.name, parent, id, style))
 
         props_buf = pygen.generate_common_properties(window)
+        layout_buf = []
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -41,20 +42,20 @@ class PythonCodeGenerator:
             if sash_pos: sash_pos = ', %s' % sash_pos
             if orientation == 'wxSPLIT_VERTICAL': f_name = 'SplitVertically'
             else: f_name = 'SplitHorizontally'
-            props_buf.append('self.%s.%s(self.%s, self.%s%s)\n' % \
+            layout_buf.append('self.%s.%s(self.%s, self.%s%s)\n' % \
                              (window.name, f_name, win_1, win_2, sash_pos))
         else:
             def add_sub(win):
-                props_buf.append('self.%s.SetSplitMode(%s)\n' % \
+                layout_buf.append('self.%s.SetSplitMode(%s)\n' % \
                                  (window.name, pygen.cn(orientation)))
-                props_buf.append('self.%s.Initialize(self.%s)\n' % \
+                layout_buf.append('self.%s.Initialize(self.%s)\n' % \
                                  (window.name, win))
             if win_1: add_sub(win_1)
             elif win_2: add_sub(win_2)
 
-        return init, props_buf, []
+        return init, props_buf, layout_buf
 
-    def get_properties_code(self, obj):
+    def get_layout_code(self, obj):
         prop = obj.properties
         pygen = common.code_writers['python']
         win_1 = prop.get('window_1')
@@ -75,7 +76,6 @@ class PythonCodeGenerator:
                 props_buf.append('self.Initialize(self.%s)\n' % win)
             if win_1: add_sub(win_1)
             elif win_2: add_sub(win_2)
-        props_buf.extend(pygen.generate_common_properties(obj))
         return props_buf    
 
 # end of class PythonCodeGenerator
@@ -112,29 +112,28 @@ class CppCodeGenerator:
                 (window.name, parent, id, extra) ]
 
         props_buf = cppgen.generate_common_properties(window)
+        layout_buf = []
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
         if win_1 and win_2:
+            sash_pos = prop.get('sash_pos', '')
+            if sash_pos: sash_pos = ', %s' % sash_pos
             if orientation == 'wxSPLIT_VERTICAL': f_name = 'SplitVertically'
             else: f_name = 'SplitHorizontally'
-            props_buf.append('%s->%s(%s, %s);\n' % \
-                             (window.name, f_name, win_1, win_2))
+            layout_buf.append('%s->%s(%s, %s%s);\n' % \
+                              (window.name, f_name, win_1, win_2, sash_pos))
         else:
             def add_sub(win):
-                props_buf.append('%s->SetSplitMode(%s);\n' % (window.name,
-                                                              orientation))
-                props_buf.append('%s->Initialize(%s);\n' % (window.name, win))
+                layout_buf.append('%s->SetSplitMode(%s);\n' % (window.name,
+                                                               orientation))
+                layout_buf.append('%s->Initialize(%s);\n' % (window.name, win))
             if win_1: add_sub(win_1)
             elif win_2: add_sub(win_2)
 
-        sash_pos = prop.get('sash_pos')
-        if sash_pos:
-            props_buf.append('%s->SetSashPosition(%s);\n' % (window.name,
-                                                             sash_pos))
-        return init, ids, props_buf, []
+        return init, ids, props_buf, layout_buf
 
-    def get_properties_code(self, obj):
+    def get_layout_code(self, obj):
         prop = obj.properties
         cppgen = common.code_writers['C++']
         win_1 = prop.get('window_1')
@@ -142,19 +141,18 @@ class CppCodeGenerator:
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
         props_buf = []
         if win_1 and win_2:
+            sash_pos = prop.get('sash_pos', '')
+            if sash_pos: sash_pos = ', %s' % sash_pos
             if orientation == 'wxSPLIT_VERTICAL': f_name = 'SplitVertically'
             else: f_name = 'SplitHorizontally'
-            props_buf.append('%s(%s, %s);\n' % (f_name, win_1, win_2))
+            props_buf.append('%s(%s, %s%s);\n' % \
+                             (f_name, win_1, win_2, sash_pos))
         else:
             def add_sub(win):
                 props_buf.append('SetSplitMode(%s);\n' % orientation)
                 props_buf.append('Initialize(%s);\n' % win)
             if win_1: add_sub(win_1)
             elif win_2: add_sub(win_2)
-        sash_pos = prop.get('sash_pos')
-        if sash_pos:
-            props_buf.append('SetSashPosition(%s);\n' % sash_pos)
-        props_buf.extend(cppgen.generate_common_properties(obj))
         return props_buf
 
 # end of class CppCodeGenerator
