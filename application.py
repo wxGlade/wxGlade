@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.26 2003/07/08 17:44:25 agriggio Exp $
+# $Id: application.py,v 1.27 2003/07/14 17:48:48 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -202,7 +202,7 @@ class Application(object):
         import locale
         locale.setlocale(locale.LC_ALL)
         try: return locale.nl_langinfo(locale.CODESET)
-        except AttributeError: return 'latin-1' # this is what I use, so... :-)
+        except AttributeError: return 'ISO-8859-1' # this is what I use...
 
     def get_encoding(self):
         return self.encoding
