@@ -35,7 +35,7 @@ class EditToggleButton(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
-        szr = misc.Sizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         self.properties['label'].display(panel)
         self.properties['value'].display(panel)
         szr.Add(self.properties['label'].panel, 0, wxEXPAND)

@@ -61,7 +61,7 @@ class EditComboBox(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
-        szr = misc.Sizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         self.properties['choices'].display(panel)
         self.properties['style'].display(panel)
         self.properties['selection'].display(panel)

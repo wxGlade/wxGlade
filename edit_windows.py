@@ -279,7 +279,7 @@ class WindowBase(EditBase):
         try: prop['font'].display(panel) 
         except KeyError: pass
 
-        sizer_tmp = misc.Sizer(wxVERTICAL)
+        sizer_tmp = wxBoxSizer(wxVERTICAL)
         sizer_tmp.Add(self.name_prop.panel, 0, wxEXPAND)
         sizer_tmp.Add(self.klass_prop.panel, 0, wxEXPAND)
         sizer_tmp.Add(prop['id'].panel, 0, wxEXPAND)
@@ -471,7 +471,7 @@ class ManagedBase(WindowBase):
         szprop['flag'].display(panel)
         szprop['border'].display(panel)
 
-        sizer_tmp = misc.Sizer(wxVERTICAL)
+        sizer_tmp = wxBoxSizer(wxVERTICAL)
         sizer_tmp.Add(szprop['option'].panel, 0, wxEXPAND)
         sizer_tmp.Add(szprop['border'].panel, 0, wxEXPAND)
         sizer_tmp.Add(szprop['flag'].panel, 0, wxEXPAND, 5)

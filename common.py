@@ -180,7 +180,7 @@ class Application(object):
         btn = wxButton(panel, BTN_ID, "Generate code")
 
         # layout of self.notebook
-        sizer = misc.Sizer(wxVERTICAL)
+        sizer = wxBoxSizer(wxVERTICAL)
         sizer.Add(self.name_prop.panel, 0, wxEXPAND)
         sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
         szr = wxBoxSizer(wxHORIZONTAL)

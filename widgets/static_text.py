@@ -36,7 +36,7 @@ class EditStaticText(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
-        szr = misc.Sizer(wxVERTICAL) #wxBoxSizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         self.properties['label'].display(panel)
         self.properties['style'].display(panel)
         szr.Add(self.properties['label'].panel, 0, wxEXPAND)

@@ -42,7 +42,7 @@ class EditRadioButton(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
-        szr = misc.Sizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         self.properties['label'].display(panel)
         self.properties['style'].display(panel)
         self.properties['clicked'].display(panel)

@@ -53,7 +53,7 @@ class EditStaticBitmap(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
-        szr = misc.Sizer(wxVERTICAL)
+        szr = wxBoxSizer(wxVERTICAL)
         self.properties['bitmap'].display(panel)
         szr.Add(self.properties['bitmap'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)

@@ -586,7 +586,7 @@ class FontDialogProperty(DialogProperty):
                 traceback.print_exc()
                 return
             if len(props) < 6:
-                print 'errore nel valore della proprieta` "%s"' % self.name
+                print 'error in the value of the property "%s"' % self.name
                 return
             fwrite = outfile.write
             fwrite('    ' * tabs + '<%s>\n' % self.name)
