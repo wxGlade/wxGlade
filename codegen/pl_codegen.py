@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.9 2003/07/10 14:49:07 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.10 2003/07/11 07:30:23 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -217,6 +217,7 @@ previous_source = None
 # if True, enable gettext support
 _use_gettext = False
 
+import re
 _quote_str_re = re.compile( r'\\(?![nrt])' )
 
 
@@ -233,6 +234,14 @@ def quote_str(s):
     else:
         return '"' + s + '"'
 
+def quote_path(s):
+    """\
+    escapes all " and \ , thus making a path suitable to
+    insert in a perl source file
+    """
+    s = s.replace('\\', '\\\\')
+    s = s.replace('"', r'\"')
+    return '"' + s + '"'
 
 def initialize(app_attrs): 
     """\

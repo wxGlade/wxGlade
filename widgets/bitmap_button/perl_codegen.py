@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxBitmapButton objects
-# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:26 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.3 2003/07/11 07:30:26 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge
 # License: MIT (see license.txt)
@@ -37,7 +37,7 @@ class PerlCodeGenerator:
                 bmp = 'wxNullBitmap'
             else:
                 bmp = 'Wx::Bitmap->new(%s, %s)' % \
-                      (plgen.quote_str(bmp_file), type)
+                      (plgen.quote_path(bmp_file), type)
         init = []
         if id_name: init.append(id_name)
         init.append('\t$self->{%s} = %s->new(%s, %s, %s);\n' % 
