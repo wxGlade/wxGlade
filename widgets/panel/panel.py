@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.21 2003/12/06 13:28:42 agriggio Exp $
+# $Id: panel.py,v 1.22 2004/03/06 13:30:19 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -256,17 +256,19 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.widget = wxScrolledWindow(win, self.id, style=0)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
-        self.widget.SetSize = win.SetSize
+        #self.widget.SetSize = win.SetSize
         EVT_CLOSE(win, self.hide_widget)
         if wxPlatform == '__WXMSW__': win.CentreOnScreen()
 
     def show_widget(self, yes):
+        oldval = self.get_size()
         super(EditTopLevelPanel, self).show_widget(yes)
         if self.widget:
             if yes and not self.properties['size'].is_active() \
                    and self.top_sizer:
                 self.top_sizer.fit_parent()
             self.widget.GetParent().Show(yes)
+        self.set_size(oldval)
 
     def hide_widget(self, *args):
         super(EditTopLevelPanel, self).hide_widget(*args)
@@ -287,7 +289,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
             self.skip_on_size = False
             return
         super(EditTopLevelPanel, self).on_size(event)
-        w, h = self.widget.GetSize()
+        w, h = self.widget.GetClientSize()
         self.skip_on_size = True
         self.widget.GetParent().SetClientSize((w+2, h+2))
 
