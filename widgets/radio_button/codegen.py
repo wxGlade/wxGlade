@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxRadioButton objects
-# $Id: codegen.py,v 1.11 2004/09/17 13:09:51 agriggio Exp $
+# $Id: codegen.py,v 1.12 2004/10/18 09:20:11 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -59,6 +59,21 @@ class CppCodeGenerator:
 # end of class CppCodeGenerator
 
 
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+
+    class XrcCodeGenerator(xrcgen.DefaultXrcObject):
+        def write(self, *args, **kwds):
+            try:
+                self.properties['value'] = self.properties['clicked']
+                del self.properties['clicked']
+            except KeyError:
+                pass
+            xrcgen.DefaultXrcObject.write(self, *args, **kwds)
+
+    return XrcCodeGenerator(obj)
+
+
 def initialize():
     common.class_names['EditRadioButton'] = 'wxRadioButton'
 
@@ -69,3 +84,6 @@ def initialize():
     cppgen = common.code_writers.get('C++')
     if cppgen:
         cppgen.add_widget_handler('wxRadioButton', CppCodeGenerator())
+    xrcgen = common.code_writers.get('XRC')
+    if xrcgen:
+        xrcgen.add_widget_handler('wxRadioButton', xrc_code_generator)

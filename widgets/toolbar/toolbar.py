@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.10 2004/10/15 10:49:50 agriggio Exp $
+# $Id: toolbar.py,v 1.11 2004/10/18 09:20:10 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -414,11 +414,16 @@ class EditToolBar(EditBase, PreviewMixin):
         if misc.check_wx_version(2, 3, 3):
             self.style_pos += [wxTB_TEXT, wxTB_NOICONS, wxTB_NODIVIDER,
                                wxTB_NOALIGN]
+        if misc.check_wx_version(2, 5, 0):
+            self.style_pos += [wxTB_HORZ_LAYOUT, wxTB_HORZ_TEXT]
+ 
         style_labels = ['#section#Style', 'wxTB_FLAT', 'wxTB_DOCKABLE',
                         'wxTB_3DBUTTONS']
         if misc.check_wx_version(2, 3, 3):
             style_labels += ['wxTB_TEXT', 'wxTB_NOICONS',
                              'wxTB_NODIVIDER', 'wxTB_NOALIGN']
+        if misc.check_wx_version(2, 5, 0):
+            style_labels += ['wxTB_HORZ_LAYOUT', 'wxTB_HORZ_TEXT']
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
         self.bitmapsize = '16, 15'
@@ -777,7 +782,7 @@ def builder(parent, sizer, pos, number=[0]):
         dialog.Destroy()
         return
     
-    name = 'toolbar_%d' % number[0]
+    name = 'toolbar_%d' % (number[0] or 1)
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'toolbar_%d' % number[0]

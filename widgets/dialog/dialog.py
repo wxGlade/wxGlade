@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.19 2004/10/15 10:49:50 agriggio Exp $
+# $Id: dialog.py,v 1.20 2004/10/18 09:20:11 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -219,7 +219,7 @@ def builder(parent, sizer, pos, number=[0]):
         return
     if class_dialog.widget == 0: name = 'dialog'
     else: name = 'panel'
-    label = '%s_%d' % (name, number[0])
+    label = '%s_%d' % (name, (number[0] or 1))
     while common.app_tree.has_name(label):
         number[0] += 1
         label = '%s_%d' % (name, number[0])
