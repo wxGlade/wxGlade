@@ -10,13 +10,12 @@ from tree import Tree
 from widget_properties import *
 from ChoicesProperty import *
 
-class EditListBox(wxListBox, ManagedBase):
+class EditListBox(ManagedBase):
     def __init__(self, name, parent, id, choices, sizer, pos, property_window,
                  show=True):
         """\
         Class to handle wxListBox objects
         """
-        wxListBox.__init__(self, parent, id, choices=choices)
         ManagedBase.__init__(self, name, 'wxListBox', parent, id, sizer,
                              pos, property_window, show=show)
         # properties
@@ -25,9 +24,8 @@ class EditListBox(wxListBox, ManagedBase):
                                                      [('Label',
                                                        GridProperty.STRING)],
                                                      len(choices))
-        self.access_functions['selection'] = (self.GetSelection,
-                                              lambda v:
-                                              self.SetSelection(int(v)))
+        self.access_functions['selection'] = (self.get_selection,
+                                              self.set_selection)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
                                                     r=(0, self.Number()-1))
@@ -39,8 +37,6 @@ class EditListBox(wxListBox, ManagedBase):
                          'wxLB_NEEDED_SB', 'wxLB_SORT')
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
-
-        EVT_LEFT_DOWN(self, self.on_set_focus)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -63,42 +59,63 @@ class EditListBox(wxListBox, ManagedBase):
         panel.SetScrollbars(5, 5, ceil(w/5.0), ceil(h/5.0))
         self.notebook.AddPage(panel, 'Widget')
         
-    def get_choices(self):
-        return zip([ self.GetString(i) for i in range(self.Number()) ])
-
-    def set_choices(self, values):
-        self.Clear()
-        for value in values:
-            self.Append(value[0])
-        self.sizer.set_item(self.pos, size=self.GetBestSize())
-        self.properties['selection'].set_range(0, self.Number()-1)
-        self.SetSelection(int(self.properties['selection'].get_value()))
-
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
             return ChoicesHandler(self)
-        
+
+    def get_choices(self):
+        # A copy of self.choice is returned, otherwise the caller
+        # could be able to change self.choice but not what is shown
+        # by self.widget.
+        return list(self.choices)
+
+    def set_choices(self, values):
+        self.choices = list(values)
+        self.properties['selection'].set_range(0, len(self.choices)-1)
+        if self.widget:
+            self.widget.Clear()
+            for value in values:
+                # !!! I can't understand what you are doing,
+                # why value[0]?
+                self.widget.Append(value[0])
+            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+            self.widget.SetSelection(int(self.properties['selection'].get_value()))
+
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.GetWindowStyleFlag()
             for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]:
+                if self.style & self.style_pos[i]:
                     retval[i] = 1
         except AttributeError: pass
         return retval
 
     def set_style(self, value):
         value = self.properties['style'].prepare_value(value)
-        style = 0
+        self.style = 0
         for v in range(len(value)):
             if value[v]:
-                style |= self.style_pos[v]
-        self.SetWindowStyleFlag(style)
+                self.style |= self.style_pos[v]
+        if self.widget:
+            self.SetWindowStyleFlag(self.style)
+
+    def get_selection(self):
+        return self.selection
+
+    def set_selection(self, value):
+        value = int(value)
+        if value != self.selection:
+            self.selection = value
+            if self.widget:
+                self.widget.SetSelection(value)
+
+    def create_widget(self):
+        self.widget = wxListBox(self.parent, self.id, choices=self.choices) 
+        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
 # end of class EditListBox
 
-        
+
 def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditListBox objects.

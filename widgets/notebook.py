@@ -123,13 +123,12 @@ class TabsHandler:
 # end of class TabsHandler
 
 
-class EditNotebook(wxNotebook, ManagedBase):
+class EditNotebook(ManagedBase):
     def __init__(self, name, parent, id, style, sizer, pos,
                  property_window, show=True):
         """\
         Class to handle wxNotebook objects
         """
-        wxNotebook.__init__(self, parent, id, style=style)
         ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer,
                              pos, property_window, show=show)
         self.tabs = [ ['tab1', None] ] # list of pages of this notebook
@@ -145,7 +144,6 @@ class EditNotebook(wxNotebook, ManagedBase):
         self.properties['tabs'] = NotebookPagesProperty(self, 'tabs', None,
                                                         tab_cols)
         del tab_cols
-        self.nb_sizer = wxNotebookSizer(self)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -165,7 +163,8 @@ class EditNotebook(wxNotebook, ManagedBase):
 
     def add_tab(self, window, name):
         self.tabs.append([name, window])
-        self.AddPage(window, name)
+        if self.widget:
+            self.widget.AddPage(window, name)
         node = Tree.Node(window)
         window.node = node
         common.app_tree.add(node, self.node)
@@ -179,7 +178,8 @@ class EditNotebook(wxNotebook, ManagedBase):
             # we have to remove some pages
             i = len(tabs)
             for n, window in self.tabs[i:]:
-                self.RemovePage(i)
+                if self.widget:
+                    self.widget.RemovePage(i)
                 window.remove(False)
             del self.tabs[i:]
             self.SetSelection(0)
@@ -189,25 +189,32 @@ class EditNotebook(wxNotebook, ManagedBase):
             while common.app_tree.has_name(self.name + '_pane_%s' % number):
                 number += 1
             for i in range(-delta):
-                window = NotebookPane(self.name + '_pane_%s' % number, self,
-                                      wxNewId(), self.property_window)
+                if self.widget:
+                    window = NotebookPane(self.name + '_pane_%s' % number, self,
+                                          wxNewId(), self.property_window)
+                else:
+                    window = None
                 number += 1
                 self.add_tab(window, "_")
-            self.SetSelection(self.GetPageCount()-1)
+            if self.widget:
+                self.SetSelection(self.GetPageCount()-1)
         # finally, we must update the labels of the tabs
         for i in range(len(tabs)):
-            self.SetPageText(i, tabs[i][0])
+            if self.widget:
+                self.widget.SetPageText(i, tabs[i][0])
             self.tabs[i][0] = tabs[i][0]
 
     def remove(self, *args):
-        for i in range(self.GetPageCount()):
-            self.RemovePage(i)
+        if self.widget:
+            for i in range(self.widget.GetPageCount()):
+                self.widget.RemovePage(i)
         ManagedBase.remove(self, *args)
 
-    def Destroy(self):
-        for i in range(self.GetPageCount()):
-            self.RemovePage(i)
-        wxNotebook.Destroy(self)
+    def destroy_widget(self):
+        if self.widget:
+            for i in range(self.widget.GetPageCount()):
+                self.widget.RemovePage(i)
+            self.widget.Destroy(self)
 
     def get_property_handler(self, name):
         if name == 'tabs': return TabsHandler(self)
@@ -220,7 +227,13 @@ class EditNotebook(wxNotebook, ManagedBase):
         for i in range(len(self.tabs)):
             if self.tabs[i][1] is page: return i
         return -1
-            
+
+    def create_widget(self):
+        self.widget = wxNotebook(self.parent, self.id, style=self.style)
+        self.nb_sizer = wxNotebookSizer(self.widget)
+        self.widget.Destroy = self.destroy_widget
+
+
 # end of class EditNotebook
         
 

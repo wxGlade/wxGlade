@@ -11,13 +11,25 @@ from widget_properties import *
 
 from ChoicesProperty import *
 
-class EditComboBox(wxComboBox, ManagedBase):
+
+if wxPlatform == '__WXMSW__':
+    class wxComboBox2(wxComboBox):
+        # on windows GetBestSize considers also the drop down menu, while we
+        # don't want it to be included
+        def GetBestSize(self):
+            w, h = wxComboBox.GetBestSize(self)
+            n = self.Number()
+            return w, h/(n+1)
+else:
+    wxComboBox2 = wxComboBox
+
+
+class EditComboBox(ManagedBase):
     def __init__(self, name, parent, id, choices, sizer, pos, property_window,
                  show=True):
         """\
         Class to handle wxComboBox objects
         """
-        wxComboBox.__init__(self, parent, id, choices=choices)
         ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer,
                              pos, property_window, show=show)
         # properties
@@ -32,11 +44,15 @@ class EditComboBox(wxComboBox, ManagedBase):
                                                      [('Label',
                                                        GridProperty.STRING)],
                                                      len(choices))
-        self.access_functions['selection'] = (self.GetSelection,
+        self.access_functions['selection'] = (self.get_selection,
                                               self.set_selection)
+        self.choices = list(choices)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
-                                                    r=(0, self.Number()-1))
-        EVT_LEFT_DOWN(self, self.on_set_focus)
+                                                    r=(0, len(self.choices) - 1))
+        if len(self.choices)
+            self.selection = 0
+        else:
+            self.selection = -1
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -54,48 +70,61 @@ class EditComboBox(wxComboBox, ManagedBase):
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 
-    def set_selection(self, val):
-        self.SetSelection(int(val))
+    def get_selection(self):
+        return self.selection
+
+    def set_selection(self, value):
+        value = int(value)
+        if self.selection != value:
+            self.selection = value
+            if self.widget:
+                self.widget.SetSelection(value)
 
     def get_choices(self):
-        return zip([ self.GetString(i) for i in range(self.Number()) ])
+        # A copy of self.choice is returned, otherwise the caller
+        # could be able to change self.choice but not what is shown
+        # by self.widget. 
+        return list(self.choices)
 
     def set_choices(self, values):
-        self.Clear()
-        for value in values:
-            self.Append(value[0])
-        self.sizer.set_item(self.pos, size=self.GetBestSize())
-        self.properties['selection'].set_range(0, self.Number()-1)
+        values = list(values)
+        self.properties['selection'].set_range(0, len(self.choices)-1)
+        if self.widget:
+            self.widget.Clear()
+            for value in values:
+                # !!! I can't understand what you are doing,
+                # why value[0]?
+                self.widget.Append(value[0])
+            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+            self.widget.SetSelection(int(self.properties['selection'].get_value()))
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.style
             for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]:
+                if self.style & self.style_pos[i]:
                     retval[i] = 1
         except AttributeError: pass
         return retval
 
     def set_style(self, value):
         value = self.properties['style'].prepare_value(value)
-        style = 0
+        self.style = 0
         for v in range(len(value)):
             if value[v]:
-                style |= self.style_pos[v]
+                self.style |= self.style_pos[v]
         self.style = style
+        # !!! Why didn't you use SetWindowStyleFlag in the original version?
+##        if self.widget:
+##            self.SetWindowStyleFlag(style)
+
+    def create_widget(self):
+        self.widget = wxComboBox2(self.parent, self.id, choices=self.choices)
+        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
             return ChoicesHandler(self)
-
-    if wxPlatform == '__WXMSW__':
-        # on windows GetBestSize considers also the drop down menu, while we
-        # don't want it to be included
-        def GetBestSize(self):
-            w, h = wxComboBox.GetBestSize(self)
-            n = self.Number()
-            return w, h/(n+1)
 
 # end of class EditComboBox
 

@@ -10,25 +10,23 @@ from tree import Tree
 from widget_properties import *
 
 
-class EditToggleButton(wxToggleButton, ManagedBase):
+class EditToggleButton(ManagedBase):
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
         """\
         Class to handle wxToggleButton objects
         """
-        wxToggleButton.__init__(self, parent, id, label)
-        self.old_label = label        
         ManagedBase.__init__(self, name, 'wxToggleButton', parent, id, sizer,
                              pos, property_window, show=show)
 
-        self.access_functions['label'] = (self.GetLabel, self.set_label)
-        self.access_functions['value'] = (self.GetValue,
-                                          lambda v: self.SetValue(int(v)))
+        self.access_functions['label'] = (self.get_label, self.set_label)
+        self.access_functions['value'] = (self.get_value, self.set_value)
         self.properties['label'] = TextProperty(self, 'label', None)
         self.properties['value'] = CheckBoxProperty(self, 'value', None,
                                                     'Clicked')
 
-        EVT_TOGGLEBUTTON(self, id, self.on_set_focus)
+        self.value = 0
+        self.label = label
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -42,12 +40,32 @@ class EditToggleButton(wxToggleButton, ManagedBase):
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
-        
+
+    def get_label(self):
+        return self.label
+
     def set_label(self, value):
-        if value != self.old_label:
-            self.SetLabel(value)
-            self.set_width(self.GetBestSize()[0])
-            self.old_label = value
+        value = str(value)
+        if value != self.label:
+            self.label = value
+            if self.widget:
+                self.SetLabel(value)
+                self.set_width(self.GetBestSize()[0])
+
+    def get_value(self):
+        return self.value
+
+    def set_value(self, value):
+        # !!! This should be done with bool.
+        value = int(value)
+        if value != self.value:
+            self.value = value
+            if self.widget:
+                self.SetValue(value)
+
+    def create_widget(self):
+        self.widget = wxToggleButton(self.parent, self.id, self.label)
+        EVT_TOGGLEBUTTON(self.widget, self.id, self.on_set_focus)
 
 # end of class EditToggleButton
 

@@ -15,7 +15,6 @@ class EditStaticLine(wxStaticLine, ManagedBase):
         """\
         Class to handle wxStaticLine objects
         """
-        wxStaticLine.__init__(self, parent, id, style=orientation)
         self.orientation = orientation
         ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer,
                              pos, property_window, show=show)
@@ -27,7 +26,6 @@ class EditStaticLine(wxStaticLine, ManagedBase):
                                                          'wxLI_HORIZONTAL'))
         self.removed_p = self.properties['font']
         del self.properties['font']
-        EVT_LEFT_DOWN(self, self.on_set_focus)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -36,6 +34,10 @@ class EditStaticLine(wxStaticLine, ManagedBase):
     def __getitem__(self, key):
         if key != 'font': return ManagedBase.__getitem__(self, key)
         return (lambda : "", lambda v: None)
+
+    def create_widget(self):
+        self.widget = wxStaticLine(self.parent, self.id, style=self.orientation)
+        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
 # end of class EditStaticLine
         

@@ -10,6 +10,7 @@ from tree import Tree
 from widget_properties import *
 from misc import wxGladeRadioButton
 
+# !!! ?
 class EditRadioButton(wxGladeRadioButton, ManagedBase):
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):

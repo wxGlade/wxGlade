@@ -15,12 +15,10 @@ class EditStaticText(wxStaticText, ManagedBase):
         """\
         Class to handle wxStaticText objects
         """
-        wxStaticText.__init__(self, parent, id, label)
-        self.old_label = label
         ManagedBase.__init__(self, name, 'wxStaticText', parent, id, sizer,
                              pos, property_window, show=show)
         # label property
-        self.access_functions['label'] = (self.GetLabel, self.set_label)
+        self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['label'] = TextProperty(self, 'label', None)
         self.style_pos  = (wxALIGN_LEFT, wxALIGN_RIGHT, wxALIGN_CENTER,
@@ -30,7 +28,8 @@ class EditStaticText(wxStaticText, ManagedBase):
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)  
 
-        EVT_LEFT_DOWN(self, self.on_set_focus)
+        self.label = label
+        self.style = style
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -46,18 +45,20 @@ class EditStaticText(wxStaticText, ManagedBase):
         self.notebook.AddPage(panel, 'Widget')
 
     def set_label(self, value):
-        if value != self.old_label:
-            self.SetLabel(value)
-            if not self.properties['size'].is_active():
-                self.sizer.set_item(self.pos, size=self.GetBestSize())
-            self.old_label = value
+        value = str(value)
+        if value != self.label:
+            self.label = value
+            if self.widget:
+                self.widget.SetLabel(value)
+                if not self.properties['size'].is_active():
+                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.GetWindowStyleFlag()
+            style = self.style
             for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]:
+                if self.style & self.style_pos[i]:
                     retval[i] = 1
         except AttributeError:
             pass
@@ -65,11 +66,16 @@ class EditStaticText(wxStaticText, ManagedBase):
 
     def set_style(self, value):
         value = self.properties['style'].prepare_value(value)
-        style = 0
+        self.style = 0
         for v in range(len(value)):
             if value[v]:
-                style |= self.style_pos[v]
-        self.SetWindowStyleFlag(style)
+                self.style |= self.style_pos[v]
+        if self.widget:
+            self.widget.SetWindowStyleFlag(style)
+
+    def create_widget(self):
+        self.widget = wxStaticText(self.parent, self.id, self.label)
+        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
 # end of class EditStaticText
 

@@ -9,34 +9,27 @@ from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase
 
-class EditPanel(wxPanel, ManagedBase):
+class EditPanel(ManagedBase):
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
         """\
         Class to handle wxPanel objects
         """
-        wxPanel.__init__(self, parent, id)
         ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer,
                              pos, property_window, show=show)
         self.has_sizer = False
-        # event handlers
-        EVT_LEFT_DOWN(self, self.drop_sizer)
-        EVT_ENTER_WINDOW(self, self.on_enter)
-        EVT_SIZE(parent, self.on_parent_size)
-        if not self.Disconnect(-1, -1, wxEVT_LEFT_DOWN):
-            print "EditPanel: Unable to disconnect the event hanlder"
 
     def on_enter(self, event):
         if not self.has_sizer and common.adding_sizer:
-            self.SetCursor(wxCROSS_CURSOR)
+            self.widget.SetCursor(wxCROSS_CURSOR)
         else:
-            self.SetCursor(wxNullCursor)
+            self.widget.SetCursor(wxNullCursor)
 
     def drop_sizer(self, event):
         if self.has_sizer or not common.adding_sizer:
             self.on_set_focus(event) # default behaviour: call show_properties
             return
-        self.SetCursor(wxNullCursor)
+        self.widget.SetCursor(wxNullCursor)
         common.adding_widget = common.adding_sizer = 0
         common.widgets[common.widget_to_add](self, None, None)
         common.widget_to_add = None
@@ -46,11 +39,22 @@ class EditPanel(wxPanel, ManagedBase):
     def on_parent_size(self, event):
         print 'on_parent_size'
         if self.has_sizer:
-            self.GetSizer().Layout()
+            self.widget.GetSizer().Layout()
 
-    def GetBestSize(self):
+    def get_widget_best_size(self):
         if self.has_sizer: return self.GetSizer().GetMinSize()
         return wxPanel.GetBestSize(self)
+
+    def create_widget(self):
+        self.widget = wxPanel(self.parent, self.id)
+        # event handlers
+        EVT_LEFT_DOWN(self.widget, self.drop_sizer)
+        EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        EVT_SIZE(self.parent.widget, self.on_parent_size)
+        # !!! Why self.widget.Disconnect?
+        #if not self.widget.Disconnect(-1, -1, wxEVT_LEFT_DOWN):
+        #    print "EditPanel: Unable to disconnect the event hanlder"
+        self.widget.GetBestSize = self.get_widget_best_size
 
 # end of class EditPanel
         

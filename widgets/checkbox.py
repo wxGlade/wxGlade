@@ -9,7 +9,7 @@ from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
 
-class EditCheckBox(wxCheckBox, ManagedBase):
+class EditCheckBox(ManagedBase):
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
         """\
@@ -17,14 +17,14 @@ class EditCheckBox(wxCheckBox, ManagedBase):
         """
         ManagedBase.__init__(self, name, 'wxCheckBox', parent, id, sizer,
                              pos, property_window, show=show)
-        self.access_functions['label'] = (self.GetLabel, self.set_label)
-        self.access_functions['checked'] = (lambda : self.GetValue(),
+        self.access_functions['label'] = (self.get_label, self.set_label)
+        self.access_functions['checked'] = (self.get_value(),
                                             self.set_value)
         self.properties['label'] = TextProperty(self, 'label', None)
         self.properties['checked'] = CheckBoxProperty(self, 'checked', None,
                                                       'Checked')
         self.label = label
-        self.value = 0 # if nonzero, che checkbox is checked
+        self.value = 0 # If nonzero, che checkbox is checked.
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -59,7 +59,9 @@ class EditCheckBox(wxCheckBox, ManagedBase):
 
     def create_widget(self):
         self.widget = wxCheckBox(self.parent, self.id, self.label)
-        EVT_CHECKBOX(self, self.id, lambda e: self.set_value(self.value))
+        def on_checkbox(event):
+            self.set_value(self.value)
+        EVT_CHECKBOX(self.widget, self.id, on_checkbox)
 
 # end of class EditCheckBox
    

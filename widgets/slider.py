@@ -9,20 +9,22 @@ from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
 
-class EditSlider(wxSlider, ManagedBase):
+class EditSlider(ManagedBase):
     def __init__(self, name, parent, id, style, sizer, pos,
                  property_window, show=True):
         """\
         Class to handle wxSlider objects
         """
-        wxSlider.__init__(self, parent, id, 0, 0, 10, style=style)
         ManagedBase.__init__(self, name, 'wxSlider', parent, id, sizer,
                              pos, property_window, show=show)
 
+        self.style = style
+        self.value = 0
+        self.range = (0, 10)
+
         prop = self.properties
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.access_functions['value'] = (self.GetValue, lambda v:
-                                          self.SetValue(int(v)))
+        self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
         style_labels = ('#section#Style', 'wxSL_HORIZONTAL', 'wxSL_VERTICAL',
                         'wxSL_AUTOTICKS', 'wxSL_LABELS', 'wxSL_LEFT',
@@ -53,29 +55,47 @@ class EditSlider(wxSlider, ManagedBase):
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.GetWindowStyleFlag()
             for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]:
+                if self.style & self.style_pos[i]:
                     retval[i] = 1
         except AttributeError: pass
         return retval
 
     def set_style(self, value):
         value = self.properties['style'].prepare_value(value)
-        style = 0
+        self.style = 0
         for v in range(len(value)):
             if value[v]:
-                style |= self.style_pos[v]
-        self.SetWindowStyleFlag(style)
+                self.style |= self.style_pos[v]
+        if self.widget:
+            self.SetWindowStyleFlag(style)
 
-    def get_range(self): return (self.GetMin(), self.GetMax())
+    def get_range(self):
+        return self.range
 
     def set_range(self, val):
         try: min_v, max_v = map(int, val.split(','))
         except: self.properties['range'].set_value('%s, %s', self.get_range())
-        self.SetRange(min_v, max_v)
+        # !!!
+        self.range = (min_v, max_v)
+        if self.widget:
+            self.SetRange(min_v, max_v)
         self.properties['value'].set_range(min_v, max_v)
-        
+
+    def get_value(self):
+        return self.value
+
+    def set_value(self, value):
+        value = int(value)
+        if value != self.value:
+            self.value = value
+            if self.widget:
+                self.SetValue(value)
+
+    def create_widget
+        wxSlider(self.parent, self.id, self.value,
+                 self.range[0], self.range[1], style=self.style)
+
 # end of class EditSlider
 
         
