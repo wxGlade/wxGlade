@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.6 2003/07/31 17:20:38 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.7 2004/01/20 22:31:52 dinogen Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -71,8 +71,13 @@ class PerlCodeGenerator:
             if not bitmap:
                 return 'wxNullBitmap'
             elif bitmap.startswith('var:'):
-                # this is a variable holding XPM data
-                return 'Wx::Bitmap->newFromXPM(%s)' % bitmap[4:].strip()
+                # this is a variable holding bitmap path
+                var = bitmap[4:].strip()
+                if var[0] != "$":
+                    var = "$" + var
+                return 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % var
+            elif bitmap.startswith('code:'):
+                return '(%s)' % bitmap[5:].strip()
             else:
                 return 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % \
                        plgen.quote_path(bitmap)

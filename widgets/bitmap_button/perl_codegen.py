@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxBitmapButton objects
-# $Id: perl_codegen.py,v 1.5 2003/08/07 12:22:01 agriggio Exp $
+# $Id: perl_codegen.py,v 1.6 2004/01/20 22:31:51 dinogen Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge
 # License: MIT (see license.txt)
@@ -32,8 +32,13 @@ class PerlCodeGenerator:
 
         if not bmp_file:
             bmp = 'wxNullBitmap'
-        elif bmp_file.startswith('var:'): # this is a variable holding XPM data
-            bmp = 'Wx::Bitmap->newFromXPM(%s)' % bmp_file[4:].strip()
+        elif bmp_file.startswith('var:'): # this is a variable holding pathname of bitmap
+            var = bmp_file[4:].strip()
+            if var[0] != "$":
+                var = "$" + var
+            bmp = 'Wx::Bitmap->new(%s wxBITMAP_TYPE_ANY)' % var
+        elif bmp_file.startswith('code:'): # this is a code chunk
+            bmp = '(%s)' % bmp_file[5:].strip()
         else:
             bmp = 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % \
                   plgen.quote_path(bmp_file)
@@ -49,9 +54,16 @@ class PerlCodeGenerator:
         if disabled_bmp:
             if disabled_bmp.startswith('var:'):
                 var = disabled_bmp[4:].strip()
+                if var[0] != "$":
+                    var = "$" + var
                 props_buf.append(
                     '$self->{%s}->SetBitmapDisabled('
-                    'Wx::Bitmap->newFromXPM(%s));\n' % (obj.name, var))
+                    'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY));\n' % (obj.name, var))
+            elif disabled_bmp.startswith('code:'):
+                var = disabled_bmp[5:].strip()
+                props_buf.append(
+                    '$self->{%s}->SetBitmapDisabled('
+                    '%s);\n' % (obj.name, var))
             else:
                 props_buf.append(
                     '$self->{%s}->SetBitmapDisabled('

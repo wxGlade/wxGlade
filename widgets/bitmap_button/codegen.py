@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.16 2004/01/18 19:45:04 agriggio Exp $
+# $Id: codegen.py,v 1.17 2004/01/20 22:31:51 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -19,12 +19,22 @@ class PythonCodeGenerator:
         if not bmp_file:
             bmp = cn('wxNullBitmap')
         elif bmp_file.startswith('var:'):
+#            if obj.preview:
+#                bmp = cn('wxEmptyBitmap') + '(1, 1)'
+#            else:
+#                bmp = (cn('wxBitmapFromXPMData') + '(%s)') % \
+#                      bmp_file[4:].strip()
             if obj.preview:
                 bmp = cn('wxEmptyBitmap') + '(1, 1)'
             else:
-                # ALB 2004-01-18: changed from wxBitmapFromXPMData to wxBitmap
-                bmp = (cn('wxBitmap') + '(%s, %s)') % \
-                      (bmp_file[4:].strip(), cn('wxBITMAP_TYPE_ANY'))
+                bmp = (cn('wxBitmap') + '(%s,' + cn('wxBITMAP_TYPE_ANY)')) % \
+                      bmp_file[4:].strip()
+        elif bmp_file.startswith('code:'):
+            if obj.preview:
+                bmp = cn('wxEmptyBitmap') + '(1, 1)'
+            else:
+                bmp = '(%s)' % \
+                      bmp_file[5:].strip()
         else:
             bmp = (cn('wxBitmap') + '(%s, ' + cn('wxBITMAP_TYPE_ANY') +
                    ')') % pygen.quote_str(bmp_file, False, False)
@@ -43,8 +53,15 @@ class PythonCodeGenerator:
                     var = disabled_bmp[4:].strip()
                     props_buf.append(
                         ('self.%s.SetBitmapDisabled(' +
-                         cn('wxBitmap') +'(%s, %s))\n') % \
-                        (obj.name, var, cn('wxBITMAP_TYPE_ANY')))
+                         cn('wxBitmap') +'(%s,' + cn('wxBITMAP_TYPE_ANY') + '))\n') % \
+                        (obj.name, var))
+            elif disabled_bmp.startswith('code:'):
+                if not obj.preview:
+                    var = disabled_bmp[5:].strip()
+                    props_buf.append(
+                        ('self.%s.SetBitmapDisabled(' +
+                        '(%s))\n') % \
+                        (obj.name, var))
             else:
                 props_buf.append(('self.%s.SetBitmapDisabled(' +
                                   cn('wxBitmap') + '(%s, ' +
@@ -78,7 +95,9 @@ class CppCodeGenerator:
         if not bmp_file:
             bmp = 'wxNullBitmap'
         elif bmp_file.startswith('var:'):
-            bmp = 'wxBitmap(%s)' % bmp_file[4:].strip()
+            bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % bmp_file[4:].strip()
+        elif bmp_file.startswith('code:'):
+            bmp = '(%s)' % bmp_file[5:].strip()
         else:
             bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
                   cppgen.quote_str(bmp_file, False, False)
@@ -91,7 +110,11 @@ class CppCodeGenerator:
             if disabled_bmp.startswith('var:'):
                 var = disabled_bmp[4:].strip()
                 props_buf.append('%s->SetBitmapDisabled('
-                                 'wxBitmap(%s));\n' % (obj.name, var))
+                                 'wxBitmap(%s,wxBITMAP_TYPE_ANY));\n' % (obj.name, var))
+            elif disabled_bmp.startswith('code:'):
+                var = disabled_bmp[5:].strip()
+                props_buf.append('%s->SetBitmapDisabled('
+                                 '(%s));\n' % (obj.name, var))
             else:
                 props_buf.append(
                     '%s->SetBitmapDisabled('
