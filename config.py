@@ -126,12 +126,12 @@ class wxGladePreferences(wxDialog):
 
 class Preferences(ConfigParser):
     _defaults = {
-        'use_menu_icons': True,
+        'use_menu_icons': wxPlatform != '__WXGTK__',
         'frame_tool_win': True,
         'open_save_path': (os.path.expanduser('~') != '~' and
-                           os.path.expanduser('~') or os.getcwd()),
+                           os.path.expanduser('~') or common.wxglade_path),
         'codegen_path': (os.path.expanduser('~') != '~' and
-                         os.path.expanduser('~') or os.getcwd()),
+                         os.path.expanduser('~') or common.wxglade_path),
         'use_dialog_units': False,
         'number_history': 4,
         'show_progress': True

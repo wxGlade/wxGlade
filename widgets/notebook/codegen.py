@@ -21,8 +21,6 @@ class TabsCodeHandler:
 
     def end_elem(self, name, code_obj):
         if name == 'tabs':
-            # set a temporary attribute of the notebook, that will be used by
-            # the last NotebookPane added: this is an ugly hack anyway...
             code_obj.properties['tabs'] = self.tabs
             return True
         elif name == 'tab':
