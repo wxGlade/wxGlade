@@ -182,8 +182,7 @@ class TextProperty(Property, _activator):
         if self.multiline: style |= wxTE_MULTILINE
         val = self.get_value()
         if self.multiline: val = val.replace('\\n', '\n')
-        self.text = wxTextCtrl(self.panel, self.id, val, style=style,
-                               size=(_label_initial_width, -1))
+        self.text = wxTextCtrl(self.panel, self.id, val, style=style)
         #label = wxStaticText(self.panel, -1, _mangle(self.name))
         label = wxGenStaticText(self.panel, -1, _mangle(self.name),
                                 size=(_label_initial_width, -1))
@@ -519,8 +518,7 @@ class DialogProperty(Property, _activator):
         self.id = wxNewId()
         self.panel = wxPanel(parent, -1)
         val = str(self.owner[self.name][0]())
-        self.text = wxTextCtrl(self.panel, self.id, val,
-                               size=(_label_initial_width, -1))
+        self.text = wxTextCtrl(self.panel, self.id, val)
         self.btn = wxButton(self.panel, self.id+1, " ... ",
                             size=(_label_initial_width, -1))
         if self.can_disable:
