@@ -281,7 +281,7 @@ class EditNotebook(ManagedBase):
 
     def get_property_handler(self, name):
         if name == 'tabs': return TabsHandler(self)
-        return ManagedBase.get_property_handler(self, prop_name)
+        return ManagedBase.get_property_handler(self, name)
 
     def find_page(self, page):
         """\

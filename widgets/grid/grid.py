@@ -380,7 +380,7 @@ class EditGrid(ManagedBase):
             
     def get_property_handler(self, name):
         if name == 'columns': return ColsHandler(self)
-        return ManagedBase.get_property_handler(self, prop_name)
+        return ManagedBase.get_property_handler(self, name)
 
 # end of class EditGrid
         
