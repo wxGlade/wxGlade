@@ -24,9 +24,14 @@ class wxGladeAboutBox(wxDialog):
     </table>
     </font>
     </center>
-    <blockquote><font size="-1">
-    <p>Copyright (c) 2002 Alberto Griggio &lt;albgrig@tiscalinet.it&gt;<br>
-    License: GPL (see license.txt)
+    <blockquote><font size="-1"><b>
+    <p>Copyright (c) 2002 Alberto Griggio<br>
+    License: GPL (see license.txt)</b>
+    </p>
+    <p><!-- name of the authors -->
+    Authors:<br>
+    &nbsp;&nbsp;&nbsp;Alberto Griggio &lt;albgrig@tiscalinet.it&gt;<br>
+    &nbsp;&nbsp;&nbsp;Marco Barisione &lt;marco.bari@vene.ws&gt;
     </p>
     </font></blockquote>
     <center>
