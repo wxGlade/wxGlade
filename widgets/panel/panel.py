@@ -11,13 +11,13 @@ from widget_properties import *
 from edit_windows import ManagedBase, TopLevelBase
 
 class PanelBase(object):
-    def __init__(self):
+    def __init__(self, style=wxTAB_TRAVERSAL):
         """\
         Class to handle wxPanel objects
         """
         super(PanelBase, self).__init__()
         self.top_sizer = None # sizer to handle the layout of children
-        self.style = wxTAB_TRAVERSAL
+        self.style = style
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
                            wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
@@ -105,13 +105,13 @@ class PanelBase(object):
 
 class EditPanel(PanelBase, ManagedBase):
     def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True):
+                 show=True, style=wxTAB_TRAVERSAL):
         """\
         Class to handle wxPanel objects
         """
         ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer,
                              pos, property_window, show=show)
-        PanelBase.__init__(self)
+        PanelBase.__init__(self, style)
 
     def create_widget(self):
         self.widget = wxPanel(self.parent.widget, self.id, style=0)
@@ -128,10 +128,10 @@ class EditPanel(PanelBase, ManagedBase):
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
     def __init__(self, name, parent, id, property_window, klass='wxPanel',
-                 show=True):
+                 show=True, style=wxTAB_TRAVERSAL):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, has_title=False)
-        PanelBase.__init__(self)
+        PanelBase.__init__(self, style)
         self.skip_on_size = False
 
     def create_widget(self):
@@ -207,7 +207,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if not sizer or not sizeritem:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     panel = EditPanel(name, parent, wxNewId(), sizer, pos,
-                      common.property_panel, True)
+                      common.property_panel, True, style=0)
     sizer.set_item(panel.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
     node = Tree.Node(panel)
@@ -221,7 +221,7 @@ def xml_toplevel_builder(attrs, parent, sizer, sizeritem, pos=None):
     try: label = attrs['name']
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     panel = EditTopLevelPanel(label, parent, wxNewId(), common.property_panel,
-                              show=False)
+                              show=False, style=0)
     node = Tree.Node(panel)
     panel.node = node
     common.app_tree.add(node)
