@@ -15,7 +15,6 @@ class wxGladeColorDialog(wxDialog):
         self.use_sys_color = wxRadioButton(self.panel_1, -1, "System color")
         self.sys_color = wxComboBox(self.panel_1, -1, choices=choices,
                                     style=wxCB_DROPDOWN|wxCB_READONLY)
-        self.static_line_1 = wxStaticLine(self.panel_1, -1)
         self.use_chooser = wxRadioButton(self.panel_1, -1, "Custom color")
         self.color_chooser = wxPyColourChooser(self, -1)
         self.ok = wxButton(self, wxID_OK, "OK")
@@ -63,7 +62,7 @@ class wxGladeColorDialog(wxDialog):
 
     def __set_properties(self):
         # begin wxGlade: wxGladeColorDialog.__set_properties
-        self.SetTitle("Choose a color")
+        self.SetTitle("dialog_1")
         self.use_sys_color.SetValue(1)
         self.sys_color.SetSelection(0)
         self.ok.SetDefault()
@@ -77,19 +76,24 @@ class wxGladeColorDialog(wxDialog):
         sizer_2 = wxBoxSizer(wxVERTICAL)
         sizer_2.Add(self.use_sys_color, 0, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5)
         sizer_2.Add(self.sys_color, 0, wxALL|wxEXPAND, 5)
-        sizer_2.Add(self.static_line_1, 0, wxALL|wxEXPAND, 5)
+        static_line_1 = wxStaticLine(self.panel_1, -1)
+        sizer_2.Add(static_line_1, 0, wxALL|wxEXPAND, 5)
         sizer_2.Add(self.use_chooser, 0, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5)
         self.panel_1.SetAutoLayout(1)
         self.panel_1.SetSizer(sizer_2)
         sizer_2.Fit(self.panel_1)
+        sizer_2.SetSizeHints(self.panel_1)
         sizer_1.Add(self.panel_1, 0, wxEXPAND, 0)
         sizer_1.Add(self.color_chooser, 0, wxALL, 5)
+        static_line_1_copy = wxStaticLine(self, -1)
+        sizer_1.Add(static_line_1_copy, 0, wxALL|wxEXPAND, 5)
         sizer_3.Add(self.ok, 0, wxRIGHT, 13)
         sizer_3.Add(self.cancel, 0, 0, 5)
         sizer_1.Add(sizer_3, 0, wxALL|wxALIGN_RIGHT, 10)
         self.SetAutoLayout(1)
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
+        sizer_1.SetSizeHints(self)
         self.Layout()
         # end wxGlade
         self.CenterOnScreen()

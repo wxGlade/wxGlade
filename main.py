@@ -495,6 +495,10 @@ def main(filename=None):
     """\
     if filename is not None, loads it
     """
+    # first thing to do, patch wxSizerPtr's Insert...
+    import misc
+    wxSizerPtr.Insert = misc.sizer_fixed_Insert
+    
     app = wxGlade()
     if filename is not None:
         app.GetTopWindow()._open_app(filename, False)

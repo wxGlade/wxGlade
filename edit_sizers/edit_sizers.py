@@ -763,7 +763,6 @@ class SizerBase:
         fake_win.Destroy()
         self.widget.Insert(new_pos, item.widget, int(item.get_option()),
                            item.get_int_flag(), int(item.get_border()))
-
         common.app_tree.change_node_pos(item.node, new_pos-1)
         common.app_tree.select_item(item.node)
 
@@ -844,14 +843,15 @@ class SizerBase:
         self._rmenu = None
         if self._btn: self._btn.Destroy()
         if self.notebook:
-            for p in self.properties.itervalues():
-                if p.panel: p.panel.Destroy()
-            if self.name_prop.panel: self.name_prop.panel.Destroy()
-            if self.klass_prop.panel: self.klass_prop.panel.Destroy()
-            if hasattr(self, 'sizer_properties'):
-                for p in self.sizer_properties.itervalues():
-                    if p.panel: p.panel.Destroy()
+##             for p in self.properties.itervalues():
+##                 if p.panel: p.panel.Destroy()
+##             if self.name_prop.panel: self.name_prop.panel.Destroy()
+##             if self.klass_prop.panel: self.klass_prop.panel.Destroy()
+##             if hasattr(self, 'sizer_properties'):
+##                 for p in self.sizer_properties.itervalues():
+##                     if p.panel: p.panel.Destroy()
             nb_szr = self.notebook.sizer
+            self.notebook.DeleteAllPages()
             self.notebook.Destroy()
             nb_szr.Destroy()
         for c in self.children:

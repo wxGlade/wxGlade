@@ -115,14 +115,15 @@ class EditBase:
         if self._rmenu: self._rmenu.Destroy()
         # ...then, destroy the property notebook...
         if self.notebook:
-            for p in self.properties.itervalues():
-                if p.panel: p.panel.Destroy()
-            if self.name_prop.panel: self.name_prop.panel.Destroy()
-            if self.klass_prop.panel: self.klass_prop.panel.Destroy()
-            if hasattr(self, 'sizer_properties'):
-                for p in self.sizer_properties.itervalues():
-                    if p.panel: p.panel.Destroy()
+##             for p in self.properties.itervalues():
+##                 if p.panel: p.panel.Destroy()
+##             if self.name_prop.panel: self.name_prop.panel.Destroy()
+##             if self.klass_prop.panel: self.klass_prop.panel.Destroy()
+##             if hasattr(self, 'sizer_properties'):
+##                 for p in self.sizer_properties.itervalues():
+##                     if p.panel: p.panel.Destroy()
             nb_szr = self.notebook.sizer
+            self.notebook.DeleteAllPages()
             self.notebook.Destroy()
             nb_szr.Destroy()
         # ...finally, destroy our widget

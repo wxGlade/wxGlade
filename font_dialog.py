@@ -29,13 +29,14 @@ class wxGladeFontDialog(wxDialog):
         self.label_3_copy = wxStaticText(self, -1, "Style:")
         self.label_4_copy = wxStaticText(self, -1, "Weight:")
         self.family = wxChoice(self, -1, choices=[
-            'Default', 'Decorative', 'Roman', 'Script', 'Swiss', 'Modern'])
-        self.style = wxChoice(self, -1, choices=['Normal', 'Slant', 'Italic'])
-        self.weight = wxChoice(self, -1, choices=['Normal', 'Light', 'Bold'])
+            "Default", "Decorative", "Roman", "Script", "Swiss", "Modern"])
+        self.style = wxChoice(self, -1, choices=["Normal", "Slant", "Italic"])
+        self.weight = wxChoice(self, -1, choices=["Normal", "Light", "Bold"])
         self.label_1 = wxStaticText(self, -1, "Size in points:")
-        self.point_size = wxSpinCtrl(self, -1, min=0, max=100, initial=0)
+        self.point_size = wxSpinCtrl(self, -1, "", min=0, max=100)
         self.underline = wxCheckBox(self, -1, "Underlined")
         self.font_btn = wxButton(self, -1, "Specific font...")
+        self.static_line_1 = wxStaticLine(self, -1)
         self.ok_btn = wxButton(self, wxID_OK, "OK")
         self.cancel_btn = wxButton(self, wxID_CANCEL, "Cancel")
 
@@ -86,7 +87,7 @@ class wxGladeFontDialog(wxDialog):
     
     def __set_properties(self):
         # begin wxGlade: wxGladeFontDialog.__set_properties
-        self.SetTitle("Select Font")
+        self.SetTitle("Select font attributes")
         self.family.SetSelection(0)
         self.style.SetSelection(0)
         self.weight.SetSelection(0)
@@ -119,14 +120,16 @@ class wxGladeFontDialog(wxDialog):
         grid_sizer_1_copy.Add(self.font_btn, 0, 0, 0)
         grid_sizer_1_copy.AddGrowableCol(1)
         sizer_5.Add(grid_sizer_1_copy, 0, wxTOP|wxEXPAND, 3)
+        sizer_5.Add(self.static_line_1, 0, wxTOP|wxEXPAND, 8)
         sizer_2.Add(sizer_5, 0, wxEXPAND, 0)
         sizer_4.Add(self.ok_btn, 0, wxRIGHT, 12)
         sizer_4.Add(self.cancel_btn, 0, 0, 0)
-        sizer_2.Add(sizer_4, 0, wxTOP|wxALIGN_RIGHT, 15)
+        sizer_2.Add(sizer_4, 0, wxTOP|wxALIGN_RIGHT, 9)
         sizer_1.Add(sizer_2, 1, wxALL|wxEXPAND, 10)
         self.SetAutoLayout(1)
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
+        sizer_1.SetSizeHints(self)
         self.Layout()
         # end wxGlade
 
