@@ -10,7 +10,8 @@ def init_all():
     import common
     if common.use_gui:
         import edit_sizers
-        global SizerSlot, SizerBase
+        global SizerSlot, SizerBase, _builder
         SizerSlot = edit_sizers.SizerSlot
         SizerBase = edit_sizers.SizerBase
+        _builder = edit_sizers._builder
         return edit_sizers.init_all()
