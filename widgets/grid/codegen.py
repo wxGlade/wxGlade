@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxGrid objects
-# $Id: codegen.py,v 1.18 2003/11/24 21:28:06 agriggio Exp $
+# $Id: codegen.py,v 1.19 2004/09/01 08:31:10 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -50,7 +50,7 @@ def _check_label(label, col):
     return label != "".join(s)
     
 
-class PythonCodeGenerator:
+class PythonCodeGenerator(object):
     def __init__(self):
         self.pygen = common.code_writers['python']
         
@@ -77,7 +77,7 @@ class PythonCodeGenerator:
         if id_name: init.append(id_name)
         klass = obj.klass
         if klass == obj.base: klass = self.cn(klass)
-        init.append('self.%s = %s(%s, %s)\n' %
+        init.append('self.%s = %s(%s, %s, size=(1, 1))\n' %
                     (obj.name, klass, parent, id))
         props_buf = self.get_properties_code(obj)
         return init, props_buf, []
