@@ -100,6 +100,20 @@ class wxGladeFrame(wxFrame):
 ##             (wxACCEL_CTRL, ord('g'), GENERATE_CODE_ID),
 ##             (wxACCEL_NORMAL, WXK_F1, TUT_ID)
 ##             ]))
+
+        # file history support
+        if misc.check_wx_version(2, 3, 3):
+            self.file_history = wxFileHistory()
+            self.file_history.UseMenu(file_menu)
+            for path in config.load_history():
+                self.file_history.AddFileToHistory(path.strip())
+                
+            def open_from_history(event):
+                self._open_app(self.file_history.GetHistoryFile(
+                    event.GetId() - wxID_FILE1))
+                
+            EVT_MENU_RANGE(self, wxID_FILE1, wxID_FILE9, open_from_history)
+        
         EVT_MENU(self, TREE_ID, self.show_tree)
         EVT_MENU(self, PROPS_ID, self.show_props_window)
         EVT_MENU(self, NEW_ID, self.new_app)
@@ -302,6 +316,9 @@ class wxGladeFrame(wxFrame):
         print 'Loading time: %.5f' % (end-start)
 
         common.app_tree.app.saved = True
+        
+        if hasattr(self, 'file_history'):
+            self.file_history.AddFileToHistory(infilename)
 
     def save_app(self, event):
         """\
