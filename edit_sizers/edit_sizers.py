@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.39 2003/08/16 13:48:33 agriggio Exp $
+# $Id: edit_sizers.py,v 1.40 2003/10/24 14:05:02 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -512,7 +512,8 @@ class SizerBase(Sizer):
         """
         self.flags_pos = [ wxALL, wxLEFT, wxRIGHT, wxTOP, wxBOTTOM,
                            wxEXPAND, wxALIGN_RIGHT, wxALIGN_BOTTOM,
-                           wxALIGN_CENTER_HORIZONTAL, wxALIGN_CENTER_VERTICAL ]
+                           wxALIGN_CENTER_HORIZONTAL, wxALIGN_CENTER_VERTICAL,
+                           wxSHAPED, wxADJUST_MINSIZE ]
 
         self.access_functions = {
             'name' : (lambda : self.name, self.set_name),
@@ -535,7 +536,8 @@ class SizerBase(Sizer):
                            'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM',
                            '#section#Alignment', 'wxEXPAND', 'wxALIGN_RIGHT',
                            'wxALIGN_BOTTOM', 'wxALIGN_CENTER_HORIZONTAL',
-                           'wxALIGN_CENTER_VERTICAL']
+                           'wxALIGN_CENTER_VERTICAL', 'wxSHAPED',
+                           'wxADJUST_MINSIZE' ]
             prop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
             prop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
             pos_p = prop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))

@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.50 2003/08/02 13:26:32 agriggio Exp $
+# $Id: edit_windows.py,v 1.51 2003/10/24 14:05:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -632,7 +632,8 @@ class ManagedBase(WindowBase):
         self.flags_pos = (wxALL,
                           wxLEFT, wxRIGHT, wxTOP, wxBOTTOM,
                           wxEXPAND, wxALIGN_RIGHT, wxALIGN_BOTTOM,
-                          wxALIGN_CENTER_HORIZONTAL, wxALIGN_CENTER_VERTICAL)
+                          wxALIGN_CENTER_HORIZONTAL, wxALIGN_CENTER_VERTICAL,
+                          wxSHAPED, wxADJUST_MINSIZE)
         sizer.add_item(self, pos)
 
         szprop = self.sizer_properties
@@ -643,7 +644,8 @@ class ManagedBase(WindowBase):
                        'wxTOP', 'wxBOTTOM',
                        '#section#Alignment', 'wxEXPAND', 'wxALIGN_RIGHT',
                        'wxALIGN_BOTTOM', 'wxALIGN_CENTER_HORIZONTAL',
-                       'wxALIGN_CENTER_VERTICAL')
+                       'wxALIGN_CENTER_VERTICAL', 'wxSHAPED',
+                       'wxADJUST_MINSIZE')
         szprop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
         szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
         pos_p = szprop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
