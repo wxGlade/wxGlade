@@ -249,7 +249,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         they keep info about the destination of the hierarchy of widgets (i.e.
         the target of the 'paste' command)
       - The first widget built must be hidden and shown again at the end of
-        the operation, to keep the speed acceptable
+        the operation, to keep the speed acceptable (NOT TRUE ANYMORE)
     """
     def __init__(self, parent, sizer, pos, option, flag, border):
         XmlWidgetBuilder.__init__(self)
@@ -279,7 +279,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 try:
                     # hide the first object, to improve speed
                     self.top_obj = self.top().obj
-                    self.top_obj.Hide()
+                    #self.top_obj.Hide()
                 except AttributeError:
                     print 'Exception! obj: %s' % self.top_obj
                     traceback.print_exc()
@@ -291,8 +291,9 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             if not self.depth_level:
                 try:
                     # show the first object and update its layout
-                    self.top_obj.Show()
-                    self.top_obj.Layout()
+##                     self.top_obj.Show()
+##                     self.top_obj.Layout()
+                    common.app_tree.show_widget(self.top_obj.node)
                 except AttributeError:
                     print 'Exception! obj: %s' % self.top_obj
                     traceback.print_exc()

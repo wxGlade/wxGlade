@@ -202,6 +202,10 @@ class Application(object):
         EVT_BUTTON(btn, BTN_ID, self.generate_code)
         EVT_CHOICE(self.top_win_prop, TOP_WIN_ID, self.set_top_window)
 
+        # this is here to keep the interface similar to the various widgets
+        # (to simplify Tree)
+        widget = None # this is always None
+
     def _get_saved(self): return self.__saved
     def _set_saved(self, value):
         if self.__saved != value:

@@ -58,8 +58,8 @@ class wxGladeFrame(wxFrame):
         sizer_btns = self.load_sizers()
         
         TREE_ID = wxNewId()
-        view_menu.Append(TREE_ID, "Show &Tree\tCtrl+T", checkable=1)
-        view_menu.Check(TREE_ID, 1)
+        view_menu.Append(TREE_ID, "Show &Tree\tCtrl+T", checkable=True)
+        view_menu.Check(TREE_ID, True)
         NEW_ID = wxNewId()
         file_menu.Append(NEW_ID, "&New\tCtrl+N")
         OPEN_ID = wxNewId()
@@ -220,7 +220,7 @@ class wxGladeFrame(wxFrame):
         """\
         loads a wxGlade project from an xml file
         NOTE: this is very slow and needs optimisation efforts
-        NOTE2: thie note above should not be True anymore :)
+        NOTE2: the note above should not be True anymore :)
         """
         if not self.ask_save(): return
         from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
@@ -245,19 +245,18 @@ class wxGladeFrame(wxFrame):
                 common.app_tree.clear()
                 common.property_panel.Reparent(self.frame2)
                 common.app_tree.app.saved = True
-                self.tree_frame.Show()
                 wxMessageBox("Error loading file:\n%s" % msg, "Error",
                              wxOK|wxCENTRE|wxICON_ERROR)
                 return 
 
             infile.close()
-            for w in common.app_tree.root.children:
-                ww = w.widget
-                ww.Show()
-                if ww.has_sizer:
-                    ww.GetSizer().Layout()
-                    if not ww.properties['size'].is_active():
-                        ww.GetSizer().Fit(ww)
+##             for w in common.app_tree.root.children:
+##                 ww = w.widget
+##                 ww.Show()
+##                 if ww.has_sizer:
+##                     ww.GetSizer().Layout()
+##                     if not ww.properties['size'].is_active():
+##                         ww.GetSizer().Fit(ww)
             common.app_tree.select_item(common.app_tree.root)
             common.app_tree.root.widget.show_properties()
             common.property_panel.Reparent(self.frame2)
@@ -305,6 +304,9 @@ class wxGladeFrame(wxFrame):
             raise SystemExit
 
     def add_object(self, event):
+        """\
+        Adds a widget or a sizer to the current app.
+        """
         common.adding_widget = True
         tmp = event.GetId()
         common.widget_to_add = common.refs[tmp]
@@ -313,6 +315,9 @@ class wxGladeFrame(wxFrame):
             common.adding_sizer = True
         
     def add_toplevel_object(self, event):
+        """\
+        Adds a toplevel widget (Frame or Dialog) to the current app.
+        """
         common.widgets[common.refs[event.GetId()]](None, None, 0)
         common.app_tree.app.saved = False
 

@@ -11,8 +11,8 @@ class Tree:
     A class to represent a hierarchy of widgets.
     """
     class Node:
-        def __init__(self, widget=None, children=None):
-            self.widget = widget
+        def __init__(self, item=None, children=None):
+            self.item = item
             self.children = children
             self.parent = None
 
@@ -21,24 +21,22 @@ class Tree:
                 if node.children is not None:
                     map(remove_rec, node.children)
                 node.children = None
-                if node.widget is not None:
+                if node.item is not None:
                     # replace the just destroyed notebook with an empty window
-                    pw = node.widget.property_window
+                    pw = node.item.property_window
                     pw.SetTitle('Properties - <>')
                     pw.GetSizer().GetChildren()[0].SetWindow(
-                        wxNotebook(node.widget.property_window, -1))
-                    try: node.widget.Hide()
-                    except: pass
+                        wxNotebook(node.item.property_window, -1))
                     # call the widget's ``destructor''
-                    node.widget.delete()
-                node.widget = None
+                    node.item.delete()
+                node.item = None
             remove_rec(self)
             try: self.parent.children.remove(self)
             except: pass
                     
         def __repr__(self):
-            try: return self.widget.name
-            except AttributeError: return `self.widget`
+            try: return self.item.name
+            except AttributeError: return `self.item`
 
         def write(self, outfile, tabs):
             """\
@@ -46,8 +44,8 @@ class Tree:
             """
             import edit_sizers
             fwrite = outfile.write
-            assert self.widget is not None
-            w = self.widget
+            assert self.item is not None
+            w = self.item
             fwrite('    ' * tabs + '<object class=%s name=%s base=%s>\n'
                    % (quoteattr(w.klass), quoteattr(w.name),
                       quoteattr(w.__class__.__name__)))
@@ -59,7 +57,7 @@ class Tree:
                     for c in self.children:
                         fwrite('    ' * (tabs+1) +
                                '<object class="sizeritem">\n')
-                        sp = c.widget.sizer_properties
+                        sp = c.item.sizer_properties
                         for p in sp: sp[p].write(outfile, tabs+2)
                         c.write(outfile, tabs+2)
                         fwrite('    ' * (tabs+1) + '</object>\n')
@@ -84,9 +82,9 @@ class Tree:
         parent.children.append(child)
         child.parent = parent
         self.current = child
-        self.names[str(child.widget.name)] = 1
+        self.names[str(child.item.name)] = 1
         if parent is self.root:
-            self.app.add_top_window(child.widget.name)
+            self.app.add_top_window(child.item.name)
 
     def insert(self, child, parent, index):
         if parent is None: parent = self.root
@@ -95,16 +93,16 @@ class Tree:
         parent.children.insert(index, child)
         child.parent = parent
         self.current = child
-        self.names[str(child.widget.name)] = 1
+        self.names[str(child.item.name)] = 1
         if parent is self.root:
-            self.app.add_top_window(child.widget.name)
+            self.app.add_top_window(child.item.name)
 
     def remove(self, node=None):
         if node is not None:
-            try: del self.names[str(node.widget.name)]
+            try: del self.names[str(node.item.name)]
             except (KeyError, AttributeError): pass
             if node.parent is self.root:
-                self.app.remove_top_window(node.widget.name)
+                self.app.remove_top_window(node.item.name)
             node.remove()
         elif self.root.children:
             [n.remove() for n in self.root.children]
@@ -165,20 +163,26 @@ class WidgetTree(wxTreeCtrl, Tree):
         self.title = ' '
         self.set_title(self.title)
 
+        # menu used to show hidden toplevel widgets
+        self._show_menu = wxMenu("Widget")
+        SHOW_ID = wxNewId()
+        self._show_menu.Append(SHOW_ID, "Show")
+        EVT_MENU(self, SHOW_ID, self.show_selected_widget)
+
     def add(self, child, parent=None, image=None): # is image still used?
         """\
         appends child to the list of parent's children
         """
         Tree.add(self, child, parent)
         import common
-        name = child.widget.__class__.__name__
+        name = child.item.__class__.__name__
         index = WidgetTree.images.get(name, -1)
         if parent is None: parent = parent.item = self.GetRootItem()
-        child.item = self.AppendItem(parent.item, child.widget.name, index)
+        child.item = self.AppendItem(parent.item, child.item.name, index)
         self.Expand(parent.item)
         self.SetPyData(child.item, child)
         self.select_item(child)
-        child.widget.show_properties()
+        child.item.show_properties()
 
     def insert(self, child, parent, pos, image=None):
         """\
@@ -188,25 +192,25 @@ class WidgetTree(wxTreeCtrl, Tree):
             self.add(child, parent, image)
             return
         import common
-        name = child.widget.__class__.__name__
+        name = child.item.__class__.__name__
         image_index = WidgetTree.images.get(name, -1)
         if parent is None: parent = parent.item = self.GetRootItem()
 
         index = 0
         item, cookie = self.GetFirstChild(parent.item, 1)
         while item.IsOk():
-            item_pos = self.GetPyData(item).widget.pos
+            item_pos = self.GetPyData(item).item.pos
             if pos < item_pos: break
             index += 1            
             item, cookie = self.GetNextChild(parent.item, cookie)
 
         Tree.insert(self, child, parent, index)
         child.item = self.InsertItemBefore(parent.item, index,
-                                           child.widget.name, image_index)
+                                           child.item.name, image_index)
         self.Expand(parent.item)
         self.SetPyData(child.item, child)
         self.select_item(child)
-        child.widget.show_properties()
+        child.item.show_properties()
 
     def remove(self, node=None):
         self.app.saved = False # update the status of the app
@@ -222,25 +226,25 @@ class WidgetTree(wxTreeCtrl, Tree):
 
     def clear(self):
         self.app.reset()
-        self.skip_select = 1
+        self.skip_select = True
         if self.root.children:
             while self.root.children:
                 c = self.root.children[-1]
-                if c.widget: c.widget.remove()
+                if c.item: c.item.remove()
             self.root.children = None
-        self.skip_select = 0
+        self.skip_select = False
         app = self.GetPyData(self.GetRootItem())
-        app.widget.show_properties()
+        app.item.show_properties()
 
     def set_name(self, node, name):
         self.SetItemText(node.item, name)
 
     def select_item(self, node):
-        self.skip_select = 1
+        self.skip_select = True
         self.SelectItem(node.item)
-        self.skip_select = 0
+        self.skip_select = False
         if self.cur_widget: self.cur_widget.update_view(False)
-        self.cur_widget = node.widget
+        self.cur_widget = node.item
         self.cur_widget.update_view(True)
 
     def on_change_selection(self, event):
@@ -248,7 +252,7 @@ class WidgetTree(wxTreeCtrl, Tree):
             item = event.GetItem()
             try:
                 if self.cur_widget: self.cur_widget.update_view(False)
-                self.cur_widget = self.GetPyData(item).widget
+                self.cur_widget = self.GetPyData(item).item
                 self.cur_widget.show_properties(None)
                 self.cur_widget.update_view(True)
             except AttributeError:
@@ -258,12 +262,16 @@ class WidgetTree(wxTreeCtrl, Tree):
                 traceback.print_exc()
 
     def popup_menu(self, event):
-        item = self.GetPyData(self.GetSelection())
+        item = self.GetPyData(self.GetSelection()).item
+        if not item.widget:
+            if isinstance(item, edit_windows.TopLevelBase):
+                self.PopupMenu(self._show_menu, event.GetPosition())
+            else: return
         try:
             x, y = self.ClientToScreen(event.GetPosition())
             x, y = item.widget.ScreenToClient((x, y))
             event.m_x, event.m_y = x, y
-            item.widget.popup_menu(event)
+            item.popup_menu(event)
         except AttributeError:
             pass
 
@@ -282,6 +290,22 @@ class WidgetTree(wxTreeCtrl, Tree):
         if not self.title: self.title = ' '
         return self.title
 
+    def show_selected_widget(self, event):
+        """\
+        Shows the current selected (toplevel) widget and all its children
+        """
+        self.show_widget(self.GetPyData(self.GetSelection()))
+
+    def show_widget(self, node):
+        """\
+        Shows the widget of the given node and all its children
+        """
+        def show_rec(node):
+            if node.children:
+                for c in node.children: show_rec(c)
+            node.item.show_widget(True)
+        show_rec(node)
+        
 # end of class WidgetTree
 
 
