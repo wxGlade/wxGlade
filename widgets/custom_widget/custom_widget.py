@@ -113,7 +113,7 @@ class CustomWidget(ManagedBase):
 
     def get_property_handler(self, name):
         if name == 'arguments': return ArgumentsHandler(self)
-        return ManagedBase.get_property_handler(self, prop_name)
+        return ManagedBase.get_property_handler(self, name)
        
 # end of class CustomWidget
         
