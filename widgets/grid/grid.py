@@ -29,6 +29,7 @@ class EditGrid(ManagedBase):
         self.enable_row_resize = True
         self.enable_grid_resize = False
         self.lines_color = '#000000'
+        self.label_bg_color = '#333333'
         
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
                              property_window, show=show)
@@ -76,6 +77,11 @@ class EditGrid(ManagedBase):
         self.properties['lines_color']= ColorDialogProperty(self,
                                                              'lines_color',
                                                              None)
+        self.access_functions['label_bg_color'] = (self.get_label_bg_color,
+                                                    self.set_label_bg_color)
+        self.properties['label_bg_color']= ColorDialogProperty(self,
+                                                             'label_bg_color',
+                                                             None)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -90,12 +96,14 @@ class EditGrid(ManagedBase):
         self.properties['enable_row_resize'].display(panel)
         self.properties['enable_grid_resize'].display(panel)
         self.properties['lines_color'].display(panel)
+        self.properties['label_bg_color'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
         szr.Add(self.properties['columns_number'].panel, 0, wxEXPAND)
         szr.Add(self.properties['rows_number'].panel, 0, wxEXPAND)
         szr.Add(self.properties['row_label_size'].panel, 0, wxEXPAND)
         szr.Add(self.properties['col_label_size'].panel, 0, wxEXPAND)
         szr.Add(self.properties['lines_color'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['label_bg_color'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_editing'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_grid_lines'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_col_resize'].panel, 0, wxEXPAND)
@@ -117,6 +125,7 @@ class EditGrid(ManagedBase):
         self.widget.EnableDragRowSize(self.enable_row_resize)
         self.widget.EnableDragGridSize(self.enable_grid_resize)
         self.widget.SetGridLineColour(misc.string_to_color(self.lines_color))
+        self.widget.SetLabelBackgroundColour(misc.string_to_color(self.label_bg_color))
         # A grid should be wxEXPANDed and 'option' should be 1,
         # or you can't see it.
         self.set_option(1)  
@@ -229,6 +238,14 @@ class EditGrid(ManagedBase):
         self.lines_color = str(value)
         if self.widget:
             self.widget.SetGridLineColour(misc.string_to_color(self.lines_color))
+
+    def get_label_bg_color(self):
+        return self.label_bg_color
+
+    def set_label_bg_color(self, value):
+        self.label_bg_color = str(value)
+        if self.widget:
+            self.widget.SetLabelBackgroundColour(misc.string_to_color(self.label_bg_color))
 
 # end of class EditGrid
         
