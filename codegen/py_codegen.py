@@ -138,19 +138,17 @@ class SourceFileContent:
                     # replace the lines inside a wxGlade block with a tag that
                     # will be used later by add_class
                     spaces = result.group(1)
-                    which_class = result.group(2) #1)
-                    which_block = result.group(3) #2)
+                    which_class = result.group(2)
+                    which_block = result.group(3)
                     if which_class is None: which_class = class_name
                     self.spaces[which_class] = spaces
                     inside_block = True
                     if class_name is None:
                         out_lines.append('<%swxGlade replace %s>' % \
                                          (nonce, which_block))
-                        #result.group(1)))
                     else:
                         out_lines.append('<%swxGlade replace %s %s>' % \
                                          (nonce, which_class, which_block))
-                        #class_name, result.group(1)))
                 else:
                     out_lines.append(line)
                     if line.startswith('from wxPython.wx import *'):
@@ -195,12 +193,14 @@ def quote_str(s):
     else: return '"' + s + '"'
 
 
-def initialize(app_attrs): #out_path, multi_files):
+def initialize(app_attrs): 
     """\
     Writer initialization function.
-    - out_path: output path for the generated code (a file if multi_files is
-      False, a dir otherwise)
-    - multi_files: if True, generate a separate file for each custom class
+    - app_attrs: dict of attributes of the application. The following two
+                 are always present:
+           path: output path for the generated code (a file if multi_files is
+                 False, a dir otherwise)
+         option: if True, generate a separate file for each custom class
     """
     out_path = app_attrs['path']
     multi_files = app_attrs['option']
@@ -232,8 +232,6 @@ def initialize(app_attrs): #out_path, multi_files):
         else:
             # if the file doesn't exist, create it and write the ``intro''
             previous_source = None
-##             try: output_file = open(out_path, 'w')
-##             except: raise XmlParsingError("Error opening '%s' file" % out_path)
             output_file = cStringIO.StringIO()
             output_file_name = out_path
             output_file.write('#!/usr/bin/env python\n')
@@ -278,9 +276,6 @@ def finalize():
             previous_source.content = previous_source.content.replace(tag[0],
                                                                       comment)
         # write the new file contents to disk
-##         out = open(previous_source.name, 'w')
-##         out.write(previous_source.content)
-##         out.close()
         common.save_file(previous_source.name, previous_source.content,
                          'codegen')
         
@@ -291,9 +286,6 @@ def finalize():
             '<%swxGlade extra_modules>\n' % nonce, em)
         output_file.close()
         try:
-##             output_file = open(output_file_name, 'w')
-##             output_file.write(content)
-##             output_file.close()
             common.save_file(output_file_name, content, 'codegen')
             # make the file executable
             if _app_added:
@@ -330,13 +322,11 @@ def add_object(top_obj, sub_obj):
         init, props, layout = builder(sub_obj)
         if sub_obj.in_windows: # the object is a wxWindow instance
             # --- patch 2002-08-26 ------------------------------------------
-            #init.reverse()
             if sub_obj.is_container and not sub_obj.is_toplevel:
                 init.reverse()
                 klass.parents_init.extend(init)
             else: klass.init.extend(init)
             # ---------------------------------------------------------------
-            #klass.init.extend(init)
         else: # the object is a sizer
             klass.sizers_init.extend(init)
         klass.props.extend(props)
@@ -363,8 +353,7 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
             # attribute is a special property, which tells us if the object
             # is a local variable or an attribute of its parent
             if test_attribute(obj): obj_name = 'self.' + obj_name
-        if obj.base == 'wxNotebook': # and not obj.is_toplevel:
-            # this is a TEMPORARY HACK! we must find a better way
+        if obj.base == 'wxNotebook':
             obj_name = 'wxNotebookSizer(%s)' % obj_name
     else: pass # it was the dimension of a spacer
     try: klass = classes[toplevel.klass]
@@ -421,13 +410,9 @@ def add_class(code_obj):
     if style: write(indentation + 'kwds["style"] = %s\n' % style)
     # __init__
     write(indentation + '%s.__init__(self, *args, **kwds)\n' % code_obj.base)
-##     if not classes.has_key(code_obj.klass):
-##         # if the class body was empty, create an empty ClassLines
-##         classes[code_obj.klass] = ClassLines()
-    tab = indentation #tabs(2)
+    tab = indentation 
     init_lines = classes[code_obj.klass].init
     # --- patch 2002-08-26 ---------------------------------------------------
-    #init_lines.reverse()
     parents_init = classes[code_obj.klass].parents_init
     parents_init.reverse()
     for l in parents_init: write(tab+l)
@@ -531,42 +516,28 @@ def add_class(code_obj):
             extra_modules = classes[code_obj.klass].dependencies.keys()
             deps = ['# begin wxGlade: dependencies\n'] + extra_modules + \
                    ['# end wxGlade\n']
-##             for module in extra_modules:
-##                 deps.append('from %s import %s\n' % (module, module))
-##             deps.append('# end wxGlade\n')
             tag = '<%swxGlade replace dependencies>' % nonce
             prev_src.content = prev_src.content.replace(tag, "".join(deps))
             
             try:
                 # store the new file contents to disk
-##                 out = open(filename, 'w')
                 common.save_file(filename, prev_src.content, 'codegen')
             except:
                 raise IOError("py_codegen.add_class: %s, %s, %s" % \
                               (out_dir, prev_src.name, code_obj.klass))
-##             out.write(prev_src.content)
-##             out.close()
             return
 
         # create the new source file
         filename = os.path.join(out_dir, code_obj.klass + '.py')
-##         try:
-##             out = open(filename, 'w')
-##         except:
-##             raise IOError("py_codegen.add_class: %s, %s, %s" % \
-##                           (out_dir, filename, code_obj.klass))
         out = cStringIO.StringIO()
         write = out.write
         # write the common lines
         for line in header_lines: write(line)
         
         # write the module dependecies for this class
-        #extra_modules = classes[code_obj.klass].dependencies
         write('\n# begin wxGlade: dependencies\n')
         for module in classes[code_obj.klass].dependencies:
             write(module)
-## extra_modules: write(module)
-##             write('from %s import %s\n' % (module, module))
         write('# end wxGlade\n')
         write('\n')
         
@@ -652,9 +623,6 @@ def add_app(app_attrs, top_win_class):
 
     if multiple_files:
         filename = os.path.join(out_dir, name + '.py')
-##         try:
-##             out = open(filename, 'w')
-##         except: raise IOError("py_codegen.add_app: %s, %s" % (out_dir, name))
         out = cStringIO.StringIO()
         write = out.write
         write('#!/usr/bin/env python\n')

@@ -16,16 +16,9 @@ def python_code_generator(obj):
     attribute = pygen.test_attribute(obj)
 
     id_name, id = pygen.generate_code_id(obj) 
-    #label = prop.get('label', '').replace('"', r'\"')
     label = pygen.quote_str(prop.get('label', ''))
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-##     if obj.is_toplevel:
-##         l = []
-##         if id_name: l.append(id_name)
-##         l.append('self.%s = %s(%s, %s, "%s")\n' %
-##                  (obj.name, obj.klass, parent, id, label))
-##         return l, [], []
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
@@ -55,14 +48,9 @@ def cpp_code_generator(obj):
 
     attribute = cppgen.test_attribute(obj)
 
-    #label = prop.get('label', '').replace('"', r'\"')
     label = cppgen.quote_str(prop.get('label', ''))
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
-##     if obj.is_toplevel:
-##         l = ['%s = new %s(%s, %s, "%s");\n' %
-##              (obj.name, obj.klass, parent, id, label)]
-##         return l, ids, [], []
     extra = ''
     style = prop.get("style")
     if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
@@ -84,10 +72,4 @@ def initialize():
         pygen.add_widget_handler('wxStaticText', python_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-##                        ('const wxString&', 'label'),
-##                        ('const wxPoint&', 'pos', 'wxDefaultPosition'),
-##                        ('const wxSize&', 'size', 'wxDefaultSize'),
-##                        ('long', 'style', '0')]
-        cppgen.add_widget_handler('wxStaticText', cpp_code_generator) #,
-                                  #constructor)
+        cppgen.add_widget_handler('wxStaticText', cpp_code_generator)

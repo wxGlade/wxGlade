@@ -84,11 +84,5 @@ def initialize():
         xrcgen.add_widget_handler('wxSlider', xrc_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-##                        ('int', 'value'), ('int', 'minValue'),
-##                        ('int', 'maxValue'),
-##                        ('const wxPoint&', 'pos', 'wxDefaultPosition'),
-##                        ('const wxSize&', 'size', 'wxDefaultSize'),
-##                        ('long', 'style', 'wxSL_HORIZONTAL')]
-        cppgen.add_widget_handler('wxSlider', cpp_code_generator)#, constructor)
-    
+        cppgen.add_widget_handler('wxSlider', cpp_code_generator)
+

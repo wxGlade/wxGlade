@@ -13,16 +13,9 @@ def python_code_generator(obj):
     pygen = common.code_writers['python']
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj)
-    #value = '"' + prop.get('value', '').replace('"', r'\"') + '"'
     value = pygen.quote_str(prop.get('value', ''))
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-##     if obj.is_toplevel:
-##         l = []
-##         if id_name: l.append(id_name)
-##         l.append('self.%s = %s(%s, %s, %s)\n' %
-##                  (obj.name, obj.klass, parent, id, value))
-##         return l , [], []
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
@@ -43,14 +36,9 @@ def cpp_code_generator(obj):
     id_name, id = cppgen.generate_code_id(obj)
     if id_name: ids = [ id_name ]
     else: ids = []
-    #value = '"' + prop.get('value', '').replace('"', r'\"') + '"'
     value = cppgen.quote_str(prop.get('value', ''))
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
-##     if obj.is_toplevel:
-##         l = ['%s = new %s(%s, %s, %s);\n' %
-##              (obj.name, obj.klass, parent, id, value)]
-##         return l, ids, [], []
     extra = ''
     style = prop.get('style')
     if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
@@ -68,11 +56,5 @@ def initialize():
         pygen.add_widget_handler('wxTextCtrl', python_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-##                        ('const wxString&', 'value', '""'),
-##                        ('const wxPoint&', 'pos', 'wxDefaultPosition'),
-##                        ('const wxSize&', 'size', 'wxDefaultSize'),
-##                        ('long', 'style', '0')]
-        cppgen.add_widget_handler('wxTextCtrl', cpp_code_generator) #,
-                                  #constructor)
-    
+        cppgen.add_widget_handler('wxTextCtrl', cpp_code_generator)
+
