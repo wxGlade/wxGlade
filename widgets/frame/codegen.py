@@ -11,6 +11,7 @@ def python_menubar_code_generator(obj):
     """\
     function that generates Python code for the menubar of a wxFrame.
     """
+    pygen = common.code_writers['python']
     menus = obj.properties['menubar']
     init = [ '\n', '# Menu Bar\n', 'self.%s = wxMenuBar()\n' % obj.name,
              'self.SetMenuBar(self.%s)\n' % obj.name ]
@@ -32,9 +33,9 @@ def python_menubar_code_generator(obj):
                         id = item.id
                 else: id = 'wxNewId()'
                 append_items(name, item.children)
-                append('%s.AppendMenu(%s, %s, %s, "%s")\n' %
-                       (menu, id, '"%s"' % item.label.replace('"', r'\"'),
-                        name, item.help_str.replace('"', r'\"')))
+                append('%s.AppendMenu(%s, %s, %s, %s)\n' %
+                       (menu, id, pygen.quote_str(item.label),
+                        name, pygen.quote_str(item.help_str)))
             else:
                 if item.id:
                     tokens = item.id.split('=')
@@ -45,13 +46,13 @@ def python_menubar_code_generator(obj):
                         id = item.id
                 else: id = 'wxNewId()'
                 if item.checkable == '1':
-                    append('%s.Append(%s, "%s", "%s", 1)\n' %
-                           (menu, id, item.label.replace('"', r'\"'),
-                            item.help_str.replace('"', r'\"')))
+                    append('%s.Append(%s, %s, %s, 1)\n' %
+                           (menu, id, pygen.quote_str(item.label),
+                            pygen.quote_str(item.help_str)))
                 else:
-                    append('%s.Append(%s, "%s", "%s")\n' %
-                           (menu, id, item.label.replace('"', r'\"'),
-                            item.help_str.replace('"', r'\"')))
+                    append('%s.Append(%s, %s, %s)\n' %
+                           (menu, id, pygen.quote_str(item.label),
+                            pygen.quote_str(item.help_str)))
     #print 'menus = %s' % menus
     for m in menus:
         menu = m.root
@@ -60,8 +61,8 @@ def python_menubar_code_generator(obj):
         append('%s = wxMenu()\n' % name)
         if menu.children:
             append_items(name, menu.children)
-        append('self.%s.Append(%s, "%s")\n' %
-               (obj.name, name, menu.label.replace('"', r'\"')))
+        append('self.%s.Append(%s, %s)\n' %
+               (obj.name, name, pygen.quote_str(menu.label)))
     append('# Menu Bar end\n')
     return init, [], []
 
@@ -70,6 +71,7 @@ def python_statusbar_code_generator(obj):
     """\
     function that generates code for the statusbar of a wxFrame.
     """
+    pygen = common.code_writers['python']
     labels, widths = obj.properties['statusbar']
     init = [ 'self.%s = self.CreateStatusBar(%s)\n' % \
              (obj.name, len(labels)) ]
@@ -77,7 +79,8 @@ def python_statusbar_code_generator(obj):
     append = props.append
     append('self.%s.SetStatusWidths(%s)\n' % (obj.name, repr(widths)))
     append('# statusbar fields\n')
-    append('%s_fields = %s\n' % (obj.name, repr(labels)))
+    append('%s_fields = [%s]\n' % \
+           (obj.name, ', '.join([pygen.quote_str(l) for l in labels])))
     append('for i in range(len(%s_fields)):\n' % obj.name)
     append('    self.%s.SetStatusText(%s_fields[i], i)\n' % \
            (obj.name, obj.name))
@@ -93,7 +96,7 @@ def python_generate_frame_properties(frame):
     pygen = common.code_writers['python']
     out = []
     title = prop.get('title')
-    if title: out.append('self.SetTitle("%s")\n' % title.replace('"', r'\"'))
+    if title: out.append('self.SetTitle(%s)\n' % pygen.quote_str(title))
     out.extend(pygen.generate_common_properties(frame))
     return out
 
@@ -257,6 +260,7 @@ def cpp_menubar_code_generator(obj):
     """\
     function that generates C++ code for the menubar of a wxFrame.
     """
+    cppgen = common.code_writers['C++']
     menus = obj.properties['menubar']
     init = [ '%s = new wxMenuBar();\n' % \
              obj.name, 'SetMenuBar(%s);\n' % obj.name ]
@@ -279,9 +283,9 @@ def cpp_menubar_code_generator(obj):
                         id = item.id
                 else: id = 'wxNewId()'
                 append_items(name, item.children)
-                append('%s->Append(%s, %s, %s, "%s");\n' %
-                       (menu, id, '"%s"' % item.label.replace('"', r'\"'),
-                        name, item.help_str.replace('"', r'\"')))
+                append('%s->Append(%s, %s, %s, %s);\n' %
+                       (menu, id, cppgen.quote_str(item.label),
+                        name, cppgen.quote_str(item.help_str)))
             else:
                 if item.id:
                     tokens = item.id.split('=')
@@ -292,13 +296,13 @@ def cpp_menubar_code_generator(obj):
                         id = item.id
                 else: id = 'wxNewId()'
                 if item.checkable == '1':
-                    append('%s->Append(%s, "%s", "%s", 1);\n' %
-                           (menu, id, item.label.replace('"', r'\"'),
-                            item.help_str.replace('"', r'\"')))
+                    append('%s->Append(%s, %s, %s, 1);\n' %
+                           (menu, id, cppgen.quote_str(item.label),
+                            cppgen.quote_str(item.help_str)))
                 else:
-                    append('%s->Append(%s, "%s", "%s");\n' %
-                           (menu, id, item.label.replace('"', r'\"'),
-                            item.help_str.replace('"', r'\"')))
+                    append('%s->Append(%s, %s, %s);\n' %
+                           (menu, id, cppgen.quote_str(item.label),
+                            cppgen.quote_str(item.help_str)))
     #print 'menus = %s' % menus
     i = 1
     for m in menus:
@@ -310,8 +314,8 @@ def cpp_menubar_code_generator(obj):
         append('wxMenu* %s = new wxMenu();\n' % name)
         if menu.children:
             append_items(name, menu.children)
-        append('%s->Append(%s, "%s");\n' %
-               (obj.name, name, menu.label.replace('"', r'\"')))
+        append('%s->Append(%s, %s);\n' %
+               (obj.name, name, cppgen.quote_str(menu.label)))
     #init.reverse()
     return init, ids, [], []
 
@@ -320,6 +324,7 @@ def cpp_statusbar_code_generator(obj):
     """\
     function that generates code for the statusbar of a wxFrame.
     """
+    cppgen = common.code_writers['C++']
     labels, widths = obj.properties['statusbar']
     init = [ '%s = CreateStatusBar(%s);\n' % (obj.name, len(labels)) ]
     props = []
@@ -328,8 +333,7 @@ def cpp_statusbar_code_generator(obj):
                                             ', '.join(map(str, widths))))
     append('%s->SetStatusWidths(%s, %s_widths);\n' % \
            (obj.name, len(widths), obj.name))
-    labels = ',\n        '.join(['"' +  l.replace('"', r'\"') + '"'
-                                 for l in labels])
+    labels = ',\n        '.join([cppgen.quote_str(l) for l in labels])
     append('const wxString %s_fields[] = {\n        %s\n    };\n' %
            (obj.name, labels))
     append('for(int i = 0; i < %s->GetFieldsCount(); ++i) {\n' % obj.name)
@@ -347,7 +351,7 @@ def cpp_generate_frame_properties(frame):
     cppgen = common.code_writers['C++']
     out = []
     title = prop.get('title')
-    if title: out.append('SetTitle("%s");\n' % title.replace('"', r'\"'))
+    if title: out.append('SetTitle(%s);\n' % cppgen.quote_str(title))
     out.extend(cppgen.generate_common_properties(frame))
     return out
 

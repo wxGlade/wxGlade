@@ -13,7 +13,8 @@ def python_code_generator(obj):
     pygen = common.code_writers['python']
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj)
-    label = '"' + prop.get('label', '').replace('"', r'\"') + '"'
+    #label = '"' + prop.get('label', '').replace('"', r'\"') + '"'
+    label = pygen.quote_str(prop.get('label', ''))
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
 ##     if obj.is_toplevel:
@@ -71,7 +72,8 @@ def cpp_code_generator(obj):
     else: ids = []
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
-    label = '"' + prop.get('label', '').replace('"', r'\"') + '"'
+    #label = '"' + prop.get('label', '').replace('"', r'\"') + '"'
+    label = cppgen.quote_str(prop.get('label', ''))
 ##     if obj.is_toplevel:
 ##         l = ['%s = new %s(%s, %s, %s);\n' % (obj.name, obj.klass, parent,
 ##                                              id, label)]

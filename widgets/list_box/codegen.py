@@ -28,8 +28,9 @@ def python_code_generator(obj):
     else: style = ''
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = %s(%s, %s, choices=%s%s)\n' %
-                (obj.name, obj.klass, parent, id, repr(choices), style))
+    choices = ', '.join([pygen.quote_str(c) for c in choices])
+    init.append('self.%s = %s(%s, %s, choices=[%s]%s)\n' %
+                (obj.name, obj.klass, parent, id, choices, style))
     props_buf = pygen.generate_common_properties(obj)
     selection = prop.get('selection')
     if selection is not None:
@@ -66,7 +67,7 @@ def cpp_code_generator(obj):
     else: parent = 'this'
     number = len(choices)
     ch_arr = '{\n        %s\n    };\n' % \
-             ',\n        '.join(['"' + c + '"' for c in choices])
+             ',\n        '.join([cppgen.quote_str(c) for c in choices])
 ##     if obj.is_toplevel:
 ##         l = []
 ##         l.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))

@@ -37,15 +37,21 @@ class EditStaticBitmap(ManagedBase):
         """\
         Class to handle wxStaticBitmap objects
         """
+        self.attribute = True
         ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer,
                              pos, property_window, show=show)
         self.set_bitmap(str(bmp_file))
         # bitmap property
         self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
+        def set_attribute(v): self.attribute = int(v)
+        self.access_functions['attribute'] = (lambda : self.attribute,
+                                              set_attribute)
         self.bitmap_prop = FileDialogProperty(self, 'bitmap', None, #panel,
                                               style=wxOPEN|wxFILE_MUST_EXIST,
                                               can_disable=False)
         self.properties['bitmap'] = self.bitmap_prop
+        self.properties['attribute'] = CheckBoxProperty(
+            self, 'attribute', None, 'Store as attribute', write_always=True)
 
     def create_widget(self):
         bmp = self.load_bitmap(self.guess_type(self.bitmap))
@@ -56,7 +62,9 @@ class EditStaticBitmap(ManagedBase):
         panel = wxPanel(self.notebook, -1)
         szr = wxBoxSizer(wxVERTICAL)
         self.properties['bitmap'].display(panel)
+        self.properties['attribute'].display(panel)
         szr.Add(self.properties['bitmap'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['attribute'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)

@@ -126,6 +126,11 @@ class XmlWidgetBuilder(XmlParser):
                 app.codewriters_prop.set_str_value(language)
             top_win = attrs.get("top_window")
             if top_win: self.top_window = top_win
+            try: use_gettext = int(attrs["use_gettext"])
+            except (KeyError, ValueError): use_gettext = False
+            if use_gettext:
+                app.use_gettext = True
+                app.use_gettext_prop.set_value(True)
             return
         if not self._appl_started:
             raise XmlParsingError("the root of the tree must be <application>")
@@ -469,15 +474,19 @@ class CodeWriter(XmlParser):
             self._appl_started = True
             if attrs.get('name') or attrs.get('class'):
                 self.app_attrs = attrs
-            try: use_multiple_files = int(attrs['option']) and True
-            except (KeyError, ValueError): use_multiple_files = False
+            try:
+                attrs['option'] = bool(int(attrs['option']))
+                use_multiple_files = attrs['option']
+            except (KeyError, ValueError):
+                use_multiple_files = attrs['option'] = False
             if self.out_path is None:
                 try: self.out_path = attrs['path']
                 except KeyError:
                     raise XmlParsingError("'path' attribute missing: could "
                                           "not generate code")
+            else: attrs['path'] = self.out_path
             # initialize the writer
-            self.code_writer.initialize(self.out_path, use_multiple_files)
+            self.code_writer.initialize(attrs)
             return
         if not self._appl_started:
             raise XmlParsingError("the root of the tree must be <application>")

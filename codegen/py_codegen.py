@@ -19,6 +19,7 @@ methods of the parent object.
 
 import sys, os, os.path
 import common
+import cStringIO
 from xml_parse import XmlParsingError
 
 
@@ -179,16 +180,37 @@ previous_source = None
 def tabs(number):
     return '    ' * number
 
-def initialize(out_path, multi_files):
+
+# if True, enable gettext support
+_use_gettext = False
+
+def quote_str(s):
+    """\
+    returns a quoted version of 's', suitable to insert in a python source file
+    as a string object. Takes care also of gettext support
+    """
+    if not s: return '""'
+    s = s.replace('"', r'\"')
+    if _use_gettext: return '_("' + s + '")'
+    else: return '"' + s + '"'
+
+
+def initialize(app_attrs): #out_path, multi_files):
     """\
     Writer initialization function.
     - out_path: output path for the generated code (a file if multi_files is
       False, a dir otherwise)
     - multi_files: if True, generate a separate file for each custom class
     """
+    out_path = app_attrs['path']
+    multi_files = app_attrs['option']
+
     global classes, header_lines, multiple_files, previous_source, nonce, \
-           _current_extra_modules
+           _current_extra_modules, _use_gettext
     import time, random
+
+    try: _use_gettext = int(app_attrs['use_gettext'])
+    except (KeyError, ValueError): _use_gettext = False
 
     # this is to be more sure to replace the right tags
     nonce = '%s%s' % (str(time.time()).replace('.', ''),
@@ -212,7 +234,6 @@ def initialize(out_path, multi_files):
             previous_source = None
 ##             try: output_file = open(out_path, 'w')
 ##             except: raise XmlParsingError("Error opening '%s' file" % out_path)
-            import cStringIO
             output_file = cStringIO.StringIO()
             output_file_name = out_path
             output_file.write('#!/usr/bin/env python\n')
@@ -257,9 +278,11 @@ def finalize():
             previous_source.content = previous_source.content.replace(tag[0],
                                                                       comment)
         # write the new file contents to disk
-        out = open(previous_source.name, 'w')
-        out.write(previous_source.content)
-        out.close()
+##         out = open(previous_source.name, 'w')
+##         out.write(previous_source.content)
+##         out.close()
+        common.save_file(previous_source.name, previous_source.content,
+                         'codegen')
         
     elif not multiple_files:
         global output_file
@@ -268,9 +291,10 @@ def finalize():
             '<%swxGlade extra_modules>\n' % nonce, em)
         output_file.close()
         try:
-            output_file = open(output_file_name, 'w')
-            output_file.write(content)
-            output_file.close()
+##             output_file = open(output_file_name, 'w')
+##             output_file.write(content)
+##             output_file.close()
+            common.save_file(output_file_name, content, 'codegen')
             # make the file executable
             if _app_added:
                 os.chmod(output_file_name, 0755)
@@ -278,6 +302,16 @@ def finalize():
             raise XmlParsingError(str(e))
         except OSError: pass # this isn't necessary a bad error
         del output_file
+
+
+def test_attribute(obj):
+    """\
+    Returns True if 'obj' should be added as an attribute of its parent's
+    class, False if it should be created as a local variable of __do_layout.
+    To do so, tests for the presence of the special property 'attribute'
+    """
+    try: return int(obj.properties['attribute'])
+    except (KeyError, ValueError): return True # this is the default
 
 
 def add_object(top_obj, sub_obj):
@@ -325,11 +359,13 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     obj_name = obj.name
     try: w, h = [ int(s) for s in obj_name.split(',') ]
     except ValueError:
-        if obj.base == 'wxNotebook' and not obj.is_toplevel:
+        if obj.in_windows:
+            # attribute is a special property, which tells us if the object
+            # is a local variable or an attribute of its parent
+            if test_attribute(obj): obj_name = 'self.' + obj_name
+        if obj.base == 'wxNotebook': # and not obj.is_toplevel:
             # this is a TEMPORARY HACK! we must find a better way
-            obj_name += '_sizer'
-        elif obj.in_windows:
-            obj_name = 'self.' + obj_name # it's a real name
+            obj_name = 'wxNotebookSizer(%s)' % obj_name
     else: pass # it was the dimension of a spacer
     try: klass = classes[toplevel.klass]
     except KeyError: klass = classes[toplevel.klass] = ClassLines()
@@ -501,21 +537,25 @@ def add_class(code_obj):
             tag = '<%swxGlade replace dependencies>' % nonce
             prev_src.content = prev_src.content.replace(tag, "".join(deps))
             
-            # store the new file contents to disk
-            try: out = open(filename, 'w')
+            try:
+                # store the new file contents to disk
+##                 out = open(filename, 'w')
+                common.save_file(filename, prev_src.content, 'codegen')
             except:
                 raise IOError("py_codegen.add_class: %s, %s, %s" % \
                               (out_dir, prev_src.name, code_obj.klass))
-            out.write(prev_src.content)
-            out.close()
+##             out.write(prev_src.content)
+##             out.close()
             return
 
         # create the new source file
         filename = os.path.join(out_dir, code_obj.klass + '.py')
-        try: out = open(filename, 'w')
-        except:
-            raise IOError("py_codegen.add_class: %s, %s, %s" % \
-                          (out_dir, filename, code_obj.klass))
+##         try:
+##             out = open(filename, 'w')
+##         except:
+##             raise IOError("py_codegen.add_class: %s, %s, %s" % \
+##                           (out_dir, filename, code_obj.klass))
+        out = cStringIO.StringIO()
         write = out.write
         # write the common lines
         for line in header_lines: write(line)
@@ -534,6 +574,13 @@ def add_class(code_obj):
         for line in buffer: write(line)
         out.close()
 
+        try:
+            # store the contents to filename
+            common.save_file(filename, out.getvalue(), 'codegen')
+        except:
+            raise IOError("py_codegen.add_class: %s, %s, %s" % \
+                          (out_dir, filename, code_obj.klass))
+        
     else: # not multiple_files
         # write the class body onto the single source file
         for dep in classes[code_obj.klass].dependencies:
@@ -579,6 +626,10 @@ def add_app(app_attrs, top_win_class):
     else:
         tab = tabs(1)
         append('if __name__ == "__main__":\n')
+        if _use_gettext:
+            append(tab + 'import gettext\n')
+            append(tab + 'gettext.install("%s") # replace with the appropriate'
+                   ' catalog name\n\n' % name)
         append(tab + '%s = wxPySimpleApp()\n' % name)
     append(tab + 'wxInitAllImageHandlers()\n') # we add this to avoid troubles
     append(tab + '%s = %s(None, -1, "")\n' % (top_win, top_win_class))
@@ -589,6 +640,10 @@ def add_app(app_attrs, top_win_class):
         append('# end of class %s\n\n' % klass)
         append('if __name__ == "__main__":\n')
         tab = tabs(1)
+        if _use_gettext:
+            append(tab + 'import gettext\n')
+            append(tab + 'gettext.install("%s") # replace with the appropriate'
+                   ' catalog name\n\n' % name)
         append(tab + '%s = %s()\n' % (name, klass))
     else:
         append(tab + '%s.SetTopWindow(%s)\n' % (name, top_win))
@@ -597,8 +652,10 @@ def add_app(app_attrs, top_win_class):
 
     if multiple_files:
         filename = os.path.join(out_dir, name + '.py')
-        try: out = open(filename, 'w')
-        except: raise IOError("py_codegen.add_app: %s, %s" % (out_dir, name))
+##         try:
+##             out = open(filename, 'w')
+##         except: raise IOError("py_codegen.add_app: %s, %s" % (out_dir, name))
+        out = cStringIO.StringIO()
         write = out.write
         write('#!/usr/bin/env python\n')
         # write the common lines
@@ -608,6 +665,9 @@ def add_app(app_attrs, top_win_class):
         # write the wxApp code
         for line in lines: write(line)
         out.close()
+        try:
+            common.save_file(filename, out.getvalue(), 'codegen')
+        except: raise IOError("py_codegen.add_app: %s, %s" % (out_dir, name))
         # make the file executable
         try: os.chmod(filename, 0755)
         except OSError: pass # this is not a bad error
@@ -621,7 +681,9 @@ def generate_code_size(obj):
     returns the code fragment that sets the size of the given object.
     """
     if obj.is_toplevel: name = 'self'
-    else: name = 'self.%s' % obj.name
+    else:
+        if test_attribute(obj): name = 'self.%s' % obj.name
+        else: name = obj.name
     size = obj.properties.get('size', '').strip()
     use_dialog_units = (size[-1] == 'd')
     if use_dialog_units:
@@ -629,8 +691,10 @@ def generate_code_size(obj):
     else:
         return name + '.SetSize((%s))\n' % size
 
+
 def _string_to_colour(s):
     return '%d, %d, %d' % (int(s[1:3], 16), int(s[3:5], 16), int(s[5:], 16))
+
 
 def generate_code_foreground(obj): 
     """\
@@ -638,7 +702,9 @@ def generate_code_foreground(obj):
     the given object.
     """
     if obj.is_toplevel: self = 'self'
-    else: self = 'self.%s' % obj.name
+    else:
+        if test_attribute(obj): self = 'self.%s' % obj.name
+        else: self = obj.name
     try:
         color = 'wxColour(%s)' % \
                 _string_to_colour(obj.properties['foreground'])
@@ -647,13 +713,16 @@ def generate_code_foreground(obj):
                 obj.properties['foreground']
     return self + '.SetForegroundColour(%s)\n' % color
 
+
 def generate_code_background(obj):
     """\
     returns the code fragment that sets the background colour of
     the given object.
     """
     if obj.is_toplevel: self = 'self'
-    else: self = 'self.%s' % obj.name
+    else:
+        if test_attribute(obj): self = 'self.%s' % obj.name
+        else: self = obj.name
     try:
         color = 'wxColour(%s)' % \
                 _string_to_colour(obj.properties['background'])
@@ -661,6 +730,7 @@ def generate_code_background(obj):
         color = 'wxSystemSettings_GetSystemColour(%s)' % \
                 obj.properties['background']
     return self + '.SetBackgroundColour(%s)\n' % color
+
 
 def generate_code_font(obj):
     """\
@@ -672,9 +742,12 @@ def generate_code_font(obj):
     style = font['style']; weight = font['weight']
     face = '"%s"' % font['face'].replace('"', r'\"')
     if obj.is_toplevel: self = 'self'
-    else: self = 'self.%s' % obj.name
+    else:
+        if test_attribute(obj): self = 'self.%s' % obj.name
+        else: self = obj.name
     return self + '.SetFont(wxFont(%s, %s, %s, %s, %s, %s))\n' % \
             (size, family, style, weight, underlined, face)
+
 
 def generate_code_id(obj):
     """\
@@ -691,14 +764,18 @@ def generate_code_id(obj):
     if not name: return '', val
     return ('%s = %s\n' % (name, val), name)
 
+
 def generate_code_tooltip(obj):
     """\
     returns the code fragment that sets the tooltip of the given object.
     """
     if obj.is_toplevel: self = 'self'
-    else: self = 'self.%s' % obj.name
-    return self + '.SetToolTipString("%s")\n' % \
-            obj.properties['tooltip'].replace('"', r'\"')
+    else:
+        if test_attribute(obj): self = 'self.%s' % obj.name
+        else: self = obj.name
+    return self + '.SetToolTipString(%s)\n' % \
+           quote_str(obj.properties['tooltip'])
+
 
 def generate_common_properties(widget):
     """\

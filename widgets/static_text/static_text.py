@@ -20,9 +20,14 @@ class EditStaticText(ManagedBase):
                              pos, property_window, show=show)
         self.label = label
         self.style = 0
-        # label property
+        self.attribute = True
+
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['style'] = (self.get_style, self.set_style)
+        def set_attribute(v): self.attribute = int(v)
+        self.access_functions['attribute'] = (lambda : self.attribute,
+                                              set_attribute)
+
         self.properties['label'] = TextProperty(self, 'label', None,
                                                 multiline=True)
         self.style_pos  = (wxALIGN_LEFT, wxALIGN_RIGHT, wxALIGN_CENTRE,
@@ -30,7 +35,9 @@ class EditStaticText(ManagedBase):
         style_labels = ('#section#Style', 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
                         'wxALIGN_CENTRE', 'wxST_NO_AUTORESIZE')
         self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)  
+                                                     style_labels)
+        self.properties['attribute'] = CheckBoxProperty(
+            self, 'attribute', None, 'Store as attribute', write_always=True)
 
     def create_widget(self):
         self.widget = wxStaticText(self.parent.widget, self.id,
@@ -42,8 +49,10 @@ class EditStaticText(ManagedBase):
         szr = wxBoxSizer(wxVERTICAL)
         self.properties['label'].display(panel)
         self.properties['style'].display(panel)
+        self.properties['attribute'].display(panel)
         szr.Add(self.properties['label'].panel, 0, wxEXPAND)
         szr.Add(self.properties['style'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['attribute'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)

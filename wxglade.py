@@ -45,6 +45,9 @@ def command_line_code_generation(options, args):
     if len(args) != 1: usage() # an input file name must be provided
     
     common.use_gui = False # don't import wxPython.wx
+    # use_gui has to be set before importing config
+    import config
+    config.init_preferences()
     common.load_code_writers()
     common.load_widgets()
     common.load_sizers()

@@ -343,12 +343,15 @@ class wxGladeFrame(wxFrame):
                 from cStringIO import StringIO
                 buffer = StringIO()
                 common.app_tree.write(buffer)
-                f = open(common.app_tree.app.filename, 'w')
-                f.write(buffer.getvalue())
-                f.close()
+##                 common.make_backup(common.app_tree.app.filename, 'wxg')
+##                 f = open(common.app_tree.app.filename, 'w')
+##                 f.write(buffer.getvalue())
+##                 f.close()
+                common.save_file(common.app_tree.app.filename,
+                                 buffer.getvalue(), 'wxg')
             except Exception, msg:
                 import traceback; traceback.print_exc()
-                if locals().has_key('f'): f.close()
+##                 if locals().has_key('f'): f.close()
                 common.app_tree.app.saved = False
                 fn = common.app_tree.app.filename
                 wxMessageBox("An exception occurred while saving file \"%s\"."

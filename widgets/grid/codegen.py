@@ -111,8 +111,8 @@ def python_generate_properties(obj):
     i = 0
     for label, size in columns:
         if _check_label(label, i):
-            out.append('%s.SetColLabelValue(%s, "%s")\n' % \
-                       (name, i, label.replace('"', '\\"')))
+            out.append('%s.SetColLabelValue(%s, %s)\n' % \
+                       (name, i, pygen.quote_str(label)))
         try:
             if int(size) > 0:
                 out.append('%s.SetColSize(%s, %s)\n' % \
@@ -189,8 +189,8 @@ def cpp_generate_properties(obj):
     i = 0
     for label, size in columns:
         if _check_label(label, i):
-            out.append('%s->SetColLabelValue(%s, "%s");\n' % \
-                       (name, i, label.replace('"', '\\"')))
+            out.append('%s->SetColLabelValue(%s, %s);\n' % \
+                       (name, i, cppgen.quote_str(label)))
         try:
             if int(size) > 0:
                 out.append('%s->SetColSize(%s, %s);\n' % \

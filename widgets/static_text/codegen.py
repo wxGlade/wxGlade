@@ -12,8 +12,12 @@ def python_code_generator(obj):
     """
     pygen = common.code_writers['python']
     prop = obj.properties
+
+    attribute = pygen.test_attribute(obj)
+
     id_name, id = pygen.generate_code_id(obj) 
-    label = prop.get('label', '').replace('"', r'\"')
+    #label = prop.get('label', '').replace('"', r'\"')
+    label = pygen.quote_str(prop.get('label', ''))
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
 ##     if obj.is_toplevel:
@@ -27,9 +31,15 @@ def python_code_generator(obj):
     else: style = ''
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = %s(%s, %s, "%s"%s)\n' %
-                (obj.name, obj.klass, parent, id, label, style))
+    if attribute: prefix = 'self.'
+    else: prefix = ''
+    init.append('%s%s = %s(%s, %s, %s%s)\n' %
+                (prefix, obj.name, obj.klass, parent, id, label, style))
     props_buf = pygen.generate_common_properties(obj)
+    if not attribute:
+        # the object doesn't have to be stored as an attribute of the custom
+        # class, but it is just considered part of the layout
+        return [], [], init + props_buf
     return init, props_buf, []
 
 
@@ -43,7 +53,10 @@ def cpp_code_generator(obj):
     if id_name: ids = [ id_name ]
     else: ids = []
 
-    label = prop.get('label', '').replace('"', r'\"')
+    attribute = cppgen.test_attribute(obj)
+
+    #label = prop.get('label', '').replace('"', r'\"')
+    label = cppgen.quote_str(prop.get('label', ''))
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
 ##     if obj.is_toplevel:
@@ -53,9 +66,13 @@ def cpp_code_generator(obj):
     extra = ''
     style = prop.get("style")
     if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-    init = ['%s = new %s(%s, %s, "%s"%s);\n' %
-            (obj.name, obj.klass, parent, id, label, extra) ]
+    if attribute: prefix = ''
+    else: prefix = '%s* ' % obj.klass
+    init = ['%s%s = new %s(%s, %s, %s%s);\n' %
+            (prefix, obj.name, obj.klass, parent, id, label, extra) ]
     props_buf = cppgen.generate_common_properties(obj)
+    if not attribute:
+        return [], ids, [], init + props_buf
     return init, ids, props_buf, []
 
 

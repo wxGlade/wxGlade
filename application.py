@@ -91,14 +91,19 @@ class Application(object):
             else: self.codegen_opt = opt
         self.output_path = ""
         def set_output_path(value): self.output_path = value
+        self.use_gettext = False
+        def set_use_gettext(value): self.use_gettext = bool(value)
         self.access_functions = {
             'name': (lambda : self.name, set_name),
             'class': (lambda : self.klass, set_klass), 
             'code_generation': (lambda : self.codegen_opt, set_codegen_opt),
             'output_path': (lambda : self.output_path, set_output_path),
             'language': (lambda : 0, self.set_language),
-            'encoding': (self.get_encoding, self.set_encoding)
+            'encoding': (self.get_encoding, self.set_encoding),
+            'use_gettext': (lambda : self.use_gettext, set_use_gettext)
             }
+        self.use_gettext_prop = CheckBoxProperty(self, "use_gettext", panel,
+                                                 "Enable gettext support")
         TOP_WIN_ID = wxNewId()
         self.top_win_prop = wxChoice(panel, TOP_WIN_ID, choices=[])
         self.top_window = '' # name of the top window of the generated app
@@ -138,6 +143,7 @@ class Application(object):
         sizer.Add(self.name_prop.panel, 0, wxEXPAND)
         sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
         sizer.Add(self.encoding_prop.panel, 0, wxEXPAND)
+        sizer.Add(self.use_gettext_prop.panel, 0, wxEXPAND)
         szr = wxBoxSizer(wxHORIZONTAL)
         from widget_properties import _label_initial_width as _w
         label = wxGenStaticText(panel, -1, "Top window", size=(_w, -1))
