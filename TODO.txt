@@ -1,6 +1,6 @@
 wxGlade TODO list
 -----------------
-Last update: 2002-08-01
+Last update: 2002-08-27
 
 The list is more or less sorted by priority
 
@@ -26,17 +26,18 @@ Key:
 
 - speedup of the xml loading (*)
 
-- separation between window objects and sizer ones in the generated code
+- separation between window objects and sizer ones in the generated code (*)
 
 - custom wxDirDialog (to choose the destination dir for the generated
   code, as the Windows default one doesn't allow to create a new dir)
+  (with wxPython 2.3.3 this seems unnecessary)
 
 - Checks on the values of some properties (name, class,...), maybe with
   wxValidator 
 
 - MDI
 
-- Code generation from the command line, witout starting the GUI
+- Code generation from the command line, witout starting the GUI (*)
 
 - Event handlers support
 
@@ -50,9 +51,9 @@ Key:
 
 - ToolBar for frames 
 
-- complete MenuBar with icons and StatusBar messages support
+- complete MenuBar with icons and StatusBar messages support (#)
 
-- support wxWindows xml resources (XRC) through a code generator
+- support wxWindows xml resources (XRC) through a code generator (*)
 
 - Grid
 
@@ -65,9 +66,11 @@ Key:
 - gettext support
 
 - support for C++ code generation (and maybe other languages, if someone wants
-  to do the work)
+  to do the work) (* C++)
 
 - ``Templates'' for particular windows (for example, something as a dialog with
   an image, a centered label and a couple of buttons)
+
+- TabOrder property (this may be hard though)
 
 - ...

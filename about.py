@@ -1,7 +1,7 @@
 # about.py: about box with general info
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 from wxPython.wx import *
 from wxPython.html import *
@@ -17,7 +17,7 @@ class wxGladeAboutBox(wxDialog):
     cellpadding="2" border="2">
     <tr>
         <td align="center">
-        <h3>wxGlade %s: a GUI builder for<br>wxPython</h3>
+        <h3>wxGlade %s: a GUI builder for<br>wxPython/wxWindows</h3>
         Running on Python %s and wxPython %s<br>
         </td>
     </tr>
@@ -28,13 +28,14 @@ class wxGladeAboutBox(wxDialog):
     <tr><td width="50">&nbsp;</td><td>
     <font size="-1"><b>&nbsp;<br>
     Copyright (c) 2002 Alberto Griggio<br>
-    License: GPL (see license.txt)</b></font>
+    License: Python 2.2 license (see license.txt)</b></font>
     </td></tr>
     <tr><td width="50">&nbsp;</td><td>
     <font size="-1">
     <br>Authors:<br>
     &nbsp;&nbsp;&nbsp;Alberto Griggio &lt;albgrig@tiscalinet.it&gt;<br>
-    &nbsp;&nbsp;&nbsp;Marco Barisione &lt;marco.bari@vene.ws&gt;
+    &nbsp;&nbsp;&nbsp;Marco Barisione &lt;marco.bari@vene.ws&gt;<br><br>
+    For credits, see credits.txt
     </font>
     </td></tr></table>
     <center>

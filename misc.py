@@ -1,7 +1,7 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 from wxPython.wx import *
 
@@ -89,12 +89,8 @@ class SelectionMarker:
 
 #----------------------------------------------------------------------------
 
-def _encode(label, encoding='latin-1'):
-    """\
-    Returns a str which is the encoded version of the unicode label
-    """
-    return label.encode(encoding, 'replace')
-
+import common
+_encode = common._encode_from_xml
 
 def color_to_string(color):
     """\

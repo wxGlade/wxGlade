@@ -1,7 +1,7 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 from wxPython.wx import *
 from xml.sax.saxutils import quoteattr
@@ -126,10 +126,12 @@ class Tree:
         klass = self.app.get_class()
         option = str(self.app.codegen_opt)
         top_window = self.app.get_top_window()
+        language = self.app.get_language()
         outfile.write('<application path=%s name=%s class=%s option=%s ' \
-                      'top_window=%s>\n'% (quoteattr(outpath), quoteattr(name),
-                                           quoteattr(klass), quoteattr(option),
-                                           quoteattr(top_window)))
+                      'language=%s top_window=%s>\n' \
+                      % (quoteattr(outpath), quoteattr(name),
+                         quoteattr(klass), quoteattr(option),
+                         quoteattr(language), quoteattr(top_window)))
         if self.root.children is not None:
             [c.write(outfile, tabs+1) for c in self.root.children]
         outfile.write('</application>\n')
@@ -381,50 +383,4 @@ class WidgetTree(wxTreeCtrl, Tree):
         return None     
         
 # end of class WidgetTree
-
-
-class MenuTree:
-    """\
-    A class to represent a menu on a wxMenuBar
-    """
-    class Node:
-        def __init__(self, label="", id="", name="", checkable=""):
-            self.label = label
-            self.id = id
-            self.name = name
-            self.checkable = checkable
-            self.children = []
-            self.parent = None
-            
-        def write(self, outfile, tabs, top=False):
-            from xml.sax.saxutils import escape, quoteattr
-            import widget_properties
-            fwrite = outfile.write
-            tstr = '    ' * (tabs+1)
-            label = widget_properties._encode(self.label)
-            if not top and not self.children:
-                fwrite('%s<item>\n' % ('    ' * tabs))
-                fwrite('%s<label>%s</label>\n' % (tstr, escape(label)))
-                fwrite('%s<id>%s</id>\n' % (tstr, escape(self.id)))
-                fwrite('%s<name>%s</name>\n' % (tstr, escape(self.name)))
-                try: checkable = int(self.checkable)
-                except: checkable = 0
-                fwrite('%s<checkable>%s</checkable>\n' % (tstr, checkable))
-                fwrite('%s</item>\n' % ('    ' * tabs))
-            else:
-                name = quoteattr(self.name)
-                fwrite('    ' * tabs + '<menu name=%s ' % name)
-                fwrite('label=%s>\n' % (quoteattr(label)))
-                for c in self.children: c.write(outfile, tabs+1)
-                fwrite('    ' * tabs + '</menu>\n')
-                
-    #end of class Node
-    
-    def __init__(self, name, label):
-        self.root = self.Node(label, "", name, "")
-
-    def write(self, outfile, tabs):
-        self.root.write(outfile, tabs, top=True)
-        
-#end of class MenuTree
 

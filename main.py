@@ -2,7 +2,7 @@
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 from wxPython.wx import *
 from widget_properties import *
@@ -28,7 +28,6 @@ class wxGladePropertyPanel(wxPanel):
 
 # end of class wxGladePropertyPanel
 
-
 class wxGladeFrame(wxFrame):
     """\
     Main frame of wxGlade (palette)
@@ -52,10 +51,10 @@ class wxGladeFrame(wxFrame):
         sizer = wxGridSizer(0, 5)
         wxToolTip_SetDelay(1000)
         # load the available code generators
-        self.load_code_writers()
+        common.load_code_writers()
         # load the available widgets and sizers
-        buttons = self.load_widgets()
-        sizer_btns = self.load_sizers()
+        buttons = common.load_widgets()
+        sizer_btns = common.load_sizers()
         
         TREE_ID = wxNewId()
         view_menu.Append(TREE_ID, "Show &Tree\tCtrl+T", "", True)
@@ -63,19 +62,30 @@ class wxGladeFrame(wxFrame):
         PROPS_ID = wxNewId()
         view_menu.Append(PROPS_ID, "Show &Properties\tCtrl+P", "", True)
         view_menu.Check(PROPS_ID, True)
+        def append_item(menu, id, text, xpm_file=None):
+            item = wxMenuItem(menu, id, text)
+            if xpm_file is not None:
+                try: item.SetBitmap(wxBitmap(xpm_file, wxBITMAP_TYPE_XPM))
+                except AttributeError: pass
+            menu.AppendItem(item)
         NEW_ID = wxNewId()
-        file_menu.Append(NEW_ID, "&New\tCtrl+N")
+        append_item(file_menu, NEW_ID, "&New\tCtrl+N")
         OPEN_ID = wxNewId()
-        file_menu.Append(OPEN_ID, "&Open...\tCtrl+O")
+        append_item(file_menu, OPEN_ID, "&Open...\tCtrl+O") 
         SAVE_ID = wxNewId()
-        file_menu.Append(SAVE_ID, "&Save\tCtrl+S")
+        append_item(file_menu, SAVE_ID, "&Save\tCtrl+S") 
         SAVE_AS_ID = wxNewId()
-        file_menu.Append(SAVE_AS_ID, "Save As...")
+        append_item(file_menu, SAVE_AS_ID, "Save As...\tShift+Ctrl+S")
+        file_menu.AppendSeparator()
+        GENERATE_CODE_ID = wxNewId()
+        append_item(file_menu, GENERATE_CODE_ID, "&Generate Code...\tCtrl+G")
         EXIT_ID = wxNewId()
         file_menu.AppendSeparator()
-        file_menu.Append(EXIT_ID, 'E&xit\tCtrl+X')
+        append_item(file_menu, EXIT_ID, 'E&xit\tCtrl+X') #, 'icons/exit.xpm')
         menu_bar.Append(file_menu, "&File")
         menu_bar.Append(view_menu, "&View")
+        TUT_ID = wxNewId()
+        help_menu.Append(TUT_ID, 'Tutorial\tF1')
         ABOUT_ID = wxNewId()
         help_menu.Append(ABOUT_ID, 'About...')
         menu_bar.Append(help_menu, '&Help')
@@ -85,7 +95,10 @@ class wxGladeFrame(wxFrame):
             (wxACCEL_CTRL, ord('n'), NEW_ID),
             (wxACCEL_CTRL, ord('o'), OPEN_ID),
             (wxACCEL_CTRL, ord('s'), SAVE_ID),
-            (wxACCEL_CTRL, ord('p'), PROPS_ID)
+            (wxACCEL_CTRL, ord('p'), PROPS_ID),
+            (wxACCEL_CTRL|wxACCEL_SHIFT, ord('s'), SAVE_AS_ID),
+            (wxACCEL_CTRL, ord('g'), GENERATE_CODE_ID),
+            (wxACCEL_NORMAL, WXK_F1, TUT_ID)
             ]))
         EVT_MENU(parent, TREE_ID, self.show_tree)
         EVT_MENU(parent, PROPS_ID, self.show_props_window)
@@ -93,14 +106,21 @@ class wxGladeFrame(wxFrame):
         EVT_MENU(parent, OPEN_ID, self.open_app)
         EVT_MENU(parent, SAVE_ID, self.save_app)
         EVT_MENU(parent, SAVE_AS_ID, self.save_app_as)
+        def generate_code(event):
+            common.app_tree.app.generate_code()
+        EVT_MENU(parent, GENERATE_CODE_ID, generate_code)
         EVT_MENU(parent, EXIT_ID, lambda e: self.Close())
+        EVT_MENU(parent, TUT_ID, self.show_tutorial)
         EVT_MENU(parent, ABOUT_ID, self.show_about_box)
+        # Tutorial window
+        self.tut_frame = None
         # layout
         self.SetAutoLayout(True)
         for b in buttons: sizer.Add(b)
         for sb in sizer_btns: sizer.Add(sb)
         self.SetSizer(sizer)
         sizer.Fit(self)
+        # Properties window
         self.frame2 = wxFrame(parent, -1, 'Properties - <app>')
         self.frame2.SetBackgroundColour(wxSystemSettings_GetSystemColour(
             wxSYS_COLOUR_BTNFACE))
@@ -120,10 +140,11 @@ class wxGladeFrame(wxFrame):
         EVT_CLOSE(self.frame2, hide_frame2)
         EVT_CLOSE(self, self.cleanup)
         common.property_panel = property_panel
-        # setup of tree_frame
+        # Tree of widgets
         self.tree_frame = wxFrame(parent, -1, 'wxGlade: Tree', size=(350, 200))
         self.tree_frame.SetIcon(icon)
-        app = common.Application(common.property_panel)
+        import application
+        app = application.Application(common.property_panel)
         common.app_tree = WidgetTree(self.tree_frame, app)
 
         app.notebook.Show()
@@ -135,7 +156,7 @@ class wxGladeFrame(wxFrame):
             self.tree_frame.Hide()
             menu_bar.Check(TREE_ID, True)
         EVT_CLOSE(self.tree_frame, on_tree_frame_close)
-        self.frame2.SetSize((250, 340))
+        self.frame2.SetSize((250, 350))
         self.SetPosition((0, 0))
         x, y = self.GetPosition()
         h = self.GetSize()[1]
@@ -150,65 +171,24 @@ class wxGladeFrame(wxFrame):
         self.Show()
         self.tree_frame.Show()
         self.frame2.Show()
-
-    def load_widgets(self):
-        """\
-        Scans the 'widgets/' directory to find the installed widgets,
-        and returns a list of buttons to handle them
-        """
-        buttons = []
-        modules = open('widgets/widgets.txt')
-        print 'loading widget modules:'
-        for line in modules:
-            module = line.strip()
-            if not module or module.startswith('#'): continue
-            module = module.split('#')[0].strip()
-            try:
-                b = __import__(module).initialize()
-            except (ImportError, AttributeError):
-                print 'ERROR loading "%s"' % module
-                import traceback; traceback.print_exc()
-            else:
-                print '\t' + module
-                buttons.append(b)
-        modules.close()
-        return buttons
-
-    def load_sizers(self):
-        import edit_sizers
-        return edit_sizers.init_all()
-
-    def load_code_writers(self):
-        """\
-        Fills the common.code_writers dictionary: to do so, loads the modules
-        found in the 'codegen/' subdir
-        """
-        import imp
-        sys.path.append('codegen')
-        for module in os.listdir('codegen'):
-            name, ext = os.path.splitext(module)
-            if name not in sys.modules and \
-                   os.path.isfile(os.path.join('codegen', module)):
-                try: writer = __import__(name).writer
-                except (ImportError, AttributeError):
-                    print '"%s" is not a valid code generator module' % module
-                else:
-                    common.code_writers[writer.language] = writer
-                    print 'loaded code generator for %s' % writer.language
+        self.Raise()
 
     def show_tree(self, event):
         self.tree_frame.Show(event.IsChecked())
 
     def show_props_window(self, event):
-        self.frame2.Show(event.IsChecked())
-        common.app_tree.app.show_properties()
-        if common.app_tree.cur_widget:
-            common.app_tree.cur_widget.show_properties()
+        show = event.IsChecked()
+        self.frame2.Show(show)
+        if show:
+            common.app_tree.app.show_properties()
+            if common.app_tree.cur_widget:
+                common.app_tree.cur_widget.show_properties()
 
     def ask_save(self):
         """\
-        checks wether the current app has changed and needs to be saved: if so,
-        prompts the user; returns False if the operation has been cancelled
+        checks whether the current app has changed and needs to be saved:
+        if so, prompts the user;
+        returns False if the operation has been cancelled
         """
         if not common.app_tree.app.saved:
             ok = wxMessageBox("Save changes to the current app?", "Confirm",
@@ -227,7 +207,7 @@ class wxGladeFrame(wxFrame):
             common.app_tree.app.filename = None
             common.app_tree.app.saved = True
         
-    def open_app(self, event):
+    def open_app(self, event_unused):
         """\
         loads a wxGlade project from an xml file
         NOTE: this is very slow and needs optimisation efforts
@@ -235,45 +215,51 @@ class wxGladeFrame(wxFrame):
         """
         if not self.ask_save(): return
         from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
-        infile = wxFileSelector("Open file", wildcard="XML files|*.xml|" \
-                                "All files|*", flags=wxOPEN|wxFILE_MUST_EXIST)
-        if infile:
-            import time
-            start = time.clock()
-            
-            common.app_tree.clear()
-            common.app_tree.app.filename = infile
-            common.property_panel.Reparent(self.hidden_frame)
-            # prevent the auto-expansion of nodes
-            common.app_tree.auto_expand = False
+        infile = wxFileSelector("Open file", wildcard="wxGlade files|*.wxg|"
+                                "XML files|*.xml|All files|*",
+                                flags=wxOPEN|wxFILE_MUST_EXIST)
+        if infile: self._open_app(infile)
 
-            try:
-                infile = open(infile)
+    def _open_app(self, infilename, use_progress_dialog=True):
+        import time
+        from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
+        start = time.clock()
+
+        common.app_tree.clear()
+        common.app_tree.app.filename = infilename
+        common.property_panel.Reparent(self.hidden_frame)
+        # prevent the auto-expansion of nodes
+        common.app_tree.auto_expand = False
+
+        try:
+            infile = open(infilename)
+            if use_progress_dialog:
                 p = ProgressXmlWidgetBuilder(input_file=infile)
-                p.parse(infile)
-            except Exception, msg:
-                import traceback; traceback.print_exc()
-                
-                if locals().has_key('infile'): infile.close()
-                common.app_tree.clear()
-                common.property_panel.Reparent(self.frame2)
-                common.app_tree.app.saved = True
-                wxMessageBox("Error loading file:\n%s" % msg, "Error",
-                             wxOK|wxCENTRE|wxICON_ERROR)
-                # reset the auto-expansion of nodes
-                common.app_tree.auto_expand = True
-                return 
+            else: p = XmlWidgetBuilder()
+            p.parse(infile)
+        except Exception, msg:
+            import traceback; traceback.print_exc()
 
-            infile.close()
-            common.app_tree.select_item(common.app_tree.root)
-            common.app_tree.root.widget.show_properties()
+            if locals().has_key('infile'): infile.close()
+            common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)
+            common.app_tree.app.saved = True
+            wxMessageBox("Error loading file:\n%s" % msg, "Error",
+                         wxOK|wxCENTRE|wxICON_ERROR)
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
-            common.app_tree.expand()
+            return 
 
-            end = time.clock()
-            print 'Loading time: %.5f' % (end-start)
+        infile.close()
+        common.app_tree.select_item(common.app_tree.root)
+        common.app_tree.root.widget.show_properties()
+        common.property_panel.Reparent(self.frame2)
+        # reset the auto-expansion of nodes
+        common.app_tree.auto_expand = True
+        common.app_tree.expand()
+
+        end = time.clock()
+        print 'Loading time: %.5f' % (end-start)
 
         common.app_tree.app.saved = True
 
@@ -302,7 +288,8 @@ class wxGladeFrame(wxFrame):
         saves a wxGlade project onto an xml file chosen by the user
         """
         fn = wxFileSelector("Save project as...",
-                            wildcard="XML files|*.xml|All files|*",
+                            wildcard="wxGlade files|*.wxg|XML files|*.xml|"
+                            "All files|*",
                             flags=wxSAVE|wxOVERWRITE_PROMPT)
         common.app_tree.app.filename = fn
         if fn: self.save_app(event)
@@ -310,7 +297,6 @@ class wxGladeFrame(wxFrame):
     def cleanup(self, event):
         if self.ask_save():
             common.app_tree.clear()
-            common.app_tree.remove()
             self.Destroy()
             raise SystemExit
 
@@ -336,6 +322,20 @@ class wxGladeFrame(wxFrame):
         import about
         about.wxGladeAboutBox(self.GetParent()).ShowModal()
 
+    def show_tutorial(self, event):
+        if not self.tut_frame:
+            from wxPython.html import wxHtmlWindow
+            self.tut_frame = wxFrame(self, -1, "wxGlade Tutorial")
+            html = wxHtmlWindow(self.tut_frame, -1)
+            html.LoadPage('docs/tutorial.html')
+            self.tut_frame.SetSize((640, 480))
+            EVT_CLOSE(self.tut_frame, lambda e: self.tut_frame.Hide())
+            if wxPlatform == '__WXMSW__':
+                self.tut_frame.CenterOnScreen() # on Unix, WM are smart enough
+                                                # to place the frame at a
+                                                # reasonable position
+        self.tut_frame.Show()
+
 # end of class wxGladeFrame
 
 
@@ -352,6 +352,11 @@ class wxGlade(wxApp):
 # end of class wxGlade
 
 
-def main():    
+def main(filename=None):
+    """\
+    if filename is not None, loads it
+    """
     app = wxGlade()
+    if filename is not None:
+        app.GetTopWindow()._open_app(filename, False)
     app.MainLoop()
