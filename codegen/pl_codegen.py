@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.17 2003/08/28 11:07:34 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.18 2003/08/28 11:19:59 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -673,7 +673,8 @@ def add_class(code_obj):
             extra_modules = classes[code_obj.klass].dependencies.keys()
             deps = ['# begin wxGlade: ::dependencies\n'] + extra_modules + \
                    ['# end wxGlade\n']
-            tag = '#<%swxGlade replace dependencies>' % nonce
+            tag = '#<%swxGlade replace %s dependencies>' % \
+                    (nonce, code_obj.klass)
             prev_src.content = prev_src.content.replace(tag, "".join(deps))
             
             try:
