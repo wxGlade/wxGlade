@@ -1,3 +1,13 @@
+2002-08-15: edit_windows.py, codegen/py_codegen.py, codegen/cpp_codegen.py: 
+		     added "tooltip" property
+	    main.py: modified file dialogs to display a filter for wxGlade XML
+		     files (.wxg extension)
+            wxglade.py, main.py: added ability to open a wxGlade file at
+				 program startup
+
+2002-08-12: codegen/cpp_codegen.py, widgets/*/codegen.py:
+		    added experimantal C++ code generator
+ 
 2002-08-11: edit_windows.py, codegen/py_codegen.py: support of dialog units
 
 2002-08-10: widgets/*/codegen.py: better python code generator functions
