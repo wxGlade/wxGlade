@@ -1,5 +1,5 @@
 # config.py: wxGlade configuration handling
-# $Id: config.py,v 1.14 2003/05/22 11:12:19 agriggio Exp $
+# $Id: config.py,v 1.15 2003/07/23 15:35:55 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -212,15 +212,22 @@ if common.use_gui:
     # end of class wxGladePreferences
 
 
+def _get_home(default=common.wxglade_path):
+    h = os.path.expanduser('~')
+    if h not in ('~', '%USERPROFILE%'):
+        return h
+    if os.name == 'nt' and h == '%USERPROFILE%':
+        return os.environ.get('USERPROFILE', default)
+    return default
+
+
 class Preferences(ConfigParser):
     _has_home = os.path.expanduser('~') != '~'
     _defaults = {
         'use_menu_icons': common.use_gui and wxPlatform != '__WXGTK__',
         'frame_tool_win': True,
-        'open_save_path': (_has_home and os.path.expanduser('~') or \
-                           common.wxglade_path),
-        'codegen_path': (_has_home and os.path.expanduser('~') or \
-                         common.wxglade_path),
+        'open_save_path': _get_home(),
+        'codegen_path': _get_home(),
         'use_dialog_units': False,
         'number_history': 4,
         'show_progress': True,
@@ -229,8 +236,9 @@ class Preferences(ConfigParser):
         'backup_suffix': sys.platform == 'win32' and '.bak' or '~',
         'buttons_per_row': 5,
         'remember_geometry': False,
-        'local_widget_path': (_has_home and \
-                              os.path.expanduser('~/.wxglade/widgets') or '')
+        'local_widget_path': (_get_home('') and \
+                              os.path.join(_get_home(), '.wxglade', 'widgets')
+                              or '')
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults
@@ -295,8 +303,10 @@ def init_preferences():
     global preferences
     if preferences is None:
         preferences = Preferences()
-        search_path = [os.path.join(common.wxglade_path, _rc_name),
-                       os.path.expanduser('~/.wxglade/%s' % _rc_name)]
+        h = _get_home('')
+        search_path = [os.path.join(common.wxglade_path, _rc_name)]
+        if h:
+            search_path.append(os.path.join(h, '.wxglade', _rc_name))
         if 'WXGLADE_CONFIG_PATH' in os.environ:
             search_path.append(
                 os.path.expandvars('$WXGLADE_CONFIG_PATH/%s' % _rc_name))
@@ -315,10 +325,8 @@ def save_preferences():
     if 'WXGLADE_CONFIG_PATH' in os.environ:
         path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
     else:
-        path = os.path.expanduser('~')
-        if path == '~':
-            path = common.wxglade_path
-        else:
+        path = _get_home()
+        if path != common.wxglade_path:
             path = os.path.join(path, '.wxglade')
     if not os.path.isdir(path):
         os.mkdir(path)
@@ -345,10 +353,8 @@ def load_history():
     if 'WXGLADE_CONFIG_PATH' in os.environ:
         path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
     else:
-        path = os.path.expanduser('~')
-        if path == '~':
-            path = common.wxglade_path
-        else:
+        path = _get_home()
+        if path != common.wxglade_path:
             path = os.path.join(path, '.wxglade')
     try:
         history = open(os.path.join(path, 'file_history.txt'))
