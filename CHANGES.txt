@@ -1,3 +1,18 @@
+2002-10-06: codegen/cpp_codegen.py, codegen/py_codegen.py, 
+               edit_sizers/edit_sizers.py: fixed bug related to notebook sizers
+	    edit_sizers/edit_sizers.py: fixed layout update on GridSizerBase,
+					fixed add_col bug
+	    widgets/*: various layout improvements on some dialogs used to 
+		       add widgets
+	    main.py: better layout of the tutorial window
+
+2002-09-08: codegen/xrc_codegen.py: fixed bug (background colour)
+	    main.py, application.py: better path handling of file dialogs on 
+				     GTK
+	    edit_sizers/edit_sizers.py: added add_row and add_col methods to
+					GridSizerBase
+
+2002-09-06: about.py: new about box with wxGlade logo
 -------------------------------------------------------------------------------
 2002-09-02: version 0.1.3 released
 	    switch from GPL license to the Python 2.2 (PSF) one
@@ -19,7 +34,7 @@
 				 program startup
 
 2002-08-12: codegen/cpp_codegen.py, widgets/*/codegen.py:
-		    added experimantal C++ code generator
+		    added experimental C++ code generator
  
 2002-08-11: edit_windows.py, codegen/py_codegen.py: support of dialog units
 
