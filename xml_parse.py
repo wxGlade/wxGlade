@@ -408,8 +408,12 @@ class XmlWidgetObject:
             except AttributeError: pass
         except KeyError:
             # unknown property for this object
-            raise XmlParsingError("property '%s' not supported by this object"\
-                                  " ('%s') " % (name, self.obj))
+            # issue a warning and ignore the property
+            import sys
+            print >> sys.stderr, "Warning: property '%s' not supported by " \
+                  "this object ('%s') " % (name, self.obj)
+##             raise XmlParsingError("property '%s' not supported by this object"\
+##                                   " ('%s') " % (name, self.obj))
 
 #end of class XmlWidgetObject
 
