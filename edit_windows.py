@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.45 2003/06/27 16:01:38 agriggio Exp $
+# $Id: edit_windows.py,v 1.46 2003/07/05 14:32:40 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -9,6 +9,7 @@ from wxPython.wx import *
 from widget_properties import *
 from tree import Tree, WidgetTree
 import math, misc, common, sys, config
+import re
 
 
 class EditBase:
@@ -122,14 +123,24 @@ class EditBase:
         return self.access_functions[value]
 
     def set_name(self, value):
-        self.name = "%s" % value
-        if self._rmenu: self._rmenu.SetTitle(self.name)
-        try: common.app_tree.set_name(self.node, self.name)
-        except AttributeError: pass
-        self.property_window.SetTitle('Properties - <%s>' % self.name)
+        value = "%s" % value
+        if not re.match(self.set_name.pattern, value):
+            self.name_prop.set_value(self.name)
+        else:
+            self.name = value
+            if self._rmenu: self._rmenu.SetTitle(self.name)
+            try: common.app_tree.set_name(self.node, self.name)
+            except AttributeError: pass
+            self.property_window.SetTitle('Properties - <%s>' % self.name)
+    set_name.pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')
 
     def set_klass(self, value):
-        self.klass = "%s" % value
+        value = "%s" % value
+        if not re.match(self.set_klass.pattern, value):
+            self.klass_prop.set_value(self.klass)
+        else:
+            self.klass = value
+    set_klass.pattern = re.compile('^[a-zA-Z]+[\w:.0-9]*$')
 
     def popup_menu(self, event):
         if self.widget:

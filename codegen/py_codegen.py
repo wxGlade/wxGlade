@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.29 2003/06/24 15:07:27 agriggio Exp $
+# $Id: py_codegen.py,v 1.30 2003/07/05 14:32:39 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -23,6 +23,7 @@ import sys, os, os.path
 import common
 import cStringIO
 from xml_parse import XmlParsingError
+import re
 
 
 # these two globals must be defined for every code generator module
@@ -107,7 +108,6 @@ class SourceFileContent:
         and replaces the wxGlade blocks with tags that in turn will be replaced
         by the new wxGlade blocks
         """
-        import re
         class_name = None
         new_classes_inserted = False
         # regexp to match class declarations
@@ -215,6 +215,12 @@ def tabs(number):
 # if True, enable gettext support
 _use_gettext = False
 
+
+_quote_str_pattern = re.compile(r'\\[natbv"]?')
+def _do_replace(match):
+    if match.group(0) == '\\': return '\\\\'
+    else: return match.group(0)
+
 def quote_str(s):
     """\
     returns a quoted version of 's', suitable to insert in a python source file
@@ -222,6 +228,7 @@ def quote_str(s):
     """
     if not s: return '""'
     s = s.replace('"', r'\"')
+    s = _quote_str_pattern.sub(_do_replace, s)
     if _use_gettext: return '_("' + s + '")'
     else: return '"' + s + '"'
 
@@ -299,7 +306,6 @@ def finalize():
         # now remove all the remaining <123415wxGlade ...> tags from the
         # source: this may happen if we're not generating multiple files,
         # and one of the container class names is changed
-        import re
         tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +\w+>)' % nonce,
                           previous_source.content)
         for tag in tags:
