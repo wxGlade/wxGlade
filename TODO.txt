@@ -1,6 +1,6 @@
 wxGlade TODO list
 -----------------
-Last update: 2002-10-12
+Last update: 2002-12-02
 
 The list is more or less sorted by priority
 
@@ -11,10 +11,6 @@ Things Done:
 
 - "tags" on the generated code, to detect the portions of code to replace and
   those to keep as is, when updating an existing file
-
-- better support of custom classes, that is to say:
-  - Avoid double class declaration on the generated files when using
-    multiple instances of the same custom class
 
 - Investigation of the many memory leaks 
 
@@ -40,13 +36,15 @@ Real TODO (# = Partially done):
 - Possibility to change the position of a widget inside its sizer (#: almost
   done, needs testing)
 
-- Event handlers support
-
 - Edit -> Preferences... to customize some aspects of wxGlade (#)
 
 - International characters support (#)
 
 - Grid (#)
+
+- Auto saving/backup of wxg files (and possibly also of generated sources)
+
+- Event handlers support
 
 - ListCtrl and TreeCtrl
 
@@ -73,8 +71,5 @@ Real TODO (# = Partially done):
   an image, a centered label and a couple of buttons)
 
 - TabOrder property (this may be hard though)
-
-- better support of custom classes:
-  - Avoid xml code duplication: this may be hard
 
 - ...
