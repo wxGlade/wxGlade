@@ -89,12 +89,8 @@ class SelectionMarker:
 
 #----------------------------------------------------------------------------
 
-def _encode(label, encoding='latin-1'):
-    """\
-    Returns a str which is the encoded version of the unicode label
-    """
-    return label.encode(encoding, 'replace')
-
+import common
+_encode = common._encode_from_xml
 
 def color_to_string(color):
     """\

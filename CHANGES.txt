@@ -1,3 +1,22 @@
+2002-08-02: widgets/* edit_sizers: turned into packages with two modules,
+				   to decouple code generation functions
+				   from the rest
+	    common.py: - moved Application to the new application.py
+		       - moved misc._encode and widget_properties._encode here
+	    misc.py: moved _encode to common.py
+	    widget_properties.py: moved _encode to common.py
+	    wxglade.py: added functions usage and command_line_code_generation
+			to support code generation without starting the GUI
+	    main.py, widgets/frame/frame.py, widgets/frame/codegen.py:
+		     modified wxMenu.Append with checkable items for wxPython
+		     2.3.3 compatibility 
+
+2002-08-01: main.py: added a View->Show Properties menu item
+	    widgets/frame.py: experimental fix for menubar-related segfaults
+			      on GTK
+-------------------------------------------------------------------------------
+2002-08-01: version 0.1.2 released
+
 2002-08-01: clipboard.py: removed dirt at the end of xml_str when retrieved
 			  from the clipboard (this may happen on Windows)
 			  Removed renaming code

@@ -12,11 +12,13 @@
 #     def char_data(self, data):
 #         return False -> no further processing needed
 
-import common, widget_properties, tree, edit_sizers, misc
+import common, edit_sizers
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
-from wxPython.wx import *
 import traceback
+
+if common.use_gui:
+    from wxPython import wx
 
 class XmlParsingError(SAXException):
     """\
@@ -163,7 +165,7 @@ class XmlWidgetBuilder(XmlParser):
         else:
             # end of a property or error
             # 1: set _curr_prop value
-            data = misc._encode("".join(self._curr_prop_val))
+            data = common._encode_from_xml("".join(self._curr_prop_val))
             if data:
                 handler = self.top().prop_handlers.top()
                 if not handler or handler.char_data(data):
@@ -203,8 +205,8 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
             del kwds['input_file']
             self.size = len(self.input_file.readlines())
             self.input_file.seek(0)
-            self.progress = wxProgressDialog("Loading...", "Please wait "
-                                             "while loading the app", 20)
+            self.progress = wx.wxProgressDialog("Loading...", "Please wait "
+                                                "while loading the app", 20)
             self.step = 4
             self.i = 1
         else:
@@ -403,28 +405,33 @@ class XmlWidgetObject:
 
 class CodeWriter(XmlParser):
     """parser used to produce the source from a given xml file"""
-    def __init__(self, writer, input, from_string=False):
+    def __init__(self, writer, input, from_string=False, out_path=None):
         # writer: object that actually writes the code
         XmlParser.__init__(self)
         self._toplevels = Stack() # toplevel objects, i.e. instances of a
                                   # custom class
         self.app_attrs = {} # attributes of the app (name, class, top_window)
         self.top_win = ''   # class name of the top window of the app (if any)
+        self.out_path = out_path # this allows to override the output path
+                                 # specified in the xml file
         
         self.tabs = 0 # current indentation level
         self.code_writer = writer
 
         if from_string: self.parse_string(input)
         else:
-            input = open(input)
-            self.parse(input)
-            input.close()
+            inputfile = None
+            try:
+                inputfile = open(input)
+                self.parse(inputfile)
+            finally:
+                if inputfile: inputfile.close()
 
     def startElement(self, name, attrs_impl):
         attrs = {}
         # turn all the attribute values from unicode to str objects
         for attr, val in attrs_impl.items():
-            attrs[attr] = misc._encode(val)
+            attrs[attr] = common._encode_from_xml(val)
         if name == 'application':
             # get the code generation options
             self._appl_started = True
@@ -432,12 +439,13 @@ class CodeWriter(XmlParser):
                 self.app_attrs = attrs
             try: use_multiple_files = int(attrs['option']) and True
             except (KeyError, ValueError): use_multiple_files = False
-            try: out_path = attrs['path']
-            except KeyError:
-                raise XmlParsingError("'path' attribute missing: could "
-                                      "not generate code")
+            if self.out_path is None:
+                try: self.out_path = attrs['path']
+                except KeyError:
+                    raise XmlParsingError("'path' attribute missing: could "
+                                          "not generate code")
             # initialize the writer
-            self.code_writer.initialize(out_path, use_multiple_files)
+            self.code_writer.initialize(self.out_path, use_multiple_files)
             return
         if not self._appl_started:
             raise XmlParsingError("the root of the tree must be <application>")
@@ -497,7 +505,7 @@ class CodeWriter(XmlParser):
         else:
             # end of a property or error
             # 1: set _curr_prop value
-            data = misc._encode(u"".join(self._curr_prop_val))
+            data = common._encode_from_xml(u"".join(self._curr_prop_val))
             if data:
                 handler = self.top().prop_handlers.top()
                 if not handler or handler.char_data(data):
@@ -574,6 +582,7 @@ class CodeObject:
                 self.in_windows = True
         else: # the object is a sizeritem
             self.obj = Sizeritem()
+            self.obj.flag_s = '0'
             self.parser._sizer_item.push(self)
 
     def __str__(self):
@@ -584,10 +593,11 @@ class CodeObject:
         if hasattr(self, 'obj'): # self is a sizeritem
             try:
                 if name == 'flag':
-                    flag = 0
-                    for f in value.split('|'):
-                        flag |= Sizeritem.flags[f.strip()]
-                    setattr(self.obj, name, flag)
+##                     flag = 0
+##                     for f in value.split('|'):
+##                         flag |= Sizeritem.flags[f.strip()]
+##                     setattr(self.obj, name, flag)
+                    self.obj.flag_s = value.strip()
                 else: setattr(self.obj, name, int(value))
             except: raise XmlParsingError("property '%s' not supported by " \
                                           "'%s' objects" % (name, self.klass))
@@ -625,12 +635,14 @@ class Stack:
 
 
 class Sizeritem:
-    flags = { 'wxEXPAND': wxEXPAND, 'wxALIGN_RIGHT': wxALIGN_RIGHT,
-              'wxALIGN_BOTTOM': wxALIGN_BOTTOM,
-              'wxALIGN_CENTER_HORIZONTAL': wxALIGN_CENTER_HORIZONTAL,
-              'wxALIGN_CENTER_VERTICAL': wxALIGN_CENTER_VERTICAL,
-              'wxLEFT': wxLEFT, 'wxRIGHT': wxRIGHT, 'wxTOP': wxTOP,
-              'wxBOTTOM': wxBOTTOM }
+    if common.use_gui:
+        flags = { 'wxEXPAND': wx.wxEXPAND, 'wxALIGN_RIGHT': wx.wxALIGN_RIGHT,
+                  'wxALIGN_BOTTOM': wx.wxALIGN_BOTTOM,
+                  'wxALIGN_CENTER_HORIZONTAL': wx.wxALIGN_CENTER_HORIZONTAL,
+                  'wxALIGN_CENTER_VERTICAL': wx.wxALIGN_CENTER_VERTICAL,
+                  'wxLEFT': wx.wxLEFT, 'wxRIGHT': wx.wxRIGHT,
+                  'wxTOP': wx.wxTOP,
+                  'wxBOTTOM': wx.wxBOTTOM }
 
     def __init__(self):
         self.option = self.border = 0
@@ -653,15 +665,17 @@ class Sizeritem:
     def flag_str(self):
         # returns the flag attribute as a string of tokens separated
         # by a '|' (used during the code generation)
-        try:
-            tmp = '|'.join([ k for k in self.flags if \
-                             self.flags[k] & self.flag ])
-        except:
-            print 'EXCEPTION: self.flags = %s, self.flag = %s' % \
-                  (self.flags, repr(self.flag))
-            raise
-        if tmp: return tmp
-        else: return '0'
+        if hasattr(self, 'flag_s'): return self.flag_s
+        else:
+            try:
+                tmp = '|'.join([ k for k in self.flags if \
+                                 self.flags[k] & self.flag ])
+            except:
+                print 'EXCEPTION: self.flags = %s, self.flag = %s' % \
+                      (self.flags, repr(self.flag))
+                raise
+            if tmp: return tmp
+            else: return '0'
 
 # end of class Sizeritem
 

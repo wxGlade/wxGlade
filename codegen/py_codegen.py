@@ -21,6 +21,7 @@ import sys, os, os.path
 import common
 from xml_parse import XmlParsingError
 
+
 # these two globals must be defined for every code generator module
 language = 'python'
 writer = sys.modules[__name__] # the writer is the module itself
@@ -647,3 +648,4 @@ def add_widget_handler(widget_name, handler,
     """
     obj_builders[widget_name] = handler
     obj_properties[widget_name] = properties_handler
+
