@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.37 2004/11/02 09:52:03 agriggio Exp $
+# $Id: misc.py,v 1.38 2004/12/08 18:11:32 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -364,3 +364,28 @@ def wxstr(s):
 # has been added on 2003-06-22 to fix what seems to me a (wx)GTK2 bug
 #------------------------------------------------------------------------------
 hidden_property_panel = None
+
+
+#------------------------------------------------------------------------------
+
+try:
+    enumerate = enumerate
+except NameError:
+    class enumerate(object):
+        """\
+        Python 2.2.x replacement for the `enumerate' builtin.
+        """
+        def __init__(self, iterable):
+            self.iterable = iterable
+            self.index = -1
+
+        def __iter__(self):
+            self.iterable = iter(self.iterable)
+            return self
+
+        def next(self):
+            val = self.iterable.next()
+            self.index += 1
+            return self.index, val
+
+    # end of class enumerate

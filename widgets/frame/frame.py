@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.37 2004/10/20 16:59:46 agriggio Exp $
+# $Id: frame.py,v 1.38 2004/12/08 18:11:27 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -183,6 +183,7 @@ class EditFrame(TopLevelBase):
                         'wxMAXIMIZE_BOX', 'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
                         'wxSIMPLE_BORDER', 'wxRESIZE_BORDER',
                         'wxFRAME_TOOL_WINDOW', 'wxFRAME_NO_TASKBAR',
+                        'wxFRAME_FLOAT_ON_PARENT',
                         'wxNO_BORDER',
                         'wxNO_FULL_REPAINT_ON_RESIZE']
         self.style_pos = [wxDEFAULT_FRAME_STYLE,
@@ -190,7 +191,8 @@ class EditFrame(TopLevelBase):
                           wxMINIMIZE_BOX, wxMAXIMIZE, wxMAXIMIZE_BOX,
                           wxSTAY_ON_TOP, wxSYSTEM_MENU, wxSIMPLE_BORDER,
                           wxRESIZE_BORDER, wxFRAME_TOOL_WINDOW,
-                          wxFRAME_NO_TASKBAR, wxNO_BORDER,
+                          wxFRAME_NO_TASKBAR, wxFRAME_FLOAT_ON_PARENT,
+                          wxNO_BORDER,
                           wxNO_FULL_REPAINT_ON_RESIZE]
         if misc.check_wx_version(2, 5):
             style_labels.insert(5, 'wxCLOSE_BOX')

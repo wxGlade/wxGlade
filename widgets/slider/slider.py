@@ -1,5 +1,5 @@
 # slider.py: wxSlider objects
-# $Id: slider.py,v 1.8 2004/09/17 13:09:50 agriggio Exp $
+# $Id: slider.py,v 1.9 2004/12/08 18:11:25 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -12,6 +12,20 @@ from tree import Tree
 from widget_properties import *
 
 class EditSlider(ManagedBase):
+
+    events = [
+        'EVT_COMMAND_SCROLL',
+        'EVT_COMMAND_SCROLL_TOP',
+        'EVT_COMMAND_SCROLL_BOTTOM',
+        'EVT_COMMAND_SCROLL_LINEUP',
+        'EVT_COMMAND_SCROLL_LINEDOWN',
+        'EVT_COMMAND_SCROLL_PAGEUP',
+        'EVT_COMMAND_SCROLL_PAGEDOWN',
+        'EVT_COMMAND_SCROLL_THUMBTRACK',
+        'EVT_COMMAND_SCROLL_THUMBRELEASE',
+        'EVT_COMMAND_SCROLL_ENDSCROLL',
+        ]
+    
     def __init__(self, name, parent, id, style, sizer, pos,
                  property_window, show=True):
         """\

@@ -1,5 +1,5 @@
 # spin_button.py: wxSpinButton objects
-# $Id: spin_button.py,v 1.3 2004/09/28 09:52:02 crazyinsomniac Exp $
+# $Id: spin_button.py,v 1.4 2004/12/08 18:11:25 agriggio Exp $
 #
 # Copyright (c) 2004 D.H. aka crazyinsomniac at users.sourceforge.net
 # License: MIT (see license.txt)
@@ -11,16 +11,20 @@ from edit_windows import ManagedBase
 from tree import Tree
 import common, misc
 from widget_properties import *
+
    
 class EditSpinButton(ManagedBase):
     """\
     Class to handle wxSpinButton objects
     """
+
+    events = ['EVT_SPIN', 'EVT_SPIN_UP', 'EVT_SPIN_DOWN']
+    
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
         import config
-        ManagedBase.__init__(self, name, 'wxSpinButton', parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxSpinButton', parent, id, sizer,
+                             pos, property_window, show=show)
         self.style = 0
         self.value = 0
         self.range = (0, 100) # Default values in wxSpinButton constructor.
@@ -29,8 +33,10 @@ class EditSpinButton(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
-        style_labels = ('#section#Style', 'wxSP_HORIZONTAL', 'wxSP_VERTICAL', 'wxSP_ARROW_KEYS', 'wxSP_WRAP')
-        self.style_pos = (wxSP_HORIZONTAL, wxSP_VERTICAL, wxSP_ARROW_KEYS, wxSP_WRAP)
+        style_labels = ('#section#Style', 'wxSP_HORIZONTAL', 'wxSP_VERTICAL',
+                        'wxSP_ARROW_KEYS', 'wxSP_WRAP')
+        self.style_pos = (wxSP_HORIZONTAL, wxSP_VERTICAL, wxSP_ARROW_KEYS,
+                          wxSP_WRAP)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         prop['range'] = TextProperty(self, 'range', None, can_disable=True)
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True)

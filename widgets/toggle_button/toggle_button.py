@@ -1,5 +1,5 @@
 # toggle_button.py: wxToggleButton objects
-# $Id: toggle_button.py,v 1.10 2004/09/17 13:09:49 agriggio Exp $
+# $Id: toggle_button.py,v 1.11 2004/12/08 18:11:23 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -13,6 +13,9 @@ from widget_properties import *
 
 
 class EditToggleButton(ManagedBase):
+
+    events = ['EVT_TOGGLEBUTTON']
+    
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
         """\

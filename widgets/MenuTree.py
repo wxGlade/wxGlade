@@ -1,5 +1,5 @@
 # MenuTree.py: A class to represent a menu on a wxMenuBar
-# $Id: MenuTree.py,v 1.8 2004/09/17 13:09:55 agriggio Exp $
+# $Id: MenuTree.py,v 1.9 2004/12/08 18:11:29 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -11,13 +11,14 @@ class MenuTree:
     """
     class Node:
         def __init__(self, label="", id="", name="", help_str="",
-                     checkable="", radio=""):
+                     checkable="", radio="", handler=""):
             self.label = label
             self.id = id
             self.name = name
             self.help_str = help_str
             self.checkable = checkable
             self.radio = radio
+            self.handler = handler
             self.children = []
             self.parent = None
             
@@ -47,20 +48,26 @@ class MenuTree:
                 except: radio = 0
                 if radio:
                     fwrite('%s<radio>%s</radio>\n' % (tstr, radio))
+                # ALB 2004-12-05
+                handler = escape(self.handler)
+                if handler:
+                    fwrite('%s<handler>%s</handler>\n' % (tstr, handler))
                 fwrite('%s</item>\n' % ('    ' * tabs))
             else:
                 name = quoteattr(self.name)
                 fwrite('    ' * tabs + '<menu name=%s ' % name)
                 if self.id:
                     fwrite('itemid=%s ' % quoteattr(self.id))
+                if self.handler:
+                    fwrite('handler=%s ' % quoteattr(self.handler))
                 fwrite('label=%s>\n' % (quoteattr(label)))
                 for c in self.children: c.write(outfile, tabs+1)
                 fwrite('    ' * tabs + '</menu>\n')
                 
     #end of class Node
     
-    def __init__(self, name, label):
-        self.root = self.Node(label, "", name, "")
+    def __init__(self, name, label, id="", help_str="", handler=""):
+        self.root = self.Node(label, id, name, help_str, handler=handler)
 
     def write(self, outfile, tabs):
         self.root.write(outfile, tabs, top=True)

@@ -1,5 +1,5 @@
 # radio_button.py: wxRadioButton objects
-# $Id: radio_button.py,v 1.13 2004/10/18 09:20:11 agriggio Exp $
+# $Id: radio_button.py,v 1.14 2004/12/08 18:11:25 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -13,6 +13,9 @@ from widget_properties import *
 from misc import wxGladeRadioButton
 
 class EditRadioButton(ManagedBase):
+
+    events = ['EVT_RADIOBUTTON']
+    
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
         """\

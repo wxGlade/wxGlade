@@ -1,5 +1,5 @@
 # text_ctrl.py: wxTreeCtrl objects
-# $Id: tree_ctrl.py,v 1.6 2004/09/17 13:09:48 agriggio Exp $
+# $Id: tree_ctrl.py,v 1.7 2004/12/08 18:11:15 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -11,10 +11,33 @@ from tree import Tree
 import common, misc
 from widget_properties import *
 
+
 class EditTreeCtrl(ManagedBase):
     """\
     Class to handle wxTreeCtrl objects
     """
+
+    events = [
+        'EVT_TREE_BEGIN_DRAG',
+        'EVT_TREE_BEGIN_RDRAG',
+        'EVT_TREE_END_DRAG',
+        'EVT_TREE_END_RDRAG',
+        'EVT_TREE_BEGIN_LABEL_EDIT',
+        'EVT_TREE_END_LABEL_EDIT',
+        'EVT_TREE_DELETE_ITEM',
+        'EVT_TREE_GET_INFO',
+        'EVT_TREE_SET_INFO',
+        'EVT_TREE_ITEM_ACTIVATED',
+        'EVT_TREE_ITEM_COLLAPSED',
+        'EVT_TREE_ITEM_COLLAPSING',
+        'EVT_TREE_ITEM_EXPANDED',
+        'EVT_TREE_ITEM_EXPANDING',
+        'EVT_TREE_SEL_CHANGED',
+        'EVT_TREE_SEL_CHANGING',
+        'EVT_TREE_KEY_DOWN',
+        'EVT_TREE_ITEM_GETTOOLTIP',
+        ]
+    
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True, style=wxTR_HAS_BUTTONS|wxSUNKEN_BORDER):
         ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, id, sizer, pos,
@@ -25,7 +48,8 @@ class EditTreeCtrl(ManagedBase):
         self.style_pos  = (wxTR_HAS_BUTTONS, wxTR_NO_LINES, wxTR_LINES_AT_ROOT,
                            wxTR_EDIT_LABELS, wxTR_MULTIPLE, wxTR_NO_BUTTONS,
                            wxTR_TWIST_BUTTONS, wxTR_FULL_ROW_HIGHLIGHT,
-                           wxTR_HIDE_ROOT, wxTR_ROW_LINES, wxTR_HAS_VARIABLE_ROW_HEIGHT,
+                           wxTR_HIDE_ROOT, wxTR_ROW_LINES,
+                           wxTR_HAS_VARIABLE_ROW_HEIGHT,
                            wxTR_SINGLE, wxTR_MULTIPLE, wxTR_EXTENDED,
                            wxTR_DEFAULT_STYLE, wxSIMPLE_BORDER, wxDOUBLE_BORDER,
                            wxSUNKEN_BORDER, wxRAISED_BORDER, wxSTATIC_BORDER,

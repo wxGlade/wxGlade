@@ -1,5 +1,5 @@
 # xrc_codegen.py: wxWidgets resources XRC code generator
-# $Id: xrc_codegen.py,v 1.16 2004/09/17 13:09:55 agriggio Exp $
+# $Id: xrc_codegen.py,v 1.17 2004/12/08 18:11:30 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -174,6 +174,10 @@ class DefaultXrcObject(XrcObject):
 
         if 'id' in self.properties:
             del self.properties['id'] # id has no meaning for XRC
+
+        # ALB 2004-12-05
+        if 'events' in self.properties:
+            del self.properties['events'] # no event handling in XRC
 
         # 'disabled' property is actually 'enabled' for XRC
         if 'disabled' in self.properties:

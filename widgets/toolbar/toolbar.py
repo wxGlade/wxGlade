@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.15 2004/11/18 21:14:57 agriggio Exp $
+# $Id: toolbar.py,v 1.16 2004/12/08 18:11:23 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -70,17 +70,25 @@ class ToolsDialog(wxDialog):
         self.tool_items.InsertColumn(4, "Short Help")
         self.tool_items.InsertColumn(5, "Long Help")
         self.tool_items.InsertColumn(6, "Type")
+        # ALB 2004-12-05
+        self.tool_items.InsertColumn(7, "Event Handler")
+
         self.tool_items.SetColumnWidth(0, 100)
         self.tool_items.SetColumnWidth(2, 100)
         self.tool_items.SetColumnWidth(3, 150)
         self.tool_items.SetColumnWidth(4, 150)
         self.tool_items.SetColumnWidth(5, 100)
         self.tool_items.SetColumnWidth(6, 150)
+        self.tool_items.SetColumnWidth(7, 150)
+        
         # tool fields
         self.id = wxTextCtrl(self, ID_ID)
         self.label = wxTextCtrl(self, LABEL_ID)
         self.help_str = wxTextCtrl(self, HELP_STR_ID)
         self.long_help_str = wxTextCtrl(self, LONG_HELP_STR_ID)
+        # ALB 2004-12-05
+        self.event_handler = wxTextCtrl(self, -1)
+
         self.bitmap1 = _MyBrowseButton(
             self, BITMAP1_ID, labelText='Normal Bitmap', buttonText='...',
             changeCallback=self.update_tool)
@@ -99,7 +107,7 @@ class ToolsDialog(wxDialog):
         self.move_up = wxButton(self, MOVE_UP_ID, "Up")
         self.move_down = wxButton(self, MOVE_DOWN_ID, "Down")
 
-        self.ok = wxButton(self, wxID_OK, " OK ")
+        self.ok = wxButton(self, wxID_OK, "OK")
         self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
 
         self.do_layout()
@@ -113,6 +121,7 @@ class ToolsDialog(wxDialog):
         EVT_KILL_FOCUS(self.id, self.update_tool)
         EVT_KILL_FOCUS(self.help_str, self.update_tool)
         EVT_KILL_FOCUS(self.long_help_str, self.update_tool)
+        EVT_KILL_FOCUS(self.event_handler, self.update_tool)
         EVT_RADIOBOX(self, CHECK_RADIO_ID, self.update_tool)
         EVT_LIST_ITEM_SELECTED(self, LIST_ID, self.show_tool)
         if items:
@@ -123,6 +132,7 @@ class ToolsDialog(wxDialog):
         self.id.Enable(False)
         self.help_str.Enable(False)
         self.long_help_str.Enable(False)
+        self.event_handler.Enable(False)
         self.bitmap1.Enable(False)
         self.bitmap2.Enable(False)
         self.check_radio.Enable(False)
@@ -133,19 +143,23 @@ class ToolsDialog(wxDialog):
         self.id.SetSize((150, -1))
         self.help_str.SetSize((150, -1))
         self.long_help_str.SetSize((150, -1))
+        self.event_handler.SetSize((150, -1))
         szr = wxFlexGridSizer(0, 2)
         if misc.check_wx_version(2, 5, 2):
             flag = wxFIXED_MINSIZE
         else:
             flag = 0
-        szr.Add(wxStaticText(self, -1, "Id   "))
+        label_flag = wxALIGN_CENTER_VERTICAL
+        szr.Add(wxStaticText(self, -1, "Id   "), flag=label_flag)
         szr.Add(self.id, flag=flag)
-        szr.Add(wxStaticText(self, -1, "Label  "))
+        szr.Add(wxStaticText(self, -1, "Label  "), flag=label_flag)
         szr.Add(self.label, flag=flag)
-        szr.Add(wxStaticText(self, -1, "Short Help  "))
+        szr.Add(wxStaticText(self, -1, "Short Help  "), flag=label_flag)
         szr.Add(self.help_str, flag=flag)
-        szr.Add(wxStaticText(self, -1, "Long Help  "))
+        szr.Add(wxStaticText(self, -1, "Long Help  "), flag=label_flag)
         szr.Add(self.long_help_str, flag=flag)
+        szr.Add(wxStaticText(self, -1, "Event Handler  "), flag=label_flag)
+        szr.Add(self.event_handler, flag=flag)
         sizer2.Add(szr, 1, wxALL|wxEXPAND, 5)
         label_w = self.bitmap1.browseButton.GetTextExtent('...')[0]
         sizer2.Add(self.bitmap1, 0, wxEXPAND)
@@ -174,7 +188,7 @@ class ToolsDialog(wxDialog):
         self.SetAutoLayout(1)
         self.SetSizer(sizer)
         sizer.Fit(self)
-        self.SetSize((-1, 350))
+        #self.SetSize((-1, 350))
         self.CenterOnParent()
 
     def add_tool(self, event):
@@ -184,7 +198,8 @@ class ToolsDialog(wxDialog):
         index = self.selected_index = self.selected_index+1
         if not self.tool_items.GetItemCount():
             for s in (self.label, self.id, self.help_str, self.long_help_str,
-                      self.bitmap1, self.bitmap2, self.check_radio):
+                      self.bitmap1, self.bitmap2, self.check_radio,
+                      self.event_handler):
                 s.Enable(True)
         if index < 0: index = self.tool_items.GetItemCount()
         name, label, id, check_radio = "", "item", "", "0"
@@ -205,6 +220,7 @@ class ToolsDialog(wxDialog):
         self.bitmap2.SetValue(bitmap2, False)
         self.help_str.SetValue(help_str)
         self.long_help_str.SetValue(long_help_str)
+        self.event_handler.SetValue("")
 
     def add_separator(self, event):
         """\
@@ -213,7 +229,8 @@ class ToolsDialog(wxDialog):
         index = self.selected_index+1
         if not self.tool_items.GetItemCount():
             for s in (self.label, self.id, self.help_str, self.long_help_str,
-                      self.bitmap1, self.bitmap2, self.check_radio):
+                      self.bitmap1, self.bitmap2, self.check_radio,
+                      self.event_handler):
                 s.Enable(True)
         if index < 0: index = self.tool_items.GetItemCount() 
         self.tool_items.InsertStringItem(index, '---')#label)
@@ -231,7 +248,8 @@ class ToolsDialog(wxDialog):
         if not self.tool_items.GetItem(index, 2).m_text == '---':
             # skip if the selected item is a separator
             for (s, i) in ((self.label, 0), (self.id, 1),
-                           (self.help_str, 4), (self.long_help_str, 5)):
+                           (self.help_str, 4), (self.long_help_str, 5),
+                           (self.event_handler, 7)):
                 s.SetValue(get_item(index, i).m_text)
             self.bitmap1.SetValue(get_item(index, 2).m_text, False)
             self.bitmap2.SetValue(get_item(index, 3).m_text, False)
@@ -257,6 +275,7 @@ class ToolsDialog(wxDialog):
         set_item(index, 4, self.help_str.GetValue())
         set_item(index, 5, self.long_help_str.GetValue())
         set_item(index, 6, str(self.check_radio.GetSelection()))
+        set_item(index, 7, self.event_handler.GetValue())
         try:
             event.Skip()
         except AttributeError:
@@ -275,7 +294,8 @@ class ToolsDialog(wxDialog):
         Event handler called when the Remove button is clicked
         """        
         if self.selected_index >= 0:
-            for s in (self.id, self.label, self.help_str, self.long_help_str):
+            for s in (self.id, self.label, self.help_str, self.long_help_str,
+                      self.event_handler):
                 s.SetValue("")
             for s in (self.bitmap1, self.bitmap2):
                 s.SetValue("", False)
@@ -284,7 +304,7 @@ class ToolsDialog(wxDialog):
             if not self.tool_items.GetItemCount():
                 for s in (self.id, self.label, self.help_str,
                           self.long_help_str, self.bitmap1, self.bitmap2,
-                          self.check_radio):
+                          self.check_radio, self.event_handler):
                     s.Enable(False)
 
     def add_tools(self, tools):
@@ -304,6 +324,7 @@ class ToolsDialog(wxDialog):
             set_item(i, 3, misc.wxstr(tool.bitmap2))
             set_item(i, 4, misc.wxstr(tool.short_help))
             set_item(i, 5, misc.wxstr(tool.long_help))
+            set_item(i, 7, misc.wxstr(tool.handler))
             item_type = 0
             set_item(i, 6, misc.wxstr(tool.type))
             index[0] += 1
@@ -311,9 +332,9 @@ class ToolsDialog(wxDialog):
             add(tool)
         if self.tool_items.GetItemCount():
             for s in (self.id, self.label, self.help_str, self.long_help_str,
-                      self.bitmap1, self.bitmap2, self.check_radio):
+                      self.bitmap1, self.bitmap2, self.check_radio,
+                      self.event_handler):
                 s.Enable(True)
-            
 
     def get_tools(self):
         """\
@@ -329,13 +350,15 @@ class ToolsDialog(wxDialog):
             bitmap2 = get(index, 3)
             short_help = get(index, 4)
             long_help = get(index, 5)
+            event_handler = get(index, 7)
             try:
                 item_type = int(get(index, 6))
             except ValueError:
                 item_type = 0
             tools.append(Tool(label=label, id=id, type=item_type,
                               short_help=short_help, long_help=long_help,
-                              bitmap1=bitmap1, bitmap2=bitmap2))
+                              bitmap1=bitmap1, bitmap2=bitmap2,
+                              handler=event_handler))
         for index in range(self.tool_items.GetItemCount()):
             add(index)
 
@@ -350,10 +373,10 @@ class ToolsDialog(wxDialog):
         if self.selected_index > 0:
             index = self.selected_index - 1
             vals1 = [ self.tool_items.GetItem(self.selected_index, i).m_text \
-                      for i in range(7) ]
+                      for i in range(8) ]
             vals2 = [ self.tool_items.GetItem(index, i).m_text \
-                      for i in range(7) ]
-            for i in range(7):
+                      for i in range(8) ]
+            for i in range(8):
                 self.tool_items.SetStringItem(index, i, vals1[i])
                 self.tool_items.SetStringItem(self.selected_index, i, vals2[i])
             state = wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED
@@ -369,10 +392,10 @@ class ToolsDialog(wxDialog):
         if self.selected_index < self.tool_items.GetItemCount()-1:
             index = self.selected_index + 1
             vals1 = [ self.tool_items.GetItem(self.selected_index, i).m_text \
-                      for i in range(7) ]
+                      for i in range(8) ]
             vals2 = [ self.tool_items.GetItem(index, i).m_text \
-                      for i in range(7) ]
-            for i in range(7):
+                      for i in range(8) ]
+            for i in range(8):
                 self.tool_items.SetStringItem(index, i, vals1[i])
                 self.tool_items.SetStringItem(self.selected_index, i, vals2[i])
             state = wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED
@@ -729,7 +752,7 @@ class EditToolBar(EditBase, PreviewMixin):
     def get_property_handler(self, name):
         class ToolsHandler:
             itemattrs = ['label', 'id', 'short_help', 'long_help',
-                         'bitmap1', 'bitmap2', 'type']
+                         'bitmap1', 'bitmap2', 'type', 'handler']
             def __init__(self, owner):
                 self.owner = owner
                 self.tools = []

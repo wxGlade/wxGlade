@@ -1,5 +1,5 @@
 # text_ctrl.py: wxListCtrl objects
-# $Id: list_ctrl.py,v 1.7 2004/09/17 13:09:52 agriggio Exp $
+# $Id: list_ctrl.py,v 1.8 2004/12/08 18:11:26 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -15,6 +15,30 @@ class EditListCtrl(ManagedBase):
     """\
     Class to handle wxListCtrl objects
     """
+
+    events = [
+        'EVT_LIST_BEGIN_DRAG',
+        'EVT_LIST_BEGIN_RDRAG',
+        'EVT_LIST_BEGIN_LABEL_EDIT',
+        'EVT_LIST_END_LABEL_EDIT',
+        'EVT_LIST_DELETE_ITEM',
+        'EVT_LIST_DELETE_ALL_ITEMS',
+        'EVT_LIST_ITEM_SELECTED',
+        'EVT_LIST_ITEM_DESELECTED',
+        'EVT_LIST_ITEM_ACTIVATED',
+        'EVT_LIST_ITEM_FOCUSED',
+        'EVT_LIST_ITEM_MIDDLE_CLICK',
+        'EVT_LIST_ITEM_RIGHT_CLICK',
+        'EVT_LIST_KEY_DOWN',
+        'EVT_LIST_INSERT_ITEM',
+        'EVT_LIST_COL_CLICK',
+        'EVT_LIST_COL_RIGHT_CLICK',
+        'EVT_LIST_COL_BEGIN_DRAG',
+        'EVT_LIST_COL_DRAGGING',
+        'EVT_LIST_COL_END_DRAG',
+        'EVT_LIST_CACHE_HINT',
+        ]
+    
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True, style=wxLC_REPORT|wxSUNKEN_BORDER):
         ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos,

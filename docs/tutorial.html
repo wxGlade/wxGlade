@@ -129,11 +129,11 @@ generates the code for the object, it writes:
 
 <p><b>NOTE 2:</b> For XRC output, if the value of <tt>Class</tt> is different
 from the default one, the object will have a <tt>subclass</tt> attribute. For
-the example above, the code generated would be: 
+the example above, the code generated would be: </p>
 <blockquote> 
 &lt;object class="wxButton" name="button_1" subclass="MyCustomButton"/&gt; 
 </blockquote>
-This means that you should be a little careful with XRC output, in that you
+<p>This means that you should be a little careful with XRC output, in that you
 have to remember to reset the <tt>Class</tt> value to the default one when
 adding a "top-level" widget (frame, dialog,...), because by default wxGlade
 assumes they are custom classes.

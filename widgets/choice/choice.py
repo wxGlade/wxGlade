@@ -1,5 +1,5 @@
 # choice.py: wxChoice objects
-# $Id: choice.py,v 1.13 2004/09/17 13:09:54 agriggio Exp $
+# $Id: choice.py,v 1.14 2004/12/08 18:11:28 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -26,6 +26,9 @@ else:
 
 
 class EditChoice(ManagedBase):
+
+    events = ['EVT_CHOICE']
+    
     def __init__(self, name, parent, id, choices, sizer, pos, property_window,
                  show=True):
         """\
