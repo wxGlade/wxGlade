@@ -9,7 +9,37 @@ from tool import *
 
 class PythonCodeGenerator:
     def get_properties_code(self, obj):
-        return []
+        prop = obj.properties
+        pygen = common.code_writers['python']
+        out = []
+        append = out.append
+        
+        if obj.is_toplevel: obj_name = 'self'
+        else: obj_name = 'self.' + obj.name
+        
+        bitmapsize = prop.get('bitmapsize')
+        if bitmapsize:
+            try:
+                w, h = [int(i) for i in bitmapsize.split(',')]
+                append('%s.SetToolBitmapSize((%s, %s))\n' % (obj_name, w, h))
+            except:
+                pass
+        margins = prop.get('margins')
+        if margins:
+            try:
+                w, h = [int(i) for i in margins.split(',')]
+                append('%s.SetMargins((%s, %s))\n' % (obj_name, w, h))
+            except:
+                pass
+        packing = prop.get('packing')
+        if packing:
+            append('%s.SetToolPacking(%s)\n' % (obj_name, packing))
+        separation = prop.get('separation')
+        if separation:
+            append('%s.SetToolSeparation(%s)\n' % (obj_name, separation))
+        append('%s.Realize()\n' % obj_name)
+
+        return out
         
     def get_init_code(self, obj):
         prop = obj.properties
@@ -21,22 +51,6 @@ class PythonCodeGenerator:
        
         if obj.is_toplevel: obj_name = 'self'
         else: obj_name = 'self.' + obj.name
-
-        bitmapsize = obj.properties.get('bitmapsize')
-        if bitmapsize:
-            try:
-                w, h = [int(i) for i in bitmapsize.split(',')]
-                append('%s.SetToolBitmapSize((%s, %s))\n' % (obj_name, w, h))
-            except:
-                pass
-
-        margins = obj.properties.get('margins')
-        if margins:
-            try:
-                w, h = [int(i) for i in margins.split(',')]
-                append('%s.SetMargins((%s, %s))\n' % (obj_name, w, h))
-            except:
-                pass
 
         for tool in tools:
             if tool.id == '---': # item is a separator
@@ -69,8 +83,6 @@ class PythonCodeGenerator:
                        (obj_name, id, pygen.quote_str(tool.label),
                         bmp1, bmp2, kind, pygen.quote_str(tool.short_help),
                         pygen.quote_str(tool.long_help)))
-        #print 'menus = %s' % menus
-        append('%s.Realize()\n' % obj_name)
         
         return ids + out
 
@@ -89,7 +101,7 @@ class PythonCodeGenerator:
                  'self.SetToolBar(self.%s)\n' % obj.name ]
         init.extend(self.get_init_code(obj))
         init.append('# Tool Bar end\n')
-        return init, [], []
+        return init, self.get_properties_code(obj), []
 
 # end of class PythonCodeGenerator
 
@@ -167,22 +179,30 @@ def xrc_code_generator(obj):
             write = outfile.write
             write('    '*tabs + '<object class="wxToolBar" name=%s>\n' % \
                   quoteattr(self.name))
-            bitmapsize = self.code_obj.properties.get('bitmapsize')
-            if bitmapsize:
-                try:
-                    w, h = [int(i) for i in bitmapsize.split(',')]
-                    write('    ' * (tabs+1) + '<bitmapsize>%s, %s'
-                          '</bitmapsize>\n' % (w, h))
-                except:
-                    pass
-            margins = self.code_obj.properties.get('margins')
-            if margins:
-                try:
-                    w, h = [int(i) for i in margins.split(',')]
-                    append('    '*(tabs+1) + '<margins>%s, %s</margins>\n' % \
-                           (w, h))
-                except:
-                    pass
+            for prop_name in 'bitmapsize', 'margins':
+                prop = self.code_obj.properties.get(prop_name)
+                if prop:
+                    try:
+                        w, h = [int(i) for i in prop.split(',')]
+                        write('    ' * (tabs+1) + '<%s>%s, %s</%s>\n' \
+                              % (prop_name, w, h, prop_name))
+                    except:
+                        pass
+            for prop_name in 'packing', 'separation':
+                prop = self.code_obj.properties.get(prop_name)
+                if prop:
+                    write('    ' * (tabs+1) + '<%s>%s</%s>\n' % \
+                          (prop_name, escape(prop), prop_name))
+            style = self.code_obj.properties.get('style')
+            if style:
+                style = style.split('|')
+                style.append('wxTB_HORIZONTAL')
+                for s in 'wxTB_TEXT', 'wxTB_NOICONS':
+                    # these two flags are (surprisingly) unsupported by XRC...
+                    try: style.remove(s)
+                    except ValueError: pass
+                write('    '*(tabs+1) + '<style>%s</style>\n' % \
+                      escape('|'.join(style)))
             for t in tools:
                 self.append_item(t, outfile, tabs+1)
             write('    '*tabs + '</object>\n')
@@ -220,6 +240,7 @@ class CppCodeGenerator:
         tools = obj.properties['toolbar']
         out = []
         append = out.append
+        prop = obj.properties
 
         if obj.is_toplevel: obj_name = ''
         else: obj_name = obj.name + '->'
@@ -240,6 +261,12 @@ class CppCodeGenerator:
                        (obj_name, w, h))
             except:
                 pass
+        packing = prop.get('packing')
+        if packing:
+            append('%sSetToolPacking(%s);\n' % (obj_name, packing))
+        separation = prop.get('separation')
+        if separation:
+            append('%sSetToolSeparation(%s);\n' % (obj_name, separation))
 
         for tool in tools:
             if tool.id == '---': # item is a separator

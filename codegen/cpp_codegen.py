@@ -376,7 +376,9 @@ def add_object(top_obj, sub_obj):
             klass.sizers_init.extend(init)
         klass.props.extend(props)
         klass.layout.extend(layout)
-        if sub_obj.is_toplevel and sub_obj.base != sub_obj.klass:
+        if multiple_files and \
+               (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
+            print top_obj.name, sub_obj.name
             klass.dependencies.append(sub_obj.klass)
         else:
 ##             headers = _obj_headers.get(sub_obj.base, [])
