@@ -131,16 +131,6 @@ class EditSplitterWindow(ManagedBase):
         
         EVT_SPLITTER_SASH_POS_CHANGED(self.widget, self.widget.GetId(),
                                       self.on_sash_pos_changed)
-##         sp = self.properties['sash_pos']
-##         if not sp.is_active():
-##             if self.orientation == wxSPLIT_HORIZONTAL:
-##                 max_pos = self.widget.GetClientSize()[1]
-##             else: max_pos = self.widget.GetClientSize()[0]
-##             sp.set_range(0, max_pos)
-##             sp.set_value(max_pos/2)
-##             self.set_sash_pos(max_pos/2)
-##         else:
-##             self.set_sash_pos(sp.get_value())
         
     def on_set_focus(self, event):
         self.show_properties()
@@ -173,20 +163,22 @@ class EditSplitterWindow(ManagedBase):
             else:
                 self.widget.SplitHorizontally(self.window_1.widget,
                                               self.window_2.widget, sp)
-##             sp = self.properties['sash_pos'].get_value()
-##             if not sp:
-##                 w, h = self.widget.GetClientSize()
-##                 if self.orientation == wxSPLIT_VERTICAL:
-##                     self.widget.SetSashPosition(w/2)
-##                 else: self.widget.SetSashPosition(h/2)
-##             else: self.widget.SetSashPosition(sp)
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
+        if not self.style:
+            # style is wxSP_NOBORDER
+            retval[5] = 1
         try:
             for i in range(len(self.style_pos)):
                 if self.style & self.style_pos[i]: retval[i] = 1
         except AttributeError: pass
+        if retval[1] and retval[2]:
+            # wxSP_3D == wxSP_3DSASH | wxSP_3DBORDER
+            retval[0] = 1
+            retval[1] = retval[2] = 0
+        elif retval[1] or retval[2]:
+            retval[0] = 0
         return retval
 
     def set_style(self, value):
@@ -219,7 +211,6 @@ class EditSplitterWindow(ManagedBase):
         ManagedBase.on_size(self, event)
 
     def on_sash_pos_changed(self, event):
-        print 'on_sash_pos_changed'
         self.sash_pos = self.widget.GetSashPosition()
         self.properties['sash_pos'].set_value(self.sash_pos)
         event.Skip()
