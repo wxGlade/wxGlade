@@ -356,7 +356,7 @@ class wxGladeFrame(wxFrame):
             self.tut_frame.SetIcon(self.GetIcon())
             panel = wxPanel(self.tut_frame, -1)
             sizer = wxBoxSizer(wxVERTICAL)
-            html = wxHtmlWindow(panel, -1, style=wxSUNKEN_BORDER)
+            html = wxHtmlWindow(panel, -1, (0, 0), (-1, -1), wxSUNKEN_BORDER)
             html.LoadPage('docs/tutorial.html')
             sizer.Add(html, 1, wxEXPAND)
             btn = wxButton(panel, -1, 'Close')

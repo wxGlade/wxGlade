@@ -131,3 +131,42 @@ if wxPlatform == '__WXGTK__':
             self.SetLabel(self.TITLE_ID, title)
 
 else: wxGladePopupMenu = wxMenu
+
+def check_wx_version(major, minor=0, release=0):
+    """\
+    returns True if the current wxPython version is at least
+    major.minor.release
+    """
+    wx_major, wx_minor, wx_release = [int(t) for t in
+                                      wx.__version__.split('.')][:3]
+    return wx_major > major or \
+           (wx_major == major and wx_minor > minor) or \
+           (wx_major == major and wx_minor == minor and wx_release >= release)
+
+if not check_wx_version(2, 3, 3):
+    # the following is copied from wx.py of version 2.3.3, as 2.3.2 doesn't
+    # have it
+    _wxCallAfterId = None
+
+    def wxCallAfter(callable, *args, **kw):
+        """
+        Call the specified function after the current and pending event
+        handlers have been completed.  This is also good for making GUI
+        method calls from non-GUI threads.
+        """
+        app = wxGetApp()
+        assert app, 'No wxApp created yet'
+
+        global _wxCallAfterId
+        if _wxCallAfterId is None:
+            _wxCallAfterId = wxNewId()
+            app.Connect(-1, -1, _wxCallAfterId,
+                  lambda event: apply(event.callable, event.args, event.kw) )
+        evt = wxPyEvent()
+        evt.SetEventType(_wxCallAfterId)
+        evt.callable = callable
+        evt.args = args
+        evt.kw = kw
+        wxPostEvent(app, evt)
+
+#----------------------------------------------------------------------
