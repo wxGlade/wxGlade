@@ -84,6 +84,35 @@ def python_generate_properties(obj):
     return props_buf    
 
 
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+    class NotebookXrcObject(xrcgen.DefaultXrcObject):
+        def write(self, outfile, ntabs):
+            if self.properties.has_key('tabs'):
+                self.tabs = self.properties['tabs']
+                del self.properties['tabs']
+            else:
+                self.tabs = []
+            self.index = 0
+            xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
+
+        def write_child_prologue(self, child, outfile, ntabs):
+            from xml.sax.saxutils import escape
+            if self.tabs:
+                tab_s = '    ' * ntabs
+                outfile.write(tab_s + '<object class="notebookpage">\n')
+                outfile.write(tab_s + '<label>%s</label>\n' % \
+                              escape(self.tabs[self.index][0]))
+                self.index += 1
+
+        def write_child_epilogue(self, child, outfile, ntabs):
+            if self.tabs:
+                outfile.write('    '*ntabs + '</object>\n')
+                
+    return NotebookXrcObject(obj)
+
+
+
 def initialize():
     common.class_names['EditNotebook'] = 'wxNotebook'
     common.class_names['NotebookPane'] = 'wxPanel'
@@ -93,4 +122,8 @@ def initialize():
         pygen.add_widget_handler('wxNotebook', python_code_generator,
                                  python_generate_properties)
         pygen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
-        
+    xrcgen = common.code_writers.get('XRC')
+    if xrcgen:
+        xrcgen.add_widget_handler('wxNotebook', xrc_code_generator)
+        xrcgen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
+

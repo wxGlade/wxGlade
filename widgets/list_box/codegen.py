@@ -38,11 +38,29 @@ def python_code_generator(obj):
     return init, props_buf, []
 
 
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+    class ListBoxXrcObject(xrcgen.DefaultXrcObject):
+        def write_property(self, name, val, outfile, tabs):
+            if name == 'choices':
+                xrc_write_choices_property(self, outfile, tabs)
+            else:
+                xrcgen.DefaultXrcObject.write_property(self, name, val,
+                                                       outfile, tabs)
+
+    # end of class ListBoxXrcObject
+
+    return ListBoxXrcObject(obj)
+
+
 def initialize():
     common.class_names['EditListBox'] = 'wxListBox'
 
-    # python code generation functions
     pygen = common.code_writers.get("python")
     if pygen:
         pygen.add_widget_handler('wxListBox', python_code_generator)
         pygen.add_property_handler('choices', ChoicesCodeHandler)
+    xrcgen = common.code_writers.get("XRC")
+    if xrcgen:
+        xrcgen.add_widget_handler('wxListBox', xrc_code_generator)
+        xrcgen.add_property_handler('choices', ChoicesCodeHandler)

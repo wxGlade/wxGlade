@@ -161,11 +161,12 @@ class MenuItemDialog(wxDialog):
         if not self.menu_items.GetItem(index, 2).m_text == '---':
             # skip if the selected item is a separator
             [s.SetValue(self.menu_items.GetItem(index, i).m_text) for (s, i) \
-             in ((self.label, 0), (self.id, 1), (self.name, 2))]
+             in ((self.label, 0), (self.id, 1), (self.name, 2),
+                 (self.help_str, 3))]
             self.label.SetValue(self.label.GetValue().lstrip())
             try:
                 self.checkable.SetValue(int(self.menu_items.GetItem(index, \
-                                                                    3).m_text))
+                                                                    4).m_text))
             except: self.checkable.SetValue(0)
         event.Skip()
 
@@ -231,7 +232,7 @@ class MenuItemDialog(wxDialog):
             add(tree.root, 0)
         if self.menu_items.GetItemCount():
             [s.Enable(1) for s in (self.name, self.id, self.label, \
-                                   self.checkable)]
+                                   self.help_str, self.checkable)]
             
 
     def get_menus(self):

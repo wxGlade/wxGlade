@@ -172,6 +172,83 @@ class MenuHandler:
 # end of class MenuHandler
 
 
+def xrc_frame_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+    class FrameXrcObject(xrcgen.DefaultXrcObject):
+        def write_child_prologue(self, child, out_file, tabs):
+            if child.code_obj.in_sizers:
+                # XRC doesn't like sizers for Frames, so we add a Panel
+                out_file.write('    '*tabs + '<object class="wxPanel">\n')
+
+        def write_child_epilogue(self, child, out_file, tabs):
+            if child.code_obj.in_sizers:
+                # end of the fake panel
+                out_file.write('    '*tabs + '</object>\n')
+
+        def write(self, outfile, tabs):
+            if self.properties.has_key('menubar'):
+                del self.properties['menubar']
+            if self.properties.has_key('statusbar'):
+                del self.properties['statusbar']
+            xrcgen.DefaultXrcObject.write(self, outfile, tabs)
+
+    # end of class FrameXrcObject
+    
+    return FrameXrcObject(obj)
+                
+
+def xrc_menubar_code_generator(obj):
+    """\
+    function that generates XRC code for the menubar of a wxFrame.
+    """
+    from xml.sax.saxutils import escape, quoteattr
+    xrcgen = common.code_writers['XRC']
+    
+    class MenuBarXrcObject(xrcgen.DefaultXrcObject):
+        def append_item(self, item, outfile, tabs):
+            write = outfile.write
+            if item.name == '---': # item is a separator
+                write('    '*tabs + '<object class="separator"/>\n')
+            elif item.children:
+                if item.name:
+                    write('    '*tabs + '<object class="wxMenu" ' \
+                          'name=%s>\n' % quoteattr(item.name))
+                else:
+                    write('    '*tabs + '<object class="wxMenu">\n')
+                tab_s = '    ' * (tabs+1)
+                if item.label:
+                    write(tab_s + '<label>%s</label>\n' % \
+                          escape(item.label))
+                for c in item.children:
+                    self.append_item(c, outfile, tabs+1)
+                write('    '*tabs + '</object>\n')
+            else:
+                if item.name:
+                    write('    '*tabs + '<object class="wxMenuItem" ' \
+                          'name=%s>\n' % quoteattr(item.name))
+                else:
+                    write('    '*tabs + '<object class="wxMenuItem">\n')  
+                if item.label:
+                    write('    '*(tabs+1) + '<label>%s</label>\n' % \
+                          escape(item.label))
+                if item.checkable == '1':
+                    write('    '*(tabs+1) + '<checkable>1</checkable>\n')
+                write('    '*tabs + '</object>\n')
+        
+        def write(self, outfile, tabs):
+            menus = self.code_obj.properties['menubar']
+            write = outfile.write
+            write('    '*tabs + '<object class="wxMenuBar" name=%s>\n' % \
+                  quoteattr(self.name))
+            for m in menus:
+                self.append_item(m.root, outfile, tabs+1)
+            write('    '*tabs + '</object>\n')
+
+    # end of class MenuBarXrcObject
+    
+    return MenuBarXrcObject(obj)
+
+
 def initialize():
     cn = common.class_names
     cn['EditFrame'] = 'wxFrame'
@@ -190,3 +267,10 @@ def initialize():
         aph('fields', StatusFieldsHandler)
         aph('menus', MenuHandler)
 
+    xrcgen = common.code_writers.get('XRC')
+    if xrcgen:
+        xrcgen.add_widget_handler('wxFrame', xrc_frame_code_generator)
+        xrcgen.add_widget_handler('wxMenuBar', xrc_menubar_code_generator)
+        xrcgen.add_property_handler('menus', MenuHandler)
+        xrcgen.add_widget_handler('wxStatusBar',
+                                  xrcgen.NotImplementedXrcObject)
