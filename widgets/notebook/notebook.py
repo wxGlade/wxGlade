@@ -1,5 +1,5 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.22 2003/06/21 14:28:44 agriggio Exp $
+# $Id: notebook.py,v 1.23 2003/06/24 15:07:26 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -150,7 +150,8 @@ class TabsHandler:
 
     def end_elem(self, name):
         if name == 'tabs':
-            self.parent.tabs = [[name, None] for name in self.tab_names]
+            self.parent.tabs = [[misc.wxstr(name), None] for name in \
+                                self.tab_names]
             self.parent.properties['tabs'].set_value([[name] for name in \
                                                       self.tab_names])
             return True

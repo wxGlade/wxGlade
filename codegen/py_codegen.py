@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.28 2003/06/11 17:10:39 agriggio Exp $
+# $Id: py_codegen.py,v 1.29 2003/06/24 15:07:27 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -425,7 +425,6 @@ def add_class(code_obj):
     try:
         builder = obj_builders[code_obj.base]
     except KeyError:
-        print builder
         raise # this is an error, let the exception be raised
 
     if prev_src is not None and prev_src.classes.has_key(code_obj.klass):
@@ -672,7 +671,7 @@ def add_app(app_attrs, top_win_class):
             append(tab + 'import gettext\n')
             append(tab + 'gettext.install("%s") # replace with the appropriate'
                    ' catalog name\n\n' % name)
-        append(tab + '%s = wxPySimpleApp()\n' % name)
+        append(tab + '%s = wxPySimpleApp(0)\n' % name)
     append(tab + 'wxInitAllImageHandlers()\n') # we add this to avoid troubles
     append(tab + '%s = %s(None, -1, "")\n' % (top_win, top_win_class))
     if klass:
@@ -686,7 +685,7 @@ def add_app(app_attrs, top_win_class):
             append(tab + 'import gettext\n')
             append(tab + 'gettext.install("%s") # replace with the appropriate'
                    ' catalog name\n\n' % name)
-        append(tab + '%s = %s()\n' % (name, klass))
+        append(tab + '%s = %s(0)\n' % (name, klass))
     else:
         append(tab + '%s.SetTopWindow(%s)\n' % (name, top_win))
         append(tab + '%s.Show(1)\n' % top_win)
