@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.4 2003/05/13 10:05:11 agriggio Exp $
+# $Id: codegen.py,v 1.5 2003/05/18 12:02:20 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -167,16 +167,12 @@ def xrc_code_generator(obj):
                         write('    '*tabs + '<object class="wxMenuItem">\n')  
                 if item.label:
                     # translate & into _ as accelerator marker
-                    val = item.label
-                    val2 = val.replace('&', '_')
-                    if val.count('&&') > 0:
-                        while True:
-                            index = val.find('&&')
-                            if index < 0: break
-                        val = val2[:index] + '&&' + val2[index+2:]
-                    else: val = val2
+                    val = item.label.replace('&', '_')
                     write('    '*(tabs+1) + '<label>%s</label>\n' % \
                           escape(val))
+                if item.help_str:
+                    write('    '*(tabs+1) + '<help>%s</help>\n' % \
+                          escape(item.help_str))
                 if item.children:
                     for c in item.children:
                         self.append_item(c, outfile, tabs+1)
