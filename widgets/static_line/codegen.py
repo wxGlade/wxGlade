@@ -12,16 +12,19 @@ def python_code_generator(obj):
     pygen = common.code_writers['python']
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj)
+    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
+    else: parent = 'self'
     if obj.is_toplevel:
-        l = ['self.%s = %s(self, %s)\n' % (obj.name, obj.klass, id)]
+        l = ['self.%s = %s(%s, %s)\n' % (obj.name, obj.klass, parent, id)]
         if id_name: l.append(id_name)
         return l, [], []
     size = pygen.generate_code_size(obj)
-    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-    else: parent = 'self'
-    style = prop.get("style", "wxLI_HORIZONTAL")
-    if not style: style = "wxLI_HORIZONTAL"
-    init = ['self.%s = wxStaticLine(%s, %s, size=%s, style=%s)\n' %
+    if size != '(-1, -1)': size = ', size=%s' % size
+    else: size = ''
+    style = prop.get("style")
+    if style and style != 'wxLI_HORIZONTAL': style = ", style=%s" % style
+    else: style = ''
+    init = ['self.%s = wxStaticLine(%s, %s%s%s)\n' %
             (obj.name, parent, id, size, style) ]
     if id_name: init.append(id_name)
     props_buf = []

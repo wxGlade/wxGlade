@@ -17,19 +17,22 @@ def python_code_generator(obj):
                           prop.get('range', '0, 100').split(',') ]
     except: min_v, max_v = '0', '100'
     
+    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
+    else: parent = 'self'
     if obj.is_toplevel:
-        l = ['self.%s = %s(self, %s, min=%s, max=%s, initial=%s)\n' % \
-             (obj.name, obj.klass, id, min_v, max_v, value)]
+        l = ['self.%s = %s(%s, %s, min=%s, max=%s, initial=%s)\n' % \
+             (obj.name, obj.klass, parent, id, min_v, max_v, value)]
         if id_name: l.append(id_name) # init lines are written in reverse order
         return l , [], []
     size = pygen.generate_code_size(obj)
-    style = prop.get('style', '0')
-    if not style: style = '0'
-    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-    else: parent = 'self'
-    init = ['self.%s = wxSpinCtrl(%s, %s, min=%s, max=%s, initial=%s, ' \
-            'size=%s, style=%s)\n' % (obj.name, parent, id, min_v, max_v,
-                                      value, size, style)]
+    if size != '(-1, -1)': size = ', size=%s' % size
+    else: size = ''
+    style = prop.get("style")
+    if style: style = ", style=%s" % style
+    else: style = ''
+    init = ['self.%s = wxSpinCtrl(%s, %s, min=%s, max=%s, initial=%s' \
+            '%s%s)\n' % (obj.name, parent, id, min_v, max_v,
+                         value, size, style)]
     if id_name: init.append(id_name)
     props_buf = []
     if prop.has_key('foreground'):

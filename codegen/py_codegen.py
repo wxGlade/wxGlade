@@ -368,6 +368,7 @@ def add_class(code_obj):
         sizers_init_lines.reverse()
         for l in sizers_init_lines: write(tab + l)
         for l in layout_lines: write(tab + l)
+        write(tab + 'self.Layout()\n')
     else: write(tab + 'pass\n')
     # end tag
     write(tab + '# end wxGlade\n')

@@ -6,11 +6,9 @@
 import common
 from MenuTree import *
 
-# python code generators
-
 def python_menubar_code_generator(obj):
     """\
-    function that generates code for the menubar of a wxFrame.
+    function that generates Python code for the menubar of a wxFrame.
     """
     menus = obj.properties['menubar']
     init = [ '\n', '# Menu Bar\n', 'self.%s = wxMenuBar()\n' % obj.name,
@@ -95,7 +93,7 @@ def python_generate_frame_properties(frame):
     pygen = common.code_writers['python']
     out = []
     title = prop.get('title')
-    if title: out.append('self.SetTitle("%s")\n' % title)
+    if title: out.append('self.SetTitle("%s")\n' % title.replace('"', r'\"'))
     out.extend(pygen.generate_common_properties(frame))
     return out
 
@@ -274,3 +272,4 @@ def initialize():
         xrcgen.add_property_handler('menus', MenuHandler)
         xrcgen.add_widget_handler('wxStatusBar',
                                   xrcgen.NotImplementedXrcObject)
+

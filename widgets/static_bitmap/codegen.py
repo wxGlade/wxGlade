@@ -17,7 +17,7 @@ _bmp_str_types = {
 
 def python_code_generator(obj):
     """\
-    fuction that generates python code for wxBitmapButton objects.
+    fuction that generates python code for wxStaticBitmap objects.
     """
     pygen = common.code_writers['python']
     prop = obj.properties
@@ -30,14 +30,17 @@ def python_code_generator(obj):
         else:
             if os.sep == '\\': bmp_file = bmp_file.replace(os.sep, '/')
             bmp = 'wxBitmap("%s", %s)' % (bmp_file.replace('"', r'\"'), type)
+    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
+    else: parent = 'self'
     if obj.is_toplevel:
-        l = ['self.%s = %s(self, %s, %s)\n' % (obj.name, obj.klass, id, bmp)]
+        l = ['self.%s = %s(%s, %s, %s)\n' %
+             (obj.name, parent, obj.klass, id, bmp)]
         if id_name: l.append(id_name) # init lines are written in reverse order
         return l , [], []    
     size = pygen.generate_code_size(obj)
-    if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-    else: parent = 'self'
-    init = [ 'self.%s = wxStaticBitmap(%s, %s, %s, size=%s)\n' % 
+    if size != '(-1, -1)': size = ', size=%s' % size
+    else: size = ''
+    init = [ 'self.%s = wxStaticBitmap(%s, %s, %s%s)\n' % 
              (obj.name, parent, id, bmp, size) ]
     if id_name: init.append(id_name) # init lines are written in reverse order
     props_buf = []
