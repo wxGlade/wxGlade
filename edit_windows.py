@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.68 2004/10/21 17:42:03 agriggio Exp $
+# $Id: edit_windows.py,v 1.69 2004/10/24 16:12:50 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -134,18 +134,20 @@ class EditBase:
     def set_name(self, value):
         value = "%s" % value
         if not config.preferences.allow_duplicate_names and \
-               (self.widget and common.app_tree.has_name(value)):
-            wxMessageBox('Name "%s" is already in use.\n'
-                         'Please enter a different one.' % value, "Error",
-                         wxOK|wxICON_ERROR)
+               (self.widget and common.app_tree.has_name(value, self.node)):
+            misc.wxCallAfter(
+                wxMessageBox, 'Name "%s" is already in use.\n'
+                'Please enter a different one.' % value, "Error",
+                wxOK|wxICON_ERROR)
             self.name_prop.set_value(self.name)
             return
         if not re.match(self.set_name_pattern, value):
             self.name_prop.set_value(self.name)
         else:
+            oldname = self.name
             self.name = value
             if self._rmenu: self._rmenu.SetTitle(self.name)
-            try: common.app_tree.refresh_name(self.node) #, self.name)
+            try: common.app_tree.refresh_name(self.node, oldname) #, self.name)
             except AttributeError: pass
             self.property_window.SetTitle('Properties - <%s>' % self.name)
     set_name_pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')

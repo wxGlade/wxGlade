@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.35 2004/10/15 23:30:35 agriggio Exp $
+# $Id: misc.py,v 1.36 2004/10/24 16:12:50 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -123,6 +123,7 @@ def get_toplevel_parent(obj):
         window = window.GetParent()
     return window
 
+
 if wxPlatform == '__WXGTK__':
     # default wxMenu seems to have probles with SetTitle on GTK
     class wxGladePopupMenu(wxMenu):
@@ -137,6 +138,7 @@ if wxPlatform == '__WXGTK__':
 
 else: wxGladePopupMenu = wxMenu
 
+
 def check_wx_version(major, minor=0, release=0, revision=0):
     """\
     returns True if the current wxPython version is at least
@@ -145,6 +147,7 @@ def check_wx_version(major, minor=0, release=0, revision=0):
     from wxPython import wx
     #return wx.__version__ >= "%d.%d.%d.%d" % (major, minor, release, revision)
     return wx.wxVERSION[:-1] >= (major, minor, release, revision)
+
 
 if not check_wx_version(2, 3, 3):
     # the following is copied from wx.py of version 2.3.3, as 2.3.2 doesn't

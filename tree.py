@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.41 2004/10/05 08:49:10 agriggio Exp $
+# $Id: tree.py,v 1.42 2004/10/24 16:12:50 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -80,10 +80,31 @@ class Tree:
         if self.root is None: self.root = Tree.Node()
         self.current = self.root
         self.app = app # reference to the app properties
-        self.names = {} # dictionary of names of the widgets 
+        self.names = {} # dictionary of names of the widgets: each entry is
+                        # itself a dictionary, one for each toplevel widget...
 
-    def has_name(self, name):
-        return self.names.has_key(name)
+    def _find_toplevel(self, node):
+        assert node is not None, "None node in _find_toplevel"
+        if node.parent is self.root:
+            return node.parent
+        while node.parent is not self.root:
+            node = node.parent
+        return node
+
+    def has_name(self, name, node=None):
+        if node is None:
+            #print '\nname to check:', name
+            for n in self.names:
+                #print 'names of %s: %s' % (n.widget.name, self.names[n])
+                if name in self.names[n]:
+                    return True
+            return False
+        else:
+            node = self._find_toplevel(node)
+            #print '\nname to check:', name
+            #print 'names of node %s: %s' % (node.widget.name, self.names[node])
+            return name in self.names[node]
+        #return self.names.has_key(name)
 
     def add(self, child, parent=None):
         if parent is None: parent = self.root 
@@ -91,7 +112,8 @@ class Tree:
         parent.children.append(child)
         child.parent = parent
         self.current = child
-        self.names[str(child.widget.name)] = 1
+        #self.names[str(child.widget.name)] = 1
+        self.names.setdefault(parent, {})[str(child.widget.name)] = 1
         if parent is self.root and \
                getattr(child.widget.__class__, '_is_toplevel', False):
             self.app.add_top_window(child.widget.name)
@@ -103,15 +125,19 @@ class Tree:
         parent.children.insert(index, child)
         child.parent = parent
         self.current = child
-        self.names[str(child.widget.name)] = 1
+        #self.names[str(child.widget.name)] = 1
+        self.names.setdefault(parent, {})[str(child.widget.name)] = 1
         if parent is self.root:
             self.app.add_top_window(child.widget.name)
 
     def remove(self, node=None):
         if node is not None:
             def clear_name(n):
-                try: del self.names[str(n.widget.name)]
-                except (KeyError, AttributeError): pass
+                try:
+                    #del self.names[str(n.widget.name)]
+                    del self.names[self._find_toplevel(n)][str(n.widget.name)]
+                except (KeyError, AttributeError):
+                    pass
                 if n.children:
                     for c in n.children: clear_name(c)
             clear_name(node)
@@ -164,10 +190,14 @@ class Tree:
         """\
         Changes the node 'node' so that it refers to 'widget'
         """
-        try: del self.names[node.widget.name]
-        except KeyError: pass
+        try:
+            #del self.names[node.widget.name]
+            del self.names[self._find_toplevel(node)][node.widget.name]
+        except KeyError:
+            pass
         node.widget = widget
-        self.names[widget.name] = 1
+        #self.names[widget.name] = 1
+        self.names.setdefault(self._find_toplevel(node), {})[widget.name] = 1
 
     def change_node_pos(self, node, new_pos, index=None):
         if index is None: index = node.parent.children.index(node)
@@ -311,12 +341,18 @@ class WidgetTree(wxTreeCtrl, Tree):
         app = self.GetPyData(self.GetRootItem())
         app.widget.show_properties()
 
-    def refresh_name(self, node): #, name=None):
-        try: del self.names[self.GetItemText(node.item)]
-        except KeyError: pass
+    def refresh_name(self, node, oldname=None): #, name=None):
+        if oldname is not None:
+            try:
+                #del self.names[self.GetItemText(node.item)]
+                del self.names[self._find_toplevel(node)][oldname]
+            except KeyError:
+                pass
         #self.names[name] = 1
         #self.SetItemText(node.item, name)
-        self.names[node.widget.name] = 1
+        #self.names[node.widget.name] = 1
+        self.names.setdefault(self._find_toplevel(node), {})[
+            node.widget.name] = 1
         self.SetItemText(node.item, self._build_label(node))
 
     def select_item(self, node):

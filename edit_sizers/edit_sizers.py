@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.52 2004/10/20 17:00:19 agriggio Exp $
+# $Id: edit_sizers.py,v 1.53 2004/10/24 16:12:49 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -620,12 +620,21 @@ class SizerBase(Sizer):
 
     def set_name(self, value):
         value = "%s" % value
+        if not config.preferences.allow_duplicate_names and \
+               (self.widget and common.app_tree.has_name(value, self.node)):
+            misc.wxCallAfter(
+                wxMessageBox, 'Name "%s" is already in use.\n'
+                'Please enter a different one.' % value, "Error",
+                wxOK|wxICON_ERROR)
+            self.name_prop.set_value(self.name)
+            return
         if not re.match(self.set_name_pattern, value):
             self.name_prop.set_value(self.name)
         else:
+            oldname = self.name
             self.name = value
             self._btn.set_menu_title(value)
-            try: common.app_tree.refresh_name(self.node) #, self.name)
+            try: common.app_tree.refresh_name(self.node, oldname) #, self.name)
             except AttributeError:
                 import traceback; traceback.print_exc()
     set_name_pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')
