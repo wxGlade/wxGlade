@@ -5,7 +5,7 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 
-import common, misc
+import common
 
 def python_code_generator(obj):
     """\
@@ -72,7 +72,7 @@ def python_generate_properties(obj):
         out.append('%s.SetSelectionMode(%s)\n' % (name, sel_mode))
     out.extend(pygen.generate_common_properties(obj))
     if prop.get('column_labels', False):
-        v = misc.smart_split(prop.get('column_labels'))
+        v = common.smart_split(prop.get('column_labels'), 1)
         i = 0
         for s in v:
             if s != '' and i < prop.get('columns_number'):
@@ -149,7 +149,7 @@ def cpp_generate_properties(obj):
         out.append('%s.SetSelectionMode(%s)\n' % (name, sel_mode))
     out.extend(pygen.generate_common_properties(obj))
     if prop.get('column_labels', False):
-        v = misc.smart_split(prop.get('column_labels'))
+        v = common.smart_split(prop.get('column_labels'), 1)
         i = 0
         for s in v:
             if s != '' and i < prop.get('columns_number'):

@@ -11,6 +11,51 @@ from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
 
+class GridColsProperty(GridProperty):      
+    def write(self, outfile, tabs):
+        from xml.sax.saxutils import escape, quoteattr
+        write = outfile.write
+        write('    ' * tabs + '<columns>\n')
+        tab_s = '    ' * (tabs+1)
+        import widget_properties
+        value = self.get_value() # this is a list
+        for i in range(len(value)):
+            val = value[i] # this is another list
+            _label = escape(widget_properties._encode(val[0]))
+            _size  = escape(widget_properties._encode(val[1]))
+            write('%s<column size=%s>%s</column>\n' % (tab_s,
+                                                       _size,
+                                                       quoteattr(_label) ))
+        write('    ' * tabs + '</columns>\n')
+
+# end of class GridColumnsProperty
+
+class ColsHandler:
+    def __init__(self, parent):
+        self.parent = parent
+        self.col_labels = []
+        self.curr_col = []
+
+    def start_elem(self, name, attrs):
+        pass
+
+    def end_elem(self, name):
+        if name == 'columns':
+            # set a temporary attribute of the notebook, that will be used by
+            # the last NotebookPane added: this is an ugly hack anyway...
+            self.parent.tmp_col_names = self.col_labels
+            return True
+        elif name == 'column':
+            self.tab_labels.append("".join(self.curr_col))
+            self.curr_col = []
+        return False
+
+    def char_data(self, data):
+        self.curr_col.append(data)
+
+# end of class TabsHandler
+
+
 
 class EditGrid(ManagedBase):
     def __init__(self, name, parent, id, sizer, pos, property_window,
@@ -20,7 +65,6 @@ class EditGrid(ManagedBase):
         """
         # values of properties for the grid:
         self.row_label_size = 30
-        self.col_label_size = 20
         self.enable_editing = False
         self.enable_grid_lines = True
         self.rows_number = 10
@@ -32,7 +76,7 @@ class EditGrid(ManagedBase):
         self.label_bg_color = '#C0C0C0'
         self.selection_mode = wxGrid.wxGridSelectCells
         self.create_grid = True
-        self.column_labels = ''
+        self.columns = [ ['COL1',100] , ['COL2',100] , ['COL3',100] ]
         
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
                              property_window, show=show)
@@ -43,10 +87,6 @@ class EditGrid(ManagedBase):
         af['row_label_size'] = (self.get_row_label_size,
                                 self.set_row_label_size)
         props['row_label_size'] = SpinProperty(self, 'row_label_size',
-                                               None, can_disable=True)
-        af['col_label_size'] = (self.get_col_label_size,
-                                self.set_col_label_size)
-        props['col_label_size'] = SpinProperty(self, 'col_label_size',
                                                None, can_disable=True)
         af['enable_editing'] = (self.get_enable_editing,
                                 self.set_enable_editing)
@@ -87,10 +127,12 @@ class EditGrid(ManagedBase):
                                                ['wxGrid.wxGridSelectCells',
                                                 'wxGrid.wxGridSelectRows',
                                                 'wxGrid.wxGridSelectColumns'])
-        af['column_labels'] = (self.get_column_labels,
-                                self.set_column_labels)
-        props['column_labels']= TextProperty(self, 'column_labels', None,
-                                             can_disable=True)
+        af['columns'] = (self.get_columns,
+                                self.set_columns)
+        props['columns']= GridColsProperty(self, 'columns', None, 
+                                               [ ('Label', GridProperty.STRING),
+                                                 ('Size', GridProperty.INT) ])
+
 
 
     def create_properties(self):
@@ -98,18 +140,17 @@ class EditGrid(ManagedBase):
         panel = wxScrolledWindow(self.notebook, -1)
         self.properties['create_grid'].display(panel)
         self.properties['row_label_size'].display(panel)
-        self.properties['col_label_size'].display(panel)
         self.properties['enable_editing'].display(panel)
         self.properties['enable_grid_lines'].display(panel)
         self.properties['rows_number'].display(panel)
         self.properties['columns_number'].display(panel)
-        self.properties['column_labels'].display(panel)
         self.properties['enable_col_resize'].display(panel)
         self.properties['enable_row_resize'].display(panel)
         self.properties['enable_grid_resize'].display(panel)
         self.properties['lines_color'].display(panel)
         self.properties['label_bg_color'].display(panel)
         self.properties['selection_mode'].display(panel)
+        self.properties['columns'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
         szr.Add(self.properties['create_grid'].panel, 0, wxEXPAND)
         szr.Add(wxStaticLine(panel, -1), 0, wxALL|wxEXPAND, 5)
@@ -119,9 +160,7 @@ class EditGrid(ManagedBase):
         szr.Add(wxStaticLine(panel, -1), 0, wxALL|wxEXPAND, 5)
         szr.Add(self.properties['rows_number'].panel, 0, wxEXPAND)
         szr.Add(self.properties['columns_number'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['column_labels'].panel, 0, wxEXPAND)
         szr.Add(self.properties['row_label_size'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['col_label_size'].panel, 0, wxEXPAND)
         szr.Add(self.properties['lines_color'].panel, 0, wxEXPAND)
         szr.Add(self.properties['label_bg_color'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_editing'].panel, 0, wxEXPAND)
@@ -130,6 +169,7 @@ class EditGrid(ManagedBase):
         szr.Add(self.properties['enable_row_resize'].panel, 0, wxEXPAND)
         szr.Add(self.properties['enable_grid_resize'].panel, 0, wxEXPAND)
         szr.Add(self.properties['selection_mode'].panel, 0, wxALL|wxEXPAND, 5)
+        szr.Add(self.properties['columns'].panel, 1, wxEXPAND)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -148,7 +188,7 @@ class EditGrid(ManagedBase):
             self.lines_color = misc.color_to_string(
                 self.widget.GetGridLineColour())
         self.widget.SetRowLabelSize(self.row_label_size)
-        self.widget.SetColLabelSize(self.col_label_size)
+#        self.widget.SetColLabelSize(self.col_label_size)
         self.widget.EnableEditing(self.enable_editing)
         self.widget.EnableGridLines(self.enable_grid_lines)
         self.widget.EnableDragColSize(self.enable_col_resize)
@@ -157,11 +197,13 @@ class EditGrid(ManagedBase):
         self.widget.SetGridLineColour(misc.string_to_color(self.lines_color))
         self.widget.SetLabelBackgroundColour(misc.string_to_color(
             self.label_bg_color))
-        v = misc.smart_split(self.column_labels)
         i = 0
-        for s in v:
-            if s != '' and i < self.columns_number:
-                self.widget.SetColLabelValue(i,s)
+        for l, s in self.columns:
+            try: s1 = int(s)
+            except: s1=0
+            self.widget.SetColLabelValue(i, l)
+            if s1 > 0:
+                self.widget.SetColSize(i, s1)
             i = i + 1
 
         # A grid should be wxEXPANDed and 'option' should be 1,
@@ -190,14 +232,6 @@ class EditGrid(ManagedBase):
         self.row_label_size = int(value)
         if value and self.widget:
             self.widget.SetRowLabelSize(self.row_label_size)
-
-    def get_col_label_size(self):
-        return self.col_label_size
-
-    def set_col_label_size(self, value):
-        self.col_label_size = int(value)
-        if value and self.widget:
-            self.widget.SetColLabelSize(self.col_label_size)
 
     def get_enable_editing(self):
         return self.enable_editing
@@ -297,7 +331,6 @@ class EditGrid(ManagedBase):
         if self.selection_mode == wxGrid.wxGridSelectCells:   return 0
         if self.selection_mode == wxGrid.wxGridSelectRows:    return 1
         if self.selection_mode == wxGrid.wxGridSelectColumns: return 2
-        print "GET_selection_mode:" + str(self.selection_mode) 
 
     def set_selection_mode(self, value):
         if value == 0:
@@ -308,19 +341,23 @@ class EditGrid(ManagedBase):
             self.selection_mode = wxGrid.wxGridSelectColumns
         # no operation on the grid.
 
-    def get_column_labels(self):
-        return self.column_labels
+    def get_columns(self):
+        return self.columns
 
-    def set_column_labels(self, value):
-        self.column_labels = str(value)
-        if self.widget:
-            v = misc.smart_split(self.column_labels)
-            i = 0
-            for s in v:
-                if s != '':
-                    self.widget.SetColLabelValue(i,s)
-                    i = i + 1
+    def set_columns(self, cols):
+        i = 0
+        for l,s in cols:
+            try: s1 = int(s)
+            except: s1 = 0
+            self.widget.SetColLabelValue(i, l)
+            if s1 > 0:
+                self.widget.SetColSize(i, s1)
+            i = i + 1
+            
+    def get_property_handler(self, name):
+        if name == 'columns': return ColsHandler(self)
 
+            
 
 # end of class EditGrid
         
@@ -371,3 +408,4 @@ def initialize():
     common.widgets_from_xml['EditGrid'] = xml_builder
 
     return common.make_object_button('EditGrid', 'icons/grid.xpm')
+
