@@ -2,19 +2,21 @@
 <!DOCTYPE book
   PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "/usr/share/sgml/docbook/xml-dtd-4.1.2-1.0-17/docbookx.dtd" >
-
 <book>
   <title>wxGlade user manual</title>
   <bookinfo>
-    <date>$Date: 2003/08/07 06:53:39 $</date>
-    <author><firstname>Marcello</firstname><surname>Semboli</surname></author>
+    <date>$Date: 2003/09/09 07:16:01 $</date>
+    <author>
+      <firstname>Marcello</firstname>
+      <surname>Semboli</surname>
+    </author>
   </bookinfo>
 
 
 <preface>
   <title>Preface</title>
     <para>
-        This manual describes the wxGlade version 0.2.2, a Python, Perl,  C++
+        This manual describes the wxGlade program, a Python, Perl,  C++
         and XRC Graphical User Interface (<quote>GUI</quote>) Editor for UNIX and
         Microsoft Windows. Each of the chapters in this manual is designed
         as a tutorial for using wxGlade and a referense for widgets
@@ -23,26 +25,49 @@
 
     <section>
       <title>Abbreviations</title>
-      <para>
-      The following abbreviations are used in this manual:
-      </para>
-      <itemizedlist>
-          <listitem><para>X11 - The X Window System version 11.</para></listitem>
-          <listitem><para>wx - The wxWindows open source C++ GUI framework.</para></listitem>
-          <listitem><para>WIN32 - The Microsoft Windows 32-bit Application 
+      <variablelist>
+		<title>The following abbreviations are used in this manual:</title>
+		<varlistentry>
+			<term><emphasis>X11</emphasis></term>
+			<listitem><para>The X Window System version 11.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><emphasis>wx</emphasis></term>
+			<listitem><para>The wxWindows open source C++ GUI framework.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><emphasis>WIN32</emphasis></term>
+			<listitem><para>The Microsoft Windows 32-bit Application 
           Programmer's Interface.</para></listitem>
-      </itemizedlist>
+		</varlistentry>
+		<varlistentry>
+			<term><emphasis>GUI</emphasis></term>
+			<listitem><para>Graphical User Interface</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><emphasis>WYSIWYG</emphasis></term>
+			<listitem><para>What You See Is What You Get.</para></listitem>
+		</varlistentry>
+      </variablelist>
     </section>
 
     <section>
       <title>Contacts</title>
+    <para>
+        Check in the sourceforge project page <ulink url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>
+        for the mailing list to discuss about the project.</para>
+<para>        Use the lists for questions, proposal, bug reports and collaboration.
+</para>
+<para>If you don't want to follow the list, you can reach the author 
+of the program at <quote>Alberto Griggio</quote> <email>albgrig@tiscalinet.it</email>:
+        any kind of feedback is always welcome.
+    </para>
       <para>Informations, support and bug reports can be addressed to the
-        wxGlade mailing list:</para>
-<para>        wxglade-general@lists.sourceforge.net.</para>
+        wxGlade mailing list.</para>
 
 <para>        The mantainer of this document is Marcello Semboli.</para>
-<para>        You can address any message regarding this document to "Marcello
-        Semboli" &lt;dinogen@siena.linux.it&gt;.
+<para>        You can address any message regarding this document to 
+<quote>Marcello Semboli</quote> <email>dinogen@siena.linux.it</email>.
       </para>
     </section>
 
@@ -51,9 +76,9 @@
       <para>wxGlade is Copyright 2002-2003 by Alberto Griggio. Use and distribution
         of wxGlade is governed by the MIT license, located in Appendix A.
         </para>
-<para>        wxWindows is Copyright (c) 1992-2002 Julian Smart, Robert Roebling,
+<para>        wxWindows is Copyright (c) 1992-20s02 Julian Smart, Robert Roebling,
         Vadim Zeitlin and other members of the wxWindows team.
-        See: http://www.wxwindows.org for details.
+        See: <ulink url="http://www.wxwindows.org">http://www.wxwindows.org</ulink> for details.
 </para>
 <para>        UNIX is a registered trademark of the X Open Group, Inc.
 </para>
@@ -67,7 +92,7 @@
 <chapter>
   <title>Introduction to wxGlade</title>
 
-  <sect1>
+  <section>
     <title>What wxGlade is</title>
     <para>
         wxGlade is a GUI designer written in Python with the popular
@@ -79,24 +104,25 @@
         GTK+/GNOME GUI builder, with which wxGlade shares the philosophy
         and the look &amp; feel (but not a line of code).
     </para>
-  </sect1>
+  </section>
   
-  <sect1>
+  <section>
     <title>What wxGlade is NOT</title>
     <para>
         It is not (and will never be) a full featured IDE, but simply
         a <quote>designer</quote>: the generated code does nothing apart from displaying
         the created widgets. If you are looking for a complete IDE,
-        maybe Boa Constructor (http://boa-constructor.sourceforge.net/)
-        or PythonCard (http://www.pythoncard.org/) is the right tool.
+        maybe Boa Constructor <ulink url="http://boa-constructor.sourceforge.net">http://boa-constructor.sourceforge.net</ulink>
+        or PythonCard <ulink url="http://www.pythoncard.org">http://www.pythoncard.org</ulink> is the right tool.
     </para>
-  </sect1>
+  </section>
   
-  <sect1>
+  <section>
     <title>Download</title>
     <para>
         You can download source files for the stable version from the
-        sourceforge project page (http://sourceforge.net/projects/wxglade).
+        sourceforge project page 
+        <ulink url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>.
       </para>  
 <para>        You can get the unstable version from Sourceforge anonymous CVS
         access. Refer to Sourceforge CVS documentation for details.
@@ -105,9 +131,9 @@
 <para>        Also binaries for Microsoft Windows and Linux are provided for
         download.
 </para> 
-  </sect1>
+  </section>
   
-  <sect1>
+  <section>
     <title>Installation and requirements</title>
     <para>
         While Python is a pseudo-interpreted language, you don't need
@@ -118,44 +144,42 @@
         2.3.2.1 or later.</para>
 <para>        The binary versions are stand-alone and doesn't have any requirement.
     </para>
-  </sect1>
+    <para>You can download wxWindows from 
+    <ulink url="http://www.wxwindows.org">http://www.wxwindows.org</ulink> and wxPython from 
+    <ulink url="http://www.wxpython.org">http://www.wxpython.org</ulink>.</para>
+  </section>
   
-  <sect1>
+  <section>
     <title>Basics</title>
     
-<para>        You need to know basics of wxWindows or wxPython.
-</para>
-<para>        Also you need basics of C++ or Python or Perl.
-       </para> 
-       
-<para>       You can't use wxGlade if you have not any basic of programming.
-</para>        
-        
-<para>       You can't learn wx programming reading this manual, as well.
+<para>You need to know basics of wxWindows or wxPython.
+Also you need basics of C++ or Python or Perl.
+You can't use wxGlade if you have not any basic of programming.
+You can't learn wx programming reading this manual, as well.
 </para>    
-  </sect1>
+  </section>
   
-  <sect1>
+  <section>
     <title>Contacts</title>
     <para>
-        Check in the sourceforge project page (http://sourceforge.net/projects/wxglade)
+        Check in the sourceforge project page <ulink url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>
         for the mailing list to discuss about the project.</para>
 <para>        Use the lists for questions, proposal, bug reports and collaboration.
 </para>
-<para>        If you don't want to follow the list, you can reach me at albgrig@tiscalinet.it:
+<para>        If you don't want to follow the list, you can reach me at <email>albgrig@tiscalinet.it</email>:
         any kind of feedback is always welcome.
     </para>
-  </sect1>
+  </section>
 </chapter>
 
 <chapter>  
   <title>Exploring wxGlade</title>  
-  <sect1>
+  <section>
     <title>Quick start</title>
     
 <para>        We will design a simple form.
 </para>
-<para>        Start wxGlade running wxglade.py program.
+<para>        Start wxGlade running <command>wxglade.py</command> program.
 </para>
 <para>        You will see a Main Window, with several buttons, and a Tree
         Window with a icon <quote>Application</quote>.  A Properties Window is showing
@@ -217,14 +241,14 @@
 </para>
 <para>        Compile and enjoy.
 </para>    
-  </sect1>
+  </section>
   
-  <sect1>
-    <title>Basics of wxGlade</title>
+    <section>
+      <title>Basics of wxGlade</title>
         
-<para>        The program wxGlade is a tool for designing Graphical User Interface (GUI).
+      <para>The program wxGlade is a tool for designing Graphical User Interface (GUI).
 </para>        
-<para>        It is intended to use with wxWindows framework in all its flawors: C++, Perl, 
+      <para>        It is intended to use with wxWindows framework in all its flawors: C++, Perl, 
         Python and XRC.
 </para>        
         <para>You use a visual editor for creating forms, menus and toolbars with the mouse.
@@ -240,9 +264,48 @@
         <para>A .wxg file can contains multiple forms, panels, menus and toolbars and generate 
         a single file containing all classes or multiple files containing one class each.
   </para>
-  </sect1>
-  
-  <sect1>
+  </section>
+  <section>
+    <title>Command line invocation</title>
+      <para>You can run wxGlade without parameters to start the GUI on a empty application as follow:
+      </para>
+      <para><command>wxglade.py</command> 
+      </para>
+      <para>Run wxGlade GUI on an existing application specifying the .wxg file as follow: 
+      </para>
+      <para><command>wxglade.py FILENAME.wxg</command>
+      </para>
+      <para>If you want only to generate the code without starting the GUI, use the -g or --generate-code option with the language as argument as follow:
+      </para>
+      <para><command>wxglade.py -g LANG FILENAME.wxg</command> 
+      </para>
+      <para><command>wxglade.py --generate-cod=LANG FILENAME.wxg</command>
+      </para>
+      <para>Possible values for LANG are "python", "XRC", "perl" or "C++". 
+      </para>
+      <para>You also can specify the destination of the generated code 
+with -o or --output option:
+      </para>
+      <para><command>wxglade.py -g LANG -o DESTINATION FILENAME.wxg</command>
+      </para>
+      <para>The DESTINATION argument can be a file or a directory. 
+It is a file while the FILENAME.wxg generate a single file source code. 
+It is a directory while the FILENAME.wxg generate multiple file source code. 
+      </para>
+      <para>This is the complete description of command line:
+      </para>
+      <para><literallayout><computeroutput>wxglade.py [OPTIONS] [FILENAME.wxg]
+OPTIONS:
+
+-g LANG, --generate-code=LANG
+	Generate the code in the LANG language. Possible values for LANG are C++, python, perl, XRC.
+
+-o DEST, --output=DEST
+	Only valid with the -g option. Specify the destination of the generation of code.
+	The argument DEST can be a source code file or a directory.</computeroutput></literallayout>
+</para>
+  </section>
+  <section>
     <title>Using the source code</title>
 <para>        How do you use source code generated by wxGlade? Basically in two ways.
 </para>
@@ -255,14 +318,15 @@
 </para>
         <para>The other way is to generate the class with wxGlade in a file (e.g. myFormUI.xxx) and 
         subclass it in another file (e.g. myForm.xxx). This give you the psychological advantage
-        that there is a file for you a one for wxGlade :-) .</para>
+        that there is a file for you and one for wxGlade :-) . 
+        If you stuck writing a messy code you can erase your entire source file.</para>
 
-  </sect1>
+  </section>
 </chapter>
   
 <chapter>  
   <title>wxGlade User Interface</title>  
-  <sect1>
+  <section>
     <title>Main Window</title>
     <para>
       The main window hosts the menu and the widgets choice buttons.
@@ -296,11 +360,11 @@
         the cursor pointer change in an arrow, then you can click on
         a sizer's empty cell and add the widget to it.
     </para>
-  </sect1>
-  <sect1>
+  </section>
+  <section>
     <title>Tree Window</title>
     <para>
-      The tree window show the logical relationship of widgets 
+      The tree window show the logical ierarchy of widgets 
       and its child-widgets. For example you can see a panel as a tree's 
       node and the widgets on it as a child nodes.
       <figure>
@@ -316,18 +380,45 @@
     <para>
     You have a visual presentation of your widget tree that 
     you can navigate by mouse, expand and collapse sizers,
-    move or remove widgwts.
+    copy, cut or remove widgwts.
     </para>
     <para>
+    A click on the tree window, on an icon you display properties of the corresponding element
+    in the properties window.
+    A double click in a frame, dialog on panel icon, make the designer window to show the 
+    corresponding 
+    Clicking with the right button of the mouse you get a pop up menu.
+      <figure>
+        <title>The menu for a widget</title>
+        <graphic fileref="label_menu.png" />
+      </figure>
+      <figure>
+        <title>The menu for a sizer</title>
+        <graphic fileref="sizer_menu.png" />
+      </figure>
+      The pop up menu for a widget allow you to copy, cut or remove the element. 
+      The pop up menu for a sizer allow you to copy, cut or remove the element 
+      and add or insert an empty slot as well. 
     </para>
-  </sect1>
+  </section>
+  <section>
+    <title>Design Window</title>
+    <para>
+      The design window show the frame or panel you are creating in WYSIWYG mode and  
+      allow you to select a widget from the main window and to put it on a empty slot of a sizer
+      <figure>
+        <title>The Design Window</title>
+        <graphic fileref="design_window_empty_slot.png" />
+      </figure>
+      
+    </para>
 </chapter>
   
   
 <appendix>
   <title>Appendix</title>
   
-<para>        Copyright (c) 2002-2003 Alberto Griggio  albgrig@tiscalinet.it.
+<para>        Copyright (c) 2002-2003 Alberto Griggio  <email>albgrig@tiscalinet.it</email>.
 </para>
 <para>        Permission is hereby granted, free of charge, to any person obtaining
         a copy of
