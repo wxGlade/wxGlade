@@ -1,3 +1,6 @@
+2004-02-17: main.py, docs/index.html, docs/html/*:
+                new manual added
+
 2004-02-07: config.py: 
                 config path is now under APPDATA ok windows
 
