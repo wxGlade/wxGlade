@@ -33,6 +33,7 @@ class SplitterPane(WindowBase):
         if self.sizer and self.sizer.widget and self.widget:
             self.widget.SetAutoLayout(True)
             self.widget.SetSizer(self.sizer.widget)    
+            self.widget.Layout()
         
     def popup_menu(self, *args): pass
 
@@ -46,12 +47,10 @@ class SplitterPane(WindowBase):
         if self.sizer or not common.adding_sizer:
             self.on_set_focus(event) # default behaviour: call show_properties
             return
-        self.SetCursor(wxNullCursor)
+        self.widget.SetCursor(wxNullCursor)
         common.widgets[common.widget_to_add](self, None, None)
         common.adding_widget = common.adding_sizer = False
         common.widget_to_add = None
-        self.sizer = True # in this case, self.sizer is used only as a flag
-                          # (this is really ugly, I must find a better way)
         common.app_tree.app.saved = False
 
     def on_parent_size(self, event):
@@ -134,7 +133,6 @@ class EditSplitterWindow(ManagedBase):
         ManagedBase.finish_widget_creation(self)
         sp = self.properties['sash_pos']
         if not sp.is_active():
-            print 'sash_pos is active'
             if self.orientation == wxSPLIT_HORIZONTAL:
                 max_pos = self.widget.GetClientSize()[1]
             else: max_pos = self.widget.GetClientSize()[0]
@@ -144,6 +142,12 @@ class EditSplitterWindow(ManagedBase):
         else:
             self.set_sash_pos(sp.get_value())
         
+    def on_set_focus(self, event):
+        self.show_properties()
+        # here we must call event.Skip() also on Win32 as this we should be
+        # able to move the sash
+        event.Skip()
+
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxScrolledWindow(self.notebook, -1)
@@ -171,8 +175,8 @@ class EditSplitterWindow(ManagedBase):
                 self.widget.SplitVertically(self.window_1.widget,
                                             self.window_2.widget)
             else:
-                self.SplitHorizontally(self.window_1.widget,
-                                       self.window_2.widget)
+                self.widget.SplitHorizontally(self.window_1.widget,
+                                              self.window_2.widget)
             sp = self.properties['sash_pos'].get_value()
             if not sp:
                 self.widget.SetSashPosition(self.widget.GetClientSize()[0]/2)
@@ -181,9 +185,8 @@ class EditSplitterWindow(ManagedBase):
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            style = self.style #GetWindowStyleFlag()
             for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]: retval[i] = 1
+                if self.style & self.style_pos[i]: retval[i] = 1
         except AttributeError: pass
         return retval
 

@@ -21,14 +21,18 @@ class EditPanel(ManagedBase):
 
     def create_widget(self):
         self.widget = wxPanel(self.parent.widget, self.id)
-        # event handlers
-        EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         EVT_SIZE(self.parent.widget, self.on_parent_size)
-        # !!! Why self.widget.Disconnect?
+        self.widget.GetBestSize = self.get_widget_best_size
+
+    def finish_widget_creation(self):
+        ManagedBase.finish_widget_creation(self)
+        # this must be done here since ManagedBase.finish_widget_creation
+        # normally sets EVT_LEFT_DOWN to update_wiew
         if not self.widget.Disconnect(-1, -1, wxEVT_LEFT_DOWN):
             print "EditPanel: Unable to disconnect the event hanlder"
-        self.widget.GetBestSize = self.get_widget_best_size
+        EVT_LEFT_DOWN(self.widget, self.drop_sizer)
+
         
     def on_enter(self, event):
         if not self.top_sizer and common.adding_sizer:
@@ -40,24 +44,22 @@ class EditPanel(ManagedBase):
         self.top_sizer = sizer
         if self.top_sizer and self.top_sizer.widget and self.widget:
             self.widget.SetAutoLayout(True)
-            self.widget.SetSizer(self.top_sizer.widget)    
+            self.widget.SetSizer(self.top_sizer.widget)
+            self.widget.Layout()
 
     def drop_sizer(self, event):
         if self.top_sizer or not common.adding_sizer:
             self.on_set_focus(event) # default behaviour: call show_properties
             return
-        self.SetCursor(wxNullCursor)
+        self.widget.SetCursor(wxNullCursor)
         common.widgets[common.widget_to_add](self, None, None)
         common.adding_widget = common.adding_sizer = False
         common.widget_to_add = None
-        self.top_sizer = True # in this case, self.top_sizer is used only
-                              # as a flag (this is really ugly,
-                              # I must find a better way)
         common.app_tree.app.saved = False
 
     def on_parent_size(self, event):
         if self.top_sizer and self.widget:
-            self.widget.GetSizer().Layout()
+            self.top_sizer.Refresh()
 
     def get_widget_best_size(self):
         if self.top_sizer and self.widget.GetSizer():
