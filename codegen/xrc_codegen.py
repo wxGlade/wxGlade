@@ -137,7 +137,7 @@ class DefaultXrcObject(XrcObject):
             self.properties['fg'] = self.properties['foreground']
             del self.properties['foreground']
         if self.properties.has_key('background'):
-            self.properties['fg'] = self.properties['background']
+            self.properties['bg'] = self.properties['background']
             del self.properties['background']
         if self.properties.has_key('font'):
             font = self.properties['font']

@@ -323,7 +323,7 @@ class WindowBase(EditBase):
                 # try to preserve the user's choice
                 try: use_dialog_units = (sz.get_value().strip()[-1] == 'd')
                 except IndexError: use_dialog_units = False
-            else: use_dialog_units = True
+            else: use_dialog_units = False
             if use_dialog_units:
                 size = "%s, %sd" % tuple(self.widget.ConvertPixelSizeToDialog(
                     self.widget.GetSize()))

@@ -43,7 +43,7 @@ def python_code_generator(obj):
     init.append('self.%s = wxBitmapButton(%s, %s, %s)\n' % 
                 (obj.name, parent, id, bmp))
     props_buf = pygen.generate_common_properties(obj)
-    if not prop.has_key(size):
+    if not prop.has_key('size'):
         props_buf.append('self.%s.SetSize(self.%s.GetBestSize())\n' % \
                          (obj.name, obj.name))
     return init, props_buf, []
@@ -83,7 +83,7 @@ def cpp_code_generator(obj):
     init = [ '%s = new wxBitmapButton(%s, %s, %s);\n' % 
              (obj.name, parent, id, bmp) ]
     props_buf = cppgen.generate_common_properties(obj)
-    if not prop.has_key(size):
+    if not prop.has_key('size'):
         props_buf.append('%s->SetSize(%s->GetBestSize());\n' % \
                          (obj.name, obj.name))
     return init, ids, props_buf, []

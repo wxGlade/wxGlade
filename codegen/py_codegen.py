@@ -267,7 +267,10 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     obj_name = obj.name
     try: w, h = [ int(s) for s in obj_name.split(',') ]
     except ValueError:
-        if obj.in_windows:
+        if obj.base == 'wxNotebook':
+            # this is a TEMPORARY HACK! we must find a better way
+            obj_name += '_sizer'
+        elif obj.in_windows:
             obj_name = 'self.' + obj_name # it's a real name
     else: pass # it was the dimension of a spacer
     try: klass = classes[toplevel.klass]

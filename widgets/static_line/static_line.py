@@ -67,8 +67,10 @@ def builder(parent, sizer, pos, number=[1]):
             prop = RadioProperty(self, 'orientation', self,
                                  ['wxLI_HORIZONTAL', 'wxLI_VERTICAL'])
             szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(prop.panel, 0, wxEXPAND)
-            szr.Add(wxButton(self, wxID_OK, 'OK'), 0, wxALL|wxALIGN_CENTER, 3)
+            szr.Add(prop.panel, 0, wxALL|wxEXPAND, 10)
+            btn = wxButton(self, wxID_OK, 'OK')
+            btn.SetDefault()
+            szr.Add(btn, 0, wxBOTTOM|wxALIGN_CENTER, 10)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
