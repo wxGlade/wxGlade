@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.10 2003/07/11 07:30:23 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.11 2003/07/11 16:10:43 agriggio Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -238,7 +238,7 @@ def quote_path(s):
     """\
     escapes all " and \ , thus making a path suitable to
     insert in a perl source file
-    """
+    """ # " alb: comment needed to avoid emacs going insane with colorization..
     s = s.replace('\\', '\\\\')
     s = s.replace('"', r'\"')
     return '"' + s + '"'
