@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.29 2004/01/18 19:45:04 agriggio Exp $
+# $Id: xml_parse.py,v 1.30 2004/05/11 23:39:31 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -631,8 +631,9 @@ class CodeObject:
                 self.is_toplevel = True
                 # make a valid name for the class (this can be invalid for
                 # some sensible reasons...)
-                self.klass = self.klass[self.klass.rfind('.')+1:]
-                self.klass = self.klass[self.klass.rfind(':')+1:]
+                # ALB: NEVER try to be smarter than the user!!
+                #self.klass = self.klass[self.klass.rfind('.')+1:]
+                #self.klass = self.klass[self.klass.rfind(':')+1:]
                 
                 self.parser._toplevels.push(self)
             #------------- 2003-05-07: preview --------------------------------
