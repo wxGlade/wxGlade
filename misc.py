@@ -209,13 +209,17 @@ focused_widget = None
 
 
 def _remove():
+    global focused_widget
     if focused_widget is not None:
         focused_widget.remove()
+        focused_widget = None
         
 def _cut():
+    global focused_widget
     if focused_widget is not None:
         try: focused_widget.clipboard_cut()
         except AttributeError: pass
+        else: focused_widget = None
         
 def _copy():
     if focused_widget is not None:

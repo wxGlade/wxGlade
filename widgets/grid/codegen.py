@@ -5,7 +5,7 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 
-import common,misc
+import common
 
 def python_code_generator(obj):
     """\
@@ -16,16 +16,15 @@ def python_code_generator(obj):
     id_name, id = pygen.generate_code_id(obj)
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-    if obj.is_toplevel:
-        l = []
-        if id_name: l.append(id_name)
-        l.append('self.%s = %s(%s, %s)\n' % (obj.name, obj.klass, parent,
-                                                 id))
-        return l, [], []    
+##     if obj.is_toplevel:
+##         l = []
+##         if id_name: l.append(id_name)
+##         l.append('self.%s = %s(%s, %s)\n' % (obj.name, obj.klass, parent,
+##                                                  id))
+##         return l, [], []    
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = wxGrid(%s, %s)\n' %
-                (obj.name, parent, id))
+    init.append('self.%s = %s(%s, %s)\n' % (obj.name, obj.klass, parent, id))
     props_buf = python_generate_properties(obj)
     return init, props_buf, []
 
@@ -36,64 +35,38 @@ def python_generate_properties(obj):
     name = 'self'
     if not obj.is_toplevel: name += '.%s' % obj.name
     prop = obj.properties
-    out.append('%s.CreateGrid(%s, %s)\n' % (name, prop.get('rows_number'), prop.get('columns_number')))
-    if prop.get('row_label_size', False):
+    out.append('%s.CreateGrid(%s, %s)\n' % (name, prop.get('rows_number'),
+                                            prop.get('columns_number')))
+    if prop.get('row_label_size'):
         out.append('%s.SetRowLabelSize(%s)\n' % (name, prop['row_label_size']))
-    if prop.get('col_label_size', False):
+    if prop.get('col_label_size'):
         out.append('%s.SetColLabelSize(%s)\n' % (name, prop['col_label_size']))
-    if prop.get('enable_editing', False):
-        out.append('%s.EnableEditing(%s)\n' % (name, prop['enable_editing']))
-    if prop.get('enable_grid_lines', False):
-        out.append('%s.EnableGridLines(%s)\n' %
-                   (name, prop['enable_grid_lines']))
-    if prop.get('enable_col_resize', False):
-        out.append('%s.EnableDragColSize(%s)\n' %
-                   (name, prop['enable_col_resize']))
-    else: #HELP# default is enabled, I try to fix in this way
-        out.append(name + '.EnableDragColSize(0)\n')
-    if prop.get('enable_row_resize', False):
-        out.append('%s.EnableDragRowSize(%s)\n' %
-                   (name, prop['enable_row_resize']))
-    else: #HELP# default is enabled, I try to fix in this way
-        out.append(name + '.EnableDragRowSize(0)\n')
-    if prop.get('enable_grid_resize', False):
-        out.append('%s.EnableDragGridSize(%s)\n' %
-                   (name, prop['enable_grid_resize']))
-    else: #HELP# default is enabled, I try to fix in this way
-        out.append(name + '.EnableDragGridSize(0)\n')
+    enable_editing = prop.get('enable_editing', '1')
+    if enable_editing != '1':
+        out.append('%s.EnableEditing(0)\n' % name)
+    enable_grid_lines = prop.get('enable_grid_lines', '1')
+    if enable_grid_lines != '1':
+        out.append('%s.EnableGridLines(0)\n' % name)
+    enable_col_resize = prop.get('enable_col_resize', '1')
+    if enable_col_resize != '1':
+        out.append('%s.EnableDragColSize(0)\n' % name)
+    enable_row_resize = prop.get('enable_row_resize', '1')
+    if enable_row_resize != '1':
+        out.append('%s.EnableDragRowSize(0)\n' % name)
+    enable_grid_resize = prop.get('enable_grid_resize', '1')
+    if enable_grid_resize != '1':
+        out.append('%s.EnableDragGridSize(0)\n' % name)
     if prop.get('lines_color', False):
-        c = misc.string_to_color(prop['lines_color'])
-        out.append('%s.SetGridLineColour(wxColour(%d,%d,%d))\n' %
-                   (name, int(c.Red()), int(c.Green()), int(c.Blue()) ) )
+        out.append('%s.SetGridLineColour(wxColour(%s))\n' %
+                   (name, pygen._string_to_colour(props['lines_color'])))
     if prop.get('label_bg_color', False):
-        c = misc.string_to_color(prop['label_bg_color'])
-        out.append('%s.SetLabelBackgroundColour(wxColour(%d,%d,%d))\n' %
-                   (name, int(c.Red()), int(c.Green()), int(c.Blue()) ) )
-    if prop.get('selection_mode', False):
-        out.append('%s.SetSelectionMode(%s)\n' %
-                   (name, prop['selection_mode']))
+        out.append('%s.SetLabelBackgroundColour(wxColour(%s))\n' %
+                   (name, pygen._string_to_colour(props['label_bg_color'])))
+    sel_mode = prop.get('selection_mode')
+    if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
+        out.append('%s.SetSelectionMode(%s)\n' % (name, sel_mode))
     out.extend(pygen.generate_common_properties(obj))
     return out
-
-
-def xrc_code_generator(obj):
-    xrcgen = common.code_writers['XRC']
-    class GridXrcObject(xrcgen.DefaultXrcObject):
-        def write_property(self, name, val, outfile, tabs):
-            if name == 'label':
-                # translate & into _ as accelerator marker
-                val2 = val.replace('&', '_')
-                if val.count('&&') > 0:
-                    while True:
-                        index = val.find('&&')
-                        if index < 0: break
-                        val = val2[:index] + '&&' + val2[index+2:]
-                else: val = val2
-            xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                   outfile, tabs)
-    # end of class GridXrcObject
-
-    return GridXrcObject(obj)
 
 
 def cpp_code_generator(obj):
@@ -134,10 +107,10 @@ def initialize():
     if pygen:
         pygen.add_widget_handler('wxGrid', python_code_generator,
                                  python_generate_properties,
-                                ['from wxPython.grid import *\n'])
+                                 ['from wxPython.grid import *\n'])
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
-        xrcgen.add_widget_handler('wxGrid', xrc_code_generator)
+        xrcgen.add_widget_handler('wxGrid', xrcgen.NotImplementedXrcObject)
     cppgen = common.code_writers.get('C++')
     if cppgen:
         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
