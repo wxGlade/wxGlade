@@ -3,6 +3,13 @@ import common, sys, os, os.path
 
 if common.use_gui:
     from wxPython.wx import *
+
+    try:
+        wxFIXED_MINSIZE
+    except NameError:
+        import configUI
+        configUI.wxFIXED_MINSIZE = 0
+    
     from configUI import *
 
     class wxGladePreferences(wxGladePreferencesUI):
