@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.57 2004/10/15 23:30:35 agriggio Exp $
+# $Id: main.py,v 1.58 2004/10/18 09:19:40 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -456,6 +456,20 @@ class wxGladeFrame(wxFrame):
 
         self.Raise()
 
+        # ALB 2004-10-16
+        if common.check_autosaved(None) and \
+               wxMessageBox("There seems to be auto saved data "
+                            "from last wxGlade session: "
+                            "do you want to restore it?",
+                            "Auto save detected",
+                            style=wxICON_QUESTION|wxYES_NO) == wxYES:
+            if self._open_app(common.get_name_for_autosave(),
+                              add_to_history=False):
+                common.app_tree.app.saved = False
+                common.app_tree.app.filename = None
+                self.user_message("Recovery from auto save complete")
+                common.remove_autosaved(None)
+
     def on_autosave_timer(self, event):
         if common.autosave_current():
             self.user_message("Auto saving... done")
@@ -508,6 +522,10 @@ class wxGladeFrame(wxFrame):
             common.app_tree.app.filename = None
             common.app_tree.app.saved = True
             self.user_message("")
+            # ALB 2004-10-15
+            common.remove_autosaved()
+            if config.preferences.autosave and self.autosave_timer is not None:
+                self.autosave_timer.Start()
         
     def open_app(self, event_unused):
         """\
@@ -533,7 +551,7 @@ class wxGladeFrame(wxFrame):
             self.cur_dir = os.path.dirname(infile)
 
     def _open_app(self, infilename, use_progress_dialog=True,
-                  is_filelike=False):
+                  is_filelike=False, add_to_history=True):
         import time
         from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, \
              XmlParsingError
@@ -573,7 +591,7 @@ class wxGladeFrame(wxFrame):
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
             os.chdir(old_dir)
-            return             
+            return False            
         except Exception, msg:
             import traceback; traceback.print_exc()
 
@@ -591,7 +609,7 @@ class wxGladeFrame(wxFrame):
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
             os.chdir(old_dir)
-            return 
+            return False
 
         if not is_filelike:
             infile.close()
@@ -607,7 +625,8 @@ class wxGladeFrame(wxFrame):
 
         common.app_tree.app.saved = True
         
-        if hasattr(self, 'file_history') and infilename is not None:
+        if hasattr(self, 'file_history') and infilename is not None and \
+               add_to_history:
             self.file_history.AddFileToHistory(infilename)
 
         # ALB 2004-10-15
@@ -616,6 +635,8 @@ class wxGladeFrame(wxFrame):
 
         self.user_message("Loaded %s (%.2f seconds)" % \
                           (common.app_tree.app.filename, end-start))
+
+        return True
 
     def save_app(self, event):
         """\
