@@ -1,3 +1,10 @@
+ Authors:
+ ---------------------------------------------------------------------------
+ - Alberto Griggio <albgrig@tiscalinet.it>
+ - Marco Barisione <marco.bari@vene.ws>
+ - Marcello Semboli <dinogen@supereva.it>
+
+
  Contributors:
  ---------------------------------------------------------------------------
  
