@@ -27,19 +27,12 @@ if common.use_gui:
             self.show_progress = wxCheckBox(self.notebook_1_pane_1, -1,
                                             "Show progress dialog when loading"
                                             " wxg files")
-            self.label_1 = wxStaticText(self.notebook_1_pane_1, -1,
-                                        "Initial path for \nfile "
-                                        "opening/saving dialogs:")
             self.open_save_path = wxTextCtrl(self.notebook_1_pane_1, -1, "")
-            self.label_2_copy = wxStaticText(self.notebook_1_pane_1, -1,
-                                             "Initial path for \ncode "
-                                             "generation file dialogs:")
             self.codegen_path = wxTextCtrl(self.notebook_1_pane_1, -1, "")
-            self.label_2 = wxStaticText(self.notebook_1_pane_1, -1,
-                                        "Number of items in file history\n"
-                                        "(wxPython >= 2.3.3)")
             self.number_history = wxSpinCtrl(self.notebook_1_pane_1, -1, "4",
                                              min=0, max=100)
+            self.buttons_per_row = wxSpinCtrl(self.notebook_1_pane_1, -1, "5",
+                                              min=1, max=10)
             self.use_dialog_units = wxCheckBox(self.notebook_1_pane_2, -1,
                                                "Use dialog units by default "
                                                "for size properties")
@@ -49,9 +42,8 @@ if common.use_gui:
                                              "Create backup files for "
                                              "generated source")
             self.backup_suffix = wxRadioBox(self.notebook_1_pane_2, -1,
-                                            "Backup options",
-                                            choices=['append ~ to filename',
-                                                    'append .bak to filename'],
+                                            "Backup options", choices=[
+                "append ~ to filename", "append .bak to filename"],
                                             majorDimension=2,
                                             style=wxRA_SPECIFY_COLS)
             self.ok = wxButton(self, wxID_OK, "OK")
@@ -81,6 +73,7 @@ if common.use_gui:
                 self.codegen_backup.SetValue(self.preferences.codegen_backup)
                 if self.preferences.backup_suffix == '.bak':
                     self.backup_suffix.SetSelection(1)
+                self.buttons_per_row.SetValue(self.preferences.buttons_per_row)
             except Exception, e:
                 wxMessageBox('Error reading config file:\n%s' % e, 'Error',
                              wxOK|wxCENTRE|wxICON_ERROR)
@@ -99,6 +92,7 @@ if common.use_gui:
             if self.backup_suffix.GetSelection():
                 prefs['backup_suffix'] = '.bak'
             else: prefs['backup_suffix'] = '~'
+            prefs['buttons_per_row'] = self.buttons_per_row.GetValue()
 
         def __set_properties(self):
             # begin wxGlade: wxGladePreferences.__set_properties
@@ -109,6 +103,7 @@ if common.use_gui:
             self.open_save_path.SetSize((196, -1))
             self.codegen_path.SetSize((196, -1))
             self.number_history.SetSize((196, -1))
+            self.buttons_per_row.SetSize((196, -1))
             self.wxg_backup.SetValue(1)
             self.codegen_backup.SetValue(1)
             self.backup_suffix.SetSelection(0)
@@ -121,18 +116,33 @@ if common.use_gui:
             sizer_2 = wxBoxSizer(wxHORIZONTAL)
             sizer_5 = wxBoxSizer(wxVERTICAL)
             sizer_3 = wxBoxSizer(wxVERTICAL)
-            sizer_4 = wxFlexGridSizer(3, 2, 0, 0)
+            sizer_4 = wxFlexGridSizer(4, 2, 0, 0)
             sizer_3.Add(self.use_menu_icons, 0, wxALL|wxEXPAND, 5)
             sizer_3.Add(self.frame_tool_win, 0, wxALL|wxEXPAND, 5)
             sizer_3.Add(self.show_progress, 0, wxALL|wxEXPAND, 5)
-            sizer_4.Add(self.label_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
-            sizer_4.Add(self.open_save_path, 1, wxALL|wxALIGN_CENTER_VERTICAL,
-                        5)
-            sizer_4.Add(self.label_2_copy, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
+            label_1 = wxStaticText(self.notebook_1_pane_1, -1,
+                                   "Initial path for \nfile opening/saving "
+                                   "dialogs:")
+            sizer_4.Add(label_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
+            sizer_4.Add(self.open_save_path, 1,
+                        wxALL|wxALIGN_CENTER_VERTICAL, 5)
+            label_2_copy = wxStaticText(self.notebook_1_pane_1, -1,
+                                        "Initial path for \ncode generation "
+                                        "file dialogs:")
+            sizer_4.Add(label_2_copy, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
             sizer_4.Add(self.codegen_path, 1, wxALL|wxALIGN_CENTER_VERTICAL, 5)
-            sizer_4.Add(self.label_2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
-            sizer_4.Add(self.number_history, 0, wxALL|wxALIGN_CENTER_VERTICAL,
-                        5)
+            label_2 = wxStaticText(self.notebook_1_pane_1, -1,
+                                   "Number of items in file history\n"
+                                   "(wxPython >= 2.3.3)")
+            sizer_4.Add(label_2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
+            sizer_4.Add(self.number_history, 0,
+                        wxALL|wxALIGN_CENTER_VERTICAL, 5)
+            label_2_copy_1 = wxStaticText(self.notebook_1_pane_1, -1,
+                                          "Number of buttons per row\nin the "
+                                          "main palette")
+            sizer_4.Add(label_2_copy_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5)
+            sizer_4.Add(self.buttons_per_row, 0,
+                        wxALL|wxALIGN_CENTER_VERTICAL, 5)
             sizer_4.AddGrowableCol(1)
             sizer_3.Add(sizer_4, 0, wxEXPAND, 3)
             self.notebook_1_pane_1.SetAutoLayout(1)
@@ -147,10 +157,9 @@ if common.use_gui:
             self.notebook_1_pane_2.SetSizer(sizer_5)
             sizer_5.Fit(self.notebook_1_pane_2)
             sizer_5.SetSizeHints(self.notebook_1_pane_2)
-            notebook_1_sizer = wxNotebookSizer(self.notebook_1)
             self.notebook_1.AddPage(self.notebook_1_pane_1, "Interface")
             self.notebook_1.AddPage(self.notebook_1_pane_2, "Other")
-            sizer_1.Add(notebook_1_sizer, 1, wxALL|wxEXPAND, 5)
+            sizer_1.Add(wxNotebookSizer(self.notebook_1), 1, wxALL|wxEXPAND, 5)
             sizer_2.Add(self.ok, 0, 0, 0)
             sizer_2.Add(self.cancel, 0, wxLEFT, 10)
             sizer_2.Add(self.apply, 0, wxLEFT, 10)
@@ -179,7 +188,8 @@ class Preferences(ConfigParser):
         'show_progress': True,
         'wxg_backup': True,
         'codegen_backup': True,
-        'backup_suffix': sys.platform == 'win32' and '.bak' or '~'
+        'backup_suffix': sys.platform == 'win32' and '.bak' or '~',
+        'buttons_per_row': 5,
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults

@@ -1,3 +1,7 @@
+2003-03-14: config.py, main.py:
+                added new preference buttons_per_row, to control the geometry
+                of the main palette
+
 2003-03-11: widgets/list_ctrl/*, widgets/tree_ctrl/*:
                 first support for wxListCtrl and wxTreeCtrl
 
