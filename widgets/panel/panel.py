@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.20 2003/08/07 12:06:01 crazyinsomniac Exp $
+# $Id: panel.py,v 1.21 2003/12/06 13:28:42 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -203,8 +203,39 @@ class EditPanel(PanelBase, ManagedBase):
             self._classname = 'EditScrolledWindow'
         else:
             self._classname = self.__class__.__name__
-            
 
+    def popup_menu(self, event):
+        if self.widget:
+            if not self._rmenu:
+                COPY_ID, REMOVE_ID, CUT_ID = [wxNewId() for i in range(3)]
+                self._rmenu = misc.wxGladePopupMenu(self.name)
+                misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
+                                 'remove.xpm')
+                misc.append_item(self._rmenu, COPY_ID, 'Copy\tCtrl+C',
+                                 'copy.xpm')
+                misc.append_item(self._rmenu, CUT_ID, 'Cut\tCtrl+X',
+                                 'cut.xpm')
+                EVT_MENU(self.widget, REMOVE_ID, self.remove)
+                EVT_MENU(self.widget, COPY_ID, self.clipboard_copy)
+                EVT_MENU(self.widget, CUT_ID, self.clipboard_cut)
+                # paste
+                PASTE_ID = wxNewId()
+                misc.append_item(self._rmenu, PASTE_ID, 'Paste\tCtrl+V',
+                                 'paste.xpm')
+                EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
+                
+            self.widget.PopupMenu(self._rmenu, event.GetPosition())
+
+    def clipboard_paste(self, *args):
+        import clipboard, xml_parse
+        size = self.widget.GetSize()
+        try:
+            if clipboard.paste(self, None, 0):
+                common.app_tree.app.saved = False
+                self.widget.SetSize(size)
+        except xml_parse.XmlParsingError, e:
+            print '\nwxGlade-WARNING: only sizers can be pasted here'
+            
 # end of class EditPanel
 
 
