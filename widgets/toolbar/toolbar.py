@@ -5,16 +5,16 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 from wxPython.wx import *
-from wxPython.lib.filebrowsebutton import FileBrowseButtonWithHistory
+from wxPython.lib.filebrowsebutton import FileBrowseButton
 
-import common, math, misc
+import common, math, misc, os
 from tree import Tree
 from tool import *
 from widget_properties import *
 from edit_windows import EditBase, TopLevelBase
 
 
-class _MyBrowseButton(FileBrowseButtonWithHistory):
+class _MyBrowseButton(FileBrowseButton):
     def createBrowseButton( self):
         """Create the browse-button control"""
         ID = wxNewId()
@@ -59,10 +59,10 @@ class ToolsDialog(wxDialog):
         self.label = wxTextCtrl(self, LABEL_ID)
         self.help_str = wxTextCtrl(self, HELP_STR_ID)
         self.long_help_str = wxTextCtrl(self, LONG_HELP_STR_ID)
-        self.bitmap1 = _MyBrowseButton(#FileBrowseButtonWithHistory(
+        self.bitmap1 = _MyBrowseButton(
             self, BITMAP1_ID, labelText='Normal Bitmap', buttonText='...',
             changeCallback=self.update_tool)
-        self.bitmap2 = _MyBrowseButton(#FileBrowseButtonWithHistory(
+        self.bitmap2 = _MyBrowseButton(
             self, BITMAP2_ID, labelText='Second Bitmap', buttonText='...',
             changeCallback=self.update_tool)
         self.check_radio = wxRadioBox(
@@ -239,6 +239,13 @@ class ToolsDialog(wxDialog):
         except AttributeError:
             # this happens on wx2.4.0.1 for FileBrowseButton events
             pass
+        # update the directory of the browse buttons
+        directory = os.path.split(self.bitmap1.GetValue())[0]
+        if not os.path.isdir(directory):
+            directory = os.path.split(self.bitmap2.GetValue())[0]
+        if os.path.isdir(directory):
+            self.bitmap1.startDirectory = directory
+            self.bitmap2.startDirectory = directory
 
     def remove_tool(self, event):
         """\
@@ -423,10 +430,20 @@ class EditToolBar(EditBase):
         self.properties['margins'] = TextProperty(self, 'margins', None,
                                                   can_disable=True)
         self.access_functions['tools'] = (self.get_tools, self.set_tools)
-        prop = self.properties['tools'] = ToolsProperty(self, 'tools', None) 
+        prop = self.properties['tools'] = ToolsProperty(self, 'tools', None)
+        self.packing = 1
+        self.access_functions['packing'] = (self.get_packing, self.set_packing)
+        self.properties['packing'] = SpinProperty(self, 'packing', None,
+                                                  r=(0, 100), can_disable=True)
+        self.separation = 5
+        self.access_functions['separation'] = (self.get_separation,
+                                               self.set_separation)
+        self.properties['separation'] = SpinProperty(
+            self, 'separation', None, r=(0, 100), can_disable=True)
 
     def create_widget(self):
-        tb_style = wxTB_HORIZONTAL|wxTB_DOCKABLE|wxTB_FLAT
+        tb_style = wxTB_HORIZONTAL|self.style
+        if wxPlatform == '__WXGTK__': tb_style |= wxTB_DOCKABLE|wxTB_FLAT
         if self.parent:
             self.widget = self._tb = wxToolBar(
                 self.parent.widget, -1, style=tb_style)
@@ -445,6 +462,16 @@ class EditToolBar(EditBase):
                 # at least move it away from the 3 wxGlade frames
                 self.widget.CenterOnScreen()
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        # set the various property values
+        prop = self.properties
+        if prop['bitmapsize'].is_active():
+            self.set_bitmapsize(self.bitmapsize, refresh=False)
+        if prop['margins'].is_active():
+            self.set_margins(self.margins, refresh=False)
+        if prop['packing'].is_active():
+            self.set_packing(self.packing, refresh=False)
+        if prop['separation'].is_active():
+            self.set_separation(self.separation, refresh=False)
         self.set_tools(self.tools) # show the menus
 
     def create_properties(self):
@@ -454,6 +481,8 @@ class EditToolBar(EditBase):
         self.properties['style'].display(page)
         self.properties['bitmapsize'].display(page)
         self.properties['margins'].display(page)
+        self.properties['packing'].display(page)
+        self.properties['separation'].display(page)
         self.properties['tools'].display(page)
         if not sizer:
             sizer = wxBoxSizer(wxVERTICAL)
@@ -464,6 +493,8 @@ class EditToolBar(EditBase):
         sizer.Add(self.properties['style'].panel, 0, wxEXPAND)
         sizer.Add(self.properties['bitmapsize'].panel, 0, wxEXPAND)
         sizer.Add(self.properties['margins'].panel, 0, wxEXPAND)
+        sizer.Add(self.properties['packing'].panel, 0, wxEXPAND)
+        sizer.Add(self.properties['separation'].panel, 0, wxEXPAND)
         sizer.Add(self.properties['tools'].panel, 0, wxALL|wxEXPAND, 3)
         sizer.Layout()
         sizer.Fit(page)
@@ -486,7 +517,7 @@ class EditToolBar(EditBase):
             pass
         return retval
 
-    def set_style(self, value):
+    def set_style(self, value, refresh=True):
         value = self.properties['style'].prepare_value(value)
         self.style = 0
         for v in range(len(value)):
@@ -494,12 +525,12 @@ class EditToolBar(EditBase):
                 self.style |= self.style_pos[v]
         if self._tb:
             self._tb.SetWindowStyleFlag(self.style)
-            self._refresh_widget()
+            if refresh: self._refresh_widget()
 
     def get_margins(self):
         return self.margins
 
-    def set_margins(self, value):
+    def set_margins(self, value, refresh=True):
         try:
             margins = [int(t.strip()) for t in value.split(',')]
         except:
@@ -508,12 +539,40 @@ class EditToolBar(EditBase):
             self.margins = value
             if self._tb:
                 self._tb.SetMargins(margins)
-                self._refresh_widget()
+                if refresh: self._refresh_widget()
+
+    def get_packing(self):
+        return self.packing
+
+    def set_packing(self, value, refresh=True):
+        try:
+            value = int(value)
+        except:
+            self.properties['packing'].set_value(self.packing)
+        else:
+            self.packing = value
+            if self._tb:
+                self._tb.SetToolPacking(self.packing)
+                if refresh: self._refresh_widget()
+
+    def get_separation(self):
+        return self.separation
+
+    def set_separation(self, value, refresh=True):
+        try:
+            value = int(value)
+        except:
+            self.properties['separation'].set_value(self.separation)
+        else:
+            self.separation = value
+            if self._tb:
+                self._tb.SetToolSeparation(self.separation)
+                if refresh: self._refresh_widget()
 
     def get_bitmapsize(self):
         return self.bitmapsize
         
-    def set_bitmapsize(self, value):
+    def set_bitmapsize(self, value, refresh=True):
         try:
             size = [int(t.strip()) for t in value.split(',')]
         except:
@@ -522,7 +581,7 @@ class EditToolBar(EditBase):
             self.bitmapsize = value
             if self._tb:
                 self._tb.SetToolBitmapSize(size)
-                self._refresh_widget()
+                if refresh: self._refresh_widget()
 
     def get_tools(self):
         return self.tools

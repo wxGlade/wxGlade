@@ -70,6 +70,11 @@ class NotebookVirtualSizer(Sizer):
             self.window.widget.DeletePage(pos)
             self.window.widget.InsertPage(pos, item.widget, label)
             self.window.widget.SetSelection(pos)
+            try:
+                misc.wxCallAfter(item.sel_marker.update)
+            except AttributeError, e:
+                #print e
+                pass
             
     def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None,
                  force_layout=True):
@@ -224,8 +229,11 @@ class EditNotebook(ManagedBase):
         if self.widget:
             window.show_widget(True)
             self.virtual_sizer.set_item(pos)
-            try: window.sel_marker.update()
-            except AttributeError: pass
+            try:
+                misc.wxCallAfter(window.sel_marker.update)
+            except AttributeError, e:
+                print e
+                pass
 
     def get_tabs(self):
         return [ [n] for n, w in self.tabs ]
