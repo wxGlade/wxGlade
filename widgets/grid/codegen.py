@@ -56,8 +56,8 @@ def python_generate_properties(obj):
                    (name, prop['enable_grid_resize']))
     if prop.get('lines_color', False):
         c = misc.string_to_color(prop['lines_color'])
-        out.append('%s.SetGridLineColour(%d,d,d)\n' %
-                   (name, c.Red(), c.Green(), c.Blue()))
+        out.append('%s.SetGridLineColour(wxColour(%d,%d,%d))\n' %
+                   (name, int(c.Red()), int(c.Green()), int(c.Blue()) ) )
     out.extend(pygen.generate_common_properties(obj))
     return out
 
