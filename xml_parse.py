@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.32 2004/09/17 13:09:56 agriggio Exp $
+# $Id: xml_parse.py,v 1.33 2004/10/18 17:13:20 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -471,7 +471,7 @@ class CodeWriter(XmlParser):
     def startElement(self, name, attrs_impl):
         attrs = {}
         try:
-            encoding = attrs['encoding']
+            encoding = self.app_attrs['encoding']
             unicode('a', encoding)
         except (KeyError, LookupError):
             encoding = 'ISO-8859-1'
@@ -481,8 +481,7 @@ class CodeWriter(XmlParser):
         if name == 'application':
             # get the code generation options
             self._appl_started = True
-            if attrs.get('name') or attrs.get('class'):
-                self.app_attrs = attrs
+            self.app_attrs = attrs
             try:
                 attrs['option'] = bool(int(attrs['option']))
                 use_multiple_files = attrs['option']
