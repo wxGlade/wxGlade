@@ -1,6 +1,8 @@
 	wxGlade technical notes
 	-----------------------
-Last update: 2002-07-22
+Last update: 2003-06-26, but only section 9. The rest has not been updated
+             since 2002-07-22, and it's likely be very outdated in some parts
+
 
 This is an informal overview of wxGlade internals, made through a sample
 session of use. Each action of the hypotetical user will be described from the
@@ -162,3 +164,22 @@ which the code has to be written, and returns 3 lists of strings, representing
 the lines to add to the '__init__', '__set_properties' and '__do_layout'
 methods of the parent object.
 NOTE: the lines in the '__init__' list will be added in reverse order
+
+
+9. For contributors
+-------------------
+You are, of course, free to make any chages/additions you want to wxGlade, in
+whatever way you like. If you decide to contribute them back, however, here are
+some simple (stylistic) rules to follow: note that these are only general
+indications, if you think they don't fit somewhere, feel free to ignore them.
+
+ - class names are usually CamelCase
+ - variables, functions and method names are lower_case_with_unserscores
+ - ``constants'' are UPPER_CASE
+ - source lines are at most 79 characters long
+ - class bodies are usually ended by a # end of class ClassName comment
+ - source files use Unix EOL conventions (LF) if possible. In any case, please
+   don't mix Unix and Windows EOLs
+ - put your copyright info whenever appropriate
+
+ - that's all folks!!
