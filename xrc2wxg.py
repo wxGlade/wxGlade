@@ -2,6 +2,7 @@
 # xrc_import.py: Converts an XRC resource file (in a format wxGlade likes,
 # i.e. all windows inside sizers, no widget unknown to wxGlade, ...) into a
 # WXG file
+# $Id: xrc2wxg.py,v 1.9 2003/05/13 10:13:50 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
