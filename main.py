@@ -233,6 +233,8 @@ class wxGladeFrame(wxFrame):
             common.app_tree.clear()
             common.app_tree.app.filename = infile
             common.property_panel.Reparent(self.hidden_frame)
+            # prevent the auto-expansion of nodes
+            common.app_tree.auto_expand = False
 
             try:
                 infile = open(infile)
@@ -247,20 +249,17 @@ class wxGladeFrame(wxFrame):
                 common.app_tree.app.saved = True
                 wxMessageBox("Error loading file:\n%s" % msg, "Error",
                              wxOK|wxCENTRE|wxICON_ERROR)
+                # reset the auto-expansion of nodes
+                common.app_tree.auto_expand = True
                 return 
 
             infile.close()
-            for node in common.app_tree.root.children:
-                common.app_tree.expand(node, False)
-##                 ww = w.widget
-##                 ww.Show()
-##                 if ww.has_sizer:
-##                     ww.GetSizer().Layout()
-##                     if not ww.properties['size'].is_active():
-##                         ww.GetSizer().Fit(ww)
             common.app_tree.select_item(common.app_tree.root)
             common.app_tree.root.widget.show_properties()
             common.property_panel.Reparent(self.frame2)
+            # reset the auto-expansion of nodes
+            common.app_tree.auto_expand = True
+            common.app_tree.expand()
 
             end = time.clock()
             print 'Loading time: %.5f' % (end-start)

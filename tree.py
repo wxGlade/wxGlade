@@ -163,6 +163,9 @@ class WidgetTree(wxTreeCtrl, Tree):
         EVT_LEFT_DCLICK(self, self.show_toplevel)
         self.title = ' '
         self.set_title(self.title)
+        
+        self.auto_expand = True # this control the automatic expansion of
+                                # nodes: it is set to False during xml loading
 
     def add(self, child, parent=None, image=None): # is image still used?
         """\
@@ -174,9 +177,10 @@ class WidgetTree(wxTreeCtrl, Tree):
         index = WidgetTree.images.get(name, -1)
         if parent is None: parent = parent.item = self.GetRootItem()
         child.item = self.AppendItem(parent.item, child.widget.name, index)
-        self.Expand(parent.item)
         self.SetPyData(child.item, child)
-        self.select_item(child)
+        if self.auto_expand:
+            self.Expand(parent.item)
+            self.select_item(child)
         child.widget.show_properties()
 
     def insert(self, child, parent, pos, image=None):
@@ -202,7 +206,7 @@ class WidgetTree(wxTreeCtrl, Tree):
         Tree.insert(self, child, parent, index)
         child.item = self.InsertItemBefore(parent.item, index,
                                            child.widget.name, image_index)
-        self.Expand(parent.item)
+        if self.auto_expand: self.Expand(parent.item)
         self.SetPyData(child.item, child)
         self.select_item(child)
         child.widget.show_properties()
@@ -267,16 +271,11 @@ class WidgetTree(wxTreeCtrl, Tree):
         except AttributeError:
             import traceback; traceback.print_exc()
 
-    def expand_all(self):
-        """\
-        expands all nodes of the tree
-        """
-        self.ExpandAll(self.GetRootItem())
-
-    def expand(self, node, yes):
+    def expand(self, node=None, yes=True):
         """\
         expands or collapses the given node
         """
+        if node is None: node = self.root
         if yes: self.Expand(node.item)
         else: self.Collapse(node.item)
 
@@ -304,6 +303,7 @@ class WidgetTree(wxTreeCtrl, Tree):
         else:
             def show_rec(node):
                 node.widget.show_widget(True)
+                self.expand(node, True)
                 if node.children:
                     for c in node.children: show_rec(c)
             show_rec(node)
