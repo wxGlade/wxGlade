@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.32 2003/10/29 22:29:39 lawson89 Exp $
+# $Id: tree.py,v 1.33 2003/12/07 13:10:19 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -109,13 +109,18 @@ class Tree:
 
     def remove(self, node=None):
         if node is not None:
-            try: del self.names[str(node.widget.name)]
-            except (KeyError, AttributeError): pass
+            def clear_name(n):
+                try: del self.names[str(n.widget.name)]
+                except (KeyError, AttributeError): pass
+                if n.children:
+                    for c in n.children: clear_name(c)
+            clear_name(node)
             if node.parent is self.root:
                 self.app.remove_top_window(node.widget.name)
             node.remove()
         elif self.root.children:
-            [n.remove() for n in self.root.children]
+            for n in self.root.children:
+                n.remove()
             self.root.children = None
             self.names = {}
 

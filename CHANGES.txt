@@ -1,3 +1,6 @@
+2003-12-07: tree.py:
+                partially fixed bug #798041 (renaming of cut widgets)
+
 2003-12-06: widgets/panel/panel.py:
                 added ability to paste a sizer inside a panel, notebook page
                 and splitter pane
