@@ -19,7 +19,7 @@ class EditPanel(ManagedBase):
         ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer,
                              pos, property_window, show=show)
         self.top_sizer = None # sizer to handle the layout of children
-        self.style = 0
+        self.style = wxTAB_TRAVERSAL
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
                            wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
