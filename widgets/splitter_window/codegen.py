@@ -85,7 +85,7 @@ def cpp_code_generator(window):
     cppgen = common.code_writers['C++']
     prop = window.properties
     id_name, id = cppgen.generate_code_id(window)
-    if id_name: ids = [ '%s = %s' % (id_name, id) ]
+    if id_name: ids = [ id_name ]
     else: ids = []
     if not window.parent.is_toplevel: parent = '%s' % window.parent.name
     else: parent = 'this'

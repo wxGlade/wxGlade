@@ -34,7 +34,7 @@ def cpp_code_generator(panel):
     cppgen = common.code_writers['C++']
     prop = panel.properties
     id_name, id = cppgen.generate_code_id(panel)
-    if id_name: ids = [ '%s = %s' % (id_name, id) ]
+    if id_name: ids = [ id_name ]
     else: ids = []
     if not panel.parent.is_toplevel: parent = '%s' % panel.parent.name
     else: parent = 'this'
