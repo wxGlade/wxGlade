@@ -22,7 +22,8 @@ class EditStaticText(ManagedBase):
         # label property
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['label'] = TextProperty(self, 'label', None)
+        self.properties['label'] = TextProperty(self, 'label', None,
+                                                multiline=True)
         self.style_pos  = (wxALIGN_LEFT, wxALIGN_RIGHT, wxALIGN_CENTER,
                            wxST_NO_AUTORESIZE)
         style_labels = ('#section#Style', 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
@@ -31,7 +32,8 @@ class EditStaticText(ManagedBase):
                                                      style_labels)  
 
     def create_widget(self):
-        self.widget = wxStaticText(self.parent.widget, self.id, self.label)
+        self.widget = wxStaticText(self.parent.widget, self.id,
+                                   self.label.replace('\\n', '\n'))
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -52,7 +54,7 @@ class EditStaticText(ManagedBase):
         if value != self.label:
             self.label = value
             if self.widget:
-                self.widget.SetLabel(value)
+                self.widget.SetLabel(value.replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
                     self.sizer.set_item(self.pos,
                                         size=self.widget.GetBestSize())

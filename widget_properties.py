@@ -150,12 +150,13 @@ class TextProperty(Property, _activator):
     """\
     Properties associated to a text control.
     """
-    def __init__(self, owner, name, parent, can_disable=0, enabled=0,
-                 readonly=0):
+    def __init__(self, owner, name, parent=None, can_disable=False,
+                 enabled=False, readonly=False, multiline=False):
         Property.__init__(self, owner, name, parent)
         self.val = str(owner[name][0]())
         self.can_disable = can_disable
         self.readonly = readonly
+        self.multiline = multiline
         _activator.__init__(self)
         if can_disable: self.toggle_active(enabled)
         self.panel = None
@@ -170,7 +171,9 @@ class TextProperty(Property, _activator):
         self.panel = wxPanel(parent, -1)
         if self.readonly: style = wxTE_READONLY
         else: style = 0
+        if self.multiline: style |= wxTE_MULTILINE
         val = self.get_value()
+        if self.multiline: val = val.replace('\\n', '\n')
         self.text = wxTextCtrl(self.panel, self.id, val, style=style)
         label = wxStaticText(self.panel, -1, _mangle(self.name))
         if self.can_disable:
@@ -182,12 +185,16 @@ class TextProperty(Property, _activator):
             self._target = self.text
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
+        sizer.SetItemMinSize(label, *label.GetBestSize())
         try:
             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
             option = 4
         except AttributeError:
             option = 5
         sizer.Add(self.text, option, wxALL|wxALIGN_CENTER, 3)
+        if self.multiline:
+            h = self.text.GetCharHeight()
+            sizer.SetItemMinSize(self.text, -1, h*3)
         self.panel.SetAutoLayout(1)
         self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
@@ -195,18 +202,26 @@ class TextProperty(Property, _activator):
 
 
     def bind_event(self, function):
-        def func_2(event, function=function, self=self):
+        def func_2(event):
             if self.text.IsEnabled():
                 function(event)
         EVT_KILL_FOCUS(self.text, func_2)
 
     def get_value(self):
-        try: return self.text.GetValue()
-        except AttributeError: return self.val
+        try:
+            val = self.text.GetValue()
+            if self.multiline: return val.replace('\n', '\\n')
+            return val
+        except AttributeError:
+            return self.val
 
     def set_value(self, value):
-        self.val = str(value)
-        try: self.text.SetValue(self.val)
+        value = str(value)
+        if self.multiline:
+            self.val = value.replace('\n', '\\n')
+            value = value.replace('\\n', '\n')
+        else: self.val = value
+        try: self.text.SetValue(value)
         except AttributeError: pass
 
     def write(self, outfile, tabs):
@@ -220,7 +235,7 @@ class CheckBoxProperty(Property):
     """\
     Properties whose values can be changed by one checkbox.
     """
-    def __init__(self, owner, name, parent, label=None):
+    def __init__(self, owner, name, parent=None, label=None):
         Property.__init__(self, owner, name, parent)
         self.val = int(owner[name][0]())
         if label is None: label = _mangle(name)
@@ -240,6 +255,7 @@ class CheckBoxProperty(Property):
         label = wxStaticText(self.panel, -1, self.label)
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 5, wxALIGN_CENTER|wxALL, 3)
+        sizer.SetItemMinSize(label, *label.GetBestSize())        
         sizer.Add(self.cb, 2, wxALIGN_CENTER|wxALL, 3)
         self.panel.SetAutoLayout(True)
         self.panel.SetSizer(sizer)
@@ -268,7 +284,7 @@ class CheckListProperty(Property):
     """\
     Properties whose values can be changed by a list of checkboxes.
     """
-    def __init__(self, owner, name, parent, labels=None, writer=None):
+    def __init__(self, owner, name, parent=None, labels=None, writer=None):
         # labels: list of names of the labels of the checkboxes; a
         # label that begins with the string "#section#" is used as the
         # title of a static box that encloses the checkboxes that
@@ -367,7 +383,8 @@ class SpinProperty(Property, _activator):
     """\
     Properties associated to a spin control.
     """
-    def __init__(self, owner, name, parent, can_disable=0, r=None, enabled=0):
+    def __init__(self, owner, name, parent=None, can_disable=False,
+                 r=None, enabled=False):
         # r = range of the spin (min, max)
         Property.__init__(self, owner, name, parent)
         self.can_disable = can_disable
@@ -402,6 +419,7 @@ class SpinProperty(Property, _activator):
             self._target = self.spin
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
+        sizer.SetItemMinSize(label, *label.GetBestSize())        
         try:
             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
             option = 4
@@ -445,7 +463,8 @@ class DialogProperty(Property, _activator):
     Property which selection is made through a dialog, which must provide a
     get_value method.
     """
-    def __init__(self, owner, name, parent, dialog, can_disable=0, enabled=0):
+    def __init__(self, owner, name, parent, dialog, can_disable=False,
+                 enabled=False):
         Property.__init__(self, owner, name, parent)
         self.dialog = dialog
         self.panel = None
@@ -477,6 +496,7 @@ class DialogProperty(Property, _activator):
         EVT_BUTTON(self.panel, self.id+1, self.display_dialog)
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
+        sizer.SetItemMinSize(label, *label.GetBestSize())        
         try:
             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
             option = 3
@@ -521,7 +541,7 @@ class DialogProperty(Property, _activator):
 
 class FileDialogProperty(DialogProperty):
     dialog = [None]
-    def __init__(self, owner, name, parent, wildcard="All Files|*",
+    def __init__(self, owner, name, parent=None, wildcard="All Files|*",
                  message="Choose a file", can_disable=True, style=0):
         if not self.dialog[0]:
             self.dialog[0] = wxFileDialog(parent, message,
@@ -535,7 +555,7 @@ class FileDialogProperty(DialogProperty):
 
 class ColorDialogProperty(DialogProperty):
     dialog = [None]
-    def __init__(self, owner, name, parent, can_disable=1):
+    def __init__(self, owner, name, parent=None, can_disable=True):
         if not self.dialog[0]:
             self.dialog[0] = wxColourDialog(parent)
             def get_value():
@@ -569,7 +589,7 @@ class FontDialogProperty(DialogProperty):
     
     dialog = [None]
 
-    def __init__(self, owner, name, parent, can_disable=1):
+    def __init__(self, owner, name, parent=None, can_disable=True):
         if not self.dialog[0]:
             # check wxPython >= 2.3.3
 ##             v = wx.__version__.split('.', 2)[-1]
