@@ -8,7 +8,8 @@
 from wxPython.wx import *
 from widget_properties import *
 from tree import Tree, WidgetTree
-import common, math, misc, os.path, config
+import common, math, misc, os, config
+import traceback
 
 class FileDirDialog:
     """\
@@ -90,6 +91,7 @@ class Application(object):
             except ValueError: pass
             else: self.codegen_opt = opt
         self.output_path = ""
+        self.language = 'python' # output language
         def set_output_path(value): self.output_path = value
         self.use_gettext = False
         def set_use_gettext(value): self.use_gettext = bool(int(value))
@@ -98,7 +100,7 @@ class Application(object):
             'class': (lambda : self.klass, set_klass), 
             'code_generation': (lambda : self.codegen_opt, set_codegen_opt),
             'output_path': (lambda : self.output_path, set_output_path),
-            'language': (lambda : 0, self.set_language),
+            'language': (self.get_language, self.set_language),
             'encoding': (self.get_encoding, self.set_encoding),
             'use_gettext': (lambda : self.use_gettext, set_use_gettext)
             }
@@ -195,7 +197,7 @@ class Application(object):
             self.encoding = value
 
     def set_language(self, value):
-        language = self.codewriters_prop.get_str_value()
+        language = self.language = self.codewriters_prop.get_str_value()
         ext = getattr(common.code_writers[language], 'default_extensions', [])
         wildcard = []
         for e in ext:
@@ -205,7 +207,7 @@ class Application(object):
         self.outpath_prop.dialog.set_wildcard('|'.join(wildcard))
 
     def get_language(self):
-        return self.codewriters_prop.get_str_value()
+        return self.language #codewriters_prop.get_str_value()
 
     def _get_saved(self): return self.__saved
     def _set_saved(self, value):
@@ -296,17 +298,19 @@ class Application(object):
     def __getitem__(self, name):
         return self.access_functions[name]
 
-    def generate_code(self, *args):
+    def generate_code(self, *args, **kwds):
+        preview = kwds.get('preview', False)
         if not self.output_path:
-            return wxMessageDialog(self.notebook, "You must specify an output "
-                                   "file\nbefore generating any code", "Error",
-                                   wxOK | wxCENTRE |
-                                   wxICON_EXCLAMATION).ShowModal()
-        if (self.name_prop.is_active() or self.klass_prop.is_active()) and \
-               self.top_win_prop.GetSelection() < 0:
-            return wxMessageDialog(self.notebook, "Please select a top window "
-                                   "for the application", "Error", wxOK |
-                                   wxCENTRE | wxICON_EXCLAMATION).ShowModal()
+            return wxMessageBox("You must specify an output file\n"
+                                "before generating any code", "Error",
+                                wxOK|wxCENTRE|wxICON_EXCLAMATION,
+                                self.notebook)
+        if not preview and \
+               ((self.name_prop.is_active() or self.klass_prop.is_active()) \
+                and self.top_win_prop.GetSelection() < 0):
+            return wxMessageBox("Please select a top window "
+                                "for the application", "Error", wxOK |
+                                wxCENTRE | wxICON_EXCLAMATION, self.notebook)
                 
         from cStringIO import StringIO
         out = StringIO()
@@ -314,8 +318,9 @@ class Application(object):
         from xml_parse import CodeWriter
         try:
             # generate the code from the xml buffer
-            cw = self.codewriters_prop.get_str_value()
-            CodeWriter(common.code_writers[cw], out.getvalue(), True)
+            cw = self.get_language() #self.codewriters_prop.get_str_value()
+            CodeWriter(common.code_writers[cw], out.getvalue(), True,
+                       preview=preview)
         except (IOError, OSError), msg:
             wxMessageBox("Error generating code:\n%s" % msg, "Error",
                          wxOK|wxCENTRE|wxICON_ERROR)
@@ -330,8 +335,9 @@ class Application(object):
                          " please report it." % msg, "Error",
                          wxOK|wxCENTRE|wxICON_ERROR)
         else:
-            wxMessageBox("Code generation completed successfully",
-                         "Information", wxOK|wxCENTRE|wxICON_INFORMATION)
+            if not preview:
+                wxMessageBox("Code generation completed successfully",
+                             "Information", wxOK|wxCENTRE|wxICON_INFORMATION)
 
     def get_name(self):
         if self.name_prop.is_active(): return self.name
@@ -344,5 +350,64 @@ class Application(object):
     def update_view(self, *args): pass
 
     def is_visible(self): return True
+
+    def preview(self, widget, out_name=[None]):
+        if out_name[0] is None:
+            import warnings
+            warnings.filterwarnings("ignore", "tempnam", RuntimeWarning,
+                                    "application")
+            out_name[0] = os.tempnam(None, 'wxg') + '.py'
+            #print 'Temporary name:', out_name[0]
+        widget_class_name = widget.klass
+        real_path = self.output_path
+        self.output_path = out_name[0]
+        real_codegen_opt = self.codegen_opt
+        real_language = self.language
+        real_use_gettext = self.use_gettext
+        self.use_gettext = False
+        self.language = 'python'
+        self.codegen_opt = 0
+        frame = None
+        try:
+            # cleanup old preview file if still hanging around
+            if os.path.isfile(self.output_path):
+                os.unlink(self.output_path)
+            self.generate_code(preview=True)
+            # dynamically import the generated module
+            FrameClass = misc.import_name(self.output_path, widget_class_name)
+            if not (issubclass(FrameClass, wxFrame) or
+                    issubclass(FrameClass, wxDialog)):
+                # the toplevel class isn't really toplevel, add a frame...
+                frame = wxFrame(None, -1, widget_class_name)
+                if issubclass(FrameClass, wxMenuBar):
+                    menubar = FrameClass()
+                    frame.SetMenuBar(menubar)
+                elif issubclass(FrameClass, wxToolBar):
+                    toolbar = FrameClass(frame, -1)
+                    frame.SetToolBar(toolbar)
+                else:
+                    panel = FrameClass(frame, -1)
+                frame.Fit()
+            else:
+                frame = FrameClass(None, -1, '')
+            def on_close(event):
+                frame.Destroy()
+                widget.preview_widget = None
+                widget.preview_button.SetLabel('Preview')
+            EVT_CLOSE(frame, on_close)
+            frame.SetTitle('<Preview> %s' % frame.GetTitle())
+            # raise the frame
+            frame.Center()
+            frame.Show()
+        except:
+            traceback.print_exc()
+            wxMessageBox("Problem previewing gui", "Error",
+                         wxOK|wxCENTRE|wxICON_EXCLAMATION, self.notebook)
+        # restore app state
+        self.output_path = real_path
+        self.codegen_opt = real_codegen_opt
+        self.language = real_language
+        self.use_gettext = real_use_gettext
+        return frame
 
 # end of class Application

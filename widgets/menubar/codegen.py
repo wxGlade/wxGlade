@@ -27,7 +27,7 @@ class PythonCodeGenerator:
                     if item.name: name = item.name
                     else: name = '%s_sub' % menu
                     append('%s = wxMenu()\n' % name)
-                    if item.id: # generating id
+                    if not obj.preview and item.id: # generating id
                         tokens = item.id.split('=')
                         if len(tokens) > 1:
                             id = tokens[0]
@@ -40,7 +40,7 @@ class PythonCodeGenerator:
                            (menu, id, pygen.quote_str(item.label),
                             name, pygen.quote_str(item.help_str)))
                 else:
-                    if item.id:
+                    if not obj.preview and item.id: # no ids for preview
                         tokens = item.id.split('=')
                         if len(tokens) > 1:
                             id = tokens[0]

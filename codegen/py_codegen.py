@@ -795,6 +795,8 @@ def generate_code_id(obj):
     empty if the object's id is a constant, and the second line is the value
     of the id
     """
+    if obj.preview:
+        return '', '-1' # never generate ids for preview code
     id = obj.properties.get('id')
     if id is None: return '', '-1'
     tokens = id.split('=')

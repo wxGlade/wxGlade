@@ -39,6 +39,8 @@ def _fix_arguments(arguments, parent, id):
 
 class PythonCodeGenerator:
     def get_code(self, widget):
+        if widget.preview:
+            return self.get_code_preview(widget)
         pygen = common.code_writers['python']
         prop = widget.properties
         id_name, id = pygen.generate_code_id(widget)
@@ -52,6 +54,41 @@ class PythonCodeGenerator:
                                             ", ".join(arguments)))
         props_buf = pygen.generate_common_properties(widget)
         return init, props_buf, []
+
+    def get_code_preview(self, widget):
+        pygen = common.code_writers['python']
+        if not widget.parent.is_toplevel:
+            parent = 'self.%s' % widget.parent.name
+        else: parent = 'self'
+        init = []
+        append = init.append
+        append('self.%s = wxWindow(%s, -1)\n' % (widget.name, parent))
+        on_paint_code = """\
+def self_%s_on_paint(event):
+    widget = self.%s
+    dc = wxPaintDC(widget)
+    dc.BeginDrawing()
+    dc.SetBrush(wxWHITE_BRUSH)
+    dc.SetPen(wxBLACK_PEN)
+    dc.SetBackground(wxWHITE_BRUSH)
+    dc.Clear()
+    w, h = widget.GetClientSize()
+    dc.DrawLine(0, 0, w, h)
+    dc.DrawLine(w, 0, 0, h)
+    text = 'Custom Widget: %s'
+    tw, th = dc.GetTextExtent(text)
+    x = (w - tw)/2
+    y = (h - th)/2
+    dc.SetPen(wxThePenList.FindOrCreatePen(wxBLACK, 0, wxTRANSPARENT))
+    dc.DrawRectangle(x-1, y-1, tw+2, th+2)
+    dc.DrawText(text, x, y)
+    dc.EndDrawing()    
+        """ % (widget.name, widget.name, widget.klass)
+        for line in on_paint_code.splitlines():
+            append(line + '\n')        
+        append('EVT_PAINT(self.%s, self_%s_on_paint)\n' %
+               (widget.name, widget.name))
+        return init, [], []
 
 # end of class PythonCodeGenerator
 

@@ -9,7 +9,8 @@
  ---------------------------------------------------------------------------
  
  - Richard Lawson <richard.lawson@colinx.com>: ability to cancel the addition
-   of a widget, preference to save the current geometry of wxGlade windows
+   of a widget, preference to save the current geometry of wxGlade windows,
+   part of the preview support
 
  - Alex Thuering <ntalex@web.de>: general virtual sizers support and
    porting of the SplitterWindow to this new model

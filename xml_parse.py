@@ -445,7 +445,8 @@ class XmlWidgetObject:
 
 class CodeWriter(XmlParser):
     """parser used to produce the source from a given xml file"""
-    def __init__(self, writer, input, from_string=False, out_path=None):
+    def __init__(self, writer, input, from_string=False, out_path=None,
+                 preview=False):
         # writer: object that actually writes the code
         XmlParser.__init__(self)
         self._toplevels = Stack() # toplevel objects, i.e. instances of a
@@ -456,6 +457,9 @@ class CodeWriter(XmlParser):
                                  # specified in the xml file
         
         self.code_writer = writer
+
+        self.preview = preview # if True, we are generating the code for the
+                               # preview
 
         if from_string: self.parse_string(input)
         else:
@@ -499,7 +503,7 @@ class CodeWriter(XmlParser):
             raise XmlParsingError("the root of the tree must be <application>")
         if name == 'object':
             # create the CodeObject which stores info about the current widget
-            CodeObject(attrs, self)
+            CodeObject(attrs, self, preview=self.preview)
             if attrs.has_key('name') and \
                    attrs['name'] == self.app_attrs.get('top_window', ''):
                 self.top_win = attrs['class']
@@ -593,7 +597,7 @@ class CodeObject:
     """\
     A class to store information needed to generate the code for a given object
     """
-    def __init__(self, attrs, parser):
+    def __init__(self, attrs, parser, preview=False):
         self.parser = parser
         self.in_windows = self.in_sizers = False
         self.is_toplevel = False # if True, the object is a toplevel one:
@@ -606,6 +610,7 @@ class CodeObject:
         # prop_handlers is a stack of custom handler functions to set
         # properties of this object
         self.prop_handlers = Stack()
+        self.preview = preview
         try:
             base = attrs.get('base', None)
             self.klass = attrs['class']
@@ -626,7 +631,15 @@ class CodeObject:
             if self.klass != self.base and can_be_toplevel:
                 #self.base != 'CustomWidget':
                 self.is_toplevel = True 
-                self.parser._toplevels.push(self)  
+                self.parser._toplevels.push(self)
+
+            #------------- 2003-05-07: preview --------------------------------
+            elif self.preview and not can_be_toplevel:
+                # if this is a custom class, but not a toplevel one,
+                # for the preview we have to use the "real" class
+                self.klass = self.base
+            #------------------------------------------------------------------
+            
             # temporary hack: to detect a sizer, check whether the name
             # of its class contains the string 'Sizer': TODO: find a
             # better way!!
