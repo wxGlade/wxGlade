@@ -122,8 +122,9 @@ class wxGladeFrame(wxFrame):
         sizer.Fit(self)
         # Properties window
         frame_style = wxDEFAULT_FRAME_STYLE
-        if wxPlatform == '__WXMSW__': frame_style |= wxFRAME_TOOL_WINDOW
-        self.frame2 = wxFrame(parent, -1, 'Properties - <app>',
+        if wxPlatform == '__WXMSW__':
+            frame_style |= wxFRAME_TOOL_WINDOW|wxFRAME_NO_TASKBAR
+        self.frame2 = wxFrame(self, -1, 'Properties - <app>',
                               style=frame_style)
         self.frame2.SetBackgroundColour(wxSystemSettings_GetSystemColour(
             wxSYS_COLOUR_BTNFACE))
@@ -131,20 +132,20 @@ class wxGladeFrame(wxFrame):
         sizer_tmp = wxBoxSizer(wxVERTICAL)
         property_panel = wxGladePropertyPanel(self.frame2, -1)
         property_panel.SetAutoLayout(True)
-        self.hidden_frame = wxFrame(parent, -1, "")
+        self.hidden_frame = wxFrame(self, -1, "")
         self.hidden_frame.Hide()
         sizer_tmp.Add(property_panel, 1, wxEXPAND)
         self.frame2.SetAutoLayout(True)
         self.frame2.SetSizer(sizer_tmp)
         sizer_tmp = wxBoxSizer(wxVERTICAL)
         def hide_frame2(event):
-            self.frame2.Hide()
             menu_bar.Check(PROPS_ID, False)
+            self.frame2.Hide()
         EVT_CLOSE(self.frame2, hide_frame2)
         EVT_CLOSE(self, self.cleanup)
         common.property_panel = property_panel
         # Tree of widgets
-        self.tree_frame = wxFrame(parent, -1, 'wxGlade: Tree',
+        self.tree_frame = wxFrame(self, -1, 'wxGlade: Tree',
                                   style=frame_style)
         self.tree_frame.SetIcon(icon)
         import application
@@ -158,8 +159,8 @@ class wxGladeFrame(wxFrame):
         sizer_tmp.Fit(property_panel)
         
         def on_tree_frame_close(event):
-            self.tree_frame.Hide()
             menu_bar.Check(TREE_ID, False)
+            self.tree_frame.Hide()
         EVT_CLOSE(self.tree_frame, on_tree_frame_close)
         self.frame2.SetSize((250, 350))
         self.SetPosition((0, 0))
@@ -182,6 +183,16 @@ class wxGladeFrame(wxFrame):
         if wxPlatform == '__WXMSW__':
             import about
             self.about_box = about.wxGladeAboutBox(self.GetParent())
+            def on_activate(event):
+                hide = self.IsIconized()
+                if not hide:
+                    self.frame2.Show(menu_bar.IsChecked(PROPS_ID))
+                    self.tree_frame.Show(menu_bar.IsChecked(TREE_ID))
+                else:
+                    self.frame2.Hide()
+                    self.tree_frame.Hide()
+                event.Skip()
+            EVT_ACTIVATE(self, on_activate)
         else:
             self.about_box = None
 
@@ -322,7 +333,9 @@ class wxGladeFrame(wxFrame):
         if self.ask_save():
             common.app_tree.clear()
             if self.about_box: self.about_box.Destroy()
-            self.Destroy()
+            #self.tree_frame.Destroy()
+            #self.frame2.Destroy()
+            #self.Destroy()
             raise SystemExit
 
     def add_object(self, event):
@@ -346,7 +359,7 @@ class wxGladeFrame(wxFrame):
     def show_about_box(self, event):
         if self.about_box is None:
             import about
-            self.about_box = about.wxGladeAboutBox(self.GetParent())
+            self.about_box = about.wxGladeAboutBox(None)
         self.about_box.ShowModal()
 
     def show_tutorial(self, event):
@@ -359,11 +372,9 @@ class wxGladeFrame(wxFrame):
             html = wxHtmlWindow(panel, -1, (0, 0), (-1, -1), wxSUNKEN_BORDER)
             html.LoadPage('docs/tutorial.html')
             sizer.Add(html, 1, wxEXPAND)
-            btn = wxButton(panel, -1, 'Close')
+            btn = wxButton(panel, -1, 'OK')
             btn.SetDefault()
-            sz2 = wxBoxSizer(wxHORIZONTAL)
-            sz2.Add(btn, 0, wxRIGHT, 20)
-            sizer.Add(sz2, 0, wxALL|wxALIGN_RIGHT, 10)
+            sizer.Add(btn, 0, wxALL|wxALIGN_RIGHT, 10)
             panel.SetAutoLayout(True)
             panel.SetSizer(sizer)
             self.tut_frame.SetSize((610, 550))
