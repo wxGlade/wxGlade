@@ -79,7 +79,7 @@ def load_code_writers():
     found in the 'codegen/' subdir
     """
     import sys
-    sys.path.append('codegen')
+    sys.path.insert(0, 'codegen')
     for module in os.listdir('codegen'):
         name, ext = os.path.splitext(module)
         if name not in sys.modules and \
