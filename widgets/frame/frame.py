@@ -1,4 +1,4 @@
-# frame.py: wxFrame, wxMenuBar and wxStatusBar objects
+# frame.py: wxFrame and wxStatusBar objects
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)

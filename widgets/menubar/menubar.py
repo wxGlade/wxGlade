@@ -9,7 +9,7 @@ import common, math, misc
 from tree import Tree
 from MenuTree import *
 from widget_properties import *
-from edit_windows import EditBase, TopLevelBase
+from edit_windows import EditBase, TopLevelBase, PreviewMixin
 
 
 class MenuItemDialog(wxDialog):
@@ -469,7 +469,7 @@ class MenuProperty(Property):
 # end of class MenuProperty
 
 
-class EditMenuBar(EditBase):
+class EditMenuBar(EditBase, PreviewMixin):
     __hidden_frame = None # used on GTK to reparent a menubar before deletion
     
     def __init__(self, name, klass, parent, property_window):
@@ -484,6 +484,7 @@ class EditMenuBar(EditBase):
         prop = self.properties['menus'] = MenuProperty(self, 'menus', None) 
 ##         self.node = Tree.Node(self)
 ##         common.app_tree.add(self.node, parent.node)
+        PreviewMixin.__init__(self)
 
     def create_widget(self):
         if wxPlatform == '__WXGTK__' and not EditMenuBar.__hidden_frame:
@@ -521,7 +522,10 @@ class EditMenuBar(EditBase):
         page.SetSize(self.notebook.GetClientSize())
         sizer.Layout()
         self.notebook.AddPage(page, "Common")
-        self.property_window.Layout()
+        if self.parent is not None:
+            self.property_window.Layout()
+        else:
+            PreviewMixin.create_properties(self)
         
     def __getitem__(self, key):
         return self.access_functions[key]

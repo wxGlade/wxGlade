@@ -287,3 +287,23 @@ def set_geometry(win, geometry):
             win.SetPosition([int(x) for x in geometry])
     except Exception, e:
         print e
+
+
+#-----------------------------------------------------------------------------
+# snagged out of the Python cookbook
+def import_name(module_path, name):
+    import imp, os
+    path, mname = os.path.split(module_path)
+    #print 'path, mname =', path, mname
+    mname = os.path.splitext(mname)[0]
+    #print 'mname:', mname
+    try:
+        mfile, pathname, description = imp.find_module(mname, [path])
+        try:
+            module = imp.load_module(mname, mfile, pathname, description)
+        finally:
+            mfile.close()
+    except ImportError:
+        import traceback; traceback.print_exc()
+        return None
+    return vars(module)[name]

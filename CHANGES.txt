@@ -1,3 +1,10 @@
+2005-05-07: application.py, edit_windows.py, xml_parse.py, 
+            widgets/menubar/codegen.py, widgets/toolbar/codegen.py,
+            widgets/custom_widget/codegen.py:
+               added preview support
+-------------------------------------------------------------------------------
+2003-05-01: version 0.2.2 released
+
 2003-04-24: widgets/toolbar/*:
                first ToolBar support (only tools, not controls yet)
             config.py:

@@ -800,7 +800,40 @@ class ManagedBase(WindowBase):
 # end of class ManagedBase
 
 
-class TopLevelBase(WindowBase):
+class PreviewMixin:
+    """Mixin class used to add preview to a widget"""
+    def __init__(self):
+        self.preview_button = None
+        self.preview_widget = None
+
+    def create_properties(self):
+        panel = self.notebook.GetPage(0)
+        sizer_tmp = panel.GetSizer()
+        # add a preview button to the Common panel for top-levels
+        self.preview_button = btn = wxButton(panel, -1, 'Preview')
+        EVT_BUTTON(btn, -1, self.preview)
+        sizer_tmp.Add(btn, 0, wxALL|wxEXPAND, 5)
+        sizer_tmp.Layout()
+        sizer_tmp.Fit(panel)
+        w, h = panel.GetClientSize()
+        self.property_window.Layout()
+        import math
+        panel.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+
+    def preview(self, event):
+        #print 'frame class _> ', self.klass
+        if self.preview_widget is None:
+            self.preview_widget = common.app_tree.app.preview(self)
+            self.preview_button.SetLabel('Close Preview')
+        else:
+            # Close triggers the EVT_CLOSE that does the real work
+            # (see application.py -> preview)
+            self.preview_widget.Close()
+
+# end of class PreviewMixin
+
+
+class TopLevelBase(WindowBase, PreviewMixin):
     """\
     Base class for every non-managed window (i.e. Frames and Dialogs).
     """
@@ -817,6 +850,7 @@ class TopLevelBase(WindowBase):
             self.properties['title'] = TextProperty(self, 'title', None)
         self.sizer = None # sizer that controls the layout of the children
                           # of the window
+        PreviewMixin.__init__(self)
 
     def finish_widget_creation(self, *args, **kwds):
         WindowBase.finish_widget_creation(self)
@@ -862,20 +896,15 @@ class TopLevelBase(WindowBase):
             sizer_tmp = panel.GetSizer()
             self.properties['title'].display(panel)
             sizer_tmp.Add(self.properties['title'].panel, 0, wxEXPAND)
-            sizer_tmp.Layout()
-            sizer_tmp.Fit(panel)
-
+        PreviewMixin.create_properties(self)
+            
     def get_title(self):
         return self.title
-##         if not self.widget: return self.name
-##         return self.widget.GetTitle()
 
     def set_title(self, value):
         self.title = value
         if self.widget:
             self.widget.SetTitle(value)
-##         if not self.widget: return
-##         self.widget.SetTitle(value)
 
     def set_sizer(self, sizer):
         self.sizer = sizer
@@ -915,4 +944,12 @@ class TopLevelBase(WindowBase):
             common.app_tree.app.update_top_window_name(self.name, name)
         WindowBase.set_name(self, name)
 
+    def delete(self, *args):
+        if self.preview_widget is not None:
+            self.preview_widget.Destroy()
+            self.preview_widget = None
+        WindowBase.delete(self, *args)
+
 # end of class TopLevelBase
+
+

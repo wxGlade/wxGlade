@@ -11,7 +11,7 @@ import common, math, misc, os
 from tree import Tree
 from tool import *
 from widget_properties import *
-from edit_windows import EditBase, TopLevelBase
+from edit_windows import EditBase, TopLevelBase, PreviewMixin
 
 
 class _MyBrowseButton(FileBrowseButton):
@@ -398,7 +398,7 @@ class ToolsProperty(Property):
 # end of class MenuProperty
 
 
-class EditToolBar(EditBase):
+class EditToolBar(EditBase, PreviewMixin):
     def __init__(self, name, klass, parent, property_window):
         custom_class = parent is None
         EditBase.__init__(self, name, klass,
@@ -440,6 +440,8 @@ class EditToolBar(EditBase):
                                                self.set_separation)
         self.properties['separation'] = SpinProperty(
             self, 'separation', None, r=(0, 100), can_disable=True)
+        # 2003-05-07 preview support
+        PreviewMixin.__init__(self)
 
     def create_widget(self):
         tb_style = wxTB_HORIZONTAL|self.style
@@ -498,11 +500,13 @@ class EditToolBar(EditBase):
         sizer.Add(self.properties['tools'].panel, 0, wxALL|wxEXPAND, 3)
         sizer.Layout()
         sizer.Fit(page)
-
         w, h = page.GetClientSize()
         self.notebook.AddPage(page, "Common")
-        self.property_window.Layout()
-        page.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+        if self.parent is not None:
+            self.property_window.Layout()
+            page.SetScrollbars(1, 5, 1, math.ceil(h/5.0))
+        else:
+            PreviewMixin.create_properties(self)
         
     def __getitem__(self, key):
         return self.access_functions[key]

@@ -56,7 +56,7 @@ class PythonCodeGenerator:
             if tool.id == '---': # item is a separator
                 append('%s.AddSeparator()\n' % obj_name)
             else:
-                if tool.id:
+                if not obj.preview and tool.id:
                     tokens = tool.id.split('=')
                     if len(tokens) > 1:
                         id = tokens[0]
