@@ -113,12 +113,38 @@ def fix_properties(document):
 
 
 def fix_widgets(document):
+    fix_custom_widgets(document)
     fix_sizeritems(document)
     fix_menubars(document)
     fix_notebooks(document)
     fix_spacers(document)
     fix_sliders(document)
     fix_toplevel_names(document)
+
+
+_widgets_list = [
+    'wxFrame', 'wxDialog', 'wxPanel', 'wxSplitterWindow', 'wxNotebook',
+    'wxButton', 'wxToggleButton', 'wxBitmapButton', 'wxTextCtrl',
+    'wxSpinCtrl', 'wxSlider', 'wxGauge', 'wxStaticText', 'wxCheckBox',
+    'wxRadioButton', 'wxRadioBox', 'wxChoice', 'wxComboBox', 'wxListBox',
+    'wxStaticLine', 'wxStaticBitmap', 'wxGrid', 'wxMenuBar', 'wxStatusBar',
+    'wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer'
+    ]
+_widgets = {}
+for w in _widgets_list: _widgets[w] = 1
+
+def fix_custom_widgets(document):
+    for elem in document.getElementsByTagName('object'):
+        klass = elem.getAttribute('class')
+        if (klass.startswith('wx') and klass not in _widgets) or \
+               klass == 'unknown':
+            elem.setAttribute('base', 'CustomWidget')
+            args = document.createElement('arguments')
+            for argument in '$parent', '$id':
+                arg = document.createElement('argument')
+                arg.appendChild(document.createTextNode(argument))
+                args.appendChild(arg)
+            elem.appendChild(args)
 
 
 def fix_sizeritems(document):
@@ -306,7 +332,7 @@ OPTIONS:
 If WXG_FILE is not given, it defaults to INPUT_FILE.wxg
     """ % _name
     print msg
-    raise sys.exit(1)
+    sys.exit(1)
 
 
 def print_exception(exc):
@@ -325,7 +351,7 @@ non-toplevel widget must be inside sizers and that the resource must not
 contain widgets unknown to wxGlade.
     """ % str(exc)
     print >> sys.stderr, msg
-    raise sys.exit(1)
+    sys.exit(1)
 
 
 if __name__ == '__main__':
