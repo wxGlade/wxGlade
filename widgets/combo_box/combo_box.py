@@ -12,16 +12,16 @@ from widget_properties import *
 
 from ChoicesProperty import *
 
-if 0 and wxPlatform == '__WXMSW__':
+if wxPlatform == '__WXMSW__':
     # why on Windows combo boxes give segfaults? Need to investigate, but
     # for now replace them with choices
     # this seems to be because of the style of wxPanel: if there's a
     # wxTAB_TRAVERSAL, we have troubles -- now it should be fixed...
-    class wxComboBox2(wxChoice):
+    class wxComboBox2(wxComboBox):
         # on windows GetBestSize considers also the drop down menu, while we
         # don't want it to be included
         def GetBestSize(self):
-            w, h = wxChoice.GetBestSize(self)
+            w, h = wxComboBox.GetBestSize(self)
             n = self.Number()
             return w, h/(n+1)
 else:
@@ -98,7 +98,8 @@ class EditComboBox(ManagedBase):
         if self.widget:
             self.widget.Clear()
             for c in self.choices: self.widget.Append(c)
-            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+            if not self.properties['size'].is_active():
+                self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def get_style(self):
         retval = [0] * len(self.style_pos)

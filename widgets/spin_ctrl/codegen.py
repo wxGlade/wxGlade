@@ -20,12 +20,6 @@ def python_code_generator(obj):
     
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-##     if obj.is_toplevel:
-##         l = []
-##         if id_name: l.append(id_name)
-##         l.append('self.%s = %s(%s, %s, min=%s, max=%s, initial=%s)\n' % \
-##                  (obj.name, obj.klass, parent, id, min_v, max_v, value))
-##         return l , [], []
     style = prop.get("style")
     if style: style = ", style=%s" % style
     else: style = ''
@@ -73,11 +67,6 @@ def cpp_code_generator(obj):
     
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
-##     if obj.is_toplevel:
-##         l = ['%s = new %s(%s, %s, "", wxDefaultPosition, wxDefaultSize, '
-##              'wxSP_ARROW_KEYS, %s, %s, %s);\n' % \
-##              (obj.name, obj.klass, parent, id, min_v, max_v, value)]
-##         return l, ids, [], []
     style = prop.get('style')
     if not style: style = 'wxSP_ARROW_KEYS'
     init = ['%s = new %s(%s, %s, "%s", wxDefaultPosition, wxDefaultSize,'
@@ -98,12 +87,5 @@ def initialize():
         xrcgen.add_widget_handler('wxSpinCtrl', xrc_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-##         constructor = [('wxWindow*', 'parent'), ('int', 'id'),
-##                        ('const wxString&', 'value', '""'),
-##                        ('const wxPoint&', 'pos', 'wxDefaultPosition'),
-##                        ('const wxSize&', 'size', 'wxDefaultSize'),
-##                        ('long', 'style', 'wxSP_ARROW_KEYS'),
-##                        ('int', 'min', '0'), ('int', 'max', '100'),
-##                        ('int', 'initial', '0')]
-        cppgen.add_widget_handler('wxSpinCtrl', cpp_code_generator)#,
-                                  #constructor)
+        cppgen.add_widget_handler('wxSpinCtrl', cpp_code_generator,
+                                  extra_headers=['<wx/spinctrl.h>'])

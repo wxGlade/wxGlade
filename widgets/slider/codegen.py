@@ -14,16 +14,10 @@ def python_code_generator(obj):
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj)
     value = prop.get('value', '0')
-    try: min_v, max_v = [ s.strip() for s in prop['range'].split() ]
+    try: min_v, max_v = [ s.strip() for s in prop['range'].split(',') ]
     except: min_v, max_v = '0', '10'
     if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
     else: parent = 'self'
-##     if obj.is_toplevel:
-##         l = []
-##         if id_name: l.append(id_name)
-##         l.append('self.%s = %s(%s, %s, %s, %s, %s)\n' % \
-##                  (obj.name, obj.klass, parent, id, value, min_v, max_v))
-##         return l, [], []
     style = prop.get("style")
     if style and style != 'wxSL_HORIZONTAL': style = ", style=%s" % style
     else: style = ''
@@ -65,20 +59,16 @@ def cpp_code_generator(obj):
     if id_name: ids = [ id_name ]
     else: ids = []
     value = prop.get('value', '0')
-    try: min_v, max_v = [ s.strip() for s in prop['range'].split() ]
+    try: min_v, max_v = [ s.strip() for s in prop['range'].split(',') ]
     except: min_v, max_v = '0', '10'
     if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
     else: parent = 'this'
-##     if obj.is_toplevel:
-##         l = ['%s = new %s(%s, %s, %s, %s, %s);\n' % \
-##              (obj.name, obj.klass, parent, id, value, min_v, max_v)]
-##         return l, ids, [], []
     extra = ''
     style = prop.get("style")
     if style and style != 'wxSL_HORIZONTAL':
         extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
     init = ['%s = new %s(%s, %s, %s, %s, %s%s);\n' %
-            (obj.name, obj.klass, parent,id, value, min_v, max_v, extra)]
+            (obj.name, obj.klass, parent, id, value, min_v, max_v, extra)]
     props_buf = cppgen.generate_common_properties(obj)
     return init, ids, props_buf, []
 

@@ -121,8 +121,6 @@ class Application(object):
         dialog = FileDirDialog(self, panel, '|'.join(wildcard),
                                "Select output file", "Select output directory",
                                wxSAVE|wxOVERWRITE_PROMPT)
-        self.outpath_prop = DialogProperty(self, "output_path", panel,
-                                           dialog)
         
         self.codewriters_prop = RadioProperty(self, "language", panel,
                                               common.code_writers.keys(),
@@ -130,6 +128,8 @@ class Application(object):
 
         self.codewriters_prop.set_str_value('python')
         
+        self.outpath_prop = DialogProperty(self, "output_path", panel,
+                                           dialog)
         BTN_ID = wxNewId()
         btn = wxButton(panel, BTN_ID, "Generate code")
 
@@ -139,8 +139,10 @@ class Application(object):
         sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
         sizer.Add(self.encoding_prop.panel, 0, wxEXPAND)
         szr = wxBoxSizer(wxHORIZONTAL)
-        szr.Add(wxStaticText(panel, -1, "Top window"), 2,
-                wxALL|wxALIGN_CENTER, 3)
+        from widget_properties import _label_initial_width as _w
+        label = wxGenStaticText(panel, -1, "Top window", size=(_w, -1))
+        label.SetToolTip(wxToolTip("Top window"))
+        szr.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
         szr.Add(self.top_win_prop, 5, wxALL|wxALIGN_CENTER, 3)
         sizer.Add(szr, 0, wxEXPAND)
         sizer.Add(self.codegen_prop.panel, 0, wxALL|wxEXPAND, 4)
@@ -163,6 +165,7 @@ class Application(object):
         # this is here to keep the interface similar to the various widgets
         # (to simplify Tree)
         self.widget = None # this is always None
+
 
     def _get_default_encoding(self):
         """\
@@ -260,8 +263,12 @@ class Application(object):
         self.klass = "MyApp"; self.klass_prop.set_value("MyApp")
         self.klass_prop.toggle_active(False)
         self.name = "app"; self.name_prop.set_value("app")
+        self.name_prop.toggle_active(False)
         self.codegen_opt = 0; self.codegen_prop.set_value(0)
         self.output_path = ""; self.outpath_prop.set_value("")
+        # do not reset language, but call set_language anyway to update the
+        # wildcard of the file dialog
+        self.set_language(self.get_language())
         self.top_window = ''
         self.top_win_prop.Clear()
         
