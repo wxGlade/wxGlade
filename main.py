@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.51 2004/05/11 15:51:37 agriggio Exp $
+# $Id: main.py,v 1.52 2004/08/15 12:01:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -595,9 +595,15 @@ class wxGladeFrame(wxFrame):
         self.about_box.ShowModal()
 
     def show_tutorial(self, event):
-        import webbrowser
-        webbrowser.open_new(os.path.join(common.wxglade_path, 'docs',
-                                         'index.html'))
+        import webbrowser, threading
+        # ALB 2004-08-15: why did this block the program?????
+        # (at least on linux - GTK)
+        def go():
+            webbrowser.open_new(os.path.join(common.wxglade_path, 'docs',
+                                             'index.html'))
+        t = threading.Thread(target=go)
+        t.setDaemon(True)
+        t.start()
 
     def show_and_raise(self):
         self.frame2.Show(self.GetMenuBar().IsChecked(self.PROPS_ID))
