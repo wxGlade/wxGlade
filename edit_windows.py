@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.65 2004/10/18 09:19:19 agriggio Exp $
+# $Id: edit_windows.py,v 1.66 2004/10/18 09:53:59 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -950,6 +950,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
     def clipboard_paste(self, *args):
+        if self.sizer is not None:
+            print '\nwxGlade-WARNING: sizer already set for this window'
+            return
         import clipboard, xml_parse
         size = self.widget.GetSize()
         try:
