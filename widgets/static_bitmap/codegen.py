@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxStaticBitmap objects
-# $Id: codegen.py,v 1.21 2004/02/01 11:56:57 agriggio Exp $
+# $Id: codegen.py,v 1.22 2004/07/21 09:22:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -45,7 +45,7 @@ class PythonCodeGenerator:
         else: prefix = ''
         style = prop.get('style')
         if style:
-            style = ', style=' + style
+            style = ', style=%s' % pygen.cn_f(style)
         else:
             style = ''
         klass = obj.klass
