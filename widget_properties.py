@@ -8,6 +8,11 @@
 from wxPython.wx import *
 from wxPython.grid import *
 from xml.sax.saxutils import escape
+try:
+    from wxPython.lib.stattext import *
+except ImportError:
+    # wxGenStaticText has been added in wx 2.3.3, so it may not be available
+    wxGenStaticText = wxStaticText
 
 def _mangle(label):
     """\
@@ -172,7 +177,9 @@ class TextProperty(Property, _activator):
         val = self.get_value()
         if self.multiline: val = val.replace('\\n', '\n')
         self.text = wxTextCtrl(self.panel, self.id, val, style=style)
-        label = wxStaticText(self.panel, -1, _mangle(self.name))
+        #label = wxStaticText(self.panel, -1, _mangle(self.name))
+        label = wxGenStaticText(self.panel, -1, _mangle(self.name))
+        label.SetToolTip(wxToolTip(_mangle(self.name)))
         if self.can_disable:
             self._enabler = wxCheckBox(self.panel, self.id+1, '')
             EVT_CHECKBOX(self.panel, self.id+1,
@@ -415,7 +422,9 @@ class SpinProperty(Property, _activator):
         if not val:
             self.spin.SetValue(1) # needed for GTK to display a '0'
         self.spin.SetValue(val) #int(self.owner[self.name][0]()))
-        label = wxStaticText(self.panel, -1, _mangle(self.name))
+        #label = wxStaticText(self.panel, -1, _mangle(self.name))
+        label = wxGenStaticText(self.panel, -1, _mangle(self.name))
+        label.SetToolTip(wxToolTip(_mangle(self.name)))
         if self.can_disable:
             self._enabler = wxCheckBox(self.panel, self.id+1, '')
             EVT_CHECKBOX(self.panel, self.id+1,
@@ -498,7 +507,9 @@ class DialogProperty(Property, _activator):
             self.btn.Enable(self.is_active())
             self._enabler.SetValue(self.is_active())
             self._target = self.text
-        label = wxStaticText(self.panel, -1, _mangle(self.name))
+        #label = wxStaticText(self.panel, -1, _mangle(self.name))
+        label = wxGenStaticText(self.panel, -1, _mangle(self.name))
+        label.SetToolTip(wxToolTip(_mangle(self.name)))
         EVT_BUTTON(self.panel, self.id+1, self.display_dialog)
         sizer = wxBoxSizer(wxHORIZONTAL)
         sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)

@@ -184,6 +184,7 @@ def append_item(menu, id, text, xpm_file=None):
     item = wxMenuItem(menu, id, text)
     if wxPlatform == '__WXMSW__': path = 'icons/msw/'
     else: path = 'icons/gtk/'
+    path = os.path.join(common.wxglade_path, path)
     if use_menu_icons and xpm_file is not None:
         try: bmp = _item_bitmaps[xpm_file]
         except KeyError:

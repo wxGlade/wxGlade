@@ -13,7 +13,7 @@ def python_code_generator(obj):
     pygen = common.code_writers['python']
     prop = obj.properties
     id_name, id = pygen.generate_code_id(obj)
-    value = prop.get('value', '0')
+    value = prop.get('value', '')
     try: min_v, max_v = [ s.strip() for s in \
                           prop.get('range', '0, 100').split(',') ]
     except: min_v, max_v = '0', '100'
@@ -31,8 +31,8 @@ def python_code_generator(obj):
     else: style = ''
     init = []
     if id_name: init.append(id_name)
-    init.append('self.%s = %s(%s, %s, min=%s, max=%s, initial=%s%s)\n' %
-                (obj.name, obj.klass, parent, id, min_v, max_v, value, style))
+    init.append('self.%s = %s(%s, %s, "%s", min=%s, max=%s%s)\n' %
+                (obj.name, obj.klass, parent, id, value, min_v, max_v, style))
     props_buf = pygen.generate_common_properties(obj)
     return init, props_buf, []
 
@@ -66,7 +66,7 @@ def cpp_code_generator(obj):
     id_name, id = cppgen.generate_code_id(obj)
     if id_name: ids = [ id_name ]
     else: ids = []
-    value = prop.get('value', '0')
+    value = prop.get('value', '')
     try: min_v, max_v = [ s.strip() for s in \
                           prop.get('range', '0, 100').split(',') ]
     except: min_v, max_v = '0', '100'
@@ -80,9 +80,9 @@ def cpp_code_generator(obj):
 ##         return l, ids, [], []
     style = prop.get('style')
     if not style: style = 'wxSP_ARROW_KEYS'
-    init = ['%s = new %s(%s, %s, "", wxDefaultPosition, wxDefaultSize,'
-            ' %s, %s, %s, %s);\n' %
-            (obj.name, obj.klass, parent, id, style, min_v, max_v, value)]
+    init = ['%s = new %s(%s, %s, "%s", wxDefaultPosition, wxDefaultSize,'
+            ' %s, %s, %s);\n' %
+            (obj.name, obj.klass, parent, id, value, style, min_v, max_v)]
     props_buf = cppgen.generate_common_properties(obj)
     return init, ids, props_buf, []
 

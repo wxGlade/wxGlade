@@ -13,6 +13,9 @@ use_gui = True
 # version identification string
 version = '0.2'
 
+# program path, set in wxglade.py
+wxglade_path = '.'
+
 # widgets dictionary: each key is the name of some EditWidget class; the mapped
 # value is a 'factory' function which actually builds the object. Each of these
 # functions accept 3 parameters: the parent of the widget, the sizer by which
