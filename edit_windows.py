@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.62 2004/09/17 13:09:56 agriggio Exp $
+# $Id: edit_windows.py,v 1.63 2004/10/05 08:49:10 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -843,6 +843,7 @@ class ManagedBase(WindowBase):
         called by self.sizer.change_item_pos to update the item's position
         when another widget is moved
         """
+        #print 'update pos', self.name, value
         self.sizer_properties['pos'].set_value(value-1)
         self.pos = value
 

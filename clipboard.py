@@ -1,5 +1,5 @@
 # clipboard.py: support for cut & paste of wxGlade widgets
-# $Id: clipboard.py,v 1.11 2004/09/17 13:09:56 agriggio Exp $
+# $Id: clipboard.py,v 1.12 2004/10/05 08:49:10 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -127,7 +127,7 @@ class FileDropTarget(wxFileDropTarget):
         if len(filenames) > 1:
             wxMessageBox("Please only drop one file at a time",
                 "wxGlade", wxICON_ERROR)
-        else:
+        elif filenames:
             path = filenames[0]
             if self.parent.ask_save(): 
                 self.parent._open_app(path)

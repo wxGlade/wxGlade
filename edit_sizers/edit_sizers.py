@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.49 2004/09/30 21:34:22 agriggio Exp $
+# $Id: edit_sizers.py,v 1.50 2004/10/05 08:49:09 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -560,6 +560,7 @@ class SizerBase(Sizer):
                                              len(self.sizer.children) - 1))
 
     def update_pos(self, value):
+        #print 'update pos', self.name, value
         self.sizer_properties['pos'].set_value(value-1)
         self.pos = value
 
@@ -864,6 +865,8 @@ class SizerBase(Sizer):
         'new_pos' must be a valid position
         """
         if not self.widget: return
+
+        #print
         
         old_pos = item.pos
         import copy
@@ -877,7 +880,8 @@ class SizerBase(Sizer):
             for c in self.children[old_pos+1:new_pos+1]:
                 c.item.update_pos(c.item.pos - 1)
             del self.children[old_pos]
-            self.children.insert(new_pos+1, new_item)
+            #self.children.insert(new_pos+1, new_item)
+            self.children.insert(new_pos, new_item)
         item.update_pos(new_pos)
 
         elem = self.widget.GetChildren()[old_pos]
@@ -897,6 +901,8 @@ class SizerBase(Sizer):
         if force_layout:
             self.layout()
             if wxPlatform == '__WXMSW__': self.window.widget.Refresh()
+
+        #print [c.item.name for c in self.children]
     # ------------------------------------------------------------------------
 
     def set_option(self, value):
@@ -1129,7 +1135,9 @@ class EditBoxSizer(SizerBase):
                                                     (orient==wxHORIZONTAL and
                                                      'wxHORIZONTAL' or
                                                      'wxVERTICAL')) }
-        class Dummy: widget = None
+        class Dummy:
+            widget = None
+            name = ""
         # add to self.children the SizerItem for self._btn
         self.children = [SizerItem(Dummy(), 0, 0, wxEXPAND)]
         for i in range(1, elements+1):

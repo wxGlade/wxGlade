@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.46 2004/09/17 13:09:55 agriggio Exp $
+# $Id: py_codegen.py,v 1.47 2004/10/05 08:49:10 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -522,7 +522,13 @@ def add_class(code_obj):
 ##     else: obj_p = []
 
     if is_new:
-        write('class %s(%s):\n' % (code_obj.klass, mycn(code_obj.base)))
+        base = mycn(code_obj.base)
+        if code_obj.preview and code_obj.klass == base:
+            import random
+            klass = code_obj.klass + ('_%d' % random.randrange(10**8, 10**9))
+        else:
+            klass = code_obj.klass
+        write('class %s(%s):\n' % (klass, base))
         write(tabs(1) + 'def __init__(self, *args, **kwds):\n')
     # __init__ begin tag
     write(indentation + '# begin wxGlade: %s.__init__\n' % code_obj.klass)

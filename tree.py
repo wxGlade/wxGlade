@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.40 2004/09/27 09:02:49 agriggio Exp $
+# $Id: tree.py,v 1.41 2004/10/05 08:49:10 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -171,7 +171,7 @@ class Tree:
 
     def change_node_pos(self, node, new_pos, index=None):
         if index is None: index = node.parent.children.index(node)
-        if index > new_pos:
+        if index >= new_pos:
             node.parent.children.insert(new_pos, node)
             del node.parent.children[index+1]
         else:
@@ -475,7 +475,8 @@ class WidgetTree(wxTreeCtrl, Tree):
         old_item = node.item
         image = self.GetItemImage(node.item)
         self.Freeze()
-        if index > new_pos:
+        #print self._build_label(node), index, new_pos
+        if index >= new_pos:
             node.item = self.InsertItemBefore(
                 node.parent.item, new_pos, self._build_label(node), image)
         else:
