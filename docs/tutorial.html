@@ -1,11 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-      
+         
   <meta http-equiv="CONTENT-TYPE"
  content="text/html; charset=iso-8859-1">
   <title>wxGlade tutorial</title>
-               
+                     
   <style type="text/css"><!--//
 body { font-family: Arial, Helvetica, sans-serif }
 //-->
@@ -16,8 +16,8 @@ body { font-family: Arial, Helvetica, sans-serif }
 <h1>wxGlade Tutorial</h1>
     
 <p>The aim of this minimal tutorial is to give an overview of wxGlade and
-its functionalities: despite its very short length, it is (hopefully) complete 
-enough to make you understand how the application works, through a step-by-step 
+its functionalities: despite its very short length, it is (hopefully) complete
+enough to make you understand how the application works, through a step-by-step
 description of the creation of a frame containing a notebook with some controls,
 a menubar and a statusbar.<br>
  </p>
@@ -28,19 +28,18 @@ a menubar and a statusbar.<br>
     
 <h3>1. Creation of the frame</h3>
     
-<p>To create a new frame, click on the appropriate button of the "palette" 
+<p>To create a new frame, click on the appropriate button of the "palette"
 (<img src="img/frame_button.gif" align="middle" width="31" height="31"
- border="0">
-): a dialog asking for the name of the class of the new window is displayed:
-choose the name you prefer, but remember that it must be a valid name for
-a Python (or C++) class.<br>
+ border="0">): a dialog asking for the name of the class of the new window
+is displayed: choose the name you prefer, but remember that it must be a
+valid name for a Python (or C++) class.<br>
  </p>
     
 <p>Now the empty frame is displayed, and the properties window changes to
-show the attributes of the widget just created. The first thing we'll do
-is change the title of the frame, which is by default equal to the object's
-name, and insert "Frame with notebook": the change takes effect when the
-Title property loses focus.<br>
+show the attributes of the widget just created. The first thing we'll do is
+change the title of the frame, which is by default equal to the object's name,
+and insert "Frame with notebook": the change takes effect when the Title
+property loses focus.<br>
  </p>
     
 <h3>2. Creation of the menubar</h3>
@@ -71,33 +70,32 @@ contains the menus we added.<br>
 one: check it to add the statusbar.<br>
  </p>
     
-<p>The "Fields" property of the object just added keeps the fields to display 
-on the statubar: double-click on a field to edit it; to add, remove, insert 
+<p>The "Fields" property of the object just added keeps the fields to display
+on the statubar: double-click on a field to edit it; to add, remove, insert
 other fields use the appropriate buttons.<br>
  Edit the default field, an set its value to "Created with wxGlade!", then
-add some other fields with the "Add" button: the "Size" column shows the
-dimension of each field: you can change them as you like, but remember that
-one of the fields must have a size of &nbsp;-1 (which tells that it will
-fill the remaining space).<br>
+add some other fields with the "Add" button: the "Size" column shows the dimension
+of each field: you can change them as you like, but remember that one of
+the fields must have a size of &nbsp;-1 (which tells that it will fill the
+remaining space).<br>
  After performing these operations, click on the "Update" button to reflect
 the changes on the widget.<br>
  </p>
     
 <h3>4. Creation of the notebook</h3>
     
-<p>Now it's time to add a notebook to our frame: before doing it it's necessary 
+<p>Now it's time to add a notebook to our frame: before doing it it's necessary
 to set a Sizer for the frame. This is a very important operation in wxGlade,
 as every container widget must have a Sizer before you can add sub-widgets
 to it.<br>
  </p>
     
-<p>Let's set the Sizer of the frame, then: to do so, click on the BoxSizer 
+<p>Let's set the Sizer of the frame, then: to do so, click on the BoxSizer
 button (<img src="img/box_sizer_button.gif" align="middle" width="31"
- height="31" border="0">
-) on the palette: now when you move the mouse inside the frame's client area,
-the pointer changes its shape and becomes a cross (this may not be true if
-you are using MS Windows): this tells us that we can drop the Sizer on the
-frame.<br>
+ height="31" border="0">) on the palette: now when you move the mouse inside
+the frame's client area, the pointer changes its shape and becomes a cross
+(this may not be true if you are using MS Windows): this tells us that we
+can drop the Sizer on the frame.<br>
  A left-click starts the operation, and a dialog asking for some features
 of the Sizer to add appears: as we have to add only an element to the Sizer
 (our notebook), the default values of the various attributes are OK.<br>
@@ -105,18 +103,18 @@ of the Sizer to add appears: as we have to add only an element to the Sizer
     
 <p>Now we can add the notebook, clicking on the corresponding button (<img
  src="img/notebook_button.gif" align="middle" border="0" width="30"
- height="30">
-) and dropping it inside the sizer just added: a dialog window appears again,
-which asks to choose the tab placement (choose what you like best).<br>
+ height="30">) and dropping it inside the sizer just added: a dialog window
+appears again, which asks to choose the tab placement (choose what you like
+best).<br>
  </p>
     
-<p>Now let's select the "Common" tab of the properties of the object just 
+<p>Now let's select the "Common" tab of the properties of the object just
 added: we can see that the "Class" property's value is "wxNotebook", i.e.
 the name of the class our object is an instance of. If we change such value,
 we can make our notebook an instance of a custom class derived from wxNotebook:
-this has no effect during the creation of the app, but it changes the generated 
-code, so that a definition for our custom class will be written. Let's change 
-then the value of "Class" to "MyNotebook", to make wxGlade generate the code 
+this has no effect during the creation of the app, but it changes the generated
+code, so that a definition for our custom class will be written. Let's change
+then the value of "Class" to "MyNotebook", to make wxGlade generate the code
 for the custom class.</p>
     
 <h3>5. Adding and removing notebook pages</h3>
@@ -129,32 +127,31 @@ their labels.<br>
 <h3>6. Addition of some controls</h3>
     
 <p>We have now reached the last part of this short tutorial: the addition
-of some controls to the first page of our notebook. In particular, we'll
-add a text area and two buttons: these operations will allow us to show the
-layout options of the objects inside sizers, and the (currently limited)
-cut &amp; paste support of wxGlade. <br>
+of some controls to the first page of our notebook. In particular, we'll add
+a text area and two buttons: these operations will allow us to show the layout
+options of the objects inside sizers, and the (currently limited) cut &amp;
+paste support of wxGlade. <br>
  </p>
     
-<p>Let's start with the addition of a sizer to the first page of the notebook: 
+<p>Let's start with the addition of a sizer to the first page of the notebook:
 again, let's click on the BoxSizer button (<img
  src="img/box_sizer_button.gif" align="middle" width="31" height="31"
- border="0">
-), and then inside the page, to make the sizer features dialog appear: this
-time we have to change the default values, and set to Vertical the orientation
-and to 2 the number of slots. The first action is mandatory, as the orientation
-of a sizer cannot change after its creation, while the number of slots, which
-are places into which sub-widgets or sub-sizers are inserted, can be changed
-from the popup menu of the just created sizer: to activate such menu, right-click
-on the "handle" button on the sizer or on the corresponding node of the tree
-of widgets (the same procedure can be used to show the menu of almost every
-object handled by wxGlade).<br>
+ border="0">), and then inside the page, to make the sizer features dialog
+appear: this time we have to change the default values, and set to Vertical
+the orientation and to 2 the number of slots. None of the two actions are
+mandatory, since both the orientation (or better, the type) of the sizer
+and the number of slots can be changed in any moment: the former by changing
+the value of the "Class" property, the latter from the popup menu you can
+activate with a right-click on the "handle" button of the sizer or on the
+corresponding node of the tree of widgets. (As a side note, this same procedure
+can be used to show the menu of almost every object handled by wxGlade).<br>
  </p>
     
 <p><font size="4"><b>6.1 Text area</b></font></p>
     
 <p>Let's click on the TextCtrl button (<img
- src="img/text_ctrl_button.gif" align="middle" width="30" height="30">
-) and insert the text area in the first slot of our sizer. </p>
+ src="img/text_ctrl_button.gif" align="middle" width="30" height="30">) and
+insert the text area in the first slot of our sizer. </p>
     
 <p>The default dimension isn't right, as we want to display a long and multiline
 text: to edit the layout, let's select the "Layout" tab of the TextCtrl's
@@ -168,45 +165,43 @@ generated code.</p>
  </big></p>
    
 <p><big></big>Now replace the second slot with a horizontal Sizer which will
-contain our two buttons: set the number of slots to 3, to leave room for
-a spacer to insert between the two buttons (so as they won't appear too close).<br>
+contain our two buttons: set the number of slots to 3, to leave room for a
+spacer to insert between the two buttons (so as they won't appear too close).<br>
  </p>
  
 <p>Replace then the first slot with a new button, as usually with the approprate
 button (<img src="img/button_button.gif" align="middle" width="30"
- height="30">
-).<br>
+ height="30">).<br>
  To add the second button, instead, we will use the clipboard: let's click
 on the "Copy" item of the popup menu of the first button, then move the mouse
 inside the third slot, and finally click on the "Paste" item of the popup
 menu of the slot to paste the copied widget.<br>
  </p>
     Now add a spacer (<img src="img/spacer_button.gif" align="middle"
- width="30" height="30">
-) of the appropriate dimension between the buttons, to keep them at a reasonable
-distance.<br>
+ width="30" height="30">) of the appropriate dimension between the buttons,
+to keep them at a reasonable distance.<br>
      
-<p>Finally, the last operation we have to do is to edit the layout of the 
+<p>Finally, the last operation we have to do is to edit the layout of the
 horizontal Sizer that contains the buttons: set to 0 the value of "Option",
 uncheck wxEXPAND from "Aligment" and check wxALIGN_CENTER_HORIZONTAL, and
 set a border (4) on the top (wxTOP) and bottom (wxBOTTOM), to keep the buttons
 separate from the text area and the notebook lower border. <br>
  </p>
  
-<p><b>NOTE on widgets' ids: </b>You certainly know that every wxWindows widget 
-has an id, used among other things for event handling, so in wxGlade each 
+<p><b>NOTE on widgets' ids: </b>You certainly know that every wxWindows widget
+has an id, used among other things for event handling, so in wxGlade each
 widget has an "id" property. This may have the following values:<br>
  </p>
  
 <ul>
-   <li><u>a number</u>: this will be the integer which will be passed to
-the constructor of the widget</li>
-   <li><u>a name</u>: in this case wxGlade assumes it is the name of an id 
-declared somewhere in the program, and uses it. For example, you can set the
-value of "id" to "wxID_OK" for the default OK button of a dialog</li>
-   <li><u>a pair name=value</u>: in this case before the constructor of the 
-widget the declaration of the variable is generated. For example you could 
-write TEST_BUTTON=wxNewId() to generate the id of a button called "Test" 
+   <li><u>a number</u>: this will be the integer which will be passed to the
+constructor of the widget</li>
+   <li><u>a name</u>: in this case wxGlade assumes it is the name of an id
+declared somewhere in the program, and uses it. For example, you can set
+the value of "id" to "wxID_OK" for the default OK button of a dialog</li>
+   <li><u>a pair name=value</u>: in this case before the constructor of the
+widget the declaration of the variable is generated. For example you could
+write TEST_BUTTON=wxNewId() to generate the id of a button called "Test"
    (note for C++ code generation: since ids are stored in an anonymous enum,
 only constant initializers are allowed, so the assigment above is not legal
 - but you can use, for instance, TEST_BUTTON=100)<br>
@@ -218,6 +213,12 @@ only constant initializers are allowed, so the assigment above is not legal
 <p> </p>
     
 <h3>7. Last changes</h3>
+Finally, suppose you are not happy with the current layout, and you decide
+it's better to put the buttons above the text area and not below as they
+are: so what can we do? Simple: let's change the value of the "Pos" property
+of the sizer which contains the buttons, and set its value to 0, to move
+the sizer before the text area: easy, isn't it? <br>
+<br>
   Now our window is complete: all we have to do is set a reasonable initial
 size for it. To do this, resize the frame until you find a good size, and
 then activate the "Size" property.<br>
@@ -235,10 +236,9 @@ on the properties window. This panel contains the options for the code generatio
  </p>
     
 <ul>
-  <li><u>Name</u>: name to give to the wxApp object which represents the
-application: if this property and the next one (Class) are not active, there
-will be no code for the application startup, but only that of the various 
-widgets<br>
+  <li><u>Name</u>: name to give to the wxApp object which represents the application:
+if this property and the next one (Class) are not active, there will be no
+code for the application startup, but only that of the various  widgets<br>
  </li>
    <li><u>Class</u>: name of the class derived from wxApp which represents
 the application: if this property is not active but the previous one (Name)
@@ -248,15 +248,15 @@ want the startup code to be generated)</li>
    <li><u>Top window</u>: main window of the application to generate<br>
  </li>
    <li><u>Code generation</u>: this controls the kind of output, and lets
-you choose between a single source file containing all the widgets, or a
-separate file for each custom class defined (for C++ output, the single-file
-mode actually generates two files, a ".h" and a ".cpp")<br>
+you choose between a single source file containing all the widgets, or a separate
+file for each custom class defined (for C++ output, the single-file mode
+actually generates two files, a ".h" and a ".cpp")<br>
   </li>
- <li><u>Language</u>: this lets you choose the language of the generated
-code: at the moment, Python, C++ and XRC, i.e. wxWindows resources xml format.
-Note that in this last case some of the properties of the application are
-ignored (Name, Class, Top window), and some are disallowed (you cannot set
-Code generation to multi-files)<br>
+ <li><u>Language</u>: this lets you choose the language of the generated code:
+at the moment, Python, C++ and XRC, i.e. wxWindows resources xml format. Note
+that in this last case some of the properties of the application are ignored
+(Name, Class, Top window), and some are disallowed (you cannot set Code generation
+to multi-files)<br>
   </li>
     <li><u>Output path</u>: in single-file mode, name of the output file;
 in   multi-file mode, path to the output directory<br>
@@ -266,14 +266,14 @@ in   multi-file mode, path to the output directory<br>
 </ul>
     
 <p>After the selection of the various options as described above, click on
-the "Generate code" button: if everything is OK, after a while a message
-box appears: this says that the operation is over... like this short tutorial 
+the "Generate code" button: if everything is OK, after a while a message box
+appears: this says that the operation is over... like this short tutorial
 ;-)<br>
  </p>
   
 <h3>9. Notes</h3>
     
-<p>All the operations described here have been tested and should not give 
+<p>All the operations described here have been tested and should not give
 problems. If this is not true, there could be many causes, among which:<br>
  </p>
   
@@ -282,20 +282,20 @@ problems. If this is not true, there could be many causes, among which:<br>
 for ASCII and latin-1 strings, and no support for other encodings: this is
 due mainly to my total ignorance of character encodings :-(<br>
    </li>
-   <li>Your version of wxPython may not be compatible with wxGlade (or better, 
+   <li>Your version of wxPython may not be compatible with wxGlade (or better,
 wxGlade might not be compatible with a particular wxPython version): it requires
 at least 2.3.2.1<br>
    </li>
-    <li>When you add a sizer, there are problems on the layout of the properties 
-window: this happens sometimes on Windows, but I've not found the problem 
+    <li>When you add a sizer, there are problems on the layout of the properties
+window: this happens sometimes on Windows, but I've not found the problem
 yet.<br>
  </li>
-  <li>wxGlade doesn't work on any environment except for my laptop and my 
+  <li>wxGlade doesn't work on any environment except for my laptop and my
 old 486 (where it is unusable because of the slow speed): even if I think
 this is not probable, it is an option I have to consider :-)</li>
  
 </ul>
-  I hope the contents are clear (and my English not too ridicule), anyway 
+  I hope the contents are clear (and my English not too ridicule), anyway
 for questions, comments, critics you can reach me by e-mail at <a
  href="mailto:albgrig@tiscalinet.it">albgrig@tiscalinet.it</a>.<br>
      
@@ -303,5 +303,6 @@ for questions, comments, critics you can reach me by e-mail at <a
  </p>
   <br>
    <br>
+<br>
 </body>
 </html>
