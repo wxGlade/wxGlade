@@ -59,10 +59,10 @@ class wxGladeFrame(wxFrame):
         buttons = common.load_widgets()
         sizer_btns = common.load_sizers()
         
-        TREE_ID = wxNewId()
+        self.TREE_ID = TREE_ID = wxNewId()
         view_menu.Append(TREE_ID, "Show &Tree\tCtrl+T", "", True)
         view_menu.Check(TREE_ID, True)
-        PROPS_ID = wxNewId()
+        self.PROPS_ID = PROPS_ID = wxNewId()
         view_menu.Append(PROPS_ID, "Show &Properties\tCtrl+P", "", True)
         view_menu.Check(PROPS_ID, True)
         append_item = misc.append_item
@@ -198,24 +198,13 @@ class wxGladeFrame(wxFrame):
             # I'll pay a beer to anyone who can explain to me why this prevents
             # a segfault on Win32 when you exit without doing anything!!
             self.about_box = about.wxGladeAboutBox(self.GetParent())
-            def on_activate(event):
-                if self._skip_activate or not event.GetActive():
-                    self._skip_activate = False
-                    event.Skip()
-                    return
-                hide = self.IsIconized()
-                if not hide:
-                    self.frame2.Show(menu_bar.IsChecked(PROPS_ID))
-                    self.frame2.Raise()
-                    self.tree_frame.Show(menu_bar.IsChecked(TREE_ID))
-                    self.tree_frame.Raise()
-                    self._skip_activate = True
+            def on_iconize(event):
+                if event.Iconized():
+                    self.hide_all()
                 else:
-                    self.frame2.Hide()
-                    self.tree_frame.Hide()
+                    self.show_and_raise()
                 event.Skip()
-            if frame_tool_win:
-                EVT_ACTIVATE(self, on_activate)
+            EVT_ICONIZE(self, on_iconize)
         else:
             self.about_box = None
 
@@ -415,7 +404,7 @@ class wxGladeFrame(wxFrame):
 ##             self.frame2.Destroy()
             self._skip_activate = True
             self.Destroy()
-            wxCallAfter(lambda : wxGetApp().ExitMainLoop())
+            misc.wxCallAfter(lambda : wxGetApp().ExitMainLoop())
             #raise SystemExit
 
     def add_object(self, event):
@@ -470,6 +459,17 @@ class wxGladeFrame(wxFrame):
                                                 # reasonable position
         self.tut_frame.Show()
 
+    def show_and_raise(self):
+        self.frame2.Show(self.GetMenuBar().IsChecked(self.PROPS_ID))
+        self.tree_frame.Show(self.GetMenuBar().IsChecked(self.TREE_ID))
+        self.Raise()
+        self.frame2.Raise()
+        self.tree_frame.Raise()
+
+    def hide_all(self):
+        self.tree_frame.Hide()
+        self.frame2.Hide()
+
 # end of class wxGladeFrame
 
 
@@ -484,6 +484,12 @@ class wxGlade(wxApp):
         wxInitAllImageHandlers()
         config.init_preferences()
         frame = wxGladeFrame()
+        if wxPlatform == '__WXMSW__':
+            def on_activate(event):
+                if event.GetActive() and not frame.IsIconized():
+                    frame.show_and_raise()
+                event.Skip()
+            EVT_ACTIVATE_APP(self, on_activate)
         self.SetTopWindow(frame)
         self.SetExitOnFrameDelete(True)
         return True
