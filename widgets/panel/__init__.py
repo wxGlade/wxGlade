@@ -11,4 +11,5 @@ def initialize():
     if common.use_gui:
         import panel
         global EditTopLevelPanel; EditTopLevelPanel = panel.EditTopLevelPanel
+        global EditPanel; EditPanel = panel.EditPanel
         return panel.initialize()
