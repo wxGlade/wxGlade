@@ -1,3 +1,8 @@
+2002-10-19: widget_properties.py, widgets/static_text/static_text.py,
+	    widgets/text_ctrl/text_ctrl.py: 
+		added multiline option to TextProperty to edit long values
+	    widgets/panel/*: added style property
+
 2002-10-12: edit_sizers/edit_sizers.py:
 		added method SizerBase.change_item_pos to change the position
 		of an item in the sizer
