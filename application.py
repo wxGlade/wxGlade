@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.35 2003/11/24 21:28:07 agriggio Exp $
+# $Id: application.py,v 1.36 2003/11/27 19:36:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -358,7 +358,7 @@ class Application(object):
             CodeWriter(common.code_writers[cw], out.getvalue(), True,
                        preview=preview)
             if preview and cw == 'python':
-                common.code_writers[cw] = old
+                common.code_writers[cw].use_new_namespace = old
         except (IOError, OSError), msg:
             wxMessageBox("Error generating code:\n%s" % msg, "Error",
                          wxOK|wxCENTRE|wxICON_ERROR)
