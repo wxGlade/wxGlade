@@ -202,9 +202,12 @@ def save_preferences():
     # always save the file history
     if _use_file_history:
         fh = common.palette.file_history
+        if misc.check_wx_version(2, 5):
+            count = fh.GetCount()
+        else:
+            count = fh.GetNoHistoryFiles()
         filenames = [ fh.GetHistoryFile(i) for i in
-                      range(min(preferences.number_history,
-                                fh.GetNoHistoryFiles())) ]
+                      range(min(preferences.number_history, count)) ]
         outfile = open(os.path.join(path, 'file_history.txt'), 'w')
         for filename in filenames:
             print >> outfile, filename

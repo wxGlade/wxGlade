@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.34 2004/01/18 19:45:04 agriggio Exp $
+# $Id: tree.py,v 1.35 2004/01/25 12:25:15 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -258,11 +258,20 @@ class WidgetTree(wxTreeCtrl, Tree):
         if parent is None: parent = parent.item = self.GetRootItem()
 
         index = 0
-        item, cookie = self.GetFirstChild(parent.item, 1)
+        if misc.check_wx_version(2, 5):
+            #print 'count:', self.GetChildrenCount(parent.item)
+            item, cookie = self.GetFirstChild(parent.item)
+            #print 'ok:', item.IsOk()
+            if item.IsOk():
+                print 'ok'
+                print self.GetItemText(item)
+            item, cookie = self.GetNextChild(parent.item, cookie)
+        else:
+            item, cookie = self.GetFirstChild(parent.item, 1)
         while item.IsOk():
             item_pos = self.GetPyData(item).widget.pos
             if pos < item_pos: break
-            index += 1            
+            index += 1
             item, cookie = self.GetNextChild(parent.item, cookie)
 
         Tree.insert(self, child, parent, index)

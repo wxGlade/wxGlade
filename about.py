@@ -1,5 +1,5 @@
 # about.py: about box with general info
-# $Id: about.py,v 1.16 2004/01/18 19:45:04 agriggio Exp $
+# $Id: about.py,v 1.17 2004/01/25 12:25:32 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -33,8 +33,8 @@ class wxGladeAboutBox(wxDialog):
     <tr><td width="50"></td><td>
     <font size="-1"><b>
     <p>License: MIT (see <a href="show_license">license.txt</a>)</b><br>
-    wxPyColourChooser code copyright (c) 2002-2003 <br>Michael Gilfix 
-    (wxWindows license)
+    <!-- wxPyColourChooser code copyright (c) 2002-2003 <br>Michael Gilfix 
+    (wxWindows license) -->
     <p>Home page:
     <a href="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</a>
     <p>For credits, see

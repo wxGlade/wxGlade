@@ -1,5 +1,5 @@
 # splitter_window.py: wxSplitterWindow objects
-# $Id: splitter_window.py,v 1.18 2003/05/13 10:05:08 agriggio Exp $
+# $Id: splitter_window.py,v 1.19 2004/01/25 12:24:51 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -99,11 +99,13 @@ class EditSplitterWindow(ManagedBase):
                                              self.set_sash_pos)
 
         self.style_pos  = (wxSP_3D, wxSP_3DSASH, wxSP_3DBORDER,
-                           wxSP_FULLSASH, wxSP_BORDER, wxSP_NOBORDER,
+                           #wxSP_FULLSASH,
+                           wxSP_BORDER, wxSP_NOBORDER,
                            wxSP_PERMIT_UNSPLIT, wxSP_LIVE_UPDATE,
                            wxCLIP_CHILDREN)
         style_labels = ('#section#Style', 'wxSP_3D', 'wxSP_3DSASH',
-                        'wxSP_3DBORDER', 'wxSP_FULLSASH', 'wxSP_BORDER',
+                        'wxSP_3DBORDER', #'wxSP_FULLSASH',
+                        'wxSP_BORDER',
                         'wxSP_NOBORDER', 'wxSP_PERMIT_UNSPLIT',
                         'wxSP_LIVE_UPDATE', 'wxCLIP_CHILDREN')
 

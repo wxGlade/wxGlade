@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.42 2004/01/18 19:45:04 agriggio Exp $
+# $Id: py_codegen.py,v 1.43 2004/01/25 12:25:11 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -444,7 +444,8 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
             if test_attribute(obj): obj_name = 'self.' + obj_name
         if obj.base == 'wxNotebook':
             obj_name = cn('wxNotebookSizer') + '(%s)' % obj_name
-    else: pass # it was the dimension of a spacer
+    else:
+        obj_name = '(%d, %d)' % (w, h) # it was the dimension of a spacer
     try: klass = classes[toplevel.klass]
     except KeyError: klass = classes[toplevel.klass] = ClassLines()
     buffer = '%s.Add(%s, %s, %s, %s)\n' % \

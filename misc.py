@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.31 2004/01/18 19:45:04 agriggio Exp $
+# $Id: misc.py,v 1.32 2004/01/25 12:25:28 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -137,18 +137,14 @@ if wxPlatform == '__WXGTK__':
 
 else: wxGladePopupMenu = wxMenu
 
-def check_wx_version(major, minor=0, release=0, micro=0):
+def check_wx_version(major, minor=0, release=0, revision=0):
     """\
     returns True if the current wxPython version is at least
     major.minor.release
     """
     from wxPython import wx
-    return wx.__version__ >= "%d.%d.%d.%d" % (major, minor, release, micro)
-##     wx_major, wx_minor, wx_release = [int(t) for t in
-##                                       wx.__version__.split('.')][:3]
-##     return wx_major > major or \
-##            (wx_major == major and wx_minor > minor) or \
-##            (wx_major == major and wx_minor == minor and wx_release>=release)
+    #return wx.__version__ >= "%d.%d.%d.%d" % (major, minor, release, revision)
+    return wx.wxVERSION[:-1] >= (major, minor, release, revision)
 
 if not check_wx_version(2, 3, 3):
     # the following is copied from wx.py of version 2.3.3, as 2.3.2 doesn't
