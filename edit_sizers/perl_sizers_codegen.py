@@ -1,5 +1,5 @@
 # perl_sizers_codegen.py : perl generator functions for the various wxSizerS
-# $Id: perl_sizers_codegen.py,v 1.2 2003/06/25 23:51:21 crazyinsomniac Exp $
+# $Id: perl_sizers_codegen.py,v 1.3 2003/06/26 07:59:58 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -78,12 +78,12 @@ class PerlGridSizerBuilder:
             ]
         layout = []
         if obj.is_toplevel:
-            layout.append('\t%s->SetAutoLayout(1)\n' % parent)
-            layout.append('\t%s->SetSizer($self->{%s})\n'
+            layout.append('\t%s->SetAutoLayout(1);\n' % parent)
+            layout.append('\t%s->SetSizer($self->{%s});\n'
                 % (parent, obj.name))
             if not obj.parent.properties.has_key('size'):
-                layout.append('\t$self->{%s}->Fit(%s)\n' % (obj.name, parent))
-                layout.append('\t$self->{%s}->SetSizeHints(%s)\n'
+                layout.append('\t$self->{%s}->Fit(%s);\n' % (obj.name, parent))
+                layout.append('\t$self->{%s}->SetSizeHints(%s);\n'
                     % (obj.name, parent))
         return init, [], layout   
 
@@ -98,11 +98,11 @@ class PerlFlexGridSizerBuilder(PerlGridSizerBuilder):
         props = obj.properties
         if props.has_key('growable_rows'):
             for r in props['growable_rows'].split(','):
-                layout.append('$self->{%s}->AddGrowableRow(%s)\n' %
+                layout.append('$self->{%s}->AddGrowableRow(%s);\n' %
                               (obj.name, r.strip()))
         if props.has_key('growable_cols'):
             for r in props['growable_cols'].split(','):
-                layout.append('$self->{%s}->AddGrowableCol(%s)\n' %
+                layout.append('$self->{%s}->AddGrowableCol(%s);\n' %
                               (obj.name, r.strip()))
         return init, p, layout
 
