@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.31 2003/12/03 17:04:10 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.32 2004/01/08 12:13:23 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -119,7 +119,8 @@ class SourceFileContent:
         out_lines = []
         for line in tmp_in:
             comment_index = line.find('/*')
-            if not inside_comment and comment_index != -1:
+            if not inside_comment and comment_index != -1 \
+                   and comment_index > line.find('//'):
                 inside_comment = True
             if inside_comment:
                 end_index = line.find('*/')
