@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.63 2004/10/05 08:49:10 agriggio Exp $
+# $Id: edit_windows.py,v 1.64 2004/10/15 23:30:36 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -913,6 +913,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
             # MSW isn't smart enough to avoid overlapping windows, so
             # at least move it away from the 3 wxGlade frames
             self.widget.CenterOnScreen()
+        # ALB 2004-10-15
+        self.widget.SetAcceleratorTable(common.palette.accel_table)
 
     def show_widget(self, yes):
         WindowBase.show_widget(self, yes)

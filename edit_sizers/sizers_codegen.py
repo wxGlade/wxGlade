@@ -1,5 +1,5 @@
 # sizers_codegen.py: code generation functions for the various wxSizerS
-# $Id: sizers_codegen.py,v 1.12 2004/09/17 13:09:55 agriggio Exp $
+# $Id: sizers_codegen.py,v 1.13 2004/10/15 23:30:32 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -19,7 +19,7 @@ class PythonBoxSizerBuilder:
         if obj.is_toplevel:
             if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
             else: parent = 'self'
-            layout.append('%s.SetAutoLayout(1)\n' % parent)
+            layout.append('%s.SetAutoLayout(True)\n' % parent)
             layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
             if not obj.parent.properties.has_key('size'):
                 layout.append('%s.Fit(%s)\n' % (obj.name, parent))
@@ -45,7 +45,7 @@ class PythonStaticBoxSizerBuilder:
             ]
         layout = []
         if obj.is_toplevel:
-            layout.append('%s.SetAutoLayout(1)\n' % parent)
+            layout.append('%s.SetAutoLayout(True)\n' % parent)
             layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
             if not obj.parent.properties.has_key('size'):
                 layout.append('%s.Fit(%s)\n' % (obj.name, parent))
@@ -72,7 +72,7 @@ class PythonGridSizerBuilder:
                  (obj.name, cn(self.klass), rows, cols, vgap, hgap) ]
         layout = []
         if obj.is_toplevel:
-            layout.append('%s.SetAutoLayout(1)\n' % parent)
+            layout.append('%s.SetAutoLayout(True)\n' % parent)
             layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
             if not obj.parent.properties.has_key('size'):
                 layout.append('%s.Fit(%s)\n' % (obj.name, parent))

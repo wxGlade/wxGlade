@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.41 2004/10/15 10:49:23 agriggio Exp $
+# $Id: common.py,v 1.42 2004/10/15 23:30:36 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -12,7 +12,7 @@ import os
 use_gui = True
 
 # version identification string
-version = '0.3.4.2'
+version = '0.3.5'
 
 # program path, set in wxglade.py
 wxglade_path = '.'
@@ -279,20 +279,30 @@ def save_file(filename, content, which='wxg'):
 # Autosaving, added 2004-10-15
 #------------------------------------------------------------------------------
 
+def get_name_for_autosave(filename=None):
+    if filename is None: filename = app_tree.app.filename
+    assert filename is not None
+    path, name = os.path.split(filename)
+    return os.path.join(path, "#~wxg.autosave~%s#" % name)
+
+
 def autosave_current():
     if not app_tree.app.filename or app_tree.app.saved:
-        return # do nothing for now in this case...
-    path, name = os.path.split(app_tree.app.filename)
-    outfile = open(os.path.join(path, "#~wxg.autosave~%s#" % name), 'w')
-    app_tree.write(outfile)
-    outfile.close()
+        return False # do nothing for now in this case...
+    try:
+        outfile = open(get_name_for_autosave(), 'w')
+        app_tree.write(outfile)
+        outfile.close()
+    except Exception, e:
+        print e
+        return False
+    return True
 
 
 def remove_autosaved():
     if not app_tree.app.filename:
         return
-    path, name = os.path.split(app_tree.app.filename)
-    autosaved = os.path.join(path, "#~wxg.autosave~%s#" % name)
+    autosaved = get_name_for_autosave()
     if os.path.exists(autosaved):
         try:
             os.unlink(autosaved)
@@ -304,8 +314,7 @@ def check_autosaved(filename):
     """\
     Returns True iff there are some auto saved data for filename
     """
-    path, name = os.path.split(filename)
-    autosaved = os.path.join(path, "#~wxg.autosave~%s#" % name)
+    autosaved = get_name_for_autosave(filename)
     try:
         orig = os.stat(filename)
         auto = os.stat(autosaved)
@@ -316,8 +325,7 @@ def check_autosaved(filename):
     
 
 def restore_from_autosaved(filename):
-    path, name = os.path.split(filename)
-    autosaved = os.path.join(path, "#~wxg.autosave~%s#" % name)
+    autosaved = get_name_for_autosave(filename)
     # when restoring, make a backup copy (if user's preferences say so...)
     if os.access(autosaved, os.R_OK):
         try:
