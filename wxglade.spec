@@ -1,5 +1,5 @@
 %define name wxGlade
-%define version 0.3.5
+%define version 0.3.5.1
 %define release 1
 
 Summary: 	wxWidgets/wxPython/wxPerl GUI designer

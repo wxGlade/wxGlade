@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.45 2004/11/02 09:52:03 agriggio Exp $
+# $Id: common.py,v 1.46 2004/11/08 11:18:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -12,7 +12,7 @@ import os
 use_gui = True
 
 # version identification string
-version = '0.3.5'
+version = '0.3.5.1'
 
 # program path, set in wxglade.py
 wxglade_path = '.'
@@ -218,7 +218,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         widget_to_add = None
         import misc
         if misc._currently_under_mouse is not None:
-            misc._currently_under_mouse.SetCursor(wx.wxNullCursor)
+            misc._currently_under_mouse.SetCursor(wx.wxSTANDARD_CURSOR)
         event.Skip()
     wx.EVT_CHAR(tmp, on_char)
 
