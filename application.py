@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.28 2003/07/15 18:38:00 agriggio Exp $
+# $Id: application.py,v 1.29 2003/07/18 07:50:46 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -405,8 +405,14 @@ class Application(object):
             self.generate_code(preview=True)
             # dynamically import the generated module
             FrameClass = misc.import_name(self.output_path, widget_class_name)
-            if not (issubclass(FrameClass, wxFrame) or
-                    issubclass(FrameClass, wxDialog)):
+            if issubclass(FrameClass, wxMDIChildFrame):
+                frame = wxMDIParentFrame(None, -1, '')
+                child = FrameClass(frame, -1, '')
+                child.SetTitle('<Preview> ' + child.GetTitle())
+                w, h = child.GetSize()
+                frame.SetClientSize((w+20, h+20))
+            elif not (issubclass(FrameClass, wxFrame) or
+                      issubclass(FrameClass, wxDialog)):
                 # the toplevel class isn't really toplevel, add a frame...
                 frame = wxFrame(None, -1, widget_class_name)
                 if issubclass(FrameClass, wxMenuBar):
