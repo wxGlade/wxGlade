@@ -56,7 +56,8 @@ class wxGladeAboutBox(wxDialog):
                 if href == 'show_license':
                     from wxPython.lib.dialogs import wxScrolledMessageDialog
                     try:
-                        license = open('license.txt')
+                        license = open(os.path.join(common.wxglade_path,
+                                                    'license.txt'))
                         dlg = wxScrolledMessageDialog(self, license.read(),
                                                       "wxGlade - License")
                         license.close()
@@ -71,7 +72,8 @@ class wxGladeAboutBox(wxDialog):
                 elif href == 'show_credits':
                     from wxPython.lib.dialogs import wxScrolledMessageDialog
                     try:
-                        credits = open('credits.txt')
+                        credits = open(os.path.join(common.wxglade_path,
+                                                    'credits.txt'))
                         dlg = wxScrolledMessageDialog(self, credits.read(),
                                                       "wxGlade - Credits")
                         credits.close()
