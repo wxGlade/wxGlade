@@ -1,4 +1,4 @@
-# config.py: wxGlade configuration handling
+# config.py: wxGlade configuration handling 
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
