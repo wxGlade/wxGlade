@@ -52,14 +52,20 @@ class wxGladeFrame(wxFrame):
         sizer = wxGridSizer(0, 5)
         wxToolTip_SetDelay(1000)
         # load the available code generators
-        self.load_code_writers()
+        #self.load_code_writers()
+        common.load_code_writers()
         # load the available widgets and sizers
-        buttons = self.load_widgets()
-        sizer_btns = self.load_sizers()
+        #buttons = self.load_widgets()
+        #sizer_btns = self.load_sizers()
+        buttons = common.load_widgets()
+        sizer_btns = common.load_sizers()
         
         TREE_ID = wxNewId()
-        view_menu.Append(TREE_ID, "Show &Tree\tCtrl+T", checkable=True)
+        view_menu.Append(TREE_ID, "Show &Tree\tCtrl+T", "", True)
         view_menu.Check(TREE_ID, True)
+        PROPS_ID = wxNewId()
+        view_menu.Append(PROPS_ID, "Show &Properties\tCtrl+P", "", True)
+        view_menu.Check(PROPS_ID, True)
         NEW_ID = wxNewId()
         file_menu.Append(NEW_ID, "&New\tCtrl+N")
         OPEN_ID = wxNewId()
@@ -81,9 +87,11 @@ class wxGladeFrame(wxFrame):
             (wxACCEL_CTRL, ord('t'), TREE_ID),
             (wxACCEL_CTRL, ord('n'), NEW_ID),
             (wxACCEL_CTRL, ord('o'), OPEN_ID),
-            (wxACCEL_CTRL, ord('s'), SAVE_ID)
+            (wxACCEL_CTRL, ord('s'), SAVE_ID),
+            (wxACCEL_CTRL, ord('p'), PROPS_ID)
             ]))
         EVT_MENU(parent, TREE_ID, self.show_tree)
+        EVT_MENU(parent, PROPS_ID, self.show_props_window)
         EVT_MENU(parent, NEW_ID, self.new_app)
         EVT_MENU(parent, OPEN_ID, self.open_app)
         EVT_MENU(parent, SAVE_ID, self.save_app)
@@ -109,13 +117,17 @@ class wxGladeFrame(wxFrame):
         self.frame2.SetAutoLayout(True)
         self.frame2.SetSizer(sizer_tmp)
         sizer_tmp = wxBoxSizer(wxVERTICAL)
-        EVT_CLOSE(self.frame2, self.hide_frame2)
+        def hide_frame2(event):
+            self.frame2.Hide()
+            menu_bar.Check(PROPS_ID, False)
+        EVT_CLOSE(self.frame2, hide_frame2)
         EVT_CLOSE(self, self.cleanup)
         common.property_panel = property_panel
         # setup of tree_frame
         self.tree_frame = wxFrame(parent, -1, 'wxGlade: Tree', size=(350, 200))
         self.tree_frame.SetIcon(icon)
-        app = common.Application(common.property_panel)
+        import application
+        app = application.Application(common.property_panel)
         common.app_tree = WidgetTree(self.tree_frame, app)
 
         app.notebook.Show()
@@ -125,7 +137,7 @@ class wxGladeFrame(wxFrame):
         
         def on_tree_frame_close(event):
             self.tree_frame.Hide()
-            menu_bar.Check(TREE_ID, 0)
+            menu_bar.Check(TREE_ID, True)
         EVT_CLOSE(self.tree_frame, on_tree_frame_close)
         self.frame2.SetSize((250, 340))
         self.SetPosition((0, 0))
@@ -143,56 +155,58 @@ class wxGladeFrame(wxFrame):
         self.tree_frame.Show()
         self.frame2.Show()
 
-    def load_widgets(self):
-        """\
-        Scans the 'widgets/' directory to find the installed widgets,
-        and returns a list of buttons to handle them
-        """
-        buttons = []
-        modules = open('widgets/widgets.txt')
-        print 'loading widget modules:'
-        for line in modules:
-            module = line.strip()
-            if not module or module.startswith('#'): continue
-            module = module.split('#')[0].strip()
-            try:
-                b = __import__(module).initialize()
-            except (ImportError, AttributeError):
-                print 'ERROR loading "%s"' % module
-                import traceback; traceback.print_exc()
-            else:
-                print '\t' + module
-                buttons.append(b)
-        modules.close()
-        return buttons
+##     def load_widgets(self):
+##         """\
+##         Scans the 'widgets/' directory to find the installed widgets,
+##         and returns a list of buttons to handle them
+##         """
+##         buttons = []
+##         modules = open('widgets/widgets.txt')
+##         print 'loading widget modules:'
+##         for line in modules:
+##             module = line.strip()
+##             if not module or module.startswith('#'): continue
+##             module = module.split('#')[0].strip()
+##             try:
+##                 b = __import__(module).initialize()
+##             except (ImportError, AttributeError):
+##                 print 'ERROR loading "%s"' % module
+##                 import traceback; traceback.print_exc()
+##             else:
+##                 print '\t' + module
+##                 buttons.append(b)
+##         modules.close()
+##         return buttons
 
-    def load_sizers(self):
-        import edit_sizers
-        return edit_sizers.init_all()
+##     def load_sizers(self):
+##         import edit_sizers
+##         return edit_sizers.init_all()
 
-    def load_code_writers(self):
-        """\
-        Fills the common.code_writers dictionary: to do so, loads the modules
-        found in the 'codegen/' subdir
-        """
-        import imp
-        sys.path.append('codegen')
-        for module in os.listdir('codegen'):
-            name, ext = os.path.splitext(module)
-            if name not in sys.modules and \
-                   os.path.isfile(os.path.join('codegen', module)):
-                try: writer = __import__(name).writer
-                except (ImportError, AttributeError):
-                    print '"%s" is not a valid code generator module' % module
-                else:
-                    common.code_writers[writer.language] = writer
-                    print 'loaded code generator for %s' % writer.language
-
-    def hide_frame2(self, event):
-        self.frame2.Hide()
+##     def load_code_writers(self):
+##         """\
+##         Fills the common.code_writers dictionary: to do so, loads the modules
+##         found in the 'codegen/' subdir
+##         """
+##         import imp
+##         sys.path.append('codegen')
+##         for module in os.listdir('codegen'):
+##             name, ext = os.path.splitext(module)
+##             if name not in sys.modules and \
+##                    os.path.isfile(os.path.join('codegen', module)):
+##                 try: writer = __import__(name).writer
+##                 except (ImportError, AttributeError):
+##                     print '"%s" is not a valid code generator module' % module
+##                 else:
+##                     common.code_writers[writer.language] = writer
+##                     print 'loaded code generator for %s' % writer.language
 
     def show_tree(self, event):
         self.tree_frame.Show(event.IsChecked())
+
+    def show_props_window(self, event):
+        self.frame2.Show(event.IsChecked())
+        common.app_tree.app.show_properties()
+        common.app_tree.cur_widget.show_properties()
 
     def ask_save(self):
         """\
