@@ -189,7 +189,7 @@ class wxGladeFrame(wxFrame):
             #print 'initializing geometry'
             try:
                 x, y, w, h = prefs.get_geometry('main')
-                misc.set_geometry(self, [x, y, -1, -1])
+                misc.set_geometry(self, (x, y))
             except Exception, e:
                 pass
             misc.set_geometry(self.frame2, prefs.get_geometry('properties'))

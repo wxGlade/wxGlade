@@ -281,7 +281,9 @@ def get_geometry(win):
 def set_geometry(win, geometry):
     if geometry is None: return
     try:
-        x, y, w, h = geometry
-        win.SetDimensions(int(x), int(y), int(w), int(h))
+        if len(geometry) == 4:
+            win.SetDimensions(*[int(x) for x in geometry])
+        else:
+            win.SetPosition([int(x) for x in geometry])
     except Exception, e:
-        pass
+        print e
