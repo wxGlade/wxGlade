@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxSplitterWindow objects
-# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:26 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.3 2003/07/06 06:08:18 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -66,9 +66,9 @@ class PerlCodeGenerator:
 
     def get_properties_code(self, obj):
         plgen = common.code_writers['perl']
-        orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
         props_buf = []
         prop = obj.properties
+        orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
 
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
