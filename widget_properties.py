@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.44 2004/08/16 18:34:10 agriggio Exp $
+# $Id: widget_properties.py,v 1.45 2004/09/01 17:56:40 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -862,13 +862,17 @@ class GridProperty(Property): #wxPanel, Property):
         self.panel = wxPanel(parent, -1) # why if the grid is not on this panel
                                          # it is not displayed???
         self.btn_id = wxNewId()
-        self.btn = wxButton(self.panel, self.btn_id, "  Apply  ")
+        self.btn = wxButton(self.panel, self.btn_id, "  Apply  ",
+                            style=wxBU_EXACTFIT)
         if self.can_add:
-            self.add_btn = wxButton(self.panel, self.btn_id+1, "  Add  ")
+            self.add_btn = wxButton(self.panel, self.btn_id+1, "  Add  ",
+                                    style=wxBU_EXACTFIT)
         if self.can_insert:
-            self.insert_btn = wxButton(self.panel, self.btn_id+3, "  Insert  ")
+            self.insert_btn = wxButton(self.panel, self.btn_id+3, "  Insert  ",
+                                       style=wxBU_EXACTFIT)
         if self.can_remove:
-            self.remove_btn = wxButton(self.panel, self.btn_id+2, "  Remove  ")
+            self.remove_btn = wxButton(self.panel, self.btn_id+2, "  Remove  ",
+                                       style=wxBU_EXACTFIT)
         self.grid = wxGrid(self.panel, -1)
         self.grid.CreateGrid(self.rows, len(self.cols))
         if misc.check_wx_version(2, 3, 3):
@@ -888,22 +892,25 @@ class GridProperty(Property): #wxPanel, Property):
 
         self.btn_sizer = wxBoxSizer(wxHORIZONTAL)
         _w = self.btn.GetTextExtent(self.btn.GetLabel())[0]
-        self.btn.SetSize((_w, -1))
-        self.btn_sizer.Add(self.btn)
+        if misc.check_wx_version(2, 5, 2): extra_flag = wxFIXED_MINSIZE
+        else: extra_flag = 0
+        #self.btn.SetSize((_w, -1))
+        self.btn_sizer.Add(self.btn, 0, extra_flag)
         if self.can_add:
             _w = self.add_btn.GetTextExtent(self.add_btn.GetLabel())[0]
-            self.add_btn.SetSize((_w, -1))
-            self.btn_sizer.Add(self.add_btn, 0, wxLEFT|wxRIGHT, 4)
+            #self.add_btn.SetSize((_w, -1))
+            self.btn_sizer.Add(self.add_btn, 0, wxLEFT|wxRIGHT|extra_flag, 4)
             EVT_BUTTON(self.add_btn, self.btn_id+1, self.add_row)
         if self.can_insert: 
             _w = self.insert_btn.GetTextExtent(self.insert_btn.GetLabel())[0]
-            self.insert_btn.SetSize((_w, -1))
-            self.btn_sizer.Add(self.insert_btn, 0, wxLEFT|wxRIGHT, 4)
+            #self.insert_btn.SetSize((_w, -1))
+            self.btn_sizer.Add(
+                self.insert_btn, 0, wxLEFT|wxRIGHT|extra_flag, 4)
             EVT_BUTTON(self.insert_btn, self.btn_id+3, self.insert_row)
         if self.can_remove:
             _w = self.remove_btn.GetTextExtent(self.remove_btn.GetLabel())[0]
-            self.remove_btn.SetSize((_w, -1))
-            self.btn_sizer.Add(self.remove_btn)
+            #self.remove_btn.SetSize((_w, -1))
+            self.btn_sizer.Add(self.remove_btn, 0, extra_flag)
             EVT_BUTTON(self.remove_btn, self.btn_id+2, self.remove_row)
         sizer.Add(self.btn_sizer, 0, wxBOTTOM|wxEXPAND, 2)
         sizer.Add(self.grid, 1, wxEXPAND)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # wxglade.py: entry point of wxGlade
-# $Id: wxglade.py,v 1.17 2004/08/16 18:34:10 agriggio Exp $
+# $Id: wxglade.py,v 1.18 2004/09/01 17:56:40 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -105,10 +105,14 @@ wxGlade usage:
 
 
 def determine_wxglade_path():
-    root = __file__
-    if os.path.islink(root):
-        root = os.path.realpath(root)
-    return os.path.dirname(os.path.abspath(root))
+    try:
+        root = __file__
+        if os.path.islink(root):
+            root = os.path.realpath(root)
+        return os.path.dirname(os.path.abspath(root))
+    except:
+        # __file__ is not defined when building an .exe with McMillan
+        return os.getcwd()
 
 if __name__ == "__main__":
     # prepend the widgets dir to the

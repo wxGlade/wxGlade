@@ -1,5 +1,5 @@
 %define name wxGlade
-%define version 0.3.2
+%define version 0.3.4
 %define release 1
 
 Summary: 	wxWidgets/wxPython/wxPerl GUI designer
@@ -74,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Mar 10 2004 Alberto Griggio <agriggio@users.sf.net> 0.3.4-1
+- Updated to version 0.3.4
+
 * Wed Mar 10 2004 Alberto Griggio <albgrig@tiscalinet.it> 0.3.2-1
 - Updated to version 0.3.2
 
