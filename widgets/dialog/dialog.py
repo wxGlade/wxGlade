@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.13 2003/05/13 10:05:13 agriggio Exp $
+# $Id: dialog.py,v 1.14 2003/05/15 19:05:00 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -31,6 +31,17 @@ class EditDialog(TopLevelBase):
                           wxDIALOG_NO_PARENT, wxNO_FULL_REPAINT_ON_RESIZE,
                           wxCLIP_CHILDREN)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
+        # icon property
+        self.icon = ""
+        self.access_functions['icon'] = (self.get_icon, self.set_icon)
+        prop['icon'] = FileDialogProperty(self, 'icon', None,
+                                          style=wxOPEN|wxFILE_MUST_EXIST,
+                                          can_disable=True)
+        # centered property
+        self.centered = False
+        self.access_functions['centered'] = (self.get_centered,
+                                             self.set_centered)
+        prop['centered'] = CheckBoxProperty(self, 'centered', None)
 
     def create_widget(self):
         if self.parent: w = self.parent.widget
@@ -45,6 +56,7 @@ class EditDialog(TopLevelBase):
         self.widget = wxFrame(w, self.id, "", style=default_style)
         self.widget.SetBackgroundColour(wxSystemSettings_GetSystemColour(
             wxSYS_COLOUR_BTNFACE))
+        self.set_icon(self.icon)
 
     def finish_widget_creation(self):
         TopLevelBase.finish_widget_creation(self)
@@ -55,7 +67,13 @@ class EditDialog(TopLevelBase):
         TopLevelBase.create_properties(self)
         panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         szr = wxBoxSizer(wxVERTICAL)
+        self.properties['title'].display(panel)
+        self.properties['icon'].display(panel)
+        self.properties['centered'].display(panel)
         self.properties['style'].display(panel)
+        szr.Add(self.properties['title'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['icon'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['centered'].panel, 0, wxEXPAND)
         szr.Add(self.properties['style'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
@@ -83,6 +101,30 @@ class EditDialog(TopLevelBase):
             if value[v]:
                 self.style |= self.style_pos[v]
         if self.widget: self.widget.SetWindowStyleFlag(self.style)
+
+    def get_icon(self):
+        return self.icon 
+
+    def set_icon(self, value):
+        self.icon = value
+        if self.widget:
+            if self.icon:
+                bmp = wxBitmap(self.icon, wxBITMAP_TYPE_ANY)
+                if not bmp.Ok():
+                    self.set_icon("")
+                else:
+                    icon = wxEmptyIcon()
+                    icon.CopyFromBitmap(bmp)
+                    self.widget.SetIcon(icon) 
+            else:
+                self.widget.SetIcon(wxNullIcon)
+
+    def get_centered(self):
+        return self.centered
+
+    def set_centered(self, value):
+        try: self.centered = bool(int(value))
+        except ValueError: pass
 
 # end of class EditDialog
 

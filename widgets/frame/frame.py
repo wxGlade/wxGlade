@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.21 2003/05/13 14:10:07 dinogen Exp $
+# $Id: frame.py,v 1.22 2003/05/15 19:04:57 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -174,14 +174,19 @@ class EditFrame(TopLevelBase):
                                            'Has ToolBar')
         # icon property
         prop['icon'] = FileDialogProperty(self, 'icon', None,
-                                               style=wxOPEN |
-                                               wxFILE_MUST_EXIST,
-                                               can_disable=True)
+                                          style=wxOPEN|wxFILE_MUST_EXIST,
+                                          can_disable=True)
+        # centered property
+        self.centered = False
+        self.access_functions['centered'] = (self.get_centered,
+                                             self.set_centered)
+        prop['centered'] = CheckBoxProperty(self, 'centered', None)
 
     def create_widget(self):
         if self.parent: w = self.parent.widget
         else: w = common.palette
         self.widget = wxFrame(w, self.id, self.get_title())
+        self.set_icon(self.icon)
 
     def finish_widget_creation(self):
         TopLevelBase.finish_widget_creation(self)
@@ -202,18 +207,22 @@ class EditFrame(TopLevelBase):
         TopLevelBase.create_properties(self)
         prop = self.properties
         panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
-        prop['style'].display(panel)
-        prop['menubar'].display(panel)
-        prop['statusbar'].display(panel)
-        prop['toolbar'].display(panel)
+        prop['title'].display(panel)
         prop['icon'].display(panel)
+        prop['centered'].display(panel)
+        prop['menubar'].display(panel)
+        prop['toolbar'].display(panel)
+        prop['statusbar'].display(panel)
+        prop['style'].display(panel)
         
         szr = wxBoxSizer(wxVERTICAL)
-        szr.Add(prop['style'].panel, 0, wxEXPAND)
-        szr.Add(prop['menubar'].panel, 0, wxEXPAND)
-        szr.Add(prop['statusbar'].panel, 0, wxEXPAND)
-        szr.Add(prop['toolbar'].panel, 0, wxEXPAND)
+        szr.Add(prop['title'].panel, 0, wxEXPAND)
         szr.Add(prop['icon'].panel, 0, wxEXPAND)
+        szr.Add(prop['centered'].panel, 0, wxEXPAND)
+        szr.Add(prop['menubar'].panel, 0, wxEXPAND)
+        szr.Add(prop['toolbar'].panel, 0, wxEXPAND)
+        szr.Add(prop['statusbar'].panel, 0, wxEXPAND)
+        szr.Add(prop['style'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -304,29 +313,32 @@ class EditFrame(TopLevelBase):
             self.toolbar = self.toolbar.remove(do_nothing=True)
         TopLevelBase.remove(self, *args)
     
-    def get_icon(self): # is a string that hold the filename (for example: icon.png)
+    def get_icon(self):
+        # is a string that holds the filename (for example: icon.png)
         return self.icon 
 
     def set_icon(self, value):
         self.icon = value
         if self.widget:
-            if self.icon != '':
+            if self.icon:
                 # setting icon
-                type = ''
-                if self.icon[-4:] == ".bmp": type = wxBITMAP_TYPE_BMP
-                if self.icon[-4:] == ".gif": type = wxBITMAP_TYPE_GIF
-                if self.icon[-4:] == ".xpm": type = wxBITMAP_TYPE_XPM
-                if self.icon[-4:] == ".jpg": type = wxBITMAP_TYPE_JPEG
-                if self.icon[-5:] == ".jpeg": type = wxBITMAP_TYPE_JPEG
-                if self.icon[-4:] == ".png": type = wxBITMAP_TYPE_PNG
-                if self.icon[-4:] == ".pcx": type = wxBITMAP_TYPE_PCX
-                bmp = wxBitmap(self.icon, type)
-                tmp_icon = wxEmptyIcon()
-                tmp_icon.CopyFromBitmap(bmp)
-                self.widget.SetIcon(tmp_icon) 
-            #else:
+                bmp = wxBitmap(self.icon, wxBITMAP_TYPE_ANY)
+                if not bmp.Ok():
+                    self.set_icon("")
+                else:
+                    icon = wxEmptyIcon()
+                    icon.CopyFromBitmap(bmp)
+                    self.widget.SetIcon(icon) 
+            else:
                 # removing icon
-                # self.widget.SetIcon(None) doesn't works
+                self.widget.SetIcon(wxNullIcon)
+
+    def get_centered(self):
+        return self.centered
+
+    def set_centered(self, value):
+        try: self.centered = bool(int(value))
+        except ValueError: pass
 
 # end of class EditFrame
 

@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.22 2003/05/13 10:05:15 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.23 2003/05/15 19:05:00 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -910,6 +910,35 @@ def generate_code_tooltip(obj):
     return intro + 'SetToolTip(%s);\n' % quote_str(obj.properties['tooltip'])
 
 
+def _get_code_name(obj):
+    if not obj.is_toplevel: return '%s->' % obj.name
+    else: return ''  
+
+
+def generate_code_disabled(obj):
+    self = _get_code_name(obj)
+    try: disabled = int(obj.properties['disabled'])
+    except: disabled = False
+    if disabled:
+        return self + 'Disable();\n'
+
+
+def generate_code_focused(obj):
+    self = _get_code_name(obj)
+    try: focused = int(obj.properties['focused'])
+    except: focused = False
+    if focused:
+        return self + 'SetFocus();\n'
+
+
+def generate_code_hidden(obj):
+    self = _get_code_name(obj)
+    try: hidden = int(obj.properties['hidden'])
+    except: hidden = False
+    if hidden:
+        return self + 'Hide();\n'
+
+
 def generate_common_properties(widget):
     """\
     generates the code for various properties common to all widgets (background
@@ -923,6 +952,10 @@ def generate_common_properties(widget):
     if prop.get('foreground'): out.append(generate_code_foreground(widget))
     if prop.get('font'): out.append(generate_code_font(widget))
     if prop.get('tooltip'): out.append(generate_code_tooltip(widget))
+    # trivial boolean properties
+    if prop.get('disabled'): out.append(generate_code_disabled(widget))
+    if prop.get('focused'): out.append(generate_code_focused(widget))
+    if prop.get('hidden'): out.append(generate_code_hidden(widget))
     return out
 
 
