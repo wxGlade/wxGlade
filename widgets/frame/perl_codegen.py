@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: perl_codegen.py,v 1.2 2003/06/25 23:51:26 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.3 2003/06/26 08:48:11 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -54,7 +54,7 @@ class PerlFrameCodeGenerator:
         icon = prop.get('icon')
         if icon:
             out.append('\tmy $icon = Wx::Icon->new();\n')
-            out.append('\t$icon.CopyFromBitmap(Wx::Bitmap->new(%s, '
+            out.append('\t$icon->CopyFromBitmap(Wx::Bitmap->new(%s, '
                        'wxBITMAP_TYPE_ANY));\n' % plgen.quote_str(icon))
             out.append('\t$self->SetIcon($icon);\n')
             
