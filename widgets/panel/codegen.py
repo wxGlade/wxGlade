@@ -57,6 +57,7 @@ def cpp_code_generator(panel):
 
 def initialize():
     common.class_names['EditPanel'] = 'wxPanel'
+    common.class_names['EditTopLevelPanel'] = 'wxPanel'
 
     # python code generation functions
     pygen = common.code_writers.get('python')
