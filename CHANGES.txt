@@ -10,7 +10,6 @@
 
 2002-12-11: edit_sizers/edit_sizers.py: 
                 - added methods insert_row and insert_col to GridSizerBase
-                  added 
                 - EVT_MIDDLE_DOWN event handler to SizerSlot to paste from 
                   the clipboard "the X way"
 
