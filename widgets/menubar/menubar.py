@@ -16,7 +16,7 @@ class MenuItemDialog(wxDialog):
     def __init__(self, parent, items=None):
         wxDialog.__init__(self, parent, -1, "Menu editor",
                           style=wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
-        ADD_ID, REMOVE_ID, NAME_ID, LABEL_ID, ID_ID, CHECK_ID, LIST_ID, \
+        ADD_ID, REMOVE_ID, NAME_ID, LABEL_ID, ID_ID, CHECK_RADIO_ID, LIST_ID, \
                 ADD_SEP_ID, MOVE_LEFT_ID, MOVE_RIGHT_ID, MOVE_UP_ID, \
                 MOVE_DOWN_ID, HELP_STR_ID = [wxNewId() for i in range(13)]
         self.menu_items = wxListCtrl(self, LIST_ID, style=wxLC_REPORT | \
@@ -25,7 +25,7 @@ class MenuItemDialog(wxDialog):
         self.menu_items.InsertColumn(1, "Id")
         self.menu_items.InsertColumn(2, "Name")
         self.menu_items.InsertColumn(3, "Help String")
-        self.menu_items.InsertColumn(4, "Checkable")
+        self.menu_items.InsertColumn(4, "Type")
         self.menu_items.SetColumnWidth(0, 250)
         self.menu_items.SetColumnWidth(2, 250)
         self.menu_items.SetColumnWidth(3, 250)
@@ -34,7 +34,10 @@ class MenuItemDialog(wxDialog):
         self.label = wxTextCtrl(self, LABEL_ID)
         self.name = wxTextCtrl(self, NAME_ID)
         self.help_str = wxTextCtrl(self, HELP_STR_ID)
-        self.checkable = wxCheckBox(self, CHECK_ID, "") #Checkable")
+        #self.checkable = wxCheckBox(self, CHECK_ID, "") #Checkable")
+        self.check_radio = wxRadioBox(
+            self, CHECK_RADIO_ID, "Type",
+            choices=['Normal', 'Checkable', 'Radio'], majorDimension=3)
 
         self.add = wxButton(self, ADD_ID, "Add")
         self.remove = wxButton(self, REMOVE_ID, "Remove")
@@ -64,7 +67,8 @@ class MenuItemDialog(wxDialog):
         EVT_KILL_FOCUS(self.label, self.update_menu_item)
         EVT_KILL_FOCUS(self.id, self.update_menu_item)
         EVT_KILL_FOCUS(self.help_str, self.update_menu_item)
-        EVT_CHECKBOX(self, CHECK_ID, self.update_menu_item)
+        #EVT_CHECKBOX(self, CHECK_ID, self.update_menu_item)
+        EVT_RADIOBOX(self, CHECK_RADIO_ID, self.update_menu_item)
         EVT_LIST_ITEM_SELECTED(self, LIST_ID, self.show_menu_item)
         if items:
             self.add_items(items)
@@ -74,7 +78,7 @@ class MenuItemDialog(wxDialog):
         self.id.Enable(False)
         self.name.Enable(False)
         self.help_str.Enable(False)
-        self.checkable.Enable(False)
+        self.check_radio.Enable(False)
         
         sizer = wxBoxSizer(wxVERTICAL)
         sizer2 = wxStaticBoxSizer(wxStaticBox(self, -1, "Menu item:"), \
@@ -92,10 +96,11 @@ class MenuItemDialog(wxDialog):
         szr.Add(self.name)
         szr.Add(wxStaticText(self, -1, "Help String  "))
         szr.Add(self.help_str)
-        szr.Add(wxStaticText(self, -1, "Checkable  "), 0,
-                wxALIGN_CENTER_VERTICAL)
-        szr.Add(self.checkable, 0, wxTOP|wxBOTTOM, 2)
+##         szr.Add(wxStaticText(self, -1, "Checkable  "), 0,
+##                 wxALIGN_CENTER_VERTICAL)
+##         szr.Add(self.check_radio, 0, wxTOP|wxBOTTOM, 2)
         sizer2.Add(szr, 1, wxALL|wxEXPAND, 5)
+        sizer2.Add(self.check_radio, 0, wxLEFT|wxRIGHT|wxBOTTOM, 4)
         szr = wxGridSizer(0, 2, 3, 3)
         szr.Add(self.add, 0, wxEXPAND); szr.Add(self.remove, 0, wxEXPAND)
         sizer2.Add(szr, 0, wxEXPAND)
@@ -131,23 +136,23 @@ class MenuItemDialog(wxDialog):
         index = self.selected_index = self.selected_index+1
         if not self.menu_items.GetItemCount():
             for s in (self.label, self.id, self.name, self.help_str,
-                      self.checkable):
+                      self.check_radio):
                 s.Enable(True)
         if index < 0: index = self.menu_items.GetItemCount()
         elif index > 0: indent = "    " * self.item_level(index-1)
         else: indent = ""
-        name, label, id, check = "", "item", "", "0"
+        name, label, id, check_radio = "", "item", "", "0"
         self.menu_items.InsertStringItem(index, indent + label)
         self.menu_items.SetStringItem(index, 1, id)
         self.menu_items.SetStringItem(index, 2, name)
-        self.menu_items.SetStringItem(index, 4, check)
+        self.menu_items.SetStringItem(index, 4, check_radio)
         # fix bug 698074
         self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED,
                                      wxLIST_STATE_SELECTED)
         self.name.SetValue(name)
         self.label.SetValue(label)
         self.id.SetValue(id)
-        self.checkable.SetValue(int(check))
+        self.check_radio.SetSelection(int(check_radio))
 
     def add_separator(self, event):
         """\
@@ -156,7 +161,7 @@ class MenuItemDialog(wxDialog):
         index = self.selected_index+1
         if not self.menu_items.GetItemCount():
             for s in (self.label, self.id, self.name, self.help_str,
-                      self.checkable):
+                      self.check_radio):
                 s.Enable(True)
         if index < 0: index = self.menu_items.GetItemCount() 
         elif index > 0: label = "    " * self.item_level(index-1) + '---'
@@ -180,9 +185,10 @@ class MenuItemDialog(wxDialog):
                 s.SetValue(self.menu_items.GetItem(index, i).m_text)
             self.label.SetValue(self.label.GetValue().lstrip())
             try:
-                self.checkable.SetValue(
+                self.check_radio.SetSelection(
                     int(self.menu_items.GetItem(index, 4).m_text))
-            except: self.checkable.SetValue(0)
+            except:
+                self.check_radio.SetSelection(0)
         event.Skip()
 
     def update_menu_item(self, event):
@@ -198,7 +204,7 @@ class MenuItemDialog(wxDialog):
         set_item(index, 1, self.id.GetValue())
         set_item(index, 2, self.name.GetValue())
         set_item(index, 3, self.help_str.GetValue())
-        set_item(index, 4, str(self.checkable.GetValue()))
+        set_item(index, 4, str(self.check_radio.GetSelection()))
         event.Skip()
 
     def item_level(self, index, label=None):
@@ -220,11 +226,11 @@ class MenuItemDialog(wxDialog):
                 self.selected_index = index-1
             for s in (self.name, self.id, self.label, self.help_str):
                 s.SetValue("")
-            self.checkable.SetValue(0)
+            self.check_radio.SetSelection(0)
             self.menu_items.DeleteItem(self.selected_index)
             if not self.menu_items.GetItemCount():
                 for s in (self.name, self.id, self.label, \
-                          self.help_str, self.checkable):
+                          self.help_str, self.check_radio):
                     s.Enable(False)
 
     def add_items(self, menus):
@@ -242,14 +248,23 @@ class MenuItemDialog(wxDialog):
             set_item(i, 1, node.id)
             set_item(i, 2, node.name)
             set_item(i, 3, node.help_str)
-            set_item(i, 4, node.checkable)
+            item_type = 0
+            try:
+                if node.checkable and int(node.checkable):
+                    item_type = 1
+                elif int(node.radio):
+                    item_type = 2
+            except ValueError:
+                pass
+            set_item(i, 4, str(item_type))
             index[0] += 1
-            [add(item, level+1) for item in node.children]
+            for item in node.children:
+                add(item, level+1)
         for tree in menus:
             add(tree.root, 0)
         if self.menu_items.GetItemCount():
             for s in (self.name, self.id, self.label, \
-                      self.help_str, self.checkable):
+                      self.help_str, self.check_radio):
                 s.Enable(True)
             
 
@@ -261,8 +276,17 @@ class MenuItemDialog(wxDialog):
         def get(i, j): return self.menu_items.GetItem(i, j).m_text
         trees = []
         def add(node, index):
-            n = MenuTree.Node(get(index, 0).lstrip(), *[ get(index, i) for i \
-                                                         in range(1, 5) ])
+            label = get(index, 0).lstrip()
+            id = get(index, 1)
+            name = get(index, 2)
+            help_str = get(index, 3)
+            try:
+                item_type = int(get(index, 4))
+            except ValueError:
+                item_type = 0
+            checkable = item_type == 1 and "1" or ""
+            radio = item_type == 2 and "1" or ""
+            n = MenuTree.Node(label, id, name, help_str, checkable, radio)
             node.children.append(n)
             n.parent = node
             return n
@@ -364,11 +388,11 @@ class MenuItemDialog(wxDialog):
         for j in range(len(items_to_move)-1, -1, -1):
             delete(index+j)
         items_to_move.reverse()
-        for label, id, name, checkable in items_to_move:
+        for label, id, name, check_radio in items_to_move:
             i = insert(i, label)
             set(i, 1, id)
             set(i, 2, name)
-            set(i, 3, checkable)
+            set(i, 3, check_radio)
         ret_idx = i
         if is_down: ret_idx += len(items_to_move)
         return ret_idx
@@ -507,7 +531,8 @@ class EditMenuBar(EditBase):
     def set_menus(self, menus):
         self.menus = menus
         if not self._mb: return # nothing left to do
-        for i in range(self._mb.GetMenuCount()): self._mb.Remove(i)
+        for i in range(self._mb.GetMenuCount()):
+            self._mb.Remove(0)
         def append(menu, items):
             for item in items:
                 if item.name == '---': # item is a separator
@@ -517,10 +542,20 @@ class EditMenuBar(EditBase):
                     append(m, item.children)
                     menu.AppendMenu(wxNewId(), item.label, m, item.help_str)
                 else:
-                    try: checkable = int(item.checkable)
-                    except: checkable = 0
+                    check_radio = 0
+                    try:
+                        if int(item.checkable):
+                            check_radio = 1
+                    except:
+                        check_radio = 0
+                    if not check_radio:
+                        try:
+                            if int(item.radio):
+                                check_radio = 2
+                        except:
+                            check_radio = 0
                     menu.Append(wxNewId(), item.label, item.help_str,
-                                checkable)
+                                check_radio)
         first = self._mb.GetMenuCount()
         for menu in self.menus:
             m = wxMenu()
@@ -585,7 +620,8 @@ class EditMenuBar(EditBase):
 
     def get_property_handler(self, name):
         class MenuHandler:
-            itemattrs = ['label', 'id', 'name', 'help_str', 'checkable']
+            itemattrs = ['label', 'id', 'name', 'help_str',
+                         'checkable', 'radio']
             def __init__(self, owner):
                 self.owner = owner
                 self.menu_items = []

@@ -48,10 +48,15 @@ class PythonCodeGenerator:
                         else:
                             id = item.id
                     else: id = 'wxNewId()'
+                    item_type = 0
                     if item.checkable == '1':
-                        append('%s.Append(%s, %s, %s, 1)\n' %
+                        item_type = 1
+                    elif item.radio == '1':
+                        item_type = 2
+                    if item_type:
+                        append('%s.Append(%s, %s, %s, %s)\n' %
                                (menu, id, pygen.quote_str(item.label),
-                                pygen.quote_str(item.help_str)))
+                                pygen.quote_str(item.help_str), item_type))
                     else:
                         append('%s.Append(%s, %s, %s)\n' %
                                (menu, id, pygen.quote_str(item.label),
@@ -90,7 +95,7 @@ class PythonCodeGenerator:
 
 class MenuHandler:
     """Handler for menus and menu items of a menubar"""
-    item_attrs = ('label', 'id', 'name', 'help_str', 'checkable')
+    item_attrs = ('label', 'id', 'name', 'help_str', 'checkable', 'radio')
     def __init__(self):
         self.menu_depth = 0
         self.menus = []
@@ -176,6 +181,8 @@ def xrc_code_generator(obj):
                         self.append_item(c, outfile, tabs+1)
                 elif item.checkable == '1':
                     write('    '*(tabs+1) + '<checkable>1</checkable>\n')
+                elif item.radio == '1':
+                    write('    '*(tabs+1) + '<radio>1</radio>\n')
                 write('    '*tabs + '</object>\n')
         
         def write(self, outfile, tabs):
@@ -239,11 +246,17 @@ class CppCodeGenerator:
                             id = tokens[0]
                         else:
                             id = item.id
-                    else: id = 'wxNewId()'
+                    else:
+                        id = 'wxNewId()'
+                    item_type = 0
                     if item.checkable == '1':
-                        append('%s->Append(%s, %s, %s, 1);\n' %
+                        item_type = 1
+                    elif item.radio == '1':
+                        item_type = 2
+                    if item_type:
+                        append('%s->Append(%s, %s, %s, %s);\n' %
                                (menu, id, cppgen.quote_str(item.label),
-                                cppgen.quote_str(item.help_str)))
+                                cppgen.quote_str(item.help_str), item_type))
                     else:
                         append('%s->Append(%s, %s, %s);\n' %
                                (menu, id, cppgen.quote_str(item.label),
