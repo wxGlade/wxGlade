@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.54 2004/05/17 09:50:20 agriggio Exp $
+# $Id: edit_windows.py,v 1.55 2004/06/04 01:12:15 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -331,7 +331,7 @@ class WindowBase(EditBase):
         self._original['foreground'] = self.widget.GetForegroundColour()
         fnt = self.widget.GetFont()
         if not fnt.Ok():
-            fnt = wxSystemSettings_GetSystemFont(wxDEFAULT_GUI_FONT)
+            fnt = wxSystemSettings_GetSystemFont(wxSYS_DEFAULT_GUI_FONT)
         self._original['font'] = fnt
         
         prop = self.properties
