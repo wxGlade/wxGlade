@@ -214,6 +214,7 @@ class SizerBase:
         EVT_BUTTON(self._btn, self.id, self.show_properties)
         self.create_widget()
         self.widget.Refresh = self.Refresh
+        self.widget.GetBestSize = self.widget.GetMinSize
         self.widget.ScreenToClient = self._btn.ScreenToClient
         if self.toplevel: self.window.set_sizer(self)
 
@@ -320,7 +321,7 @@ class SizerBase:
         if hasattr(self, 'node'): common.app_tree.select_item(self.node)
         self.notebook.Show()
         
-    def fit_parent(self, event):
+    def fit_parent(self, *args):
         """\
         Tell the sizer to resize the window to match the sizer's minimal size
         """
@@ -646,6 +647,9 @@ class EditBoxSizer(SizerBase):
             if c.size: w, h = c.size
             else: w, h = c.item.widget.GetBestSize()
             self.widget.SetItemMinSize(c.item.widget, w, h)
+        if not self.toplevel:
+            self.sizer.add_item(self, self.pos, self.option, self.flag,
+                                self.border, self.widget.GetMinSize())
 
 # end of class EditBoxSizer
 
@@ -771,9 +775,6 @@ class GridSizerBase(SizerBase):
         This must be overriden and called at the end of the overriden version
         """
         for c in self.children[1:]: # we've already added self._btn
-            print 'child:'
-            print '\toption: %s\n\tflag: %s\n\tborder: %s\n\tobj: %s' % \
-                  (c.option, c.flag, c.border, c.item)
             c.item.show_widget(True)
             if isinstance(c.item, SizerSlot):
                 self.widget.Add(c.item.widget, 1, wxEXPAND)
@@ -894,11 +895,6 @@ class GridSizerBase(SizerBase):
         common.app_tree.app.saved = False
 
     def _adjust_initial_size(self, w, h): pass
-
-    def add_item(self, item, pos, option=0, flag=0, border=0, size=None):
-        print 'add_item: %s, %s, %s, %s, %s, %s' % (item, pos, option, flag,
-                                                    border, size)
-        SizerBase.add_item(self, item, pos, option, flag, border, size)
 
 # end of class GridSizerBase
 
