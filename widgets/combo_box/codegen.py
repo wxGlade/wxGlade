@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxComboBox objects
-# $Id: codegen.py,v 1.9 2003/05/13 10:05:14 agriggio Exp $
+# $Id: codegen.py,v 1.10 2003/11/24 21:28:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -17,13 +17,15 @@ class PythonCodeGenerator:
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         style = prop.get("style", None)
-        if not style: style = 'wxCB_DROPDOWN'
-        else: style = 'wxCB_DROPDOWN|' + style
+        if not style: style = pygen.cn('wxCB_DROPDOWN')
+        else: style = pygen.cn_f('wxCB_DROPDOWN|' + style)
         init = []
         if id_name: init.append(id_name)
         choices = ', '.join([pygen.quote_str(c) for c in choices])
+        klass = obj.klass
+        if klass == obj.base: klass = pygen.cn(klass)
         init.append('self.%s = %s(%s, %s, choices=[%s], style=%s)\n' %
-                    (obj.name, obj.klass, parent, id, choices, style))
+                    (obj.name, klass, parent, id, choices, style))
         props_buf = pygen.generate_common_properties(obj)
         selection = prop.get('selection')
         if selection is not None:

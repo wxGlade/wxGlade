@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxStaticBitmap objects
-# $Id: codegen.py,v 1.14 2003/07/26 09:15:57 agriggio Exp $
+# $Id: codegen.py,v 1.15 2003/11/24 21:28:05 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -20,6 +20,7 @@ _bmp_str_types = {
 class PythonCodeGenerator:
     def get_code(self, obj):
         pygen = common.code_writers['python']
+        cn = pygen.cn
         prop = obj.properties
 
         attribute = pygen.test_attribute(obj)
@@ -27,14 +28,14 @@ class PythonCodeGenerator:
         id_name, id = pygen.generate_code_id(obj) 
         bmp_file = prop.get('bitmap', '')
         if not bmp_file:
-            bmp = 'wxNullBitmap'
+            bmp = cn('wxNullBitmap')
         elif bmp_file.startswith('var:'):
             if obj.preview:
-                bmp = 'wxEmptyBitmap(1, 1)'
+                bmp = cn('wxEmptyBitmap(1, 1)')
             else:
-                bmp = 'wxBitmapFromXPMData(%s)' % bmp_file[4:].strip()
+                bmp = cn('wxBitmapFromXPMData') + '(%s)' % bmp_file[4:].strip()
         else:
-            bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
+            bmp = ('wxBitmap(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \
                   pygen.quote_str(bmp_file, False, False)
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
@@ -47,8 +48,10 @@ class PythonCodeGenerator:
             style = ', style=' + style
         else:
             style = ''
+        klass = obj.klass
+        if klass == obj.base: klass = pygen.cn(klass)
         init.append('%s%s = %s(%s, %s, %s%s)\n' % 
-                    (prefix, obj.name, obj.klass, parent, id, bmp, style))
+                    (prefix, obj.name, klass, parent, id, bmp, style))
         props_buf = pygen.generate_common_properties(obj)
         if not attribute:
             # the object doesn't have to be stored as an attribute of the

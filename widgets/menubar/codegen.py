@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.10 2003/08/16 13:47:46 agriggio Exp $
+# $Id: codegen.py,v 1.11 2003/11/24 21:28:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -15,6 +15,7 @@ class PythonCodeGenerator:
     def get_init_code(self, obj):
         prop = obj.properties
         pygen = common.code_writers['python']
+        cn = pygen.cn
         out = []
         append = out.append
         menus = obj.properties['menubar']
@@ -27,14 +28,14 @@ class PythonCodeGenerator:
                     continue
                 name, val = pygen.generate_code_id(None, item.id)
                 if obj.preview or (not name and ( not val or val == '-1')):
-                    id = 'wxNewId()'
+                    id = cn('wxNewId()')
                 else:
                     if name: ids.append(name)
                     id = val
                 if item.children:
                     if item.name: name = item.name
                     else: name = '%s_sub' % menu
-                    append('%s = wxMenu()\n' % name)
+                    append(('%s = ' + cn('wxMenu') + '()\n') % name)
 ##                     if not obj.preview and item.id: # generating id
 ##                         tokens = item.id.split('=')
 ##                         if len(tokens) > 1:
@@ -57,11 +58,11 @@ class PythonCodeGenerator:
 ##                             id = item.id
 ##                     else: id = 'wxNewId()'
 
-                    item_type = 'wxITEM_NORMAL'
+                    item_type = cn('wxITEM_NORMAL')
                     if item.checkable == '1':
-                        item_type = 'wxITEM_CHECK'
+                        item_type = cn('wxITEM_CHECK')
                     elif item.radio == '1':
-                        item_type = 'wxITEM_RADIO'
+                        item_type = cn('wxITEM_RADIO')
                     if item_type:
                         append('%s.Append(%s, %s, %s, %s)\n' %
                                (menu, id, pygen.quote_str(item.label),
@@ -79,7 +80,7 @@ class PythonCodeGenerator:
             menu = m.root
             if menu.name: name = 'self.' + menu.name
             else: name = 'wxglade_tmp_menu'
-            append('%s = wxMenu()\n' % name)
+            append(('%s = ' + cn('wxMenu') + '()\n') % name)
             if menu.children:
                 append_items(name, menu.children)
             append('%s.Append(%s, %s)\n' %

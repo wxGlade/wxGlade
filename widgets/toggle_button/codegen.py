@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxToggleButton objects
-# $Id: codegen.py,v 1.9 2003/05/13 10:05:07 agriggio Exp $
+# $Id: codegen.py,v 1.10 2003/11/24 21:28:05 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -18,8 +18,10 @@ class PythonCodeGenerator:
         else: parent = 'self'
         init = []
         if id_name: init.append(id_name)
+        klass = obj.klass
+        if klass == obj.base: klass = pygen.cn(klass)
         init.append('self.%s = %s(%s, %s, %s)\n' % 
-                    (obj.name, obj.klass, parent, id, label))
+                    (obj.name, klass, parent, id, label))
         props_buf = pygen.generate_common_properties(obj)
         value = prop.get('value')
         if value: props_buf.append('self.%s.SetValue(%s)\n' %

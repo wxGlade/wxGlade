@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.11 2003/08/16 13:47:45 agriggio Exp $
+# $Id: codegen.py,v 1.12 2003/11/24 21:28:05 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -45,6 +45,7 @@ class PythonCodeGenerator:
     def get_init_code(self, obj):
         prop = obj.properties
         pygen = common.code_writers['python']
+        cn = pygen.cn
         out = []
         append = out.append
         tools = obj.properties['toolbar']
@@ -55,14 +56,16 @@ class PythonCodeGenerator:
 
         def _get_bitmap(bitmap):
             if not bitmap:
-                return 'wxNullBitmap'
+                return cn('wxNullBitmap')
             elif bitmap.startswith('var:'):
                 if obj.preview:
-                    return 'wxEmptyBitmap(1, 1)'
+                    return cn('wxEmptyBitmap(1, 1)')
                 else:
-                    return 'wxBitmapFromXPMData(%s)' % bitmap[4:].strip()
+                    return cn('wxBitmapFromXPMData') + \
+                           '(%s)' % bitmap[4:].strip()
             else:
-                return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
+                return cn('wxBitmap') + \
+                       ('(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \
                        pygen.quote_str(bitmap, False, False)
                 
         for tool in tools:
@@ -71,7 +74,7 @@ class PythonCodeGenerator:
             else:
                 name, val = pygen.generate_code_id(None, tool.id)
                 if obj.preview or (not name and (not val or val == '-1')):
-                    id = 'wxNewId()'
+                    id = cn('wxNewId()')
                 else:
                     if name: ids.append(name)
                     id = val
@@ -84,7 +87,7 @@ class PythonCodeGenerator:
                 bmp2 = _get_bitmap(tool.bitmap2)
                 append('%s.AddLabelTool(%s, %s, %s, %s, %s, %s, %s)\n' %
                        (obj_name, id, pygen.quote_str(tool.label),
-                        bmp1, bmp2, kind, pygen.quote_str(tool.short_help),
+                        bmp1, bmp2, cn(kind), pygen.quote_str(tool.short_help),
                         pygen.quote_str(tool.long_help)))
         
         return ids + out
@@ -96,11 +99,13 @@ class PythonCodeGenerator:
         pygen = common.code_writers['python']
         style = obj.properties.get('style')
         if style:
-            style = ', style=wxTB_HORIZONTAL|' + style
+            style = ', style=' + pygen.cn_f('wxTB_HORIZONTAL|' + style)
         else:
             style = ''
+        klass = obj.klass
+        if klass == obj.base: klass = pygen.cn(klass)
         init = [ '\n', '# Tool Bar\n', 'self.%s = %s(self, -1%s)\n' %
-                 (obj.name, obj.klass, style),
+                 (obj.name, klass, style),
                  'self.SetToolBar(self.%s)\n' % obj.name ]
         init.extend(self.get_init_code(obj))
         init.append('# Tool Bar end\n')

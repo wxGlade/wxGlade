@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxSplitterWindow objects
-# $Id: codegen.py,v 1.11 2003/05/22 11:13:43 agriggio Exp $
+# $Id: codegen.py,v 1.12 2003/11/24 21:28:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -23,12 +23,14 @@ class PythonCodeGenerator:
                      (window.name, window.klass, parent,id))
             return l, [], []
         style = prop.get("style")
-        if style and style != 'wxSP_3D': style = ", style=%s" % style
-        else: style = ''
+        if style and style != 'wxSP_3D':
+            style = ", style=%s" % pygen.cn_f(style)
+        else:
+            style = ''
         init = []
         if id_name: init.append(id_name)
-        init.append('self.%s = wxSplitterWindow(%s, %s%s)\n' %
-                    (window.name, parent, id, style))
+        init.append(('self.%s = ' + pygen.cn('wxSplitterWindow') +
+                     '(%s, %s%s)\n') % (window.name, parent, id, style))
 
         props_buf = pygen.generate_common_properties(window)
         win_1 = prop.get('window_1')
@@ -43,8 +45,8 @@ class PythonCodeGenerator:
                              (window.name, f_name, win_1, win_2, sash_pos))
         else:
             def add_sub(win):
-                props_buf.append('self.%s.SetSplitMode(%s)\n' % (window.name,
-                                                                 orientation))
+                props_buf.append('self.%s.SetSplitMode(%s)\n' % \
+                                 (window.name, pygen.cn(orientation)))
                 props_buf.append('self.%s.Initialize(self.%s)\n' % \
                                  (window.name, win))
             if win_1: add_sub(win_1)
@@ -68,7 +70,8 @@ class PythonCodeGenerator:
                              (f_name, win_1, win_2, sash_pos))
         else:
             def add_sub(win):
-                props_buf.append('self.SetSplitMode(%s)\n' % orientation)
+                props_buf.append('self.SetSplitMode(%s)\n' %
+                                 pygen.cn(orientation))
                 props_buf.append('self.Initialize(self.%s)\n' % win)
             if win_1: add_sub(win_1)
             elif win_2: add_sub(win_2)

@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxGrid objects
-# $Id: codegen.py,v 1.17 2003/05/13 10:05:12 agriggio Exp $
+# $Id: codegen.py,v 1.18 2003/11/24 21:28:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -42,7 +42,7 @@ def _check_label(label, col):
     # build the default value
     s = []
     while True:
-        s.append(chr(ord('A') + col%26))
+        s.append(chr(ord('A') + col % 26))
         col = col/26 - 1
         if col < 0: break
     s.reverse()
@@ -51,7 +51,21 @@ def _check_label(label, col):
     
 
 class PythonCodeGenerator:
-    import_modules = ['from wxPython.grid import *\n']
+    def __init__(self):
+        self.pygen = common.code_writers['python']
+        
+    def __get_import_modules(self):
+        if self.pygen.use_new_namespace:
+            return ['import wx.grid\n']
+        else:
+            return ['from wxPython.grid import *\n']
+    import_modules = property(__get_import_modules)
+
+    def cn(self, c):
+        if self.pygen.use_new_namespace:
+            return 'wx.grid.' + c[2:]
+        else:
+            return c
 
     def get_code(self, obj):
         pygen = common.code_writers['python']
@@ -61,8 +75,10 @@ class PythonCodeGenerator:
         else: parent = 'self'
         init = []
         if id_name: init.append(id_name)
+        klass = obj.klass
+        if klass == obj.base: klass = self.cn(klass)
         init.append('self.%s = %s(%s, %s)\n' %
-                    (obj.name, obj.klass, parent, id))
+                    (obj.name, klass, parent, id))
         props_buf = self.get_properties_code(obj)
         return init, props_buf, []
 
@@ -102,14 +118,17 @@ class PythonCodeGenerator:
         if enable_grid_resize != '1':
             out.append('%s.EnableDragGridSize(0)\n' % name)
         if prop.get('lines_color', False):
-            out.append('%s.SetGridLineColour(wxColour(%s))\n' %
+            out.append(('%s.SetGridLineColour(' + pygen.cn('wxColour') +
+                        '(%s))\n') %
                        (name, pygen._string_to_colour(prop['lines_color'])))
         if prop.get('label_bg_color', False):
-            out.append('%s.SetLabelBackgroundColour(wxColour(%s))\n' %
+            out.append(('%s.SetLabelBackgroundColour(' + pygen.cn('wxColour') +
+                        '(%s))\n') %
                        (name, pygen._string_to_colour(prop['label_bg_color'])))
         sel_mode = prop.get('selection_mode')
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
-            out.append('%s.SetSelectionMode(%s)\n' % (name, sel_mode))
+            out.append('%s.SetSelectionMode(%s)\n' % \
+                       (name, self.cn('wxGrid') + sel_mode[6:]))
 
         i = 0
         for label, size in columns:

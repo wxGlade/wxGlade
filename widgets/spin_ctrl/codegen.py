@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxSpinCtrl objects
-# $Id: codegen.py,v 1.9 2003/05/13 10:05:09 agriggio Exp $
+# $Id: codegen.py,v 1.10 2003/11/24 21:28:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -21,12 +21,14 @@ class PythonCodeGenerator:
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         style = prop.get("style")
-        if style: style = ", style=%s" % style
+        if style: style = ", style=%s" % pygen.cn_f(style)
         else: style = ''
         init = []
         if id_name: init.append(id_name)
+        klass = obj.klass
+        if klass == obj.base: klass = pygen.cn(klass)
         init.append('self.%s = %s(%s, %s, "%s", min=%s, max=%s%s)\n' %
-                    (obj.name, obj.klass, parent, id, value, min_v,
+                    (obj.name, klass, parent, id, value, min_v,
                      max_v, style))
         props_buf = pygen.generate_common_properties(obj)
         return init, props_buf, []

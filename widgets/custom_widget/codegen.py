@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for CustomWidget objects
-# $Id: codegen.py,v 1.8 2003/10/30 07:52:32 dinogen Exp $
+# $Id: codegen.py,v 1.9 2003/11/24 21:28:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -55,7 +55,9 @@ class PythonCodeGenerator:
         else: parent = 'self'
         init = []
         if id_name: init.append(id_name)
-        arguments = _fix_arguments(prop.get('arguments', []), parent, id, prop.get('size', '-1, -1').strip())
+        arguments = _fix_arguments(
+            prop.get('arguments', []), parent, id,
+            prop.get('size', '-1, -1').strip())
         init.append('self.%s = %s(%s)\n' % (widget.name, widget.klass,
                                             ", ".join(arguments)))
         props_buf = pygen.generate_common_properties(widget)
@@ -108,7 +110,9 @@ class CppCodeGenerator:
         else: ids = []
         if not widget.parent.is_toplevel: parent = '%s' % widget.parent.name
         else: parent = 'this'
-        arguments = _fix_arguments(prop.get('arguments', []), parent, id, prop.get('size', '-1, -1').strip())
+        arguments = _fix_arguments(
+            prop.get('arguments', []), parent, id,
+            prop.get('size', '-1, -1').strip())
         init = ['%s = new %s(%s);\n' % (widget.name, widget.klass,
                                         ", ".join(arguments)) ]
         props_buf = cppgen.generate_common_properties(widget)

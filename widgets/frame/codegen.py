@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.13 2003/08/31 08:41:00 agriggio Exp $
+# $Id: codegen.py,v 1.14 2003/11/24 21:28:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -36,14 +36,15 @@ class PythonFrameCodeGenerator:
     def get_properties_code(self, frame):
         prop = frame.properties
         pygen = common.code_writers['python']
+        cn = pygen.cn
         out = []
         title = prop.get('title')
         if title: out.append('self.SetTitle(%s)\n' % pygen.quote_str(title))
         icon = prop.get('icon')
         if icon: 
-            out.append('_icon = wxEmptyIcon()\n')
-            out.append('_icon.CopyFromBitmap(wxBitmap(%s, '
-                       'wxBITMAP_TYPE_ANY))\n' % \
+            out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
+            out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') + '(%s, ' +
+                        cn('wxBITMAP_TYPE_ANY') + '))\n') % \
                        pygen.quote_str(icon, False, False))
             out.append('self.SetIcon(_icon)\n')
 

@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxNotebook objects
-# $Id: codegen.py,v 1.15 2003/05/16 19:55:43 agriggio Exp $
+# $Id: codegen.py,v 1.16 2003/11/24 21:28:06 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -57,11 +57,11 @@ class PythonCodeGenerator:
                      (window.name, window.klass, parent,id))
             return l, [], [] 
         style = prop.get("style")
-        if style: style = ", style=%s" % style
+        if style: style = ", style=%s" % pygen.cn_f(style)
         else: style = ''
         init = []
         if id_name: init.append(id_name)
-        init.append('self.%s = wxNotebook(%s, %s%s)\n' %
+        init.append(('self.%s = ' + pygen.cn('wxNotebook') + '(%s, %s%s)\n') %
                     (window.name, parent, id, style))
 
         props_buf = pygen.generate_common_properties(window)
