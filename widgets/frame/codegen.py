@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.14 2003/11/24 21:28:06 agriggio Exp $
+# $Id: codegen.py,v 1.15 2004/01/29 09:46:31 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -41,12 +41,25 @@ class PythonFrameCodeGenerator:
         title = prop.get('title')
         if title: out.append('self.SetTitle(%s)\n' % pygen.quote_str(title))
         icon = prop.get('icon')
+        print icon
         if icon: 
-            out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
-            out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') + '(%s, ' +
-                        cn('wxBITMAP_TYPE_ANY') + '))\n') % \
-                       pygen.quote_str(icon, False, False))
-            out.append('self.SetIcon(_icon)\n')
+            if icon.startswith('var:'):
+                out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
+                out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') + '(%s, ' +
+                            cn('wxBITMAP_TYPE_ANY') + '))\n') % \
+                           icon[4:].strip())
+                out.append('self.SetIcon(_icon)\n')
+            elif icon.startswith('code:'):
+                out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
+                out.append(('_icon.CopyFromBitmap(%s)\n') % \
+                           icon[5:].strip())
+                out.append('self.SetIcon(_icon)\n')
+            else:
+                out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
+                out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') + '(%s, ' +
+                            cn('wxBITMAP_TYPE_ANY') + '))\n') % \
+                           pygen.quote_str(icon, False, False))
+                out.append('self.SetIcon(_icon)\n')
 
         out.extend(pygen.generate_common_properties(frame))
         return out
