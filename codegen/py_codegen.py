@@ -243,8 +243,8 @@ def initialize(app_attrs):
         previous_source = None
         global out_dir
         if not os.path.isdir(out_path):
-            raise XmlParsingError("'path' must be a directory when generating"\
-                                  " multiple output files")
+            raise IOError("'path' must be a directory when generating"\
+                          " multiple output files")
         out_dir = out_path
 
 
@@ -290,8 +290,8 @@ def finalize():
             # make the file executable
             if _app_added:
                 os.chmod(output_file_name, 0755)
-        except IOError, e:
-            raise XmlParsingError(str(e))
+##         except IOError, e:
+##             raise XmlParsingError(str(e))
         except OSError: pass # this isn't necessary a bad error
         del output_file
 

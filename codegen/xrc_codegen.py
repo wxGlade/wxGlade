@@ -209,7 +209,7 @@ def initialize(app_attrs): #out_path, multi_files):
     global output_file, curr_tab, xrc_objects, output_file_name
     if multi_files:
         # for now we handle only single-file code generation
-        raise XmlParsingError("XRC code cannot be split into multiple files")
+        raise IOError("XRC code cannot be split into multiple files")
     output_file_name = out_path
     output_file = cStringIO.StringIO() #open(out_path, 'w')
     from time import asctime

@@ -260,8 +260,8 @@ def initialize(app_attrs):
         previous_source = None
         global out_dir
         if not os.path.isdir(out_path):
-            raise XmlParsingError("'path' must be a directory when generating"\
-                                  " multiple output files")
+            raise IOError("'path' must be a directory when generating"\
+                          " multiple output files")
         out_dir = out_path
 
 

@@ -1,3 +1,6 @@
+2003-02-14: main.py, application.py: 
+                better error messages in case of IOError or OSError exceptions
+
 2003-02-02: version 0.2.1 released
 ------------------------------------------------------------------------------
 2003-01-27: codegen/py_codegen.py, codegen/cpp_codegen.py:
