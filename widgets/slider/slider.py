@@ -106,7 +106,7 @@ def builder(parent, sizer, pos, number=[1]):
             prop = RadioProperty(self, 'orientation', self,
                                  ['wxSL_HORIZONTAL', 'wxSL_VERTICAL'])
             szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(prop.panel, 0, wxEXPAND)
+            szr.Add(prop.panel, 0, wxALL|wxEXPAND, 10)
             style_labels = ('#section#', 'wxSL_AUTOTICKS', 'wxSL_LABELS',
                             'wxSL_LEFT', 'wxSL_RIGHT', 'wxSL_TOP')
             self.style_pos = (wxSL_AUTOTICKS, wxSL_LABELS, wxSL_LEFT,
@@ -114,8 +114,10 @@ def builder(parent, sizer, pos, number=[1]):
             self.style = 0
             self.style_prop = CheckListProperty(self, 'style', self,
                                                 style_labels)
-            szr.Add(self.style_prop.panel, 0, wxEXPAND)
-            szr.Add(wxButton(self, wxID_OK, 'OK'), 0, wxALL|wxALIGN_CENTER, 3)
+            szr.Add(self.style_prop.panel, 0, wxALL|wxEXPAND, 10)
+            btn = wxButton(self, wxID_OK, 'OK')
+            btn.SetDefault()
+            szr.Add(btn, 0, wxBOTTOM|wxALIGN_CENTER, 10)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)

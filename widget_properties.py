@@ -624,12 +624,13 @@ class RadioProperty(Property, _activator):
     properties controlled by a series of radio buttons.
     """
     def __init__(self, owner, name, parent, choices, can_disable=False,
-                 enabled=False):
+                 enabled=False, columns=1):
         Property.__init__(self, owner, name, parent)
         self.can_disable = can_disable
         _activator.__init__(self)
         if can_disable: self.toggle_active(enabled)
         self.choices = choices
+        self.columns = columns
         self.panel = None
         if parent is not None: self.display(parent)
         self.val = owner[name][0]()
@@ -651,7 +652,8 @@ class RadioProperty(Property, _activator):
                                                _mangle(self.name)),
                                    wxHORIZONTAL)
         self.options = wxRadioBox(self.panel, self.id, _mangle(self.name),
-                                  choices=self.choices, majorDimension=1,
+                                  choices=self.choices,
+                                  majorDimension=self.columns,
                                   style=style)
         if self.can_disable:
             self._enabler = wxCheckBox(self.panel, self.id+1, "")

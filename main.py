@@ -185,6 +185,10 @@ class wxGladeFrame(wxFrame):
         else:
             self.about_box = None
 
+        # last visited directory, used on GTK for wxFileDialog
+        self.cur_dir = os.path.expanduser('~')
+        if self.cur_dir == '~': self.cur_dir = os.getcwd() 
+
         self.Raise()
 
     def show_tree(self, event):
@@ -231,8 +235,11 @@ class wxGladeFrame(wxFrame):
         from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
         infile = wxFileSelector("Open file", wildcard="wxGlade files|*.wxg|"
                                 "XML files|*.xml|All files|*",
-                                flags=wxOPEN|wxFILE_MUST_EXIST)
-        if infile: self._open_app(infile)
+                                flags=wxOPEN|wxFILE_MUST_EXIST,
+                                default_path=self.cur_dir)
+        if infile:
+            self._open_app(infile)
+            self.cur_dir = os.path.dirname(infile)
 
     def _open_app(self, infilename, use_progress_dialog=True):
         import time
@@ -304,9 +311,12 @@ class wxGladeFrame(wxFrame):
         fn = wxFileSelector("Save project as...",
                             wildcard="wxGlade files|*.wxg|XML files|*.xml|"
                             "All files|*",
-                            flags=wxSAVE|wxOVERWRITE_PROMPT)
+                            flags=wxSAVE|wxOVERWRITE_PROMPT,
+                            default_path=self.cur_dir)
         common.app_tree.app.filename = fn
-        if fn: self.save_app(event)
+        if fn:
+            self.save_app(event)
+            self.cur_dir = os.path.dirname(fn)
 
     def cleanup(self, event):
         if self.ask_save():
@@ -343,10 +353,19 @@ class wxGladeFrame(wxFrame):
         if not self.tut_frame:
             from wxPython.html import wxHtmlWindow
             self.tut_frame = wxFrame(self, -1, "wxGlade Tutorial")
-            html = wxHtmlWindow(self.tut_frame, -1)
+            panel = wxPanel(self.tut_frame, -1)
+            sizer = wxBoxSizer(wxVERTICAL)
+            html = wxHtmlWindow(panel, -1, style=wxSUNKEN_BORDER)
             html.LoadPage('docs/tutorial.html')
-            self.tut_frame.SetSize((640, 480))
+            sizer.Add(html, 1, wxEXPAND)
+            btn = wxButton(panel, -1, 'Close')
+            btn.SetDefault()
+            sizer.Add(btn, 0, wxALL|wxALIGN_CENTER, 10)
+            panel.SetAutoLayout(True)
+            panel.SetSizer(sizer)
+            self.tut_frame.SetSize((640, 550))
             EVT_CLOSE(self.tut_frame, lambda e: self.tut_frame.Hide())
+            EVT_BUTTON(btn, btn.GetId(), lambda e: self.tut_frame.Hide())
             if wxPlatform == '__WXMSW__':
                 self.tut_frame.CenterOnScreen() # on Unix, WM are smart enough
                                                 # to place the frame at a

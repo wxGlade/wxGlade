@@ -320,8 +320,12 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     """
     try: klass = classes[toplevel.klass]
     except KeyError: klass = classes[toplevel.klass] = ClassLines()
+    name = obj.name
+    if obj.base == 'wxNotebook':
+        # this is an ugly TEMPORARY HACK! We must find a better way
+        name += '_sizer'
     buffer = '%s->Add(%s, %s, %s, %s);\n' % \
-             (sizer.name, obj.name, option, flag, border)
+             (sizer.name, name, option, flag, border)
     klass.layout.append(buffer)
 
 

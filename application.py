@@ -7,7 +7,7 @@
 from wxPython.wx import *
 from widget_properties import *
 from tree import Tree, WidgetTree
-import common, math, misc
+import common, math, misc, os.path
 
 class FileDirDialog:
     """\
@@ -28,15 +28,39 @@ class FileDirDialog:
         if v and int(v[0]) > 2: style = wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON
         self.dir_dialog = wxDirDialog(parent, dir_message, style=style)
         del log_null
+        self.parent = parent
+        self.file_message = file_message
+        self.style = style
+        self.prev_dir = os.path.expanduser('~')
+        if self.prev_dir == '~': self.prev_dir = None
 
     def ShowModal(self):
-        if self.owner.codegen_opt == 0: return self.file_dialog.ShowModal()
-        else: return self.dir_dialog.ShowModal()
+        if self.owner.codegen_opt == 0:
+            if self.prev_dir is not None:
+                self.file_dialog.SetDirectory(self.prev_dir)
+            dialog = self.file_dialog
+        else:
+            if self.prev_dir is not None:
+                self.dir_dialog.SetPath(self.prev_dir)
+            dialog = self.dir_dialog
+        ok = dialog.ShowModal()
+        if ok == wxID_OK:
+            self.prev_dir = dialog.GetPath()
+            if os.path.isfile(self.prev_dir):
+                self.prev_dir = os.path.dirname(self.prev_dir)
+        return ok
 
     def get_value(self):
         if self.owner.codegen_opt == 0: return self.file_dialog.GetPath()
         else: return self.dir_dialog.GetPath()
 
+    def set_wildcard(self, wildcard):
+        if wxPlatform == '__WXMSW__': self.file_dialog.SetWildcard(wildcard)
+        else:
+            # on GTK SetWildcard has no effect, so we recreate the dialog
+            self.file_dialog = wxFileDialog(self.parent, self.file_message,
+                                            wildcard=wildcard,
+                                            style=self.style)
 # end of class FileDirDialog
 
 
@@ -83,7 +107,13 @@ class Application(object):
         self.codegen_prop = RadioProperty(self, "code_generation", panel,
                                           ["Single file", "Separate file for" \
                                            " each class"])
-        dialog = FileDirDialog(self, panel, "All Files|*",
+        ext = getattr(common.code_writers.get('python'),
+                      'default_extensions', [])
+        wildcard = []
+        for e in ext:
+            wildcard.append('%s files (*.%s)|*.%s' % ('Python', e, e))
+        wildcard.append('All files|*')
+        dialog = FileDirDialog(self, panel, '|'.join(wildcard),
                                "Select output file", "Select output directory",
                                wxSAVE|wxOVERWRITE_PROMPT)
         self.outpath_prop = DialogProperty(self, "output_path", panel,
@@ -91,6 +121,8 @@ class Application(object):
         
         self.codewriters_prop = RadioProperty(self, "language", panel,
                                               common.code_writers.keys())
+
+        self.codewriters_prop.set_str_value('python')
         
         BTN_ID = wxNewId()
         btn = wxButton(panel, BTN_ID, "Generate code")
@@ -130,7 +162,7 @@ class Application(object):
             wildcard.append('%s files (*.%s)|*.%s' % (language.capitalize(),
                                                       e, e))
         wildcard.append('All files|*')
-        self.outpath_prop.dialog.file_dialog.SetWildcard('|'.join(wildcard))
+        self.outpath_prop.dialog.set_wildcard('|'.join(wildcard))
 
     def get_language(self):
         return self.codewriters_prop.get_str_value()

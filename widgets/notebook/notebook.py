@@ -163,6 +163,11 @@ class EditNotebook(ManagedBase):
                 window.show_widget(True)
                 self.widget.AddPage(window.widget, name)
 
+    def finish_widget_creation(self):
+        ManagedBase.finish_widget_creation(self)
+        # replace 'self' with 'self.nb_sizer' in 'self.sizer'
+        self.sizer._fix_notebook(self.pos, self.nb_sizer)
+
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxScrolledWindow(self.notebook, -1)
@@ -265,10 +270,13 @@ def builder(parent, sizer, pos, number=[1]):
             self.styles = [ 0, wxNB_BOTTOM, wxNB_LEFT, wxNB_RIGHT ]
             self.style = 0
             prop = RadioProperty(self, 'tab_placement', self,
-                                 ['Top', 'Bottom', 'Left', 'Right'])
+                                 ['Top', 'Bottom', 'Left', 'Right'],
+                                 columns=2)
             szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(prop.panel, 0, wxEXPAND)
-            szr.Add(wxButton(self, wxID_OK, 'OK'), 0, wxALL|wxALIGN_CENTER, 3)
+            szr.Add(prop.panel, 0, wxALL|wxEXPAND, 10)
+            btn = wxButton(self, wxID_OK, 'OK')
+            btn.SetDefault()
+            szr.Add(btn, 0, wxBOTTOM|wxALIGN_CENTER, 10)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
