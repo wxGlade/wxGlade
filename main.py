@@ -97,7 +97,9 @@ class wxGladeFrame(wxFrame):
             self.file_history = wxFileHistory(
                 config.preferences.number_history)
             self.file_history.UseMenu(file_menu)
-            for path in config.load_history():
+            files = config.load_history()
+            files.reverse()
+            for path in files:
                 self.file_history.AddFileToHistory(path.strip())
                 
             def open_from_history(event):

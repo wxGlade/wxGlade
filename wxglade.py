@@ -5,7 +5,7 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import sys
+import os, os.path, sys
 
 # check to see if the Python release supports boolean identifiers
 # and bool built-in function (>= Python 2.2.1).
@@ -16,6 +16,16 @@ except NameError:
     setattr(__builtins__, 'False', not True)
     def bool(value): return not not value
     setattr(__builtins__, 'bool', bool)
+
+def _fix_path(path):
+    """\
+    Returns an absolute version of path, accroding to the invoking dir of
+    wxglade (which can be different from '.' if it is invoked from a shell
+    script)
+    """
+    if not os.path.isabs(path):
+        return os.path.join(os.getenv('WXGLADE_INVOKING_DIR', '.'), path)
+    return path
 
 def parse_command_line():
     import getopt, common
@@ -46,9 +56,9 @@ def command_line_code_generation(options, args):
             if option == '-g' or option == '--generate-code':
                 language = arg
             elif option == '-o' or option == '--output':
-                out_path = arg
+                out_path = _fix_path(arg)
         writer = common.code_writers[language]
-        CodeWriter(writer, args[0], out_path=out_path)
+        CodeWriter(writer, _fix_path(args[0]), out_path=out_path)
     except KeyError:
         print >> sys.stderr, 'Error: no writer for language "%s" available' % \
               language
@@ -98,6 +108,7 @@ if __name__ == "__main__":
         if not options:
             # start the app in GUI mode, opening the given file
             import main
-            main.main(args[0])
+            filename = _fix_path(args[0])
+            main.main(filename)
         else:
             command_line_code_generation(options, args)
