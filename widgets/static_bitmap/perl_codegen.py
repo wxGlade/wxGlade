@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxStaticBitmap objects
-# $Id: perl_codegen.py,v 1.5 2004/01/20 22:31:52 dinogen Exp $
+# $Id: perl_codegen.py,v 1.6 2004/02/01 11:56:57 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -37,7 +37,8 @@ class PerlCodeGenerator:
         bmp_file = prop.get('bitmap', '')
         if not bmp_file:
             bmp = 'wxNullBitmap'
-        elif bmp_file.startswith('var:'): # this is a variable holding bitmap path
+        elif bmp_file.startswith('var:'):
+            # this is a variable holding bitmap path
             var = bmp_file[4:].strip()
             if var[0] != "$":
                 var = "$" + var
