@@ -489,13 +489,19 @@ class EditMenuBar(EditBase):
             else: self.widget.Append(m, menu.root.label)
         self.widget.Refresh()
       
-    def remove(self, *args):
+    def remove(self, *args, **kwds):
         self.parent.properties['menubar'].set_value(0)
-        if self.parent.widget:
-            if wxPlatform == '__WXGTK__':
-                self.widget.Reparent(EditMenuBar.__hidden_frame)
-                self.widget.Hide()
-            self.parent.widget.SetMenuBar(None)
+        if kwds.get('gtk_do_nothing', False) and wxPlatform == '__WXGTK__':
+            # workaround to prevent some segfaults on GTK: unfortunately,
+            # I'm not sure that this works in all cases, and moreover it
+            # could probably leak some memory (but I'm not sure)
+            self.widget = None
+        else:
+            if self.parent.widget:
+                if wxPlatform == '__WXGTK__':
+                    self.widget.Reparent(EditMenuBar.__hidden_frame)
+                    self.widget.Hide()
+                self.parent.widget.SetMenuBar(None)
         EditBase.remove(self)
 
     def popup_menu(self, *args): pass
@@ -798,8 +804,9 @@ class EditFrame(TopLevelBase):
         if self.widget: self.widget.SetWindowStyleFlag(style)
 
     def remove(self, *args):
+        if self.menubar:
+            self.menubar = self.menubar.remove(gtk_do_nothing=True)
         if self.statusbar: self.statusbar = self.statusbar.remove()
-        if self.menubar: self.menubar = self.menubar.remove()
         TopLevelBase.remove(self, *args)
 
 # end of class EditFrame
