@@ -1,5 +1,5 @@
 # choice.py: wxChoice objects
-# $Id: choice.py,v 1.9 2003/06/21 14:28:45 agriggio Exp $
+# $Id: choice.py,v 1.10 2003/09/11 06:35:20 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -31,6 +31,7 @@ class EditChoice(ManagedBase):
         """\
         Class to handle wxChoice objects
         """
+        import config
         ManagedBase.__init__(self, name, 'wxChoice', parent, id, sizer,
                              pos, property_window, show=show)
         self.choices = choices
@@ -45,6 +46,10 @@ class EditChoice(ManagedBase):
                                               self.set_selection)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
                                                     r=(0, len(choices)-1))
+        # 2003-09-04 added default_border
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wxALL
 
     def create_widget(self):
         self.widget = wxChoice2(self.parent.widget, self.id,

@@ -1,5 +1,5 @@
 # toggle_button.py: wxToggleButton objects
-# $Id: toggle_button.py,v 1.8 2003/07/17 15:51:25 agriggio Exp $
+# $Id: toggle_button.py,v 1.9 2003/09/11 06:35:21 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -18,6 +18,7 @@ class EditToggleButton(ManagedBase):
         """\
         Class to handle wxToggleButton objects
         """
+        import config
         ManagedBase.__init__(self, name, 'wxToggleButton', parent, id, sizer,
                              pos, property_window, show=show)
         self.label = label
@@ -29,6 +30,10 @@ class EditToggleButton(ManagedBase):
                                                 multiline=True)
         self.properties['value'] = CheckBoxProperty(self, 'value', None,
                                                     'Clicked')
+        # 2003-09-04 added default_border
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wxALL
 
     def create_widget(self):
         self.widget = wxToggleButton(self.parent.widget, self.id, self.label)

@@ -1,5 +1,5 @@
 # combo_box.py: wxComboBox objects
-# $Id: combo_box.py,v 1.14 2003/06/21 14:28:45 agriggio Exp $
+# $Id: combo_box.py,v 1.15 2003/09/11 06:35:20 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -35,6 +35,7 @@ class EditComboBox(ManagedBase):
         """\
         Class to handle wxComboBox objects
         """
+        import config
         ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer,
                              pos, property_window, show=show)
         self.choices = choices
@@ -57,6 +58,10 @@ class EditComboBox(ManagedBase):
         self.choices = list(choices)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
                                                     r=(0, len(choices)-1))
+        # 2003-09-04 added default_border
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wxALL
 
     def create_widget(self):
         self.widget = wxComboBox2(self.parent.widget, self.id,
