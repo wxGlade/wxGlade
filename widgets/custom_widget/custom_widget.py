@@ -1,0 +1,168 @@
+# custom_widget.py: custom wxWindow objects
+#
+# Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
+# License: Python 2.2 license (see license.txt)
+
+from wxPython.wx import *
+import common, misc
+from tree import Tree
+from widget_properties import *
+from edit_windows import ManagedBase
+
+class ArgumentsProperty(GridProperty):
+    def write(self, outfile, tabs):
+        from xml.sax.saxutils import escape
+        if self.getter: values = self.getter()
+        else: values = self.owner[self.name][0]()
+        if values:
+            write = outfile.write
+            write('    ' * tabs + '<arguments>\n')
+            stab = '    ' * (tabs+1)
+            for value in values:
+                write('%s<argument>%s</argument>\n' % (stab, escape(value[0])))
+            write('    ' * tabs + '</arguments>\n')
+
+# end of class ArgumentsProperty
+
+
+class ArgumentsHandler:
+    def __init__(self, parent):
+        self.parent = parent
+        self.arguments = []
+        self.curr_arg = []
+
+    def start_elem(self, name, attrs):
+        pass
+
+    def end_elem(self, name):
+        if name == 'arguments':
+            self.parent.arguments = self.arguments
+            self.parent.properties['arguments'].set_value(self.arguments)
+            return True
+        elif name == 'argument':
+            self.arguments.append(["".join(self.curr_arg)])
+            self.curr_arg = []
+        return False
+
+    def char_data(self, data):
+        self.curr_arg.append(data)
+
+# end of class ArgumentsHandler
+
+
+class CustomWidget(ManagedBase):
+    def __init__(self, name, klass, parent, id, sizer, pos, property_window,
+                 show=True):
+        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos,
+                             property_window, show)
+        self.arguments = [['$parent'], ['$id']]
+        self.access_functions['arguments'] = (self.get_arguments,
+                                              self.set_arguments)
+        cols = [('Constructor Parameters', GridProperty.STRING)]
+        self.properties['arguments'] = ArgumentsProperty(self, 'arguments',
+                                                         None, cols, 2)
+
+    def create_widget(self):
+        self.widget = wxWindow(self.parent.widget, self.id,
+                               style=wxSUNKEN_BORDER)
+
+    def create_properties(self):
+        ManagedBase.create_properties(self)
+        panel = wxPanel(self.notebook, -1)
+        szr = wxBoxSizer(wxVERTICAL)
+        args = self.properties['arguments']
+        args.display(panel)
+        args.set_col_sizes([-1])
+        szr.Add(args.panel, 1, wxALL|wxEXPAND, 5)
+        panel.SetAutoLayout(True)
+        panel.SetSizer(szr)
+        szr.Fit(panel)
+        self.notebook.AddPage(panel, 'Widget')
+
+    def get_arguments(self):
+        return self.arguments
+
+    def set_arguments(self, value):
+        self.arguments = value
+
+    def get_property_handler(self, name):
+        if name == 'arguments': return ArgumentsHandler(self)
+       
+# end of class CustomWidget
+        
+
+def builder(parent, sizer, pos, number=[1]):
+    """\
+    factory function for CustomWidget objects.
+    """
+    class Dialog(wxDialog):
+        def __init__(self, number=[0]):
+            title = 'Select widget class'
+            wxDialog.__init__(self, None, -1, title)
+            self.klass = 'CustomWidget'
+            if number[0]: self.klass = 'CustomWidget%s' % (number[0]-1)
+            number[0] += 1
+            klass_prop = TextProperty(self, 'class', self)
+            szr = wxBoxSizer(wxVERTICAL)
+            szr.Add(klass_prop.panel, 0, wxALL|wxEXPAND, 5)
+            szr.Add(wxButton(self, wxID_OK, 'OK'), 0, wxALL|wxALIGN_CENTER, 5)
+            self.SetAutoLayout(True)
+            self.SetSizer(szr)
+            szr.Fit(self)
+            w = self.GetTextExtent(title)[0] + 10
+            if self.GetSize()[0] < w: self.SetSize((w, -1))
+        def __getitem__(self, value):
+            def set_klass(c): self.klass = c
+            return (lambda : self.klass, set_klass)
+    # end of inner class
+
+    dialog = Dialog()
+    dialog.ShowModal()
+
+    name = 'window_%d' % number[0]
+    while common.app_tree.has_name(name):
+        number[0] += 1
+        name = 'window_%d' % number[0]
+    win = CustomWidget(name, dialog.klass, parent, wxNewId(), sizer, pos,
+                       common.property_panel)
+    node = Tree.Node(win)
+    win.node = node
+
+    win.set_option(1)
+    win.set_flag("wxEXPAND")
+    win.show_widget(True)
+
+    common.app_tree.insert(node, sizer.node, pos-1)
+    sizer.set_item(win.pos, 1, wxEXPAND)
+
+def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+    """\
+    factory to build CustomWidget objects from an xml file
+    """
+    from xml_parse import XmlParsingError
+    try: name = attrs['name']
+    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    if not sizer or not sizeritem:
+        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+    win = CustomWidget(name, 'CustomWidget', parent, wxNewId(), sizer, pos,
+                       common.property_panel, True)
+    sizer.set_item(win.pos, option=sizeritem.option, flag=sizeritem.flag,
+                   border=sizeritem.border)
+    node = Tree.Node(win)
+    win.node = node
+    if pos is None: common.app_tree.add(node, sizer.node)
+    else: common.app_tree.insert(node, sizer.node, pos-1)
+    return win
+
+
+def initialize():
+    """\
+    initialization function for the module: returns a wxBitmapButton to be
+    added to the main palette.
+    """
+    common.widgets['CustomWidget'] = builder
+    common.widgets_from_xml['CustomWidget'] = xml_builder
+
+    return common.make_object_button('CustomWidget', 'icons/custom.xpm',
+                                     tip='Add a custom widget')
+    
