@@ -412,27 +412,33 @@ class WidgetTree(wxTreeCtrl, Tree):
         Returns None if there's no match.
         If toplevels_only is True, scans only root's children
         """
-        def inside(x, y, rect):
-            return (rect.x <= x <= rect.x + rect.width) and \
-                   (rect.y <= y <= rect.y + rect.height)
-        def rec_find(node):
-            if not node: return None
-            rect = self.GetBoundingRect(node.item)
-            if rect is not None and inside(x, y, rect): return node            
-            if node.children: 
-                for c in node.children:
-                    res = rec_find(c)
-                    if res is not None: return res
-            return None
-        if not self.root.children: return None # root is not considered
-        if not toplevels_only:
-            for node in self.root.children:
-                res = rec_find(node)
-                if res is not None: return res
-        else:
-            for node in self.root.children:
-                rect = self.GetBoundingRect(node.item)
-                if rect is not None and inside(x, y, rect): return node
+##         def inside(x, y, rect):
+##             return (rect.x <= x <= rect.x + rect.width) and \
+##                    (rect.y <= y <= rect.y + rect.height)
+##         def rec_find(node):
+##             if not node: return None
+##             rect = self.GetBoundingRect(node.item)
+##             if rect is not None and inside(x, y, rect): return node            
+##             if node.children: 
+##                 for c in node.children:
+##                     res = rec_find(c)
+##                     if res is not None: return res
+##             return None
+##         if not self.root.children: return None # root is not considered
+##         if not toplevels_only:
+##             for node in self.root.children:
+##                 res = rec_find(node)
+##                 if res is not None: return res
+##         else:
+##             for node in self.root.children:
+##                 rect = self.GetBoundingRect(node.item)
+##                 if rect is not None and inside(x, y, rect): return node
+        item, flags = self.HitTest((x, y))
+        if item and flags & (wxTREE_HITTEST_ONITEMLABEL |
+                             wxTREE_HITTEST_ONITEMICON):
+            node = self.GetPyData(item)
+            if not toplevels_only or node.parent is self.root:
+                return node
         return None
 
     def change_node(self, node, widget):
