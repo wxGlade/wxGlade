@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.5 2003/05/18 12:02:20 agriggio Exp $
+# $Id: codegen.py,v 1.6 2003/07/08 14:52:35 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -49,11 +49,11 @@ class PythonCodeGenerator:
                         else:
                             id = item.id
                     else: id = 'wxNewId()'
-                    item_type = 0
+                    item_type = 'wxITEM_NORMAL'
                     if item.checkable == '1':
-                        item_type = 1
+                        item_type = 'wxITEM_CHECK'
                     elif item.radio == '1':
-                        item_type = 2
+                        item_type = 'wxITEM_RADIO'
                     if item_type:
                         append('%s.Append(%s, %s, %s, %s)\n' %
                                (menu, id, pygen.quote_str(item.label),
@@ -245,11 +245,11 @@ class CppCodeGenerator:
                             id = item.id
                     else:
                         id = 'wxNewId()'
-                    item_type = 0
+                    item_type = 'wxITEM_NORMAL'
                     if item.checkable == '1':
-                        item_type = 1
+                        item_type = 'wxITEM_CHECK'
                     elif item.radio == '1':
-                        item_type = 2
+                        item_type = 'wxITEM_RADIO'
                     if item_type:
                         append('%s->Append(%s, %s, %s, %s);\n' %
                                (menu, id, cppgen.quote_str(item.label),
