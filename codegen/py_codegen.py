@@ -4,6 +4,7 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
+# this version hacked by John Dubery
 
 """\
 How the code is generated: every time the end of an object is reached during
@@ -109,19 +110,46 @@ class SourceFileContent:
         class_name = None
         new_classes_inserted = False
         # regexp to match class declarations
+#        class_decl = re.compile(r'^\s*class\s+([a-zA-Z_]\w*)\s*(\(\s*[a-zA-Z_]\w*\s*(,\s*[a-zA-Z_]\w*)*\s*\))?:\s*$')
+#jdubery - less precise regex, but matches definitions with base classes having module qualified names
         class_decl = re.compile(r'^\s*class\s+([a-zA-Z_]\w*)\s*'
-                                '(\(\s*[a-zA-Z_]\w*\s*(,\s*[a-zA-Z_]\w*)*'
-                                '\s*\))?:\s*$')
+                                '(\([\s\w.,]*\))?:\s*$')
         # regexps to match wxGlade blocks
         block_start = re.compile(r'^(\s*)#\s*begin\s+wxGlade:\s*'
                                  '([A-Za-z_]+\w*)??[.]?(\w+)\s*$')
         block_end = re.compile(r'^\s*#\s*end\s+wxGlade\s*$')
         inside_block = False
+        inside_triple_quote = False
+        triple_quote_str = None
         tmp_in = open(self.name)
         out_lines = []
         for line in tmp_in:
+            quote_index = -1
+            if not inside_triple_quote:
+                triple_dquote_index = line.find('"""')
+                triple_squote_index = line.find("'''")
+                if triple_squote_index == -1:
+                    quote_index = triple_dquote_index
+                    tmp_quote_str = '"""'
+                elif triple_dquote_index == -1:
+                    quote_index = triple_squote_index
+                    tmp_quote_str = "'''"
+                else:
+                    quote_index, tmp_quote_str = min(
+                        (triple_squote_index, "'''"),
+                        (triple_dquote_index, '"""'))
+
+            if not inside_triple_quote and quote_index != -1:
+                inside_triple_quote = True
+                triple_quote_str = tmp_quote_str
+            if inside_triple_quote:
+                end_index = line.rfind(triple_quote_str)
+                if quote_index < end_index and end_index != -1:
+                    inside_triple_quote = False
+            
             result = class_decl.match(line)
-            if result is not None:
+            if not inside_triple_quote and result is not None:
+##                 print ">> class %r" % result.group(1)
                 if class_name is None:
                     # this is the first class declared in the file: insert the
                     # new ones before this
@@ -134,7 +162,9 @@ class SourceFileContent:
                 out_lines.append(line)
             elif not inside_block:
                 result = block_start.match(line)
-                if result is not None:
+                if not inside_triple_quote and result is not None:
+##                     print ">> block %r %r %r" % (
+##                         result.group(1), result.group(2), result.group(3))
                     # replace the lines inside a wxGlade block with a tag that
                     # will be used later by add_class
                     spaces = result.group(1)
@@ -150,6 +180,8 @@ class SourceFileContent:
                         out_lines.append('<%swxGlade replace %s %s>' % \
                                          (nonce, which_class, which_block))
                 else:
+##                     if inside_triple_quote:
+##                         print '>> inside_triple_quote:', line
                     out_lines.append(line)
                     if line.startswith('from wxPython.wx import *'):
                         # add a tag to allow extra modules
@@ -243,8 +275,8 @@ def initialize(app_attrs):
         previous_source = None
         global out_dir
         if not os.path.isdir(out_path):
-            raise IOError("'path' must be a directory when generating"\
-                          " multiple output files")
+            raise XmlParsingError("'path' must be a directory when generating"\
+                                  " multiple output files")
         out_dir = out_path
 
 
@@ -290,8 +322,8 @@ def finalize():
             # make the file executable
             if _app_added:
                 os.chmod(output_file_name, 0755)
-##         except IOError, e:
-##             raise XmlParsingError(str(e))
+        except IOError, e:
+            raise XmlParsingError(str(e))
         except OSError: pass # this isn't necessary a bad error
         del output_file
 
@@ -860,3 +892,4 @@ def add_widget_handler(widget_name, handler,
     obj_properties[widget_name] = properties_handler
     if import_modules is not None:
         _widget_extra_modules[widget_name] = import_modules
+

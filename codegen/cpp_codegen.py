@@ -127,8 +127,8 @@ class SourceFileContent:
         # doesn't match template classes, nor virtual inheritance, but
         # should be enough for most cases)
         class_decl = re.compile(r'^\s*class\s+([a-zA-Z_]\w*)\s*'
-                                '(:\s*(public|protected|private)?\s+\w+'
-                                '(,\s*(public|protected|private)?\s+\w+)*'
+                                '(:\s*(public|protected|private)?\s+[\w:]+'
+                                '(,\s*(public|protected|private)?\s+[\w:]+)*'
                                 ')?')
         # regexps to match wxGlade blocks
         block_start = re.compile(r'^\s*//\s*begin\s+wxGlade:\s*'
@@ -155,6 +155,7 @@ class SourceFileContent:
                                      nonce)
                     new_classes_inserted = True
                 class_name = result.group(1)
+##                 print 'OK:', class_name
                 self.classes[class_name] = 1 # add the found class to the list
                                              # of classes of this module
                 out_lines.append(line)
