@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.51 2004/10/18 09:19:19 agriggio Exp $
+# $Id: edit_sizers.py,v 1.52 2004/10/20 17:00:19 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1405,6 +1405,9 @@ class GridSizerBase(SizerBase):
                 else: w, h = c.item.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.item.widget, w, h)
         self.widget.Layout()
+##         print self.name, 'rows, cols:', self.rows, self.cols, len(self.children)
+##         self.set_rows(self.rows)
+##         self.set_cols(self.cols)
 
     def _property_setup(self):
         SizerBase._property_setup(self)
@@ -1441,6 +1444,16 @@ class GridSizerBase(SizerBase):
     def get_vgap(self): return self.vgap
     def get_hgap(self): return self.hgap
 
+    def _set_rows_cols(self, rows, cols):
+        self.rows = rows
+        self.cols = cols
+        self.properties['rows'].set_value(rows)
+        self.properties['cols'].set_value(cols)
+        if self.widget:
+            self.widget.SetRows(self.rows)
+            self.widget.SetCols(self.cols)
+            self.layout(True)
+
     def set_rows(self, rows):
         self.rows = int(rows)
         if self.widget:
@@ -1450,7 +1463,7 @@ class GridSizerBase(SizerBase):
     def set_cols(self, cols):
         self.cols = int(cols)
         if self.widget:
-            self.widget.SetCols(self.cols)
+            self.widget.SetCols(self.rows)
             self.layout(True)
 
     def set_hgap(self, hgap):
@@ -1498,20 +1511,6 @@ class GridSizerBase(SizerBase):
 
     def add_row(self, *args, **kwds):
         if not self.widget: return
-##         self.set_rows(self.rows+1)
-##         self.properties['rows'].set_value(self.rows)
-##         slots = [SizerSlot(self.window, self, len(self.children)+i) for i in
-##                  range(self.cols)]
-##         items = [SizerItem(slots[i], len(self.children)+i, 1, wxEXPAND) for i
-##                  in range(self.cols)]
-##         self.children.extend(items)
-##         for s in slots:
-##             s.show_widget(True) # create the actual SizerSlot widget
-##             self.widget.Add(s.widget, 1, wxEXPAND)
-##             self.widget.SetItemMinSize(s.widget, 20, 20)
-##         force_layout = kwds.get('force_layout', True)
-##         if force_layout: self.layout(True)
-##         common.app_tree.app.saved = False
         self._insert_row(self.widget.GetRows()+1)
 
     def insert_row(self, *args):
@@ -1525,6 +1524,18 @@ class GridSizerBase(SizerBase):
         rows = self.widget.GetRows()
         cols = self.widget.GetCols()
         pos = (pos-1) * cols + 1
+        if pos >= len(self.children):
+            # fix the out of bounds index...
+            tot = len(self.children) - 1
+            rows = tot / cols
+            if tot % cols:
+                rows += 1
+            print 'fixed rows:', rows
+            if rows * cols > tot:
+                for i in range(rows * cols - tot):
+                    self.insert_slot(interactive=False, pos=tot+i+1,
+                                     force_layout=False)
+            pos = rows * cols + 1
         self.set_rows(rows+1)
         for i in range(cols):
             self.insert_slot(interactive=False, pos=pos+i, force_layout=False)
@@ -1533,17 +1544,6 @@ class GridSizerBase(SizerBase):
         common.app_tree.app.saved = False
 
     def add_col(self, *args, **kwds):
-##         if not self.widget: return
-##         rows = self.widget.GetRows()
-##         cols = self.widget.GetCols()
-##         self.set_cols(self.cols+1)
-##         for i in range(rows):
-##             self.insert_slot(interactive=False, pos=self.cols * (i+1),
-##                              #pos=cols + self.cols * i,
-##                              force_layout=False)
-##         self.properties['cols'].set_value(self.cols)
-##         force_layout = kwds.get('force_layout', True)
-##         if force_layout: self.layout(True)
         if not self.widget: return
         self._insert_col(self.widget.GetCols()+1)
 
@@ -1557,6 +1557,18 @@ class GridSizerBase(SizerBase):
     def _insert_col(self, pos):
         rows = self.widget.GetRows()
         cols = self.widget.GetCols()
+        if pos >= len(self.children):
+            # fix the out of bounds index...
+            tot = len(self.children) - 1
+            cols = tot / rows
+            if tot % rows:
+                cols += 1
+            print 'fixed cols:', cols
+            if rows * cols > tot:
+                for i in range(rows * cols - tot):
+                    self.insert_slot(interactive=False, pos=tot+i+1,
+                                     force_layout=False)
+            pos = rows * cols + 1
         self.set_cols(cols+1)
         for i in range(rows):
             self.insert_slot(interactive=False, pos=pos + self.cols * i,
