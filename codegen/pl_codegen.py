@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.6 2003/06/25 23:01:39 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.7 2003/06/27 05:56:23 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -533,7 +533,6 @@ def add_class(code_obj):
     try:
         builder = obj_builders[code_obj.base]
     except KeyError:
-        print builder
         raise # this is an error, let the exception be raised
 
     if prev_src is not None and prev_src.classes.has_key(code_obj.klass):
