@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.12 2003/11/24 21:28:05 agriggio Exp $
+# $Id: codegen.py,v 1.13 2004/01/18 19:45:03 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -61,8 +61,10 @@ class PythonCodeGenerator:
                 if obj.preview:
                     return cn('wxEmptyBitmap(1, 1)')
                 else:
-                    return cn('wxBitmapFromXPMData') + \
-                           '(%s)' % bitmap[4:].strip()
+                    # ALB 2004-01-18: changed from wxBitmapFromXPMData
+                    # to wxBitmap
+                    return cn('wxBitmap') + '(%s, %s)' % \
+                           (bitmap[4:].strip(), cn('wxBITMAP_TYPE_ANY'))
             else:
                 return cn('wxBitmap') + \
                        ('(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \

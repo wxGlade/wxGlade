@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.36 2003/11/27 19:36:56 agriggio Exp $
+# $Id: application.py,v 1.37 2004/01/18 19:45:04 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -119,7 +119,7 @@ class Application(object):
         self.codegen_prop = RadioProperty(self, "code_generation", panel,
                                           ["Single file", "Separate file for" \
                                            " each class"])
-        
+
         ext = getattr(common.code_writers.get('python'),
                       'default_extensions', [])
         wildcard = []
@@ -140,6 +140,13 @@ class Application(object):
                                               _writers, columns=columns)
 
         self.codewriters_prop.set_str_value('python')
+        
+        # ALB 2004-01-18
+        self.access_functions['use_new_namespace'] = (
+            self.get_use_new_namespace, self.set_use_new_namespace)
+        self.use_new_namespace_prop = CheckBoxProperty(
+            self, 'use_new_namespace', panel, 'Use new "wx" namespace\n(python'
+            ' output only)')
         
         # `overwrite' property - added 2003-07-15
         self.overwrite = False
@@ -169,6 +176,7 @@ class Application(object):
         sizer.Add(szr, 0, wxEXPAND)
         sizer.Add(self.codegen_prop.panel, 0, wxALL|wxEXPAND, 4)
         sizer.Add(self.codewriters_prop.panel, 0, wxALL|wxEXPAND, 4)
+        sizer.Add(self.use_new_namespace_prop.panel, 0, wxEXPAND)
         sizer.Add(self.overwrite_prop.panel, 0, wxEXPAND)
         sizer.Add(self.outpath_prop.panel, 0, wxEXPAND)
         sizer.Add(btn, 0, wxALL|wxEXPAND, 5)
@@ -254,7 +262,10 @@ class Application(object):
             self.__filename = value
             if self.__saved: flag = ' '
             else: flag = '* '
-            common.app_tree.set_title('%s(%s)' % (flag, self.__filename))
+            if self.__filename is not None:
+                common.app_tree.set_title('%s(%s)' % (flag, self.__filename))
+            else:
+                common.app_tree.set_title(flag)
     filename = property(_get_filename, _set_filename)
        
     def get_top_window(self): return self.top_window
@@ -309,6 +320,9 @@ class Application(object):
         self.set_language(self.get_language())
         self.top_window = ''
         self.top_win_prop.Clear()
+        # ALB 2004-01-18
+        self.set_use_new_namespace(True)
+        self.use_new_namespace_prop.set_value(True)
         
     def show_properties(self, *args):
         sizer_tmp = self.property_window.GetSizer()
@@ -347,7 +361,7 @@ class Application(object):
                 
         from cStringIO import StringIO
         out = StringIO()
-        common.app_tree.write(out) # write the xml onto a temporary buffer
+        #common.app_tree.write(out) # write the xml onto a temporary buffer
         from xml_parse import CodeWriter
         try:
             # generate the code from the xml buffer
@@ -355,6 +369,7 @@ class Application(object):
             if preview and cw == 'python': # of course cw == 'python', but...
                 old = common.code_writers[cw].use_new_namespace
                 common.code_writers[cw].use_new_namespace = False
+            common.app_tree.write(out) # write the xml onto a temporary buffer
             CodeWriter(common.code_writers[cw], out.getvalue(), True,
                        preview=preview)
             if preview and cw == 'python':
@@ -476,5 +491,13 @@ class Application(object):
         self.use_gettext = real_use_gettext
         self.overwrite = overwrite
         return frame
+
+    def get_use_new_namespace(self):
+        try: return common.code_writers['python'].use_new_namespace
+        except: return False
+
+    def set_use_new_namespace(self, val):
+        try: common.code_writers['python'].use_new_namespace = bool(int(val))
+        except: pass
 
 # end of class Application
