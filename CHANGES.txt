@@ -1,3 +1,7 @@
+2003-24-11: codegen/py_codegen.py, widgets/*/codegen.py,
+            edit_sizers/sizers_codegen.py:
+                changes to the python code generator to support new wx 
+                namespace
 -------------------------------------------------------------------------------
 2003-08-30: version 0.3.1 released: sigh! we found an annoying bug on
             pl_codegen.py right after releasing 0.3 :-(
