@@ -6,7 +6,7 @@
 <book>
   <title>wxGlade user manual</title>
   <bookinfo>
-    <date>$Date: 2003/08/05 07:09:59 $</date>
+    <date>$Date: 2003/08/07 06:53:39 $</date>
     <author><firstname>Marcello</firstname><surname>Semboli</surname></author>
   </bookinfo>
 
@@ -15,7 +15,7 @@
   <title>Preface</title>
     <para>
         This manual describes the wxGlade version 0.2.2, a Python, Perl,  C++
-        and XRC Graphical User Interface ("GUI") Editor for UNIX and
+        and XRC Graphical User Interface (<quote>GUI</quote>) Editor for UNIX and
         Microsoft Windows. Each of the chapters in this manual is designed
         as a tutorial for using wxGlade and a referense for widgets
         supported until now.
@@ -37,11 +37,11 @@
     <section>
       <title>Contacts</title>
       <para>Informations, support and bug reports can be addressed to the
-        wxGlade mailing list:
-        wxglade-general@lists.sourceforge.net.
+        wxGlade mailing list:</para>
+<para>        wxglade-general@lists.sourceforge.net.</para>
 
-        The mantainer of this document is Marcello Semboli.
-        You can address any message regarding this document to "Marcello
+<para>        The mantainer of this document is Marcello Semboli.</para>
+<para>        You can address any message regarding this document to "Marcello
         Semboli" &lt;dinogen@siena.linux.it&gt;.
       </para>
     </section>
@@ -50,14 +50,14 @@
       <title>Copyrights and Trademarks</title>
       <para>wxGlade is Copyright 2002-2003 by Alberto Griggio. Use and distribution
         of wxGlade is governed by the MIT license, located in Appendix A.
-
-        wxWindows is Copyright (c) 1992-2002 Julian Smart, Robert Roebling,
+        </para>
+<para>        wxWindows is Copyright (c) 1992-2002 Julian Smart, Robert Roebling,
         Vadim Zeitlin and other members of the wxWindows team.
         See: http://www.wxwindows.org for details.
-
-        UNIX is a registered trademark of the X Open Group, Inc.
-
-        Microsoft and Windows are registered trademarks of Microsoft
+</para>
+<para>        UNIX is a registered trademark of the X Open Group, Inc.
+</para>
+        <para>Microsoft and Windows are registered trademarks of Microsoft
         Corporation.
       </para>
     </section>
@@ -74,8 +74,8 @@
         GUI toolkit wxPython, that helps you create wxWindows/wxPython
         user interfaces. At the moment it can generate Python, C++ and
         XRC (wxWindows' XML resources) code.
-
-        As you can guess by the name, its model is Glade, the famous
+</para>
+<para>        As you can guess by the name, its model is Glade, the famous
         GTK+/GNOME GUI builder, with which wxGlade shares the philosophy
         and the look &amp; feel (but not a line of code).
     </para>
@@ -85,7 +85,7 @@
     <title>What wxGlade is NOT</title>
     <para>
         It is not (and will never be) a full featured IDE, but simply
-        a "designer": the generated code does nothing apart from displaying
+        a <quote>designer</quote>: the generated code does nothing apart from displaying
         the created widgets. If you are looking for a complete IDE,
         maybe Boa Constructor (http://boa-constructor.sourceforge.net/)
         or PythonCard (http://www.pythoncard.org/) is the right tool.
@@ -97,47 +97,52 @@
     <para>
         You can download source files for the stable version from the
         sourceforge project page (http://sourceforge.net/projects/wxglade).
-        
-        You can get the unstable version from Sourceforge anonymous CVS
+      </para>  
+<para>        You can get the unstable version from Sourceforge anonymous CVS
         access. Refer to Sourceforge CVS documentation for details.
+</para>
 
-
-        Also binaries for Microsoft Windows and Linux are provided for
+<para>        Also binaries for Microsoft Windows and Linux are provided for
         download.
-    </para>
+</para> 
   </sect1>
   
   <sect1>
     <title>Installation and requirements</title>
     <para>
         While Python is a pseudo-interpreted language, you don't need
-        any "compile" or "make" steps.
+        any <quote>compile</quote> or <quote>make</quote> steps.
+</para>
 
-
-        wxGlade requires Python version 2.2 or later and wxPython version
-        2.3.2.1 or later.
-        The binary versions are stand-alone and doesn't have any requirement.
+<para>        wxGlade requires Python version 2.2 or later and wxPython version
+        2.3.2.1 or later.</para>
+<para>        The binary versions are stand-alone and doesn't have any requirement.
     </para>
   </sect1>
   
   <sect1>
     <title>Basics</title>
-    <para>
-        You need to know basics of wxWindows or wxPython.
-        Also you need basics of C++ or Python or Perl.
-        You can't use wxGlade if you have not any basic of programming.
-        You can't learn wx programming reading this manual, as well.
-    </para>
+    
+<para>        You need to know basics of wxWindows or wxPython.
+</para>
+<para>        Also you need basics of C++ or Python or Perl.
+       </para> 
+       
+<para>       You can't use wxGlade if you have not any basic of programming.
+</para>        
+        
+<para>       You can't learn wx programming reading this manual, as well.
+</para>    
   </sect1>
   
   <sect1>
     <title>Contacts</title>
     <para>
         Check in the sourceforge project page (http://sourceforge.net/projects/wxglade)
-        for the mailing list to discuss about the project.
-        Use the lists for questions, proposal, bug reports and collaboration.
-
-        If you don't want to follow the list, you can reach me at albgrig@tiscalinet.it:
+        for the mailing list to discuss about the project.</para>
+<para>        Use the lists for questions, proposal, bug reports and collaboration.
+</para>
+<para>        If you don't want to follow the list, you can reach me at albgrig@tiscalinet.it:
         any kind of feedback is always welcome.
     </para>
   </sect1>
@@ -147,95 +152,111 @@
   <title>Exploring wxGlade</title>  
   <sect1>
     <title>Quick start</title>
-    <para>
-        We will design a simple form.
-
-        Start wxGlade running wxglade.py program.
-
-        You will see a Main Window, with several buttons, and a Tree
-        Window with a icon "Application".  A Properties Window is showing
+    
+<para>        We will design a simple form.
+</para>
+<para>        Start wxGlade running wxglade.py program.
+</para>
+<para>        You will see a Main Window, with several buttons, and a Tree
+        Window with a icon <quote>Application</quote>.  A Properties Window is showing
         properties of the Application.
+</para>
 
-
-        If you move the mouse over a main window's button, a tooltip
+<para>        If you move the mouse over a main window's button, a tooltip
         display the function of the button.
+</para>
 
-
-        To add a frame at the design window, from the Main Window choose
-        the first button: "Add a frame".
-
-        Then choose wxFrame as base class.
-
-        Look at the tree window and see that two icons are generated
+<para>        To add a frame at the design window, from the Main Window choose
+        the first button: <quote>Add a frame</quote>.
+</para>
+<para>        Then choose wxFrame as base class.
+</para>
+<para>        Look at the tree window and see that two icons are generated
         under the application icon, a frame icon and a sizer icon.
-
-        If you double click with the mouse on the frame icon, the designer
+</para>
+<para>        If you double click with the mouse on the frame icon, the designer
         window appears.
         Notice that the sizer is displayed as a set of gray boxes: they are
-        the "slots" of the grid sizer where you will place the widgets.
-
-        You put a widgets on a sizer by selecting it on the Main Window,
+        the <quote>slots</quote> of the grid sizer where you will place the widgets.
+</para>
+<para>        You put a widgets on a sizer by selecting it on the Main Window,
         then click on a empty slot on the frame on the designer window.
         Try adding a static text, a text control and a button.
-        If you want add something else, add empty slots on the sizer by
-        right-click on the sizer on the tree window and selecting "Add slot".
-        Play adding four or five widgets on the frame.
-
-        Now look at the properties form; there are three tabs. In the "Common"
+</para>
+<para>        If you want add something else, add empty slots on the sizer by
+        right-click on the sizer on the tree window and selecting 
+        <quote>Add slot</quote>.
+</para>        
+<para>        Play adding four or five widgets on the frame.
+</para>
+<para>        Now look at the properties form; there are three tabs. In the 
+<quote>Common</quote>
         tab you can specify name, size and color of the widget.
-        In the "Layout" tab you can adjust borders and alignements.
-        In the "Widget" tab you find the properties depending to the
+</para>        
+<para>        In the <quote>Layout</quote> tab you can adjust borders and alignements.
+</para>        
+<para>        In the <quote>Widget</quote> tab you find the properties depending to the
         widget.
-
-        You can select the properties of a widget by clicking on the designer window
+</para>
+<para>        You can select the properties of a widget by clicking on the designer window
         or the corresponding icon on the tree window.
-        Try adjusting widgets with the properties form until you know you
+</para>        
+<para>        Try adjusting widgets with the properties form until you know you
         played enougth.
-
-        Now let's generate the code.
-
-        Select the Application icon on the tree window and
+</para>
+<para>        Now let's generate the code.
+</para>
+<para>        Select the Application icon on the tree window and
         pay attention to the properties window;
-        Check Name and Class, choose a Top window, check Single file and
+</para>        
+<para>        Check Name and Class, choose a Top window, check Single file and
         choose the language
         and set the Output path pushing the button for selecting a path and a filename.
-        Finally press the Generate code button and the code is generate.
-
-        Compile and enjoy.
-    </para>
+</para>        
+<para>        Finally press the Generate code button and the code is generate.
+</para>
+<para>        Compile and enjoy.
+</para>    
   </sect1>
   
   <sect1>
     <title>Basics of wxGlade</title>
-    <para>
-        The program wxGlade is a tool for designing Graphical User Interface (GUI).
-        It is intended to use with wxWindows framework in all its flawors: C++, Perl, 
+        
+<para>        The program wxGlade is a tool for designing Graphical User Interface (GUI).
+</para>        
+<para>        It is intended to use with wxWindows framework in all its flawors: C++, Perl, 
         Python and XRC.
-        You use a visual editor for creating forms, menus and toolbars with the mouse.
-        Your design is saved in a .wxg file that is the wxGlade file format.
-        Then you generate source code or XRC by using visual tools or invoking wxGlade 
+</para>        
+        <para>You use a visual editor for creating forms, menus and toolbars with the mouse.
+        </para>
+        <para>Your design is saved in a .wxg file that is the wxGlade file format.
+        </para>
+        <para>Then you generate source code or XRC by using visual tools or invoking wxGlade 
         in the command line.
-        You can also use wxGlade in your makefile generating source code only when the .wxg
+        </para>
+        <para>You can also use wxGlade in your makefile generating source code only when the .wxg
         change.
-        A .wxg file can contains multiple forms, panels, menus and toolbars and generate 
+        </para>
+        <para>A .wxg file can contains multiple forms, panels, menus and toolbars and generate 
         a single file containing all classes or multiple files containing one class each.
-    </para>
+  </para>
   </sect1>
   
   <sect1>
     <title>Using the source code</title>
-    <para>
-        How do you use source code generated by wxGlade? Basically in two ways.
-
-        You can safely edit the source code of the generated class. This because
-        wxGlade mark the untouchable code with the special comments "begin wxGlade" and "end wxGlade".
-        So you can edit all you need outside these two tags. When you makes 
+<para>        How do you use source code generated by wxGlade? Basically in two ways.
+</para>
+        <para>You can safely edit the source code of the generated class. This because
+        wxGlade mark the untouchable code with the special 
+        comments <quote>begin wxGlade</quote> and <quote>end wxGlade</quote>.
+        </para>
+        <para>So you can edit all you need outside these two tags. When you makes 
         changes in your forms, a new code generation will not modify the user code.
-
-        The other way is to generate the class with wxGlade in a file (e.g. myFormUI.xxx) and 
+</para>
+        <para>The other way is to generate the class with wxGlade in a file (e.g. myFormUI.xxx) and 
         subclass it in another file (e.g. myForm.xxx). This give you the psychological advantage
-        that there is a file for you a one for wxGlade :-) .
-    </para>
+        that there is a file for you a one for wxGlade :-) .</para>
+
   </sect1>
 </chapter>
   
@@ -255,14 +276,49 @@
     <para>
         If you pass the mouse pointer over a button a tooltip show the button's 
         description.
-
-        The ``frame'' button and the ``Dialog'' button show up a dialog
+    </para>
+    <para>
+        The <quote>Add a Frame</quote> button and the <quote>Add a Dialog/Panel</quote> button 
+        show up a dialog
         to add a frame, a dialog or a panel to your project.
-
+    </para>
+    <para>
+    The <quote>Add a MenuBar</quote> button ask to you for the name of the class
+    then add to your project a menu bar.
+    </para>
+    <para>
+    The <quote>Add a ToolBar</quote> button ask to you for the name of the class
+    then add to your project a toolbar.
+    </para>
+    <para>
         Other buttons in the main window adds widgets in a form. 
         When you click on such button, 
         the cursor pointer change in an arrow, then you can click on
         a sizer's empty cell and add the widget to it.
+    </para>
+  </sect1>
+  <sect1>
+    <title>Tree Window</title>
+    <para>
+      The tree window show the logical relationship of widgets 
+      and its child-widgets. For example you can see a panel as a tree's 
+      node and the widgets on it as a child nodes.
+      <figure>
+        <title>The Tree Window</title>
+        <graphic fileref="tree_window.png" />
+      </figure>
+    </para>
+    <para>
+      Usually a frame or a panel contains a sizer, so you
+      often see a sort of panel-sizer-widgets structure.
+      The tree get more complex while you nest sizers on sizers. 
+    </para>
+    <para>
+    You have a visual presentation of your widget tree that 
+    you can navigate by mouse, expand and collapse sizers,
+    move or remove widgwts.
+    </para>
+    <para>
     </para>
   </sect1>
 </chapter>
@@ -270,10 +326,10 @@
   
 <appendix>
   <title>Appendix</title>
-  <para>
-        Copyright (c) 2002-2003 Alberto Griggio  albgrig@tiscalinet.it.
-
-        Permission is hereby granted, free of charge, to any person obtaining
+  
+<para>        Copyright (c) 2002-2003 Alberto Griggio  albgrig@tiscalinet.it.
+</para>
+<para>        Permission is hereby granted, free of charge, to any person obtaining
         a copy of
         this software and associated documentation files (the "Software"),
         to deal in
@@ -284,20 +340,20 @@
         of the Software, and to permit persons to whom the Software is
         furnished to do
         so, subject to the following conditions:
-
-        The above copyright notice and this permission notice shall be
+</para>
+<para>        The above copyright notice and this permission notice shall be
         included in all
         copies or substantial portions of the Software.
-
-        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+</para>
+<para>        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
         EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
         OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-        IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+</para>        
+<para>        IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
         FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
         OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
         WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  </para>
-</appendix>
+</para></appendix>
   
 
 
