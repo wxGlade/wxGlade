@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.19 2004/12/08 18:11:26 agriggio Exp $
+# $Id: menubar.py,v 1.20 2004/12/10 12:30:52 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -49,6 +49,8 @@ class MenuItemDialog(wxDialog):
 
         # ALB 2004-12-05
         self.event_handler = wxTextCtrl(self, -1)
+        import re
+        self.handler_re = re.compile(r'^\s*\w*\s*$')
 
         #self.checkable = wxCheckBox(self, CHECK_ID, "") #Checkable")
         self.check_radio = wxRadioBox(
@@ -229,7 +231,12 @@ class MenuItemDialog(wxDialog):
         """        
         set_item = self.menu_items.SetStringItem
         index = self.selected_index
-        if index < 0: return
+        val = self.event_handler.GetValue()
+        if not self.handler_re.match(val):
+            event.GetEventObject().SetFocus()
+            return
+        if index < 0:
+            return event.Skip()
         set_item(index, 0, "    " * self.item_level(index) + \
                  self.label.GetValue().lstrip())
         set_item(index, 1, self.id.GetValue())

@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.61 2004/12/08 18:11:32 agriggio Exp $
+# $Id: main.py,v 1.62 2004/12/10 12:30:53 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -119,7 +119,6 @@ class wxGladeArtProvider(wxArtProvider):
         return wxNullBitmap
 
 # end of class wxGladeArtProvider
-
 
 
 class wxGladeFrame(wxFrame):
@@ -349,6 +348,7 @@ class wxGladeFrame(wxFrame):
         sz.Add(misc.hidden_property_panel, 1, wxEXPAND)
         self.frame2.SetSizer(sz)
         sz.Show(misc.hidden_property_panel, False)
+        self.property_frame = self.frame2
         #--------------------------------------------------------
         
         property_panel.SetAutoLayout(True)
@@ -798,8 +798,12 @@ class wxGlade(wxApp):
         if wxPlatform == '__WXGTK__' and config.preferences.use_kde_dialogs:
             import kdefiledialog
             if kdefiledialog.test_kde():
-                misc.FileSelector = kdefiledialog.kde_file_selector
-                misc.DirSelector = kdefiledialog.kde_dir_selector
+                def filesel(*args, **kwds):
+                    kdefiledialog.kde_file_selector(*args, **kwds)
+                def dirsel(*args, **kwds):
+                    kdefiledialog.kde_dir_selector(*args, **kwds)
+                misc.FileSelector = filesel
+                misc.DirSelector = dirsel
 
         wxArtProvider_PushProvider(wxGladeArtProvider())
 
