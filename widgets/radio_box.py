@@ -14,8 +14,6 @@ from ChoicesProperty import *
 
 
 class EditRadioBox(ManagedBase):
-#!!! Why is this derived from wxPanel?
-# What are the problems with wxRadioBox and wxRadioButton?
     def __init__(self, name, parent, id, label, choices, major_dim, style,
                  sizer, pos, property_window, show=True):
         """\
@@ -23,10 +21,10 @@ class EditRadioBox(ManagedBase):
         """
         ManagedBase.__init__(self, name, 'wxRadioBox', parent, id, sizer,
                              pos, property_window, show=show)
-        self.static_box = None #wxStaticBox(self, -1, label)
+        self.static_box = None 
         self.selection = 0
         self.choices = choices
-        self.buttons = None #[ self.create_button(c) for c in choices ]
+        self.buttons = None 
         self.major_dim = major_dim
 
         if not style: self.style = wxRA_SPECIFY_COLS
@@ -132,10 +130,9 @@ class EditRadioBox(ManagedBase):
         sb_sizer.SetMinSize(sizer.GetMinSize())
         sb_sizer.Fit(self.widget)
         sp = self.sizer_properties
-        #self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+        self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def get_label(self):
-        #return self.static_box.GetLabel()
         return self.label
     
     def set_label(self, value):

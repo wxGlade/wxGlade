@@ -106,15 +106,10 @@ class EditSplitterWindow(ManagedBase):
                                                 self.set_orientation)
         self.properties['orientation'] = HiddenProperty(self, 'orientation')
 
-        def get_window(win):
-            try: return win.name
-            except: return ''
-        def get_win_1(): return get_window(self.window_1)
-        def get_win_2(): return get_window(self.window_2)
-        self.properties['window_1'] = HiddenProperty(self, 'window_1',
-                                                     get_win_1)
-        self.properties['window_2'] = HiddenProperty(self, 'window_2',
-                                                     get_win_2)
+        self.access_functions['window_1'] = (self.get_win_1, lambda v: None)
+        self.access_functions['window_2'] = (self.get_win_2, lambda v: None)
+        self.properties['window_1'] = HiddenProperty(self, 'window_1')
+        self.properties['window_2'] = HiddenProperty(self, 'window_2')
 
         self.properties['sash_pos'] = SpinProperty(self, 'sash_pos', None,
                                                    r=(0, 20),
@@ -159,11 +154,6 @@ class EditSplitterWindow(ManagedBase):
         sizer.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
         
-    def __getitem__(self, key):
-        if key == 'window_1' or key == 'window_2':
-            return (lambda : '', lambda v: None)
-        return ManagedBase.__getitem__(self, key)
-
     def split(self):
         if not self.widget: return
         if self.window_1 and self.window_2:
@@ -235,6 +225,14 @@ class EditSplitterWindow(ManagedBase):
                'wxSPLIT_VERTICAL': wxSPLIT_VERTICAL }
         self.orientation = od.get(value, wxSPLIT_VERTICAL)
 
+    def get_win_1(self):
+        if self.window_1: return self.window_1.name
+        return ''
+
+    def get_win_2(self):
+        if self.window_2: return self.window_2.name
+        return ''
+    
 # end of class EditSplitterWindow
         
 
@@ -294,11 +292,6 @@ def builder(parent, sizer, pos, number=[1]):
     common.app_tree.add(node3, window.node)
 
     sizer.set_item(window.pos, 1, wxEXPAND)
-##     window.sizer_properties['option'].set_value(1)
-##     window.sizer_properties['flag'].set_value("wxEXPAND")
-
-##     window.split()
-##     window.Show()
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -331,9 +324,12 @@ def xml_builder_pane(attrs, parent, sizer, sizeritem, pos=None):
     if not parent.window_1: pos = 1
     else: pos = 2
     pane = SplitterPane(name, parent, wxNewId(), 1, common.property_panel)
-    if not parent.window_1: parent.window_1 = pane
+    if not parent.window_1:
+        parent.window_1 = pane
+        parent.properties['window_1'].set_value(pane.name)
     else:
         parent.window_2 = pane
+        parent.properties['window_2'].set_value(pane.name)
         parent.split()
     node = Tree.Node(pane)
     pane.node = node

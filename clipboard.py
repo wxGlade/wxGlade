@@ -33,7 +33,7 @@ class _WidgetDataObject(wxCustomDataObject):
         Convert a string into option, flag, border and xml_string
         and returns them in a list.
         """
-        ret = self.GetData().split(":", 4)
+        ret = self.GetData().split(":", 3)
         assert len(ret) == 4, "Invalid data in the clipboard"
         # remove the dirt at the end of xml_str
         bound = ret[3].rfind('>')+1

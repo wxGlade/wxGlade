@@ -72,12 +72,12 @@ class EditStaticBitmap(ManagedBase):
             self.bitmap = value
         if self.widget:
             bmp = self.load_bitmap(type)
-            self.widget.SetBitmapLabel(bmp)
-            self.widget.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
+            self.widget.SetBitmap(bmp)
+            self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
     def load_bitmap(self, type):
         if self.bitmap:
-            return wxBitmap(self.bitmap, type)
+            return wxBitmap(os.path.abspath(self.bitmap), type)
         else:
             return wxNullBitmap
 

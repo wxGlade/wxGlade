@@ -78,9 +78,9 @@ class SizerSlot:
         if clipboard.paste(self.parent, self.sizer, self.pos):
             common.app_tree.app.saved = False # update the status of the app
 
-    def delete(self):
+    def delete(self, delete_widget=True):
         if self.menu: self.menu.Destroy()
-        if self.widget: self.widget.Destroy()
+        if delete_widget and self.widget: self.widget.Destroy()
 
 # end of class SizerSlot
 
@@ -319,8 +319,12 @@ class SizerBase:
             self.children.append(SizerItem(item, pos, option, flag, border,
                                            size))
             self.add_slot()
-        try: self.children[pos] = SizerItem(item, pos, option, flag, border,
-                                            size)
+        try:
+            old_child = self.children[pos]
+            if isinstance(old_child.item, SizerSlot):
+                old_child.item.delete(False)            
+            self.children[pos] = SizerItem(item, pos, option, flag, border,
+                                           size)
         except IndexError: # this shouldn't happen!
             import traceback; traceback.print_exc()
             raise SystemExit
@@ -388,7 +392,9 @@ class SizerBase:
     def _set_item_widget(self, pos, option, flag, border, size, force_layout):
         if not self.widget: return
         
-        elem = self.widget.GetChildren()[pos]
+        try: elem = self.widget.GetChildren()[pos]
+        except IndexError: return # this may happen during xml loading
+        
         if option is not None: elem.SetOption(option)
         if flag is not None: elem.SetFlag(flag)
         if border is not None: elem.SetBorder(border)
@@ -502,7 +508,6 @@ class SizerBase:
             if c.item and isinstance(c.item, SizerSlot): c.item.delete()
         if self.toplevel:
             self.window.set_sizer(None)
-        #if self.widget: self.widget.Destroy()
 
     if wxPlatform == '__WXMSW__':
         def finish_set(self):
@@ -619,7 +624,6 @@ class EditBoxSizer(SizerBase):
     """
     def __init__(self, name, window, orient=wxVERTICAL, elements=3,
                  toplevel=True, show=True):
-        #wxBoxSizer.__init__(self, orient)
         SizerBase.__init__(self, name, 'wxBoxSizer', window, toplevel, show)
         self.access_functions['orient'] = (self.get_orient, self.set_orient)
         self.properties = {'orient': HiddenProperty(self, 'orient',
@@ -801,12 +805,6 @@ class GridSizerBase(SizerBase):
             if c.size: w, h = c.size
             else: w, h = c.item.widget.GetBestSize()
             self.widget.SetItemMinSize(c.item.widget, w, h)
-
-##     def __getattr__(self, name):
-##         if name in ['sizer', 'pos']:
-##             return getattr(self.widget, name)
-##         raise AttributeError, "%s instance has no attribute '%s'" % \
-##               (self.__class__, name)
 
     def _property_setup(self):
         SizerBase._property_setup(self)

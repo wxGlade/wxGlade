@@ -92,6 +92,7 @@ class HiddenProperty(Property):
     def __init__(self, owner, name, value=None):
         try: getter, setter = owner[name]
         except KeyError:
+            import traceback; traceback.print_exc()
             if callable(value): getter = value
             else:
                 def getter(): return value
@@ -100,7 +101,9 @@ class HiddenProperty(Property):
         self.panel = None # this is needed to provide an uniform treatment,
                           # but is always None
         Property.__init__(self, owner, name, None, getter, setter)
-        if value is not None: self.value = value
+        if value is not None:
+            if callable(value): self.value = value()
+            else: self.value = value
 
     def bind_event(self, function):
         pass
@@ -661,7 +664,11 @@ class RadioProperty(Property, _activator):
         except AttributeError: return self.val
 
     def get_str_value(self):
-        return self.options.GetStringSelection()
+        try: return self.options.GetStringSelection()
+        except AttributeError:
+            if 0 <= self.val < len(self.choices):
+                return self.choices[self.val]
+            else: return ''
 
     def set_value(self, value):
         try: self.val = int(value)

@@ -8,6 +8,12 @@
 	    widgets/dialog.py: changed create_widget to
 			       use a default style and not the current one,
 			       to avoid for example frames without a caption
+	    edit_sizers.py: fixed a memory leak
+	    widgets/splitter_window.py: fixed bug in the code generation
+	    widget_properties.py: fixed bug in HiddenProperty
+	    widgets/radio_box.py, widgets/static_bitmap.py, 
+	    widgets/bitmap_button.py: fixed bugs
+	    README file added
 
 2002-07-30: xml_parse.py: removed fake obj replacement in 
 			  XmlWidgetObject.add_property since it is not
