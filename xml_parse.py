@@ -376,13 +376,7 @@ class XmlWidgetObject:
         returned False
         """
         try:
-            res = self.obj[name][1](val) # call the setter for this property
-            # if res is not None, it is the widget self.obj must be replaced
-            # with: this happens when we cannot build a widget (or sizer) until
-            # we know some of its properties, so at first we build a fake one,
-            # which then gets replaced when all the required information is
-            # available
-            if res is not None: self.obj = res
+            self.obj[name][1](val) # call the setter for this property
             try:
                 prop = self.obj.properties[name]
                 prop.set_value(val)

@@ -144,10 +144,9 @@ class EditNotebook(ManagedBase):
                                        # (actually a list of
                                        # 2-list label, window)
 
-        styles = { wxNB_LEFT: 'wxNB_LEFT', wxNB_RIGHT: 'wxNB_RIGHT',
-                   wxNB_BOTTOM: 'wxNB_BOTTOM' }
-        self.properties['style'] = HiddenProperty(self, 'style',
-                                                  styles.get(style, '0'))
+        self.access_functions['style'] = (self.get_tab_pos, self.set_tab_pos)
+        self.properties['style'] = HiddenProperty(self, 'style')
+                                                  #styles.get(style, '0'))
         self.access_functions['tabs'] = (self.get_tabs, self.set_tabs)
         tab_cols = [('Tab label', GridProperty.STRING)]
         self.properties['tabs'] = NotebookPagesProperty(self, 'tabs', None,
@@ -243,6 +242,17 @@ class EditNotebook(ManagedBase):
                 else: return -1
         return -1
 
+    def get_tab_pos(self): 
+        styles = { wxNB_LEFT: 'wxNB_LEFT', wxNB_RIGHT: 'wxNB_RIGHT',
+                   wxNB_BOTTOM: 'wxNB_BOTTOM' }
+        return styles.get(self.style, '0')
+    
+    def set_tab_pos(self, value):
+        styles = { 'wxNB_LEFT': wxNB_LEFT, 'wxNB_RIGHT': wxNB_RIGHT,
+                   'wxNB_BOTTOM': wxNB_BOTTOM }
+        print 'self.set_tab_pos: value = %s' % value
+        self.style = styles.get(value, 0)
+
 # end of class EditNotebook
         
 
@@ -292,55 +302,17 @@ def builder(parent, sizer, pos, number=[1]):
     sizer.set_item(window.pos, 1, wxEXPAND)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
-                tmp_win=[None]):
+def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build EditNotebook objects from an xml file
     """
-    class FakeNotebook:
-        styles = { 'wxNB_BOTTOM': wxNB_BOTTOM, 'wxNB_RIGHT': wxNB_RIGHT,
-                   'wxNB_LEFT': wxNB_LEFT }
-        def __init__(self, attrs, parent, sizer, sizeritem, pos):
-            self.attrs = attrs
-            self.parent = parent
-            self.sizer = sizer
-            self.sizeritem = sizeritem
-            self.pos = pos
-
-        def __getitem__(self, value):
-            if value != 'style': raise KeyError
-            return (None, self.set_style)
-                
-        def set_style(self, val):
-            try: self.style = FakeNotebook.styles(val)
-            except: self.style = 0
-            return xml_builder(self.attrs, self.parent, self.sizer,
-                               self.sizeritem, self.pos, True)
-
-        def get_property_handler(self, name):
-            if name == 'tabs': return TabsHandler(self)            
-
-    # end of class FakeNotebook
-    
-    if not complete:
-        tmp_win[0] = FakeNotebook(attrs, parent, sizer, sizeritem, pos)
-        return tmp_win[0]
     from xml_parse import XmlParsingError
     try: name = attrs['name']
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if not sizer or not sizeritem:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    style = tmp_win[0].style
-    window = EditNotebook(name, parent, wxNewId(), style, sizer, pos,
+    window = EditNotebook(name, parent, wxNewId(), 0, sizer, pos,
                           common.property_panel, True)
-    if hasattr(tmp_win[0], 'tmp_tab_names'):
-        window.tmp_tab_names = tmp_win[0].tmp_tab_names
-
-    # see if the notebook is an instance of a custom class, and set its klass
-    # property 
-    if hasattr(tmp_win[0], 'klass'):
-        window.klass = tmp_win[0].klass
-        window.klass_prop.set_value(window.klass)
 
     sizer.set_item(window.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)

@@ -161,55 +161,20 @@ def builder(parent, sizer, pos, number=[1]):
     common.app_tree.insert(node, sizer.node, pos-1) 
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None, complete=False,
-                tmp_slider=[None]):
+def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build EditSlider objects from an xml file
     """
-    class FakeSlider:
-        styles = { 'wxSL_HORIZONTAL': wxSL_HORIZONTAL,
-                   'wxSL_VERTICAL': wxSL_VERTICAL,
-                   'wxSL_AUTOTICKS': wxSL_AUTOTICKS,
-                   'wxSL_LABELS': wxSL_LABELS,
-                   'wxSL_LEFT': wxSL_LEFT,
-                   'wxSL_RIGHT': wxSL_RIGHT,
-                   'wxSL_TOP': wxSL_TOP                   
-                   }
-        def __init__(self, attrs, parent, sizer, sizeritem, pos):
-            self.attrs = attrs
-            self.parent = parent
-            self.sizer = sizer
-            self.sizeritem = sizeritem
-            self.pos = pos
-        def __getitem__(self, value):
-            if value != 'style': raise KeyError
-            def set_style(val):
-                style_list = [ FakeSlider.styles[v] for v in val.split('|') ]
-                self.style = reduce(lambda a, b: a|b, style_list)
-                return xml_builder(self.attrs, self.parent, self.sizer,
-                                   self.sizeritem, self.pos, True)
-            return (None, set_style)
-    # end of class FakeSlider
-
-    if not complete:
-        tmp_slider[0] = FakeSlider(attrs, parent, sizer, sizeritem, pos)
-        return tmp_slider[0]
     from xml_parse import XmlParsingError
     try: name = attrs['name']
     except KeyError: raise XmlParsingError, "'name' attribute missing"
-    style = tmp_slider[0].style    
+    style = 0
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     slider = EditSlider(name, parent, wxNewId(), style, sizer,
                         pos, common.property_panel) 
-    # see if the slider is an instance of a custom class, and set its klass
-    # property 
-    if hasattr(tmp_slider[0], 'klass'):
-        slider.klass = tmp_slider[0].klass
-        slider.klass_prop.set_value(slider.klass)
     sizer.set_item(slider.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
-##                    size=slider.GetBestSize())
     node = Tree.Node(slider)
     slider.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

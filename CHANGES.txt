@@ -1,3 +1,13 @@
+2002-07-30: xml_parse.py: removed fake obj replacement in 
+			  XmlWidgetObject.add_property since it is not
+			  necessary anymore
+	    edit_sizers.py, widgets/static_line.py, widgets/notebook.py,
+	    widgets/splitter_window.py, widgets/slider.py:
+			  removed obsolete use of Fake* objects during xml
+			  loading
+	    widgets/splitter_window.py: fixed bug in set_size regarding the
+					position of the sash
+
 2002-07-29: tree.py, main.py: prevention of auto expansion of tree nodes 
 	                      during xml loading
             widget_properties.py: fixed bug in self._enabler for many 
