@@ -200,7 +200,17 @@ class WidgetTree(wxTreeCtrl, Tree):
         EVT_RIGHT_DOWN(self, self.popup_menu)
         EVT_LEFT_DCLICK(self, self.show_toplevel)
         EVT_MENU(self, SHOW_ID, self.show_toplevel)
-
+        def on_key_down(event):
+            evt_flags = 0
+            if event.ControlDown(): evt_flags = wxACCEL_CTRL
+            evt_key = event.GetKeyCode()
+            for flags, key, function in misc.accel_table:
+                if evt_flags == flags and evt_key == key:
+                    wxCallAfter(function)
+                    break
+            event.Skip()
+        EVT_KEY_DOWN(self, on_key_down)
+        
     def add(self, child, parent=None, image=None): # is image still used?
         """\
         appends child to the list of parent's children

@@ -810,7 +810,10 @@ class GridProperty(wxPanel, Property):
         event.Skip()
 
     def bind_event(self, function):
-        EVT_BUTTON(self.btn, self.btn_id, function)
+        def func(event):
+            self.grid.SaveEditControlValue()
+            function(event)
+        EVT_BUTTON(self.btn, self.btn_id, func)
 
     def get_value(self):
         if not hasattr(self, 'grid'): return self.val
