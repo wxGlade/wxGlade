@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.39 2003/05/14 17:53:38 agriggio Exp $
+# $Id: main.py,v 1.40 2003/05/16 19:55:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -202,9 +202,9 @@ class wxGladeFrame(wxFrame):
                 w += 10
             self.frame2.SetPosition((x, y+h))
             self.tree_frame.SetPosition((x+w, y))
-        self.Show()
         self.tree_frame.Show()
         self.frame2.Show()    
+        self.Show()
 
         self._skip_activate = False
         if wxPlatform == '__WXMSW__':
