@@ -33,7 +33,8 @@ class PanelBase(object):
                                                      style_labels)  
 
     def finish_widget_creation(self):
-        super(PanelBase, self).finish_widget_creation()
+        super(PanelBase, self).finish_widget_creation(
+            sel_marker_parent=self.widget)
         # this must be done here since ManagedBase.finish_widget_creation
         # normally sets EVT_LEFT_DOWN to update_wiew
         if not self.widget.Disconnect(-1, -1, wxEVT_LEFT_DOWN):
@@ -117,6 +118,12 @@ class EditPanel(PanelBase, ManagedBase):
         self.widget = wxPanel(self.parent.widget, self.id, style=0)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
+        if self.sizer.is_virtual():
+            def GetBestSize():
+                if self.widget and self.widget.GetSizer():
+                    return self.widget.GetSizer().GetMinSize()
+                return wxPanel.GetBestSize(self.widget)
+            self.widget.GetBestSize = GetBestSize
 
     def set_sizer(self, sizer):
         super(EditPanel, self).set_sizer(sizer)
@@ -238,12 +245,20 @@ def initialize():
     """
     common.widgets['EditPanel'] = builder
     common.widgets_from_xml['EditPanel'] = xml_builder
-
+    
     common.widgets_from_xml['EditTopLevelPanel'] = xml_toplevel_builder
     from tree import WidgetTree
     import os.path
     WidgetTree.images['EditTopLevelPanel'] = os.path.join(common.wxglade_path,
                                                           'icons/panel.xpm')
-        
+
+    # these are for backwards compatibility (may be removed someday...)
+    common.widgets_from_xml['SplitterPane'] = xml_builder
+    WidgetTree.images['SplitterPane'] = os.path.join(common.wxglade_path,
+                                                     'icons/panel.xpm')
+    common.widgets_from_xml['NotebookPane'] = xml_builder
+    WidgetTree.images['NotebookPane'] = os.path.join(common.wxglade_path,
+                                                     'icons/panel.xpm')
+    
     return common.make_object_button('EditPanel', 'icons/panel.xpm')
     

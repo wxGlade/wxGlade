@@ -36,6 +36,8 @@ class EditBase:
         self.base = klass
         self.custom_class = custom_class
 
+        self._dont_destroy = False
+
         self.access_functions = {
             'name' : (lambda : self.name, self.set_name),
             'class' : (lambda : self.klass, self.set_klass)
@@ -73,7 +75,7 @@ class EditBase:
         """
         raise NotImplementedError
 
-    def finish_widget_creation(self):
+    def finish_widget_creation(self, *args, **kwds):
         """\
         Creates the popup menu and connects some event handlers to self.widgets
         """
@@ -126,8 +128,9 @@ class EditBase:
             self.notebook.DeleteAllPages()
             self.notebook.Destroy()
             nb_szr.Destroy()
-        # ...finally, destroy our widget
-        if self.widget: self.widget.Destroy()
+        # ...finally, destroy our widget (if needed)
+        if self.widget and not self._dont_destroy:
+            self.widget.Destroy()
         if misc.focused_widget is self: misc.focused_widget = None
             
     def create_properties(self):
@@ -177,6 +180,7 @@ class EditBase:
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
     def remove(self, *args):
+        self._dont_destroy = False # always destroy when explicitly asked
         common.app_tree.remove(self.node)
 
     def show_properties(self, *args):
@@ -306,7 +310,7 @@ class WindowBase(EditBase):
         # properties added 2002-08-15
         prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True)
 
-    def finish_widget_creation(self):
+    def finish_widget_creation(self, *args, **kwds):
         prop = self.properties
         size = prop['size'].get_value()
         if size:
@@ -586,6 +590,9 @@ class ManagedBase(WindowBase):
                  show=True):
         WindowBase.__init__(self, name, klass, parent, id, property_window,
                             show=show)
+        # if True, the user is able to control the layout of the widget
+        # inside the sizer (proportion, borders, alignment...)
+        self._has_layout = not sizer.is_virtual()
         # selection markers
         self.sel_marker = None
         # dictionary of properties relative to the sizer which
@@ -623,8 +630,9 @@ class ManagedBase(WindowBase):
         def write(*args, **kwds): pass
         pos_p.write = write # no need to save the position
 
-    def finish_widget_creation(self):
-        self.sel_marker = misc.SelectionMarker(self.widget, self.parent.widget)
+    def finish_widget_creation(self, sel_marker_parent=None):
+        if sel_marker_parent is None: sel_marker_parent = self.parent.widget
+        self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
         WindowBase.finish_widget_creation(self)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         EVT_MOVE(self.widget, self.on_move)
@@ -640,6 +648,7 @@ class ManagedBase(WindowBase):
 
     def create_properties(self):
         WindowBase.create_properties(self)
+        if not self._has_layout: return
         panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
 
         min_x = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_X)
@@ -771,7 +780,7 @@ class ManagedBase(WindowBase):
         WindowBase.delete(self)
 
     def remove(self, *args):
-        self.sizer.free_slot(self.pos)        
+        self.sizer.free_slot(self.pos)
         WindowBase.remove(self)
 
     def get_pos(self): return self.pos-1
@@ -809,7 +818,7 @@ class TopLevelBase(WindowBase):
         self.sizer = None # sizer that controls the layout of the children
                           # of the window
 
-    def finish_widget_creation(self):
+    def finish_widget_creation(self, *args, **kwds):
         WindowBase.finish_widget_creation(self)
         if self.has_title:
             self.widget.SetTitle(self.properties['title'].get_value())

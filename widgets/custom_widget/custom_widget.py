@@ -73,6 +73,9 @@ class CustomWidget(ManagedBase):
                                style=wxSUNKEN_BORDER)
         EVT_PAINT(self.widget, self.on_paint)
 
+    def finish_widget_creation(self):
+        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
+
     def on_paint(self, event):
         dc = wxPaintDC(self.widget)
         dc.BeginDrawing()
