@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.20 2004/09/17 13:09:55 agriggio Exp $
+# $Id: codegen.py,v 1.21 2004/12/19 23:32:12 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -22,15 +22,15 @@ class PythonCodeGenerator:
             bmp = cn('wxNullBitmap')
         elif bmp_file.startswith('var:'):
             if obj.preview:
-                bmp = "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path,
-                                       cn('wxBITMAP_TYPE_XPM'))
+                bmp = "%s('%s', %s)" % (cn('wxBitmap'), bmp_preview_path,
+                                        cn('wxBITMAP_TYPE_XPM'))
             else:
                 bmp = (cn('wxBitmap') + '(%s,' + cn('wxBITMAP_TYPE_ANY)')) % \
                       bmp_file[4:].strip()
         elif bmp_file.startswith('code:'):
             if obj.preview:
-                bmp = "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path,
-                                       cn('wxBITMAP_TYPE_XPM'))
+                bmp = "%s('%s', %s)" % (cn('wxBitmap'), bmp_preview_path,
+                                        cn('wxBITMAP_TYPE_XPM'))
             else:
                 bmp = '(%s)' % \
                       bmp_file[5:].strip()

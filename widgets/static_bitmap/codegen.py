@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxStaticBitmap objects
-# $Id: codegen.py,v 1.23 2004/09/17 13:09:50 agriggio Exp $
+# $Id: codegen.py,v 1.24 2004/12/19 23:32:11 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -26,8 +26,8 @@ class PythonCodeGenerator:
                 bmp = "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path,
                                        cn('wxBITMAP_TYPE_XPM') )
             else:
-                bmp = cn('wxBitmap') + '(%s,%s)' % (bmp_file[4:].strip(),
-                                                    cn('wxBITMAP_TYPE_ANY'))
+                bmp = cn('wxBitmap') + '(%s, %s)' % (bmp_file[4:].strip(),
+                                                     cn('wxBITMAP_TYPE_ANY'))
         elif bmp_file.startswith('code:'):
             if obj.preview:
                 bmp = "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path,
