@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.8 2003/08/07 12:22:00 agriggio Exp $
+# $Id: menubar.py,v 1.9 2004/03/15 17:18:20 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -735,6 +735,7 @@ def builder(parent, sizer, pos, number=[0]):
     mb.node = Tree.Node(mb)
     common.app_tree.add(mb.node)
     mb.show_widget(True)
+    mb.show_properties()
     
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
