@@ -5,7 +5,7 @@
 <book>
   <title>wxGlade user manual</title>
   <bookinfo>
-    <date>$Date: 2003/10/07 07:28:44 $</date>
+    <date>$Date: 2003/10/09 06:59:56 $</date>
     <author>
       <firstname>documentation by Marcello</firstname>
       <surname>Semboli</surname>
@@ -182,7 +182,7 @@ You can't learn wx programming reading this manual, as well.
 </para>
 <para>        Start wxGlade running <command>wxglade.py</command> program.
 </para>
-<para>        You will see a Main Window, with several buttons, and a Tree
+<para>        You will see a Main Palette, with several buttons, and a Tree
         Window with a icon <quote>Application</quote>.  A Properties Window is showing
         properties of the Application.
 </para>
@@ -191,7 +191,7 @@ You can't learn wx programming reading this manual, as well.
         display the function of the button.
 </para>
 
-<para>        To add a frame at the design window, from the Main Window choose
+<para>        To add a frame at the design window, from the Main Palette choose
         the first button: <quote>Add a frame</quote>.
 </para>
 <para>        Then choose wxFrame as base class.
@@ -328,13 +328,14 @@ OPTIONS:
 <chapter>  
   <title>wxGlade User Interface</title>  
   <section>
-    <title>Main Window</title>
+    <title>Main Palette</title>
     <para>
-      The main window hosts the menu and the widgets choice buttons.
+      The main window is a palette that hosts the menu and 
+      the widgets choice buttons.
     </para>
     <para> 
       <figure>
-        <title>The Main Window</title>
+        <title>The Main Palette</title>
         <graphic fileref="main_window.png" />
       </figure>
     </para>
@@ -412,7 +413,7 @@ OPTIONS:
     <title>Design Window</title>
     <para>
       The design window shows the frame or panel you are creating in WYSIWYG mode and  
-      allow you to select a widget from the main window and to put it on a empty slot of a sizer.
+      allow you to select a widget from the main palette and to put it on a empty slot of a sizer.
       You can show the design window double-clicking in a frame's icon or dialog's icon in the tree window.
       <figure>
         <title>The Design Window</title>
@@ -500,20 +501,28 @@ OPTIONS:
             </para>
             <para>
             </para>
-            <para>
-            </para>
-            <para>
-            </para>
-            <para>
-            </para>
-            <para>
-            </para>
         </section>    
     </section>
     <section>
     <title id="preferences.section">Preferences Dialog</title>
     <para>
-    Bla bla bla.
+    You can access to the Preferences Dialog with menu item 
+    <menuchoice>
+        <guimenu>View</guimenu>
+        <guimenuitem>Preferences</guimenuitem>
+    </menuchoice>.
+    You can choose some decoration option, like if show icons in menu or not,
+    but also something more effective.
+    For example, you can modify the number of buttons in the main palette;
+    if you type a value of 15 or 30, you get a long toolbar like
+    main palette. You need to restart wxGlade to take effect.
+    You can also choose the default path where you save wxGlade files 
+    or generate code code.
+    </para>
+    <para>
+    Another useful option is to enable a default border of 3 
+    around some widgets. In many cases this can be useful to have 
+    
     </para>
     </section>
     <section>
