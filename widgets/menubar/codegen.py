@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.12 2003/12/17 23:13:34 agriggio Exp $
+# $Id: codegen.py,v 1.13 2004/02/20 19:10:32 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -124,7 +124,8 @@ class MenuHandler:
                 self.curr_menu = t.root
                 self.menus.append(t)
                 return
-            node = MenuTree.Node(label=label, name=attrs['name'])
+            id = attrs.get('itemid', '')
+            node = MenuTree.Node(label=label, name=attrs['name'], id=id)
             node.parent = self.curr_menu
             self.curr_menu.children.append(node)
             self.curr_menu = node

@@ -1,5 +1,5 @@
 # MenuTree.py: A class to represent a menu on a wxMenuBar
-# $Id: MenuTree.py,v 1.6 2003/05/13 10:05:15 agriggio Exp $
+# $Id: MenuTree.py,v 1.7 2004/02/20 19:10:41 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -51,6 +51,8 @@ class MenuTree:
             else:
                 name = quoteattr(self.name)
                 fwrite('    ' * tabs + '<menu name=%s ' % name)
+                if self.id:
+                    fwrite('itemid=%s ' % quoteattr(self.id))
                 fwrite('label=%s>\n' % (quoteattr(label)))
                 for c in self.children: c.write(outfile, tabs+1)
                 fwrite('    ' * tabs + '</menu>\n')
