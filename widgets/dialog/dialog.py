@@ -87,40 +87,86 @@ def builder(parent, sizer, pos, number=[0]):
     """\
     factory function for EditDialog objects.
     """
+    try:
+        import panel
+        has_panel = True
+    except ImportError:
+        has_panel = False
+        
     class Dialog(wxDialog):
         def __init__(self):
-            wxDialog.__init__(self, None, -1, 'Select dialog class')
+            if has_panel: title = 'Select widget type'
+            else: title = 'Select dialog class'
+            wxDialog.__init__(self, None, -1, title)
             if not number[0]: self.klass = 'MyDialog'
             else: self.klass = 'MyDialog%s' % number[0]
             number[0] += 1
-            klass_prop = TextProperty(self, 'class', self)
+            self.klass_prop = TextProperty(self, 'class', self)
+            self.widget = 0
             szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(klass_prop.panel, 0, wxEXPAND)
-            szr.Add(wxButton(self, wxID_OK, 'OK'), 0, wxALL|wxALIGN_CENTER, 3)
+            if has_panel:
+                widget_prop = RadioProperty(self, 'widget', self,
+                                            ['wxDialog', 'wxPanel'])
+                szr.Add(widget_prop.panel, 0, wxALL|wxEXPAND, 5)
+            szr.Add(self.klass_prop.panel, 0, wxALL|wxEXPAND, 5)
+            btn = wxButton(self, wxID_OK, 'OK')
+            szr.Add(btn, 0, wxALL|wxALIGN_CENTER, 3)
+            btn.SetFocus()
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
+            h = self.GetTextExtent(title)[1]
+            if h > self.GetSize()[1]: self.SetSize((-1, h))
+            self.klass_modified = False
+
+        def set_klass(self, c):
+            self.klass = c
+            self.klass_modified = True
+        
+        def set_widget(self, c):
+            self.widget = int(c)
+            if not self.klass_modified:
+                try: number = str(int(self.klass[-1]))
+                except ValueError: number = ''
+                if self.widget == 0: self.klass = 'MyDialog' + number
+                else: self.klass = 'MyPanel' + number
+                self.klass_prop.set_value(self.klass)
+
         def __getitem__(self, value):
-            def set_klass(c): self.klass = c
-            return (lambda : self.klass, set_klass)
+            if value == 'class':
+                return (lambda : self.klass, self.set_klass)
+            else:
+                return (lambda : self.widget, self.set_widget)
     # end of inner class
 
     class_dialog = Dialog()
     class_dialog.ShowModal()
-    label = 'dialog_%d' % number[0]
+    if class_dialog.widget == 0: name = 'dialog'
+    else: name = 'panel'
+    label = '%s_%d' % (name, number[0])
     while common.app_tree.has_name(label):
         number[0] += 1
-        label = 'dialog_%d' % number[0]
-    dialog = EditDialog(label, parent, wxNewId(), label, common.property_panel,
-                        klass=class_dialog.klass)
+        label = '%s_%d' % (name, number[0])
+    if class_dialog.widget == 0:
+        is_panel = False
+        dialog = EditDialog(label, parent, wxNewId(), label,
+                            common.property_panel, klass=class_dialog.klass)
+    else:
+        is_panel = True
+        import panel
+        dialog = panel.EditTopLevelPanel(label, parent, wxNewId(),
+                                         common.property_panel,
+                                         klass=class_dialog.klass)
     node = Tree.Node(dialog)
     dialog.node = node
     dialog.show_widget(True)
     common.app_tree.add(node)
     class_dialog.Destroy()
     if wxPlatform == '__WXMSW__':
-        dialog.widget.CenterOnScreen()
-        dialog.widget.Raise()
+        if not is_panel: w = dialog.widget
+        else: w = dialog.widget.GetParent()
+        w.CenterOnScreen()
+        w.Raise()
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
@@ -136,7 +182,6 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     common.app_tree.add(node)
     return dialog
 
-
 def initialize():
     """\
     initialization function for the module: returns a wxBitmapButton to be
@@ -147,4 +192,5 @@ def initialize():
 
     common.widgets['EditDialog'] = builder
     
-    return common.make_object_button('EditDialog', 'icons/dialog.xpm', 1)
+    return common.make_object_button('EditDialog', 'icons/dialog.xpm', 1,
+                                     tip='Add a Dialog/Panel')

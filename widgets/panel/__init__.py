@@ -9,4 +9,5 @@ def initialize():
     codegen.initialize()
     if common.use_gui:
         import panel
+        global EditTopLevelPanel; EditTopLevelPanel = panel.EditTopLevelPanel
         return panel.initialize()
