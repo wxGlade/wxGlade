@@ -51,7 +51,7 @@ class wxGladeFrame(wxFrame):
         file_menu = wxMenu(style=wxMENU_TEAROFF)
         view_menu = wxMenu(style=wxMENU_TEAROFF)
         help_menu = wxMenu(style=wxMENU_TEAROFF)
-        sizer = wxGridSizer(0, 5)
+        sizer = wxGridSizer(0, config.preferences.buttons_per_row)
         wxToolTip_SetDelay(1000)
         # load the available code generators
         common.load_code_writers()
