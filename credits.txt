@@ -1,8 +1,8 @@
 Contributors:
 ---------------------------------------------------------------------------
 
-- Richard Lawson: ability to cancel the addition of a widget, preference to
-                  save the current geometry of wxGlade windows
+- Richard Lawson <richard.lawson@colinx.com>: ability to cancel the addition of
+  a widget, preference to save the current geometry of wxGlade windows
 
 Many thanks to:
 ---------------------------------------------------------------------------
