@@ -1,3 +1,6 @@
+2002-12-28: edit_sizers/edit_sizers.py:
+                better (hopefully) implementation of SizerBase.layout
+
 2002-12-23: main.py, application.py: 
                 slightly better error messages
 

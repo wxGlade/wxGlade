@@ -803,6 +803,18 @@ class TopLevelBase(WindowBase):
             # at least move it away from the 3 wxGlade frames
             self.widget.CenterOnScreen()
 
+    def show_widget(self, yes):
+        WindowBase.show_widget(self, yes)
+        if yes and wxPlatform == '__WXMSW__':
+            # more than ugly, but effective hack to properly layout the window
+            # on Win32
+            if self.properties['size'].is_active():
+                w, h = self.widget.GetSize()
+                self.widget.SetSize((-1, h+1))
+                self.widget.SetSize((-1, h))
+            elif self.sizer:
+                self.sizer.fit_parent()
+
     def popup_menu(self, event):
         if self.widget:
             if not self._rmenu:
