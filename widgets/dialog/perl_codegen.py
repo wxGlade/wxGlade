@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxDialog objects
-# $Id: perl_codegen.py,v 1.1 2003/06/23 21:26:53 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.2 2003/07/09 09:23:58 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -10,6 +10,11 @@ import common
 
 
 class PerlCodeGenerator:
+#wxDialog( parent, id, title, pos, size, style, name )
+    new_signature = [
+        '$parent', '$id', '$title', '$pos', '$size', '$style', '$name'
+    ]
+
     def get_code(self, obj):
         return [], [], []
 
