@@ -11,7 +11,8 @@ from widget_properties import *
 from edit_windows import ManagedBase, WindowBase
 
 class NotebookPane(WindowBase):
-    def __init__(self, name, parent, id, property_window, show=True):
+    def __init__(self, name, parent, id, property_window, show=True,
+                 style=wxTAB_TRAVERSAL):
         WindowBase.__init__(self, name, 'wxPanel', parent,
                             id, property_window, show)
         self.sizer = None
@@ -19,7 +20,7 @@ class NotebookPane(WindowBase):
         self.remove_page_from_parent = True # if True, a call to Destroy will
                                             # also remove the pane from its
                                             # parent's list of pages
-        self.style = wxTAB_TRAVERSAL
+        self.style = style
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
                            wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
@@ -35,7 +36,7 @@ class NotebookPane(WindowBase):
                                                      style_labels)  
 
     def create_widget(self):
-        self.widget = wxPanel(self.parent.widget, self.id)
+        self.widget = wxPanel(self.parent.widget, self.id, style=0)
         self.sel_marker = misc.SelectionMarker(self.widget, self.widget)
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
@@ -389,7 +390,8 @@ def xml_builder_pane(attrs, parent, sizer, sizeritem, pos=None, index=[-1]):
         except IndexError: tab_name = name
     else: tab_name = name
 
-    pane = NotebookPane(name, parent, wxNewId(), common.property_panel)
+    pane = NotebookPane(name, parent, wxNewId(), common.property_panel,
+                        style=0)
     if not index[0]: parent.tabs = []
     parent.add_tab(pane, tab_name)
     if hasattr(parent, 'tmp_tab_names') and \
