@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.18 2003/06/26 15:09:24 agriggio Exp $
+# $Id: panel.py,v 1.19 2003/06/27 16:01:37 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -127,6 +127,14 @@ class PanelBase(object):
 
     def set_scrollable(self, value):
         self.scrollable = bool(int(value))
+        if self.scrollable:
+            if self.klass == 'wxPanel':
+                self.klass = 'wxScrolledWindow'
+                self.klass_prop.set_value(self.klass)
+        else:
+            if self.klass == 'wxScrolledWindow':
+                self.klass = 'wxPanel'
+                self.klass_prop.set_value(self.klass)
         if not self.widget: return
         if self.scrollable:
             self.properties['scroll_rate'].toggle_active(True)

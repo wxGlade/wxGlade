@@ -1,5 +1,5 @@
 # list_box.py: wxListBox objects
-# $Id: list_box.py,v 1.11 2003/06/21 14:31:24 agriggio Exp $
+# $Id: list_box.py,v 1.12 2003/06/27 16:01:38 agriggio Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -60,7 +60,7 @@ class EditListBox(ManagedBase):
         szr.Add(self.properties['selection'].panel, 0, wxEXPAND)
         ch = self.properties['choices'].panel
         ch.SetSize((ch.GetSize()[0]-20, 200))
-        szr.Add(self.properties['choices'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['choices'].panel, 0, wxALL|wxEXPAND, 5)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
