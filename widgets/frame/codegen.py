@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.20 2004/10/26 11:06:32 agriggio Exp $
+# $Id: codegen.py,v 1.21 2004/11/02 11:59:04 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -124,8 +124,6 @@ def xrc_frame_code_generator(obj):
                 del self.properties['statusbar']
             if 'toolbar' in self.properties:
                 del self.properties['toolbar']
-            if 'icon' in self.properties:
-                del self.properties['icon']
             xrcgen.DefaultXrcObject.write(self, outfile, tabs)
 
     # end of class FrameXrcObject
