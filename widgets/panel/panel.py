@@ -166,7 +166,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         if win is not None: win.Destroy()
 
     def on_size(self, event):
-        if self.skip_on_size:
+        if wxPlatform == '__WXMSW__' and self.skip_on_size:
             self.skip_on_size = False
             return
         super(EditTopLevelPanel, self).on_size(event)
