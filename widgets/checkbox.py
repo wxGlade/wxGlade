@@ -15,7 +15,6 @@ class EditCheckBox(wxCheckBox, ManagedBase):
         """\
         Class to handle wxCheckBox objects
         """
-        wxCheckBox.__init__(self, parent, id, label)
         ManagedBase.__init__(self, name, 'wxCheckBox', parent, id, sizer,
                              pos, property_window, show=show)
         self.access_functions['label'] = (self.GetLabel, self.set_label)
@@ -24,10 +23,8 @@ class EditCheckBox(wxCheckBox, ManagedBase):
         self.properties['label'] = TextProperty(self, 'label', None)
         self.properties['checked'] = CheckBoxProperty(self, 'checked', None,
                                                       'Checked')
-
-        self.old_label = label
+        self.label = label
         self.value = 0 # if nonzero, che checkbox is checked
-        EVT_CHECKBOX(self, id, lambda e: self.SetValue(self.value))
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -42,14 +39,27 @@ class EditCheckBox(wxCheckBox, ManagedBase):
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 
+    def get_label(self):
+        return self.label
+
     def set_label(self, value):
-        if value != self.old_label:
-            self.SetLabel(str(value))
-            self.old_label = value
+        value = str(value)
+        if value != self.label:
+            self.label = value
+            if self.widget:
+                self.SetLabel(self.label)
+
+    def get_value(self):
+        return self.value
 
     def set_value(self, value):
         self.value = int(value)
-        self.SetValue(self.value)
+        if self.widget:
+            self.widget.SetValue(self.value)
+
+    def create_widget(self):
+        self.widget = wxCheckBox(self.parent, self.id, self.label)
+        EVT_CHECKBOX(self, self.id, lambda e: self.set_value(self.value))
 
 # end of class EditCheckBox
    
