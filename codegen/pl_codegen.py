@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.23 2004/09/17 13:09:55 agriggio Exp $
+# $Id: pl_codegen.py,v 1.24 2004/09/22 08:04:50 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -257,22 +257,31 @@ def initialize(app_attrs):
            _current_extra_modules, _use_gettext, _overwrite
     import time, random
 
-    # import all perl generators and initialize them first -- yuck
-    # -- crazyinsomniac
-
-    # alb: let's try to make this slightly less ugly...
-    # first, the widgets...
+# scan widgets.txt for widgets, load perl_codegen's
     _widgets_dir = os.path.join(common.wxglade_path, 'widgets')
-    for name in os.listdir(_widgets_dir):
-        if os.path.isdir(os.path.join(_widgets_dir, name)):
-            try:
-                m = __import__(name + '.perl_codegen', {}, {}, ['initialize'])
-                m.initialize()
-            except ImportError:
-                pass
-##             else:
-##                 print 'initialized perl generator for', name
-    # ...then, the sizers
+    widgets_file = os.path.join(_widgets_dir, 'widgets.txt')
+    if not os.path.isfile(widgets_file):
+        print >> sys.stderr, "widgets file (%s) doesn't exist" % widgets_file
+        return
+    import sys
+    sys.path.append(_widgets_dir)
+    modules = open(widgets_file)
+    for line in modules:
+        module_name = line.strip()
+        if not module_name or module_name.startswith('#'): continue
+        module_name = module_name.split('#')[0].strip()
+        try:
+            m = __import__(module_name + '.perl_codegen', {}, {}, ['initialize'])
+            m.initialize()
+        except (ImportError, AttributeError):
+            print 'ERROR loading "%s"' % module
+            import traceback;
+            traceback.print_exc()
+        else:
+#            print 'initialized perl generator for ', module_name
+    modules.close()
+
+   # ...then, the sizers
     import edit_sizers.perl_sizers_codegen
     edit_sizers.perl_sizers_codegen.initialize()  
 
