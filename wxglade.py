@@ -98,6 +98,9 @@ if __name__ == "__main__":
     # app's search path
     #sys.path.insert(0, 'widgets')
     sys.path = [os.getcwd(), os.path.join(os.getcwd(), 'widgets')] + sys.path
+    # set the program's path
+    import common
+    common.wxglade_path = os.getcwd()
     # before running the GUI, let's see if there are command line options for
     # code generation
     if len(sys.argv) == 1:

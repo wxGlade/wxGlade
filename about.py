@@ -7,7 +7,7 @@
 from wxPython.wx import *
 from wxPython.html import *
 import wxPython.lib.wxpTag
-import common, misc
+import common, misc, os.path
 
 class wxGladeAboutBox(wxDialog):
     text = '''
@@ -17,7 +17,7 @@ class wxGladeAboutBox(wxDialog):
     <center>
     <table align="center" width="380" border="2" cellspacing="0">
     <tr>
-    <td align="center" valign="center"><img src="icons/wxglade_small.png"
+    <td align="center" valign="center"><img src="%s"
     border="0">
     </td></tr>
     <tr><td bgcolor="#000000"
@@ -86,8 +86,10 @@ class wxGladeAboutBox(wxDialog):
         html = HtmlWin(self, -1, size=(400, -1))
         py_version = sys.version.split()[0]
         bgcolor = misc.color_to_string(self.GetBackgroundColour())
-        html.SetPage(self.text % (bgcolor, common.version, py_version,
-                                  wx.__version__))
+        icon_path = os.path.join(common.wxglade_path,
+                                 'icons/wxglade_small.png')
+        html.SetPage(self.text % (bgcolor, icon_path, common.version,
+                                  py_version, wx.__version__))
         ir = html.GetInternalRepresentation()
         ir.SetIndent(0, wxHTML_INDENT_ALL)
         html.SetSize((ir.GetWidth(), ir.GetHeight()))
