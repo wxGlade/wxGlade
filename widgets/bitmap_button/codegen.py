@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.17 2004/01/20 22:31:51 dinogen Exp $
+# $Id: codegen.py,v 1.18 2004/01/29 09:11:18 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
@@ -14,24 +14,20 @@ class PythonCodeGenerator:
         prop = obj.properties
         id_name, id = pygen.generate_code_id(obj) 
         bmp_file = prop.get('bitmap', '')
+        bmp_preview_path = os.path.join(common.wxglade_path, "icons", "icon.xpm")
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         if not bmp_file:
             bmp = cn('wxNullBitmap')
         elif bmp_file.startswith('var:'):
-#            if obj.preview:
-#                bmp = cn('wxEmptyBitmap') + '(1, 1)'
-#            else:
-#                bmp = (cn('wxBitmapFromXPMData') + '(%s)') % \
-#                      bmp_file[4:].strip()
             if obj.preview:
-                bmp = cn('wxEmptyBitmap') + '(1, 1)'
+                bmp = "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path, cn('wxBITMAP_TYPE_XPM') )
             else:
                 bmp = (cn('wxBitmap') + '(%s,' + cn('wxBITMAP_TYPE_ANY)')) % \
                       bmp_file[4:].strip()
         elif bmp_file.startswith('code:'):
             if obj.preview:
-                bmp = cn('wxEmptyBitmap') + '(1, 1)'
+                bmp = "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path, cn('wxBITMAP_TYPE_XPM') )
             else:
                 bmp = '(%s)' % \
                       bmp_file[5:].strip()

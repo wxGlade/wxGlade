@@ -1,11 +1,11 @@
 # codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.15 2004/01/25 12:19:30 agriggio Exp $
+# $Id: codegen.py,v 1.16 2004/01/29 09:11:33 dinogen Exp $
 #
 # Copyright (c) 2002-2003 Alberto Griggio <albgrig@tiscalinet.it>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import common
+import common, os
 from tool import *
 
 class PythonCodeGenerator:
@@ -55,17 +55,18 @@ class PythonCodeGenerator:
         else: obj_name = 'self.' + obj.name
 
         def _get_bitmap(bitmap):
+            bmp_preview_path = os.path.join(common.wxglade_path, "icons", "icon.xpm")
             if not bitmap:
                 return cn('wxNullBitmap')
             elif bitmap.startswith('var:'):
                 if obj.preview:
-                    return cn('wxEmptyBitmap(1, 1)')
+                    return "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path, cn('wxBITMAP_TYPE_XPM') )
                 else:
                     return (cn('wxBitmap') + '(%s,' + cn('wxBITMAP_TYPE_ANY') +
                             ')') % (bitmap[4:].strip())
             elif bitmap.startswith('code:'):
                 if obj.preview:
-                    return cn('wxEmptyBitmap(1, 1)')
+                    return "%s('%s',%s)" % (cn('wxBitmap'), bmp_preview_path, cn('wxBITMAP_TYPE_XPM') )
                 else:
                     return '(%s)' % bitmap[5:].strip()
             else:
