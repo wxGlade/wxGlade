@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.46 2004/09/17 13:09:56 agriggio Exp $
+# $Id: widget_properties.py,v 1.47 2004/10/18 09:19:19 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -236,6 +236,7 @@ class TextProperty(Property, _activator):
         def func_2(event):
             if self.text.IsEnabled():
                 function(event)
+            event.Skip()
         EVT_KILL_FOCUS(self.text, func_2)
 
     def get_value(self):
@@ -584,8 +585,10 @@ class DialogProperty(Property, _activator):
 
     def toggle_active(self, active):
         _activator.toggle_active(self, active)
-        try: self.btn.Enable(active)
-        except AttributeError: pass
+        try:
+            self.btn.Enable(active)
+        except AttributeError:
+            pass
 
 # end of class DialogProperty
 

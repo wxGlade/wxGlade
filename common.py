@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.42 2004/10/15 23:30:36 agriggio Exp $
+# $Id: common.py,v 1.43 2004/10/18 09:19:20 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -281,14 +281,18 @@ def save_file(filename, content, which='wxg'):
 
 def get_name_for_autosave(filename=None):
     if filename is None: filename = app_tree.app.filename
-    assert filename is not None
-    path, name = os.path.split(filename)
-    return os.path.join(path, "#~wxg.autosave~%s#" % name)
+    if not filename:
+        import config
+        path, name = config._get_home(), ""
+    else:
+        path, name = os.path.split(filename)
+    ret = os.path.join(path, "#~wxg.autosave~%s#" % name)
+    return ret
 
 
 def autosave_current():
-    if not app_tree.app.filename or app_tree.app.saved:
-        return False # do nothing for now in this case...
+    if app_tree.app.saved:
+        return False # do nothing in this case...
     try:
         outfile = open(get_name_for_autosave(), 'w')
         app_tree.write(outfile)
@@ -300,8 +304,6 @@ def autosave_current():
 
 
 def remove_autosaved():
-    if not app_tree.app.filename:
-        return
     autosaved = get_name_for_autosave()
     if os.path.exists(autosaved):
         try:
@@ -316,9 +318,12 @@ def check_autosaved(filename):
     """
     autosaved = get_name_for_autosave(filename)
     try:
-        orig = os.stat(filename)
-        auto = os.stat(autosaved)
-        return orig.st_mtime < auto.st_mtime
+        if filename:
+            orig = os.stat(filename)
+            auto = os.stat(autosaved)
+            return orig.st_mtime < auto.st_mtime
+        else:
+            return os.path.exists(autosaved)
     except OSError, e:
         print e
         return False

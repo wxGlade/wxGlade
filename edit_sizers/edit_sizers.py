@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.50 2004/10/05 08:49:09 agriggio Exp $
+# $Id: edit_sizers.py,v 1.51 2004/10/18 09:19:19 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -21,7 +21,10 @@ class SizerSlot:
         self.menu = None
 
     def create_widget(self):
-        self.widget = wxWindow(self.parent.widget, -1, size=(20, 20))
+        if misc.check_wx_version(2, 5, 2): style = wxFULL_REPAINT_ON_RESIZE
+        else: style = 0
+        self.widget = wxWindow(self.parent.widget, -1, size=(20, 20),
+                               style=style)
         self.widget.SetBackgroundColour(wxLIGHT_GREY)
         self.widget.SetAutoLayout(True)
         EVT_PAINT(self.widget, self.on_paint)

@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.64 2004/10/15 23:30:36 agriggio Exp $
+# $Id: edit_windows.py,v 1.65 2004/10/18 09:19:19 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -758,6 +758,9 @@ class ManagedBase(WindowBase):
         for v in range(len(value)):
             if value[v]:
                 flags |= self.flags_pos[v]
+        self.set_int_flag(flags)
+
+    def set_int_flag(self, flags):
         self.flag = flags
         if not self.widget: return
         try:
