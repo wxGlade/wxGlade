@@ -2,7 +2,7 @@
 #                 being created
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 from wxPython.wx import *
 from widget_properties import *
@@ -23,9 +23,10 @@ class FileDirDialog:
         log_null = wxLogNull() # to prevent popup messages about lack of
                                # permissions to view the contents of
                                # some directories
-        self.dir_dialog = wxDirDialog(parent, dir_message,
-                                      style=wxDD_DEFAULT_STYLE|
-                                      wxDD_NEW_DIR_BUTTON)
+        style = 0
+        v = wx.__version__.split('.', 2)[-1]
+        if v and int(v[0]) > 2: style = wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON
+        self.dir_dialog = wxDirDialog(parent, dir_message, style=style)
         del log_null
 
     def ShowModal(self):

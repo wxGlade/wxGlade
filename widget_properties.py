@@ -2,7 +2,7 @@
 # (name, size, color, etc.)
 # 
 # Copyright (c) 2002 Alberto Griggio <albgrig@tiscalinet.it>
-# License: GPL (see license.txt)
+# License: Python 2.2 license (see license.txt)
 
 from wxPython.wx import *
 from wxPython.grid import *
@@ -555,8 +555,7 @@ def _reverse_dict(src):
 class FontDialogProperty(DialogProperty):
     font_families_to = { 'default': wxDEFAULT, 'decorative': wxDECORATIVE,
                          'roman': wxROMAN, 'swiss': wxSWISS,
-                         'script':wxSCRIPT, 'modern': wxMODERN,
-                         'teletype': wxTELETYPE }
+                         'script':wxSCRIPT, 'modern': wxMODERN }
     font_families_from = _reverse_dict(font_families_to)
     font_styles_to = { 'normal': wxNORMAL, 'slant': wxSLANT,
                        'italic': wxITALIC }
@@ -568,13 +567,21 @@ class FontDialogProperty(DialogProperty):
 
     def __init__(self, owner, name, parent, can_disable=1):
         if not self.dialog[0]:
+            # check wxPython >= 2.3.3
+            v = wx.__version__.split('.', 2)[-1]
+            if v and int(v[0]) > 2:
+                FontDialogProperty.font_families_to['teletype'] = wxTELETYPE 
+
             data = wxFontData()
             self.dialog[0] = wxFontDialog(parent, data)
             def get_value():
                 font = self.dialog.GetFontData().GetChosenFont()
                 family = font.GetFamily()
-                for f in (wxVARIABLE, wxFIXED):
-                    if family & f: family = family ^ f
+                # check wxPython >= 2.3.3
+                v = wx.__version__.split('.', 2)[-1]
+                if v and int(v[0]) > 2:
+                    for f in (wxVARIABLE, wxFIXED):
+                        if family & f: family = family ^ f
                 return "['%s', '%s', '%s', '%s', '%s', '%s']" % \
                        (font.GetPointSize(),
                         self.font_families_from[family],
