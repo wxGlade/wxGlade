@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxSplitterWindow objects
-# $Id: perl_codegen.py,v 1.4 2004/01/20 12:27:55 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.5 2004/03/30 15:00:23 agriggio Exp $
 #
 # Copyright (c) 2002-2003 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -42,6 +42,8 @@ wxDefaultPosition, wxDefaultSize, %s);\n'
             % (window.name, parent, id, style))
 
         props_buf = plgen.generate_common_properties(window)
+
+        layout_buf = []
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -54,23 +56,23 @@ wxDefaultPosition, wxDefaultSize, %s);\n'
             else:
                 f_name = 'SplitHorizontally'
 
-            props_buf.append('$self->{%s}->%s($self->{%s}, $self->{%s}, %s);\n'
+            layout_buf.append('$self->{%s}->%s($self->{%s}, $self->{%s}, %s);\n'
                 % (window.name, f_name, win_1, win_2, sash_pos))
         else:
             def add_sub(win):
-                props_buf.append('$self->{%s}->SetSplitMode(%s);\n'
+                layout_buf.append('$self->{%s}->SetSplitMode(%s);\n'
                     % (window.name, orientation))
-                props_buf.append('$self->{%s}->Initialize($self->{%s});\n'
+                layout_buf.append('$self->{%s}->Initialize($self->{%s});\n'
                     % (window.name, win))
             if win_1:
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
 
-        return init, props_buf, []
+        return init, props_buf, layout_buf
 
 
-    def get_properties_code(self, obj):
+    def get_layout_code(self, obj):
         plgen = common.code_writers['perl']
         props_buf = []
         prop = obj.properties
@@ -98,8 +100,6 @@ wxDefaultPosition, wxDefaultSize, %s);\n'
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
-
-        props_buf.extend(plgen.generate_common_properties(obj))
 
         return props_buf    
 
