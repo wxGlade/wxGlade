@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.28 2004/12/19 00:55:02 agriggio Exp $
+# $Id: panel.py,v 1.29 2005/04/07 12:56:19 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -327,6 +327,7 @@ def builder(parent, sizer, pos, number=[1]):
 
     panel.set_option(1)
     panel.set_flag("wxEXPAND")
+
     panel.show_widget(True)
 
     common.app_tree.insert(node, sizer.node, pos-1)

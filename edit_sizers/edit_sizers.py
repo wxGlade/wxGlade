@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.59 2005/04/04 18:59:38 agriggio Exp $
+# $Id: edit_sizers.py,v 1.60 2005/04/07 12:56:22 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -569,7 +569,7 @@ class SizerBase(Sizer):
 ##             pos_p.write = write
             prop['pos'] = LayoutPosProperty(self, self.sizer)
 
-    def set_sizer(self, sizer):
+    def set_containing_sizer(self, sizer):
         self.sizer = sizer
         self.sizer_properties['option'].set_sizer(sizer)
         self.sizer_properties['pos'].set_sizer(sizer)
@@ -578,8 +578,8 @@ class SizerBase(Sizer):
         return self.pos - 1
     
     def set_pos(self, value):
-        self.sizer.change_item_pos(self, min(value + 1,
-                                             len(self.sizer.children) - 1))
+        misc.wxCallAfter(self.sizer.change_item_pos, 
+                         self, min(value + 1, len(self.sizer.children) - 1))
 
     def update_pos(self, value):
         #print 'update pos', self.name, value
@@ -732,8 +732,8 @@ class SizerBase(Sizer):
             print self.children, pos
             raise SystemExit
 
-        if hasattr(item, 'set_sizer'):
-            item.set_sizer(self)
+        if hasattr(item, 'set_containing_sizer'):
+            item.set_containing_sizer(self)
         else:
             item.sizer = self
         item.pos = pos
@@ -752,13 +752,14 @@ class SizerBase(Sizer):
             # I have to set wxADJUST_MINSIZE to handle a bug that I'm not
             # able to detect (yet): if the width or height of a widget is -1,
             # the layout is messed up!
+            
             self.widget.Add(item.widget, option, flag, border)
+
             if size: w, h = size
             else: w, h = item.widget.GetBestSize()
             if w == -1: w = item.widget.GetBestSize()[0]
             if h == -1: h = item.widget.GetBestSize()[1]
-            if option == 0 or not (flag & wxEXPAND):
-                self.widget.SetItemMinSize(item.widget, w, h)
+            self.widget.SetItemMinSize(item.widget, w, h)
             return
 
         if not misc.check_wx_version(2, 5):
@@ -782,10 +783,12 @@ class SizerBase(Sizer):
                 w.Destroy()
                 
         try: # if the item was a window, set its size to a reasonable value
+##         if elem.IsWindow():
             if size: w, h = size
             else: w, h = item.widget.GetBestSize()
             if w == -1: w = item.widget.GetBestSize()[0]
             if h == -1: h = item.widget.GetBestSize()[1]
+
             option = 0
             if misc.check_wx_version(2, 5): option = elem.GetProportion()
             else: option = elem.GetOption()
@@ -793,11 +796,12 @@ class SizerBase(Sizer):
             if not size or (option == 0 or not (flag & wxEXPAND)):
                 self.widget.SetItemMinSize(item.widget, w, h)
             else:
-                self.widget.SetItemMinSize(item.widget,
-                                           *item.widget.GetBestSize())
+                w, h = item.widget.GetBestSize()
+                self.widget.SetItemMinSize(item.widget, w, h)
+                #*item.widget.GetBestSize())
             #self.widget.SetItemMinSize(item.widget, w, h)
         except Exception, e:
-            #import traceback; traceback.print_exc()
+            import traceback; traceback.print_exc()
             pass
         if force_layout: self.layout() # update the layout of self
 
@@ -860,19 +864,26 @@ class SizerBase(Sizer):
         if border is not None:
             elem.SetBorder(border)
         if elem.IsWindow():
-            if size is None: size = elem.GetSize()
             item = elem.GetWindow()
+            if size is None: size = elem.GetSize()
             w, h = size
             if w == -1: w = item.GetBestSize()[0]
             if h == -1: h = item.GetBestSize()[1]
-            option = 0
-            if misc.check_wx_version(2, 5): option = elem.GetProportion()
-            else: option = elem.GetOption()
-            flag = elem.GetFlag()
-            if not size or (option == 0 or not (flag & wxEXPAND)):
-                self.widget.SetItemMinSize(item, w, h)
+            newelem = wxSizerItem()
+            newelem.SetWindow(item)
+            newelem.SetFlag(elem.GetFlag())
+            newelem.SetBorder(elem.GetBorder())
+            if misc.check_wx_version(2, 5):
+                newelem.SetProportion(elem.GetProportion())
             else:
-                self.widget.SetItemMinSize(item, *item.GetBestSize())
+                newelem.SetOption(elem.GetOption())
+            w, h = size
+            if w == -1: w = item.GetBestSize()[0]
+            if h == -1: h = item.GetBestSize()[1]
+            newelem.SetInitSize(w, h)
+            self.widget.InsertItem(pos, newelem)
+            #self.children[pos] = newelem
+            self.widget.Remove(pos+1)
         if force_layout:
             self.layout(True)
             #try: self.sizer.Layout()
@@ -1217,6 +1228,7 @@ class EditBoxSizer(SizerBase):
     def create_widget(self):
         self.widget = wxGladeBoxSizer(self.orient)
         self.widget.Add(self._btn, 0, wxEXPAND)
+        to_lay_out = []
         for c in self.children[1:]: # we've already added self._btn
             c.item.show_widget(True)
             if isinstance(c.item, SizerSlot):
@@ -1224,19 +1236,38 @@ class EditBoxSizer(SizerBase):
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:
                 sp = c.item.properties.get('size')
-                if sp and sp.is_active() and \
-                       (c.option == 0 or not (c.flag & wxEXPAND)):
-                    size = sp.get_value().strip()
-                    if size[-1] == 'd':
-                        size = size[:-1]
-                        use_dialog_units = True
-                    else: use_dialog_units = False
-                    w, h = [ int(v) for v in size.split(',') ]
-                    if use_dialog_units:
-                        w, h = wxDLG_SZE(c.item.widget, (w, h))
-                else:
-                    w, h = c.item.widget.GetBestSize()
-                self.widget.SetItemMinSize(c.item.widget, w, h)
+                if sp and sp.is_active():
+                    if (c.option != 0 or (c.flag & wxEXPAND)) and \
+                           (misc.check_wx_version(2, 4) or \
+                            not (c.flag & wxFIXED_MINSIZE)):
+                        c.item.widget.Layout()
+                        w, h = c.item.widget.GetBestSize()
+                        if misc.check_wx_version(2, 5):
+                            #print "HERE:", w, h
+                            c.item.widget.SetMinSize((w, h))
+                    else:
+##                     if misc.check_wx_version(2, 4) or \
+##                            ((c.flag & wxFIXED_MINSIZE) and \
+##                             (c.option == 0 or not (c.flag & wxEXPAND))):
+                        size = sp.get_value().strip()
+                        if size[-1] == 'd':
+                            size = size[:-1]
+                            use_dialog_units = True
+                        else: use_dialog_units = False
+                        w, h = [ int(v) for v in size.split(',') ]
+                        if use_dialog_units:
+                            w, h = wxDLG_SZE(c.item.widget, (w, h))
+##                     else:
+##                         w, h = c.item.widget.GetBestSize()
+                        # now re-set the item to update the size correctly...
+                        to_lay_out.append((c.item.pos, (w, h)))
+##                 else:
+##                     w, h = c.item.widget.GetBestSize()
+##                 self.widget.SetItemMinSize(c.item.widget, w, h)
+        for pos, size in to_lay_out:
+            #print 'set_item:', pos, size
+            self.set_item(pos, size=size, force_layout=False)
+        self.layout(True)
         if not self.toplevel and hasattr(self, 'sizer'):
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer'
             # call
@@ -1455,27 +1486,54 @@ class GridSizerBase(SizerBase):
         """\
         This must be overriden and called at the end of the overriden version
         """
+        to_lay_out = []
         for c in self.children[1:]: # we've already added self._btn
             c.item.show_widget(True)
             if isinstance(c.item, SizerSlot):
                 self.widget.Add(c.item.widget, 1, wxEXPAND)
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:
-                sp = c.item.properties.get('size')
-                if sp and sp.is_active() and \
-                       (c.option == 0 or not (c.flag & wxEXPAND)):
-                    size = sp.get_value().strip()
-                    if size[-1] == 'd':
-                        size = size[:-1]
-                        use_dialog_units = True
-                    else: use_dialog_units = False
-                    w, h = [ int(v) for v in size.split(',') ]
-                    if use_dialog_units:
-                        w, h = wxDLG_SZE(c.item.widget, (w, h))
-                else:
-                    w, h = c.item.widget.GetBestSize()
-                self.widget.SetItemMinSize(c.item.widget, w, h)
-        self.widget.Layout()
+                if sp and sp.is_active():
+                    if (c.option != 0 or (c.flag & wxEXPAND)) and \
+                           (misc.check_wx_version(2, 4) or \
+                            not (c.flag & wxFIXED_MINSIZE)):
+                        c.item.widget.Layout()
+                        w, h = c.item.widget.GetBestSize()
+                        if misc.check_wx_version(2, 5):
+                            c.item.widget.SetMinSize((w, h))
+                    else:
+                        size = sp.get_value().strip()
+                        if size[-1] == 'd':
+                            size = size[:-1]
+                            use_dialog_units = True
+                        else: use_dialog_units = False
+                        w, h = [ int(v) for v in size.split(',') ]
+                        if use_dialog_units:
+                            w, h = wxDLG_SZE(c.item.widget, (w, h))
+                        # now re-set the item to update the size correctly...
+                        to_lay_out.append((c.item.pos, (w, h)))
+
+##                 sp = c.item.properties.get('size')
+##                 if sp and sp.is_active() and \
+##                        (c.option == 0 or not (c.flag & wxEXPAND)):
+##                     size = sp.get_value().strip()
+##                     if size[-1] == 'd':
+##                         size = size[:-1]
+##                         use_dialog_units = True
+##                     else: use_dialog_units = False
+##                     w, h = [ int(v) for v in size.split(',') ]
+##                     if use_dialog_units:
+##                         w, h = wxDLG_SZE(c.item.widget, (w, h))
+##                 else:
+##                     w, h = c.item.widget.GetBestSize()
+##                 self.widget.SetItemMinSize(c.item.widget, w, h)
+        for pos, size in to_lay_out:
+            #print 'set_item:', pos, size
+            self.set_item(pos, size=size, force_layout=False)
+        self.layout(True)
+        
+##         self.widget.Layout()
+
 ##         print self.name, 'rows, cols:', self.rows, self.cols, len(self.children)
 ##         self.set_rows(self.rows)
 ##         self.set_cols(self.cols)

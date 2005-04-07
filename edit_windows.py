@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.78 2005/04/04 18:59:39 agriggio Exp $
+# $Id: edit_windows.py,v 1.79 2005/04/07 12:56:23 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -596,7 +596,8 @@ class WindowBase(EditBase):
                     self.widget.SetMinSize(size)
                 self.widget.SetSize(size)
                 try:
-                    self.sizer.set_item(self.pos, size=self.widget.GetSize())
+                    #self.sizer.set_item(self.pos, size=self.widget.GetSize())
+                    self.sizer.set_item(self.pos, size=size)
                 except AttributeError:
                     pass
 
@@ -728,6 +729,8 @@ class ManagedBase(WindowBase):
         szp['flag'].set_value(self.get_flag())
         szp['border'].set_value(self.get_border())
         szp['pos'].set_value(self.pos-1)
+##         if self.properties['size'].is_active():
+##             self.sizer.set_item(self.pos, size=self.widget.GetSize())
 
     def create_properties(self):
         WindowBase.create_properties(self)

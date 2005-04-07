@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.50 2004/12/08 18:11:31 agriggio Exp $
+# $Id: widget_properties.py,v 1.51 2005/04/07 12:56:22 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -235,7 +235,7 @@ class TextProperty(Property, _activator):
     def bind_event(self, function):
         def func_2(event):
             if self.text.IsEnabled():
-                function(event)
+                misc.wxCallAfter(function, event)
             event.Skip()
         EVT_KILL_FOCUS(self.text, func_2)
 
@@ -473,9 +473,10 @@ class SpinProperty(Property, _activator):
         self.bind_event(self.on_change_val)
 
     def bind_event(self, function):
-        def func_2(event, function=function, self=self):
+        def func_2(event):
             if self.is_active():
-                function(event)
+                misc.wxCallAfter(function, event)
+            event.Skip()
         EVT_KILL_FOCUS(self.spin, func_2)
         if wxPlatform == '__WXMAC__':
             EVT_TEXT(self.spin, self.spin.GetId(), func_2)
