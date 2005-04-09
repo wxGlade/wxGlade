@@ -1,5 +1,5 @@
 # static_bitmap.py: wxStaticBitmap objects
-# $Id: static_bitmap.py,v 1.16 2004/11/02 09:52:01 agriggio Exp $
+# $Id: static_bitmap.py,v 1.17 2005/04/09 22:01:04 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -89,7 +89,9 @@ class EditStaticBitmap(ManagedBase):
             self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
     def load_bitmap(self, empty=[None]):
-        if self.bitmap:
+        if self.bitmap  and not ( self.bitmap.startswith('var:') or
+                                    self.bitmap.startswith('code:')
+                                ):
             return wxBitmap(os.path.abspath(self.bitmap), wxBITMAP_TYPE_ANY)
         else:
             if empty[0] is None:

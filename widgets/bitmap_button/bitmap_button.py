@@ -1,5 +1,5 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.19 2004/12/08 18:11:29 agriggio Exp $
+# $Id: bitmap_button.py,v 1.20 2005/04/09 22:00:15 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -88,11 +88,13 @@ class EditBitmapButton(ManagedBase):
 
     def load_bitmap(self, which=None, empty=[None]):
         if which is None: which = self.bitmap
-        if which:
+        if which and not ( which.startswith('var:') or
+                            which.startswith('code:')
+                          ):
             return wxBitmap(which, wxBITMAP_TYPE_ANY)
         else:
             if empty[0] is None:
-                empty[0] = wxEmptyBitmap(1, 1)                
+                empty[0] = wxEmptyBitmap(1, 1)         
             return empty[0]
 
     def get_default(self):
