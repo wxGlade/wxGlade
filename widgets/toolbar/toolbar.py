@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.18 2004/12/19 00:54:58 agriggio Exp $
+# $Id: toolbar.py,v 1.19 2005/04/09 22:12:56 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -661,15 +661,23 @@ class EditToolBar(EditBase, PreviewMixin):
                 self._tb.AddSeparator()
             else:
                 if tool.bitmap1:
-                    bmp1 = wxBitmap(misc.wxstr(tool.bitmap1),
+                    bmp1 = None
+                    if not ( tool.bitmap1.startswith('var:') or
+                              tool.bitmap1.startswith('code:')
+                            ):
+                        bmp1 = wxBitmap(misc.wxstr(tool.bitmap1),
                                     wxBITMAP_TYPE_ANY)
-                    if not bmp1.Ok(): bmp1 = wxEmptyBitmap(1, 1)
+                    if not bmp1 or not bmp1.Ok(): bmp1 = wxEmptyBitmap(1, 1)
                 else:
                     bmp1 = wxNullBitmap
                 if tool.bitmap2:
-                    bmp2 = wxBitmap(misc.wxstr(tool.bitmap2),
+                    bmp2 = None
+                    if not ( tool.bitmap2.startswith('var:') or
+                              tool.bitmap2.startswith('code:')
+                            ):
+                        bmp2 = wxBitmap(misc.wxstr(tool.bitmap2),
                                     wxBITMAP_TYPE_ANY)
-                    if not bmp1.Ok(): bmp1 = wxEmptyBitmap(1, 1)
+                    if not bmp2 or not bmp2.Ok(): bmp2 = wxEmptyBitmap(1, 1)
                 else:
                     bmp2 = wxNullBitmap
                 # signature of AddTool for 2.3.2.1:
