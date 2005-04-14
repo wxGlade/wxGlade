@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.60 2005/04/07 12:56:22 agriggio Exp $
+# $Id: edit_sizers.py,v 1.61 2005/04/14 09:47:39 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1493,6 +1493,7 @@ class GridSizerBase(SizerBase):
                 self.widget.Add(c.item.widget, 1, wxEXPAND)
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:
+                sp = c.item.properties.get('size')
                 if sp and sp.is_active():
                     if (c.option != 0 or (c.flag & wxEXPAND)) and \
                            (misc.check_wx_version(2, 4) or \
