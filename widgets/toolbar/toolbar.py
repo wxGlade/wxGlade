@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.19 2005/04/09 22:12:56 crazyinsomniac Exp $
+# $Id: toolbar.py,v 1.20 2005/04/16 00:42:40 agriggio Exp $
 #
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
