@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.61 2005/04/14 09:47:39 agriggio Exp $
+# $Id: edit_sizers.py,v 1.62 2005/04/26 18:56:12 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -884,6 +884,7 @@ class SizerBase(Sizer):
             self.widget.InsertItem(pos, newelem)
             #self.children[pos] = newelem
             self.widget.Remove(pos+1)
+            
         if force_layout:
             self.layout(True)
             #try: self.sizer.Layout()
@@ -933,7 +934,7 @@ class SizerBase(Sizer):
                 c.item.widget.Refresh()
             except Exception, e: pass
         if recursive:
-            if hasattr(self, 'sizer'):
+            if getattr(self, 'sizer', None) is not None:
                 self.sizer.layout(recursive)
 
     # 2002-10-09 -------------------------------------------------------------
@@ -1712,6 +1713,34 @@ class GridSizerBase(SizerBase):
         self.layout(True)
         common.app_tree.app.saved = False
         
+    def _set_item_widget(self, pos, option, flag, border, size, force_layout):
+        if not self.widget: return
+        
+        try: elem = self.widget.GetChildren()[pos]
+        except IndexError: return # this may happen during xml loading
+
+        if option is not None:
+            if not misc.check_wx_version(2, 5):
+                elem.SetOption(option)
+            else:
+                elem.SetProportion(option)
+        if flag is not None:
+            elem.SetFlag(flag)
+        if border is not None:
+            elem.SetBorder(border)
+        if elem.IsWindow():
+            if size is None: size = elem.GetSize()
+            item = elem.GetWindow()
+            w, h = size
+            if w == -1: w = item.GetBestSize()[0]
+            if h == -1: h = item.GetBestSize()[1]
+            self.widget.SetItemMinSize(item, w, h)
+            
+        if force_layout:
+            self.layout(True)
+            #try: self.sizer.Layout()
+            #except AttributeError: pass
+
 # end of class GridSizerBase
 
 
