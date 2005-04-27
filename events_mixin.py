@@ -1,5 +1,5 @@
 # events_mixin.py: mixin class for 'events' property
-# $Id: events_mixin.py,v 1.3 2004/12/10 18:45:59 agriggio Exp $
+# $Id: events_mixin.py,v 1.4 2005/04/27 09:39:14 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sf.net>
 # License: MIT (see license.txt)
@@ -79,7 +79,7 @@ class EventsProperty(GridProperty):
 
 class EventsPropertyHandler(object):
     def __init__(self, owner):
-        print 'EventsPropertyHandler', owner.name
+        #print 'EventsPropertyHandler', owner.name
         self.owner = owner
         self.handlers = {}
         self.event_name = None

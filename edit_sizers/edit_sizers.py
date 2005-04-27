@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.62 2005/04/26 18:56:12 agriggio Exp $
+# $Id: edit_sizers.py,v 1.63 2005/04/27 09:39:12 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -877,9 +877,6 @@ class SizerBase(Sizer):
                 newelem.SetProportion(elem.GetProportion())
             else:
                 newelem.SetOption(elem.GetOption())
-            w, h = size
-            if w == -1: w = item.GetBestSize()[0]
-            if h == -1: h = item.GetBestSize()[1]
             newelem.SetInitSize(w, h)
             self.widget.InsertItem(pos, newelem)
             #self.children[pos] = newelem
