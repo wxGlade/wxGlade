@@ -1,7 +1,7 @@
 # Grid.py: wxGrid objects
-# $Id: grid.py,v 1.28 2004/12/08 18:11:27 agriggio Exp $
+# $Id: grid.py,v 1.29 2005/05/06 21:48:20 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

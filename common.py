@@ -1,7 +1,7 @@
 # common.py: global variables
-# $Id: common.py,v 1.48 2005/01/20 09:31:48 agriggio Exp $
+# $Id: common.py,v 1.49 2005/05/06 21:48:26 agriggio Exp $
 # 
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -336,7 +336,7 @@ def check_autosaved(filename):
         else:
             return os.path.exists(autosaved)
     except OSError, e:
-        print e
+        if e.errno != 2: print e
         return False
     
 

@@ -1,7 +1,7 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.29 2005/04/07 12:56:19 agriggio Exp $
+# $Id: panel.py,v 1.30 2005/05/06 21:48:19 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -10,6 +10,7 @@ import common, misc
 from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase, TopLevelBase
+
 
 class PanelBase(object):
     def __init__(self, style=wxTAB_TRAVERSAL):
@@ -20,11 +21,11 @@ class PanelBase(object):
         self.top_sizer = None # sizer to handle the layout of children
         self.style = style
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
+        self.style_pos  = [wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
                            wxRAISED_BORDER, wxSTATIC_BORDER,
                            wxNO_BORDER, wxNO_3D,
                            wxTAB_TRAVERSAL, wxWANTS_CHARS,
-                           wxNO_FULL_REPAINT_ON_RESIZE, wxCLIP_CHILDREN)
+                           wxNO_FULL_REPAINT_ON_RESIZE, wxCLIP_CHILDREN]
         style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
                         'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
                         'wxSTATIC_BORDER',
@@ -43,7 +44,6 @@ class PanelBase(object):
                                                 self.set_scroll_rate)
         self.properties['scroll_rate'] = TextProperty(self, 'scroll_rate',
                                                       None, can_disable=True)
-
 
     def finish_widget_creation(self):
         super(PanelBase, self).finish_widget_creation(
@@ -290,13 +290,15 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         if win is not None: win.Destroy()
 
     def on_size(self, event):
+        w, h = event.GetSize()
         if (wxPlatform == '__WXMSW__' or wxPlatform == '__WXMAC__') \
                and self.skip_on_size:
             self.skip_on_size = False
             return
         super(EditTopLevelPanel, self).on_size(event)
-        w, h = self.widget.GetClientSize()
+        #w, h = self.widget.GetClientSize()
         self.skip_on_size = True
+        #self.widget.GetParent().SetClientSize((w+2, h+2))
         self.widget.GetParent().SetClientSize((w+2, h+2))
 
     def set_scrollable(self, value):

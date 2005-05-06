@@ -1,8 +1,8 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.51 2005/04/07 12:56:22 agriggio Exp $
+# $Id: widget_properties.py,v 1.52 2005/05/06 21:48:24 agriggio Exp $
 # 
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

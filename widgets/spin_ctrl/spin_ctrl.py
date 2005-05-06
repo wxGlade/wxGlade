@@ -1,7 +1,7 @@
 # spin_ctrl.py: wxSpinCtrl objects
-# $Id: spin_ctrl.py,v 1.12 2004/12/08 18:11:24 agriggio Exp $
+# $Id: spin_ctrl.py,v 1.13 2005/05/06 21:48:18 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

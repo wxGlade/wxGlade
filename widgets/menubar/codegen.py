@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.17 2004/12/10 18:22:52 agriggio Exp $
+# $Id: codegen.py,v 1.18 2005/05/06 21:48:20 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

@@ -1,7 +1,7 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.79 2005/04/07 12:56:23 agriggio Exp $
+# $Id: edit_windows.py,v 1.80 2005/05/06 21:48:26 agriggio Exp $
 # 
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -111,7 +111,7 @@ class EditBase(EventsMixin):
             nb_szr = self.notebook.sizer
             self.notebook.DeleteAllPages()
             self.notebook.Destroy()
-            nb_szr.Destroy()
+            if nb_szr is not None: nb_szr.Destroy()
         # ...finally, destroy our widget (if needed)
         if self.widget and not self._dont_destroy:
             self.widget.Destroy()
@@ -123,9 +123,12 @@ class EditBase(EventsMixin):
         """
         self.notebook = wxNotebook(self.property_window, -1)
 
-        nb_sizer = wxNotebookSizer(self.notebook)
+        if not misc.check_wx_version(2, 5, 2):
+            nb_sizer = wxNotebookSizer(self.notebook)
+            self.notebook.sizer = nb_sizer
+        else:
+            self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
-        self.notebook.sizer = nb_sizer
         self.notebook.Hide()
 
         self._common_panel = panel = wxScrolledWindow(self.notebook, -1,
@@ -208,6 +211,7 @@ class EditBase(EventsMixin):
         child = sizer_tmp.GetChildren()[0]
         w = child.GetWindow()
         if w is self.notebook: return
+
         try:
             index = -1
             title = w.GetPageText(w.GetSelection())
@@ -216,7 +220,7 @@ class EditBase(EventsMixin):
                     index = i
                     break
         except AttributeError, e:
-            print e
+            #print e
             index = -1
         w.Hide()
         if 0 <= index < self.notebook.GetPageCount():
@@ -224,13 +228,16 @@ class EditBase(EventsMixin):
         self.notebook.Reparent(self.property_window)
         child.SetWindow(self.notebook)
         w.Reparent(misc.hidden_property_panel)
-        
+
+        # ALB moved this before Layout, it seems to be needed for wx2.6...
+        self.notebook.Show()
+
         self.property_window.Layout()
         self.property_window.SetTitle('Properties - <%s>' % self.name)
         try: common.app_tree.select_item(self.node)
         except AttributeError: pass
-        self.notebook.Show()
         self.widget.SetFocus()
+        
         
     def on_set_focus(self, event):
         """\

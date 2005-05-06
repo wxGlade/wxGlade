@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxListCtrl objects
-# $Id: codegen.py,v 1.6 2004/12/13 18:45:22 agriggio Exp $
+# $Id: codegen.py,v 1.7 2005/05/06 21:48:20 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

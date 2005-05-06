@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxGrid objects
-# $Id: codegen.py,v 1.23 2005/04/04 18:59:38 agriggio Exp $
+# $Id: codegen.py,v 1.24 2005/05/06 21:48:20 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -62,7 +62,7 @@ class PythonCodeGenerator(object):
     import_modules = property(__get_import_modules)
 
     def cn(self, c):
-        print 'PythonCodeGenerator.cn with arg:', c
+        #print 'PythonCodeGenerator.cn with arg:', c
         if self.pygen.use_new_namespace:
             if c[:2] == 'wx':
                 c = c[2:]

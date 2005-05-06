@@ -1,7 +1,7 @@
 # sizers_codegen.py: code generation functions for the various wxSizerS
-# $Id: sizers_codegen.py,v 1.13 2004/10/15 23:30:32 agriggio Exp $
+# $Id: sizers_codegen.py,v 1.14 2005/05/06 21:48:23 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

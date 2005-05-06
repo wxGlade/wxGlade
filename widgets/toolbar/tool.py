@@ -1,7 +1,7 @@
 # tool.py: Tool objects
-# $Id: tool.py,v 1.6 2004/12/10 12:30:50 agriggio Exp $
+# $Id: tool.py,v 1.7 2005/05/06 21:48:16 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

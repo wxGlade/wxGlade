@@ -2,9 +2,9 @@
 # xrc2wxg.py: Converts an XRC resource file (in a format wxGlade likes,
 # i.e. all windows inside sizers, no widget unknown to wxGlade, ...) into a
 # WXG file
-# $Id: xrc2wxg.py,v 1.17 2005/01/20 09:26:30 agriggio Exp $
+# $Id: xrc2wxg.py,v 1.18 2005/05/06 21:48:24 agriggio Exp $
 # 
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

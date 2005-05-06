@@ -1,7 +1,7 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.45 2005/03/05 13:39:31 agriggio Exp $
+# $Id: tree.py,v 1.46 2005/05/06 21:48:25 agriggio Exp $
 # 
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -434,22 +434,23 @@ class WidgetTree(wxTreeCtrl, Tree):
         Shows the widget of the given node and all its children
         """
         if toplevel:
+            if not wxIsBusy():
+                wxBeginBusyCursor()
             if not node.widget.widget:
                 node.widget.create_widget()
                 node.widget.finish_widget_creation()
             if node.children:
                 for c in node.children: self.show_widget(c)
-##             # set the best size for the widget (if no one is given) before
-##             # showing it
-##             if not node.widget.properties['size'].is_active() and \
-##                    node.widget.sizer:
-##                 node.widget.sizer.fit_parent() #node.widget)
             node.widget.post_load()
             node.widget.show_widget(True)
             node.widget.show_properties()
             node.widget.widget.Raise()
-
-
+            # set the best size for the widget (if no one is given)
+            if not node.widget.properties['size'].is_active() and \
+                   node.widget.sizer:
+                node.widget.sizer.fit_parent()
+            if wxIsBusy():
+                wxEndBusyCursor()
         else:
             import edit_sizers
             def show_rec(node):
@@ -462,8 +463,7 @@ class WidgetTree(wxTreeCtrl, Tree):
 ##                 if isinstance(w, edit_sizers.SizerBase): return
 ##                 elif not w.properties['size'].is_active() and \
 ##                          w.sizer and w.sizer.toplevel:
-##                     w.sizer.fit_parent()
-                    
+##                     w.sizer.fit_parent()                    
             show_rec(node)
 
     def show_toplevel(self, event):

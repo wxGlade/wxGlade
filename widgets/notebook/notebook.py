@@ -1,7 +1,7 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.26 2005/01/10 20:22:30 agriggio Exp $
+# $Id: notebook.py,v 1.27 2005/05/06 21:48:19 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -46,9 +46,9 @@ def _ugly_hack_for_win32_notebook_bug(notebook_widget):
     
     
 class NotebookVirtualSizer(Sizer):
-    """\
+    '''\
     "Virtual sizer" responsible for the management of the pages of a Notebook.
-    """
+    '''
     def __init__(self, *args, **kwds):
         Sizer.__init__(self, *args, **kwds)
         self._itempos = 0
@@ -76,6 +76,9 @@ class NotebookVirtualSizer(Sizer):
             except AttributeError, e:
                 #print e
                 pass
+        if self.window.sizer is not None:
+            self.window.sizer.set_item(
+                self.window.pos, size=self.window.widget.GetBestSize())
             
     def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None,
                  force_layout=True):
@@ -85,7 +88,7 @@ class NotebookVirtualSizer(Sizer):
         #print 'pos:', pos, 'item.name:', item.name
         self.window.tabs[pos-1][1] = item
         item._dont_destroy = True
-    
+
     def free_slot(self, pos, force_layout=True):
         """\
         Replaces the element at pos with an empty slot
@@ -195,7 +198,8 @@ class EditNotebook(ManagedBase):
 
     def create_widget(self):
         self.widget = wxNotebook(self.parent.widget, self.id, style=self.style)
-        self.nb_sizer = wxNotebookSizer(self.widget)
+        if not misc.check_wx_version(2, 5, 2):
+            self.nb_sizer = wxNotebookSizer(self.widget)
 
     def show_widget(self, yes):
         ManagedBase.show_widget(self, yes)
@@ -205,7 +209,8 @@ class EditNotebook(ManagedBase):
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
         # replace 'self' with 'self.nb_sizer' in 'self.sizer'
-        self.sizer._fix_notebook(self.pos, self.nb_sizer)
+        if not misc.check_wx_version(2, 5, 2):
+            self.sizer._fix_notebook(self.pos, self.nb_sizer)        
 
     def create_properties(self):
         ManagedBase.create_properties(self)

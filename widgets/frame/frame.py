@@ -1,7 +1,7 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.40 2005/02/07 12:46:59 agriggio Exp $
+# $Id: frame.py,v 1.41 2005/05/06 21:48:21 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -13,6 +13,9 @@ from widget_properties import *
 from edit_windows import EditBase, TopLevelBase
 
 class EditStatusBar(EditBase):
+
+    _hidden_frame = None
+    
     def __init__(self, parent, property_window):
         EditBase.__init__(self, parent.name + '_statusbar',
                           'wxStatusBar', parent, id, property_window,
@@ -103,9 +106,14 @@ class EditStatusBar(EditBase):
             if self.widget: self.widget.Hide()
             EditBase.remove(self)
         else:
+            if misc.check_wx_version(2, 6):
+                if EditStatusBar._hidden_frame is None:
+                    EditStatusBar._hidden_frame = wxFrame(None, -1, "")
+                self.widget.Reparent(EditStatusBar._hidden_frame)
             self.widget = None
 
-    def popup_menu(self, *args): pass # to avoid strange segfault :)
+    def popup_menu(self, *args):
+        pass # to avoid strange segfault :)
 
     def get_property_handler(self, name):
         class FieldsHandler:

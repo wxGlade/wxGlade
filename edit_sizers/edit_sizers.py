@@ -1,7 +1,7 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.63 2005/04/27 09:39:12 agriggio Exp $
+# $Id: edit_sizers.py,v 1.64 2005/05/06 21:48:23 agriggio Exp $
 # 
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -595,8 +595,11 @@ class SizerBase(Sizer):
         Displays the Properties of self
         """
         self.notebook = wxNotebook(common.property_panel, -1)
-        nb_sizer = wxNotebookSizer(self.notebook)
-        self.notebook.sizer = nb_sizer
+        if not misc.check_wx_version(2, 5, 2):
+            nb_sizer = wxNotebookSizer(self.notebook)
+            self.notebook.sizer = nb_sizer
+        else:
+            self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
         panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         sizer_tmp = wxBoxSizer(wxVERTICAL)
@@ -685,7 +688,7 @@ class SizerBase(Sizer):
                     index = i
                     break
         except AttributeError, e:
-            print e
+            #print e
             index = -1
         w.Hide()
         if 0 <= index < self.notebook.GetPageCount():
@@ -694,10 +697,12 @@ class SizerBase(Sizer):
         child.SetWindow(self.notebook)
         w.Reparent(misc.hidden_property_panel)
 
+        # ALB moved this before Layout, it seems to be needed for wx2.6...
+        self.notebook.Show()
+
         self.property_window.Layout()
         self.property_window.SetTitle('Properties - <%s>' % self.name)
         if hasattr(self, 'node'): common.app_tree.select_item(self.node)
-        self.notebook.Show()
         try: self._btn.SetFocus()
         except AttributeError: pass
         
@@ -918,10 +923,14 @@ class SizerBase(Sizer):
                 szr.Layout()
             return
         elif self.toplevel and isinstance(self.window, TopLevelBase):
-            self.window.widget.Layout()
+            #self.window.widget.Layout()
+            evt = wxSizeEvent(self.window.widget.GetSize(),
+                              self.window.widget.GetId())
+            wxPostEvent(self.window.widget, evt)
             # don't change the size of the window
-            if misc.check_wx_version(2, 4, 1):
-                # this seems to work bad for 2.4.0
+            if misc.check_wx_version(2, 4, 1) and \
+                   not misc.check_wx_version(2, 6, 0):
+                # this seems to work bad for 2.4.0 (and 2.6 too... 2005-05-01)
                 self.widget.FitInside(self.window.widget)
             return
         self.widget.SetMinSize(self.widget.CalcMin())
@@ -1066,7 +1075,7 @@ class SizerBase(Sizer):
             nb_szr = self.notebook.sizer
             self.notebook.DeleteAllPages()
             self.notebook.Destroy()
-            nb_szr.Destroy()
+            if nb_szr is not None: nb_szr.Destroy()
         for c in self.children:
             if c.item and isinstance(c.item, SizerSlot): c.item.delete()
         if self.toplevel:
@@ -1945,6 +1954,7 @@ def _builder(parent, sizer, pos, orientation=wxVERTICAL, slots=1,
         sz = EditStaticBoxSizer(name, parent, orientation, label, num, topl)
     else:
         sz = EditBoxSizer(name, parent, orientation, num, topl)
+
     if sizer is not None:
         sizer.add_item(sz, pos, 1, wxEXPAND)
         node = Tree.Node(sz)
@@ -1960,7 +1970,7 @@ def _builder(parent, sizer, pos, orientation=wxVERTICAL, slots=1,
             common.app_tree.insert(node, parent.node, pos-1)
             sz.pos = pos
 
-    sz.show_widget(show) #True)
+    sz.show_widget(show)
     if sizer is not None:
         sz.sizer_properties['flag'].set_value('wxEXPAND')
         sz.sizer_properties['pos'].set_value(pos-1)

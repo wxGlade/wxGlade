@@ -1,7 +1,7 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.21 2004/12/19 00:55:03 agriggio Exp $
+# $Id: menubar.py,v 1.22 2005/05/06 21:48:20 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

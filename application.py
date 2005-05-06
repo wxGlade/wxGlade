@@ -1,8 +1,8 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.47 2005/01/14 14:16:33 agriggio Exp $
+# $Id: application.py,v 1.48 2005/05/06 21:48:26 agriggio Exp $
 # 
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -94,9 +94,12 @@ class Application(object):
     def __init__(self, property_window):
         self.property_window = property_window
         self.notebook = wxNotebook(self.property_window, -1)
-        nb_sizer = wxNotebookSizer(self.notebook)
+        if not misc.check_wx_version(2, 5, 2):
+            nb_sizer = wxNotebookSizer(self.notebook)
+            self.notebook.sizer = nb_sizer
+        else:
+            self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
-        self.notebook.sizer = nb_sizer
         self.notebook.Hide()
         #panel = wxPanel(self.notebook, -1)
         panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)

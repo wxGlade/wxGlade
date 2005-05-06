@@ -1,7 +1,7 @@
 # ChoicesCodeHandler.py: handler for the 'choices' property of various elements
-# $Id: ChoicesCodeHandler.py,v 1.6 2004/09/17 13:09:55 agriggio Exp $
+# $Id: ChoicesCodeHandler.py,v 1.7 2005/05/06 21:48:23 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
