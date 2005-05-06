@@ -1,17 +1,21 @@
- Authors:
+ Main Developer:
  ---------------------------------------------------------------------------
  - Alberto Griggio <agriggio@users.sourceforge.net>
+
+ Other Developers:
+ ---------------------------------------------------------------------------
  - Marcello Semboli <dinogen@supereva.it>
- - Richard Lawson <richard.lawson@colinx.com>
  - D.H. <crazyinsomniac@yahoo.com> (Perl code generation)
  - Georges Khaznadar <gekhajofour@netinfo.fr> (debian package maintainer)
+ - Kevin Walzer (OSX app bundle maintainer)
 
- Former Authors:
+ Former Developers:
  ---------------------------------------------------------------------------
  - Marco Barisione <marco.bari@vene.ws>
 
  Contributors:
  ---------------------------------------------------------------------------
+ - Richard Lawson <richard.lawson@colinx.com>
  - Alex Thuering <ntalex@web.de>: general virtual sizers support and
    porting of the SplitterWindow to this new model
  - Brendan Oakley <pradoderobles@angelfire.com>: editor of the new user's

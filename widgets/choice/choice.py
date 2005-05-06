@@ -1,7 +1,7 @@
 # choice.py: wxChoice objects
-# $Id: choice.py,v 1.14 2004/12/08 18:11:28 agriggio Exp $
+# $Id: choice.py,v 1.15 2005/05/06 21:48:22 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.20 2004/12/19 23:32:10 agriggio Exp $
+# $Id: codegen.py,v 1.21 2005/05/06 21:48:17 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

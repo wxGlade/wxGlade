@@ -1,7 +1,7 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.40 2005/01/10 20:22:35 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.41 2005/05/06 21:48:24 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

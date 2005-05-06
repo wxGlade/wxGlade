@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxDialog objects
-# $Id: codegen.py,v 1.13 2004/11/02 11:59:05 agriggio Exp $
+# $Id: codegen.py,v 1.14 2005/05/06 21:48:21 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

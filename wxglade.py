@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # wxglade.py: entry point of wxGlade
-# $Id: wxglade.py,v 1.21 2004/11/02 09:52:03 agriggio Exp $
+# $Id: wxglade.py,v 1.22 2005/05/06 21:48:24 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

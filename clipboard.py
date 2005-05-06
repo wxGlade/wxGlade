@@ -1,7 +1,7 @@
 # clipboard.py: support for cut & paste of wxGlade widgets
-# $Id: clipboard.py,v 1.12 2004/10/05 08:49:10 agriggio Exp $
+# $Id: clipboard.py,v 1.13 2005/05/06 21:48:26 agriggio Exp $
 # 
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

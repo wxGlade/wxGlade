@@ -1,3 +1,31 @@
+2005-05-01: edit_sizers/edit_sizers.py:
+                updated layout() to work with wx2.6
+
+            widgets/frame/frame.py:
+                fixed a segfault when deleting a frame with a statusbar on
+                wx2.6
+
+            widgets/notebook/notebook.py:
+                updated notebook virtual sizer to fix broken layout on wx2.6
+
+            edit_windows.py:
+                fixed property_panel layout which was broken on wx2.6
+
+            tree.py:
+                - added wxBegin/EndBusyCursor() calls when showing a toplevel
+                  widget
+                - called fit_parent at the end of show_widget for toplevel
+                  widgets without a specific size
+
+
+2005-??-??: sorry, I didn't update this for a while, but there have been
+            changes and improvements even during this period :-) To summarize:
+            - added event handlers support (not for perl at the moment)
+            - better sizers layout
+            - many bugs fixed
+            - updated copyright information
+            - ...
+
 -------------------------------------------------------------------------------
 2004-11-08: version 0.3.5.1 released, due to a bug in version 0.3.5 (size
             property not updating correctly)

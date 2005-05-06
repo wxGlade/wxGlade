@@ -1,7 +1,7 @@
 # about.py: about box with general info
-# $Id: about.py,v 1.20 2005/01/10 20:22:36 agriggio Exp $
+# $Id: about.py,v 1.21 2005/05/06 21:48:26 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxRadioButton objects
-# $Id: codegen.py,v 1.12 2004/10/18 09:20:11 agriggio Exp $
+# $Id: codegen.py,v 1.13 2005/05/06 21:48:19 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

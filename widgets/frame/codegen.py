@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: codegen.py,v 1.22 2005/03/11 00:03:29 agriggio Exp $
+# $Id: codegen.py,v 1.23 2005/05/06 21:48:21 agriggio Exp $
 #
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
