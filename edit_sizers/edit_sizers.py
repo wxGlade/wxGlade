@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.64 2005/05/06 21:48:23 agriggio Exp $
+# $Id: edit_sizers.py,v 1.65 2005/05/13 00:11:39 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -806,7 +806,7 @@ class SizerBase(Sizer):
                 #*item.widget.GetBestSize())
             #self.widget.SetItemMinSize(item.widget, w, h)
         except Exception, e:
-            import traceback; traceback.print_exc()
+            #import traceback; traceback.print_exc()
             pass
         if force_layout: self.layout() # update the layout of self
 
@@ -1147,15 +1147,19 @@ class SizerBase(Sizer):
         self.children[pos] = item
         if self.widget:
             tmp.show_widget(True) # create the actual SizerSlot
-            elem = self.widget.GetChildren()[pos]
-            elem.SetWindow(tmp.widget)
-            elem.SetSizer(None)
-            if not misc.check_wx_version(2, 5):
-                elem.SetOption(1)
+            if misc.check_wx_version(2, 6):
+                self.widget.Insert(pos+1, tmp.widget, 1, wxEXPAND)
+                self.widget.Detach(pos)
             else:
-                elem.SetProportion(1)
-            elem.SetBorder(0)
-            elem.SetFlag(wxEXPAND)
+                elem = self.widget.GetChildren()[pos]
+                elem.SetWindow(tmp.widget)
+                elem.SetSizer(None)
+                if not misc.check_wx_version(2, 5):
+                    elem.SetOption(1)
+                else:
+                    elem.SetProportion(1)
+                elem.SetBorder(0)
+                elem.SetFlag(wxEXPAND)
             if force_layout: self.layout()
 
     def is_visible(self):
@@ -1850,7 +1854,7 @@ class EditFlexGridSizer(GridSizerBase):
             self.widget.AddGrowableRow(r)
         for c in self.grow_cols:
             self.widget.AddGrowableCol(c)
-        if not self.toplevel and hasattr(self, 'sizer'):
+        if not self.toplevel and getattr(self, 'sizer', None) is not None:
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer'
             # call
             self.sizer.add_item(self, self.pos, self.option, self.flag,
