@@ -1,5 +1,5 @@
 # static_text.py: wxStaticText objects
-# $Id: static_text.py,v 1.12 2005/05/06 21:48:17 agriggio Exp $
+# $Id: static_text.py,v 1.13 2005/06/03 14:50:10 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -123,7 +123,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     static_text = EditStaticText(label, parent, wxNewId(),
-                                 misc._encode(label), sizer, pos,
+                                 "", sizer, pos,
                                  common.property_panel)
     sizer.set_item(static_text.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
