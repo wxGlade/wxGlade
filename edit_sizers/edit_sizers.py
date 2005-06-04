@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.65 2005/05/13 00:11:39 agriggio Exp $
+# $Id: edit_sizers.py,v 1.66 2005/06/04 12:33:08 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -149,7 +149,7 @@ class SizerSlot:
 
 # end of class SizerSlot
 
-if wxPlatform != '__WXMAC__':
+if 0: #wxPlatform != '__WXMAC__':
     Button = wxButton
 else:
     from wxPython.lib.buttons import wxGenButton as Button
