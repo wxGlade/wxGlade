@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.57 2005/05/06 21:48:24 agriggio Exp $
+# $Id: py_codegen.py,v 1.58 2005/06/09 17:12:58 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -294,8 +294,13 @@ def quote_str(s, translate=True, escape_chars=True):
     s = s.replace('"', r'\"')
     if escape_chars: s = _quote_str_pattern.sub(_do_replace, s)
     else: s = s.replace('\\', r'\\') # just quote the backslashes
-    if _use_gettext and translate: return '_("' + s + '")'
-    else: return '"' + s + '"'
+    try:
+        unicode(s, 'ascii')
+        if _use_gettext and translate: return '_("' + s + '")'
+        else: return '"' + s + '"'
+    except UnicodeDecodeError:
+        if _use_gettext and translate: return '_(u"' + s + '")'
+        else: return 'u"' + s + '"'
 
 
 def initialize(app_attrs): 
