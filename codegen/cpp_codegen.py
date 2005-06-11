@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.41 2005/05/06 21:48:24 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.42 2005/06/11 11:34:41 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1083,7 +1083,7 @@ def generate_code_size(obj):
     else: name1 = '%s->' % obj.name; name2 = obj.name
     size = obj.properties.get('size', '').strip()
     use_dialog_units = (size[-1] == 'd')
-    if for_version < (2, 5):
+    if for_version < (2, 5) or obj.parent is None:
         method = 'SetSize'
     else:
         method = 'SetMinSize'
