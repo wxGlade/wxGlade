@@ -1,5 +1,5 @@
 # text_ctrl.py: wxListCtrl objects
-# $Id: list_ctrl.py,v 1.9 2005/05/06 21:48:20 agriggio Exp $
+# $Id: list_ctrl.py,v 1.10 2005/07/11 12:12:46 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -54,7 +54,8 @@ class EditListCtrl(ManagedBase):
                            wxSIMPLE_BORDER,
                            wxDOUBLE_BORDER, wxSUNKEN_BORDER, wxRAISED_BORDER,
                            wxSTATIC_BORDER, wxNO_BORDER,
-                           wxWANTS_CHARS, wxNO_FULL_REPAINT_ON_RESIZE)
+                           wxWANTS_CHARS, wxNO_FULL_REPAINT_ON_RESIZE,
+                           wxFULL_REPAINT_ON_RESIZE)
         style_labels = ('#section#Style',
                         'wxLC_LIST', 'wxLC_REPORT', 'wxLC_ICON',
                         'wxLC_VIRTUAL', 'wxLC_SMALL_ICON',
@@ -65,7 +66,8 @@ class EditListCtrl(ManagedBase):
                         'wxLC_HRULES', 'wxLC_VRULES', 'wxSIMPLE_BORDER',
                         'wxDOUBLE_BORDER', 'wxSUNKEN_BORDER',
                         'wxRAISED_BORDER', 'wxSTATIC_BORDER', 'wxNO_BORDER',
-                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE')
+                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
+                        'wxFULL_REPAINT_ON_RESIZE')
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
 

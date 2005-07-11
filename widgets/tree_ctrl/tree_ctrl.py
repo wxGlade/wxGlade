@@ -1,5 +1,5 @@
 # text_ctrl.py: wxTreeCtrl objects
-# $Id: tree_ctrl.py,v 1.8 2005/05/06 21:47:58 agriggio Exp $
+# $Id: tree_ctrl.py,v 1.9 2005/07/11 12:12:42 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -54,7 +54,8 @@ class EditTreeCtrl(ManagedBase):
                            wxTR_DEFAULT_STYLE, wxSIMPLE_BORDER, wxDOUBLE_BORDER,
                            wxSUNKEN_BORDER, wxRAISED_BORDER, wxSTATIC_BORDER,
                            wxNO_BORDER, wxWANTS_CHARS, 
-                           wxNO_FULL_REPAINT_ON_RESIZE)
+                           wxNO_FULL_REPAINT_ON_RESIZE,
+                           wxFULL_REPAINT_ON_RESIZE)
         style_labels = ('#section#Style', 'wxTR_HAS_BUTTONS', 'wxTR_NO_LINES',
                         'wxTR_LINES_AT_ROOT', 'wxTR_EDIT_LABELS',
                         'wxTR_MULTIPLE', 'wxTR_NO_BUTTONS',
@@ -65,7 +66,8 @@ class EditTreeCtrl(ManagedBase):
                         'wxTR_DEFAULT_STYLE', 'wxSIMPLE_BORDER',
                         'wxDOUBLE_BORDER', 'wxSUNKEN_BORDER',
                         'wxRAISED_BORDER', 'wxSTATIC_BORDER', 'wxNO_BORDER',
-                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE')
+                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
+                        'wxFULL_REPAINT_ON_RESIZE')
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
         self._item_with_name = None

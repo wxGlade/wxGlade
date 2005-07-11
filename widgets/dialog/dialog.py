@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.25 2005/05/06 21:48:21 agriggio Exp $
+# $Id: dialog.py,v 1.26 2005/07/11 12:12:46 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -29,7 +29,9 @@ class EditDialog(TopLevelBase):
             style_labels += ('wxCLOSE_BOX', 'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX')
         style_labels += ('wxTHICK_FRAME',
                          'wxSTAY_ON_TOP', 'wxNO_3D', 'wxDIALOG_NO_PARENT',
-                         'wxNO_FULL_REPAINT_ON_RESIZE', 'wxCLIP_CHILDREN')
+                         'wxNO_FULL_REPAINT_ON_RESIZE',
+                         'wxFULL_REPAINT_ON_RESIZE',
+                         'wxCLIP_CHILDREN')
         self.style_pos = (wxDEFAULT_DIALOG_STYLE,
                           wxDIALOG_MODAL, wxCAPTION, wxRESIZE_BORDER,
                           wxSYSTEM_MENU)
@@ -37,6 +39,7 @@ class EditDialog(TopLevelBase):
             self.style_pos += (wxCLOSE_BOX, wxMAXIMIZE_BOX, wxMINIMIZE_BOX)
         self.style_pos += (wxTHICK_FRAME, wxSTAY_ON_TOP, wxNO_3D,
                            wxDIALOG_NO_PARENT, wxNO_FULL_REPAINT_ON_RESIZE,
+                           wxFULL_REPAINT_ON_RESIZE,
                            wxCLIP_CHILDREN)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # icon property

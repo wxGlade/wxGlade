@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.48 2005/05/06 21:48:26 agriggio Exp $
+# $Id: application.py,v 1.49 2005/07/11 12:12:47 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -170,7 +170,7 @@ class Application(object):
         self.codewriters_prop.set_str_value('python')
 
         self.for_version_prop = RadioProperty(self, "for_version", panel,
-                                              ['2.4', '2.5'], columns=2,
+                                              ['2.4', '2.5', '2.6'], columns=3,
                                               label="wxWidgets compatibility")
         self.for_version_prop.set_str_value(self.for_version)
         
