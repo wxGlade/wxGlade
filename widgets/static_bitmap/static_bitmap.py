@@ -1,5 +1,5 @@
 # static_bitmap.py: wxStaticBitmap objects
-# $Id: static_bitmap.py,v 1.18 2005/05/06 21:48:17 agriggio Exp $
+# $Id: static_bitmap.py,v 1.19 2005/07/11 12:12:45 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -39,11 +39,14 @@ class EditStaticBitmap(ManagedBase):
         self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
                            wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
                            wxTAB_TRAVERSAL, wxWANTS_CHARS,
-                           wxNO_FULL_REPAINT_ON_RESIZE, wxCLIP_CHILDREN)
+                           wxNO_FULL_REPAINT_ON_RESIZE,
+                           wxFULL_REPAINT_ON_RESIZE,
+                           wxCLIP_CHILDREN)
         style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
                         'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
                         'wxSTATIC_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
                         'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
+                        'wxFULL_REPAINT_ON_RESIZE',
                         'wxCLIP_CHILDREN')
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)  

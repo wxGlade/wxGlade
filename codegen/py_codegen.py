@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.59 2005/06/11 11:24:26 agriggio Exp $
+# $Id: py_codegen.py,v 1.60 2005/07/11 12:12:46 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -734,6 +734,9 @@ def add_class(code_obj):
                 buf.append(tabs(1) + 'def %s(self, event): '
                            '# wxGlade: %s.<event_handler>\n'
                            % (handler, code_obj.klass))
+                buf.append(
+                    tab + 'print "Event handler `%s\' not implemented"\n' %
+                    handler)
                 buf.append(tab + 'event.Skip()\n\n')
         tag = '<%swxGlade event_handlers %s>' % (nonce, code_obj.klass)
         if prev_src.content.find(tag) < 0:
@@ -748,6 +751,8 @@ def add_class(code_obj):
             write('\n' + tabs(1) + 'def %s(self, event): '
                   '# wxGlade: %s.<event_handler>\n'
                   % (handler, code_obj.klass))
+            write(tab + 'print "Event handler `%s\' not implemented!"\n' %
+                  handler)
             write(tab + 'event.Skip()\n')
 
     # the code has been generated

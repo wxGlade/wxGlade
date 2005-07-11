@@ -1,5 +1,5 @@
 # spin_ctrl.py: wxSpinCtrl objects
-# $Id: spin_ctrl.py,v 1.13 2005/05/06 21:48:18 agriggio Exp $
+# $Id: spin_ctrl.py,v 1.14 2005/07/11 12:12:45 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -31,8 +31,19 @@ class EditSpinCtrl(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
-        style_labels = ('#section#Style', 'wxSP_ARROW_KEYS', 'wxSP_WRAP')
-        self.style_pos = (wxSP_ARROW_KEYS, wxSP_WRAP)
+        style_labels = ('#section#Style', 'wxSP_ARROW_KEYS', 'wxSP_WRAP',
+                        'wxTE_PROCESS_ENTER',
+                        'wxTE_PROCESS_TAB', 'wxTE_MULTILINE', 'wxTE_PASSWORD',
+                        'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH',
+                        'wxTE_RICH2', 'wxTE_AUTO_URL', 'wxTE_NOHIDESEL',
+                        'wxTE_CENTRE', 'wxTE_RIGHT', 'wxTE_LINEWRAP',
+                        'wxTE_WORDWRAP', 'wxNO_BORDER')
+        self.style_pos = (wxSP_ARROW_KEYS, wxSP_WRAP,
+                          wxTE_PROCESS_ENTER, wxTE_PROCESS_TAB,
+                          wxTE_MULTILINE,wxTE_PASSWORD, wxTE_READONLY,
+                          wxHSCROLL, wxTE_RICH, wxTE_RICH2, wxTE_AUTO_URL,
+                          wxTE_NOHIDESEL, wxTE_CENTRE, wxTE_RIGHT,
+                          wxTE_LINEWRAP, wxTE_WORDWRAP, wxNO_BORDER)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         prop['range'] = TextProperty(self, 'range', None, can_disable=True)
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
