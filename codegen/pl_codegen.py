@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.30 2004/12/12 12:41:57 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.31 2005/08/15 07:13:43 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -715,7 +715,7 @@ def add_class(code_obj):
         try:
             dirname = os.path.dirname( filename ) # create Foo in Foo::Bar, Foo/Bar.pm
             if not os.path.exists( dirname ):
-                os.mkdir( dirname )
+                os.makedirs( dirname )
             # store the contents to filename
             common.save_file(filename, out.getvalue(), 'codegen')
         except:
