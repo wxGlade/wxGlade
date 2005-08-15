@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxNotebook objects
-# $Id: perl_codegen.py,v 1.4 2005/02/21 04:02:01 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.5 2005/08/15 07:14:49 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -31,10 +31,14 @@ class PerlCodeGenerator:
             parent = '$self'
 
         if window.is_toplevel:
+            klass = window.base;
+            if klass != window.klass : klass = window.klass; 
+            else: klass = klass.replace('wx','Wx::',1);
+
             l = []
             if id_name: l.append(id_name)
             l.append('$self->{%s} = %s->new(%s, %s);\n' %
-                (window.name, window.klass.replace('wx','Wx::',1), parent,id))
+                (window.name, klass, parent,id))
             return l, [], [] 
         style = prop.get("style")
         if style: style = "%s" % style
