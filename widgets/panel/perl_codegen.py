@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxPanel objects
-# $Id: perl_codegen.py,v 1.8 2004/09/17 13:09:51 agriggio Exp $
+# $Id: perl_codegen.py,v 1.9 2005/08/15 07:41:42 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -30,8 +30,13 @@ class PerlCodeGenerator:
         if panel.is_toplevel:
             l = []
             if id_name: l.append(id_name)
+
+            klass = panel.base;
+            if klass != panel.klass : klass = panel.klass; 
+            else: klass = klass.replace('wx','Wx::',1);
+
             l.append('$self->{%s} = %s->new(%s, %s);\n' %
-                 (panel.name, panel.klass.replace('wx','Wx::',1), parent, id))
+                 (panel.name, klass, parent, id))
             return l, [], []
 
         init = []

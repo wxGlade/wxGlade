@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxBitmapButton objects
-# $Id: perl_codegen.py,v 1.9 2004/12/22 11:13:35 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.10 2005/08/15 07:35:15 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge
 # License: MIT (see license.txt)
@@ -45,9 +45,13 @@ class PerlCodeGenerator:
                   plgen.quote_path(bmp_file)
         init = []
         if id_name: init.append(id_name)
+
+        klass = obj.base;
+        if klass != obj.klass : klass = obj.klass; 
+        else: klass = klass.replace('wx','Wx::',1);
+
         init.append('$self->{%s} = %s->new(%s, %s, %s);\n' % 
-                    ( obj.name, obj.klass.replace('wx','Wx::',1),
-                      parent, id, bmp) )
+                    ( obj.name, klass, parent, id, bmp) )
 
         props_buf = plgen.generate_common_properties(obj)
 

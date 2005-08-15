@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.5 2004/09/17 13:09:52 agriggio Exp $
+# $Id: perl_codegen.py,v 1.6 2005/08/15 07:41:20 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -33,6 +33,7 @@ class PerlCodeGenerator:
                     if name: ids.append(name)
                     id = val
 
+
                 if item.children:
                     if item.name:
                         name = item.name
@@ -55,6 +56,7 @@ class PerlCodeGenerator:
                                (menu, id, plgen.quote_str(item.label),
                                 plgen.quote_str(item.help_str), item_type))
                     else:
+
                         append('%s->Append(%s, %s, %s);\n' %
                                (menu, id, plgen.quote_str(item.label),
                                 plgen.quote_str(item.help_str)))
@@ -80,9 +82,14 @@ class PerlCodeGenerator:
         """\
         function that generates Perl code for the menubar of a wxFrame.
         """
+
+        klass = obj.base;
+        if klass != obj.klass : klass = obj.klass; 
+        else: klass = klass.replace('wx','Wx::',1);
+
         plgen = common.code_writers['perl']
         init = [ '\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' %
-                 (obj.name, obj.klass.replace('wx','Wx::',1)),
+                 (obj.name, klass),
                  '$self->SetMenuBar($self->{%s});\n' % obj.name ]
         init.extend(self.get_init_code(obj))
         init.append('\n# Menu Bar end\n\n')

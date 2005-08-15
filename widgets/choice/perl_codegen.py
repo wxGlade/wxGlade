@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxChoice objects
-# $Id: perl_codegen.py,v 1.3 2004/09/17 13:09:54 agriggio Exp $
+# $Id: perl_codegen.py,v 1.4 2005/08/15 07:36:21 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -27,11 +27,14 @@ class PerlCodeGenerator:
 
         if id_name: init.append(id_name)
 
+        klass = obj.base;
+        if klass != obj.klass : klass = obj.klass; 
+        else: klass = klass.replace('wx','Wx::',1);
+
         choices = ', '.join([plgen.quote_str(c) for c in choices])
         init.append('$self->{%s} = %s->new(%s, %s, wxDefaultPosition, \
 wxDefaultSize, [%s], %s);\n' %
-                    (obj.name, obj.klass.replace('wx','Wx::',1),
-                    parent, id, choices, style))
+                    (obj.name, klass, parent, id, choices, style))
         props_buf = plgen.generate_common_properties(obj)
 
         selection = prop.get('selection')
