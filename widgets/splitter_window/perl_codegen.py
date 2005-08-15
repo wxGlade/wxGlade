@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxSplitterWindow objects
-# $Id: perl_codegen.py,v 1.6 2004/09/17 13:09:50 agriggio Exp $
+# $Id: perl_codegen.py,v 1.7 2005/08/15 07:43:32 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -26,8 +26,13 @@ class PerlCodeGenerator:
         if window.is_toplevel:
             l = []
             if id_name: l.append(id_name)
+
+            klass = window.base;
+            if klass != window.klass : klass = window.klass; 
+            else: klass = klass.replace('wx','Wx::',1);
+
             l.append('$self->{%s} = %s->new(%s, %s);\n' %
-                (window.name, window.klass.replace('wx','Wx::',1), parent,id))
+                (window.name, klass.replace('wx','Wx::',1), parent,id))
             return l, [], []
 
         style = prop.get("style")

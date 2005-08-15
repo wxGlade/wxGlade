@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxRadioButton objects
-# $Id: perl_codegen.py,v 1.3 2004/09/17 13:09:51 agriggio Exp $
+# $Id: perl_codegen.py,v 1.4 2005/08/15 07:42:18 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -27,9 +27,12 @@ class PerlCodeGenerator:
 
         if id_name: init.append(id_name)
 
+        klass = obj.base;
+        if klass != obj.klass : klass = obj.klass; 
+        else: klass = klass.replace('wx','Wx::',1);
+
         init.append('$self->{%s} = %s->new(%s, %s, %s, wxDefaultPosition, \
-wxDefaultSize, %s);\n' % (obj.name, obj.klass.replace('wx','Wx::',1), parent,
-            id, label, style))
+wxDefaultSize, %s);\n' % (obj.name, klass, parent, id, label, style))
         props_buf = plgen.generate_common_properties(obj)
 
         clicked = prop.get('clicked')

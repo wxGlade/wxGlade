@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxStaticText objects
-# $Id: perl_codegen.py,v 1.3 2004/09/17 13:09:49 agriggio Exp $
+# $Id: perl_codegen.py,v 1.4 2005/08/15 07:47:30 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D. H. aka crazyinsomniac on sourceforge
 # License: MIT (see license.txt)
@@ -32,9 +32,12 @@ class PerlCodeGenerator:
             prefix = 'my $%s' % obj.name
             obj.name = '$' + obj.name
 
+        klass = obj.base;
+        if klass != obj.klass : klass = obj.klass; 
+        else: klass = klass.replace('wx','Wx::',1);
+
         init.append('%s = %s->new(%s, %s, %s, wxDefaultPosition, \
-wxDefaultSize, %s);\n' % (prefix, obj.klass.replace('wx','Wx::',1),
-            parent, id, label, style))
+wxDefaultSize, %s);\n' % (prefix, klass, parent, id, label, style))
 
         props_buf = plgen.generate_common_properties(obj)
         if not attribute:
