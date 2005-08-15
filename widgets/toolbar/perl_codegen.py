@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.10 2005/03/25 16:09:44 agriggio Exp $
+# $Id: perl_codegen.py,v 1.11 2005/08/15 08:03:02 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -120,10 +120,14 @@ class PerlCodeGenerator:
         else:
             style = ''
 
+        klass = obj.base;
+        if klass != obj.klass : klass = obj.klass; 
+        else: klass = klass.replace('wx','Wx::',1);
+
         init = [
             '\n# Tool Bar\n',
             '$self->{%s} = %s->new($self, -1, wxDefaultPosition, \
-wxDefaultSize, %s);\n' % (obj.name, obj.klass.replace('wx','Wx::',1), style),
+wxDefaultSize, %s);\n' % (obj.name, klass, style),
                  '$self->SetToolBar($self->{%s});\n' % obj.name 
             ]
         init.extend(self.get_init_code(obj))
