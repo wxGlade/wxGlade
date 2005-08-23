@@ -1,6 +1,8 @@
 wxglade (0.3.5.cvs20050823) unstable; urgency=low
 
   * upgraded to last CVS version 
+  * updated the dependancies
+  * fixed some executable flags
 
  -- Georges Khaznadar <georgesk@ofset.org>  Tue, 23 Aug 2005 10:59:39 +0200
 
