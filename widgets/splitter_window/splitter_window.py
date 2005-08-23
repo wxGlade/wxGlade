@@ -1,5 +1,5 @@
 # splitter_window.py: wxSplitterWindow objects
-# $Id: splitter_window.py,v 1.23 2005/05/06 21:48:18 agriggio Exp $
+# $Id: splitter_window.py,v 1.24 2005/08/23 11:49:47 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -200,7 +200,8 @@ class EditSplitterWindow(ManagedBase):
         retval = [0] * len(self.style_pos)
         if not self.style:
             # style is wxSP_NOBORDER
-            retval[5] = 1
+            #retval[5] = 1
+            retval[4] = 1
         try:
             for i in range(len(self.style_pos)):
                 if self.style & self.style_pos[i]: retval[i] = 1

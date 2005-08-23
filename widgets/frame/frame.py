@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.42 2005/07/11 12:12:46 agriggio Exp $
+# $Id: frame.py,v 1.43 2005/08/23 11:49:47 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -109,7 +109,8 @@ class EditStatusBar(EditBase):
             if misc.check_wx_version(2, 6):
                 if EditStatusBar._hidden_frame is None:
                     EditStatusBar._hidden_frame = wxFrame(None, -1, "")
-                self.widget.Reparent(EditStatusBar._hidden_frame)
+                if self.widget is not None:
+                    self.widget.Reparent(EditStatusBar._hidden_frame)
             self.widget = None
 
     def popup_menu(self, *args):
