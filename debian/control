@@ -1,13 +1,13 @@
 Source: wxglade
 Section: devel
 Priority: optional
-Maintainer: Georges Khaznadar <gekhajofour@netinfo.fr>
-Build-Depends: debhelper (>= 4.0.0), docbook, xsltproc
-Standards-Version: 3.6.1
+Maintainer: Georges Khaznadar <georgesk@ofset.org>
+Build-Depends-Indep: debhelper (>= 4.0.0), docbook, xsltproc
+Standards-Version: 3.6.2
 
 Package: python2.3-wxglade
 Architecture: all
-Depends: python (>= 2.3), python2.3-pythoncard
+Depends: python (>= 2.3), libwxgtk-python
 Description:  GUI designer written in Python with wxPython
  wxGlade is a GUI designer written in
  Python with the popular GUI toolkit wxPython, that helps you create
