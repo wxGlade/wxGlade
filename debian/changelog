@@ -1,3 +1,9 @@
+wxglade (0.3.5.cvs20050823) unstable; urgency=low
+
+  * upgraded to last CVS version 
+
+ -- Georges Khaznadar <georgesk@ofset.org>  Tue, 23 Aug 2005 10:59:39 +0200
+
 wxglade (0.3.5.cvs20041101-1) unstable; urgency=low
 
   * upgraded to last CVS version
