@@ -9,8 +9,7 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-
-
+PYVER := $(shell /usr/bin/python -c 'import sys; print sys.version[:3]')
 
 CFLAGS = -Wall -g
 
@@ -23,8 +22,6 @@ endif
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	# Add here commands to configure the package.
-
 	touch configure-stamp
 
 
@@ -32,31 +29,30 @@ build: build-stamp
 
 build-stamp: configure-stamp 
 	dh_testdir
-
-	# Add here commands to compile the package.
-	$(MAKE)
+	$(MAKE) PYVER=$(PYVER)
 	#docbook-to-man debian/wxglade.sgml > wxglade.1
-
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
-
-	# Add here commands to clean up after the build process.
 	-$(MAKE) clean
-
 	dh_clean 
 
 install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -k 
-	dh_installdirs
+	dh_installdirs \
+		usr/bin \
+		usr/share/man/man1/ \
+		usr/lib/python$(PYVER)/site-packages/wxglade \
+		usr/share/python-wxglade/icons \
+		usr/share/doc/python-wxglade
 
 	# Add here commands to install the package into debian/wxglade.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/python2.3-wxglade
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/python-wxglade
 
 
 # Build architecture-independent files here.
@@ -71,7 +67,7 @@ binary-arch: build install
 	dh_installdocs
 	dh_installexamples
 #	remove unnecessary license file
-	rm -f $(CURDIR)/debian/python2.3-wxglade/usr/share/doc/python2.3-wxglade/license.txt
+	rm -f $(CURDIR)/debian/python-wxglade/usr/share/doc/python-wxglade/license.txt
 #	dh_install
 #	dh_installmenu
 #	dh_installdebconf	
@@ -88,7 +84,7 @@ binary-arch: build install
 	dh_compress
 	dh_fixperms
 #	dh_perl
-#	dh_python
+	dh_python
 #	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps

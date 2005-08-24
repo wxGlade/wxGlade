@@ -1,3 +1,16 @@
+wxglade (0.3.5.cvs20050824-0.1) unstable; urgency=low
+
+  * Sponsored upload.
+  * renamed the package to python-wxglade. the python-wxgtk packages
+    don't have a version schema as well, so it doesn't make sense with
+    wxglade as well.
+  * Depend on python-wxgtk2.6 | python-wxgtk. These are the new names,
+    and you have at least to depend on a real package.
+  * Build-depend on python (needed for dh_python).
+  * Repackage as a .orig.tar.gz package.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 24 Aug 2005 07:29:15 +0000
+
 wxglade (0.3.5.cvs20050823) unstable; urgency=low
 
   * upgraded to last CVS version 

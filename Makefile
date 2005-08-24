@@ -1,6 +1,7 @@
 DESTDIR=
 
-PACKAGE=python2.3-wxglade
+PACKAGE=python-wxglade
+PYVER=2.3
 
 all: debian/wxglade.1
 
@@ -16,15 +17,20 @@ debian/wxglade.1: debian/manpage.xml
 
 install: all install-doc
 	cp -a *.py codegen edit_sizers res widgets \
-	  $(DESTDIR)/usr/lib/python2.3/site-packages/wxglade
-	# fix one executable flag
-	chmod a+x $(DESTDIR)/usr/lib/python2.3/site-packages/wxglade/configUI.py
+	  $(DESTDIR)/usr/lib/python$(PYVER)/site-packages/wxglade
+	# fix executable flags
+	for f in configUI.py zwxglade.py; do \
+	  chmod 755 $(DESTDIR)/usr/lib/python$(PYVER)/site-packages/wxglade/$$f; \
+	done
+	for f in edit_widget.py config.py; do \
+	  chmod 644 $(DESTDIR)/usr/lib/python$(PYVER)/site-packages/wxglade/$$f; \
+	done
 	cp -a icons $(DESTDIR)/usr/share/$(PACKAGE)
 	# get rid of .xvpics subdirectories and .cvsignore files
 	find $(DESTDIR)/usr/share/$(PACKAGE) -name '.xvpics' -type d -exec rm -r {} \;
 	find $(DESTDIR) -name '.cvsignore' -type f -exec rm {} \;
 	ln -s /usr/share/$(PACKAGE)/icons \
-	  $(DESTDIR)/usr/lib/python2.3/site-packages/wxglade
+	  $(DESTDIR)/usr/lib/python$(PYVER)/site-packages/wxglade
 	install -m 755 wxglade $(DESTDIR)/usr/bin
 install-doc: debian/wxglade.1
 	gzip -c9 debian/wxglade.1 > $(DESTDIR)/usr/share/man/man1/wxglade.1.gz
