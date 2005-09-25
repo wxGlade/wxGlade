@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxFrame objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:59:31 efuzzyone Exp $
+# $Id: lisp_codegen.py,v 1.2 2005/09/25 08:23:34 efuzzyone Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -19,17 +19,17 @@ class LispStatusBarCodeGenerator:
         labels, widths = obj.properties['statusbar']
         style = obj.properties.get("style")
         if not style: style = '0'
-        init = [ '(setf (slot-%s self) (wxFrame_CreateStatusBar (slot-frame self) %s %s))\n'
+        init = [ '(setf (slot-%s obj) (wxFrame_CreateStatusBar (slot-top-window obj) %s %s))\n'
                  % (obj.name, len(labels), style) ]
         props = []
 
         append = props.append
-        append('(wxStatusBar_SetStatusWidths (slot-%s self) %s (vector %s))\n'
+        append('(wxStatusBar_SetStatusWidths (slot-%s obj) %s (vector %s))\n'
             %  (obj.name, len(widths),' '.join(map(str, widths))))
 
         i = 0
         for l in labels:
-            append('\t (wxStatusBar_SetStatusText (slot-%s self) %s %s)\n'
+            append('\t (wxStatusBar_SetStatusText (slot-%s obj) %s %s)\n'
                    % (obj.name, plgen.quote_str(l),i) )
             i=i+1
         return init, props, []
@@ -56,14 +56,14 @@ class LispFrameCodeGenerator:
         out = []
         title = prop.get('title')
         if title:
-            out.append('(wxFrame_SetTitle (slot-frame %s) %s)\n' % plgen.quote_str(title))
+            out.append('(wxFrame_SetTitle (slot-top-window %s) %s)\n' % plgen.quote_str(title))
 
         icon = prop.get('icon')
         if icon:
             out.append('my $icon = Wx::Icon->new();\n')
             out.append('$icon->CopyFromBitmap(Wx::Bitmap->new(%s, '
                        'wxBITMAP_TYPE_ANY));\n' % plgen.quote_str(icon))
-            out.append('(wxFrame_SetIcon (slot-frame self) $icon)\n')
+            out.append('(wxFrame_SetIcon (slot-top-window obj) $icon)\n')
             
         out.extend(plgen.generate_common_properties(frame))
         return out
@@ -72,7 +72,7 @@ class LispFrameCodeGenerator:
         ret = ['$self->Layout();\n']
         try:
             if int(frame.properties['centered']):
-                ret.append('(wxFrame_Centre (slot-frame self) 0)\n')
+                ret.append('(wxFrame_Centre (slot-top-window obj) 0)\n')
         except (KeyError, ValueError):
             pass
         return ret

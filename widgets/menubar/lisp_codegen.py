@@ -1,5 +1,5 @@
 # lisp_codegen.py : lisp generator functions for wxMenuBar objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:59:52 efuzzyone Exp $
+# $Id: lisp_codegen.py,v 1.2 2005/09/25 08:23:37 efuzzyone Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -80,7 +80,7 @@ class LispCodeGenerator:
         plgen = common.code_writers['lisp']
         init = [ '\n', ';;; Menu Bar\n', '(setf (slot-%s obj) (wxMenuBar_Create 0))\n' %
                  (obj.name),
-                 '(wxFrame_SetMenuBar (slot-frame obj) (slot-%s obj))\n' % obj.name ]
+                 '(wxFrame_SetMenuBar (slot-top-window obj) (slot-%s obj))\n' % obj.name ]
         init.extend(self.get_init_code(obj))
         init.append(';;; Menu Bar end\n\n')
         return init, [], []
