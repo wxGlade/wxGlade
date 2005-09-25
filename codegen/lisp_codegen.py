@@ -1,5 +1,5 @@
 # lisp_codegen.py: lisp code generator
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:32:49 efuzzyone Exp $
+# $Id: lisp_codegen.py,v 1.2 2005/09/25 08:22:38 efuzzyone Exp $
 #
 # Copyright (c) 2005 Surendra K Singhi <efuzzyone@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -505,10 +505,12 @@ def add_object(top_obj, sub_obj):
             sub_obj.parent.name = sub_obj.parent.name.replace('_','-')
             if(sub_obj.name != "spacer"):
                 class_lines.append(sub_obj.name)
-            if (sub_obj.klass != "wxBoxSizer" and sub_obj.klass != "wxStaticBoxSizer"
-                and sub_obj.klass != "wxGridSizer" and sub_obj.klass != "wxFlexGridSizer"
-                and sub_obj.klass != "spacer"):
-                import_packages = import_packages | set([sub_obj.klass])
+            if (sub_obj.klass == "wxBoxSizer" or sub_obj.klass == "wxStaticBoxSizer"
+                or sub_obj.klass == "wxGridSizer" or sub_obj.klass == "wxFlexGridSizer"):
+                import_packages = import_packages | set(["wxSizer"])
+            else:
+                if (sub_obj.klass != "spacer"):
+                    import_packages = import_packages | set([sub_obj.klass])
 
             if (sub_obj.klass == "wxMenuBar" ):
                 import_packages = import_packages | set(["wxMenu"])
@@ -562,7 +564,6 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     # as a couple of integers, it is the size of the spacer to add
     global import_packages
     
-    import_packages = import_packages | set(['wxSizer'])
     
     sizer.name = sizer.name.replace('_','-')
     obj_name = obj.name
@@ -663,6 +664,7 @@ def add_class(code_obj):
         write("\t((top-window :initform nil :accessor slot-top-window)")
         for l in class_lines: write("\n"+tab+"("+l+" :initform nil :accessor slot-"+l+")")
         write("))\n")
+
         write("\n(defun make-%s ()\n" % klass)
         write(tab+"(let ((obj (make-instance '%s)))\n" % klass)
         write(tab+"  (init obj)\n")
@@ -716,7 +718,7 @@ def add_class(code_obj):
         for win_id, event, handler in event_handlers:
             if win_id.startswith('#'):
                 win_id = win_id[1:] + '.GetId()'
-            write(tab + '%s(obj, %s, obj.%s)\n' % \
+            write(tab + '%s(obj %s obj.%s)\n' % \
                   (event, win_id, handler))
     else:
         for win_id, event, handler in event_handlers:
@@ -951,7 +953,7 @@ def add_app(app_attrs, top_win_class):
             append(tab + 'import gettext\n')
             append(tab + 'gettext.install("%s") # replace with the appropriate'
                    ' catalog name\n\n' % name)
-        append(tab + '%s = %s(0)\n' % (name, cn('wxPySimpleApp')))
+#        append(tab + '%s = %s(0)\n' % (name, cn('wxPySimpleApp')))
 
 
     top_win = top_win.replace('_','-')
@@ -973,8 +975,8 @@ def add_app(app_attrs, top_win_class):
         append(tab + '(ELJApp_SetTopWindow (slot-top-window %s))\n' % top_win)
         append(tab + '(wxWindow_Show (slot-top-window %s))))\n' % top_win)
 
-    append("(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)\n")
-    append("\n(ffi:close-foreign-library \"../miscellaneous/wxc-msw2.6.1.dll\")\n")
+    append("\n(unwind-protect\n\t(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)")
+    append("\n  (ffi:close-foreign-library \"../miscellaneous/wxc-msw2.6.2.dll\"))\n")
     if multiple_files:
         filename = os.path.join(out_dir, name + '.py')
         out = cStringIO.StringIO()
