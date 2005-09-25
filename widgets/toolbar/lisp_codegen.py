@@ -1,5 +1,5 @@
 # lisp_codegen.py : lisp generator functions for wxMenuBar objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:40:25 efuzzyone Exp $
+# $Id: lisp_codegen.py,v 1.2 2005/09/25 08:23:40 efuzzyone Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -76,7 +76,7 @@ class LispCodeGenerator:
                 return '(%s)' % bitmap[5:].strip()
             else:
                 return '(wxBitmap:wxBitmap_CreateLoad %s wxBITMAP_TYPE_ANY)' % \
-                       plgen.quote_path(bitmap)
+                       plgen.quote_str(bitmap)
 
         for tool in tools:
             if tool.id == '---': # item is a separator
@@ -120,12 +120,12 @@ class LispCodeGenerator:
         if not obj.parent.is_toplevel:
             parent = '(slot-%s obj)' % obj.parent.name
         else:
-            parent = '(slot-frame obj)'
+            parent = '(slot-top-window obj)'
 
         init = [
             '\n\t;;; Tool Bar\n',
             '(setf (slot-%s obj) (wxToolBar_Create %s -1 -1 -1 -1 -1 %s))\n' % (obj.name, parent, style),
-                 '(wxFrame_SetToolBar (slot-frame obj) (slot-%s obj))\n' % obj.name 
+                 '(wxFrame_SetToolBar (slot-top-window obj) (slot-%s obj))\n' % obj.name 
             ]
         init.extend(self.get_init_code(obj))
         init.append(';;; Tool Bar end\n')
