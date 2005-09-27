@@ -1,5 +1,5 @@
 # lisp_codegen.py: lisp code generator
-# $Id: lisp_codegen.py,v 1.2 2005/09/25 08:22:38 efuzzyone Exp $
+# $Id: lisp_codegen.py,v 1.3 2005/09/27 02:20:07 efuzzyone Exp $
 #
 # Copyright (c) 2005 Surendra K Singhi <efuzzyone@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -723,11 +723,11 @@ def add_class(code_obj):
     else:
         for win_id, event, handler in event_handlers:
             if win_id.startswith('#'):
-                write(tab + "(wxEvtHandlerConnect (slot-top-window obj) %s (exp%s)"
+                write(tab + "(wxEvtHandler_Connect (slot-top-window obj) %s (exp%s)"
                       "\n\t\t(wxClosure_Create #'%s obj))\n"
                       % (win_id[1:],event, handler, ))
             else:
-                write(tab + "(wxEvtHandlerConnect (slot-top-window obj) %s (exp%s)"
+                write(tab + "(wxEvtHandler_Connect (slot-top-window obj) %s (exp%s)"
                       "\n\t\t(wxClosure_Create #'%s obj))\n"
                       % (win_id,event, handler, ))
 
