@@ -1,5 +1,5 @@
 # lisp_codegen.py : lisp generator functions for wxNotebook objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:59:54 efuzzyone Exp $
+# $Id: lisp_codegen.py,v 1.2 2005/09/27 02:20:44 efuzzyone Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -22,7 +22,7 @@ class LispCodeGenerator:
         layout_props = [] 
         tabs = prop.get('tabs', [])
         for label, tab_win in tabs:
-            label = label.replace('_','-')
+            tab_win = tab_win.replace('_','-')
             layout_props.append('(wxNotebook_AddPage (slot-%s obj) (slot-%s obj) %s 1 -1)\n' % \
                                 (window.name, tab_win, plgen.quote_str(label)))
 
