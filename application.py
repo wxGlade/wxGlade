@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.49 2005/07/11 12:12:47 agriggio Exp $
+# $Id: application.py,v 1.50 2005/09/29 02:03:20 efuzzyone Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -237,7 +237,7 @@ class Application(object):
             self.name_prop.set_value(self.name)
         else:
             self.name = value
-    set_name_pattern = re.compile('^[a-zA-Z]+[\w0-9]*$')
+    set_name_pattern = re.compile('^[a-zA-Z]+[\w0-9-]*$')
 
     def set_klass(self, value):
         value = "%s" % value
@@ -245,7 +245,7 @@ class Application(object):
             self.klass_prop.set_value(self.klass)
         else:
             self.klass = value
-    set_klass_pattern = re.compile('^[a-zA-Z]+[\w:.0-9]*$')
+    set_klass_pattern = re.compile('^[a-zA-Z]+[\w:.0-9-]*$')
 
     def _get_default_encoding(self):
         """\

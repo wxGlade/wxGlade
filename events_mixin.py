@@ -1,5 +1,5 @@
 # events_mixin.py: mixin class for 'events' property
-# $Id: events_mixin.py,v 1.4 2005/04/27 09:39:14 agriggio Exp $
+# $Id: events_mixin.py,v 1.5 2005/09/29 02:03:20 efuzzyone Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sf.net>
 # License: MIT (see license.txt)
@@ -24,7 +24,7 @@ class EventsProperty(GridProperty):
         self._pos = {}
         for index, name in enumerate(owner.events):
             self._pos[name] = index
-        self.validator_re = re.compile(r'^\s*\w+\s*$')
+        self.validator_re = re.compile(r'^\s*[\w-]+\s*$')
         self.set_value([[name, ''] for name in owner.events])
 
     def display(self, parent):
