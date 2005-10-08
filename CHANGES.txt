@@ -1,3 +1,5 @@
+2005-10-10: version 0.4 released.
+-------------------------------------------------------------------------------
 2005-05-01: edit_sizers/edit_sizers.py:
                 updated layout() to work with wx2.6
 

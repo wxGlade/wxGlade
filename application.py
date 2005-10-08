@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.50 2005/09/29 02:03:20 efuzzyone Exp $
+# $Id: application.py,v 1.51 2005/10/08 14:00:26 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -158,11 +158,12 @@ class Application(object):
                                "Select output file", "Select output directory",
                                wxSAVE|wxOVERWRITE_PROMPT)
 
-        # this "columns-stuff" is to fix a bug (of at least wxGTK)
+##         # this "columns-stuff" is to fix a bug (of at least wxGTK)
         _writers = common.code_writers.keys()
-        if not len(_writers) % 3: columns = 3
-        elif not len(_writers) % 2: columns = 2
-        else: columns = 1
+##         if not len(_writers) % 3: columns = 3
+##         elif not len(_writers) % 2: columns = 2
+##         else: columns = 1
+        columns = 3
         
         self.codewriters_prop = RadioProperty(self, "language", panel,
                                               _writers, columns=columns)

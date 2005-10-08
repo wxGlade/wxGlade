@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.32 2005/08/25 22:41:23 agriggio Exp $
+# $Id: pl_codegen.py,v 1.33 2005/10/08 14:00:23 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -293,6 +293,16 @@ def initialize(app_attrs):
     # this is to be more sure to replace the right tags
     nonce = '%s%s' % (str(time.time()).replace('.', ''),
                       random.randrange(10**6, 10**7))
+
+    global for_version
+    try:
+        for_version = tuple([int(t) for t in
+                             app_attrs['for_version'].split('.')[:2]])
+    except (KeyError, ValueError):
+        if common.app_tree is not None:
+            for_version = common.app_tree.app.for_version
+        else:
+            for_version = (2, 4) # default...
 
     classes = {}
     _current_extra_modules = {}
@@ -849,12 +859,16 @@ def generate_code_size(obj):
     name = _get_code_name(obj)
     size = obj.properties.get('size', '').strip()
     use_dialog_units = (size[-1] == 'd')
+    if for_version < (2, 5) or obj.parent is None:
+        method = 'SetSize'
+    else:
+        method = 'SetMinSize'
     if use_dialog_units:
-        return name + \
-            '->SetSize(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n' % \
-            ( name, size[:-1] )
+        return name + '->' + method + \
+               '(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n' % \
+               (name, size[:-1])
 
-    return name + '->SetSize(%s);\n' % size
+    return name + '->' + method + '(Wx::Size->new(%s));\n' % size
 
 
 def _string_to_colour(s):
