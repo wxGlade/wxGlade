@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.81 2005/09/29 02:03:20 efuzzyone Exp $
+# $Id: edit_windows.py,v 1.82 2005/10/13 13:29:31 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -198,6 +198,31 @@ class EditBase(EventsMixin):
         """\
         Updates property_window to display the properties of self
         """
+
+        # Begin Marcello 13 oct. 2005
+        if self.klass == 'wxPanel': # am I a wxPanel under a wxNotebook?
+            if self.parent and self.parent.klass == 'wxNotebook':
+                #pdb.set_trace()
+                nb = self.parent
+                if nb.widget:
+                    i = 0
+                    for tn,ep in nb.tabs: # tn=tabname, ep = editpanel 
+                        if self.name == ep.name:      # If I am under this tab...
+                            nb.widget.SetSelection(i) # ...Show that tab.
+                        i = i + 1
+        if self.parent and self.parent.klass == 'wxPanel': # am I a widget under a wxPanel under a wxNotebook?
+            if self.parent.parent and self.parent.parent.klass == 'wxNotebook':
+                #pdb.set_trace()
+                nb = self.parent.parent
+                if nb.widget:
+                    i = 0
+                    for tn,ep in nb.tabs: # tn=tabname, ep = editpanel 
+                        if self.parent.name == ep.name:
+                            nb.widget.SetSelection(i)
+                        i = i + 1
+        # End Marcello 13 oct. 2005
+
+
         if not self.is_visible(): return # don't do anything if self is hidden
         # create the notebook the first time the function is called: this
         # allows us to create only the notebooks we really need
