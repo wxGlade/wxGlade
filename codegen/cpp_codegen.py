@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.42 2005/06/11 11:34:41 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.43 2005/10/14 12:18:31 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -281,8 +281,10 @@ def initialize(app_attrs):
     multi_files = app_attrs['option']
     
     global classes, header_lines, multiple_files, previous_source, nonce, \
-           _use_gettext, _overwrite
+           _use_gettext, _overwrite, _last_generated_id
     import time, random
+
+    _last_generated_id = 1000
 
     try: _use_gettext = int(app_attrs['use_gettext'])
     except (KeyError, ValueError): _use_gettext = False
@@ -1165,7 +1167,7 @@ def generate_code_id(obj, id=None):
     else: return '', tokens[0] # we assume name is declared elsewhere
     if not name: return '', val
     if val.strip() == '?':
-        val = str(_last_generated_id)
+        val = 'wxID_HIGHEST + ' + str(_last_generated_id)
         _last_generated_id += 1        
     return '%s = %s' % (name, val), name
 

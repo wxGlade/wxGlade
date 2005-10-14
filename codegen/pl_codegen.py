@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.33 2005/10/08 14:00:23 agriggio Exp $
+# $Id: pl_codegen.py,v 1.34 2005/10/14 12:18:30 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -64,6 +64,11 @@ output_file = None
 # if not None, it is the directory inside which the output files are saved
 out_dir = None
 
+def cn(class_name):
+    if class_name[:2] == 'wx': 
+        return 'Wx::' + class_name[2:]
+    elif class_name[:4] == 'EVT_':
+        return 'Wx::' + class_name
 
 class ClassLines:
     """\
@@ -81,6 +86,7 @@ class ClassLines:
         self.dependencies = {} # names of the modules this class depends on
         self.done = False # if True, the code for this class has already
                           # been generated
+        self.event_handlers = [] # lines to bind events 
 
 # end of class ClassLines
 
@@ -104,6 +110,7 @@ class SourceFileContent:
                               # inserted BEFORE the old ones)
         if classes is None: self.classes = {}
         self.spaces = {} # indentation level for each class
+        self.event_handlers = {} # list of event handlers for each class
         if self.content is None:
             self.build_untouched_content()
 
@@ -132,6 +139,8 @@ class SourceFileContent:
                                  '([a-zA-Z_][\w:]*?)::(\w+)\s*$')
         block_end = re.compile(r'^\s*#\s*end\s+wxGlade\s*$')
         pod_re = re.compile(r'^\s*=[A-Za-z_]+\w*.*$')
+        event_handler = re.compile(
+            r'#\s*wxGlade:\s*(\w+)::(\w+) <event_handler>\s*$')
         inside_block = False
         inside_pod = False
         tmp_in = open(self.name)
@@ -177,6 +186,18 @@ class SourceFileContent:
                         out_lines.append('#<%swxGlade replace %s %s>' % \
                                          (nonce, which_class, which_block))
                 else:
+                    #- ALB 2004-12-05 ----------
+                    result = event_handler.match(line)
+                    if result is not None:
+                        which_handler = result.group(2)
+                        which_class = result.group(1)
+                        self.event_handlers.setdefault(
+                            which_class, {})[which_handler] = 1
+                    if class_name is not None and self.is_end_of_class(line):
+                        # add extra event handlers here...
+                        out_lines.append('#<%swxGlade event_handlers %s>'
+                                         % (nonce, class_name))
+                    #---------------------------
                     out_lines.append(line)
                     if line.lstrip().startswith('use Wx'):
                         # add a tag to allow extra modules
@@ -195,6 +216,9 @@ class SourceFileContent:
         # set the ``persistent'' content of the file
         self.content = "".join(out_lines)
         
+    def is_end_of_class(self, line):
+        return line.strip().startswith('# end of class ')
+
 # end of class SourceFileContent
 
 # if not None, it is an instance of SourceFileContent that keeps info about
@@ -268,7 +292,8 @@ def initialize(app_attrs):
         if not module_name or module_name.startswith('#'): continue
         module_name = module_name.split('#')[0].strip()
         try:
-            m = __import__(module_name + '.perl_codegen', {}, {}, ['initialize'])
+            m = __import__(
+                module_name + '.perl_codegen', {}, {}, ['initialize'])
             m.initialize()
         except (ImportError, AttributeError):
             print 'ERROR loading "%s"' % module_name
@@ -294,6 +319,7 @@ def initialize(app_attrs):
     nonce = '%s%s' % (str(time.time()).replace('.', ''),
                       random.randrange(10**6, 10**7))
 
+    # ALB 2004-12-05
     global for_version
     try:
         for_version = tuple([int(t) for t in
@@ -366,6 +392,11 @@ def finalize():
                       'did you rename this class?\n' % indent
             previous_source.content = previous_source.content.replace(tag[0],
                                                                       comment)
+        tags = re.findall('#<%swxGlade event_handlers \w+>' % nonce,
+                          previous_source.content)
+        for tag in tags:
+            previous_source.content = previous_source.content.replace(tag, "")
+
         # write the new file contents to disk
         common.save_file(previous_source.name, previous_source.content,
                          'codegen')
@@ -422,9 +453,22 @@ def add_object(top_obj, sub_obj):
                 klass.parents_init.extend(init)
             else: klass.init.extend(init)
             # ---------------------------------------------------------------
+            mycn = getattr(builder, 'cn', cn)
+            if hasattr(builder, 'get_events'):
+                evts = builder.get_events(sub_obj)
+                for id, event, handler in evts:
+                    klass.event_handlers.append((id, event, handler))
+            elif 'events' in sub_obj.properties:
+                id_name, id = generate_code_id(sub_obj)
+                #if id == '-1': id = 'self.%s.GetId()' % sub_obj.name
+                if id == '-1': id = '#$self->%s' % sub_obj.name
+                for event, handler in sub_obj.properties['events'].iteritems():
+                    klass.event_handlers.append((id, event, handler))
+
         else: # the object is a sizer
             if sub_obj.base == 'wxStaticBoxSizer':
-                klass.parents_init.insert( 1, init.pop(0) ) # ${staticboxsizername}_staticbox
+                klass.parents_init.insert(1, init.pop(0))
+                # ${staticboxsizername}_staticbox
             klass.sizers_init.extend(init)
         klass.props.extend(props)
         klass.layout.extend(layout)
@@ -588,6 +632,18 @@ def add_class(code_obj):
     
     write('\n\t$self->__set_properties();\n')
     write('\t$self->__do_layout();\n\n')
+
+    event_handlers = classes[code_obj.klass].event_handlers
+    if hasattr(builder, 'get_events'):
+        for id, event, handler in builder.get_events(code_obj):
+            event_handlers.append((id, event, handler))
+    for win_id, event, handler in event_handlers:
+        if win_id.startswith('#'):
+            win_id = '$self->{' + win_id[8:] + '}->GetId'
+        write('\tWx::Event::%s($self, %s, \\&%s);\n' % \
+              (event, win_id, handler))
+    if event_handlers: write('\n')
+   
     write('# end wxGlade\n')
 
     if is_new:
@@ -674,6 +730,33 @@ def add_class(code_obj):
         else:
             prev_src.content = prev_src.content.replace(tag, "".join(buffer))
 
+    if prev_src is not None and not is_new:
+        already_there = prev_src.event_handlers.get(code_obj.klass, {})
+        buf = []
+        for name, event, handler in event_handlers:
+            if handler not in already_there:
+                buf.append('# wxGlade: %s::%s <event_handler>\n'
+                           'sub %s {\n'
+                           '\tmy ($self, $event) = @_;\n'
+                           '\t$event->Skip;\n}\n\n'
+                           % (code_obj.klass, handler, handler))
+
+        tag = '#<%swxGlade event_handlers %s>' % (nonce, code_obj.klass)
+        if prev_src.content.find(tag) < 0:
+            # no event_handlers tag found, issue a warning and do nothing
+            print >> sys.stderr, "WARNING: wxGlade event_handlers block " \
+                  "not found, event_handlers code NOT generated"
+        else:
+            prev_src.content = prev_src.content.replace(tag, "".join(buf))
+        del buf
+    else:
+        for name, event, handler in event_handlers:
+            write('# wxGlade: %s::%s <event_handler>\n'
+                  'sub %s {\n'
+                  '\tmy ($self, $event) = @_;\n'
+                  '\t$event->Skip;\n}\n\n'
+                  % (code_obj.klass, handler, handler))
+
     # the code has been generated
     classes[code_obj.klass].done = True
 
@@ -723,9 +806,10 @@ def add_class(code_obj):
         # write the class body
         for line in buffer: write(line)
         try:
-            dirname = os.path.dirname( filename ) # create Foo in Foo::Bar, Foo/Bar.pm
-            if not os.path.exists( dirname ):
-                os.makedirs( dirname )
+            dirname = os.path.dirname(filename) # create Foo in Foo::Bar,
+                                                # Foo/Bar.pm
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
             # store the contents to filename
             common.save_file(filename, out.getvalue(), 'codegen')
         except:
@@ -1061,8 +1145,37 @@ class DummyPropertyHandler:
 # end of class DummyPropertyHandler
 
 
+class EventsPropertyHandler(object):
+    def __init__(self):
+        self.handlers = {}
+        self.event_name = None
+        self.curr_handler = []
+        
+    def start_elem(self, name, attrs):
+        if name == 'handler':
+            self.event_name = attrs['event']
+
+    def end_elem(self, name, code_obj):
+        if name == 'handler':
+            if self.event_name and self.curr_handler:
+                self.handlers[self.event_name] = ''.join(self.curr_handler)
+            self.event_name = None
+            self.curr_handler = []
+        elif name == 'events':
+            code_obj.properties['events'] = self.handlers
+            return True
+
+    def char_data(self, data):
+        data = data.strip()
+        if data:
+            self.curr_handler.append(data)
+
+# end of class EventsPropertyHandler
+    
+
 # dictionary whose items are custom handlers for widget properties
-_global_property_writers = { 'font': FontPropertyHandler }
+_global_property_writers = { 'font': FontPropertyHandler,
+                             'events': EventsPropertyHandler, }
 
 # dictionary of dictionaries of property handlers specific for a widget
 # the keys are the class names of the widgets
