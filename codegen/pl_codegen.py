@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.34 2005/10/14 12:18:30 agriggio Exp $
+# $Id: pl_codegen.py,v 1.35 2005/10/14 13:13:05 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -500,7 +500,7 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
             if test_attribute(obj):
                 obj_name = '$self->{%s}' % obj_name
 
-        if obj.base == 'wxNotebook':
+        if obj.base == 'wxNotebook' and for_version < (2, 6): # deprecated since wxWidgets 2.5.3
             obj_name = 'Wx::NotebookSizer->new(%s)' % obj_name
         elif obj_name[0:1] != '$':
             obj_name = '$self->{%s}' % obj_name
