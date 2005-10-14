@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxStaticBitmap objects
-# $Id: perl_codegen.py,v 1.9 2005/08/01 17:02:19 agriggio Exp $
+# $Id: perl_codegen.py,v 1.10 2005/10/14 12:39:47 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -58,10 +58,12 @@ class PerlCodeGenerator:
         style = prop.get('style')
         if not style: style = ''
 
+        klass = obj.base;
+        if klass != obj.klass : klass = obj.klass; 
+        else: klass = klass.replace('wx','Wx::',1);
+
         init.append('%s = %s->new(%s, %s, %s, wxDefaultPosition, wxDefaultSize,'
-                    ' %s);\n' % 
-                    (prefix, obj.klass.replace('wx', 'Wx::', 1), parent, id,
-                     bmp, style))
+                    ' %s);\n' %  (prefix, klass, parent, id, bmp, style))
         props_buf = plgen.generate_common_properties(obj)
 
         if not attribute:
