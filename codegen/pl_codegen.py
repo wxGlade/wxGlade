@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.35 2005/10/14 13:13:05 crazyinsomniac Exp $
+# $Id: pl_codegen.py,v 1.36 2005/10/14 13:45:07 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -735,11 +735,12 @@ def add_class(code_obj):
         buf = []
         for name, event, handler in event_handlers:
             if handler not in already_there:
-                buf.append('# wxGlade: %s::%s <event_handler>\n'
-                           'sub %s {\n'
+                buf.append('\nsub %s {\n'
                            '\tmy ($self, $event) = @_;\n'
-                           '\t$event->Skip;\n}\n\n'
-                           % (code_obj.klass, handler, handler))
+                           '# wxGlade: %s::%s <event_handler>\n\n'
+                           '\twarn "Event handler (%s) not implemented";\n'
+                           '\t$event->Skip;\n\n# end wxGlade\n}\n\n'
+                       % (handler, code_obj.klass,handler, handler))
 
         tag = '#<%swxGlade event_handlers %s>' % (nonce, code_obj.klass)
         if prev_src.content.find(tag) < 0:
@@ -751,11 +752,12 @@ def add_class(code_obj):
         del buf
     else:
         for name, event, handler in event_handlers:
-            write('# wxGlade: %s::%s <event_handler>\n'
-                  'sub %s {\n'
-                  '\tmy ($self, $event) = @_;\n'
-                  '\t$event->Skip;\n}\n\n'
-                  % (code_obj.klass, handler, handler))
+            write('\nsub %s {\n'
+                       '\tmy ($self, $event) = @_;\n'
+                       '# wxGlade: %s::%s <event_handler>\n\n'
+                       '\twarn "Event handler (%s) not implemented";\n'
+                       '\t$event->Skip;\n\n# end wxGlade\n}\n\n'
+                       % (handler, code_obj.klass,handler, handler))
 
     # the code has been generated
     classes[code_obj.klass].done = True
