@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.8 2005/10/14 13:29:21 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.9 2005/10/14 13:30:34 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -7,7 +7,7 @@
 
 import common
 from MenuTree import *
-from codeen import MenuHandler
+from codegen import MenuHandler
 
 class PerlCodeGenerator:
     def get_properties_code(self, obj):
