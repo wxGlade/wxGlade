@@ -27,8 +27,8 @@ install: all install-doc
 	done
 	cp -a icons $(DESTDIR)/usr/share/$(PACKAGE)
 	# get rid of .xvpics subdirectories and .cvsignore files
-	find $(DESTDIR)/usr/share/$(PACKAGE) -name '.xvpics' -type d -exec rm -r {} \;
-	find $(DESTDIR) -name '.cvsignore' -type f -exec rm {} \;
+	find $(DESTDIR)/usr/share/$(PACKAGE) -name '.xvpics' -type d | xargs rm -rf 
+	find $(DESTDIR) -name '.cvsignore' -type f | xargs rm -f
 	ln -s /usr/share/$(PACKAGE)/icons \
 	  $(DESTDIR)/usr/lib/python$(PYVER)/site-packages/wxglade
 	install -m 755 wxglade $(DESTDIR)/usr/bin
