@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxPanel objects
-# $Id: perl_codegen.py,v 1.9 2005/08/15 07:41:42 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.10 2005/11/20 10:50:48 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -44,10 +44,14 @@ class PerlCodeGenerator:
         style = prop.get("style", 'wxTAB_TRAVERSAL')
         if not( scrollable or style != 'wxTAB_TRAVERSAL' ):
             style = ''
-        if scrollable:
-            klass = 'Wx::ScrolledWindow'
+        # ALB 2005-11-19
+        if not int(panel.properties.get('no_custom_class', False)):
+            if scrollable:
+                klass = 'Wx::ScrolledWindow'
+            else:
+                klass = 'Wx::Panel'
         else:
-            klass = 'Wx::Panel'
+            klass = panel.klass
 
         init.append('$self->{%s} = %s->new(%s, %s, \
 wxDefaultPosition, wxDefaultSize, %s);\n'

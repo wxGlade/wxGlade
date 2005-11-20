@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxPanel objects
-# $Id: codegen.py,v 1.16 2005/05/06 21:48:19 agriggio Exp $
+# $Id: codegen.py,v 1.17 2005/11/20 10:50:48 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -31,8 +31,13 @@ class PythonCodeGenerator:
         if scrollable or style != 'wxTAB_TRAVERSAL':
             style = ", style=%s" % cn_f(style)
         else: style = ''
-        if scrollable: klass = cn('wxScrolledWindow')
-        else: klass = cn('wxPanel')
+        # ALB 2005-11-19
+        if not int(panel.properties.get('no_custom_class', False)) \
+               or panel.preview:
+            if scrollable: klass = cn('wxScrolledWindow')
+            else: klass = cn('wxPanel')
+        else:
+            klass = panel.klass
         init.append('self.%s = %s(%s, %s%s)\n' % \
                     (panel.name, klass, parent, id, style))
         props_buf = pygen.generate_common_properties(panel)
@@ -82,8 +87,12 @@ class CppCodeGenerator:
         style = prop.get("style", 'wxTAB_TRAVERSAL')
         if scrollable or style != 'wxTAB_TRAVERSAL':
             extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        if scrollable: klass = 'wxScrolledWindow'
-        else: klass = 'wxPanel'
+        # ALB 2005-11-19
+        if not int(panel.properties.get('no_custom_class', False)):
+            if scrollable: klass = 'wxScrolledWindow'
+            else: klass = 'wxPanel'
+        else:
+            klass = panel.klass
         init = ['%s = new %s(%s, %s%s);\n' %
                 (panel.name, klass, parent, id, extra) ]
         props_buf = cppgen.generate_common_properties(panel)
