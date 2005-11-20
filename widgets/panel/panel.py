@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.31 2005/07/11 12:12:46 agriggio Exp $
+# $Id: panel.py,v 1.32 2005/11/20 10:50:48 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -19,6 +19,13 @@ class PanelBase(object):
         """
         super(PanelBase, self).__init__()
         self.top_sizer = None # sizer to handle the layout of children
+        # ------ ALB 2005-11-19: option to disable custom class code generation
+        self.no_custom_class = False
+        self.access_functions['no_custom_class'] = (self.get_no_custom_class,
+                                                    self.set_no_custom_class)
+        self.properties['no_custom_class'] = CheckBoxProperty(
+            self, 'no_custom_class', label="Don't generate code for this class")
+        # ------
         self.style = style
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.style_pos  = [wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
@@ -66,6 +73,8 @@ class PanelBase(object):
         panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         panel.SetScrollRate(5, 5)
         szr = wxBoxSizer(wxVERTICAL)
+        self.properties['no_custom_class'].display(panel)
+        szr.Add(self.properties['no_custom_class'].panel, 0, wxEXPAND)
         self.properties['style'].display(panel)
         szr.Add(self.properties['style'].panel, 0, wxEXPAND)
         self.properties['scrollable'].display(panel)
@@ -165,7 +174,13 @@ class PanelBase(object):
         self.scroll_rate = srx, sry
         if self.widget:
             self.widget.SetScrollRate(srx, sry)
-            
+
+    def get_no_custom_class(self):
+        return self.no_custom_class
+
+    def set_no_custom_class(self, value):
+        self.no_custom_class = bool(int(value))
+
 # end of class PanelBase
     
 

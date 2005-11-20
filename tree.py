@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.46 2005/05/06 21:48:25 agriggio Exp $
+# $Id: tree.py,v 1.47 2005/11/20 10:50:50 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -54,9 +54,14 @@ class Tree:
             assert self.widget is not None
             w = self.widget
             classname = getattr(w, '_classname', w.__class__.__name__)
-            fwrite('    ' * tabs + '<object class=%s name=%s base=%s>\n'
+            # ALB 2005-11-19: to disable custom class code generation
+            # (for panels...)
+            no_custom = ""
+            if getattr(w, 'no_custom_class', False):
+                no_custom = ' no_custom_class="1"'
+            fwrite('    ' * tabs + '<object class=%s name=%s base=%s%s>\n'
                    % (quoteattr(w.klass), quoteattr(w.name),
-                      quoteattr(classname)))
+                      quoteattr(classname), no_custom))
             for p in w.properties:
                 w.properties[p].write(outfile, tabs+1)
 

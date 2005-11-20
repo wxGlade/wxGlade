@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.37 2005/05/06 21:48:24 agriggio Exp $
+# $Id: xml_parse.py,v 1.38 2005/11/20 10:50:50 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -660,13 +660,17 @@ class CodeObject:
                    can_be_toplevel:
                 #self.base != 'CustomWidget':
                 self.is_toplevel = True
-                # make a valid name for the class (this can be invalid for
-                # some sensible reasons...)
-                # ALB: NEVER try to be smarter than the user!!
-                #self.klass = self.klass[self.klass.rfind('.')+1:]
-                #self.klass = self.klass[self.klass.rfind(':')+1:]
-                
-                self.parser._toplevels.push(self)
+                # ALB 2005-11-19: for panel objects, if the user sets a
+                # custom class but (s)he doesn't want the code
+                # to be generated...
+                if int(attrs.get('no_custom_class', False)) and \
+                       not self.preview:
+                    self.is_toplevel = False
+                    #print 'OK:', str(self)
+                    #self.in_windows = True
+                    #self.parser._windows.push(self)
+                else:
+                    self.parser._toplevels.push(self)
             #------------- 2003-05-07: preview --------------------------------
             elif self.preview and not can_be_toplevel:
                 # if this is a custom class, but not a toplevel one,
