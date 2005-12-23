@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxChoice objects
-# $Id: codegen.py,v 1.12 2005/05/06 21:48:22 agriggio Exp $
+# $Id: codegen.py,v 1.13 2005/12/23 11:28:19 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -28,7 +28,7 @@ class PythonCodeGenerator:
                     (obj.name, klass, parent, id, choices, style))
         props_buf = pygen.generate_common_properties(obj)
         selection = prop.get('selection')
-        if selection is not None:
+        if selection is not None and len(prop.get('choices', [])):
             props_buf.append('self.%s.SetSelection(%s)\n' %
                              (obj.name, selection))
         return init, props_buf, []   
@@ -75,7 +75,7 @@ class CppCodeGenerator:
                     (obj.name, obj.klass, parent, id, number, obj.name, style))
         props_buf = cppgen.generate_common_properties(obj)
         selection = prop.get('selection')
-        if selection is not None:
+        if selection is not None and len(prop.get('choices', [])):
             props_buf.append('%s->SetSelection(%s);\n' % (obj.name, selection))
         return init, ids, props_buf, []
 
