@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.32 2005/11/20 10:50:48 agriggio Exp $
+# $Id: panel.py,v 1.33 2005/12/28 00:24:03 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -24,7 +24,8 @@ class PanelBase(object):
         self.access_functions['no_custom_class'] = (self.get_no_custom_class,
                                                     self.set_no_custom_class)
         self.properties['no_custom_class'] = CheckBoxProperty(
-            self, 'no_custom_class', label="Don't generate code for this class")
+            self, 'no_custom_class',
+            label="Don't generate code for this custom class")
         # ------
         self.style = style
         self.access_functions['style'] = (self.get_style, self.set_style)
@@ -75,6 +76,11 @@ class PanelBase(object):
         szr = wxBoxSizer(wxVERTICAL)
         self.properties['no_custom_class'].display(panel)
         szr.Add(self.properties['no_custom_class'].panel, 0, wxEXPAND)
+        label = self.properties['no_custom_class'].cb
+        label.SetToolTip(
+            wxToolTip('If this is a custom class, setting this property '
+                      'prevents wxGlade\nfrom generating the class definition'
+                      ' code'))
         self.properties['style'].display(panel)
         szr.Add(self.properties['style'].panel, 0, wxEXPAND)
         self.properties['scrollable'].display(panel)
