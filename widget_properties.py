@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.52 2005/05/06 21:48:24 agriggio Exp $
+# $Id: widget_properties.py,v 1.53 2005/12/28 00:22:02 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -27,6 +27,7 @@ def _mangle(label):
     the name of a property
     """
     return misc.wxstr(label.capitalize().replace('_', ' '))
+
 
 import common
 _encode = common._encode_to_xml
@@ -288,7 +289,7 @@ class CheckBoxProperty(Property):
         self.cb.SetValue(self.val)
         label = wxStaticText(parent, -1, self.label)
         sizer = wxBoxSizer(wxHORIZONTAL)
-        sizer.Add(label, 5, wxALIGN_CENTER|wxALL, 3)
+        sizer.Add(label, 5, wxALIGN_CENTER_VERTICAL|wxALL, 3)
         sizer.Add(self.cb, 2, wxALIGN_CENTER|wxALL, 3)
 ##         self.panel.SetAutoLayout(True)
 ##         self.panel.SetSizer(sizer)

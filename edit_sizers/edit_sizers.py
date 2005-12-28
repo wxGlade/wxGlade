@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.66 2005/06/04 12:33:08 agriggio Exp $
+# $Id: edit_sizers.py,v 1.67 2005/12/28 00:22:01 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -723,8 +723,8 @@ class SizerBase(Sizer):
         option = int(option); flag = int(flag); border = int(border)
         if pos is None:
             pos = len(self.children)
-            self.children.append(SizerItem(item, pos, option, flag, border,
-                                           size))
+##             self.children.append(SizerItem(item, pos, option, flag, border,
+##                                            size))
             self.add_slot()
         try:
             old_child = self.children[pos]
@@ -1104,10 +1104,10 @@ class SizerBase(Sizer):
         adds a slot to the sizer, i.e. a fake window that will accept the
         dropping of widgets
         """
-        if not self.widget: return
         tmp = SizerSlot(self.window, self, len(self.children))
         item = SizerItem(tmp, len(self.children), 1, wxEXPAND)
         self.children.append(item)
+        if not self.widget: return
         tmp.show_widget(True) # create the actual SizerSlot widget
         self.widget.Add(tmp.widget, 1, wxEXPAND)
         self.widget.SetItemMinSize(tmp.widget, 20, 20)
@@ -1241,6 +1241,7 @@ class EditBoxSizer(SizerBase):
         self.widget.Add(self._btn, 0, wxEXPAND)
         to_lay_out = []
         for c in self.children[1:]: # we've already added self._btn
+            print c.item
             c.item.show_widget(True)
             if isinstance(c.item, SizerSlot):
                 self.widget.Add(c.item.widget, 1, wxEXPAND)

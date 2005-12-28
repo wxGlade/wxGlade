@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.47 2005/11/20 10:50:50 agriggio Exp $
+# $Id: tree.py,v 1.48 2005/12/28 00:22:02 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -66,14 +66,29 @@ class Tree:
                 w.properties[p].write(outfile, tabs+1)
 
             if isinstance(w, edit_sizers.SizerBase):
-                if self.children is not None:
-                    for c in self.children:
+                maxpos = len(w.children)
+                children = self.children is not None and self.children or []
+                tmp = {}
+                for c in children:
+                    tmp[c.widget.pos] = c
+                children = []
+                class SlotNode:
+                    def write(self, outfile, tabs):
+                        fwrite('    ' * tabs + '<object class="sizerslot" />\n')
+                for i in range(1, maxpos):
+                    children.append(tmp.get(i, SlotNode()))
+                #if self.children is not None:
+                #    for c in self.children:
+                for c in children:
+                    if hasattr(c, 'widget'):
                         fwrite('    ' * (tabs+1) +
                                '<object class="sizeritem">\n')
                         sp = c.widget.sizer_properties
                         for p in sp: sp[p].write(outfile, tabs+2)
                         c.write(outfile, tabs+2)
                         fwrite('    ' * (tabs+1) + '</object>\n')
+                    else:
+                        c.write(outfile, tabs+1)
             elif self.children is not None:
                 for c in self.children: c.write(outfile, tabs+1)
             fwrite('    ' * tabs + '</object>\n')
