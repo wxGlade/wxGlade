@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.82 2005/10/13 13:29:31 dinogen Exp $
+# $Id: edit_windows.py,v 1.83 2005/12/28 00:22:02 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -824,7 +824,10 @@ class ManagedBase(WindowBase):
                 w, h = [ int(v) for v in size.split(',') ]
                 if use_dialog_units:
                     w, h = wxDLG_SZE(self.widget, (w, h))
-            else: w, h = self.widget.GetBestSize()
+                if value:
+                    w, h = 1, 1
+            else:
+                w, h = self.widget.GetBestSize()
             self.sizer.set_item(self.pos, option=value, size=(w, h))
         except AttributeError, e:
             print e

@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.38 2005/11/20 10:50:50 agriggio Exp $
+# $Id: xml_parse.py,v 1.39 2005/12/28 00:22:01 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -187,7 +187,7 @@ class XmlWidgetBuilder(XmlParser):
         if name == 'object':
             # remove last object from the stack
             obj = self.pop()
-            if obj.klass == 'sizeritem': return
+            if obj.klass in ('sizeritem', 'sizerslot'): return
             si = self._sizer_item.top()
             if si is not None and si.parent == obj.parent:
                 sprop = obj.obj.sizer_properties
@@ -425,7 +425,14 @@ class XmlWidgetObject:
             self.obj = Sizeritem()
             self.parent = self.parser._windows.top().obj
             self.parser._sizer_item.push(self)
-            
+
+        elif self.klass == 'sizerslot':
+            sizer = self.parser._sizers.top().obj
+            assert sizer is not None, \
+                   "malformed wxg file: slots can only be inside sizers!"
+            sizer.add_slot()
+            self.parser._sizer_item.push(self)
+                        
         # push the object on the _objects stack
         self.parser._objects.push(self)
 
@@ -560,7 +567,7 @@ class CodeWriter(XmlParser):
             return
         if name == 'object':
             obj = self.pop()
-            if obj.klass == 'sizeritem': return
+            if obj.klass in ('sizeritem', 'sizerslot'): return
             # at the end of the object, we have all the information to add it
             # to its toplevel parent, or to generate the code for the custom
             # class
