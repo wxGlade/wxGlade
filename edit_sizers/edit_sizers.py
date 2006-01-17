@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.67 2005/12/28 00:22:01 agriggio Exp $
+# $Id: edit_sizers.py,v 1.68 2006/01/17 08:43:48 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1241,7 +1241,7 @@ class EditBoxSizer(SizerBase):
         self.widget.Add(self._btn, 0, wxEXPAND)
         to_lay_out = []
         for c in self.children[1:]: # we've already added self._btn
-            print c.item
+            #print c.item
             c.item.show_widget(True)
             if isinstance(c.item, SizerSlot):
                 self.widget.Add(c.item.widget, 1, wxEXPAND)
