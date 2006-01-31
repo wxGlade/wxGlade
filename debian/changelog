@@ -1,3 +1,19 @@
+wxglade (0.3.5.cvs20060131-0.1) unstable; urgency=low
+
+  * Sponsored upload.
+  * synchronised to the CVS.
+    Closes #340999, #327851
+  * no problem with the menu bars upon testing, so probably ...
+    Closes #341762
+  * added a Conflicts: against libwxgtk2.4-python, thanks to  Andrea Brenci
+    <andrea.brenci@libero.it>
+  * added a menu file, thanks to Basil Shubin <bashu@yandex.ru>
+    Closes #335945, #335946
+  * modified /usr/bin/wxglade to use python2.3
+   Closes #348871
+
+ -- Georges Khaznadar <georgesk@ofset.org>  Tue, 31 Jan 2006 19:59:41 +0100
+
 wxglade (0.3.5.cvs20050824-0.1) unstable; urgency=low
 
   * Sponsored upload.
