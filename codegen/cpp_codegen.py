@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.43 2005/10/14 12:18:31 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.44 2006/02/12 13:01:43 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -648,14 +648,18 @@ def add_class(code_obj):
             t = tabs(1)
             hwrite('\n' + t + 'DECLARE_EVENT_TABLE();\n')
             hwrite('\npublic:\n')
+            already_there = {}
             for tpl in event_handlers:
                 if len(tpl) == 4:
                     win_id, event, handler, evt_type = tpl
                 else:
                     win_id, event, handler = tpl
                     evt_type = 'wxCommandEvent'
-                hwrite(t + 'void %s(%s &event); '
-                       '// wxGlade: <event_handler>\n' % (handler, evt_type))
+                if handler not in already_there:
+                    hwrite(t + 'void %s(%s &event); '
+                           '// wxGlade: <event_handler>\n' %
+                           (handler, evt_type))
+                    already_there[handler] = 1
         
         hwrite('}; // wxGlade: end class\n\n')
         
@@ -724,6 +728,7 @@ def add_class(code_obj):
                 if handler not in already_there:
                     hwrite(t + 'void %s(%s &event); // wxGlade: '
                            '<event_handler>\n' % (handler, evt_type))
+                    already_there[handler] = 1
             if code_obj.klass not in prev_src.event_table_def:
                 hwrite('\nprotected:\n')
                 hwrite(tabs(1) + 'DECLARE_EVENT_TABLE()\n')
@@ -838,6 +843,7 @@ def add_class(code_obj):
                        (code_obj.klass, handler, evt_type))
                 swrite(tab + 'event.Skip();\n')
                 swrite('}\n')
+                already_there[handler] = 1
         if is_new or prev_src is None:
             swrite('\n\n')
         swrite('// wxGlade: add %s event handlers\n' % code_obj.klass)

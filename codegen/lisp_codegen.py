@@ -1,5 +1,5 @@
 # lisp_codegen.py: lisp code generator
-# $Id: lisp_codegen.py,v 1.3 2005/09/27 02:20:07 efuzzyone Exp $
+# $Id: lisp_codegen.py,v 1.4 2006/02/12 13:01:43 agriggio Exp $
 #
 # Copyright (c) 2005 Surendra K Singhi <efuzzyone@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -824,10 +824,12 @@ def add_class(code_obj):
                 buf.append('(defun %s (function data event) '
                            ';;;wxGlade: %s.<event_handler>\n'
                            % (handler, code_obj.klass))
-                buf.append(tab + '(print "Event handler `%s\' not implemented")\n' %
+                buf.append(tab +
+                           '(print "Event handler `%s\' not implemented")\n' %
                            handler)
                 buf.append(tab + '(when event\n')
                 buf.append(tab + '(wxEvent:wxEvent_Skip event)))\n')
+                already_there[handler] = 1
         tag = '<%swxGlade event_handlers %s>' % (nonce, code_obj.klass)
         if prev_src.content.find(tag) < 0:
             # no event_handlers tag found, issue a warning and do nothing
@@ -837,15 +839,18 @@ def add_class(code_obj):
             prev_src.content = prev_src.content.replace(tag, "".join(buf))
         del buf
     else:
+        already_there = {}
         for name, event, handler in event_handlers:
-            write('\n' + '(defun %s (function data event) '
-                  ';;;wxGlade: %s.<event_handler>\n'
-                  % (handler, code_obj.klass))
-            write(tab + '(print "Event handler `%s\' not implemented!")\n' %
-                  handler)
-            write(tab + '(when event\n')
-            write(tab + tab + '(wxEvent:wxEvent_Skip event)))\n')
-
+            if handler not in already_there:
+                write('\n' + '(defun %s (function data event) '
+                      ';;;wxGlade: %s.<event_handler>\n'
+                      % (handler, code_obj.klass))
+                write(tab + '(print "Event handler `%s\' not implemented!")\n' %
+                      handler)
+                write(tab + '(when event\n')
+                write(tab + tab + '(wxEvent:wxEvent_Skip event)))\n')
+                already_there[handler] = 1
+    
     # the code has been generated
     classes[code_obj.klass].done = True
 
