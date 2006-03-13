@@ -1,10 +1,13 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.69 2005/05/06 21:48:25 agriggio Exp $
+# $Id: main.py,v 1.70 2006/03/13 10:17:15 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
+
+import wxversion
+wxversion.select("2.6")
 
 from wxPython.wx import *
 from widget_properties import *
