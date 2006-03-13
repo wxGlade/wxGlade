@@ -1,5 +1,5 @@
 # custom_widget.py: custom wxWindow objects
-# $Id: custom_widget.py,v 1.16 2005/05/06 21:48:21 agriggio Exp $
+# $Id: custom_widget.py,v 1.17 2006/03/13 10:14:49 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -71,7 +71,7 @@ class CustomWidget(ManagedBase):
 
     def create_widget(self):
         self.widget = wxWindow(self.parent.widget, self.id,
-                               style=wxSUNKEN_BORDER)
+                               style=wxSUNKEN_BORDER|wxFULL_REPAINT_ON_RESIZE)
         EVT_PAINT(self.widget, self.on_paint)
 
     def finish_widget_creation(self):
