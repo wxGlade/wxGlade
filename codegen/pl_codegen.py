@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.37 2006/02/12 13:01:43 agriggio Exp $
+# $Id: pl_codegen.py,v 1.38 2006/05/02 08:34:05 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -847,6 +847,7 @@ def add_app(app_attrs, top_win_class):
     else:
         filename = os.path.join(out_dir, name + '.pl')
         if not os.path.exists(filename): prev_src = None
+        elif _overwrite: prev_src = None
         else:
             # prev_src doesn't need to be a SourceFileContent instance in this
             # case, as we do nothing if it is not None
