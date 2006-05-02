@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.52 2005/10/14 12:18:31 agriggio Exp $
+# $Id: application.py,v 1.53 2006/05/02 08:09:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -310,7 +310,10 @@ class Application(object):
 
     def add_top_window(self, name):
         self.top_win_prop.Append("%s" % name)
-
+        if not self.top_window:
+            self.top_win_prop.SetSelection(self.top_win_prop.GetCount()-1)
+            self.set_top_window()
+            
     def remove_top_window(self, name):
         index = self.top_win_prop.FindString("%s" % name)
         if index != -1:
