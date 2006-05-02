@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.61 2006/02/12 13:01:43 agriggio Exp $
+# $Id: py_codegen.py,v 1.62 2006/05/02 08:34:05 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -842,6 +842,7 @@ def add_app(app_attrs, top_win_class):
     else:
         filename = os.path.join(out_dir, name + '.py')
         if not os.path.exists(filename): prev_src = None
+        elif _overwrite: prev_src = None
         else:
             # prev_src doesn't need to be a SourceFileContent instance in this
             # case, as we do nothing if it is not None
