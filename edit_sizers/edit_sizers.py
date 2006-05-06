@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.68 2006/01/17 08:43:48 agriggio Exp $
+# $Id: edit_sizers.py,v 1.69 2006/05/06 11:04:09 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -323,6 +323,7 @@ def change_sizer(old, new, which_page=0):
         lambda : EditFlexGridSizer(old.name, old.window, rows=0, cols=0,
                                    toplevel=old.toplevel)
     }
+
     szr = constructors[new]()
     szr.children.extend(old.children[1:])
     szr.node = old.node
@@ -1280,7 +1281,7 @@ class EditBoxSizer(SizerBase):
             #print 'set_item:', pos, size
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
-        if not self.toplevel and hasattr(self, 'sizer'):
+        if not self.toplevel and getattr(self, 'sizer'):
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer'
             # call
             self.sizer.add_item(self, self.pos, self.option, self.flag,
