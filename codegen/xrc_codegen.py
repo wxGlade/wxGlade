@@ -1,5 +1,5 @@
 # xrc_codegen.py: wxWidgets resources XRC code generator
-# $Id: xrc_codegen.py,v 1.18 2005/05/06 21:48:23 agriggio Exp $
+# $Id: xrc_codegen.py,v 1.19 2006/05/06 11:20:50 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -177,7 +177,11 @@ class DefaultXrcObject(XrcObject):
 
         # ALB 2004-12-05
         if 'events' in self.properties:
-            del self.properties['events'] # no event handling in XRC
+            #del self.properties['events'] # no event handling in XRC
+            for handler, event in self.properties['events'].iteritems():
+                write(tab_str + '<handler event=%s>%s</handler>\n' % \
+                      (quoteattr(handler), escape(event)))
+            del self.properties['events']
 
         # 'disabled' property is actually 'enabled' for XRC
         if 'disabled' in self.properties:
@@ -366,6 +370,34 @@ class FontPropertyHandler:
 # end of class FontHandler
 
 
+class EventsPropertyHandler(object):
+    def __init__(self):
+        self.handlers = {}
+        self.event_name = None
+        self.curr_handler = []
+        
+    def start_elem(self, name, attrs):
+        if name == 'handler':
+            self.event_name = attrs['event']
+
+    def end_elem(self, name, code_obj):
+        if name == 'handler':
+            if self.event_name and self.curr_handler:
+                self.handlers[self.event_name] = ''.join(self.curr_handler)
+            self.event_name = None
+            self.curr_handler = []
+        elif name == 'events':
+            code_obj.properties['events'] = self.handlers
+            return True
+
+    def char_data(self, data):
+        data = data.strip()
+        if data:
+            self.curr_handler.append(data)
+
+# end of class EventsPropertyHandler
+
+
 class DummyPropertyHandler:
     """Empty handler for properties that do not need code"""
     def start_elem(self, name, attrs): pass
@@ -376,7 +408,8 @@ class DummyPropertyHandler:
 
 
 # dictionary whose items are custom handlers for widget properties
-_global_property_writers = { 'font': FontPropertyHandler }
+_global_property_writers = { 'font': FontPropertyHandler,
+                             'events': EventsPropertyHandler, }
 
 # dictionary of dictionaries of property handlers specific for a widget
 # the keys are the class names of the widgets

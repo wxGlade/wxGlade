@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.53 2006/05/02 08:09:03 agriggio Exp $
+# $Id: application.py,v 1.54 2006/05/06 11:20:51 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -115,6 +115,7 @@ class Application(object):
             else: self.codegen_opt = opt
         self.output_path = ""
         self.language = 'python' # output language
+        def get_output_path(): return os.path.expanduser(self.output_path)
         def set_output_path(value): self.output_path = value
         self.use_gettext = False
         def set_use_gettext(value): self.use_gettext = bool(int(value))
@@ -125,7 +126,7 @@ class Application(object):
             'name': (lambda : self.name, self.set_name),
             'class': (lambda : self.klass, self.set_klass), 
             'code_generation': (lambda : self.codegen_opt, set_codegen_opt),
-            'output_path': (lambda : self.output_path, set_output_path),
+            'output_path': (get_output_path, set_output_path),
             'language': (self.get_language, self.set_language),
             'encoding': (self.get_encoding, self.set_encoding),
             'use_gettext': (lambda : self.use_gettext, set_use_gettext),
