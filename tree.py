@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.49 2006/05/06 11:20:51 agriggio Exp $
+# $Id: tree.py,v 1.50 2006/05/07 11:42:03 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -466,7 +466,8 @@ class WidgetTree(wxTreeCtrl, Tree):
             node.widget.show_properties()
             node.widget.widget.Raise()
             # set the best size for the widget (if no one is given)
-            if not node.widget.properties['size'].is_active() and \
+            props = node.widget.properties
+            if 'size' in props and not props['size'].is_active() and \
                    node.widget.sizer:
                 node.widget.sizer.fit_parent()
             if wxIsBusy():
