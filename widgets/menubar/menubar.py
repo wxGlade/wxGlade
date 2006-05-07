@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.22 2005/05/06 21:48:20 agriggio Exp $
+# $Id: menubar.py,v 1.23 2006/05/07 11:43:37 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -14,7 +14,7 @@ from edit_windows import EditBase, TopLevelBase, PreviewMixin
 
 
 class MenuItemDialog(wxDialog):
-    def __init__(self, parent, items=None):
+    def __init__(self, parent, owner, items=None):
         wxDialog.__init__(self, parent, -1, "Menu editor",
                           style=wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
         ADD_ID, REMOVE_ID, NAME_ID, LABEL_ID, ID_ID, CHECK_RADIO_ID, LIST_ID, \
@@ -22,7 +22,8 @@ class MenuItemDialog(wxDialog):
                 MOVE_DOWN_ID, HELP_STR_ID = [wxNewId() for i in range(13)]
 
         self._staticbox = wxStaticBox(self, -1, "Menu item:")
-        
+
+        self.owner = owner
         self.menu_items = wxListCtrl(self, LIST_ID, style=wxLC_REPORT | \
                                      wxLC_SINGLE_SEL|wxSUNKEN_BORDER)
         # ALB 2004-09-26: workaround to make the scroll wheel work...
@@ -68,6 +69,7 @@ class MenuItemDialog(wxDialog):
         self.move_right = wxButton(self, MOVE_RIGHT_ID, " > ")
 
         self.ok = wxButton(self, wxID_OK, "OK")
+        self.apply = wxButton(self, wxID_APPLY, "Apply")
         self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
 
         self.do_layout()
@@ -81,6 +83,7 @@ class MenuItemDialog(wxDialog):
         EVT_BUTTON(self, MOVE_RIGHT_ID, self.move_item_right)
         EVT_BUTTON(self, MOVE_UP_ID, self.move_item_up)
         EVT_BUTTON(self, MOVE_DOWN_ID, self.move_item_down)
+        EVT_BUTTON(self, wxID_APPLY, self.on_apply)
         EVT_KILL_FOCUS(self.name, self.update_menu_item)
         EVT_KILL_FOCUS(self.label, self.update_menu_item)
         EVT_KILL_FOCUS(self.id, self.update_menu_item)
@@ -146,6 +149,7 @@ class MenuItemDialog(wxDialog):
         sizer.Add(szr, 1, wxEXPAND)
         sizer2 = wxBoxSizer(wxHORIZONTAL)
         sizer2.Add(self.ok, 0, wxALL, 5)
+        sizer2.Add(self.apply, 0, wxALL, 5)
         sizer2.Add(self.cancel, 0, wxALL, 5)
         sizer.Add(sizer2, 0, wxALL|wxALIGN_CENTER, 3)
         self.SetAutoLayout(1)
@@ -478,6 +482,10 @@ class MenuItemDialog(wxDialog):
         else:
             # restore the selected index
             self.selected_index = index
+
+    def on_apply(self, event):
+        self.owner.set_menus(self.get_menus())
+        common.app_tree.app.saved = False
                                                   
 #end of class MenuItemDialog
 
@@ -506,7 +514,8 @@ class MenuProperty(Property):
     def bind_event(*args): pass
 
     def edit_menus(self, event):
-        dialog = MenuItemDialog(self.panel, items=self.owner.get_menus())
+        dialog = MenuItemDialog(self.panel, self.owner,
+                                items=self.owner.get_menus())
         if dialog.ShowModal() == wxID_OK:
             self.owner.set_menus(dialog.get_menus())
             common.app_tree.app.saved = False # update the status of the app
