@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.21 2005/05/06 21:48:01 agriggio Exp $
+# $Id: toolbar.py,v 1.22 2006/05/07 11:42:58 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -48,7 +48,7 @@ class _MyBrowseButton(FileBrowseButton):
 
 
 class ToolsDialog(wxDialog):
-    def __init__(self, parent, items=None):
+    def __init__(self, parent, owner, items=None):
         wxDialog.__init__(self, parent, -1, "Toolbar editor",
                           style=wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
         ADD_ID, REMOVE_ID, NAME_ID, LABEL_ID, ID_ID, CHECK_RADIO_ID, LIST_ID, \
@@ -57,6 +57,8 @@ class ToolsDialog(wxDialog):
                 = [wxNewId() for i in range(14)]
 
         self._staticbox = wxStaticBox(self, -1, "Tool:")
+
+        self.owner = owner
         
         self.tool_items = wxListCtrl(self, LIST_ID, style=wxLC_REPORT | \
                                      wxLC_SINGLE_SEL|wxSUNKEN_BORDER,
@@ -110,6 +112,7 @@ class ToolsDialog(wxDialog):
         self.move_down = wxButton(self, MOVE_DOWN_ID, "Down")
 
         self.ok = wxButton(self, wxID_OK, "OK")
+        self.apply = wxButton(self, wxID_APPLY, "Apply")
         self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
 
         self.do_layout()
@@ -119,6 +122,7 @@ class ToolsDialog(wxDialog):
         EVT_BUTTON(self, ADD_SEP_ID, self.add_separator)
         EVT_BUTTON(self, MOVE_UP_ID, self.move_item_up)
         EVT_BUTTON(self, MOVE_DOWN_ID, self.move_item_down)
+        EVT_BUTTON(self, wxID_APPLY, self.on_apply)
         EVT_KILL_FOCUS(self.label, self.update_tool)
         EVT_KILL_FOCUS(self.id, self.update_tool)
         EVT_KILL_FOCUS(self.help_str, self.update_tool)
@@ -185,6 +189,7 @@ class ToolsDialog(wxDialog):
         sizer.Add(szr, 1, wxEXPAND)
         sizer2 = wxBoxSizer(wxHORIZONTAL)
         sizer2.Add(self.ok, 0, wxALL, 5)
+        sizer2.Add(self.apply, 0, wxALL, 5)
         sizer2.Add(self.cancel, 0, wxALL, 5)
         sizer.Add(sizer2, 0, wxALL|wxALIGN_CENTER, 3)
         self.SetAutoLayout(1)
@@ -408,8 +413,12 @@ class ToolsDialog(wxDialog):
             state = wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED
             self.tool_items.SetItemState(index, state, state)
             self.selected_index = index
-                                                  
-#end of class ToolsDialog
+
+    def on_apply(self, event):
+        self.owner.set_tools(self.get_tools())
+        common.app_tree.app.saved = False
+
+# end of class ToolsDialog
 
 
 class ToolsProperty(Property):
@@ -436,7 +445,8 @@ class ToolsProperty(Property):
     def bind_event(*args): pass
 
     def edit_tools(self, event):
-        dialog = ToolsDialog(self.panel, items=self.owner.get_tools())
+        dialog = ToolsDialog(self.panel, self.owner,
+                             items=self.owner.get_tools())
         if dialog.ShowModal() == wxID_OK:
             self.owner.set_tools(dialog.get_tools())
             common.app_tree.app.saved = False # update the status of the app
@@ -448,7 +458,7 @@ class ToolsProperty(Property):
             tool.write(outfile, tabs+1)
         fwrite('    ' * tabs + '</tools>\n')
 
-# end of class MenuProperty
+# end of class ToolsProperty
 
 
 class EditToolBar(EditBase, PreviewMixin):
