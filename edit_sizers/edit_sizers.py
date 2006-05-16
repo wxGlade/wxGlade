@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.69 2006/05/06 11:04:09 agriggio Exp $
+# $Id: edit_sizers.py,v 1.70 2006/05/16 14:57:23 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1396,6 +1396,7 @@ class EditStaticBoxSizer(SizerBase):
         """
         self.label = misc.wxstr(value)
         if self.widget: self.widget.GetStaticBox().SetLabel(self.label)
+        self.layout()
 
     def get_label(self): return self.label
 
@@ -1449,6 +1450,13 @@ class CustomSizer(wxBoxSizer):
 
     def RemovePos(self, pos):
         self._grid.Remove(pos-1)
+
+    def Detach(self, pos_or_obj):
+        try:
+            pos = int(pos_or_obj) - 1
+            self._grid.Detach(pos)
+        except TypeError:
+            self._grid.Detach(pos_or_obj)
         
     def SetItemMinSize(self, item, w, h): #*args, **kwds):
         try:
