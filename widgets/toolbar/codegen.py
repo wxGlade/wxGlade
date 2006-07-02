@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.21 2005/05/06 21:48:17 agriggio Exp $
+# $Id: codegen.py,v 1.22 2006/07/02 09:40:21 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -364,6 +364,22 @@ class CppCodeGenerator:
 ##                         id = tokens[0]
 ##                         ids.append(' = '.join(tokens))
         return ids
+
+    def get_events(self,obj):
+        cppgen = common.code_writers['C++']
+        out = []
+
+        def do_get(tool):
+            ret = []
+            name, val = cppgen.generate_code_id(None, tool.id)
+            if not val: val = '-1' # but this is wrong anyway...
+            if tool.handler:
+                ret.append((val, 'EVT_TOOL', tool.handler, 'wxCommandEvent'))
+            return ret
+
+        for tool in obj.properties['toolbar']:
+            out.extend(do_get(tool))
+        return out
 
 # end of class CppCodeGenerator
 

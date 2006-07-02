@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.18 2005/05/06 21:48:20 agriggio Exp $
+# $Id: codegen.py,v 1.19 2006/07/02 09:40:21 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -379,6 +379,25 @@ class CppCodeGenerator:
                 collect_ids(m.root.children)
 
         return ids
+
+    def get_events(self,obj):
+        cppgen = common.code_writers['C++']
+        out = []
+
+        def do_get(item):
+            ret = []
+            name, val = cppgen.generate_code_id(None, item.id)
+            if not val: val = '-1' # but this is wrong anyway...
+            if item.handler:
+                ret.append((val, 'EVT_MENU', item.handler, 'wxCommandEvent'))
+            if item.children:
+                for c in item.children:
+                    ret.extend(do_get(c))
+            return ret
+
+        for menu in obj.properties['menubar']:
+            out.extend(do_get(menu.root))
+        return out
 
 # end of class CppCodeGenerator
 
