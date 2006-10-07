@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.19 2006/07/02 09:40:21 agriggio Exp $
+# $Id: codegen.py,v 1.20 2006/10/07 09:03:59 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -380,7 +380,7 @@ class CppCodeGenerator:
 
         return ids
 
-    def get_events(self,obj):
+    def get_events(self, obj):
         cppgen = common.code_writers['C++']
         out = []
 
