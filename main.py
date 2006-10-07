@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.70 2006/03/13 10:17:15 agriggio Exp $
+# $Id: main.py,v 1.71 2006/10/07 09:03:59 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -219,6 +219,7 @@ class wxGladeFrame(wxFrame):
                 self.file_history.AddFileToHistory(path.strip())
                 
             def open_from_history(event):
+                if not self.ask_save(): return
                 infile = self.file_history.GetHistoryFile(
                     event.GetId() - wxID_FILE1)
                 # ALB 2004-10-15 try to restore possible autosave content...

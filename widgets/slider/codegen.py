@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxSlider objects
-# $Id: codegen.py,v 1.13 2005/05/06 21:48:18 agriggio Exp $
+# $Id: codegen.py,v 1.14 2006/10/07 09:03:59 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -79,6 +79,10 @@ class CppCodeGenerator:
                 (obj.name, obj.klass, parent, id, value, min_v, max_v, extra)]
         props_buf = cppgen.generate_common_properties(obj)
         return init, ids, props_buf, []
+
+    def get_events(self, obj):
+        cppgen = common.code_writers['C++']
+        return cppgen.get_events_with_type(obj, 'wxScrollEvent')
 
 # end of class CppCodeGenerator
 
