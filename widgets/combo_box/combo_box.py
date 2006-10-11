@@ -1,5 +1,5 @@
 # combo_box.py: wxComboBox objects
-# $Id: combo_box.py,v 1.22 2005/08/01 16:58:23 agriggio Exp $
+# $Id: combo_box.py,v 1.23 2006/10/11 07:37:41 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -25,6 +25,9 @@ if wxPlatform == '__WXMSW__':
             w, h = wxComboBox.GetBestSize(self)
             n = self.GetCount()
             return w, h/(n+1)
+
+        def GetSize(self):
+            return self.GetClientSize()
 else:
     wxComboBox2 = wxComboBox
 

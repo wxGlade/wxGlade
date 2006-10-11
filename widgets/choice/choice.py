@@ -1,5 +1,5 @@
 # choice.py: wxChoice objects
-# $Id: choice.py,v 1.15 2005/05/06 21:48:22 agriggio Exp $
+# $Id: choice.py,v 1.16 2006/10/11 07:37:41 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -21,6 +21,8 @@ if wxPlatform == '__WXMSW__':
             w, h = wxChoice.GetBestSize(self)
             n = self.GetCount()
             return w, h/(n+1)
+        def GetSize(self):
+            return self.GetClientSize()
 else:
     wxChoice2 = wxChoice
 
