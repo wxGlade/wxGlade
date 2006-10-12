@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.45 2006/05/02 08:34:05 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.46 2006/10/12 07:03:20 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -842,6 +842,10 @@ def add_class(code_obj):
                 swrite('\n\nvoid %s::%s(%s &event)\n{\n' % \
                        (code_obj.klass, handler, evt_type))
                 swrite(tab + 'event.Skip();\n')
+                swrite(tab + 'std::cout<<"Event handler (%s::%s) not '
+                       'implemented yet"<<std::endl; //notify the user '
+                       'that he hasn\'t implemented the event handler yet\n' % \
+                       (code_obj.klass, handler))
                 swrite('}\n')
                 already_there[handler] = 1
         if is_new or prev_src is None:
