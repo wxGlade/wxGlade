@@ -1,5 +1,5 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.1 2006/10/14 21:24:59 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.2 2006/10/15 07:30:19 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -43,9 +43,10 @@ class EditCalendarCtrl(ManagedBase):
             'wxCAL_SHOW_SURROUNDING_WEEKS','wxCAL_SEQUENTIAL_MONTH_SELECTION')
         self.style_pos = (wxNO_BORDER, wxSTATIC_BORDER,
                           wxRAISED_BORDER, wxSUNKEN_BORDER)
+        
         self.properties['style'] = CheckListProperty(self, 'style', None,
             style_labels)
-	    
+        
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
             self.flag = wxALL
@@ -53,11 +54,11 @@ class EditCalendarCtrl(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wxPanel(self.notebook, -1)
-        self.properties['label'].display(panel)
+        #self.properties['label'].display(panel)
         self.properties['default'].display(panel)
         self.properties['style'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
-        szr.Add(self.properties['label'].panel, 0, wxEXPAND)
+        #szr.Add(self.properties['label'].panel, 0, wxEXPAND)
         szr.Add(self.properties['default'].panel, 0, wxEXPAND)
         szr.Add(self.properties['style'].panel, 0, wxEXPAND)
         panel.SetAutoLayout(1)
