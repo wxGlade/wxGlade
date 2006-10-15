@@ -1,5 +1,5 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.2 2006/10/15 07:30:19 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.3 2006/10/15 07:46:19 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -142,5 +142,4 @@ def initialize():
     common.widgets['EditCalendarCtrl'] = builder
     common.widgets_from_xml['EditCalendarCtrl'] = xml_builder
 
-    #use the grid.xpm untill something better is found - Guy
-    return common.make_object_button('EditCalendarCtrl', 'icons/grid.xpm')
+    return common.make_object_button('EditCalendarCtrl', 'icons/calendar_ctrl.xpm')
