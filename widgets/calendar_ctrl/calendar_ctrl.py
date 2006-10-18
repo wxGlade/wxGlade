@@ -1,5 +1,5 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.3 2006/10/15 07:46:19 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.4 2006/10/18 07:48:55 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -125,7 +125,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    calendar_ctrl = EditCalendarCtrl(label, parent, wxNewId(), '', sizer,
+    calendar_ctrl = EditCalendarCtrl(label, parent, wxNewId(), sizer,
                         pos, common.property_panel, show=False)
     node = Tree.Node(calendar_ctrl)
     calendar_ctrl.node = node
