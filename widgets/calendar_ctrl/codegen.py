@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.1 2006/10/14 21:24:59 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.2 2006/10/19 16:40:58 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -13,7 +13,7 @@ class PythonCodeGenerator:
         cn = pygen.cn
         prop = obj.properties
         id_name, id = pygen.generate_code_id(obj)
-        label = pygen.quote_str(prop.get('label', ''))
+        #label = pygen.quote_str(prop.get('label', ''))
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         style = prop.get("style")
@@ -24,7 +24,8 @@ class PythonCodeGenerator:
         klass = obj.klass
         if klass == obj.base: klass = cn(klass)
         init.append('self.%s = %s(%s, %s, %s%s)\n' %
-                    (obj.name, klass, parent, id, label, style))
+        #            (obj.name, klass, parent, id, label, style))
+                     (obj.name, klass,parent, id, style))
         props_buf = pygen.generate_common_properties(obj)
         if prop.get('default', False):
             props_buf.append('self.%s.SetDefault()\n' % obj.name)
@@ -72,7 +73,8 @@ class CppCodeGenerator:
         if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
         label = cppgen.quote_str(prop.get('label', ''))
         init = [ '%s = new %s(%s, %s, %s%s);\n' % 
-                 (obj.name, obj.klass, parent, id, label, extra) ]
+        #         (obj.name, obj.klass, parent, id, label, extra) ]
+                  (obj.name, obj.klass, parent, id, extra) ]
         props_buf = cppgen.generate_common_properties(obj)
         if prop.get('default', False):
             props_buf.append('%s->SetDefault();\n' % obj.name)
