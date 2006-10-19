@@ -1,5 +1,5 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.4 2006/10/18 07:48:55 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.5 2006/10/19 16:40:58 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -41,11 +41,11 @@ class EditCalendarCtrl(ManagedBase):
         style_labels = ('#section#Style', 'wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST', 
             'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE', 'wxCAL_NO_MONTH_CHANGE',
             'wxCAL_SHOW_SURROUNDING_WEEKS','wxCAL_SEQUENTIAL_MONTH_SELECTION')
-        self.style_pos = (wxNO_BORDER, wxSTATIC_BORDER,
-                          wxRAISED_BORDER, wxSUNKEN_BORDER)
-        
+        self.style_pos = (wxCAL_SUNDAY_FIRST, wxCAL_MONDAY_FIRST, 
+            wxCAL_SHOW_HOLIDAYS, wxCAL_NO_YEAR_CHANGE, wxCAL_NO_MONTH_CHANGE,
+            wxCAL_SHOW_SURROUNDING_WEEKS,wxCAL_SEQUENTIAL_MONTH_SELECTION)
         self.properties['style'] = CheckListProperty(self, 'style', None,
-            style_labels)
+                                                     style_labels)
         
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -69,7 +69,7 @@ class EditCalendarCtrl(ManagedBase):
     def create_widget(self):
         try:
             #TODO add all the other parameters for the CalendarCtrl especialy style=self.style and the itial date
-            self.widget = wxCalendarCtrl(self.parent.widget, self.id )
+            self.widget = wxCalendarCtrl(self.parent.widget, self.id ,style=self.style)
         except AttributeError:
             self.widget = wxCalendarCtrl(self.parent.widget, self.id)
 
@@ -90,12 +90,15 @@ class EditCalendarCtrl(ManagedBase):
         return retval
 
     def set_style(self, value):
+        print "setting value..."
+	print value
         value = self.properties['style'].prepare_value(value)
         self.style = 0
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
         if self.widget: self.widget.SetWindowStyleFlag(self.style)
+
 
 # end of class EditCalendarCtrl
         
