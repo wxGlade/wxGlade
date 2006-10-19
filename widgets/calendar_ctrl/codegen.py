@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.2 2006/10/19 16:40:58 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.3 2006/10/19 16:51:10 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -23,7 +23,7 @@ class PythonCodeGenerator:
         if id_name: init.append(id_name)
         klass = obj.klass
         if klass == obj.base: klass = cn(klass)
-        init.append('self.%s = %s(%s, %s, %s%s)\n' %
+        init.append('self.%s = %s(%s, %s, %s)\n' %
         #            (obj.name, klass, parent, id, label, style))
                      (obj.name, klass,parent, id, style))
         props_buf = pygen.generate_common_properties(obj)
@@ -71,8 +71,8 @@ class CppCodeGenerator:
         extra = ''
         style = prop.get("style")
         if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        label = cppgen.quote_str(prop.get('label', ''))
-        init = [ '%s = new %s(%s, %s, %s%s);\n' % 
+        #label = cppgen.quote_str(prop.get('label', ''))
+        init = [ '%s = new %s(%s, %s, %s);\n' % 
         #         (obj.name, obj.klass, parent, id, label, extra) ]
                   (obj.name, obj.klass, parent, id, extra) ]
         props_buf = cppgen.generate_common_properties(obj)
