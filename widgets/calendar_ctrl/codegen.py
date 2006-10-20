@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.3 2006/10/19 16:51:10 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.4 2006/10/20 09:33:03 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -8,22 +8,54 @@
 import common
 
 class PythonCodeGenerator:
+    def __init__(self):
+        self.pygen = common.code_writers['python']
+     
+    def __get_import_modules(self):
+        if self.pygen.use_new_namespace:
+            return ['import wx.calendar\n']
+        else:
+            return ['from wxPython.calendar import *\n']
+    import_modules = property(__get_import_modules)
+
+    def cn(self, c):
+        """ Create names according to if the new namescace (wx) was selected
+	@type c: string
+	@param c: the name which should be altered
+	@rtype: string
+	@return: the orignial name with a prefix according to which namespace the user selected
+	"""
+        if self.pygen.use_new_namespace:
+            if c[:2] == 'wx':
+                c = c[2:]
+            return 'wx.calendar.' + c
+        else:
+            return c
+
+    def cn_f(self, flags):
+	""" Same as cn(c) but for flags
+	@rtype: string
+	"""
+        if self.pygen.use_new_namespace:
+            return "|".join([self.cn(f) for f in str(flags).split('|')])
+        else:
+            return str(flags)
+    
     def get_code(self, obj):
         pygen = common.code_writers['python']
-        cn = pygen.cn
         prop = obj.properties
         id_name, id = pygen.generate_code_id(obj)
         #label = pygen.quote_str(prop.get('label', ''))
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         style = prop.get("style")
-        if style: style = ", style=%s" % pygen.cn_f(style)
+        if style: style = ", style=%s" % self.cn_f(style)
         else: style = ''
         init = []
         if id_name: init.append(id_name)
         klass = obj.klass
-        if klass == obj.base: klass = cn(klass)
-        init.append('self.%s = %s(%s, %s, %s)\n' %
+        if klass == obj.base: klass = self.cn(klass)
+        init.append('self.%s = %s(%s, %s%s)\n' %
         #            (obj.name, klass, parent, id, label, style))
                      (obj.name, klass,parent, id, style))
         props_buf = pygen.generate_common_properties(obj)
@@ -72,7 +104,7 @@ class CppCodeGenerator:
         style = prop.get("style")
         if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
         #label = cppgen.quote_str(prop.get('label', ''))
-        init = [ '%s = new %s(%s, %s, %s);\n' % 
+        init = [ '%s = new %s(%s, %s%s);\n' % 
         #         (obj.name, obj.klass, parent, id, label, extra) ]
                   (obj.name, obj.klass, parent, id, extra) ]
         props_buf = cppgen.generate_common_properties(obj)
