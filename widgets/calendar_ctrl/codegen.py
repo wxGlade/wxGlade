@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.4 2006/10/20 09:33:03 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.5 2006/10/20 09:47:13 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -102,7 +102,7 @@ class CppCodeGenerator:
         else: parent = 'this'
         extra = ''
         style = prop.get("style")
-        if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
+        if style: extra = ', wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, %s' % style
         #label = cppgen.quote_str(prop.get('label', ''))
         init = [ '%s = new %s(%s, %s%s);\n' % 
         #         (obj.name, obj.klass, parent, id, label, extra) ]
