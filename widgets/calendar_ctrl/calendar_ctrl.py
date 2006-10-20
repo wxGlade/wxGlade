@@ -1,5 +1,5 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.5 2006/10/19 16:40:58 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.6 2006/10/20 09:33:03 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -90,8 +90,6 @@ class EditCalendarCtrl(ManagedBase):
         return retval
 
     def set_style(self, value):
-        print "setting value..."
-	print value
         value = self.properties['style'].prepare_value(value)
         self.style = 0
         for v in range(len(value)):
@@ -139,8 +137,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 def initialize():
     """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
+    initialization function for the module.
+    @rtype: wxBitmapButton
+    @return: an icon to be added to the main palette. 
     """
     common.widgets['EditCalendarCtrl'] = builder
     common.widgets_from_xml['EditCalendarCtrl'] = xml_builder
