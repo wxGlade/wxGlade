@@ -30,3 +30,4 @@ menubar
 toolbar
 spacer
 calendar_ctrl
+datepicker_ctrl
