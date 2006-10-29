@@ -28,6 +28,6 @@ grid
 custom_widget
 menubar
 toolbar
-spacer
 calendar_ctrl
 datepicker_ctrl
+spacer
