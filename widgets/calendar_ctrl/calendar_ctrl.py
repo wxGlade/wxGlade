@@ -1,5 +1,5 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.6 2006/10/20 09:33:03 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.7 2006/11/02 22:00:24 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -11,7 +11,7 @@ from tree import Tree
 import common, misc
 from widget_properties import *
 #import needed modules for the wxCalendarCtrl
-from wxPython.calendar import *
+from wx.calendar import *
 
 class EditCalendarCtrl(ManagedBase):
 
@@ -30,7 +30,7 @@ class EditCalendarCtrl(ManagedBase):
         """
         import config
         self.default = False
-        ManagedBase.__init__(self, name, 'wxCalendarCtrl', parent, id, sizer, pos,
+        ManagedBase.__init__(self, name, 'CalendarCtrl', parent, id, sizer, pos,
                              property_window, show=show)
         #self.access_functions['label'] = (self.get_label, self.set_label)
         #self.properties['label'] = TextProperty(self, 'label', None,
@@ -38,12 +38,12 @@ class EditCalendarCtrl(ManagedBase):
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
-        style_labels = ('#section#Style', 'wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST', 
-            'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE', 'wxCAL_NO_MONTH_CHANGE',
-            'wxCAL_SHOW_SURROUNDING_WEEKS','wxCAL_SEQUENTIAL_MONTH_SELECTION')
-        self.style_pos = (wxCAL_SUNDAY_FIRST, wxCAL_MONDAY_FIRST, 
-            wxCAL_SHOW_HOLIDAYS, wxCAL_NO_YEAR_CHANGE, wxCAL_NO_MONTH_CHANGE,
-            wxCAL_SHOW_SURROUNDING_WEEKS,wxCAL_SEQUENTIAL_MONTH_SELECTION)
+        style_labels = ('#section#Style', 'CAL_SUNDAY_FIRST', 'CAL_MONDAY_FIRST', 
+            'CAL_SHOW_HOLIDAYS', 'CAL_NO_YEAR_CHANGE', 'CAL_NO_MONTH_CHANGE',
+            'CAL_SHOW_SURROUNDING_WEEKS','CAL_SEQUENTIAL_MONTH_SELECTION')
+        self.style_pos = (CAL_SUNDAY_FIRST, CAL_MONDAY_FIRST, 
+            CAL_SHOW_HOLIDAYS, CAL_NO_YEAR_CHANGE, CAL_NO_MONTH_CHANGE,
+            CAL_SHOW_SURROUNDING_WEEKS, CAL_SEQUENTIAL_MONTH_SELECTION)
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
         
@@ -69,9 +69,9 @@ class EditCalendarCtrl(ManagedBase):
     def create_widget(self):
         try:
             #TODO add all the other parameters for the CalendarCtrl especialy style=self.style and the itial date
-            self.widget = wxCalendarCtrl(self.parent.widget, self.id ,style=self.style)
+            self.widget = CalendarCtrl(self.parent.widget, self.id ,style=self.style)
         except AttributeError:
-            self.widget = wxCalendarCtrl(self.parent.widget, self.id)
+            self.widget = CalendarCtrl(self.parent.widget, self.id)
 
     def get_default(self):
         return self.default
