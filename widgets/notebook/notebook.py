@@ -1,11 +1,11 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.27 2005/05/06 21:48:19 agriggio Exp $
+# $Id: notebook.py,v 1.28 2006/11/07 15:06:25 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from tree import Tree
 from widget_properties import *
@@ -197,13 +197,13 @@ class EditNotebook(ManagedBase):
         self.nb_sizer = None 
 
     def create_widget(self):
-        self.widget = wxNotebook(self.parent.widget, self.id, style=self.style)
+        self.widget = wx.Notebook(self.parent.widget, self.id, style=self.style)
         if not misc.check_wx_version(2, 5, 2):
-            self.nb_sizer = wxNotebookSizer(self.widget)
+            self.nb_sizer = wx.NotebookSizer(self.widget)
 
     def show_widget(self, yes):
         ManagedBase.show_widget(self, yes)
-        if yes and wxPlatform in ('__WXMSW__', '__WXMAC__'):
+        if yes and wx.Platform in ('__WXMSW__', '__WXMAC__'):
             misc.wxCallAfter(_ugly_hack_for_win32_notebook_bug, self.widget)
 
     def finish_widget_creation(self):
@@ -214,10 +214,10 @@ class EditNotebook(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         self.properties['tabs'].display(panel)
-        sizer = wxBoxSizer(wxVERTICAL)
-        sizer.Add(self.properties['tabs'].panel, 1, wxALL|wxEXPAND, 3)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.properties['tabs'].panel, 1, wx.ALL|wx.EXPAND, 3)
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer)
         sizer.Fit(panel)
@@ -310,13 +310,13 @@ class EditNotebook(ManagedBase):
         return -1
 
     def get_tab_pos(self): 
-        styles = { wxNB_LEFT: 'wxNB_LEFT', wxNB_RIGHT: 'wxNB_RIGHT',
-                   wxNB_BOTTOM: 'wxNB_BOTTOM' }
+        styles = { wx.NB_LEFT: 'wxNB_LEFT', wx.NB_RIGHT: 'wxNB_RIGHT',
+                   wx.NB_BOTTOM: 'wxNB_BOTTOM' }
         return styles.get(self.style, '0')
     
     def set_tab_pos(self, value):
-        styles = { 'wxNB_LEFT': wxNB_LEFT, 'wxNB_RIGHT': wxNB_RIGHT,
-                   'wxNB_BOTTOM': wxNB_BOTTOM }
+        styles = { 'wxNB_LEFT': wx.NB_LEFT, 'wxNB_RIGHT': wx.NB_RIGHT,
+                   'wxNB_BOTTOM': wx.NB_BOTTOM }
         self.style = styles.get(value, 0)
 
 # end of class EditNotebook
@@ -326,19 +326,19 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditNotebook objects.
     """
-    class Dialog(wxDialog):
+    class Dialog(wx.Dialog):
         def __init__(self):
-            wxDialog.__init__(self, None, -1, 'Select tab placement')
-            self.styles = [ 0, wxNB_BOTTOM, wxNB_LEFT, wxNB_RIGHT ]
+            wx.Dialog.__init__(self, None, -1, 'Select tab placement')
+            self.styles = [ 0, wx.NB_BOTTOM, wx.NB_LEFT, wx.NB_RIGHT ]
             self.style = 0
             prop = RadioProperty(self, 'tab_placement', self,
                                  ['Top', 'Bottom', 'Left', 'Right'],
                                  columns=2)
-            szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(prop.panel, 0, wxALL|wxEXPAND, 10)
-            btn = wxButton(self, wxID_OK, 'OK')
+            szr = wx.BoxSizer(wx.VERTICAL)
+            szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
+            btn = wx.Button(self, wx.ID_OK, 'OK')
             btn.SetDefault()
-            szr.Add(btn, 0, wxBOTTOM|wxALIGN_CENTER, 10)
+            szr.Add(btn, 0, wx.BOTTOM|wx.ALIGN_CENTER, 10)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
@@ -353,10 +353,10 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'notebook_%d' % number[0]
-    window = EditNotebook(name, parent, wxNewId(), dialog.style,
+    window = EditNotebook(name, parent, wx.NewId(), dialog.style,
                           sizer, pos, common.property_panel, show=False)
     if _has_panel:
-        pane1 = EditPanel(name + '_pane_1', window, wxNewId(),
+        pane1 = EditPanel(name + '_pane_1', window, wx.NewId(),
                           window.virtual_sizer, 1, common.property_panel)
 
     node = Tree.Node(window)
@@ -371,7 +371,7 @@ def builder(parent, sizer, pos, number=[1]):
     if _has_panel:
         window._add_tab(pane1, 1)
 
-    sizer.set_item(window.pos, 1, wxEXPAND)
+    sizer.set_item(window.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -383,7 +383,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if not sizer or not sizeritem:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    window = EditNotebook(name, parent, wxNewId(), 0, sizer, pos,
+    window = EditNotebook(name, parent, wx.NewId(), 0, sizer, pos,
                           common.property_panel, True)
 
     sizer.set_item(window.pos, option=sizeritem.option, flag=sizeritem.flag,

@@ -1,11 +1,11 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.21 2005/05/06 21:48:23 agriggio Exp $
+# $Id: bitmap_button.py,v 1.22 2006/11/07 15:06:26 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc, os
 from edit_windows import ManagedBase
 from tree import Tree
@@ -29,8 +29,8 @@ class EditBitmapButton(ManagedBase):
         # bitmap property
         self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
         self.properties['bitmap'] = FileDialogProperty(self, 'bitmap', None,
-                                                       style=wxOPEN |
-                                                       wxFILE_MUST_EXIST,
+                                                       style=wx.OPEN |
+                                                       wx.FILE_MUST_EXIST,
                                                        can_disable=False)
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
@@ -39,22 +39,22 @@ class EditBitmapButton(ManagedBase):
         self.access_functions['disabled_bitmap'] = (self.get_disabled_bitmap,
                                                     self.set_disabled_bitmap)
         self.properties['disabled_bitmap'] = FileDialogProperty(
-            self, 'disabled_bitmap', None, style=wxOPEN|wxFILE_MUST_EXIST)
+            self, 'disabled_bitmap', None, style=wx.OPEN|wx.FILE_MUST_EXIST)
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
-            self.flag = wxALL
+            self.flag = wx.ALL
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
+        panel = wx.Panel(self.notebook, -1)
         self.properties['bitmap'].display(panel)
         self.properties['disabled_bitmap'].display(panel)
         self.properties['default'].display(panel)
-        szr = wxBoxSizer(wxVERTICAL)
-        szr.Add(self.properties['bitmap'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['disabled_bitmap'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['default'].panel, 0, wxEXPAND)
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(self.properties['bitmap'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['disabled_bitmap'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -84,17 +84,17 @@ class EditBitmapButton(ManagedBase):
 
     def create_widget(self):
         bmp = self.load_bitmap()
-        self.widget = wxBitmapButton(self.parent.widget, self.id, bmp)
+        self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
 
     def load_bitmap(self, which=None, empty=[None]):
         if which is None: which = self.bitmap
         if which and not ( which.startswith('var:') or
                             which.startswith('code:')
                           ):
-            return wxBitmap(which, wxBITMAP_TYPE_ANY)
+            return wx.Bitmap(which, wx.BITMAP_TYPE_ANY)
         else:
             if empty[0] is None:
-                empty[0] = wxEmptyBitmap(1, 1)         
+                empty[0] = wx.EmptyBitmap(1, 1)         
             return empty[0]
 
     def get_default(self):
@@ -118,7 +118,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'bitmap_button_%s' % number[0]
     bitmap = misc.FileSelector("Select the image for the button")
-    button = EditBitmapButton(name, parent, wxNewId(), bitmap, sizer, pos,
+    button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos,
                               common.property_panel)
     node = Tree.Node(button)
     button.node = node
@@ -134,7 +134,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    button = EditBitmapButton(label, parent, wxNewId(), '', sizer, pos,
+    button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos,
                               common.property_panel, show=False)
     sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border) #, size=button.GetBestSize())

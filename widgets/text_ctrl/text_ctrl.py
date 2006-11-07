@@ -1,11 +1,11 @@
 # text_ctrl.py: wxTextCtrl objects
-# $Id: text_ctrl.py,v 1.15 2005/05/06 21:48:17 agriggio Exp $
+# $Id: text_ctrl.py,v 1.16 2006/11/07 15:06:24 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 from edit_windows import ManagedBase, WindowBase
 from tree import Tree
 import common, misc
@@ -37,11 +37,11 @@ class EditTextCtrl(ManagedBase):
         prop['value'] = TextProperty(self, 'value', None,
                                      multiline=True)
         # style property
-        self.style_pos  = (wxTE_PROCESS_ENTER, wxTE_PROCESS_TAB,
-                           wxTE_MULTILINE,wxTE_PASSWORD, wxTE_READONLY,
-                           wxHSCROLL, wxTE_RICH, wxTE_RICH2, wxTE_AUTO_URL,
-                           wxTE_NOHIDESEL, wxTE_CENTRE, wxTE_RIGHT,
-                           wxTE_LINEWRAP, wxTE_WORDWRAP, wxNO_BORDER)
+        self.style_pos  = (wx.TE_PROCESS_ENTER, wx.TE_PROCESS_TAB,
+                           wx.TE_MULTILINE,wx.TE_PASSWORD, wx.TE_READONLY,
+                           wx.HSCROLL, wx.TE_RICH, wx.TE_RICH2, wx.TE_AUTO_URL,
+                           wx.TE_NOHIDESEL, wx.TE_CENTRE, wx.TE_RIGHT,
+                           wx.TE_LINEWRAP, wx.TE_WORDWRAP, wx.NO_BORDER)
         style_labels = ('#section#Style', 'wxTE_PROCESS_ENTER',
                         'wxTE_PROCESS_TAB', 'wxTE_MULTILINE', 'wxTE_PASSWORD',
                         'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH',
@@ -52,24 +52,24 @@ class EditTextCtrl(ManagedBase):
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
-            self.flag = wxALL
+            self.flag = wx.ALL
 
     def create_widget(self):
         value = self.value
-        if self.style & wxTE_MULTILINE:
+        if self.style & wx.TE_MULTILINE:
             value = value.replace('\\n', '\n')
-        self.widget = wxTextCtrl(self.parent.widget, self.id, value=value,
-                                 style=self.style & wxTE_MULTILINE)
+        self.widget = wx.TextCtrl(self.parent.widget, self.id, value=value,
+                                  style=self.style & wx.TE_MULTILINE)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL) 
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL) 
         prop = self.properties
         prop['value'].display(panel)
         prop['style'].display(panel)
-        szr = wxBoxSizer(wxVERTICAL)
-        szr.Add(prop['value'].panel, 0, wxEXPAND)
-        szr.Add(prop['style'].panel, 0, wxEXPAND)
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(prop['value'].panel, 0, wx.EXPAND)
+        szr.Add(prop['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -85,7 +85,7 @@ class EditTextCtrl(ManagedBase):
         value = misc.wxstr(value)
         if not misc.streq(value, self.value):
             self.value = value
-            if self.style & wxTE_MULTILINE:
+            if self.style & wx.TE_MULTILINE:
                 value = value.replace('\\n', '\n')
             if self.widget: self.widget.SetValue(value)
 
@@ -99,14 +99,14 @@ class EditTextCtrl(ManagedBase):
         return retval
 
     def set_style(self, value):
-        old = self.style & wxTE_MULTILINE
+        old = self.style & wx.TE_MULTILINE
         value = self.properties['style'].prepare_value(value)
         self.style = 0
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
         if self.widget:
-            new = self.style & wxTE_MULTILINE
+            new = self.style & wx.TE_MULTILINE
             if old != new:
                 focused = misc.focused_widget is self
                 self.sel_marker.Destroy()
@@ -132,7 +132,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'text_ctrl_%d' % number[0]
-    text = EditTextCtrl(name, parent, wxNewId(), sizer, pos,
+    text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos,
                         common.property_panel)
     node = Tree.Node(text)
     text.node = node
@@ -148,7 +148,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    text = EditTextCtrl(name, parent, wxNewId(), sizer, pos,
+    text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos,
                         common.property_panel)
     sizer.set_item(text.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)

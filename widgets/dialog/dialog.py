@@ -1,11 +1,11 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.26 2005/07/11 12:12:46 agriggio Exp $
+# $Id: dialog.py,v 1.27 2006/11/07 15:06:26 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, math, misc
 from tree import Tree
 from widget_properties import *
@@ -13,7 +13,7 @@ from edit_windows import TopLevelBase
 
 class EditDialog(TopLevelBase):
     def __init__(self, name, parent, id, title, property_window,
-                 style=wxDEFAULT_DIALOG_STYLE, show=True, klass='wxDialog'):
+                 style=wx.DEFAULT_DIALOG_STYLE, show=True, klass='wxDialog'):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, title=title)
         self.base = 'wxDialog'
@@ -32,21 +32,21 @@ class EditDialog(TopLevelBase):
                          'wxNO_FULL_REPAINT_ON_RESIZE',
                          'wxFULL_REPAINT_ON_RESIZE',
                          'wxCLIP_CHILDREN')
-        self.style_pos = (wxDEFAULT_DIALOG_STYLE,
-                          wxDIALOG_MODAL, wxCAPTION, wxRESIZE_BORDER,
-                          wxSYSTEM_MENU)
+        self.style_pos = (wx.DEFAULT_DIALOG_STYLE,
+                          wx.DIALOG_MODAL, wx.CAPTION, wx.RESIZE_BORDER,
+                          wx.SYSTEM_MENU)
         if misc.check_wx_version(2, 5):
-            self.style_pos += (wxCLOSE_BOX, wxMAXIMIZE_BOX, wxMINIMIZE_BOX)
-        self.style_pos += (wxTHICK_FRAME, wxSTAY_ON_TOP, wxNO_3D,
-                           wxDIALOG_NO_PARENT, wxNO_FULL_REPAINT_ON_RESIZE,
-                           wxFULL_REPAINT_ON_RESIZE,
-                           wxCLIP_CHILDREN)
+            self.style_pos += (wx.CLOSE_BOX, wx.MAXIMIZE_BOX, wx.MINIMIZE_BOX)
+        self.style_pos += (wx.THICK_FRAME, wx.STAY_ON_TOP, wx.NO_3D,
+                           wx.DIALOG_NO_PARENT, wx.NO_FULL_REPAINT_ON_RESIZE,
+                           wx.FULL_REPAINT_ON_RESIZE,
+                           wx.CLIP_CHILDREN)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # icon property
         self.icon = ""
         self.access_functions['icon'] = (self.get_icon, self.set_icon)
         prop['icon'] = FileDialogProperty(self, 'icon', None,
-                                          style=wxOPEN|wxFILE_MUST_EXIST,
+                                          style=wx.OPEN|wx.FILE_MUST_EXIST,
                                           can_disable=True)
         # centered property
         self.centered = False
@@ -60,13 +60,13 @@ class EditDialog(TopLevelBase):
         # we set always a default style because this is the best one for
         # editing the dialog (for example, a dialog without a caption would
         # be hard to move, etc.)
-        default_style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
+        default_style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER
         # change 2002-10-09: now we create a wxFrame instead of a wxDialog,
         # because the latter gives troubles I wasn't able to solve when using
         # wxPython 2.3.3.1 :-/
-        self.widget = wxFrame(w, self.id, "", style=default_style)
-        self.widget.SetBackgroundColour(wxSystemSettings_GetColour(
-            wxSYS_COLOUR_BTNFACE))
+        self.widget = wx.Frame(w, self.id, "", style=default_style)
+        self.widget.SetBackgroundColour(wx.SystemSettings_GetColour(
+            wx.SYS_COLOUR_BTNFACE))
         self.set_icon(self.icon)
 
     def finish_widget_creation(self):
@@ -76,16 +76,16 @@ class EditDialog(TopLevelBase):
 
     def create_properties(self):
         TopLevelBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
-        szr = wxBoxSizer(wxVERTICAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
+        szr = wx.BoxSizer(wx.VERTICAL)
         self.properties['title'].display(panel)
         self.properties['icon'].display(panel)
         self.properties['centered'].display(panel)
         self.properties['style'].display(panel)
-        szr.Add(self.properties['title'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['icon'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['centered'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['title'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['icon'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['centered'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -98,9 +98,9 @@ class EditDialog(TopLevelBase):
         style = self.style
         try:
             default = 0
-            if style & wxDEFAULT_DIALOG_STYLE == wxDEFAULT_DIALOG_STYLE:
+            if style & wx.DEFAULT_DIALOG_STYLE == wx.DEFAULT_DIALOG_STYLE:
                 default = 1
-                style = style & ~wxDEFAULT_DIALOG_STYLE
+                style = style & ~wx.DEFAULT_DIALOG_STYLE
             for i in range(len(self.style_pos)):
                 if style & self.style_pos[i]: retval[i] = 1
             retval[0] = default
@@ -124,15 +124,15 @@ class EditDialog(TopLevelBase):
         if self.widget:
             if self.icon and not (self.icon.startswith('var:') or
                                   self.icon.startswith('code:')):
-                bmp = wxBitmap(self.icon, wxBITMAP_TYPE_ANY)
+                bmp = wx.Bitmap(self.icon, wx.BITMAP_TYPE_ANY)
                 if not bmp.Ok():
                     self.set_icon("")
                 else:
-                    icon = wxEmptyIcon()
+                    icon = wx.EmptyIcon()
                     icon.CopyFromBitmap(bmp)
                     self.widget.SetIcon(icon) 
             else:
-                self.widget.SetIcon(wxNullIcon)
+                self.widget.SetIcon(wx.NullIcon)
 
     def get_centered(self):
         return self.centered
@@ -154,11 +154,11 @@ def builder(parent, sizer, pos, number=[0]):
     except ImportError:
         has_panel = False
         
-    class Dialog(wxDialog):
+    class Dialog(wx.Dialog):
         def __init__(self):
             if has_panel: title = 'Select widget type'
             else: title = 'Select dialog class'
-            wxDialog.__init__(self, None, -1, title)
+            wx.Dialog.__init__(self, None, -1, title)
             if common.app_tree.app.get_language().lower() == 'xrc':
                 self.klass = 'wxDialog'
             else:
@@ -167,20 +167,20 @@ def builder(parent, sizer, pos, number=[0]):
                 number[0] += 1
             self.klass_prop = TextProperty(self, 'class', None) #self)
             self.widget = 0
-            szr = wxBoxSizer(wxVERTICAL)
+            szr = wx.BoxSizer(wx.VERTICAL)
             if has_panel:
                 widget_prop = RadioProperty(self, 'widget', self,
                                             ['wxDialog', 'wxPanel'])
-                szr.Add(widget_prop.panel, 0, wxALL|wxEXPAND, 5)
+                szr.Add(widget_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
             self.klass_prop.display(self)
-            szr.Add(self.klass_prop.panel, 0, wxALL|wxEXPAND, 5)
-            btnbox = wxBoxSizer(wxHORIZONTAL)
-            btnOK = wxButton(self, wxID_OK, 'OK')
-            btnCANCEL = wxButton(self, wxID_CANCEL, 'Cancel')
-            btnbox.Add(btnOK, 0, wxALL, 3)
-            btnbox.Add(btnCANCEL, 0, wxALL, 3)
+            szr.Add(self.klass_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
+            btnbox = wx.BoxSizer(wx.HORIZONTAL)
+            btnOK = wx.Button(self, wx.ID_OK, 'OK')
+            btnCANCEL = wx.Button(self, wx.ID_CANCEL, 'Cancel')
+            btnbox.Add(btnOK, 0, wx.ALL, 3)
+            btnbox.Add(btnCANCEL, 0, wx.ALL, 3)
             btnOK.SetFocus()
-            szr.Add(btnbox, 0, wxALL|wxALIGN_CENTER, 3)
+            szr.Add(btnbox, 0, wx.ALL|wx.ALIGN_CENTER, 3)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
@@ -217,7 +217,7 @@ def builder(parent, sizer, pos, number=[0]):
 
     class_dialog = Dialog()
     # Check if the user hit Cancel, if so then bail out
-    if class_dialog.ShowModal() == wxID_CANCEL:
+    if class_dialog.ShowModal() == wx.ID_CANCEL:
         # restore state
         class_dialog.undo()
         # clean up resources
@@ -231,12 +231,12 @@ def builder(parent, sizer, pos, number=[0]):
         label = '%s_%d' % (name, number[0])
     if class_dialog.widget == 0:
         is_panel = False
-        dialog = EditDialog(label, parent, wxNewId(), label,
+        dialog = EditDialog(label, parent, wx.NewId(), label,
                             common.property_panel, klass=class_dialog.klass)
     else:
         is_panel = True
         import panel
-        dialog = panel.EditTopLevelPanel(label, parent, wxNewId(),
+        dialog = panel.EditTopLevelPanel(label, parent, wx.NewId(),
                                          common.property_panel,
                                          klass=class_dialog.klass)
     node = Tree.Node(dialog)
@@ -244,7 +244,7 @@ def builder(parent, sizer, pos, number=[0]):
     dialog.show_widget(True)
     common.app_tree.add(node)
     class_dialog.Destroy()
-    if wxPlatform == '__WXMSW__':
+    if wx.Platform == '__WXMSW__':
         if not is_panel: w = dialog.widget
         else: w = dialog.widget.GetParent()
         w.CenterOnScreen()
@@ -257,7 +257,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     from xml_parse import XmlParsingError
     try: label = attrs['name']
     except KeyError: raise XmlParsingError, "'name' attribute missing"
-    dialog = EditDialog(label, parent, wxNewId(), "", common.property_panel,
+    dialog = EditDialog(label, parent, wx.NewId(), "", common.property_panel,
                         show=False)
     node = Tree.Node(dialog)
     dialog.node = node
