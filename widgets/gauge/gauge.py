@@ -1,11 +1,11 @@
 # gauge.py: wxGauge objects
-# $Id: gauge.py,v 1.7 2005/05/06 21:48:20 agriggio Exp $
+# $Id: gauge.py,v 1.8 2006/11/07 15:06:26 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -27,24 +27,24 @@ class EditGauge(ManagedBase):
         self.access_functions['range'] = (self.get_range, self.set_range)
         style_labels = ('#section#Style', 'wxGA_HORIZONTAL', 'wxGA_VERTICAL',
                         'wxGA_PROGRESSBAR', 'wxGA_SMOOTH')
-        self.style_pos = (wxGA_HORIZONTAL, wxGA_VERTICAL,
-                          wxGA_PROGRESSBAR, wxGA_SMOOTH)
+        self.style_pos = (wx.GA_HORIZONTAL, wx.GA_VERTICAL,
+                          wx.GA_PROGRESSBAR, wx.GA_SMOOTH)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         prop['range'] = SpinProperty(self, 'range', None)
 
     def create_widget(self):
-        self.widget = wxGauge(self.parent.widget, self.id, self.range,
-                              style=self.style)
+        self.widget = wx.Gauge(self.parent.widget, self.id, self.range,
+                               style=self.style)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         prop = self.properties
-        szr = wxBoxSizer(wxVERTICAL)
+        szr = wx.BoxSizer(wx.VERTICAL)
         prop['range'].display(panel)
         prop['style'].display(panel)
-        szr.Add(prop['range'].panel, 0, wxEXPAND)
-        szr.Add(prop['style'].panel, 0, wxEXPAND)
+        szr.Add(prop['range'].panel, 0, wx.EXPAND)
+        szr.Add(prop['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -82,24 +82,24 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditStaticLine objects.
     """
-    class Dialog(wxDialog):
+    class Dialog(wx.Dialog):
         def __init__(self):
-            wxDialog.__init__(self, None, -1, 'Select style')
-            self.orientations = [ wxGA_HORIZONTAL, wxGA_VERTICAL ]
-            self.orientation = wxGA_HORIZONTAL
+            wx.Dialog.__init__(self, None, -1, 'Select style')
+            self.orientations = [ wx.GA_HORIZONTAL, wx.GA_VERTICAL ]
+            self.orientation = wx.GA_HORIZONTAL
             prop = RadioProperty(self, 'orientation', self,
                                  ['wxGA_HORIZONTAL', 'wxGA_VERTICAL'])
-            szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(prop.panel, 0, wxALL|wxEXPAND, 10)
+            szr = wx.BoxSizer(wx.VERTICAL)
+            szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
             style_labels = ('#section#', 'wxGA_PROGRESSBAR', 'wxGA_SMOOTH')
-            self.style_pos = (wxGA_PROGRESSBAR, wxGA_SMOOTH)
+            self.style_pos = (wx.GA_PROGRESSBAR, wx.GA_SMOOTH)
             self.style = 0
             self.style_prop = CheckListProperty(self, 'style', self,
                                                 style_labels)
-            szr.Add(self.style_prop.panel, 0, wxALL|wxEXPAND, 10)
-            btn = wxButton(self, wxID_OK, 'OK')
+            szr.Add(self.style_prop.panel, 0, wx.ALL|wx.EXPAND, 10)
+            btn = wx.Button(self, wx.ID_OK, 'OK')
             btn.SetDefault()
-            szr.Add(btn, 0, wxBOTTOM|wxALIGN_CENTER, 10)
+            szr.Add(btn, 0, wx.BOTTOM|wx.ALIGN_CENTER, 10)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
@@ -137,7 +137,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'gauge_%d' % number[0]
-    gauge = EditGauge(label, parent, wxNewId(), dialog.orientation |
+    gauge = EditGauge(label, parent, wx.NewId(), dialog.orientation |
                       dialog.style, sizer, pos, common.property_panel)
     node = Tree.Node(gauge)
     gauge.node = node
@@ -155,7 +155,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     style = 0
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    gauge = EditGauge(name, parent, wxNewId(), style, sizer,
+    gauge = EditGauge(name, parent, wx.NewId(), style, sizer,
                       pos, common.property_panel) 
     sizer.set_item(gauge.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)

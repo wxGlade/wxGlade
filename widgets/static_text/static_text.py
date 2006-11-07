@@ -1,11 +1,11 @@
 # static_text.py: wxStaticText objects
-# $Id: static_text.py,v 1.13 2005/06/03 14:50:10 agriggio Exp $
+# $Id: static_text.py,v 1.14 2006/11/07 15:06:25 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -32,8 +32,8 @@ class EditStaticText(ManagedBase):
 
         self.properties['label'] = TextProperty(self, 'label', None,
                                                 multiline=True)
-        self.style_pos  = (wxALIGN_LEFT, wxALIGN_RIGHT, wxALIGN_CENTRE,
-                           wxST_NO_AUTORESIZE)
+        self.style_pos  = (wx.ALIGN_LEFT, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE,
+                           wx.ST_NO_AUTORESIZE)
         style_labels = ('#section#Style', 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
                         'wxALIGN_CENTRE', 'wxST_NO_AUTORESIZE')
         self.properties['style'] = CheckListProperty(self, 'style', None,
@@ -43,22 +43,22 @@ class EditStaticText(ManagedBase):
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
-            self.flag = wxALL
+            self.flag = wx.ALL
 
     def create_widget(self):
-        self.widget = wxStaticText(self.parent.widget, self.id,
-                                   self.label.replace('\\n', '\n'))
+        self.widget = wx.StaticText(self.parent.widget, self.id,
+                                    self.label.replace('\\n', '\n'))
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
-        szr = wxBoxSizer(wxVERTICAL)
+        panel = wx.Panel(self.notebook, -1)
+        szr = wx.BoxSizer(wx.VERTICAL)
         self.properties['label'].display(panel)
         self.properties['style'].display(panel)
         self.properties['attribute'].display(panel)
-        szr.Add(self.properties['label'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['attribute'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['attribute'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -105,7 +105,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'label_%d' % number[0]
-    static_text = EditStaticText(label, parent, wxNewId(),
+    static_text = EditStaticText(label, parent, wx.NewId(),
                                  misc._encode(label), sizer, pos,
                                  common.property_panel)
     node = Tree.Node(static_text)
@@ -122,7 +122,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    static_text = EditStaticText(label, parent, wxNewId(),
+    static_text = EditStaticText(label, parent, wx.NewId(),
                                  "", sizer, pos,
                                  common.property_panel)
     sizer.set_item(static_text.pos, option=sizeritem.option,

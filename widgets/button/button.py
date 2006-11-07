@@ -1,11 +1,11 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.18 2005/05/06 21:48:22 agriggio Exp $
+# $Id: button.py,v 1.19 2006/11/07 15:06:26 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -32,8 +32,8 @@ class EditButton(ManagedBase):
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
-        self.style_pos = (wxBU_LEFT, wxBU_RIGHT, wxBU_TOP, wxBU_BOTTOM,
-            wxBU_EXACTFIT)
+        self.style_pos = (wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP, wx.BU_BOTTOM,
+            wx.BU_EXACTFIT)
         style_labels = ('#section#Style', 'wxBU_LEFT', 'wxBU_RIGHT', 
             'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT') 
         self.properties['style'] = CheckListProperty(self, 'style', None,
@@ -41,18 +41,18 @@ class EditButton(ManagedBase):
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
-            self.flag = wxALL
+            self.flag = wx.ALL
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
+        panel = wx.Panel(self.notebook, -1)
         self.properties['label'].display(panel)
         self.properties['default'].display(panel)
         self.properties['style'].display(panel)
-        szr = wxBoxSizer(wxVERTICAL)
-        szr.Add(self.properties['label'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['default'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -73,9 +73,9 @@ class EditButton(ManagedBase):
 
     def create_widget(self):
         try:
-            self.widget = wxButton(self.parent.widget, self.id, self.label, style=self.style)
+            self.widget = wx.Button(self.parent.widget, self.id, self.label, style=self.style)
         except AttributeError:
-            self.widget = wxButton(self.parent.widget, self.id, self.label)
+            self.widget = wx.Button(self.parent.widget, self.id, self.label)
 
     def get_default(self):
         return self.default
@@ -112,7 +112,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'button_%d' % number[0]
-    button = EditButton(label, parent, wxNewId(), misc._encode(label), sizer,
+    button = EditButton(label, parent, wx.NewId(), misc._encode(label), sizer,
                         pos, common.property_panel)
     node = Tree.Node(button)
     button.node = node
@@ -129,7 +129,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    button = EditButton(label, parent, wxNewId(), '', sizer,
+    button = EditButton(label, parent, wx.NewId(), '', sizer,
                         pos, common.property_panel, show=False)
     node = Tree.Node(button)
     button.node = node

@@ -1,11 +1,11 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.43 2005/08/23 11:49:47 agriggio Exp $
+# $Id: frame.py,v 1.44 2006/11/07 15:06:26 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, math, misc
 from tree import Tree
 #from MenuTree import *
@@ -21,7 +21,7 @@ class EditStatusBar(EditBase):
                           'wxStatusBar', parent, id, property_window,
                           custom_class=False, show=False)
         # style property
-        self.style_pos  = (wxST_SIZEGRIP,)
+        self.style_pos  = (wx.ST_SIZEGRIP,)
         style_labels = ('#section#Style', 'wxST_SIZEGRIP')
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['style'] = CheckListProperty(self, 'style', None,
@@ -52,8 +52,8 @@ class EditStatusBar(EditBase):
         prop.write = write_prop
 
     def create_widget(self):
-        self.widget = wxStatusBar(self.parent.widget, wxNewId())
-        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        self.widget = wx.StatusBar(self.parent.widget, wx.NewId())
+        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         self.set_fields(self.fields)
         if self.parent.widget: self.parent.widget.SetStatusBar(self.widget)
 
@@ -65,13 +65,13 @@ class EditStatusBar(EditBase):
         prop.display(page)
         sizer = page.GetSizer()
         if not sizer:
-            sizer = wxBoxSizer(wxVERTICAL)
-            sizer.Add(self.name_prop.panel, 0, wxEXPAND)
-            sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
+            sizer = wx.BoxSizer(wx.VERTICAL)
+            sizer.Add(self.name_prop.panel, 0, wx.EXPAND)
+            sizer.Add(self.klass_prop.panel, 0, wx.EXPAND)
             page.SetAutoLayout(1)
             page.SetSizer(sizer)
-        sizer.Add(self.properties['style'].panel, 0, wxEXPAND)
-        sizer.Add(prop.panel, 1, wxALL|wxEXPAND, 3)
+        sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
+        sizer.Add(prop.panel, 1, wx.ALL|wx.EXPAND, 3)
         sizer.Fit(page)
         page.SetSize(self.notebook.GetClientSize())
         sizer.Layout()
@@ -108,7 +108,7 @@ class EditStatusBar(EditBase):
         else:
             if misc.check_wx_version(2, 6):
                 if EditStatusBar._hidden_frame is None:
-                    EditStatusBar._hidden_frame = wxFrame(None, -1, "")
+                    EditStatusBar._hidden_frame = wx.Frame(None, -1, "")
                 if self.widget is not None:
                     self.widget.Reparent(EditStatusBar._hidden_frame)
             self.widget = None
@@ -168,7 +168,7 @@ class EditStatusBar(EditBase):
 
 class EditFrame(TopLevelBase):
     def __init__(self, name, parent, id, title, property_window,
-                 style=wxDEFAULT_FRAME_STYLE, show=True, klass='wxFrame'):
+                 style=wx.DEFAULT_FRAME_STYLE, show=True, klass='wxFrame'):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, title=title)
         self.base = 'wxFrame'
@@ -197,19 +197,19 @@ class EditFrame(TopLevelBase):
                         'wxNO_FULL_REPAINT_ON_RESIZE',
                         'wxFULL_REPAINT_ON_RESIZE',
                         'wxTAB_TRAVERSAL', 'wxCLIP_CHILDREN']
-        self.style_pos = [wxDEFAULT_FRAME_STYLE,
-                          wxICONIZE, wxCAPTION, wxMINIMIZE,
-                          wxMINIMIZE_BOX, wxMAXIMIZE, wxMAXIMIZE_BOX,
-                          wxSTAY_ON_TOP, wxSYSTEM_MENU, wxSIMPLE_BORDER,
-                          wxRESIZE_BORDER, wxFRAME_TOOL_WINDOW,
-                          wxFRAME_NO_TASKBAR, wxFRAME_FLOAT_ON_PARENT,
-                          wxNO_BORDER,
-                          wxNO_FULL_REPAINT_ON_RESIZE,
-                          wxFULL_REPAINT_ON_RESIZE,
-                          wxTAB_TRAVERSAL, wxCLIP_CHILDREN]
+        self.style_pos = [wx.DEFAULT_FRAME_STYLE,
+                          wx.ICONIZE, wx.CAPTION, wx.MINIMIZE,
+                          wx.MINIMIZE_BOX, wx.MAXIMIZE, wx.MAXIMIZE_BOX,
+                          wx.STAY_ON_TOP, wx.SYSTEM_MENU, wx.SIMPLE_BORDER,
+                          wx.RESIZE_BORDER, wx.FRAME_TOOL_WINDOW,
+                          wx.FRAME_NO_TASKBAR, wx.FRAME_FLOAT_ON_PARENT,
+                          wx.NO_BORDER,
+                          wx.NO_FULL_REPAINT_ON_RESIZE,
+                          wx.FULL_REPAINT_ON_RESIZE,
+                          wx.TAB_TRAVERSAL, wx.CLIP_CHILDREN]
         if misc.check_wx_version(2, 5):
             style_labels.insert(5, 'wxCLOSE_BOX')
-            self.style_pos.insert(4, wxCLOSE_BOX)
+            self.style_pos.insert(4, wx.CLOSE_BOX)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # menubar property
         prop['menubar'] = CheckBoxProperty(self, 'menubar', None,
@@ -222,7 +222,7 @@ class EditFrame(TopLevelBase):
                                            'Has ToolBar')
         # icon property
         prop['icon'] = FileDialogProperty(self, 'icon', None,
-                                          style=wxOPEN|wxFILE_MUST_EXIST,
+                                          style=wx.OPEN|wx.FILE_MUST_EXIST,
                                           can_disable=True)
         # centered property
         self.centered = False
@@ -233,7 +233,7 @@ class EditFrame(TopLevelBase):
     def create_widget(self):
         if self.parent: w = self.parent.widget
         else: w = common.palette
-        self.widget = wxFrame(w, self.id, self.get_title())
+        self.widget = wx.Frame(w, self.id, self.get_title())
         self.set_icon(self.icon)
 
     def finish_widget_creation(self):
@@ -242,7 +242,7 @@ class EditFrame(TopLevelBase):
             #if self.sizer: self.sizer.fit_parent()
             #else:
             self.widget.SetSize((400, 300))
-        if wxPlatform == '__WXMSW__':
+        if wx.Platform == '__WXMSW__':
             self.widget.CenterOnScreen()
         if self.menubar and self.menubar.widget:
             self.widget.SetMenuBar(self.menubar.widget)
@@ -254,7 +254,7 @@ class EditFrame(TopLevelBase):
     def create_properties(self):
         TopLevelBase.create_properties(self)
         prop = self.properties
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         prop['title'].display(panel)
         prop['icon'].display(panel)
         prop['centered'].display(panel)
@@ -267,15 +267,15 @@ class EditFrame(TopLevelBase):
             sbprop = None
         prop['style'].display(panel)
         
-        szr = wxBoxSizer(wxVERTICAL)
-        szr.Add(prop['title'].panel, 0, wxEXPAND)
-        szr.Add(prop['icon'].panel, 0, wxEXPAND)
-        szr.Add(prop['centered'].panel, 0, wxEXPAND)
-        szr.Add(prop['menubar'].panel, 0, wxEXPAND)
-        szr.Add(prop['toolbar'].panel, 0, wxEXPAND)
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(prop['title'].panel, 0, wx.EXPAND)
+        szr.Add(prop['icon'].panel, 0, wx.EXPAND)
+        szr.Add(prop['centered'].panel, 0, wx.EXPAND)
+        szr.Add(prop['menubar'].panel, 0, wx.EXPAND)
+        szr.Add(prop['toolbar'].panel, 0, wx.EXPAND)
         if sbprop:
-            szr.Add(sbprop.panel, 0, wxEXPAND)
-        szr.Add(prop['style'].panel, 0, wxEXPAND)
+            szr.Add(sbprop.panel, 0, wx.EXPAND)
+        szr.Add(prop['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -315,8 +315,8 @@ class EditFrame(TopLevelBase):
             self.show_properties(None)
         if self.widget:
             # this is needed at least on win32
-            wxPostEvent(self.widget, wxSizeEvent(self.widget.GetSize(),
-                                                 self.widget.GetId()))
+            wx.PostEvent(self.widget, wx.SizeEvent(self.widget.GetSize(),
+                                                   self.widget.GetId()))
         
     def get_toolbar(self):
         return self.toolbar is not None
@@ -339,7 +339,7 @@ class EditFrame(TopLevelBase):
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
-            if self.style == wxDEFAULT_FRAME_STYLE: retval[0] = 1
+            if self.style == wx.DEFAULT_FRAME_STYLE: retval[0] = 1
             else:
                 for i in range(len(self.style_pos)):
                     if self.style & self.style_pos[i]: retval[i] = 1
@@ -376,16 +376,16 @@ class EditFrame(TopLevelBase):
             if self.icon and not (self.icon.startswith('var:') or
                                   self.icon.startswith('code:')):
                 # setting icon
-                bmp = wxBitmap(self.icon, wxBITMAP_TYPE_ANY)
+                bmp = wx.Bitmap(self.icon, wx.BITMAP_TYPE_ANY)
                 if not bmp.Ok():
                     self.set_icon("")
                 else:
-                    icon = wxEmptyIcon()
+                    icon = wx.EmptyIcon()
                     icon.CopyFromBitmap(bmp)
                     self.widget.SetIcon(icon) 
             else:
                 # removing icon
-                self.widget.SetIcon(wxNullIcon)
+                self.widget.SetIcon(wx.NullIcon)
 
     def get_centered(self):
         return self.centered
@@ -413,9 +413,9 @@ def builder(parent, sizer, pos, number=[0]):
     """\
     factory function for EditFrame objects.
     """
-    class Dialog(wxDialog):
+    class Dialog(wx.Dialog):
         def __init__(self):
-            wxDialog.__init__(self, None, -1, 'Select frame class')
+            wx.Dialog.__init__(self, None, -1, 'Select frame class')
             if common.app_tree.app.get_language().lower() == 'xrc':
                 self.klass = 'wxFrame'
             else:
@@ -426,16 +426,16 @@ def builder(parent, sizer, pos, number=[0]):
             base_prop = RadioProperty(self, 'base class', self,
                                       ['wxFrame', 'wxMDIChildFrame'])
             klass_prop = TextProperty(self, 'class', self)
-            szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(base_prop.panel, 0, wxALL|wxEXPAND, 5)
-            szr.Add(klass_prop.panel, 0, wxEXPAND)
-            btnbox = wxBoxSizer(wxHORIZONTAL)
-            btnOK = wxButton(self, wxID_OK, 'OK')
-            btnCANCEL = wxButton(self, wxID_CANCEL, 'Cancel')
-            btnbox.Add(btnOK, 0, wxALL, 3)
-            btnbox.Add(btnCANCEL, 0, wxALL, 3)
+            szr = wx.BoxSizer(wx.VERTICAL)
+            szr.Add(base_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
+            szr.Add(klass_prop.panel, 0, wx.EXPAND)
+            btnbox = wx.BoxSizer(wx.HORIZONTAL)
+            btnOK = wx.Button(self, wx.ID_OK, 'OK')
+            btnCANCEL = wx.Button(self, wx.ID_CANCEL, 'Cancel')
+            btnbox.Add(btnOK, 0, wx.ALL, 3)
+            btnbox.Add(btnCANCEL, 0, wx.ALL, 3)
             btnOK.SetFocus()
-            szr.Add(btnbox, 0, wxALL|wxALIGN_CENTER, 3)
+            szr.Add(btnbox, 0, wx.ALL|wx.ALIGN_CENTER, 3)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
@@ -455,7 +455,7 @@ def builder(parent, sizer, pos, number=[0]):
 
     dialog = Dialog()
     # Check if the user hit Cancel, if so then bail out
-    if dialog.ShowModal() == wxID_CANCEL:
+    if dialog.ShowModal() == wx.ID_CANCEL:
         # restore state
         dialog.undo()
         # clean up resources
@@ -467,7 +467,7 @@ def builder(parent, sizer, pos, number=[0]):
         label = 'frame_%d' % number[0]
     if dialog.base == 0: base_class = EditFrame
     else: base_class = EditMDIChildFrame
-    frame = base_class(label, parent, wxNewId(), label, common.property_panel,
+    frame = base_class(label, parent, wx.NewId(), label, common.property_panel,
                        klass=dialog.klass)
     node = Tree.Node(frame)
     frame.node = node
@@ -481,7 +481,7 @@ def builder(parent, sizer, pos, number=[0]):
     common.app_tree.select_item(node)
     
     dialog.Destroy()
-    if wxPlatform == '__WXMSW__':
+    if wx.Platform == '__WXMSW__':
         #frame.widget.CenterOnScreen()
         frame.widget.Raise()
 
@@ -491,7 +491,7 @@ def _make_builder(base_class):
         from xml_parse import XmlParsingError
         try: label = attrs['name']
         except KeyError: raise XmlParsingError, "'name' attribute missing"
-        frame = base_class(label, parent, wxNewId(), "",
+        frame = base_class(label, parent, wx.NewId(), "",
                            common.property_panel,
                            show=False)
         node = Tree.Node(frame)
@@ -507,7 +507,7 @@ def _make_builder(base_class):
 ##     from xml_parse import XmlParsingError
 ##     try: label = attrs['name']
 ##     except KeyError: raise XmlParsingError, "'name' attribute missing"
-##     frame = EditFrame(label, parent, wxNewId(), label, common.property_panel,
+##     frame = EditFrame(label, parent, wx.NewId(), label, common.property_panel,
 ##                       show=False)
 ##     node = Tree.Node(frame)
 ##     frame.node = node
@@ -528,7 +528,7 @@ def statusbar_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 def initialize():
     """\
-    initialization function for the module: returns a wxBitmapButton to be
+    initialization function for the module: returns a wx.BitmapButton to be
     added to the main palette.
     """
     cwx = common.widgets_from_xml

@@ -1,11 +1,11 @@
 # spin_ctrl.py: wxSpinCtrl objects
-# $Id: spin_ctrl.py,v 1.14 2005/07/11 12:12:45 agriggio Exp $
+# $Id: spin_ctrl.py,v 1.15 2006/11/07 15:06:25 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 from edit_windows import ManagedBase
 from tree import Tree
 import common, misc
@@ -38,36 +38,36 @@ class EditSpinCtrl(ManagedBase):
                         'wxTE_RICH2', 'wxTE_AUTO_URL', 'wxTE_NOHIDESEL',
                         'wxTE_CENTRE', 'wxTE_RIGHT', 'wxTE_LINEWRAP',
                         'wxTE_WORDWRAP', 'wxNO_BORDER')
-        self.style_pos = (wxSP_ARROW_KEYS, wxSP_WRAP,
-                          wxTE_PROCESS_ENTER, wxTE_PROCESS_TAB,
-                          wxTE_MULTILINE,wxTE_PASSWORD, wxTE_READONLY,
-                          wxHSCROLL, wxTE_RICH, wxTE_RICH2, wxTE_AUTO_URL,
-                          wxTE_NOHIDESEL, wxTE_CENTRE, wxTE_RIGHT,
-                          wxTE_LINEWRAP, wxTE_WORDWRAP, wxNO_BORDER)
+        self.style_pos = (wx.SP_ARROW_KEYS, wx.SP_WRAP,
+                          wx.TE_PROCESS_ENTER, wx.TE_PROCESS_TAB,
+                          wx.TE_MULTILINE,wx.TE_PASSWORD, wx.TE_READONLY,
+                          wx.HSCROLL, wx.TE_RICH, wx.TE_RICH2, wx.TE_AUTO_URL,
+                          wx.TE_NOHIDESEL, wx.TE_CENTRE, wx.TE_RIGHT,
+                          wx.TE_LINEWRAP, wx.TE_WORDWRAP, wx.NO_BORDER)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         prop['range'] = TextProperty(self, 'range', None, can_disable=True)
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
-            self.flag = wxALL
+            self.flag = wx.ALL
 
     def create_widget(self):
-        self.widget = wxSpinCtrl(self.parent.widget, self.id,
-                                 min=self.range[0], max=self.range[1],
-                                 initial=self.value)
+        self.widget = wx.SpinCtrl(self.parent.widget, self.id,
+                                  min=self.range[0], max=self.range[1],
+                                  initial=self.value)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
-        szr = wxBoxSizer(wxVERTICAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
+        szr = wx.BoxSizer(wx.VERTICAL)
         prop = self.properties
         prop['range'].display(panel)
         prop['value'].display(panel)
         prop['style'].display(panel)
-        szr.Add(prop['range'].panel, 0, wxEXPAND)
-        szr.Add(prop['value'].panel, 0, wxEXPAND)
-        szr.Add(prop['style'].panel, 0, wxEXPAND)
+        szr.Add(prop['range'].panel, 0, wx.EXPAND)
+        szr.Add(prop['value'].panel, 0, wx.EXPAND)
+        szr.Add(prop['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -123,7 +123,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'spin_ctrl_%d' % number[0]
-    text = EditSpinCtrl(name, parent, wxNewId(), sizer, pos,
+    text = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos,
                         common.property_panel)
     node = Tree.Node(text)
     text.node = node
@@ -139,7 +139,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    text = EditSpinCtrl(name, parent, wxNewId(), sizer, pos,
+    text = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos,
                         common.property_panel)
     sizer.set_item(text.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)

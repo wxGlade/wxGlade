@@ -1,11 +1,11 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.33 2005/12/28 00:24:03 agriggio Exp $
+# $Id: panel.py,v 1.34 2006/11/07 15:06:25 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from tree import Tree
 from widget_properties import *
@@ -13,7 +13,7 @@ from edit_windows import ManagedBase, TopLevelBase
 
 
 class PanelBase(object):
-    def __init__(self, style=wxTAB_TRAVERSAL):
+    def __init__(self, style=wx.TAB_TRAVERSAL):
         """\
         Class to handle wxPanel objects
         """
@@ -29,13 +29,13 @@ class PanelBase(object):
         # ------
         self.style = style
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.style_pos  = [wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
-                           wxRAISED_BORDER, wxSTATIC_BORDER,
-                           wxNO_BORDER, wxNO_3D,
-                           wxTAB_TRAVERSAL, wxWANTS_CHARS,
-                           wxNO_FULL_REPAINT_ON_RESIZE,
-                           wxFULL_REPAINT_ON_RESIZE,
-                           wxCLIP_CHILDREN]
+        self.style_pos  = [wx.SIMPLE_BORDER, wx.DOUBLE_BORDER, wx.SUNKEN_BORDER,
+                           wx.RAISED_BORDER, wx.STATIC_BORDER,
+                           wx.NO_BORDER, wx.NO_3D,
+                           wx.TAB_TRAVERSAL, wx.WANTS_CHARS,
+                           wx.NO_FULL_REPAINT_ON_RESIZE,
+                           wx.FULL_REPAINT_ON_RESIZE,
+                           wx.CLIP_CHILDREN]
         style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
                         'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
                         'wxSTATIC_BORDER',
@@ -65,28 +65,28 @@ class PanelBase(object):
             self.widget.SetScrollRate(*self.scroll_rate)
         # this must be done here since ManagedBase.finish_widget_creation
         # normally sets EVT_LEFT_DOWN to update_wiew
-        if not self.widget.Disconnect(-1, -1, wxEVT_LEFT_DOWN):
+        if not self.widget.Disconnect(-1, -1, wx.wxEVT_LEFT_DOWN):
             print "EditPanel: Unable to disconnect the event hanlder"
-        EVT_LEFT_DOWN(self.widget, self.drop_sizer)
+        wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
 
     def create_properties(self):
         super(PanelBase, self).create_properties()
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         panel.SetScrollRate(5, 5)
-        szr = wxBoxSizer(wxVERTICAL)
+        szr = wx.BoxSizer(wx.VERTICAL)
         self.properties['no_custom_class'].display(panel)
-        szr.Add(self.properties['no_custom_class'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['no_custom_class'].panel, 0, wx.EXPAND)
         label = self.properties['no_custom_class'].cb
         label.SetToolTip(
-            wxToolTip('If this is a custom class, setting this property '
-                      'prevents wxGlade\nfrom generating the class definition'
-                      ' code'))
+            wx.ToolTip('If this is a custom class, setting this property '
+                       'prevents wxGlade\nfrom generating the class definition'
+                       ' code'))
         self.properties['style'].display(panel)
-        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         self.properties['scrollable'].display(panel)
-        szr.Add(self.properties['scrollable'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['scrollable'].panel, 0, wx.EXPAND)
         self.properties['scroll_rate'].display(panel)
-        szr.Add(self.properties['scroll_rate'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['scroll_rate'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -94,9 +94,9 @@ class PanelBase(object):
         
     def on_enter(self, event):
         if not self.top_sizer and common.adding_sizer:
-            self.widget.SetCursor(wxCROSS_CURSOR)
+            self.widget.SetCursor(wx.CROSS_CURSOR)
         else:
-            self.widget.SetCursor(wxSTANDARD_CURSOR)
+            self.widget.SetCursor(wx.STANDARD_CURSOR)
 
     def set_sizer(self, sizer):
         self.top_sizer = sizer
@@ -110,7 +110,7 @@ class PanelBase(object):
         if self.top_sizer or not common.adding_sizer:
             self.on_set_focus(event) # default behaviour: call show_properties
             return
-        self.widget.SetCursor(wxNullCursor)
+        self.widget.SetCursor(wx.NullCursor)
         common.widgets[common.widget_to_add](self, None, None)
         common.adding_widget = common.adding_sizer = False
         common.widget_to_add = None
@@ -121,8 +121,8 @@ class PanelBase(object):
             #return self.widget.GetSizer().CalcMin()
             self.top_sizer.fit_parent()
             return self.widget.GetSize()
-        #return wxPanel.GetBestSize(self.widget)
-        return wxScrolledWindow.GetBestSize(self.widget)
+        #return wx.Panel.GetBestSize(self.widget)
+        return wx.ScrolledWindow.GetBestSize(self.widget)
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
@@ -192,7 +192,7 @@ class PanelBase(object):
 
 class EditPanel(PanelBase, ManagedBase):
     def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True, style=wxTAB_TRAVERSAL):
+                 show=True, style=wx.TAB_TRAVERSAL):
         """\
         Class to handle wxPanel objects
         """
@@ -201,16 +201,16 @@ class EditPanel(PanelBase, ManagedBase):
         PanelBase.__init__(self, style)
 
     def create_widget(self):
-        #self.widget = wxPanel(self.parent.widget, self.id, style=0)
-        self.widget = wxScrolledWindow(self.parent.widget, self.id, style=0)
-        EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        #self.widget = wx.Panel(self.parent.widget, self.id, style=0)
+        self.widget = wx.ScrolledWindow(self.parent.widget, self.id, style=0)
+        wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         if self.sizer.is_virtual():
             def GetBestSize():
                 if self.widget and self.widget.GetSizer():
                     return self.widget.GetSizer().GetMinSize()
-                #return wxPanel.GetBestSize(self.widget)
-                return wxScrolledWindow.GetBestSize(self.widget)
+                #return wx.Panel.GetBestSize(self.widget)
+                return wx.ScrolledWindow.GetBestSize(self.widget)
             self.widget.GetBestSize = GetBestSize
 
     def set_sizer(self, sizer):
@@ -231,7 +231,7 @@ class EditPanel(PanelBase, ManagedBase):
     def popup_menu(self, event):
         if self.widget:
             if not self._rmenu:
-                COPY_ID, REMOVE_ID, CUT_ID = [wxNewId() for i in range(3)]
+                COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
                 misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
                                  'remove.xpm')
@@ -241,14 +241,14 @@ class EditPanel(PanelBase, ManagedBase):
                                  'cut.xpm')
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
-                EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-                EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
-                EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
+                wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+                wx.EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
+                wx.EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
                 # paste
-                PASTE_ID = wxNewId()
+                PASTE_ID = wx.NewId()
                 misc.append_item(self._rmenu, PASTE_ID, 'Paste\tCtrl+V',
                                  'paste.xpm')
-                EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
+                wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
                 
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
@@ -270,7 +270,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
                          # of the app
     
     def __init__(self, name, parent, id, property_window, klass='wxPanel',
-                 show=True, style=wxTAB_TRAVERSAL):
+                 show=True, style=wx.TAB_TRAVERSAL):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, has_title=False)
         PanelBase.__init__(self, style)
@@ -278,15 +278,15 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.skip_on_size = False
 
     def create_widget(self):
-        win = wxFrame(common.palette, -1, misc.design_title(self.name),
-                      size=(400, 300)) 
-        #self.widget = wxPanel(win, self.id, style=0)
-        self.widget = wxScrolledWindow(win, self.id, style=0)
-        EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        win = wx.Frame(common.palette, -1, misc.design_title(self.name),
+                       size=(400, 300)) 
+        #self.widget = wx.Panel(win, self.id, style=0)
+        self.widget = wx.ScrolledWindow(win, self.id, style=0)
+        wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         #self.widget.SetSize = win.SetSize
-        EVT_CLOSE(win, self.hide_widget)
-        if wxPlatform == '__WXMSW__': win.CentreOnScreen()
+        wx.EVT_CLOSE(win, self.hide_widget)
+        if wx.Platform == '__WXMSW__': win.CentreOnScreen()
 
     def show_widget(self, yes):
         oldval = self.get_size()
@@ -315,7 +315,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
 
     def on_size(self, event):
         w, h = event.GetSize()
-        if (wxPlatform == '__WXMSW__' or wxPlatform == '__WXMAC__') \
+        if (wx.Platform == '__WXMSW__' or wx.Platform == '__WXMAC__') \
                and self.skip_on_size:
             self.skip_on_size = False
             return
@@ -346,7 +346,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'panel_%d' % number[0]
-    panel = EditPanel(name, parent, wxNewId(), sizer, pos,
+    panel = EditPanel(name, parent, wx.NewId(), sizer, pos,
                       common.property_panel)
     node = Tree.Node(panel)
     panel.node = node
@@ -357,7 +357,7 @@ def builder(parent, sizer, pos, number=[1]):
     panel.show_widget(True)
 
     common.app_tree.insert(node, sizer.node, pos-1)
-    sizer.set_item(panel.pos, 1, wxEXPAND)
+    sizer.set_item(panel.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -369,7 +369,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if not sizer or not sizeritem:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    panel = EditPanel(name, parent, wxNewId(), sizer, pos,
+    panel = EditPanel(name, parent, wx.NewId(), sizer, pos,
                       common.property_panel, True, style=0)
     sizer.set_item(panel.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
@@ -384,7 +384,7 @@ def xml_toplevel_builder(attrs, parent, sizer, sizeritem, pos=None):
     from xml_parse import XmlParsingError
     try: label = attrs['name']
     except KeyError: raise XmlParsingError, "'name' attribute missing"
-    panel = EditTopLevelPanel(label, parent, wxNewId(), common.property_panel,
+    panel = EditTopLevelPanel(label, parent, wx.NewId(), common.property_panel,
                               show=False, style=0)
     node = Tree.Node(panel)
     panel.node = node

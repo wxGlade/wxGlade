@@ -1,11 +1,11 @@
 # toggle_button.py: wxToggleButton objects
-# $Id: toggle_button.py,v 1.12 2005/05/06 21:48:17 agriggio Exp $
+# $Id: toggle_button.py,v 1.13 2006/11/07 15:06:22 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -36,21 +36,21 @@ class EditToggleButton(ManagedBase):
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
-            self.flag = wxALL
+            self.flag = wx.ALL
 
     def create_widget(self):
-        self.widget = wxToggleButton(self.parent.widget, self.id, self.label)
+        self.widget = wx.ToggleButton(self.parent.widget, self.id, self.label)
         self.widget.SetValue(self.value)
-        EVT_TOGGLEBUTTON(self.widget, self.id, self.on_set_focus)        
+        wx.EVT_TOGGLEBUTTON(self.widget, self.id, self.on_set_focus)        
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
-        szr = wxBoxSizer(wxVERTICAL)
+        panel = wx.Panel(self.notebook, -1)
+        szr = wx.BoxSizer(wx.VERTICAL)
         self.properties['label'].display(panel)
         self.properties['value'].display(panel)
-        szr.Add(self.properties['label'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['value'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['value'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -91,7 +91,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'button_%d' % number[0]
-    button = EditToggleButton(label, parent, wxNewId(), misc._encode(label),
+    button = EditToggleButton(label, parent, wx.NewId(), misc._encode(label),
                               sizer, pos, common.property_panel)
     node = Tree.Node(button)
     button.node = node
@@ -107,7 +107,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    button = EditToggleButton(label, parent, wxNewId(), '',
+    button = EditToggleButton(label, parent, wx.NewId(), '',
                               sizer, pos, common.property_panel)
     sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border) #, size=button.GetBestSize())

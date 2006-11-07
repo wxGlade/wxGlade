@@ -1,11 +1,11 @@
 # splitter_window.py: wxSplitterWindow objects
-# $Id: splitter_window.py,v 1.24 2005/08/23 11:49:47 agriggio Exp $
+# $Id: splitter_window.py,v 1.25 2006/11/07 15:06:25 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from tree import Tree
 from widget_properties import *
@@ -98,7 +98,7 @@ class EditSplitterWindow(ManagedBase):
         ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer,
                              pos, property_window, show=show)
         self.virtual_sizer = SplitterWindowSizer(self)
-        if style is None: style = wxSP_3D
+        if style is None: style = wx.SP_3D
         self.style = style
         self.window_1 = win_1 
         self.window_2 = win_2 
@@ -109,11 +109,11 @@ class EditSplitterWindow(ManagedBase):
         self.access_functions['sash_pos'] = (self.get_sash_pos,
                                              self.set_sash_pos)
 
-        self.style_pos  = (wxSP_3D, wxSP_3DSASH, wxSP_3DBORDER,
-                           #wxSP_FULLSASH,
-                           wxSP_BORDER, wxSP_NOBORDER,
-                           wxSP_PERMIT_UNSPLIT, wxSP_LIVE_UPDATE,
-                           wxCLIP_CHILDREN)
+        self.style_pos  = (wx.SP_3D, wx.SP_3DSASH, wx.SP_3DBORDER,
+                           #wx.SP_FULLSASH,
+                           wx.SP_BORDER, wx.SP_NOBORDER,
+                           wx.SP_PERMIT_UNSPLIT, wx.SP_LIVE_UPDATE,
+                           wx.CLIP_CHILDREN)
         style_labels = ('#section#Style', 'wxSP_3D', 'wxSP_3DSASH',
                         'wxSP_3DBORDER', #'wxSP_FULLSASH',
                         'wxSP_BORDER',
@@ -122,7 +122,7 @@ class EditSplitterWindow(ManagedBase):
 
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
-        if self.orientation == wxSPLIT_HORIZONTAL:
+        if self.orientation == wx.SPLIT_HORIZONTAL:
             od = 'wxSPLIT_HORIZONTAL'
         else: od = 'wxSPLIT_VERTICAL'
         self.access_functions['orientation'] = (self.get_orientation,
@@ -141,8 +141,8 @@ class EditSplitterWindow(ManagedBase):
                                                    can_disable=True) 
 
     def create_widget(self):
-        self.widget = wxSplitterWindow(self.parent.widget, self.id,
-                                       style=self.style)
+        self.widget = wx.SplitterWindow(self.parent.widget, self.id,
+                                        style=self.style)
         self.split()
 
     def finish_widget_creation(self):
@@ -154,8 +154,8 @@ class EditSplitterWindow(ManagedBase):
         else:
             sp.set_value(self.widget.GetSashPosition())
         
-        EVT_SPLITTER_SASH_POS_CHANGED(self.widget, self.widget.GetId(),
-                                      self.on_sash_pos_changed)
+        wx.EVT_SPLITTER_SASH_POS_CHANGED(self.widget, self.widget.GetId(),
+                                         self.on_sash_pos_changed)
         
     def on_set_focus(self, event):
         self.show_properties()
@@ -165,12 +165,12 @@ class EditSplitterWindow(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
-        sizer = wxBoxSizer(wxVERTICAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
+        sizer = wx.BoxSizer(wx.VERTICAL)
         self.properties['style'].display(panel)
         self.properties['sash_pos'].display(panel)
-        sizer.Add(self.properties['style'].panel, 0, wxEXPAND)
-        sizer.Add(self.properties['sash_pos'].panel, 0, wxEXPAND)
+        sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
+        sizer.Add(self.properties['sash_pos'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer)
         sizer.Fit(panel)
@@ -183,11 +183,11 @@ class EditSplitterWindow(ManagedBase):
             self.window_2.show_widget(True)
             sp = self.properties['sash_pos'].get_value()
             if not self.properties['sash_pos'].is_active():
-                if self.orientation == wxSPLIT_VERTICAL:
+                if self.orientation == wx.SPLIT_VERTICAL:
                     max_pos = self.widget.GetClientSize()[0]
                 else: max_pos = self.widget.GetClientSize()[1]
                 sp = max_pos/2
-            if self.orientation == wxSPLIT_VERTICAL:
+            if self.orientation == wx.SPLIT_VERTICAL:
                 self.widget.SplitVertically(self.window_1.widget,
                                             self.window_2.widget, sp)
             else:
@@ -207,7 +207,7 @@ class EditSplitterWindow(ManagedBase):
                 if self.style & self.style_pos[i]: retval[i] = 1
         except AttributeError: pass
         if retval[1] and retval[2]:
-            # wxSP_3D == wxSP_3DSASH | wxSP_3DBORDER
+            # wx.SP_3D == wx.SP_3DSASH | wx.SP_3DBORDER
             retval[0] = 1
             retval[1] = retval[2] = 0
         elif retval[1] or retval[2]:
@@ -235,7 +235,7 @@ class EditSplitterWindow(ManagedBase):
     def on_size(self, event):
         if not self.widget: return
         try:
-            if self.orientation == wxSPLIT_VERTICAL:
+            if self.orientation == wx.SPLIT_VERTICAL:
                 max_pos = self.widget.GetClientSize()[0]
             else: max_pos = self.widget.GetClientSize()[1]
             self.properties['sash_pos'].set_range(0, max_pos)
@@ -252,14 +252,14 @@ class EditSplitterWindow(ManagedBase):
         event.Skip()
 
     def get_orientation(self):
-        od = { wxSPLIT_HORIZONTAL: 'wxSPLIT_HORIZONTAL',
-               wxSPLIT_VERTICAL: 'wxSPLIT_VERTICAL' }
+        od = { wx.SPLIT_HORIZONTAL: 'wxSPLIT_HORIZONTAL',
+               wx.SPLIT_VERTICAL: 'wxSPLIT_VERTICAL' }
         return od.get(self.orientation, 'wxSPLIT_VERTICAL')
 
     def set_orientation(self, value):
-        od = { 'wxSPLIT_HORIZONTAL': wxSPLIT_HORIZONTAL,
-               'wxSPLIT_VERTICAL': wxSPLIT_VERTICAL }
-        self.orientation = od.get(value, wxSPLIT_VERTICAL)
+        od = { 'wxSPLIT_HORIZONTAL': wx.SPLIT_HORIZONTAL,
+               'wxSPLIT_VERTICAL': wx.SPLIT_VERTICAL }
+        self.orientation = od.get(value, wx.SPLIT_VERTICAL)
 
     def get_win_1(self):
         if not isinstance(self.window_1, SizerSlot):
@@ -278,18 +278,18 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditSplitterWindow objects.
     """
-    class Dialog(wxDialog):
+    class Dialog(wx.Dialog):
         def __init__(self):
-            wxDialog.__init__(self, None, -1, 'Select orientation')
-            self.orientations = [ wxSPLIT_VERTICAL, wxSPLIT_HORIZONTAL ]
-            self.orientation = wxSPLIT_VERTICAL
+            wx.Dialog.__init__(self, None, -1, 'Select orientation')
+            self.orientations = [ wx.SPLIT_VERTICAL, wx.SPLIT_HORIZONTAL ]
+            self.orientation = wx.SPLIT_VERTICAL
             prop = RadioProperty(self, 'orientation', self,
                                  ['wxSPLIT_VERTICAL', 'wxSPLIT_HORIZONTAL'])
-            szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(prop.panel, 0, wxALL|wxEXPAND, 10)
-            btn = wxButton(self, wxID_OK, 'OK')
+            szr = wx.BoxSizer(wx.VERTICAL)
+            szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
+            btn = wx.Button(self, wx.ID_OK, 'OK')
             btn.SetDefault()
-            szr.Add(btn, 0, wxBOTTOM|wxALIGN_CENTER, 10)
+            szr.Add(btn, 0, wx.BOTTOM|wx.ALIGN_CENTER, 10)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
@@ -304,7 +304,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'window_%d' % number[0]
-    window = EditSplitterWindow(name, parent, wxNewId(), None, None, None,
+    window = EditSplitterWindow(name, parent, wx.NewId(), None, None, None,
                                 dialog.orientation,
                                 sizer, pos, common.property_panel, show=False)
     try:
@@ -313,9 +313,9 @@ def builder(parent, sizer, pos, number=[1]):
     except ImportError:
         have_panels = False
     if have_panels:
-        pane1 = EditPanel(name + '_pane_1', window, wxNewId(),
+        pane1 = EditPanel(name + '_pane_1', window, wx.NewId(),
                             window.virtual_sizer, 1, common.property_panel)
-        pane2 = EditPanel(name + '_pane_2', window, wxNewId(),
+        pane2 = EditPanel(name + '_pane_2', window, wx.NewId(),
                             window.virtual_sizer, 2, common.property_panel)
         window.window_1 = pane1
         window.window_2 = pane2
@@ -339,7 +339,7 @@ def builder(parent, sizer, pos, number=[1]):
         window.window_2.node = node3
         common.app_tree.add(node3, window.node)
 
-    sizer.set_item(window.pos, 1, wxEXPAND)
+    sizer.set_item(window.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -351,8 +351,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if not sizer or not sizeritem:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    window = EditSplitterWindow(name, parent, wxNewId(), None, None, None,
-                                wxSPLIT_VERTICAL,
+    window = EditSplitterWindow(name, parent, wx.NewId(), None, None, None,
+                                wx.SPLIT_VERTICAL,
                                 sizer, pos, common.property_panel, True)
     sizer.set_item(window.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
