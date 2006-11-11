@@ -1,11 +1,11 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.7 2006/11/02 22:00:24 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.8 2006/11/11 07:38:49 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 from edit_windows import ManagedBase
 from tree import Tree
 import common, misc
@@ -49,7 +49,7 @@ class EditCalendarCtrl(ManagedBase):
         
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
-            self.flag = wxALL
+            self.flag = wx.ALL
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -58,9 +58,9 @@ class EditCalendarCtrl(ManagedBase):
         self.properties['default'].display(panel)
         self.properties['style'].display(panel)
         szr = wxBoxSizer(wxVERTICAL)
-        #szr.Add(self.properties['label'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['default'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
+        #szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -68,7 +68,7 @@ class EditCalendarCtrl(ManagedBase):
 
     def create_widget(self):
         try:
-            #TODO add all the other parameters for the CalendarCtrl especialy style=self.style and the itial date
+            #TODO add all the other parameters for the CalendarCtrl especialy style=self.style and the initial date
             self.widget = CalendarCtrl(self.parent.widget, self.id ,style=self.style)
         except AttributeError:
             self.widget = CalendarCtrl(self.parent.widget, self.id)
@@ -109,7 +109,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'calendar_ctrl_%d' % number[0]
-    calendar_ctrl = EditCalendarCtrl(label, parent, wxNewId(), sizer,
+    calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer,
                         pos, common.property_panel)
     node = Tree.Node(calendar_ctrl)
     calendar_ctrl.node = node
@@ -126,7 +126,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    calendar_ctrl = EditCalendarCtrl(label, parent, wxNewId(), sizer,
+    calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer,
                         pos, common.property_panel, show=False)
     node = Tree.Node(calendar_ctrl)
     calendar_ctrl.node = node
