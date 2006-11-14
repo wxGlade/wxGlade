@@ -1,11 +1,11 @@
 # list_box.py: wxListBox objects
-# $Id: list_box.py,v 1.17 2005/05/06 21:48:20 agriggio Exp $
+# $Id: list_box.py,v 1.18 2006/11/14 23:14:13 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -37,9 +37,9 @@ class EditListBox(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
                                                     r=(0, len(choices)-1))
-        self.style_pos  = (wxLB_SINGLE, wxLB_MULTIPLE, wxLB_EXTENDED,
-                           wxLB_HSCROLL, wxLB_ALWAYS_SB, wxLB_NEEDED_SB,
-                           wxLB_SORT)
+        self.style_pos  = (wx.LB_SINGLE, wx.LB_MULTIPLE, wx.LB_EXTENDED,
+                           wx.LB_HSCROLL, wx.LB_ALWAYS_SB, wx.LB_NEEDED_SB,
+                           wx.LB_SORT)
         style_labels  = ('#section#Style', 'wxLB_SINGLE', 'wxLB_MULTIPLE',
                          'wxLB_EXTENDED', 'wxLB_HSCROLL', 'wxLB_ALWAYS_SB',
                          'wxLB_NEEDED_SB', 'wxLB_SORT')
@@ -47,23 +47,23 @@ class EditListBox(ManagedBase):
                                                      style_labels)
         
     def create_widget(self):
-        self.widget = wxListBox(self.parent.widget, self.id,
+        self.widget = wx.ListBox(self.parent.widget, self.id,
                                 choices=self.choices)
         self.set_selection(self.selection)
-        EVT_LEFT_DOWN(self.widget, self.on_set_focus)        
+        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)        
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
-        szr = wxBoxSizer(wxVERTICAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
+        szr = wx.BoxSizer(wx.VERTICAL)
         self.properties['choices'].display(panel)
         self.properties['style'].display(panel)
         self.properties['selection'].display(panel)
-        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['selection'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['selection'].panel, 0, wx.EXPAND)
         ch = self.properties['choices'].panel
         ch.SetSize((ch.GetSize()[0]-20, 200))
-        szr.Add(self.properties['choices'].panel, 0, wxALL|wxEXPAND, 5)
+        szr.Add(self.properties['choices'].panel, 0, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -130,7 +130,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'list_box_%d' % number[0]
-    list_box = EditListBox(name, parent, wxNewId(),
+    list_box = EditListBox(name, parent, wx.NewId(),
                            #[misc._encode('choice 1')], sizer, pos,
                            [], sizer, pos,
                            common.property_panel)
@@ -149,7 +149,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    list_box = EditListBox(name, parent, wxNewId(), [], sizer, pos,
+    list_box = EditListBox(name, parent, wx.NewId(), [], sizer, pos,
                            common.property_panel)
     sizer.set_item(list_box.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)

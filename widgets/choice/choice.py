@@ -1,11 +1,11 @@
 # choice.py: wxChoice objects
-# $Id: choice.py,v 1.16 2006/10/11 07:37:41 agriggio Exp $
+# $Id: choice.py,v 1.17 2006/11/14 23:14:14 jkt Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -13,18 +13,18 @@ from widget_properties import *
 
 from ChoicesProperty import *
 
-if wxPlatform == '__WXMSW__':
+if wx.Platform == '__WXMSW__':
     # On windows GetBestSize considers also the drop down menu, while we
     # don't want it to be included.
-    class wxChoice2(wxChoice):
+    class wxChoice2(wx.Choice):
         def GetBestSize(self):
-            w, h = wxChoice.GetBestSize(self)
+            w, h = wx.Choice.GetBestSize(self)
             n = self.GetCount()
             return w, h/(n+1)
         def GetSize(self):
             return self.GetClientSize()
 else:
-    wxChoice2 = wxChoice
+    wxChoice2 = wx.Choice
 
 
 class EditChoice(ManagedBase):
@@ -54,22 +54,22 @@ class EditChoice(ManagedBase):
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
-            self.flag = wxALL
+            self.flag = wx.ALL
 
     def create_widget(self):
         self.widget = wxChoice2(self.parent.widget, self.id,
                                choices=self.choices)
         self.set_selection(self.selection)
-        EVT_LEFT_DOWN(self.widget, self.on_set_focus)        
+        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)        
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
-        szr = wxBoxSizer(wxVERTICAL)
+        panel = wx.Panel(self.notebook, -1)
+        szr = wx.BoxSizer(wx.VERTICAL)
         self.properties['choices'].display(panel)
         self.properties['selection'].display(panel)
-        szr.Add(self.properties['selection'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['choices'].panel, 1, wxEXPAND)
+        szr.Add(self.properties['selection'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['choices'].panel, 1, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -116,7 +116,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'choice_%d' % number[0]
-    choice = EditChoice(name, parent, wxNewId(), [],
+    choice = EditChoice(name, parent, wx.NewId(), [],
                         #[misc._encode('choice 1')],
                         sizer, pos, common.property_panel)
     node = Tree.Node(choice)
@@ -134,7 +134,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    choice = EditChoice(name, parent, wxNewId(), [], sizer, pos,
+    choice = EditChoice(name, parent, wx.NewId(), [], sizer, pos,
                         common.property_panel) #, show=False)
     sizer.set_item(choice.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
