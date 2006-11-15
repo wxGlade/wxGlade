@@ -1,11 +1,11 @@
 # datepicker_ctrl.py: wxDatePickerCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/datepicker_ctrl/datepicker_ctrl.py,v 1.1 2006/10/20 11:53:07 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/datepicker_ctrl/datepicker_ctrl.py,v 1.2 2006/11/15 07:06:16 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 from edit_windows import ManagedBase
 from tree import Tree
 import common, misc
@@ -33,8 +33,8 @@ class EditDatePickerCtrl(ManagedBase):
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
         style_labels = ('#section#Style', 'wxDP_SPIN', 'wxDP_DROPDOWN', 
             'wxDP_DEFAULT', 'wxDP_ALLOWNONE', 'wxDP_SHOWCENTURY')
-        self.style_pos = (wxDP_SPIN, wxDP_DROPDOWN, 
-            wxDP_DEFAULT, wxDP_ALLOWNONE, wxDP_SHOWCENTURY)
+        self.style_pos = (wx.DP_SPIN, wx.DP_DROPDOWN, 
+            wx.DP_DEFAULT, wx.DP_ALLOWNONE, wx.DP_SHOWCENTURY)
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
         
@@ -48,10 +48,10 @@ class EditDatePickerCtrl(ManagedBase):
         #self.properties['label'].display(panel)
         self.properties['default'].display(panel)
         self.properties['style'].display(panel)
-        szr = wxBoxSizer(wxVERTICAL)
+        szr = wx.BoxSizer(wxVERTICAL)
         #szr.Add(self.properties['label'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['default'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -100,7 +100,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'datepicker_ctrl_%d' % number[0]
-    datepicker_ctrl = EditDatePickerCtrl(label, parent, wxNewId(), sizer,
+    datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer,
                         pos, common.property_panel)
     node = Tree.Node(datepicker_ctrl)
     datepicker_ctrl.node = node
@@ -117,7 +117,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    datepicker_ctrl = EditDatePickerCtrl(label, parent, wxNewId(), sizer,
+    datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer,
                         pos, common.property_panel, show=False)
     node = Tree.Node(datepicker_ctrl)
     datepicker_ctrl.node = node
