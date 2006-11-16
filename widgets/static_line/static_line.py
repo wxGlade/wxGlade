@@ -1,11 +1,11 @@
 # static_line.py: wxStaticLine objects
-# $Id: static_line.py,v 1.9 2005/05/06 21:48:17 agriggio Exp $
+# $Id: static_line.py,v 1.10 2006/11/16 15:37:15 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common
 from edit_windows import ManagedBase
 from tree import Tree
@@ -33,7 +33,7 @@ class EditStaticLine(ManagedBase):
 
     def create_widget(self):
         #self.orientation = int(self.property['style'].get_value())
-        self.widget = wxStaticLine(self.parent.widget, self.id,
+        self.widget = wx.StaticLine(self.parent.widget, self.id,
                                    style=self.orientation)
         EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
@@ -45,10 +45,10 @@ class EditStaticLine(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         if self.removed_p.panel: self.removed_p.panel.Hide()
-        panel = wxPanel(self.notebook, -1)
-        szr = wxBoxSizer(wxVERTICAL)
+        panel = wx.Panel(self.notebook, -1)
+        szr = wx.BoxSizer(wx.VERTICAL)
         self.properties['attribute'].display(panel)
-        szr.Add(self.properties['attribute'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['attribute'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -59,14 +59,14 @@ class EditStaticLine(ManagedBase):
         return (lambda : "", lambda v: None)
 
     def get_orientation(self): 
-        od = { wxLI_HORIZONTAL: 'wxLI_HORIZONTAL',
-               wxLI_VERTICAL: 'wxLI_VERTICAL' }
+        od = { wx.LI_HORIZONTAL: 'wxLI_HORIZONTAL',
+               wx.LI_VERTICAL: 'wxLI_VERTICAL' }
         return od.get(self.orientation, 'wxLI_HORIZONTAL')
     
     def set_orientation(self, value):
-        od = { 'wxLI_HORIZONTAL': wxLI_HORIZONTAL,
-               'wxLI_VERTICAL': wxLI_VERTICAL }
-        self.orientation = od.get(value, wxLI_HORIZONTAL)
+        od = { 'wxLI_HORIZONTAL': wx.LI_HORIZONTAL,
+               'wxLI_VERTICAL': wx.LI_VERTICAL }
+        self.orientation = od.get(value, wx.LI_HORIZONTAL)
 
 # end of class EditStaticLine
         
@@ -75,18 +75,18 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditStaticLine objects.
     """
-    class Dialog(wxDialog):
+    class Dialog(wx.Dialog):
         def __init__(self):
-            wxDialog.__init__(self, None, -1, 'Select orientation')
-            self.orientations = [ wxLI_HORIZONTAL, wxLI_VERTICAL ]
-            self.orientation = wxLI_HORIZONTAL
+            wx.Dialog.__init__(self, None, -1, 'Select orientation')
+            self.orientations = [ wx.LI_HORIZONTAL, wx.LI_VERTICAL ]
+            self.orientation = wx.LI_HORIZONTAL
             prop = RadioProperty(self, 'orientation', self,
                                  ['wxLI_HORIZONTAL', 'wxLI_VERTICAL'])
-            szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(prop.panel, 0, wxALL|wxEXPAND, 10)
-            btn = wxButton(self, wxID_OK, 'OK')
+            szr = wx.BoxSizer(wx.VERTICAL)
+            szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
+            btn = wx.Button(self, wx.ID_OK, 'OK')
             btn.SetDefault()
-            szr.Add(btn, 0, wxBOTTOM|wxALIGN_CENTER, 10)
+            szr.Add(btn, 0, wx.BOTTOM|wx.ALIGN_CENTER, 10)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
@@ -102,7 +102,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'static_line_%d' % number[0]
-    static_line = EditStaticLine(label, parent, wxNewId(), dialog.orientation,
+    static_line = EditStaticLine(label, parent, wx.NewId(), dialog.orientation,
                                  sizer, pos, common.property_panel)
     node = Tree.Node(static_line)
     static_line.node = node
@@ -120,7 +120,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    static_line = EditStaticLine(name, parent, wxNewId(), 0, sizer,
+    static_line = EditStaticLine(name, parent, wx.NewId(), 0, sizer,
                                  pos, common.property_panel)
     sizer.set_item(static_line.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
@@ -133,7 +133,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 def initialize():
     """\
-    initialization function for the module: returns a wxBitmapButton to be
+    initialization function for the module: returns a wx.BitmapButton to be
     added to the main palette.
     """
     common.widgets['EditStaticLine'] = builder
