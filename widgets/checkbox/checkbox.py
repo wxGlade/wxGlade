@@ -1,11 +1,11 @@
 # checkbox.py: wxCheckBox objects
-# $Id: checkbox.py,v 1.11 2005/05/06 21:48:22 agriggio Exp $
+# $Id: checkbox.py,v 1.12 2006/11/16 15:49:07 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -35,10 +35,10 @@ class EditCheckBox(ManagedBase):
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
-            self.flag = wxALL
+            self.flag = wx.ALL
 
     def create_widget(self):
-        self.widget = wxCheckBox(self.parent.widget, self.id, self.label)
+        self.widget = wx.CheckBox(self.parent.widget, self.id, self.label)
         self.widget.SetValue(self.value)
         def on_checkbox(event):
             self.set_value(self.value)
@@ -46,12 +46,12 @@ class EditCheckBox(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
+        panel = wx.Panel(self.notebook, -1)
         self.properties['label'].display(panel)
         self.properties['checked'].display(panel)
-        szr = wxBoxSizer(wxVERTICAL)
-        szr.Add(self.properties['label'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['checked'].panel, 0, wxEXPAND)
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['checked'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -90,7 +90,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'checkbox_%d' % number[0]
-    checkbox = EditCheckBox(label, parent, wxNewId(), label, sizer, pos,
+    checkbox = EditCheckBox(label, parent, wx.NewId(), label, sizer, pos,
                             common.property_panel)
     node = Tree.Node(checkbox)
     checkbox.node = node
@@ -106,7 +106,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    checkbox = EditCheckBox(label, parent, wxNewId(),
+    checkbox = EditCheckBox(label, parent, wx.NewId(),
                             "", sizer, pos,
                             common.property_panel, show=False) 
     sizer.set_item(checkbox.pos, option=sizeritem.option,
@@ -121,7 +121,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 def initialize():
     """\
-    initialization function for the module: returns a wxBitmapButton to be
+    initialization function for the module: returns a wx.BitmapButton to be
     added to the main palette.
     """
     common.widgets['EditCheckBox'] = builder
