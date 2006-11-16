@@ -1,11 +1,11 @@
 # radio_box.py: wxRadioBox objects
-# $Id: radio_box.py,v 1.14 2005/05/06 21:48:19 agriggio Exp $
+# $Id: radio_box.py,v 1.15 2006/11/16 15:43:26 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -32,7 +32,7 @@ class EditRadioBox(ManagedBase):
         self.buttons = None 
         self.major_dim = major_dim
 
-        if not style: self.style = wxRA_SPECIFY_ROWS
+        if not style: self.style = wx.RA_SPECIFY_ROWS
         else: self.style = style
         self.label = label
         # properties
@@ -50,15 +50,15 @@ class EditRadioBox(ManagedBase):
                                                      [('Label',
                                                        GridProperty.STRING)],
                                                      len(choices))
-        self.style_pos = [wxRA_SPECIFY_ROWS, wxRA_SPECIFY_COLS]
+        self.style_pos = [wx.RA_SPECIFY_ROWS, wx.RA_SPECIFY_COLS]
         self.properties['style'] = RadioProperty(self, 'style', None,
                                                  ['wxRA_SPECIFY_ROWS',
                                                   'wxRA_SPECIFY_COLS'])
         self.properties['dimension'] = SpinProperty(self, 'dimension', None)
 
     def create_widget(self):
-        self.widget = wxPanel(self.parent.widget, self.id)
-        self.static_box = wxStaticBox(self.widget, -1, self.label)        
+        self.widget = wx.Panel(self.parent.widget, self.id)
+        self.static_box = wx.StaticBox(self.widget, -1, self.label)        
         self.buttons = [ self.create_button(c) for c in self.choices ]
         if self.buttons: self.buttons[0].SetValue(True)
         EVT_LEFT_DOWN(self.static_box, self.on_set_focus)
@@ -72,8 +72,8 @@ class EditRadioBox(ManagedBase):
         
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
-        szr = wxBoxSizer(wxVERTICAL)
+        panel = wx.Panel(self.notebook, -1)
+        szr = wx.BoxSizer(wx.VERTICAL)
         self.properties['label'].display(panel)
         self.properties['style'].display(panel)
         self.properties['dimension'].display(panel)
@@ -82,11 +82,11 @@ class EditRadioBox(ManagedBase):
 
         self.properties['style'].set_value(self.get_style())
 
-        szr.Add(self.properties['label'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['style'].panel, 0, wxALL|wxEXPAND, 3)
-        szr.Add(self.properties['dimension'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['selection'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['choices'].panel, 1, wxALL|wxEXPAND, 3)
+        szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.ALL|wx.EXPAND, 3)
+        szr.Add(self.properties['dimension'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['selection'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['choices'].panel, 1, wx.ALL|wx.EXPAND, 3)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -107,10 +107,10 @@ class EditRadioBox(ManagedBase):
         if not self.widget: return
         buttons_layout = self.buttons
         if self.major_dim:
-            if self.style & wxRA_SPECIFY_COLS: cols = self.major_dim; rows = 0
+            if self.style & wx.RA_SPECIFY_COLS: cols = self.major_dim; rows = 0
             else: cols = 0; rows = self.major_dim
-            sizer = wxGridSizer(rows, cols)
-            if wxPlatform == '__WXGTK__':
+            sizer = wx.GridSizer(rows, cols)
+            if wx.Platform == '__WXGTK__':
                 # we need to reorder self.buttons 'cos wxRadioBox lays out its
                 # elements by colums, while wxGridSizer by rows
                 import math
@@ -123,15 +123,15 @@ class EditRadioBox(ManagedBase):
                 buttons_layout = []
                 for t in tmp: buttons_layout.extend(t)
         else:
-            sizer = wxBoxSizer(wxVERTICAL)
+            sizer = wx.BoxSizer(wx.VERTICAL)
         for button in buttons_layout:
             w, h = button.GetBestSize()
-            sizer.Add(button, 0, wxEXPAND)
+            sizer.Add(button, 0, wx.EXPAND)
             sizer.SetItemMinSize(button, w, h)
         self.widget.SetAutoLayout(True)
-        sb_sizer = wxStaticBoxSizer(self.static_box, wxVERTICAL)
+        sb_sizer = wx.StaticBoxSizer(self.static_box, wx.VERTICAL)
         self.widget.SetSizer(sb_sizer)
-        sb_sizer.Add(sizer, 1, wxEXPAND)
+        sb_sizer.Add(sizer, 1, wx.EXPAND)
         sb_sizer.SetMinSize(sizer.GetMinSize())
         sb_sizer.Fit(self.widget)
         sp = self.sizer_properties
@@ -151,13 +151,13 @@ class EditRadioBox(ManagedBase):
                                         size=self.widget.GetBestSize())
 
     def get_style(self):
-        if self.style == wxRA_SPECIFY_ROWS: return 0
+        if self.style == wx.RA_SPECIFY_ROWS: return 0
         else: return 1
 
     def set_style(self, value):
         if value == 0 or value == 'wxRA_SPECIFY_ROWS':
-            self.style = wxRA_SPECIFY_ROWS
-        else: self.style = wxRA_SPECIFY_COLS
+            self.style = wx.RA_SPECIFY_ROWS
+        else: self.style = wx.RA_SPECIFY_COLS
         self.do_layout()
 
     def get_major_dimension(self):
@@ -207,19 +207,19 @@ class EditRadioBox(ManagedBase):
         return max(w, w2), h
 
     def SetBackgroundColour(self, colour):
-        wxPanel.SetBackgroundColour(self.widget, colour)
+        wx.Panel.SetBackgroundColour(self.widget, colour)
         self.static_box.SetBackgroundColour(colour)
         for b in self.buttons: b.SetBackgroundColour(colour)
         self.widget.Refresh()
         
     def SetForegroundColour(self, colour):
-        wxPanel.SetForegroundColour(self.widget, colour)
+        wx.Panel.SetForegroundColour(self.widget, colour)
         self.static_box.SetForegroundColour(colour)
         for b in self.buttons: b.SetForegroundColour(colour)
         self.widget.Refresh()
 
     def SetFont(self, font):
-        wxPanel.SetFont(self.widget, font)
+        wx.Panel.SetFont(self.widget, font)
         self.static_box.SetFont(font)
         for b in self.buttons: b.SetFont(font)
         self.widget.Refresh()
@@ -235,7 +235,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'radio_box_%d' % number[0]
-    radio_box = EditRadioBox(label, parent, wxNewId(), label,
+    radio_box = EditRadioBox(label, parent, wx.NewId(), label,
                              [misc._encode('choice 1')],
                              0, 0, sizer, pos, common.property_panel)
     #sizer.set_item(pos, 0, 0, size=radio_box.GetSize())
@@ -253,7 +253,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    radio_box = EditRadioBox(label, parent, wxNewId(), '', [], 0, 0,
+    radio_box = EditRadioBox(label, parent, wx.NewId(), '', [], 0, 0,
                              sizer, pos, common.property_panel) 
     sizer.set_item(radio_box.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
@@ -267,7 +267,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     
 def initialize():
     """\
-    initialization function for the module: returns a wxBitmapButton to be
+    initialization function for the module: returns a wx.BitmapButton to be
     added to the main palette.
     """
     common.widgets['EditRadioBox'] = builder
