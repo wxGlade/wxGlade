@@ -1,11 +1,11 @@
 # custom_widget.py: custom wxWindow objects
-# $Id: custom_widget.py,v 1.17 2006/03/13 10:14:49 agriggio Exp $
+# $Id: custom_widget.py,v 1.18 2006/11/16 15:06:47 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from tree import Tree
 from widget_properties import *
@@ -70,19 +70,19 @@ class CustomWidget(ManagedBase):
         if self.widget: self.widget.Refresh()
 
     def create_widget(self):
-        self.widget = wxWindow(self.parent.widget, self.id,
-                               style=wxSUNKEN_BORDER|wxFULL_REPAINT_ON_RESIZE)
+        self.widget = wx.Window(self.parent.widget, self.id,
+                               style=wx.SUNKEN_BORDER|wx.FULL_REPAINT_ON_RESIZE)
         EVT_PAINT(self.widget, self.on_paint)
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
 
     def on_paint(self, event):
-        dc = wxPaintDC(self.widget)
+        dc = wx.PaintDC(self.widget)
         dc.BeginDrawing()
-        dc.SetBrush(wxWHITE_BRUSH)
-        dc.SetPen(wxBLACK_PEN)
-        dc.SetBackground(wxWHITE_BRUSH)
+        dc.SetBrush(wx.WHITE_BRUSH)
+        dc.SetPen(wx.BLACK_PEN)
+        dc.SetBackground(wx.WHITE_BRUSH)
         dc.Clear()
         w, h = self.widget.GetClientSize()
         dc.DrawLine(0, 0, w, h)
@@ -91,19 +91,19 @@ class CustomWidget(ManagedBase):
         tw, th = dc.GetTextExtent(text)
         x = (w - tw)/2
         y = (h - th)/2
-        dc.SetPen(wxThePenList.FindOrCreatePen(wxBLACK, 0, wxTRANSPARENT))
+        dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
         dc.DrawRectangle(x-1, y-1, tw+2, th+2)
         dc.DrawText(text, x, y)
         dc.EndDrawing()
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1)
-        szr = wxBoxSizer(wxVERTICAL)
+        panel = wx.ScrolledWindow(self.notebook, -1)
+        szr = wx.BoxSizer(wx.VERTICAL)
         args = self.properties['arguments']
         args.display(panel)
-        szr.Add(args.panel, 1, wxALL|wxEXPAND, 5)
-        help_btn = wxButton(panel, -1, 'Help on "Arguments" property')
+        szr.Add(args.panel, 1, wx.ALL|wx.EXPAND, 5)
+        help_btn = wx.Button(panel, -1, 'Help on "Arguments" property')
         text = """\
 The 'Arguments' property behaves differently when generating
 XRC code wrt C++ or python: you can use it to add custom attributes
@@ -115,10 +115,10 @@ is translated to:
     <default_value>10</default_value>
 Invalid entries are silently ignored"""
         def show_help(event):
-            wxMessageBox(text, 'Help on "Arguments" property',
-                         wxOK|wxCENTRE|wxICON_INFORMATION)
+            wx.MessageBox(text, 'Help on "Arguments" property',
+                         wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
         EVT_BUTTON(help_btn, -1, show_help)
-        szr.Add(help_btn, 0, wxBOTTOM|wxLEFT|wxRIGHT|wxEXPAND, 5)
+        szr.Add(help_btn, 0, wx.BOTTOM|wx.LEFT|wx.RIGHT|wx.EXPAND, 5)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -142,17 +142,17 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for CustomWidget objects.
     """
-    class Dialog(wxDialog):
+    class Dialog(wx.Dialog):
         def __init__(self, number=[0]):
             title = 'Select widget class'
-            wxDialog.__init__(self, None, -1, title)
+            wx.Dialog.__init__(self, None, -1, title)
             self.klass = 'CustomWidget'
             if number[0]: self.klass = 'CustomWidget%s' % (number[0]-1)
             number[0] += 1
             klass_prop = TextProperty(self, 'class', self)
-            szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(klass_prop.panel, 0, wxALL|wxEXPAND, 5)
-            szr.Add(wxButton(self, wxID_OK, 'OK'), 0, wxALL|wxALIGN_CENTER, 5)
+            szr = wx.BoxSizer(wx.VERTICAL)
+            szr.Add(klass_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
+            szr.Add(wx.Button(self, wx.ID_OK, 'OK'), 0, wx.ALL|wx.ALIGN_CENTER, 5)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
@@ -172,7 +172,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'window_%d' % number[0]
-    win = CustomWidget(name, dialog.klass, parent, wxNewId(), sizer, pos,
+    win = CustomWidget(name, dialog.klass, parent, wx.NewId(), sizer, pos,
                        common.property_panel)
     node = Tree.Node(win)
     win.node = node
@@ -182,7 +182,7 @@ def builder(parent, sizer, pos, number=[1]):
     win.show_widget(True)
 
     common.app_tree.insert(node, sizer.node, pos-1)
-    sizer.set_item(win.pos, 1, wxEXPAND)
+    sizer.set_item(win.pos, 1, wx.EXPAND)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
@@ -193,7 +193,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if not sizer or not sizeritem:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    win = CustomWidget(name, 'CustomWidget', parent, wxNewId(), sizer, pos,
+    win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos,
                        common.property_panel, True)
     sizer.set_item(win.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
@@ -206,7 +206,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 def initialize():
     """\
-    initialization function for the module: returns a wxBitmapButton to be
+    initialization function for the module: returns a wx.BitmapButton to be
     added to the main palette.
     """
     common.widgets['CustomWidget'] = builder
