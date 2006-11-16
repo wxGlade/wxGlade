@@ -1,11 +1,11 @@
 # static_bitmap.py: wxStaticBitmap objects
-# $Id: static_bitmap.py,v 1.19 2005/07/11 12:12:45 agriggio Exp $
+# $Id: static_bitmap.py,v 1.20 2006/11/16 15:34:22 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -29,19 +29,19 @@ class EditStaticBitmap(ManagedBase):
         self.access_functions['attribute'] = (lambda : self.attribute,
                                               set_attribute)
         self.bitmap_prop = FileDialogProperty(self, 'bitmap', None, #panel,
-                                              style=wxOPEN|wxFILE_MUST_EXIST,
+                                              style=wx.OPEN|wx.FILE_MUST_EXIST,
                                               can_disable=False)
         self.properties['bitmap'] = self.bitmap_prop
         self.properties['attribute'] = CheckBoxProperty(
             self, 'attribute', None, 'Store as attribute', write_always=True)
         self.style = 0
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.style_pos  = (wxSIMPLE_BORDER, wxDOUBLE_BORDER, wxSUNKEN_BORDER,
-                           wxRAISED_BORDER, wxSTATIC_BORDER, wxNO_3D,
-                           wxTAB_TRAVERSAL, wxWANTS_CHARS,
-                           wxNO_FULL_REPAINT_ON_RESIZE,
-                           wxFULL_REPAINT_ON_RESIZE,
-                           wxCLIP_CHILDREN)
+        self.style_pos  = (wx.SIMPLE_BORDER, wx.DOUBLE_BORDER, wx.SUNKEN_BORDER,
+                           wx.RAISED_BORDER, wx.STATIC_BORDER, wx.NO_3D,
+                           wx.TAB_TRAVERSAL, wx.WANTS_CHARS,
+                           wx.NO_FULL_REPAINT_ON_RESIZE,
+                           wx.FULL_REPAINT_ON_RESIZE,
+                           wx.CLIP_CHILDREN)
         style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
                         'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
                         'wxSTATIC_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
@@ -53,25 +53,25 @@ class EditStaticBitmap(ManagedBase):
 
     def create_widget(self):
         bmp = self.load_bitmap()
-        self.widget = wxStaticBitmap(self.parent.widget, self.id, bmp)
-        if wxPlatform == '__WXMSW__':
+        self.widget = wx.StaticBitmap(self.parent.widget, self.id, bmp)
+        if wx.Platform == '__WXMSW__':
             def get_best_size():
                 bmp = self.widget.GetBitmap()
                 if bmp and bmp.Ok():
                     return bmp.GetWidth(), bmp.GetHeight()
-                return wxStaticBitmap.GetBestSize(self.widget)
+                return wx.StaticBitmap.GetBestSize(self.widget)
             self.widget.GetBestSize = get_best_size
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
-        szr = wxBoxSizer(wxVERTICAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
+        szr = wx.BoxSizer(wx.VERTICAL)
         self.properties['bitmap'].display(panel)
         self.properties['attribute'].display(panel)
         self.properties['style'].display(panel)
-        szr.Add(self.properties['bitmap'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['attribute'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['style'].panel, 0, wxEXPAND)
+        szr.Add(self.properties['bitmap'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['attribute'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -95,10 +95,10 @@ class EditStaticBitmap(ManagedBase):
         if self.bitmap  and not ( self.bitmap.startswith('var:') or
                                     self.bitmap.startswith('code:')
                                 ):
-            return wxBitmap(os.path.abspath(self.bitmap), wxBITMAP_TYPE_ANY)
+            return wx.Bitmap(os.path.abspath(self.bitmap), wx.BITMAP_TYPE_ANY)
         else:
             if empty[0] is None:
-                empty[0] = wxEmptyBitmap(1, 1)
+                empty[0] = wx.EmptyBitmap(1, 1)
             return empty[0]
 
     def get_style(self):
@@ -130,7 +130,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'bitmap_%s' % number[0]
     bitmap = misc.FileSelector("Select the image")
-    static_bitmap = EditStaticBitmap(name, parent, wxNewId(), bitmap, sizer,
+    static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer,
                                      pos, common.property_panel)
     node = Tree.Node(static_bitmap)
     static_bitmap.node = node
@@ -146,7 +146,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    bitmap = EditStaticBitmap(label, parent, wxNewId(), '', sizer, pos,
+    bitmap = EditStaticBitmap(label, parent, wx.NewId(), '', sizer, pos,
                               common.property_panel)
     sizer.set_item(bitmap.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border) #, size=bitmap.GetBestSize())
@@ -159,7 +159,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 def initialize():
     """\
-    initialization function for the module: returns a wxBitmapButton to be
+    initialization function for the module: returns a wx.BitmapButton to be
     added to the main palette.
     """
     common.widgets['EditStaticBitmap'] = builder
