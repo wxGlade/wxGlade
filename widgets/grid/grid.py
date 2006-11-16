@@ -1,12 +1,12 @@
 # Grid.py: wxGrid objects
-# $Id: grid.py,v 1.29 2005/05/06 21:48:20 agriggio Exp $
+# $Id: grid.py,v 1.30 2006/11/16 15:16:34 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
-from wxPython.grid import *
+import wx
+from wx.grid import *
 import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -179,7 +179,7 @@ class EditGrid(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         self.properties['create_grid'].display(panel)
         self.properties['columns'].display(panel)
         self.properties['rows_number'].display(panel)
@@ -193,26 +193,26 @@ class EditGrid(ManagedBase):
         self.properties['lines_color'].display(panel)
         self.properties['label_bg_color'].display(panel)
         self.properties['selection_mode'].display(panel)
-        szr = wxBoxSizer(wxVERTICAL)
-        szr.Add(self.properties['create_grid'].panel, 0, wxEXPAND)
-        szr.Add(wxStaticLine(panel, -1), 0, wxALL|wxEXPAND, 5)
-        szr.Add(wxStaticText(panel, -1, "The following properties are "
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(self.properties['create_grid'].panel, 0, wx.EXPAND)
+        szr.Add(wx.StaticLine(panel, -1), 0, wx.ALL|wx.EXPAND, 5)
+        szr.Add(wx.StaticText(panel, -1, "The following properties are "
                              "meaningful\nonly if 'Create grid' is selected"),
-                0, wxLEFT|wxRIGHT|wxEXPAND, 10)
-        szr.Add(wxStaticLine(panel, -1), 0, wxALL|wxEXPAND, 5)
-        szr.Add(self.properties['columns'].panel, 0, wxALL|wxEXPAND, 2)
+                0, wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
+        szr.Add(wx.StaticLine(panel, -1), 0, wx.ALL|wx.EXPAND, 5)
+        szr.Add(self.properties['columns'].panel, 0, wx.ALL|wx.EXPAND, 2)
         szr.SetItemMinSize(self.properties['columns'].panel, 1, 150)
-        szr.Add(self.properties['rows_number'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['row_label_size'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['col_label_size'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['lines_color'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['label_bg_color'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['enable_editing'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['enable_grid_lines'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['enable_col_resize'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['enable_row_resize'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['enable_grid_resize'].panel, 0, wxEXPAND)
-        szr.Add(self.properties['selection_mode'].panel, 0, wxALL|wxEXPAND, 5)
+        szr.Add(self.properties['rows_number'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['row_label_size'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['col_label_size'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['lines_color'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['label_bg_color'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['enable_editing'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['enable_grid_lines'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['enable_col_resize'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['enable_row_resize'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['enable_grid_resize'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['selection_mode'].panel, 0, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -423,9 +423,9 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'grid_%d' % number[0]
-    grid = EditGrid(label, parent, wxNewId(), sizer, pos,
+    grid = EditGrid(label, parent, wx.NewId(), sizer, pos,
                     common.property_panel)
-    # A grid should be wxEXPANDed and 'option' should be 1,
+    # A grid should be wx.EXPANDed and 'option' should be 1,
     # or you can't see it.
     grid.set_option(1)  
     grid.set_flag("wxEXPAND")
@@ -444,7 +444,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError: raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
-    grid = EditGrid(label, parent, wxNewId(), sizer,
+    grid = EditGrid(label, parent, wx.NewId(), sizer,
                     pos, common.property_panel, show=False)
     sizer.set_item(grid.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border) #, size=(100,100))  #HELP#
@@ -457,7 +457,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 def initialize():
     """\
-    initialization function for the module: returns a wxBitmapButton to be
+    initialization function for the module: returns a wx.BitmapButton to be
     added to the main palette.
     """
     common.widgets['EditGrid'] = builder
