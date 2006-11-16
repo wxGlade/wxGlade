@@ -1,11 +1,11 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.23 2006/05/07 11:43:37 agriggio Exp $
+# $Id: menubar.py,v 1.24 2006/11/16 14:58:02 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 import common, math, misc
 from tree import Tree
 from MenuTree import *
@@ -13,19 +13,19 @@ from widget_properties import *
 from edit_windows import EditBase, TopLevelBase, PreviewMixin
 
 
-class MenuItemDialog(wxDialog):
+class MenuItemDialog(wx.Dialog):
     def __init__(self, parent, owner, items=None):
-        wxDialog.__init__(self, parent, -1, "Menu editor",
-                          style=wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
+        wx.Dialog.__init__(self, parent, -1, "Menu editor",
+                          style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
         ADD_ID, REMOVE_ID, NAME_ID, LABEL_ID, ID_ID, CHECK_RADIO_ID, LIST_ID, \
                 ADD_SEP_ID, MOVE_LEFT_ID, MOVE_RIGHT_ID, MOVE_UP_ID, \
-                MOVE_DOWN_ID, HELP_STR_ID = [wxNewId() for i in range(13)]
+                MOVE_DOWN_ID, HELP_STR_ID = [wx.NewId() for i in range(13)]
 
-        self._staticbox = wxStaticBox(self, -1, "Menu item:")
+        self._staticbox = wx.StaticBox(self, -1, "Menu item:")
 
         self.owner = owner
-        self.menu_items = wxListCtrl(self, LIST_ID, style=wxLC_REPORT | \
-                                     wxLC_SINGLE_SEL|wxSUNKEN_BORDER)
+        self.menu_items = wx.ListCtrl(self, LIST_ID, style=wx.LC_REPORT | \
+                                     wx.LC_SINGLE_SEL|wx.SUNKEN_BORDER)
         # ALB 2004-09-26: workaround to make the scroll wheel work...
         EVT_MOUSEWHEEL(self.menu_items, lambda e: e.Skip())
         
@@ -43,38 +43,38 @@ class MenuItemDialog(wxDialog):
         self.menu_items.SetColumnWidth(5, 250)
 
         # menu item fields
-        self.id = wxTextCtrl(self, ID_ID)
-        self.label = wxTextCtrl(self, LABEL_ID)
-        self.name = wxTextCtrl(self, NAME_ID)
-        self.help_str = wxTextCtrl(self, HELP_STR_ID)
+        self.id = wx.TextCtrl(self, ID_ID)
+        self.label = wx.TextCtrl(self, LABEL_ID)
+        self.name = wx.TextCtrl(self, NAME_ID)
+        self.help_str = wx.TextCtrl(self, HELP_STR_ID)
 
         # ALB 2004-12-05
-        self.event_handler = wxTextCtrl(self, -1)
+        self.event_handler = wx.TextCtrl(self, -1)
         import re
         self.handler_re = re.compile(r'^\s*\w*\s*$')
 
-        #self.checkable = wxCheckBox(self, CHECK_ID, "") #Checkable")
-        self.check_radio = wxRadioBox(
+        #self.checkable = wx.CheckBox(self, CHECK_ID, "") #Checkable")
+        self.check_radio = wx.RadioBox(
             self, CHECK_RADIO_ID, "Type",
             choices=['Normal', 'Checkable', 'Radio'], majorDimension=3)
 
-        self.add = wxButton(self, ADD_ID, "Add")
-        self.remove = wxButton(self, REMOVE_ID, "Remove")
-        self.add_sep = wxButton(self, ADD_SEP_ID, "Add separator")
+        self.add = wx.Button(self, ADD_ID, "Add")
+        self.remove = wx.Button(self, REMOVE_ID, "Remove")
+        self.add_sep = wx.Button(self, ADD_SEP_ID, "Add separator")
 
         # menu items navigation
-        self.move_up = wxButton(self, MOVE_UP_ID, "Up")
-        self.move_down = wxButton(self, MOVE_DOWN_ID, "Down")
-        self.move_left = wxButton(self, MOVE_LEFT_ID, " < ")
-        self.move_right = wxButton(self, MOVE_RIGHT_ID, " > ")
+        self.move_up = wx.Button(self, MOVE_UP_ID, "Up")
+        self.move_down = wx.Button(self, MOVE_DOWN_ID, "Down")
+        self.move_left = wx.Button(self, MOVE_LEFT_ID, " < ")
+        self.move_right = wx.Button(self, MOVE_RIGHT_ID, " > ")
 
-        self.ok = wxButton(self, wxID_OK, "OK")
-        self.apply = wxButton(self, wxID_APPLY, "Apply")
-        self.cancel = wxButton(self, wxID_CANCEL, "Cancel")
+        self.ok = wx.Button(self, wx.ID_OK, "OK")
+        self.apply = wx.Button(self, wx.ID_APPLY, "Apply")
+        self.cancel = wx.Button(self, wx.ID_CANCEL, "Cancel")
 
         self.do_layout()
         self.selected_index = -1 # index of the selected element in the 
-                                 # wxListCtrl menu_items
+                                 # wx.ListCtrl menu_items
         # event handlers
         EVT_BUTTON(self, ADD_ID, self.add_menu_item)
         EVT_BUTTON(self, REMOVE_ID, self.remove_menu_item)
@@ -83,7 +83,7 @@ class MenuItemDialog(wxDialog):
         EVT_BUTTON(self, MOVE_RIGHT_ID, self.move_item_right)
         EVT_BUTTON(self, MOVE_UP_ID, self.move_item_up)
         EVT_BUTTON(self, MOVE_DOWN_ID, self.move_item_down)
-        EVT_BUTTON(self, wxID_APPLY, self.on_apply)
+        EVT_BUTTON(self, wx.ID_APPLY, self.on_apply)
         EVT_KILL_FOCUS(self.name, self.update_menu_item)
         EVT_KILL_FOCUS(self.label, self.update_menu_item)
         EVT_KILL_FOCUS(self.id, self.update_menu_item)
@@ -104,54 +104,54 @@ class MenuItemDialog(wxDialog):
         self.event_handler.Enable(False)
         self.check_radio.Enable(False)
         
-        sizer = wxBoxSizer(wxVERTICAL)
-        sizer2 = wxStaticBoxSizer(self._staticbox, wxVERTICAL)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer2 = wx.StaticBoxSizer(self._staticbox, wx.VERTICAL)
         self.label.SetSize((150, -1))
         self.id.SetSize((150, -1))
         self.name.SetSize((150, -1))
         self.help_str.SetSize((150, -1))
         self.event_handler.SetSize((150, -1))
-        szr = wxFlexGridSizer(0, 2)
+        szr = wx.FlexGridSizer(0, 2)
         if misc.check_wx_version(2, 5, 2):
-            flag = wxFIXED_MINSIZE
+            flag = wx.FIXED_MINSIZE
         else:
             flag = 0
-        label_flag = wxALIGN_CENTER_VERTICAL
-        szr.Add(wxStaticText(self, -1, "Id   "), flag=label_flag)
+        label_flag = wx.ALIGN_CENTER_VERTICAL
+        szr.Add(wx.StaticText(self, -1, "Id   "), flag=label_flag)
         szr.Add(self.id, flag=flag)
-        szr.Add(wxStaticText(self, -1, "Label  "), flag=label_flag)
+        szr.Add(wx.StaticText(self, -1, "Label  "), flag=label_flag)
         szr.Add(self.label, flag=flag)
-        szr.Add(wxStaticText(self, -1, "Name  "), flag=label_flag)
+        szr.Add(wx.StaticText(self, -1, "Name  "), flag=label_flag)
         szr.Add(self.name, flag=flag)
-        szr.Add(wxStaticText(self, -1, "Help String  "), flag=label_flag)
+        szr.Add(wx.StaticText(self, -1, "Help String  "), flag=label_flag)
         szr.Add(self.help_str, flag=flag)
-        szr.Add(wxStaticText(self, -1, "Event Handler  "), flag=label_flag)
+        szr.Add(wx.StaticText(self, -1, "Event Handler  "), flag=label_flag)
         szr.Add(self.event_handler, flag=flag)
-        sizer2.Add(szr, 1, wxALL|wxEXPAND, 5)
-        sizer2.Add(self.check_radio, 0, wxLEFT|wxRIGHT|wxBOTTOM, 4)
-        szr = wxGridSizer(0, 2, 3, 3)
-        szr.Add(self.add, 0, wxEXPAND); szr.Add(self.remove, 0, wxEXPAND)
-        sizer2.Add(szr, 0, wxEXPAND)
-        sizer2.Add(self.add_sep, 0, wxTOP|wxEXPAND, 3)
+        sizer2.Add(szr, 1, wx.ALL|wx.EXPAND, 5)
+        sizer2.Add(self.check_radio, 0, wx.LEFT|wx.RIGHT|wx.BOTTOM, 4)
+        szr = wx.GridSizer(0, 2, 3, 3)
+        szr.Add(self.add, 0, wx.EXPAND); szr.Add(self.remove, 0, wx.EXPAND)
+        sizer2.Add(szr, 0, wx.EXPAND)
+        sizer2.Add(self.add_sep, 0, wx.TOP|wx.EXPAND, 3)
 
-        sizer3 = wxBoxSizer(wxVERTICAL)
-        sizer3.Add(self.menu_items, 1, wxALL|wxEXPAND, 5)
-        sizer4 = wxBoxSizer(wxHORIZONTAL)
+        sizer3 = wx.BoxSizer(wx.VERTICAL)
+        sizer3.Add(self.menu_items, 1, wx.ALL|wx.EXPAND, 5)
+        sizer4 = wx.BoxSizer(wx.HORIZONTAL)
 
-        sizer4.Add(self.move_up, 0, wxLEFT|wxRIGHT, 3)
-        sizer4.Add(self.move_down, 0, wxLEFT|wxRIGHT, 5)
-        sizer4.Add(self.move_left, 0, wxLEFT|wxRIGHT, 5)
-        sizer4.Add(self.move_right, 0, wxLEFT|wxRIGHT, 5)
-        sizer3.Add(sizer4, 0, wxALIGN_CENTER|wxALL, 5)
-        szr = wxBoxSizer(wxHORIZONTAL)
-        szr.Add(sizer3, 1, wxALL|wxEXPAND, 5) 
-        szr.Add(sizer2, 0, wxTOP|wxBOTTOM|wxRIGHT, 5)
-        sizer.Add(szr, 1, wxEXPAND)
-        sizer2 = wxBoxSizer(wxHORIZONTAL)
-        sizer2.Add(self.ok, 0, wxALL, 5)
-        sizer2.Add(self.apply, 0, wxALL, 5)
-        sizer2.Add(self.cancel, 0, wxALL, 5)
-        sizer.Add(sizer2, 0, wxALL|wxALIGN_CENTER, 3)
+        sizer4.Add(self.move_up, 0, wx.LEFT|wx.RIGHT, 3)
+        sizer4.Add(self.move_down, 0, wx.LEFT|wx.RIGHT, 5)
+        sizer4.Add(self.move_left, 0, wx.LEFT|wx.RIGHT, 5)
+        sizer4.Add(self.move_right, 0, wx.LEFT|wx.RIGHT, 5)
+        sizer3.Add(sizer4, 0, wx.ALIGN_CENTER|wx.ALL, 5)
+        szr = wx.BoxSizer(wx.HORIZONTAL)
+        szr.Add(sizer3, 1, wx.ALL|wx.EXPAND, 5) 
+        szr.Add(sizer2, 0, wx.TOP|wx.BOTTOM|wx.RIGHT, 5)
+        sizer.Add(szr, 1, wx.EXPAND)
+        sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer2.Add(self.ok, 0, wx.ALL, 5)
+        sizer2.Add(self.apply, 0, wx.ALL, 5)
+        sizer2.Add(self.cancel, 0, wx.ALL, 5)
+        sizer.Add(sizer2, 0, wx.ALL|wx.ALIGN_CENTER, 3)
         self.SetAutoLayout(1)
         self.SetSizer(sizer)
         sizer.Fit(self)
@@ -182,8 +182,8 @@ class MenuItemDialog(wxDialog):
         self.menu_items.SetStringItem(index, 2, name)
         self.menu_items.SetStringItem(index, 4, check_radio)
         # fix bug 698074
-        self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED,
-                                     wxLIST_STATE_SELECTED)
+        self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED,
+                                     wx.LIST_STATE_SELECTED)
         self.name.SetValue(name)
         self.label.SetValue(label)
         self.id.SetValue(id)
@@ -207,8 +207,8 @@ class MenuItemDialog(wxDialog):
         self.menu_items.SetStringItem(index, 1, '---')
         self.menu_items.SetStringItem(index, 2, '---')
         # fix bug 698074
-        self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED,
-                                     wxLIST_STATE_SELECTED)
+        self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED,
+                                     wx.LIST_STATE_SELECTED)
 
     def show_menu_item(self, event):
         """\
@@ -372,8 +372,8 @@ class MenuItemDialog(wxDialog):
             label = self.menu_items.GetItem(index, 0).m_text
             if misc.streq(label[:4], " " * 4):
                 self.menu_items.SetStringItem(index, 0, label[4:])
-                self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED, 
-                                             wxLIST_STATE_SELECTED)
+                self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, 
+                                             wx.LIST_STATE_SELECTED)
                 
     def move_item_left(self, event):
         """\
@@ -388,8 +388,8 @@ class MenuItemDialog(wxDialog):
             label = self.menu_items.GetItem(index, 0).m_text
             self.menu_items.SetStringItem(index, 0, misc.wxstr(" " * 4)
                                           + label)
-            self.menu_items.SetItemState(index, wxLIST_STATE_SELECTED, \
-                                         wxLIST_STATE_SELECTED)
+            self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, \
+                                         wx.LIST_STATE_SELECTED)
 
     def move_item_right(self, event):
         """\
@@ -408,7 +408,7 @@ class MenuItemDialog(wxDialog):
         self.menu_items.SetFocus()
         index = self._do_move_item(event, self.selected_index, False)
         if index is not None:
-            state = wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED
+            state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
             self.menu_items.SetItemState(index, state, state)
 
     def _do_move_item(self, event, index, is_down):
@@ -477,7 +477,7 @@ class MenuItemDialog(wxDialog):
             #self.selected_index = i
             self.selected_index = self._do_move_item(event, i, True)
             # fix bug 698071
-            state = wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED
+            state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
             self.menu_items.SetItemState(self.selected_index, state, state)
         else:
             # restore the selected index
@@ -501,11 +501,11 @@ class MenuProperty(Property):
         if parent is not None: self.display(parent)
 
     def display(self, parent):
-        self.panel = wxPanel(parent, -1)
-        edit_btn_id = wxNewId()
-        self.edit_btn = wxButton(self.panel, edit_btn_id, "Edit menus...")
-        sizer = wxBoxSizer(wxHORIZONTAL)
-        sizer.Add(self.edit_btn, 1, wxEXPAND|wxALIGN_CENTER|wxTOP|wxBOTTOM, 4)
+        self.panel = wx.Panel(parent, -1)
+        edit_btn_id = wx.NewId()
+        self.edit_btn = wx.Button(self.panel, edit_btn_id, "Edit menus...")
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 4)
         self.panel.SetAutoLayout(1)
         self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
@@ -516,7 +516,7 @@ class MenuProperty(Property):
     def edit_menus(self, event):
         dialog = MenuItemDialog(self.panel, self.owner,
                                 items=self.owner.get_menus())
-        if dialog.ShowModal() == wxID_OK:
+        if dialog.ShowModal() == wx.ID_OK:
             self.owner.set_menus(dialog.get_menus())
             common.app_tree.app.saved = False # update the status of the app
 
@@ -536,7 +536,7 @@ class EditMenuBar(EditBase, PreviewMixin):
     def __init__(self, name, klass, parent, property_window):
         custom_class = parent is None
         EditBase.__init__(self, name, klass,
-                          parent, wxNewId(), property_window,
+                          parent, wx.NewId(), property_window,
                           custom_class=custom_class, show=False)
         self.base = 'wxMenuBar'
         
@@ -550,19 +550,19 @@ class EditMenuBar(EditBase, PreviewMixin):
         PreviewMixin.__init__(self)
 
     def create_widget(self):
-        if wxPlatform == '__WXGTK__' and not EditMenuBar.__hidden_frame:
-            EditMenuBar.__hidden_frame = wxFrame(common.palette, -1, "")
+        if wx.Platform == '__WXGTK__' and not EditMenuBar.__hidden_frame:
+            EditMenuBar.__hidden_frame = wx.Frame(common.palette, -1, "")
             EditMenuBar.__hidden_frame.Hide()
         if self.parent:
-            self.widget = self._mb = wxMenuBar()
+            self.widget = self._mb = wx.MenuBar()
             if self.parent.widget: self.parent.widget.SetMenuBar(self.widget)
-            if wxPlatform == '__WXMSW__' or wxPlatform == '__WXMAC__':
+            if wx.Platform == '__WXMSW__' or wx.Platform == '__WXMAC__':
                 self.widget.SetFocus = lambda : None
         else:
             # "top-level" menubar
-            self.widget = wxFrame(None, -1, misc.design_title(self.name))
+            self.widget = wx.Frame(None, -1, misc.design_title(self.name))
             self.widget.SetClientSize((400, 30))
-            self._mb = wxMenuBar()
+            self._mb = wx.MenuBar()
             self.widget.SetMenuBar(self._mb)
             self.widget.SetBackgroundColour(self._mb.GetBackgroundColour())
             EVT_CLOSE(self.widget, lambda e: self.hide_widget())
@@ -575,12 +575,12 @@ class EditMenuBar(EditBase, PreviewMixin):
         sizer = page.GetSizer()
         self.properties['menus'].display(page)
         if not sizer:
-            sizer = wxBoxSizer(wxVERTICAL)
-            sizer.Add(self.name_prop.panel, 0, wxEXPAND)
-            sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
+            sizer = wx.BoxSizer(wx.VERTICAL)
+            sizer.Add(self.name_prop.panel, 0, wx.EXPAND)
+            sizer.Add(self.klass_prop.panel, 0, wx.EXPAND)
             page.SetAutoLayout(1)
             page.SetSizer(sizer)
-        sizer.Add(self.properties['menus'].panel, 0, wxALL|wxEXPAND, 3)
+        sizer.Add(self.properties['menus'].panel, 0, wx.ALL|wx.EXPAND, 3)
         sizer.Fit(page)
         page.SetSize(self.notebook.GetClientSize())
         sizer.Layout()
@@ -606,9 +606,9 @@ class EditMenuBar(EditBase, PreviewMixin):
                 if misc.streq(item.name, '---'): # item is a separator
                     menu.AppendSeparator()
                 elif item.children:
-                    m = wxMenu()
+                    m = wx.Menu()
                     append(m, item.children)
-                    menu.AppendMenu(wxNewId(), misc.wxstr(item.label), m,
+                    menu.AppendMenu(wx.NewId(), misc.wxstr(item.label), m,
                                     misc.wxstr(item.help_str))
                 else:
                     check_radio = 0
@@ -623,11 +623,11 @@ class EditMenuBar(EditBase, PreviewMixin):
                                 check_radio = 2
                         except:
                             check_radio = 0
-                    menu.Append(wxNewId(), misc.wxstr(item.label),
+                    menu.Append(wx.NewId(), misc.wxstr(item.label),
                                 misc.wxstr(item.help_str), check_radio)
         first = self._mb.GetMenuCount()
         for menu in self.menus:
-            m = wxMenu()
+            m = wx.Menu()
             append(m, menu.root.children)
             if first:
                 self._mb.Replace(0, m, misc.wxstr(menu.root.label))
@@ -638,14 +638,14 @@ class EditMenuBar(EditBase, PreviewMixin):
     def remove(self, *args, **kwds):
         if self.parent is not None:
             self.parent.properties['menubar'].set_value(0)
-            if kwds.get('gtk_do_nothing', False) and wxPlatform == '__WXGTK__':
+            if kwds.get('gtk_do_nothing', False) and wx.Platform == '__WXGTK__':
                 # workaround to prevent some segfaults on GTK: unfortunately,
                 # I'm not sure that this works in all cases, and moreover it
                 # could probably leak some memory (but I'm not sure)
                 self.widget = None
             else:
                 if self.parent.widget:
-                    if wxPlatform == '__WXGTK__' and \
+                    if wx.Platform == '__WXGTK__' and \
                            not misc.check_wx_version(2, 5):
                         self.widget.Reparent(EditMenuBar.__hidden_frame)
                         self.widget.Hide()
@@ -661,7 +661,7 @@ class EditMenuBar(EditBase, PreviewMixin):
             return # do nothing in this case
         if self.widget:
             if not self._rmenu:
-                REMOVE_ID, HIDE_ID = [wxNewId() for i in range(2)]
+                REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
                 misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
                                  'remove.xpm')
@@ -721,7 +721,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                     cm = self.curr_menu[-1]
                     cm[0].children.append(node)
                     node.parent = cm[0]
-                    menu = wxMenu()
+                    menu = wx.Menu()
                     self.curr_menu.append( (node, menu) )
                 elif name == 'item':
                     self.curr_item = MenuTree.Node()
@@ -761,9 +761,9 @@ def builder(parent, sizer, pos, number=[0]):
     """\
     factory function for EditMenuBar objects.
     """
-    class Dialog(wxDialog):
+    class Dialog(wx.Dialog):
         def __init__(self):
-            wxDialog.__init__(self, None, -1, 'Select menubar class')
+            wx.Dialog.__init__(self, None, -1, 'Select menubar class')
             if common.app_tree.app.get_language().lower() == 'xrc':
                 self.klass = 'wxMenuBar'
             else:
@@ -771,12 +771,12 @@ def builder(parent, sizer, pos, number=[0]):
                 else: self.klass = 'MyMenuBar%s' % number[0]
                 number[0] += 1
             klass_prop = TextProperty(self, 'class', self)
-            szr = wxBoxSizer(wxVERTICAL)
-            szr.Add(klass_prop.panel, 0, wxEXPAND)
-            sz2 = wxBoxSizer(wxHORIZONTAL)
-            sz2.Add(wxButton(self, wxID_OK, 'OK'), 0, wxALL, 3)
-            sz2.Add(wxButton(self, wxID_CANCEL, 'Cancel'), 0, wxALL, 3)
-            szr.Add(sz2, 0, wxALL|wxALIGN_CENTER, 3)
+            szr = wx.BoxSizer(wx.VERTICAL)
+            szr.Add(klass_prop.panel, 0, wx.EXPAND)
+            sz2 = wx.BoxSizer(wx.HORIZONTAL)
+            sz2.Add(wx.Button(self, wx.ID_OK, 'OK'), 0, wx.ALL, 3)
+            sz2.Add(wx.Button(self, wx.ID_CANCEL, 'Cancel'), 0, wx.ALL, 3)
+            szr.Add(sz2, 0, wx.ALL|wx.ALIGN_CENTER, 3)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
@@ -794,7 +794,7 @@ def builder(parent, sizer, pos, number=[0]):
     # end of inner class
 
     dialog = Dialog()
-    if dialog.ShowModal() == wxID_CANCEL:
+    if dialog.ShowModal() == wx.ID_CANCEL:
         # cancel the operation
         dialog.undo()
         dialog.Destroy()
@@ -832,7 +832,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 def initialize():
     """\
-    initialization function for the module: returns a wxBitmapButton to be
+    initialization function for the module: returns a wx.BitmapButton to be
     added to the main palette.
     """
     cwx = common.widgets_from_xml
