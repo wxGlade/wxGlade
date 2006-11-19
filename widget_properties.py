@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.55 2006/05/13 08:11:20 agriggio Exp $
+# $Id: widget_properties.py,v 1.56 2006/11/19 15:58:57 guyru Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -326,14 +326,20 @@ class CheckListProperty(Property):
     """\
     Properties whose values can be changed by a list of checkboxes.
     """
-    def __init__(self, owner, name, parent=None, labels=None, writer=None):
-        # labels: list of names of the labels of the checkboxes; a
-        # label that begins with the string "#section#" is used as the
-        # title of a static box that encloses the checkboxes that
-        # follow
+    def __init__(self, owner, name, parent=None, labels=None, writer=None,tooltips=None):
+	"""
+        @type labels: list of strings
+	@param labels: list of names of the labels of the checkboxes; a
+         label that begins with the string "#section#" is used as the
+         title of a static box that encloses the checkboxes that
+         follow
+	@type tooltips: tuple of strings
+	@param tooltips: a list of strings to be displayed as the tool-tips for the properties
+	"""
         Property.__init__(self, owner, name, parent)
         self.values = owner[name][0]()
         self.labels = labels
+	self.tooltips = tooltips
         # the writer param is a function to customize the generation of the xml
         # for this property
         self.writer = writer
@@ -372,6 +378,12 @@ class CheckListProperty(Property):
 
         for i in range(len(self.values)):
             self.choices[i].SetValue(self.values[i])
+	    
+	#Set the tool-tips for the properties
+	if self.tooltips is not None:
+		for i in range(len(self.tooltips)):
+			if i >= len(self.choices): break
+			self.choices[i].SetToolTip(wxToolTip(self.tooltips[i]))
                   
 ##         self.panel.SetSizer(tmp_sizer)
 ##         self.panel.SetSize(tmp_sizer.GetMinSize())
