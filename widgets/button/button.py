@@ -1,5 +1,5 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.19 2006/11/07 15:06:26 jkt Exp $
+# $Id: button.py,v 1.20 2006/11/19 16:00:22 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -33,11 +33,19 @@ class EditButton(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
         self.style_pos = (wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP, wx.BU_BOTTOM,
-            wx.BU_EXACTFIT)
+            wx.BU_EXACTFIT,wxNO_BORDER)
         style_labels = ('#section#Style', 'wxBU_LEFT', 'wxBU_RIGHT', 
-            'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT') 
+            'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT','wxNO_BORDER')
+	
+	#The tooltips tuple
+        style_tooltips=("Left-justifies the label. Windows and GTK+ only.",
+            "Right-justifies the bitmap label. Windows and GTK+ only.",
+	    "Aligns the label to the top of the button. Windows and GTK+ only.",
+            "Aligns the label to the bottom of the button. Windows and GTK+ only.",
+	    "Creates the button as small as possible instead of making it of the standard size (which is the default behaviour ).",
+	    "Creates a flat button. Windows and GTK+ only.")
         self.properties['style'] = CheckListProperty(self, 'style', None,
-            style_labels)
+            style_labels, tooltips=style_tooltips) #the tooltips tuple is passed as the last argument
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
