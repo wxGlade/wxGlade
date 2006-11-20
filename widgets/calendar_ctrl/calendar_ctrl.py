@@ -1,5 +1,5 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.8 2006/11/11 07:38:49 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.9 2006/11/20 20:11:55 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -38,14 +38,21 @@ class EditCalendarCtrl(ManagedBase):
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
-        style_labels = ('#section#Style', 'CAL_SUNDAY_FIRST', 'CAL_MONDAY_FIRST', 
-            'CAL_SHOW_HOLIDAYS', 'CAL_NO_YEAR_CHANGE', 'CAL_NO_MONTH_CHANGE',
-            'CAL_SHOW_SURROUNDING_WEEKS','CAL_SEQUENTIAL_MONTH_SELECTION')
+        style_labels = ('#section#Style', 'wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST', 
+            'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE', 'wxCAL_NO_MONTH_CHANGE',
+            'wxCAL_SHOW_SURROUNDING_WEEKS','wxCAL_SEQUENTIAL_MONTH_SELECTION')
         self.style_pos = (CAL_SUNDAY_FIRST, CAL_MONDAY_FIRST, 
             CAL_SHOW_HOLIDAYS, CAL_NO_YEAR_CHANGE, CAL_NO_MONTH_CHANGE,
             CAL_SHOW_SURROUNDING_WEEKS, CAL_SEQUENTIAL_MONTH_SELECTION)
+	self.tooltips=("Show Sunday as the first day in the week",
+			"Show Monday as the first day in the week",
+			"Highlight holidays in the calendar",
+			"Disable the year changing",
+			"Disable the month (and, implicitly, the year) changing",
+			"Show the neighbouring weeks in the previous and next months",
+			"Use alternative, more compact, style for the month and year selection controls.")
         self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)
+                                                     style_labels,tooltips=self.tooltips)
         
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
