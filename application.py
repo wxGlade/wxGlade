@@ -1,12 +1,13 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.54 2006/05/06 11:20:51 agriggio Exp $
+# $Id: application.py,v 1.55 2006/11/20 23:45:38 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+#from wxPython.wx import *
+import wx
 from widget_properties import *
 from tree import Tree, WidgetTree
 import common, math, misc, os, config
@@ -25,7 +26,7 @@ class FileDirDialog:
         self.file_message = file_message
         self.dir_message = dir_message
         self.file_style = style
-        self.dir_style = wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON
+        self.dir_style = wx.DD_DEFAULT_STYLE|wx.DD_NEW_DIR_BUTTON
 ##         self.file_dialog = wxFileDialog(parent, file_message, self.prev_dir,
 ##                                         wildcard=wildcard, style=style)
 ##         if dir_message is None: dir_message = file_message
@@ -66,8 +67,8 @@ class FileDirDialog:
             self.prev_dir = self.value
             if not os.path.isdir(self.prev_dir):
                 self.prev_dir = os.path.dirname(self.prev_dir)
-            return wxID_OK
-        return wxID_CANCEL
+            return wx.ID_OK
+        return wx.ID_CANCEL
 
     def get_value(self):
 ##         if self.owner.codegen_opt == 0: return self.file_dialog.GetPath()
@@ -93,16 +94,16 @@ class Application(object):
     """
     def __init__(self, property_window):
         self.property_window = property_window
-        self.notebook = wxNotebook(self.property_window, -1)
+        self.notebook = wx.Notebook(self.property_window, -1)
         if not misc.check_wx_version(2, 5, 2):
-            nb_sizer = wxNotebookSizer(self.notebook)
+            nb_sizer = wx.NotebookSizer(self.notebook)
             self.notebook.sizer = nb_sizer
         else:
             self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
-        #panel = wxPanel(self.notebook, -1)
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
+        #panel = wx.Panel(self.notebook, -1)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
         self.name = "app" # name of the wxApp instance to generate
         self.__saved = True # if True, there are no changes to save
         self.__filename = None # name of the output xml file
@@ -119,7 +120,7 @@ class Application(object):
         def set_output_path(value): self.output_path = value
         self.use_gettext = False
         def set_use_gettext(value): self.use_gettext = bool(int(value))
-        self.for_version = wxVERSION_STRING[:3]
+        self.for_version = wx.VERSION_STRING[:3]
         def set_for_version(value):
             self.for_version = self.for_version_prop.get_str_value()
         self.access_functions = {
@@ -134,8 +135,8 @@ class Application(object):
             }
         self.use_gettext_prop = CheckBoxProperty(self, "use_gettext", panel,
                                                  "Enable gettext support")
-        TOP_WIN_ID = wxNewId()
-        self.top_win_prop = wxChoice(panel, TOP_WIN_ID, choices=[],
+        TOP_WIN_ID = wx.NewId()
+        self.top_win_prop = wx.Choice(panel, TOP_WIN_ID, choices=[],
                                      size=(1, -1))
         self.top_window = '' # name of the top window of the generated app
 
@@ -157,7 +158,7 @@ class Application(object):
         wildcard.append('All files|*')
         dialog = FileDirDialog(self, panel, '|'.join(wildcard),
                                "Select output file", "Select output directory",
-                               wxSAVE|wxOVERWRITE_PROMPT)
+                               wx.SAVE|wx.OVERWRITE_PROMPT)
 
 ##         # this "columns-stuff" is to fix a bug (of at least wxGTK)
         _writers = common.code_writers.keys()
@@ -193,29 +194,30 @@ class Application(object):
 
         self.outpath_prop = DialogProperty(self, "output_path", panel,
                                            dialog)
-        BTN_ID = wxNewId()
-        btn = wxButton(panel, BTN_ID, "Generate code")
+        BTN_ID = wx.NewId()
+        btn = wx.Button(panel, BTN_ID, "Generate code")
 
         # layout of self.notebook
-        sizer = wxBoxSizer(wxVERTICAL)
-        sizer.Add(self.name_prop.panel, 0, wxEXPAND)
-        sizer.Add(self.klass_prop.panel, 0, wxEXPAND)
-        sizer.Add(self.encoding_prop.panel, 0, wxEXPAND)
-        sizer.Add(self.use_gettext_prop.panel, 0, wxEXPAND)
-        szr = wxBoxSizer(wxHORIZONTAL)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.name_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.klass_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.encoding_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.use_gettext_prop.panel, 0, wx.EXPAND)
+        szr = wx.BoxSizer(wx.HORIZONTAL)
         from widget_properties import _label_initial_width as _w
-        label = wxGenStaticText(panel, -1, "Top window", size=(_w, -1))
-        label.SetToolTip(wxToolTip("Top window"))
-        szr.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
-        szr.Add(self.top_win_prop, 5, wxALL|wxALIGN_CENTER, 3)
-        sizer.Add(szr, 0, wxEXPAND)
-        sizer.Add(self.codegen_prop.panel, 0, wxALL|wxEXPAND, 4)
-        sizer.Add(self.codewriters_prop.panel, 0, wxALL|wxEXPAND, 4)
-        sizer.Add(self.for_version_prop.panel, 0, wxALL|wxEXPAND, 4)
-        sizer.Add(self.use_new_namespace_prop.panel, 0, wxEXPAND)
-        sizer.Add(self.overwrite_prop.panel, 0, wxEXPAND)
-        sizer.Add(self.outpath_prop.panel, 0, wxEXPAND)
-        sizer.Add(btn, 0, wxALL|wxEXPAND, 5)
+        #label = wxGenStaticText(panel, -1, "Top window", size=(_w, -1))
+        label = wxStaticText(panel, -1, "Top window", size=(_w, -1)) # ???
+        label.SetToolTip(wx.ToolTip("Top window"))
+        szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
+        szr.Add(self.top_win_prop, 5, wx.ALL|wx.ALIGN_CENTER, 3)
+        sizer.Add(szr, 0, wx.EXPAND)
+        sizer.Add(self.codegen_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
+        sizer.Add(self.codewriters_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
+        sizer.Add(self.for_version_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
+        sizer.Add(self.use_new_namespace_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.overwrite_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.outpath_prop.panel, 0, wx.EXPAND)
+        sizer.Add(btn, 0, wx.ALL|wx.EXPAND, 5)
         
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer)
@@ -264,7 +266,7 @@ class Application(object):
     def set_encoding(self, value):
         try: unicode('a', value)
         except LookupError, e:
-            wxMessageBox(str(e), "Error", wxOK|wxCENTRE|wxICON_ERROR)
+            wx.MessageBox(str(e), "Error", wx.OK|wx.CENTRE|wx.ICON_ERROR)
             self.encoding_prop.set_value(self.encoding)
         else:
             self.encoding = value
@@ -318,7 +320,7 @@ class Application(object):
     def remove_top_window(self, name):
         index = self.top_win_prop.FindString("%s" % name)
         if index != -1:
-            if wxPlatform == '__WXGTK__':
+            if wx.Platform == '__WXGTK__':
                 choices = [ self.top_win_prop.GetString(i) for i in \
                             range(self.top_win_prop.GetCount()) if i != index ]
                 self.top_win_prop.Clear()
@@ -332,7 +334,7 @@ class Application(object):
         if index != -1:
             if self.top_window == oldname:
                 self.top_window = newname
-            if wxPlatform == '__WXGTK__':
+            if wx.Platform == '__WXGTK__':
                 sel_index = self.top_win_prop.GetSelection()
                 choices = [ self.top_win_prop.GetString(i) for i in \
                             range(self.top_win_prop.GetCount()) ]
@@ -365,9 +367,11 @@ class Application(object):
         
     def show_properties(self, *args):
         sizer_tmp = self.property_window.GetSizer()
-        sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
-        child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
-        w = wxPyTypeCast(child.GetWindow(), "wxWindow")
+        #sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer") with 2.6 should not be necessary see http://www.wxpython.org/MigrationGuide.html
+        #child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
+        child = sizer_tmp.GetChildren()[0]
+        #w = wxPyTypeCast(child.GetWindow(), "wxWindow")
+        w = child.GetWindow()
         if w is self.notebook: return
         w.Hide()
 
@@ -387,16 +391,16 @@ class Application(object):
     def generate_code(self, *args, **kwds):
         preview = kwds.get('preview', False)
         if not self.output_path:
-            return wxMessageBox("You must specify an output file\n"
+            return wx.MessageBox("You must specify an output file\n"
                                 "before generating any code", "Error",
-                                wxOK|wxCENTRE|wxICON_EXCLAMATION,
+                                wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION,
                                 self.notebook)
         if not preview and \
                ((self.name_prop.is_active() or self.klass_prop.is_active()) \
                 and self.top_win_prop.GetSelection() < 0):
-            return wxMessageBox("Please select a top window "
-                                "for the application", "Error", wxOK |
-                                wxCENTRE | wxICON_EXCLAMATION, self.notebook)
+            return wx.MessageBox("Please select a top window "
+                                "for the application", "Error", wx.OK |
+                                wx.CENTRE | wx.ICON_EXCLAMATION, self.notebook)
                 
         from cStringIO import StringIO
         out = StringIO()
@@ -423,22 +427,22 @@ class Application(object):
                 common.code_writers[cw].use_new_namespace = old
                 self.overwrite = overwrite
         except (IOError, OSError), msg:
-            wxMessageBox("Error generating code:\n%s" % msg, "Error",
-                         wxOK|wxCENTRE|wxICON_ERROR)
+            wx.MessageBox("Error generating code:\n%s" % msg, "Error",
+                         wx.OK|wx.CENTRE|wx.ICON_ERROR)
         except Exception, msg:
             import traceback; traceback.print_exc()
-            wxMessageBox("An exception occurred while generating the code "
+            wx.MessageBox("An exception occurred while generating the code "
                          "for the application.\n"
                          "This is the error message associated with it:\n"
                          "        %s\n"
                          "For more details, look at the full traceback "
                          "on the console.\nIf you think this is a wxGlade bug,"
                          " please report it." % msg, "Error",
-                         wxOK|wxCENTRE|wxICON_ERROR)
+                         wx.OK|wx.CENTRE|wx.ICON_ERROR)
         else:
             if not preview:
-                wxMessageBox("Code generation completed successfully",
-                             "Information", wxOK|wxCENTRE|wxICON_INFORMATION)
+                wx.MessageBox("Code generation completed successfully",
+                             "Information", wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
 
     def get_name(self):
         if self.name_prop.is_active(): return self.name
@@ -489,20 +493,20 @@ class Application(object):
             self.generate_code(preview=True)
             # dynamically import the generated module
             FrameClass = misc.import_name(self.output_path, widget.klass)
-            if issubclass(FrameClass, wxMDIChildFrame):
-                frame = wxMDIParentFrame(None, -1, '')
+            if issubclass(FrameClass, wx.MDIChildFrame):
+                frame = wx.MDIParentFrame(None, -1, '')
                 child = FrameClass(frame, -1, '')
                 child.SetTitle('<Preview> - ' + child.GetTitle())
                 w, h = child.GetSize()
                 frame.SetClientSize((w+20, h+20))
-            elif not (issubclass(FrameClass, wxFrame) or
-                      issubclass(FrameClass, wxDialog)):
+            elif not (issubclass(FrameClass, wx.Frame) or
+                      issubclass(FrameClass, wx.Dialog)):
                 # the toplevel class isn't really toplevel, add a frame...
-                frame = wxFrame(None, -1, widget_class_name)
-                if issubclass(FrameClass, wxMenuBar):
+                frame = wx.Frame(None, -1, widget_class_name)
+                if issubclass(FrameClass, wx.MenuBar):
                     menubar = FrameClass()
                     frame.SetMenuBar(menubar)
-                elif issubclass(FrameClass, wxToolBar):
+                elif issubclass(FrameClass, wx.ToolBar):
                     toolbar = FrameClass(frame, -1)
                     frame.SetToolBar(toolbar)
                 else:
@@ -512,7 +516,7 @@ class Application(object):
                 frame = FrameClass(None, -1, '')
                 # make sure we don't get a modal dialog...
                 s = frame.GetWindowStyleFlag()
-                frame.SetWindowStyleFlag(s & ~wxDIALOG_MODAL)
+                frame.SetWindowStyleFlag(s & ~wx.DIALOG_MODAL)
             def on_close(event):
                 frame.Destroy()
                 widget.preview_widget = None
@@ -531,8 +535,8 @@ class Application(object):
             #traceback.print_exc()
             widget.preview_widget = None
             widget.preview_button.SetLabel('Preview')
-            wxMessageBox("Problem previewing gui: %s" % str(e), "Error",
-                         wxOK|wxCENTRE|wxICON_EXCLAMATION, self.notebook)
+            wx.MessageBox("Problem previewing gui: %s" % str(e), "Error",
+                         wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION, self.notebook)
         # restore app state
         widget.klass = widget_class_name
         self.output_path = real_path
