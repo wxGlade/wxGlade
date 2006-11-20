@@ -1,16 +1,19 @@
 # about.py: about box with general info
-# $Id: about.py,v 1.21 2005/05/06 21:48:26 agriggio Exp $
+# $Id: about.py,v 1.22 2006/11/20 22:08:19 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
-from wxPython.html import *
-import wxPython.lib.wxpTag
+#from wxPython.wx import *
+import wx
+#from wxPython.html import *
+import wx.html
+#import wxPython.lib.wxpTag
+import wx.lib.wxpTag
 import common, misc, os.path, sys
 
-class wxGladeAboutBox(wxDialog):
+class wxGladeAboutBox(wx.Dialog):
     text = '''
     <html>
     <body bgcolor="%s">
@@ -43,39 +46,39 @@ class wxGladeAboutBox(wxDialog):
     '''
 
     def __init__(self, parent=None):
-        wxDialog.__init__(self, parent, -1, 'About wxGlade')
-        class HtmlWin(wxHtmlWindow):
+        wx.Dialog.__init__(self, parent, -1, 'About wxGlade')
+        class HtmlWin(wx.html.HtmlWindow):
             def OnLinkClicked(self, linkinfo):
                 href = linkinfo.GetHref()
                 if href == 'show_license':
-                    from wxPython.lib.dialogs import wxScrolledMessageDialog
+                    from wx.lib.dialogs import ScrolledMessageDialog
                     try:
                         license = open(os.path.join(common.wxglade_path,
                                                     'license.txt'))
-                        dlg = wxScrolledMessageDialog(self, license.read(),
+                        dlg = ScrolledMessageDialog(self, license.read(),
                                                       "wxGlade - License")
                         license.close()
                         dlg.ShowModal()
                         dlg.Destroy()
                     except IOError:
-                        wxMessageBox("Can't find the license!\n"
+                        wx.MessageBox("Can't find the license!\n"
                                      "You can get a copy at \n"
                                      "http://www.opensource.org/licenses/"
                                      "mit-license.php", "Error",
-                                     wxOK|wxCENTRE|wxICON_EXCLAMATION)
+                                     wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
                 elif href == 'show_credits':
-                    from wxPython.lib.dialogs import wxScrolledMessageDialog
+                    from wx.lib.dialogs import ScrolledMessageDialog
                     try:
                         credits = open(os.path.join(common.wxglade_path,
                                                     'credits.txt'))
-                        dlg = wxScrolledMessageDialog(self, credits.read(),
+                        dlg = ScrolledMessageDialog(self, credits.read(),
                                                       "wxGlade - Credits")
                         credits.close()
                         dlg.ShowModal()
                         dlg.Destroy()
                     except IOError:
-                        wxMessageBox("Can't find the credits file!\n", "Oops!",
-                                     wxOK|wxCENTRE|wxICON_EXCLAMATION)
+                        wx.MessageBox("Can't find the credits file!\n", "Oops!",
+                                     wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
                 else:
                     import webbrowser
                     webbrowser.open(linkinfo.GetHref(), new=True)
@@ -92,19 +95,19 @@ class wxGladeAboutBox(wxDialog):
         html.SetPage(self.text % (bgcolor, icon_path, common.version,
                                   py_version, wx.__version__))
         ir = html.GetInternalRepresentation()
-        ir.SetIndent(0, wxHTML_INDENT_ALL)
+        ir.SetIndent(0, wx.html.HTML_INDENT_ALL)
         html.SetSize((ir.GetWidth(), ir.GetHeight()))
-        szr = wxBoxSizer(wxVERTICAL)
-        szr.Add(html, 0, wxTOP|wxALIGN_CENTER, 10)
-        szr.Add(wxStaticLine(self, -1), 0, wxLEFT|wxRIGHT|wxEXPAND, 20)
-        szr2 = wxBoxSizer(wxHORIZONTAL)
-        btn = wxButton(self, wxID_OK, "OK")
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(html, 0, wx.TOP|wx.ALIGN_CENTER, 10)
+        szr.Add(wx.StaticLine(self, -1), 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
+        szr2 = wx.BoxSizer(wx.HORIZONTAL)
+        btn = wx.Button(self, wx.ID_OK, "OK")
         btn.SetDefault()
         szr2.Add(btn)
-        if wxPlatform == '__WXGTK__':
+        if wx.Platform == '__WXGTK__':
             extra_border = 5 # border around a default button
         else: extra_border = 0
-        szr.Add(szr2, 0, wxALL|wxALIGN_RIGHT, 20 + extra_border)
+        szr.Add(szr2, 0, wx.ALL|wx.ALIGN_RIGHT, 20 + extra_border)
         self.SetAutoLayout(True)
         self.SetSizer(szr)
         szr.Fit(self)
@@ -116,8 +119,8 @@ class wxGladeAboutBox(wxDialog):
 
 
 if __name__ == '__main__':
-    wxInitAllImageHandlers()
-    app = wxPySimpleApp()
+    wx.InitAllImageHandlers()
+    app = wx.PySimpleApp()
     d = wxGladeAboutBox()
     app.SetTopWindow(d)
     d.ShowModal()
