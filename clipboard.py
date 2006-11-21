@@ -1,23 +1,23 @@
 # clipboard.py: support for cut & paste of wxGlade widgets
-# $Id: clipboard.py,v 1.13 2005/05/06 21:48:26 agriggio Exp $
+# $Id: clipboard.py,v 1.14 2006/11/21 22:54:16 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
-
+#from wxPython.wx import *
+import wx
 
 # Format used by wxGlade for the clipboard.
-_widget_data_format = wxCustomDataFormat("wxglade_widget")
+_widget_data_format = wx.CustomDataFormat("wxglade_widget")
 
 
-class _WidgetDataObject(wxCustomDataObject):
+class _WidgetDataObject(wx.CustomDataObject):
     """\
     Object representig a widget in the clipboard.
     """
     def __init__(self, *args):
-        wxCustomDataObject.__init__(self, _widget_data_format)
+        wx.CustomDataObject.__init__(self, _widget_data_format)
         if args:
             data = apply(self._widget2repr, args)
             self.SetData(data)
@@ -56,16 +56,16 @@ def copy(widget):
     flag = widget.get_int_flag() 
     option = widget.get_option()
     border = widget.get_border()
-    if wxTheClipboard.Open():
+    if wx.TheClipboard.Open():
         try:
             wdo = _WidgetDataObject(option, flag, border,
                                     xml_str.getvalue())
-            if not wxTheClipboard.SetData(wdo):
+            if not wx.TheClipboard.SetData(wdo):
                 print "Data can't be copied to clipboard."
                 return False
             return True
         finally:
-            wxTheClipboard.Close()
+            wx.TheClipboard.Close()
     else:
         print "Clipboard can't be opened."
         return False
@@ -89,17 +89,17 @@ def paste(parent, sizer, pos):
     destination (parent, sizer and position inside the sizer)
     returns True if there was something to paste, False otherwise.
     """
-    if wxTheClipboard.Open():
+    if wx.TheClipboard.Open():
         try:
-            if wxTheClipboard.IsSupported(_widget_data_format):
+            if wx.TheClipboard.IsSupported(_widget_data_format):
                 wdo = _WidgetDataObject()
-                if not wxTheClipboard.GetData(wdo):
+                if not wx.TheClipboard.GetData(wdo):
                     print "Data can't be copied from clipboard."
                     return False
             else:
                 return False
         finally:
-            wxTheClipboard.Close()
+            wx.TheClipboard.Close()
     else:
         print "Clipboard can't be opened."
         return False
@@ -118,15 +118,15 @@ def paste(parent, sizer, pos):
 # 2004-02-19 ALB: D&D support (thanks to Chris Liechti)
 #-----------------------------------------------------------------------------
 
-class FileDropTarget(wxFileDropTarget):
+class FileDropTarget(wx.FileDropTarget):
     def __init__(self, parent):
-        wxFileDropTarget.__init__(self)
+        wx.FileDropTarget.__init__(self)
         self.parent = parent
 
     def OnDropFiles(self, x, y, filenames):
         if len(filenames) > 1:
-            wxMessageBox("Please only drop one file at a time",
-                "wxGlade", wxICON_ERROR)
+            wx.MessageBox("Please only drop one file at a time",
+                "wxGlade", wx.ICON_ERROR)
         elif filenames:
             path = filenames[0]
             if self.parent.ask_save(): 
