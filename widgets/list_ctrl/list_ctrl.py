@@ -1,5 +1,5 @@
 # text_ctrl.py: wxListCtrl objects
-# $Id: list_ctrl.py,v 1.11 2006/11/16 15:26:29 guyru Exp $
+# $Id: list_ctrl.py,v 1.12 2006/11/22 16:33:31 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -68,8 +68,32 @@ class EditListCtrl(ManagedBase):
                         'wxRAISED_BORDER', 'wxSTATIC_BORDER', 'wxNO_BORDER',
                         'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
                         'wxFULL_REPAINT_ON_RESIZE')
+	self.style_tooltips = ("Multicolumn list view, with optional small icons. Columns are computed automatically, i.e. you don't set columns as in wxLC_REPORT. In other words, the list wraps, unlike a wxListBox.",
+				"Single or multicolumn report view, with optional header.",
+				"Large icon view, with optional labels.",
+				"The application provides items text on demand. May only be used with wxLC_REPORT.",
+				"Small icon view, with optional labels.",
+				"Icons align to the top. Win32 default, Win32 only.",
+				"Icons align to the left.",
+				"Icons arrange themselves. Win32 only.",
+				"Labels are editable: the application will be notified when editing starts.",
+				"No header in report mode.",
+				"Single selection (default is multiple).",
+				"Sort in ascending order (must still supply a comparison callback in SortItems.",
+				"Sort in descending order (must still supply a comparison callback in SortItems.",
+				"Draws light horizontal rules between rows in report mode.",
+				"Draws light vertical rules between columns in report mode",
+				"Displays a thin border around the window. wxBORDER is the old name for this style.",
+				"Displays a double border. Windows and Mac only.",
+				"Displays a sunken border.",
+				"Displays a raised border.",
+				"Displays a border suitable for a static control. Windows only.",
+				"Displays no border, overriding the default border style for the window.",
+				"Use this to indicate that the window wants to get all char/key events for all keys - even for keys like TAB or ENTER which are usually used for dialog navigation and which wouldn't be generated without this style. If you need to use this style in order to get the arrows or etc., but would still like to have normal keyboard navigation take place, you should create and send a wxNavigationKeyEvent in response to the key events for Tab and Shift-Tab.",
+				"On Windows, this style used to disable repainting the window completely when its size is changed. Since this behaviour is now the default, the style is now obsolete and no longer has an effect.",
+				"Use this style to force a complete redraw of the window whenever it is resized instead of redrawing just the part of the window affected by resizing. Note that this was the behaviour by default before 2.5.1 release and that if you experience redraw problems with code which previously used to work you may want to try this. Currently this style applies on GTK+ 2 and Windows only, and full repainting is always done on other platforms.")
         self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)
+                                                     style_labels, tooltips=self.style_tooltips)
 
     def create_widget(self):
         self.widget = wx.ListCtrl(self.parent.widget, self.id,

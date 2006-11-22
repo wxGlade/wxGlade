@@ -1,5 +1,5 @@
 # list_box.py: wxListBox objects
-# $Id: list_box.py,v 1.18 2006/11/14 23:14:13 jkt Exp $
+# $Id: list_box.py,v 1.19 2006/11/22 16:33:31 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -43,8 +43,15 @@ class EditListBox(ManagedBase):
         style_labels  = ('#section#Style', 'wxLB_SINGLE', 'wxLB_MULTIPLE',
                          'wxLB_EXTENDED', 'wxLB_HSCROLL', 'wxLB_ALWAYS_SB',
                          'wxLB_NEEDED_SB', 'wxLB_SORT')
+	self.style_tooltips = ('Single-selection list.',
+				'Multiple-selection list: the user can toggle multiple items on and off.',
+				'Extended-selection list: the user can select multiple items using the SHIFT key and the mouse or special key combinations.',
+				'Create horizontal scrollbar if contents are too wide (Windows only).',
+				'Always show a vertical scrollbar.',
+				'Only create a vertical scrollbar if needed.',
+				'The listbox contents are sorted in alphabetical order.')
         self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)
+                                                     style_labels, tooltips=self.style_tooltips)
         
     def create_widget(self):
         self.widget = wx.ListBox(self.parent.widget, self.id,
