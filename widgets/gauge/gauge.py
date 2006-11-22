@@ -1,5 +1,5 @@
 # gauge.py: wxGauge objects
-# $Id: gauge.py,v 1.8 2006/11/07 15:06:26 jkt Exp $
+# $Id: gauge.py,v 1.9 2006/11/22 16:33:30 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -29,7 +29,11 @@ class EditGauge(ManagedBase):
                         'wxGA_PROGRESSBAR', 'wxGA_SMOOTH')
         self.style_pos = (wx.GA_HORIZONTAL, wx.GA_VERTICAL,
                           wx.GA_PROGRESSBAR, wx.GA_SMOOTH)
-        prop['style'] = CheckListProperty(self, 'style', None, style_labels)
+	self.tooltips = ("Creates a horizontal gauge.",
+			 "Creates a vertical gauge.",
+			 "Under Windows 95, creates a horizontal progress bar.",
+			 "Creates smooth progress bar with one pixel wide update step (not supported by all platforms).")
+        prop['style'] = CheckListProperty(self, 'style', None, style_labels,tooltips=self.tooltips)
         prop['range'] = SpinProperty(self, 'range', None)
 
     def create_widget(self):
