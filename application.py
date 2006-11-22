@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.55 2006/11/20 23:45:38 dinogen Exp $
+# $Id: application.py,v 1.56 2006/11/22 21:17:00 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -366,12 +366,14 @@ class Application(object):
         self.use_new_namespace_prop.set_value(True)
         
     def show_properties(self, *args):
-        sizer_tmp = self.property_window.GetSizer()
-        #sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer") with 2.6 should not be necessary see http://www.wxpython.org/MigrationGuide.html
-        #child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
-        child = sizer_tmp.GetChildren()[0]
-        #w = wxPyTypeCast(child.GetWindow(), "wxWindow")
-        w = child.GetWindow()
+        if wx.__version__.startswith("2.6") :
+            sizer_tmp = self.property_window.GetSizer()
+            child = sizer_tmp.GetChildren()[0]
+            w = child.GetWindow()
+        else:
+            sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
+            child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
+            w = wxPyTypeCast(child.GetWindow(), "wxWindow")
         if w is self.notebook: return
         w.Hide()
 
