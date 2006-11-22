@@ -2,11 +2,11 @@ from ConfigParser import *
 import common, sys, os, os.path
 
 if common.use_gui:
-    from wxPython.wx import *
+    import wx
     import misc
 
     try:
-        wxFIXED_MINSIZE
+        wx.FIXED_MINSIZE
     except NameError:
         import configUI
         configUI.wxFIXED_MINSIZE = 0
@@ -17,7 +17,7 @@ if common.use_gui:
         def __init__(self, preferences):
             wxGladePreferencesUI.__init__(self, None, -1, "")
             
-            EVT_BUTTON(self, self.choose_widget_path.GetId(),
+            wx.EVT_BUTTON(self, self.choose_widget_path.GetId(),
                        self.on_widget_path)
     
             self.preferences = preferences
@@ -57,8 +57,8 @@ if common.use_gui:
                 # ALB 2004-10-27
                 self.use_kde_dialogs.SetValue(self.preferences.use_kde_dialogs)
             except Exception, e:
-                wxMessageBox('Error reading config file:\n%s' % e, 'Error',
-                             wxOK|wxCENTRE|wxICON_ERROR)
+                wx.MessageBox('Error reading config file:\n%s' % e, 'Error',
+                             wx.OK|wx.CENTRE|wx.ICON_ERROR)
     
         def set_preferences(self):
             prefs = self.preferences
@@ -101,8 +101,8 @@ if common.use_gui:
 ##                 self.local_widget_path.SetValue(dlg.GetPath())
 ##             dlg.Destroy()
             pth = misc.DirSelector("Choose a directory:", os.getcwd(),
-                                   style=wxDD_DEFAULT_STYLE |
-                                   wxDD_NEW_DIR_BUTTON)
+                                   style=wx.DD_DEFAULT_STYLE |
+                                   wx.DD_NEW_DIR_BUTTON)
             if pth:
                 self.local_widget_path.SetValue(pth)
 
@@ -129,7 +129,7 @@ def _get_appdatapath(default=common.wxglade_path):
 class Preferences(ConfigParser):
     _has_home = os.path.expanduser('~') != '~'
     _defaults = {
-        'use_menu_icons': common.use_gui and wxPlatform != '__WXGTK__',
+        'use_menu_icons': common.use_gui and wx.Platform != '__WXGTK__',
         'frame_tool_win': True,
         'open_save_path': _get_home(),
         'codegen_path': _get_home(),
@@ -242,9 +242,9 @@ def init_preferences():
 
 def edit_preferences():
     dialog = wxGladePreferences(preferences)
-    if dialog.ShowModal() == wxID_OK:
-        wxMessageBox('Changes will take effect after wxGlade is restarted',
-                     'Preferences saved', wxOK|wxCENTRE|wxICON_INFORMATION)
+    if dialog.ShowModal() == wx.ID_OK:
+        wx.MessageBox('Changes will take effect after wxGlade is restarted',
+                     'Preferences saved', wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
         dialog.set_preferences()
     dialog.Destroy()
 
