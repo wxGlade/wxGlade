@@ -1,5 +1,5 @@
 # datepicker_ctrl.py: wxDatePickerCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/datepicker_ctrl/datepicker_ctrl.py,v 1.2 2006/11/15 07:06:16 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/datepicker_ctrl/datepicker_ctrl.py,v 1.3 2006/11/22 15:11:20 guyru Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -35,8 +35,13 @@ class EditDatePickerCtrl(ManagedBase):
             'wxDP_DEFAULT', 'wxDP_ALLOWNONE', 'wxDP_SHOWCENTURY')
         self.style_pos = (wx.DP_SPIN, wx.DP_DROPDOWN, 
             wx.DP_DEFAULT, wx.DP_ALLOWNONE, wx.DP_SHOWCENTURY)
+	self.tooltips = ("Creates a control without a month calendar drop down but with spin-control-like arrows to change individual date components. This style is not supported by the generic version.",
+		"Creates a control with a month calendar drop-down part from which the user can select a date.",
+		"Creates a control with the style that is best supported for the current platform (currently wxDP_SPIN under Windows and wxDP_DROPDOWN elsewhere).",
+		"With this style, the control allows the user to not enter any valid date at all. Without it - the default - the control always has some valid date.",
+		"Forces display of the century in the default date format. Without this style the century could be displayed, or not, depending on the default date representation in the system.")
         self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)
+                                                     style_labels,tooltips=self.tooltips)
         
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size

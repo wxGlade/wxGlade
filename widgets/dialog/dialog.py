@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.27 2006/11/07 15:06:26 jkt Exp $
+# $Id: dialog.py,v 1.28 2006/11/22 15:11:20 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -32,6 +32,22 @@ class EditDialog(TopLevelBase):
                          'wxNO_FULL_REPAINT_ON_RESIZE',
                          'wxFULL_REPAINT_ON_RESIZE',
                          'wxCLIP_CHILDREN')
+	#note that the tooltips are only for wxPython>=2.5
+	self.tooltips = ("Equivalent to a combination of wxCAPTION, wxCLOSE_BOX and wxSYSTEM_MENU (the last one is not used under Unix)",
+		"NO DESCRIPTION",
+		"Puts a caption on the dialog box.",
+		"Display a resizeable frame around the window.",
+		"Display a system menu.",
+		"Displays a close box on the frame.",
+		"Displays a maximize box on the dialog.",
+		"Displays a minimize box on the dialog.",
+		"Display a thick frame around the window.",
+		"The dialog stays on top of all other windows.",
+		"Under Windows, specifies that the child controls should not have 3D borders unless specified in the control.",
+		"By default, a dialog created with a NULL parent window will be given the application's top level window as parent. Use this style to prevent this from happening and create an orphan dialog. This is not recommended for modal dialogs.",
+		"NO DESCRIPTION",
+		"NO DESCRIPTION",
+		"NO DESCRIPTION")		
         self.style_pos = (wx.DEFAULT_DIALOG_STYLE,
                           wx.DIALOG_MODAL, wx.CAPTION, wx.RESIZE_BORDER,
                           wx.SYSTEM_MENU)
@@ -41,7 +57,7 @@ class EditDialog(TopLevelBase):
                            wx.DIALOG_NO_PARENT, wx.NO_FULL_REPAINT_ON_RESIZE,
                            wx.FULL_REPAINT_ON_RESIZE,
                            wx.CLIP_CHILDREN)
-        prop['style'] = CheckListProperty(self, 'style', None, style_labels)
+        prop['style'] = CheckListProperty(self, 'style', None, style_labels, tooltips=self.tooltips)
         # icon property
         self.icon = ""
         self.access_functions['icon'] = (self.get_icon, self.set_icon)
