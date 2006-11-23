@@ -1,11 +1,11 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.84 2006/03/13 10:14:14 agriggio Exp $
+# $Id: edit_windows.py,v 1.85 2006/11/23 23:35:50 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+import wx
 from widget_properties import *
 from tree import Tree, WidgetTree
 import math, misc, common, sys, config
@@ -104,7 +104,7 @@ class EditBase(EventsMixin):
         otherwise we get a lot of memory leaks... :)
         """
         # first, destroy the popup menu...
-        if wxPlatform != '__WXMAC__':
+        if wx.Platform != '__WXMAC__':
             if self._rmenu: self._rmenu.Destroy()
         # ...then, destroy the property notebook...
         if self.notebook:
@@ -121,18 +121,18 @@ class EditBase(EventsMixin):
         """\
         Creates the notebook with the properties of self
         """
-        self.notebook = wxNotebook(self.property_window, -1)
+        self.notebook = wx.Notebook(self.property_window, -1)
 
         if not misc.check_wx_version(2, 5, 2):
-            nb_sizer = wxNotebookSizer(self.notebook)
+            nb_sizer = wx.NotebookSizer(self.notebook)
             self.notebook.sizer = nb_sizer
         else:
             self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
 
-        self._common_panel = panel = wxScrolledWindow(self.notebook, -1,
-                                                      style=wxTAB_TRAVERSAL)
+        self._common_panel = panel = wx.ScrolledWindow(self.notebook, -1,
+                                                      style=wx.TAB_TRAVERSAL)
 
         self.name_prop.display(panel)
         self.klass_prop.display(panel)
@@ -145,9 +145,9 @@ class EditBase(EventsMixin):
         if not config.preferences.allow_duplicate_names and \
                (self.widget and common.app_tree.has_name(value, self.node)):
             misc.wxCallAfter(
-                wxMessageBox, 'Name "%s" is already in use.\n'
+                wx.MessageBox, 'Name "%s" is already in use.\n'
                 'Please enter a different one.' % value, "Error",
-                wxOK|wxICON_ERROR)
+                wx.OK|wx.ICON_ERROR)
             self.name_prop.set_value(self.name)
             return
         if not re.match(self.set_name_pattern, value):
@@ -174,7 +174,7 @@ class EditBase(EventsMixin):
     def popup_menu(self, event):
         if self.widget:
             if not self._rmenu:
-                COPY_ID, REMOVE_ID, CUT_ID = [wxNewId() for i in range(3)]
+                COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
                 misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
                                  'remove.xpm')
@@ -345,8 +345,8 @@ class WindowBase(EditBase):
                                                self.set_foreground)
         # this is True if the user has selected a custom font
         self._font_changed = False
-        self.font = self._build_from_font(wxSystemSettings_GetSystemFont(
-            wxSYS_DEFAULT_GUI_FONT))
+        self.font = self._build_from_font(wx.SystemSettings_GetFont(
+            wx.SYS_DEFAULT_GUI_FONT))
         self.font[1] = 'default'
         
         self.access_functions['font'] = (self.get_font, self.set_font)
@@ -355,10 +355,10 @@ class WindowBase(EditBase):
         self.tooltip = ''
         self.access_functions['tooltip'] = (self.get_tooltip, self.set_tooltip)
 
-        min_x = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_X)
-        min_y = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_Y)
-        max_x = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_X)
-        max_y = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_Y)
+        min_x = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_X)
+        min_y = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_Y)
+        max_x = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_X)
+        max_y = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y)
 
         self._original = {'background': None, 'foreground': None,
                           'font': None}        
@@ -392,7 +392,7 @@ class WindowBase(EditBase):
         self._original['foreground'] = self.widget.GetForegroundColour()
         fnt = self.widget.GetFont()
         if not fnt.Ok():
-            fnt = wxSystemSettings_GetSystemFont(wxSYS_DEFAULT_GUI_FONT)
+            fnt = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
         self._original['font'] = fnt
         
         prop = self.properties
@@ -424,7 +424,7 @@ class WindowBase(EditBase):
 
         def on_key_down(event):
             evt_flags = 0
-            if event.ControlDown(): evt_flags = wxACCEL_CTRL
+            if event.ControlDown(): evt_flags = wx.ACCEL_CTRL
             evt_key = event.GetKeyCode()
             for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
@@ -435,10 +435,10 @@ class WindowBase(EditBase):
 
     def create_properties(self):
         EditBase.create_properties(self)
-        min_x = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_X)
-        min_y = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_Y)
-        max_x = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_X)
-        max_y = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_Y)
+        min_x = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_X)
+        min_y = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_Y)
+        max_x = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_X)
+        max_y = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y)
 
         panel = self._common_panel
             
@@ -457,19 +457,19 @@ class WindowBase(EditBase):
         prop['focused'].display(panel)
         prop['hidden'].display(panel)
 
-        sizer_tmp = wxBoxSizer(wxVERTICAL)
-        sizer_tmp.Add(self.name_prop.panel, 0, wxEXPAND)
-        sizer_tmp.Add(self.klass_prop.panel, 0, wxEXPAND)
-        sizer_tmp.Add(prop['id'].panel, 0, wxEXPAND)
-        sizer_tmp.Add(prop['size'].panel, 0, wxEXPAND)
-        sizer_tmp.Add(prop['background'].panel, 0, wxEXPAND)
-        sizer_tmp.Add(prop['foreground'].panel, 0, wxEXPAND)
-        try: sizer_tmp.Add(prop['font'].panel, 0, wxEXPAND)
+        sizer_tmp = wx.BoxSizer(wx.VERTICAL)
+        sizer_tmp.Add(self.name_prop.panel, 0, wx.EXPAND)
+        sizer_tmp.Add(self.klass_prop.panel, 0, wx.EXPAND)
+        sizer_tmp.Add(prop['id'].panel, 0, wx.EXPAND)
+        sizer_tmp.Add(prop['size'].panel, 0, wx.EXPAND)
+        sizer_tmp.Add(prop['background'].panel, 0, wx.EXPAND)
+        sizer_tmp.Add(prop['foreground'].panel, 0, wx.EXPAND)
+        try: sizer_tmp.Add(prop['font'].panel, 0, wx.EXPAND)
         except KeyError: pass
-        sizer_tmp.Add(prop['tooltip'].panel, 0, wxEXPAND)
-        sizer_tmp.Add(prop['disabled'].panel, 0, wxEXPAND)
-        sizer_tmp.Add(prop['focused'].panel, 0, wxEXPAND)
-        sizer_tmp.Add(prop['hidden'].panel, 0, wxEXPAND)
+        sizer_tmp.Add(prop['tooltip'].panel, 0, wx.EXPAND)
+        sizer_tmp.Add(prop['disabled'].panel, 0, wx.EXPAND)
+        sizer_tmp.Add(prop['focused'].panel, 0, wx.EXPAND)
+        sizer_tmp.Add(prop['hidden'].panel, 0, wx.EXPAND)
         
         panel.SetAutoLayout(1)
         panel.SetSizer(sizer_tmp)
@@ -531,7 +531,7 @@ class WindowBase(EditBase):
         if not self.widget: return
         value = value.strip()
         if value in ColorDialogProperty.str_to_colors:
-            self.widget.SetBackgroundColour(wxSystemSettings_GetSystemColour(
+            self.widget.SetBackgroundColour(wx.SystemSettings_GetColour(
                 ColorDialogProperty.str_to_colors[value]))
         else:
             try:
@@ -549,7 +549,7 @@ class WindowBase(EditBase):
         if not self.widget: return
         value = value.strip()
         if value in ColorDialogProperty.str_to_colors:
-            self.widget.SetForegroundColour(wxSystemSettings_GetSystemColour(
+            self.widget.SetForegroundColour(wx.SystemSettings_GetColour(
                 ColorDialogProperty.str_to_colors[value]))
         else:
             try:
@@ -582,7 +582,7 @@ class WindowBase(EditBase):
         weights = FontDialogProperty.font_weights_to
         try:
             value = eval(value)
-            f = wxFont(int(value[0]), families[value[1]], styles[value[2]],
+            f = wx.Font(int(value[0]), families[value[1]], styles[value[2]],
                        weights[value[3]], int(value[4]), value[5])
         except:
             #import traceback; traceback.print_exc()
@@ -623,7 +623,7 @@ class WindowBase(EditBase):
             if use_dialog_units and value[-1] != 'd': value += 'd'
             self.size = value
             if self.widget:
-                if use_dialog_units: size = wxDLG_SZE(self.widget, size)
+                if use_dialog_units: size = wx.DLG_SZE(self.widget, size)
                 if misc.check_wx_version(2, 5):
                     self.widget.SetMinSize(size)
                 self.widget.SetSize(size)
@@ -713,11 +713,11 @@ class ManagedBase(WindowBase):
         self.access_functions['flag'] = (self.get_flag, self.set_flag)
         self.access_functions['border'] = (self.get_border, self.set_border)
         self.access_functions['pos'] = (self.get_pos, self.set_pos)
-        self.flags_pos = (wxALL,
-                          wxLEFT, wxRIGHT, wxTOP, wxBOTTOM,
-                          wxEXPAND, wxALIGN_RIGHT, wxALIGN_BOTTOM,
-                          wxALIGN_CENTER_HORIZONTAL, wxALIGN_CENTER_VERTICAL,
-                          wxSHAPED, wxADJUST_MINSIZE)
+        self.flags_pos = (wx.ALL,
+                          wx.LEFT, wx.RIGHT, wx.TOP, wx.BOTTOM,
+                          wx.EXPAND, wx.ALIGN_RIGHT, wx.ALIGN_BOTTOM,
+                          wx.ALIGN_CENTER_HORIZONTAL, wx.ALIGN_CENTER_VERTICAL,
+                          wx.SHAPED, wx.ADJUST_MINSIZE)
         flag_labels = ('#section#Border',
                        'wxALL',
                        'wxLEFT', 'wxRIGHT',
@@ -728,8 +728,8 @@ class ManagedBase(WindowBase):
                        'wxADJUST_MINSIZE')
         # ALB 2004-08-16 - see the "wxPython migration guide" for details...
         if misc.check_wx_version(2, 5, 2):
-            self.flag = wxADJUST_MINSIZE #wxFIXED_MINSIZE
-            self.flags_pos += (wxFIXED_MINSIZE, )
+            self.flag = wx.ADJUST_MINSIZE #wxFIXED_MINSIZE
+            self.flags_pos += (wx.FIXED_MINSIZE, )
             flag_labels += ('wxFIXED_MINSIZE', )
         sizer.add_item(self, pos)
 
@@ -767,12 +767,12 @@ class ManagedBase(WindowBase):
     def create_properties(self):
         WindowBase.create_properties(self)
         if not self._has_layout: return
-        panel = wxScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
 
-        min_x = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_X)
-        min_y = wxSystemSettings_GetSystemMetric(wxSYS_WINDOWMIN_Y)
-        max_x = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_X)
-        max_y = wxSystemSettings_GetSystemMetric(wxSYS_SCREEN_Y)
+        min_x = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_X)
+        min_y = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_Y)
+        max_x = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_X)
+        max_y = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y)
 
         szprop = self.sizer_properties
         szprop['option'].display(panel)
@@ -780,11 +780,11 @@ class ManagedBase(WindowBase):
         szprop['border'].display(panel)
         szprop['pos'].display(panel)
 
-        sizer_tmp = wxBoxSizer(wxVERTICAL)
-        sizer_tmp.Add(szprop['pos'].panel, 0, wxEXPAND)
-        sizer_tmp.Add(szprop['option'].panel, 0, wxEXPAND)
-        sizer_tmp.Add(szprop['border'].panel, 0, wxEXPAND)
-        sizer_tmp.Add(szprop['flag'].panel, 0, wxEXPAND, 5)
+        sizer_tmp = wx.BoxSizer(wx.VERTICAL)
+        sizer_tmp.Add(szprop['pos'].panel, 0, wx.EXPAND)
+        sizer_tmp.Add(szprop['option'].panel, 0, wx.EXPAND)
+        sizer_tmp.Add(szprop['border'].panel, 0, wx.EXPAND)
+        sizer_tmp.Add(szprop['flag'].panel, 0, wx.EXPAND, 5)
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer_tmp)
         sizer_tmp.Layout()
@@ -805,7 +805,7 @@ class ManagedBase(WindowBase):
         WindowBase.on_size(self, event)
         sz = self.properties['size']
         if (sz.is_active() and (int(self.get_option()) != 0 or
-                                self.get_int_flag() & wxEXPAND)):
+                                self.get_int_flag() & wx.EXPAND)):
             self.properties['size'].set_value(old)
             self.size = old
         self.sel_marker.update()
@@ -823,7 +823,7 @@ class ManagedBase(WindowBase):
                 else: use_dialog_units = False
                 w, h = [ int(v) for v in size.split(',') ]
                 if use_dialog_units:
-                    w, h = wxDLG_SZE(self.widget, (w, h))
+                    w, h = wx.DLG_SZE(self.widget, (w, h))
                 if value:
                     w, h = 1, 1
             else:
@@ -853,11 +853,11 @@ class ManagedBase(WindowBase):
                 else: use_dialog_units = False
                 w, h = [ int(v) for v in size.split(',') ]
                 if use_dialog_units:
-                    w, h = wxDLG_SZE(self.widget, (w, h))
+                    w, h = wx.DLG_SZE(self.widget, (w, h))
                 size = [w, h]
             except ValueError:
                 size = None
-            if not (flags & wxEXPAND) and \
+            if not (flags & wx.EXPAND) and \
                not self.properties['size'].is_active():
                 size = list(self.widget.GetBestSize())
             self.sizer.set_item(self.pos, flag=flags, size=size)
@@ -876,7 +876,7 @@ class ManagedBase(WindowBase):
             else: use_dialog_units = False
             w, h = [ int(v) for v in size.split(',') ]
             if use_dialog_units:
-                w, h = wxDLG_SZE(self.widget, (w, h))
+                w, h = wx.DLG_SZE(self.widget, (w, h))
             if w == -1: w = self.widget.GetSize()[0]
             if h == -1: h = self.widget.GetSize()[1]
             self.sizer.set_item(self.pos, border=int(value), size=(w, h))
@@ -943,9 +943,9 @@ class PreviewMixin:
         panel = self.notebook.GetPage(0)
         sizer_tmp = panel.GetSizer()
         # add a preview button to the Common panel for top-levels
-        self.preview_button = btn = wxButton(panel, -1, 'Preview')
+        self.preview_button = btn = wx.Button(panel, -1, 'Preview')
         EVT_BUTTON(btn, -1, self.preview)
-        sizer_tmp.Add(btn, 0, wxALL|wxEXPAND, 5)
+        sizer_tmp.Add(btn, 0, wx.ALL|wx.EXPAND, 5)
         sizer_tmp.Layout()
         sizer_tmp.Fit(panel)
         w, h = panel.GetClientSize()
@@ -997,7 +997,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         EVT_ENTER_WINDOW(self.widget, self.on_enter)
         EVT_CLOSE(self.widget, self.hide_widget)
-        if wxPlatform == '__WXMSW__':
+        if wx.Platform == '__WXMSW__':
             # MSW isn't smart enough to avoid overlapping windows, so
             # at least move it away from the 3 wxGlade frames
             self.widget.Center()
@@ -1006,7 +1006,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def show_widget(self, yes):
         WindowBase.show_widget(self, yes)
-        if yes and wxPlatform == '__WXMSW__':
+        if yes and wx.Platform == '__WXMSW__':
             # more than ugly, but effective hack to properly layout the window
             # on Win32
             if self.properties['size'].is_active():
@@ -1019,7 +1019,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
     def popup_menu(self, event):
         if self.widget:
             if not self._rmenu:
-                REMOVE_ID, HIDE_ID = [wxNewId() for i in range(2)]
+                REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
                 misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
                                  'remove.xpm')
@@ -1029,7 +1029,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
                 EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 # paste
-                PASTE_ID = wxNewId()
+                PASTE_ID = wx.NewId()
                 misc.append_item(self._rmenu, PASTE_ID, 'Paste\tCtrl+V',
                                  'paste.xpm')
                 EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
@@ -1077,16 +1077,16 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def on_enter(self, event):
         if not self.sizer and common.adding_sizer:
-            self.widget.SetCursor(wxCROSS_CURSOR)
+            self.widget.SetCursor(wx.CROSS_CURSOR)
         else:
-            self.widget.SetCursor(wxSTANDARD_CURSOR)
+            self.widget.SetCursor(wx.STANDARD_CURSOR)
 
     def drop_sizer(self, event):
         if self.sizer or not common.adding_sizer:
             self.on_set_focus(event) # default behaviour: call show_properties
             return
         common.adding_widget = common.adding_sizer = False
-        self.widget.SetCursor(wxSTANDARD_CURSOR)
+        self.widget.SetCursor(wx.STANDARD_CURSOR)
         common.widgets[common.widget_to_add](self, None, None)
         common.widget_to_add = None
 
