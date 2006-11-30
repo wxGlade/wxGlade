@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.52 2006/05/13 08:12:03 agriggio Exp $
+# $Id: common.py,v 1.53 2006/11/30 16:25:33 jkt Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -351,3 +351,9 @@ def restore_from_autosaved(filename):
             return False
         return True
     return False
+
+
+def generated_from():
+    if app_tree.app.filename:
+        return " from " + app_tree.app.filename
+    return ""
