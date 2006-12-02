@@ -1,5 +1,5 @@
 # slider.py: wxSlider objects
-# $Id: slider.py,v 1.11 2006/11/07 15:06:25 jkt Exp $
+# $Id: slider.py,v 1.12 2006/12/02 19:30:32 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -43,11 +43,23 @@ class EditSlider(ManagedBase):
         self.access_functions['range'] = (self.get_range, self.set_range)
         style_labels = ('#section#Style', 'wxSL_HORIZONTAL', 'wxSL_VERTICAL',
                         'wxSL_AUTOTICKS', 'wxSL_LABELS', 'wxSL_LEFT',
-                        'wxSL_RIGHT', 'wxSL_TOP')
+                        'wxSL_RIGHT', 'wxSL_TOP', 'wxSL_BOTTOM',
+                        'wxSL_SELRANGE', 'wxSL_INVERSE')
         self.style_pos = (wx.SL_HORIZONTAL, wx.SL_VERTICAL,
                           wx.SL_AUTOTICKS, wx.SL_LABELS, wx.SL_LEFT,
-                          wx.SL_RIGHT, wx.SL_TOP)
-        prop['style'] = CheckListProperty(self, 'style', None, style_labels)
+                          wx.SL_RIGHT, wx.SL_TOP, wx.SL_BOTTOM,
+                          wx.SL_SELRANGE, wx.SL_INVERSE)
+        tooltips = ("Displays the slider horizontally (this is the default).",
+                    "Displays the slider vertically.",
+                    "Displays tick marks.",
+		    "Displays minimum, maximum and value labels.",
+		    "Displays ticks on the left and forces the slider to be vertical.",
+		    "Displays ticks on the right and forces the slider to be vertical.",
+		    "Displays ticks on the top.",
+		    "Displays ticks on the bottom (this is the default).",
+		    "Allows the user to select a range on the slider. Windows only.",
+		    "Inverses the mininum and maximum endpoints on the slider. Not compatible with wxSL_SELRANGE.")
+        prop['style'] = CheckListProperty(self, 'style', None, style_labels, tooltips=tooltips)
         prop['range'] = TextProperty(self, 'range', None, can_disable=True)
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
 
