@@ -1,5 +1,5 @@
 # checkbox.py: wxCheckBox objects
-# $Id: checkbox.py,v 1.12 2006/11/16 15:49:07 guyru Exp $
+# $Id: checkbox.py,v 1.13 2006/12/02 10:49:56 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -42,7 +42,7 @@ class EditCheckBox(ManagedBase):
         self.widget.SetValue(self.value)
         def on_checkbox(event):
             self.set_value(self.value)
-        EVT_CHECKBOX(self.widget, self.id, on_checkbox)
+        wx.EVT_CHECKBOX(self.widget, self.id, on_checkbox)
 
     def create_properties(self):
         ManagedBase.create_properties(self)

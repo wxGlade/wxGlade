@@ -1,14 +1,15 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.41 2005/05/06 21:48:25 agriggio Exp $
+# $Id: misc.py,v 1.42 2006/12/02 10:49:57 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+#from wxPython.wx import *
+import wx
 
-if wxPlatform == '__WXMSW__':
-    class wxGladeRadioButton(wxRadioButton):
+if wx.Platform == '__WXMSW__':
+    class wxGladeRadioButton(wx.RadioButton):
         """
         custom wxRadioButton class which tries to implement a better
         GetBestSize than the default one for WXMSW (mostly copied from
@@ -17,9 +18,9 @@ if wxPlatform == '__WXMSW__':
         __radio_size = None
         def GetBestSize(self):
             if not self.__radio_size:
-                dc = wxScreenDC()
-                dc.SetFont(wxSystemSettings_GetSystemFont(
-                    wxSYS_DEFAULT_GUI_FONT))
+                dc = wx.ScreenDC()
+                dc.SetFont(wx.SystemSettings_GetSystemFont(
+                    wx.SYS_DEFAULT_GUI_FONT))
                 self.__radio_size = (3*dc.GetCharHeight())/2
             label = self.GetLabel()
             if label:
@@ -32,16 +33,16 @@ if wxPlatform == '__WXMSW__':
     # end of class wxGladeRadioButton
 
 else:
-    wxGladeRadioButton = wxRadioButton
+    wxGladeRadioButton = wx.RadioButton
 
 
 # ALB 2004-10-27
-FileSelector = wxFileSelector
-DirSelector = wxDirSelector
+FileSelector = wx.FileSelector
+DirSelector = wx.DirSelector
 
 #---------------------  Selection Markers  ----------------------------------
 
-class SelectionTag(wxWindow):
+class SelectionTag(wx.Window):
     """\
     This is one of the small black squares that appear at the corners of the
     active widgets
@@ -49,8 +50,8 @@ class SelectionTag(wxWindow):
     def __init__(self, parent, pos=None):
         kwds = { 'size': (7, 7) }
         if pos: kwds['position'] = pos
-        wxWindow.__init__(self, parent, -1, **kwds)
-        self.SetBackgroundColour(wxBLACK)
+        wx.Window.__init__(self, parent, -1, **kwds)
+        self.SetBackgroundColour(wx.BLACK)
         self.Hide()
 
 # end of class SelectionTag
@@ -64,7 +65,7 @@ class SelectionMarker:
         self.visible = visible
         self.owner = owner
         self.parent = parent
-        if wxPlatform == '__WXMSW__': self.parent = owner
+        if wx.Platform == '__WXMSW__': self.parent = owner
         self.tags = [ SelectionTag(self.parent) for i in range(4) ]
         self.update()
         if visible:
@@ -121,30 +122,30 @@ def string_to_color(color):
     for example: #ffffff ==> wxColour(255, 255, 255)
     """
     if len(color) != 7: raise ValueError
-    return apply(wxColour, [int(color[i:i+2], 16) for i in range(1, 7, 2)])
+    return apply(wx.Colour, [int(color[i:i+2], 16) for i in range(1, 7, 2)])
 
     
 def get_toplevel_parent(obj):
-    if not isinstance(obj, wxWindow): window = obj.widget
+    if not isinstance(obj, wx.Window): window = obj.widget
     else: window = obj
     while window and not window.IsTopLevel():
         window = window.GetParent()
     return window
 
 
-if wxPlatform == '__WXGTK__':
+if wx.Platform == '__WXGTK__':
     # default wxMenu seems to have probles with SetTitle on GTK
-    class wxGladePopupMenu(wxMenu):
+    class wxGladePopupMenu(wx.Menu):
         def __init__(self, title):
-            wxMenu.__init__(self)
-            self.TITLE_ID = wxNewId()
+            wx.Menu.__init__(self)
+            self.TITLE_ID = wx.NewId()
             self.Append(self.TITLE_ID, title)
             self.AppendSeparator()
 
         def SetTitle(self, title):
             self.SetLabel(self.TITLE_ID, title)
 
-else: wxGladePopupMenu = wxMenu
+else: wxGladePopupMenu = wx.Menu
 
 
 def check_wx_version(major, minor=0, release=0, revision=0):
@@ -152,9 +153,10 @@ def check_wx_version(major, minor=0, release=0, revision=0):
     returns True if the current wxPython version is at least
     major.minor.release
     """
-    from wxPython import wx
+    #from wxPython import wx
+    import wx
     #return wx.__version__ >= "%d.%d.%d.%d" % (major, minor, release, revision)
-    return wx.wxVERSION[:-1] >= (major, minor, release, revision)
+    return wx.VERSION[:-1] >= (major, minor, release, revision)
 
 
 if not check_wx_version(2, 3, 3):
@@ -182,6 +184,8 @@ if not check_wx_version(2, 3, 3):
         evt.args = args
         evt.kw = kw
         wxPostEvent(app, evt)
+else:
+    wxCallAfter = wx.CallAfter
 
 #----------------------------------------------------------------------
 
@@ -193,11 +197,11 @@ def append_item(menu, id, text, xpm_file=None):
     if use_menu_icons is None:
         import config
         use_menu_icons = config.preferences.use_menu_icons
-    if wxPlatform == '__WXGTK__' and wxVERSION == (2, 4, 1, 2, ''):
+    if wx.Platform == '__WXGTK__' and wx.VERSION == (2, 4, 1, 2, ''):
         use_menu_icons = 0
     import common, os.path
-    item = wxMenuItem(menu, id, text)
-    if wxPlatform == '__WXMSW__': path = 'icons/msw/'
+    item = wx.MenuItem(menu, id, text)
+    if wx.Platform == '__WXMSW__': path = 'icons/msw/'
     else: path = 'icons/gtk/'
     path = os.path.join(common.wxglade_path, path)
     if use_menu_icons and xpm_file is not None:
@@ -205,7 +209,7 @@ def append_item(menu, id, text, xpm_file=None):
         except KeyError:
             f = os.path.join(path, xpm_file)
             if os.path.isfile(f):
-                bmp = _item_bitmaps[xpm_file] = wxBitmap(f, wxBITMAP_TYPE_XPM)
+                bmp = _item_bitmaps[xpm_file] = wx.Bitmap(f, wx.BITMAP_TYPE_XPM)
             else: bmp = None
         if bmp is not None:
             try: item.SetBitmap(bmp)
@@ -249,10 +253,10 @@ def _paste():
 # accelerator table to enable keyboard shortcuts for the popup menus of the
 # various widgets (remove, cut, copy, paste)
 accel_table = [
-    (0, WXK_DELETE, _remove),
-    (wxACCEL_CTRL, ord('C'), _copy),
-    (wxACCEL_CTRL, ord('X'), _cut),
-    (wxACCEL_CTRL, ord('V'), _paste),
+    (0, wx.WXK_DELETE, _remove),
+    (wx.ACCEL_CTRL, ord('C'), _copy),
+    (wx.ACCEL_CTRL, ord('X'), _cut),
+    (wx.ACCEL_CTRL, ord('V'), _paste),
     ]
 #-----------------------------------------------------------------------------
 
@@ -289,8 +293,8 @@ _currently_under_mouse = None
 def get_geometry(win):
     x, y = win.GetPosition()
     w, h = win.GetSize()
-    if 0 <= x <= wxSystemSettings_GetMetric(wxSYS_SCREEN_X) and \
-       0 <= y <= wxSystemSettings_GetMetric(wxSYS_SCREEN_Y):
+    if 0 <= x <= wx.SystemSettings_GetMetric(wx.SYS_SCREEN_X) and \
+       0 <= y <= wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y):
         return (x, y, w, h)
     return None
 
@@ -352,7 +356,7 @@ def wxstr(s):
     """
     if common.app_tree is None:
         return str(s)
-    if wxUSE_UNICODE:
+    if wx.USE_UNICODE:
         if type(s) != type(u''):
             return unicode(str(s), common.app_tree.app.encoding)
         else:

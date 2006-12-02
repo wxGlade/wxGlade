@@ -20,6 +20,8 @@ radio_box
 choice
 combo_box
 list_box
+calendar_ctrl
+datepicker_ctrl
 static_line
 static_bitmap
 list_ctrl
@@ -28,6 +30,4 @@ grid
 custom_widget
 menubar
 toolbar
-calendar_ctrl
-datepicker_ctrl
 spacer

@@ -1,12 +1,13 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.23 2006/11/15 20:23:44 guyru Exp $
+# $Id: toolbar.py,v 1.24 2006/12/02 10:49:54 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
-from wxPython.lib.filebrowsebutton import FileBrowseButton
+#from wxPython.lib.filebrowsebutton import FileBrowseButton
+from wx.lib.filebrowsebutton import FileBrowseButton
 
 import common, math, misc, os
 from tree import Tree
@@ -24,7 +25,7 @@ class _MyBrowseButton(FileBrowseButton):
         w = button.GetTextExtent(self.buttonText)[0] + 10
         if not misc.check_wx_version(2, 5, 2): button.SetSize((w, -1))
         else: button.SetMinSize((w, -1))
-        EVT_BUTTON(button, ID, self.OnBrowse)
+        wx.EVT_BUTTON(button, ID, self.OnBrowse)
         return button
 
     def OnBrowse (self, event=None):
@@ -117,19 +118,19 @@ class ToolsDialog(wx.Dialog):
 
         self.do_layout()
         # event handlers
-        EVT_BUTTON(self, ADD_ID, self.add_tool)
-        EVT_BUTTON(self, REMOVE_ID, self.remove_tool)
-        EVT_BUTTON(self, ADD_SEP_ID, self.add_separator)
-        EVT_BUTTON(self, MOVE_UP_ID, self.move_item_up)
-        EVT_BUTTON(self, MOVE_DOWN_ID, self.move_item_down)
-        EVT_BUTTON(self, wx.ID_APPLY, self.on_apply)
-        EVT_KILL_FOCUS(self.label, self.update_tool)
-        EVT_KILL_FOCUS(self.id, self.update_tool)
-        EVT_KILL_FOCUS(self.help_str, self.update_tool)
-        EVT_KILL_FOCUS(self.long_help_str, self.update_tool)
-        EVT_KILL_FOCUS(self.event_handler, self.update_tool)
-        EVT_RADIOBOX(self, CHECK_RADIO_ID, self.update_tool)
-        EVT_LIST_ITEM_SELECTED(self, LIST_ID, self.show_tool)
+        wx.EVT_BUTTON(self, ADD_ID, self.add_tool)
+        wx.EVT_BUTTON(self, REMOVE_ID, self.remove_tool)
+        wx.EVT_BUTTON(self, ADD_SEP_ID, self.add_separator)
+        wx.EVT_BUTTON(self, MOVE_UP_ID, self.move_item_up)
+        wx.EVT_BUTTON(self, MOVE_DOWN_ID, self.move_item_down)
+        wx.EVT_BUTTON(self, wx.ID_APPLY, self.on_apply)
+        wx.EVT_KILL_FOCUS(self.label, self.update_tool)
+        wx.EVT_KILL_FOCUS(self.id, self.update_tool)
+        wx.EVT_KILL_FOCUS(self.help_str, self.update_tool)
+        wx.EVT_KILL_FOCUS(self.long_help_str, self.update_tool)
+        wx.EVT_KILL_FOCUS(self.event_handler, self.update_tool)
+        wx.EVT_RADIOBOX(self, CHECK_RADIO_ID, self.update_tool)
+        wx.EVT_LIST_ITEM_SELECTED(self, LIST_ID, self.show_tool)
         if items:
             self.add_tools(items)
 
@@ -440,7 +441,7 @@ class ToolsProperty(Property):
         self.panel.SetAutoLayout(1)
         self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
-        EVT_BUTTON(self.panel, edit_btn_id, self.edit_tools)
+        wx.EVT_BUTTON(self.panel, edit_btn_id, self.edit_tools)
 
     def bind_event(*args): pass
 
@@ -527,13 +528,13 @@ class EditToolBar(EditBase, PreviewMixin):
             self._tb = wx.ToolBar(self.widget, -1, style=tb_style)
             self.widget.SetToolBar(self._tb)
             self.widget.SetBackgroundColour(self._tb.GetBackgroundColour())
-            EVT_CLOSE(self.widget, lambda e: self.hide_widget())
-            EVT_LEFT_DOWN(self._tb, self.on_set_focus)
+            wx.EVT_CLOSE(self.widget, lambda e: self.hide_widget())
+            wx.EVT_LEFT_DOWN(self._tb, self.on_set_focus)
             if wx.Platform == '__WXMSW__':
                 # MSW isn't smart enough to avoid overlapping windows, so
                 # at least move it away from the 3 wxGlade frames
                 self.widget.CenterOnScreen()
-        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         # set the various property values
         prop = self.properties
         if prop['bitmapsize'].is_active():
@@ -757,8 +758,8 @@ class EditToolBar(EditBase, PreviewMixin):
                 misc.append_item(self._rmenu, HIDE_ID, 'Hide') 
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
-                EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-                EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
+                wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+                wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 

@@ -1,5 +1,5 @@
 # custom_widget.py: custom wxWindow objects
-# $Id: custom_widget.py,v 1.18 2006/11/16 15:06:47 guyru Exp $
+# $Id: custom_widget.py,v 1.19 2006/12/02 10:49:55 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -72,7 +72,7 @@ class CustomWidget(ManagedBase):
     def create_widget(self):
         self.widget = wx.Window(self.parent.widget, self.id,
                                style=wx.SUNKEN_BORDER|wx.FULL_REPAINT_ON_RESIZE)
-        EVT_PAINT(self.widget, self.on_paint)
+        wx.EVT_PAINT(self.widget, self.on_paint)
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
@@ -117,7 +117,7 @@ Invalid entries are silently ignored"""
         def show_help(event):
             wx.MessageBox(text, 'Help on "Arguments" property',
                          wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
-        EVT_BUTTON(help_btn, -1, show_help)
+        wx.EVT_BUTTON(help_btn, -1, show_help)
         szr.Add(help_btn, 0, wx.BOTTOM|wx.LEFT|wx.RIGHT|wx.EXPAND, 5)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)

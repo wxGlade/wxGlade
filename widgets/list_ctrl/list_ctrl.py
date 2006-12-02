@@ -1,5 +1,5 @@
 # text_ctrl.py: wxListCtrl objects
-# $Id: list_ctrl.py,v 1.12 2006/11/22 16:33:31 guyru Exp $
+# $Id: list_ctrl.py,v 1.13 2006/12/02 10:49:55 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -92,8 +92,8 @@ class EditListCtrl(ManagedBase):
 				"Use this to indicate that the window wants to get all char/key events for all keys - even for keys like TAB or ENTER which are usually used for dialog navigation and which wouldn't be generated without this style. If you need to use this style in order to get the arrows or etc., but would still like to have normal keyboard navigation take place, you should create and send a wxNavigationKeyEvent in response to the key events for Tab and Shift-Tab.",
 				"On Windows, this style used to disable repainting the window completely when its size is changed. Since this behaviour is now the default, the style is now obsolete and no longer has an effect.",
 				"Use this style to force a complete redraw of the window whenever it is resized instead of redrawing just the part of the window affected by resizing. Note that this was the behaviour by default before 2.5.1 release and that if you experience redraw problems with code which previously used to work you may want to try this. Currently this style applies on GTK+ 2 and Windows only, and full repainting is always done on other platforms.")
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels, tooltips=self.style_tooltips)
+        self.properties['style'] = CheckListProperty(
+            self, 'style', None, style_labels, tooltips=self.style_tooltips)
 
     def create_widget(self):
         self.widget = wx.ListCtrl(self.parent.widget, self.id,
@@ -101,7 +101,8 @@ class EditListCtrl(ManagedBase):
         # add a couple of columns just for a better appearence (for now)
         self.widget.InsertColumn(0, 'List Control:')
         self.widget.InsertColumn(1, self.name)
-        EVT_LIST_COL_CLICK(self.widget, self.widget.GetId(), self.on_set_focus)
+        wx.EVT_LIST_COL_CLICK(self.widget, self.widget.GetId(),
+                              self.on_set_focus)
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)

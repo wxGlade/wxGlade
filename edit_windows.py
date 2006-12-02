@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.85 2006/11/23 23:35:50 dinogen Exp $
+# $Id: edit_windows.py,v 1.86 2006/12/02 10:49:57 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -95,7 +95,7 @@ class EditBase(EventsMixin):
         """\
         Creates the popup menu and connects some event handlers to self.widgets
         """
-        EVT_RIGHT_DOWN(self.widget, self.popup_menu)
+        wx.EVT_RIGHT_DOWN(self.widget, self.popup_menu)
 
     def delete(self):
         """\
@@ -184,9 +184,9 @@ class EditBase(EventsMixin):
                                  'cut.xpm')
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
-                EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-                EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
-                EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
+                wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+                wx.EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
+                wx.EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
                 
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
@@ -417,7 +417,7 @@ class WindowBase(EditBase):
         if prop['font'].is_active():
             self.set_font(prop['font'].get_value())
         EditBase.finish_widget_creation(self)
-        EVT_SIZE(self.widget, self.on_size)
+        wx.EVT_SIZE(self.widget, self.on_size)
         # after setting various Properties, we must Refresh widget in order to
         # see changes
         self.widget.Refresh()
@@ -431,7 +431,7 @@ class WindowBase(EditBase):
                     misc.wxCallAfter(function)
                     break
             event.Skip()
-        EVT_KEY_DOWN(self.widget, on_key_down)
+        wx.EVT_KEY_DOWN(self.widget, on_key_down)
 
     def create_properties(self):
         EditBase.create_properties(self)
@@ -750,8 +750,8 @@ class ManagedBase(WindowBase):
         if sel_marker_parent is None: sel_marker_parent = self.parent.widget
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
         WindowBase.finish_widget_creation(self)
-        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
-        EVT_MOVE(self.widget, self.on_move)
+        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        wx.EVT_MOVE(self.widget, self.on_move)
         # re-add the item to update it
         self.sizer.add_item(self, self.pos, self.option, self.flag,
                             self.border, self.widget.GetSize())
@@ -944,7 +944,7 @@ class PreviewMixin:
         sizer_tmp = panel.GetSizer()
         # add a preview button to the Common panel for top-levels
         self.preview_button = btn = wx.Button(panel, -1, 'Preview')
-        EVT_BUTTON(btn, -1, self.preview)
+        wx.EVT_BUTTON(btn, -1, self.preview)
         sizer_tmp.Add(btn, 0, wx.ALL|wx.EXPAND, 5)
         sizer_tmp.Layout()
         sizer_tmp.Fit(panel)
@@ -994,9 +994,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 self.properties['title'].get_value()))
         elif hasattr(self.widget, 'SetTitle'):
             self.widget.SetTitle(misc.design_title(self.name))
-        EVT_LEFT_DOWN(self.widget, self.drop_sizer)
-        EVT_ENTER_WINDOW(self.widget, self.on_enter)
-        EVT_CLOSE(self.widget, self.hide_widget)
+        wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
+        wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        wx.EVT_CLOSE(self.widget, self.hide_widget)
         if wx.Platform == '__WXMSW__':
             # MSW isn't smart enough to avoid overlapping windows, so
             # at least move it away from the 3 wxGlade frames
@@ -1026,13 +1026,13 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 misc.append_item(self._rmenu, HIDE_ID, 'Hide')
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
-                EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-                EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
+                wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+                wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 # paste
                 PASTE_ID = wx.NewId()
                 misc.append_item(self._rmenu, PASTE_ID, 'Paste\tCtrl+V',
                                  'paste.xpm')
-                EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
+                wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
                 
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 

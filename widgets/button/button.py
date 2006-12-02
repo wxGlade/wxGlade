@@ -1,5 +1,5 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.20 2006/11/19 16:00:22 guyru Exp $
+# $Id: button.py,v 1.21 2006/12/02 10:49:56 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -33,7 +33,7 @@ class EditButton(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
         self.style_pos = (wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP, wx.BU_BOTTOM,
-            wx.BU_EXACTFIT,wxNO_BORDER)
+            wx.BU_EXACTFIT,wx.NO_BORDER)
         style_labels = ('#section#Style', 'wxBU_LEFT', 'wxBU_RIGHT', 
             'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT','wxNO_BORDER')
 	
