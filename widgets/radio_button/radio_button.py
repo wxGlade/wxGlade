@@ -1,5 +1,5 @@
 # radio_button.py: wxRadioButton objects
-# $Id: radio_button.py,v 1.17 2006/12/02 10:49:54 agriggio Exp $
+# $Id: radio_button.py,v 1.18 2006/12/02 19:17:27 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -35,10 +35,13 @@ class EditRadioButton(ManagedBase):
                                                 multiline=True)
         self.properties['clicked'] = CheckBoxProperty(self, 'clicked', None,
                                                       'Clicked')
-        self.style_pos = [wx.RB_GROUP, wx.RB_SINGLE]
+        self.style_pos = [wx.RB_GROUP, wx.RB_SINGLE, wx.RB_USE_CHECKBOX]
         self.properties['style'] = CheckListProperty(
             self, 'style', None, ['#section#Style',
-                                  'wxRB_GROUP', 'wxRB_SINGLE'])
+                                  'wxRB_GROUP', 'wxRB_SINGLE', 'wxRB_USE_CHECKBOX'],
+				  tooltips=['Marks the beginning of a new group of radio buttons.',
+				  'In some circumstances, radio buttons that are not consecutive siblings trigger a hang bug in Windows (only). If this happens, add this style to mark the button as not belonging to a group, and implement the mutually-exclusive group behaviour yourself.',
+				  'Use a checkbox button instead of radio button (currently supported only on PalmOS).'])
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
