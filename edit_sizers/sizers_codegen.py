@@ -1,5 +1,5 @@
 # sizers_codegen.py: code generation functions for the various wxSizerS
-# $Id: sizers_codegen.py,v 1.14 2005/05/06 21:48:23 agriggio Exp $
+# $Id: sizers_codegen.py,v 1.15 2006/12/02 11:20:29 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -19,11 +19,12 @@ class PythonBoxSizerBuilder:
         if obj.is_toplevel:
             if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
             else: parent = 'self'
-            layout.append('%s.SetAutoLayout(True)\n' % parent)
+            #layout.append('%s.SetAutoLayout(True)\n' % parent)
             layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size'):
+            if not obj.parent.properties.has_key('size') and \
+                   obj.parent.is_toplevel:
                 layout.append('%s.Fit(%s)\n' % (obj.name, parent))
-                layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
+##                 layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
         return init, [], layout
 
 # end of class PythonBoxSizerBuilder
@@ -45,11 +46,12 @@ class PythonStaticBoxSizerBuilder:
             ]
         layout = []
         if obj.is_toplevel:
-            layout.append('%s.SetAutoLayout(True)\n' % parent)
+            #layout.append('%s.SetAutoLayout(True)\n' % parent)
             layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size'):
+            if not obj.parent.properties.has_key('size') and \
+                   obj.parent.is_toplevel:
                 layout.append('%s.Fit(%s)\n' % (obj.name, parent))
-                layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
+##                 layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
         return init, [], layout
 
 # end of class PythonStaticBoxSizerBuilder
@@ -72,11 +74,12 @@ class PythonGridSizerBuilder:
                  (obj.name, cn(self.klass), rows, cols, vgap, hgap) ]
         layout = []
         if obj.is_toplevel:
-            layout.append('%s.SetAutoLayout(True)\n' % parent)
+            #layout.append('%s.SetAutoLayout(True)\n' % parent)
             layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size'):
+            if not obj.parent.properties.has_key('size') and \
+                   obj.parent.is_toplevel:
                 layout.append('%s.Fit(%s)\n' % (obj.name, parent))
-                layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
+##                 layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
         return init, [], layout   
 
 # end of class PythonGridSizerBuilder
@@ -112,13 +115,14 @@ class CppBoxSizerBuilder:
         if obj.is_toplevel:
             if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name
             else: parent = ''
-            layout.append('%sSetAutoLayout(true);\n' % parent)
+            #layout.append('%sSetAutoLayout(true);\n' % parent)
             layout.append('%sSetSizer(%s);\n' % (parent, obj.name))
             if not obj.parent.properties.has_key('size'):
                 if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
                 else: parent = 'this'
-                layout.append('%s->Fit(%s);\n' % (obj.name, parent))
-                layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
+                if obj.parent.is_toplevel:
+                    layout.append('%s->Fit(%s);\n' % (obj.name, parent))
+##                 layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
         return init, [], [], layout
 
 # end of class CppBoxSizerBuilder
@@ -143,13 +147,14 @@ class CppStaticBoxSizerBuilder:
         if obj.is_toplevel:
             if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name
             else: parent = ''
-            layout.append('%sSetAutoLayout(true);\n' % parent)
+            #layout.append('%sSetAutoLayout(true);\n' % parent)
             layout.append('%sSetSizer(%s);\n' % (parent, obj.name))
             if not obj.parent.properties.has_key('size'):
                 if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
                 else: parent = 'this'
-                layout.append('%s->Fit(%s);\n' % (obj.name, parent))
-                layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
+                if obj.parent.is_toplevel:
+                    layout.append('%s->Fit(%s);\n' % (obj.name, parent))
+##                 layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
         return init, [], [], layout
 
 # end of class CppStaticBoxSizerBuilder
@@ -170,13 +175,14 @@ class CppGridSizerBuilder:
         if obj.is_toplevel:
             if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name
             else: parent = ''
-            layout.append('%sSetAutoLayout(true);\n' % parent)
+            #layout.append('%sSetAutoLayout(true);\n' % parent)
             layout.append('%sSetSizer(%s);\n' % (parent, obj.name))
             if not obj.parent.properties.has_key('size'):
                 if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
                 else: parent = 'this'
-                layout.append('%s->Fit(%s);\n' % (obj.name, parent))
-                layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
+                if obj.parent.is_toplevel:
+                    layout.append('%s->Fit(%s);\n' % (obj.name, parent))
+##                 layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
         return init, [], [], layout   
 
 # end of class CppGridSizerBuilder

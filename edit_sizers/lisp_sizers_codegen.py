@@ -1,5 +1,5 @@
 # lisp_sizers_codegen.py : lisp generator functions for the various wxSizerS
-# $Id: lisp_sizers_codegen.py,v 1.1 2005/09/22 06:33:31 efuzzyone Exp $
+# $Id: lisp_sizers_codegen.py,v 1.2 2006/12/02 11:20:29 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -22,13 +22,14 @@ class LispBoxSizerBuilder:
             else:
                 parent = '(slot-top-window obj)'
 
-            layout.append('(wxWindow_SetAutoLayout %s 1)\n' % parent)
+            #layout.append('(wxWindow_SetAutoLayout %s 1)\n' % parent)
             layout.append('(wxWindow_SetSizer %s (slot-%s obj))\n' % (parent, obj.name))
 
-            if not obj.parent.properties.has_key('size'):
+            if not obj.parent.properties.has_key('size') and \
+                   obj.parent.is_toplevel:
                 layout.append('(wxSizer_Fit (slot-%s obj) %s)\n' % (obj.name, parent))
-                layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
-                              % (obj.name, parent))
+##                 layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
+##                               % (obj.name, parent))
         return init, [], layout
 
 # end of class LispBoxSizerBuilder
@@ -47,12 +48,13 @@ class LispStaticBoxSizerBuilder:
         ]
         layout = []
         if obj.is_toplevel:
-            layout.append('(wxWindow_SetAutoLayout %s 1)\n' % parent)
+            #layout.append('(wxWindow_SetAutoLayout %s 1)\n' % parent)
             layout.append('(wxWindow_SetSizer %s (slot-%s obj))\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size'):
+            if not obj.parent.properties.has_key('size') and \
+                   obj.parent.is_toplevel:
                 layout.append('(wxSizer_Fit (slot-%s obj) %s)\n' % (obj.name, parent))
-                layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
-                              % (obj.name, parent))
+##                 layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
+##                               % (obj.name, parent))
         return init, [], layout
 
 # end of class LispStaticBoxSizerBuilder
@@ -77,12 +79,13 @@ class LispGridSizerBuilder:
             ]
         layout = []
         if obj.is_toplevel:
-            layout.append('(wxWindow_SetAutoLayout %s 1)\n' % parent)
+            #layout.append('(wxWindow_SetAutoLayout %s 1)\n' % parent)
             layout.append('(wxWindow_SetSizer %s (slot-%s obj))\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size'):
+            if not obj.parent.properties.has_key('size') and \
+                   obj.parent.is_toplevel:
                 layout.append('(wxSizer_Fit (slot-%s obj) %s)\n' % (obj.name, parent))
-                layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
-                              % (obj.name, parent))
+##                 layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
+##                               % (obj.name, parent))
         return init, [], layout   
 
 # end of class LispGridSizerBuilder
