@@ -1,5 +1,5 @@
 # perl_sizers_codegen.py : perl generator functions for the various wxSizerS
-# $Id: perl_sizers_codegen.py,v 1.6 2004/09/17 13:09:55 agriggio Exp $
+# $Id: perl_sizers_codegen.py,v 1.7 2006/12/02 11:20:29 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -22,13 +22,14 @@ class PerlBoxSizerBuilder:
             else:
                 parent = '$self'
 
-            layout.append('%s->SetAutoLayout(1);\n' % parent)
+            #layout.append('%s->SetAutoLayout(1);\n' % parent)
             layout.append('%s->SetSizer($self->{%s});\n' % (parent, obj.name))
 
-            if not obj.parent.properties.has_key('size'):
+            if not obj.parent.properties.has_key('size') and \
+                   obj.parent.is_toplevel:
                 layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-                layout.append('$self->{%s}->SetSizeHints(%s);\n'
-                    % (obj.name, parent))
+##                 layout.append('$self->{%s}->SetSizeHints(%s);\n'
+##                     % (obj.name, parent))
         return init, [], layout
 
 # end of class PerlBoxSizerBuilder
@@ -49,12 +50,13 @@ class PerlStaticBoxSizerBuilder:
         ]
         layout = []
         if obj.is_toplevel:
-            layout.append('%s->SetAutoLayout(1);\n' % parent)
+            #layout.append('%s->SetAutoLayout(1);\n' % parent)
             layout.append('%s->SetSizer($self->{%s});\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size'):
+            if not obj.parent.properties.has_key('size') and \
+                   obj.parent.is_toplevel:
                 layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-                layout.append('$self->{%s}->SetSizeHints(%s);\n'
-                    % (obj.name, parent))
+##                 layout.append('$self->{%s}->SetSizeHints(%s);\n'
+##                     % (obj.name, parent))
         return init, [], layout
 
 # end of class PerlStaticBoxSizerBuilder
@@ -80,13 +82,14 @@ class PerlGridSizerBuilder:
             ]
         layout = []
         if obj.is_toplevel:
-            layout.append('%s->SetAutoLayout(1);\n' % parent)
+            #layout.append('%s->SetAutoLayout(1);\n' % parent)
             layout.append('%s->SetSizer($self->{%s});\n'
                 % (parent, obj.name))
-            if not obj.parent.properties.has_key('size'):
+            if not obj.parent.properties.has_key('size') and \
+                   obj.parent.is_toplevel:
                 layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-                layout.append('$self->{%s}->SetSizeHints(%s);\n'
-                    % (obj.name, parent))
+##                 layout.append('$self->{%s}->SetSizeHints(%s);\n'
+##                     % (obj.name, parent))
         return init, [], layout   
 
 # end of class PerlGridSizerBuilder
