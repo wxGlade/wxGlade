@@ -20,6 +20,7 @@
    porting of the SplitterWindow to this new model
  - Brendan Oakley <pradoderobles@angelfire.com>: editor of the new user's
    manual 
+ - Jack Thomasson <wxglade@jkt.mailsnare.net>: assist with port to wx namespace
  
  Many thanks to:
  ---------------------------------------------------------------------------
