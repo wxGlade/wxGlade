@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.53 2006/11/30 16:25:33 jkt Exp $
+# $Id: common.py,v 1.54 2006/12/02 10:49:57 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -184,16 +184,17 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     Returns:
       the newly created wxBitmapButton
     """
-    from wxPython import wx
+    #from wxPython import wx
+    import wx
     from tree import WidgetTree
-    id = wx.wxNewId()
+    id = wx.NewId()
     if not os.path.isabs(icon_path):
         icon_path = os.path.join(wxglade_path, icon_path)
-    if wx.wxPlatform == '__WXGTK__': style = wx.wxNO_BORDER
-    else: style = wx.wxBU_AUTODRAW
-    tmp = wx.wxBitmapButton(palette, id, wx.wxBitmap(icon_path,
-                                                     wx.wxBITMAP_TYPE_XPM),
-                            size=(31, 31), style=style)
+    if wx.Platform == '__WXGTK__': style = wx.NO_BORDER
+    else: style = wx.BU_AUTODRAW
+    tmp = wx.BitmapButton(palette, id, wx.Bitmap(icon_path,
+                                                 wx.BITMAP_TYPE_XPM),
+                          size=(31, 31), style=style)
     if not toplevel:
         wx.EVT_BUTTON(tmp, id, add_object)
     else:
@@ -201,7 +202,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     refs[id] = widget
     if not tip:
         tip = 'Add a %s' % widget.replace('Edit', '')
-    tmp.SetToolTip(wx.wxToolTip(tip))
+    tmp.SetToolTip(wx.ToolTip(tip))
 
     WidgetTree.images[widget] = icon_path
 
@@ -218,7 +219,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         widget_to_add = None
         import misc
         if misc._currently_under_mouse is not None:
-            misc._currently_under_mouse.SetCursor(wx.wxSTANDARD_CURSOR)
+            misc._currently_under_mouse.SetCursor(wx.STANDARD_CURSOR)
         event.Skip()
     wx.EVT_CHAR(tmp, on_char)
 

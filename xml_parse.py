@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.39 2005/12/28 00:22:01 agriggio Exp $
+# $Id: xml_parse.py,v 1.40 2006/12/02 10:49:57 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -28,7 +28,8 @@ import xml.sax.expatreader
 
 
 if common.use_gui:
-    from wxPython import wx
+    #from wxPython import wx
+    import wx
 
 class XmlParsingError(SAXException):
     """\
@@ -242,8 +243,8 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
             del kwds['input_file']
             self.size = len(self.input_file.readlines())
             self.input_file.seek(0)
-            self.progress = wx.wxProgressDialog("Loading...", "Please wait "
-                                                "while loading the app", 20)
+            self.progress = wx.ProgressDialog("Loading...", "Please wait "
+                                              "while loading the app", 20)
             self.step = 4
             self.i = 1
         else:
@@ -756,19 +757,19 @@ class Stack:
 
 class Sizeritem:
     if common.use_gui:
-        flags = { 'wxALL': wx.wxALL,
-                  'wxEXPAND': wx.wxEXPAND, 'wxALIGN_RIGHT': wx.wxALIGN_RIGHT,
-                  'wxALIGN_BOTTOM': wx.wxALIGN_BOTTOM,
-                  'wxALIGN_CENTER_HORIZONTAL': wx.wxALIGN_CENTER_HORIZONTAL,
-                  'wxALIGN_CENTER_VERTICAL': wx.wxALIGN_CENTER_VERTICAL,
-                  'wxLEFT': wx.wxLEFT, 'wxRIGHT': wx.wxRIGHT,
-                  'wxTOP': wx.wxTOP,
-                  'wxBOTTOM': wx.wxBOTTOM,
-                  'wxSHAPED': wx.wxSHAPED,
-                  'wxADJUST_MINSIZE': wx.wxADJUST_MINSIZE, }
+        flags = { 'wxALL': wx.ALL,
+                  'wxEXPAND': wx.EXPAND, 'wxALIGN_RIGHT': wx.ALIGN_RIGHT,
+                  'wxALIGN_BOTTOM': wx.ALIGN_BOTTOM,
+                  'wxALIGN_CENTER_HORIZONTAL': wx.ALIGN_CENTER_HORIZONTAL,
+                  'wxALIGN_CENTER_VERTICAL': wx.ALIGN_CENTER_VERTICAL,
+                  'wxLEFT': wx.LEFT, 'wxRIGHT': wx.RIGHT,
+                  'wxTOP': wx.TOP,
+                  'wxBOTTOM': wx.BOTTOM,
+                  'wxSHAPED': wx.SHAPED,
+                  'wxADJUST_MINSIZE': wx.ADJUST_MINSIZE, }
         import misc
         if misc.check_wx_version(2, 5, 2):
-            flags['wxFIXED_MINSIZE'] = wx.wxFIXED_MINSIZE
+            flags['wxFIXED_MINSIZE'] = wx.FIXED_MINSIZE
         else:
             flags['wxFIXED_MINSIZE'] = 0
 

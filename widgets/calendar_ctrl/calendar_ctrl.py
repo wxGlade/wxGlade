@@ -1,5 +1,5 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.9 2006/11/20 20:11:55 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.10 2006/12/02 10:49:56 agriggio Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -60,11 +60,11 @@ class EditCalendarCtrl(ManagedBase):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
+        panel = wx.Panel(self.notebook, -1)
         #self.properties['label'].display(panel)
         self.properties['default'].display(panel)
         self.properties['style'].display(panel)
-        szr = wxBoxSizer(wxVERTICAL)
+        szr = wx.BoxSizer(wx.VERTICAL)
         #szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)

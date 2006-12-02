@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.56 2006/11/19 15:58:57 guyru Exp $
+# $Id: widget_properties.py,v 1.57 2006/12/02 10:49:57 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -11,15 +11,20 @@
 # property, otherwise on the properties tabs horizontal scrollbars are shown
 _label_initial_width = 5 
 
-from wxPython.wx import *
-from wxPython.grid import *
+#from wxPython.wx import *
+#from wxPython.grid import *
+import wx
+import wx.grid
 from xml.sax.saxutils import escape
 import common, misc
 try:
-    from wxPython.lib.stattext import *
+    #from wxPython.lib.stattext import *
+    import wx.lib.stattext
+    wxGenStaticText = wx.lib.stattext.GenStaticText
 except ImportError:
     # wxGenStaticText has been added in wx 2.3.3, so it may not be available
-    wxGenStaticText = wxStaticText
+    #wxGenStaticText = wxStaticText
+    wxGenStaticText = wx.StaticText
 
 def _mangle(label):
     """\
@@ -178,33 +183,33 @@ class TextProperty(Property, _activator):
         Actually builds the text control to set the value of the property
         interactively
         """
-        self.id = wxNewId()
+        self.id = wx.NewId()
         #self.panel = wxPanel(parent, -1)
         #self.panel = parent
-        if self.readonly: style = wxTE_READONLY
+        if self.readonly: style = wx.TE_READONLY
         else: style = 0
-        if self.multiline: style |= wxTE_MULTILINE
+        if self.multiline: style |= wx.TE_MULTILINE
         val = self.get_value()
         if self.multiline: val = val.replace('\\n', '\n')
         #label = wxStaticText(self.panel, -1, _mangle(self.name))
         label = wxGenStaticText(parent, -1, _mangle(self.name),
                                 size=(_label_initial_width, -1))
         if self.can_disable:
-            self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
-        self.text = wxTextCtrl(parent, self.id, val, style=style, size=(1, -1))
+            self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
+        self.text = wx.TextCtrl(parent, self.id, val, style=style, size=(1, -1))
         if hasattr(self, 'tooltip'):
-            label.SetToolTip(wxToolTip(self.tooltip))
+            label.SetToolTip(wx.ToolTip(self.tooltip))
         else:
-            label.SetToolTip(wxToolTip(_mangle(self.name)))
+            label.SetToolTip(wx.ToolTip(_mangle(self.name)))
         if self.can_disable:
             #self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
-            EVT_CHECKBOX(self._enabler, self.id+1,
+            wx.EVT_CHECKBOX(self._enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
             self.text.Enable(self.is_active())
             self._enabler.SetValue(self.is_active())
             self._target = self.text
-        sizer = wxBoxSizer(wxHORIZONTAL)
-        sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         #sizer.SetItemMinSize(label, *label.GetBestSize())
 ##         try:
 ##             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
@@ -212,11 +217,11 @@ class TextProperty(Property, _activator):
 ##         except AttributeError:
 ##             option = 5
         if getattr(self, '_enabler', None) is not None:
-            sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
+            sizer.Add(self._enabler, 1, wx.ALL|wx.ALIGN_CENTER, 3)
             option = 4
         else:
             option = 5
-        sizer.Add(self.text, option, wxALL|wxALIGN_CENTER, 3)
+        sizer.Add(self.text, option, wx.ALL|wx.ALIGN_CENTER, 3)
         if self.multiline:
             h = self.text.GetCharHeight()
             sizer.SetItemMinSize(self.text, -1, h*3)
@@ -225,10 +230,10 @@ class TextProperty(Property, _activator):
 ##         self.panel.SetSize(sizer.GetMinSize())
         self.panel = sizer
         self.bind_event(self.on_change_val)
-        EVT_CHAR(self.text, self.on_char)
+        wx.EVT_CHAR(self.text, self.on_char)
 
     def on_char(self, event):
-        if event.GetKeyCode() == WXK_ESCAPE:
+        if event.GetKeyCode() == wx.WXK_ESCAPE:
             self.text.SetValue(self.val)
             self.text.SetInsertionPointEnd()
         event.Skip()
@@ -239,7 +244,7 @@ class TextProperty(Property, _activator):
                 #misc.wxCallAfter(function, event)
                 function(event)
             event.Skip()
-        EVT_KILL_FOCUS(self.text, func_2)
+        wx.EVT_KILL_FOCUS(self.text, func_2)
 
     def get_value(self):
         try:
@@ -284,14 +289,14 @@ class CheckBoxProperty(Property):
         Actually builds the check box to set the value of the property
         interactively
         """
-        self.id = wxNewId()
+        self.id = wx.NewId()
         #self.panel = wxPanel(parent, -1)
-        self.cb = wxCheckBox(parent, self.id, '')
+        self.cb = wx.CheckBox(parent, self.id, '')
         self.cb.SetValue(self.val)
-        label = wxStaticText(parent, -1, self.label)
-        sizer = wxBoxSizer(wxHORIZONTAL)
-        sizer.Add(label, 5, wxALIGN_CENTER_VERTICAL|wxALL, 3)
-        sizer.Add(self.cb, 2, wxALIGN_CENTER|wxALL, 3)
+        label = wx.StaticText(parent, -1, self.label)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(label, 5, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 3)
+        sizer.Add(self.cb, 2, wx.ALIGN_CENTER|wx.ALL, 3)
 ##         self.panel.SetAutoLayout(True)
 ##         self.panel.SetSizer(sizer)
 ##         self.panel.SetSize(sizer.GetMinSize())
@@ -299,7 +304,7 @@ class CheckBoxProperty(Property):
         self.bind_event(self.on_change_val)
         
     def bind_event(self, function):
-        EVT_CHECKBOX(self.cb, self.id, function)
+        wx.EVT_CHECKBOX(self.cb, self.id, function)
 
     def get_value(self):
         try: return int(self.cb.GetValue())
@@ -335,7 +340,7 @@ class CheckListProperty(Property):
          follow
 	@type tooltips: tuple of strings
 	@param tooltips: a list of strings to be displayed as the tool-tips for the properties
-	"""
+	""" #" # ALB - fix for emacs's syntax highlight, don't remove please!
         Property.__init__(self, owner, name, parent)
         self.values = owner[name][0]()
         self.labels = labels
@@ -351,11 +356,11 @@ class CheckListProperty(Property):
         Actually builds the list of checkboxes to set the value of the property
         interactively
         """
-        self.id = wxNewId()
+        self.id = wx.NewId()
         #self.panel = wxPanel(parent, -1)
 
         self.choices = []
-        tmp_sizer = wxBoxSizer(wxVERTICAL)
+        tmp_sizer = wx.BoxSizer(wx.VERTICAL)
         #self.panel.SetAutoLayout(True)
         i = j = 0
         tmp = tmp_sizer
@@ -363,18 +368,18 @@ class CheckListProperty(Property):
             if i >= len(self.labels): break
             if self.labels[i].startswith('#section#'):
                 if tmp != tmp_sizer:
-                    tmp_sizer.Add(tmp, 1, wxALL|wxEXPAND, 5)
+                    tmp_sizer.Add(tmp, 1, wx.ALL|wx.EXPAND, 5)
                 lbl = _mangle(self.labels[i].replace('#section#', ''))
-                tmp = wxStaticBoxSizer(wxStaticBox(parent, -1, lbl),
-                                       wxVERTICAL)
+                tmp = wx.StaticBoxSizer(wx.StaticBox(parent, -1, lbl),
+                                       wx.VERTICAL)
             else:
-                c = wxCheckBox(parent, self.id+j, self.labels[i])
+                c = wx.CheckBox(parent, self.id+j, self.labels[i])
                 self.choices.append(c)
                 tmp.Add(c)
                 j += 1
             i += 1
         if tmp != tmp_sizer:
-            tmp_sizer.Add(tmp, 1, wxALL|wxEXPAND, 5)
+            tmp_sizer.Add(tmp, 1, wx.ALL|wx.EXPAND, 5)
 
         for i in range(len(self.values)):
             self.choices[i].SetValue(self.values[i])
@@ -383,7 +388,7 @@ class CheckListProperty(Property):
 	if self.tooltips is not None:
 		for i in range(len(self.tooltips)):
 			if i >= len(self.choices): break
-			self.choices[i].SetToolTip(wxToolTip(self.tooltips[i]))
+			self.choices[i].SetToolTip(wx.ToolTip(self.tooltips[i]))
                   
 ##         self.panel.SetSizer(tmp_sizer)
 ##         self.panel.SetSize(tmp_sizer.GetMinSize())
@@ -392,7 +397,7 @@ class CheckListProperty(Property):
         
     def bind_event(self, function):
         for i in range(len(self.choices)):
-            EVT_CHECKBOX(self.choices[i], self.id+i, function)
+            wx.EVT_CHECKBOX(self.choices[i], self.id+i, function)
 
     def get_value(self):
         try: return [c.GetValue() for c in self.choices]
@@ -455,14 +460,14 @@ class SpinProperty(Property, _activator):
         Actually builds the spin control to set the value of the property
         interactively
         """
-        self.id = wxNewId()
+        self.id = wx.NewId()
         if self.val_range is None: self.val_range = (0, 1000)
         label = wxGenStaticText(parent, -1, _mangle(self.name),
                                 size=(_label_initial_width, -1))
-        label.SetToolTip(wxToolTip(_mangle(self.name)))
+        label.SetToolTip(wx.ToolTip(_mangle(self.name)))
         if self.can_disable:
-            self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
-        self.spin = wxSpinCtrl(parent, self.id, min=self.val_range[0],
+            self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
+        self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
                                max=self.val_range[1])
         val = int(self.owner[self.name][0]())
         if not val:
@@ -470,19 +475,19 @@ class SpinProperty(Property, _activator):
         self.spin.SetValue(val) #int(self.owner[self.name][0]()))
         if self.can_disable:
             #self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
-            EVT_CHECKBOX(self._enabler, self.id+1,
+            wx.EVT_CHECKBOX(self._enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
             self.spin.Enable(self.is_active())
             self._enabler.SetValue(self.is_active())
             self._target = self.spin
-        sizer = wxBoxSizer(wxHORIZONTAL)
-        sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         if getattr(self, '_enabler', None) is not None:
-            sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
+            sizer.Add(self._enabler, 1, wx.ALL|wx.ALIGN_CENTER, 3)
             option = 4
         else:
             option = 5
-        sizer.Add(self.spin, option, wxALL|wxALIGN_CENTER, 3)
+        sizer.Add(self.spin, option, wx.ALL|wx.ALIGN_CENTER, 3)
         self.panel = sizer
         self.bind_event(self.on_change_val)
 
@@ -494,10 +499,10 @@ class SpinProperty(Property, _activator):
 ##                 else:
                 function(event)
             event.Skip()
-        EVT_KILL_FOCUS(self.spin, func_2)
-        if wxPlatform == '__WXMAC__':
-            EVT_TEXT(self.spin, self.spin.GetId(), func_2)
-            EVT_SPINCTRL(self.spin, self.spin.GetId(), func_2)
+        wx.EVT_KILL_FOCUS(self.spin, func_2)
+        if wx.Platform == '__WXMAC__':
+            wx.EVT_TEXT(self.spin, self.spin.GetId(), func_2)
+            wx.EVT_SPINCTRL(self.spin, self.spin.GetId(), func_2)
 
     def get_value(self):
         try: return self.spin.GetValue()
@@ -541,52 +546,52 @@ class DialogProperty(Property, _activator):
         Actually builds the panel (with the text ctrl and the button to display
         the dialog) to set the value of the property interactively
         """
-        self.id = wxNewId()
+        self.id = wx.NewId()
         val = misc.wxstr(self.owner[self.name][0]())
         label = wxGenStaticText(parent, -1, _mangle(self.name),
                                 size=(_label_initial_width, -1))
-        label.SetToolTip(wxToolTip(_mangle(self.name)))
+        label.SetToolTip(wx.ToolTip(_mangle(self.name)))
         if self.can_disable:
-            self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
-        self.text = wxTextCtrl(parent, self.id, val, size=(1, -1))
-        self.btn = wxButton(parent, self.id+1, " ... ",
+            self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
+        self.text = wx.TextCtrl(parent, self.id, val, size=(1, -1))
+        self.btn = wx.Button(parent, self.id+1, " ... ",
                             size=(_label_initial_width, -1))
         if self.can_disable:
             #self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
-            EVT_CHECKBOX(self._enabler, self.id+1,
+            wx.EVT_CHECKBOX(self._enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
             self.text.Enable(self.is_active())
             self.btn.Enable(self.is_active())
             self._enabler.SetValue(self.is_active())
             self._target = self.text
-        EVT_BUTTON(self.btn, self.id+1, self.display_dialog)
-        sizer = wxBoxSizer(wxHORIZONTAL)
-        sizer.Add(label, 2, wxALL|wxALIGN_CENTER, 3)
+        wx.EVT_BUTTON(self.btn, self.id+1, self.display_dialog)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         if getattr(self, '_enabler', None) is not None:
-            sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
+            sizer.Add(self._enabler, 1, wx.ALL|wx.ALIGN_CENTER, 3)
             option = 3
         else:
             option = 4
-        sizer.Add(self.text, option, wxALL|wxALIGN_CENTER, 3)
-        sizer.Add(self.btn, 1, wxALL|wxALIGN_CENTER, 3)
+        sizer.Add(self.text, option, wx.ALL|wx.ALIGN_CENTER, 3)
+        sizer.Add(self.btn, 1, wx.ALL|wx.ALIGN_CENTER, 3)
         self.panel = sizer
         
         self.bind_event(self.on_change_val)
-        EVT_CHAR(self.text, self.on_char)
+        wx.EVT_CHAR(self.text, self.on_char)
 
     def on_char(self, event):
-        if event.GetKeyCode() == WXK_ESCAPE:
+        if event.GetKeyCode() == wx.WXK_ESCAPE:
             self.text.SetValue(self.val)
             self.text.SetInsertionPointEnd()
         event.Skip()
 
     def display_dialog(self, event):
-        if self.dialog.ShowModal() == wxID_OK:
+        if self.dialog.ShowModal() == wx.ID_OK:
             self.text.SetValue(misc.wxstr(self.dialog.get_value()))
-        self.text.ProcessEvent(wxFocusEvent(wxEVT_KILL_FOCUS, self.id))
+        self.text.ProcessEvent(wx.FocusEvent(wx.wxEVT_KILL_FOCUS, self.id))
 
     def bind_event(self, function):
-        EVT_KILL_FOCUS(self.text, function)
+        wx.EVT_KILL_FOCUS(self.text, function)
 
     def get_value(self):
         try: return self.text.GetValue()
@@ -626,7 +631,7 @@ class FileDialogProperty(DialogProperty):
             self.value = misc.FileSelector(
                 self.message, wildcard=self.wildcard, flags=self.style)
             if self.value:
-                return wxID_OK
+                return wx.ID_OK
 
         def get_value(self):
             return self.value
@@ -652,37 +657,37 @@ from misc import _reverse_dict
 
 class ColorDialogProperty(DialogProperty):
     str_to_colors = {
-        'wxSYS_COLOUR_SCROLLBAR': wxSYS_COLOUR_SCROLLBAR,
-        'wxSYS_COLOUR_BACKGROUND': wxSYS_COLOUR_BACKGROUND,
-        'wxSYS_COLOUR_ACTIVECAPTION': wxSYS_COLOUR_ACTIVECAPTION,
-        'wxSYS_COLOUR_INACTIVECAPTION': wxSYS_COLOUR_INACTIVECAPTION,
-        'wxSYS_COLOUR_MENU': wxSYS_COLOUR_MENU,
-        'wxSYS_COLOUR_WINDOW': wxSYS_COLOUR_WINDOW,
-        'wxSYS_COLOUR_WINDOWFRAME': wxSYS_COLOUR_WINDOWFRAME,
-        'wxSYS_COLOUR_MENUTEXT': wxSYS_COLOUR_MENUTEXT,
-        'wxSYS_COLOUR_WINDOWTEXT': wxSYS_COLOUR_WINDOWTEXT,
-        'wxSYS_COLOUR_CAPTIONTEXT': wxSYS_COLOUR_CAPTIONTEXT,
-        'wxSYS_COLOUR_ACTIVEBORDER': wxSYS_COLOUR_ACTIVEBORDER,
-        'wxSYS_COLOUR_INACTIVEBORDER': wxSYS_COLOUR_INACTIVEBORDER,
-        'wxSYS_COLOUR_APPWORKSPACE': wxSYS_COLOUR_APPWORKSPACE,
-        'wxSYS_COLOUR_HIGHLIGHT': wxSYS_COLOUR_HIGHLIGHT,
-        'wxSYS_COLOUR_HIGHLIGHTTEXT': wxSYS_COLOUR_HIGHLIGHTTEXT,
-        'wxSYS_COLOUR_BTNFACE': wxSYS_COLOUR_BTNFACE,
-        'wxSYS_COLOUR_BTNSHADOW': wxSYS_COLOUR_BTNSHADOW,
-        'wxSYS_COLOUR_GRAYTEXT': wxSYS_COLOUR_GRAYTEXT,
-        'wxSYS_COLOUR_BTNTEXT': wxSYS_COLOUR_BTNTEXT,
-        'wxSYS_COLOUR_INACTIVECAPTIONTEXT': wxSYS_COLOUR_INACTIVECAPTIONTEXT,
-        'wxSYS_COLOUR_BTNHIGHLIGHT': wxSYS_COLOUR_BTNHIGHLIGHT,
-        'wxSYS_COLOUR_3DDKSHADOW': wxSYS_COLOUR_3DDKSHADOW,
-        'wxSYS_COLOUR_3DLIGHT': wxSYS_COLOUR_3DLIGHT,
-        'wxSYS_COLOUR_INFOTEXT': wxSYS_COLOUR_INFOTEXT,
-        'wxSYS_COLOUR_INFOBK': wxSYS_COLOUR_INFOBK,
-        'wxSYS_COLOUR_DESKTOP': wxSYS_COLOUR_DESKTOP,
-        'wxSYS_COLOUR_3DFACE': wxSYS_COLOUR_3DFACE,
-        'wxSYS_COLOUR_3DSHADOW': wxSYS_COLOUR_3DSHADOW,
-        'wxSYS_COLOUR_3DHIGHLIGHT': wxSYS_COLOUR_3DHIGHLIGHT,
-        'wxSYS_COLOUR_3DHILIGHT': wxSYS_COLOUR_3DHILIGHT,
-        'wxSYS_COLOUR_BTNHILIGHT': wxSYS_COLOUR_BTNHILIGHT
+        'wxSYS_COLOUR_SCROLLBAR': wx.SYS_COLOUR_SCROLLBAR,
+        'wxSYS_COLOUR_BACKGROUND': wx.SYS_COLOUR_BACKGROUND,
+        'wxSYS_COLOUR_ACTIVECAPTION': wx.SYS_COLOUR_ACTIVECAPTION,
+        'wxSYS_COLOUR_INACTIVECAPTION': wx.SYS_COLOUR_INACTIVECAPTION,
+        'wxSYS_COLOUR_MENU': wx.SYS_COLOUR_MENU,
+        'wxSYS_COLOUR_WINDOW': wx.SYS_COLOUR_WINDOW,
+        'wxSYS_COLOUR_WINDOWFRAME': wx.SYS_COLOUR_WINDOWFRAME,
+        'wxSYS_COLOUR_MENUTEXT': wx.SYS_COLOUR_MENUTEXT,
+        'wxSYS_COLOUR_WINDOWTEXT': wx.SYS_COLOUR_WINDOWTEXT,
+        'wxSYS_COLOUR_CAPTIONTEXT': wx.SYS_COLOUR_CAPTIONTEXT,
+        'wxSYS_COLOUR_ACTIVEBORDER': wx.SYS_COLOUR_ACTIVEBORDER,
+        'wxSYS_COLOUR_INACTIVEBORDER': wx.SYS_COLOUR_INACTIVEBORDER,
+        'wxSYS_COLOUR_APPWORKSPACE': wx.SYS_COLOUR_APPWORKSPACE,
+        'wxSYS_COLOUR_HIGHLIGHT': wx.SYS_COLOUR_HIGHLIGHT,
+        'wxSYS_COLOUR_HIGHLIGHTTEXT': wx.SYS_COLOUR_HIGHLIGHTTEXT,
+        'wxSYS_COLOUR_BTNFACE': wx.SYS_COLOUR_BTNFACE,
+        'wxSYS_COLOUR_BTNSHADOW': wx.SYS_COLOUR_BTNSHADOW,
+        'wxSYS_COLOUR_GRAYTEXT': wx.SYS_COLOUR_GRAYTEXT,
+        'wxSYS_COLOUR_BTNTEXT': wx.SYS_COLOUR_BTNTEXT,
+        'wxSYS_COLOUR_INACTIVECAPTIONTEXT': wx.SYS_COLOUR_INACTIVECAPTIONTEXT,
+        'wxSYS_COLOUR_BTNHIGHLIGHT': wx.SYS_COLOUR_BTNHIGHLIGHT,
+        'wxSYS_COLOUR_3DDKSHADOW': wx.SYS_COLOUR_3DDKSHADOW,
+        'wxSYS_COLOUR_3DLIGHT': wx.SYS_COLOUR_3DLIGHT,
+        'wxSYS_COLOUR_INFOTEXT': wx.SYS_COLOUR_INFOTEXT,
+        'wxSYS_COLOUR_INFOBK': wx.SYS_COLOUR_INFOBK,
+        'wxSYS_COLOUR_DESKTOP': wx.SYS_COLOUR_DESKTOP,
+        'wxSYS_COLOUR_3DFACE': wx.SYS_COLOUR_3DFACE,
+        'wxSYS_COLOUR_3DSHADOW': wx.SYS_COLOUR_3DSHADOW,
+        'wxSYS_COLOUR_3DHIGHLIGHT': wx.SYS_COLOUR_3DHIGHLIGHT,
+        'wxSYS_COLOUR_3DHILIGHT': wx.SYS_COLOUR_3DHILIGHT,
+        'wxSYS_COLOUR_BTNHILIGHT': wx.SYS_COLOUR_BTNHILIGHT
         }
 
     colors_to_str = _reverse_dict(str_to_colors)
@@ -717,19 +722,19 @@ class ColorDialogProperty(DialogProperty):
 
 
 class FontDialogProperty(DialogProperty):
-    font_families_to = { 'default': wxDEFAULT, 'decorative': wxDECORATIVE,
-                         'roman': wxROMAN, 'swiss': wxSWISS,
-                         'script':wxSCRIPT, 'modern': wxMODERN }
+    font_families_to = { 'default': wx.DEFAULT, 'decorative': wx.DECORATIVE,
+                         'roman': wx.ROMAN, 'swiss': wx.SWISS,
+                         'script':wx.SCRIPT, 'modern': wx.MODERN }
     font_families_from = _reverse_dict(font_families_to)
-    font_styles_to = { 'normal': wxNORMAL, 'slant': wxSLANT,
-                       'italic': wxITALIC }
+    font_styles_to = { 'normal': wx.NORMAL, 'slant': wx.SLANT,
+                       'italic': wx.ITALIC }
     font_styles_from = _reverse_dict(font_styles_to)
-    font_weights_to = { 'normal': wxNORMAL, 'light': wxLIGHT, 'bold': wxBOLD }
+    font_weights_to = {'normal': wx.NORMAL, 'light': wx.LIGHT, 'bold': wx.BOLD }
     font_weights_from = _reverse_dict(font_weights_to)
     
     if misc.check_wx_version(2, 3, 3):
-        font_families_to['teletype'] = wxTELETYPE 
-        font_families_from[wxTELETYPE] = 'teletype' 
+        font_families_to['teletype'] = wx.TELETYPE 
+        font_families_from[wx.TELETYPE] = 'teletype' 
 
     dialog = [None]
 
@@ -811,29 +816,29 @@ class RadioProperty(Property, _activator):
         Actually builds the radio box to set the value of the property
         interactively
         """
-        self.id = wxNewId()
-        style = wxRA_SPECIFY_COLS|wxNO_BORDER
+        self.id = wx.NewId()
+        style = wx.RA_SPECIFY_COLS|wx.NO_BORDER
         if not self.can_disable: 
-            szr = wxBoxSizer(wxHORIZONTAL)
-            style=wxRA_SPECIFY_COLS
+            szr = wx.BoxSizer(wx.HORIZONTAL)
+            style=wx.RA_SPECIFY_COLS
         else: 
-            szr = wxStaticBoxSizer(wxStaticBox(parent, -1, self.label),
-                                   wxHORIZONTAL)
-        self.options = wxRadioBox(parent, self.id, self.label,
+            szr = wx.StaticBoxSizer(wx.StaticBox(parent, -1, self.label),
+                                   wx.HORIZONTAL)
+        self.options = wx.RadioBox(parent, self.id, self.label,
                                   choices=self.choices,
                                   majorDimension=self.columns,
                                   style=style)
         try: self.options.SetSelection(int(self.val))
         except: pass
         if self.can_disable:
-            self._enabler = wxCheckBox(parent, self.id+1, "")
+            self._enabler = wx.CheckBox(parent, self.id+1, "")
             szr.Add(self._enabler)
-            EVT_CHECKBOX(self._enabler, self.id+1,
+            wx.EVT_CHECKBOX(self._enabler, self.id+1,
                          lambda e: self.toggle_active(e.IsChecked()))
             self.options.Enable(self.is_active())
             self.options.SetLabel("")
             self._enabler.SetValue(self.is_active())
-        szr.Add(self.options, 1, wxEXPAND)
+        szr.Add(self.options, 1, wx.EXPAND)
         self.panel = szr
         self.bind_event(self.on_change_val)
 
@@ -841,7 +846,7 @@ class RadioProperty(Property, _activator):
         def func_2(event, function=function, self=self):
             if self.options.IsEnabled():
                 function(event)
-        EVT_RADIOBOX(self.options, self.id, func_2)
+        wx.EVT_RADIOBOX(self.options, self.id, func_2)
 
     def get_value(self):
         try: return self.options.GetSelection()
@@ -905,23 +910,23 @@ class GridProperty(Property): #wxPanel, Property):
         Actually builds the grid to set the value of the property
         interactively
         """
-        self.panel = wxPanel(parent, -1) # why if the grid is not on this panel
+        self.panel = wx.Panel(parent, -1) # why if the grid is not on this panel
                                          # it is not displayed???
-        sizer = wxStaticBoxSizer(wxStaticBox(self.panel, -1,
-                                             _mangle(self.name)), wxVERTICAL)
-        self.btn_id = wxNewId()
-        self.btn = wxButton(self.panel, self.btn_id, "  Apply  ",
-                            style=wxBU_EXACTFIT)
+        sizer = wx.StaticBoxSizer(wx.StaticBox(self.panel, -1,
+                                             _mangle(self.name)), wx.VERTICAL)
+        self.btn_id = wx.NewId()
+        self.btn = wx.Button(self.panel, self.btn_id, "  Apply  ",
+                            style=wx.BU_EXACTFIT)
         if self.can_add:
-            self.add_btn = wxButton(self.panel, self.btn_id+1, "  Add  ",
-                                    style=wxBU_EXACTFIT)
+            self.add_btn = wx.Button(self.panel, self.btn_id+1, "  Add  ",
+                                    style=wx.BU_EXACTFIT)
         if self.can_insert:
-            self.insert_btn = wxButton(self.panel, self.btn_id+3, "  Insert  ",
-                                       style=wxBU_EXACTFIT)
+            self.insert_btn = wx.Button(self.panel, self.btn_id+3, "  Insert  ",
+                                       style=wx.BU_EXACTFIT)
         if self.can_remove:
-            self.remove_btn = wxButton(self.panel, self.btn_id+2, "  Remove  ",
-                                       style=wxBU_EXACTFIT)
-        self.grid = wxGrid(self.panel, -1)
+            self.remove_btn = wx.Button(self.panel, self.btn_id+2, "  Remove  ",
+                                       style=wx.BU_EXACTFIT)
+        self.grid = wx.grid.Grid(self.panel, -1)
         self.grid.CreateGrid(self.rows, len(self.cols))
         if misc.check_wx_version(2, 3, 3):
             self.grid.SetMargins(0, 0)
@@ -937,35 +942,35 @@ class GridProperty(Property): #wxPanel, Property):
         self.grid.SetRowLabelSize(0)
         self.grid.SetColLabelSize(20)
 
-        self.btn_sizer = wxBoxSizer(wxHORIZONTAL)
+        self.btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
         _w = self.btn.GetTextExtent(self.btn.GetLabel())[0]
-        if misc.check_wx_version(2, 5, 2): extra_flag = wxFIXED_MINSIZE
+        if misc.check_wx_version(2, 5, 2): extra_flag = wx.FIXED_MINSIZE
         else: extra_flag = 0
         #self.btn.SetSize((_w, -1))
         self.btn_sizer.Add(self.btn, 0, extra_flag)
         if self.can_add:
             _w = self.add_btn.GetTextExtent(self.add_btn.GetLabel())[0]
             #self.add_btn.SetSize((_w, -1))
-            self.btn_sizer.Add(self.add_btn, 0, wxLEFT|wxRIGHT|extra_flag, 4)
-            EVT_BUTTON(self.add_btn, self.btn_id+1, self.add_row)
+            self.btn_sizer.Add(self.add_btn, 0, wx.LEFT|wx.RIGHT|extra_flag, 4)
+            wx.EVT_BUTTON(self.add_btn, self.btn_id+1, self.add_row)
         if self.can_insert: 
             _w = self.insert_btn.GetTextExtent(self.insert_btn.GetLabel())[0]
             #self.insert_btn.SetSize((_w, -1))
             self.btn_sizer.Add(
-                self.insert_btn, 0, wxLEFT|wxRIGHT|extra_flag, 4)
-            EVT_BUTTON(self.insert_btn, self.btn_id+3, self.insert_row)
+                self.insert_btn, 0, wx.LEFT|wx.RIGHT|extra_flag, 4)
+            wx.EVT_BUTTON(self.insert_btn, self.btn_id+3, self.insert_row)
         if self.can_remove:
             _w = self.remove_btn.GetTextExtent(self.remove_btn.GetLabel())[0]
             #self.remove_btn.SetSize((_w, -1))
             self.btn_sizer.Add(self.remove_btn, 0, extra_flag)
-            EVT_BUTTON(self.remove_btn, self.btn_id+2, self.remove_row)
-        sizer.Add(self.btn_sizer, 0, wxBOTTOM|wxEXPAND, 2)
-        sizer.Add(self.grid, 1, wxEXPAND)
+            wx.EVT_BUTTON(self.remove_btn, self.btn_id+2, self.remove_row)
+        sizer.Add(self.btn_sizer, 0, wx.BOTTOM|wx.EXPAND, 2)
+        sizer.Add(self.grid, 1, wx.EXPAND)
         self.panel.SetAutoLayout(1)
         self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
 
-        EVT_GRID_SELECT_CELL(self.grid, self.on_select_cell)
+        wx.grid.EVT_GRID_SELECT_CELL(self.grid, self.on_select_cell)
         self.bind_event(self.on_change_val)
         self.set_value(self.val)
 
@@ -977,7 +982,7 @@ class GridProperty(Property): #wxPanel, Property):
         def func(event):
             self.grid.SaveEditControlValue()
             function(event)
-        EVT_BUTTON(self.btn, self.btn_id, func)
+        wx.EVT_BUTTON(self.btn, self.btn_id, func)
 
     def get_value(self):
         if not hasattr(self, 'grid'): return self.val

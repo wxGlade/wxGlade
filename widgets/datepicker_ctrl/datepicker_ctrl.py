@@ -1,5 +1,5 @@
 # datepicker_ctrl.py: wxDatePickerCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/datepicker_ctrl/datepicker_ctrl.py,v 1.3 2006/11/22 15:11:20 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/datepicker_ctrl/datepicker_ctrl.py,v 1.4 2006/12/02 10:49:55 agriggio Exp $
 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -45,15 +45,15 @@ class EditDatePickerCtrl(ManagedBase):
         
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
-            self.flag = wxALL
+            self.flag = wx.ALL
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wxPanel(self.notebook, -1)
+        panel = wx.Panel(self.notebook, -1)
         #self.properties['label'].display(panel)
         self.properties['default'].display(panel)
         self.properties['style'].display(panel)
-        szr = wx.BoxSizer(wxVERTICAL)
+        szr = wx.BoxSizer(wx.VERTICAL)
         #szr.Add(self.properties['label'].panel, 0, wxEXPAND)
         szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
@@ -65,9 +65,9 @@ class EditDatePickerCtrl(ManagedBase):
     def create_widget(self):
         try:
             #TODO add all the other parameters for the DatePickerCtrl intial date
-            self.widget = wxDatePickerCtrl(self.parent.widget, self.id ,style=self.style)
+            self.widget = wx.DatePickerCtrl(self.parent.widget, self.id ,style=self.style)
         except AttributeError:
-            self.widget = wxDatePickerCtrl(self.parent.widget, self.id)
+            self.widget = wx.DatePickerCtrl(self.parent.widget, self.id)
 
     def get_default(self):
         return self.default

@@ -1,5 +1,5 @@
 # radio_box.py: wxRadioBox objects
-# $Id: radio_box.py,v 1.15 2006/11/16 15:43:26 guyru Exp $
+# $Id: radio_box.py,v 1.16 2006/12/02 10:49:54 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -61,8 +61,8 @@ class EditRadioBox(ManagedBase):
         self.static_box = wx.StaticBox(self.widget, -1, self.label)        
         self.buttons = [ self.create_button(c) for c in self.choices ]
         if self.buttons: self.buttons[0].SetValue(True)
-        EVT_LEFT_DOWN(self.static_box, self.on_set_focus)
-        EVT_RIGHT_DOWN(self.static_box, self.popup_menu)
+        wx.EVT_LEFT_DOWN(self.static_box, self.on_set_focus)
+        wx.EVT_RIGHT_DOWN(self.static_box, self.popup_menu)
         self.widget.GetBestSize = self.GetBestSize
         self.widget.SetForegroundColour = self.SetForegroundColour
         self.widget.SetBackgroundColour = self.SetBackgroundColour
@@ -95,8 +95,8 @@ class EditRadioBox(ManagedBase):
 
     def create_button(self, label):
         r = wxGladeRadioButton(self.widget, -1, label)
-        EVT_LEFT_DOWN(r, self.on_set_focus)
-        EVT_RIGHT_DOWN(r, self.popup_menu)
+        wx.EVT_LEFT_DOWN(r, self.on_set_focus)
+        wx.EVT_RIGHT_DOWN(r, self.popup_menu)
         return r
 
     def do_layout(self):

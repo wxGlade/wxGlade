@@ -1,5 +1,5 @@
 # Grid.py: wxGrid objects
-# $Id: grid.py,v 1.30 2006/11/16 15:16:34 guyru Exp $
+# $Id: grid.py,v 1.31 2006/12/02 10:49:55 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -223,7 +223,7 @@ class EditGrid(ManagedBase):
         self.properties['columns'].set_col_sizes([-1, 0])
 
     def create_widget(self):
-        self.widget = wxGrid(self.parent.widget, self.id,(200,200))
+        self.widget = Grid(self.parent.widget, self.id,(200,200))
         self.widget.CreateGrid(self.rows_number, len(self.columns))
         if not self.properties['label_bg_color'].is_active():
             self.label_bg_color = misc.color_to_string(

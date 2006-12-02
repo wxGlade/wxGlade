@@ -1,11 +1,12 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.50 2006/05/07 11:42:03 agriggio Exp $
+# $Id: tree.py,v 1.51 2006/12/02 10:49:57 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
+#from wxPython.wx import *
+import wx
 from xml.sax.saxutils import quoteattr
 import misc, common, os.path
 
@@ -30,7 +31,7 @@ class Tree:
                     pw = node.widget.property_window
                     pw.SetTitle('Properties - <>')
                     if Tree.Node.__empty_win is None:
-                        Tree.Node.__empty_win = wxWindow(pw, -1)
+                        Tree.Node.__empty_win = wx.Window(pw, -1)
                     pw.GetSizer().GetChildren()[0].SetWindow(
                         Tree.Node.__empty_win)
                     #wxNotebook(node.widget.property_window, -1))
@@ -237,29 +238,29 @@ class Tree:
 # end of class Tree
 
 
-class WidgetTree(wxTreeCtrl, Tree):
+class WidgetTree(wx.TreeCtrl, Tree):
     """\
     Tree with the ability to display the hierarchy of widgets
     """
     images = {} # dictionary of icons of the widgets displayed
     def __init__(self, parent, application):
-        id = wxNewId()
-        style = wxTR_DEFAULT_STYLE|wxTR_HAS_VARIABLE_ROW_HEIGHT
-        if wxPlatform == '__WXGTK__':
-            style |= wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT
-        elif wxPlatform == '__WXMAC__':
-            style &= ~wxTR_ROW_LINES
-        wxTreeCtrl.__init__(self, parent, id, style=style)
+        id = wx.NewId()
+        style = wx.TR_DEFAULT_STYLE|wx.TR_HAS_VARIABLE_ROW_HEIGHT
+        if wx.Platform == '__WXGTK__':
+            style |= wx.TR_NO_LINES|wx.TR_FULL_ROW_HIGHLIGHT
+        elif wx.Platform == '__WXMAC__':
+            style &= ~wx.TR_ROW_LINES
+        wx.TreeCtrl.__init__(self, parent, id, style=style)
         root_node = Tree.Node(application)
         self.cur_widget = None # reference to the selected widget
         Tree.__init__(self, root_node, application)
-        image_list = wxImageList(21, 21)
-        image_list.Add(wxBitmap(os.path.join(common.wxglade_path,
+        image_list = wx.ImageList(21, 21)
+        image_list.Add(wx.Bitmap(os.path.join(common.wxglade_path,
                                              'icons/application.xpm'),
-                                wxBITMAP_TYPE_XPM))
+                                wx.BITMAP_TYPE_XPM))
         for w in WidgetTree.images:
-            WidgetTree.images[w] = image_list.Add(wxBitmap(
-                WidgetTree.images[w], wxBITMAP_TYPE_XPM))
+            WidgetTree.images[w] = image_list.Add(wx.Bitmap(
+                WidgetTree.images[w], wx.BITMAP_TYPE_XPM))
         self.AssignImageList(image_list)
         root_node.item = self.AddRoot('Application', 0)
         self.SetPyData(root_node.item, root_node)
@@ -273,22 +274,22 @@ class WidgetTree(wxTreeCtrl, Tree):
         self._show_menu = misc.wxGladePopupMenu('widget') # popup menu to
                                                           # show toplevel
                                                           # widgets
-        SHOW_ID = wxNewId()
+        SHOW_ID = wx.NewId()
         self._show_menu.Append(SHOW_ID, 'Show')
-        EVT_TREE_SEL_CHANGED(self, id, self.on_change_selection)
-        EVT_RIGHT_DOWN(self, self.popup_menu)
-        EVT_LEFT_DCLICK(self, self.show_toplevel)
-        EVT_MENU(self, SHOW_ID, self.show_toplevel)
+        wx.EVT_TREE_SEL_CHANGED(self, id, self.on_change_selection)
+        wx.EVT_RIGHT_DOWN(self, self.popup_menu)
+        wx.EVT_LEFT_DCLICK(self, self.show_toplevel)
+        wx.EVT_MENU(self, SHOW_ID, self.show_toplevel)
         def on_key_down(event):
             evt_flags = 0
-            if event.ControlDown(): evt_flags = wxACCEL_CTRL
+            if event.ControlDown(): evt_flags = wx.ACCEL_CTRL
             evt_key = event.GetKeyCode()
             for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
-                    wxCallAfter(function)
+                    wx.CallAfter(function)
                     break
             event.Skip()
-        EVT_KEY_DOWN(self, on_key_down)
+        wx.EVT_KEY_DOWN(self, on_key_down)
 
     def _build_label(self, node):
         s = node.widget.name
@@ -357,7 +358,7 @@ class WidgetTree(wxTreeCtrl, Tree):
             except: self.SelectItem(self.GetRootItem())
             self.Delete(node.item)
         else:
-            wxTreeCtrl.Destroy(self)
+            wx.TreeCtrl.Destroy(self)
 
     def clear(self):
         self.app.reset()
@@ -454,8 +455,8 @@ class WidgetTree(wxTreeCtrl, Tree):
         Shows the widget of the given node and all its children
         """
         if toplevel:
-            if not wxIsBusy():
-                wxBeginBusyCursor()
+            if not wx.IsBusy():
+                wx.BeginBusyCursor()
             if not node.widget.widget:
                 node.widget.create_widget()
                 node.widget.finish_widget_creation()
@@ -470,8 +471,8 @@ class WidgetTree(wxTreeCtrl, Tree):
             if 'size' in props and not props['size'].is_active() and \
                    node.widget.sizer:
                 node.widget.sizer.fit_parent()
-            if wxIsBusy():
-                wxEndBusyCursor()
+            if wx.IsBusy():
+                wx.EndBusyCursor()
         else:
             import edit_sizers
             def show_rec(node):
@@ -521,8 +522,8 @@ class WidgetTree(wxTreeCtrl, Tree):
         If toplevels_only is True, scans only root's children
         """
         item, flags = self.HitTest((x, y))
-        if item and flags & (wxTREE_HITTEST_ONITEMLABEL |
-                             wxTREE_HITTEST_ONITEMICON):
+        if item and flags & (wx.TREE_HITTEST_ONITEMLABEL |
+                             wx.TREE_HITTEST_ONITEMICON):
             node = self.GetPyData(item)
             if not toplevels_only or node.parent is self.root:
                 return node

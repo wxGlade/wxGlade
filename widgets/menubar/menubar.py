@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.24 2006/11/16 14:58:02 guyru Exp $
+# $Id: menubar.py,v 1.25 2006/12/02 10:49:54 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -27,7 +27,7 @@ class MenuItemDialog(wx.Dialog):
         self.menu_items = wx.ListCtrl(self, LIST_ID, style=wx.LC_REPORT | \
                                      wx.LC_SINGLE_SEL|wx.SUNKEN_BORDER)
         # ALB 2004-09-26: workaround to make the scroll wheel work...
-        EVT_MOUSEWHEEL(self.menu_items, lambda e: e.Skip())
+        wx.EVT_MOUSEWHEEL(self.menu_items, lambda e: e.Skip())
         
         self.menu_items.InsertColumn(0, "Label")
         self.menu_items.InsertColumn(1, "Id")
@@ -76,23 +76,23 @@ class MenuItemDialog(wx.Dialog):
         self.selected_index = -1 # index of the selected element in the 
                                  # wx.ListCtrl menu_items
         # event handlers
-        EVT_BUTTON(self, ADD_ID, self.add_menu_item)
-        EVT_BUTTON(self, REMOVE_ID, self.remove_menu_item)
-        EVT_BUTTON(self, ADD_SEP_ID, self.add_separator)
-        EVT_BUTTON(self, MOVE_LEFT_ID, self.move_item_left)
-        EVT_BUTTON(self, MOVE_RIGHT_ID, self.move_item_right)
-        EVT_BUTTON(self, MOVE_UP_ID, self.move_item_up)
-        EVT_BUTTON(self, MOVE_DOWN_ID, self.move_item_down)
-        EVT_BUTTON(self, wx.ID_APPLY, self.on_apply)
-        EVT_KILL_FOCUS(self.name, self.update_menu_item)
-        EVT_KILL_FOCUS(self.label, self.update_menu_item)
-        EVT_KILL_FOCUS(self.id, self.update_menu_item)
-        EVT_KILL_FOCUS(self.help_str, self.update_menu_item)
+        wx.EVT_BUTTON(self, ADD_ID, self.add_menu_item)
+        wx.EVT_BUTTON(self, REMOVE_ID, self.remove_menu_item)
+        wx.EVT_BUTTON(self, ADD_SEP_ID, self.add_separator)
+        wx.EVT_BUTTON(self, MOVE_LEFT_ID, self.move_item_left)
+        wx.EVT_BUTTON(self, MOVE_RIGHT_ID, self.move_item_right)
+        wx.EVT_BUTTON(self, MOVE_UP_ID, self.move_item_up)
+        wx.EVT_BUTTON(self, MOVE_DOWN_ID, self.move_item_down)
+        wx.EVT_BUTTON(self, wx.ID_APPLY, self.on_apply)
+        wx.EVT_KILL_FOCUS(self.name, self.update_menu_item)
+        wx.EVT_KILL_FOCUS(self.label, self.update_menu_item)
+        wx.EVT_KILL_FOCUS(self.id, self.update_menu_item)
+        wx.EVT_KILL_FOCUS(self.help_str, self.update_menu_item)
         # ALB 2004-12-05
-        EVT_KILL_FOCUS(self.event_handler, self.update_menu_item)
-        #EVT_CHECKBOX(self, CHECK_ID, self.update_menu_item)
-        EVT_RADIOBOX(self, CHECK_RADIO_ID, self.update_menu_item)
-        EVT_LIST_ITEM_SELECTED(self, LIST_ID, self.show_menu_item)
+        wx.EVT_KILL_FOCUS(self.event_handler, self.update_menu_item)
+        #wx.EVT_CHECKBOX(self, CHECK_ID, self.update_menu_item)
+        wx.EVT_RADIOBOX(self, CHECK_RADIO_ID, self.update_menu_item)
+        wx.EVT_LIST_ITEM_SELECTED(self, LIST_ID, self.show_menu_item)
         if items:
             self.add_items(items)
 
@@ -509,7 +509,7 @@ class MenuProperty(Property):
         self.panel.SetAutoLayout(1)
         self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
-        EVT_BUTTON(self.panel, edit_btn_id, self.edit_menus)
+        wx.EVT_BUTTON(self.panel, edit_btn_id, self.edit_menus)
 
     def bind_event(*args): pass
 
@@ -565,8 +565,8 @@ class EditMenuBar(EditBase, PreviewMixin):
             self._mb = wx.MenuBar()
             self.widget.SetMenuBar(self._mb)
             self.widget.SetBackgroundColour(self._mb.GetBackgroundColour())
-            EVT_CLOSE(self.widget, lambda e: self.hide_widget())
-        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+            wx.EVT_CLOSE(self.widget, lambda e: self.hide_widget())
+        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         self.set_menus(self.menus) # show the menus
 
     def create_properties(self):
@@ -668,8 +668,8 @@ class EditMenuBar(EditBase, PreviewMixin):
                 misc.append_item(self._rmenu, HIDE_ID, 'Hide')
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
-                EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-                EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
+                wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+                wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 

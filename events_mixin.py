@@ -1,12 +1,14 @@
 # events_mixin.py: mixin class for 'events' property
-# $Id: events_mixin.py,v 1.5 2005/09/29 02:03:20 efuzzyone Exp $
+# $Id: events_mixin.py,v 1.6 2006/12/02 10:49:57 agriggio Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sf.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from wxPython.wx import *
-from wxPython.grid import *
+#from wxPython.wx import *
+#from wxPython.grid import *
+import wx
+import wx.grid
 
 import re
 
@@ -29,12 +31,12 @@ class EventsProperty(GridProperty):
 
     def display(self, parent):
         GridProperty.display(self, parent)
-        attr = wxGridCellAttr()
+        attr = wx.grid.GridCellAttr()
         attr.SetReadOnly(True)
         self.grid.SetColAttr(0, attr)
         self.grid.AutoSizeColumn(0, False)
         self.grid.AutoSizeColumn(1, False)
-        EVT_GRID_CELL_CHANGE(self.grid, self.on_change_val)
+        wx.grid.EVT_GRID_CELL_CHANGE(self.grid, self.on_change_val)
         szr = self.panel.GetSizer()
         szr.Show(self.btn_sizer, False)
         szr.Layout()
@@ -139,10 +141,10 @@ class EventsMixin:
     def create_events_property(self):
         if not self.events:
             return
-        panel = wxPanel(self.notebook, -1) #wxScrolledWindow(self.notebook, -1)
+        panel = wx.Panel(self.notebook, -1) 
         self.properties['events'].display(panel)
-        sizer = wxBoxSizer(wxVERTICAL)
-        sizer.Add(self.properties['events'].panel, 1, wxALL|wxEXPAND, 5)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.properties['events'].panel, 1, wx.ALL|wx.EXPAND, 5)
         panel.SetSizerAndFit(sizer)
         self.notebook.AddPage(panel, 'Events')
 

@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.57 2006/11/23 23:09:09 dinogen Exp $
+# $Id: application.py,v 1.58 2006/12/02 10:49:57 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -103,7 +103,7 @@ class Application(object):
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
         #panel = wx.Panel(self.notebook, -1)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wxTAB_TRAVERSAL)
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         self.name = "app" # name of the wxApp instance to generate
         self.__saved = True # if True, there are no changes to save
         self.__filename = None # name of the output xml file
@@ -206,7 +206,7 @@ class Application(object):
         szr = wx.BoxSizer(wx.HORIZONTAL)
         from widget_properties import _label_initial_width as _w
         #label = wxGenStaticText(panel, -1, "Top window", size=(_w, -1))
-        label = wxStaticText(panel, -1, "Top window", size=(_w, -1)) # ???
+        label = wx.StaticText(panel, -1, "Top window", size=(_w, -1)) # ???
         label.SetToolTip(wx.ToolTip("Top window"))
         szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         szr.Add(self.top_win_prop, 5, wx.ALL|wx.ALIGN_CENTER, 3)
@@ -228,8 +228,8 @@ class Application(object):
         import math
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
-        EVT_BUTTON(btn, BTN_ID, self.generate_code)
-        EVT_CHOICE(self.top_win_prop, TOP_WIN_ID, self.set_top_window)
+        wx.EVT_BUTTON(btn, BTN_ID, self.generate_code)
+        wx.EVT_CHOICE(self.top_win_prop, TOP_WIN_ID, self.set_top_window)
 
         # this is here to keep the interface similar to the various widgets
         # (to simplify Tree)
@@ -518,7 +518,7 @@ class Application(object):
                 frame.Destroy()
                 widget.preview_widget = None
                 widget.preview_button.SetLabel('Preview')
-            EVT_CLOSE(frame, on_close)
+            wx.EVT_CLOSE(frame, on_close)
             frame.SetTitle('<Preview> - %s' % frame.GetTitle())
             # raise the frame
             frame.Center()

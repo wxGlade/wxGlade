@@ -1,5 +1,5 @@
 # radio_button.py: wxRadioButton objects
-# $Id: radio_button.py,v 1.16 2006/11/16 15:46:50 guyru Exp $
+# $Id: radio_button.py,v 1.17 2006/12/02 10:49:54 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -52,8 +52,8 @@ class EditRadioButton(ManagedBase):
         except AttributeError:
             raise
 
-        EVT_CHECKBOX(self.widget, self.id,
-                     lambda e: self.widget.SetValue(self.value))        
+        wx.EVT_CHECKBOX(self.widget, self.id,
+                        lambda e: self.widget.SetValue(self.value))        
 
     def create_properties(self):
         ManagedBase.create_properties(self)

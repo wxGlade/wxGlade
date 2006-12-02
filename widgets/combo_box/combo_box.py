@@ -1,5 +1,5 @@
 # combo_box.py: wxComboBox objects
-# $Id: combo_box.py,v 1.25 2006/11/20 20:11:06 guyru Exp $
+# $Id: combo_box.py,v 1.26 2006/12/02 10:49:55 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -53,7 +53,7 @@ class EditComboBox(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         style_labels = ('#section#Style', 'wxCB_SIMPLE','wxCB_DROPDOWN',
                         'wxCB_READONLY', 'wxCB_SORT')
-        self.style_pos = [ eval(s) for s in style_labels[1:] ]
+        self.style_pos = [ eval('wx.' + s[2:]) for s in style_labels[1:] ]
 	self.tooltips = ("Creates a combobox with a permanently displayed list. Windows only.",
 				"Creates a combobox with a drop-down list.",
 				"Same as wxCB_DROPDOWN but only the strings specified as the combobox choices can be selected, it is impossible to select (even from a program) a string which is not in the choices list.",

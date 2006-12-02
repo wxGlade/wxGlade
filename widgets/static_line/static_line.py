@@ -1,5 +1,5 @@
 # static_line.py: wxStaticLine objects
-# $Id: static_line.py,v 1.10 2006/11/16 15:37:15 guyru Exp $
+# $Id: static_line.py,v 1.11 2006/12/02 10:49:54 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -35,7 +35,7 @@ class EditStaticLine(ManagedBase):
         #self.orientation = int(self.property['style'].get_value())
         self.widget = wx.StaticLine(self.parent.widget, self.id,
                                    style=self.orientation)
-        EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
