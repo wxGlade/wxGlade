@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.72 2006/12/02 10:49:57 agriggio Exp $
+# $Id: main.py,v 1.73 2006/12/04 05:49:12 jkt Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -824,7 +824,7 @@ class wxGlade(wx.App):
                 misc.FileSelector = kdefiledialog.kde_file_selector
                 misc.DirSelector = kdefiledialog.kde_dir_selector
 
-        wx.ArtProvider_PushProvider(wxGladeArtProvider())
+        wx.ArtProvider.PushProvider(wxGladeArtProvider())
 
         frame = wxGladeFrame()
         if wx.Platform == '__WXMSW__':
