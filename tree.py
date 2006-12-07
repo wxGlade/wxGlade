@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.51 2006/12/02 10:49:57 agriggio Exp $
+# $Id: tree.py,v 1.52 2006/12/07 07:47:51 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -196,7 +196,8 @@ class Tree:
         use_gettext = str(int(self.app.use_gettext))
         overwrite = str(int(self.app.overwrite))
         # ALB 2004-01-18
-        use_new_namespace = str(int(self.app.get_use_new_namespace()))
+        #use_new_namespace = str(int(self.app.get_use_new_namespace()))
+        use_new_namespace = str(int(not self.app.get_use_old_namespace()))
         # ALB 2004-12-05
         for_version = str(self.app.for_version)
         outfile.write('<application path=%s name=%s class=%s option=%s ' \

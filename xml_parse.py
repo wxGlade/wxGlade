@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.40 2006/12/02 10:49:57 agriggio Exp $
+# $Id: xml_parse.py,v 1.41 2006/12/07 07:47:51 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -150,8 +150,10 @@ class XmlWidgetBuilder(XmlParser):
             # ALB 2004-01-18
             try: use_new_namespace = int(attrs['use_new_namespace'])
             except (KeyError, ValueError): use_new_namespace = False
-            app.set_use_new_namespace(use_new_namespace)
-            app.use_new_namespace_prop.set_value(use_new_namespace)
+##             app.set_use_new_namespace(use_new_namespace)
+##             app.use_new_namespace_prop.set_value(use_new_namespace)
+            app.set_use_old_namespace(not use_new_namespace)
+            app.use_old_namespace_prop.set_value(not use_new_namespace)
             # ALB 2004-12-05
             try:
                 for_version = attrs['for_version']
