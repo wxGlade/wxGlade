@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.58 2006/12/02 10:49:57 agriggio Exp $
+# $Id: application.py,v 1.59 2006/12/07 07:47:51 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -179,10 +179,10 @@ class Application(object):
         
         # ALB 2004-01-18
         self.access_functions['use_new_namespace'] = (
-            self.get_use_new_namespace, self.set_use_new_namespace)
-        self.use_new_namespace_prop = CheckBoxProperty(
-            self, 'use_new_namespace', panel, 'Use new "wx" namespace\n(python'
-            ' output only)')
+            self.get_use_old_namespace, self.set_use_old_namespace)
+        self.use_old_namespace_prop = CheckBoxProperty(
+            self, 'use_new_namespace', panel, 'Use old "from wxPython.wx"\n'
+            'import (python output only)')
         
         # `overwrite' property - added 2003-07-15
         self.overwrite = False
@@ -214,7 +214,7 @@ class Application(object):
         sizer.Add(self.codegen_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
         sizer.Add(self.codewriters_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
         sizer.Add(self.for_version_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
-        sizer.Add(self.use_new_namespace_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.use_old_namespace_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.overwrite_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.outpath_prop.panel, 0, wx.EXPAND)
         sizer.Add(btn, 0, wx.ALL|wx.EXPAND, 5)
@@ -362,8 +362,10 @@ class Application(object):
         self.top_window = ''
         self.top_win_prop.Clear()
         # ALB 2004-01-18
-        self.set_use_new_namespace(True)
-        self.use_new_namespace_prop.set_value(True)
+        #self.set_use_new_namespace(True)
+        #self.use_new_namespace_prop.set_value(True)
+        self.set_use_old_namespace(False)
+        self.use_old_namespace_prop.set_value(False)
         
     def show_properties(self, *args):
         sizer_tmp = self.property_window.GetSizer()
@@ -408,7 +410,7 @@ class Application(object):
             cw = self.get_language() #self.codewriters_prop.get_str_value()
             if preview and cw == 'python': # of course cw == 'python', but...
                 old = common.code_writers[cw].use_new_namespace
-                common.code_writers[cw].use_new_namespace = False
+                common.code_writers[cw].use_new_namespace = True #False
                 overwrite = self.overwrite
                 self.overwrite = True
             common.app_tree.write(out) # write the xml onto a temporary buffer
@@ -543,12 +545,15 @@ class Application(object):
         self.overwrite = overwrite
         return frame
 
-    def get_use_new_namespace(self):
-        try: return common.code_writers['python'].use_new_namespace
+    def get_use_old_namespace(self):
+        try: return not common.code_writers['python'].use_new_namespace
         except: return False
 
-    def set_use_new_namespace(self, val):
-        try: common.code_writers['python'].use_new_namespace = bool(int(val))
-        except: pass
+    def set_use_old_namespace(self, val):
+        #print "set use old namespace"
+        try:
+            common.code_writers['python'].use_new_namespace = not bool(int(val))
+        except:
+            pass
 
 # end of class Application
