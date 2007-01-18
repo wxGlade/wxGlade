@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # wxglade.py: entry point of wxGlade
-# $Id: wxglade.py,v 1.22 2005/05/06 21:48:24 agriggio Exp $
+# $Id: wxglade.py,v 1.23 2007/01/18 22:38:47 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import os, sys
+import os, sys, gettext
+_=gettext.gettext
 
 # check to see if the Python release supports boolean identifiers
 # and bool built-in function (>= Python 2.2.1).
@@ -70,11 +71,11 @@ def command_line_code_generation(options, args):
         writer = common.code_writers[language]
         CodeWriter(writer, _fix_path(args[0]), out_path=out_path)
     except KeyError:
-        print >> sys.stderr, 'Error: no writer for language "%s" available' % \
+        print >> sys.stderr, _('Error: no writer for language "%s" available') % \
               language
         sys.exit(1)
     except Exception, e:
-        print >> sys.stderr, "Error: %s" % e
+        print >> sys.stderr, _("Error: %s") % e
         import traceback; traceback.print_exc()
         sys.exit(1)
     sys.exit(0)
@@ -84,7 +85,7 @@ def usage():
     """\
     Prints a help message about the usage of wxGlade from the command line.
     """
-    msg = """\
+    msg = _("""\
 wxGlade usage:
 - to start the GUI: python wxglade.py [WXG_FILE]
 - to generate code from the command line: python wxglade.py OPTIONS... FILE
@@ -93,9 +94,9 @@ wxGlade usage:
   -o, --output=PATH             (optional) name of the output file (in
                                 single-file mode) or directory (in
                                 multi-file mode)
-    """
+    """)
     print msg
-    print 'Valid LANGUAGE values:',
+    print _('Valid LANGUAGE values:'),
     import common
     common.use_gui = False
     common.load_code_writers()

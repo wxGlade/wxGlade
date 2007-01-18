@@ -1,5 +1,7 @@
 from ConfigParser import *
 import common, sys, os, os.path
+import gettext
+_=gettext.gettext
 
 if common.use_gui:
     import wx
@@ -57,7 +59,7 @@ if common.use_gui:
                 # ALB 2004-10-27
                 self.use_kde_dialogs.SetValue(self.preferences.use_kde_dialogs)
             except Exception, e:
-                wx.MessageBox('Error reading config file:\n%s' % e, 'Error',
+                wx.MessageBox(_('Error reading config file:\n%s') % e, 'Error',
                              wx.OK|wx.CENTRE|wx.ICON_ERROR)
     
         def set_preferences(self):
@@ -100,7 +102,7 @@ if common.use_gui:
 ##                              wxOK|wxICON_INFORMATION|wxCENTRE)
 ##                 self.local_widget_path.SetValue(dlg.GetPath())
 ##             dlg.Destroy()
-            pth = misc.DirSelector("Choose a directory:", os.getcwd(),
+            pth = misc.DirSelector(_("Choose a directory:"), os.getcwd(),
                                    style=wx.DD_DEFAULT_STYLE |
                                    wx.DD_NEW_DIR_BUTTON)
             if pth:
@@ -243,8 +245,8 @@ def init_preferences():
 def edit_preferences():
     dialog = wxGladePreferences(preferences)
     if dialog.ShowModal() == wx.ID_OK:
-        wx.MessageBox('Changes will take effect after wxGlade is restarted',
-                     'Preferences saved', wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
+        wx.MessageBox(_('Changes will take effect after wxGlade is restarted'),
+                     _('Preferences saved'), wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
         dialog.set_preferences()
     dialog.Destroy()
 

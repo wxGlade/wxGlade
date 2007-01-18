@@ -1,12 +1,13 @@
 # clipboard.py: support for cut & paste of wxGlade widgets
-# $Id: clipboard.py,v 1.14 2006/11/21 22:54:16 dinogen Exp $
+# $Id: clipboard.py,v 1.15 2007/01/18 22:38:47 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 #from wxPython.wx import *
-import wx
+import wx,gettext
+_=gettext.gettext
 
 # Format used by wxGlade for the clipboard.
 _widget_data_format = wx.CustomDataFormat("wxglade_widget")
@@ -36,7 +37,7 @@ class _WidgetDataObject(wx.CustomDataObject):
         and returns them in a list.
         """
         ret = self.GetData().split(":", 3)
-        assert len(ret) == 4, "Invalid data in the clipboard"
+        assert len(ret) == 4, _("Invalid data in the clipboard")
         # remove the dirt at the end of xml_str
         bound = ret[3].rfind('>')+1
         ret[3] = ret[3][:bound]
@@ -61,13 +62,13 @@ def copy(widget):
             wdo = _WidgetDataObject(option, flag, border,
                                     xml_str.getvalue())
             if not wx.TheClipboard.SetData(wdo):
-                print "Data can't be copied to clipboard."
+                print _("Data can't be copied to clipboard.")
                 return False
             return True
         finally:
             wx.TheClipboard.Close()
     else:
-        print "Clipboard can't be opened."
+        print _("Clipboard can't be opened.")
         return False
 
 
@@ -94,14 +95,14 @@ def paste(parent, sizer, pos):
             if wx.TheClipboard.IsSupported(_widget_data_format):
                 wdo = _WidgetDataObject()
                 if not wx.TheClipboard.GetData(wdo):
-                    print "Data can't be copied from clipboard."
+                    print _("Data can't be copied from clipboard.")
                     return False
             else:
                 return False
         finally:
             wx.TheClipboard.Close()
     else:
-        print "Clipboard can't be opened."
+        print _("Clipboard can't be opened.")
         return False
 
     option, flag, border, xml_str = wdo.GetWidgetData()
@@ -125,7 +126,7 @@ class FileDropTarget(wx.FileDropTarget):
 
     def OnDropFiles(self, x, y, filenames):
         if len(filenames) > 1:
-            wx.MessageBox("Please only drop one file at a time",
+            wx.MessageBox(_("Please only drop one file at a time"),
                 "wxGlade", wx.ICON_ERROR)
         elif filenames:
             path = filenames[0]
