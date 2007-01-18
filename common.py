@@ -1,12 +1,13 @@
 # common.py: global variables
-# $Id: common.py,v 1.54 2006/12/02 10:49:57 agriggio Exp $
+# $Id: common.py,v 1.55 2007/01/18 22:38:47 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import os
-
+import gettext
+_=gettext.gettext
 # if False, the program is invoked from the command-line in "batch" mode (for
 # code generation only)
 use_gui = True
@@ -90,11 +91,11 @@ def load_code_writers():
             try: writer = __import__(name).writer
             except (ImportError, AttributeError, ValueError):
                 if use_gui:
-                    print '"%s" is not a valid code generator module' % module
+                    print _('"%s" is not a valid code generator module') % module
             else:
                 code_writers[writer.language] = writer
                 if use_gui:
-                    print 'loaded code generator for %s' % writer.language
+                    print _('loaded code generator for %s') % writer.language
 
 def load_widgets():
     """\
@@ -125,8 +126,8 @@ def __load_widgets(widget_dir):
     sys.path.append(widget_dir)
     modules = open(widgets_file)
     if use_gui:
-        print 'Found widgets listing -> %s' % widgets_file 
-        print 'loading widget modules:'
+        print _('Found widgets listing -> %s') % widgets_file 
+        print _('loading widget modules:')
     for line in modules:
         module = line.strip()
         if not module or module.startswith('#'): continue
@@ -135,7 +136,7 @@ def __load_widgets(widget_dir):
             b = __import__(module).initialize()
         except (ImportError, AttributeError):
             if use_gui:
-                print 'ERROR loading "%s"' % module
+                print _('ERROR loading "%s"') % module
                 import traceback; traceback.print_exc()
         else:
             if use_gui: print '\t' + module
@@ -201,7 +202,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         wx.EVT_BUTTON(tmp, id, add_toplevel_object)
     refs[id] = widget
     if not tip:
-        tip = 'Add a %s' % widget.replace('Edit', '')
+        tip = _('Add a %s') % widget.replace('Edit', '')
     tmp.SetToolTip(wx.ToolTip(tip))
 
     WidgetTree.images[widget] = icon_path
