@@ -1,0 +1,230 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-01-18 23:29+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: clipboard.py:40
+msgid "Invalid data in the clipboard"
+msgstr ""
+
+#: clipboard.py:65
+msgid "Data can't be copied to clipboard."
+msgstr ""
+
+#: clipboard.py:71 clipboard.py:105
+msgid "Clipboard can't be opened."
+msgstr ""
+
+#: clipboard.py:98
+msgid "Data can't be copied from clipboard."
+msgstr ""
+
+#: clipboard.py:129
+msgid "Please only drop one file at a time"
+msgstr ""
+
+#: color_dialog.py:20
+msgid "System colour"
+msgstr ""
+
+#: color_dialog.py:24
+msgid "Custom colour"
+msgstr ""
+
+#: color_dialog.py:27 configUI.py:40
+msgid "OK"
+msgstr ""
+
+#: color_dialog.py:28 configUI.py:41
+msgid "Cancel"
+msgstr ""
+
+#: color_dialog.py:72
+msgid "Select widget colour"
+msgstr ""
+
+#: common.py:94
+#, python-format
+msgid "\"%s\" is not a valid code generator module"
+msgstr ""
+
+#: common.py:98
+#, python-format
+msgid "loaded code generator for %s"
+msgstr ""
+
+#: common.py:129
+#, python-format
+msgid "Found widgets listing -> %s"
+msgstr ""
+
+#: common.py:130
+msgid "loading widget modules:"
+msgstr ""
+
+#: common.py:139
+#, python-format
+msgid "ERROR loading \"%s\""
+msgstr ""
+
+#: common.py:205
+#, python-format
+msgid "Add a %s"
+msgstr ""
+
+#: config.py:62
+#, python-format
+msgid ""
+"Error reading config file:\n"
+"%s"
+msgstr ""
+
+#: config.py:105
+msgid "Choose a directory:"
+msgstr ""
+
+#: config.py:248
+msgid "Changes will take effect after wxGlade is restarted"
+msgstr ""
+
+#: config.py:249
+msgid "Preferences saved"
+msgstr ""
+
+#: configUI.py:17
+msgid "Local widget path"
+msgstr ""
+
+#: configUI.py:19
+msgid "Use icons in menu items"
+msgstr ""
+
+#: configUI.py:20
+msgid "Show properties and tree windows as small frames (Win32 only)"
+msgstr ""
+
+#: configUI.py:21
+msgid "Show progress dialog when loading wxg files"
+msgstr ""
+
+#: configUI.py:22
+msgid "Remember position and size of wxGlade windows"
+msgstr ""
+
+#: configUI.py:23
+msgid "Show \"handles\" of sizers"
+msgstr ""
+
+#: configUI.py:24
+msgid "Use native file dialogs on KDE"
+msgstr ""
+
+#: configUI.py:29
+msgid "Use dialog units by default for size properties"
+msgstr ""
+
+#: configUI.py:30
+msgid "Create backup wxg files"
+msgstr ""
+
+#: configUI.py:31
+msgid "Create backup files for generated source"
+msgstr ""
+
+#: configUI.py:32
+msgid "Allow duplicate widget names"
+msgstr ""
+
+#: configUI.py:33
+msgid "Default border width for widgets"
+msgstr ""
+
+#: configUI.py:35
+msgid "Auto save wxg files every "
+msgstr ""
+
+#: configUI.py:37
+msgid "Backup options"
+msgstr ""
+
+#: configUI.py:37
+msgid "append ~ to filename"
+msgstr ""
+
+#: configUI.py:37
+msgid "append .bak to filename"
+msgstr ""
+
+#: configUI.py:49
+msgid "wxGlade: preferences"
+msgstr ""
+
+#: configUI.py:85
+msgid ""
+"Initial path for \n"
+"file opening/saving dialogs:"
+msgstr ""
+
+#: configUI.py:88
+msgid ""
+"Initial path for \n"
+"code generation file dialogs:"
+msgstr ""
+
+#: configUI.py:92
+msgid "Number of items in file history"
+msgstr ""
+
+#: configUI.py:95
+msgid ""
+"Number of buttons per row\n"
+"in the main palette"
+msgstr ""
+
+#: configUI.py:124
+msgid "Interface"
+msgstr ""
+
+#: configUI.py:125
+msgid "Other"
+msgstr ""
+
+#: wxglade.py:74
+#, python-format
+msgid "Error: no writer for language \"%s\" available"
+msgstr ""
+
+#: wxglade.py:78
+#, python-format
+msgid "Error: %s"
+msgstr ""
+
+#: wxglade.py:88
+msgid ""
+"wxGlade usage:\n"
+"- to start the GUI: python wxglade.py [WXG_FILE]\n"
+"- to generate code from the command line: python wxglade.py OPTIONS... FILE\n"
+"  OPTIONS are the following:\n"
+"  -g, --generate-code=LANGUAGE  (required) give the output language\n"
+"  -o, --output=PATH             (optional) name of the output file (in\n"
+"                                single-file mode) or directory (in\n"
+"                                multi-file mode)\n"
+"    "
+msgstr ""
+
+#: wxglade.py:99
+msgid "Valid LANGUAGE values:"
+msgstr ""
