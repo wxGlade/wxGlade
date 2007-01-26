@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.71 2006/12/02 10:49:56 agriggio Exp $
+# $Id: edit_sizers.py,v 1.72 2007/01/26 19:05:45 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -11,6 +11,8 @@ from tree import Tree, WidgetTree
 import common, config, misc
 import math, sys, re
 
+import gettext
+_=gettext.gettext
 
 class SizerSlot:
     "a window to represent a slot in a sizer"
@@ -81,13 +83,13 @@ class SizerSlot:
 
     def popup_menu(self, event):
         if not self.menu:
-            self.menu = wx.Menu('Options')
+            self.menu = wx.Menu(_('Options'))
             REMOVE_ID, PASTE_ID = wx.NewId(), wx.NewId()
             if not self.sizer.is_virtual():
                 # we cannot remove items from virtual sizers
-                misc.append_item(self.menu, REMOVE_ID, 'Remove\tDel',
+                misc.append_item(self.menu, REMOVE_ID, _('Remove\tDel'),
                                  'remove.xpm')
-            misc.append_item(self.menu, PASTE_ID, 'Paste\tCtrl+V', 'paste.xpm')
+            misc.append_item(self.menu, PASTE_ID, _('Paste\tCtrl+V'), 'paste.xpm')
             def bind(method):
                 return lambda e: misc.wxCallAfter(method)
             wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
@@ -213,7 +215,7 @@ class SizerHandleButton(Button):
             def bind(method):
                 return lambda e: misc.wxCallAfter(method)
             #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
-            misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
+            misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
                              'remove.xpm')
             wx.EVT_MENU(self, REMOVE_ID, bind(self._remove))
             for item in self.menu:
@@ -284,8 +286,8 @@ class SizerClassDialog:
             if self.owner.orient == wx.HORIZONTAL: name += 'H'
             else: name += 'V'
         choices = [ b for a, b in self.choices if a != name ]
-        self.dialog = wx.SingleChoiceDialog(self.parent, "Select sizer type",
-                                           "Select sizer type", choices)
+        self.dialog = wx.SingleChoiceDialog(self.parent, _("Select sizer type"),
+                                           _("Select sizer type"), choices)
         return self.dialog.ShowModal()
 
     def get_value(self):
@@ -387,14 +389,14 @@ def change_sizer(old, new, which_page=0):
 
 class InsertDialog(wx.Dialog):
     def __init__(self, max_val):
-        wx.Dialog.__init__(self, None, -1, "Select a position")
+        wx.Dialog.__init__(self, None, -1, _("Select a position"))
         self.pos = 0
         pos_prop = SpinProperty(self, 'position', self, r=(0, max_val))
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(pos_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
         szr2 = wx.BoxSizer(wx.HORIZONTAL)
-        szr2.Add(wx.Button(self, wx.ID_OK, "OK"), 0, wx.ALL, 5)
-        szr2.Add(wx.Button(self, wx.ID_CANCEL, "Cancel"), 0, wx.ALL, 5)
+        szr2.Add(wx.Button(self, wx.ID_OK, _("OK")), 0, wx.ALL, 5)
+        szr2.Add(wx.Button(self, wx.ID_CANCEL, _("Cancel")), 0, wx.ALL, 5)
         szr.Add(szr2, 0, wx.ALIGN_CENTER)
         self.SetAutoLayout(True)
         self.SetSizer(szr)
@@ -493,11 +495,11 @@ class SizerBase(Sizer):
             
         self.menu = menu
         if self.menu is None:
-            self.menu = [('Add slot', self.add_slot),
-                         ('Insert slot...', self.insert_slot)]
+            self.menu = [(_('Add slot'), self.add_slot),
+                         (_('Insert slot...'), self.insert_slot)]
         #if not self.toplevel:
-        self.menu.extend([('Copy\tCtrl+C', self.clipboard_copy,'copy.xpm'),
-                          ('Cut\tCtrl+X', self.clipboard_cut, 'cut.xpm')
+        self.menu.extend([(_('Copy\tCtrl+C'), self.clipboard_copy,'copy.xpm'),
+                          (_('Cut\tCtrl+X'), self.clipboard_cut, 'cut.xpm')
                           ])
 
         self._btn = None # SizerHandleButton
@@ -624,7 +626,7 @@ class SizerBase(Sizer):
         else:
             # button to Fit parent
             FIT_ID = wx.NewId()
-            self.fit_btn = wx.Button(panel, FIT_ID, 'Fit parent')
+            self.fit_btn = wx.Button(panel, FIT_ID, _('Fit parent'))
             wx.EVT_BUTTON(self.fit_btn, FIT_ID, self.fit_parent)
             sizer_tmp.Add(self.fit_btn, 0, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(True)
@@ -632,7 +634,7 @@ class SizerBase(Sizer):
         sizer_tmp.Fit(panel)
         
         w, h = panel.GetClientSizeTuple()
-        self.notebook.AddPage(panel, "Common")
+        self.notebook.AddPage(panel, _("Common"))
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def popup_menu(self, event):
@@ -648,8 +650,8 @@ class SizerBase(Sizer):
         if not config.preferences.allow_duplicate_names and \
                (self.widget and common.app_tree.has_name(value, self.node)):
             misc.wxCallAfter(
-                wx.MessageBox, 'Name "%s" is already in use.\n'
-                'Please enter a different one.' % value, "Error",
+                wx.MessageBox, _('Name "%s" is already in use.\n'
+                'Please enter a different one.') % value, _("Error"),
                 wx.OK|wx.ICON_ERROR)
             self.name_prop.set_value(self.name)
             return
@@ -662,7 +664,7 @@ class SizerBase(Sizer):
             try: common.app_tree.refresh_name(self.node, oldname) #, self.name)
             except AttributeError:
                 import traceback; traceback.print_exc()
-            self.property_window.SetTitle('Properties - <%s>' % self.name)
+            self.property_window.SetTitle(_('Properties - <%s>') % self.name)
     set_name_pattern = re.compile('^[a-zA-Z_]+[\w0-9]*$')
             
     def __getitem__(self, value):
@@ -704,7 +706,7 @@ class SizerBase(Sizer):
         self.notebook.Show()
 
         self.property_window.Layout()
-        self.property_window.SetTitle('Properties - <%s>' % self.name)
+        self.property_window.SetTitle(_('Properties - <%s>') % self.name)
         if hasattr(self, 'node'): common.app_tree.select_item(self.node)
         try: self._btn.SetFocus()
         except AttributeError: pass
@@ -1490,12 +1492,12 @@ class GridSizerBase(SizerBase):
         if self.cols or self.rows:
             if not self.rows: self.rows = 1
             elif not self.cols: self.cols = 1
-        menu = [('Add slot', self.add_slot),
-                ('Insert slot...', self.insert_slot),
-                ('Add row', self.add_row),
-                ('Add column', self.add_col),
-                ('Insert row...', self.insert_row),
-                ('Insert column...', self.insert_col)]
+        menu = [(_('Add slot'), self.add_slot),
+                (_('Insert slot...'), self.insert_slot),
+                (_('Add row'), self.add_row),
+                (_('Add column'), self.add_col),
+                (_('Insert row...'), self.insert_row),
+                (_('Insert column...'), self.insert_col)]
         SizerBase.__init__(self, name, klass, window, toplevel, show, menu)
 
         class Dummy: widget = None
@@ -1687,7 +1689,7 @@ class GridSizerBase(SizerBase):
             rows = tot / cols
             if tot % cols:
                 rows += 1
-            print 'fixed rows:', rows
+            # print 'fixed rows:', rows
             if rows * cols > tot:
                 for i in range(rows * cols - tot):
                     self.insert_slot(interactive=False, pos=tot+i+1,
@@ -1720,7 +1722,7 @@ class GridSizerBase(SizerBase):
             cols = tot / rows
             if tot % rows:
                 cols += 1
-            print 'fixed cols:', cols
+            # print 'fixed cols:', cols
             if rows * cols > tot:
                 for i in range(rows * cols - tot):
                     self.insert_slot(interactive=False, pos=tot+i+1,
@@ -1806,8 +1808,8 @@ class CheckListDialogProperty(DialogProperty):
                     sizer.Add(self.choices, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 10)
                     sizer.Add(wx.StaticLine(self, -1), 0, wx.EXPAND|wx.ALL, 10)
                     sz2 = wx.BoxSizer(wx.HORIZONTAL)
-                    sz2.Add(wx.Button(self, wx.ID_OK, "OK"), 0, wx.ALL, 10)
-                    sz2.Add(wx.Button(self, wx.ID_CANCEL, "Cancel"), 0,wx.ALL, 10)
+                    sz2.Add(wx.Button(self, wx.ID_OK, _("OK")), 0, wx.ALL, 10)
+                    sz2.Add(wx.Button(self, wx.ID_CANCEL, _("Cancel")), 0,wx.ALL, 10)
                     sizer.Add(sz2, 0, wx.ALIGN_CENTER)
                     self.SetAutoLayout(True)
                     self.SetSizer(sizer)
@@ -1883,14 +1885,14 @@ class EditFlexGridSizer(GridSizerBase):
         def rows_setter():
             return map(str, range(self.get_rows()))
         pr = CheckListDialogProperty(self, 'growable_rows', None,
-                                     'Growable Rows', 'Select growable rows',
+                                     _('Growable Rows'), _('Select growable rows'),
                                      rows_setter)
         self.properties['growable_rows'] = pr
         def cols_setter():
             return map(str, range(self.get_cols()))
         pr = CheckListDialogProperty(self, 'growable_cols', None,
-                                     'Growable Columns',
-                                     'Select growable columns',
+                                     _('Growable Columns'),
+                                     _('Select growable columns'),
                                      cols_setter)
         self.properties['growable_cols'] = pr
 
@@ -2000,11 +2002,11 @@ def builder(parent, sizer, pos, number=[1], show=True):
         def __init__(self, parent):
             wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1,
                               'Select sizer type')
-            self.orientation = wx.RadioBox(self, -1, 'Orientation',
-                                          choices=['Horizontal', 'Vertical'])
+            self.orientation = wx.RadioBox(self, -1, _('Orientation'),
+                                          choices=[_('Horizontal'), _('Vertical')])
             self.orientation.SetSelection(0)
             tmp = wx.BoxSizer(wx.HORIZONTAL)
-            tmp.Add(wx.StaticText(self, -1, 'Slots: '), 0,
+            tmp.Add(wx.StaticText(self, -1, _('Slots: ')), 0,
                     wx.ALL|wx.ALIGN_CENTER_VERTICAL, 3)
             self.num = wx.SpinCtrl(self, -1)
             self.num.SetRange(1, 100)
@@ -2014,17 +2016,17 @@ def builder(parent, sizer, pos, number=[1], show=True):
             szr.Add(self.orientation, 0, wx.ALL|wx.EXPAND, 4)
             szr.Add(tmp, 0, wx.EXPAND)
             CHECK_ID = wx.NewId()
-            self.check = wx.CheckBox(self, CHECK_ID, 'Has a Static Box')
+            self.check = wx.CheckBox(self, CHECK_ID, _('Has a Static Box'))
             self.label = wx.TextCtrl(self, -1, "")
             self.label.Enable(False)
             wx.EVT_CHECKBOX(self, CHECK_ID, self.on_check_statbox)
             szr.Add(self.check, 0, wx.ALL|wx.EXPAND, 4)
             tmp = wx.BoxSizer(wx.HORIZONTAL)
-            tmp.Add(wx.StaticText(self, -1, "Label: "), 0, wx.ALIGN_CENTER)
+            tmp.Add(wx.StaticText(self, -1, _("Label: ")), 0, wx.ALIGN_CENTER)
             tmp.Add(self.label, 1)
             szr.Add(tmp, 0, wx.ALL|wx.EXPAND, 4)
             
-            btn = wx.Button(self, wx.ID_OK, 'OK')
+            btn = wx.Button(self, wx.ID_OK, _('OK'))
             btn.SetDefault()
             szr.Add(btn, 0, wx.ALL|wx.ALIGN_CENTER, 10)
             self.SetAutoLayout(1)
@@ -2047,7 +2049,7 @@ def builder(parent, sizer, pos, number=[1], show=True):
 
     dialog = SizerDialog(parent)
     dialog.ShowModal()
-    if dialog.orientation.GetStringSelection() == 'Horizontal':
+    if dialog.orientation.GetStringSelection() == _('Horizontal'):
         orientation = wx.HORIZONTAL
     else: orientation = wx.VERTICAL
     num = dialog.num.GetValue()
@@ -2096,7 +2098,7 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
     class Dialog(wx.Dialog):
         def __init__(self, parent):
             wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1,
-                              'Select sizer attributes')
+                              _('Select sizer attributes'))
             self.rows = SpinProperty(self, 'rows', self)
             self.cols = SpinProperty(self, 'cols', self)
             self.vgap = SpinProperty(self, 'vgap', self)
