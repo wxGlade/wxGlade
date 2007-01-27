@@ -1,5 +1,5 @@
 # about.py: about box with general info
-# $Id: about.py,v 1.22 2006/11/20 22:08:19 dinogen Exp $
+# $Id: about.py,v 1.23 2007/01/27 18:24:37 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -11,7 +11,7 @@ import wx
 import wx.html
 #import wxPython.lib.wxpTag
 import wx.lib.wxpTag
-import common, misc, os.path, sys
+import common, misc, os.path, sys,gettext
 
 class wxGladeAboutBox(wx.Dialog):
     text = '''
@@ -46,7 +46,7 @@ class wxGladeAboutBox(wx.Dialog):
     '''
 
     def __init__(self, parent=None):
-        wx.Dialog.__init__(self, parent, -1, 'About wxGlade')
+        wx.Dialog.__init__(self, parent, -1, _('About wxGlade'))
         class HtmlWin(wx.html.HtmlWindow):
             def OnLinkClicked(self, linkinfo):
                 href = linkinfo.GetHref()
@@ -56,15 +56,15 @@ class wxGladeAboutBox(wx.Dialog):
                         license = open(os.path.join(common.wxglade_path,
                                                     'license.txt'))
                         dlg = ScrolledMessageDialog(self, license.read(),
-                                                      "wxGlade - License")
+                                                      _("wxGlade - License"))
                         license.close()
                         dlg.ShowModal()
                         dlg.Destroy()
                     except IOError:
-                        wx.MessageBox("Can't find the license!\n"
+                        wx.MessageBox(_("Can't find the license!\n"
                                      "You can get a copy at \n"
                                      "http://www.opensource.org/licenses/"
-                                     "mit-license.php", "Error",
+                                     "mit-license.php"), _("Error"),
                                      wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
                 elif href == 'show_credits':
                     from wx.lib.dialogs import ScrolledMessageDialog
@@ -77,7 +77,7 @@ class wxGladeAboutBox(wx.Dialog):
                         dlg.ShowModal()
                         dlg.Destroy()
                     except IOError:
-                        wx.MessageBox("Can't find the credits file!\n", "Oops!",
+                        wx.MessageBox(_("Can't find the credits file!\n"), _("Oops!"),
                                      wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
                 else:
                     import webbrowser

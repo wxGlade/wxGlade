@@ -1,13 +1,11 @@
 # common.py: global variables
-# $Id: common.py,v 1.55 2007/01/18 22:38:47 dinogen Exp $
+# $Id: common.py,v 1.56 2007/01/27 18:24:37 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import os
-import gettext
-_=gettext.gettext
 # if False, the program is invoked from the command-line in "batch" mode (for
 # code generation only)
 use_gui = True
