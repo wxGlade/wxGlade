@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.72 2007/01/26 19:05:45 dinogen Exp $
+# $Id: edit_sizers.py,v 1.73 2007/01/27 19:59:29 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -10,9 +10,6 @@ from widget_properties import *
 from tree import Tree, WidgetTree
 import common, config, misc
 import math, sys, re
-
-import gettext
-_=gettext.gettext
 
 class SizerSlot:
     "a window to represent a slot in a sizer"
@@ -2122,7 +2119,7 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
             sizer.Add(self.hgap.panel, 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
             sizer.Add(szr, 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
             szr = wx.BoxSizer(wx.HORIZONTAL)
-            btn = wx.Button(self, wx.ID_OK, 'OK')
+            btn = wx.Button(self, wx.ID_OK, _('OK'))
             btn.SetDefault()            
             szr.Add(btn)
             sizer.Add(szr, 0, wx.ALL|wx.ALIGN_CENTER, 10)
