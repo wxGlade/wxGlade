@@ -1,13 +1,11 @@
 # clipboard.py: support for cut & paste of wxGlade widgets
-# $Id: clipboard.py,v 1.15 2007/01/18 22:38:47 dinogen Exp $
+# $Id: clipboard.py,v 1.16 2007/01/27 18:24:37 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 #from wxPython.wx import *
-import wx,gettext
-_=gettext.gettext
 
 # Format used by wxGlade for the clipboard.
 _widget_data_format = wx.CustomDataFormat("wxglade_widget")

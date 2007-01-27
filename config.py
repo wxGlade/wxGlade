@@ -1,7 +1,5 @@
 from ConfigParser import *
 import common, sys, os, os.path
-import gettext
-_=gettext.gettext
 
 if common.use_gui:
     import wx

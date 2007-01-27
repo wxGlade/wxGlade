@@ -4,8 +4,6 @@
 
 #from wxPython.wx import *
 import wx
-import gettext
-_=gettext.gettext
 
 class wxGladePreferencesUI(wx.Dialog):
     def __init__(self, *args, **kwds):
