@@ -10,7 +10,6 @@ from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
 
-
 class EditWidget(ManagedBase):
     def __init__(self, name, klass, parent, id, label, sizer, pos,
                  property_window, show=True):
@@ -101,7 +100,7 @@ def get_label_from_xml(attrs):
     try:
         return attrs['name']
     except KeyError:
-        raise XmlParsingError, "'name' attribute missing"
+        raise XmlParsingError, _("'name' attribute missing")
 
 
 def initialize(edit_klass, builder, xml_builder, icon_path):
