@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.86 2006/12/02 10:49:57 agriggio Exp $
+# $Id: edit_windows.py,v 1.87 2007/01/29 19:50:35 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -54,13 +54,13 @@ class EditBase(EventsMixin):
         self.klass_prop = TextProperty(self, 'class', None,
                                        readonly=not custom_class)
         if custom_class:
-            self.klass_prop.tooltip = "If you change the default value, " \
+            self.klass_prop.tooltip = _("If you change the default value, " \
                                       "it will be interpreted as the name " \
                                       "of the subclass of the widget. " \
                                       "How this name affects code generation "\
                                       "depends on the kind (i.e. language) " \
                                       "of output. See the docs for " \
-                                      "more details."
+                                      "more details.")
         self.notebook = None
         self.property_window = property_window
 
@@ -145,8 +145,8 @@ class EditBase(EventsMixin):
         if not config.preferences.allow_duplicate_names and \
                (self.widget and common.app_tree.has_name(value, self.node)):
             misc.wxCallAfter(
-                wx.MessageBox, 'Name "%s" is already in use.\n'
-                'Please enter a different one.' % value, "Error",
+                wx.MessageBox, _('Name "%s" is already in use.\n'
+                'Please enter a different one.') % value, _("Error"),
                 wx.OK|wx.ICON_ERROR)
             self.name_prop.set_value(self.name)
             return
@@ -158,7 +158,7 @@ class EditBase(EventsMixin):
             if self._rmenu: self._rmenu.SetTitle(self.name)
             try: common.app_tree.refresh_name(self.node, oldname) #, self.name)
             except AttributeError: pass
-            self.property_window.SetTitle('Properties - <%s>' % self.name)
+            self.property_window.SetTitle(_('Properties - <%s>') % self.name)
     set_name_pattern = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
 
     def set_klass(self, value):
@@ -176,11 +176,11 @@ class EditBase(EventsMixin):
             if not self._rmenu:
                 COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
-                misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
+                misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
                                  'remove.xpm')
-                misc.append_item(self._rmenu, COPY_ID, 'Copy\tCtrl+C',
+                misc.append_item(self._rmenu, COPY_ID, _('Copy\tCtrl+C'),
                                  'copy.xpm')
-                misc.append_item(self._rmenu, CUT_ID, 'Cut\tCtrl+X',
+                misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
                                  'cut.xpm')
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
@@ -258,7 +258,7 @@ class EditBase(EventsMixin):
         self.notebook.Show()
 
         self.property_window.Layout()
-        self.property_window.SetTitle('Properties - <%s>' % self.name)
+        self.property_window.SetTitle(_('Properties - <%s>') % self.name)
         try: common.app_tree.select_item(self.node)
         except AttributeError: pass
         self.widget.SetFocus()
@@ -477,7 +477,7 @@ class WindowBase(EditBase):
         sizer_tmp.Fit(panel)
 
         w, h = panel.GetClientSize()
-        self.notebook.AddPage(panel, "Common")
+        self.notebook.AddPage(panel, _("Common"))
         self.property_window.Layout()
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
@@ -943,7 +943,7 @@ class PreviewMixin:
         panel = self.notebook.GetPage(0)
         sizer_tmp = panel.GetSizer()
         # add a preview button to the Common panel for top-levels
-        self.preview_button = btn = wx.Button(panel, -1, 'Preview')
+        self.preview_button = btn = wx.Button(panel, -1, _('Preview'))
         wx.EVT_BUTTON(btn, -1, self.preview)
         sizer_tmp.Add(btn, 0, wx.ALL|wx.EXPAND, 5)
         sizer_tmp.Layout()
@@ -957,7 +957,7 @@ class PreviewMixin:
         #print 'frame class _> ', self.klass
         if self.preview_widget is None:
             self.preview_widget = common.app_tree.app.preview(self)
-            self.preview_button.SetLabel('Close Preview')
+            self.preview_button.SetLabel(_('Close Preview'))
         else:
             # Close triggers the EVT_CLOSE that does the real work
             # (see application.py -> preview)
@@ -1021,16 +1021,16 @@ class TopLevelBase(WindowBase, PreviewMixin):
             if not self._rmenu:
                 REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
-                misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
+                misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
                                  'remove.xpm')
-                misc.append_item(self._rmenu, HIDE_ID, 'Hide')
+                misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
                 wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 # paste
                 PASTE_ID = wx.NewId()
-                misc.append_item(self._rmenu, PASTE_ID, 'Paste\tCtrl+V',
+                misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'),
                                  'paste.xpm')
                 wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
                 
@@ -1038,7 +1038,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def clipboard_paste(self, *args):
         if self.sizer is not None:
-            print '\nwxGlade-WARNING: sizer already set for this window'
+            print _('\nwxGlade-WARNING: sizer already set for this window')
             return
         import clipboard, xml_parse
         size = self.widget.GetSize()
@@ -1047,7 +1047,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 common.app_tree.app.saved = False
                 self.widget.SetSize(size)
         except xml_parse.XmlParsingError, e:
-            print '\nwxGlade-WARNING: only sizers can be pasted here'
+            print _('\nwxGlade-WARNING: only sizers can be pasted here')
 
     def create_properties(self):
         WindowBase.create_properties(self)

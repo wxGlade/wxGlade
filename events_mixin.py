@@ -1,5 +1,5 @@
 # events_mixin.py: mixin class for 'events' property
-# $Id: events_mixin.py,v 1.6 2006/12/02 10:49:57 agriggio Exp $
+# $Id: events_mixin.py,v 1.7 2007/01/29 19:50:35 dinogen Exp $
 # 
 # Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sf.net>
 # License: MIT (see license.txt)
@@ -19,8 +19,8 @@ from xml.sax.saxutils import escape, quoteattr
 
 class EventsProperty(GridProperty):
     def __init__(self, owner):
-        cols = [('Event', GridProperty.STRING),
-                ('Handler', GridProperty.STRING)]
+        cols = [(_('Event'), GridProperty.STRING),
+                (_('Handler'), GridProperty.STRING)]
         GridProperty.__init__(self, owner, 'events', None, cols,
                               len(owner.events), False, False, False)
         self._pos = {}

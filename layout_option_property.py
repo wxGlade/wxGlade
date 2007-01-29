@@ -1,6 +1,6 @@
 # layout_option_property.py: Property class for the 'option' layout property of
 # widgets and non-toplevel sizers
-# $Id: layout_option_property.py,v 1.2 2006/12/02 10:49:57 agriggio Exp $
+# $Id: layout_option_property.py,v 1.3 2007/01/29 19:50:35 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -11,7 +11,6 @@ import wx
 
 import widget_properties
 #from edit_sizers import EditGridBagSizer
-
 
 def _is_gridbag(sizer):
     return False
@@ -38,9 +37,9 @@ class LayoutOptionProperty(widget_properties.Property):
         self.id = wx.NewId()
         self.val_range = (0, 1000)
         size = (widget_properties._label_initial_width, -1)
-        label = widget_properties.wxGenStaticText(parent, -1, 'Option',
+        label = widget_properties.wxGenStaticText(parent, -1, _('Option'),
                                                   size=size)
-        label.SetToolTip(wx.ToolTip('Option'))
+        label.SetToolTip(wx.ToolTip(_('Option')))
         self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
                                max=self.val_range[1])
         val = int(self.owner[self.name][0]())
@@ -60,9 +59,9 @@ class LayoutOptionProperty(widget_properties.Property):
         val = self.owner[self.name][0]()
         
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        label = widget_properties.wxGenStaticText(parent, -1, 'Position',
+        label = widget_properties.wxGenStaticText(parent, -1, _('Position'),
                                                   size=size)
-        label.SetToolTip(wx.ToolTip('Position'))
+        label.SetToolTip(wx.ToolTip(_('Position')))
         szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         self.position = wx.TextCtrl(parent, -1)
         self.position.SetValue(val[:2])
@@ -70,9 +69,9 @@ class LayoutOptionProperty(widget_properties.Property):
         sizer.Add(szr, 0, wx.EXPAND)
 
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        label = widget_properties.wxGenStaticText(parent, -1, 'Span',
+        label = widget_properties.wxGenStaticText(parent, -1, _('Span'),
                                                   size=size)
-        label.SetToolTip(wx.ToolTip('Span'))
+        label.SetToolTip(wx.ToolTip(_('Span')))
         szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         self.span = wx.TextCtrl(parent, -1)
         self.span.SetValue(val[2:])
