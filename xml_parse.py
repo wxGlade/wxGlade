@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.41 2006/12/07 07:47:51 agriggio Exp $
+# $Id: xml_parse.py,v 1.42 2007/01/31 16:02:45 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -142,6 +142,11 @@ class XmlWidgetBuilder(XmlParser):
             if use_gettext:
                 app.use_gettext = True
                 app.use_gettext_prop.set_value(True)
+		
+            try: is_template = int(attrs["is_template"])
+            except (KeyError, ValueError): is_template = False
+            app.is_template = is_template
+	    
             try: overwrite = int(attrs['overwrite'])
             except (KeyError, ValueError): overwrite = False
             if overwrite:
