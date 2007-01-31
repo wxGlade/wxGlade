@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.53 2007/01/31 16:02:45 guyru Exp $
+# $Id: tree.py,v 1.54 2007/01/31 22:17:00 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -29,7 +29,7 @@ class Tree:
                 if node.widget is not None:
                     # replace the just destroyed notebook with an empty window
                     pw = node.widget.property_window
-                    pw.SetTitle('Properties - <>')
+                    pw.SetTitle(_('Properties - <>'))
                     if Tree.Node.__empty_win is None:
                         Tree.Node.__empty_win = wx.Window(pw, -1)
                     pw.GetSizer().GetChildren()[0].SetWindow(
@@ -264,7 +264,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             WidgetTree.images[w] = image_list.Add(wx.Bitmap(
                 WidgetTree.images[w], wx.BITMAP_TYPE_XPM))
         self.AssignImageList(image_list)
-        root_node.item = self.AddRoot('Application', 0)
+        root_node.item = self.AddRoot(_('Application'), 0)
         self.SetPyData(root_node.item, root_node)
         self.skip_select = 0 # necessary to avoid an infinite loop on win32, as
                              # SelectItem fires an EVT_TREE_SEL_CHANGED event
@@ -277,7 +277,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                                                           # show toplevel
                                                           # widgets
         SHOW_ID = wx.NewId()
-        self._show_menu.Append(SHOW_ID, 'Show')
+        self._show_menu.Append(SHOW_ID, _('Show'))
         wx.EVT_TREE_SEL_CHANGED(self, id, self.on_change_selection)
         wx.EVT_RIGHT_DOWN(self, self.popup_menu)
         wx.EVT_LEFT_DCLICK(self, self.show_toplevel)
@@ -445,7 +445,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def set_title(self, value):
         if value is None: value = ""
         self.title = value
-        try: self.GetParent().SetTitle('wxGlade: Tree %s' % value)
+        try: self.GetParent().SetTitle(_('wxGlade: Tree %s') % value)
         except: pass
 
     def get_title(self):

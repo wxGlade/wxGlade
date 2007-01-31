@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.57 2006/12/02 10:49:57 agriggio Exp $
+# $Id: widget_properties.py,v 1.58 2007/01/31 22:17:00 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -332,19 +332,19 @@ class CheckListProperty(Property):
     Properties whose values can be changed by a list of checkboxes.
     """
     def __init__(self, owner, name, parent=None, labels=None, writer=None,tooltips=None):
-	"""
+        """
         @type labels: list of strings
-	@param labels: list of names of the labels of the checkboxes; a
-         label that begins with the string "#section#" is used as the
-         title of a static box that encloses the checkboxes that
-         follow
-	@type tooltips: tuple of strings
-	@param tooltips: a list of strings to be displayed as the tool-tips for the properties
-	""" #" # ALB - fix for emacs's syntax highlight, don't remove please!
+        @param labels: list of names of the labels of the checkboxes; a
+        label that begins with the string "#section#" is used as the
+        title of a static box that encloses the checkboxes that
+        follow
+        @type tooltips: tuple of strings
+        @param tooltips: a list of strings to be displayed as the tool-tips for the properties
+        """ #" # ALB - fix for emacs's syntax highlight, don't remove please!
         Property.__init__(self, owner, name, parent)
         self.values = owner[name][0]()
         self.labels = labels
-	self.tooltips = tooltips
+        self.tooltips = tooltips
         # the writer param is a function to customize the generation of the xml
         # for this property
         self.writer = writer
@@ -638,8 +638,8 @@ class FileDialogProperty(DialogProperty):
 
     # end of class FileDialog
     
-    def __init__(self, owner, name, parent=None, wildcard="All Files|*",
-                 message="Choose a file", can_disable=True, style=0):
+    def __init__(self, owner, name, parent=None, wildcard=_("All Files|*"),
+                 message=_("Choose a file"), can_disable=True, style=0):
         if not self.dialog[0]:
 ##             self.dialog[0] = wxFileDialog(parent, message,
 ##                                           wildcard=wildcard, style=style)
@@ -762,7 +762,7 @@ class FontDialogProperty(DialogProperty):
                 traceback.print_exc()
                 return
             if len(props) < 6:
-                print 'error in the value of the property "%s"' % self.name
+                print _('error in the value of the property "%s"') % self.name
                 return
             fwrite = outfile.write
             fwrite('    ' * tabs + '<%s>\n' % self.name)
@@ -915,16 +915,16 @@ class GridProperty(Property): #wxPanel, Property):
         sizer = wx.StaticBoxSizer(wx.StaticBox(self.panel, -1,
                                              _mangle(self.name)), wx.VERTICAL)
         self.btn_id = wx.NewId()
-        self.btn = wx.Button(self.panel, self.btn_id, "  Apply  ",
+        self.btn = wx.Button(self.panel, self.btn_id, _("  Apply  "),
                             style=wx.BU_EXACTFIT)
         if self.can_add:
-            self.add_btn = wx.Button(self.panel, self.btn_id+1, "  Add  ",
+            self.add_btn = wx.Button(self.panel, self.btn_id+1, _("  Add  "),
                                     style=wx.BU_EXACTFIT)
         if self.can_insert:
-            self.insert_btn = wx.Button(self.panel, self.btn_id+3, "  Insert  ",
+            self.insert_btn = wx.Button(self.panel, self.btn_id+3, _("  Insert  "),
                                        style=wx.BU_EXACTFIT)
         if self.can_remove:
-            self.remove_btn = wx.Button(self.panel, self.btn_id+2, "  Remove  ",
+            self.remove_btn = wx.Button(self.panel, self.btn_id+2, _("  Remove  "),
                                        style=wx.BU_EXACTFIT)
         self.grid = wx.grid.Grid(self.panel, -1)
         self.grid.CreateGrid(self.rows, len(self.cols))

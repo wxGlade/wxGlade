@@ -1,5 +1,5 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.22 2006/11/07 15:06:26 jkt Exp $
+# $Id: bitmap_button.py,v 1.23 2007/01/31 22:17:01 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -117,7 +117,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'bitmap_button_%s' % number[0]
-    bitmap = misc.FileSelector("Select the image for the button")
+    bitmap = misc.FileSelector(_("Select the image for the button"))
     button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos,
                               common.property_panel)
     node = Tree.Node(button)

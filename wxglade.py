@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # wxglade.py: entry point of wxGlade
-# $Id: wxglade.py,v 1.24 2007/01/27 18:24:37 dinogen Exp $
+# $Id: wxglade.py,v 1.25 2007/01/31 22:17:00 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -8,7 +8,9 @@
 
 import os, sys, gettext
 
-t = gettext.translation("wxglade","locale")
+t = gettext.translation(domain="wxglade", \
+				     localedir="locale", \
+				     fallback=True)
 t.install("wxglade")
 
 # check to see if the Python release supports boolean identifiers
