@@ -8,6 +8,7 @@
  - D.H. <crazyinsomniac@yahoo.com> (Perl code generation)
  - Georges Khaznadar <gekhajofour@netinfo.fr> (debian package maintainer)
  - Kevin Walzer (OSX app bundle maintainer)
+ - Guy Rutenberg <guyrutenberg@gmail.com>
 
  Former Developers:
  ---------------------------------------------------------------------------
