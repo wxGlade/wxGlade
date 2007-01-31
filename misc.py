@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.42 2006/12/02 10:49:57 agriggio Exp $
+# $Id: misc.py,v 1.43 2007/01/31 22:17:00 dinogen Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -401,4 +401,4 @@ except NameError:
 
 
 def design_title(title):
-    return '<Design> - ' + title
+    return _('<Design> - ') + title

@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.42 2007/01/31 16:02:45 guyru Exp $
+# $Id: xml_parse.py,v 1.43 2007/01/31 22:17:00 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -250,8 +250,8 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
             del kwds['input_file']
             self.size = len(self.input_file.readlines())
             self.input_file.seek(0)
-            self.progress = wx.ProgressDialog("Loading...", "Please wait "
-                                              "while loading the app", 20)
+            self.progress = wx.ProgressDialog(_("Loading..."), _("Please wait "
+                                              "while loading the app"), 20)
             self.step = 4
             self.i = 1
         else:
@@ -401,9 +401,9 @@ class XmlWidgetObject:
             if hasattr(sizeritem, 'pos'):
                 pos = sizeritem.pos
             else: pos = None
-			
+            
             if parent and hasattr(parent, 'virtual_sizer') and \
-                    parent.virtual_sizer:
+                parent.virtual_sizer:
                 sizer = parent.virtual_sizer
                 sizer.node = parent.node
                 sizeritem = Sizeritem()
