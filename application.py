@@ -1,6 +1,6 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.59 2006/12/07 07:47:51 agriggio Exp $
+# $Id: application.py,v 1.60 2007/01/31 17:00:15 guyru Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -118,6 +118,7 @@ class Application(object):
         self.language = 'python' # output language
         def get_output_path(): return os.path.expanduser(self.output_path)
         def set_output_path(value): self.output_path = value
+	self.is_template = False
         self.use_gettext = False
         def set_use_gettext(value): self.use_gettext = bool(int(value))
         self.for_version = wx.VERSION_STRING[:3]
