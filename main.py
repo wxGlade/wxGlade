@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.74 2007/01/29 19:50:35 dinogen Exp $
+# $Id: main.py,v 1.75 2007/01/31 16:02:44 guyru Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -563,7 +563,8 @@ class wxGladeFrame(wx.Frame):
         if not self.ask_save(): return
         from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
         infile = misc.FileSelector(_("Open file"), wildcard="wxGlade files (*.wxg)"
-                                   "|*.wxg|XML files (*.xml)|*.xml|All files|*",
+                                   "|*.wxg|wxGlade Template files (*.wgt)|*.wgt|"
+				   "XML files (*.xml)|*.xml|All files|*",
                                    flags=wx.OPEN|wx.FILE_MUST_EXIST,
                                    default_path=self.cur_dir)
         if infile:
@@ -648,6 +649,9 @@ class wxGladeFrame(wx.Frame):
         # reset the auto-expansion of nodes
         common.app_tree.auto_expand = True
         common.app_tree.expand()
+	if common.app_tree.app.is_template:
+            print _("Loaded template")
+            common.app_tree.filename = None
 
         end = time.clock()
         print _('Loading time: %.5f') % (end-start)
@@ -655,7 +659,7 @@ class wxGladeFrame(wx.Frame):
         common.app_tree.app.saved = True
         
         if hasattr(self, 'file_history') and infilename is not None and \
-               add_to_history:
+               add_to_history and (not common.app_tree.app.is_template):
             self.file_history.AddFileToHistory(infilename)
 
         # ALB 2004-10-15
@@ -671,9 +675,11 @@ class wxGladeFrame(wx.Frame):
         """\
         saves a wxGlade project onto an xml file
         """
-        if not common.app_tree.app.filename:
+        if not common.app_tree.app.filename or common.app_tree.app.is_template:
             self.save_app_as(event)
         else:
+	    if common.app_tree.app.filename[-4:]==".wgt": #check whether we are saving a template
+	        common.app_tree.app.is_template=True
             try:
                 from cStringIO import StringIO
                 buffer = StringIO()
@@ -713,15 +719,20 @@ class wxGladeFrame(wx.Frame):
         """
         fn = misc.FileSelector(_("Save project as..."),
                                wildcard="wxGlade files (*.wxg)|*.wxg|"
+			       "wxGlade Template files (*.wgt) |*.wgt|"
                                "XML files (*.xml)|*.xml|All files|*",
                                flags=wx.SAVE|wx.OVERWRITE_PROMPT,
                                default_path=self.cur_dir)
         if fn:
             common.app_tree.app.filename = fn
+	    #remove the template flag so we can save the file.
+	    common.app_tree.app.is_template = False
+
             self.save_app(event)
             self.cur_dir = os.path.dirname(fn)
             if misc.check_wx_version(2, 3, 3):
                 self.file_history.AddFileToHistory(fn)
+
 
     def cleanup(self, event):
         if self.ask_save():
