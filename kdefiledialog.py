@@ -67,7 +67,7 @@ def kde_file_selector(message, default_path="", default_filename="",
         if (flags & wx.SAVE) and (flags & wx.OVERWRITE_PROMPT) and \
                os.path.exists(filename):
             if wx.MessageBox(_("File '%s' already exists: do you really want to "
-                             "overwrite it?")) % filename, "Confirm",
+                             "overwrite it?") % filename, "Confirm",
                              style=wx.YES_NO|wx.ICON_QUESTION) == wx.NO:
                 return kde_file_selector(message, default_path,
                                          default_filename, default_extension,
