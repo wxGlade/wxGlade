@@ -5,14 +5,14 @@
  Other Developers:
  ---------------------------------------------------------------------------
  - Marcello Semboli <dinogen@supereva.it>
+ - Guy Rutenberg <guyrutenberg@gmail.com>
  - D.H. <crazyinsomniac@yahoo.com> (Perl code generation)
  - Georges Khaznadar <gekhajofour@netinfo.fr> (debian package maintainer)
- - Kevin Walzer (OSX app bundle maintainer)
- - Guy Rutenberg <guyrutenberg@gmail.com>
 
  Former Developers:
  ---------------------------------------------------------------------------
  - Marco Barisione <marco.bari@vene.ws>
+ - Kevin Walzer (OSX app bundle maintainer)
 
  Contributors:
  ---------------------------------------------------------------------------
