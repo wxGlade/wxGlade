@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.75 2007/01/31 16:02:44 guyru Exp $
+# $Id: main.py,v 1.76 2007/02/04 12:45:28 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -749,8 +749,9 @@ class wxGladeFrame(wx.Frame):
             if self.about_box: self.about_box.Destroy()
             try: config.save_preferences()
             except Exception, e:
-                wx.MessageBox(_('Error saving preferences:\n%s') % e, _('Error'),
-                             wx.OK|wx.CENTRE|wx.ICON_ERROR)
+                wx.MessageBox(_('Error saving preferences:\n%s') % e,
+                              _('Error'),
+                              wx.OK|wx.CENTRE|wx.ICON_ERROR)
             self._skip_activate = True
             self.Destroy()
             common.remove_autosaved() # ALB 2004-10-15
@@ -772,9 +773,9 @@ class wxGladeFrame(wx.Frame):
             # (at least on linux - GTK)
             def go():
                 webbrowser.open_new(docs_path)
-                t = threading.Thread(target=go)
-                t.setDaemon(True)
-                t.start()
+            t = threading.Thread(target=go)
+            t.setDaemon(True)
+            t.start()
 
     def show_and_raise(self):
         self.frame2.Show(self.GetMenuBar().IsChecked(self.PROPS_ID))
