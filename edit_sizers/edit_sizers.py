@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.73 2007/01/27 19:59:29 dinogen Exp $
+# $Id: edit_sizers.py,v 1.74 2007/02/04 12:44:37 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1777,7 +1777,7 @@ class EditGridSizer(GridSizerBase):
     def create_widget(self):
         self.widget = CustomSizer(self, wx.GridSizer, self.rows, self.cols,
                                   self.vgap, self.hgap)
-        if not self.toplevel and hasattr(self, 'sizer'):
+        if not self.toplevel and getattr(self, 'sizer', None): #hasattr(self, 'sizer'):
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer'
             # call
             self.sizer.add_item(self, self.pos, self.option, self.flag,
@@ -1799,8 +1799,8 @@ class CheckListDialogProperty(DialogProperty):
                     wx.Dialog.__init__(self, parent, -1, title)
                     sizer = wx.BoxSizer(wx.VERTICAL)
                     self.message = wx.StaticText(self, -1, "")
-                    sizer.Add(self.message, 0, wx.TOP|wx.LEFT|wx.RIGHT|wx.EXPAND,
-                              10)
+                    sizer.Add(self.message, 0,
+                              wx.TOP|wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
                     self.choices = wx.CheckListBox(self, -1, choices=[])
                     sizer.Add(self.choices, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 10)
                     sizer.Add(wx.StaticLine(self, -1), 0, wx.EXPAND|wx.ALL, 10)
