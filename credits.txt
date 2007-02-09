@@ -4,7 +4,7 @@
 
  Other Developers:
  ---------------------------------------------------------------------------
- - Marcello Semboli <dinogen@supereva.it>
+ - Marcello Semboli <dinogen@siena.linux.it>
  - Guy Rutenberg <guyrutenberg@gmail.com>
  - D.H. <crazyinsomniac@yahoo.com> (Perl code generation)
  - Georges Khaznadar <gekhajofour@netinfo.fr> (debian package maintainer)

@@ -1,5 +1,5 @@
 # text_ctrl.py: wxTextCtrl objects
-# $Id: text_ctrl.py,v 1.16 2006/11/07 15:06:24 jkt Exp $
+# $Id: text_ctrl.py,v 1.17 2007/02/09 22:24:07 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -73,7 +73,7 @@ class EditTextCtrl(ManagedBase):
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')
+        self.notebook.AddPage(panel, _('Widget'))
         import math
         panel.SetScrollbars(
             1, 5, 1, int(math.ceil(panel.GetClientSize()[1]/5.0)))

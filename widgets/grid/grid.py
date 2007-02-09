@@ -1,5 +1,5 @@
 # Grid.py: wxGrid objects
-# $Id: grid.py,v 1.31 2006/12/02 10:49:55 agriggio Exp $
+# $Id: grid.py,v 1.32 2007/02/09 22:24:04 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -196,8 +196,8 @@ class EditGrid(ManagedBase):
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(self.properties['create_grid'].panel, 0, wx.EXPAND)
         szr.Add(wx.StaticLine(panel, -1), 0, wx.ALL|wx.EXPAND, 5)
-        szr.Add(wx.StaticText(panel, -1, "The following properties are "
-                             "meaningful\nonly if 'Create grid' is selected"),
+        szr.Add(wx.StaticText(panel, -1, _("The following properties are "
+                             "meaningful\nonly if 'Create grid' is selected")),
                 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
         szr.Add(wx.StaticLine(panel, -1), 0, wx.ALL|wx.EXPAND, 5)
         szr.Add(self.properties['columns'].panel, 0, wx.ALL|wx.EXPAND, 2)
@@ -217,7 +217,7 @@ class EditGrid(ManagedBase):
         panel.SetSizer(szr)
         szr.Fit(panel)
         w, h = panel.GetClientSize()
-        self.notebook.AddPage(panel, 'Widget')
+        self.notebook.AddPage(panel, _('Widget'))
         import math
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
         self.properties['columns'].set_col_sizes([-1, 0])

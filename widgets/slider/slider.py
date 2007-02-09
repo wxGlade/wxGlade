@@ -1,5 +1,5 @@
 # slider.py: wxSlider objects
-# $Id: slider.py,v 1.12 2006/12/02 19:30:32 guyru Exp $
+# $Id: slider.py,v 1.13 2007/02/09 22:24:06 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -49,16 +49,16 @@ class EditSlider(ManagedBase):
                           wx.SL_AUTOTICKS, wx.SL_LABELS, wx.SL_LEFT,
                           wx.SL_RIGHT, wx.SL_TOP, wx.SL_BOTTOM,
                           wx.SL_SELRANGE, wx.SL_INVERSE)
-        tooltips = ("Displays the slider horizontally (this is the default).",
-                    "Displays the slider vertically.",
-                    "Displays tick marks.",
-		    "Displays minimum, maximum and value labels.",
-		    "Displays ticks on the left and forces the slider to be vertical.",
-		    "Displays ticks on the right and forces the slider to be vertical.",
-		    "Displays ticks on the top.",
-		    "Displays ticks on the bottom (this is the default).",
-		    "Allows the user to select a range on the slider. Windows only.",
-		    "Inverses the mininum and maximum endpoints on the slider. Not compatible with wxSL_SELRANGE.")
+        tooltips = (_("Displays the slider horizontally (this is the default)."),
+                    _("Displays the slider vertically."),
+                    _("Displays tick marks."),
+                    _("Displays minimum, maximum and value labels."),
+                    _("Displays ticks on the left and forces the slider to be vertical."),
+                    _("Displays ticks on the right and forces the slider to be vertical."),
+                    _("Displays ticks on the top."),
+                    _("Displays ticks on the bottom (this is the default)."),
+                    _("Allows the user to select a range on the slider. Windows only."),
+                    _("Inverses the mininum and maximum endpoints on the slider. Not compatible with wxSL_SELRANGE."))
         prop['style'] = CheckListProperty(self, 'style', None, style_labels, tooltips=tooltips)
         prop['range'] = TextProperty(self, 'range', None, can_disable=True)
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
@@ -81,7 +81,7 @@ class EditSlider(ManagedBase):
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')
+        self.notebook.AddPage(panel, _('Widget'))
 
     def get_style(self):
         retval = [0] * len(self.style_pos)
@@ -128,7 +128,7 @@ def builder(parent, sizer, pos, number=[1]):
     """
     class Dialog(wx.Dialog):
         def __init__(self):
-            wx.Dialog.__init__(self, None, -1, 'Select style')
+            wx.Dialog.__init__(self, None, -1, _('Select style'))
             self.orientations = [ wx.SL_HORIZONTAL, wx.SL_VERTICAL ]
             self.orientation = wx.SL_HORIZONTAL
             prop = RadioProperty(self, 'orientation', self,

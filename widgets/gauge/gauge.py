@@ -1,5 +1,5 @@
 # gauge.py: wxGauge objects
-# $Id: gauge.py,v 1.9 2006/11/22 16:33:30 guyru Exp $
+# $Id: gauge.py,v 1.10 2007/02/09 22:24:04 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -29,10 +29,10 @@ class EditGauge(ManagedBase):
                         'wxGA_PROGRESSBAR', 'wxGA_SMOOTH')
         self.style_pos = (wx.GA_HORIZONTAL, wx.GA_VERTICAL,
                           wx.GA_PROGRESSBAR, wx.GA_SMOOTH)
-	self.tooltips = ("Creates a horizontal gauge.",
-			 "Creates a vertical gauge.",
-			 "Under Windows 95, creates a horizontal progress bar.",
-			 "Creates smooth progress bar with one pixel wide update step (not supported by all platforms).")
+        self.tooltips = (_("Creates a horizontal gauge."),
+                     _("Creates a vertical gauge."),
+                     _("Under Windows 95, creates a horizontal progress bar."),
+                     _("Creates smooth progress bar with one pixel wide update step (not supported by all platforms)."))
         prop['style'] = CheckListProperty(self, 'style', None, style_labels,tooltips=self.tooltips)
         prop['range'] = SpinProperty(self, 'range', None)
 
@@ -88,7 +88,7 @@ def builder(parent, sizer, pos, number=[1]):
     """
     class Dialog(wx.Dialog):
         def __init__(self):
-            wx.Dialog.__init__(self, None, -1, 'Select style')
+            wx.Dialog.__init__(self, None, -1, _('Select style'))
             self.orientations = [ wx.GA_HORIZONTAL, wx.GA_VERTICAL ]
             self.orientation = wx.GA_HORIZONTAL
             prop = RadioProperty(self, 'orientation', self,
@@ -101,7 +101,7 @@ def builder(parent, sizer, pos, number=[1]):
             self.style_prop = CheckListProperty(self, 'style', self,
                                                 style_labels)
             szr.Add(self.style_prop.panel, 0, wx.ALL|wx.EXPAND, 10)
-            btn = wx.Button(self, wx.ID_OK, 'OK')
+            btn = wx.Button(self, wx.ID_OK, _('OK'))
             btn.SetDefault()
             szr.Add(btn, 0, wx.BOTTOM|wx.ALIGN_CENTER, 10)
             self.SetAutoLayout(True)

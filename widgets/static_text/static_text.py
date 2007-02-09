@@ -1,5 +1,5 @@
 # static_text.py: wxStaticText objects
-# $Id: static_text.py,v 1.14 2006/11/07 15:06:25 jkt Exp $
+# $Id: static_text.py,v 1.15 2007/02/09 22:24:06 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -39,7 +39,7 @@ class EditStaticText(ManagedBase):
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
         self.properties['attribute'] = CheckBoxProperty(
-            self, 'attribute', None, 'Store as attribute', write_always=True)
+            self, 'attribute', None, _('Store as attribute'), write_always=True)
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -62,7 +62,7 @@ class EditStaticText(ManagedBase):
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')
+        self.notebook.AddPage(panel, _('Widget'))
 
     def get_label(self): return self.label
 

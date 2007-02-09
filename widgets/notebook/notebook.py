@@ -1,5 +1,5 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.28 2006/11/07 15:06:25 jkt Exp $
+# $Id: notebook.py,v 1.29 2007/02/09 22:24:06 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -221,7 +221,7 @@ class EditNotebook(ManagedBase):
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer)
         sizer.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')
+        self.notebook.AddPage(panel, _('Widget'))
         self.properties['tabs'].set_col_sizes([-1])
 
     def on_set_focus(self, event):
@@ -328,15 +328,15 @@ def builder(parent, sizer, pos, number=[1]):
     """
     class Dialog(wx.Dialog):
         def __init__(self):
-            wx.Dialog.__init__(self, None, -1, 'Select tab placement')
+            wx.Dialog.__init__(self, None, -1, _('Select tab placement'))
             self.styles = [ 0, wx.NB_BOTTOM, wx.NB_LEFT, wx.NB_RIGHT ]
             self.style = 0
             prop = RadioProperty(self, 'tab_placement', self,
-                                 ['Top', 'Bottom', 'Left', 'Right'],
+                                 [_('Top'), _('Bottom'), _('Left'), _('Right')],
                                  columns=2)
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
-            btn = wx.Button(self, wx.ID_OK, 'OK')
+            btn = wx.Button(self, wx.ID_OK, _('OK'))
             btn.SetDefault()
             szr.Add(btn, 0, wx.BOTTOM|wx.ALIGN_CENTER, 10)
             self.SetAutoLayout(True)
