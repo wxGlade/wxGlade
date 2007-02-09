@@ -1,5 +1,6 @@
+
 # lisp_codegen.py : lisp generator functions for spacers
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 07:00:35 efuzzyone Exp $
+# $Id: lisp_codegen.py,v 1.2 2007/02/09 22:24:06 dinogen Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)

@@ -1,5 +1,5 @@
 # text_ctrl.py: wxTreeCtrl objects
-# $Id: tree_ctrl.py,v 1.10 2006/11/16 15:20:54 guyru Exp $
+# $Id: tree_ctrl.py,v 1.11 2007/02/09 22:24:07 dinogen Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -76,10 +76,10 @@ class EditTreeCtrl(ManagedBase):
         self.widget = wx.TreeCtrl(self.parent.widget, self.id,
                                  style=wx.TR_HAS_BUTTONS|wx.SUNKEN_BORDER)
         # add a couple of items just for a better appearence
-        root = self.widget.AddRoot(' Tree Control:')
+        root = self.widget.AddRoot(_(' Tree Control:'))
         self._item_with_name = self.widget.AppendItem(root, ' ' + self.name)
         self.widget.AppendItem(self._item_with_name,
-                               ' on wxGlade %s' % common.version)
+                               _(' on wxGlade %s') % common.version)
         self.widget.Expand(root)
         self.widget.Expand(self._item_with_name)
 
@@ -102,7 +102,7 @@ class EditTreeCtrl(ManagedBase):
         panel.SetSizer(szr)
         szr.Fit(panel)
         w, h = panel.GetClientSize()
-        self.notebook.AddPage(panel, 'Widget')
+        self.notebook.AddPage(panel, _('Widget'))
         self.property_window.Layout()
         import math
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
