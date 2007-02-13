@@ -1,5 +1,5 @@
 # template.py: handles the template tags and description
-# $header: $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/template.py,v 1.2 2007/02/13 19:18:06 guyru Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
