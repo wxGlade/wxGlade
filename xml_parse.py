@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.43 2007/01/31 22:17:00 dinogen Exp $
+# $Id: xml_parse.py,v 1.44 2007/02/13 19:16:44 guyru Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -212,11 +212,13 @@ class XmlWidgetBuilder(XmlParser):
             # 1: set _curr_prop value
             data = common._encode_from_xml("".join(self._curr_prop_val))
             if data:
-                handler = self.top().prop_handlers.top()
-                if not handler or handler.char_data(data):
-                    # if char_data returned False,
-                    # we don't have to call add_property
-                    self.top().add_property(self._curr_prop, data)
+                try:
+                    handler = self.top().prop_handlers.top()
+                    if not handler or handler.char_data(data):
+                        # if char_data returned False,
+                        # we don't have to call add_property
+                        self.top().add_property(self._curr_prop, data)
+                except AttributeError: pass
             # 2: call custom end_elem handler
             try:
                 # if there is a custom handler installed for this property,
