@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.76 2007/02/04 12:45:28 agriggio Exp $
+# $Id: main.py,v 1.77 2007/02/13 19:13:21 guyru Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -651,6 +651,8 @@ class wxGladeFrame(wx.Frame):
         common.app_tree.expand()
 	if common.app_tree.app.is_template:
             print _("Loaded template")
+	    import template
+	    common.app_tree.template_data = template.Template(infilename)
             common.app_tree.filename = None
 
         end = time.clock()
