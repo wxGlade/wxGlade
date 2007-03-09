@@ -1,5 +1,5 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.39 2006/11/30 16:25:33 jkt Exp $
+# $Id: pl_codegen.py,v 1.40 2007/03/09 07:33:37 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -140,7 +140,7 @@ class SourceFileContent:
         block_end = re.compile(r'^\s*#\s*end\s+wxGlade\s*$')
         pod_re = re.compile(r'^\s*=[A-Za-z_]+\w*.*$')
         event_handler = re.compile(
-            r'#\s*wxGlade:\s*(\w+)::(\w+) <event_handler>\s*$')
+            r'#\s*wxGlade:\s*([\w:]+)::(\w+) <event_handler>\s*$')
         inside_block = False
         inside_pod = False
         tmp_in = open(self.name)
