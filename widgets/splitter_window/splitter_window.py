@@ -1,5 +1,5 @@
 # splitter_window.py: wxSplitterWindow objects
-# $Id: splitter_window.py,v 1.25 2006/11/07 15:06:25 jkt Exp $
+# $Id: splitter_window.py,v 1.26 2007/03/09 07:35:35 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -238,7 +238,7 @@ class EditSplitterWindow(ManagedBase):
             if self.orientation == wx.SPLIT_VERTICAL:
                 max_pos = self.widget.GetClientSize()[0]
             else: max_pos = self.widget.GetClientSize()[1]
-            self.properties['sash_pos'].set_range(0, max_pos)
+            self.properties['sash_pos'].set_range(-max_pos, max_pos)
             if not self.properties['sash_pos'].is_active():
                 self.widget.SetSashPosition(max_pos/2)
                 self.sash_pos = self.widget.GetSashPosition()
