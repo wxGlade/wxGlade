@@ -1,5 +1,5 @@
 # py_codegen.py: python code generator
-# $Id: py_codegen.py,v 1.63 2006/11/30 16:25:33 jkt Exp $
+# $Id: py_codegen.py,v 1.64 2007/03/19 09:58:32 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -359,7 +359,7 @@ def initialize(app_attrs):
 
     # add coding (PEP 263)
     if _encoding:
-        header_lines.insert(0, "# -*- coding: %s -*-\n" % _encoding)
+        header_lines.insert(0, "# -*- coding: %s -*-\n" % _encoding.lower())
 
     multiple_files = multi_files
     if not multiple_files:
