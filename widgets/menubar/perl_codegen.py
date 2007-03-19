@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.9 2005/10/14 13:30:34 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.10 2007/03/19 10:01:00 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -20,6 +20,8 @@ class PerlCodeGenerator:
         append = out.append
         menus = obj.properties['menubar']
         ids = []
+        # We need to keep track of tmpnames used.
+        tmpsused = {}
 
         def append_items(menu, items):
             for item in items:
@@ -38,10 +40,13 @@ class PerlCodeGenerator:
                         name = item.name
                     else:
                         name = '%s_sub' % menu
+                        if not tmpsused.has_key(name):
+                            tmpsused[name] = 1
+                            append('my %s;\n' % name)
 
                     append('%s = Wx::Menu->new();\n' % name)
                     append_items(name, item.children)
-                    append('%s->AppendMenu(%s, %s, %s, %s);\n' %
+                    append('%s->Append(%s, %s, %s, %s);\n' %
                            (menu, id, plgen.quote_str(item.label),
                             name, plgen.quote_str(item.help_str)))
                 else:
