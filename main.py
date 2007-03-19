@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.79 2007/03/19 09:59:39 agriggio Exp $
+# $Id: main.py,v 1.80 2007/03/19 10:03:45 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -165,8 +165,10 @@ class wxGladeFrame(wx.Frame):
         view_menu.Append(TREE_ID, _("Show &Tree\tCtrl+T"), "", True)
         view_menu.Check(TREE_ID, True)
         self.PROPS_ID = PROPS_ID = wx.NewId()
+        self.RAISE_ID = RAISE_ID = wx.NewId()
         view_menu.Append(PROPS_ID, _("Show &Properties\tCtrl+P"), "", True)
         view_menu.Check(PROPS_ID, True)
+        view_menu.Append(RAISE_ID, _("&Raise All\tCtrl-R"), "", False)
         append_item = misc.append_item
         NEW_ID = wx.NewId()
         append_item(file_menu, NEW_ID, _("&New\tCtrl+N"), 'new.xpm')
@@ -238,6 +240,7 @@ class wxGladeFrame(wx.Frame):
         
         wx.EVT_MENU(self, TREE_ID, self.show_tree)
         wx.EVT_MENU(self, PROPS_ID, self.show_props_window)
+        wx.EVT_MENU(self, RAISE_ID, self.raise_all)
         wx.EVT_MENU(self, NEW_ID, self.new_app)
         wx.EVT_MENU(self, OPEN_ID, self.open_app)
         wx.EVT_MENU(self, SAVE_ID, self.save_app)
@@ -503,6 +506,12 @@ class wxGladeFrame(wx.Frame):
             common.app_tree.app.show_properties()
             if common.app_tree.cur_widget:
                 common.app_tree.cur_widget.show_properties()
+
+    def raise_all(self, event):
+        children = self.GetChildren()
+        for child in children:
+            if child.GetTitle(): child.Raise()
+        self.Raise()
 
     def user_message(self, msg):
         sb = self.GetStatusBar()
