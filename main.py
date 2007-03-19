@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.78 2007/03/01 14:47:04 agriggio Exp $
+# $Id: main.py,v 1.79 2007/03/19 09:59:39 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -564,10 +564,9 @@ class wxGladeFrame(wx.Frame):
         if not self.ask_save(): return
         from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
         infile = misc.FileSelector(_("Open file"),
-                                   wildcard="wxGlade files (*.wxg)"
-                                   "|*.wxg|"
+                                   wildcard="wxGlade files (*.wxg)|*.wxg|"
                                    "wxGlade Template files (*.wgt)|*.wgt|"
-                                   "XML files (*.xml)|*.xml|All files|*",
+				   "XML files (*.xml)|*.xml|All files|*",
                                    flags=wx.OPEN|wx.FILE_MUST_EXIST,
                                    default_path=self.cur_dir)
         if infile:
@@ -620,7 +619,7 @@ class wxGladeFrame(wx.Frame):
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
             wx.MessageBox(_("Error loading file %s: %s") % (infilename, msg),
-                         _("Error"), wx.OK|wx.CENTRE|wx.ICON_ERROR)
+                          _("Error"), wx.OK|wx.CENTRE|wx.ICON_ERROR)
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
             os.chdir(old_dir)
@@ -633,12 +632,14 @@ class wxGladeFrame(wx.Frame):
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
             wx.MessageBox(_("An exception occurred while loading file \"%s\".\n"
-                         "This is the error message associated with it:\n"
-                         "        %s\n"
-                         "For more details, look at the full traceback "
-                         "on the console.\nIf you think this is a wxGlade bug,"
-                         " please report it.") % (infilename, msg), _("Error"),
-                         wx.OK|wx.CENTRE|wx.ICON_ERROR)
+                            "This is the error message associated with it:\n"
+                            "        %s\n"
+                            "For more details, look at the full traceback "
+                            "on the console.\n"
+                            "If you think this is a wxGlade bug,"
+                            " please report it.") % (infilename, msg),
+                          _("Error"),
+                          wx.OK|wx.CENTRE|wx.ICON_ERROR)
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
             os.chdir(old_dir)
@@ -683,9 +684,9 @@ class wxGladeFrame(wx.Frame):
         if not common.app_tree.app.filename or common.app_tree.app.is_template:
             self.save_app_as(event)
         else:
-            if common.app_tree.app.filename[-4:]==".wgt":
-                # check whether we are saving a template
-                common.app_tree.app.is_template=True
+            # check whether we are saving a template
+            if os.path.splitext(common.app_tree.app.filename)[1] == ".wgt":
+	        common.app_tree.app.is_template = True
             try:
                 from cStringIO import StringIO
                 buffer = StringIO()
@@ -702,11 +703,9 @@ class wxGladeFrame(wx.Frame):
                 common.app_tree.app.saved = False
                 fn = common.app_tree.app.filename
                 wx.MessageBox(_("An exception occurred while saving file "
-                                "\"%s\"."
-                                "\n"
+                                "\"%s\".\n"
                                 "This is the error message associated with it:"
-                                "\n"
-                                "        %s\n"
+                                "\n        %s\n"
                                 "For more details, look at the full traceback "
                                 "on the console.\nIf you think this is a "
                                 "wxGlade bug,"
@@ -740,7 +739,6 @@ class wxGladeFrame(wx.Frame):
             self.cur_dir = os.path.dirname(fn)
             if misc.check_wx_version(2, 3, 3):
                 self.file_history.AddFileToHistory(fn)
-
 
     def cleanup(self, event):
         if self.ask_save():
@@ -817,12 +815,12 @@ class wxGladeFrame(wx.Frame):
             except Exception, msg:
                 import traceback; traceback.print_exc()
                 wx.MessageBox(_("An exception occurred while importing file "
-                             "\"%s\".\nThis is the error message associated "
-                             "with it:\n        %s\n"
-                             "For more details, look at the full traceback "
-                             "on the console.\nIf you think this is a wxGlade "
-                             "bug, please report it.") % (infile, msg),
-                              _("Error"),
+                                "\"%s\".\nThis is the error message associated "
+                                "with it:\n        %s\n"
+                                "For more details, look at the full traceback "
+                                "on the console.\nIf you think this is a "
+                                "wxGlade bug, please report it.") % \
+                              (infile, msg), _("Error"),
                               wx.OK|wx.CENTRE|wx.ICON_ERROR)
 
 # end of class wxGladeFrame
