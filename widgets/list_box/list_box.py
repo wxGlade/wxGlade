@@ -1,5 +1,5 @@
 # list_box.py: wxListBox objects
-# $Id: list_box.py,v 1.20 2007/02/09 22:24:05 dinogen Exp $
+# $Id: list_box.py,v 1.21 2007/03/26 09:31:25 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -44,14 +44,17 @@ class EditListBox(ManagedBase):
                          'wxLB_EXTENDED', 'wxLB_HSCROLL', 'wxLB_ALWAYS_SB',
                          'wxLB_NEEDED_SB', 'wxLB_SORT')
         self.style_tooltips = (_('Single-selection list.'),
-            _('Multiple-selection list: the user can toggle multiple items on and off.'),
-            _('Extended-selection list: the user can select multiple items using the SHIFT key and the mouse or special key combinations.'),
-            _('Create horizontal scrollbar if contents are too wide (Windows only).'),
+            _('Multiple-selection list: the user can toggle multiple items on '
+              'and off.'),
+            _('Extended-selection list: the user can select multiple items '
+              'using the SHIFT key and the mouse or special key combinations.'),
+            _('Create horizontal scrollbar if contents are too wide '
+              '(Windows only).'),
             _('Always show a vertical scrollbar.'),
             _('Only create a vertical scrollbar if needed.'),
             _('The listbox contents are sorted in alphabetical order.'))
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels, tooltips=self.style_tooltips)
+        self.properties['style'] = CheckListProperty(
+            self, 'style', None, style_labels, tooltips=self.style_tooltips)
         
     def create_widget(self):
         self.widget = wx.ListBox(self.parent.widget, self.id,
@@ -70,7 +73,7 @@ class EditListBox(ManagedBase):
         szr.Add(self.properties['selection'].panel, 0, wx.EXPAND)
         ch = self.properties['choices'].panel
         ch.SetSize((ch.GetSize()[0]-20, 200))
-        szr.Add(self.properties['choices'].panel, 0, wx.ALL|wx.EXPAND, 5)
+        szr.Add(self.properties['choices'].panel, 1, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
