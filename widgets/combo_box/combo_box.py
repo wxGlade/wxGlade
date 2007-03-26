@@ -1,5 +1,5 @@
 # combo_box.py: wxComboBox objects
-# $Id: combo_box.py,v 1.26 2006/12/02 10:49:55 agriggio Exp $
+# $Id: combo_box.py,v 1.27 2007/03/26 09:18:25 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -54,12 +54,17 @@ class EditComboBox(ManagedBase):
         style_labels = ('#section#Style', 'wxCB_SIMPLE','wxCB_DROPDOWN',
                         'wxCB_READONLY', 'wxCB_SORT')
         self.style_pos = [ eval('wx.' + s[2:]) for s in style_labels[1:] ]
-	self.tooltips = ("Creates a combobox with a permanently displayed list. Windows only.",
-				"Creates a combobox with a drop-down list.",
-				"Same as wxCB_DROPDOWN but only the strings specified as the combobox choices can be selected, it is impossible to select (even from a program) a string which is not in the choices list.",
-				"Sorts the entries in the list alphabetically.")
+	self.tooltips = ("Creates a combobox with a permanently displayed list."
+                         " Windows only.",
+                         "Creates a combobox with a drop-down list.",
+                         "Same as wxCB_DROPDOWN but only the strings specified "
+                         "as the combobox choices can be selected, it is "
+                         "impossible to select (even from a program) a string "
+                         "which is not in the choices list.",
+                         "Sorts the entries in the list alphabetically.")
         self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels,tooltips=self.tooltips)
+                                                     style_labels,
+                                                     tooltips=self.tooltips)
         self.properties['choices'] = ChoicesProperty(self, 'choices', None,
                                                      [('Label',
                                                        GridProperty.STRING)],
