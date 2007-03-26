@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.58 2007/01/31 22:17:00 dinogen Exp $
+# $Id: widget_properties.py,v 1.59 2007/03/26 09:18:53 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -450,7 +450,10 @@ class SpinProperty(Property, _activator):
         self.can_disable = can_disable
         _activator.__init__(self)
         if can_disable: self.toggle_active(enabled)
-        self.val_range = r
+        if r is not None:
+            self.val_range = (r[0], max(r[0], r[1]))
+        else:
+            self.val_range = None
         self.panel = None
         if parent is not None: self.display(parent)
         self.val = owner[name][0]()
