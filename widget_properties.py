@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.59 2007/03/26 09:18:53 agriggio Exp $
+# $Id: widget_properties.py,v 1.60 2007/03/26 09:31:25 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -517,7 +517,7 @@ class SpinProperty(Property, _activator):
         except AttributeError: pass
 
     def set_range(self, min_v, max_v):
-        self.val_range = (min_v, max_v)
+        self.val_range = (min_v, max(min_v, max_v))
         try: self.spin.SetRange(min_v, max_v)
         except AttributeError: pass
 
