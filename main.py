@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.80 2007/03/19 10:03:45 agriggio Exp $
+# $Id: main.py,v 1.81 2007/03/26 08:44:22 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -510,7 +510,11 @@ class wxGladeFrame(wx.Frame):
     def raise_all(self, event):
         children = self.GetChildren()
         for child in children:
-            if child.GetTitle(): child.Raise()
+            try:
+                child = misc.get_toplevel_parent(child)
+                if child.IsShown() and child.GetTitle(): child.Raise()
+            except AttributeError:
+                pass
         self.Raise()
 
     def user_message(self, msg):
