@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.60 2007/03/26 09:31:25 agriggio Exp $
+# $Id: widget_properties.py,v 1.61 2007/03/27 06:55:42 agriggio Exp $
 # 
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1075,4 +1075,80 @@ class GridProperty(Property): #wxPanel, Property):
                 self.grid.SetColSize(col_to_expand, w)
 
 # end of class GridProperty
+
+class ComboBoxProperty(Property, _activator):
+    """\
+    Properties whose values can be changed with a combobox.
+    """
+    def __init__(self, owner, name, choices, parent=None, label=None,
+                 can_disable=False, enabled=False,
+                 write_always=False):
+        Property.__init__(self, owner, name, parent)
+        self.val = misc.wxstr(owner[name][0]())
+        if label is None: label = _mangle(name)
+        self.label = label
+        self.panel = None
+        self.write_always = write_always
+        self.choices = choices
+        self.can_disable = can_disable
+        _activator.__init__(self)
+        if can_disable: self.toggle_active(enabled)
+        if parent is not None: self.display(parent)
+
+    def display(self, parent):
+        """\
+        Actually builds the check box to set the value of the property
+        interactively
+        """
+        self.id = wx.NewId()
+        #self.panel = wxPanel(parent, -1)
+        self.cb = wx.ComboBox(parent, self.id, choices=self.choices,
+                              style=wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.cb.SetValue(self.val)
+        if self.can_disable:
+            self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
+        label = wx.StaticText(parent, -1, self.label)
+        if self.can_disable:
+            wx.EVT_CHECKBOX(self._enabler, self.id+1,
+                         lambda event: self.toggle_active(event.IsChecked()))
+            self.cb.Enable(self.is_active())
+            self._enabler.SetValue(self.is_active())
+            self._target = self.cb
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(label, 2, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 3)
+        if getattr(self, '_enabler', None) is not None:
+            sizer.Add(self._enabler, 1, wx.ALL|wx.ALIGN_CENTER, 3)
+            option = 4
+        else:
+            option = 5
+        sizer.Add(self.cb, option, wx.ALIGN_CENTER|wx.ALL, 3)
+##         self.panel.SetAutoLayout(True)
+##         self.panel.SetSizer(sizer)
+##         self.panel.SetSize(sizer.GetMinSize())
+        self.panel = sizer
+        self.bind_event(self.on_change_val)
+        
+    def bind_event(self, function):
+        wx.EVT_COMBOBOX(self.cb, self.id, function)
+
+    def get_value(self):
+        try: return misc.wxstr(self.cb.GetValue())
+        except AttributeError: return misc.wxstr(self.val)
+
+    def set_value(self, val):
+        self.val = misc.wxstr(val)
+        try: self.cb.SetValue(self.val)
+        except AttributeError: pass
+
+    def write(self, outfile, tabs):
+        if self.write_always or self.get_value():
+            if self.getter: value = misc.wxstr(self.getter())
+            else: value = misc.wxstr(self.owner[self.name][0]())
+            if value != 'None':
+                fwrite = outfile.write
+                fwrite('    ' * tabs + '<%s>' % self.name)
+                fwrite(escape(_encode(value)))
+                fwrite('</%s>\n' % self.name)
+
+# end of class ComboBoxProperty
 

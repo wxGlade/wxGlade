@@ -1,5 +1,5 @@
 # lisp_codegen.py : lisp generator functions for wxButton objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:36:49 efuzzyone Exp $
+# $Id: lisp_codegen.py,v 1.2 2007/03/27 06:55:42 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -18,7 +18,10 @@ class LispCodeGenerator:
         plgen = common.code_writers['lisp']
         prop = obj.properties
         id_name, id = plgen.generate_code_id(obj)
-        label = plgen.quote_str(prop.get('label', ''))
+        if prop.get('stockitem',0):
+            label = plgen.quote_str('')
+        else:
+            label = plgen.quote_str(prop.get('label', ''))
         
         if not obj.parent.is_toplevel:
             parent = '(slot-%s obj)' % obj.parent.name

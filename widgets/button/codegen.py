@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxButton objects
-# $Id: codegen.py,v 1.14 2005/05/06 21:48:22 agriggio Exp $
+# $Id: codegen.py,v 1.15 2007/03/27 06:55:42 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -13,7 +13,11 @@ class PythonCodeGenerator:
         cn = pygen.cn
         prop = obj.properties
         id_name, id = pygen.generate_code_id(obj)
-        label = pygen.quote_str(prop.get('label', ''))
+        if prop.get('stockitem', False): # and not obj.preview:
+            id = pygen.cn("wxID_" + prop['stockitem'])
+            label = pygen.quote_str('')
+        else:
+            label = pygen.quote_str(prop.get('label', ''))
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         style = prop.get("style")
@@ -68,7 +72,10 @@ class CppCodeGenerator:
         extra = ''
         style = prop.get("style")
         if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        label = cppgen.quote_str(prop.get('label', ''))
+        if prop.get('stockitem',0):
+            label = cppgen.quote_str(prop.get('label', ''))
+        else:
+            label = cppgen.quote_str('')
         init = [ '%s = new %s(%s, %s, %s%s);\n' % 
                  (obj.name, obj.klass, parent, id, label, extra) ]
         props_buf = cppgen.generate_common_properties(obj)

@@ -1,5 +1,5 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.21 2006/12/02 10:49:56 agriggio Exp $
+# $Id: button.py,v 1.22 2007/03/27 06:55:42 agriggio Exp $
 #
 # Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -10,6 +10,7 @@ import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
+from button_stockitems import *
 
 
 class EditButton(ManagedBase):
@@ -24,14 +25,25 @@ class EditButton(ManagedBase):
         import config
         self.label = label
         self.default = False
+        self.stockitem = "None"
         ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
                              property_window, show=show)
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.properties['label'] = TextProperty(self, 'label', None,
                                                 multiline=True)
+        self.access_functions['stockitem'] = (self.get_stockitem,
+                                              self.set_stockitem)
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
+
+        #Get the list of items, and add a 'None'
+        choices = ButtonStockItems.stock_ids.keys()
+        choices.sort()
+        choices[:0] = ['None']
+        self.properties['stockitem'] = ComboBoxProperty(
+            self, 'stockitem', choices, can_disable=True)
+
         self.style_pos = (wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP, wx.BU_BOTTOM,
             wx.BU_EXACTFIT,wx.NO_BORDER)
         style_labels = ('#section#Style', 'wxBU_LEFT', 'wxBU_RIGHT', 
@@ -39,13 +51,21 @@ class EditButton(ManagedBase):
 	
 	#The tooltips tuple
         style_tooltips=("Left-justifies the label. Windows and GTK+ only.",
-            "Right-justifies the bitmap label. Windows and GTK+ only.",
-	    "Aligns the label to the top of the button. Windows and GTK+ only.",
-            "Aligns the label to the bottom of the button. Windows and GTK+ only.",
-	    "Creates the button as small as possible instead of making it of the standard size (which is the default behaviour ).",
-	    "Creates a flat button. Windows and GTK+ only.")
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-            style_labels, tooltips=style_tooltips) #the tooltips tuple is passed as the last argument
+                        "Right-justifies the bitmap label. Windows and GTK+ "
+                        "only.",
+                        "Aligns the label to the top of the button. Windows "
+                        "and GTK+ only.",
+                        "Aligns the label to the bottom of the button. "
+                        "Windows and GTK+ only.",
+                        "Creates the button as small as possible instead of "
+                        "making it of the standard size (which is the default "
+                        "behaviour ).",
+                        "Creates a flat button. Windows and GTK+ only.")
+        self.properties['style'] = CheckListProperty(
+            self, 'style', None,
+            style_labels, tooltips=style_tooltips) # the tooltips tuple is
+                                                   # passed as the last
+                                                   # argument
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -55,10 +75,12 @@ class EditButton(ManagedBase):
         ManagedBase.create_properties(self)
         panel = wx.Panel(self.notebook, -1)
         self.properties['label'].display(panel)
+        self.properties['stockitem'].display(panel)
         self.properties['default'].display(panel)
         self.properties['style'].display(panel)
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['stockitem'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(1)
@@ -81,7 +103,8 @@ class EditButton(ManagedBase):
 
     def create_widget(self):
         try:
-            self.widget = wx.Button(self.parent.widget, self.id, self.label, style=self.style)
+            self.widget = wx.Button(self.parent.widget, self.id, self.label,
+                                    style=self.style)
         except AttributeError:
             self.widget = wx.Button(self.parent.widget, self.id, self.label)
 
@@ -91,6 +114,23 @@ class EditButton(ManagedBase):
     def set_default(self, value):
         self.default = bool(int(value))
 
+    def get_stockitem(self):
+        return self.stockitem
+
+    def set_stockitem(self, value):
+        self.stockitem = misc.wxstr(value)
+        if self.stockitem != "None":
+            l = ButtonStockItems.stock_ids[self.stockitem];
+            self.set_label(l)
+            self.properties['label'].set_value(l)
+            self.properties['label'].text.Enable(False)
+            self.window_id = "wxID_" + self.stockitem
+            self.properties['id'].set_value(self.window_id)
+            self.properties['id'].text.Enable(False)
+            self.properties['id']._enabler.SetValue(0)
+        else:
+            self.properties['label'].text.Enable(True)
+            
     def get_style(self):
         retval = [0] * len(self.style_pos)
         try:
