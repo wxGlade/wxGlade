@@ -1,7 +1,7 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.10 2006/12/02 10:49:56 agriggio Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.11 2007/03/27 07:02:04 agriggio Exp $
 
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

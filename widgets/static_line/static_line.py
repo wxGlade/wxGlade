@@ -1,7 +1,7 @@
 # static_line.py: wxStaticLine objects
-# $Id: static_line.py,v 1.11 2006/12/02 10:49:54 agriggio Exp $
+# $Id: static_line.py,v 1.12 2007/03/27 07:01:52 agriggio Exp $
 #
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

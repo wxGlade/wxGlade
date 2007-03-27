@@ -1,7 +1,7 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.35 2007/03/26 08:56:05 agriggio Exp $
+# $Id: panel.py,v 1.36 2007/03/27 07:01:56 agriggio Exp $
 #
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

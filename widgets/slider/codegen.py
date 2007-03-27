@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxSlider objects
-# $Id: codegen.py,v 1.14 2006/10/07 09:03:59 agriggio Exp $
+# $Id: codegen.py,v 1.15 2007/03/27 07:01:54 agriggio Exp $
 #
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

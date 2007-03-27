@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.5 2006/10/20 09:47:13 guyru Exp $
+# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.6 2007/03/27 07:02:04 agriggio Exp $
 
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

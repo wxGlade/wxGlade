@@ -1,8 +1,8 @@
 # layout_option_property.py: Property class for the 'option' layout property of
 # widgets and non-toplevel sizers
-# $Id: layout_option_property.py,v 1.3 2007/01/29 19:50:35 dinogen Exp $
+# $Id: layout_option_property.py,v 1.4 2007/03/27 07:02:07 agriggio Exp $
 # 
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

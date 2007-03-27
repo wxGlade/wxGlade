@@ -1,7 +1,7 @@
 # codegen.py: code generator functions for wxButton objects
-# $Id: codegen.py,v 1.15 2007/03/27 06:55:42 agriggio Exp $
+# $Id: codegen.py,v 1.16 2007/03/27 07:02:05 agriggio Exp $
 #
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

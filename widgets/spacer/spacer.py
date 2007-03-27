@@ -1,7 +1,7 @@
 # spacer.py: spacers to use in sizers
-# $Id: spacer.py,v 1.11 2006/11/16 15:05:16 guyru Exp $
+# $Id: spacer.py,v 1.12 2007/03/27 07:01:54 agriggio Exp $
 #
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
