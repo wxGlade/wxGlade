@@ -35,8 +35,8 @@ class wxGladePreferencesUI(wx.Dialog):
         self.backup_suffix = wx.RadioBox(self.notebook_1_pane_2, -1, _("Backup options"), choices=[_("append ~ to filename"), _("append .bak to filename")], majorDimension=2, style=wx.RA_SPECIFY_COLS)
         self.local_widget_path = wx.TextCtrl(self.notebook_1_pane_2, -1, "")
         self.choose_widget_path = wx.Button(self.notebook_1_pane_2, -1, "...", style=wx.BU_EXACTFIT)
-        self.ok = wx.Button(self, wx.ID_OK, _("OK"))
-        self.cancel = wx.Button(self, wx.ID_CANCEL, _("Cancel"))
+        self.ok = wx.Button(self, wx.ID_OK, "")
+        self.cancel = wx.Button(self, wx.ID_CANCEL, "")
 
         self.__set_properties()
         self.__do_layout()
