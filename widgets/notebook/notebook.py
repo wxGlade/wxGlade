@@ -1,7 +1,7 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.29 2007/02/09 22:24:06 dinogen Exp $
+# $Id: notebook.py,v 1.30 2007/03/27 07:01:56 agriggio Exp $
 #
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

@@ -1,7 +1,7 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.74 2007/02/04 12:44:37 agriggio Exp $
+# $Id: edit_sizers.py,v 1.75 2007/03/27 07:02:06 agriggio Exp $
 # 
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

@@ -1,7 +1,7 @@
 # __init__.py: sizers module initialization
-# $Id: __init__.py,v 1.9 2005/05/06 21:48:23 agriggio Exp $
+# $Id: __init__.py,v 1.10 2007/03/27 07:02:06 agriggio Exp $
 #
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

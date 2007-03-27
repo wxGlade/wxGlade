@@ -1,7 +1,7 @@
 # combo_box.py: wxComboBox objects
-# $Id: combo_box.py,v 1.27 2007/03/26 09:18:25 agriggio Exp $
+# $Id: combo_box.py,v 1.28 2007/03/27 07:02:02 agriggio Exp $
 #
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 

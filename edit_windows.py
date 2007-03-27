@@ -1,7 +1,7 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.87 2007/01/29 19:50:35 dinogen Exp $
+# $Id: edit_windows.py,v 1.88 2007/03/27 07:02:07 agriggio Exp $
 # 
-# Copyright (c) 2002-2005 Alberto Griggio <agriggio@users.sourceforge.net>
+# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
