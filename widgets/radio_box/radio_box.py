@@ -1,5 +1,5 @@
 # radio_box.py: wxRadioBox objects
-# $Id: radio_box.py,v 1.17 2007/03/27 07:01:55 agriggio Exp $
+# $Id: radio_box.py,v 1.18 2007/03/28 12:40:12 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -58,11 +58,9 @@ class EditRadioBox(ManagedBase):
 
     def create_widget(self):
         self.widget = wx.Panel(self.parent.widget, self.id)
-        self.static_box = wx.StaticBox(self.widget, -1, self.label)        
+        self.static_box = self.create_static_box()
         self.buttons = [ self.create_button(c) for c in self.choices ]
         if self.buttons: self.buttons[0].SetValue(True)
-        wx.EVT_LEFT_DOWN(self.static_box, self.on_set_focus)
-        wx.EVT_RIGHT_DOWN(self.static_box, self.popup_menu)
         self.widget.GetBestSize = self.GetBestSize
         self.widget.SetForegroundColour = self.SetForegroundColour
         self.widget.SetBackgroundColour = self.SetBackgroundColour
@@ -98,6 +96,12 @@ class EditRadioBox(ManagedBase):
         wx.EVT_LEFT_DOWN(r, self.on_set_focus)
         wx.EVT_RIGHT_DOWN(r, self.popup_menu)
         return r
+
+    def create_static_box(self):
+        sb = wx.StaticBox(self.widget, -1, self.label)        
+        wx.EVT_LEFT_DOWN(sb, self.on_set_focus)
+        wx.EVT_RIGHT_DOWN(sb, self.popup_menu)
+        return sb
 
     def do_layout(self):
         """\
@@ -158,14 +162,16 @@ class EditRadioBox(ManagedBase):
         if value == 0 or value == 'wxRA_SPECIFY_ROWS':
             self.style = wx.RA_SPECIFY_ROWS
         else: self.style = wx.RA_SPECIFY_COLS
-        self.do_layout()
+        self.set_choices(self.get_choices())
+        #self.do_layout()
 
     def get_major_dimension(self):
         return self.major_dim
 
     def set_major_dimension(self, value):
         self.major_dim = int(value)
-        self.do_layout()
+        self.set_choices(self.get_choices())
+        #self.do_layout()
 
     def get_choices(self):
         return zip(self.choices)
@@ -174,15 +180,20 @@ class EditRadioBox(ManagedBase):
         self.choices = [ misc.wxstr(v[0]) for v in values ]
         self.properties['selection'].set_range(0, len(self.choices)-1)
         if not self.widget: return
-        
-        delta = len(values) - len(self.buttons)
-        if delta > 0:
-            self.buttons.extend([ self.create_button("")
-                                  for i in range(delta) ])
-        elif delta < 0:
-            to_remove = self.buttons[delta:]
-            self.buttons = self.buttons[:delta]
-            for b in to_remove: b.Hide(); b.Destroy()
+
+##         delta = len(values) - len(self.buttons)
+##         if delta > 0:
+##             self.buttons.extend([ self.create_button("")
+##                                   for i in range(delta) ])
+##         elif delta < 0:
+##             to_remove = self.buttons[delta:]
+##             self.buttons = self.buttons[:delta]
+##             for b in to_remove: b.Hide(); b.Destroy()
+        for b in self.buttons:
+            b.Hide()
+            b.Destroy()
+        self.static_box = self.create_static_box()
+        self.buttons = [ self.create_button("") for i in range(len(values)) ]
         for i in range(len(values)):
             self.buttons[i].SetLabel(values[i][0])
         self.do_layout()
