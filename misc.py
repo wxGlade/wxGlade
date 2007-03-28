@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.44 2007/03/27 07:02:07 agriggio Exp $
+# $Id: misc.py,v 1.45 2007/03/28 12:39:47 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -19,7 +19,7 @@ if wx.Platform == '__WXMSW__':
         def GetBestSize(self):
             if not self.__radio_size:
                 dc = wx.ScreenDC()
-                dc.SetFont(wx.SystemSettings_GetSystemFont(
+                dc.SetFont(wx.SystemSettings_GetFont(
                     wx.SYS_DEFAULT_GUI_FONT))
                 self.__radio_size = (3*dc.GetCharHeight())/2
             label = self.GetLabel()
