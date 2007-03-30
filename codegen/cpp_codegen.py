@@ -1,5 +1,5 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.48 2007/03/27 07:02:06 agriggio Exp $
+# $Id: cpp_codegen.py,v 1.49 2007/03/30 06:37:53 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -264,7 +264,7 @@ def quote_str(s, translate=True, escape_chars=True):
     returns a quoted version of 's', suitable to insert in a C++ source file
     as a string object. Takes care also of gettext support
     """
-    if not s: return 'wxT("")'
+    if not s: return 'wxEmptyString'
     s = s.replace('"', r'\"')
     if escape_chars: s = _quote_str_pattern.sub(_do_replace, s)
     else: s = s.replace('\\', r'\\')
@@ -1066,7 +1066,7 @@ def add_app(app_attrs, top_win_class):
     append('IMPLEMENT_APP(%s)\n\n' % klass)
     append('bool %s::OnInit()\n{\n' % klass)
     append(tab + 'wxInitAllImageHandlers();\n') # we add this to avoid troubles
-    append(tab + '%s* %s = new %s(0, -1, wxT(""));\n' % \
+    append(tab + '%s* %s = new %s(NULL, wxID_ANY, wxEmptyString);\n' % \
            (top_win_class, top_win, top_win_class))
     append(tab + 'SetTopWindow(%s);\n' % top_win)
     append(tab + '%s->Show();\n' % top_win)
@@ -1172,7 +1172,7 @@ def generate_code_id(obj, id=None):
     if id is None:
         id = obj.properties.get('id')
 
-    if not id: return '', '-1'
+    if not id: return '', 'wxID_ANY'
     tokens = id.split('=')
     if len(tokens) > 1: name, val = tokens[:2]
     else: return '', tokens[0] # we assume name is declared elsewhere
