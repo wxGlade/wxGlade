@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.62 2007/03/27 07:02:07 agriggio Exp $
+# $Id: widget_properties.py,v 1.63 2007/03/31 09:55:14 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -331,7 +331,8 @@ class CheckListProperty(Property):
     """\
     Properties whose values can be changed by a list of checkboxes.
     """
-    def __init__(self, owner, name, parent=None, labels=None, writer=None,tooltips=None):
+    def __init__(self, owner, name, parent=None, labels=None, writer=None,
+                 tooltips=None):
         """
         @type labels: list of strings
         @param labels: list of names of the labels of the checkboxes; a
@@ -339,7 +340,8 @@ class CheckListProperty(Property):
         title of a static box that encloses the checkboxes that
         follow
         @type tooltips: tuple of strings
-        @param tooltips: a list of strings to be displayed as the tool-tips for the properties
+        @param tooltips: a list of strings to be displayed as the tool-tips for
+        the properties
         """ #" # ALB - fix for emacs's syntax highlight, don't remove please!
         Property.__init__(self, owner, name, parent)
         self.values = owner[name][0]()
