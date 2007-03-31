@@ -1,5 +1,5 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.23 2007/03/27 07:02:05 agriggio Exp $
+# $Id: button.py,v 1.24 2007/03/31 09:55:43 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -87,6 +87,10 @@ class EditButton(ManagedBase):
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
+        if self.stockitem != "None":
+            s = common.app_tree.app.saved
+            self.set_stockitem(self.stockitem)
+            common.app_tree.app.saved = s
 
     def get_label(self):
         return self.label
@@ -123,13 +127,14 @@ class EditButton(ManagedBase):
             l = ButtonStockItems.stock_ids[self.stockitem];
             self.set_label(l)
             self.properties['label'].set_value(l)
-            self.properties['label'].text.Enable(False)
+            if self.properties['label'].panel is not None:
+                self.properties['label'].text.Enable(False)
             self.window_id = "wxID_" + self.stockitem
             self.properties['id'].set_value(self.window_id)
-            self.properties['id'].text.Enable(False)
-            self.properties['id']._enabler.SetValue(0)
+            self.properties['id'].toggle_active(False)
         else:
-            self.properties['label'].text.Enable(True)
+            if self.properties['label'].panel is not None:
+                self.properties['label'].text.Enable(True)
             
     def get_style(self):
         retval = [0] * len(self.style_pos)
