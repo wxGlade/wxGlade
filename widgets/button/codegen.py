@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxButton objects
-# $Id: codegen.py,v 1.17 2007/04/01 12:29:51 agriggio Exp $
+# $Id: codegen.py,v 1.18 2007/04/01 12:42:16 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -43,6 +43,15 @@ class PythonCodeGenerator:
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
     class ButtonXrcObject(xrcgen.DefaultXrcObject):
+        def write(self, out_file, ntabs):
+            stockitem = self.properties.get('stockitem', 'None')
+            if stockitem != 'None':
+                self.name = 'wxID_' + stockitem
+                del self.properties['stockitem']
+                try: del self.properties['label']
+                except KeyError: pass
+            xrcgen.DefaultXrcObject.write(self, out_file, ntabs)
+            
         def write_property(self, name, val, outfile, tabs):
             if name == 'label':
                 # translate & into _ as accelerator marker
