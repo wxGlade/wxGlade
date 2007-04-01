@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxButton objects
-# $Id: perl_codegen.py,v 1.7 2007/03/27 06:55:42 agriggio Exp $
+# $Id: perl_codegen.py,v 1.8 2007/04/01 12:29:50 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -17,8 +17,10 @@ class PerlCodeGenerator:
         plgen = common.code_writers['perl']
         prop = obj.properties
         id_name, id = plgen.generate_code_id(obj)
-        if prop.get('stockitem',0):
+        stockitem = prop.get('stockitem', 'None')
+        if stockitem != 'None':
             label = plgen.quote_str('')
+            id = "wxID_" + stockitem
         else:
             label = plgen.quote_str(prop.get('label', ''))
         
