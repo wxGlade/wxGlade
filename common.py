@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.58 2007/03/27 07:02:07 agriggio Exp $
+# $Id: common.py,v 1.59 2007/04/02 14:09:38 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -11,7 +11,7 @@ import os
 use_gui = True
 
 # version identification string
-version = '0.5cvs'
+version = '0.5'
 
 # program path, set in wxglade.py
 wxglade_path = '.'
