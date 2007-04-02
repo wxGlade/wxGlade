@@ -16,6 +16,7 @@
 
  Contributors:
  ---------------------------------------------------------------------------
+ - Johan Vromans
  - Richard Lawson <richard.lawson@colinx.com>
  - Alex Thuering <ntalex@web.de>: general virtual sizers support and
    porting of the SplitterWindow to this new model
