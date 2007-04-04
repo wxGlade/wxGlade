@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.63 2007/03/31 09:55:14 agriggio Exp $
+# $Id: widget_properties.py,v 1.64 2007/04/04 06:36:10 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -921,16 +921,18 @@ class GridProperty(Property): #wxPanel, Property):
                                              _mangle(self.name)), wx.VERTICAL)
         self.btn_id = wx.NewId()
         self.btn = wx.Button(self.panel, self.btn_id, _("  Apply  "),
-                            style=wx.BU_EXACTFIT)
+                             style=wx.BU_EXACTFIT)
         if self.can_add:
             self.add_btn = wx.Button(self.panel, self.btn_id+1, _("  Add  "),
-                                    style=wx.BU_EXACTFIT)
+                                     style=wx.BU_EXACTFIT)
         if self.can_insert:
-            self.insert_btn = wx.Button(self.panel, self.btn_id+3, _("  Insert  "),
-                                       style=wx.BU_EXACTFIT)
+            self.insert_btn = wx.Button(self.panel, self.btn_id+3,
+                                        _("  Insert  "),
+                                        style=wx.BU_EXACTFIT)
         if self.can_remove:
-            self.remove_btn = wx.Button(self.panel, self.btn_id+2, _("  Remove  "),
-                                       style=wx.BU_EXACTFIT)
+            self.remove_btn = wx.Button(self.panel, self.btn_id+2,
+                                        _("  Remove  "),
+                                        style=wx.BU_EXACTFIT)
         self.grid = wx.grid.Grid(self.panel, -1)
         self.grid.CreateGrid(self.rows, len(self.cols))
         if misc.check_wx_version(2, 3, 3):
