@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.75 2007/03/27 07:02:06 agriggio Exp $
+# $Id: edit_sizers.py,v 1.76 2007/04/04 06:36:09 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1801,12 +1801,12 @@ class CheckListDialogProperty(DialogProperty):
                     self.message = wx.StaticText(self, -1, "")
                     sizer.Add(self.message, 0,
                               wx.TOP|wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
-                    self.choices = wx.CheckListBox(self, -1, choices=[])
+                    self.choices = wx.CheckListBox(self, -1, choices=['dummy'])
                     sizer.Add(self.choices, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 10)
                     sizer.Add(wx.StaticLine(self, -1), 0, wx.EXPAND|wx.ALL, 10)
                     sz2 = wx.BoxSizer(wx.HORIZONTAL)
-                    sz2.Add(wx.Button(self, wx.ID_OK, _("OK")), 0, wx.ALL, 10)
-                    sz2.Add(wx.Button(self, wx.ID_CANCEL, _("Cancel")), 0,wx.ALL, 10)
+                    sz2.Add(wx.Button(self, wx.ID_OK, ""), 0, wx.ALL, 10)
+                    sz2.Add(wx.Button(self, wx.ID_CANCEL, ""), 0, wx.ALL, 10)
                     sizer.Add(sz2, 0, wx.ALIGN_CENTER)
                     self.SetAutoLayout(True)
                     self.SetSizer(sizer)
@@ -1882,7 +1882,8 @@ class EditFlexGridSizer(GridSizerBase):
         def rows_setter():
             return map(str, range(self.get_rows()))
         pr = CheckListDialogProperty(self, 'growable_rows', None,
-                                     _('Growable Rows'), _('Select growable rows'),
+                                     _('Growable Rows'),
+                                     _('Select growable rows'),
                                      rows_setter)
         self.properties['growable_rows'] = pr
         def cols_setter():
