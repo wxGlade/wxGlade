@@ -1,5 +1,5 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.24 2007/03/27 07:02:05 agriggio Exp $
+# $Id: bitmap_button.py,v 1.25 2007/04/10 13:01:02 guyru Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -33,6 +33,7 @@ class EditBitmapButton(ManagedBase):
                                                        wx.FILE_MUST_EXIST,
                                                        can_disable=False)
         self.access_functions['default'] = (self.get_default, self.set_default)
+	self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
         # 2003-08-07: added 'disabled_bitmap' property
         self.disabled_bitmap = ""
@@ -44,6 +45,28 @@ class EditBitmapButton(ManagedBase):
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
             self.flag = wx.ALL
+        
+	self.style_pos = (wx.BU_AUTODRAW, wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP,
+            wx.BU_BOTTOM, wx.BU_EXACTFIT,wx.NO_BORDER)
+        style_labels = ('#section#Style', 'wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT', 
+            'wxBU_TOP', 'wxBU_BOTTOM', 'wxNO_BORDER')
+	
+	#The tooltips tuple
+        self.tooltips=("If this is specified, the button will be drawn "
+                        "automatically using the label bitmap only, providing"
+                        " a 3D-look border. If this style is not specified, the "
+                        "button will be drawn without borders and using all "
+                        "provided bitmaps. WIN32 only."
+                        "Left-justifies the bitmap label. WIN32 only.",
+                        "Right-justifies the bitmap label. WIN32 only.",
+                        "Aligns the bitmap label to the top of the button."
+                        " WIN32 only.",
+                        "Aligns the bitmap label to the bottom of the button."
+                        " WIN32 only.",
+                        "Creates a flat button. Windows and GTK+ only.")
+        self.properties['style'] = CheckListProperty(self, 'style', None,
+                                                     style_labels,tooltips=self.tooltips)
+
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -51,14 +74,34 @@ class EditBitmapButton(ManagedBase):
         self.properties['bitmap'].display(panel)
         self.properties['disabled_bitmap'].display(panel)
         self.properties['default'].display(panel)
+        self.properties['style'].display(panel)
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(self.properties['bitmap'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['disabled_bitmap'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
+
+    def get_style(self):
+        retval = [0] * len(self.style_pos)
+        try:
+            for i in range(len(self.style_pos)):
+                if self.style & self.style_pos[i]:
+                    retval[i] = 1
+        except AttributeError:
+            pass
+        return retval
+
+    def set_style(self, value):
+        value = self.properties['style'].prepare_value(value)
+        self.style = 0
+        for v in range(len(value)):
+            if value[v]:
+                self.style |= self.style_pos[v]
+        if self.widget: self.widget.SetWindowStyleFlag(self.style)
 
     def get_bitmap(self):
         return self.bitmap
@@ -84,7 +127,7 @@ class EditBitmapButton(ManagedBase):
 
     def create_widget(self):
         bmp = self.load_bitmap()
-        self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
+        self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp, style=self.style)
 
     def load_bitmap(self, which=None, empty=[None]):
         if which is None: which = self.bitmap

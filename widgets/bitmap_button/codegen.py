@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.23 2007/03/27 07:02:05 agriggio Exp $
+# $Id: codegen.py,v 1.24 2007/04/10 13:01:02 guyru Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -18,6 +18,9 @@ class PythonCodeGenerator:
                                         "icon.xpm")
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
+        style = prop.get("style")
+	if style: style = ", style=%s" % pygen.cn_f(style)
+        else: style = ''
         if not bmp_file:
             bmp = cn('wxNullBitmap')
         elif bmp_file.startswith('var:'):
@@ -41,8 +44,8 @@ class PythonCodeGenerator:
         if id_name: init.append(id_name)
         klass = obj.klass
         if klass == obj.base: klass = cn(klass)
-        init.append('self.%s = %s(%s, %s, %s)\n' % 
-                    (obj.name, klass, parent, id, bmp))
+        init.append('self.%s = %s(%s, %s, %s%s)\n' % #no need for comma for style, already includes one 
+                    (obj.name, klass, parent, id, bmp,style))
         props_buf = pygen.generate_common_properties(obj)
 
         disabled_bmp = prop.get('disabled_bitmap')
