@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.24 2007/04/10 13:01:02 guyru Exp $
+# $Id: codegen.py,v 1.25 2007/04/10 13:13:29 guyru Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -94,6 +94,11 @@ class CppCodeGenerator:
         bmp_file = prop.get('bitmap', '')
         if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
         else: parent = 'this'
+        
+        extra = ''
+        style = prop.get("style")
+        if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
+        
         if not bmp_file:
             bmp = 'wxNullBitmap'
         elif bmp_file.startswith('var:'):
@@ -103,8 +108,8 @@ class CppCodeGenerator:
         else:
             bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
                   cppgen.quote_str(bmp_file, False, False)
-        init = [ '%s = new %s(%s, %s, %s);\n' % 
-                 (obj.name, obj.klass, parent, id, bmp) ]
+        init = [ '%s = new %s(%s, %s, %s%s);\n' % 
+                 (obj.name, obj.klass, parent, id, bmp,extra) ]
         props_buf = cppgen.generate_common_properties(obj)
 
         disabled_bmp = prop.get('disabled_bitmap')
