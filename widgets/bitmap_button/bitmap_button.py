@@ -1,5 +1,5 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.25 2007/04/10 13:01:02 guyru Exp $
+# $Id: bitmap_button.py,v 1.26 2007/04/12 07:15:34 guyru Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -47,7 +47,7 @@ class EditBitmapButton(ManagedBase):
             self.flag = wx.ALL
         
 	self.style_pos = (wx.BU_AUTODRAW, wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP,
-            wx.BU_BOTTOM, wx.BU_EXACTFIT,wx.NO_BORDER)
+            wx.BU_BOTTOM, wx.NO_BORDER)
         style_labels = ('#section#Style', 'wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT', 
             'wxBU_TOP', 'wxBU_BOTTOM', 'wxNO_BORDER')
 	
@@ -127,7 +127,10 @@ class EditBitmapButton(ManagedBase):
 
     def create_widget(self):
         bmp = self.load_bitmap()
-        self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp, style=self.style)
+	try:
+            self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp, style=self.style)
+        except AttributeError:
+            self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
 
     def load_bitmap(self, which=None, empty=[None]):
         if which is None: which = self.bitmap
