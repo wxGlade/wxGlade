@@ -1,5 +1,5 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.30 2007/03/27 07:01:56 agriggio Exp $
+# $Id: notebook.py,v 1.31 2007/04/14 17:07:47 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -194,7 +194,8 @@ class EditNotebook(ManagedBase):
         self.properties['tabs'] = NotebookPagesProperty(self, 'tabs', None,
                                                         tab_cols)
         del tab_cols
-        self.nb_sizer = None 
+        self.nb_sizer = None
+        self._create_slots = False
 
     def create_widget(self):
         self.widget = wx.Notebook(self.parent.widget, self.id, style=self.style)
@@ -205,12 +206,18 @@ class EditNotebook(ManagedBase):
         ManagedBase.show_widget(self, yes)
         if yes and wx.Platform in ('__WXMSW__', '__WXMAC__'):
             misc.wxCallAfter(_ugly_hack_for_win32_notebook_bug, self.widget)
+        if self._create_slots:
+            self._create_slots = False
+            for i in range(len(self.tabs)):
+                if self.tabs[i][1] is None:
+                    self.tabs = self.tabs[:i]
+                    self.properties['tabs'].set_value(self.get_tabs())
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
         # replace 'self' with 'self.nb_sizer' in 'self.sizer'
         if not misc.check_wx_version(2, 5, 2):
-            self.sizer._fix_notebook(self.pos, self.nb_sizer)        
+            self.sizer._fix_notebook(self.pos, self.nb_sizer)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -243,7 +250,7 @@ class EditNotebook(ManagedBase):
             try:
                 misc.wxCallAfter(window.sel_marker.update)
             except AttributeError, e:
-                print e
+                #print e
                 pass
 
     def get_tabs(self):
@@ -385,6 +392,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     window = EditNotebook(name, parent, wx.NewId(), 0, sizer, pos,
                           common.property_panel, True)
+    window._create_slots = True
 
     sizer.set_item(window.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)

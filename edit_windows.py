@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.88 2007/03/27 07:02:07 agriggio Exp $
+# $Id: edit_windows.py,v 1.89 2007/04/14 17:07:48 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -206,22 +206,29 @@ class EditBase(EventsMixin):
                 nb = self.parent
                 if nb.widget:
                     i = 0
-                    for tn,ep in nb.tabs: # tn=tabname, ep = editpanel 
-                        if self.name == ep.name:      # If I am under this tab...
-                            nb.widget.SetSelection(i) # ...Show that tab.
+                    for tn, ep in nb.tabs: # tn=tabname, ep = editpanel
+                        try:
+                            if ep and self.name == ep.name:
+                                # If I am under this tab...
+                                nb.widget.SetSelection(i) # ...Show that tab.
+                        except AttributeError:
+                            pass
                         i = i + 1
-        if self.parent and self.parent.klass == 'wxPanel': # am I a widget under a wxPanel under a wxNotebook?
+        if self.parent and self.parent.klass == 'wxPanel':
+            # am I a widget under a wxPanel under a wxNotebook?
             if self.parent.parent and self.parent.parent.klass == 'wxNotebook':
                 #pdb.set_trace()
                 nb = self.parent.parent
                 if nb.widget:
                     i = 0
-                    for tn,ep in nb.tabs: # tn=tabname, ep = editpanel 
-                        if self.parent.name == ep.name:
-                            nb.widget.SetSelection(i)
+                    for tn, ep in nb.tabs: # tn=tabname, ep = editpanel
+                        try:
+                            if ep and self.parent.name == ep.name:
+                                nb.widget.SetSelection(i)
+                        except AttributeError:
+                            pass
                         i = i + 1
         # End Marcello 13 oct. 2005
-
 
         if not self.is_visible(): return # don't do anything if self is hidden
         # create the notebook the first time the function is called: this
