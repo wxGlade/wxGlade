@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.45 2007/03/28 12:39:47 agriggio Exp $
+# $Id: misc.py,v 1.46 2007/04/19 09:29:08 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -66,7 +66,9 @@ class SelectionMarker:
         self.owner = owner
         self.parent = parent
         if wx.Platform == '__WXMSW__': self.parent = owner
-        self.tags = [ SelectionTag(self.parent) for i in range(4) ]
+        self.tag_pos = None
+        self.tags = None
+        #self.tags = [ SelectionTag(self.parent) for i in range(4) ]
         self.update()
         if visible:
             for t in self.tags: t.Show()
@@ -80,17 +82,35 @@ class SelectionMarker:
             elif j == 1: return x+w-7, y     # top-right
             elif j == 2: return x+w-7, y+h-7 # bottom-right
             else: return x, y+h-7            # bottom-left
-        for i in range(len(self.tags)):
-            self.tags[i].SetPosition(position(i))
+##         for i in range(len(self.tags)):
+##             self.tags[i].SetPosition(position(i))
+        self.tag_pos = [ position(i) for i in range(4) ]
+        if self.visible:
+            if not self.tags:
+                self.tags = [ SelectionTag(self.parent) for i in range(4) ]
+            for i in range(4):
+                self.tags[i].SetPosition(self.tag_pos[i])
         if event: event.Skip()
 
     def Show(self, visible):
-        self.visible = visible
-        for tag in self.tags: tag.Show(visible)
+##         self.visible = visible
+##         for tag in self.tags: tag.Show(visible)
+        if self.visible != visible:
+            self.visible = visible
+            if self.visible:
+                if not self.tags:
+                    self.tags = [ SelectionTag(self.parent) for i in range(4) ]
+                for i in range(4):
+                    self.tags[i].SetPosition(self.tag_pos[i])
+                    self.tags[i].Show()
+            else:
+                for tag in self.tags: tag.Destroy()
+                self.tags = None
 
     def Destroy(self):
-        for tag in self.tags: tag.Destroy()
-        self.tags = None
+        if self.tags:
+            for tag in self.tags: tag.Destroy()
+            self.tags = None
 
     def Reparent(self, parent):
         self.parent = parent
