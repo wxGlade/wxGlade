@@ -94,6 +94,8 @@ class wxGladePreferencesUI(wx.Dialog):
         sizer_4.Add(label_2_copy_1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         sizer_4.Add(self.buttons_per_row, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.FIXED_MINSIZE, 5)
         sizer_4.AddGrowableCol(1)
+        sizer_4.AddSpacer((10,10))
+        sizer_4.AddSpacer((10,10))
         sizer_3.Add(sizer_4, 0, wx.EXPAND, 3)
         self.notebook_1_pane_1.SetAutoLayout(True)
         self.notebook_1_pane_1.SetSizer(sizer_3)
