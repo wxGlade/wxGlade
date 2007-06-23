@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.10 2007/03/19 10:01:00 agriggio Exp $
+# $Id: perl_codegen.py,v 1.11 2007/06/23 10:57:58 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -35,6 +35,7 @@ class PerlCodeGenerator:
                     if name: ids.append(name)
                     id = val
 
+
                 if item.children:
                     if item.name:
                         name = item.name
@@ -55,14 +56,18 @@ class PerlCodeGenerator:
                         item_type = 1
                     elif item.radio == '1':
                         item_type = 2
+                        
+                    if item.name: itemname = '$self->{%s} = ' % item.name
+                    else: itemname = ''
+                    
                     if item_type:
-                        append('%s->Append(%s, %s, %s, %s);\n' %
-                               (menu, id, plgen.quote_str(item.label),
+                        append('%s%s->Append(%s, %s, %s, %s);\n' %
+                               (itemname, menu, id, plgen.quote_str(item.label),
                                 plgen.quote_str(item.help_str), item_type))
                     else:
 
-                        append('%s->Append(%s, %s, %s);\n' %
-                               (menu, id, plgen.quote_str(item.label),
+                        append('%s%s->Append(%s, %s, %s);\n' %
+                               (itemname, menu, id, plgen.quote_str(item.label),
                                 plgen.quote_str(item.help_str)))
         #print 'menus = %s' % menus
 
@@ -109,7 +114,8 @@ class PerlCodeGenerator:
         def do_get(item):
             ret = []
             if item.name:
-                val = '#self.%s' % item.name # see py_codegen.py, ~480
+                #val = '#self.%s' % item.name # see py_codegen.py, ~480
+                val = item.name
             else:
                 name, val = pygen.generate_code_id(None, item.id)
                 if not val: val = '-1' # but this is wrong anyway...
