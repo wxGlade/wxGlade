@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.76 2007/04/04 06:36:09 agriggio Exp $
+# $Id: edit_sizers.py,v 1.77 2007/06/25 18:37:34 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -1362,8 +1362,8 @@ class EditStaticBoxSizer(SizerBase):
                     w, h = c.item.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.item.widget, w, h)
         self.layout()
-        if not self.toplevel and hasattr(self, 'sizer'):
-            # hasattr(self, 'sizer') is False only in case of a 'change_sizer'
+        if not self.toplevel and getattr(self, 'sizer'):
+            # getattr(self, 'sizer') is False only in case of a 'change_sizer'
             # call
             self.sizer.add_item(self, self.pos, self.option, self.flag,
                                 self.border, self.widget.GetMinSize())
