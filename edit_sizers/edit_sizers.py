@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.77 2007/06/25 18:37:34 agriggio Exp $
+# $Id: edit_sizers.py,v 1.78 2007/06/25 18:40:02 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -86,7 +86,8 @@ class SizerSlot:
                 # we cannot remove items from virtual sizers
                 misc.append_item(self.menu, REMOVE_ID, _('Remove\tDel'),
                                  'remove.xpm')
-            misc.append_item(self.menu, PASTE_ID, _('Paste\tCtrl+V'), 'paste.xpm')
+            misc.append_item(self.menu, PASTE_ID, _('Paste\tCtrl+V'),
+                             'paste.xpm')
             def bind(method):
                 return lambda e: misc.wxCallAfter(method)
             wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
@@ -566,9 +567,6 @@ class SizerBase(Sizer):
                            'wxADJUST_MINSIZE' ]
             prop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
             prop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
-##             pos_p = prop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
-##             def write(*args, **kwds): pass
-##             pos_p.write = write
             prop['pos'] = LayoutPosProperty(self, self.sizer)
 
     def set_containing_sizer(self, sizer):
@@ -1555,12 +1553,6 @@ class GridSizerBase(SizerBase):
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
         
-##         self.widget.Layout()
-
-##         print self.name, 'rows, cols:', self.rows, self.cols, len(self.children)
-##         self.set_rows(self.rows)
-##         self.set_cols(self.cols)
-
     def _property_setup(self):
         SizerBase._property_setup(self)
         self.access_functions['rows'] = (self.get_rows, self.set_rows)
@@ -1777,8 +1769,8 @@ class EditGridSizer(GridSizerBase):
     def create_widget(self):
         self.widget = CustomSizer(self, wx.GridSizer, self.rows, self.cols,
                                   self.vgap, self.hgap)
-        if not self.toplevel and getattr(self, 'sizer', None): #hasattr(self, 'sizer'):
-            # hasattr(self, 'sizer') is False only in case of a 'change_sizer'
+        if not self.toplevel and getattr(self, 'sizer', None): 
+            # getattr(self, 'sizer') is False only in case of a 'change_sizer'
             # call
             self.sizer.add_item(self, self.pos, self.option, self.flag,
                                 self.border) #, self.widget.GetMinSize())
@@ -2001,7 +1993,8 @@ def builder(parent, sizer, pos, number=[1], show=True):
             wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1,
                               'Select sizer type')
             self.orientation = wx.RadioBox(self, -1, _('Orientation'),
-                                          choices=[_('Horizontal'), _('Vertical')])
+                                          choices=[_('Horizontal'),
+                                                   _('Vertical')])
             self.orientation.SetSelection(0)
             tmp = wx.BoxSizer(wx.HORIZONTAL)
             tmp.Add(wx.StaticText(self, -1, _('Slots: ')), 0,
@@ -2226,6 +2219,3 @@ def init_all():
 
     return [common.make_object_button('EditBoxSizer', 'icons/sizer.xpm'),
             common.make_object_button('EditGridSizer', 'icons/grid_sizer.xpm')]
-
-
-
