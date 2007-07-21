@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.78 2007/06/25 18:40:02 agriggio Exp $
+# $Id: edit_sizers.py,v 1.79 2007/07/21 11:29:51 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -916,7 +916,7 @@ class SizerBase(Sizer):
             if not self.window.properties['size'].is_active():
                 szr = self.window.sizer.widget
                 w, h = self.window.widget.GetBestSize()
-                szr.SetItemMinSize(self.window.widget, w, h)            
+                szr.SetItemMinSize(self.window.widget, w, h)
             if self.window.sizer is not self:
                 self.window.sizer.layout(False)
             else:
@@ -1241,7 +1241,6 @@ class EditBoxSizer(SizerBase):
         self.widget.Add(self._btn, 0, wx.EXPAND)
         to_lay_out = []
         for c in self.children[1:]: # we've already added self._btn
-            #print c.item
             c.item.show_widget(True)
             if isinstance(c.item, SizerSlot):
                 self.widget.Add(c.item.widget, 1, wx.EXPAND)
@@ -1277,7 +1276,6 @@ class EditBoxSizer(SizerBase):
 ##                     w, h = c.item.widget.GetBestSize()
 ##                 self.widget.SetItemMinSize(c.item.widget, w, h)
         for pos, size in to_lay_out:
-            #print 'set_item:', pos, size
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
         if not self.toplevel and getattr(self, 'sizer'):

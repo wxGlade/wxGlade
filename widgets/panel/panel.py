@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.36 2007/03/27 07:01:56 agriggio Exp $
+# $Id: panel.py,v 1.37 2007/07/21 11:29:50 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -68,6 +68,19 @@ class PanelBase(object):
         if not self.widget.Disconnect(-1, -1, wx.wxEVT_LEFT_DOWN):
             print "EditPanel: Unable to disconnect the event hanlder"
         wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
+        #wx.EVT_SCROLLWIN(self.widget, self._update_markers)
+
+    def _update_markers(self, event):
+        def get_pos():
+            x, y = self.widget.GetPosition()
+            xx, yy = self.widget.GetViewStart()
+            return x+xx, y+yy
+        old = self.widget.GetPosition
+        self.widget.GetPosition = get_pos
+        #print self.widget, self.sel_marker.owner
+        self.sel_marker.update()
+        self.widget.GetPosition = old
+        event.Skip()
 
     def create_properties(self):
         super(PanelBase, self).create_properties()
@@ -99,12 +112,21 @@ class PanelBase(object):
             self.widget.SetCursor(wx.STANDARD_CURSOR)
 
     def set_sizer(self, sizer):
+        #print "set_sizer", self.top_sizer, sizer, self.widget
         self.top_sizer = sizer
         if self.top_sizer and self.top_sizer.widget and self.widget:
+##         if self.top_sizer and self.widget:
+##             if not self.top_sizer.widget:
+##                 print "AA"
+##                 self.top_sizer.show_widget(True)
+##                 print "B"
+##             print "HERE 2"
             self.widget.SetAutoLayout(True)
             self.widget.SetSizer(self.top_sizer.widget)
             self.widget.Layout()
             #self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+        elif self.top_sizer is None and self.widget:
+            self.widget.SetSizer(None)
 
     def drop_sizer(self, event):
         if self.top_sizer or not common.adding_sizer:
