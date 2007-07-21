@@ -1,5 +1,5 @@
 # clipboard.py: support for cut & paste of wxGlade widgets
-# $Id: clipboard.py,v 1.18 2007/03/27 07:02:07 agriggio Exp $
+# $Id: clipboard.py,v 1.19 2007/07/21 11:30:29 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -106,10 +106,14 @@ def paste(parent, sizer, pos):
     option, flag, border, xml_str = wdo.GetWidgetData()
     if xml_str:
         import xml_parse
-        parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos,
-                                                     option, flag, border)
-        parser.parse_string(xml_str)
-        return True # Widget hierarchy pasted.
+        try:
+            wx.BeginBusyCursor()
+            parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos,
+                                                         option, flag, border)
+            parser.parse_string(xml_str)
+            return True # Widget hierarchy pasted.
+        finally:
+            wx.EndBusyCursor()
     return False # There's nothing to paste.
 
 
