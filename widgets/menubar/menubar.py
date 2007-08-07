@@ -1,5 +1,5 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.27 2007/03/27 07:01:57 agriggio Exp $
+# $Id: menubar.py,v 1.28 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -156,7 +156,7 @@ class MenuItemDialog(wx.Dialog):
         self.SetSizer(sizer)
         sizer.Fit(self)
         self.SetSize((-1, 350))
-        self.CenterOnParent()
+        self.CenterOnScreen()
 
     def _enable_fields(self, enable=True):
         for s in (self.label, self.id, self.name, self.help_str,
@@ -565,6 +565,11 @@ class EditMenuBar(EditBase, PreviewMixin):
             self._mb = wx.MenuBar()
             self.widget.SetMenuBar(self._mb)
             self.widget.SetBackgroundColour(self._mb.GetBackgroundColour())
+            import os
+            icon = wx.EmptyIcon()
+            xpm = os.path.join(common.wxglade_path, 'icons', 'menubar.xpm')
+            icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
+            self.widget.SetIcon(icon)
             wx.EVT_CLOSE(self.widget, lambda e: self.hide_widget())
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         self.set_menus(self.menus) # show the menus
@@ -664,7 +669,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                 REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
                 misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                                 'remove.xpm')
+                                 wx.ART_DELETE)
                 misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
@@ -782,6 +787,7 @@ def builder(parent, sizer, pos, number=[0]):
             szr.Fit(self)
             if self.GetBestSize()[0] < 150:
                 self.SetSize((150, -1))
+            self.CenterOnScreen()
 
         def undo(self):
             if number[0] > 0:

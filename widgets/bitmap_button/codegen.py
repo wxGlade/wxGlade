@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.25 2007/04/10 13:13:29 guyru Exp $
+# $Id: codegen.py,v 1.26 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -44,7 +44,7 @@ class PythonCodeGenerator:
         if id_name: init.append(id_name)
         klass = obj.klass
         if klass == obj.base: klass = cn(klass)
-        init.append('self.%s = %s(%s, %s, %s%s)\n' % #no need for comma for style, already includes one 
+        init.append('self.%s = %s(%s, %s, %s%s)\n' % 
                     (obj.name, klass, parent, id, bmp,style))
         props_buf = pygen.generate_common_properties(obj)
 

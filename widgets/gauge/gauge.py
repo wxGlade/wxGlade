@@ -1,5 +1,5 @@
 # gauge.py: wxGauge objects
-# $Id: gauge.py,v 1.11 2007/03/27 07:01:59 agriggio Exp $
+# $Id: gauge.py,v 1.12 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -107,6 +107,7 @@ def builder(parent, sizer, pos, number=[1]):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
+            self.CenterOnScreen()
             
         def __getitem__(self, value):
             if value == 'orientation':

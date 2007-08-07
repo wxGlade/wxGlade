@@ -1,5 +1,5 @@
 # spacer.py: spacers to use in sizers
-# $Id: spacer.py,v 1.12 2007/03/27 07:01:54 agriggio Exp $
+# $Id: spacer.py,v 1.13 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -28,8 +28,10 @@ class EditSpacer(ManagedBase):
         self.properties['height'] = SpinProperty(self, 'height', None)
 
     def create_widget(self):
-        self.widget = wx.Panel(self.parent.widget, self.id, size=self.__size)
+        self.widget = wx.Window(self.parent.widget, self.id, size=self.__size,
+                                style=wx.SIMPLE_BORDER)
         self.widget.GetBestSize = self.widget.GetSize
+        wx.EVT_PAINT(self.widget, self.on_paint)
         
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -76,6 +78,27 @@ class EditSpacer(ManagedBase):
         if not (self.get_int_flag() & wx.EXPAND):
             self.sizer.set_item(self.pos, size=self.__size)
 
+    def on_paint(self, event):
+        dc = wx.PaintDC(self.widget)
+        dc.BeginDrawing()
+        brush = wx.TheBrushList.FindOrCreateBrush(
+            self.widget.GetBackgroundColour())
+        dc.SetBrush(brush)
+        dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 1, wx.SOLID))
+        dc.SetBackground(brush)
+        dc.Clear()
+        w, h = self.widget.GetClientSize()
+        dc.DrawLine(0, 0, w, h)
+        dc.DrawLine(w, 0, 0, h)
+        text = 'Spacer'
+        tw, th = dc.GetTextExtent(text)
+        x = (w - tw)/2
+        y = (h - th)/2
+        dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
+        dc.DrawRectangle(x-1, y-1, tw+2, th+2)
+        dc.DrawText(text, x, y)
+        dc.EndDrawing()
+
 # end of class EditSpacer
         
 
@@ -102,7 +125,7 @@ def builder(parent, sizer, pos):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
-            self.Centre()
+            self.CenterOnScreen()
 
         def __getitem__(self, name):
             return (lambda : 0, lambda v: None)

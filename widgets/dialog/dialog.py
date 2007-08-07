@@ -1,5 +1,5 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.29 2007/03/27 07:02:00 agriggio Exp $
+# $Id: dialog.py,v 1.30 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -57,7 +57,8 @@ class EditDialog(TopLevelBase):
                            wx.DIALOG_NO_PARENT, wx.NO_FULL_REPAINT_ON_RESIZE,
                            wx.FULL_REPAINT_ON_RESIZE,
                            wx.CLIP_CHILDREN)
-        prop['style'] = CheckListProperty(self, 'style', None, style_labels, tooltips=self.tooltips)
+        prop['style'] = CheckListProperty(self, 'style', None, style_labels,
+                                          tooltips=self.tooltips)
         # icon property
         self.icon = ""
         self.access_functions['icon'] = (self.get_icon, self.set_icon)
@@ -148,7 +149,11 @@ class EditDialog(TopLevelBase):
                     icon.CopyFromBitmap(bmp)
                     self.widget.SetIcon(icon) 
             else:
-                self.widget.SetIcon(wx.NullIcon)
+                import os
+                icon = wx.EmptyIcon()
+                xpm = os.path.join(common.wxglade_path, 'icons', 'dialog.xpm')
+                icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
+                self.widget.SetIcon(icon)
 
     def get_centered(self):
         return self.centered
@@ -202,6 +207,7 @@ def builder(parent, sizer, pos, number=[0]):
             szr.Fit(self)
             if self.GetSize()[0] < 150: self.SetSize((150, -1))
             self.klass_modified = False
+            self.CenterOnScreen()
 
         def undo(self):
             if number[0] > 0:

@@ -1,5 +1,5 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.25 2007/03/27 07:01:51 agriggio Exp $
+# $Id: toolbar.py,v 1.26 2007/08/07 12:18:33 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -197,7 +197,7 @@ class ToolsDialog(wx.Dialog):
         self.SetSizer(sizer)
         sizer.Fit(self)
         #self.SetSize((-1, 350))
-        self.CenterOnParent()
+        self.CenterOnScreen()
 
     def add_tool(self, event):
         """\
@@ -528,6 +528,11 @@ class EditToolBar(EditBase, PreviewMixin):
             self._tb = wx.ToolBar(self.widget, -1, style=tb_style)
             self.widget.SetToolBar(self._tb)
             self.widget.SetBackgroundColour(self._tb.GetBackgroundColour())
+            import os
+            icon = wx.EmptyIcon()
+            xpm = os.path.join(common.wxglade_path, 'icons', 'toolbar.xpm')
+            icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
+            self.widget.SetIcon(icon)
             wx.EVT_CLOSE(self.widget, lambda e: self.hide_widget())
             wx.EVT_LEFT_DOWN(self._tb, self.on_set_focus)
             if wx.Platform == '__WXMSW__':
@@ -754,7 +759,7 @@ class EditToolBar(EditBase, PreviewMixin):
                 REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
                 misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
-                                 'remove.xpm')
+                                 wx.ART_DELETE)
                 misc.append_item(self._rmenu, HIDE_ID, 'Hide') 
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
