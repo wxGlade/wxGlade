@@ -1,5 +1,5 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.45 2007/03/27 07:02:00 agriggio Exp $
+# $Id: frame.py,v 1.46 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -385,7 +385,11 @@ class EditFrame(TopLevelBase):
                     self.widget.SetIcon(icon) 
             else:
                 # removing icon
-                self.widget.SetIcon(wx.NullIcon)
+                icon = wx.EmptyIcon()
+                import os
+                xpm = os.path.join(common.wxglade_path, 'icons', 'frame.xpm')
+                icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
+                self.widget.SetIcon(icon)
 
     def get_centered(self):
         return self.centered
@@ -439,6 +443,7 @@ def builder(parent, sizer, pos, number=[0]):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
+            self.CenterOnScreen()
             
         def undo(self):
             if number[0] > 0:

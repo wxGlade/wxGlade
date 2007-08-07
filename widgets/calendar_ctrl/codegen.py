@@ -1,13 +1,12 @@
 # codegen.py: code generator functions for wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/codegen.py,v 1.6 2007/03/27 07:02:04 agriggio Exp $
-
+# $Id: codegen.py,v 1.7 2007/08/07 12:18:34 agriggio Exp $
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import common
 
-class PythonCodeGenerator:
+class PythonCodeGenerator(object):
     def __init__(self):
         self.pygen = common.code_writers['python']
      
@@ -23,7 +22,8 @@ class PythonCodeGenerator:
 	@type c: string
 	@param c: the name which should be altered
 	@rtype: string
-	@return: the orignial name with a prefix according to which namespace the user selected
+	@return: the orignial name with a prefix according to which namespace
+        the user selected
 	"""
         if self.pygen.use_new_namespace:
             if c[:2] == 'wx':
@@ -102,7 +102,9 @@ class CppCodeGenerator:
         else: parent = 'this'
         extra = ''
         style = prop.get("style")
-        if style: extra = ', wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, %s' % style
+        if style:
+            extra = ', wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, %s'\
+                    % style
         #label = cppgen.quote_str(prop.get('label', ''))
         init = [ '%s = new %s(%s, %s%s);\n' % 
         #         (obj.name, obj.klass, parent, id, label, extra) ]

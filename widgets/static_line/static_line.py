@@ -1,5 +1,5 @@
 # static_line.py: wxStaticLine objects
-# $Id: static_line.py,v 1.12 2007/03/27 07:01:52 agriggio Exp $
+# $Id: static_line.py,v 1.13 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -90,6 +90,8 @@ def builder(parent, sizer, pos, number=[1]):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
+            self.CenterOnScreen()
+            
         def __getitem__(self, value):
             def set_orientation(o): self.orientation = self.orientations[o]
             return (lambda: self.orientation, set_orientation)
