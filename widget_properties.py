@@ -1,6 +1,6 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.64 2007/04/04 06:36:10 agriggio Exp $
+# $Id: widget_properties.py,v 1.65 2007/08/07 12:21:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -191,8 +191,10 @@ class TextProperty(Property, _activator):
         if self.multiline: style |= wx.TE_MULTILINE
         val = self.get_value()
         if self.multiline: val = val.replace('\\n', '\n')
+        lbl = getattr(self, 'label', None)
+        if lbl is None: lbl = _mangle(self.name)
         #label = wxStaticText(self.panel, -1, _mangle(self.name))
-        label = wxGenStaticText(parent, -1, _mangle(self.name),
+        label = wxGenStaticText(parent, -1, lbl,
                                 size=(_label_initial_width, -1))
         if self.can_disable:
             self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
@@ -202,7 +204,6 @@ class TextProperty(Property, _activator):
         else:
             label.SetToolTip(wx.ToolTip(_mangle(self.name)))
         if self.can_disable:
-            #self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
             wx.EVT_CHECKBOX(self._enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
             self.text.Enable(self.is_active())
@@ -210,12 +211,6 @@ class TextProperty(Property, _activator):
             self._target = self.text
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
-        #sizer.SetItemMinSize(label, *label.GetBestSize())
-##         try:
-##             sizer.Add(self._enabler, 1, wxALL|wxALIGN_CENTER, 3)
-##             option = 4
-##         except AttributeError:
-##             option = 5
         if getattr(self, '_enabler', None) is not None:
             sizer.Add(self._enabler, 1, wx.ALL|wx.ALIGN_CENTER, 3)
             option = 4
@@ -225,9 +220,6 @@ class TextProperty(Property, _activator):
         if self.multiline:
             h = self.text.GetCharHeight()
             sizer.SetItemMinSize(self.text, -1, h*3)
-##         self.panel.SetAutoLayout(1)
-##         self.panel.SetSizer(sizer)
-##         self.panel.SetSize(sizer.GetMinSize())
         self.panel = sizer
         self.bind_event(self.on_change_val)
         wx.EVT_CHAR(self.text, self.on_char)
@@ -296,7 +288,7 @@ class CheckBoxProperty(Property):
         label = wx.StaticText(parent, -1, self.label)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 5, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 3)
-        sizer.Add(self.cb, 2, wx.ALIGN_CENTER|wx.ALL, 3)
+        sizer.Add(self.cb, 0, wx.ALIGN_CENTER|wx.ALL, 3)
 ##         self.panel.SetAutoLayout(True)
 ##         self.panel.SetSizer(sizer)
 ##         self.panel.SetSize(sizer.GetMinSize())
@@ -372,7 +364,8 @@ class CheckListProperty(Property):
                 if tmp != tmp_sizer:
                     tmp_sizer.Add(tmp, 1, wx.ALL|wx.EXPAND, 5)
                 lbl = _mangle(self.labels[i].replace('#section#', ''))
-                tmp = wx.StaticBoxSizer(wx.StaticBox(parent, -1, lbl),
+                s = wx.FULL_REPAINT_ON_RESIZE
+                tmp = wx.StaticBoxSizer(wx.StaticBox(parent, -1, lbl, style=s),
                                        wx.VERTICAL)
             else:
                 c = wx.CheckBox(parent, self.id+j, self.labels[i])
@@ -381,7 +374,7 @@ class CheckListProperty(Property):
                 j += 1
             i += 1
         if tmp != tmp_sizer:
-            tmp_sizer.Add(tmp, 1, wx.ALL|wx.EXPAND, 5)
+            tmp_sizer.Add(tmp, 0, wx.ALL|wx.EXPAND, 5)
 
         for i in range(len(self.values)):
             self.choices[i].SetValue(self.values[i])
@@ -446,10 +439,13 @@ class SpinProperty(Property, _activator):
     Properties associated to a spin control.
     """
     def __init__(self, owner, name, parent=None, can_disable=False,
-                 r=None, enabled=False):
+                 r=None, enabled=False, immediate=False):
         # r = range of the spin (min, max)
         Property.__init__(self, owner, name, parent)
         self.can_disable = can_disable
+        self.immediate = immediate # if true, changes to this property have an
+                                   # immediate effect (instead of waiting the
+                                   # focus change...)
         _activator.__init__(self)
         if can_disable: self.toggle_active(enabled)
         if r is not None:
@@ -467,9 +463,13 @@ class SpinProperty(Property, _activator):
         """
         self.id = wx.NewId()
         if self.val_range is None: self.val_range = (0, 1000)
-        label = wxGenStaticText(parent, -1, _mangle(self.name),
+        lbl = getattr(self, 'label', None)
+        if lbl is None: lbl = _mangle(self.name)
+        label = wxGenStaticText(parent, -1, lbl,
                                 size=(_label_initial_width, -1))
-        label.SetToolTip(wx.ToolTip(_mangle(self.name)))
+        tip = getattr(self, 'tooltip', None)
+        if tip is None: tip = lbl
+        label.SetToolTip(wx.ToolTip(tip))
         if self.can_disable:
             self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
         self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
@@ -499,13 +499,10 @@ class SpinProperty(Property, _activator):
     def bind_event(self, function):
         def func_2(event):
             if self.is_active():
-##                 if wxPlatform != '__WXMSW__':
-##                     misc.wxCallAfter(function, event)
-##                 else:
                 function(event)
             event.Skip()
         wx.EVT_KILL_FOCUS(self.spin, func_2)
-        if wx.Platform == '__WXMAC__':
+        if wx.Platform == '__WXMAC__' or self.immediate:
             wx.EVT_TEXT(self.spin, self.spin.GetId(), func_2)
             wx.EVT_SPINCTRL(self.spin, self.spin.GetId(), func_2)
 
@@ -1105,7 +1102,6 @@ class ComboBoxProperty(Property, _activator):
         interactively
         """
         self.id = wx.NewId()
-        #self.panel = wxPanel(parent, -1)
         self.cb = wx.ComboBox(parent, self.id, choices=self.choices,
                               style=wx.CB_DROPDOWN|wx.CB_READONLY)
         self.cb.SetValue(self.val)
@@ -1126,9 +1122,6 @@ class ComboBoxProperty(Property, _activator):
         else:
             option = 5
         sizer.Add(self.cb, option, wx.ALIGN_CENTER|wx.ALL, 3)
-##         self.panel.SetAutoLayout(True)
-##         self.panel.SetSizer(sizer)
-##         self.panel.SetSize(sizer.GetMinSize())
         self.panel = sizer
         self.bind_event(self.on_change_val)
         

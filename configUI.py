@@ -15,7 +15,7 @@ class wxGladePreferencesUI(wx.Dialog):
         self.sizer_6_staticbox = wx.StaticBox(self.notebook_1_pane_2, -1, _("Local widget path"))
         self.notebook_1_pane_1 = wx.Panel(self.notebook_1, -1)
         self.use_menu_icons = wx.CheckBox(self.notebook_1_pane_1, -1, _("Use icons in menu items"))
-        self.frame_tool_win = wx.CheckBox(self.notebook_1_pane_1, -1, _("Show properties and tree windows as small frames (Win32 only)"))
+        self.frame_tool_win = wx.CheckBox(self.notebook_1_pane_1, -1, _("Show properties and tree windows as small frames"))
         self.show_progress = wx.CheckBox(self.notebook_1_pane_1, -1, _("Show progress dialog when loading wxg files"))
         self.remember_geometry = wx.CheckBox(self.notebook_1_pane_1, -1, _("Remember position and size of wxGlade windows"))
         self.show_sizer_handle = wx.CheckBox(self.notebook_1_pane_1, -1, _("Show \"handles\" of sizers"))
@@ -134,6 +134,7 @@ class wxGladePreferencesUI(wx.Dialog):
         sizer_1.SetSizeHints(self)
         self.Layout()
         # end wxGlade
+        self.CenterOnScreen()
 
 # end of class wxGladePreferencesUI
 

@@ -1,5 +1,5 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.89 2007/04/14 17:07:48 agriggio Exp $
+# $Id: edit_windows.py,v 1.90 2007/08/07 12:21:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -9,7 +9,7 @@ import wx
 from widget_properties import *
 from tree import Tree, WidgetTree
 import math, misc, common, sys, config
-import re
+import os, re
 
 # ALB 2004-12-05: event handling support
 from events_mixin import EventsMixin
@@ -131,8 +131,8 @@ class EditBase(EventsMixin):
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
 
-        self._common_panel = panel = wx.ScrolledWindow(self.notebook, -1,
-                                                      style=wx.TAB_TRAVERSAL)
+        self._common_panel = panel = wx.ScrolledWindow(
+            self.notebook, -1, style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
 
         self.name_prop.display(panel)
         self.klass_prop.display(panel)
@@ -177,22 +177,41 @@ class EditBase(EventsMixin):
                 COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
                 misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                                 'remove.xpm')
+                                 wx.ART_DELETE)
                 misc.append_item(self._rmenu, COPY_ID, _('Copy\tCtrl+C'),
-                                 'copy.xpm')
+                                 wx.ART_COPY)
                 misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
-                                 'cut.xpm')
+                                 wx.ART_CUT)
+                self._rmenu.AppendSeparator()
+                PREVIEW_ID = wx.NewId()
+                misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
                 wx.EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
                 wx.EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
-                
+                wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
+
+            self.setup_preview_menu()
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
     def remove(self, *args):
         self._dont_destroy = False # always destroy when explicitly asked
         common.app_tree.remove(self.node)
+
+    def setup_preview_menu(self):
+        p = misc.get_toplevel_widget(self)
+        if p is not None:
+            item = self._rmenu.GetMenuItems()[-1]
+            if p.preview_is_visible():
+                item.SetText(_('Close preview') + ' (%s)\tCtrl+P' % p.name)
+            else:
+                item.SetText(_('Preview') + ' (%s)\tCtrl+P' % p.name)        
+
+    def preview_parent(self):
+        widget = misc.get_toplevel_widget(self)
+        if widget is not None:
+            widget.preview(None)
 
     def show_properties(self, *args):
         """\
@@ -263,6 +282,7 @@ class EditBase(EventsMixin):
 
         # ALB moved this before Layout, it seems to be needed for wx2.6...
         self.notebook.Show()
+        self.notebook.SetSize(self.property_window.GetClientSize())
 
         self.property_window.Layout()
         self.property_window.SetTitle(_('Properties - <%s>') % self.name)
@@ -774,7 +794,8 @@ class ManagedBase(WindowBase):
     def create_properties(self):
         WindowBase.create_properties(self)
         if not self._has_layout: return
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
+        panel = wx.ScrolledWindow(
+            self.notebook, -1, style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
 
         min_x = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_X)
         min_y = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_Y)
@@ -970,6 +991,9 @@ class PreviewMixin:
             # (see application.py -> preview)
             self.preview_widget.Close()
 
+    def preview_is_visible(self):
+        return self.preview_widget is not None
+
 # end of class PreviewMixin
 
 
@@ -1029,7 +1053,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
                 misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                                 'remove.xpm')
+                                 wx.ART_DELETE)
                 misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
@@ -1038,9 +1062,14 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 # paste
                 PASTE_ID = wx.NewId()
                 misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'),
-                                 'paste.xpm')
+                                 wx.ART_PASTE)
                 wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
-                
+                PREVIEW_ID = wx.NewId()
+                self._rmenu.AppendSeparator()
+                misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
+                wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
+
+            self.setup_preview_menu()
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
     def clipboard_paste(self, *args):
