@@ -1,6 +1,6 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.45 2007/03/27 07:02:07 agriggio Exp $
+# $Id: xml_parse.py,v 1.46 2007/08/07 12:16:44 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -480,7 +480,7 @@ class XmlWidgetObject:
 class CodeWriter(XmlParser):
     """parser used to produce the source from a given xml file"""
     def __init__(self, writer, input, from_string=False, out_path=None,
-                 preview=False):
+                 preview=False, class_names=None):
         # writer: object that actually writes the code
         XmlParser.__init__(self)
         self._toplevels = Stack() # toplevel objects, i.e. instances of a
@@ -494,6 +494,11 @@ class CodeWriter(XmlParser):
 
         self.preview = preview # if True, we are generating the code for the
                                # preview
+                               
+        # used in the CustomWidget preview code, to generate better previews
+        # (see widgets/custom_widget/codegen.py)
+        self.class_names = class_names
+        if self.class_names is None: self.class_names = set()
 
         if from_string: self.parse_string(input)
         else:
@@ -689,9 +694,13 @@ class CodeObject:
                 else:
                     self.parser._toplevels.push(self)
             #------------- 2003-05-07: preview --------------------------------
-            elif self.preview and not can_be_toplevel:
+            elif self.preview and not can_be_toplevel and \
+                     self.base != 'CustomWidget':
                 # if this is a custom class, but not a toplevel one,
                 # for the preview we have to use the "real" class
+                #
+                # ALB 2007-08-04: CustomWidgets handle this in a special way
+                # (see widgets/custom_widget/codegen.py)
                 self.klass = self.base
             #------------------------------------------------------------------
             

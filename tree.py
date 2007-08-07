@@ -1,5 +1,5 @@
 # tree.py: classes to handle and display the structure of a wxGlade app
-# $Id: tree.py,v 1.55 2007/03/27 07:02:07 agriggio Exp $
+# $Id: tree.py,v 1.56 2007/08/07 12:13:44 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -46,7 +46,7 @@ class Tree:
             try: return self.widget.name
             except AttributeError: return repr(self.widget)
 
-        def write(self, outfile, tabs):
+        def write(self, outfile, tabs, class_names=None):
             """\
             Writes the xml code for the widget to the given output file
             """
@@ -65,6 +65,9 @@ class Tree:
                       quoteattr(classname), no_custom))
             for p in w.properties:
                 w.properties[p].write(outfile, tabs+1)
+
+            if class_names is not None:
+                class_names.add(w.klass)
 
             if isinstance(w, edit_sizers.SizerBase):
                 maxpos = len(w.children)
@@ -86,12 +89,12 @@ class Tree:
                                '<object class="sizeritem">\n')
                         sp = c.widget.sizer_properties
                         for p in sp: sp[p].write(outfile, tabs+2)
-                        c.write(outfile, tabs+2)
+                        c.write(outfile, tabs+2, class_names)
                         fwrite('    ' * (tabs+1) + '</object>\n')
                     else:
                         c.write(outfile, tabs+1)
             elif self.children is not None:
-                for c in self.children: c.write(outfile, tabs+1)
+                for c in self.children: c.write(outfile, tabs+1, class_names)
             fwrite('    ' * tabs + '</object>\n')
 
     # end of class Node
@@ -208,12 +211,15 @@ class Tree:
                       % tuple(map(quoteattr,
                                   [outpath, name, klass, option, language,
                                    top_window, encoding, use_gettext,
-                                   overwrite, use_new_namespace, for_version,is_template]))
+                                   overwrite, use_new_namespace, for_version,
+                                   is_template]))
                       )
+        class_names = set()
         if self.root.children is not None:
             for c in self.root.children:
-                c.write(outfile, tabs+1)
+                c.write(outfile, tabs+1, class_names)
         outfile.write('</application>\n')
+        return class_names
 
     def change_node(self, node, widget):
         """\
@@ -261,8 +267,10 @@ class WidgetTree(wx.TreeCtrl, Tree):
                                              'icons/application.xpm'),
                                 wx.BITMAP_TYPE_XPM))
         for w in WidgetTree.images:
-            WidgetTree.images[w] = image_list.Add(wx.Bitmap(
-                WidgetTree.images[w], wx.BITMAP_TYPE_XPM))
+##             WidgetTree.images[w] = image_list.Add(wx.Bitmap(
+##                 WidgetTree.images[w], wx.BITMAP_TYPE_XPM))
+            WidgetTree.images[w] = image_list.Add(
+                misc.get_xpm_bitmap(WidgetTree.images[w]))
         self.AssignImageList(image_list)
         root_node.item = self.AddRoot(_('Application'), 0)
         self.SetPyData(root_node.item, root_node)
