@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxNotebook objects
-# $Id: codegen.py,v 1.20 2007/03/27 07:01:56 agriggio Exp $
+# $Id: codegen.py,v 1.21 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -54,14 +54,17 @@ class PythonCodeGenerator:
             l = []
             if id_name: l.append(id_name)
             l.append('self.%s = %s(%s, %s)\n' %
-                     (window.name, window.klass, parent,id))
+                     (window.name, pygen.without_package(window.klass),
+                      parent,id))
             return l, [], [] 
         style = prop.get("style")
         if style: style = ", style=%s" % pygen.cn_f(style)
         else: style = ''
+        klass = window.klass
+        if window.preview: klass = 'wxNotebook'
         init = []
         if id_name: init.append(id_name)
-        init.append(('self.%s = ' + pygen.cn('wxNotebook') + '(%s, %s%s)\n') %
+        init.append(('self.%s = ' + pygen.cn(klass) + '(%s, %s%s)\n') %
                     (window.name, parent, id, style))
 
         props_buf = pygen.generate_common_properties(window)
@@ -96,6 +99,8 @@ def xrc_code_generator(obj):
             self.index = 0
             # always use a wxNotebookSizer
             self.properties['usenotebooksizer'] = '1'
+            if 'no_custom_class' in self.properties:
+                del self.properties['no_custom_class']
             xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
 
         def write_child_prologue(self, child, outfile, ntabs):
@@ -147,8 +152,8 @@ class CppCodeGenerator:
         extra = ''
         style = prop.get('style')
         if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        init = ['%s = new wxNotebook(%s, %s%s);\n' %
-                (window.name, parent, id, extra) ]
+        init = ['%s = new %s(%s, %s%s);\n' %
+                (window.name, window.klass, parent, id, extra) ]
 
         props_buf = cppgen.generate_common_properties(window)
 

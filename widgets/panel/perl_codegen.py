@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxPanel objects
-# $Id: perl_codegen.py,v 1.10 2005/11/20 10:50:48 agriggio Exp $
+# $Id: perl_codegen.py,v 1.11 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -51,7 +51,7 @@ class PerlCodeGenerator:
             else:
                 klass = 'Wx::Panel'
         else:
-            klass = panel.klass
+            klass = plgen.cn(panel.klass)
 
         init.append('$self->{%s} = %s->new(%s, %s, \
 wxDefaultPosition, wxDefaultSize, %s);\n'

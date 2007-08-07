@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxSplitterWindow objects
-# $Id: perl_codegen.py,v 1.7 2005/08/15 07:43:32 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.8 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -27,12 +27,12 @@ class PerlCodeGenerator:
             l = []
             if id_name: l.append(id_name)
 
-            klass = window.base;
-            if klass != window.klass : klass = window.klass; 
-            else: klass = klass.replace('wx','Wx::',1);
+            klass = window.base
+            if klass != window.klass: klass = window.klass
+            else: klass = klass.replace('wx','Wx::',1)
 
             l.append('$self->{%s} = %s->new(%s, %s);\n' %
-                (window.name, klass.replace('wx','Wx::',1), parent,id))
+                (window.name, plgen.cn(klass), parent,id))
             return l, [], []
 
         style = prop.get("style")
@@ -42,9 +42,9 @@ class PerlCodeGenerator:
         init = []
         if id_name: init.append(id_name)
 
-        init.append('$self->{%s} = Wx::SplitterWindow->new(%s, %s, \
-wxDefaultPosition, wxDefaultSize, %s);\n'
-            % (window.name, parent, id, style))
+        init.append('$self->{%s} = %s->new(%s, %s, wxDefaultPosition, '
+                    'wxDefaultSize, %s);\n'
+                    % (window.name, plgen.cn(window.klass), parent, id, style))
 
         props_buf = plgen.generate_common_properties(window)
 

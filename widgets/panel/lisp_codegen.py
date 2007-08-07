@@ -1,5 +1,5 @@
 # lisp_codegen.py : lisp generator functions for wxPanel objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:59:58 efuzzyone Exp $
+# $Id: lisp_codegen.py,v 1.2 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -31,8 +31,8 @@ class LispCodeGenerator:
             l = []
             if id_name: l.append(id_name)
 
-            l.append('(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1))\n' %
-                 (panel.name, parent, id))
+            l.append('(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1))\n'
+                     % (panel.name, parent, id))
             return l, [], []
 
         init = []
@@ -46,15 +46,16 @@ class LispCodeGenerator:
                 style = '(logior %s)' % style
 
 
-        init.append('(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1 %s))\n'
-            % (panel.name, parent, id, style))
+        init.append('(setf (slot-%s obj) '
+                    '(wxPanel_Create %s %s -1 -1 -1 -1 %s))\n'
+                    % (panel.name, parent, id, style))
 
         props_buf = plgen.generate_common_properties(panel)
         if scrollable:
             sr = prop.get('scroll_rate', '0 0')
             sr = sr.replace(',',' ')
-            props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj) %s)\n'
-                % (panel.name, sr))
+            props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate'
+                             ' (slot-%s obj) %s)\n' % (panel.name, sr))
         return init, props_buf, []
 
     def get_properties_code(self, obj):
@@ -68,7 +69,8 @@ class LispCodeGenerator:
         props_buf = plgen.generate_common_properties(obj)
         if scrollable:
             sr = prop.get('scroll_rate', '0 0')
-            props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj))\n' % sr)
+            props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate '
+                             '(slot-%s obj))\n' % sr)
         return props_buf
 
 # end of class LispCodeGenerator

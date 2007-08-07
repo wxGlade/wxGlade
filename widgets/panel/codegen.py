@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxPanel objects
-# $Id: codegen.py,v 1.18 2007/03/27 07:01:56 agriggio Exp $
+# $Id: codegen.py,v 1.19 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -23,7 +23,8 @@ class PythonCodeGenerator:
             l = []
             if id_name: l.append(id_name)
             l.append('self.%s = %s(%s, %s)\n' %
-                     (panel.name, panel.klass, parent, id))
+                     (panel.name, pygen.without_package(panel.klass),
+                      parent, id))
             return l, [], []
         init = []
         if id_name: init.append(id_name)
@@ -128,6 +129,8 @@ def xrc_code_generator(obj):
             for prop in ('scrollable', 'scroll_rate'):
                 try: del self.properties[prop]
                 except KeyError: pass
+            if 'no_custom_class' in self.properties:
+                del self.properties['no_custom_class']
             xrcgen.DefaultXrcObject.write(self, *args, **kwds)
 
     return XrcCodeGenerator(obj)

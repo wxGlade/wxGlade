@@ -1,5 +1,5 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.31 2007/04/14 17:07:47 agriggio Exp $
+# $Id: notebook.py,v 1.32 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -197,6 +197,13 @@ class EditNotebook(ManagedBase):
         self.nb_sizer = None
         self._create_slots = False
 
+        self.no_custom_class = False
+        self.access_functions['no_custom_class'] = (self.get_no_custom_class,
+                                                    self.set_no_custom_class)
+        self.properties['no_custom_class'] = CheckBoxProperty(
+            self, 'no_custom_class',
+            label="Don't generate code for this custom class")
+
     def create_widget(self):
         self.widget = wx.Notebook(self.parent.widget, self.id, style=self.style)
         if not misc.check_wx_version(2, 5, 2):
@@ -222,8 +229,11 @@ class EditNotebook(ManagedBase):
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
+        self.properties['no_custom_class'].display(panel)
         self.properties['tabs'].display(panel)
         sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.properties['no_custom_class'].panel, 0,
+                  wx.ALL|wx.EXPAND, 3)
         sizer.Add(self.properties['tabs'].panel, 1, wx.ALL|wx.EXPAND, 3)
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer)
@@ -326,6 +336,12 @@ class EditNotebook(ManagedBase):
                    'wxNB_BOTTOM': wx.NB_BOTTOM }
         self.style = styles.get(value, 0)
 
+    def get_no_custom_class(self):
+        return self.no_custom_class
+
+    def set_no_custom_class(self, value):
+        self.no_custom_class = bool(int(value))
+
 # end of class EditNotebook
         
 
@@ -349,6 +365,7 @@ def builder(parent, sizer, pos, number=[1]):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
+            self.CenterOnScreen()
         def __getitem__(self, value):
             def set_style(s): self.style = self.styles[s]
             return (lambda: self.style, set_style)

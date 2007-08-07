@@ -1,5 +1,5 @@
 # splitter_window.py: wxSplitterWindow objects
-# $Id: splitter_window.py,v 1.27 2007/03/27 07:01:53 agriggio Exp $
+# $Id: splitter_window.py,v 1.28 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -139,6 +139,12 @@ class EditSplitterWindow(ManagedBase):
         self.properties['sash_pos'] = SpinProperty(self, 'sash_pos', None,
                                                    r=(0, 20),
                                                    can_disable=True) 
+        self.no_custom_class = False
+        self.access_functions['no_custom_class'] = (self.get_no_custom_class,
+                                                    self.set_no_custom_class)
+        self.properties['no_custom_class'] = CheckBoxProperty(
+            self, 'no_custom_class',
+            label="Don't generate code for this custom class")
 
     def create_widget(self):
         self.widget = wx.SplitterWindow(self.parent.widget, self.id,
@@ -167,8 +173,11 @@ class EditSplitterWindow(ManagedBase):
         ManagedBase.create_properties(self)
         panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         sizer = wx.BoxSizer(wx.VERTICAL)
+        self.properties['no_custom_class'].display(panel)
         self.properties['style'].display(panel)
         self.properties['sash_pos'].display(panel)
+        sizer.Add(self.properties['no_custom_class'].panel, 0,
+                  wx.ALL|wx.EXPAND, 3)
         sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['sash_pos'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
@@ -271,6 +280,12 @@ class EditSplitterWindow(ManagedBase):
             return self.window_2.name
         return ''
 
+    def get_no_custom_class(self):
+        return self.no_custom_class
+
+    def set_no_custom_class(self, value):
+        self.no_custom_class = bool(int(value))
+
 # end of class EditSplitterWindow
 
 
@@ -293,6 +308,8 @@ def builder(parent, sizer, pos, number=[1]):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
+            self.CenterOnScreen()
+            
         def __getitem__(self, value):
             def set_orientation(o): self.orientation = self.orientations[o]
             return (lambda: self.orientation, set_orientation)
