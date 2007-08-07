@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for CustomWidget objects
-# $Id: codegen.py,v 1.12 2007/03/27 07:02:01 agriggio Exp $
+# $Id: codegen.py,v 1.13 2007/08/07 12:13:43 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -45,7 +45,10 @@ def _fix_arguments(arguments, parent, id, size):
 
 class PythonCodeGenerator:
     def get_code(self, widget):
-        if widget.preview:
+        if widget.preview and widget.klass not in widget.parser.class_names:
+            # if this CustomWidget refers to another class in the same wxg
+            # file, use that for the preview
+            #print "PREVIEW:", widget.klass, widget.parser.class_names
             return self.get_code_preview(widget)
         pygen = common.code_writers['python']
         prop = widget.properties
@@ -70,15 +73,15 @@ class PythonCodeGenerator:
         else: parent = 'self'
         init = []
         append = init.append
-        append('self.%s = wxWindow(%s, -1)\n' % (widget.name, parent))
+        append('self.%s = wx.Window(%s, -1)\n' % (widget.name, parent))
         on_paint_code = """\
 def self_%s_on_paint(event):
     widget = self.%s
-    dc = wxPaintDC(widget)
+    dc = wx.PaintDC(widget)
     dc.BeginDrawing()
-    dc.SetBrush(wxWHITE_BRUSH)
-    dc.SetPen(wxBLACK_PEN)
-    dc.SetBackground(wxWHITE_BRUSH)
+    dc.SetBrush(wx.WHITE_BRUSH)
+    dc.SetPen(wx.BLACK_PEN)
+    dc.SetBackground(wx.WHITE_BRUSH)
     dc.Clear()
     w, h = widget.GetClientSize()
     dc.DrawLine(0, 0, w, h)
@@ -87,14 +90,14 @@ def self_%s_on_paint(event):
     tw, th = dc.GetTextExtent(text)
     x = (w - tw)/2
     y = (h - th)/2
-    dc.SetPen(wxThePenList.FindOrCreatePen(wxBLACK, 0, wxTRANSPARENT))
+    dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
     dc.DrawRectangle(x-1, y-1, tw+2, th+2)
     dc.DrawText(text, x, y)
     dc.EndDrawing()    
 """ % ((widget.name,) * 3)
         for line in on_paint_code.splitlines():
             append(line + '\n')        
-        append('EVT_PAINT(self.%s, self_%s_on_paint)\n' %
+        append('wx.EVT_PAINT(self.%s, self_%s_on_paint)\n' %
                (widget.name, widget.name))
         return init, [], []
 

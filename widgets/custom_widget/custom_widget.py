@@ -1,5 +1,5 @@
 # custom_widget.py: custom wxWindow objects
-# $Id: custom_widget.py,v 1.20 2007/03/27 07:02:01 agriggio Exp $
+# $Id: custom_widget.py,v 1.21 2007/08/07 12:13:43 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -152,13 +152,15 @@ def builder(parent, sizer, pos, number=[1]):
             klass_prop = TextProperty(self, 'class', self)
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(klass_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
-            szr.Add(wx.Button(self, wx.ID_OK, 'OK'), 0, wx.ALL|wx.ALIGN_CENTER, 5)
+            szr.Add(wx.Button(self, wx.ID_OK, 'OK'), 0,
+                    wx.ALL|wx.ALIGN_CENTER, 5)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
             w = self.GetTextExtent(title)[0] + 50
             if self.GetSize()[0] < w:
                 self.SetSize((w, -1))
+            self.CenterOnScreen()
                 
         def __getitem__(self, value):
             def set_klass(c): self.klass = c

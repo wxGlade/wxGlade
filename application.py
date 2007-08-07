@@ -1,12 +1,11 @@
 # application.py: Application class to store properties of the application
 #                 being created
-# $Id: application.py,v 1.63 2007/04/02 14:12:13 agriggio Exp $
+# $Id: application.py,v 1.64 2007/08/07 12:13:44 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-#from wxPython.wx import *
 import wx
 from widget_properties import *
 from tree import Tree, WidgetTree
@@ -27,42 +26,17 @@ class FileDirDialog:
         self.dir_message = dir_message
         self.file_style = style
         self.dir_style = wx.DD_DEFAULT_STYLE|wx.DD_NEW_DIR_BUTTON
-##         self.file_dialog = wxFileDialog(parent, file_message, self.prev_dir,
-##                                         wildcard=wildcard, style=style)
-##         if dir_message is None: dir_message = file_message
-##         log_null = wxLogNull() # to prevent popup messages about lack of
-##                                # permissions to view the contents of
-##                                # some directories
-##         style = 0
-##         if misc.check_wx_version(2, 3, 3):
-##             style = wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON
-##         self.dir_dialog = wxDirDialog(parent, dir_message, style=style)
-##         del log_null
         self.parent = parent
-##         self.file_message = file_message
-##         self.style = style
         self.value = None
 
     def ShowModal(self):
         if self.owner.codegen_opt == 0:
-##             if self.prev_dir is not None:
-##                 self.file_dialog.SetDirectory(self.prev_dir)
-##             dialog = self.file_dialog
             self.value = misc.FileSelector(
                 self.file_message, self.prev_dir or "",
                 wildcard=self.wildcard, flags=self.file_style)
         else:
-##             if self.prev_dir is not None:
-##                 self.dir_dialog.SetPath(self.prev_dir)
-##             dialog = self.dir_dialog
             self.value = misc.DirSelector(
                 self.dir_message, self.prev_dir or "", style=self.dir_style)
-##         ok = dialog.ShowModal()
-##         if ok == wxID_OK:
-##             self.prev_dir = dialog.GetPath()
-##             if not os.path.isdir(self.prev_dir):
-##                 self.prev_dir = os.path.dirname(self.prev_dir)
-##         return ok
         if self.value:
             self.prev_dir = self.value
             if not os.path.isdir(self.prev_dir):
@@ -71,18 +45,9 @@ class FileDirDialog:
         return wx.ID_CANCEL
 
     def get_value(self):
-##         if self.owner.codegen_opt == 0: return self.file_dialog.GetPath()
-##         else: return self.dir_dialog.GetPath()
         return self.value
 
     def set_wildcard(self, wildcard):
-##         if wxPlatform == '__WXMSW__':
-##             self.file_dialog.SetWildcard(wildcard)
-##         else:
-##             # on GTK SetWildcard has no effect, so we recreate the dialog
-##             self.file_dialog = wxFileDialog(self.parent, self.file_message,
-##                                             wildcard=wildcard,
-##                                             style=self.style)
         self.wildcard = wildcard
         
 # end of class FileDirDialog
@@ -102,8 +67,8 @@ class Application(object):
             self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
-        #panel = wx.Panel(self.notebook, -1)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
+        panel = wx.ScrolledWindow(
+            self.notebook, -1, style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
         self.name = "app" # name of the wxApp instance to generate
         self.__saved = True # if True, there are no changes to save
         self.__filename = None # name of the output xml file
@@ -161,11 +126,7 @@ class Application(object):
                                "Select output file", "Select output directory",
                                wx.SAVE|wx.OVERWRITE_PROMPT)
 
-##         # this "columns-stuff" is to fix a bug (of at least wxGTK)
         _writers = common.code_writers.keys()
-##         if not len(_writers) % 3: columns = 3
-##         elif not len(_writers) % 2: columns = 2
-##         else: columns = 1
         columns = 3
 
         self.codewriters_prop = RadioProperty(self, "language", panel,
@@ -206,8 +167,7 @@ class Application(object):
         sizer.Add(self.use_gettext_prop.panel, 0, wx.EXPAND)
         szr = wx.BoxSizer(wx.HORIZONTAL)
         from widget_properties import _label_initial_width as _w
-        #label = wxGenStaticText(panel, -1, "Top window", size=(_w, -1))
-        label = wx.StaticText(panel, -1, "Top window", size=(_w, -1)) # ???
+        label = wx.StaticText(panel, -1, "Top window", size=(_w, -1))
         label.SetToolTip(wx.ToolTip("Top window"))
         szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         szr.Add(self.top_win_prop, 5, wx.ALL|wx.ALIGN_CENTER, 3)
@@ -259,7 +219,7 @@ class Application(object):
         import locale
         locale.setlocale(locale.LC_ALL)
         try: return locale.nl_langinfo(locale.CODESET)
-        except AttributeError: return 'ISO-8859-1' # this is what I use...
+        except AttributeError: return 'ISO-8859-15' # this is what I use...
 
     def get_encoding(self):
         return self.encoding
@@ -414,7 +374,8 @@ class Application(object):
                 common.code_writers[cw].use_new_namespace = True #False
                 overwrite = self.overwrite
                 self.overwrite = True
-            common.app_tree.write(out) # write the xml onto a temporary buffer
+            class_names = common.app_tree.write(out) # write the xml onto a
+                                                     # temporary buffer
             if not os.path.isabs(self.output_path) and \
                self.filename is not None:
                 out_path = os.path.join(os.path.dirname(self.filename),
@@ -422,7 +383,8 @@ class Application(object):
             else:
                 out_path = None
             CodeWriter(common.code_writers[cw], out.getvalue(), True,
-                       preview=preview, out_path=out_path)
+                       preview=preview, out_path=out_path,
+                       class_names=class_names)
             if preview and cw == 'python':
                 common.code_writers[cw].use_new_namespace = old
                 self.overwrite = overwrite
@@ -524,10 +486,10 @@ class Application(object):
             wx.EVT_CLOSE(frame, on_close)
             frame.SetTitle('<Preview> - %s' % frame.GetTitle())
             # raise the frame
-            frame.Center()
+            frame.CenterOnScreen()
             frame.Show()
             # remove the temporary file (and the .pyc/.pyo ones too)
-            for ext in '', 'c', 'o':
+            for ext in '', 'c', 'o', '~':
                 name = self.output_path + ext
                 if os.path.isfile(name):
                     os.unlink(name)
@@ -536,7 +498,7 @@ class Application(object):
             widget.preview_widget = None
             widget.preview_button.SetLabel('Preview')
             wx.MessageBox("Problem previewing gui: %s" % str(e), "Error",
-                         wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION, self.notebook)
+                         wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)#, self.notebook)
         # restore app state
         widget.klass = widget_class_name
         self.output_path = real_path
