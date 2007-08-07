@@ -1,5 +1,5 @@
 # codegen.py: code generator functions for wxSplitterWindow objects
-# $Id: codegen.py,v 1.17 2007/03/27 07:01:53 agriggio Exp $
+# $Id: codegen.py,v 1.18 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -20,7 +20,8 @@ class PythonCodeGenerator:
             l = []
             if id_name: l.append(id_name)
             l.append('self.%s = %s(%s, %s)\n' %
-                     (window.name, window.klass, parent,id))
+                     (window.name, pygen.without_package(window.klass),
+                      parent,id))
             return l, [], []
         style = prop.get("style")
         if style and style != 'wxSP_3D':
@@ -29,7 +30,9 @@ class PythonCodeGenerator:
             style = ''
         init = []
         if id_name: init.append(id_name)
-        init.append(('self.%s = ' + pygen.cn('wxSplitterWindow') +
+        klass = window.klass
+        if window.preview: klass = 'wxSplitterWindow'
+        init.append(('self.%s = ' + pygen.cn(klass) +
                      '(%s, %s%s)\n') % (window.name, parent, id, style))
 
         props_buf = pygen.generate_common_properties(window)
@@ -108,8 +111,8 @@ class CppCodeGenerator:
         style = prop.get("style")
         if style and style != 'wxSP_3D':
             extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        init = ['%s = new wxSplitterWindow(%s, %s%s);\n' %
-                (window.name, parent, id, extra) ]
+        init = ['%s = new %s(%s, %s%s);\n' %
+                (window.name, window.klass, parent, id, extra) ]
 
         props_buf = cppgen.generate_common_properties(window)
         layout_buf = []
@@ -185,6 +188,11 @@ def xrc_code_generator(obj):
                     self, prop, val, outfile, ntabs)
             except KeyError:
                 return
+
+        def write(self, *args, **kwds):
+            if 'no_custom_class' in self.properties:
+                del self.properties['no_custom_class']            
+            xrcgen.DefaultXrcObject.write(self, *args, **kwds)
             
     # end of class XrcCodeGenerator
 

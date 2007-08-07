@@ -1,5 +1,5 @@
 # panel.py: wxPanel objects
-# $Id: panel.py,v 1.37 2007/07/21 11:29:50 agriggio Exp $
+# $Id: panel.py,v 1.38 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -112,19 +112,11 @@ class PanelBase(object):
             self.widget.SetCursor(wx.STANDARD_CURSOR)
 
     def set_sizer(self, sizer):
-        #print "set_sizer", self.top_sizer, sizer, self.widget
         self.top_sizer = sizer
         if self.top_sizer and self.top_sizer.widget and self.widget:
-##         if self.top_sizer and self.widget:
-##             if not self.top_sizer.widget:
-##                 print "AA"
-##                 self.top_sizer.show_widget(True)
-##                 print "B"
-##             print "HERE 2"
             self.widget.SetAutoLayout(True)
             self.widget.SetSizer(self.top_sizer.widget)
             self.widget.Layout()
-            #self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
         elif self.top_sizer is None and self.widget:
             self.widget.SetSizer(None)
 
@@ -140,10 +132,8 @@ class PanelBase(object):
 
     def get_widget_best_size(self):
         if self.top_sizer and self.widget.GetSizer():
-            #return self.widget.GetSizer().CalcMin()
             self.top_sizer.fit_parent()
             return self.widget.GetSize()
-        #return wx.Panel.GetBestSize(self.widget)
         return wx.ScrolledWindow.GetBestSize(self.widget)
 
     def get_style(self):
@@ -162,7 +152,6 @@ class PanelBase(object):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        #if self.widget: self.widget.SetWindowStyleFlag(self.style)
 
     def get_scrollable(self):
         return self.scrollable
@@ -255,12 +244,12 @@ class EditPanel(PanelBase, ManagedBase):
             if not self._rmenu:
                 COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
-                misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
-                                 'remove.xpm')
-                misc.append_item(self._rmenu, COPY_ID, 'Copy\tCtrl+C',
-                                 'copy.xpm')
-                misc.append_item(self._rmenu, CUT_ID, 'Cut\tCtrl+X',
-                                 'cut.xpm')
+                misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
+                                 wx.ART_DELETE)
+                misc.append_item(self._rmenu, COPY_ID, _('Copy\tCtrl+C'),
+                                 wx.ART_COPY)
+                misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
+                                 wx.ART_CUT)
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
@@ -268,10 +257,15 @@ class EditPanel(PanelBase, ManagedBase):
                 wx.EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
                 # paste
                 PASTE_ID = wx.NewId()
-                misc.append_item(self._rmenu, PASTE_ID, 'Paste\tCtrl+V',
-                                 'paste.xpm')
+                misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'),
+                                 wx.ART_PASTE)
                 wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
-                
+                PREVIEW_ID = wx.NewId()
+                self._rmenu.AppendSeparator()
+                misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
+                wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
+
+            self.setup_preview_menu()
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
     def clipboard_paste(self, *args):
@@ -302,6 +296,11 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
     def create_widget(self):
         win = wx.Frame(common.palette, -1, misc.design_title(self.name),
                        size=(400, 300)) 
+        import os
+        icon = wx.EmptyIcon()
+        xpm = os.path.join(common.wxglade_path, 'icons', 'panel.xpm')
+        icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
+        win.SetIcon(icon)
         #self.widget = wx.Panel(win, self.id, style=0)
         self.widget = wx.ScrolledWindow(win, self.id, style=0)
         wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
@@ -337,16 +336,13 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
 
     def on_size(self, event):
         w, h = event.GetSize()
-##         if (wx.Platform == '__WXMSW__' or wx.Platform == '__WXMAC__') \
-##                and self.skip_on_size:
         if self.skip_on_size:
             self.skip_on_size = False
             return
         super(EditTopLevelPanel, self).on_size(event)
-        #w, h = self.widget.GetClientSize()
         self.skip_on_size = True
-        #self.widget.GetParent().SetClientSize((w+2, h+2))
-        self.widget.GetParent().SetClientSize((w+2, h+2))
+        if self.widget.GetParent().GetClientSize() != (w, h):
+            self.widget.GetParent().SetClientSize((w+2, h+2))
 
     def set_scrollable(self, value):
         super(EditTopLevelPanel, self).set_scrollable(value)

@@ -1,5 +1,5 @@
 # perl_codegen.py : perl generator functions for wxNotebook objects
-# $Id: perl_codegen.py,v 1.5 2005/08/15 07:14:49 crazyinsomniac Exp $
+# $Id: perl_codegen.py,v 1.6 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 # License: MIT (see license.txt)
@@ -31,9 +31,9 @@ class PerlCodeGenerator:
             parent = '$self'
 
         if window.is_toplevel:
-            klass = window.base;
-            if klass != window.klass : klass = window.klass; 
-            else: klass = klass.replace('wx','Wx::',1);
+            klass = window.base
+            if klass != window.klass: klass = window.klass;
+            else: klass = plgen.cn(klass) #klass.replace('wx','Wx::',1)
 
             l = []
             if id_name: l.append(id_name)
@@ -45,8 +45,9 @@ class PerlCodeGenerator:
         else: style = ''
         init = []
         if id_name: init.append(id_name)
-        init.append('$self->{%s} = Wx::Notebook->new(%s, %s, \
-wxDefaultPosition, wxDefaultSize, %s);\n' % (window.name, parent, id, style))
+        init.append('$self->{%s} = %s->new(%s, %s, '
+                    'wxDefaultPosition, wxDefaultSize, %s);\n' %
+                    (window.name, plgen.cn(window.klass), parent, id, style))
 
         props_buf = plgen.generate_common_properties(window)
         return init, props_buf, layout_props 
