@@ -1,0 +1,57 @@
+wxglade (0.4.1.cvs20060221) unstable; urgency=low
+
+  * Sponsored upload.
+  * Upgraded to last upstream version
+  * Updated the version number to Alberto Griggio's announcement.
+
+ -- Georges Khaznadar <georgesk@ofset.org>  Tue, 21 Feb 2006 17:10:35 +0100
+
+wxglade (0.3.5.cvs20060131-0.1) unstable; urgency=low
+
+  * Sponsored upload.
+  * synchronised to the CVS.
+    Closes #340999, #327851
+  * no problem with the menu bars upon testing, so probably ...
+    Closes #341762
+  * added a Conflicts: against libwxgtk2.4-python, thanks to  Andrea Brenci
+    <andrea.brenci@libero.it>
+  * added a menu file, thanks to Basil Shubin <bashu@yandex.ru>
+    Closes #335945, #335946
+  * modified /usr/bin/wxglade to use python2.3
+   Closes #348871
+
+ -- Georges Khaznadar <georgesk@ofset.org>  Tue, 31 Jan 2006 19:59:41 +0100
+
+wxglade (0.3.5.cvs20050824-0.1) unstable; urgency=low
+
+  * Sponsored upload.
+  * renamed the package to python-wxglade. the python-wxgtk packages
+    don't have a version schema as well, so it doesn't make sense with
+    wxglade as well.
+  * Depend on python-wxgtk2.6 | python-wxgtk. These are the new names,
+    and you have at least to depend on a real package.
+  * Build-depend on python (needed for dh_python).
+  * Repackage as a .orig.tar.gz package.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 24 Aug 2005 07:29:15 +0000
+
+wxglade (0.3.5.cvs20050823) unstable; urgency=low
+
+  * upgraded to last CVS version 
+  * updated the dependancies
+  * fixed some executable flags
+
+ -- Georges Khaznadar <georgesk@ofset.org>  Tue, 23 Aug 2005 10:59:39 +0200
+
+wxglade (0.3.5.cvs20041101-1) unstable; urgency=low
+
+  * upgraded to last CVS version
+
+ -- Georges Khaznadar <gekhajofour@netinfo.fr>  Mon,  1 Nov 2004 16:40:31 +0100
+
+wxglade (0.3.4-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Georges Khaznadar <gekhajofour@netinfo.fr>  Mon, 25 Oct 2004 14:09:48 +0200
+

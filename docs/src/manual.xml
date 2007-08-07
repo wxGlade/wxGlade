@@ -1,0 +1,864 @@
+<?xml version="1.0" ?>
+<!DOCTYPE book
+  PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "/usr/share/sgml/docbook/xml-dtd-4.1.2-1.0-17/docbookx.dtd" >
+<book>
+  <title>wxGlade user manual</title>
+  <bookinfo>
+    <date>$Date: 2004/03/01 22:14:32 $</date>
+    <author>
+      <firstname>documentation by Marcello</firstname>
+      <surname>Semboli</surname>
+    </author>
+  </bookinfo>
+
+
+<preface>
+  <title>Preface</title>
+    <para>
+        This manual describes Alberto Griggio's wxGlade program, a Python, Perl,  C++
+        and XRC Graphical User Interface (<quote>GUI</quote>) Editor for UNIX and
+        Microsoft Windows. Each of the chapters in this manual is designed
+        as a tutorial for using wxGlade and a reference for widgets
+        supported until now.
+    </para>
+
+    <section>
+      <title>Abbreviations</title>
+      <variablelist>
+		<title>The following abbreviations are used in this manual:</title>
+		<varlistentry>
+			<term><emphasis>X11</emphasis></term>
+			<listitem><para>The X Window System version 11.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><emphasis>wx</emphasis></term>
+			<listitem><para>The wxWindows/wxWidgets open source C++ GUI framework.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><emphasis>WIN32</emphasis></term>
+			<listitem><para>The Microsoft Windows 32-bit Application 
+          Programmer's Interface.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><emphasis>GUI</emphasis></term>
+			<listitem><para>Graphical User Interface</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><emphasis>WYSIWYG</emphasis></term>
+			<listitem><para>What You See Is What You Get.</para></listitem>
+		</varlistentry>
+      </variablelist>
+    </section>
+
+    <section>
+      <title>Contacts</title>
+    <para>
+        Check the sourceforge project page <ulink url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>
+        for the mailing list to discuss the project.</para>
+<para>        Use the lists for questions, proposals, bug reports and collaboration.
+</para>
+<para>If you don't want to follow the list, you can reach the author 
+of the program <quote>Alberto Griggio</quote> at <email>albgrig@tiscalinet.it</email>.
+        Any kind of feedback is always welcome.
+    </para>
+      <para>Information, support and bug reports can be addressed to the
+        wxGlade mailing list.</para>
+
+<para>        The mantainer of this document is Marcello Semboli.</para>
+<para>        You can address any message regarding this document to 
+<quote>Marcello Semboli</quote> <email>dinogen@siena.linux.it</email>.
+Please report grammatical errors to me, as English isn't my native language.
+      </para>
+    </section>
+
+    <section>
+      <title>Copyrights and Trademarks</title>
+      <para>wxGlade is Copyright 2002-2003 by Alberto Griggio. Use and distribution
+        of wxGlade is governed by the MIT license, located in Appendix A.
+        </para>
+<para>        wxWindows/wxWidgets is Copyright (c) 1992-2002 Julian Smart, Robert Roebling,
+        Vadim Zeitlin and other members of the wxWidgets team.
+        See: <ulink url="http://www.wxwidgets.org">http://www.wxwidgets.org</ulink> for details.
+</para>
+<para>        UNIX is a registered trademark of the X Open Group, Inc.
+</para>
+        <para>Microsoft and Windows are registered trademarks of Microsoft
+        Corporation.
+      </para>
+    </section>
+</preface>
+
+
+<chapter>
+  <title>Introduction to wxGlade</title>
+
+  <section>
+    <title>What wxGlade is</title>
+    <para>
+        wxGlade is a GUI designer written in Python with the popular
+        GUI toolkit wxPython, that helps you create wxWidgets/wxPython
+        user interfaces. At the moment it can generate Python, C++ and
+        XRC (wxWidgets' XML resources) code.
+</para>
+<para>        As you can guess by the name, its model is Glade, the famous
+        GTK+/GNOME GUI builder, with which wxGlade shares the philosophy
+        and the look &amp; feel (but not a line of code).
+    </para>
+  </section>
+  
+  <section>
+    <title>What wxGlade is NOT</title>
+    <para>
+        It is not (and will never be) a full featured IDE, but simply
+        a <quote>designer</quote>. The generated code does nothing apart from displaying
+        the created widgets. If you are looking for a complete IDE,
+        maybe Boa Constructor <ulink url="http://boa-constructor.sourceforge.net">http://boa-constructor.sourceforge.net</ulink>
+        or PythonCard <ulink url="http://www.pythoncard.org">http://www.pythoncard.org</ulink> is the right tool.
+    </para>
+  </section>
+  
+  <section>
+    <title>Download</title>
+    <para>
+        You can download source files for the stable version from the
+        sourceforge project page 
+        <ulink url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>.
+      </para>  
+<para>        You can get the unstable version from Sourceforge anonymous CVS
+        access. Refer to Sourceforge CVS documentation for details.
+</para>
+
+<para>        Also binaries for Microsoft Windows and Linux are provided for
+        download.
+</para> 
+  </section>
+  
+  <section>
+    <title>Installation and requirements</title>
+    <para>
+        Since Python is a pseudo-interpreted language, you don't need
+        any <quote>compile</quote> or <quote>make</quote> steps.
+</para>
+
+<para>        wxGlade requires Python version 2.2 or later and wxPython version
+        2.3.2.1 or later.</para>
+<para>        The binary versions are stand-alone and don't have any requirement.
+    </para>
+    <para>You can download wxWidgets from 
+    <ulink url="http://www.wxwidgets.org">http://www.wxwidgets.org</ulink> and wxPython from 
+    <ulink url="http://www.wxpython.org">http://www.wxpython.org</ulink>.</para>
+    <para>In Microsoft Windows, you only need to install wxPython. wxWidgets is not required.</para>
+    <para>In a Linux/Unix environment you need to install wxPythonGTK, which usually also requires the wxGTK package. Mandrake Linux 9.2 comes with a libwxPython rpm that works, without
+    installing wxGTK.</para>
+    <para>If you use apt or yum, just install wxPythonGTK package, and let it resolve
+    the dependencies.</para>
+  </section>
+  
+  <section>
+    <title>Basics</title>
+    
+<para>You need to know the basics of wxWidgets or wxPython, as well as the basics of C++, Python or Perl.
+You can't use wxGlade if you do not have any basic understanding of programming.
+You can't learn wx programming from reading this manual either.
+</para>    
+  </section>
+  
+  <section>
+    <title>Contacts</title>
+    <para>
+        Check the sourceforge project page <ulink url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>
+        for the mailing list to discuss the project.</para>
+<para>        Use the list for questions, proposals, bug reports and collaboration.
+</para>
+<para>        If you don't want to follow the list, you can reach me at 
+<email>albgrig@tiscalinet.it</email>. Any kind of feedback is always welcome.
+    </para>
+  </section>
+</chapter>
+
+<chapter>  
+  <title>Exploring wxGlade</title>  
+  <section>
+    <title>Quick start</title>
+    
+<para>        We will design a simple form.
+</para>
+<para>        Start wxGlade by running the <command>wxglade.py</command> program.
+</para>
+<para>        You will see a Main Palette with several buttons, and a Tree
+        Window with an icon marked <quote>Application</quote>.  A Properties Window shows the properties 
+of the Application.
+</para>
+
+<para>        If you move the mouse over a button in the main window, a tooltip will display its function.
+</para>
+
+<para>        To add a frame in the design window, from the Main Palette choose
+        the first button: <quote>Add a frame</quote>.
+</para>
+<para>        Then choose wxFrame as the base class.
+</para>
+<para>        Look at the tree window and see that two icons are generated
+        under the application icon, a frame icon and a sizer icon.
+</para>
+<para>        If you double click with the mouse on the frame icon, the designer
+        window appears.
+        Notice that the sizer is displayed as a set of gray boxes: they are
+        the <quote>slots</quote> of the grid sizer where you will place the widgets.
+</para>
+<para>        You put a widget on a sizer by selecting it on the Main Window,
+        then click on an empty slot on the frame on the designer window.
+        Try adding a static text, a text control and a button.
+</para>
+<para>        If you want to add something else, add empty slots on the sizer by
+        right-clicking on the sizer on the tree window and selecting 
+        <quote>Add slot</quote>.
+</para>        
+<para>        Play around, adding four or five widgets on the frame.
+</para>
+<para>        Now look at the properties form; there are three tabs. In the 
+<quote>Common</quote>
+        tab you can specify the name, size and color of the widget.
+</para>        
+<para>        In the <quote>Layout</quote> tab you can adjust borders and alignments.
+</para>        
+<para>        In the <quote>Widget</quote> tab you find the properties depending on the
+        widget.
+</para>
+<para>        You can select the properties of a widget by clicking on the designer window
+        or the corresponding icon on the tree window.
+</para>        
+<para>        Try adjusting widgets with the properties form until you know you have
+        played enough.
+</para>
+<para>        Now let's generate the code.
+</para>
+<para>        Select the Application icon on the tree window and
+        go to the properties window.
+</para>        
+<para>        Check Name and Class, choose a Top window, check Single file and
+        choose the language
+        and set the Output path by pushing the button for selecting a path and a filename.
+</para>        
+<para>        Finally press the Generate code button, and the code is generated.
+</para>
+<para>        Compile and enjoy.
+</para>    
+  </section>
+  
+    <section>
+      <title>Basics of wxGlade</title>
+        
+      <para>The program wxGlade is a tool for designing Graphical User Interfaces (GUI).
+</para>        
+      <para>        It is intended to be used with the wxWidgets framework in all its flavors: C++, Perl, 
+        Python and XRC.
+</para>        
+        <para>You use a visual editor for creating forms, menus and toolbars with the mouse.
+        </para>
+        <para>Your design is saved in a .wxg file, which is the wxGlade file format.
+        </para>
+        <para>Then you generate source code or XRC by using visual tools or invoking wxGlade at the 
+command line.
+        </para>
+        <para>You can also use wxGlade in your makefile by generating source code only when the .wxg
+        changes.
+        </para>
+        <para>A .wxg file can contain multiple forms, panels, menus and toolbars and generate either 
+        a single file containing all classes or multiple files containing one class each.
+        </para>
+        <para>wxGlade does not manage events, file inclusion, function names, stubs or
+        anything else but graphic interface code.</para>
+  </section>
+  <section>
+    <title>Command line invocation</title>
+      <para>You can run wxGlade without parameters to start the GUI on an empty application as follows:
+      </para>
+      <para><command>wxglade.py</command> 
+      </para>
+      <para>Run wxGlade GUI on an existing application specifying the .wxg file as follow: 
+      </para>
+      <para><command>wxglade.py FILENAME.wxg</command>
+      </para>
+      <para>If you only want to generate the code without starting the GUI, use the -g or 
+--generate-code option with the language as argument as follows:
+      </para>
+      <para><command>wxglade.py -g LANG FILENAME.wxg</command> 
+      </para>
+      <para><command>wxglade.py --generate-cod=LANG FILENAME.wxg</command>
+      </para>
+      <para>Possible values for LANG are "python", "XRC", "perl" or "C++". 
+      </para>
+      <para>You can also specify the destination of the generated code 
+with -o or --output option:
+      </para>
+      <para><command>wxglade.py -g LANG -o DESTINATION FILENAME.wxg</command>
+      </para>
+      <para>The DESTINATION argument can be a file or a directory. 
+It is a file when the FILENAME.wxg generates single-file source code. 
+It is a directory when the FILENAME.wxg generates multiple-file source code. 
+      </para>
+      <para>This is the complete description of the command line:
+      </para>
+      <para><literallayout><computeroutput>wxglade.py [OPTIONS] [FILENAME.wxg]
+OPTIONS:
+
+-g LANG, --generate-code=LANG
+	Generate the code in the LANG language. Possible values for LANG are C++, python, perl, XRC.
+
+-o DEST, --output=DEST
+	Only valid with the -g option. Specify the destination for the code generation.
+	The argument DEST can be a source code file or a directory.</computeroutput></literallayout>
+</para>
+  </section>
+  <section>
+    <title>Using the source code</title>
+<para>How do you use source code generated by wxGlade? Basically in two ways.
+</para>
+        <para>You can safely edit the source code of the generated class. This is because
+        wxGlade marks the untouchable code with the special 
+        comments <quote>begin wxGlade</quote> and <quote>end wxGlade</quote>.
+        </para>
+        <para>So you can edit all you need outside these two tags. When you make 
+        changes in your forms, a new code generation will not modify the user code.
+</para>
+        <para>The other way is to generate the class with wxGlade in a file (e.g. myFormUI.xxx) and 
+        subclass it in another file (e.g. myForm.xxx). This gives you the psychological advantage
+        that there is a file for you and one for wxGlade :-) . 
+        That way if you are stuck writing messy code you can erase your entire source 
+        file.</para>
+        <para>There is an annoying problem in wxWidgets: you can put widgets directly on a wxFrame 
+        or in a wxPanel that belongs to the wxFrame. If you choose the first option, in Microsoft
+        Windows the frame looks quite odd.</para>
+        <para>Since wxGlade doesn't automatically generate a wxPanel within a wxFrame, a good way
+        of working is to design a wxPanel with wxGlade (by choosing "dialog" in the main toolbar) 
+        and import it into the wxFrame. This gives
+        you the double advantage of separating code and UI, as well as preserving the 
+        wxFrame-wxPanel-Widgets structure.
+        </para>
+  </section>
+  <section>
+    <title id="basic.bitmaps.section">Specifying the path of bitmaps</title>
+    <para>In wxGlade some widgets need to specify a bitmap path.
+    You can use any graphic format supported by wxWidgets.</para>
+    <para>The bitmap can be specified in several ways:</para>
+    <para>Usually you can type an absolute path in a textbox or browse
+    for a bitmap with a file dialog. This will produce a wxBitmap object
+    with the typed string as bitmap path (e.g. <emphasis>wxBitmap("/usr/share/icons/application.png", 
+    wxBITMAP_TYPE_ANY)</emphasis>)</para>
+    <para>You can enter a variable name using the <emphasis>var:</emphasis> tag in the textbox. 
+    This will produce a wxBitmap object with the variable name as bitmap path 
+    (e.g. <emphasis>var:my_bitmap_path</emphasis> produces <emphasis>wxBitmap(my_bitmap_path, 
+    wxBITMAP_TYPE_ANY)</emphasis>). 
+    In perl code generation a <quote>$</quote> sign is added if you omit it.</para>
+    <para>You can enter a code chunk returning a wxBitmap, by using the <emphasis>code:</emphasis> 
+    tag. This inserts verbatum the code you enter in brackets and nothing more 
+    (e.g.: if wxSomeWidget needs a wxBitmap as an argument, the string 
+    <emphasis>code:if (x == 0) get_bitmap1() else get_bitmap2();</emphasis> produces 
+    <emphasis>wxSomeWidget((if (x == 0) get_bitmap1() else get_bitmap2();), option1, 
+    option2)</emphasis>).</para>
+    <para>wxGlade never declares or assigns variable or function names, so after code 
+    generation, you have to provide extra code to declare your variables or functions.</para>
+    <para>If you use <emphasis>var</emphasis>: or <emphasis>code:</emphasis> tags the
+    preview window shows an empty bitmap of fixed size.</para>
+  </section>
+</chapter>
+  
+<chapter>  
+  <title>wxGlade User Interface</title>  
+  <section>
+    <title>Main Palette</title>
+    <para>
+      The main window is a palette that hosts the menu and 
+      the widget choice buttons.
+    </para>
+    <para> 
+      <figure>
+        <title>The Main Palette</title>
+        <graphic fileref="main_window.png" />
+      </figure>
+    </para>
+    <para>
+        If you pass the mouse pointer over a button a tooltip shows the button's 
+        description.
+    </para>
+    <para>
+        The <quote>Add a Frame</quote> button and the <quote>Add a Dialog/Panel</quote> button 
+        bring up a dialog
+        to add a frame, a dialog or a panel to your project.
+    </para>
+    <para>
+    The <quote>Add a MenuBar</quote> button asks you for the name of the class
+    then adds a menu bar to your project.
+    </para>
+    <para>
+    The <quote>Add a ToolBar</quote> button asks you for the name of the class
+    then adds a toolbar to your project.
+    </para>
+    <para>
+        The other buttons in the main window add widgets to a form.
+        When you click on one, the mouse pointer changes to an arrow.
+        Then you can click on
+        a sizer's empty cell to add the widget to it.
+    </para>
+  </section>
+  <section>
+    <title>Tree Window</title>
+    <para>
+      The tree window shows the logical hierarchy of widgets 
+      and its child-widgets. For example you can see a panel as a tree's 
+      node and the widgets on it as child nodes.
+      <figure>
+        <title>The Tree Window</title>
+        <graphic fileref="tree_window.png" />
+      </figure>
+    </para>
+    <para>
+    You can show or hide the tree window by the menu item View/Show Tree
+    or with the Ctrl-T shortcut.
+    </para>
+    <para>
+      Usually a frame or a panel contains a sizer, so you
+      often see a sort of panel-sizer-widgets structure.
+      The tree gets more complex when you nest sizers within sizers. 
+    </para>
+    <para>
+    You can navigate the visual presentation of your widget tree by mouse, 
+    expand and collapse sizers, and 
+    copy, cut or remove widgets.
+    </para>
+    <para>
+    A click on an icon in the tree window displays the properties of the corresponding element
+    in the properties window.
+    A double click in a frame, dialog or panel icon, makes the designer window show it as it appears.
+    Clicking with the right button of the mouse gives you a pop-up menu.
+      <figure id="label_menu.fig">
+        <title id="label_menu.title">The menu for a widget</title>
+        <graphic fileref="label_menu.png" />
+      </figure>
+      <figure id="sizer_menu.fig">
+        <title id="sizer_menu.title">The menu for a sizer</title>
+        <graphic fileref="sizer_menu.png" />
+      </figure>
+      The pop-up menu for a widget allows you to copy, cut or remove the element. 
+      The pop-up menu for a sizer allows you to copy, cut or remove the element, 
+      or add or insert an empty slot. 
+      <emphasis>Note</emphasis>: Often when you add an empty slot, you have to make the designer window
+      larger, to show the new slot.
+    </para>
+  </section>
+  <section>
+    <title>Design Window</title>
+    <para>
+      The design window shows the frame or panel you are creating in WYSIWYG mode and  
+      allows you to select a widget from the main palette and to put it on an empty slot of a sizer.
+      You can show the design window by double-clicking on the icon of a frame or dialog in 
+the tree window.
+      <figure>
+        <title>The Design Window</title>
+        <graphic fileref="design_window_empty_slot.png" />
+      </figure>
+    </para>
+    <para>
+    By clicking with the right mouse button on a widget you
+    can access the context menu. Notice that the sizers, 
+    which are invisible elements,  have a 
+    little gray <quote>handle,</quote> that you can click to select the sizer 
+    or let the pop-up menu appear.
+    </para>
+    <para>The pop-up menu is the same as the one you get in the Tree Window,
+    as shown in <xref linkend="label_menu.fig" />
+    or in <xref linkend="sizer_menu.fig" />.
+    </para>
+    </section>
+  <section>
+    <title>Properties Window</title>
+    <para>
+      The properties window lets you see and edit the 
+      properties that 
+      apply to the selected element. This window
+      consists of three tabs. The first tab contains the 
+      common properties that apply to all widgets.
+      <figure id="properties_window_tab_1.fig">
+        <title>Common Properties</title>
+        <graphic fileref="properties_window_tab_1.png" />
+      </figure>
+    </para>
+    <para>
+    As shown in <xref linkend="properties_window_tab_1.fig"/>
+    the common properties are related to name, size, 
+    colors and fonts. 
+    </para>
+    <para>
+    The second tab is related to layout properties that control position
+    and resizing within the sizer.
+      <figure id="properties_window_tab_2.fig">
+        <title>Layout Properties</title>
+        <graphic fileref="properties_window_tab_2.png" />
+      </figure>
+    These properties apply to any widget.
+    You can check or uncheck any option related to the placement
+    in the sizer. Many widgets may have a default value of 3 in the "Border" 
+    property in the Preferences Dialog (see <xref linkend="preferences.section"/>).
+    If you let a widget have a default border, the <option>wxALL</option> option
+    is also checked.
+    </para>
+    <para>
+    The third tab, named <quote>Widget,</quote> is different for each widget, and lets
+    you edit properties for the specific element you have selected.
+      <figure id="properties_window_tab_3.fig">
+        <title>Widget Properties</title>
+        <graphic fileref="properties_window_tab_3.png" />
+      </figure>
+    The set of options may also be quite complex in the case of widgets that have 
+    a great deal of methods and properties (such as grids and treeviews). In this case, wxGlade 
+    greatly simplifies the process of designing forms.
+    </para>
+    <para>
+    You can show or hide the properties window by the menu item 
+    <menuchoice>
+        <shortcut><keysym>Ctrl-P</keysym></shortcut>
+        <guimenu>View</guimenu>
+        <guimenuitem>Show Properties</guimenuitem>
+    </menuchoice>.
+    </para>
+        <section>
+            <title>Editing properties</title>
+            <para>
+            Editing properties is quite simple; Properties are represented
+            by buttons, text boxes and checks.
+            Usually they are referenced by the same name or symbol
+            that you find writing C++ code.
+            </para>
+            <para>
+            Usually you get the changes in the design window in real time. 
+            In some cases you have to push the "Apply" button.
+            For example, the wxNotebook widget
+            shows in its properties window a list of child wxPanels.
+            You have to press the apply button to show changes you make
+            when you add or remove panels.
+            </para>
+            <para>
+            </para>
+        </section>    
+    </section>
+    <section>
+    <title id="preferences.section">Preferences Dialog</title>
+    <para>
+    You can access the Preferences Dialog with the menu item 
+    <menuchoice>
+        <guimenu>View</guimenu>
+        <guimenuitem>Preferences</guimenuitem>
+    </menuchoice>.
+    You can choose some decoration options, like whether to show icons in menus or not,
+    but also something more effective.
+    For example, you can modify the number of buttons in the Main Palette.
+    If you type a value of 15 or 30, you get a long toolbar-like
+    Main Palette. 
+    You can also choose the default path where you save wxGlade files 
+    or generate source code.
+    </para>
+    <para>
+    Another useful option is to enable a default border of 3 
+    around some widgets. In many cases this can be useful to have set.
+    </para>
+    <para>You need to restart wxGlade for changes to take effect.</para>
+    </section>
+    <section>
+    <title id="menu.section">The wxGlade Menu</title>
+    <para>
+    wxGlade has only a few very small menus.
+    </para>
+      <section>
+      <title id="menu.file.section">The FILE menu</title>
+      <para>In the FILE menu there are the classic <menuchoice>
+        <guimenu>File</guimenu>
+        <guimenuitem>New</guimenuitem>
+    </menuchoice>, 
+      <menuchoice>
+        <guimenu>File</guimenu>
+        <guimenuitem>Open...</guimenuitem>
+    </menuchoice> and <menuchoice>
+        <guimenu>File</guimenu>
+        <guimenuitem>Save</guimenuitem>
+    </menuchoice> items. When opening or 
+      saving a new file, the file dialog defaults to the directory that you put in
+      the <quote>Initial path</quote> textbox in the Preferences dialog, usually the 
+      user home directory.</para>
+      <para>The <menuchoice>
+        <guimenu>File</guimenu>
+        <guimenuitem>Generate code</guimenuitem>
+    </menuchoice> item produces the code from the current design.</para>
+      </section>  
+      <section>  
+      <title id="menu.view.section">The VIEW menu</title>
+      <para>In the VIEW menu, you can show or hide the tree window and the 
+      properties window.</para>
+      <para>In this menu you access the Preferences Dialog as well.</para>
+      </section>  
+    </section>
+</chapter>  
+<chapter>  
+  <title>Supported widgets</title>  
+    <section>
+    <title id="widgets.intro.section">Introduction</title>
+        <para>wxGlade supports a number of widgets
+        and helps you to edit the properties and visual look of each one.</para>
+    </section>
+    <section>
+        <title id="widgets.wlist.section">Widget list</title>
+        <para>Follow the widget list as it appears in the wxGlade main window.</para>
+        <section>
+        <title id="widgets.frame.section">Frame</title>
+        <para>This prompts for a wxFrame or a wxMDIChildFrame. 
+        A vertical wxBoxSizer is appended.
+        In the properties window you can choose the styles and you can add an icon.</para>
+        </section>
+        <section>
+        <title id="widgets.dialog.section">Dialog or Panel</title>
+        <para>This prompts for a wxDialog or a wxPanel in top level. 
+        In the properties window you can choose the styles and, for the dialog, 
+        you can add an icon.</para>
+        </section>
+        <section>
+        <title id="widgets.panel.section">Panel</title>
+        <para>This allows you to add a panel to a sizer.</para>
+        <para>In the properties window you can choose the styles.</para>
+        </section>
+        <section>
+        <title id="widgets.splitter.section">Splitter window</title>
+        <para>This produces a wxSplitterWindow and two associated panels as well. 
+        You can choose vertical or horizontal splitting.</para>
+        <para>In the properties window you can choose the styles and
+        the sash position.</para>
+        <para>Be careful not to put too large a widget in a splitter panel, 
+        because while it might appear normal in the design window,
+        when you run your program one of two panels will take all the available space
+        and the other will shrink to the minimum size possible.</para>
+        </section>
+        <section>
+        <title id="widgets.notebook.section">Notebook</title>
+        <para>This produces a wxNotebook and one panel for each tab.</para>
+        <para>In the properties window you can add and remove tabs, which 
+        appear in a list.</para>
+        <para>Don't forget to click on the <quote>Apply</quote> button to transfer changes
+        that you have made in the list to the design window.</para>
+        </section>
+        <section>
+            <title id="widgets.button.section">Button</title>
+            <para>This produces a wxButton. You can enter a caption and the 
+            <quote>default</quote> flag. If you want to add an image  
+            you need a bitmap button (see <xref linkend="widgets.bitmap_button.section"/>).</para>
+        </section>
+        <section>
+            <title id="widgets.toggle_button.section">Toggle button</title>
+            <para>This produces a wxToggleButton. You can enter a caption and 
+            the status (clicked or not) of the button.</para>
+        </section>
+        <section>
+            <title id="widgets.bitmap_button.section">Bitmap button</title>
+            <para>This produces a wxBitmapButton. You can set the 
+            <quote>default</quote> flag on or off. You also can choose the bitmap for the button
+            and, optionally, the bitmap for the disabled status. Refer to 
+            <xref linkend="basic.bitmaps.section"/> for bitmap path specifications.</para>
+        </section>
+        <section>
+        <title id="widgets.textctrl.section">Text control</title>
+        <para>This produces a wxTextCtrl. In the properties window you can enter 
+        the text and also set the style.</para>
+        </section>
+        <section>
+        <title id="widgets.spinctrl.section">Spin control</title>
+        <para>This produces a wxSpinCtrl. In the properties window you can enter 
+        the value, the  range  and also set the style.</para>
+        </section>
+        <section>
+        <title id="widgets.slider.section">Slider</title>
+        <para>This produces a wxSlider. In the properties window you can enter 
+        the value, the  range  and also set the style.</para>
+        </section>
+        <section>
+        <title id="widgets.gauge.section">Gauge</title>
+        <para>This produces a wxGauge. In the properties window you can enter 
+        the  range  and set the style.</para>
+        </section>
+        <section>
+        <title id="widgets.static_text.section">Static text</title>
+        <para>This produces a wxStaticText. In the properties window you can enter 
+        the text, set the style and tell wxGlade whether to store the control as an attribute.
+        </para>
+        </section>
+        <section>
+        <title id="widgets.checkbox.section">Check box</title>
+        <para>This produces a wxCheckBox. In the properties window you can enter 
+        the  text, and the status, checked or not, of the button.</para>
+        </section>
+        <section>
+        <title id="widgets.radio.section">Radio button</title>
+        <para>This produces a wxRadioButton. In the properties window you can enter 
+        the  text, and the status, clicked or not, and the style.</para>
+        </section>
+        <section>
+        <title id="widgets.radiobox.section">Radio box</title>
+        <para>This produces a wxRadioBox. In the properties window you can enter
+        the dimension. The style determines whether the dimension is the number of rows or columns.</para>
+        <para>You also can set which button is selected with the <quote>Selection</quote>
+        spin starting from 0. You can edit the list of choices, but remember to click on the <quote>Apply</quote> 
+        button to consolidate changes.</para>
+        </section>
+        <section>
+        <title id="widgets.choice.section">Choice</title>
+        <para>This produces a wxChoice. In the properties window you can enter 
+        the position of the selected item starting from 0. You can edit the list of 
+        choices, but remember to click on the <quote>Apply</quote> 
+        button to consolidate changes.</para>
+        </section>
+        <section>
+        <title id="widgets.combo.section">Combo Box</title>
+        <para>This produces a wxComboBox. In the properties window you can enter 
+        the position of the selected item starting from 0. You can edit the list of 
+        choices, but remember to click on the <quote>Apply</quote> 
+        button to consolidate changes.</para>
+        </section>
+        <section>
+        <title id="widgets.listbox.section">List Box</title>
+        <para>This produces a wxListBox. In the properties window you can enter 
+        the position of the selected item starting from 0. You can edit the list of 
+        choices, but remember to click on the <quote>Apply</quote> 
+        button to consolidate changes.</para>
+        </section>
+        <section>
+        <title id="widgets.staticline.section">StaticLine</title>
+        <para>This produces a vertical or horizontal wxStaticLine. 
+        In the properties window you can tell wxGlade whether to store 
+        the object as an attribute of the frame class.</para>
+        </section>
+        <section>
+            <title id="widgets.static_bitmap.section">Static bitmap</title>
+            <para>This produces a wxStaticBitmap. You will be prompted for the bitmap path. Refer to 
+            <xref linkend="basic.bitmaps.section"/> for bitmap path specifications.
+            In the properties window you can set the style and you can tell wxGlade whether to store 
+            the object as an attribute of the frame class.</para>
+        </section>
+        <section>
+            <title id="widgets.listctrl.section">List Control</title>
+            <para>This produces a wxListCtrl. 
+            In the properties window you can set the style.</para>
+        </section>
+        <section>
+            <title id="widgets.treectrl.section">Tree Control</title>
+            <para>This produces a wxTreeCtrl. 
+            In the properties window you can set the style.</para>
+        </section>
+        <section>
+            <title id="widgets.grid.section">Grid</title>
+            <para>This produces a wxGrid. 
+            In the properties window you can set the style, the row number, 
+            the label size, the line and background color and the selection mode.
+            You can edit the list of columns, but remember to click on the <quote>Apply</quote> 
+            button to consolidate changes. Also you can choose to let wxGlade to
+            create the grid or leave it to the user code.</para>
+        </section>
+        <section>
+            <title id="widgets.custom.section">Custom Widget</title>
+            <para>When you put a custom widget in the design window you will be
+            prompted for a class name. 
+            In the properties window you can set a number of custom attributes that
+            will appear in the costructor call. These attributes have different effects in 
+            C++, perl, python or XRC code generation. Four special attributes, <emphasis>$id, $parent,
+            $width and $height</emphasis> each return the value you specify in the <quote>common</quote> tab 
+            of the custom widget.</para>
+        </section>
+        <section>
+            <title id="widgets.spacer.section">Spacer</title>
+            <para>When you put a spacer into a sizer slot in the design window you will be
+            prompted for the size; wxGlade will generate the code to set an empty space in that slot
+            of the sizer.</para>
+        </section>
+    </section>
+</chapter>  
+<chapter>  
+  <title>Menu, Toolbar and Statusbar</title>  
+    <section>
+    <title id="menu.intro.section">Introduction</title>
+        <para>wxGlade helps you to design the menu and the 
+        toolbar for your application.</para>
+        <para>You can create the menu and toolbar as stand alone classes 
+        by clicking the corresponding button in the main window.</para>
+        <para>Alternatively you can make the menu, toolbar and statusbar associated with a wxFrame, 
+        by selecting the related checkboxes in the wxFrame properties window.</para>
+    </section>
+    <section>
+        <title id="menu.menu.section">Menu</title>
+        <para>In the menu properties window click on the <quote>Edit menus...</quote>
+        button. A dialog will let you edit your menu. Use the <quote>Add</quote> button
+        to add items to the menu; enter the label, an optional name and help string.
+        You can use numbers or variable names as the item id. If you use a variable name,
+        you have to provide extra code in the generated source code.</para>
+        <para>Choose the type of the item: Normal, Checkable or Radio.</para>
+        <para>You can move menu items with <quote>Up</quote> and <quote>Down</quote>
+        buttons, and you can modify the hierarchy of the menu with <quote>&lt;</quote>
+        and <quote>&gt;</quote> buttons.</para>
+    </section>
+    <section>
+        <title id="menu.toolbar.section">Toolbar</title>
+        <para>You can edit the Toolbar's style and bitmap size in the properties window.</para>
+        <para>Click on the <quote>Edit tools...</quote>
+        button to edit the toolbar buttons. Use the <quote>Add</quote> button
+        to add buttons to the toolbar; enter the label, an optional name and help string.
+        You can use numbers or variable names as the button id. If you use a variable name,
+        you have to provide extra code in the generated source code.</para>
+        <para>Choose the type of the button: Normal, Checkable or Radio.</para>
+        <para>You can move toolbar buttons with <quote>Up</quote> and <quote>Down</quote>
+        buttons.</para>
+        <para>You have to enter two bitmaps, one for normal status and the other
+        for the pushed status.</para>
+        <para>Refer to <xref linkend="basic.bitmaps.section"/> for bitmap path 
+        specifications.</para>
+    </section>
+    <section>
+        <title id="menu.statusbar.section">Statusbar</title>
+        <para>In the properties window you can edit the list of fields and their size, 
+        but remember to click on the <quote>Apply</quote> 
+        button to consolidate changes.</para>
+    </section>
+</chapter>
+  
+  
+<appendix>
+  <title>Appendix</title>
+  
+<para>        Copyright (c) 2002-2003 Alberto Griggio  <email>albgrig@tiscalinet.it</email>.
+</para>
+<para>        Permission is hereby granted, free of charge, to any person obtaining
+        a copy of
+        this software and associated documentation files (the "Software"),
+        to deal in
+        the Software without restriction, including without limitation
+        the rights to
+        use, copy, modify, merge, publish, distribute, sublicense and/or
+        sell copies
+        of the Software, and to permit persons to whom the Software is
+        furnished to do
+        so, subject to the following conditions:
+</para>
+<para>        The above copyright notice and this permission notice shall be
+        included in all
+        copies or substantial portions of the Software.
+</para>
+<para>        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+        OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+</para>        
+<para>        IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+        FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+        OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+        WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+</para></appendix>
+  
+
+
+ 
+
+</book>
