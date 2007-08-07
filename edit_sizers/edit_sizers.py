@@ -1,5 +1,5 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.79 2007/07/21 11:29:51 agriggio Exp $
+# $Id: edit_sizers.py,v 1.80 2007/08/07 12:21:55 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -85,13 +85,20 @@ class SizerSlot:
             if not self.sizer.is_virtual():
                 # we cannot remove items from virtual sizers
                 misc.append_item(self.menu, REMOVE_ID, _('Remove\tDel'),
-                                 'remove.xpm')
+                                 wx.ART_DELETE)
             misc.append_item(self.menu, PASTE_ID, _('Paste\tCtrl+V'),
-                             'paste.xpm')
+                             wx.ART_PASTE)
             def bind(method):
                 return lambda e: misc.wxCallAfter(method)
             wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
             wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
+
+            PREVIEW_ID = wx.NewId()
+            self.menu.AppendSeparator()
+            misc.append_item(self.menu, PREVIEW_ID, _('Preview'))
+            wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
+
+        self.setup_preview_menu()
         self.widget.PopupMenu(self.menu, event.GetPosition())
 
     def remove(self, *args):
@@ -148,6 +155,20 @@ class SizerSlot:
         """
         self.pos = value
 
+    def setup_preview_menu(self):
+        p = misc.get_toplevel_widget(self.sizer)
+        if p is not None:
+            item = self.menu.GetMenuItems()[-1]
+            if p.preview_is_visible():
+                item.SetText(_('Close preview') + ' (%s)\tCtrl+P' % p.name)
+            else:
+                item.SetText(_('Preview') + ' (%s)\tCtrl+P' % p.name)        
+
+    def preview_parent(self):
+        p = misc.get_toplevel_widget(self.sizer)
+        if p is not None:
+            p.preview(None)
+
 # end of class SizerSlot
 
 if 0: #wxPlatform != '__WXMAC__':
@@ -166,6 +187,8 @@ class SizerHandleButton(Button):
         self.sizer = sizer
         self.menu = menu
         self._rmenu = None
+        try: self.SetUseFocusIndicator(False)
+        except AttributeError: pass
 ##         # provide popup menu for removal
 ##         REMOVE_ID = wxNewId() 
 ##         self._rmenu = misc.wxGladePopupMenu(sizer.name)
@@ -214,7 +237,7 @@ class SizerHandleButton(Button):
                 return lambda e: misc.wxCallAfter(method)
             #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
             misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                             'remove.xpm')
+                             wx.ART_DELETE)
             wx.EVT_MENU(self, REMOVE_ID, bind(self._remove))
             for item in self.menu:
                 id = wx.NewId()
@@ -223,8 +246,13 @@ class SizerHandleButton(Button):
                 if len(item) > 2: bmp = item[2]
                 misc.append_item(self._rmenu, id, item[0], bmp)
                 wx.EVT_MENU(self, id, bind(item[1]))
+            self._rmenu.AppendSeparator()
+            PREVIEW_ID = wx.NewId()
+            misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
+            wx.EVT_MENU(self, PREVIEW_ID, bind(self.preview_parent))
             self.sizer._rmenu = self._rmenu
             del self.menu
+        self.setup_preview_menu()
         self.PopupMenu(self._rmenu, event.GetPosition())
 
     def _remove(self, *args):
@@ -243,6 +271,19 @@ class SizerHandleButton(Button):
         if self._rmenu: self._rmenu.Destroy()
         Button.Destroy(self)
         if misc.focused_widget is self: misc.focused_widget = None
+
+    def setup_preview_menu(self):
+        p = misc.get_toplevel_widget(self.sizer)
+        if p is not None:
+            item = self._rmenu.GetMenuItems()[-1]
+            if p.preview_is_visible():
+                item.SetText(_('Close preview') + ' (%s)\tCtrl+P' % p.name)
+            else:
+                item.SetText(_('Preview') + ' (%s)\tCtrl+P' % p.name)        
+
+    def preview_parent(self):
+        p = misc.get_toplevel_widget(self.sizer)
+        p.preview(None)
 
 # end of class SizerHandleButton
 
@@ -286,6 +327,7 @@ class SizerClassDialog:
         choices = [ b for a, b in self.choices if a != name ]
         self.dialog = wx.SingleChoiceDialog(self.parent, _("Select sizer type"),
                                            _("Select sizer type"), choices)
+        self.dialog.CenterOnScreen()
         return self.dialog.ShowModal()
 
     def get_value(self):
@@ -399,6 +441,7 @@ class InsertDialog(wx.Dialog):
         self.SetAutoLayout(True)
         self.SetSizer(szr)
         szr.Fit(self)
+        self.CenterOnScreen()
 
     def __getitem__(self, name):
         def set_pos(v): self.pos = int(v)
@@ -496,8 +539,10 @@ class SizerBase(Sizer):
             self.menu = [(_('Add slot'), self.add_slot),
                          (_('Insert slot...'), self.insert_slot)]
         #if not self.toplevel:
-        self.menu.extend([(_('Copy\tCtrl+C'), self.clipboard_copy,'copy.xpm'),
-                          (_('Cut\tCtrl+X'), self.clipboard_cut, 'cut.xpm')
+        self.menu.extend([(_('Copy\tCtrl+C'), self.clipboard_copy,
+                           wx.ART_COPY),
+                          (_('Cut\tCtrl+X'), self.clipboard_cut,
+                           wx.ART_CUT), 
                           ])
 
         self._btn = None # SizerHandleButton
@@ -527,6 +572,8 @@ class SizerBase(Sizer):
         # ALB 2004-08-11
         if not config.preferences.show_sizer_handle:
             self.widget.Show(self._btn, False)
+        if misc.focused_widget is self:
+            self.update_view(True)
 
     def _property_setup(self):
         """\
@@ -699,6 +746,7 @@ class SizerBase(Sizer):
 
         # ALB moved this before Layout, it seems to be needed for wx2.6...
         self.notebook.Show()
+        self.notebook.SetSize(self.property_window.GetClientSize())
 
         self.property_window.Layout()
         self.property_window.SetTitle(_('Properties - <%s>') % self.name)
@@ -924,6 +972,7 @@ class SizerBase(Sizer):
             return
         elif self.toplevel and isinstance(self.window, TopLevelBase):
             #self.window.widget.Layout()
+            self.widget.Layout()
             evt = wx.SizeEvent(self.window.widget.GetSize(),
                               self.window.widget.GetId())
             wx.PostEvent(self.window.widget, evt)
@@ -1097,7 +1146,13 @@ class SizerBase(Sizer):
                 try: c.item.widget.Refresh()
                 except AttributeError: pass
 
-    def update_view(self, *args): pass
+    def update_view(self, selected):
+        if self._btn is not None:
+            color = wx.SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
+            if selected:
+                color = wx.RED
+            self._btn.SetBackgroundColour(color)
+            self._btn.Refresh(True)
 
     def add_slot(self, *args, **kwds):
         """\
@@ -1801,6 +1856,7 @@ class CheckListDialogProperty(DialogProperty):
                     self.SetAutoLayout(True)
                     self.SetSizer(sizer)
                     sizer.Fit(self)
+                    self.CenterOnScreen()
 
                 def get_value(self):
                     ret = []
@@ -2022,7 +2078,7 @@ def builder(parent, sizer, pos, number=[1], show=True):
             self.SetSizer(szr)
             szr.Fit(self)
             self.Layout()
-            self.CentreOnParent()
+            self.CenterOnScreen()
 
         def reset(self):
             self.orientation.SetSelection(0)

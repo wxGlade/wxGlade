@@ -1,5 +1,5 @@
 # common.py: global variables
-# $Id: common.py,v 1.60 2007/04/04 06:36:31 agriggio Exp $
+# $Id: common.py,v 1.61 2007/08/07 12:21:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -89,7 +89,8 @@ def load_code_writers():
             try: writer = __import__(name).writer
             except (ImportError, AttributeError, ValueError):
                 if use_gui:
-                    print _('"%s" is not a valid code generator module') % module
+                    print _('"%s" is not a valid code generator module') % \
+                          module
             else:
                 code_writers[writer.language] = writer
                 if use_gui:
@@ -131,7 +132,16 @@ def __load_widgets(widget_dir):
         if not module or module.startswith('#'): continue
         module = module.split('#')[0].strip()
         try:
-            b = __import__(module).initialize()
+            try:
+                b = __import__(module).initialize()
+            except ImportError:
+                # try importing from a zip archive
+                if os.path.exists(os.path.join(widget_dir, module + '.zip')):
+                    sys.path.append(os.path.join(widget_dir, module + '.zip'))
+                    try: b = __import__(module).initialize()
+                    finally: sys.path.pop()
+                else:
+                    raise
         except (ImportError, AttributeError):
             if use_gui:
                 print _('ERROR loading "%s"') % module
@@ -191,9 +201,9 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         icon_path = os.path.join(wxglade_path, icon_path)
     if wx.Platform == '__WXGTK__': style = wx.NO_BORDER
     else: style = wx.BU_AUTODRAW
-    tmp = wx.BitmapButton(palette, id, wx.Bitmap(icon_path,
-                                                 wx.BITMAP_TYPE_XPM),
-                          size=(31, 31), style=style)
+    import misc
+    bmp = misc.get_xpm_bitmap(icon_path)
+    tmp = wx.BitmapButton(palette, id, bmp, size=(31, 31), style=style)
     if not toplevel:
         wx.EVT_BUTTON(tmp, id, add_object)
     else:
@@ -274,6 +284,8 @@ def save_file(filename, content, which='wxg'):
             savecontent = (oldfile.read() != content)
             oldfile.close()
         if savecontent:
+            if not os.path.isdir(os.path.dirname(filename)):
+                os.mkdir(os.path.dirname(filename))
             outfile = open(filename, 'w')
             outfile.write(content)
             outfile.close()

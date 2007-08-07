@@ -1,6 +1,6 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.83 2007/03/27 07:03:35 agriggio Exp $
+# $Id: main.py,v 1.84 2007/08/07 12:21:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -161,30 +161,28 @@ class wxGladeFrame(wx.Frame):
         core_btns, custom_btns = common.load_widgets()
         sizer_btns = common.load_sizers()
         
+        append_item = misc.append_item
         self.TREE_ID = TREE_ID = wx.NewId()
-        view_menu.Append(TREE_ID, _("Show &Tree\tCtrl+T"), "", True)
-        view_menu.Check(TREE_ID, True)
+        append_item(view_menu, TREE_ID, _("Show &Tree\tF2"))
         self.PROPS_ID = PROPS_ID = wx.NewId()
         self.RAISE_ID = RAISE_ID = wx.NewId()
-        view_menu.Append(PROPS_ID, _("Show &Properties\tCtrl+P"), "", True)
-        view_menu.Check(PROPS_ID, True)
-        view_menu.Append(RAISE_ID, _("&Raise All\tCtrl-R"), "", False)
-        append_item = misc.append_item
+        append_item(view_menu, PROPS_ID, _("Show &Properties\tF3"))
+        append_item(view_menu, RAISE_ID, _("&Raise All\tF4"))
         NEW_ID = wx.NewId()
-        append_item(file_menu, NEW_ID, _("&New\tCtrl+N"), 'new.xpm')
+        append_item(file_menu, NEW_ID, _("&New\tCtrl+N"), wx.ART_NEW)
         OPEN_ID = wx.NewId()
-        append_item(file_menu, OPEN_ID, _("&Open...\tCtrl+O"), 'open.xpm') 
+        append_item(file_menu, OPEN_ID, _("&Open...\tCtrl+O"), wx.ART_FILE_OPEN)
         SAVE_ID = wx.NewId()
-        append_item(file_menu, SAVE_ID, _("&Save\tCtrl+S"), 'save.xpm') 
+        append_item(file_menu, SAVE_ID, _("&Save\tCtrl+S"), wx.ART_FILE_SAVE)
         SAVE_AS_ID = wx.NewId()
         append_item(file_menu, SAVE_AS_ID, _("Save As...\tShift+Ctrl+S"),
-                    'save_as.xpm')
+                    wx.ART_FILE_SAVE_AS)
         file_menu.AppendSeparator()
         RELOAD_ID = wx.NewId()
-        append_item(file_menu, RELOAD_ID, _("&Refresh\tf5"), 'refresh.xpm')
+        append_item(file_menu, RELOAD_ID, _("&Refresh\tf5"), wx.ART_REDO)
         GENERATE_CODE_ID = wx.NewId()
         append_item(file_menu, GENERATE_CODE_ID, _("&Generate Code\tCtrl+G"),
-                    'generate.xpm')
+                    wx.ART_EXECUTABLE_FILE)
         
         file_menu.AppendSeparator()
         IMPORT_ID = wx.NewId()
@@ -192,16 +190,17 @@ class wxGladeFrame(wx.Frame):
         
         EXIT_ID = wx.NewId()
         file_menu.AppendSeparator()
-        append_item(file_menu, EXIT_ID, _('E&xit\tCtrl+Q'), 'exit.xpm')
+        append_item(file_menu, EXIT_ID, _('E&xit\tCtrl+Q'), wx.ART_QUIT)
         PREFS_ID = wx.NewId()
         view_menu.AppendSeparator()
-        append_item(view_menu, PREFS_ID, _('Preferences...'), 'prefs.xpm')
+        append_item(view_menu, PREFS_ID, _('Preferences...'),
+                    wx.ART_HELP_SETTINGS)
         menu_bar.Append(file_menu, _("&File"))
         menu_bar.Append(view_menu, _("&View"))
         TUT_ID = wx.NewId()
-        append_item(help_menu, TUT_ID, _('Contents\tF1'), 'tutorial.xpm')
+        append_item(help_menu, TUT_ID, _('Contents\tF1'), wx.ART_HELP)
         ABOUT_ID = wx.NewId()
-        append_item(help_menu, ABOUT_ID, _('About...'), 'about.xpm')
+        append_item(help_menu, ABOUT_ID, _('About...'), wx.ART_QUESTION)
         menu_bar.Append(help_menu, _('&Help'))
         parent.SetMenuBar(menu_bar)
         # Mac tweaks...
@@ -255,6 +254,14 @@ class wxGladeFrame(wx.Frame):
         wx.EVT_MENU(self, IMPORT_ID, self.import_xrc)
         wx.EVT_MENU(self, RELOAD_ID, self.reload_app)
 
+        PREVIEW_ID = wx.NewId()
+        def preview(event):
+            if common.app_tree.cur_widget is not None:
+                p = misc.get_toplevel_widget(common.app_tree.cur_widget)
+                if p is not None:
+                    p.preview(None)
+        wx.EVT_MENU(self, PREVIEW_ID, preview)
+
         self.accel_table = wx.AcceleratorTable([
             (wx.ACCEL_CTRL, ord('N'), NEW_ID),
             (wx.ACCEL_CTRL, ord('O'), OPEN_ID),
@@ -265,6 +272,10 @@ class wxGladeFrame(wx.Frame):
             (0, wx.WXK_F1, TUT_ID),
             (wx.ACCEL_CTRL, ord('Q'), EXIT_ID),
             (0, wx.WXK_F5, RELOAD_ID),
+            (0, wx.WXK_F2, TREE_ID),
+            (0, wx.WXK_F3, PROPS_ID),
+            (0, wx.WXK_F4, RAISE_ID),
+            (wx.ACCEL_CTRL, ord('P'), PREVIEW_ID),
             ])
 
         # Tutorial window
@@ -344,8 +355,9 @@ class wxGladeFrame(wx.Frame):
         # Properties window
         frame_style = wx.DEFAULT_FRAME_STYLE
         frame_tool_win = config.preferences.frame_tool_win
-        if wx.Platform == '__WXMSW__' and frame_tool_win:
-            frame_style |= wx.FRAME_TOOL_WINDOW|wx.FRAME_NO_TASKBAR
+        if frame_tool_win:
+            frame_style |= wx.FRAME_NO_TASKBAR
+            if wx.Platform != '__WXGTK__': frame_style |= wx.FRAME_TOOL_WINDOW
         
         self.frame2 = wx.Frame(self, -1, _('Properties - <app>'),
                               style=frame_style)
@@ -431,11 +443,7 @@ class wxGladeFrame(wx.Frame):
         self.Show()
 
         self._skip_activate = False
-        if wx.Platform == '__WXMSW__':
-            import about
-            # I'll pay a beer to anyone who can explain to me why this prevents
-            # a segfault on Win32 when you exit without doing anything!!
-            self.about_box = about.wxGladeAboutBox(self.GetParent())
+        if frame_tool_win:
             def on_iconize(event):
                 if event.Iconized():
                     self.hide_all()
@@ -443,6 +451,12 @@ class wxGladeFrame(wx.Frame):
                     self.show_and_raise()
                 event.Skip()
             wx.EVT_ICONIZE(self, on_iconize)
+
+        if wx.Platform == '__WXMSW__':
+            import about
+            # I'll pay a beer to anyone who can explain to me why this prevents
+            # a segfault on Win32 when you exit without doing anything!!
+            self.about_box = about.wxGladeAboutBox(self.GetParent())
         else:
             self.about_box = None
 
@@ -497,15 +511,16 @@ class wxGladeFrame(wx.Frame):
         config.edit_preferences()
 
     def show_tree(self, event):
-        self.tree_frame.Show(event.IsChecked())
+        self.tree_frame.Raise()
+        common.app_tree.SetFocus()
 
     def show_props_window(self, event):
-        show = event.IsChecked()
-        self.frame2.Show(show)
-        if show:
-            common.app_tree.app.show_properties()
-            if common.app_tree.cur_widget:
-                common.app_tree.cur_widget.show_properties()
+        self.frame2.Raise()
+        try:
+            c = self.frame2.GetSizer().GetChildren()
+            if c: c[0].GetWindow().SetFocus()
+        except (AttributeError, TypeError):
+            self.frame2.SetFocus()
 
     def raise_all(self, event):
         children = self.GetChildren()
@@ -796,9 +811,9 @@ class wxGladeFrame(wx.Frame):
     def show_and_raise(self):
         self.frame2.Show(self.GetMenuBar().IsChecked(self.PROPS_ID))
         self.tree_frame.Show(self.GetMenuBar().IsChecked(self.TREE_ID))
-        self.Raise()
         self.frame2.Raise()
         self.tree_frame.Raise()
+        self.Raise()
 
     def hide_all(self):
         self.tree_frame.Hide()

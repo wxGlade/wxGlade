@@ -1,5 +1,5 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.46 2007/04/19 09:29:08 agriggio Exp $
+# $Id: misc.py,v 1.47 2007/08/07 12:21:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -51,7 +51,7 @@ class SelectionTag(wx.Window):
         kwds = { 'size': (7, 7) }
         if pos: kwds['position'] = pos
         wx.Window.__init__(self, parent, -1, **kwds)
-        self.SetBackgroundColour(wx.BLACK)
+        self.SetBackgroundColour(wx.BLUE) #wx.BLACK)
         self.Hide()
 
 # end of class SelectionTag
@@ -153,14 +153,29 @@ def get_toplevel_parent(obj):
     return window
 
 
+def get_toplevel_widget(widget):
+    from edit_windows import EditBase, TopLevelBase
+    from edit_sizers import Sizer
+    if isinstance(widget, Sizer):
+        widget = widget.window
+    assert isinstance(widget, EditBase), "EditBase or SizerBase object needed"
+    while widget and not isinstance(widget, TopLevelBase):
+        widget = widget.parent
+    return widget
+
+
 if wx.Platform == '__WXGTK__':
     # default wxMenu seems to have probles with SetTitle on GTK
     class wxGladePopupMenu(wx.Menu):
         def __init__(self, title):
             wx.Menu.__init__(self)
             self.TITLE_ID = wx.NewId()
-            self.Append(self.TITLE_ID, title)
+            item = self.Append(self.TITLE_ID, title)
             self.AppendSeparator()
+            font = item.GetFont()
+            font.SetWeight(wx.BOLD)
+            item.SetFont(wx.Font(font.GetPointSize(), font.GetFamily(),
+                                 font.GetStyle(), wx.BOLD))
 
         def SetTitle(self, title):
             self.SetLabel(self.TITLE_ID, title)
@@ -212,7 +227,7 @@ else:
 use_menu_icons = None
 
 _item_bitmaps = {}
-def append_item(menu, id, text, xpm_file=None):
+def append_item(menu, id, text, xpm_file_or_artid=None):
     global use_menu_icons
     if use_menu_icons is None:
         import config
@@ -224,13 +239,20 @@ def append_item(menu, id, text, xpm_file=None):
     if wx.Platform == '__WXMSW__': path = 'icons/msw/'
     else: path = 'icons/gtk/'
     path = os.path.join(common.wxglade_path, path)
-    if use_menu_icons and xpm_file is not None:
-        try: bmp = _item_bitmaps[xpm_file]
-        except KeyError:
-            f = os.path.join(path, xpm_file)
-            if os.path.isfile(f):
-                bmp = _item_bitmaps[xpm_file] = wx.Bitmap(f, wx.BITMAP_TYPE_XPM)
-            else: bmp = None
+    if use_menu_icons and xpm_file_or_artid is not None:
+        bmp = None
+        if not xpm_file_or_artid.startswith('wxART_'):
+            try: bmp = _item_bitmaps[xpm_file_or_artid]
+            except KeyError:
+                f = os.path.join(path, xpm_file_or_artid)
+                if os.path.isfile(f):
+                    bmp = _item_bitmaps[xpm_file_or_artid] = \
+                          wx.Bitmap(f, wx.BITMAP_TYPE_XPM)
+                else: bmp = None
+        else:
+            # xpm_file_or_artid is an id for wx.ArtProvider
+            bmp = wx.ArtProvider.GetBitmap(
+                xpm_file_or_artid, wx.ART_MENU, (16, 16))
         if bmp is not None:
             try: item.SetBitmap(bmp)
             except AttributeError: pass
@@ -422,3 +444,33 @@ except NameError:
 
 def design_title(title):
     return _('<Design> - ') + title
+
+
+import re
+_get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
+del re
+    
+def get_xpm_bitmap(path):
+    import os
+    bmp = wx.NullBitmap
+    if not os.path.exists(path):
+        if '.zip' in path:
+            import zipfile
+            archive, name = path.split('.zip', 1)
+            archive += '.zip'
+            if name.startswith(os.sep):
+                name = name.split(os.sep, 1)[1]
+            if zipfile.is_zipfile(archive):
+                # extract the XPM lines...
+                try:
+                    data = zipfile.ZipFile(archive).read(name)
+                    data = [d[1:-1] for d in _get_xpm_bitmap_re.findall(data)]
+##                     print "DATA:"
+##                     for d in data: print d
+                    bmp = wx.BitmapFromXPMData(data)
+                except:
+                    import traceback; traceback.print_exc()
+                    bmp = wx.NullBitmap
+    else:
+        bmp = wx.Bitmap(path, wx.BITMAP_TYPE_XPM)
+    return bmp
