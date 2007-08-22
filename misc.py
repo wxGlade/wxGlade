@@ -114,7 +114,8 @@ class SelectionMarker:
 
     def Reparent(self, parent):
         self.parent = parent
-        for tag in self.tags: tag.Reparent(parent)
+        if self.tags:
+            for tag in self.tags: tag.Reparent(parent)
 
 # end of class SelectionMarker
 
