@@ -324,6 +324,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.Expand(parent.item)
             self.select_item(child)
         child.widget.show_properties()
+        self.app.check_codegen(child.widget)
 
     def insert(self, child, parent, pos, image=None):
         """\
@@ -357,6 +358,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.Expand(parent.item)
             self.select_item(child)
         child.widget.show_properties()
+        self.app.check_codegen(child.widget)
 
     def remove(self, node=None):
         self.app.saved = False # update the status of the app

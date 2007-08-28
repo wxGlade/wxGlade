@@ -341,35 +341,6 @@ def initialize(app_attrs):
         else:
             for_version = (2, 4) # default...
 
-# scan widgets.txt for widgets, load lisp_codegen's
-    _widgets_dir = os.path.join(common.wxglade_path, 'widgets')
-    widgets_file = os.path.join(_widgets_dir, 'widgets.txt')
-    if not os.path.isfile(widgets_file):
-        print >> sys.stderr, "widgets file (%s) doesn't exist" % widgets_file
-        return
-
-    import sys
-    sys.path.append(_widgets_dir)
-    modules = open(widgets_file)
-    for line in modules:
-        module_name = line.strip()
-        if not module_name or module_name.startswith('#'): continue
-        module_name = module_name.split('#')[0].strip()
-        try:
-            m = __import__(module_name + '.lisp_codegen', {}, {}, ['initialize'])
-            m.initialize()
-        except (ImportError, AttributeError):
-            print 'ERROR loading "%s"' % module_name
-            import traceback;
-            traceback.print_exc()
-#        else:
-#            print 'initialized lisp generator for ', module_name
-    modules.close()
-
-   # ...then, the sizers
-    import edit_sizers.lisp_sizers_codegen
-    edit_sizers.lisp_sizers_codegen.initialize()  
-
     try:
         _use_gettext = int(app_attrs['use_gettext'])
     except (KeyError, ValueError):
@@ -1330,3 +1301,40 @@ class WidgetHandler:
 def add_widget_handler(widget_name, handler):
     obj_builders[widget_name] = handler
 
+
+def setup():
+    """\
+    Code generator setup function. This is called once, when the code
+    generator is loaded in wxglade.
+    """
+    # scan widgets.txt for widgets, load lisp_codegen's
+    _widgets_dir = os.path.join(common.wxglade_path, 'widgets')
+    widgets_file = os.path.join(_widgets_dir, 'widgets.txt')
+    if not os.path.isfile(widgets_file):
+        print >> sys.stderr, "widgets file (%s) doesn't exist" % widgets_file
+        return
+
+    import sys
+    sys.path.append(_widgets_dir)
+    modules = open(widgets_file)
+    for line in modules:
+        module_name = line.strip()
+        if not module_name or module_name.startswith('#'): continue
+        module_name = module_name.split('#')[0].strip()
+        try:
+            m = __import__(module_name + '.lisp_codegen', {}, {},
+                           ['initialize'])
+            m.initialize()
+        except (ImportError, AttributeError):
+            pass
+##             print 'ERROR loading "%s"' % module_name
+##             import traceback;
+##             traceback.print_exc()
+##         else:
+##             print 'initialized lisp generator for ', module_name
+    modules.close()
+
+    # ...then, the sizers
+    import edit_sizers.lisp_sizers_codegen
+    edit_sizers.lisp_sizers_codegen.initialize()  
+    
