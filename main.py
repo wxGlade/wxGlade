@@ -573,10 +573,10 @@ class wxGladeFrame(wx.Frame):
         self.ask_save()
         if not common.app_tree.app.filename:
             wx.MessageBox(_("Impossible to reload an unsaved application"),
-                         _("Alert"), style=wx.OK|wx.ICON_INFORMATION)
+                          _("Alert"), style=wx.OK|wx.ICON_INFORMATION)
             return
         path = common.app_tree.get_selected_path()
-        print 'path:', path
+        #print 'path:', path
         self._open_app(common.app_tree.app.filename, add_to_history=False)
         common.app_tree.select_path(path)
         
