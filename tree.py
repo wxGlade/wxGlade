@@ -589,7 +589,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         from edit_sizers import SizerBase
         ret = []
         w = self.cur_widget
+        oldw = None
         while w is not None:
+            oldw = w
             ret.append(w.name)
             sizer = getattr(w, 'sizer', None)
             if getattr(w, 'parent', "") is None:
@@ -602,6 +604,12 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 else:
                     w = w.parent
         ret.reverse()
+        # ALB 2007-08-28: remember also the position of the toplevel window in
+        # the selected path
+        if oldw is not None:
+            assert oldw.widget
+            pos = misc.get_toplevel_parent(oldw.widget).GetPosition()
+            ret[0] = (ret[0], pos)
         return ret
 
     def select_path(self, path):
@@ -613,9 +621,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
         item, cookie = self._get_first_child(self.GetRootItem())
         itemok = None
         parent = None
+        pos = None
         while item.Ok() and index < len(path):
             widget = self.GetPyData(item).widget
-            if misc.streq(widget.name, path[index]):
+            name = path[index]
+            if index == 0 and type(name) == type(()):
+                name, pos = name
+            if misc.streq(widget.name, name):
                 #print 'OK:', widget.name
                 #self.EnsureVisible(item)
                 itemok = item
@@ -631,6 +643,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node = self.GetPyData(itemok)
             if parent is not None:
                 self.show_widget(parent, True)
+                if pos is not None:
+                    misc.get_toplevel_parent(parent.widget).SetPosition(pos)
             self.select_item(node)
         
     def _get_first_child(self, item):
