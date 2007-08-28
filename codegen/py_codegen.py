@@ -476,6 +476,9 @@ def add_object(top_obj, sub_obj):
         klass.init.extend(['\n', '# code for %s (type %s) not generated: '
                            'no suitable writer found' % (sub_obj.name,
                                                          sub_obj.klass),'\n'])
+        common.message('WARNING', 'code for %s (type %s) not generated: '
+                       'no suitable writer found',
+                       sub_obj.name, sub_obj.klass)
     else:
         try:
             init, props, layout = builder.get_code(sub_obj)

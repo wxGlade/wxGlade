@@ -233,7 +233,7 @@ class Application(object):
             self.encoding = value
 
     def set_language(self, value):
-        language = self.language = self.codewriters_prop.get_str_value()
+        language = self.codewriters_prop.get_str_value()
         ext = getattr(common.code_writers[language], 'default_extensions', [])
         wildcard = []
         for e in ext:
@@ -241,6 +241,10 @@ class Application(object):
                                                       e, e))
         wildcard.append('All files|*')
         self.outpath_prop.dialog.set_wildcard('|'.join(wildcard))
+        # check that the new language supports all the widgets in the tree
+        if self.language != language:
+            self.language = language
+            self.check_codegen()
 
     def get_language(self):
         return self.language #codewriters_prop.get_str_value()
@@ -518,5 +522,33 @@ class Application(object):
             common.code_writers['python'].use_new_namespace = not bool(int(val))
         except:
             pass
+
+    def check_codegen(self, widget=None, language=None):
+        """\
+        Checks whether widget has a suitable code generator for the given
+        language (default: the current active language). If not, the user is
+        informed with a message.
+        """
+        if language is None: language = self.language
+        if widget is not None:
+            cname = common.class_names[widget.__class__.__name__]
+            if language != 'XRC' and \
+                   cname not in common.code_writers[language].obj_builders:
+                # XRC can handle everything...
+                common.message('WARNING',
+                               'No %s code generator for %s (of type %s)'
+                               ' available',
+                               language.capitalize(), widget.name, cname)
+        else:
+            # in this case, we check all the widgets in the tree
+            def check_rec(node):
+                if node.widget is not None:
+                    self.check_codegen(node.widget)
+                if node.children:
+                    for c in node.children:
+                        check_rec(c)
+            if common.app_tree.root.children:
+                for c in common.app_tree.root.children:
+                    check_rec(c)
 
 # end of class Application

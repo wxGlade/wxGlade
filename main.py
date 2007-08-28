@@ -881,7 +881,14 @@ class wxGlade(wx.App):
 
         self.SetTopWindow(frame)
         self.SetExitOnFrameDelete(True)
+
+        wx.EVT_IDLE(self, self.on_idle)
+        
         return True
+
+    def on_idle(self, event):
+        common.message.flush()
+        event.Skip()
 
 # end of class wxGlade
 
