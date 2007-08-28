@@ -18,7 +18,7 @@ if common.use_gui:
             wxGladePreferencesUI.__init__(self, None, -1, "")
             
             wx.EVT_BUTTON(self, self.choose_widget_path.GetId(),
-                       self.on_widget_path)
+                          self.on_widget_path)
     
             self.preferences = preferences
             self.set_values()
@@ -92,14 +92,6 @@ if common.use_gui:
             
         def on_widget_path(self, event):
             # create a file choice dialog
-##             dlg = wxDirDialog(self, "Choose a directory:", os.getcwd(),
-##                               style=wxDD_DEFAULT_STYLE|wxDD_NEW_DIR_BUTTON)
-##             if dlg.ShowModal() == wxID_OK:
-##                 wxMessageBox('Changes to local widget path take effect '
-##                              'on restart of wxGlade', 'wxGlade',
-##                              wxOK|wxICON_INFORMATION|wxCENTRE)
-##                 self.local_widget_path.SetValue(dlg.GetPath())
-##             dlg.Destroy()
             pth = misc.DirSelector(_("Choose a directory:"), os.getcwd(),
                                    style=wx.DD_DEFAULT_STYLE |
                                    wx.DD_NEW_DIR_BUTTON)
@@ -244,7 +236,8 @@ def edit_preferences():
     dialog = wxGladePreferences(preferences)
     if dialog.ShowModal() == wx.ID_OK:
         wx.MessageBox(_('Changes will take effect after wxGlade is restarted'),
-                     _('Preferences saved'), wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
+                      _('Preferences saved'),
+                      wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
         dialog.set_preferences()
     dialog.Destroy()
 
