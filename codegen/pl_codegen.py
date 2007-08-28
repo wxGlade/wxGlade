@@ -1276,8 +1276,6 @@ def setup():
     Code generator setup function. This is called once, when the code
     generator is loaded in wxglade.
     """
-    return
-
     # scan widgets.txt for widgets, load perl_codegen's
     _widgets_dir = os.path.join(common.wxglade_path, 'widgets')
     widgets_file = os.path.join(_widgets_dir, 'widgets.txt')
