@@ -17,18 +17,25 @@ class Template:
     
     def __init__(self, file):
         self.filexml = minidom.parse(file)
-        #we have no use for all the xml data in the file. We only care about what is between the "description" tags
+        # we have no use for all the xml data in the file. We only care about
+        # what is between the "description" tags
         templatedata = self.filexml.getElementsByTagName('templatedata')
         if len(templatedata):
             self.desc_xml = templatedata[0]
             try:
-                self.author = saxutils.unescape(self.desc_xml.getElementsByTagName('author')[0].firstChild.data)
+                self.author = saxutils.unescape(
+                    self.desc_xml.getElementsByTagName(
+                    'author')[0].firstChild.data)
             except IndexError: self.author = ''
             try:
-                self.description = saxutils.unescape(self.desc_xml.getElementsByTagName('description')[0].firstChild.data)
+                self.description = saxutils.unescape(
+                    self.desc_xml.getElementsByTagName(
+                    'description')[0].firstChild.data)
             except IndexError: self.description = ''
             try:
-                self.instructions = saxutils.unescape(self.desc_xml.getElementsByTagName('instructions')[0].firstChild.data)
+                self.instructions = saxutils.unescape(
+                    self.desc_xml.getElementsByTagName(
+                    'instructions')[0].firstChild.data)
             except IndexError: self.instructions = ''
             
         else:
