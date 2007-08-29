@@ -38,6 +38,9 @@ class PythonCodeGenerator:
                 bmp = '(%s)' % \
                       bmp_file[5:].strip()
         else:
+            if obj.preview:
+                import misc
+                bmp_file = misc.get_relative_path(bmp_file, True)
             bmp = (cn('wxBitmap') + '(%s, ' + cn('wxBITMAP_TYPE_ANY') +
                    ')') % pygen.quote_str(bmp_file, False, False)
         init = []

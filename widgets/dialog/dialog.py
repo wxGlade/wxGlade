@@ -141,7 +141,8 @@ class EditDialog(TopLevelBase):
         if self.widget:
             if self.icon and not (self.icon.startswith('var:') or
                                   self.icon.startswith('code:')):
-                bmp = wx.Bitmap(self.icon, wx.BITMAP_TYPE_ANY)
+                icon = misc.get_relative_path(self.icon)
+                bmp = wx.Bitmap(icon, wx.BITMAP_TYPE_ANY)
                 if not bmp.Ok():
                     self.set_icon("")
                 else:

@@ -19,7 +19,10 @@ class PythonCodeGenerator:
         title = prop.get('title')
         if title: out.append('self.SetTitle(%s)\n' % pygen.quote_str(title))
         icon = prop.get('icon')
-        if icon: 
+        if icon:
+            if dialog.preview:
+                import misc
+                icon = misc.get_relative_path(icon, True)
             out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
             out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') + '(%s, ' +
                         cn('wxBITMAP_TYPE_ANY') + '))\n') % \

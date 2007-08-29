@@ -128,15 +128,16 @@ class EditBitmapButton(ManagedBase):
     def create_widget(self):
         bmp = self.load_bitmap()
 	try:
-            self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp, style=self.style)
+            self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp,
+                                          style=self.style)
         except AttributeError:
             self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
 
     def load_bitmap(self, which=None, empty=[None]):
         if which is None: which = self.bitmap
-        if which and not ( which.startswith('var:') or
-                            which.startswith('code:')
-                          ):
+        if which and \
+               not (which.startswith('var:') or which.startswith('code:')):
+            which = misc.get_relative_path(which)
             return wx.Bitmap(which, wx.BITMAP_TYPE_ANY)
         else:
             if empty[0] is None:
