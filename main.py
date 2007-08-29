@@ -261,10 +261,7 @@ class wxGladeFrame(wx.Frame):
         wx.EVT_MENU(self, TUT_ID, self.show_tutorial)
         wx.EVT_MENU(self, ABOUT_ID, self.show_about_box)
         wx.EVT_MENU(self, PREFS_ID, self.edit_preferences)
-        def manage_templates(event):
-            import template
-            template.manage_templates()
-        wx.EVT_MENU(self, MANAGE_TEMPLATES_ID, manage_templates)
+        wx.EVT_MENU(self, MANAGE_TEMPLATES_ID, self.manage_templates)
         wx.EVT_MENU(self, IMPORT_ID, self.import_xrc)
         wx.EVT_MENU(self, RELOAD_ID, self.reload_app)
 
@@ -592,6 +589,7 @@ class wxGladeFrame(wx.Frame):
         infile = template.select_template()
         if infile:
             self._open_app(infile, add_to_history=False)
+            common.app_tree.app.template_data = None
 
     def reload_app(self, event):
         self.ask_save()
@@ -705,7 +703,7 @@ class wxGladeFrame(wx.Frame):
         if common.app_tree.app.is_template:
             print _("Loaded template")
             import template
-            common.app_tree.template_data = template.Template(infilename)
+            common.app_tree.app.template_data = template.Template(infilename)
             common.app_tree.app.filename = None
 
         end = time.clock()
@@ -794,7 +792,8 @@ class wxGladeFrame(wx.Frame):
 
     def save_app_as_template(self, event):
         import template
-        outfile, data = template.save_template()
+        data = getattr(common.app_tree.app, 'template_data', None)
+        outfile, data = template.save_template(data)
         if outfile:
             common.app_tree.app.is_template = True
             common.app_tree.app.template_data = data
@@ -882,6 +881,18 @@ class wxGladeFrame(wx.Frame):
                                 "wxGlade bug, please report it.") % \
                               (infile, msg), _("Error"),
                               wx.OK|wx.CENTRE|wx.ICON_ERROR)
+
+    def manage_templates(self, event):
+        import template
+        to_edit = template.manage_templates()
+        if to_edit is not None and self.ask_save():
+            # edit the template
+            # TODO, you still need to save it manually...
+            self._open_app(to_edit, add_to_history=False)
+            wx.MessageBox(_("To save the changes to the template, edit the "
+                            "GUI as usual,\nand then click "
+                            "File->Save as Template..."), _("Information"),
+                          style=wx.OK|wx.ICON_INFORMATION)
 
 # end of class wxGladeFrame
 

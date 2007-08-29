@@ -1,11 +1,10 @@
 # template.py: handles the template tags and description
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/template.py,v 1.4 2007/03/27 07:02:07 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 #
-# Author: Guy Rutenberg.
+# Author: Guy Rutenberg, Alberto Griggio
 
 from xml.dom import minidom
 from xml.sax import saxutils
@@ -23,8 +22,9 @@ class Template:
     
     def __init__(self, filename=None):
         self.author = ''
-        self.description=''
-        self.instructions=''
+        self.description = ''
+        self.instructions = ''
+        self.filename = filename
 
         if filename is not None:
             filexml = minidom.parse(filename)
@@ -100,8 +100,10 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
                                              'templates')
             if os.path.dirname(self.selected_template) == wxglade_templates:
                 self.btn_delete.Disable()
+                self.btn_edit.Disable()
             else:
                 self.btn_delete.Enable()
+                self.btn_edit.Enable()
         else:
             self.set_template_name("")
             self.author.SetValue("")
@@ -167,11 +169,17 @@ def select_template():
     return ret
 
 
-def save_template():
+def save_template(data=None):
     """\
     Returns an out file name and template description for saving a template
     """
     dlg = templates_ui.TemplateInfoDialog(None, -1, "")
+    if data is not None:
+        dlg.template_name.SetValue(
+            misc.wxstr(os.path.basename(os.path.splitext(data.filename)[0])))
+        dlg.author.SetValue(misc.wxstr(data.author))
+        dlg.description.SetValue(misc.wxstr(data.description))
+        dlg.instructions.SetValue(misc.wxstr(data.instructions))
     ret = None
     retdata = Template()
     if dlg.ShowModal() == wx.ID_OK:
@@ -179,6 +187,9 @@ def save_template():
         retdata.author = dlg.author.GetValue()
         retdata.description = dlg.description.GetValue()
         retdata.instructions = dlg.instructions.GetValue()
+        if not ret:
+            wx.MessageBox(_("Can't save a template with an empty name"),
+                          _("Error"), wx.OK|wx.ICON_ERROR)
     dlg.Destroy()
     name = ret
     if ret:
@@ -201,6 +212,10 @@ def save_template():
 def manage_templates():
     dlg = TemplateListDialog()
     dlg.btn_open.Hide()
-    dlg.btn_edit.Hide()
-    dlg.ShowModal()
+    #dlg.btn_edit.Hide()
+    ret = None
+    if dlg.ShowModal() == wx.ID_EDIT:
+        ret = dlg.selected_template
     dlg.Destroy()
+    return ret
+
