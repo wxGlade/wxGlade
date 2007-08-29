@@ -170,6 +170,9 @@ class wxGladeFrame(wx.Frame):
         append_item(view_menu, RAISE_ID, _("&Raise All\tF4"))
         NEW_ID = wx.NewId()
         append_item(file_menu, NEW_ID, _("&New\tCtrl+N"), wx.ART_NEW)
+        NEW_FROM_TEMPLATE_ID = wx.NewId()
+        append_item(file_menu, NEW_FROM_TEMPLATE_ID,
+                    _("New from &Template...\tShift+Ctrl+N"))
         OPEN_ID = wx.NewId()
         append_item(file_menu, OPEN_ID, _("&Open...\tCtrl+O"), wx.ART_FILE_OPEN)
         SAVE_ID = wx.NewId()
@@ -177,6 +180,8 @@ class wxGladeFrame(wx.Frame):
         SAVE_AS_ID = wx.NewId()
         append_item(file_menu, SAVE_AS_ID, _("Save As...\tShift+Ctrl+S"),
                     wx.ART_FILE_SAVE_AS)
+        SAVE_TEMPLATE_ID = wx.NewId()
+        append_item(file_menu, SAVE_TEMPLATE_ID, _("Save As Template..."))
         file_menu.AppendSeparator()
         RELOAD_ID = wx.NewId()
         append_item(file_menu, RELOAD_ID, _("&Refresh\tf5"), wx.ART_REDO)
@@ -241,9 +246,11 @@ class wxGladeFrame(wx.Frame):
         wx.EVT_MENU(self, PROPS_ID, self.show_props_window)
         wx.EVT_MENU(self, RAISE_ID, self.raise_all)
         wx.EVT_MENU(self, NEW_ID, self.new_app)
+        wx.EVT_MENU(self, NEW_FROM_TEMPLATE_ID, self.new_app_from_template)
         wx.EVT_MENU(self, OPEN_ID, self.open_app)
         wx.EVT_MENU(self, SAVE_ID, self.save_app)
         wx.EVT_MENU(self, SAVE_AS_ID, self.save_app_as)
+        wx.EVT_MENU(self, SAVE_TEMPLATE_ID, self.save_app_as_template)
         def generate_code(event):
             common.app_tree.app.generate_code()
         wx.EVT_MENU(self, GENERATE_CODE_ID, generate_code)
@@ -569,6 +576,16 @@ class wxGladeFrame(wx.Frame):
             if config.preferences.autosave and self.autosave_timer is not None:
                 self.autosave_timer.Start()
 
+    def new_app_from_template(self, event):
+        """\
+        creates a new wxGlade project from an existing template file
+        """
+        if not self.ask_save(): return
+        import template
+        infile = template.select_template()
+        if infile:
+            self._open_app(infile, add_to_history=False)
+
     def reload_app(self, event):
         self.ask_save()
         if not common.app_tree.app.filename:
@@ -682,7 +699,7 @@ class wxGladeFrame(wx.Frame):
             print _("Loaded template")
             import template
             common.app_tree.template_data = template.Template(infilename)
-            common.app_tree.filename = None
+            common.app_tree.app.filename = None
 
         end = time.clock()
         print _('Loading time: %.5f') % (end-start)
@@ -711,39 +728,42 @@ class wxGladeFrame(wx.Frame):
         else:
             # check whether we are saving a template
             if os.path.splitext(common.app_tree.app.filename)[1] == ".wgt":
-	        common.app_tree.app.is_template = True
-            try:
-                from cStringIO import StringIO
-                buffer = StringIO()
-                common.app_tree.write(buffer)
-                common.save_file(common.app_tree.app.filename,
-                                 buffer.getvalue(), 'wxg')
-            except (IOError, OSError), msg:
-                common.app_tree.app.saved = False
-                fn = common.app_tree.app.filename
-                wx.MessageBox(_("Error saving app:\n%s") % msg, _("Error"),
-                             wx.OK|wx.CENTRE|wx.ICON_ERROR)
-            except Exception, msg:
-                import traceback; traceback.print_exc()
-                common.app_tree.app.saved = False
-                fn = common.app_tree.app.filename
-                wx.MessageBox(_("An exception occurred while saving file "
-                                "\"%s\".\n"
-                                "This is the error message associated with it:"
-                                "\n        %s\n"
-                                "For more details, look at the full traceback "
-                                "on the console.\nIf you think this is a "
-                                "wxGlade bug,"
-                                " please report it.") % (fn, msg), _("Error"),
-                              wx.OK|wx.CENTRE|wx.ICON_ERROR)
-            else:
-                common.app_tree.app.saved = True
-                common.remove_autosaved() # ALB 2004-10-15
-                # ALB 2004-10-15
-                if config.preferences.autosave and \
-                       self.autosave_timer is not None:
-                    self.autosave_timer.Start()
-                self.user_message(_("Saved %s") % common.app_tree.app.filename)
+                common.app_tree.app.is_template = True
+            self._save_app(common.app_tree.app.filename)
+
+    def _save_app(self, filename):
+        try:
+            from cStringIO import StringIO
+            buffer = StringIO()
+            common.app_tree.write(buffer)
+            common.save_file(filename,
+                             buffer.getvalue(), 'wxg')
+        except (IOError, OSError), msg:
+            common.app_tree.app.saved = False
+            fn = filename
+            wx.MessageBox(_("Error saving app:\n%s") % msg, _("Error"),
+                         wx.OK|wx.CENTRE|wx.ICON_ERROR)
+        except Exception, msg:
+            import traceback; traceback.print_exc()
+            common.app_tree.app.saved = False
+            fn = filename
+            wx.MessageBox(_("An exception occurred while saving file "
+                            "\"%s\".\n"
+                            "This is the error message associated with it:"
+                            "\n        %s\n"
+                            "For more details, look at the full traceback "
+                            "on the console.\nIf you think this is a "
+                            "wxGlade bug,"
+                            " please report it.") % (fn, msg), _("Error"),
+                          wx.OK|wx.CENTRE|wx.ICON_ERROR)
+        else:
+            common.app_tree.app.saved = True
+            common.remove_autosaved() # ALB 2004-10-15
+            # ALB 2004-10-15
+            if config.preferences.autosave and \
+                   self.autosave_timer is not None:
+                self.autosave_timer.Start()
+            self.user_message(_("Saved %s") % filename)
 
     def save_app_as(self, event):
         """\
@@ -764,6 +784,14 @@ class wxGladeFrame(wx.Frame):
             self.cur_dir = os.path.dirname(fn)
             if misc.check_wx_version(2, 3, 3):
                 self.file_history.AddFileToHistory(fn)
+
+    def save_app_as_template(self, event):
+        import template
+        outfile, data = template.save_template()
+        if outfile:
+            common.app_tree.app.is_template = True
+            common.app_tree.app.template_data = data
+            self._save_app(outfile)
 
     def cleanup(self, event):
         if self.ask_save():

@@ -214,6 +214,8 @@ class Tree:
                                    overwrite, use_new_namespace, for_version,
                                    is_template]))
                       )
+        if self.app.is_template and getattr(self.app, 'template_data', None):
+            self.app.template_data.write(outfile, tabs+1)
         class_names = set()
         if self.root.children is not None:
             for c in self.root.children:
