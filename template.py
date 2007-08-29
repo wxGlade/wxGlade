@@ -96,6 +96,12 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
             self.author.SetValue(misc.wxstr(t.author))
             self.description.SetValue(misc.wxstr(t.description))
             self.instructions.SetValue(misc.wxstr(t.instructions))
+            wxglade_templates = os.path.join(common.wxglade_path,
+                                             'templates')
+            if os.path.dirname(self.selected_template) == wxglade_templates:
+                self.btn_delete.Disable()
+            else:
+                self.btn_delete.Enable()
         else:
             self.set_template_name("")
             self.author.SetValue("")
@@ -116,7 +122,7 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
             name = self.template_names.GetStringSelection()
             if wx.MessageBox(_("Delete template '%s'?") % misc.wxstr(name),
                              _("Are you sure?"),
-                             style=wx.OK|wx.CANCEL|wx.CENTRE) == wx.ID_OK:
+                             style=wx.YES|wx.NO|wx.CENTRE) == wx.YES:
                 try:
                     os.unlink(self.selected_template)
                 except Exception, e:
@@ -187,6 +193,14 @@ def save_template():
     if ret and os.path.exists(ret) and \
        wx.MessageBox(_("A template called '%s' already exists:\ndo you want to"
                        " overwrite it?") % name, _("Question"),
-                     wx.YES|wx.NO|wx.ICON_QUESTION) != wx.ID_YES:
+                     wx.YES|wx.NO|wx.ICON_QUESTION) != wx.YES:
         ret = None
     return ret, retdata
+
+
+def manage_templates():
+    dlg = TemplateListDialog()
+    dlg.btn_open.Hide()
+    dlg.btn_edit.Hide()
+    dlg.ShowModal()
+    dlg.Destroy()
