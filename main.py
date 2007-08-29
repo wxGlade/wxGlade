@@ -198,6 +198,9 @@ class wxGladeFrame(wx.Frame):
         append_item(file_menu, EXIT_ID, _('E&xit\tCtrl+Q'), wx.ART_QUIT)
         PREFS_ID = wx.NewId()
         view_menu.AppendSeparator()
+        MANAGE_TEMPLATES_ID = wx.NewId()
+        append_item(view_menu, MANAGE_TEMPLATES_ID, _('Templates Manager...'))
+        view_menu.AppendSeparator()
         append_item(view_menu, PREFS_ID, _('Preferences...'),
                     wx.ART_HELP_SETTINGS)
         menu_bar.Append(file_menu, _("&File"))
@@ -258,6 +261,10 @@ class wxGladeFrame(wx.Frame):
         wx.EVT_MENU(self, TUT_ID, self.show_tutorial)
         wx.EVT_MENU(self, ABOUT_ID, self.show_about_box)
         wx.EVT_MENU(self, PREFS_ID, self.edit_preferences)
+        def manage_templates(event):
+            import template
+            template.manage_templates()
+        wx.EVT_MENU(self, MANAGE_TEMPLATES_ID, manage_templates)
         wx.EVT_MENU(self, IMPORT_ID, self.import_xrc)
         wx.EVT_MENU(self, RELOAD_ID, self.reload_app)
 
