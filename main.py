@@ -18,6 +18,7 @@ import common, os, os.path, misc, config
 import clipboard
 
 import xml_parse
+import template
 
 
 class wxGladePropertyPanel(wx.Panel):
@@ -585,7 +586,6 @@ class wxGladeFrame(wx.Frame):
         creates a new wxGlade project from an existing template file
         """
         if not self.ask_save(): return
-        import template
         infile = template.select_template()
         if infile:
             self._open_app(infile, add_to_history=False)
@@ -702,7 +702,6 @@ class wxGladeFrame(wx.Frame):
         common.app_tree.expand()
         if common.app_tree.app.is_template:
             print _("Loaded template")
-            import template
             common.app_tree.app.template_data = template.Template(infilename)
             common.app_tree.app.filename = None
 
@@ -791,7 +790,6 @@ class wxGladeFrame(wx.Frame):
                 self.file_history.AddFileToHistory(fn)
 
     def save_app_as_template(self, event):
-        import template
         data = getattr(common.app_tree.app, 'template_data', None)
         outfile, data = template.save_template(data)
         if outfile:
@@ -883,7 +881,6 @@ class wxGladeFrame(wx.Frame):
                               wx.OK|wx.CENTRE|wx.ICON_ERROR)
 
     def manage_templates(self, event):
-        import template
         to_edit = template.manage_templates()
         if to_edit is not None and self.ask_save():
             # edit the template
