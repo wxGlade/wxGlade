@@ -443,7 +443,7 @@ class Application(object):
         widget.klass = '_%d_%s' % \
                        (random.randrange(10**8, 10**9), widget.klass)
             
-        real_path = self.output_path
+        self.real_output_path = self.output_path
         self.output_path = out_name[0]
         real_codegen_opt = self.codegen_opt
         real_language = self.language
@@ -505,7 +505,8 @@ class Application(object):
                          wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)#, self.notebook)
         # restore app state
         widget.klass = widget_class_name
-        self.output_path = real_path
+        self.output_path = self.real_output_path
+        del self.real_output_path
         self.codegen_opt = real_codegen_opt
         self.language = real_language
         self.use_gettext = real_use_gettext

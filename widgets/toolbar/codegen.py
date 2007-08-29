@@ -73,6 +73,9 @@ class PythonCodeGenerator:
                 else:
                     return '(%s)' % bitmap[5:].strip()
             else:
+                if obj.preview:
+                    import misc
+                    bitmap = misc.get_relative_path(bitmap, True)
                 return cn('wxBitmap') + \
                        ('(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \
                        pygen.quote_str(bitmap, False, False)
