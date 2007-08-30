@@ -256,6 +256,7 @@ class EditBase(EventsMixin):
             self.create_properties()
             # ALB 2004-12-05
             self.create_events_property()
+            self.create_extracode_property()
         sizer_tmp = self.property_window.GetSizer()
         #sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
         #child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
@@ -414,6 +415,11 @@ class WindowBase(EditBase):
         self.access_functions['hidden'] = (self.get_hidden, self.set_hidden)
         prop['hidden'] = CheckBoxProperty(self, 'hidden', None)
 
+        # code property
+        import code_property
+        prop['extracode'] = code_property.CodeProperty(self)
+        
+
     def finish_widget_creation(self, *args, **kwds):
         self._original['background'] = self.widget.GetBackgroundColour()
         self._original['foreground'] = self.widget.GetForegroundColour()
@@ -508,6 +514,11 @@ class WindowBase(EditBase):
         self.property_window.Layout()
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
+    def create_extracode_property(self):
+        try:
+            self.properties['extracode']._show(self.notebook)
+        except KeyError:
+            pass
 
     def on_size(self, event):
         """\

@@ -61,6 +61,8 @@ multiple_files = False
 
 # if not None, it is the single source file to write into
 output_file = None
+output_file_name = None
+
 # if not None, it is the directory inside which the output files are saved
 out_dir = None
 
@@ -113,7 +115,9 @@ class ClassLines:
                           # been generated
 
         # ALB 2004-12-05
-        self.event_handlers = [] # lines to bind events 
+        self.event_handlers = [] # lines to bind events
+
+        self.extra_code = [] # extra code to output before this class
 
 # end of class ClassLines
 
@@ -246,6 +250,7 @@ class SourceFileContent:
             else:
                 # ignore all the lines inside a wxGlade block
                 if block_end.match(line) is not None:
+##                     print 'end block'
                     inside_block = False
         if not new_classes_inserted:
             # if we are here, the previous ``version'' of the file did not
@@ -266,6 +271,8 @@ class SourceFileContent:
         return line.strip().startswith('# end of class ')
 
     def add_package(self, class_name):
+        if not multiple_files:
+            return class_name
         name = self.name
         if out_dir is not None:
             name = name.replace(out_dir, '')
@@ -329,7 +336,7 @@ def initialize(app_attrs):
     multi_files = app_attrs['option']
 
     global classes, header_lines, multiple_files, previous_source, nonce, \
-           _current_extra_modules, _use_gettext, _overwrite
+           _current_extra_modules, _use_gettext, _overwrite, _current_extra_code
     import time, random
 
     try: _use_gettext = int(app_attrs['use_gettext'])
@@ -370,6 +377,10 @@ def initialize(app_attrs):
                     use_new_namespace and 'import wx\n' or
                     'from wxPython.wx import *\n']
 
+    # extra lines to generate (see the 'extracode' property of top-level
+    # widgets)
+    _current_extra_code = []
+
     # add coding (PEP 263)
     if _encoding:
         header_lines.insert(0, "# -*- coding: %s -*-\n" % _encoding.lower())
@@ -391,6 +402,7 @@ def initialize(app_attrs):
             for line in header_lines:
                 output_file.write(line)
             output_file.write('<%swxGlade extra_modules>\n' % nonce)
+            output_file.write('\n<%swxGlade replace extracode>\n\n' % nonce)
             output_file.write('\n')
     else:
         previous_source = None
@@ -416,10 +428,17 @@ def finalize():
         tag = '<%swxGlade extra_modules>\n' % nonce
         code = "".join(_current_extra_modules.keys())
         previous_source.content = previous_source.content.replace(tag, code)
+        # extra code (see the 'extracode' property of top-level widgets)
+        tag = '<%swxGlade replace extracode>' % nonce
+        code = "\n".join(['# begin wxGlade: extracode'] + _current_extra_code +
+                         ['# end wxGlade\n'])
+        previous_source.content = previous_source.content.replace(tag, code)
+        
         # now remove all the remaining <123415wxGlade ...> tags from the
         # source: this may happen if we're not generating multiple files,
         # and one of the container class names is changed
-        tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +\w+>)' % nonce,
+        tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % \
+                          nonce,
                           previous_source.content)
         for tag in tags:
             indent = previous_source.spaces.get(tag[1], tabs(2))
@@ -442,6 +461,12 @@ def finalize():
         em = "".join(_current_extra_modules.keys())
         content = output_file.getvalue().replace(
             '<%swxGlade extra_modules>\n' % nonce, em)
+        # extra code (see the 'extracode' property of top-level widgets)
+        tag = '<%swxGlade replace extracode>' % nonce
+        code = "\n".join(['# begin wxGlade: extracode'] + _current_extra_code +
+                         ['# end wxGlade\n'])
+        content = content.replace(tag, code)
+        
         output_file.close()
         try:
             common.save_file(output_file_name, content, 'codegen')
@@ -504,6 +529,13 @@ def add_object(top_obj, sub_obj):
                 if id == '-1': id = '#self.%s' % sub_obj.name
                 for event, handler in sub_obj.properties['events'].iteritems():
                     klass.event_handlers.append((id, mycn(event), handler))
+
+            # try to see if there's some extra code to add to this class
+            extra_code = getattr(builder, 'extracode',
+                                 sub_obj.properties.get('extracode', ""))
+            if extra_code:
+                extra_code = re.sub(r'\\n', '\n', extra_code)
+                klass.extra_code.append(extra_code)
 
         else: # the object is a sizer
             # ALB 2004-09-17: workaround (hack) for static box sizers...
@@ -600,6 +632,16 @@ def add_class(code_obj):
     if not classes.has_key(code_obj.klass):
         # if the class body was empty, create an empty ClassLines
         classes[code_obj.klass] = ClassLines()
+
+    # try to see if there's some extra code to add to this class
+    extra_code = getattr(builder, 'extracode',
+                         code_obj.properties.get('extracode', ""))
+    if extra_code:
+        extra_code = re.sub(r'\\n', '\n', extra_code)
+        classes[code_obj.klass].extra_code.append(extra_code)
+    if not multiple_files and extra_code:
+        _current_extra_code.append("".join(
+            classes[code_obj.klass].extra_code[::-1]))
 
     if is_new:
         base = mycn(code_obj.base)
@@ -796,6 +838,13 @@ def add_class(code_obj):
                    ['# end wxGlade\n']
             tag = '<%swxGlade replace dependencies>' % nonce
             prev_src.content = prev_src.content.replace(tag, "".join(deps))
+
+            # insert the extra code of this class
+            extra_code = '# begin wxGlade: extracode\n%s\n# end wxGlade\n' % \
+                         "".join(classes[code_obj.klass].extra_code[::-1])
+            tag = '<%swxGlade replace extracode>' % nonce
+            prev_src.content = prev_src.content.replace(tag, extra_code)
+            
             
             try:
                 # store the new file contents to disk
