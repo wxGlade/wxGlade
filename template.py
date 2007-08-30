@@ -37,17 +37,17 @@ class Template:
                     self.author = saxutils.unescape(
                         desc_xml.getElementsByTagName(
                         'author')[0].firstChild.data)
-                except IndexError: self.author = ''
+                except (IndexError, AttributeError): self.author = ''
                 try:
                     self.description = saxutils.unescape(
                         desc_xml.getElementsByTagName(
                         'description')[0].firstChild.data)
-                except IndexError: self.description = ''
+                except (IndexError, AttributeError): self.description = ''
                 try:
                     self.instructions = saxutils.unescape(
                         desc_xml.getElementsByTagName(
                         'instructions')[0].firstChild.data)
-                except IndexError: self.instructions = ''
+                except (IndexError, AttributeError): self.instructions = ''
             else:
                 self.author = ''
                 self.description=''
