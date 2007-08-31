@@ -93,6 +93,7 @@ def load_code_writers():
                           module
             else:
                 code_writers[writer.language] = writer
+                if hasattr(writer, 'setup'): writer.setup()
                 if use_gui:
                     print _('loaded code generator for %s') % writer.language
 
@@ -369,3 +370,51 @@ def generated_from():
     if app_tree.app.filename:
         return " from " + app_tree.app.filename
     return ""
+
+
+class MessageLogger(object):
+    def __init__(self):
+        self.disabled = False
+        self.lines = []
+        self.logger = None
+
+    def _setup_logger(self):
+        import msgdialog
+        self.logger = msgdialog.MessageDialog(None, -1, "")
+        self.logger.msg_list.InsertColumn(0, "")
+
+    def __call__(self, kind, fmt, *args):
+        if self.disabled:
+            return
+        kind = kind.upper()
+        if use_gui:
+            import wx, misc
+            if args:
+                msg = misc.wxstr(fmt) % tuple([misc.wxstr(a) for a in args])
+            else:
+                msg = misc.wxstr(fmt)
+            self.lines.extend(msg.splitlines())
+##             if kind == 'WARNING':
+##                 wx.LogWarning(msg)
+##             else:
+##                 wx.LogMessage(msg)
+        else:
+            if args: msg = fmt % tuple(args)
+            else: msg = fmt
+            print "%s: %s" % (kind, msg)
+
+    def flush(self):
+        if self.lines and use_gui:
+            if not self.logger: self._setup_logger()
+            self.logger.msg_list.Freeze()
+            self.logger.msg_list.DeleteAllItems()
+            for line in self.lines:
+                self.logger.msg_list.Append([line])
+            self.lines = []            
+            self.logger.msg_list.SetColumnWidth(0, -1)
+            self.logger.msg_list.Thaw()
+            self.logger.ShowModal()
+
+# end of class MessageLogger
+
+message = MessageLogger()

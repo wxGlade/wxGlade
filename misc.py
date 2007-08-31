@@ -478,3 +478,23 @@ def get_xpm_bitmap(path):
     else:
         bmp = wx.Bitmap(path, wx.BITMAP_TYPE_XPM)
     return bmp
+
+
+def get_relative_path(path, for_preview=False):
+    """\
+    Get an absolute path relative to the current output directory (where the
+    code is generated).
+    """
+    import os
+    if os.path.isabs(path):
+        return path
+    p = common.app_tree.app.output_path
+    if for_preview:
+        p = getattr(common.app_tree.app, 'real_output_path', '')
+        p = common._encode_from_xml(common._encode_to_xml(p))
+    d = os.path.dirname(p)
+    if d:
+        path = os.path.join(d, path)
+    else:
+        path = os.path.abspath(path)
+    return path

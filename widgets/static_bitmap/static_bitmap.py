@@ -92,10 +92,12 @@ class EditStaticBitmap(ManagedBase):
             self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
     def load_bitmap(self, empty=[None]):
-        if self.bitmap  and not ( self.bitmap.startswith('var:') or
-                                    self.bitmap.startswith('code:')
-                                ):
-            return wx.Bitmap(os.path.abspath(self.bitmap), wx.BITMAP_TYPE_ANY)
+        if self.bitmap and \
+               not (self.bitmap.startswith('var:') or
+                    self.bitmap.startswith('code:')):
+            path = misc.get_relative_path(self.bitmap)
+            print "LOADING FROM:", path
+            return wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
         else:
             if empty[0] is None:
                 empty[0] = wx.EmptyBitmap(1, 1)
