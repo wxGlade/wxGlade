@@ -531,11 +531,26 @@ def add_object(top_obj, sub_obj):
                     klass.event_handlers.append((id, mycn(event), handler))
 
             # try to see if there's some extra code to add to this class
-            extra_code = getattr(builder, 'extracode',
-                                 sub_obj.properties.get('extracode', ""))
-            if extra_code:
-                extra_code = re.sub(r'\\n', '\n', extra_code)
-                klass.extra_code.append(extra_code)
+            if not sub_obj.preview:
+                extra_code = getattr(builder, 'extracode',
+                                     sub_obj.properties.get('extracode', ""))
+                if extra_code:
+                    extra_code = re.sub(r'\\n', '\n', extra_code)
+                    klass.extra_code.append(extra_code)
+                    # if we are not overwriting existing source, warn the user
+                    # about the presence of extra code
+                    if multiple_files:
+                        warn = False
+                    else:
+                        warn = previous_source is not None
+                    if warn:
+                        common.message(
+                            'WARNING',
+                            '%s has extra code, but you are '
+                            'not overwriting existing sources: please check '
+                            'that the resulting code is correct!' % \
+                            sub_obj.name)
+
 
         else: # the object is a sizer
             # ALB 2004-09-17: workaround (hack) for static box sizers...
@@ -634,17 +649,32 @@ def add_class(code_obj):
         classes[code_obj.klass] = ClassLines()
 
     # try to see if there's some extra code to add to this class
-    extra_code = getattr(builder, 'extracode',
-                         code_obj.properties.get('extracode', ""))
-    if extra_code:
-        extra_code = re.sub(r'\\n', '\n', extra_code)
-        classes[code_obj.klass].extra_code.append(extra_code)
-    if not multiple_files and extra_code:
-        _current_extra_code.append("".join(
-            classes[code_obj.klass].extra_code[::-1]))
+    if not code_obj.preview:
+        extra_code = getattr(builder, 'extracode',
+                             code_obj.properties.get('extracode', ""))
+        if extra_code:
+            extra_code = re.sub(r'\\n', '\n', extra_code)
+            classes[code_obj.klass].extra_code.append(extra_code)
+            if not is_new:
+                common.message('WARNING', '%s has extra code, but you are '
+                               'not overwriting existing sources: please check '
+                               'that the resulting code is correct!' % \
+                               code_obj.name)
 
+        if not multiple_files and extra_code:
+            _current_extra_code.append("".join(
+                classes[code_obj.klass].extra_code[::-1]))
+
+    # ALB 2007-08-31 custom base classes support
+    custom_base = getattr(code_obj, 'custom_base',
+                          code_obj.properties.get('custom_base', None))
+    if code_obj.preview or (custom_base and not custom_base.strip()):
+        custom_base = None
+        
     if is_new:
         base = mycn(code_obj.base)
+        if custom_base is not None:
+            base = ", ".join([b.strip() for b in custom_base.split(',')])
         if code_obj.preview and code_obj.klass == base:
             import random
             klass = code_obj.klass + ('_%d' % random.randrange(10**8, 10**9))
@@ -652,6 +682,13 @@ def add_class(code_obj):
             klass = code_obj.klass
         write('class %s(%s):\n' % (without_package(klass), base))
         write(tabs(1) + 'def __init__(self, *args, **kwds):\n')
+    elif custom_base is not None:
+        # custom base classes set, but "overwrite existing sources" not
+        # set. Issue a warning about this
+        common.message('WARNING', '%s has custom base classes, but you are '
+                       'not overwriting existing sources: please check that '
+                       'the resulting code is correct!' % code_obj.name)
+                       
     # __init__ begin tag
     write(indentation + '# begin wxGlade: %s.__init__\n' % \
           without_package(code_obj.klass))
@@ -659,8 +696,16 @@ def add_class(code_obj):
     style = prop.get("style", None)
     if style: write(indentation + 'kwds["style"] = %s\n' % mycn_f(style))
     # __init__
-    write(indentation + '%s.__init__(self, *args, **kwds)\n' % \
-          mycn(code_obj.base))
+    if custom_base is not None:
+        bases = [b.strip() for b in custom_base.split(',')]
+        for i, b in enumerate(bases):
+            if not i:
+                write(indentation + '%s.__init__(self, *args, **kwds)\n' % b)
+            else:
+                write(indentation + '%s.__init__(self)\n' % b)
+    else:
+        write(indentation + '%s.__init__(self, *args, **kwds)\n' % \
+              mycn(code_obj.base))
     tab = indentation 
     init_lines = classes[code_obj.klass].init
     # --- patch 2002-08-26 ---------------------------------------------------
@@ -840,10 +885,21 @@ def add_class(code_obj):
             prev_src.content = prev_src.content.replace(tag, "".join(deps))
 
             # insert the extra code of this class
+            extra_code = "".join(classes[code_obj.klass].extra_code[::-1])
+            # if there's extra code but we are not overwriting existing
+            # sources, warn the user
+            common.message('WARNING', '%s (or one of its chilren) has '
+                           'extra code classes, but you are '
+                           'not overwriting existing sources: please check '
+                           'that the resulting code is correct!' % \
+                           code_obj.name)
+            
             extra_code = '# begin wxGlade: extracode\n%s\n# end wxGlade\n' % \
-                         "".join(classes[code_obj.klass].extra_code[::-1])
+                         extra_code
+##                          "".join(classes[code_obj.klass].extra_code[::-1])
             tag = '<%swxGlade replace extracode>' % nonce
             prev_src.content = prev_src.content.replace(tag, extra_code)
+            
             
             
             try:
