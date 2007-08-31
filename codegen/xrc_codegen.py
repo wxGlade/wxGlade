@@ -195,6 +195,10 @@ class DefaultXrcObject(XrcObject):
         if 'extracode' in self.properties:
             write(self.properties['extracode'].replace('\\n', '\n'))
             del self.properties['extracode']
+
+        # custom base classes are ignored for XRC...
+        if 'custom_base' in self.properties:
+            del self.properties['custom_base']
             
         for name, val in self.properties.iteritems():
             self.write_property(str(name), val, out_file, ntabs+1)

@@ -13,6 +13,9 @@ from edit_windows import ManagedBase, TopLevelBase
 
 
 class PanelBase(object):
+
+    _custom_base_classes = True
+
     def __init__(self, style=wx.TAB_TRAVERSAL):
         """\
         Class to handle wxPanel objects

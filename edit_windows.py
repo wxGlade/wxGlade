@@ -61,6 +61,23 @@ class EditBase(EventsMixin):
                                       "depends on the kind (i.e. language) " \
                                       "of output. See the docs for " \
                                       "more details.")
+
+        # ALB 2007-08-31: custom base classes support
+        if getattr(self, '_custom_base_classes', False):
+            self.custom_base = ""
+            def get_custom_base(): return self.custom_base
+            def set_custom_base(val): self.custom_base = val
+            self.access_functions['custom_base'] = (get_custom_base,
+                                                    set_custom_base)
+            p = self.properties['custom_base'] = TextProperty(
+                self, 'custom_base', can_disable=True, enabled=False)
+            p.label = 'Base class(es)'
+            p.tooltip = """\
+A comma-separated list of custom base classes. The first will be invoked \
+with the same parameters as this class, while for the others the default \
+constructor will be used. You should probably not use this if \
+"overwrite existing sources" is not set."""
+            
         self.notebook = None
         self.property_window = property_window
 
@@ -136,6 +153,8 @@ class EditBase(EventsMixin):
 
         self.name_prop.display(panel)
         self.klass_prop.display(panel)
+        if getattr(self, '_custom_base_classes', False):
+            self.properties['custom_base'].display(panel)
 
     def __getitem__(self, value):
         return self.access_functions[value]
@@ -493,6 +512,8 @@ class WindowBase(EditBase):
         sizer_tmp = wx.BoxSizer(wx.VERTICAL)
         sizer_tmp.Add(self.name_prop.panel, 0, wx.EXPAND)
         sizer_tmp.Add(self.klass_prop.panel, 0, wx.EXPAND)
+        if getattr(self, '_custom_base_classes', False):
+            sizer_tmp.Add(prop['custom_base'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(prop['id'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(prop['size'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(prop['background'].panel, 0, wx.EXPAND)
@@ -1013,6 +1034,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
     Base class for every non-managed window (i.e. Frames and Dialogs).
     """
     _is_toplevel = True
+    _custom_base_classes = True
     
     def __init__(self, name, klass, parent, id, property_window, show=True,
                  has_title=True, title=None):
