@@ -14,7 +14,7 @@ return an instance of XrcObject
 import common, sys
 import cStringIO
 from xml_parse import XmlParsingError
-from xml.sax.saxutils import escape, quoteattr
+from xml.sax.saxutils import escape, quoteattr, unescape
 
 language = "XRC"
 writer = sys.modules[__name__]
@@ -190,6 +190,11 @@ class DefaultXrcObject(XrcObject):
             if val:
                 self.properties['enabled'] = '0'
             del self.properties['disabled']
+
+        # ALB 2007-08-31 extracode property
+        if 'extracode' in self.properties:
+            write(self.properties['extracode'].replace('\\n', '\n'))
+            del self.properties['extracode']
             
         for name, val in self.properties.iteritems():
             self.write_property(str(name), val, out_file, ntabs+1)
