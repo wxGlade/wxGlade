@@ -752,8 +752,9 @@ def add_class(code_obj):
                                              '__init__')
         if prev_src.content.find(tag) < 0:
             # no __init__ tag found, issue a warning and do nothing
-            print >> sys.stderr, "WARNING: wxGlade __init__ block not found," \
-                  " __init__ code NOT generated"
+            common.message("WARNING",
+                           "wxGlade __init__ block not found for %s," \
+                           " __init__ code NOT generated" % code_obj.name)
         else:
             prev_src.content = prev_src.content.replace(tag, "".join(buffer))
         buffer = []
@@ -781,8 +782,10 @@ def add_class(code_obj):
                                              '__set_properties')
         if prev_src.content.find(tag) < 0:
             # no __set_properties tag found, issue a warning and do nothing
-            print >> sys.stderr, "WARNING: wxGlade __set_properties block " \
-                  "not found, __set_properties code NOT generated"
+            common.message("WARNING", "wxGlade __set_properties block " \
+                           "not found for %s, "
+                           "__set_properties code NOT generated" %
+                           code_obj.name)
         else:
             prev_src.content = prev_src.content.replace(tag, "".join(buffer))
         buffer = []
@@ -818,8 +821,9 @@ def add_class(code_obj):
                                              '__do_layout')
         if prev_src.content.find(tag) < 0:
             # no __do_layout tag found, issue a warning and do nothing
-            print >> sys.stderr, "WARNING: wxGlade __do_layout block " \
-                  "not found, __do_layout code NOT generated"
+            common.message("WARNING", "wxGlade __do_layout block " \
+                           "not found for %s, __do_layout code NOT generated" %
+                           code_obj.name)
         else:
             prev_src.content = prev_src.content.replace(tag, "".join(buffer))
 
@@ -840,8 +844,9 @@ def add_class(code_obj):
         tag = '<%swxGlade event_handlers %s>' % (nonce, code_obj.klass)
         if prev_src.content.find(tag) < 0:
             # no event_handlers tag found, issue a warning and do nothing
-            print >> sys.stderr, "WARNING: wxGlade event_handlers block " \
-                  "not found, event_handlers code NOT generated"
+            common.message("WARNING", "wxGlade event_handlers block " \
+                           "not found for %s,"
+                           " event_handlers code NOT generated" % code_obj.name)
         else:
             prev_src.content = prev_src.content.replace(tag, "".join(buf))
         del buf
