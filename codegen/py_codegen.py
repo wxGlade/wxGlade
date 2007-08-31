@@ -194,7 +194,8 @@ class SourceFileContent:
                     inside_triple_quote = False
             
             result = class_decl.match(line)
-            if not inside_triple_quote and result is not None:
+            if not inside_triple_quote and not inside_block and \
+                   result is not None:
 ##                 print ">> class %r" % result.group(1)
                 if class_name is None:
                     # this is the first class declared in the file: insert the
