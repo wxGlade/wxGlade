@@ -643,7 +643,8 @@ class wxGladeFrame(wx.Frame):
             common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
-            wx.MessageBox(_("Error loading file %s: %s") % (infilename, msg),
+            wx.MessageBox(_("Error loading file %s: %s") % \
+                          (misc.wxstr(infilename), misc.wxstr(msg)),
                           _("Error"), wx.OK|wx.CENTRE|wx.ICON_ERROR)
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
@@ -662,7 +663,8 @@ class wxGladeFrame(wx.Frame):
                             "For more details, look at the full traceback "
                             "on the console.\n"
                             "If you think this is a wxGlade bug,"
-                            " please report it.") % (infilename, msg),
+                            " please report it.") % \
+                          (misc.wxstr(infilename), misc.wxstr(msg)),
                           _("Error"),
                           wx.OK|wx.CENTRE|wx.ICON_ERROR)
             # reset the auto-expansion of nodes
@@ -691,14 +693,14 @@ class wxGladeFrame(wx.Frame):
         
         if hasattr(self, 'file_history') and infilename is not None and \
                add_to_history and (not common.app_tree.app.is_template):
-            self.file_history.AddFileToHistory(infilename)
+            self.file_history.AddFileToHistory(misc.wxstr(infilename))
 
         # ALB 2004-10-15
         if config.preferences.autosave and self.autosave_timer is not None:
             self.autosave_timer.Start()
 
         self.user_message(_("Loaded %s (%.2f seconds)") % \
-                          (common.app_tree.app.filename, end-start))
+                          (misc.wxstr(common.app_tree.app.filename), end-start))
 
         return True
 
@@ -734,7 +736,8 @@ class wxGladeFrame(wx.Frame):
                                 "For more details, look at the full traceback "
                                 "on the console.\nIf you think this is a "
                                 "wxGlade bug,"
-                                " please report it.") % (fn, msg), _("Error"),
+                                " please report it.") % \
+                              (misc.wxstr(fn), misc.wxstr(msg)), _("Error"),
                               wx.OK|wx.CENTRE|wx.ICON_ERROR)
             else:
                 common.app_tree.app.saved = True
@@ -743,7 +746,8 @@ class wxGladeFrame(wx.Frame):
                 if config.preferences.autosave and \
                        self.autosave_timer is not None:
                     self.autosave_timer.Start()
-                self.user_message(_("Saved %s") % common.app_tree.app.filename)
+                self.user_message(_("Saved %s") % \
+                                  misc.wxstr(common.app_tree.app.filename))
 
     def save_app_as(self, event):
         """\

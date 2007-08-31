@@ -393,20 +393,23 @@ def streq(s1, s2):
         return s1 == s2
 
 
-def wxstr(s):
+def wxstr(s, encoding=None):
     """\
     Converts the object s to str or unicode, according to what wxPython expects
     """
-    if common.app_tree is None:
-        return str(s)
+    if encoding is None:
+        if common.app_tree is None:
+            return str(s)
+        else:
+            encoding = common.app_tree.app.encoding
     if wx.USE_UNICODE:
         if type(s) != type(u''):
-            return unicode(str(s), common.app_tree.app.encoding)
+            return unicode(str(s), encoding)
         else:
             return s
     else:
         if type(s) == type(u''):
-            return s.encode(common.app_tree.app.encoding)
+            return s.encode(encoding)
         else:
             return str(s)
 

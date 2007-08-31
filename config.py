@@ -244,7 +244,8 @@ def edit_preferences():
     dialog = wxGladePreferences(preferences)
     if dialog.ShowModal() == wx.ID_OK:
         wx.MessageBox(_('Changes will take effect after wxGlade is restarted'),
-                     _('Preferences saved'), wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
+                     _('Preferences saved'),
+                      wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
         dialog.set_preferences()
     dialog.Destroy()
 
@@ -266,9 +267,11 @@ def save_preferences():
             count = fh.GetCount()
         else:
             count = fh.GetNoHistoryFiles()
-        filenames = [ fh.GetHistoryFile(i) for i in
-                      range(min(preferences.number_history, count)) ]
+        encoding = 'utf-8'
+        filenames = [common._encode_to_xml(fh.GetHistoryFile(i), encoding)
+                     for i in range(min(preferences.number_history, count))]
         outfile = open(os.path.join(path, 'file_history.txt'), 'w')
+        print >> outfile, "# -*- coding: %s -*-" % encoding
         for filename in filenames:
             print >> outfile, filename
         outfile.close()
@@ -292,7 +295,17 @@ def load_history():
     try:
         history = open(os.path.join(path, 'file_history.txt'))
         l = history.readlines()
+        if l and l[0].startswith('# -*- coding:'):
+            try:
+                encoding = 'utf-8' 
+                #l = [common._encode_from_xml(e, encoding) for e in l[1:]]
+                l = [e.decode(encoding) for e in l[1:]]
+            except Exception, e:
+                print "ERR:", e
+                l = l[1:]
         history.close()
+        if common.use_gui:
+            l = [misc.wxstr(e, 'utf-8') for e in l]
         return l
     except IOError:
         # don't consider this an error

@@ -208,12 +208,11 @@ class Tree:
                       'language=%s top_window=%s encoding=%s ' \
                       'use_gettext=%s overwrite=%s '
                       'use_new_namespace=%s for_version=%s is_template=%s>\n' \
-                      % tuple(map(quoteattr,
-                                  [outpath, name, klass, option, language,
-                                   top_window, encoding, use_gettext,
-                                   overwrite, use_new_namespace, for_version,
-                                   is_template]))
-                      )
+                      % tuple([quoteattr(common._encode_to_xml(i)) for i in 
+                               (outpath, name, klass, option, language,
+                                top_window, encoding, use_gettext,
+                                overwrite, use_new_namespace, for_version,
+                                is_template)]))
         class_names = set()
         if self.root.children is not None:
             for c in self.root.children:
