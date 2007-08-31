@@ -533,9 +533,14 @@ class Application(object):
         if language is None: language = self.language
         if widget is not None:
             cname = common.class_names[widget.__class__.__name__]
-            if language != 'XRC' and \
-                   cname not in common.code_writers[language].obj_builders:
-                # XRC can handle everything...
+            if language != 'XRC':
+                ok = cname in common.code_writers[language].obj_builders
+            else:
+                # xrc is special...
+                xrcgen = common.code_writers['XRC']
+                ok = xrcgen.obj_builders.get(cname, None) is not \
+                     xrcgen.NotImplementedXrcObject
+            if not ok:
                 common.message('WARNING',
                                'No %s code generator for %s (of type %s)'
                                ' available',
