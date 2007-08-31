@@ -30,7 +30,7 @@ class CodeProperty(widget_properties.TextProperty):
         val = self.get_value()
         val = val.replace('\\n', '\n')
         label = widget_properties.wxGenStaticText(parent, -1,
-                                                  'Extra code for this class')
+                                                  'Extra code for this widget')
         self._enabler = wx.CheckBox(parent, self.id+1, '')
         description = wx.StaticText(parent, -1,
                                     """\
