@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+
+<!--
+
+Process this file with an XSLT processor: `xsltproc \
+-''-nonet /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/\
+manpages/docbook.xsl manpage.dbk'.  A manual page
+<package>.<section> will be generated.  You may view the
+manual page with: nroff -man <package>.<section> | less'.  A
+typical entry in a Makefile or Makefile.am is:
+
+DB2MAN=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/\
+manpages/docbook.xsl
+XP=xsltproc -''-nonet
+
+manpage.1: manpage.dbk
+        $(XP) $(DB2MAN) $<
+    
+The xsltproc binary is found in the xsltproc package.  The
+XSL files are in docbook-xsl.  Please remember that if you
+create the nroff version in one of the debian/rules file
+targets (such as build), you will need to include xsltproc
+and docbook-xsl in your Build-Depends control field.
+
+-->
+
+  <!ENTITY dhfirstname "<firstname>Georges</firstname>">
+  <!ENTITY dhsurname   "<surname>Khaznadar</surname>">
+  <!ENTITY dhdate      "<date>octobre 25, 2004</date>">
+  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
+  <!ENTITY dhemail     "<email>georgesk@ofset.org</email>">
+  <!ENTITY dhusername  "Georges Khaznadar">
+  <!ENTITY dhucpackage "<refentrytitle>WXGLADE</refentrytitle>">
+  <!ENTITY dhpackage   "wxglade">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]>
+
+<refentry>
+  <refentryinfo>
+    <address>
+      &dhemail;
+    </address>
+    <author>
+      &dhfirstname;
+      &dhsurname;
+    </author>
+    <copyright>
+      <year>2003</year>
+      <holder>&dhusername;</holder>
+    </copyright>
+    &dhdate;
+  </refentryinfo>
+  <refmeta>
+    &dhucpackage;
+
+    &dhsection;
+  </refmeta>
+  <refnamediv>
+    <refname>&dhpackage;</refname>
+
+    <refpurpose>python program to build user interfaces based on the wxWidgets toolset.</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <arg><option>-g <replaceable>LANG</replaceable></option></arg>
+      <arg><option>--generate-cod <replaceable>LANG</replaceable></option></arg>
+      <arg><option>-o <replaceable>DESTINATION</replaceable></option></arg>
+      <arg><option>--output <replaceable>DESTINATION</replaceable></option></arg>
+      <arg><replaceable>FILENAME.wxg</replaceable></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>DESCRIPTION</title>
+
+    <para>
+      <command>&dhpackage;</command> wxGlade is a GUI designer written in
+      Python with the popular GUI toolkit wxPython, that helps you create
+      wxWidgets/wxPython user interfaces. At the moment it can generate Python,
+      C++ and XRC (wxWidgets' XML resources) code.
+    </para>
+
+  </refsect1>
+  <refsect1>
+    <title>OPTIONS</title>
+
+    <para>These programs follow the usual &gnu; command line syntax,
+      with long options starting with two dashes (`-').  A summary of
+      options is included below.  For a complete description, see the
+      <application>Info</application> files.</para>
+
+    <variablelist>
+      <varlistentry>
+        <term><option>-g</option> or
+          <option>--generate-cod</option> <replaceable>LANG</replaceable>
+        </term>
+        <listitem>
+          <para>If you only want to generate the code without starting the 
+	    GUI, use the -g or --generate-code option with the language as 
+	    argument
+	  </para>
+	  <para>
+	    Possible values for LANG are "python", "XRC", "perl" or "C++".
+	  </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-o</option> or
+	  <option>--output</option> <replaceable>DESTINATION</replaceable>
+        </term>
+        <listitem>
+          <para>
+	    You can specify the destination of the generated code with -o
+	    or --output option.
+	  </para>
+	  <para>
+	    The DESTINATION argument can be a file or a directory. It is a file
+	    when the FILENAME.wxg generates single-file source code. It is a
+	    directory when the FILENAME.wxg generates multiple-file source
+	    code.
+	  </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+  <refsect1>
+    <title>AUTHOR</title>
+
+    <para>This manual page was written by &dhusername; &dhemail; for
+      the &debian; system (but may be used by others).  Permission is
+      granted to copy, distribute and/or modify this document under
+      the terms of the &gnu; General Public License, Version 2 any 
+	  later version published by the Free Software Foundation.
+    </para>
+	<para>
+	  On Debian systems, the complete text of the GNU General Public
+	  License can be found in /usr/share/common-licenses/GPL.
+	</para>
+
+  </refsect1>
+</refentry>
+
