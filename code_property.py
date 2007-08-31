@@ -41,12 +41,13 @@ Please note that you should use this ability only if you have the \
 
 NOTE: at the moment, this property is supported only by the following code \
 generators:
-    Python""")
+    Python C++ XRC""")
         style = wx.TE_MULTILINE|wx.HSCROLL
         self.text = wx.TextCtrl(parent, self.id, val, style=style, size=(1, -1))
         font = wx.Font(11, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL,
                        wx.FONTWEIGHT_NORMAL)
         self.text.SetFont(font)
+
         if hasattr(self, 'tooltip'):
             label.SetToolTip(wx.ToolTip(self.tooltip))
         wx.EVT_CHECKBOX(self._enabler, self.id+1,
