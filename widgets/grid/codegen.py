@@ -236,7 +236,24 @@ class CppCodeGenerator:
         return cppgen.get_events_with_type(obj, 'wxGridEvent')
 
 # end of class CppCodeGenerator
+
+
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+    class GridXrcObject(xrcgen.DefaultXrcObject):
+        unsupported = set(['column', 'create_grid', 'rows_number',
+                           'row_label_size', 'col_label_size',
+                           'enable_editing', 'enable_grid_lines',
+                           'enable_col_resize', 'enable_row_resize',
+                           'enable_grid_resize', 'lines_color',
+                           'label_bg_color', 'selection_mode'])
         
+        def write_property(self, name, val, outfile, tabs):
+            if name not in self.unsupported:
+                xrcgen.DefaultXrcObject.write_property(self, name, val,
+                                                       outfile, tabs)
+    return GridXrcObject(obj)
+
 
 def initialize():
     common.class_names['EditGrid'] = 'wxGrid'
@@ -246,7 +263,7 @@ def initialize():
         pygen.add_widget_handler('wxGrid', PythonCodeGenerator())
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
-        xrcgen.add_widget_handler('wxGrid', xrcgen.NotImplementedXrcObject)
+        xrcgen.add_widget_handler('wxGrid', xrc_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
         cppgen.add_property_handler('columns', ColsCodeHandler, 'wxGrid')
