@@ -889,20 +889,19 @@ def add_class(code_obj):
             extra_code = "".join(classes[code_obj.klass].extra_code[::-1])
             # if there's extra code but we are not overwriting existing
             # sources, warn the user
-            common.message('WARNING', '%s (or one of its chilren) has '
-                           'extra code classes, but you are '
-                           'not overwriting existing sources: please check '
-                           'that the resulting code is correct!' % \
-                           code_obj.name)
+            if extra_code:
+                common.message('WARNING', '%s (or one of its chilren) has '
+                               'extra code classes, but you are '
+                               'not overwriting existing sources: please check '
+                               'that the resulting code is correct!' % \
+                               code_obj.name)
             
             extra_code = '# begin wxGlade: extracode\n%s\n# end wxGlade\n' % \
                          extra_code
 ##                          "".join(classes[code_obj.klass].extra_code[::-1])
             tag = '<%swxGlade replace extracode>' % nonce
             prev_src.content = prev_src.content.replace(tag, extra_code)
-            
-            
-            
+
             try:
                 # store the new file contents to disk
                 common.save_file(filename, prev_src.content, 'codegen')
@@ -924,6 +923,13 @@ def add_class(code_obj):
         for module in classes[code_obj.klass].dependencies:
             write(module)
         write('# end wxGlade\n')
+        write('\n')
+
+        # insert the extra code of this class
+        extra_code = "".join(classes[code_obj.klass].extra_code[::-1])
+        extra_code = '# begin wxGlade: extracode\n%s\n# end wxGlade\n' % \
+                     extra_code
+        write(extra_code)
         write('\n')
         
         # write the class body
