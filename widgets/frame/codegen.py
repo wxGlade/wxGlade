@@ -57,6 +57,9 @@ class PythonFrameCodeGenerator:
                            icon[5:].strip())
                 out.append('self.SetIcon(_icon)\n')
             else:
+                if frame.preview:
+                    import misc
+                    icon = misc.get_relative_path(icon, True)
                 out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
                 out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
                             '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') % \

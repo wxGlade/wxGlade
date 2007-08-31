@@ -437,7 +437,8 @@ class ToolsProperty(Property):
         edit_btn_id = wx.NewId()
         self.edit_btn = wx.Button(self.panel, edit_btn_id, "Edit tools...")
         sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 4)
+        sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM,
+                  4)
         self.panel.SetAutoLayout(1)
         self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
@@ -678,21 +679,21 @@ class EditToolBar(EditBase, PreviewMixin):
             else:
                 if tool.bitmap1:
                     bmp1 = None
-                    if not ( tool.bitmap1.startswith('var:') or
-                              tool.bitmap1.startswith('code:')
-                            ):
-                        bmp1 = wx.Bitmap(misc.wxstr(tool.bitmap1),
-                                    wx.BITMAP_TYPE_ANY)
+                    if not (tool.bitmap1.startswith('var:') or
+                            tool.bitmap1.startswith('code:')):
+                        bmp1 = wx.Bitmap(
+                            misc.get_relative_path(misc.wxstr(tool.bitmap1)),
+                            wx.BITMAP_TYPE_ANY)
                     if not bmp1 or not bmp1.Ok(): bmp1 = wx.EmptyBitmap(1, 1)
                 else:
                     bmp1 = wx.NullBitmap
                 if tool.bitmap2:
                     bmp2 = None
-                    if not ( tool.bitmap2.startswith('var:') or
-                              tool.bitmap2.startswith('code:')
-                            ):
-                        bmp2 = wx.Bitmap(misc.wxstr(tool.bitmap2),
-                                    wx.BITMAP_TYPE_ANY)
+                    if not (tool.bitmap2.startswith('var:') or
+                            tool.bitmap2.startswith('code:')):
+                        bmp2 = wx.Bitmap(
+                            misc.get_relative_path(misc.wxstr(tool.bitmap2)),
+                            wx.BITMAP_TYPE_ANY)
                     if not bmp2 or not bmp2.Ok(): bmp2 = wx.EmptyBitmap(1, 1)
                 else:
                     bmp2 = wx.NullBitmap

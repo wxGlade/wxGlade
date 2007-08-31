@@ -233,7 +233,7 @@ class Application(object):
             self.encoding = value
 
     def set_language(self, value):
-        language = self.language = self.codewriters_prop.get_str_value()
+        language = self.codewriters_prop.get_str_value()
         ext = getattr(common.code_writers[language], 'default_extensions', [])
         wildcard = []
         for e in ext:
@@ -241,6 +241,10 @@ class Application(object):
                                                       e, e))
         wildcard.append('All files|*')
         self.outpath_prop.dialog.set_wildcard('|'.join(wildcard))
+        # check that the new language supports all the widgets in the tree
+        if self.language != language:
+            self.language = language
+            self.check_codegen()
 
     def get_language(self):
         return self.language #codewriters_prop.get_str_value()
@@ -439,7 +443,7 @@ class Application(object):
         widget.klass = '_%d_%s' % \
                        (random.randrange(10**8, 10**9), widget.klass)
             
-        real_path = self.output_path
+        self.real_output_path = self.output_path
         self.output_path = out_name[0]
         real_codegen_opt = self.codegen_opt
         real_language = self.language
@@ -501,7 +505,8 @@ class Application(object):
                          wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)#, self.notebook)
         # restore app state
         widget.klass = widget_class_name
-        self.output_path = real_path
+        self.output_path = self.real_output_path
+        del self.real_output_path
         self.codegen_opt = real_codegen_opt
         self.language = real_language
         self.use_gettext = real_use_gettext
@@ -518,5 +523,38 @@ class Application(object):
             common.code_writers['python'].use_new_namespace = not bool(int(val))
         except:
             pass
+
+    def check_codegen(self, widget=None, language=None):
+        """\
+        Checks whether widget has a suitable code generator for the given
+        language (default: the current active language). If not, the user is
+        informed with a message.
+        """
+        if language is None: language = self.language
+        if widget is not None:
+            cname = common.class_names[widget.__class__.__name__]
+            if language != 'XRC':
+                ok = cname in common.code_writers[language].obj_builders
+            else:
+                # xrc is special...
+                xrcgen = common.code_writers['XRC']
+                ok = xrcgen.obj_builders.get(cname, None) is not \
+                     xrcgen.NotImplementedXrcObject
+            if not ok:
+                common.message('WARNING',
+                               'No %s code generator for %s (of type %s)'
+                               ' available',
+                               language.capitalize(), widget.name, cname)
+        else:
+            # in this case, we check all the widgets in the tree
+            def check_rec(node):
+                if node.widget is not None:
+                    self.check_codegen(node.widget)
+                if node.children:
+                    for c in node.children:
+                        check_rec(c)
+            if common.app_tree.root.children:
+                for c in common.app_tree.root.children:
+                    check_rec(c)
 
 # end of class Application

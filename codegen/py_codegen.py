@@ -61,6 +61,8 @@ multiple_files = False
 
 # if not None, it is the single source file to write into
 output_file = None
+output_file_name = None
+
 # if not None, it is the directory inside which the output files are saved
 out_dir = None
 
@@ -113,7 +115,9 @@ class ClassLines:
                           # been generated
 
         # ALB 2004-12-05
-        self.event_handlers = [] # lines to bind events 
+        self.event_handlers = [] # lines to bind events
+
+        self.extra_code = [] # extra code to output before this class
 
 # end of class ClassLines
 
@@ -190,7 +194,8 @@ class SourceFileContent:
                     inside_triple_quote = False
             
             result = class_decl.match(line)
-            if not inside_triple_quote and result is not None:
+            if not inside_triple_quote and not inside_block and \
+                   result is not None:
 ##                 print ">> class %r" % result.group(1)
                 if class_name is None:
                     # this is the first class declared in the file: insert the
@@ -246,6 +251,7 @@ class SourceFileContent:
             else:
                 # ignore all the lines inside a wxGlade block
                 if block_end.match(line) is not None:
+##                     print 'end block'
                     inside_block = False
         if not new_classes_inserted:
             # if we are here, the previous ``version'' of the file did not
@@ -266,6 +272,8 @@ class SourceFileContent:
         return line.strip().startswith('# end of class ')
 
     def add_package(self, class_name):
+        if not multiple_files:
+            return class_name
         name = self.name
         if out_dir is not None:
             name = name.replace(out_dir, '')
@@ -329,7 +337,7 @@ def initialize(app_attrs):
     multi_files = app_attrs['option']
 
     global classes, header_lines, multiple_files, previous_source, nonce, \
-           _current_extra_modules, _use_gettext, _overwrite
+           _current_extra_modules, _use_gettext, _overwrite, _current_extra_code
     import time, random
 
     try: _use_gettext = int(app_attrs['use_gettext'])
@@ -370,6 +378,10 @@ def initialize(app_attrs):
                     use_new_namespace and 'import wx\n' or
                     'from wxPython.wx import *\n']
 
+    # extra lines to generate (see the 'extracode' property of top-level
+    # widgets)
+    _current_extra_code = []
+
     # add coding (PEP 263)
     if _encoding:
         header_lines.insert(0, "# -*- coding: %s -*-\n" % _encoding.lower())
@@ -391,6 +403,7 @@ def initialize(app_attrs):
             for line in header_lines:
                 output_file.write(line)
             output_file.write('<%swxGlade extra_modules>\n' % nonce)
+            output_file.write('\n<%swxGlade replace extracode>\n\n' % nonce)
             output_file.write('\n')
     else:
         previous_source = None
@@ -416,10 +429,17 @@ def finalize():
         tag = '<%swxGlade extra_modules>\n' % nonce
         code = "".join(_current_extra_modules.keys())
         previous_source.content = previous_source.content.replace(tag, code)
+        # extra code (see the 'extracode' property of top-level widgets)
+        tag = '<%swxGlade replace extracode>' % nonce
+        code = "\n".join(['# begin wxGlade: extracode'] + _current_extra_code +
+                         ['# end wxGlade\n'])
+        previous_source.content = previous_source.content.replace(tag, code)
+        
         # now remove all the remaining <123415wxGlade ...> tags from the
         # source: this may happen if we're not generating multiple files,
         # and one of the container class names is changed
-        tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +\w+>)' % nonce,
+        tags = re.findall('(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % \
+                          nonce,
                           previous_source.content)
         for tag in tags:
             indent = previous_source.spaces.get(tag[1], tabs(2))
@@ -442,6 +462,12 @@ def finalize():
         em = "".join(_current_extra_modules.keys())
         content = output_file.getvalue().replace(
             '<%swxGlade extra_modules>\n' % nonce, em)
+        # extra code (see the 'extracode' property of top-level widgets)
+        tag = '<%swxGlade replace extracode>' % nonce
+        code = "\n".join(['# begin wxGlade: extracode'] + _current_extra_code +
+                         ['# end wxGlade\n'])
+        content = content.replace(tag, code)
+        
         output_file.close()
         try:
             common.save_file(output_file_name, content, 'codegen')
@@ -476,6 +502,9 @@ def add_object(top_obj, sub_obj):
         klass.init.extend(['\n', '# code for %s (type %s) not generated: '
                            'no suitable writer found' % (sub_obj.name,
                                                          sub_obj.klass),'\n'])
+        common.message('WARNING', 'code for %s (type %s) not generated: '
+                       'no suitable writer found',
+                       sub_obj.name, sub_obj.klass)
     else:
         try:
             init, props, layout = builder.get_code(sub_obj)
@@ -501,6 +530,28 @@ def add_object(top_obj, sub_obj):
                 if id == '-1': id = '#self.%s' % sub_obj.name
                 for event, handler in sub_obj.properties['events'].iteritems():
                     klass.event_handlers.append((id, mycn(event), handler))
+
+            # try to see if there's some extra code to add to this class
+            if not sub_obj.preview:
+                extra_code = getattr(builder, 'extracode',
+                                     sub_obj.properties.get('extracode', ""))
+                if extra_code:
+                    extra_code = re.sub(r'\\n', '\n', extra_code)
+                    klass.extra_code.append(extra_code)
+                    # if we are not overwriting existing source, warn the user
+                    # about the presence of extra code
+                    if multiple_files:
+                        warn = False
+                    else:
+                        warn = previous_source is not None
+                    if warn:
+                        common.message(
+                            'WARNING',
+                            '%s has extra code, but you are '
+                            'not overwriting existing sources: please check '
+                            'that the resulting code is correct!' % \
+                            sub_obj.name)
+
 
         else: # the object is a sizer
             # ALB 2004-09-17: workaround (hack) for static box sizers...
@@ -598,8 +649,33 @@ def add_class(code_obj):
         # if the class body was empty, create an empty ClassLines
         classes[code_obj.klass] = ClassLines()
 
+    # try to see if there's some extra code to add to this class
+    if not code_obj.preview:
+        extra_code = getattr(builder, 'extracode',
+                             code_obj.properties.get('extracode', ""))
+        if extra_code:
+            extra_code = re.sub(r'\\n', '\n', extra_code)
+            classes[code_obj.klass].extra_code.append(extra_code)
+            if not is_new:
+                common.message('WARNING', '%s has extra code, but you are '
+                               'not overwriting existing sources: please check '
+                               'that the resulting code is correct!' % \
+                               code_obj.name)
+
+        if not multiple_files and extra_code:
+            _current_extra_code.append("".join(
+                classes[code_obj.klass].extra_code[::-1]))
+
+    # ALB 2007-08-31 custom base classes support
+    custom_base = getattr(code_obj, 'custom_base',
+                          code_obj.properties.get('custom_base', None))
+    if code_obj.preview or (custom_base and not custom_base.strip()):
+        custom_base = None
+        
     if is_new:
         base = mycn(code_obj.base)
+        if custom_base is not None:
+            base = ", ".join([b.strip() for b in custom_base.split(',')])
         if code_obj.preview and code_obj.klass == base:
             import random
             klass = code_obj.klass + ('_%d' % random.randrange(10**8, 10**9))
@@ -607,6 +683,13 @@ def add_class(code_obj):
             klass = code_obj.klass
         write('class %s(%s):\n' % (without_package(klass), base))
         write(tabs(1) + 'def __init__(self, *args, **kwds):\n')
+    elif custom_base is not None:
+        # custom base classes set, but "overwrite existing sources" not
+        # set. Issue a warning about this
+        common.message('WARNING', '%s has custom base classes, but you are '
+                       'not overwriting existing sources: please check that '
+                       'the resulting code is correct!' % code_obj.name)
+                       
     # __init__ begin tag
     write(indentation + '# begin wxGlade: %s.__init__\n' % \
           without_package(code_obj.klass))
@@ -614,8 +697,16 @@ def add_class(code_obj):
     style = prop.get("style", None)
     if style: write(indentation + 'kwds["style"] = %s\n' % mycn_f(style))
     # __init__
-    write(indentation + '%s.__init__(self, *args, **kwds)\n' % \
-          mycn(code_obj.base))
+    if custom_base is not None:
+        bases = [b.strip() for b in custom_base.split(',')]
+        for i, b in enumerate(bases):
+            if not i:
+                write(indentation + '%s.__init__(self, *args, **kwds)\n' % b)
+            else:
+                write(indentation + '%s.__init__(self)\n' % b)
+    else:
+        write(indentation + '%s.__init__(self, *args, **kwds)\n' % \
+              mycn(code_obj.base))
     tab = indentation 
     init_lines = classes[code_obj.klass].init
     # --- patch 2002-08-26 ---------------------------------------------------
@@ -661,8 +752,9 @@ def add_class(code_obj):
                                              '__init__')
         if prev_src.content.find(tag) < 0:
             # no __init__ tag found, issue a warning and do nothing
-            print >> sys.stderr, "WARNING: wxGlade __init__ block not found," \
-                  " __init__ code NOT generated"
+            common.message("WARNING",
+                           "wxGlade __init__ block not found for %s," \
+                           " __init__ code NOT generated" % code_obj.name)
         else:
             prev_src.content = prev_src.content.replace(tag, "".join(buffer))
         buffer = []
@@ -690,8 +782,10 @@ def add_class(code_obj):
                                              '__set_properties')
         if prev_src.content.find(tag) < 0:
             # no __set_properties tag found, issue a warning and do nothing
-            print >> sys.stderr, "WARNING: wxGlade __set_properties block " \
-                  "not found, __set_properties code NOT generated"
+            common.message("WARNING", "wxGlade __set_properties block " \
+                           "not found for %s, "
+                           "__set_properties code NOT generated" %
+                           code_obj.name)
         else:
             prev_src.content = prev_src.content.replace(tag, "".join(buffer))
         buffer = []
@@ -727,8 +821,9 @@ def add_class(code_obj):
                                              '__do_layout')
         if prev_src.content.find(tag) < 0:
             # no __do_layout tag found, issue a warning and do nothing
-            print >> sys.stderr, "WARNING: wxGlade __do_layout block " \
-                  "not found, __do_layout code NOT generated"
+            common.message("WARNING", "wxGlade __do_layout block " \
+                           "not found for %s, __do_layout code NOT generated" %
+                           code_obj.name)
         else:
             prev_src.content = prev_src.content.replace(tag, "".join(buffer))
 
@@ -749,8 +844,9 @@ def add_class(code_obj):
         tag = '<%swxGlade event_handlers %s>' % (nonce, code_obj.klass)
         if prev_src.content.find(tag) < 0:
             # no event_handlers tag found, issue a warning and do nothing
-            print >> sys.stderr, "WARNING: wxGlade event_handlers block " \
-                  "not found, event_handlers code NOT generated"
+            common.message("WARNING", "wxGlade event_handlers block " \
+                           "not found for %s,"
+                           " event_handlers code NOT generated" % code_obj.name)
         else:
             prev_src.content = prev_src.content.replace(tag, "".join(buf))
         del buf
@@ -793,7 +889,24 @@ def add_class(code_obj):
                    ['# end wxGlade\n']
             tag = '<%swxGlade replace dependencies>' % nonce
             prev_src.content = prev_src.content.replace(tag, "".join(deps))
+
+            # insert the extra code of this class
+            extra_code = "".join(classes[code_obj.klass].extra_code[::-1])
+            # if there's extra code but we are not overwriting existing
+            # sources, warn the user
+            if extra_code:
+                common.message('WARNING', '%s (or one of its chilren) has '
+                               'extra code classes, but you are '
+                               'not overwriting existing sources: please check '
+                               'that the resulting code is correct!' % \
+                               code_obj.name)
             
+            extra_code = '# begin wxGlade: extracode\n%s\n# end wxGlade\n' % \
+                         extra_code
+##                          "".join(classes[code_obj.klass].extra_code[::-1])
+            tag = '<%swxGlade replace extracode>' % nonce
+            prev_src.content = prev_src.content.replace(tag, extra_code)
+
             try:
                 # store the new file contents to disk
                 common.save_file(filename, prev_src.content, 'codegen')
@@ -815,6 +928,13 @@ def add_class(code_obj):
         for module in classes[code_obj.klass].dependencies:
             write(module)
         write('# end wxGlade\n')
+        write('\n')
+
+        # insert the extra code of this class
+        extra_code = "".join(classes[code_obj.klass].extra_code[::-1])
+        extra_code = '# begin wxGlade: extracode\n%s\n# end wxGlade\n' % \
+                     extra_code
+        write(extra_code)
         write('\n')
         
         # write the class body

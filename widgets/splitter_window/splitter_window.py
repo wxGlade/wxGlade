@@ -83,6 +83,7 @@ class SplitterWindowSizer(Sizer):
 
 class EditSplitterWindow(ManagedBase):
 
+    _custom_base_classes = True
     events = [
         'EVT_SPLITTER_SASH_POS_CHANGING',
         'EVT_SPLITTER_SASH_POS_CHANGED',

@@ -171,6 +171,7 @@ class TabsHandler:
 
 class EditNotebook(ManagedBase):
 
+    _custom_base_classes = True
     events = ['EVT_NOTEBOOK_PAGE_CHANGED', 'EVT_NOTEBOOK_PAGE_CHANGING']
     
     def __init__(self, name, parent, id, style, sizer, pos,
