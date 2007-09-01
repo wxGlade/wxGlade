@@ -437,6 +437,7 @@ class WindowBase(EditBase):
         # code property
         import code_property
         prop['extracode'] = code_property.CodeProperty(self)
+        prop['extraproperties'] = code_property.ExtraPropertiesProperty(self)
         
 
     def finish_widget_creation(self, *args, **kwds):
@@ -538,6 +539,7 @@ class WindowBase(EditBase):
     def create_extracode_property(self):
         try:
             self.properties['extracode']._show(self.notebook)
+            self.properties['extraproperties']._show(self.notebook)
         except KeyError:
             pass
 
@@ -717,6 +719,9 @@ class WindowBase(EditBase):
                     self.props[self.index] = str(data.strip())
             # end of class FontHandler
             return FontHandler(self)
+        elif name == 'extraproperties':
+            import code_property
+            return code_property.ExtraPropertiesPropertyHandler(self)
         return EditBase.get_property_handler(self, name)
 
     def get_disabled(self):
