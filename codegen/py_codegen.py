@@ -527,7 +527,7 @@ def add_object(top_obj, sub_obj):
             elif 'events' in sub_obj.properties:
                 id_name, id = generate_code_id(sub_obj)
                 #if id == '-1': id = 'self.%s.GetId()' % sub_obj.name
-                if id == '-1': id = 'self.%s' % sub_obj.name
+                if id == '-1': id = '#self.%s' % sub_obj.name
                 for event, handler in sub_obj.properties['events'].iteritems():
                     klass.event_handlers.append((id, mycn(event), handler))
 
