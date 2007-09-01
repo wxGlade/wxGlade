@@ -949,6 +949,8 @@ def add_class(code_obj):
         # write the class body onto the single source file
         for dep in classes[code_obj.klass].dependencies:
             _current_extra_modules[dep] = 1
+        if classes[code_obj.klass].extra_code:
+            _current_extra_code.extend(classes[code_obj.klass].extra_code[::-1])
         write = output_file.write
         for line in buffer: write(line)
         
