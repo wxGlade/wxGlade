@@ -112,7 +112,7 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
         event.Skip()
 
     def set_template_name(self, name):
-        self.template_name.SetLabel(_("wxGlade template: ") + misc.wxstr(name))
+        self.template_name.SetLabel(_("wxGlade template:\n") + misc.wxstr(name))
 
     def on_edit(self, event):
         self.selected_template = self.get_selected()
