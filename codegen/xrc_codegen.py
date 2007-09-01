@@ -200,6 +200,11 @@ class DefaultXrcObject(XrcObject):
         if 'custom_base' in self.properties:
             del self.properties['custom_base']
             
+        if 'extraproperties' in self.properties:
+            prop = self.properties['extraproperties']
+            del self.properties['extraproperties']
+            self.properties.update(prop)
+            
         for name, val in self.properties.iteritems():
             self.write_property(str(name), val, out_file, ntabs+1)
         # write the font, if present
@@ -416,9 +421,39 @@ class DummyPropertyHandler:
 # end of class DummyPropertyHandler
 
 
+class ExtraPropertiesPropertyHandler(object):
+    def __init__(self):
+        self.props = {}
+        self.prop_name = None
+        self.curr_prop = []
+        
+    def start_elem(self, name, attrs):
+        if name == 'property':
+            self.prop_name = attrs['name']
+
+    def end_elem(self, name, code_obj):
+        if name == 'property':
+            if self.prop_name and self.curr_prop:
+                self.props[self.prop_name] = ''.join(self.curr_prop)
+            self.prop_name = None
+            self.curr_prop = []
+        elif name == 'extraproperties':
+            code_obj.properties['extraproperties'] = self.props
+            return True # to remove this handler
+
+    def char_data(self, data):
+        data = data.strip()
+        if data:
+            self.curr_prop.append(data)
+
+# end of class ExtraPropertiesPropertyHandler
+
+
 # dictionary whose items are custom handlers for widget properties
 _global_property_writers = { 'font': FontPropertyHandler,
-                             'events': EventsPropertyHandler, }
+                             'events': EventsPropertyHandler,
+                             'extraproperties': ExtraPropertiesPropertyHandler,
+                             }
 
 # dictionary of dictionaries of property handlers specific for a widget
 # the keys are the class names of the widgets

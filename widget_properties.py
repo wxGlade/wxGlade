@@ -912,10 +912,11 @@ class GridProperty(Property): #wxPanel, Property):
         Actually builds the grid to set the value of the property
         interactively
         """
-        self.panel = wx.Panel(parent, -1) # why if the grid is not on this panel
-                                         # it is not displayed???
-        sizer = wx.StaticBoxSizer(wx.StaticBox(self.panel, -1,
-                                             _mangle(self.name)), wx.VERTICAL)
+        self.panel = wx.Panel(parent, -1) # why if the grid is not on this
+                                          # panel it is not displayed???
+        label = getattr(self, 'label', _mangle(self.name))
+        sizer = wx.StaticBoxSizer(wx.StaticBox(self.panel, -1, label),
+                                  wx.VERTICAL)
         self.btn_id = wx.NewId()
         self.btn = wx.Button(self.panel, self.btn_id, _("  Apply  "),
                              style=wx.BU_EXACTFIT)

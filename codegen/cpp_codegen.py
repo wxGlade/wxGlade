@@ -1384,6 +1384,15 @@ def generate_code_hidden(obj):
         return self + 'Hide();\n'
 
 
+def generate_code_extraproperties(obj):
+    self = _get_code_name(obj)
+    prop = obj.properties['extraproperties']
+    ret = []
+    for name in sorted(prop):
+        ret.append(self + 'Set%s(%s);\n' % (name, prop[name]))
+    return ret
+
+
 def generate_common_properties(widget):
     """\
     generates the code for various properties common to all widgets (background
@@ -1401,6 +1410,9 @@ def generate_common_properties(widget):
     if prop.get('disabled'): out.append(generate_code_disabled(widget))
     if prop.get('focused'): out.append(generate_code_focused(widget))
     if prop.get('hidden'): out.append(generate_code_hidden(widget))
+    # ALB 2007-09-01 extra properties
+    if prop.get('extraproperties') and not widget.preview:
+        out.extend(generate_code_extraproperties(widget))
     return out
 
 
@@ -1482,9 +1494,41 @@ class EventsPropertyHandler(object):
 # end of class EventsPropertyHandler
     
 
+class ExtraPropertiesPropertyHandler(object):
+    def __init__(self):
+        self.props = {}
+        self.prop_name = None
+        self.curr_prop = []
+        
+    def start_elem(self, name, attrs):
+        if name == 'property':
+            name = attrs['name']
+            if name and name[0].islower():
+                name = name[0].upper() + name[1:]
+            self.prop_name = name
+
+    def end_elem(self, name, code_obj):
+        if name == 'property':
+            if self.prop_name and self.curr_prop:
+                self.props[self.prop_name] = ''.join(self.curr_prop)
+            self.prop_name = None
+            self.curr_prop = []
+        elif name == 'extraproperties':
+            code_obj.properties['extraproperties'] = self.props
+            return True # to remove this handler
+
+    def char_data(self, data):
+        data = data.strip()
+        if data:
+            self.curr_prop.append(data)
+
+# end of class ExtraPropertiesPropertyHandler
+
+
 # dictionary whose items are custom handlers for widget properties
 _global_property_writers = { 'font': FontPropertyHandler,
                              'events': EventsPropertyHandler,
+                             'extraproperties': ExtraPropertiesPropertyHandler,
                              }
 
 # dictionary of dictionaries of property handlers specific for a widget
