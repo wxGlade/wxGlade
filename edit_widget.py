@@ -24,6 +24,7 @@ class EditWidget(ManagedBase):
         # introspect subclass looking for properties
         # and widgets
         self.property_names = []
+        self.property_proportion = {}
         attrs = dir(self)
         for attr in attrs:
             prefix = attr[0:4]
@@ -47,7 +48,13 @@ class EditWidget(ManagedBase):
                 self.property_names.append(name)
                 self.access_functions[name] = (getattr(self, getter),
                                                getattr(self, setter))
-                self.properties[name] = getattr(self, getter_widget)()
+                prop = getattr(self, getter_widget)()
+                try:
+                    prop, proportion = prop
+                except TypeError:
+                    proportion = 0
+                self.properties[name] = prop
+                self.property_proportion[name] = proportion
         
 
     def create_properties(self):
@@ -56,7 +63,8 @@ class EditWidget(ManagedBase):
         szr = wx.BoxSizer(wx.VERTICAL)
         for name in self.property_names:
             self.properties[name].display(panel)
-            szr.Add(self.properties[name].panel, 0, wx.EXPAND)
+            szr.Add(self.properties[name].panel, self.property_proportion[name],
+                    wx.EXPAND)
         panel.SetAutoLayout(1)
         panel.SetSizer(szr)
         szr.Fit(panel)

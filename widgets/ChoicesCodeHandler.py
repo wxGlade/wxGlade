@@ -12,14 +12,24 @@ class ChoicesCodeHandler:
     def __init__(self):
         self.choices = []
         self.curr_choice = []
+        self.cur_checked = None
         
-    def start_elem(self, name, attrs): pass
+    def start_elem(self, name, attrs):
+        if name == 'choice':
+            try:
+                self.cur_checked = int(attrs['checked'])
+            except (KeyError, ValueError):
+                self.cur_checked = None
             
     def end_elem(self, name, code_obj):
         if name == 'choice':
             c = "".join(self.curr_choice)
-            self.choices.append("".join(self.curr_choice))
+            if self.cur_checked is None:
+                self.choices.append(c)
+            else:
+                self.choices.append((c, self.cur_checked))
             self.curr_choice = []
+            self.cur_checked = None
         elif name == 'choices':
             code_obj.properties['choices'] = self.choices
             return True
@@ -40,6 +50,10 @@ def xrc_write_choices_property(xrc_obj, outfile, tabs):
     write('    '*tabs + '<content>\n')
     tab_s = '    ' * (tabs+1)
     for choice in choices:
-        write(tab_s + '<item>%s</item>\n' % escape(choice))
+        if isinstance(choice, tuple):
+            write(tab_s + '<item checked="%d">%s</item>\n' % \
+                  (choice[1], escape(choice[0])))
+        else:
+            write(tab_s + '<item>%s</item>\n' % escape(choice))
     write('    '*tabs + '</content>\n')
 

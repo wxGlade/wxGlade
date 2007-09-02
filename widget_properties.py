@@ -882,14 +882,15 @@ class RadioProperty(Property, _activator):
 # end of class RadioProperty
 
 
-class GridProperty(Property): #wxPanel, Property):
+class GridProperty(Property): 
     """\
     Property whose values are modified through a wxGrid table.
     """
-    STRING, INT, FLOAT = 0, 1, 2
+    STRING, INT, FLOAT, BOOL = 0, 1, 2, 3
     col_format = [lambda g, c: None,
                   lambda g, c: g.SetColFormatNumber(c),
-                  lambda g, c: g.SetColFormatFloat(c)]
+                  lambda g, c: g.SetColFormatFloat(c),
+                  lambda g, c: g.SetColFormatBool(c)]
     def __init__(self, owner, name, parent, cols, rows=1, can_add=True,
                  can_remove=True, can_insert=True):
         # cols: list of 2-tuples with these fields:
