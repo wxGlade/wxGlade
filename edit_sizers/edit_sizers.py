@@ -336,7 +336,7 @@ class SizerClassDialog:
 # end of class SizerClassDialog
             
 
-def change_sizer(old, new, which_page=0):
+def change_sizer(old, new, which_page=0, _hidden=[None]):
     """\
     changes 'old' sizer to 'new'
     Params:
@@ -393,10 +393,22 @@ def change_sizer(old, new, which_page=0):
             except (AttributeError, KeyError):
                 pass
     szr.show_widget(True, dont_set=True)
+
+    if _hidden[0] is None:
+        _hidden[0] = wx.Frame(None, -1, "HIDDEN FRAME FOR CHANGE SIZER")
+    
     for c in szr.children[1:]:
         widget = c.item
         widget.sizer = szr
         if not isinstance(widget, SizerSlot):
+            # ALB 2007-09-04. This is necessary as a workaround to a
+            # wx.StaticBoxSizer issue: it seems that the wx.StaticBox needs to
+            # come before any other widget managed by the wx.StaticBoxSizer in
+            # the GetChildren() list. Explicitly reparenting the widgets seems
+            # to solve the problem
+            p = widget.widget.GetParent()
+            widget.widget.Reparent(_hidden[0])
+            widget.widget.Reparent(p)
             szr.widget.Insert(widget.pos, widget.widget,
                               int(widget.get_option()), widget.get_int_flag(),
                               int(widget.get_border()))
