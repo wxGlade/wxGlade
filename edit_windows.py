@@ -221,7 +221,7 @@ constructor will be used. You should probably not use this if \
     def setup_preview_menu(self):
         p = misc.get_toplevel_widget(self)
         if p is not None:
-            item = self._rmenu.GetMenuItems()[-1]
+            item = list(self._rmenu.GetMenuItems())[-1]
             if p.preview_is_visible():
                 item.SetText(_('Close preview') + ' (%s)\tCtrl+P' % p.name)
             else:
