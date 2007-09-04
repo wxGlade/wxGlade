@@ -1532,7 +1532,7 @@ class CustomSizer(wx.BoxSizer):
         self._grid.SetItemMinSize(item, w, h)
 
     def GetChildren(self):
-        return [None] + self._grid.GetChildren()
+        return [None] + list(self._grid.GetChildren())
 
     def Layout(self):
         self._grid.Layout()
