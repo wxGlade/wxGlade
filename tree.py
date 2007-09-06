@@ -10,6 +10,10 @@ import wx
 from xml.sax.saxutils import quoteattr
 import misc, common, os.path
 
+try: set
+except NameError: from sets import Set as set
+
+
 class Tree:
     """\
     A class to represent a hierarchy of widgets.
