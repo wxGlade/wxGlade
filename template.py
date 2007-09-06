@@ -214,7 +214,7 @@ def manage_templates():
     dlg.btn_open.Hide()
     #dlg.btn_edit.Hide()
     ret = None
-    if dlg.ShowModal() == wx.ID_EDIT:
+    if dlg.ShowModal() == templates_ui.ID_EDIT:
         ret = dlg.selected_template
     dlg.Destroy()
     return ret
