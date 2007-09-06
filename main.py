@@ -368,7 +368,7 @@ class wxGladeFrame(wx.Frame):
         frame_style = wx.DEFAULT_FRAME_STYLE
         frame_tool_win = config.preferences.frame_tool_win
         if frame_tool_win:
-            frame_style |= wx.FRAME_NO_TASKBAR
+            frame_style |= wx.FRAME_NO_TASKBAR | wx.FRAME_FLOAT_ON_PARENT
             if wx.Platform != '__WXGTK__': frame_style |= wx.FRAME_TOOL_WINDOW
         
         self.frame2 = wx.Frame(self, -1, _('Properties - <app>'),
@@ -398,7 +398,7 @@ class wxGladeFrame(wx.Frame):
         self.frame2.SetSizer(sizer_tmp)
         sizer_tmp = wx.BoxSizer(wx.VERTICAL)
         def hide_frame2(event):
-            menu_bar.Check(PROPS_ID, False)
+            #menu_bar.Check(PROPS_ID, False)
             self.frame2.Hide()
         wx.EVT_CLOSE(self.frame2, hide_frame2)
         wx.EVT_CLOSE(self, self.cleanup)
@@ -419,7 +419,7 @@ class wxGladeFrame(wx.Frame):
         sizer_tmp.Fit(property_panel)
         
         def on_tree_frame_close(event):
-            menu_bar.Check(TREE_ID, False)
+            #menu_bar.Check(TREE_ID, False)
             self.tree_frame.Hide()
         wx.EVT_CLOSE(self.tree_frame, on_tree_frame_close)
         # check to see if there are some remembered values
@@ -454,15 +454,15 @@ class wxGladeFrame(wx.Frame):
         self.frame2.Show()    
         self.Show()
 
-        self._skip_activate = False
-        if frame_tool_win:
-            def on_iconize(event):
-                if event.Iconized():
-                    self.hide_all()
-                else:
-                    self.show_and_raise()
-                event.Skip()
-            wx.EVT_ICONIZE(self, on_iconize)
+        #self._skip_activate = False
+##         if frame_tool_win:
+##             def on_iconize(event):
+##                 if event.Iconized():
+##                     self.hide_all()
+##                 else:
+##                     self.show_and_raise()
+##                 event.Skip()
+##             wx.EVT_ICONIZE(self, on_iconize)
 
         if wx.Platform == '__WXMSW__':
             import about
@@ -523,10 +523,12 @@ class wxGladeFrame(wx.Frame):
         config.edit_preferences()
 
     def show_tree(self, event):
+        self.tree_frame.Show()
         self.tree_frame.Raise()
         common.app_tree.SetFocus()
 
     def show_props_window(self, event):
+        self.frame2.Show()
         self.frame2.Raise()
         try:
             c = self.frame2.GetSizer().GetChildren()
@@ -817,7 +819,9 @@ class wxGladeFrame(wx.Frame):
                 wx.MessageBox(_('Error saving preferences:\n%s') % e,
                               _('Error'),
                               wx.OK|wx.CENTRE|wx.ICON_ERROR)
-            self._skip_activate = True
+            #self._skip_activate = True
+            self.frame2.Destroy()
+            self.tree_frame.Destroy()
             self.Destroy()
             common.remove_autosaved() # ALB 2004-10-15
             misc.wxCallAfter(wx.GetApp().ExitMainLoop)
@@ -843,8 +847,8 @@ class wxGladeFrame(wx.Frame):
             t.start()
 
     def show_and_raise(self):
-        self.frame2.Show(self.GetMenuBar().IsChecked(self.PROPS_ID))
-        self.tree_frame.Show(self.GetMenuBar().IsChecked(self.TREE_ID))
+        self.frame2.Show()#self.GetMenuBar().IsChecked(self.PROPS_ID))
+        self.tree_frame.Show()#self.GetMenuBar().IsChecked(self.TREE_ID))
         self.frame2.Raise()
         self.tree_frame.Raise()
         self.Raise()
@@ -917,12 +921,12 @@ class wxGlade(wx.App):
         wx.ArtProvider.PushProvider(wxGladeArtProvider())
 
         frame = wxGladeFrame()
-        if wx.Platform == '__WXMSW__':
-            def on_activate(event):
-                if event.GetActive() and not frame.IsIconized():
-                    frame.show_and_raise()
-                event.Skip()
-            wx.EVT_ACTIVATE_APP(self, on_activate)
+##         if wx.Platform == '__WXMSW__':
+##             def on_activate(event):
+##                 if event.GetActive() and not frame.IsIconized():
+##                     frame.show_and_raise()
+##                 event.Skip()
+##             wx.EVT_ACTIVATE_APP(self, on_activate)
 
         self.SetTopWindow(frame)
         self.SetExitOnFrameDelete(True)
