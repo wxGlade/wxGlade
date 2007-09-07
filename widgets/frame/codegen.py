@@ -46,16 +46,18 @@ class PythonFrameCodeGenerator:
         icon = prop.get('icon')
         if icon: 
             if icon.startswith('var:'):
-                out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
-                out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
-                            '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') % \
-                           icon[4:].strip())
-                out.append('self.SetIcon(_icon)\n')
+                if not frame.preview:
+                    out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
+                    out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
+                                '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') % \
+                               icon[4:].strip())
+                    out.append('self.SetIcon(_icon)\n')
             elif icon.startswith('code:'):
-                out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
-                out.append(('_icon.CopyFromBitmap(%s)\n') % \
-                           icon[5:].strip())
-                out.append('self.SetIcon(_icon)\n')
+                if not frame.preview:
+                    out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
+                    out.append(('_icon.CopyFromBitmap(%s)\n') % \
+                               icon[5:].strip())
+                    out.append('self.SetIcon(_icon)\n')
             else:
                 if frame.preview:
                     import misc
@@ -201,9 +203,17 @@ class CppFrameCodeGenerator:
         icon = prop.get('icon')
         if icon:
             out.append('wxIcon _icon;\n')
-            out.append('_icon.CopyFromBitmap(wxBitmap(%s, '
-                       'wxBITMAP_TYPE_ANY));\n' % \
-                       cppgen.quote_str(icon, False, False))
+            if icon.startswith('var:'):
+                out.append(('_icon.CopyFromBitmap(wxBitmap(') +
+                           '%s, wxBITMAP_TYPE_ANY));\n' % \
+                           icon[4:].strip())
+            elif icon.startswith('code:'):
+                out.append(('_icon.CopyFromBitmap(%s);\n' % \
+                            icon[5:].strip())
+            else:
+                out.append('_icon.CopyFromBitmap(wxBitmap(%s, '
+                           'wxBITMAP_TYPE_ANY));\n' % \
+                           cppgen.quote_str(icon, False, False))
             out.append('SetIcon(_icon);\n')
             
         out.extend(cppgen.generate_common_properties(frame))

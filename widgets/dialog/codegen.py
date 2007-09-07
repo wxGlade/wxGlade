@@ -19,15 +19,29 @@ class PythonCodeGenerator:
         title = prop.get('title')
         if title: out.append('self.SetTitle(%s)\n' % pygen.quote_str(title))
         icon = prop.get('icon')
-        if icon:
-            if dialog.preview:
-                import misc
-                icon = misc.get_relative_path(icon, True)
-            out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
-            out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') + '(%s, ' +
-                        cn('wxBITMAP_TYPE_ANY') + '))\n') % \
-                       pygen.quote_str(icon))
-            out.append('self.SetIcon(_icon)\n')
+        if icon: 
+            if icon.startswith('var:'):
+                if not dialog.preview:
+                    out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
+                    out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
+                                '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') % \
+                               icon[4:].strip())
+                    out.append('self.SetIcon(_icon)\n')
+            elif icon.startswith('code:'):
+                if not dialog.preview:
+                    out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
+                    out.append(('_icon.CopyFromBitmap(%s)\n') % \
+                               icon[5:].strip())
+                    out.append('self.SetIcon(_icon)\n')
+            else:
+                if dialog.preview:
+                    import misc
+                    icon = misc.get_relative_path(icon, True)
+                out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
+                out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
+                            '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') % \
+                           pygen.quote_str(icon, False, False))
+                out.append('self.SetIcon(_icon)\n')
         out.extend(pygen.generate_common_properties(dialog))
         return out
 
@@ -66,8 +80,17 @@ class CppCodeGenerator:
         icon = prop.get('icon')
         if icon:
             out.append('wxIcon _icon;\n')
-            out.append('_icon.CopyFromBitmap(wxBitmap(%s, '
-                       'wxBITMAP_TYPE_ANY));\n' % cppgen.quote_str(icon))
+            if icon.startswith('var:'):
+                out.append(('_icon.CopyFromBitmap(wxBitmap(') +
+                           '%s, wxBITMAP_TYPE_ANY));\n' % \
+                           icon[4:].strip())
+            elif icon.startswith('code:'):
+                out.append(('_icon.CopyFromBitmap(%s);\n' % \
+                            icon[5:].strip())
+            else:
+                out.append('_icon.CopyFromBitmap(wxBitmap(%s, '
+                           'wxBITMAP_TYPE_ANY));\n' % \
+                           cppgen.quote_str(icon, False, False))
             out.append('SetIcon(_icon);\n')
         out.extend(cppgen.generate_common_properties(dialog))
         return out
