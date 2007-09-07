@@ -515,7 +515,10 @@ class CodeWriter(XmlParser):
             encoding = self.app_attrs['encoding']
             unicode('a', encoding)
         except (KeyError, LookupError):
-            encoding = 'ISO-8859-1'
+            if name == 'application':
+                encoding = str(attrs_impl.get('encoding', 'ISO-8859-1'))
+            else:
+                encoding = 'ISO-8859-1'
         # turn all the attribute values from unicode to str objects
         for attr, val in attrs_impl.items():
             attrs[attr] = common._encode_from_xml(val, encoding)
