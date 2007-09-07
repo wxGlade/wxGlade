@@ -56,9 +56,35 @@ if common.use_gui:
                 self.autosave_delay.SetValue(self.preferences.autosave_delay)
                 # ALB 2004-10-27
                 self.use_kde_dialogs.SetValue(self.preferences.use_kde_dialogs)
+
+                self._fix_spin_ctrls()
             except Exception, e:
                 wx.MessageBox(_('Error reading config file:\n%s') % e, 'Error',
                              wx.OK|wx.CENTRE|wx.ICON_ERROR)
+
+        def _fix_spin_ctrls(self):
+            """\
+            Workaround to a wxGTK 2.8.4.2 bug in wx.SpinCtrl.GetValue
+            """
+            done = {}
+            for name in ('buttons_per_row', 'autosave_delay', 'number_history',
+                         'default_border_size'):
+                def fix(n):
+                    done[n] = False
+                    def update(e):
+                        done[n] = True
+                        e.Skip()
+                    def get_val():
+                        if not done[n]:
+                            return getattr(self.preferences, n)
+                        else:
+                            return wx.SpinCtrl.GetValue(getattr(self, n))
+                    return update, get_val
+                spin = getattr(self, name)
+                if spin.GetValue() != getattr(self.preferences, name):
+                    update, get_val = fix(name)
+                    spin.GetValue = get_val
+                    spin.Bind(wx.EVT_SPINCTRL, update)
     
         def set_preferences(self):
             prefs = self.preferences
@@ -89,6 +115,11 @@ if common.use_gui:
             prefs['autosave_delay'] = self.autosave_delay.GetValue()
             # ALB 2004-10-27
             prefs['use_kde_dialogs'] = self.use_kde_dialogs.GetValue()
+
+##             print "PREFERENCES:", type(prefs)
+##             for key, val in prefs:
+##                 print key, val
+##             print
             
         def on_widget_path(self, event):
             # create a file choice dialog
@@ -165,6 +196,12 @@ class Preferences(ConfigParser):
             return cast(self.get('wxglade', attr))
         except (NoOptionError, ValueError):
             return val
+
+    def __iter__(self):
+        def do_iter():
+            for key in self.def_vals:
+                yield key, self[key]
+        return do_iter()
 
     def _cast_to_bool(self, val):
         try:
