@@ -81,12 +81,12 @@ class CppCodeGenerator:
         if icon:
             out.append('wxIcon _icon;\n')
             if icon.startswith('var:'):
-                out.append(('_icon.CopyFromBitmap(wxBitmap(') +
+                out.append('_icon.CopyFromBitmap(wxBitmap(' +
                            '%s, wxBITMAP_TYPE_ANY));\n' % \
                            icon[4:].strip())
             elif icon.startswith('code:'):
-                out.append(('_icon.CopyFromBitmap(%s);\n' % \
-                            icon[5:].strip())
+                out.append('_icon.CopyFromBitmap(%s);\n' % \
+                           icon[5:].strip())
             else:
                 out.append('_icon.CopyFromBitmap(wxBitmap(%s, '
                            'wxBITMAP_TYPE_ANY));\n' % \
