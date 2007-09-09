@@ -147,6 +147,7 @@ class SizerSlot:
             misc._currently_under_mouse = None
         if delete_widget and self.widget: self.widget.Destroy()
         if misc.focused_widget is self: misc.focused_widget = None
+        common.app_tree.app.saved = False # update the status of the app
 
     def update_pos(self, value):
         """\
