@@ -369,6 +369,7 @@ class wxGladeFrame(wx.Frame):
         frame_tool_win = config.preferences.frame_tool_win
         if frame_tool_win:
             frame_style |= wx.FRAME_NO_TASKBAR | wx.FRAME_FLOAT_ON_PARENT
+            frame_style &= ~wx.MINIMIZE_BOX
             if wx.Platform != '__WXGTK__': frame_style |= wx.FRAME_TOOL_WINDOW
         
         self.frame2 = wx.Frame(self, -1, _('Properties - <app>'),
@@ -450,9 +451,9 @@ class wxGladeFrame(wx.Frame):
                 w += 10
             self.frame2.SetPosition((x, y+h))
             self.tree_frame.SetPosition((x+w, y))
+        self.Show()
         self.tree_frame.Show()
         self.frame2.Show()    
-        self.Show()
 
         #self._skip_activate = False
 ##         if frame_tool_win:
