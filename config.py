@@ -57,6 +57,8 @@ if common.use_gui:
                 # ALB 2004-10-27
                 self.use_kde_dialogs.SetValue(self.preferences.use_kde_dialogs)
 
+                self.write_timestamp.SetValue(self.preferences.write_timestamp)
+
                 self._fix_spin_ctrls()
             except Exception, e:
                 wx.MessageBox(_('Error reading config file:\n%s') % e, 'Error',
@@ -116,10 +118,7 @@ if common.use_gui:
             # ALB 2004-10-27
             prefs['use_kde_dialogs'] = self.use_kde_dialogs.GetValue()
 
-##             print "PREFERENCES:", type(prefs)
-##             for key, val in prefs:
-##                 print key, val
-##             print
+            prefs['write_timestamp'] = self.write_timestamp.GetValue()
             
         def on_widget_path(self, event):
             # create a file choice dialog
@@ -175,6 +174,7 @@ class Preferences(ConfigParser):
         'autosave': True,
         'autosave_delay': 120, # in seconds
         'use_kde_dialogs': False,
+        'write_timestamp': True,
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults
