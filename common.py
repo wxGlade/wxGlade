@@ -367,8 +367,9 @@ def restore_from_autosaved(filename):
 
 
 def generated_from():
-    if app_tree.app.filename:
-        return " from " + app_tree.app.filename
+    import config
+    if config.preferences.write_generated_from and app_tree.app.filename:
+        return ' from "' + app_tree.app.filename + '"'
     return ""
 
 

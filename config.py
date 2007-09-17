@@ -58,6 +58,8 @@ if common.use_gui:
                 self.use_kde_dialogs.SetValue(self.preferences.use_kde_dialogs)
 
                 self.write_timestamp.SetValue(self.preferences.write_timestamp)
+                self.write_generated_from.SetValue(
+                    self.preferences.write_generated_from)
 
                 self._fix_spin_ctrls()
             except Exception, e:
@@ -119,6 +121,7 @@ if common.use_gui:
             prefs['use_kde_dialogs'] = self.use_kde_dialogs.GetValue()
 
             prefs['write_timestamp'] = self.write_timestamp.GetValue()
+            prefs['write_generated_from'] = self.write_generated_from.GetValue()
             
         def on_widget_path(self, event):
             # create a file choice dialog
@@ -175,6 +178,7 @@ class Preferences(ConfigParser):
         'autosave_delay': 120, # in seconds
         'use_kde_dialogs': False,
         'write_timestamp': True,
+        'write_generated_from': False,
         }
     def __init__(self, defaults=None):
         self.def_vals = defaults
