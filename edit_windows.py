@@ -479,11 +479,14 @@ class WindowBase(EditBase):
             evt_flags = 0
             if event.ControlDown(): evt_flags = wx.ACCEL_CTRL
             evt_key = event.GetKeyCode()
+            done = False
             for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
                     misc.wxCallAfter(function)
+                    done = True
                     break
-            event.Skip()
+            if not done:
+                event.Skip()
         wx.EVT_KEY_DOWN(self.widget, on_key_down)
 
     def create_properties(self):

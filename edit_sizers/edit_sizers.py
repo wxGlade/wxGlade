@@ -42,7 +42,7 @@ class SizerSlot:
                 if evt_flags == flags and evt_key == key:
                     misc.wxCallAfter(function)
                     break
-            event.Skip()
+            #event.Skip()
         wx.EVT_KEY_DOWN(self.widget, on_key_down)
 
     def show_widget(self, yes):
@@ -218,7 +218,7 @@ class SizerHandleButton(Button):
                 if evt_flags == flags and evt_key == key:
                     misc.wxCallAfter(function)
                     break
-            event.Skip()
+            #event.Skip()
         wx.EVT_KEY_DOWN(self, on_key_down)
 
         def on_set_focus(event):
