@@ -11,6 +11,13 @@ from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
 
+try:
+    import wx.lib.stattext
+    StaticText = wx.lib.stattext.GenStaticText
+except ImportError:
+    StaticText = wx.StaticText
+
+
 class EditStaticText(ManagedBase):
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
@@ -46,8 +53,8 @@ class EditStaticText(ManagedBase):
             self.flag = wx.ALL
 
     def create_widget(self):
-        self.widget = wx.StaticText(self.parent.widget, self.id,
-                                    self.label.replace('\\n', '\n'))
+        self.widget = StaticText(self.parent.widget, self.id,
+                                 self.label.replace('\\n', '\n'))
 
     def create_properties(self):
         ManagedBase.create_properties(self)
