@@ -99,6 +99,12 @@ class Application(object):
             'use_gettext': (lambda : self.use_gettext, set_use_gettext),
             'for_version': (lambda : self.for_version, set_for_version),
             }
+        self.name_prop = TextProperty(self, "name", panel, True)
+        self.klass_prop = TextProperty(self, "class", panel, True)
+
+        self.encoding = self._get_default_encoding()
+        self.encoding_prop = TextProperty(self, 'encoding', panel)
+
         self.use_gettext_prop = CheckBoxProperty(self, "use_gettext", panel,
                                                  "Enable gettext support")
         TOP_WIN_ID = wx.NewId()
@@ -106,11 +112,6 @@ class Application(object):
                                      size=(1, -1))
         self.top_window = '' # name of the top window of the generated app
 
-        self.name_prop = TextProperty(self, "name", panel, True)
-        self.klass_prop = TextProperty(self, "class", panel, True)
-
-        self.encoding = self._get_default_encoding()
-        self.encoding_prop = TextProperty(self, 'encoding', panel)
         
         self.codegen_prop = RadioProperty(self, "code_generation", panel,
                                           ["Single file", "Separate file for" \
