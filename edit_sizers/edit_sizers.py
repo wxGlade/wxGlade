@@ -670,10 +670,10 @@ class SizerBase(Sizer):
         sizer_tmp.Add(self.klass_prop.panel, 0, wx.EXPAND)
         if not self.toplevel:
             prop = self.sizer_properties
-            prop['option'].display(panel)
-            prop['flag'].display(panel)
-            prop['border'].display(panel)
             prop['pos'].display(panel)
+            prop['option'].display(panel)
+            prop['border'].display(panel)
+            prop['flag'].display(panel)
             sizer_tmp.Add(prop['pos'].panel, 0, wx.EXPAND)
             sizer_tmp.Add(prop['option'].panel, 0, wx.EXPAND)
             sizer_tmp.Add(prop['border'].panel, 0, wx.EXPAND)

@@ -843,10 +843,10 @@ class ManagedBase(WindowBase):
         max_y = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y)
 
         szprop = self.sizer_properties
-        szprop['option'].display(panel)
-        szprop['flag'].display(panel)
-        szprop['border'].display(panel)
         szprop['pos'].display(panel)
+        szprop['option'].display(panel)
+        szprop['border'].display(panel)
+        szprop['flag'].display(panel)
 
         sizer_tmp = wx.BoxSizer(wx.VERTICAL)
         sizer_tmp.Add(szprop['pos'].panel, 0, wx.EXPAND)
