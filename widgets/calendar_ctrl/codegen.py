@@ -9,6 +9,7 @@ import common
 class PythonCodeGenerator(object):
     def __init__(self):
         self.pygen = common.code_writers['python']
+        self.real_class_name = 'CalendarCtrl'
      
     def __get_import_modules(self):
         if self.pygen.use_new_namespace:
@@ -54,7 +55,7 @@ class PythonCodeGenerator(object):
         init = []
         if id_name: init.append(id_name)
         klass = obj.klass
-        if klass == obj.base: klass = self.cn(klass)
+        if klass == obj.base or klass == self.real_class_name: klass = self.cn(klass)
         init.append('self.%s = %s(%s, %s%s)\n' %
         #            (obj.name, klass, parent, id, label, style))
                      (obj.name, klass,parent, id, style))
