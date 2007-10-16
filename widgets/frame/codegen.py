@@ -78,6 +78,10 @@ class PythonFrameCodeGenerator:
                 ret.append('self.Centre()\n')
         except (KeyError, ValueError):
             pass
+        pygen = common.code_writers['python']
+        if frame.properties.get('size', '').strip() and \
+               pygen.for_version < (2, 8):
+            ret.append(pygen.generate_code_size(frame))
         return ret
     
 # end of class PythonFrameCodeGenerator
@@ -226,6 +230,10 @@ class CppFrameCodeGenerator:
                 ret.append('Centre();\n')
         except (KeyError, ValueError):
             pass
+        cppgen = common.code_writers['C++']
+        if frame.properties.get('size', '').strip() and \
+               cppgen.for_version < (2, 8):
+            ret.append(cppgen.generate_code_size(frame))
         return ret
 
 # end of class CppFrameCodeGenerator
