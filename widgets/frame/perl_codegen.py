@@ -75,6 +75,10 @@ class PerlFrameCodeGenerator:
                 ret.append('$self->Centre();\n')
         except (KeyError, ValueError):
             pass
+        plgen = common.code_writers['perl']
+        if frame.properties.get('size', '').strip() and \
+               plgen.for_version < (2, 8):
+            ret.append(plgen.generate_code_size(frame))
         return ret
 
 # end of class PerlFrameCodeGenerator
