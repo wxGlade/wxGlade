@@ -715,6 +715,7 @@ class ColorDialogProperty(DialogProperty):
                 which = 'Set%sColour' % self.name.capitalize()
                 func = getattr(self.owner.widget, which, lambda c: None)
                 func(color)
+                self.owner.widget.Refresh()
         else:
             # restore the saved value
             getval, setval = self.owner[self.name]
