@@ -966,8 +966,8 @@ def add_class(code_obj):
                 swrite('\n\nvoid %s::%s(%s &event)\n{\n' % \
                        (code_obj.klass, handler, evt_type))
                 swrite(tab + 'event.Skip();\n')
-                swrite(tab + 'std::cout<<"Event handler (%s::%s) not '
-                       'implemented yet"<<std::endl; //notify the user '
+                swrite(tab + 'wxLogDebug(wxT("Event handler (%s::%s) not '
+                       'implemented yet")); //notify the user '
                        'that he hasn\'t implemented the event handler yet\n' % \
                        (code_obj.klass, handler))
                 swrite('}\n')
