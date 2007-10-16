@@ -96,6 +96,11 @@ constructor will be used. You should probably not use this if \
         # ALB 2004-12-05
         EventsMixin.__init__(self)
 
+        # code property
+        import code_property
+        self.properties['extracode'] = code_property.CodeProperty(self)
+        self.properties['extraproperties'] = code_property.ExtraPropertiesProperty(self)
+
     def show_widget(self, yes):
         if yes and self.widget is None:
             self.create_widget()
@@ -365,6 +370,14 @@ constructor will be used. You should probably not use this if \
         """
         pass
 
+
+    def create_extracode_property(self):
+        try:
+            self.properties['extracode']._show(self.notebook)
+            self.properties['extraproperties']._show(self.notebook)
+        except KeyError:
+            pass
+
 # end of class EditBase
 
 
@@ -434,10 +447,6 @@ class WindowBase(EditBase):
         self.access_functions['hidden'] = (self.get_hidden, self.set_hidden)
         prop['hidden'] = CheckBoxProperty(self, 'hidden', None)
 
-        # code property
-        import code_property
-        prop['extracode'] = code_property.CodeProperty(self)
-        prop['extraproperties'] = code_property.ExtraPropertiesProperty(self)
         
 
     def finish_widget_creation(self, *args, **kwds):
@@ -539,12 +548,7 @@ class WindowBase(EditBase):
         self.property_window.Layout()
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
-    def create_extracode_property(self):
-        try:
-            self.properties['extracode']._show(self.notebook)
-            self.properties['extraproperties']._show(self.notebook)
-        except KeyError:
-            pass
+
 
     def on_size(self, event):
         """\
