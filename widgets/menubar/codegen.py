@@ -111,9 +111,10 @@ class PythonCodeGenerator:
         if obj.klass == obj.base: klass = pygen.cn(obj.klass)
         else: klass = obj.klass
         init = [ '\n', '# Menu Bar\n', 'self.%s = %s()\n' %
-                 (obj.name, klass),
-                 'self.SetMenuBar(self.%s)\n' % obj.name ]
+                 (obj.name, klass) ]
+##                  'self.SetMenuBar(self.%s)\n' % obj.name ]
         init.extend(self.get_init_code(obj))
+        init.append('self.SetMenuBar(self.%s)\n' % obj.name)
         init.append('# Menu Bar end\n')
         return init, [], []
 
@@ -268,9 +269,9 @@ class CppCodeGenerator:
         """
         cppgen = common.code_writers['C++']
         menus = obj.properties['menubar']
-        init = [ '%s = new %s();\n' % (obj.name, obj.klass),
-                 'SetMenuBar(%s);\n' % obj.name ]
+        init = [ '%s = new %s();\n' % (obj.name, obj.klass) ]
         init.extend(self.get_properties_code(obj))
+        init.append('SetMenuBar(%s);\n' % obj.name)
         ids = self.get_ids_code(obj)
         return init, ids, [], []
 

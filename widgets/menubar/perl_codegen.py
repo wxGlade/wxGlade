@@ -97,9 +97,10 @@ class PerlCodeGenerator:
 
         plgen = common.code_writers['perl']
         init = [ '\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' %
-                 (obj.name, klass),
-                 '$self->SetMenuBar($self->{%s});\n' % obj.name ]
+                 (obj.name, klass) ]
+##                  '$self->SetMenuBar($self->{%s});\n' % obj.name ]
         init.extend(self.get_init_code(obj))
+        init.append('$self->SetMenuBar($self->{%s});\n' % obj.name)
         init.append('\n# Menu Bar end\n\n')
         return init, [], []
 
