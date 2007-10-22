@@ -54,7 +54,7 @@ class EditComboBox(ManagedBase):
         style_labels = ('#section#Style', 'wxCB_SIMPLE','wxCB_DROPDOWN',
                         'wxCB_READONLY', 'wxCB_SORT')
         self.style_pos = [ eval('wx.' + s[2:]) for s in style_labels[1:] ]
-	self.tooltips = ("Creates a combobox with a permanently displayed list."
+        self.tooltips = ("Creates a combobox with a permanently displayed list."
                          " Windows only.",
                          "Creates a combobox with a drop-down list.",
                          "Same as wxCB_DROPDOWN but only the strings specified "

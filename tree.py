@@ -201,7 +201,7 @@ class Tree:
         language = self.app.get_language()
         encoding = self.app.get_encoding()
         use_gettext = str(int(self.app.use_gettext))
-	is_template = str(int(self.app.is_template))
+        is_template = str(int(self.app.is_template))
         overwrite = str(int(self.app.overwrite))
         # ALB 2004-01-18
         #use_new_namespace = str(int(self.app.get_use_new_namespace()))
