@@ -32,22 +32,22 @@ class EditDialog(TopLevelBase):
                          'wxNO_FULL_REPAINT_ON_RESIZE',
                          'wxFULL_REPAINT_ON_RESIZE',
                          'wxCLIP_CHILDREN')
-	#note that the tooltips are only for wxPython>=2.5
-	self.tooltips = ("Equivalent to a combination of wxCAPTION, wxCLOSE_BOX and wxSYSTEM_MENU (the last one is not used under Unix)",
-		"NO DESCRIPTION",
-		"Puts a caption on the dialog box.",
-		"Display a resizeable frame around the window.",
-		"Display a system menu.",
-		"Displays a close box on the frame.",
-		"Displays a maximize box on the dialog.",
-		"Displays a minimize box on the dialog.",
-		"Display a thick frame around the window.",
-		"The dialog stays on top of all other windows.",
-		"Under Windows, specifies that the child controls should not have 3D borders unless specified in the control.",
-		"By default, a dialog created with a NULL parent window will be given the application's top level window as parent. Use this style to prevent this from happening and create an orphan dialog. This is not recommended for modal dialogs.",
-		"NO DESCRIPTION",
-		"NO DESCRIPTION",
-		"NO DESCRIPTION")		
+        #note that the tooltips are only for wxPython>=2.5
+        self.tooltips = ("Equivalent to a combination of wxCAPTION, wxCLOSE_BOX and wxSYSTEM_MENU (the last one is not used under Unix)",
+                "NO DESCRIPTION",
+                "Puts a caption on the dialog box.",
+                "Display a resizeable frame around the window.",
+                "Display a system menu.",
+                "Displays a close box on the frame.",
+                "Displays a maximize box on the dialog.",
+                "Displays a minimize box on the dialog.",
+                "Display a thick frame around the window.",
+                "The dialog stays on top of all other windows.",
+                "Under Windows, specifies that the child controls should not have 3D borders unless specified in the control.",
+                "By default, a dialog created with a NULL parent window will be given the application's top level window as parent. Use this style to prevent this from happening and create an orphan dialog. This is not recommended for modal dialogs.",
+                "NO DESCRIPTION",
+                "NO DESCRIPTION",
+                "NO DESCRIPTION")               
         self.style_pos = (wx.DEFAULT_DIALOG_STYLE,
                           wx.DIALOG_MODAL, wx.CAPTION, wx.RESIZE_BORDER,
                           wx.SYSTEM_MENU)

@@ -19,7 +19,7 @@ class PythonCodeGenerator:
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         style = prop.get("style")
-	if style: style = ", style=%s" % pygen.cn_f(style)
+        if style: style = ", style=%s" % pygen.cn_f(style)
         else: style = ''
         if not bmp_file:
             bmp = cn('wxNullBitmap')
