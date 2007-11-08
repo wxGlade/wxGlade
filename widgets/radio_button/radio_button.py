@@ -32,12 +32,12 @@ class EditRadioButton(ManagedBase):
         self.access_functions['clicked'] = (self.get_value, self.set_value)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['label'] = TextProperty(self, 'label', None,
-                                                multiline=True)
+                                                multiline=True, label=_("label"))
         self.properties['clicked'] = CheckBoxProperty(self, 'clicked', None,
                                                       _('Clicked'))
         self.style_pos = [wx.RB_GROUP, wx.RB_SINGLE, wx.RB_USE_CHECKBOX]
         self.properties['style'] = CheckListProperty(
-            self, 'style', None, ['#section#Style',
+            self, 'style', None, ['#section#' + _('Style'),
                                   'wxRB_GROUP', 'wxRB_SINGLE', 'wxRB_USE_CHECKBOX'],
                     tooltips=[_('Marks the beginning of a new group of radio buttons.'),
                     _('In some circumstances, radio buttons that are not consecutive siblings trigger a hang bug in Windows (only). If this happens, add this style to mark the button as not belonging to a group, and implement the mutually-exclusive group behaviour yourself.'),
@@ -131,9 +131,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     radio = EditRadioButton(label, parent, wx.NewId(), "",
                             sizer, pos, common.property_panel)
     sizer.set_item(radio.pos, option=sizeritem.option,

@@ -396,7 +396,7 @@ def change_sizer(old, new, which_page=0, _hidden=[None]):
     szr.show_widget(True, dont_set=True)
 
     if _hidden[0] is None:
-        _hidden[0] = wx.Frame(None, -1, "HIDDEN FRAME FOR CHANGE SIZER")
+        _hidden[0] = wx.Frame(None, -1, _("HIDDEN FRAME FOR CHANGE SIZER"))
     
     for c in szr.children[1:]:
         widget = c.item
@@ -444,7 +444,7 @@ class InsertDialog(wx.Dialog):
     def __init__(self, max_val):
         wx.Dialog.__init__(self, None, -1, _("Select a position"))
         self.pos = 0
-        pos_prop = SpinProperty(self, 'position', self, r=(0, max_val))
+        pos_prop = SpinProperty(self, 'position', self, r=(0, max_val), label=_("position"))
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(pos_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
         szr2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -607,10 +607,10 @@ class SizerBase(Sizer):
             self.access_functions['border'] = (self.get_border,self.set_border)
             self.access_functions['pos'] = (self.get_pos, self.set_pos)
 
-        self.name_prop = TextProperty(self, 'name', None)
+        self.name_prop = TextProperty(self, 'name', None, label=_('name'))
         #self.klass_prop = TextProperty(self, 'class', None, readonly=True)
         dialog = SizerClassDialog(self, None)
-        self.klass_prop = DialogProperty(self, 'class', None, dialog)
+        self.klass_prop = DialogProperty(self, 'class', None, dialog, label=_('class'))
         if not self.toplevel:
             prop = self.sizer_properties = {}
 
@@ -619,14 +619,14 @@ class SizerBase(Sizer):
                  LayoutPosProperty
             prop['option'] = LayoutOptionProperty(self, self.sizer)
 
-            flag_labels = ['#section#Border', 'wxALL',
+            flag_labels = ['#section#' + _('Border'), 'wxALL',
                            'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM',
-                           '#section#Alignment', 'wxEXPAND', 'wxALIGN_RIGHT',
+                           '#section#' + _('Alignment'), 'wxEXPAND', 'wxALIGN_RIGHT',
                            'wxALIGN_BOTTOM', 'wxALIGN_CENTER_HORIZONTAL',
                            'wxALIGN_CENTER_VERTICAL', 'wxSHAPED',
                            'wxADJUST_MINSIZE' ]
             prop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
-            prop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
+            prop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000), label=_('border'))
             prop['pos'] = LayoutPosProperty(self, self.sizer)
 
     def set_containing_sizer(self, sizer):
@@ -1435,7 +1435,7 @@ class EditStaticBoxSizer(SizerBase):
     def _property_setup(self):
         SizerBase._property_setup(self)
         self.access_functions['label'] = (self.get_label, self.set_label)
-        lbl = self.properties['label'] = TextProperty(self, 'label', None)
+        lbl = self.properties['label'] = TextProperty(self, 'label', None, label=_("label"))
         def write(outfile, tabs):
             import widget_properties
             outfile.write('    ' * tabs + '<label>')
@@ -1625,10 +1625,10 @@ class GridSizerBase(SizerBase):
         self.access_functions['cols'] = (self.get_cols, self.set_cols)
         self.access_functions['hgap'] = (self.get_hgap, self.set_hgap)
         self.access_functions['vgap'] = (self.get_vgap, self.set_vgap)
-        props = { 'rows': SpinProperty(self, 'rows', None),
-                  'cols': SpinProperty(self, 'cols', None),
-                  'hgap': SpinProperty(self, 'hgap', None),
-                  'vgap': SpinProperty(self, 'vgap', None) }
+        props = { 'rows': SpinProperty(self, 'rows', None, label=_("rows")),
+                  'cols': SpinProperty(self, 'cols', None, label=_("cols")),
+                  'hgap': SpinProperty(self, 'hgap', None, label=_("hgap")),
+                  'vgap': SpinProperty(self, 'vgap', None, label=_("vgap")) }
         self.properties = props
 
     def create_properties(self):
@@ -1647,7 +1647,7 @@ class GridSizerBase(SizerBase):
         page.SetAutoLayout(True)
         page.SetSizer(sizer)
         sizer.Fit(page)
-        self.notebook.AddPage(page, "Grid")
+        self.notebook.AddPage(page, _("Grid"))
 
     def get_rows(self): return self.rows
     def get_cols(self): return self.cols
@@ -1893,7 +1893,7 @@ class CheckListDialogProperty(DialogProperty):
             self.dialog[0] = Dialog()
             
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
-                                can_disable)
+                                can_disable, label=title)
         self.choices_setter = callback
 
     def display_dialog(self, event):
@@ -2058,7 +2058,7 @@ def builder(parent, sizer, pos, number=[1], show=True):
     class SizerDialog(wx.Dialog):
         def __init__(self, parent):
             wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1,
-                              'Select sizer type')
+                              _('Select sizer type'))
             self.orientation = wx.RadioBox(self, -1, _('Orientation'),
                                           choices=[_('Horizontal'),
                                                    _('Vertical')])
@@ -2124,7 +2124,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     orientation = wx.VERTICAL # default value
     if sizer is not None: topl = False
     else: topl = True
@@ -2134,7 +2134,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         sz = EditBoxSizer(name, parent, orientation, 0, topl)
     if sizer is not None:
         if sizeritem is None:
-            raise XmlParsingError, "'sizeritem' object not found"
+            raise XmlParsingError, _("'sizeritem' object not found")
         sizer.add_item(sz, pos=pos, option=sizeritem.option,
                        flag=sizeritem.flag, border=sizeritem.border) 
         node = Tree.Node(sz)
@@ -2157,10 +2157,10 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
         def __init__(self, parent):
             wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1,
                               _('Select sizer attributes'))
-            self.rows = SpinProperty(self, 'rows', self)
-            self.cols = SpinProperty(self, 'cols', self)
-            self.vgap = SpinProperty(self, 'vgap', self)
-            self.hgap = SpinProperty(self, 'hgap', self)
+            self.rows = SpinProperty(self, 'rows', self, label=_("rows"))
+            self.cols = SpinProperty(self, 'cols', self, label=_("cols"))
+            self.vgap = SpinProperty(self, 'vgap', self, label=_("vgap"))
+            self.hgap = SpinProperty(self, 'hgap', self, label=_("hgap"))
             self.flex = wx.CheckBox(self, -1, '')
 
             self.rows.set_value(3)
@@ -2169,7 +2169,7 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
             self.hgap.set_value(0)
 
             szr = wx.BoxSizer(wx.HORIZONTAL)
-            szr.Add(wx.StaticText(self, -1, 'Flexible'), 2,
+            szr.Add(wx.StaticText(self, -1, _('Flexible')), 2,
                     wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
             szr.Add(self.flex, 5, wx.ALL, 4)
 
@@ -2240,13 +2240,13 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if attrs['base'] == 'EditGridSizer': constructor = EditGridSizer
     else: constructor = EditFlexGridSizer
     if sizer is not None: 
         sz = constructor(name, parent, rows=0, cols=0, toplevel=False)
         if sizeritem is None:
-            raise XmlParsingError, "'sizeritem' object not found"
+            raise XmlParsingError, _("'sizeritem' object not found")
         sizer.add_item(sz, pos=pos, option=sizeritem.option,
                        flag=sizeritem.flag, border=sizeritem.border)
         node = Tree.Node(sz)

@@ -51,29 +51,29 @@ class EditComboBox(ManagedBase):
         # properties
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = ('#section#Style', 'wxCB_SIMPLE','wxCB_DROPDOWN',
+        style_labels = ('#section#' + _('Style'), 'wxCB_SIMPLE','wxCB_DROPDOWN',
                         'wxCB_READONLY', 'wxCB_SORT')
         self.style_pos = [ eval('wx.' + s[2:]) for s in style_labels[1:] ]
-        self.tooltips = ("Creates a combobox with a permanently displayed list."
-                         " Windows only.",
-                         "Creates a combobox with a drop-down list.",
-                         "Same as wxCB_DROPDOWN but only the strings specified "
+	self.tooltips = (_("Creates a combobox with a permanently displayed list."
+                         " Windows only."),
+                         _("Creates a combobox with a drop-down list."),
+                         _("Same as wxCB_DROPDOWN but only the strings specified "
                          "as the combobox choices can be selected, it is "
                          "impossible to select (even from a program) a string "
-                         "which is not in the choices list.",
-                         "Sorts the entries in the list alphabetically.")
+                         "which is not in the choices list."),
+                         _("Sorts the entries in the list alphabetically."))
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels,
                                                      tooltips=self.tooltips)
         self.properties['choices'] = ChoicesProperty(self, 'choices', None,
                                                      [('Label',
                                                        GridProperty.STRING)],
-                                                     len(choices))
+                                                     len(choices), label=_("choices"))
         self.access_functions['selection'] = (self.get_selection,
                                               self.set_selection)
         self.choices = list(choices)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
-                                                    r=(0, len(choices)-1))
+                                                    r=(0, len(choices)-1), label=_("selection"))
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -176,9 +176,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     choice = EditComboBox(name, parent, wx.NewId(), [], sizer, pos,
                           common.property_panel)
     sizer.set_item(choice.pos, option=sizeritem.option,

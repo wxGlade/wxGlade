@@ -31,7 +31,7 @@ class EditSpinCtrl(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
-        style_labels = ('#section#Style', 'wxSP_ARROW_KEYS', 'wxSP_WRAP',
+        style_labels = ('#section#' + _('Style'), 'wxSP_ARROW_KEYS', 'wxSP_WRAP',
                         'wxTE_PROCESS_ENTER',
                         'wxTE_PROCESS_TAB', 'wxTE_MULTILINE', 'wxTE_PASSWORD',
                         'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH',
@@ -45,8 +45,8 @@ class EditSpinCtrl(ManagedBase):
                           wx.TE_NOHIDESEL, wx.TE_CENTRE, wx.TE_RIGHT,
                           wx.TE_LINEWRAP, wx.TE_WORDWRAP, wx.NO_BORDER)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
-        prop['range'] = TextProperty(self, 'range', None, can_disable=True)
-        prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
+        prop['range'] = TextProperty(self, 'range', None, can_disable=True, label=_("range"))
+        prop['value'] = SpinProperty(self, 'value', None, can_disable=True, label=_("value"))
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -136,9 +136,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     text = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos,
                         common.property_panel)
     sizer.set_item(text.pos, option=sizeritem.option, flag=sizeritem.flag,

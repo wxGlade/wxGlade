@@ -22,7 +22,7 @@ class EditDialog(TopLevelBase):
         prop = self.properties
         # style property
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = ('#section#Style', 'wxDEFAULT_DIALOG_STYLE',
+        style_labels = ('#section#' + _('Style'), 'wxDEFAULT_DIALOG_STYLE',
                         'wxDIALOG_MODAL', 'wxCAPTION',
                         'wxRESIZE_BORDER', 'wxSYSTEM_MENU')
         if misc.check_wx_version(2, 5):
@@ -33,21 +33,21 @@ class EditDialog(TopLevelBase):
                          'wxFULL_REPAINT_ON_RESIZE',
                          'wxCLIP_CHILDREN')
         #note that the tooltips are only for wxPython>=2.5
-        self.tooltips = ("Equivalent to a combination of wxCAPTION, wxCLOSE_BOX and wxSYSTEM_MENU (the last one is not used under Unix)",
-                "NO DESCRIPTION",
-                "Puts a caption on the dialog box.",
-                "Display a resizeable frame around the window.",
-                "Display a system menu.",
-                "Displays a close box on the frame.",
-                "Displays a maximize box on the dialog.",
-                "Displays a minimize box on the dialog.",
-                "Display a thick frame around the window.",
-                "The dialog stays on top of all other windows.",
-                "Under Windows, specifies that the child controls should not have 3D borders unless specified in the control.",
-                "By default, a dialog created with a NULL parent window will be given the application's top level window as parent. Use this style to prevent this from happening and create an orphan dialog. This is not recommended for modal dialogs.",
-                "NO DESCRIPTION",
-                "NO DESCRIPTION",
-                "NO DESCRIPTION")               
+	self.tooltips = (_("Equivalent to a combination of wxCAPTION, wxCLOSE_BOX and wxSYSTEM_MENU (the last one is not used under Unix)"),
+		_("NO DESCRIPTION"),
+		_("Puts a caption on the dialog box."),
+		_("Display a resizeable frame around the window."),
+		_("Display a system menu."),
+		_("Displays a close box on the frame."),
+		_("Displays a maximize box on the dialog."),
+		_("Displays a minimize box on the dialog."),
+		_("Display a thick frame around the window."),
+		_("The dialog stays on top of all other windows."),
+		_("Under Windows, specifies that the child controls should not have 3D borders unless specified in the control."),
+		_("By default, a dialog created with a NULL parent window will be given the application's top level window as parent. Use this style to prevent this from happening and create an orphan dialog. This is not recommended for modal dialogs."),
+		_("NO DESCRIPTION"),
+		_("NO DESCRIPTION"),
+		_("NO DESCRIPTION"))		
         self.style_pos = (wx.DEFAULT_DIALOG_STYLE,
                           wx.DIALOG_MODAL, wx.CAPTION, wx.RESIZE_BORDER,
                           wx.SYSTEM_MENU)
@@ -64,12 +64,12 @@ class EditDialog(TopLevelBase):
         self.access_functions['icon'] = (self.get_icon, self.set_icon)
         prop['icon'] = FileDialogProperty(self, 'icon', None,
                                           style=wx.OPEN|wx.FILE_MUST_EXIST,
-                                          can_disable=True)
+                                          can_disable=True, label=_("icon"))
         # centered property
         self.centered = False
         self.access_functions['centered'] = (self.get_centered,
                                              self.set_centered)
-        prop['centered'] = CheckBoxProperty(self, 'centered', None)
+        prop['centered'] = CheckBoxProperty(self, 'centered', None, label=_("centered"))
 
     def create_widget(self):
         if self.parent: w = self.parent.widget
@@ -197,8 +197,8 @@ def builder(parent, sizer, pos, number=[0]):
             self.klass_prop.display(self)
             szr.Add(self.klass_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
             btnbox = wx.BoxSizer(wx.HORIZONTAL)
-            btnOK = wx.Button(self, wx.ID_OK, 'OK')
-            btnCANCEL = wx.Button(self, wx.ID_CANCEL, 'Cancel')
+            btnOK = wx.Button(self, wx.ID_OK, _('OK'))
+            btnCANCEL = wx.Button(self, wx.ID_CANCEL, _('Cancel'))
             btnbox.Add(btnOK, 0, wx.ALL, 3)
             btnbox.Add(btnCANCEL, 0, wx.ALL, 3)
             btnOK.SetFocus()
@@ -279,7 +279,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     dialog = EditDialog(label, parent, wx.NewId(), "", common.property_panel,
                         show=False)
     node = Tree.Node(dialog)

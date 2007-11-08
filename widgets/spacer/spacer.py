@@ -24,8 +24,8 @@ class EditSpacer(ManagedBase):
         self.access_functions['width'] = (self.get_width, self.set_width)
         self.access_functions['height'] = (self.get_height, self.set_height)
 
-        self.properties['width'] = SpinProperty(self, 'width', None)
-        self.properties['height'] = SpinProperty(self, 'height', None)
+        self.properties['width'] = SpinProperty(self, 'width', None, label=_("width"))
+        self.properties['height'] = SpinProperty(self, 'height', None, label=_("height"))
 
     def create_widget(self):
         self.widget = wx.Window(self.parent.widget, self.id, size=self.__size,
@@ -90,7 +90,7 @@ class EditSpacer(ManagedBase):
         w, h = self.widget.GetClientSize()
         dc.DrawLine(0, 0, w, h)
         dc.DrawLine(w, 0, 0, h)
-        text = 'Spacer'
+        text = _('Spacer')
         tw, th = dc.GetTextExtent(text)
         x = (w - tw)/2
         y = (h - th)/2
@@ -109,10 +109,10 @@ def builder(parent, sizer, pos):
     class Dialog(wx.Dialog):
         def __init__(self):
             wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1,
-                              "Enter size")
+                              _("Enter size"))
             
-            self.width = SpinProperty(self, 'width', self)
-            self.height = SpinProperty(self, 'height', self)
+            self.width = SpinProperty(self, 'width', self, label=_("width"))
+            self.height = SpinProperty(self, 'height', self, label=_("height"))
             self.width.set_value(20)
             self.height.set_value(20)
             
@@ -120,7 +120,7 @@ def builder(parent, sizer, pos):
             szr.Add(self.width.panel, 0, wx.EXPAND)
             szr.Add(self.height.panel, 0, wx.EXPAND)
             sz = wx.BoxSizer(wx.HORIZONTAL)
-            sz.Add(wx.Button(self, wx.ID_OK, 'OK'))
+            sz.Add(wx.Button(self, wx.ID_OK, _('OK')))
             szr.Add(sz, 0, wx.ALL|wx.ALIGN_CENTER, 4)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
@@ -150,7 +150,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     if not sizer or not sizeritem:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos,
                         common.property_panel, True)
     sizer.set_item(spacer.pos, option=sizeritem.option, flag=sizeritem.flag,

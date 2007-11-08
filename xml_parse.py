@@ -39,7 +39,7 @@ class XmlParsingError(SAXException):
     def __init__(self, msg):
         if self.locator:
             l = self.locator
-            msg += ' (line: %s, column:  %s)' % (l.getLineNumber(),
+            msg += ' _((line: %s, column:  %s))' % (l.getLineNumber(),
                                                  l.getColumnNumber())
         SAXException.__init__(self, msg)
 
@@ -168,7 +168,7 @@ class XmlWidgetBuilder(XmlParser):
                 pass
             return
         if not self._appl_started:
-            raise XmlParsingError("the root of the tree must be <application>")
+            raise XmlParsingError(_("the root of the tree must be <application>"))
         if name == 'object':
             # create the object and push it on the appropriate stacks
             XmlWidgetObject(attrs, self)
@@ -235,8 +235,8 @@ class XmlWidgetBuilder(XmlParser):
         if not data or data.isspace():
             return
         if self._curr_prop is None:
-            raise XmlParsingError("character data can be present only " \
-                                  "inside properties")
+            raise XmlParsingError(_("character data can be present only " \
+                                  "inside properties"))
         self._curr_prop_val.append(data)
 
 # end of class XmlWidgetBuilder
@@ -344,7 +344,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 try:
                     self.top_obj = self.top().obj
                 except AttributeError:
-                    print 'Exception! obj: %s' % self.top_obj
+                    print _('Exception! obj: %s') % self.top_obj
                     traceback.print_exc()
             self.depth_level += 1
 
@@ -360,7 +360,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     self.top_obj.show_properties()
                     common.app_tree.select_item(self.top_obj.node)
                 except AttributeError:
-                    print 'Exception! obj: %s' % self.top_obj
+                    print _('Exception! obj: %s') % self.top_obj
                     traceback.print_exc()
         XmlWidgetBuilder.endElement(self, name)
 
@@ -382,8 +382,8 @@ class XmlWidgetObject:
             base = attrs.get('base', None)
             self.klass = attrs['class']
         except KeyError:
-            raise XmlParsingError("'object' items must have a 'class' " \
-                                  "attribute")
+            raise XmlParsingError(_("'object' items must have a 'class' " \
+                                  "attribute"))
                   
         if base is not None:
             # if base is not None, the object is a widget (or sizer), and not a
@@ -439,7 +439,7 @@ class XmlWidgetObject:
         elif self.klass == 'sizerslot':
             sizer = self.parser._sizers.top().obj
             assert sizer is not None, \
-                   "malformed wxg file: slots can only be inside sizers!"
+                   _("malformed wxg file: slots can only be inside sizers!")
             sizer.add_slot()
             self.parser._sizer_item.push(self)
                         
@@ -471,8 +471,8 @@ class XmlWidgetObject:
             # unknown property for this object
             # issue a warning and ignore the property
             import sys
-            print >> sys.stderr, "Warning: property '%s' not supported by " \
-                  "this object ('%s') " % (name, self.obj)
+            print >> sys.stderr, _("Warning: property '%s' not supported by " \
+                  "this object ('%s') ") % (name, self.obj)
 
 #end of class XmlWidgetObject
 
@@ -534,26 +534,26 @@ class CodeWriter(XmlParser):
             if self.out_path is None:
                 try: self.out_path = attrs['path']
                 except KeyError:
-                    raise XmlParsingError("'path' attribute missing: could "
-                                          "not generate code")
+                    raise XmlParsingError(_("'path' attribute missing: could "
+                                          "not generate code"))
             else: attrs['path'] = self.out_path
 
             # ALB 2004-11-01: check if the values of
             # use_multiple_files and out_path agree
             if use_multiple_files:
                 if not os.path.isdir(self.out_path):
-                    raise IOError("Output path must be an existing directory"
-                                  " when generating multiple files")
+                    raise IOError(_("Output path must be an existing directory"
+                                  " when generating multiple files"))
             else:
                 if os.path.isdir(self.out_path):
-                    raise IOError("Output path can't be a directory when "
-                                  "generating a single file")
+                    raise IOError(_("Output path can't be a directory when "
+                                  "generating a single file"))
             
             # initialize the writer
             self.code_writer.initialize(attrs)
             return
         if not self._appl_started:
-            raise XmlParsingError("the root of the tree must be <application>")
+            raise XmlParsingError(_("the root of the tree must be <application>"))
         if name == 'object':
             # create the CodeObject which stores info about the current widget
             CodeObject(attrs, self, preview=self.preview)
@@ -639,8 +639,8 @@ class CodeWriter(XmlParser):
     def characters(self, data):
         if not data or data.isspace(): return
         if self._curr_prop is None:
-            raise XmlParsingError("character data can only appear inside " \
-                                  "properties")
+            raise XmlParsingError(_("character data can only appear inside " \
+                                  "properties"))
         self._curr_prop_val.append(data)
 
 # end of class CodeWriter
@@ -668,8 +668,8 @@ class CodeObject:
             base = attrs.get('base', None)
             self.klass = attrs['class']
         except KeyError:
-            raise XmlParsingError("'object' items must have a 'class' " \
-                                  "attribute")
+            raise XmlParsingError(_("'object' items must have a 'class' " \
+                                  "attribute"))
         self.parser._objects.push(self)
         self.parent = self.parser._windows.top()
         # -------- added 2002-08-26 to detect container widgets --------------
@@ -741,8 +741,8 @@ class CodeObject:
 ##                     setattr(self.obj, name, flag)
                     self.obj.flag_s = value.strip()
                 else: setattr(self.obj, name, int(value))
-            except: raise XmlParsingError("property '%s' not supported by " \
-                                          "'%s' objects" % (name, self.klass))
+            except: raise XmlParsingError(_("property '%s' not supported by " \
+                                          "'%s' objects") % (name, self.klass))
         self.properties[name] = value
 
     def pop(self):

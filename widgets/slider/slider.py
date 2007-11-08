@@ -41,7 +41,7 @@ class EditSlider(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
-        style_labels = ('#section#Style', 'wxSL_HORIZONTAL', 'wxSL_VERTICAL',
+        style_labels = ('#section#' + _('Style'), 'wxSL_HORIZONTAL', 'wxSL_VERTICAL',
                         'wxSL_AUTOTICKS', 'wxSL_LABELS', 'wxSL_LEFT',
                         'wxSL_RIGHT', 'wxSL_TOP', 'wxSL_BOTTOM',
                         'wxSL_SELRANGE', 'wxSL_INVERSE')
@@ -60,8 +60,8 @@ class EditSlider(ManagedBase):
                     _("Allows the user to select a range on the slider. Windows only."),
                     _("Inverses the mininum and maximum endpoints on the slider. Not compatible with wxSL_SELRANGE."))
         prop['style'] = CheckListProperty(self, 'style', None, style_labels, tooltips=tooltips)
-        prop['range'] = TextProperty(self, 'range', None, can_disable=True)
-        prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
+        prop['range'] = TextProperty(self, 'range', None, can_disable=True, label=_("range"))
+        prop['value'] = SpinProperty(self, 'value', None, can_disable=True, label=_("value"))
 
     def create_widget(self):
         self.widget = wx.Slider(self.parent.widget, self.id, self.value,
@@ -132,7 +132,7 @@ def builder(parent, sizer, pos, number=[1]):
             self.orientations = [ wx.SL_HORIZONTAL, wx.SL_VERTICAL ]
             self.orientation = wx.SL_HORIZONTAL
             prop = RadioProperty(self, 'orientation', self,
-                                 ['wxSL_HORIZONTAL', 'wxSL_VERTICAL'])
+                                 ['wxSL_HORIZONTAL', 'wxSL_VERTICAL'], label=_("orientation"))
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
             style_labels = ('#section#', 'wxSL_AUTOTICKS', 'wxSL_LABELS',
@@ -143,7 +143,7 @@ def builder(parent, sizer, pos, number=[1]):
             self.style_prop = CheckListProperty(self, 'style', self,
                                                 style_labels)
             szr.Add(self.style_prop.panel, 0, wx.ALL|wx.EXPAND, 10)
-            btn = wx.Button(self, wx.ID_OK, 'OK')
+            btn = wx.Button(self, wx.ID_OK, _('OK'))
             btn.SetDefault()
             szr.Add(btn, 0, wx.BOTTOM|wx.ALIGN_CENTER, 10)
             self.SetAutoLayout(True)
@@ -198,10 +198,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     style = 0
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     slider = EditSlider(name, parent, wx.NewId(), style, sizer,
                         pos, common.property_panel) 
     sizer.set_item(slider.pos, option=sizeritem.option,

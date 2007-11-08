@@ -28,19 +28,19 @@ class EditListBox(ManagedBase):
         # properties
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
         self.properties['choices'] = ChoicesProperty(self, 'choices', None,
-                                                     [('Label',
+                                                     [(_('Label'),
                                                        GridProperty.STRING)],
-                                                     len(choices))
+                                                     len(choices), label=_('choices'))
         self.access_functions['selection'] = (self.get_selection,
                                               self.set_selection)
         self.style = 0
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
-                                                    r=(0, len(choices)-1))
+                                                    r=(0, len(choices)-1), label=_('selection'))
         self.style_pos  = (wx.LB_SINGLE, wx.LB_MULTIPLE, wx.LB_EXTENDED,
                            wx.LB_HSCROLL, wx.LB_ALWAYS_SB, wx.LB_NEEDED_SB,
                            wx.LB_SORT)
-        style_labels  = ('#section#Style', 'wxLB_SINGLE', 'wxLB_MULTIPLE',
+        style_labels  = ('#section#' + _('Style'), 'wxLB_SINGLE', 'wxLB_MULTIPLE',
                          'wxLB_EXTENDED', 'wxLB_HSCROLL', 'wxLB_ALWAYS_SB',
                          'wxLB_NEEDED_SB', 'wxLB_SORT')
         self.style_tooltips = (_('Single-selection list.'),
@@ -156,9 +156,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     list_box = EditListBox(name, parent, wx.NewId(), [], sizer, pos,
                            common.property_panel)
     sizer.set_item(list_box.pos, option=sizeritem.option,

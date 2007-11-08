@@ -43,18 +43,18 @@ class EditRadioBox(ManagedBase):
                                               self.set_major_dimension)
         self.access_functions['selection'] = (self.get_selection,
                                               self.set_selection)
-        self.properties['label'] = TextProperty(self, 'label', None)
+        self.properties['label'] = TextProperty(self, 'label', None, label=_("label"))
         self.properties['selection'] = SpinProperty(self, 'selection', None,
-                                                    r=(0, len(choices)-1))
+                                                    r=(0, len(choices)-1), label=_("selection"))
         self.properties['choices'] = ChoicesProperty(self, 'choices', None,
                                                      [('Label',
                                                        GridProperty.STRING)],
-                                                     len(choices))
+                                                     len(choices), label=_("choices"))
         self.style_pos = [wx.RA_SPECIFY_ROWS, wx.RA_SPECIFY_COLS]
         self.properties['style'] = RadioProperty(self, 'style', None,
                                                  ['wxRA_SPECIFY_ROWS',
-                                                  'wxRA_SPECIFY_COLS'])
-        self.properties['dimension'] = SpinProperty(self, 'dimension', None)
+                                                  'wxRA_SPECIFY_COLS'], label=_("style"))
+        self.properties['dimension'] = SpinProperty(self, 'dimension', None, label=_("dimension"))
 
     def create_widget(self):
         self.widget = wx.Panel(self.parent.widget, self.id)
@@ -261,9 +261,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     radio_box = EditRadioBox(label, parent, wx.NewId(), '', [], 0, 0,
                              sizer, pos, common.property_panel) 
     sizer.set_item(radio_box.pos, option=sizeritem.option,

@@ -37,9 +37,9 @@ class LayoutOptionProperty(widget_properties.Property):
         self.id = wx.NewId()
         self.val_range = (0, 1000)
         size = (widget_properties._label_initial_width, -1)
-        label = widget_properties.wxGenStaticText(parent, -1, 'Proportion',
+        label = widget_properties.wxGenStaticText(parent, -1, _('Proportion'),
                                                   size=size)
-        label.SetToolTip(wx.ToolTip('Proportion'))
+        label.SetToolTip(wx.ToolTip(_('Proportion')))
         self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
                                max=self.val_range[1])
         val = int(self.owner[self.name][0]())
@@ -140,7 +140,7 @@ class LayoutPosProperty(widget_properties.SpinProperty):
         self.is_gridbag = _is_gridbag(sizer)
         widget_properties.SpinProperty.__init__(
             self, owner, 'pos', parent, 0, (0, 1000))#, immediate=True)
-        self.label = 'Position'
+        self.label = _('Position')
 
     def set_sizer(self, sizer):
         self.is_gridbag = _is_gridbag(sizer)

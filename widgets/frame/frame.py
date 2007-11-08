@@ -22,7 +22,7 @@ class EditStatusBar(EditBase):
                           custom_class=False, show=False)
         # style property
         self.style_pos  = (wx.ST_SIZEGRIP,)
-        style_labels = ('#section#Style', 'wxST_SIZEGRIP')
+        style_labels = ('#section#' + _('Style'), 'wxST_SIZEGRIP')
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
@@ -75,7 +75,7 @@ class EditStatusBar(EditBase):
         sizer.Fit(page)
         page.SetSize(self.notebook.GetClientSize())
         sizer.Layout()
-        self.notebook.AddPage(page, "Common")
+        self.notebook.AddPage(page, _("Common"))
         self.property_window.Layout()
         prop.set_col_sizes([190, 0])
 
@@ -186,7 +186,7 @@ class EditFrame(TopLevelBase):
 
         self.access_functions['icon'] = (self.get_icon, self.set_icon)
         prop = self.properties
-        style_labels = ['#section#Style', 'wxDEFAULT_FRAME_STYLE',
+        style_labels = ['#section#' + _('Style'), 'wxDEFAULT_FRAME_STYLE',
                         'wxICONIZE', 'wxCAPTION',
                         'wxMINIMIZE', 'wxMINIMIZE_BOX', 'wxMAXIMIZE',
                         'wxMAXIMIZE_BOX', 'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
@@ -213,22 +213,22 @@ class EditFrame(TopLevelBase):
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # menubar property
         prop['menubar'] = CheckBoxProperty(self, 'menubar', None,
-                                           'Has MenuBar')
+                                           _('Has MenuBar'))
         # statusbar property
         prop['statusbar'] = CheckBoxProperty(self, 'statusbar', None,
-                                             'Has StatusBar')
+                                             _('Has StatusBar'))
         # toolbar property
         prop['toolbar'] = CheckBoxProperty(self, 'toolbar', None,
-                                           'Has ToolBar')
+                                           _('Has ToolBar'))
         # icon property
         prop['icon'] = FileDialogProperty(self, 'icon', None,
                                           style=wx.OPEN|wx.FILE_MUST_EXIST,
-                                          can_disable=True)
+                                          can_disable=True, label=_("icon"))
         # centered property
         self.centered = False
         self.access_functions['centered'] = (self.get_centered,
                                              self.set_centered)
-        prop['centered'] = CheckBoxProperty(self, 'centered', None)
+        prop['centered'] = CheckBoxProperty(self, 'centered', None, label=_("centered"))
 
     def create_widget(self):
         if self.parent: w = self.parent.widget
@@ -420,7 +420,7 @@ def builder(parent, sizer, pos, number=[0]):
     """
     class Dialog(wx.Dialog):
         def __init__(self):
-            wx.Dialog.__init__(self, None, -1, 'Select frame class')
+            wx.Dialog.__init__(self, None, -1, _('Select frame class'))
             if common.app_tree.app.get_language().lower() == 'xrc':
                 self.klass = 'wxFrame'
             else:
@@ -429,14 +429,14 @@ def builder(parent, sizer, pos, number=[0]):
                 number[0] += 1
             self.base = 0
             base_prop = RadioProperty(self, 'base class', self,
-                                      ['wxFrame', 'wxMDIChildFrame'])
-            klass_prop = TextProperty(self, 'class', self)
+                                      ['wxFrame', 'wxMDIChildFrame'], label=_("base class"))
+            klass_prop = TextProperty(self, 'class', self, label=_("class"))
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(base_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
             szr.Add(klass_prop.panel, 0, wx.EXPAND)
             btnbox = wx.BoxSizer(wx.HORIZONTAL)
-            btnOK = wx.Button(self, wx.ID_OK, 'OK')
-            btnCANCEL = wx.Button(self, wx.ID_CANCEL, 'Cancel')
+            btnOK = wx.Button(self, wx.ID_OK, _('OK'))
+            btnCANCEL = wx.Button(self, wx.ID_CANCEL, _('Cancel'))
             btnbox.Add(btnOK, 0, wx.ALL, 3)
             btnbox.Add(btnCANCEL, 0, wx.ALL, 3)
             btnOK.SetFocus()
@@ -496,7 +496,7 @@ def _make_builder(base_class):
     def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         from xml_parse import XmlParsingError
         try: label = attrs['name']
-        except KeyError: raise XmlParsingError, "'name' attribute missing"
+        except KeyError: raise XmlParsingError, _("'name' attribute missing")
         frame = base_class(label, parent, wx.NewId(), "",
                            common.property_panel,
                            show=False)
@@ -512,7 +512,7 @@ def _make_builder(base_class):
 ##     """
 ##     from xml_parse import XmlParsingError
 ##     try: label = attrs['name']
-##     except KeyError: raise XmlParsingError, "'name' attribute missing"
+##     except KeyError: raise XmlParsingError, _("'name' attribute missing")
 ##     frame = EditFrame(label, parent, wx.NewId(), label, common.property_panel,
 ##                       show=False)
 ##     node = Tree.Node(frame)

@@ -211,7 +211,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         wx.EVT_BUTTON(tmp, id, add_toplevel_object)
     refs[id] = widget
     if not tip:
-        tip = _('Add a %s') % widget.replace('Edit', '')
+        tip = _('Add a %s') % widget.replace(_('Edit'), '')
     tmp.SetToolTip(wx.ToolTip(tip))
 
     WidgetTree.images[widget] = icon_path

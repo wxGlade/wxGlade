@@ -42,7 +42,7 @@ class Property:
     """\
     A class to handle a single property of a widget.
     """
-    def __init__(self, owner, name, parent, getter=None, setter=None):
+    def __init__(self, owner, name, parent, getter=None, setter=None, label=None):
         # owner: the widget this property belongs to
         # parent: the widget inside which the property is displayed
         """\
@@ -56,6 +56,10 @@ class Property:
         self.getter = getter
         self.setter = setter
         self.name = name
+        if label:
+            self.dispName = label
+        else:
+            self.dispName = name
 
     def on_change_val(self, event, first=[True]):
         """\
@@ -103,7 +107,7 @@ class HiddenProperty(Property):
     """\
     Properties not associated to any control, i.e. not editable by the user.
     """
-    def __init__(self, owner, name, value=None):
+    def __init__(self, owner, name, value=None, label=None):
         try: getter, setter = owner[name]
         except KeyError:
             import traceback; traceback.print_exc()
@@ -114,7 +118,7 @@ class HiddenProperty(Property):
             
         self.panel = None # this is needed to provide an uniform treatment,
                           # but is always None
-        Property.__init__(self, owner, name, None, getter, setter)
+        Property.__init__(self, owner, name, None, getter, setter, label=label)
         if value is not None:
             if callable(value): self.value = value()
             else: self.value = value
@@ -167,8 +171,8 @@ class TextProperty(Property, _activator):
     Properties associated to a text control.
     """
     def __init__(self, owner, name, parent=None, can_disable=False,
-                 enabled=False, readonly=False, multiline=False):
-        Property.__init__(self, owner, name, parent)
+                 enabled=False, readonly=False, multiline=False, label=None):
+        Property.__init__(self, owner, name, parent, label=label)
         self.val = misc.wxstr(owner[name][0]())
         self.can_disable = can_disable
         self.readonly = readonly
@@ -192,8 +196,8 @@ class TextProperty(Property, _activator):
         val = self.get_value()
         if self.multiline: val = val.replace('\\n', '\n')
         lbl = getattr(self, 'label', None)
-        if lbl is None: lbl = _mangle(self.name)
-        #label = wxStaticText(self.panel, -1, _mangle(self.name))
+        if lbl is None: lbl = _mangle(self.dispName)
+        #label = wxStaticText(self.panel, -1, _mangle(self.dispName))
         label = wxGenStaticText(parent, -1, lbl,
                                 size=(_label_initial_width, -1))
         if self.can_disable:
@@ -202,7 +206,7 @@ class TextProperty(Property, _activator):
         if hasattr(self, 'tooltip'):
             label.SetToolTip(wx.ToolTip(self.tooltip))
         else:
-            label.SetToolTip(wx.ToolTip(_mangle(self.name)))
+            label.SetToolTip(wx.ToolTip(_mangle(self.dispName)))
         if self.can_disable:
             wx.EVT_CHECKBOX(self._enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
@@ -268,7 +272,7 @@ class CheckBoxProperty(Property):
     """
     def __init__(self, owner, name, parent=None, label=None,
                  write_always=False):
-        Property.__init__(self, owner, name, parent)
+        Property.__init__(self, owner, name, parent, label=label)
         self.val = int(owner[name][0]())
         if label is None: label = _mangle(name)
         self.label = label
@@ -335,7 +339,7 @@ class CheckListProperty(Property):
         @param tooltips: a list of strings to be displayed as the tool-tips for
         the properties
         """ #" # ALB - fix for emacs's syntax highlight, don't remove please!
-        Property.__init__(self, owner, name, parent)
+        Property.__init__(self, owner, name, parent, label=None)
         self.values = owner[name][0]()
         self.labels = labels
         self.tooltips = tooltips
@@ -363,7 +367,7 @@ class CheckListProperty(Property):
             if self.labels[i].startswith('#section#'):
                 if tmp != tmp_sizer:
                     tmp_sizer.Add(tmp, 1, wx.ALL|wx.EXPAND, 5)
-                lbl = _mangle(self.labels[i].replace('#section#', ''))
+                lbl = _mangle(self.labels[i].replace(u'#section#', ''))
                 s = wx.FULL_REPAINT_ON_RESIZE
                 tmp = wx.StaticBoxSizer(wx.StaticBox(parent, -1, lbl, style=s),
                                        wx.VERTICAL)
@@ -439,9 +443,9 @@ class SpinProperty(Property, _activator):
     Properties associated to a spin control.
     """
     def __init__(self, owner, name, parent=None, can_disable=False,
-                 r=None, enabled=False, immediate=False):
+                 r=None, enabled=False, immediate=False, label=None):
         # r = range of the spin (min, max)
-        Property.__init__(self, owner, name, parent)
+        Property.__init__(self, owner, name, parent, label=label)
         self.can_disable = can_disable
         self.immediate = immediate # if true, changes to this property have an
                                    # immediate effect (instead of waiting the
@@ -464,7 +468,7 @@ class SpinProperty(Property, _activator):
         self.id = wx.NewId()
         if self.val_range is None: self.val_range = (0, 1000)
         lbl = getattr(self, 'label', None)
-        if lbl is None: lbl = _mangle(self.name)
+        if lbl is None: lbl = _mangle(self.dispName)
         label = wxGenStaticText(parent, -1, lbl,
                                 size=(_label_initial_width, -1))
         tip = getattr(self, 'tooltip', None)
@@ -533,8 +537,8 @@ class DialogProperty(Property, _activator):
     get_value method.
     """
     def __init__(self, owner, name, parent, dialog, can_disable=False,
-                 enabled=False):
-        Property.__init__(self, owner, name, parent)
+                 enabled=False, label=None):
+        Property.__init__(self, owner, name, parent, label=label)
         self.dialog = dialog
         self.panel = None
         self.can_disable = can_disable
@@ -550,9 +554,9 @@ class DialogProperty(Property, _activator):
         """
         self.id = wx.NewId()
         val = misc.wxstr(self.owner[self.name][0]())
-        label = wxGenStaticText(parent, -1, _mangle(self.name),
+        label = wxGenStaticText(parent, -1, _mangle(self.dispName),
                                 size=(_label_initial_width, -1))
-        label.SetToolTip(wx.ToolTip(_mangle(self.name)))
+        label.SetToolTip(wx.ToolTip(_mangle(self.dispName)))
         if self.can_disable:
             self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
         self.text = wx.TextCtrl(parent, self.id, val, size=(1, -1))
@@ -622,7 +626,7 @@ class FileDialogProperty(DialogProperty):
     dialog = [None]
 
     class FileDialog:
-        def __init__(self, parent, message, wildcard, style):
+        def __init__(self, parent, message, wildcard, style, label=None):
             self.parent = parent
             self.message = message
             self.wildcard = wildcard
@@ -641,7 +645,7 @@ class FileDialogProperty(DialogProperty):
     # end of class FileDialog
     
     def __init__(self, owner, name, parent=None, wildcard=_("All Files|*"),
-                 message=_("Choose a file"), can_disable=True, style=0):
+                 message=_("Choose a file"), can_disable=True, style=0, label=None):
         if not self.dialog[0]:
 ##             self.dialog[0] = wxFileDialog(parent, message,
 ##                                           wildcard=wildcard, style=style)
@@ -649,7 +653,7 @@ class FileDialogProperty(DialogProperty):
             self.dialog[0] = self.FileDialog(
                 parent, message, wildcard, style)
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
-                                can_disable)
+                                can_disable, label=label)
 
 # end of class FileDialogProperty
 
@@ -695,12 +699,12 @@ class ColorDialogProperty(DialogProperty):
     colors_to_str = _reverse_dict(str_to_colors)
 
     dialog = [None]
-    def __init__(self, owner, name, parent=None, can_disable=True):
+    def __init__(self, owner, name, parent=None, can_disable=True, label=None):
         if not self.dialog[0]:
             from color_dialog import wxGladeColorDialog
             self.dialog[0] = wxGladeColorDialog(self.str_to_colors)
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
-                                can_disable)
+                                can_disable, label=label)
 
     def display_dialog(self, event):
         self.dialog.set_value(self.get_value())
@@ -741,12 +745,12 @@ class FontDialogProperty(DialogProperty):
 
     dialog = [None]
 
-    def __init__(self, owner, name, parent=None, can_disable=True):
+    def __init__(self, owner, name, parent=None, can_disable=True, label=None):
         if not self.dialog[0]:
             import font_dialog
             self.dialog[0] = font_dialog.wxGladeFontDialog(parent, -1, "")
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
-                                can_disable)
+                                can_disable, label=label)
 
     def display_dialog(self, event):
         try: props = eval(self.get_value())
@@ -801,7 +805,7 @@ class RadioProperty(Property, _activator):
     """
     def __init__(self, owner, name, parent, choices, can_disable=False,
                  enabled=False, columns=1, label=None):
-        Property.__init__(self, owner, name, parent)
+        Property.__init__(self, owner, name, parent, label=label)
         self.can_disable = can_disable
         _activator.__init__(self)
         if can_disable: self.toggle_active(enabled)
@@ -820,7 +824,7 @@ class RadioProperty(Property, _activator):
         interactively
         """
         self.id = wx.NewId()
-        style = wx.RA_SPECIFY_COLS|wx.NO_BORDER
+        style = wx.RA_SPECIFY_COLS|wx.NO_BORDER|wx.CLIP_CHILDREN
         if not self.can_disable: 
             szr = wx.BoxSizer(wx.HORIZONTAL)
             style=wx.RA_SPECIFY_COLS
@@ -893,12 +897,12 @@ class GridProperty(Property):
                   lambda g, c: g.SetColFormatFloat(c),
                   lambda g, c: g.SetColFormatBool(c)]
     def __init__(self, owner, name, parent, cols, rows=1, can_add=True,
-                 can_remove=True, can_insert=True):
+                 can_remove=True, can_insert=True, label=None):
         # cols: list of 2-tuples with these fields:
         #     - label for the column
         #     - type: GridProperty.STRING, GridProperty.INT, GridProperty.FLOAT
         # rows: number of rows
-        Property.__init__(self, owner, name, parent)
+        Property.__init__(self, owner, name, parent, label=label)
         self.val = owner[name][0]()
         self.set_value(self.val)
         self.rows, self.cols = rows, cols
@@ -916,7 +920,7 @@ class GridProperty(Property):
         """
         self.panel = wx.Panel(parent, -1) # why if the grid is not on this
                                           # panel it is not displayed???
-        label = getattr(self, 'label', _mangle(self.name))
+        label = getattr(self, 'label', _mangle(self.dispName))
         sizer = wx.StaticBoxSizer(wx.StaticBox(self.panel, -1, label),
                                   wx.VERTICAL)
         self.btn_id = wx.NewId()
@@ -1087,7 +1091,7 @@ class ComboBoxProperty(Property, _activator):
     def __init__(self, owner, name, choices, parent=None, label=None,
                  can_disable=False, enabled=False,
                  write_always=False):
-        Property.__init__(self, owner, name, parent)
+        Property.__init__(self, owner, name, parent, label=label)
         self.val = misc.wxstr(owner[name][0]())
         if label is None: label = _mangle(name)
         self.label = label

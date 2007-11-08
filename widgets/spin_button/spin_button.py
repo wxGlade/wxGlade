@@ -33,13 +33,13 @@ class EditSpinButton(ManagedBase):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
-        style_labels = ('#section#Style', 'wxSP_HORIZONTAL', 'wxSP_VERTICAL',
+        style_labels = ('#section#' + _('Style'), 'wxSP_HORIZONTAL', 'wxSP_VERTICAL',
                         'wxSP_ARROW_KEYS', 'wxSP_WRAP')
         self.style_pos = (wx.SP_HORIZONTAL, wx.SP_VERTICAL, wx.SP_ARROW_KEYS,
                           wx.SP_WRAP)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
-        prop['range'] = TextProperty(self, 'range', None, can_disable=True)
-        prop['value'] = SpinProperty(self, 'value', None, can_disable=True)
+        prop['range'] = TextProperty(self, 'range', None, can_disable=True, label=_("range"))
+        prop['value'] = SpinProperty(self, 'value', None, can_disable=True, label=_("value"))
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -131,9 +131,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     text = EditSpinButton(name, parent, wx.NewId(), sizer, pos,
                         common.property_panel)
     sizer.set_item(text.pos, option=sizeritem.option, flag=sizeritem.flag,

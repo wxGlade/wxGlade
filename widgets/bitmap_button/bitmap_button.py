@@ -31,16 +31,16 @@ class EditBitmapButton(ManagedBase):
         self.properties['bitmap'] = FileDialogProperty(self, 'bitmap', None,
                                                        style=wx.OPEN |
                                                        wx.FILE_MUST_EXIST,
-                                                       can_disable=False)
+                                                       can_disable=False, label=_("bitmap"))
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['default'] = CheckBoxProperty(self, 'default', None)
+        self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("default"))
         # 2003-08-07: added 'disabled_bitmap' property
         self.disabled_bitmap = ""
         self.access_functions['disabled_bitmap'] = (self.get_disabled_bitmap,
                                                     self.set_disabled_bitmap)
         self.properties['disabled_bitmap'] = FileDialogProperty(
-            self, 'disabled_bitmap', None, style=wx.OPEN|wx.FILE_MUST_EXIST)
+            self, 'disabled_bitmap', None, style=wx.OPEN|wx.FILE_MUST_EXIST, label=_("disabled bitmap"))
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -48,22 +48,22 @@ class EditBitmapButton(ManagedBase):
         
         self.style_pos = (wx.BU_AUTODRAW, wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP,
             wx.BU_BOTTOM, wx.NO_BORDER)
-        style_labels = ('#section#Style', 'wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT', 
+        style_labels = ('#section#' + _('Style'), 'wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT', 
             'wxBU_TOP', 'wxBU_BOTTOM', 'wxNO_BORDER')
         
         #The tooltips tuple
-        self.tooltips=("If this is specified, the button will be drawn "
+        self.tooltips=(_("If this is specified, the button will be drawn "
                         "automatically using the label bitmap only, providing"
                         " a 3D-look border. If this style is not specified, the "
                         "button will be drawn without borders and using all "
                         "provided bitmaps. WIN32 only."
-                        "Left-justifies the bitmap label. WIN32 only.",
-                        "Right-justifies the bitmap label. WIN32 only.",
-                        "Aligns the bitmap label to the top of the button."
-                        " WIN32 only.",
-                        "Aligns the bitmap label to the bottom of the button."
-                        " WIN32 only.",
-                        "Creates a flat button. Windows and GTK+ only.")
+                        "Left-justifies the bitmap label. WIN32 only."),
+                        _("Right-justifies the bitmap label. WIN32 only."),
+                        _("Aligns the bitmap label to the top of the button."
+                        " WIN32 only."),
+                        _("Aligns the bitmap label to the bottom of the button."
+                        " WIN32 only."),
+                        _("Creates a flat button. Windows and GTK+ only."))
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels,tooltips=self.tooltips)
 
@@ -178,9 +178,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos,
                               common.property_panel, show=False)
     sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,

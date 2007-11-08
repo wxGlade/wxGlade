@@ -334,7 +334,7 @@ def load_history():
                 #l = [common._encode_from_xml(e, encoding) for e in l[1:]]
                 l = [e.decode(encoding) for e in l[1:]]
             except Exception, e:
-                print "ERR:", e
+                print _("ERR:"), e
                 l = l[1:]
         history.close()
         if common.use_gui:

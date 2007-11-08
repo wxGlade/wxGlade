@@ -25,7 +25,7 @@ class EditGauge(ManagedBase):
         prop = self.properties
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['range'] = (self.get_range, self.set_range)
-        style_labels = ('#section#Style', 'wxGA_HORIZONTAL', 'wxGA_VERTICAL',
+        style_labels = ('#section#' + _('Style'), 'wxGA_HORIZONTAL', 'wxGA_VERTICAL',
                         'wxGA_PROGRESSBAR', 'wxGA_SMOOTH')
         self.style_pos = (wx.GA_HORIZONTAL, wx.GA_VERTICAL,
                           wx.GA_PROGRESSBAR, wx.GA_SMOOTH)
@@ -34,7 +34,7 @@ class EditGauge(ManagedBase):
                      _("Under Windows 95, creates a horizontal progress bar."),
                      _("Creates smooth progress bar with one pixel wide update step (not supported by all platforms)."))
         prop['style'] = CheckListProperty(self, 'style', None, style_labels,tooltips=self.tooltips)
-        prop['range'] = SpinProperty(self, 'range', None)
+        prop['range'] = SpinProperty(self, 'range', None, label=_("range"))
 
     def create_widget(self):
         self.widget = wx.Gauge(self.parent.widget, self.id, self.range,
@@ -92,7 +92,7 @@ def builder(parent, sizer, pos, number=[1]):
             self.orientations = [ wx.GA_HORIZONTAL, wx.GA_VERTICAL ]
             self.orientation = wx.GA_HORIZONTAL
             prop = RadioProperty(self, 'orientation', self,
-                                 ['wxGA_HORIZONTAL', 'wxGA_VERTICAL'])
+                                 ['wxGA_HORIZONTAL', 'wxGA_VERTICAL'], label=_("orientation"))
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
             style_labels = ('#section#', 'wxGA_PROGRESSBAR', 'wxGA_SMOOTH')
@@ -156,10 +156,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     style = 0
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     gauge = EditGauge(name, parent, wx.NewId(), style, sizer,
                       pos, common.property_panel) 
     sizer.set_item(gauge.pos, option=sizeritem.option,

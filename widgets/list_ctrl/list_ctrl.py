@@ -56,7 +56,7 @@ class EditListCtrl(ManagedBase):
                            wx.STATIC_BORDER, wx.NO_BORDER,
                            wx.WANTS_CHARS, wx.NO_FULL_REPAINT_ON_RESIZE,
                            wx.FULL_REPAINT_ON_RESIZE)
-        style_labels = ('#section#Style',
+        style_labels = ('#section#' + _('Style'),
                         'wxLC_LIST', 'wxLC_REPORT', 'wxLC_ICON',
                         'wxLC_VIRTUAL', 'wxLC_SMALL_ICON',
                         'wxLC_ALIGN_TOP', 'wxLC_ALIGN_LEFT',
@@ -99,7 +99,7 @@ class EditListCtrl(ManagedBase):
         self.widget = wx.ListCtrl(self.parent.widget, self.id,
                                  style=wx.LC_REPORT|wx.SUNKEN_BORDER)
         # add a couple of columns just for a better appearence (for now)
-        self.widget.InsertColumn(0, 'List Control:')
+        self.widget.InsertColumn(0, _('List Control:'))
         self.widget.InsertColumn(1, self.name)
         wx.EVT_LIST_COL_CLICK(self.widget, self.widget.GetId(),
                               self.on_set_focus)
@@ -174,9 +174,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos,
                              common.property_panel, style=0)
     sizer.set_item(list_ctrl.pos, option=sizeritem.option, flag=sizeritem.flag,

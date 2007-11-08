@@ -112,7 +112,7 @@ class Tree:
                         # itself a dictionary, one for each toplevel widget...
 
     def _find_toplevel(self, node):
-        assert node is not None, "None node in _find_toplevel"
+        assert node is not None, _("None node in _find_toplevel")
         if node.parent is self.root:
             return node.parent
         while node.parent is not self.root:

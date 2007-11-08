@@ -50,9 +50,9 @@ class EditBase(EventsMixin):
 
         # these two properties are special and are not listed in
         # 'self.properties'
-        self.name_prop = TextProperty(self, 'name', None)
+        self.name_prop = TextProperty(self, 'name', None, label=_("name"))
         self.klass_prop = TextProperty(self, 'class', None,
-                                       readonly=not custom_class)
+                                       readonly=not custom_class, label=_("class"))
         if custom_class:
             self.klass_prop.tooltip = _("If you change the default value, " \
                                       "it will be interpreted as the name " \
@@ -71,12 +71,12 @@ class EditBase(EventsMixin):
                                                     set_custom_base)
             p = self.properties['custom_base'] = TextProperty(
                 self, 'custom_base', can_disable=True, enabled=False)
-            p.label = 'Base class(es)'
-            p.tooltip = """\
+            p.label = _('Base class(es)')
+            p.tooltip = _("""\
 A comma-separated list of custom base classes. The first will be invoked \
 with the same parameters as this class, while for the others the default \
 constructor will be used. You should probably not use this if \
-"overwrite existing sources" is not set."""
+"overwrite existing sources" is not set.""")
             
         self.notebook = None
         self.property_window = property_window
@@ -425,27 +425,27 @@ class WindowBase(EditBase):
 
         prop = self.properties
         prop['id'] = TextProperty(self, 'id', None, can_disable=True)
-        prop['size'] = TextProperty(self, 'size', None, can_disable=True)
-        prop['background'] = ColorDialogProperty(self, "background", None)
-        prop['foreground'] = ColorDialogProperty(self, "foreground", None)
-        prop['font'] = FontDialogProperty(self, "font", None)
+        prop['size'] = TextProperty(self, 'size', None, can_disable=True, label=_("size"))
+        prop['background'] = ColorDialogProperty(self, "background", None, label=_("background"))
+        prop['foreground'] = ColorDialogProperty(self, "foreground", None, label=_("foreground"))
+        prop['font'] = FontDialogProperty(self, "font", None, label=_("font"))
 
         # properties added 2002-08-15
-        prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True)
+        prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True,  label=_('tooltip'))
 
         # properties added 2003-05-15
         self.disabled_p = False
         self.access_functions['disabled'] = (self.get_disabled,
                                              self.set_disabled)
-        prop['disabled'] = CheckBoxProperty(self, 'disabled', None)
+        prop['disabled'] = CheckBoxProperty(self, 'disabled', None, _('disabled'))
         
         self.focused_p = False
         self.access_functions['focused'] = (self.get_focused, self.set_focused)
-        prop['focused'] = CheckBoxProperty(self, 'focused', None)
+        prop['focused'] = CheckBoxProperty(self, 'focused', None, _('focused'))
 
         self.hidden_p = False
         self.access_functions['hidden'] = (self.get_hidden, self.set_hidden)
-        prop['hidden'] = CheckBoxProperty(self, 'hidden', None)
+        prop['hidden'] = CheckBoxProperty(self, 'hidden', None, _('hidden'))
 
         
 
@@ -789,11 +789,11 @@ class ManagedBase(WindowBase):
                           wx.EXPAND, wx.ALIGN_RIGHT, wx.ALIGN_BOTTOM,
                           wx.ALIGN_CENTER_HORIZONTAL, wx.ALIGN_CENTER_VERTICAL,
                           wx.SHAPED, wx.ADJUST_MINSIZE)
-        flag_labels = ('#section#Border',
+        flag_labels = (u'#section#' + _('Border'),
                        'wxALL',
                        'wxLEFT', 'wxRIGHT',
                        'wxTOP', 'wxBOTTOM',
-                       '#section#Alignment', 'wxEXPAND', 'wxALIGN_RIGHT',
+                       u'#section#' + _('Alignment'), 'wxEXPAND', 'wxALIGN_RIGHT',
                        'wxALIGN_BOTTOM', 'wxALIGN_CENTER_HORIZONTAL',
                        'wxALIGN_CENTER_VERTICAL', 'wxSHAPED',
                        'wxADJUST_MINSIZE')
@@ -805,13 +805,13 @@ class ManagedBase(WindowBase):
         sizer.add_item(self, pos)
 
         szprop = self.sizer_properties
-        #szprop['option'] = SpinProperty(self, "option", None, 0, (0, 1000))
+        #szprop['option'] = SpinProperty(self, _("option"), None, 0, (0, 1000))
         from layout_option_property import LayoutOptionProperty, \
              LayoutPosProperty
         szprop['option'] = LayoutOptionProperty(self, sizer)
         
         szprop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
-        szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000))
+        szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000), label=_('border'))
 ##         pos_p = szprop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
 ##         def write(*args, **kwds): pass
 ##         pos_p.write = write # no need to save the position
@@ -863,7 +863,7 @@ class ManagedBase(WindowBase):
         sizer_tmp.Fit(panel)
 
         w, h = panel.GetClientSize()
-        self.notebook.AddPage(panel, "Layout")
+        self.notebook.AddPage(panel, _("Layout"))
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
         
     def update_view(self, selected):
@@ -1057,7 +1057,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             if title is None: title = self.name
             self.title = title
             self.access_functions['title'] = (self.get_title, self.set_title)
-            self.properties['title'] = TextProperty(self, 'title', None)
+            self.properties['title'] = TextProperty(self, 'title', None, label=_("title"))
         self.sizer = None # sizer that controls the layout of the children
                           # of the window
         PreviewMixin.__init__(self)

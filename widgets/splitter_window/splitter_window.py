@@ -115,7 +115,7 @@ class EditSplitterWindow(ManagedBase):
                            wx.SP_BORDER, wx.SP_NOBORDER,
                            wx.SP_PERMIT_UNSPLIT, wx.SP_LIVE_UPDATE,
                            wx.CLIP_CHILDREN)
-        style_labels = ('#section#Style', 'wxSP_3D', 'wxSP_3DSASH',
+        style_labels = ('#section#' + _('Style'), 'wxSP_3D', 'wxSP_3DSASH',
                         'wxSP_3DBORDER', #'wxSP_FULLSASH',
                         'wxSP_BORDER',
                         'wxSP_NOBORDER', 'wxSP_PERMIT_UNSPLIT',
@@ -128,7 +128,7 @@ class EditSplitterWindow(ManagedBase):
         else: od = 'wxSPLIT_VERTICAL'
         self.access_functions['orientation'] = (self.get_orientation,
                                                 self.set_orientation)
-        self.properties['orientation'] = HiddenProperty(self, 'orientation')
+        self.properties['orientation'] = HiddenProperty(self, 'orientation', label=_("orientation"))
 
         self.access_functions['window_1'] = (self.get_win_1, lambda v: None)
         self.access_functions['window_2'] = (self.get_win_2, lambda v: None)
@@ -139,13 +139,13 @@ class EditSplitterWindow(ManagedBase):
 
         self.properties['sash_pos'] = SpinProperty(self, 'sash_pos', None,
                                                    r=(0, 20),
-                                                   can_disable=True) 
+                                                   can_disable=True, label=_("sash_pos")) 
         self.no_custom_class = False
         self.access_functions['no_custom_class'] = (self.get_no_custom_class,
                                                     self.set_no_custom_class)
         self.properties['no_custom_class'] = CheckBoxProperty(
             self, 'no_custom_class',
-            label="Don't generate code for this custom class")
+            label=_("Don't generate code for this custom class"))
 
     def create_widget(self):
         self.widget = wx.SplitterWindow(self.parent.widget, self.id,
@@ -300,10 +300,10 @@ def builder(parent, sizer, pos, number=[1]):
             self.orientations = [ wx.SPLIT_VERTICAL, wx.SPLIT_HORIZONTAL ]
             self.orientation = wx.SPLIT_VERTICAL
             prop = RadioProperty(self, 'orientation', self,
-                                 ['wxSPLIT_VERTICAL', 'wxSPLIT_HORIZONTAL'])
+                                 ['wxSPLIT_VERTICAL', 'wxSPLIT_HORIZONTAL'], label=_("orientation"))
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
-            btn = wx.Button(self, wx.ID_OK, 'OK')
+            btn = wx.Button(self, wx.ID_OK, _('OK'))
             btn.SetDefault()
             szr.Add(btn, 0, wx.BOTTOM|wx.ALIGN_CENTER, 10)
             self.SetAutoLayout(True)
@@ -366,9 +366,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if not sizer or not sizeritem:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     window = EditSplitterWindow(name, parent, wx.NewId(), None, None, None,
                                 wx.SPLIT_VERTICAL,
                                 sizer, pos, common.property_panel, True)

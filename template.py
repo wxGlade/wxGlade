@@ -198,7 +198,7 @@ def save_template(data=None):
             try:
                 os.mkdir(d)
             except (OSError, IOError), e:
-                print "ERROR creating %s: %s" % (d, e)
+                print _("ERROR creating %s: %s") % (d, e)
                 return None, retdata
         ret = os.path.join(d, ret + '.wgt')
     if ret and os.path.exists(ret) and \

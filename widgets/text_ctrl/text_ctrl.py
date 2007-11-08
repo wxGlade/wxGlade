@@ -35,14 +35,14 @@ class EditTextCtrl(ManagedBase):
         prop = self.properties
         # value property
         prop['value'] = TextProperty(self, 'value', None,
-                                     multiline=True)
+                                     multiline=True, label=_("value"))
         # style property
         self.style_pos  = (wx.TE_PROCESS_ENTER, wx.TE_PROCESS_TAB,
                            wx.TE_MULTILINE,wx.TE_PASSWORD, wx.TE_READONLY,
                            wx.HSCROLL, wx.TE_RICH, wx.TE_RICH2, wx.TE_AUTO_URL,
                            wx.TE_NOHIDESEL, wx.TE_CENTRE, wx.TE_RIGHT,
                            wx.TE_LINEWRAP, wx.TE_WORDWRAP, wx.NO_BORDER)
-        style_labels = ('#section#Style', 'wxTE_PROCESS_ENTER',
+        style_labels = ('#section#' + _('Style'), 'wxTE_PROCESS_ENTER',
                         'wxTE_PROCESS_TAB', 'wxTE_MULTILINE', 'wxTE_PASSWORD',
                         'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH',
                         'wxTE_RICH2', 'wxTE_AUTO_URL', 'wxTE_NOHIDESEL',
@@ -145,9 +145,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos,
                         common.property_panel)
     sizer.set_item(text.pos, option=sizeritem.option, flag=sizeritem.flag,

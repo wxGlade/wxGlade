@@ -35,32 +35,32 @@ class EditButton(ManagedBase):
                                               self.set_stockitem)
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['default'] = CheckBoxProperty(self, 'default', None)
+        self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("default"))
 
         #Get the list of items, and add a 'None'
         choices = ButtonStockItems.stock_ids.keys()
         choices.sort()
         choices[:0] = ['None']
         self.properties['stockitem'] = ComboBoxProperty(
-            self, 'stockitem', choices, can_disable=True)
+            self, 'stockitem', choices, can_disable=True, label=_("stockitem"))
 
         self.style_pos = (wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP, wx.BU_BOTTOM,
             wx.BU_EXACTFIT,wx.NO_BORDER)
-        style_labels = ('#section#Style', 'wxBU_LEFT', 'wxBU_RIGHT', 
+        style_labels = ('#section#' + _('Style'), 'wxBU_LEFT', 'wxBU_RIGHT', 
             'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT','wxNO_BORDER')
         
         #The tooltips tuple
-        style_tooltips=("Left-justifies the label. Windows and GTK+ only.",
-                        "Right-justifies the bitmap label. Windows and GTK+ "
-                        "only.",
-                        "Aligns the label to the top of the button. Windows "
-                        "and GTK+ only.",
-                        "Aligns the label to the bottom of the button. "
-                        "Windows and GTK+ only.",
-                        "Creates the button as small as possible instead of "
+        style_tooltips=(_("Left-justifies the label. Windows and GTK+ only."),
+                        _("Right-justifies the bitmap label. Windows and GTK+ "
+                        "only."),
+                        _("Aligns the label to the top of the button. Windows "
+                        "and GTK+ only."),
+                        _("Aligns the label to the bottom of the button. "
+                        "Windows and GTK+ only."),
+                        _("Creates the button as small as possible instead of "
                         "making it of the standard size (which is the default "
-                        "behaviour ).",
-                        "Creates a flat button. Windows and GTK+ only.")
+                        "behaviour )."),
+                        _("Creates a flat button. Windows and GTK+ only."))
         self.properties['style'] = CheckListProperty(
             self, 'style', None,
             style_labels, tooltips=style_tooltips) # the tooltips tuple is
@@ -179,9 +179,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     button = EditButton(label, parent, wx.NewId(), '', sizer,
                         pos, common.property_panel, show=False)
     node = Tree.Node(button)

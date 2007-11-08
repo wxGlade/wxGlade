@@ -137,19 +137,19 @@ class TemplateListDialog(wx.Dialog):
         # end wxGlade
 
     def on_open(self, event): # wxGlade: TemplateListDialog.<event_handler>
-        print "Event handler `on_open' not implemented!"
+        print _("Event handler `on_open' not implemented!")
         event.Skip()
 
     def on_select_template(self, event): # wxGlade: TemplateListDialog.<event_handler>
-        print "Event handler `on_select_template' not implemented!"
+        print _("Event handler `on_select_template' not implemented!")
         event.Skip()
 
     def on_edit(self, event): # wxGlade: TemplateListDialog.<event_handler>
-        print "Event handler `on_edit' not implemented!"
+        print _("Event handler `on_edit' not implemented!")
         event.Skip()
 
     def on_delete(self, event): # wxGlade: TemplateListDialog.<event_handler>
-        print "Event handler `on_delete' not implemented!"
+        print _("Event handler `on_delete' not implemented!")
         event.Skip()
 
 # end of class TemplateListDialog

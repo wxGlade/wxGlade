@@ -159,7 +159,7 @@ def get_toplevel_widget(widget):
     from edit_sizers import Sizer
     if isinstance(widget, Sizer):
         widget = widget.window
-    assert isinstance(widget, EditBase), "EditBase or SizerBase object needed"
+    assert isinstance(widget, EditBase), _("EditBase or SizerBase object needed")
     while widget and not isinstance(widget, TopLevelBase):
         widget = widget.parent
     return widget
@@ -207,7 +207,7 @@ if not check_wx_version(2, 3, 3):
         method calls from non-GUI threads.
         """
         app = wxGetApp()
-        assert app, 'No wxApp created yet'
+        assert app, _('No wxApp created yet')
 
         global _wxCallAfterId
         if _wxCallAfterId is None:

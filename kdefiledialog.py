@@ -76,7 +76,7 @@ def kde_file_selector(message, default_path="", default_filename="",
                os.path.exists(filename):
             if wx.MessageBox(_("File '%s' already exists: do you really want "
                                "to overwrite it?") % misc.wxstr(filename),
-                             "Confirm",
+                             _("Confirm"),
                              style=wx.YES_NO|wx.ICON_QUESTION) == wx.NO:
                 return kde_file_selector(message, default_path,
                                          default_filename, default_extension,
@@ -179,13 +179,13 @@ if __name__ == '__main__':
     def on_click2(event):
         filename = wx.FileSelector(
             'Select file to save', '', 'prova.py',
-            wildcard="Python files|*.py;*.pyc|All files|*",
+            wildcard=_("Python files|*.py;*.pyc|All files|*"),
             flags=wx.SAVE|wx.OVERWRITE_PROMPT)
         if filename:
-            wx.MessageBox('You selected file: %s' % filename,
+            wx.MessageBox(_('You selected file: %s') % filename,
                           style=wx.OK|wx.ICON_INFORMATION)
         else:
-            wx.MessageBox('No files selected!',
+            wx.MessageBox(_('No files selected!'),
                           style=wx.OK|wx.ICON_EXCLAMATION)
             
 
