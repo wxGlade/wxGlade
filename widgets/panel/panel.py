@@ -28,7 +28,7 @@ class PanelBase(object):
                                                     self.set_no_custom_class)
         self.properties['no_custom_class'] = CheckBoxProperty(
             self, 'no_custom_class',
-            label="Don't generate code for this custom class")
+            label=_("Don't generate code for this custom class"))
         # ------
         self.style = style
         self.access_functions['style'] = (self.get_style, self.set_style)
@@ -39,7 +39,7 @@ class PanelBase(object):
                            wx.NO_FULL_REPAINT_ON_RESIZE,
                            wx.FULL_REPAINT_ON_RESIZE,
                            wx.CLIP_CHILDREN]
-        style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
+        style_labels = ('#section#' + _('Style'), 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
                         'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
                         'wxSTATIC_BORDER',
                         'wxNO_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
@@ -52,12 +52,12 @@ class PanelBase(object):
                                                self.set_scrollable)
         self.scrollable = False
         self.properties['scrollable'] = CheckBoxProperty(
-            self, 'scrollable', None)
+            self, 'scrollable', None, label=_("scrollable"))
         self.scroll_rate = (10, 10)
         self.access_functions['scroll_rate'] = (self.get_scroll_rate,
                                                 self.set_scroll_rate)
         self.properties['scroll_rate'] = TextProperty(self, 'scroll_rate',
-                                                      None, can_disable=True)
+                                                      None, can_disable=True, label=_("scroll_rate"))
 
     def finish_widget_creation(self):
         super(PanelBase, self).finish_widget_creation(
@@ -69,7 +69,7 @@ class PanelBase(object):
         # this must be done here since ManagedBase.finish_widget_creation
         # normally sets EVT_LEFT_DOWN to update_wiew
         if not self.widget.Disconnect(-1, -1, wx.wxEVT_LEFT_DOWN):
-            print "EditPanel: Unable to disconnect the event hanlder"
+            print _("EditPanel: Unable to disconnect the event hanlder")
         wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         #wx.EVT_SCROLLWIN(self.widget, self._update_markers)
 
@@ -94,9 +94,9 @@ class PanelBase(object):
         szr.Add(self.properties['no_custom_class'].panel, 0, wx.EXPAND)
         label = self.properties['no_custom_class'].cb
         label.SetToolTip(
-            wx.ToolTip('If this is a custom class, setting this property '
+            wx.ToolTip(_('If this is a custom class, setting this property '
                        'prevents wxGlade\nfrom generating the class definition'
-                       ' code'))
+                       ' code')))
         self.properties['style'].display(panel)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         self.properties['scrollable'].display(panel)
@@ -279,7 +279,7 @@ class EditPanel(PanelBase, ManagedBase):
                 common.app_tree.app.saved = False
                 self.widget.SetSize(size)
         except xml_parse.XmlParsingError, e:
-            print '\nwxGlade-WARNING: only sizers can be pasted here'
+            print _('\nwxGlade-WARNING: only sizers can be pasted here')
             
 # end of class EditPanel
 
@@ -388,9 +388,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if not sizer or not sizeritem:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     panel = EditPanel(name, parent, wx.NewId(), sizer, pos,
                       common.property_panel, True, style=0)
     sizer.set_item(panel.pos, option=sizeritem.option, flag=sizeritem.flag,
@@ -405,7 +405,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 def xml_toplevel_builder(attrs, parent, sizer, sizeritem, pos=None):
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     panel = EditTopLevelPanel(label, parent, wx.NewId(), common.property_panel,
                               show=False, style=0)
     node = Tree.Node(panel)

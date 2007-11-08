@@ -63,7 +63,7 @@ class CustomWidget(ManagedBase):
         
         cols = [('Arguments', GridProperty.STRING)]
         self.properties['arguments'] = ArgumentsProperty(self, 'arguments',
-                                                         None, cols, 2)
+                                                         None, cols, 2, label=_("arguments"))
 
     def set_klass(self, value):
         ManagedBase.set_klass(self, value)
@@ -87,7 +87,7 @@ class CustomWidget(ManagedBase):
         w, h = self.widget.GetClientSize()
         dc.DrawLine(0, 0, w, h)
         dc.DrawLine(w, 0, 0, h)
-        text = 'Custom Widget: %s' % self.klass
+        text = _('Custom Widget: %s') % self.klass
         tw, th = dc.GetTextExtent(text)
         x = (w - tw)/2
         y = (h - th)/2
@@ -103,8 +103,8 @@ class CustomWidget(ManagedBase):
         args = self.properties['arguments']
         args.display(panel)
         szr.Add(args.panel, 1, wx.ALL|wx.EXPAND, 5)
-        help_btn = wx.Button(panel, -1, 'Help on "Arguments" property')
-        text = """\
+        help_btn = wx.Button(panel, -1, _('Help on "Arguments" property'))
+        text = _("""\
 The 'Arguments' property behaves differently when generating
 XRC code wrt C++ or python: you can use it to add custom attributes
 to the resource object. To do so, arguments must have the following
@@ -113,9 +113,9 @@ For instance:
     default_value: 10
 is translated to:
     <default_value>10</default_value>
-Invalid entries are silently ignored"""
+Invalid entries are silently ignored""")
         def show_help(event):
-            wx.MessageBox(text, 'Help on "Arguments" property',
+            wx.MessageBox(text, _('Help on "Arguments" property'),
                          wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
         wx.EVT_BUTTON(help_btn, -1, show_help)
         szr.Add(help_btn, 0, wx.BOTTOM|wx.LEFT|wx.RIGHT|wx.EXPAND, 5)
@@ -144,15 +144,15 @@ def builder(parent, sizer, pos, number=[1]):
     """
     class Dialog(wx.Dialog):
         def __init__(self, number=[0]):
-            title = 'Select widget class'
+            title = _('Select widget class')
             wx.Dialog.__init__(self, None, -1, title)
             self.klass = 'CustomWidget'
             if number[0]: self.klass = 'CustomWidget%s' % (number[0]-1)
             number[0] += 1
-            klass_prop = TextProperty(self, 'class', self)
+            klass_prop = TextProperty(self, 'class', self, label=_("class"))
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(klass_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
-            szr.Add(wx.Button(self, wx.ID_OK, 'OK'), 0,
+            szr.Add(wx.Button(self, wx.ID_OK, _('OK')), 0,
                     wx.ALL|wx.ALIGN_CENTER, 5)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
@@ -192,9 +192,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if not sizer or not sizeritem:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos,
                        common.property_panel, True)
     sizer.set_item(win.pos, option=sizeritem.option, flag=sizeritem.flag,

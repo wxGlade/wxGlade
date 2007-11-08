@@ -50,14 +50,14 @@ class _MyBrowseButton(FileBrowseButton):
 
 class ToolsDialog(wx.Dialog):
     def __init__(self, parent, owner, items=None):
-        wx.Dialog.__init__(self, parent, -1, "Toolbar editor",
+        wx.Dialog.__init__(self, parent, -1, _("Toolbar editor"),
                           style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
         ADD_ID, REMOVE_ID, NAME_ID, LABEL_ID, ID_ID, CHECK_RADIO_ID, LIST_ID, \
                 ADD_SEP_ID, MOVE_UP_ID, MOVE_DOWN_ID, HELP_STR_ID, \
                 LONG_HELP_STR_ID, BITMAP1_ID, BITMAP2_ID \
                 = [wx.NewId() for i in range(14)]
 
-        self._staticbox = wx.StaticBox(self, -1, "Tool:")
+        self._staticbox = wx.StaticBox(self, -1, _("Tool:"))
 
         self.owner = owner
         
@@ -66,15 +66,15 @@ class ToolsDialog(wx.Dialog):
                                      size=(300, -1))
         self.selected_index = -1 # index of the selected element in the 
                                  # wxListCtrl 
-        self.tool_items.InsertColumn(0, "Label")
-        self.tool_items.InsertColumn(1, "Id")
-        self.tool_items.InsertColumn(2, "Normal Bitmap")
-        self.tool_items.InsertColumn(3, "Second Bitmap")
-        self.tool_items.InsertColumn(4, "Short Help")
-        self.tool_items.InsertColumn(5, "Long Help")
-        self.tool_items.InsertColumn(6, "Type")
+        self.tool_items.InsertColumn(0, _("Label"))
+        self.tool_items.InsertColumn(1, _("Id"))
+        self.tool_items.InsertColumn(2, _("Normal Bitmap"))
+        self.tool_items.InsertColumn(3, _("Second Bitmap"))
+        self.tool_items.InsertColumn(4, _("Short Help"))
+        self.tool_items.InsertColumn(5, _("Long Help"))
+        self.tool_items.InsertColumn(6, _("Type"))
         # ALB 2004-12-05
-        self.tool_items.InsertColumn(7, "Event Handler")
+        self.tool_items.InsertColumn(7, _("Event Handler"))
 
         self.tool_items.SetColumnWidth(0, 100)
         self.tool_items.SetColumnWidth(2, 100)
@@ -95,26 +95,26 @@ class ToolsDialog(wx.Dialog):
         self.handler_re = re.compile(r'^\s*\w*\s*$')
 
         self.bitmap1 = _MyBrowseButton(
-            self, BITMAP1_ID, labelText='Normal Bitmap', buttonText='...',
+            self, BITMAP1_ID, labelText=_('Normal Bitmap'), buttonText='...',
             changeCallback=self.update_tool)
         self.bitmap2 = _MyBrowseButton(
-            self, BITMAP2_ID, labelText='Second Bitmap', buttonText='...',
+            self, BITMAP2_ID, labelText=_('Second Bitmap'), buttonText='...',
             changeCallback=self.update_tool)
         self.check_radio = wx.RadioBox(
-            self, CHECK_RADIO_ID, "Type",
+            self, CHECK_RADIO_ID, _("Type"),
             choices=['Normal', 'Checkable', 'Radio'], majorDimension=3)
 
-        self.add = wx.Button(self, ADD_ID, "Add")
-        self.remove = wx.Button(self, REMOVE_ID, "Remove")
-        self.add_sep = wx.Button(self, ADD_SEP_ID, "Add separator")
+        self.add = wx.Button(self, ADD_ID, _("Add"))
+        self.remove = wx.Button(self, REMOVE_ID, _("Remove"))
+        self.add_sep = wx.Button(self, ADD_SEP_ID, _("Add separator"))
 
         # tools navigation
-        self.move_up = wx.Button(self, MOVE_UP_ID, "Up")
-        self.move_down = wx.Button(self, MOVE_DOWN_ID, "Down")
+        self.move_up = wx.Button(self, MOVE_UP_ID, _("Up"))
+        self.move_down = wx.Button(self, MOVE_DOWN_ID, _("Down"))
 
-        self.ok = wx.Button(self, wx.ID_OK, "OK")
-        self.apply = wx.Button(self, wx.ID_APPLY, "Apply")
-        self.cancel = wx.Button(self, wx.ID_CANCEL, "Cancel")
+        self.ok = wx.Button(self, wx.ID_OK, _("OK"))
+        self.apply = wx.Button(self, wx.ID_APPLY, _("Apply"))
+        self.cancel = wx.Button(self, wx.ID_CANCEL, _("Cancel"))
 
         self.do_layout()
         # event handlers
@@ -157,15 +157,15 @@ class ToolsDialog(wx.Dialog):
         else:
             flag = 0
         label_flag = wx.ALIGN_CENTER_VERTICAL
-        szr.Add(wx.StaticText(self, -1, "Id   "), flag=label_flag)
+        szr.Add(wx.StaticText(self, -1, _("Id   ")), flag=label_flag)
         szr.Add(self.id, flag=flag)
-        szr.Add(wx.StaticText(self, -1, "Label  "), flag=label_flag)
+        szr.Add(wx.StaticText(self, -1, _("Label  ")), flag=label_flag)
         szr.Add(self.label, flag=flag)
-        szr.Add(wx.StaticText(self, -1, "Short Help  "), flag=label_flag)
+        szr.Add(wx.StaticText(self, -1, _("Short Help  ")), flag=label_flag)
         szr.Add(self.help_str, flag=flag)
-        szr.Add(wx.StaticText(self, -1, "Long Help  "), flag=label_flag)
+        szr.Add(wx.StaticText(self, -1, _("Long Help  ")), flag=label_flag)
         szr.Add(self.long_help_str, flag=flag)
-        szr.Add(wx.StaticText(self, -1, "Event Handler  "), flag=label_flag)
+        szr.Add(wx.StaticText(self, -1, _("Event Handler  ")), flag=label_flag)
         szr.Add(self.event_handler, flag=flag)
         sizer2.Add(szr, 1, wx.ALL|wx.EXPAND, 5)
         label_w = self.bitmap1.browseButton.GetTextExtent('...')[0]
@@ -435,7 +435,7 @@ class ToolsProperty(Property):
     def display(self, parent):
         self.panel = wx.Panel(parent, -1)
         edit_btn_id = wx.NewId()
-        self.edit_btn = wx.Button(self.panel, edit_btn_id, "Edit tools...")
+        self.edit_btn = wx.Button(self.panel, edit_btn_id, _("Edit tools..."))
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM,
                   4)
@@ -483,7 +483,7 @@ class EditToolBar(EditBase, PreviewMixin):
         if misc.check_wx_version(2, 5, 0):
             self.style_pos += [wx.TB_HORZ_LAYOUT, wx.TB_HORZ_TEXT]
  
-        style_labels = ['#section#Style', 'wxTB_FLAT', 'wxTB_DOCKABLE',
+        style_labels = ['#section#' + _('Style'), 'wxTB_FLAT', 'wxTB_DOCKABLE',
                         'wxTB_3DBUTTONS']
         if misc.check_wx_version(2, 3, 3):
             style_labels += ['wxTB_TEXT', 'wxTB_NOICONS',
@@ -496,22 +496,22 @@ class EditToolBar(EditBase, PreviewMixin):
         self.access_functions['bitmapsize'] = (self.get_bitmapsize,
                                                self.set_bitmapsize)
         self.properties['bitmapsize'] = TextProperty(self, 'bitmapsize', None,
-                                                     can_disable=True)
+                                                     can_disable=True, label=_("bitmapsize"))
         self.margins = '0, 0'
         self.access_functions['margins'] = (self.get_margins, self.set_margins)
         self.properties['margins'] = TextProperty(self, 'margins', None,
-                                                  can_disable=True)
+                                                  can_disable=True, label=_("margins"))
         self.access_functions['tools'] = (self.get_tools, self.set_tools)
         prop = self.properties['tools'] = ToolsProperty(self, 'tools', None)
         self.packing = 1
         self.access_functions['packing'] = (self.get_packing, self.set_packing)
         self.properties['packing'] = SpinProperty(self, 'packing', None,
-                                                  r=(0, 100), can_disable=True)
+                                                  r=(0, 100), can_disable=True, label=_("packing"))
         self.separation = 5
         self.access_functions['separation'] = (self.get_separation,
                                                self.set_separation)
         self.properties['separation'] = SpinProperty(
-            self, 'separation', None, r=(0, 100), can_disable=True)
+            self, 'separation', None, r=(0, 100), can_disable=True, label=_("separation"))
         # 2003-05-07 preview support
         PreviewMixin.__init__(self)
 
@@ -578,7 +578,7 @@ class EditToolBar(EditBase, PreviewMixin):
         sizer.Layout()
         sizer.Fit(page)
         w, h = page.GetClientSize()
-        self.notebook.AddPage(page, "Common")
+        self.notebook.AddPage(page, _("Common"))
         if self.parent is not None:
             self.property_window.Layout()
             page.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
@@ -759,9 +759,9 @@ class EditToolBar(EditBase, PreviewMixin):
             if not self._rmenu:
                 REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
                 self._rmenu = misc.wxGladePopupMenu(self.name)
-                misc.append_item(self._rmenu, REMOVE_ID, 'Remove\tDel',
+                misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
                                  wx.ART_DELETE)
-                misc.append_item(self._rmenu, HIDE_ID, 'Hide') 
+                misc.append_item(self._rmenu, HIDE_ID, _('Hide')) 
                 def bind(method):
                     return lambda e: misc.wxCallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
@@ -801,7 +801,7 @@ class EditToolBar(EditBase, PreviewMixin):
                         self.curr_index = -1
                         pass # just ignore the attributes we don't know
 ##                         from xml_parse import XmlParsingError
-##                         raise XmlParsingError, "invalid tool attribute"
+##                         raise XmlParsingError, _("invalid tool attribute")
             def end_elem(self, name):
                 if name == 'tool':
                     self.tools.append(self.curr_tool)
@@ -826,7 +826,7 @@ def builder(parent, sizer, pos, number=[0]):
     """
     class Dialog(wx.Dialog):
         def __init__(self):
-            wx.Dialog.__init__(self, None, -1, 'Select toolbar class')
+            wx.Dialog.__init__(self, None, -1, _('Select toolbar class'))
             if common.app_tree.app.get_language().lower() == 'xrc':
                 self.klass = 'wxToolBar'
             else:
@@ -837,8 +837,8 @@ def builder(parent, sizer, pos, number=[0]):
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(klass_prop.panel, 0, wx.EXPAND)
             sz2 = wx.BoxSizer(wx.HORIZONTAL)
-            sz2.Add(wx.Button(self, wx.ID_OK, 'OK'), 0, wx.ALL, 3)
-            sz2.Add(wx.Button(self, wx.ID_CANCEL, 'Cancel'), 0, wx.ALL, 3)
+            sz2.Add(wx.Button(self, wx.ID_OK, _('OK')), 0, wx.ALL, 3)
+            sz2.Add(wx.Button(self, wx.ID_CANCEL, _('Cancel')), 0, wx.ALL, 3)
             szr.Add(sz2, 0, wx.ALL|wx.ALIGN_CENTER, 3)
             self.SetAutoLayout(True)
             self.SetSizer(szr)

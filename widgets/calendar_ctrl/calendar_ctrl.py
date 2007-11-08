@@ -37,20 +37,20 @@ class EditCalendarCtrl(ManagedBase):
         #                                       multiline=True)
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['default'] = CheckBoxProperty(self, 'default', None)
-        style_labels = ('#section#Style', 'wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST', 
+        self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("default"))
+        style_labels = ('#section#' + _('Style'), 'wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST', 
             'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE', 'wxCAL_NO_MONTH_CHANGE',
             'wxCAL_SHOW_SURROUNDING_WEEKS','wxCAL_SEQUENTIAL_MONTH_SELECTION')
         self.style_pos = (CAL_SUNDAY_FIRST, CAL_MONDAY_FIRST, 
             CAL_SHOW_HOLIDAYS, CAL_NO_YEAR_CHANGE, CAL_NO_MONTH_CHANGE,
             CAL_SHOW_SURROUNDING_WEEKS, CAL_SEQUENTIAL_MONTH_SELECTION)
-        self.tooltips=("Show Sunday as the first day in the week",
-                        "Show Monday as the first day in the week",
-                        "Highlight holidays in the calendar",
-                        "Disable the year changing",
-                        "Disable the month (and, implicitly, the year) changing",
-                        "Show the neighbouring weeks in the previous and next months",
-                        "Use alternative, more compact, style for the month and year selection controls.")
+	self.tooltips=(_("Show Sunday as the first day in the week"),
+			_("Show Monday as the first day in the week"),
+			_("Highlight holidays in the calendar"),
+			_("Disable the year changing"),
+			_("Disable the month (and, implicitly, the year) changing"),
+			_("Show the neighbouring weeks in the previous and next months"),
+			_("Use alternative, more compact, style for the month and year selection controls."))
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels,tooltips=self.tooltips)
         
@@ -130,9 +130,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer,
                         pos, common.property_panel, show=False)
     node = Tree.Node(calendar_ctrl)

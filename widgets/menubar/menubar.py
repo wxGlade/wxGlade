@@ -737,13 +737,13 @@ class EditMenuBar(EditBase, PreviewMixin):
                         self.curr_index = -1
                         pass
 ##                         from xml_parse import XmlParsingError
-##                         raise XmlParsingError, "invalid menu item attribute"
+##                         raise XmlParsingError, _("invalid menu item attribute")
             def end_elem(self, name):
                 if name == 'item':
                     try: cm = self.curr_menu[-1]
                     except IndexError:
                         from xml_parse import XmlParsingError
-                        raise XmlParsingError, "menu item outside a menu"
+                        raise XmlParsingError, _("menu item outside a menu")
                     cm[0].children.append(self.curr_item)
                     self.curr_item.parent = cm[0]
                 elif name == 'menu':
@@ -775,7 +775,7 @@ def builder(parent, sizer, pos, number=[0]):
                 if not number[0]: self.klass = 'MyMenuBar'
                 else: self.klass = 'MyMenuBar%s' % number[0]
                 number[0] += 1
-            klass_prop = TextProperty(self, 'class', self)
+            klass_prop = TextProperty(self, 'class', self, label=_('class'))
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(klass_prop.panel, 0, wx.EXPAND)
             sz2 = wx.BoxSizer(wx.HORIZONTAL)

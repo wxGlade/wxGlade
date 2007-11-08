@@ -56,7 +56,7 @@ class EditTreeCtrl(ManagedBase):
                            wx.NO_BORDER, wx.WANTS_CHARS, 
                            wx.NO_FULL_REPAINT_ON_RESIZE,
                            wx.FULL_REPAINT_ON_RESIZE)
-        style_labels = ('#section#Style', 'wxTR_HAS_BUTTONS', 'wxTR_NO_LINES',
+        style_labels = ('#section#' + _('Style'), 'wxTR_HAS_BUTTONS', 'wxTR_NO_LINES',
                         'wxTR_LINES_AT_ROOT', 'wxTR_EDIT_LABELS',
                         'wxTR_MULTIPLE', 'wxTR_NO_BUTTONS',
                         'wxTR_TWIST_BUTTONS', 'wxTR_FULL_ROW_HIGHLIGHT',

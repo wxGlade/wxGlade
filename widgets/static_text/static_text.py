@@ -38,10 +38,10 @@ class EditStaticText(ManagedBase):
                                               set_attribute)
 
         self.properties['label'] = TextProperty(self, 'label', None,
-                                                multiline=True)
+                                                multiline=True, label=_('label'))
         self.style_pos  = (wx.ALIGN_LEFT, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE,
                            wx.ST_NO_AUTORESIZE)
-        style_labels = ('#section#Style', 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
+        style_labels = ('#section#' + _('Style'), 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
                         'wxALIGN_CENTRE', 'wxST_NO_AUTORESIZE')
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
@@ -126,9 +126,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     static_text = EditStaticText(label, parent, wx.NewId(),
                                  "", sizer, pos,
                                  common.property_panel)

@@ -72,7 +72,7 @@ class wxGladeAboutBox(wx.Dialog):
                         credits = open(os.path.join(common.wxglade_path,
                                                     'credits.txt'))
                         dlg = ScrolledMessageDialog(self, credits.read(),
-                                                      "wxGlade - Credits")
+                                                      _("wxGlade - Credits"))
                         credits.close()
                         dlg.ShowModal()
                         dlg.Destroy()
@@ -101,7 +101,7 @@ class wxGladeAboutBox(wx.Dialog):
         szr.Add(html, 0, wx.TOP|wx.ALIGN_CENTER, 10)
         szr.Add(wx.StaticLine(self, -1), 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
         szr2 = wx.BoxSizer(wx.HORIZONTAL)
-        btn = wx.Button(self, wx.ID_OK, "OK")
+        btn = wx.Button(self, wx.ID_OK, _("OK"))
         btn.SetDefault()
         szr2.Add(btn)
         if wx.Platform == '__WXGTK__':

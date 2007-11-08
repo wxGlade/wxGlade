@@ -22,7 +22,7 @@ class EventsProperty(GridProperty):
         cols = [(_('Event'), GridProperty.STRING),
                 (_('Handler'), GridProperty.STRING)]
         GridProperty.__init__(self, owner, 'events', None, cols,
-                              len(owner.events), False, False, False)
+                              len(owner.events), False, False, False, label=_('events'))
         self._pos = {}
         for index, name in enumerate(owner.events):
             self._pos[name] = index
@@ -146,7 +146,7 @@ class EventsMixin:
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.properties['events'].panel, 1, wx.ALL|wx.EXPAND, 5)
         panel.SetSizerAndFit(sizer)
-        self.notebook.AddPage(panel, 'Events')
+        self.notebook.AddPage(panel, _('Events'))
 
     def get_property_handler(self, name):
         if name == 'events':

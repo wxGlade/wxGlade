@@ -29,9 +29,9 @@ class EditCheckBox(ManagedBase):
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['checked'] = (self.get_value, self.set_value)
         self.properties['label'] = TextProperty(self, 'label', None,
-                                                multiline=True)
+                                                multiline=True, label=_("label"))
         self.properties['checked'] = CheckBoxProperty(self, 'checked', None,
-                                                      'Checked')
+                                                      _('Checked'))
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -103,9 +103,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     checkbox = EditCheckBox(label, parent, wx.NewId(),
                             "", sizer, pos,
                             common.property_panel, show=False) 

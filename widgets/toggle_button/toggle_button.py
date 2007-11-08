@@ -30,9 +30,9 @@ class EditToggleButton(ManagedBase):
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.properties['label'] = TextProperty(self, 'label', None,
-                                                multiline=True)
+                                                multiline=True, label=_("label"))
         self.properties['value'] = CheckBoxProperty(self, 'value', None,
-                                                    'Clicked')
+                                                    _('Clicked'))
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -104,9 +104,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     button = EditToggleButton(label, parent, wx.NewId(), '',
                               sizer, pos, common.property_panel)
     sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,

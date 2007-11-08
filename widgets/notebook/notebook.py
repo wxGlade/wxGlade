@@ -189,11 +189,11 @@ class EditNotebook(ManagedBase):
                                        # 2-list label, window)
 
         self.access_functions['style'] = (self.get_tab_pos, self.set_tab_pos)
-        self.properties['style'] = HiddenProperty(self, 'style')
+        self.properties['style'] = HiddenProperty(self, 'style', label=_("style"))
         self.access_functions['tabs'] = (self.get_tabs, self.set_tabs)
         tab_cols = [('Tab label', GridProperty.STRING)]
         self.properties['tabs'] = NotebookPagesProperty(self, 'tabs', None,
-                                                        tab_cols)
+                                                        tab_cols, label=_("tabs"))
         del tab_cols
         self.nb_sizer = None
         self._create_slots = False
@@ -203,7 +203,7 @@ class EditNotebook(ManagedBase):
                                                     self.set_no_custom_class)
         self.properties['no_custom_class'] = CheckBoxProperty(
             self, 'no_custom_class',
-            label="Don't generate code for this custom class")
+            label=_("Don't generate code for this custom class"))
 
     def create_widget(self):
         self.widget = wx.Notebook(self.parent.widget, self.id, style=self.style)
@@ -357,7 +357,7 @@ def builder(parent, sizer, pos, number=[1]):
             self.style = 0
             prop = RadioProperty(self, 'tab_placement', self,
                                  [_('Top'), _('Bottom'), _('Left'), _('Right')],
-                                 columns=2)
+                                 columns=2, label=_('tab_placement'))
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
             btn = wx.Button(self, wx.ID_OK, _('OK'))
@@ -405,9 +405,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if not sizer or not sizeritem:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     window = EditNotebook(name, parent, wx.NewId(), 0, sizer, pos,
                           common.property_panel, True)
     window._create_slots = True

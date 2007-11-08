@@ -30,10 +30,10 @@ class EditStaticBitmap(ManagedBase):
                                               set_attribute)
         self.bitmap_prop = FileDialogProperty(self, 'bitmap', None, #panel,
                                               style=wx.OPEN|wx.FILE_MUST_EXIST,
-                                              can_disable=False)
+                                              can_disable=False, label=_("bitmap"))
         self.properties['bitmap'] = self.bitmap_prop
         self.properties['attribute'] = CheckBoxProperty(
-            self, 'attribute', None, 'Store as attribute', write_always=True)
+            self, 'attribute', None, _('Store as attribute'), write_always=True)
         self.style = 0
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.style_pos  = (wx.SIMPLE_BORDER, wx.DOUBLE_BORDER, wx.SUNKEN_BORDER,
@@ -42,7 +42,7 @@ class EditStaticBitmap(ManagedBase):
                            wx.NO_FULL_REPAINT_ON_RESIZE,
                            wx.FULL_REPAINT_ON_RESIZE,
                            wx.CLIP_CHILDREN)
-        style_labels = ('#section#Style', 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
+        style_labels = (u'#section#' + _('Style'), 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
                         'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
                         'wxSTATIC_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
                         'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',

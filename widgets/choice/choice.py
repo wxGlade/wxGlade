@@ -46,11 +46,11 @@ class EditChoice(ManagedBase):
         self.properties['choices'] = ChoicesProperty(self, 'choices', None,
                                                      [('Label',
                                                        GridProperty.STRING)],
-                                                     len(choices))
+                                                     len(choices),label=_('choices'))
         self.access_functions['selection'] = (self.get_selection,
                                               self.set_selection)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
-                                                    r=(0, len(choices)-1))
+                                                    r=(0, len(choices)-1), label=_('selection'))
         # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
@@ -131,9 +131,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    except KeyError: raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     choice = EditChoice(name, parent, wx.NewId(), [], sizer, pos,
                         common.property_panel) #, show=False)
     sizer.set_item(choice.pos, option=sizeritem.option,
