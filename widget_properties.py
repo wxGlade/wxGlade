@@ -378,12 +378,12 @@ class CheckListProperty(Property):
 
         for i in range(len(self.values)):
             self.choices[i].SetValue(self.values[i])
-	    
-	#Set the tool-tips for the properties
-	if self.tooltips is not None:
-		for i in range(len(self.tooltips)):
-			if i >= len(self.choices): break
-			self.choices[i].SetToolTip(wx.ToolTip(self.tooltips[i]))
+            
+        #Set the tool-tips for the properties
+        if self.tooltips is not None:
+                for i in range(len(self.tooltips)):
+                        if i >= len(self.choices): break
+                        self.choices[i].SetToolTip(wx.ToolTip(self.tooltips[i]))
                   
 ##         self.panel.SetSizer(tmp_sizer)
 ##         self.panel.SetSize(tmp_sizer.GetMinSize())

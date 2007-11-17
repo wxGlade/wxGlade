@@ -33,7 +33,7 @@ class EditBitmapButton(ManagedBase):
                                                        wx.FILE_MUST_EXIST,
                                                        can_disable=False)
         self.access_functions['default'] = (self.get_default, self.set_default)
-	self.access_functions['style'] = (self.get_style, self.set_style)
+        self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None)
         # 2003-08-07: added 'disabled_bitmap' property
         self.disabled_bitmap = ""
@@ -46,12 +46,12 @@ class EditBitmapButton(ManagedBase):
             self.border = config.preferences.default_border_size
             self.flag = wx.ALL
         
-	self.style_pos = (wx.BU_AUTODRAW, wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP,
+        self.style_pos = (wx.BU_AUTODRAW, wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP,
             wx.BU_BOTTOM, wx.NO_BORDER)
         style_labels = ('#section#Style', 'wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT', 
             'wxBU_TOP', 'wxBU_BOTTOM', 'wxNO_BORDER')
-	
-	#The tooltips tuple
+        
+        #The tooltips tuple
         self.tooltips=("If this is specified, the button will be drawn "
                         "automatically using the label bitmap only, providing"
                         " a 3D-look border. If this style is not specified, the "
@@ -127,7 +127,7 @@ class EditBitmapButton(ManagedBase):
 
     def create_widget(self):
         bmp = self.load_bitmap()
-	try:
+        try:
             self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp,
                                           style=self.style)
         except AttributeError:

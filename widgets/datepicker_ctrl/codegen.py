@@ -20,11 +20,11 @@ class PythonCodeGenerator:
 
     #def cn(self, c):
         #""" Create names according to if the new namescace (wx) was selected
-	#@type c: string
-	#@param c: the name which should be altered
-	#@rtype: string
-	#@return: the orignial name with a prefix according to which namespace the user selected
-	#"""
+        #@type c: string
+        #@param c: the name which should be altered
+        #@rtype: string
+        #@return: the orignial name with a prefix according to which namespace the user selected
+        #"""
         #if self.pygen.use_new_namespace:
             #if c[:2] == 'wx':
                 #c = c[2:]
@@ -33,9 +33,9 @@ class PythonCodeGenerator:
             #return c
 
     #def cn_f(self, flags):
-	#""" Same as cn(c) but for flags
-	#@rtype: string
-	#"""
+        #""" Same as cn(c) but for flags
+        #@rtype: string
+        #"""
         #if self.pygen.use_new_namespace:
             #return "|".join([self.cn(f) for f in str(flags).split('|')])
         #else:
