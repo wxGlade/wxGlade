@@ -71,7 +71,10 @@ class CppCodeGenerator:
         if not style: style = 'wxCB_DROPDOWN'
         else: style = 'wxCB_DROPDOWN|' + style
         init = []
-        init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+        if number:
+            init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+        else:
+            init.append('const wxString *%s_choices = NULL;\n' % obj.name)
         init.append('%s = new %s(%s, %s, wxT(""), wxDefaultPosition, '
                     'wxDefaultSize, %s, %s_choices, %s);\n' % \
                     (obj.name, obj.klass, parent, id, number, obj.name, style))
