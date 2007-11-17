@@ -44,13 +44,13 @@ class EditCalendarCtrl(ManagedBase):
         self.style_pos = (CAL_SUNDAY_FIRST, CAL_MONDAY_FIRST, 
             CAL_SHOW_HOLIDAYS, CAL_NO_YEAR_CHANGE, CAL_NO_MONTH_CHANGE,
             CAL_SHOW_SURROUNDING_WEEKS, CAL_SEQUENTIAL_MONTH_SELECTION)
-	self.tooltips=("Show Sunday as the first day in the week",
-			"Show Monday as the first day in the week",
-			"Highlight holidays in the calendar",
-			"Disable the year changing",
-			"Disable the month (and, implicitly, the year) changing",
-			"Show the neighbouring weeks in the previous and next months",
-			"Use alternative, more compact, style for the month and year selection controls.")
+        self.tooltips=("Show Sunday as the first day in the week",
+                        "Show Monday as the first day in the week",
+                        "Highlight holidays in the calendar",
+                        "Disable the year changing",
+                        "Disable the month (and, implicitly, the year) changing",
+                        "Show the neighbouring weeks in the previous and next months",
+                        "Use alternative, more compact, style for the month and year selection controls.")
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels,tooltips=self.tooltips)
         

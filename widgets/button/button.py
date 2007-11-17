@@ -48,8 +48,8 @@ class EditButton(ManagedBase):
             wx.BU_EXACTFIT,wx.NO_BORDER)
         style_labels = ('#section#Style', 'wxBU_LEFT', 'wxBU_RIGHT', 
             'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT','wxNO_BORDER')
-	
-	#The tooltips tuple
+        
+        #The tooltips tuple
         style_tooltips=("Left-justifies the label. Windows and GTK+ only.",
                         "Right-justifies the bitmap label. Windows and GTK+ "
                         "only.",

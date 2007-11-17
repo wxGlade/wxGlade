@@ -616,7 +616,7 @@ class wxGladeFrame(wx.Frame):
         infile = misc.FileSelector(_("Open file"),
                                    wildcard="wxGlade files (*.wxg)|*.wxg|"
                                    "wxGlade Template files (*.wgt)|*.wgt|"
-				   "XML files (*.xml)|*.xml|All files|*",
+                                   "XML files (*.xml)|*.xml|All files|*",
                                    flags=wx.OPEN|wx.FILE_MUST_EXIST,
                                    default_path=self.cur_dir)
         if infile:

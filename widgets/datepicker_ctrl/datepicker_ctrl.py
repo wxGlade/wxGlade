@@ -35,11 +35,11 @@ class EditDatePickerCtrl(ManagedBase):
             'wxDP_DEFAULT', 'wxDP_ALLOWNONE', 'wxDP_SHOWCENTURY')
         self.style_pos = (wx.DP_SPIN, wx.DP_DROPDOWN, 
             wx.DP_DEFAULT, wx.DP_ALLOWNONE, wx.DP_SHOWCENTURY)
-	self.tooltips = ("Creates a control without a month calendar drop down but with spin-control-like arrows to change individual date components. This style is not supported by the generic version.",
-		"Creates a control with a month calendar drop-down part from which the user can select a date.",
-		"Creates a control with the style that is best supported for the current platform (currently wxDP_SPIN under Windows and wxDP_DROPDOWN elsewhere).",
-		"With this style, the control allows the user to not enter any valid date at all. Without it - the default - the control always has some valid date.",
-		"Forces display of the century in the default date format. Without this style the century could be displayed, or not, depending on the default date representation in the system.")
+        self.tooltips = ("Creates a control without a month calendar drop down but with spin-control-like arrows to change individual date components. This style is not supported by the generic version.",
+                "Creates a control with a month calendar drop-down part from which the user can select a date.",
+                "Creates a control with the style that is best supported for the current platform (currently wxDP_SPIN under Windows and wxDP_DROPDOWN elsewhere).",
+                "With this style, the control allows the user to not enter any valid date at all. Without it - the default - the control always has some valid date.",
+                "Forces display of the century in the default date format. Without this style the century could be displayed, or not, depending on the default date representation in the system.")
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels,tooltips=self.tooltips)
         
