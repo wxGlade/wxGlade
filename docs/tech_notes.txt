@@ -1,0 +1,185 @@
+	wxGlade technical notes
+	-----------------------
+Last update: 2003-06-26, but only section 9. The rest has not been updated
+             since 2002-07-22, and it's likely be very outdated in some parts
+
+
+This is an informal overview of wxGlade internals, made through a sample
+session of use. Each action of the hypotetical user will be described from the
+point of view of the application, to (hopefully) understand what's happening
+behind the scenes.
+These notes are *absolutely* incomplete and in some cases they might be
+outdated or not completely correct: the best reference is always the source
+code.
+
+1. Startup
+----------
+The program starts from the function 'main' in the module 'main': this creates
+an instance of wxGlade (a subclass of wxApp), which in turn creates a
+wxGladeFrame: this is the main window of the app, i.e. the one with the
+palette of buttons. The initialization of wxGladeFrame consists of three steps:
+
+ - Creation of the three frames of the app, the palette itself, the tree and 
+   the property window
+
+ - Loading of the code generator modules. The 'codegen/' subdir is scanned to
+   find the available code generators: when a python module is found, the app
+   tries to load it and to access its 'writer' attribute: if this is
+   succesfully accomplished, such 'writer' object is considered a valid code
+   generator, and is inserted into the 'common.code_writers' dict (the key used
+   is the 'language' attribute of the writer itself)
+
+ - Loading of the widget and sizer modules. To load the widgets, the file
+   'widgets/widgets.txt' is read, and the app tries to import every widget
+   module listed on such file. For every module succesfully imported, the
+   'initialize' function is then called: this function sets up the builder and
+   code generator functions for a particular widget (explained later), and
+   returns a wxBitmapButton instance to be added to the main palette. 
+   The loading of the sizers is more or less the same, except that all the
+   sizers are in the same module, 'edit_sizers', and the initialization
+   function (called 'init_all') returns a list of wxBitmapButton objects
+
+
+2. Adding a toplevel widget
+---------------------------
+When the user clicks on a button of a toplevel widget (a Frame or a Dialog),
+the method 'add_toplevel_object' of wxGladeFrame is called: this is responsible
+for the addition of the widget to the app.
+This happens in this way:
+
+- the name of the class of the widget to add is obtained: this is done with the
+  use of the 'common.refs' dict, which maps the ids of the buttons of the
+  palette to the class names of the widgets. 
+
+- with the name just obtained, the appropriate factory function for the widget
+  to add is got from the 'common.widgets' dict. This function must accept three
+  parameters: a reference to the parent widget (None in this case), a reference
+  to the sizer to which the widget will be added (again None for toplevel
+  windows) and the zero-based position inside the sizer (once again, this is
+  unused for toplevel windows)
+
+- the call of the factory function actually builds the widgets and inserts it
+  in the 'common.app_tree' tree with a call to its method 'insert'.
+  The '__init__' method of the widget also builds all the Properties of the
+  object and stores them in the 'self.properties' dict
+
+
+3. Adding a toplevel sizer
+--------------------------
+This is similar to the addition of a toplevel widget, but the action is
+performed in two steps:
+
+- when the user clicks on the button in the palette, the method 'add_object' of
+  wxGladeFrame is called: this sets the global variables 'common.adding_widget'
+  and 'common.adding_sizer' to True, and stores the class name of the sizer to
+  add in the global 'common.widget_to_add' (the name is obtained from the
+  'common.refs' dict as described above)
+
+- when the user left-clicks the mouse inside the previously added toplevel
+  widget, its 'drop_sizer' method is called, which is responsible of the
+  addition of the sizer: it calls the factory function for the sizer (passing
+  self as the first argument), which will build the object and add it to the
+  tree
+
+
+4. Adding a normal widget/sizer
+-------------------------------
+This step is more or less the same as step 3: 
+
+- 'wxGladeFrame.add_object' is called in response to a button click
+
+- when the user ``drops'' the widget inside a slot in a sizer, the method
+  'drop_widget' of edit_sizers.SizerSlot is called, which in turn calls the
+  appropriate factory function with arguments 'self.parent', 'self.sizer' and
+  'self.pos' (i.e. the parent, sizer and position inside the sizer of the slot
+  that will be replaced). Factory functions of non-toplevel objects call, apart
+  from 'common.app_tree.insert' to insert the object in the tree, the method
+  'add_item' of edit_sizers.SizerBase, to add the object to the sizer and to
+  remove the slot.
+  For managed widgets/sizers, the '__init__' method also builds the Properties
+  which control the layout of the object inside a sizer, and stores them in the
+  'self.sizer_properties' dict
+
+
+5. Changing the value of a Property
+-----------------------------------
+When the user selects a widget the property window changes to display the
+properties of the selected object: this is done by the functions
+'show_properties' of edit_windows.EditBase and edit_sizers.SizerBase, which are
+called inside two event handlers for focus and tree selection events.
+
+When the value of a Property is changed, its setter function is called to
+update the aspect/layout of the widget the Property belongs to: such function
+is obtained from a call to the widget's '__getitem__' method, which must return
+a 2-tuple (getter, setter) for the Property
+
+
+6. Saving the app
+-----------------
+This operation is performed by the 'common.app_tree' Tree: for every Node of
+the tree, an 'object' xml element is generated, with the following attributes:
+name, class, base (class). Each object contains an element for each Property
+(generated by the 'write' method of Property) and then an 'object' element for
+all its sub-widgets and/or sizers. Properties in the 'sizer_properties' dict
+are treated in a different way, as well as the children of a sizer, which are
+sub-elements of 'sizeritem' objects: see the source code for details.
+
+
+7. Loading an app from an xml file
+----------------------------------
+This is done by 'xml_parse.XmlWidgetBuilder', a subclass of
+xml.sax.handler.ContentHandler.
+Basically, the steps involved are the following:
+- when the start of an 'object' element is reached, an XmlWidgetObject instance
+  is created and pushed onto a stack of the objects created: such object in
+  turn calls the appropriate ``xml builder'' function (got from the
+  'common.widgets_from_xml' dict) that creates the widget: this function is
+  similar to the factory function used to build the widget during an
+  interactive session, see the code for details and differences
+
+- when the end of an 'object' element is reached, the object at the top of the
+  stack is removed, and its widget (see the source of XmlWidgetObject) is laid
+  out
+
+- when the end of a Property element is reached, the appropriate setter
+  function of the owner of the Property is called. This is the default
+  behaviour, suitable for simple properties. For more complex properties, whose
+  xml representation consists of more sub-elements, each widget can define a
+  particular handler: see for example FontHandler in edit_windows.WindowBase
+
+
+8. Generating the source code
+-----------------------------
+This section is the result of a cut & paste of the comment at the beginning of
+'codegen/py_codegen.py'. It is *VERY* incomplete. The ContentHandler subclass
+which drives the code generation is xml_parse.CodeWriter
+
+How the code is generated: every time the end of an object is reached during
+the parsing of the xml tree, either the function 'add_object' or the function
+'add_class' is called: the latter when the object is a toplevel one, the former
+when it is not. In the last case, 'add_object' calls the appropriate ``writer''
+function for the specific object, found in the 'obj_builders' dict. Such
+function accepts one argument, the CodeObject representing the object for
+which the code has to be written, and returns 3 lists of strings, representing
+the lines to add to the '__init__', '__set_properties' and '__do_layout'
+methods of the parent object.
+NOTE: the lines in the '__init__' list will be added in reverse order
+
+
+9. For contributors
+-------------------
+You are, of course, free to make any chages/additions you want to wxGlade, in
+whatever way you like. If you decide to contribute them back, however, here are
+some simple (stylistic) rules to follow: note that these are only general
+indications, if you think they don't fit somewhere, feel free to ignore them.
+
+ - class names are usually CamelCase
+ - variables, functions and method names are lower_case_with_unserscores
+ - ``constants'' are UPPER_CASE
+ - source lines are at most 79 characters long
+ - class bodies are usually ended by a # end of class ClassName comment
+ - source files use Unix EOL conventions (LF) if possible. In any case, please
+   don't mix Unix and Windows EOLs
+ - put your copyright info whenever appropriate
+
+ - that's all folks!!

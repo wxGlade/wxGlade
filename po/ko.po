@@ -1,0 +1,1191 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-02-09 23:22+0100\n"
+"PO-Revision-Date: 2007-10-22 15:01+0900\n"
+"Last-Translator: homin,Lee <ff4500@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: about.py:49
+msgid "About wxGlade"
+msgstr "wxGlade 정보"
+
+#: about.py:59
+msgid "wxGlade - License"
+msgstr "wxGlade - 라이센스"
+
+#: about.py:64
+msgid ""
+"Can't find the license!\n"
+"You can get a copy at \n"
+"http://www.opensource.org/licenses/mit-license.php"
+msgstr ""
+"라이센스를 찾을 수 없습니다!\n"
+"아래의 위치에서 복사본을  얻을 수 있습니다. \n"
+"http://www.opensource.org/licenses/mit-license.php"
+
+#: about.py:67
+#: edit_windows.py:149
+#: main.py:620
+#: main.py:637
+#: main.py:692
+#: main.py:705
+#: main.py:753
+#: main.py:815
+#: zmain.py:482
+#: zmain.py:499
+#: zmain.py:538
+#: zmain.py:551
+#: zmain.py:587
+#: edit_sizers/edit_sizers.py:651
+msgid "Error"
+msgstr "에러"
+
+#: about.py:80
+msgid "Can't find the credits file!\n"
+msgstr "크레딧 파일을 찾을 수 없습니다!\n"
+
+#: about.py:80
+msgid "Oops!"
+msgstr "이런!"
+
+#: clipboard.py:40
+#: clipboard.py:38
+msgid "Invalid data in the clipboard"
+msgstr "유효하지 않은 데이터가 클립보드에 있습니다"
+
+#: clipboard.py:65
+#: clipboard.py:63
+msgid "Data can't be copied to clipboard."
+msgstr "데이터를 클립보드에 카피할 수 없습니다."
+
+#: clipboard.py:71
+#: clipboard.py:105
+#: clipboard.py:69
+#: clipboard.py:103
+msgid "Clipboard can't be opened."
+msgstr "클립보드를 열 수 없습니다."
+
+#: clipboard.py:98
+#: clipboard.py:96
+msgid "Data can't be copied from clipboard."
+msgstr "데이터를 클립보드에서 카피할 수 없습니다."
+
+#: clipboard.py:129
+#: clipboard.py:127
+msgid "Please only drop one file at a time"
+msgstr "한번에 하나의 파일을 드롭해 주세요"
+
+#: color_dialog.py:18
+#: color_dialog.py:19
+msgid "System colour"
+msgstr "시스템 컬러"
+
+#: color_dialog.py:22
+#: color_dialog.py:23
+msgid "Custom colour"
+msgstr "사용자 컬러"
+
+#: color_dialog.py:25
+#: configUI.py:38
+#: color_dialog.py:26
+#: edit_sizers/edit_sizers.py:395
+#: edit_sizers/edit_sizers.py:1808
+#: edit_sizers/edit_sizers.py:2026
+#: edit_sizers/edit_sizers.py:2122
+#: widgets/gauge/gauge.py:104
+#: widgets/menubar/menubar.py:71
+#: widgets/menubar/menubar.py:777
+#: widgets/notebook/notebook.py:339
+msgid "OK"
+msgstr "확인"
+
+#: color_dialog.py:26
+#: configUI.py:39
+#: color_dialog.py:27
+#: edit_sizers/edit_sizers.py:396
+#: edit_sizers/edit_sizers.py:1809
+#: widgets/menubar/menubar.py:73
+#: widgets/menubar/menubar.py:778
+msgid "Cancel"
+msgstr "취소"
+
+#: color_dialog.py:70
+#: color_dialog.py:71
+msgid "Select widget colour"
+msgstr "위젯 컬러 선택"
+
+#: common.py:92
+#, python-format
+msgid "\"%s\" is not a valid code generator module"
+msgstr "\"%s\" 는 유효한 코드 생성 모듈이 아닙니다"
+
+#: common.py:96
+#, python-format
+msgid "loaded code generator for %s"
+msgstr "%s 를 위한 코드 생성기가 로드됨"
+
+#: common.py:127
+#, python-format
+msgid "Found widgets listing -> %s"
+msgstr "검색된 위젯들을 리스팅 -> %s"
+
+#: common.py:128
+msgid "loading widget modules:"
+msgstr "위젯 모듈을 로드중:"
+
+#: common.py:137
+#, python-format
+msgid "ERROR loading \"%s\""
+msgstr "\"%s\" 로딩 실패"
+
+#: common.py:203
+#, python-format
+msgid "Add a %s"
+msgstr "%s 추가"
+
+#: config.py:60
+#, python-format
+msgid ""
+"Error reading config file:\n"
+"%s"
+msgstr ""
+"설정파일 읽기 실패:\n"
+"%s"
+
+#: config.py:103
+msgid "Choose a directory:"
+msgstr "디렉토리 선택:"
+
+#: config.py:246
+msgid "Changes will take effect after wxGlade is restarted"
+msgstr "변경사항은 wxGlade가 재시작 될때 적용될 것 입니다"
+
+#: config.py:247
+msgid "Preferences saved"
+msgstr "참조 저장됨"
+
+#: configUI.py:15
+msgid "Local widget path"
+msgstr "로컬 위젯 경로"
+
+#: configUI.py:17
+msgid "Use icons in menu items"
+msgstr "메뉴 아이템에 아이콘 사용"
+
+#: configUI.py:18
+msgid "Show properties and tree windows as small frames (Win32 only)"
+msgstr "설정창과 트리창을 작은 프레임으로 보여주기 (Win32 only)"
+
+#: configUI.py:19
+msgid "Show progress dialog when loading wxg files"
+msgstr "wxg파일을 읽을 때 프로그래스 바를 보여주기"
+
+#: configUI.py:20
+msgid "Remember position and size of wxGlade windows"
+msgstr "wxGlade 윈도우들의 위치와 크기 기억"
+
+#: configUI.py:21
+msgid "Show \"handles\" of sizers"
+msgstr "사이저의 \"핸들\"을 보여줌"
+
+#: configUI.py:22
+msgid "Use native file dialogs on KDE"
+msgstr "KDE에서 고유의 파일 다이얼로그를 사용"
+
+#: configUI.py:27
+msgid "Use dialog units by default for size properties"
+msgstr "기본 크기 속성으로 다이얼로그 단위를 사용"
+
+#: configUI.py:28
+msgid "Create backup wxg files"
+msgstr "wxg파일의 백업본을 생성"
+
+#: configUI.py:29
+msgid "Create backup files for generated source"
+msgstr "생성된 소스의 백업본을 생성"
+
+#: configUI.py:30
+msgid "Allow duplicate widget names"
+msgstr "위젯이름의 중복을 허용"
+
+#: configUI.py:31
+msgid "Default border width for widgets"
+msgstr "위젯들의 기본 테두리 넓이"
+
+#: configUI.py:33
+msgid "Auto save wxg files every "
+msgstr "다음마다 wxg 파일들을 자동으로 저장"
+
+#: configUI.py:35
+msgid "Backup options"
+msgstr "백업 옵션"
+
+#: configUI.py:35
+msgid "append ~ to filename"
+msgstr "파일이름의 뒤에 ~를 붙임"
+
+#: configUI.py:35
+msgid "append .bak to filename"
+msgstr "파일이름의 뒤에 .bak를 붙임"
+
+#: configUI.py:47
+msgid "wxGlade: preferences"
+msgstr "wxGlade: 설정"
+
+#: configUI.py:83
+msgid ""
+"Initial path for \n"
+"file opening/saving dialogs:"
+msgstr ""
+"파일 열기/저장 다이얼로그의 \n"
+"초기 경로:"
+
+#: configUI.py:86
+msgid ""
+"Initial path for \n"
+"code generation file dialogs:"
+msgstr ""
+"코드 생성 파일 다이얼로그의 \n"
+"초기 경로:"
+
+#: configUI.py:90
+msgid "Number of items in file history"
+msgstr "파일 히스토리의 아이템 개수"
+
+#: configUI.py:93
+msgid ""
+"Number of buttons per row\n"
+"in the main palette"
+msgstr ""
+"메인 팔렛트에서\n"
+"한줄당 버튼의 개수"
+
+#: configUI.py:122
+msgid "Interface"
+msgstr "인터페이스"
+
+#: configUI.py:123
+msgid "Other"
+msgstr "기타"
+
+#: wxglade.py:76
+#: wxglade.py:78
+#, python-format
+msgid "Error: no writer for language \"%s\" available"
+msgstr "에러: \"%s\"언어에 대한 사용가능한 작성기가 없습니다"
+
+#: wxglade.py:80
+#: wxglade.py:82
+#, python-format
+msgid "Error: %s"
+msgstr "에러: %s"
+
+#: wxglade.py:90
+#: wxglade.py:92
+msgid ""
+"wxGlade usage:\n"
+"- to start the GUI: python wxglade.py [WXG_FILE]\n"
+"- to generate code from the command line: python wxglade.py OPTIONS... FILE\n"
+"  OPTIONS are the following:\n"
+"  -g, --generate-code=LANGUAGE  (required) give the output language\n"
+"  -o, --output=PATH             (optional) name of the output file (in\n"
+"                                single-file mode) or directory (in\n"
+"                                multi-file mode)\n"
+"    "
+msgstr ""
+"wxGlade 사용법\n"
+"- GUI로 시작하려면: python wxglade.py [WXG_FILE]\n"
+"- 커맨드라인에서 코드를 생성하려면: python wxglade.py OPTIONS... FILE\n"
+"  OPTIONS 들은 아래와 같습니다.:\n"
+"  -g, --generate-code=LANGUAGE  (필수) 출력 언어\n"
+"  -o, --output=PATH             (선택) 출력 파일의 이름 (\n"
+"                                단일-파일 모드인 경우) 혹은 디렉토리 (\n"
+"                                여러-파일 모드인 경우)\n"
+"    "
+
+#: wxglade.py:101
+#: wxglade.py:103
+msgid "Valid LANGUAGE values:"
+msgstr "유요한 언어(LANGUAGE) 값들:"
+
+#: edit_widget.py:103
+msgid "'name' attribute missing"
+msgstr "'name' 속성 실종됨"
+
+#: edit_windows.py:57
+msgid "If you change the default value, it will be interpreted as the name of the subclass of the widget. How this name affects code generation depends on the kind (i.e. language) of output. See the docs for more details."
+msgstr "만약 기본 값을 바꾼다면, 그것은 위젯의 서브클래스 이름으로 해석될 것입니다. 이 이름이 코드 생성에 어떻게 영향을 미치는 지는 출력 종류(예. 언어)에 따라 다릅니다. 자세한 내용은 문서를 참조하세요."
+
+#: edit_windows.py:148
+#: edit_sizers/edit_sizers.py:650
+#, python-format
+msgid ""
+"Name \"%s\" is already in use.\n"
+"Please enter a different one."
+msgstr ""
+"\"%s\"라는 이름이 이미 사용중입니다.\n"
+"다른 이름을 입력하세요."
+
+#: edit_windows.py:161
+#: edit_windows.py:261
+#: edit_sizers/edit_sizers.py:664
+#: edit_sizers/edit_sizers.py:706
+#, python-format
+msgid "Properties - <%s>"
+msgstr "속성들 - <%s>"
+
+#: edit_windows.py:179
+#: edit_windows.py:1024
+#: edit_sizers/edit_sizers.py:87
+#: edit_sizers/edit_sizers.py:215
+#: widgets/menubar/menubar.py:666
+msgid "Remove\tDel"
+msgstr "삭제\tDel"
+
+#: edit_windows.py:181
+#: edit_sizers/edit_sizers.py:498
+msgid "Copy\tCtrl+C"
+msgstr "복사\tCtrl+C"
+
+#: edit_windows.py:183
+#: edit_sizers/edit_sizers.py:499
+msgid "Cut\tCtrl+X"
+msgstr "잘라내기\tCtrl+X"
+
+#: edit_windows.py:480
+#: edit_sizers/edit_sizers.py:634
+#: widgets/menubar/menubar.py:587
+msgid "Common"
+msgstr "일반"
+
+#: edit_windows.py:946
+msgid "Preview"
+msgstr "미리보기"
+
+#: edit_windows.py:960
+msgid "Close Preview"
+msgstr "미리보기 닫기"
+
+#: edit_windows.py:1026
+#: widgets/menubar/menubar.py:668
+msgid "Hide"
+msgstr "숨기기"
+
+#: edit_windows.py:1033
+#: edit_sizers/edit_sizers.py:89
+msgid "Paste\tCtrl+V"
+msgstr "붙이기\tCtrl+V"
+
+#: edit_windows.py:1041
+msgid ""
+"\n"
+"wxGlade-WARNING: sizer already set for this window"
+msgstr ""
+"\n"
+"wxGlade-경고: 이 윈도우에 대한 sizer가 이미 설정되어 있습니다."
+
+#: edit_windows.py:1050
+msgid ""
+"\n"
+"wxGlade-WARNING: only sizers can be pasted here"
+msgstr ""
+"\n"
+"wxGlade-경고: 이곳에는 sizer만 붙일 수 있습니다."
+
+#: events_mixin.py:22
+msgid "Event"
+msgstr "이벤트"
+
+#: events_mixin.py:23
+msgid "Handler"
+msgstr "핸들러"
+
+#: font_dialog.py:30
+msgid "Family:"
+msgstr "종류(Family):"
+
+#: font_dialog.py:31
+msgid "Style:"
+msgstr "스타일"
+
+#: font_dialog.py:32
+msgid "Weight:"
+msgstr "너비:"
+
+#: font_dialog.py:97
+msgid "Select font attributes"
+msgstr "폰트 속성 선택"
+
+#: kdefiledialog.py:69
+#, python-format
+msgid "File '%s' already exists: do you really want to overwrite it?"
+msgstr "'%s' 파일이 이미 존재합니다: 정말로 덮어쓰기를 원하시나요?"
+
+#: kdefiledialog.py:77
+#: kdefiledialog.py:118
+msgid "Fork Error"
+msgstr "분기(Fork) 에러"
+
+#: layout_option_property.py:40
+#: layout_option_property.py:42
+msgid "Option"
+msgstr "옵션"
+
+#: layout_option_property.py:62
+#: layout_option_property.py:64
+msgid "Position"
+msgstr "위치"
+
+#: layout_option_property.py:72
+#: layout_option_property.py:74
+msgid "Span"
+msgstr "폭(Span)"
+
+#: main.py:165
+#: zmain.py:148
+msgid "Show &Tree\tCtrl+T"
+msgstr "트리 보이기(&T)\tCtrl+T"
+
+#: main.py:168
+#: zmain.py:151
+msgid "Show &Properties\tCtrl+P"
+msgstr "속성 보이기(&P)\tCtrl+P"
+
+#: main.py:172
+#: zmain.py:155
+msgid "&New\tCtrl+N"
+msgstr "새로 만들기(&N)\tCtrl+N"
+
+#: main.py:174
+#: zmain.py:157
+msgid "&Open...\tCtrl+O"
+msgstr "열기(&O)...\tCtrl+O"
+
+#: main.py:176
+#: zmain.py:159
+msgid "&Save\tCtrl+S"
+msgstr "저장(&S)\tCtrl+S"
+
+#: main.py:178
+#: zmain.py:161
+msgid "Save As...\tShift+Ctrl+S"
+msgstr "다른이름으로 저장...\tShift+Ctrl+S"
+
+#: main.py:182
+msgid "&Refresh\tf5"
+msgstr "새로고침(&R)\tf5"
+
+#: main.py:184
+#: zmain.py:165
+msgid "&Generate Code\tCtrl+G"
+msgstr "코드 생성(&G)\tCtrl+G"
+
+#: main.py:189
+msgid "&Import from XRC...\tCtrl+I"
+msgstr "XRC로 부터 가져오기(&I)...\tCtrl+I"
+
+#: main.py:193
+#: zmain.py:169
+msgid "E&xit\tCtrl+Q"
+msgstr "나가기(&x)\tCtrl+Q"
+
+#: main.py:196
+#: zmain.py:172
+msgid "Preferences..."
+msgstr "설정..."
+
+#: main.py:197
+#: zmain.py:173
+msgid "&File"
+msgstr "파일(&F)"
+
+#: main.py:198
+#: zmain.py:174
+msgid "&View"
+msgstr "보기(&V)"
+
+#: main.py:200
+#: zmain.py:176
+msgid "Contents\tF1"
+msgstr "내용\tF1"
+
+#: main.py:202
+#: zmain.py:178
+msgid "About..."
+msgstr "정보..."
+
+#: main.py:203
+#: main.py:210
+#: zmain.py:179
+msgid "&Help"
+msgstr "도움말(&H)"
+
+#: main.py:228
+#: main.py:573
+msgid "There seems to be auto saved data for this file: do you want to restore it?"
+msgstr "이 파일에 대한 자동 저장 내용이 있습니다: 이 내용을 복구 할까요?"
+
+#: main.py:230
+#: main.py:478
+#: main.py:575
+msgid "Auto save detected"
+msgstr "자동 저장 발견됨"
+
+#: main.py:274
+#: zmain.py:219
+msgid "Core components"
+msgstr "핵심 컴포넌트들 "
+
+#: main.py:274
+#: zmain.py:219
+msgid "Custom components"
+msgstr "사용자 컴포넌트들"
+
+#: main.py:347
+#: zmain.py:292
+msgid "Properties - <app>"
+msgstr "속성 - <app>"
+
+#: main.py:380
+#: zmain.py:324
+msgid "wxGlade: Tree"
+msgstr "wxGlade: 트리"
+
+#: main.py:475
+msgid "There seems to be auto saved data from last wxGlade session: do you want to restore it?"
+msgstr "지난 wxGlade 세션의 자동 저장된 데이타가 있습니다: 이 내용을 복구 할까요?"
+
+#: main.py:484
+msgid "Recovery from auto save complete"
+msgstr "자동 저장으로부터 복구 완료"
+
+#: main.py:491
+msgid "Auto saving... done"
+msgstr "자동 저장... 완료"
+
+#: main.py:525
+#: zmain.py:421
+msgid "Save changes to the current app?"
+msgstr "현재 app에 변경 내용을 저장 할까요?"
+
+#: main.py:525
+#: zmain.py:421
+msgid "Confirm"
+msgstr "확인"
+
+#: main.py:549
+msgid "Impossible to reload an unsaved application"
+msgstr "저장하지 않은 어플리케이션을 다시 읽어오는 것은 불가능합니다"
+
+#: main.py:550
+msgid "Alert"
+msgstr "경고"
+
+#: main.py:565
+#: zmain.py:445
+msgid "Open file"
+msgstr "파일 열기"
+
+#: main.py:619
+#: zmain.py:481
+#, python-format
+msgid "Error loading file %s: %s"
+msgstr "%s 파일 불러오기 에러: %s"
+
+#: main.py:632
+#: zmain.py:494
+#, python-format
+msgid ""
+"An exception occurred while loading file \"%s\".\n"
+"This is the error message associated with it:\n"
+"        %s\n"
+"For more details, look at the full traceback on the console.\n"
+"If you think this is a wxGlade bug, please report it."
+msgstr ""
+"\"%s\"파일을 읽어오는 도중 예외가 발생하였습니다.\n"
+"이것이 예외의 에러 메세지 입니다.:\n"
+"        %s\n"
+"더 자세한 내요은 콘솔에서 full traceback을 살펴보십시오.\n"
+"만약 이것이 wxGlade의 버그로 판단되면 레포트 해주시면 감사하겠습니다."
+
+#: main.py:653
+msgid "Loaded template"
+msgstr "템플릿 불러옴"
+
+#: main.py:657
+#, python-format
+msgid "Loading time: %.5f"
+msgstr "불러오는중 시간: %.5f"
+
+#: main.py:669
+#, python-format
+msgid "Loaded %s (%.2f seconds)"
+msgstr "%s 불러옴 (%.2f 초)"
+
+#: main.py:692
+#: zmain.py:538
+#, python-format
+msgid ""
+"Error saving app:\n"
+"%s"
+msgstr ""
+"app 저장 에러:\n"
+"%s"
+
+#: main.py:698
+#: zmain.py:544
+#, python-format
+msgid ""
+"An exception occurred while saving file \"%s\".\n"
+"This is the error message associated with it:\n"
+"        %s\n"
+"For more details, look at the full traceback on the console.\n"
+"If you think this is a wxGlade bug, please report it."
+msgstr ""
+"\"%s\"파일을 저장하는 도중 예외가 발생하였습니다.\n"
+"이것이 예외의 에러 메세지 입니다.:\n"
+"        %s\n"
+"더 자세한 내요은 콘솔에서 full traceback을 살펴보십시오.\n"
+"만약 이것이 wxGlade의 버그로 판단되면 레포트 해주시면 감사하겠습니다."
+
+#: main.py:714
+#, python-format
+msgid "Saved %s"
+msgstr "%s 저장됨"
+
+#: main.py:720
+#: zmain.py:560
+msgid "Save project as..."
+msgstr "프로젝트를 다른이름으로 저장..."
+
+#: main.py:752
+#: zmain.py:587
+#, python-format
+msgid ""
+"Error saving preferences:\n"
+"%s"
+msgstr ""
+"설정 저장 에러:\n"
+"%s"
+
+#: main.py:797
+msgid "Import file"
+msgstr "파일 가져오기"
+
+#: main.py:810
+#, python-format
+msgid ""
+"An exception occurred while importing file \"%s\".\n"
+"This is the error message associated with it:\n"
+"        %s\n"
+"For more details, look at the full traceback on the console.\n"
+"If you think this is a wxGlade bug, please report it."
+msgstr ""
+"\"%s\"파일을 가져오는 도중 예외가 발생하였습니다.\n"
+"이것이 예외의 에러 메세지 입니다.:\n"
+"        %s\n"
+"더 자세한 내요은 콘솔에서 full traceback을 살펴보십시오.\n"
+"만약 이것이 wxGlade의 버그로 판단되면 레포트 해주시면 감사하겠습니다."
+
+#: misc.py:404
+msgid "<Design> - "
+msgstr "<디자인> -"
+
+#: tree.py:32
+msgid "Properties - <>"
+msgstr "설정 - <>"
+
+#: tree.py:267
+msgid "Application"
+msgstr "어플리케이션"
+
+#: tree.py:280
+msgid "Show"
+msgstr "보이기"
+
+#: tree.py:448
+#, python-format
+msgid "wxGlade: Tree %s"
+msgstr "wxGlade: 트리 %s"
+
+#: widget_properties.py:641
+msgid "All Files|*"
+msgstr "모든 파일|*"
+
+#: widget_properties.py:642
+msgid "Choose a file"
+msgstr "파일을 선택하세요"
+
+#: widget_properties.py:765
+#, python-format
+msgid "error in the value of the property \"%s\""
+msgstr "\"%s\"속성 값 에러"
+
+#: widget_properties.py:918
+msgid "  Apply  "
+msgstr " 적용"
+
+#: widget_properties.py:921
+msgid "  Add  "
+msgstr " 추가"
+
+#: widget_properties.py:924
+msgid "  Insert  "
+msgstr " 삽입"
+
+#: widget_properties.py:927
+msgid "  Remove  "
+msgstr " 제거"
+
+#: xml_parse.py:253
+msgid "Loading..."
+msgstr "불러오는중..."
+
+#: xml_parse.py:253
+msgid "Please wait while loading the app"
+msgstr "app를 불러오는 중입니다. 잠시만 기다려주세요."
+
+#: zmain.py:445
+#: zmain.py:561
+msgid "wxGlade files (*.wxg)|*.wxg|XML files (*.xml)|*.xml|All files|*"
+msgstr "wxGlade 파일 (*.wxg)|*.wxg|XML 파일 (*.xml)|*.xml|모든 파일|*"
+
+#: edit_sizers/edit_sizers.py:83
+msgid "Options"
+msgstr "옵션"
+
+#: edit_sizers/edit_sizers.py:286
+#: edit_sizers/edit_sizers.py:287
+msgid "Select sizer type"
+msgstr "sizer 종류 선택"
+
+#: edit_sizers/edit_sizers.py:389
+msgid "Select a position"
+msgstr "위치 선택"
+
+#: edit_sizers/edit_sizers.py:495
+#: edit_sizers/edit_sizers.py:1492
+msgid "Add slot"
+msgstr "slot 추가"
+
+#: edit_sizers/edit_sizers.py:496
+#: edit_sizers/edit_sizers.py:1493
+msgid "Insert slot..."
+msgstr "slot 삽입..."
+
+#: edit_sizers/edit_sizers.py:626
+msgid "Fit parent"
+msgstr "parent에 맞춤"
+
+#: edit_sizers/edit_sizers.py:1494
+msgid "Add row"
+msgstr "행 추가"
+
+#: edit_sizers/edit_sizers.py:1495
+msgid "Add column"
+msgstr "열 추가"
+
+#: edit_sizers/edit_sizers.py:1496
+msgid "Insert row..."
+msgstr "행 삽입..."
+
+#: edit_sizers/edit_sizers.py:1497
+msgid "Insert column..."
+msgstr "열 삽입..."
+
+#: edit_sizers/edit_sizers.py:1885
+msgid "Growable Rows"
+msgstr "커질 수 있는 행"
+
+#: edit_sizers/edit_sizers.py:1885
+msgid "Select growable rows"
+msgstr "커질 수 있는 행 선택"
+
+#: edit_sizers/edit_sizers.py:1891
+msgid "Growable Columns"
+msgstr "커질 수 있는 열"
+
+#: edit_sizers/edit_sizers.py:1892
+msgid "Select growable columns"
+msgstr "커질 수 있는 열 선택"
+
+#: edit_sizers/edit_sizers.py:2002
+msgid "Orientation"
+msgstr "기준"
+
+#: edit_sizers/edit_sizers.py:2003
+#: edit_sizers/edit_sizers.py:2049
+msgid "Horizontal"
+msgstr "수평"
+
+#: edit_sizers/edit_sizers.py:2003
+msgid "Vertical"
+msgstr "수직"
+
+#: edit_sizers/edit_sizers.py:2006
+msgid "Slots: "
+msgstr "슬롯:"
+
+#: edit_sizers/edit_sizers.py:2016
+msgid "Has a Static Box"
+msgstr "고정된 상자(Box)를 가짐"
+
+#: edit_sizers/edit_sizers.py:2022
+msgid "Label: "
+msgstr "이름표:"
+
+#: edit_sizers/edit_sizers.py:2098
+msgid "Select sizer attributes"
+msgstr "sizer 속성 선택"
+
+#: widgets/bitmap_button/bitmap_button.py:120
+msgid "Select the image for the button"
+msgstr "버튼 이미지 선택"
+
+#: widgets/gauge/gauge.py:32
+msgid "Creates a horizontal gauge."
+msgstr "수평 게이지 생성"
+
+#: widgets/gauge/gauge.py:33
+msgid "Creates a vertical gauge."
+msgstr "수직 게이지 생성"
+
+#: widgets/gauge/gauge.py:34
+msgid "Under Windows 95, creates a horizontal progress bar."
+msgstr "Windows 95에서는, 수평 진행 바를 생성."
+
+#: widgets/gauge/gauge.py:35
+msgid "Creates smooth progress bar with one pixel wide update step (not supported by all platforms)."
+msgstr "한 픽셀의 업데이트 간격을 가지는 부드러운 진행 바 생성 (모든 플렛폼에서 지원되지는 않음)"
+
+#: widgets/gauge/gauge.py:91
+#: widgets/slider/slider.py:131
+msgid "Select style"
+msgstr "스타일 선택"
+
+#: widgets/grid/grid.py:199
+msgid ""
+"The following properties are meaningful\n"
+"only if 'Create grid' is selected"
+msgstr ""
+"다음의 설정들은 '그리드 생성'이\n"
+"선택 된 경우에만 의미가 있습니다"
+
+#: widgets/grid/grid.py:220
+#: widgets/notebook/notebook.py:224
+#: widgets/radio_button/radio_button.py:74
+#: widgets/slider/slider.py:84
+#: widgets/static_text/static_text.py:65
+#: widgets/text_ctrl/text_ctrl.py:76
+#: widgets/tree_ctrl/tree_ctrl.py:105
+msgid "Widget"
+msgstr "위젯"
+
+#: widgets/list_box/list_box.py:46
+msgid "Single-selection list."
+msgstr "단일-선택 리스트."
+
+#: widgets/list_box/list_box.py:47
+msgid "Multiple-selection list: the user can toggle multiple items on and off."
+msgstr "다중-선택 리스트: 사용자가 여러개의 아이템을 선택할 수 있음"
+
+#: widgets/list_box/list_box.py:48
+msgid "Extended-selection list: the user can select multiple items using the SHIFT key and the mouse or special key combinations."
+msgstr "확장된-선택 리스트: 사용자가 SHIFT키+마우스 혹은 특별한 키조합을 통해 여러개의 아템을 선택할 수 있음."
+
+#: widgets/list_box/list_box.py:49
+msgid "Create horizontal scrollbar if contents are too wide (Windows only)."
+msgstr "컨탠츠가 매우 넓을 경우 수평 스크롤 바 생성 (Windows만 지원)"
+
+#: widgets/list_box/list_box.py:50
+msgid "Always show a vertical scrollbar."
+msgstr "수직 스크롤바 항상 보이기."
+
+#: widgets/list_box/list_box.py:51
+msgid "Only create a vertical scrollbar if needed."
+msgstr "필요한 경우에 수평 스크롤 바를 생성함."
+
+#: widgets/list_box/list_box.py:52
+msgid "The listbox contents are sorted in alphabetical order."
+msgstr "리스트박스의 내용은 알파벳순으로 정렬됨."
+
+#: widgets/list_ctrl/list_ctrl.py:71
+msgid "Multicolumn list view, with optional small icons. Columns are computed automatically, i.e. you don't set columns as in wxLC_REPORT. In other words, the list wraps, unlike a wxListBox."
+msgstr "다중열 리스트 뷰 (작은 아이콘 선택 가능). 열들은 자동으로 계산되어짐. 예. 당신이 wxLC_REPORT에 열(columns)을 설정하지 않음. 다시말해, wxListBox와는 다르게 리스트가 둘러싸여짐."
+
+#: widgets/list_ctrl/list_ctrl.py:72
+msgid "Single or multicolumn report view, with optional header."
+msgstr "단일 혹은 다중열의 보고 뷰, 헤더 선택 가능"
+
+#: widgets/list_ctrl/list_ctrl.py:73
+msgid "Large icon view, with optional labels."
+msgstr "큰 아이콘 뷰, 이름표 선택 가능."
+
+#: widgets/list_ctrl/list_ctrl.py:74
+msgid "The application provides items text on demand. May only be used with wxLC_REPORT."
+msgstr "요구에 따라 어플리케이션은 아이템 텍스트를 제공함. 반드시 wxLC_REPORT와 함께 사용되어야 할 것임."
+
+#: widgets/list_ctrl/list_ctrl.py:75
+msgid "Small icon view, with optional labels."
+msgstr "작은 아이콘 뷰, 이름표 선택 가능."
+
+#: widgets/list_ctrl/list_ctrl.py:76
+msgid "Icons align to the top. Win32 default, Win32 only."
+msgstr "아이콘 위쪽 정렬. Win32 기본값, Win32 만 가능."
+
+#: widgets/list_ctrl/list_ctrl.py:77
+msgid "Icons align to the left."
+msgstr "아이콘 왼쪽 정렬"
+
+#: widgets/list_ctrl/list_ctrl.py:78
+msgid "Icons arrange themselves. Win32 only."
+msgstr "아이콘들 스스로 정려. Win32 만 지원."
+
+#: widgets/list_ctrl/list_ctrl.py:79
+msgid "Labels are editable: the application will be notified when editing starts."
+msgstr "이름표는 편집 가능함: 어필리케이션이 편집이 시작될때 알려줄 것임"
+
+#: widgets/list_ctrl/list_ctrl.py:80
+msgid "No header in report mode."
+msgstr "보고 모드에서는 헤더가 없음."
+
+#: widgets/list_ctrl/list_ctrl.py:81
+msgid "Single selection (default is multiple)."
+msgstr "단일 선택 (기본값은 다중)."
+
+#: widgets/list_ctrl/list_ctrl.py:82
+msgid "Sort in ascending order (must still supply a comparison callback in SortItems."
+msgstr "점점크게 순으로 정렬(정렬 아이템들의 비교 콜백이 제공되어야 함."
+
+#: widgets/list_ctrl/list_ctrl.py:83
+msgid "Sort in descending order (must still supply a comparison callback in SortItems."
+msgstr "점점작게 순으로 정렬(정렬 아이템들의 비교 콜백이 제공되어야 함."
+
+#: widgets/list_ctrl/list_ctrl.py:84
+msgid "Draws light horizontal rules between rows in report mode."
+msgstr "보고 모드에서는 열간에 밝은 수평 자를 그림."
+
+#: widgets/list_ctrl/list_ctrl.py:85
+msgid "Draws light vertical rules between columns in report mode"
+msgstr "보고 모드에서는 행간에 밝은 수직 자를 그림."
+
+#: widgets/list_ctrl/list_ctrl.py:86
+msgid "Displays a thin border around the window. wxBORDER is the old name for this style."
+msgstr "얇은 테두리를 윈도우에 둘러 표시. wxBORDER 가 이 스타일의 옛 이름임."
+
+#: widgets/list_ctrl/list_ctrl.py:87
+msgid "Displays a double border. Windows and Mac only."
+msgstr "이중 테두리 표시. Windows 와 Mac 만 지원."
+
+#: widgets/list_ctrl/list_ctrl.py:88
+msgid "Displays a sunken border."
+msgstr "움푹 들어간 테두리 표시."
+
+#: widgets/list_ctrl/list_ctrl.py:89
+msgid "Displays a raised border."
+msgstr "튀어나온 테두리 표시."
+
+#: widgets/list_ctrl/list_ctrl.py:90
+msgid "Displays a border suitable for a static control. Windows only."
+msgstr "고정된(static) 컨트롤에 맞게 테두리 표시. Windows만 지원"
+
+#: widgets/list_ctrl/list_ctrl.py:91
+msgid "Displays no border, overriding the default border style for the window."
+msgstr "테두리를 표시하지 않음. 기본 테두리 스타일을 윈도우에 적용함."
+
+#: widgets/list_ctrl/list_ctrl.py:92
+msgid "Use this to indicate that the window wants to get all char/key events for all keys - even for keys like TAB or ENTER which are usually used for dialog navigation and which wouldn't be generated without this style. If you need to use this style in order to get the arrows or etc., but would still like to have normal keyboard navigation take place, you should create and send a wxNavigationKeyEvent in response to the key events for Tab and Shift-Tab."
+msgstr "윈도우가 모든 키로부터 모든 문자/키 이벤트이벤트를 받기 원함을 알리기 위해 사용합니다. 모든 키에는 TAB 이나 ENTER 같은 대게 다이얼로그를 탐색하기 위해 사용되는 키 이벤트를 포함하여 이 스타일을 선택하지 않으면 생성되지 않습니다. 당신이 방향키등을 받기 위해 이 스타일을 사용할 필요가 있다면, 그리고 일반적인 키보드 탐색기능을 포함한다면, Tab 과 Shift-Tab 이벤트의 답변으로 wxNavigationKeyEvent를 생성하여 보내 주여야 합니다."
+
+#: widgets/list_ctrl/list_ctrl.py:93
+msgid "On Windows, this style used to disable repainting the window completely when its size is changed. Since this behaviour is now the default, the style is now obsolete and no longer has an effect."
+msgstr "Windows 에서는, 이 스타일은 사이즈가 변경되었을때 윈도우를 완전히 다시칠하는(repainting)하는 것을 해제합니다. 이제 이 행동이 기본값이 되었으므로, 이 스타일은 사용되지 않으며 더이상 아무 효과가 없습니다."
+
+#: widgets/list_ctrl/list_ctrl.py:94
+msgid "Use this style to force a complete redraw of the window whenever it is resized instead of redrawing just the part of the window affected by resizing. Note that this was the behaviour by default before 2.5.1 release and that if you experience redraw problems with code which previously used to work you may want to try this. Currently this style applies on GTK+ 2 and Windows only, and full repainting is always done on other platforms."
+msgstr "크기가 변경되었을때 변경에 따라 추가된 부분만 다시 그리는 것이 아니라 강제로 완전히 다시 그리기 위해 이 스타일을 사용합니다. 이것이 2.5.1 릴리즈 이전에는 기본값이었다는 것을 알아두세요. 그렇기 때문에 당신이 예전에 작업했던 코드에서 다시그리기(redraw)에 문제를 경험하게 된다면 이 스타일을 시도해 보아야 할 것입니다.  현재 이 스타일은 GTK+2 와 Windows에서만 지원하며, 다른 플렛폼에서는 항상 완전히 다시 그리기(full repainting)이 시행됩니다."
+
+#: widgets/menubar/menubar.py:18
+msgid "Menu editor"
+msgstr "메뉴 에디터"
+
+#: widgets/menubar/menubar.py:24
+msgid "Menu item:"
+msgstr "메뉴 아이템:"
+
+#: widgets/menubar/menubar.py:32
+msgid "Label"
+msgstr "이름표"
+
+#: widgets/menubar/menubar.py:33
+msgid "Id"
+msgstr "아이디"
+
+#: widgets/menubar/menubar.py:34
+msgid "Name"
+msgstr "이름"
+
+#: widgets/menubar/menubar.py:35
+msgid "Help String"
+msgstr "도움말"
+
+#: widgets/menubar/menubar.py:36
+#: widgets/menubar/menubar.py:58
+msgid "Type"
+msgstr "종류"
+
+#: widgets/menubar/menubar.py:38
+msgid "Event Handler"
+msgstr "이벤트 핸들러"
+
+#: widgets/menubar/menubar.py:61
+msgid "Add"
+msgstr "추가"
+
+#: widgets/menubar/menubar.py:62
+msgid "Remove"
+msgstr "삭제"
+
+#: widgets/menubar/menubar.py:63
+msgid "Add separator"
+msgstr "분리자 추가"
+
+#: widgets/menubar/menubar.py:66
+msgid "Up"
+msgstr "위"
+
+#: widgets/menubar/menubar.py:67
+msgid "Down"
+msgstr "아래"
+
+#: widgets/menubar/menubar.py:72
+msgid "Apply"
+msgstr "적용"
+
+#: widgets/menubar/menubar.py:120
+msgid "Id   "
+msgstr "아이디"
+
+#: widgets/menubar/menubar.py:122
+msgid "Label  "
+msgstr "이름표"
+
+#: widgets/menubar/menubar.py:124
+msgid "Name  "
+msgstr "이름"
+
+#: widgets/menubar/menubar.py:126
+msgid "Help String  "
+msgstr "도움말"
+
+#: widgets/menubar/menubar.py:128
+msgid "Event Handler  "
+msgstr "이벤트 핸들러"
+
+#: widgets/menubar/menubar.py:506
+msgid "Edit menus..."
+msgstr "메뉴 편집..."
+
+#: widgets/menubar/menubar.py:766
+msgid "Select menubar class"
+msgstr "메뉴바 클래스 선택"
+
+#: widgets/notebook/notebook.py:331
+msgid "Select tab placement"
+msgstr "탭 위치 선택"
+
+#: widgets/notebook/notebook.py:335
+msgid "Top"
+msgstr "최상위"
+
+#: widgets/notebook/notebook.py:335
+msgid "Bottom"
+msgstr "최하위"
+
+#: widgets/notebook/notebook.py:335
+msgid "Left"
+msgstr "왼쪽"
+
+#: widgets/notebook/notebook.py:335
+msgid "Right"
+msgstr "오른쪽"
+
+#: widgets/radio_button/radio_button.py:37
+msgid "Clicked"
+msgstr "클릭됨"
+
+#: widgets/radio_button/radio_button.py:42
+msgid "Marks the beginning of a new group of radio buttons."
+msgstr "라디오 버튼의 새 그룹의 시작에 표시(marks)."
+
+#: widgets/radio_button/radio_button.py:43
+msgid "In some circumstances, radio buttons that are not consecutive siblings trigger a hang bug in Windows (only). If this happens, add this style to mark the button as not belonging to a group, and implement the mutually-exclusive group behaviour yourself."
+msgstr "어떤 환경에서, 연속적이지 않은 형제를 가지는 라디오 버튼들은 멈추는 버그를 유발합니다 (Windows에서만 발생). 이 현상이 발생하며, 그룹에 속하지 않은 버튼들을 표시하기 위해 이 스타일을 추가하고, 직접 상호배제되는(mutually-exclusive) 그룹동작을 구현해야 합니다."
+
+#: widgets/radio_button/radio_button.py:44
+msgid "Use a checkbox button instead of radio button (currently supported only on PalmOS)."
+msgstr "라디오버튼 대신에 체크박스 버튼 사용 (현재 PalmOS에서만 지원됨)"
+
+#: widgets/slider/slider.py:52
+msgid "Displays the slider horizontally (this is the default)."
+msgstr "슬라이더를 수편으로 표시(기본값)"
+
+#: widgets/slider/slider.py:53
+msgid "Displays the slider vertically."
+msgstr "슬라이더를 수직으로 표시."
+
+#: widgets/slider/slider.py:54
+msgid "Displays tick marks."
+msgstr "두꺼운 마크(marks) 표시"
+
+#: widgets/slider/slider.py:55
+msgid "Displays minimum, maximum and value labels."
+msgstr "최소, 최대와 값 표시"
+
+#: widgets/slider/slider.py:56
+msgid "Displays ticks on the left and forces the slider to be vertical."
+msgstr "왼쪽을 두껍게 표시하며 강제로 슬라이더를 수직으로 함"
+
+#: widgets/slider/slider.py:57
+msgid "Displays ticks on the right and forces the slider to be vertical."
+msgstr "오른쪽을 두껍게 표시하며 강제로 슬라이더를 수직으로 함"
+
+#: widgets/slider/slider.py:58
+msgid "Displays ticks on the top."
+msgstr "위쪽을 두껍게 표시"
+
+#: widgets/slider/slider.py:59
+msgid "Displays ticks on the bottom (this is the default)."
+msgstr "아래쪽을 두껍게 표시 (기본값)."
+
+#: widgets/slider/slider.py:60
+msgid "Allows the user to select a range on the slider. Windows only."
+msgstr "사용자가 슬라이더에서 영역을 선택할 수 있도록 허용. Windows만 지원"
+
+#: widgets/slider/slider.py:61
+msgid "Inverses the mininum and maximum endpoints on the slider. Not compatible with wxSL_SELRANGE."
+msgstr "슬라이더의 최소 최대 끝값을 "
+
+#: widgets/static_text/static_text.py:42
+msgid "Store as attribute"
+msgstr "속성으로 저장"
+
+#: widgets/tree_ctrl/tree_ctrl.py:79
+msgid " Tree Control:"
+msgstr " 트리 컨트롤:"
+
+#: widgets/tree_ctrl/tree_ctrl.py:82
+#, python-format
+msgid " on wxGlade %s"
+msgstr " wxGlade 에서는 %s"
+
