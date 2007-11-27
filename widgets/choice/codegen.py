@@ -69,7 +69,10 @@ class CppCodeGenerator:
                  ',\n        '.join([cppgen.quote_str(c) for c in choices])
         style = prop.get("style", "0")
         init = []
-        init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+        if number:
+            init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
+        else:
+            init.append('const wxString *%s_choices = NULL;\n' % obj.name)
         init.append('%s = new %s(%s, %s, wxDefaultPosition, wxDefaultSize, '
                     '%s, %s_choices, %s);\n' % \
                     (obj.name, obj.klass, parent, id, number, obj.name, style))
