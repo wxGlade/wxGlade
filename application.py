@@ -83,7 +83,7 @@ class Application(object):
         self.language = 'python' # output language
         def get_output_path(): return os.path.expanduser(self.output_path)
         def set_output_path(value): self.output_path = value
-	self.is_template = False
+        self.is_template = False
         self.use_gettext = False
         def set_use_gettext(value): self.use_gettext = bool(int(value))
         self.for_version = wx.VERSION_STRING[:3]

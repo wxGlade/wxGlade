@@ -142,11 +142,11 @@ class XmlWidgetBuilder(XmlParser):
             if use_gettext:
                 app.use_gettext = True
                 app.use_gettext_prop.set_value(True)
-		
+                
             try: is_template = int(attrs["is_template"])
             except (KeyError, ValueError): is_template = False
             app.is_template = is_template
-	    
+            
             try: overwrite = int(attrs['overwrite'])
             except (KeyError, ValueError): overwrite = False
             if overwrite:

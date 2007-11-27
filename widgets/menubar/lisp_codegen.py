@@ -79,9 +79,11 @@ class LispCodeGenerator:
 
         plgen = common.code_writers['lisp']
         init = [ '\n', ';;; Menu Bar\n', '(setf (slot-%s obj) (wxMenuBar_Create 0))\n' %
-                 (obj.name),
-                 '(wxFrame_SetMenuBar (slot-top-window obj) (slot-%s obj))\n' % obj.name ]
+                 (obj.name) ]
+##                  '(wxFrame_SetMenuBar (slot-top-window obj) (slot-%s obj))\n' % obj.name ]
         init.extend(self.get_init_code(obj))
+        init.append('(wxFrame_SetMenuBar (slot-top-window obj) ' \
+                    '(slot-%s obj))\n' % obj.name)
         init.append(';;; Menu Bar end\n\n')
         return init, [], []
 
