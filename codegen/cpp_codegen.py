@@ -132,7 +132,8 @@ class SourceFileContent:
         block_end = re.compile(r'^\s*//\s*end\s+wxGlade\s*$')
         # regexp to match event handlers
         # ALB 2004-12-08
-        event_handler = re.compile(r'^\s*void\s+([A-Za-z_]+\w*)\s*'
+        event_handler = re.compile(r'^\s*(?:virtual\s+)?'
+                                   'void\s+([A-Za-z_]+\w*)\s*'
                                    '\([A-Za-z_:0-9]+\s*&\s*\w*\)\s*;\s*'
                                    '//\s*wxGlade:\s*<event_handler>\s*$')
         decl_event_table = re.compile(r'^\s*DECLARE_EVENT_TABLE\s*\(\s*\)'
