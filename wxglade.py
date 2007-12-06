@@ -20,6 +20,15 @@ except NameError:
     setattr(__builtins__, 'False', not True)
     def bool(value): return not not value
     setattr(__builtins__, 'bool', bool)
+# and this is for Python <= 2.3
+try:
+    sorted
+except NameError:
+    def sorted(l):
+        l = list(l)[:]
+        l.sort()
+        return l
+    setattr(__builtins__, 'sorted', sorted)    
 
 
 def _fix_path(path):
