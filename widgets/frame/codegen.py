@@ -116,16 +116,6 @@ class StatusFieldsHandler:
 def xrc_frame_code_generator(obj):
     xrcgen = common.code_writers['XRC']
     class FrameXrcObject(xrcgen.DefaultXrcObject):
-##         def write_child_prologue(self, child, out_file, tabs):
-##             if child.code_obj.in_sizers:
-##                 # XRC doesn't like sizers for Frames, so we add a Panel
-##                 out_file.write('    '*tabs + '<object class="wxPanel">\n')
-
-##         def write_child_epilogue(self, child, out_file, tabs):
-##             if child.code_obj.in_sizers:
-##                 # end of the fake panel
-##                 out_file.write('    '*tabs + '</object>\n')
-
         def write(self, outfile, tabs):
             if 'menubar' in self.properties:
                 del self.properties['menubar']
@@ -134,6 +124,10 @@ def xrc_frame_code_generator(obj):
             if 'toolbar' in self.properties:
                 del self.properties['toolbar']
             xrcgen.DefaultXrcObject.write(self, outfile, tabs)
+
+        def write_property(self, name, val, outfile, ntabs):
+            if name != 'sizehints':
+                xrcgen.DefaultXrcObject.write(self, name, val, outfile, ntabs)
 
     # end of class FrameXrcObject
     

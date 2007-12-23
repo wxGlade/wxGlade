@@ -69,7 +69,14 @@ class EditDialog(TopLevelBase):
         self.centered = False
         self.access_functions['centered'] = (self.get_centered,
                                              self.set_centered)
-        prop['centered'] = CheckBoxProperty(self, 'centered', None, label=_("centered"))
+        prop['centered'] = CheckBoxProperty(self, 'centered', None,
+                                            label=_("centered"))
+        # size hints property
+        self.sizehints = False
+        self.access_functions['sizehints'] = (self.get_sizehints,
+                                              self.set_sizehints)
+        prop['sizehints'] = CheckBoxProperty(self, 'sizehints', None,
+                                             label=_('Set Size Hints'))
 
     def create_widget(self):
         if self.parent: w = self.parent.widget
@@ -161,6 +168,13 @@ class EditDialog(TopLevelBase):
 
     def set_centered(self, value):
         try: self.centered = bool(int(value))
+        except ValueError: pass
+
+    def get_sizehints(self):
+        return self.sizehints
+
+    def set_sizehints(self, value):
+        try: self.sizehints = bool(int(value))
         except ValueError: pass
 
 # end of class EditDialog

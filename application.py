@@ -114,8 +114,10 @@ class Application(object):
 
         
         self.codegen_prop = RadioProperty(self, "code_generation", panel,
-                                          [_("Single file"), _("Separate file for" \
-                                           " each class")], label=_("code generation"))
+                                          [_("Single file"),
+                                           _("Separate file for" \
+                                           " each class")],
+                                          label=_("Code Generation"))
 
         ext = getattr(common.code_writers.get('python'),
                       'default_extensions', [])

@@ -228,7 +228,14 @@ class EditFrame(TopLevelBase):
         self.centered = False
         self.access_functions['centered'] = (self.get_centered,
                                              self.set_centered)
-        prop['centered'] = CheckBoxProperty(self, 'centered', None, label=_("centered"))
+        prop['centered'] = CheckBoxProperty(self, 'centered', None,
+                                            label=_("centered"))
+        # size hints property
+        self.sizehints = False
+        self.access_functions['sizehints'] = (self.get_sizehints,
+                                              self.set_sizehints)
+        prop['sizehints'] = CheckBoxProperty(self, 'sizehints', None,
+                                             label=_('Set Size Hints'))
 
     def create_widget(self):
         if self.parent: w = self.parent.widget
@@ -258,6 +265,7 @@ class EditFrame(TopLevelBase):
         prop['title'].display(panel)
         prop['icon'].display(panel)
         prop['centered'].display(panel)
+        prop['sizehints'].display(panel)
         prop['menubar'].display(panel)
         prop['toolbar'].display(panel)
         try:
@@ -271,6 +279,7 @@ class EditFrame(TopLevelBase):
         szr.Add(prop['title'].panel, 0, wx.EXPAND)
         szr.Add(prop['icon'].panel, 0, wx.EXPAND)
         szr.Add(prop['centered'].panel, 0, wx.EXPAND)
+        szr.Add(prop['sizehints'].panel, 0, wx.EXPAND)
         szr.Add(prop['menubar'].panel, 0, wx.EXPAND)
         szr.Add(prop['toolbar'].panel, 0, wx.EXPAND)
         if sbprop:
@@ -397,6 +406,13 @@ class EditFrame(TopLevelBase):
 
     def set_centered(self, value):
         try: self.centered = bool(int(value))
+        except ValueError: pass
+
+    def get_sizehints(self):
+        return self.sizehints
+
+    def set_sizehints(self, value):
+        try: self.sizehints = bool(int(value))
         except ValueError: pass
 
 # end of class EditFrame

@@ -274,7 +274,7 @@ class CheckBoxProperty(Property):
                  write_always=False):
         Property.__init__(self, owner, name, parent, label=label)
         self.val = int(owner[name][0]())
-        if label is None: label = _mangle(name)
+        if label is None or label == name: label = _mangle(name)
         self.label = label
         self.panel = None
         self.write_always = write_always
