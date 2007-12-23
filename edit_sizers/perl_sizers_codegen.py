@@ -28,8 +28,9 @@ class PerlBoxSizerBuilder:
             if not obj.parent.properties.has_key('size') and \
                    obj.parent.is_toplevel:
                 layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-##                 layout.append('$self->{%s}->SetSizeHints(%s);\n'
-##                     % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('$self->{%s}->SetSizeHints(%s);\n'
+                              % (obj.name, parent))
         return init, [], layout
 
 # end of class PerlBoxSizerBuilder
@@ -55,8 +56,9 @@ class PerlStaticBoxSizerBuilder:
             if not obj.parent.properties.has_key('size') and \
                    obj.parent.is_toplevel:
                 layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-##                 layout.append('$self->{%s}->SetSizeHints(%s);\n'
-##                     % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('$self->{%s}->SetSizeHints(%s);\n'
+                              % (obj.name, parent))
         return init, [], layout
 
 # end of class PerlStaticBoxSizerBuilder
@@ -88,8 +90,9 @@ class PerlGridSizerBuilder:
             if not obj.parent.properties.has_key('size') and \
                    obj.parent.is_toplevel:
                 layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-##                 layout.append('$self->{%s}->SetSizeHints(%s);\n'
-##                     % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('$self->{%s}->SetSizeHints(%s);\n'
+                              % (obj.name, parent))
         return init, [], layout   
 
 # end of class PerlGridSizerBuilder

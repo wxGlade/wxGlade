@@ -28,8 +28,9 @@ class LispBoxSizerBuilder:
             if not obj.parent.properties.has_key('size') and \
                    obj.parent.is_toplevel:
                 layout.append('(wxSizer_Fit (slot-%s obj) %s)\n' % (obj.name, parent))
-##                 layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
-##                               % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
+                              % (obj.name, parent))
         return init, [], layout
 
 # end of class LispBoxSizerBuilder
@@ -53,8 +54,9 @@ class LispStaticBoxSizerBuilder:
             if not obj.parent.properties.has_key('size') and \
                    obj.parent.is_toplevel:
                 layout.append('(wxSizer_Fit (slot-%s obj) %s)\n' % (obj.name, parent))
-##                 layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
-##                               % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
+                              % (obj.name, parent))
         return init, [], layout
 
 # end of class LispStaticBoxSizerBuilder
@@ -84,8 +86,9 @@ class LispGridSizerBuilder:
             if not obj.parent.properties.has_key('size') and \
                    obj.parent.is_toplevel:
                 layout.append('(wxSizer_Fit (slot-%s obj) %s)\n' % (obj.name, parent))
-##                 layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
-##                               % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('(wxSizer_SetSizeHints (slot-%s obj) %s)\n'
+                              % (obj.name, parent))
         return init, [], layout   
 
 # end of class LispGridSizerBuilder

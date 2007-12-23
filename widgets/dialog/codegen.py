@@ -109,7 +109,13 @@ class CppCodeGenerator:
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
-    return xrcgen.DefaultXrcObject(obj)
+    class DialogXrcObject(xrcgen.DefaultXrcObject):
+        def write_property(self, name, val, outfile, ntabs):
+            if name != 'sizehints':
+                xrcgen.DefaultXrcObject.write(self, name, val, outfile, ntabs)
+    # end of class DialogXrcObject
+    
+    return DialogXrcObject(obj)
 
 
 def initialize():

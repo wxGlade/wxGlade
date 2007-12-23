@@ -24,7 +24,8 @@ class PythonBoxSizerBuilder:
             if not obj.parent.properties.has_key('size') and \
                    obj.parent.is_toplevel:
                 layout.append('%s.Fit(%s)\n' % (obj.name, parent))
-##                 layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
         return init, [], layout
 
 # end of class PythonBoxSizerBuilder
@@ -51,7 +52,8 @@ class PythonStaticBoxSizerBuilder:
             if not obj.parent.properties.has_key('size') and \
                    obj.parent.is_toplevel:
                 layout.append('%s.Fit(%s)\n' % (obj.name, parent))
-##                 layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
         return init, [], layout
 
 # end of class PythonStaticBoxSizerBuilder
@@ -79,7 +81,8 @@ class PythonGridSizerBuilder:
             if not obj.parent.properties.has_key('size') and \
                    obj.parent.is_toplevel:
                 layout.append('%s.Fit(%s)\n' % (obj.name, parent))
-##                 layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
         return init, [], layout   
 
 # end of class PythonGridSizerBuilder
@@ -122,7 +125,8 @@ class CppBoxSizerBuilder:
                 else: parent = 'this'
                 if obj.parent.is_toplevel:
                     layout.append('%s->Fit(%s);\n' % (obj.name, parent))
-##                 layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
         return init, [], [], layout
 
 # end of class CppBoxSizerBuilder
@@ -154,7 +158,8 @@ class CppStaticBoxSizerBuilder:
                 else: parent = 'this'
                 if obj.parent.is_toplevel:
                     layout.append('%s->Fit(%s);\n' % (obj.name, parent))
-##                 layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
         return init, [], [], layout
 
 # end of class CppStaticBoxSizerBuilder
@@ -182,7 +187,8 @@ class CppGridSizerBuilder:
                 else: parent = 'this'
                 if obj.parent.is_toplevel:
                     layout.append('%s->Fit(%s);\n' % (obj.name, parent))
-##                 layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
+            if obj.parent.properties.get('sizehints', False):
+                layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
         return init, [], [], layout   
 
 # end of class CppGridSizerBuilder
