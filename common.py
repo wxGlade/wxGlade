@@ -11,7 +11,7 @@ import os
 use_gui = True
 
 # version identification string
-version = '0.6.2hg'
+version = '0.6.2'
 
 # program path, set in wxglade.py
 wxglade_path = '.'
