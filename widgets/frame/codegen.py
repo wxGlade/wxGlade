@@ -127,7 +127,8 @@ def xrc_frame_code_generator(obj):
 
         def write_property(self, name, val, outfile, ntabs):
             if name != 'sizehints':
-                xrcgen.DefaultXrcObject.write(self, name, val, outfile, ntabs)
+                xrcgen.DefaultXrcObject.write_property(
+                    self, name, val, outfile, ntabs)
 
     # end of class FrameXrcObject
     
