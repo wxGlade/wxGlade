@@ -233,7 +233,18 @@ class CppCodeGenerator:
 
     def get_events(self, obj):
         cppgen = common.code_writers['C++']
-        return cppgen.get_events_with_type(obj, 'wxGridEvent')
+        ret = cppgen.get_events_with_type(obj, 'wxGridEvent')
+        evt_different_types = {
+            'EVT_GRID_CMD_COL_SIZE': 'wxGridSizeEvent',
+            'EVT_GRID_CMD_ROW_SIZE': 'wxGridSizeEvent',
+            'EVT_GRID_CMD_RANGE_SELECT': 'wxGridRangeSelectEvent',
+            'EVT_GRID_CMD_EDITOR_CREATED': 'wxGridEditorCreatedEvent',
+            }
+        for i in xrange(len(ret)):
+            e = ret[i]
+            if e[1] in evt_different_types:
+                ret[i] = e[:3] + (evt_different_types[e[1]],)
+        return ret
 
 # end of class CppCodeGenerator
 
