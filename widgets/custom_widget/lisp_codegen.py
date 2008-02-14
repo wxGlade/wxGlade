@@ -10,10 +10,10 @@ import common
 from codegen import ArgumentsCodeHandler, _fix_arguments
 
 
-class PerlCodeGenerator:
+class LispCodeGenerator:
     def get_code(self, widget):
         init = []
-        plgen = common.code_writers['perl']
+        plgen = common.code_writers['lisp']
         prop = widget.properties
         id_name, id = plgen.generate_code_id(widget)
 
@@ -37,8 +37,8 @@ class PerlCodeGenerator:
 def initialize():
     common.class_names['CustomWidget'] = 'CustomWidget'
 
-    plgen = common.code_writers.get('perl')
+    plgen = common.code_writers.get('lisp')
     if plgen:
-        plgen.add_widget_handler('CustomWidget', PerlCodeGenerator())
+        plgen.add_widget_handler('CustomWidget', LispCodeGenerator())
         plgen.add_property_handler('arguments', ArgumentsCodeHandler,
                                     'CustomWidget')
