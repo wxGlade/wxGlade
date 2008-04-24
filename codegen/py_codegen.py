@@ -666,9 +666,8 @@ def add_class(code_obj):
                                'that the resulting code is correct!' % \
                                code_obj.name)
 
-        if not multiple_files and extra_code:
-            _current_extra_code.append("".join(
-                classes[code_obj.klass].extra_code[::-1]))
+        # Don't add extra_code to _current_extra_code here, that is handled
+        # later.  Otherwise we'll emit duplicate extra code for frames.
 
     # ALB 2007-08-31 custom base classes support
     custom_base = getattr(code_obj, 'custom_base',
