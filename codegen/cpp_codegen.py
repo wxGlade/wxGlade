@@ -1200,12 +1200,12 @@ def add_class(code_obj):
         swrite = output_source.write
         for line in source_buffer: swrite(line)
         # extra code
-        if classes[code_obj.klass].extra_code_h:
-            _current_extra_code_h.extend(
-                classes[code_obj.klass].extra_code_h[::-1])
-        if classes[code_obj.klass].extra_code_cpp:
-            _current_extra_code_cpp.extend(
-                classes[code_obj.klass].extra_code_h[::-1])
+        ## if classes[code_obj.klass].extra_code_h:
+        ##     _current_extra_code_h.extend(
+        ##         classes[code_obj.klass].extra_code_h[::-1])
+        ## if classes[code_obj.klass].extra_code_cpp:
+        ##     _current_extra_code_cpp.extend(
+        ##         classes[code_obj.klass].extra_code_h[::-1])
 
 
 def add_app(app_attrs, top_win_class):
