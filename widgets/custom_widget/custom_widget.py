@@ -62,8 +62,8 @@ class CustomWidget(ManagedBase):
                                               self.set_arguments)
         
         cols = [('Arguments', GridProperty.STRING)]
-        self.properties['arguments'] = ArgumentsProperty(self, 'arguments',
-                                                         None, cols, 2, label=_("arguments"))
+        self.properties['arguments'] = ArgumentsProperty(
+            self, 'arguments', None, cols, 2, label=_("arguments"))
 
     def set_klass(self, value):
         ManagedBase.set_klass(self, value)
