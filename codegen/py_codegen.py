@@ -1003,8 +1003,8 @@ def add_app(app_attrs, top_win_class):
                    ' catalog name\n\n' % name)
         append(tab + '%s = %s(0)\n' % (name, cn('wxPySimpleApp')))
     append(tab + cn('wxInitAllImageHandlers') + '()\n') # to avoid troubles
-    append(tab + '%s = %s(None, ' + cn('wxID_ANY') + ', "")\n' %
-           (top_win, top_win_class))
+    append(tab + '%s = %s(None, %s, "")\n' %
+           (top_win, top_win_class, cn('wxID_ANY')))
     if klass:
         append(tab + 'self.SetTopWindow(%s)\n' % top_win)
         append(tab + '%s.Show()\n' % top_win)
