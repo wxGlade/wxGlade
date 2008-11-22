@@ -39,7 +39,8 @@ class PanelBase(object):
                            wx.NO_FULL_REPAINT_ON_RESIZE,
                            wx.FULL_REPAINT_ON_RESIZE,
                            wx.CLIP_CHILDREN]
-        style_labels = ('#section#' + _('Style'), 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
+        style_labels = ('#section#' + _('Style'),
+                        'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
                         'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
                         'wxSTATIC_BORDER',
                         'wxNO_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
@@ -56,8 +57,8 @@ class PanelBase(object):
         self.scroll_rate = (10, 10)
         self.access_functions['scroll_rate'] = (self.get_scroll_rate,
                                                 self.set_scroll_rate)
-        self.properties['scroll_rate'] = TextProperty(self, 'scroll_rate',
-                                                      None, can_disable=True, label=_("scroll_rate"))
+        self.properties['scroll_rate'] = TextProperty(
+            self, 'scroll_rate', None, can_disable=True, label=_("scroll_rate"))
 
     def finish_widget_creation(self):
         super(PanelBase, self).finish_widget_creation(
