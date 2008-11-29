@@ -236,6 +236,9 @@ class TextProperty(Property, _activator):
 
     def bind_event(self, function):
         def func_2(event):
+            if self.text.IsBeingDeleted():
+                return
+
             if self.text.IsEnabled():
                 #misc.wxCallAfter(function, event)
                 function(event)
@@ -502,6 +505,9 @@ class SpinProperty(Property, _activator):
 
     def bind_event(self, function):
         def func_2(event):
+            if self.spin.IsBeingDeleted():
+                return
+            
             if self.is_active():
                 function(event)
             event.Skip()
@@ -597,7 +603,12 @@ class DialogProperty(Property, _activator):
         self.text.ProcessEvent(wx.FocusEvent(wx.wxEVT_KILL_FOCUS, self.id))
 
     def bind_event(self, function):
-        wx.EVT_KILL_FOCUS(self.text, function)
+        def func_2(event):
+            if self.text.IsBeingDeleted():
+                return
+
+            function(event)
+        wx.EVT_KILL_FOCUS(self.text, func_2)
 
     def get_value(self):
         try: return self.text.GetValue()

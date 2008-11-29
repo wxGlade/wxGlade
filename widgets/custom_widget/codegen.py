@@ -48,7 +48,6 @@ class PythonCodeGenerator:
         if widget.preview and widget.klass not in widget.parser.class_names:
             # if this CustomWidget refers to another class in the same wxg
             # file, use that for the preview
-            #print "PREVIEW:", widget.klass, widget.parser.class_names
             return self.get_code_preview(widget)
         pygen = common.code_writers['python']
         prop = widget.properties

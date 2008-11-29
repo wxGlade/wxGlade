@@ -70,7 +70,8 @@ class Tree:
             for p in w.properties:
                 w.properties[p].write(outfile, tabs+1)
 
-            if class_names is not None:
+            if class_names is not None and \
+                   w.__class__.__name__ != 'CustomWidget':
                 class_names.add(w.klass)
 
             if isinstance(w, edit_sizers.SizerBase):
