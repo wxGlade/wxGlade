@@ -65,6 +65,13 @@ class CustomWidget(ManagedBase):
         self.properties['arguments'] = ArgumentsProperty(
             self, 'arguments', None, cols, 2, label=_("arguments"))
 
+        self.custom_ctor = "" # if not empty, an arbitrary piece of code that
+                              # will be used instead of the constructor name
+        self.access_functions['custom_ctor'] = (self.get_custom_ctor,
+                                                self.set_custom_ctor)
+        self.properties['custom_ctor'] = TextProperty(
+            self, 'custom_ctor', None, True, label=_('Custom constructor'))
+
     def set_klass(self, value):
         ManagedBase.set_klass(self, value)
         if self.widget: self.widget.Refresh()
@@ -100,6 +107,9 @@ class CustomWidget(ManagedBase):
         ManagedBase.create_properties(self)
         panel = wx.ScrolledWindow(self.notebook, -1)
         szr = wx.BoxSizer(wx.VERTICAL)
+        ctor = self.properties['custom_ctor']
+        ctor.display(panel)
+        szr.Add(ctor.panel, 0, wx.EXPAND)
         args = self.properties['arguments']
         args.display(panel)
         szr.Add(args.panel, 1, wx.ALL|wx.EXPAND, 5)
@@ -134,6 +144,12 @@ Invalid entries are silently ignored""")
     def get_property_handler(self, name):
         if name == 'arguments': return ArgumentsHandler(self)
         return ManagedBase.get_property_handler(self, name)
+
+    def get_custom_ctor(self):
+        return self.custom_ctor
+
+    def set_custom_ctor(self, value):
+        self.custom_ctor = value.strip()
        
 # end of class CustomWidget
         

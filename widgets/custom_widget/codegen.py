@@ -60,7 +60,11 @@ class PythonCodeGenerator:
         arguments = _fix_arguments(
             prop.get('arguments', []), parent, id,
             prop.get('size', '-1, -1').strip())
-        init.append('self.%s = %s(%s)\n' % (widget.name, widget.klass,
+        ctor = widget.klass
+        cust_ctor = prop.get('custom_ctor', '').strip()
+        if cust_ctor:
+            ctor = cust_ctor
+        init.append('self.%s = %s(%s)\n' % (widget.name, ctor,
                                             ", ".join(arguments)))
         props_buf = pygen.generate_common_properties(widget)
         return init, props_buf, []
@@ -115,8 +119,12 @@ class CppCodeGenerator:
         arguments = _fix_arguments(
             prop.get('arguments', []), parent, id,
             prop.get('size', '-1, -1').strip())
-        init = ['%s = new %s(%s);\n' % (widget.name, widget.klass,
-                                        ", ".join(arguments)) ]
+        ctor = 'new ' + widget.klass
+        cust_ctor = prop.get('custom_ctor', '').strip()
+        if cust_ctor:
+            ctor = cust_ctor
+        init = ['%s = %s(%s);\n' % (widget.name, ctor,
+                                    ", ".join(arguments)) ]
         props_buf = cppgen.generate_common_properties(widget)
         return init, ids, props_buf, []
 
@@ -133,6 +141,9 @@ def xrc_code_generator(obj):
         def write(self, outfile, ntabs):
             # first, fix the class:
             self.klass = obj.klass
+            # delete the custom constructor property
+            if 'custom_ctor' in self.properties:
+                del self.properties['custom_ctor']
             # then, the attributes:
             if 'arguments' in self.properties:
                 args = self.properties['arguments']
