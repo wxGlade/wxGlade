@@ -824,10 +824,10 @@ class RadioProperty(Property, _activator):
         self.columns = columns
         self.panel = None
         self.label = label
+        self.val = owner[name][0]()
         if label is None:
             self.label = _mangle(name)
         if parent is not None: self.display(parent)
-        self.val = owner[name][0]()
 
     def display(self, parent):
         """\
