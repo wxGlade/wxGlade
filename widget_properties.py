@@ -460,8 +460,8 @@ class SpinProperty(Property, _activator):
         else:
             self.val_range = None
         self.panel = None
-        if parent is not None: self.display(parent)
         self.val = owner[name][0]()
+        if parent is not None: self.display(parent)
 
     def display(self, parent):
         """\
