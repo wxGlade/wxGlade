@@ -15,7 +15,8 @@ language = 'C++'
 writer = sys.modules[__name__] # the writer is the module itself
 
 # default extensions for generated files: a list of file extensions
-default_extensions = ['h', 'cpp']
+default_extensions = ['h', 'hh', 'hpp', 'H', 'hxx',
+                      'cpp', 'cc', 'C', 'cxx', 'c++']
 
 """\
 dictionary that maps the lines of code of a class to the name of such class:
@@ -113,8 +114,8 @@ class SourceFileContent:
         and replaces the wxGlade blocks with tags that in turn will be replaced
         by the new wxGlade blocks
         """
-        self._build_untouched(self.name + '.h', True)
-        self._build_untouched(self.name + '.cpp', False)
+        self._build_untouched(self.name + header_extension, True)
+        self._build_untouched(self.name + source_extension, False)
 
     def _build_untouched(self, filename, is_header):
         class_name = None
@@ -248,7 +249,7 @@ previous_source = None
 
 
 def tabs(number):
-    return '    ' * number
+    return indent_symbol * indent_amount * number
 
 
 # if True, overwrite any previous version of the source file instead of
@@ -291,6 +292,27 @@ def initialize(app_attrs):
 
     _last_generated_id = 1000
 
+    # Extensions based on Project options when set
+    global source_extension, header_extension
+    source_extension = app_attrs.get('source_extension', '.cpp')
+    header_extension = app_attrs.get('header_extension', '.h')
+
+    # Inentation level based on the project options
+    global indent_symbol,indent_amount
+    try:
+        indent_symbol = app_attrs['indent_symbol']
+        if indent_symbol == 'tab':
+            indent_symbol = '\t'
+        elif indent_symbol == 'space':
+            indent_symbol = ' '
+        else:
+            indent_symbol = ' '
+    except (KeyError, ValueError):
+        indent_symbol = ' '
+
+    try: indent_amount = int(app_attrs['indent_amount'])
+    except (KeyError, ValueError): indent_amount = 4
+
     try: _use_gettext = int(app_attrs['use_gettext'])
     except (KeyError, ValueError): _use_gettext = False
 
@@ -331,7 +353,7 @@ def initialize(app_attrs):
         global output_header, output_source, output_name
         name, ext = os.path.splitext(out_path)
         output_name = name
-        if not _overwrite and os.path.isfile(name + '.h'):
+        if not _overwrite and os.path.isfile(name + header_extension):
             # the file exists, we must keep all the lines not inside a wxGlade
             # block. NOTE: this may cause troubles if out_path is not a valid
             # C++ file, so be careful!
@@ -344,7 +366,8 @@ def initialize(app_attrs):
                 output_header.write(line)
                 #output_source.write(line)
             # isolation directives
-            oh = os.path.basename(name + '.h').upper().replace('.', '_')
+            oh = os.path.basename(name + header_extension).upper().replace(
+                '.', '_')
             # extra headers
             #for val in _obj_headers.itervalues():
 ##             for handler in obj_builders.itervalues():
@@ -360,7 +383,7 @@ def initialize(app_attrs):
 
             output_source.write(header_lines[0])
             output_source.write('#include "%s%s"\n\n' % \
-                                (os.path.basename(name), '.h'))
+                                (os.path.basename(name), header_extension))
             output_source.write('<%swxGlade replace  extracode>\n\n' % nonce)
     else:
         previous_source = None
@@ -443,11 +466,10 @@ def finalize():
             source_content = source_content.replace(tag, "")
 
         # write the new file contents to disk
-        common.save_file(previous_source.name + '.h', header_content,
-                         'codegen')
-        common.save_file(previous_source.name + '.cpp',
-                         source_content + '\n\n' + extra_source,
-                         'codegen')
+        common.save_file(previous_source.name + header_extension,
+                         header_content, 'codegen')
+        common.save_file(previous_source.name + source_extension,
+                         source_content + '\n\n' + extra_source, 'codegen')
         
     elif not multiple_files:
         oh = os.path.basename(output_name).upper() + '_H'
@@ -482,8 +504,10 @@ def finalize():
         source_content = source_content.replace(tag, code)
         # --------------------------------------------------------------        
             
-        common.save_file(output_name + '.h', header_content, 'codegen')
-        common.save_file(output_name + '.cpp', source_content, 'codegen')
+        common.save_file(output_name + header_extension, header_content,
+                         'codegen')
+        common.save_file(output_name + source_extension, source_content,
+                         'codegen')
 
 
 def test_attribute(obj):
@@ -615,7 +639,8 @@ def add_class(code_obj):
         # let's see if the file to generate exists, and in this case
         # create a SourceFileContent instance
         filename = os.path.join(out_dir,
-                                code_obj.klass.replace('::', '_') + '.h')
+                                code_obj.klass.replace('::', '_') +
+                                header_extension)
         if _overwrite or not os.path.exists(filename):
             prev_src = None
         else:
@@ -1130,13 +1155,15 @@ def add_class(code_obj):
             
             # store the new file contents to disk
             name = os.path.join(out_dir, code_obj.klass)
-            common.save_file(name + '.h', prev_src.header_content, 'codegen')
-            common.save_file(name + '.cpp', prev_src.source_content, 'codegen')
+            common.save_file(name + header_extension, prev_src.header_content,
+                             'codegen')
+            common.save_file(name + source_extension, prev_src.source_content,
+                             'codegen')
             return
 
         # create the new source file
-        header_file = os.path.join(out_dir, code_obj.klass + '.h')
-        source_file = os.path.join(out_dir, code_obj.klass + '.cpp')
+        header_file = os.path.join(out_dir, code_obj.klass + header_extension)
+        source_file = os.path.join(out_dir, code_obj.klass + source_extension)
         hout = cStringIO.StringIO()
         sout = cStringIO.StringIO()
         # header file

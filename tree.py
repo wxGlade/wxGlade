@@ -204,6 +204,14 @@ class Tree:
         use_gettext = str(int(self.app.use_gettext))
         is_template = str(int(self.app.is_template))
         overwrite = str(int(self.app.overwrite))
+        indent_amount = str(int(self.app.indent_amount))
+        indent_symbol = int(self.app.indent_mode)
+        if indent_symbol == 0:
+            indent_symbol = "tab"
+        else:
+            indent_symbol = "space"
+        source_ext = '.' + self.app.source_ext
+        header_ext = '.' + self.app.header_ext
         # ALB 2004-01-18
         #use_new_namespace = str(int(self.app.get_use_new_namespace()))
         use_new_namespace = str(int(not self.app.get_use_old_namespace()))
@@ -212,12 +220,15 @@ class Tree:
         outfile.write('<application path=%s name=%s class=%s option=%s ' \
                       'language=%s top_window=%s encoding=%s ' \
                       'use_gettext=%s overwrite=%s '
-                      'use_new_namespace=%s for_version=%s is_template=%s>\n' \
+                      'use_new_namespace=%s for_version=%s is_template=%s '\
+                      'indent_amount=%s indent_symbol=%s '\
+                      'source_extension=%s header_extension=%s>\n' \
                       % tuple([quoteattr(common._encode_to_xml(i)) for i in 
                                (outpath, name, klass, option, language,
                                 top_window, encoding, use_gettext,
                                 overwrite, use_new_namespace, for_version,
-                                is_template)]))
+                                is_template, indent_amount, indent_symbol,
+                                source_ext, header_ext)]))
         if self.app.is_template and getattr(self.app, 'template_data', None):
             self.app.template_data.write(outfile, tabs+1)
         class_names = set()

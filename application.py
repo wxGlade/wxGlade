@@ -79,6 +79,20 @@ class Application(object):
             try: opt = int(value)
             except ValueError: pass
             else: self.codegen_opt = opt
+        self.indent_mode = 1
+        self.indent_amount = 4
+        def set_indent_mode(value):
+            try: opt = int(value)
+            except ValueError: pass
+            else: self.indent_mode = opt
+        def set_indent_amount(value):
+            try: opt = int(value)
+            except ValueError: pass
+            else: self.indent_amount = opt
+        self.source_ext = 'cpp'
+        self.header_ext = 'h'
+        def set_source_ext(value): self.source_ext = value
+        def set_header_ext(value): self.header_ext = value
         self.output_path = ""
         self.language = 'python' # output language
         def get_output_path(): return os.path.expanduser(self.output_path)
@@ -93,6 +107,10 @@ class Application(object):
             'name': (lambda : self.name, self.set_name),
             'class': (lambda : self.klass, self.set_klass), 
             'code_generation': (lambda : self.codegen_opt, set_codegen_opt),
+            'indent_mode': (lambda : self.indent_mode, set_indent_mode),
+            'indent_amount': (lambda : self.indent_amount, set_indent_amount),
+            'source_ext' : (lambda : self.source_ext, set_source_ext),
+            'header_ext' : (lambda : self.header_ext, set_header_ext),
             'output_path': (get_output_path, set_output_path),
             'language': (self.get_language, self.set_language),
             'encoding': (self.get_encoding, self.set_encoding),
@@ -118,7 +136,14 @@ class Application(object):
                                            _("Separate file for" \
                                            " each class")],
                                           label=_("Code Generation"))
-
+        self.indent_mode_prop = RadioProperty(self, "indent_mode", panel,
+                                              [_("Tabs"), _("Spaces")],
+                                              columns=2,
+                                              label=_("Indentation mode (C++)"))
+        self.indent_amount_prop = SpinProperty(self, 'indent_amount', panel,
+                                               r=(1, 100))
+        self.source_ext_prop = TextProperty(self, 'source_ext', panel)
+        self.header_ext_prop = TextProperty(self, 'header_ext', panel)
         ext = getattr(common.code_writers.get('python'),
                       'default_extensions', [])
         wildcard = []
@@ -176,11 +201,16 @@ class Application(object):
         szr.Add(self.top_win_prop, 5, wx.ALL|wx.ALIGN_CENTER, 3)
         sizer.Add(szr, 0, wx.EXPAND)
         sizer.Add(self.codegen_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
+        sizer.Add(self.indent_mode_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
+        sizer.Add(self.indent_amount_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.codewriters_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
         sizer.Add(self.for_version_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
         sizer.Add(self.use_old_namespace_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.overwrite_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.source_ext_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.header_ext_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.outpath_prop.panel, 0, wx.EXPAND)
+                
         sizer.Add(btn, 0, wx.ALL|wx.EXPAND, 5)
         
         panel.SetAutoLayout(True)
@@ -323,6 +353,10 @@ class Application(object):
         self.name = "app"; self.name_prop.set_value("app")
         self.name_prop.toggle_active(False)
         self.codegen_opt = 0; self.codegen_prop.set_value(0)
+        self.indent_mode = 1
+        self.indent_amount = 4
+        self.cpp_source_ext = 'cpp'
+        self.cpp_header_ext = 'h'
         self.output_path = ""; self.outpath_prop.set_value("")
         # do not reset language, but call set_language anyway to update the
         # wildcard of the file dialog
