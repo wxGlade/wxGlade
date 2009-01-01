@@ -69,6 +69,13 @@ class Application(object):
         self.notebook.Hide()
         panel = wx.ScrolledWindow(
             self.notebook, -1, style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
+        lang_panels = {}
+        def mkp():
+            return wx.ScrolledWindow(
+                self.notebook, -1,
+                style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
+        lang_panels['C++'] = mkp()
+        lang_panels['python'] = mkp()
         self.name = "app" # name of the wxApp instance to generate
         self.__saved = True # if True, there are no changes to save
         self.__filename = None # name of the output xml file
@@ -136,14 +143,17 @@ class Application(object):
                                            _("Separate file for" \
                                            " each class")],
                                           label=_("Code Generation"))
-        self.indent_mode_prop = RadioProperty(self, "indent_mode", panel,
+        self.indent_mode_prop = RadioProperty(self, "indent_mode",
+                                              lang_panels['C++'],
                                               [_("Tabs"), _("Spaces")],
                                               columns=2,
-                                              label=_("Indentation mode (C++)"))
-        self.indent_amount_prop = SpinProperty(self, 'indent_amount', panel,
-                                               r=(1, 100))
-        self.source_ext_prop = TextProperty(self, 'source_ext', panel)
-        self.header_ext_prop = TextProperty(self, 'header_ext', panel)
+                                              label=_("Indentation mode"))
+        self.indent_amount_prop = SpinProperty(self, 'indent_amount',
+                                               lang_panels['C++'], r=(1, 100))
+        self.source_ext_prop = TextProperty(self, 'source_ext',
+                                            lang_panels['C++'])
+        self.header_ext_prop = TextProperty(self, 'header_ext',
+                                            lang_panels['C++'])
         ext = getattr(common.code_writers.get('python'),
                       'default_extensions', [])
         wildcard = []
@@ -171,8 +181,8 @@ class Application(object):
         self.access_functions['use_new_namespace'] = (
             self.get_use_old_namespace, self.set_use_old_namespace)
         self.use_old_namespace_prop = CheckBoxProperty(
-            self, 'use_new_namespace', panel, _('Use old "from wxPython.wx"\n'
-            'import (python output only)'))
+            self, 'use_new_namespace', lang_panels['python'],
+            _('Use old "from wxPython.wx"\nimport'))
         
         # `overwrite' property - added 2003-07-15
         self.overwrite = False
@@ -201,26 +211,37 @@ class Application(object):
         szr.Add(self.top_win_prop, 5, wx.ALL|wx.ALIGN_CENTER, 3)
         sizer.Add(szr, 0, wx.EXPAND)
         sizer.Add(self.codegen_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
-        sizer.Add(self.indent_mode_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
-        sizer.Add(self.indent_amount_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.codewriters_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
         sizer.Add(self.for_version_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
-        sizer.Add(self.use_old_namespace_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.overwrite_prop.panel, 0, wx.EXPAND)
-        sizer.Add(self.source_ext_prop.panel, 0, wx.EXPAND)
-        sizer.Add(self.header_ext_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.outpath_prop.panel, 0, wx.EXPAND)
                 
         sizer.Add(btn, 0, wx.ALL|wx.EXPAND, 5)
-        
-        panel.SetAutoLayout(True)
-        panel.SetSizer(sizer)
-        sizer.Layout()
-        sizer.Fit(panel)
-        h = panel.GetSize()[1]
-        self.notebook.AddPage(panel, _("Application"))
+
         import math
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
+        def do_add(l, p, s):
+            p.SetAutoLayout(True)
+            p.SetSizer(s)
+            s.Layout()
+            s.Fit(p)
+            h = p.GetSize()[1]
+            self.notebook.AddPage(p, l)
+            p.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
+            
+        do_add(_('Application'), panel, sizer)
+
+        # lang_panels['python']
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.use_old_namespace_prop.panel, 0, wx.EXPAND)
+        do_add('Python', lang_panels['python'], sizer)
+
+        # lang_panels['C++']
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.indent_mode_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
+        sizer.Add(self.indent_amount_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.source_ext_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.header_ext_prop.panel, 0, wx.EXPAND)
+        do_add('C++', lang_panels['C++'], sizer)
 
         wx.EVT_BUTTON(btn, BTN_ID, self.generate_code)
         wx.EVT_CHOICE(self.top_win_prop, TOP_WIN_ID, self.set_top_window)
