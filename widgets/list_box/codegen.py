@@ -43,6 +43,11 @@ def xrc_code_generator(obj):
         def write_property(self, name, val, outfile, tabs):
             if name == 'choices':
                 xrc_write_choices_property(self, outfile, tabs)
+            elif name == 'selection':
+                choices = self.properties['choices']
+                if choices:
+                    xrcgen.DefaultXrcObject.write_property(self, name, val,
+                                                           outfile, tabs)
             else:
                 xrcgen.DefaultXrcObject.write_property(self, name, val,
                                                        outfile, tabs)

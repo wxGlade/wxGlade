@@ -1673,7 +1673,7 @@ class GridSizerBase(SizerBase):
     def set_cols(self, cols):
         self.cols = int(cols)
         if self.widget:
-            self.widget.SetCols(self.rows)
+            self.widget.SetCols(self.cols)
             self.layout(True)
 
     def set_hgap(self, hgap):

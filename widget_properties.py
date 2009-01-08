@@ -236,6 +236,9 @@ class TextProperty(Property, _activator):
 
     def bind_event(self, function):
         def func_2(event):
+            if self.text.IsBeingDeleted():
+                return
+
             if self.text.IsEnabled():
                 #misc.wxCallAfter(function, event)
                 function(event)
@@ -457,8 +460,8 @@ class SpinProperty(Property, _activator):
         else:
             self.val_range = None
         self.panel = None
-        if parent is not None: self.display(parent)
         self.val = owner[name][0]()
+        if parent is not None: self.display(parent)
 
     def display(self, parent):
         """\
@@ -502,6 +505,9 @@ class SpinProperty(Property, _activator):
 
     def bind_event(self, function):
         def func_2(event):
+            if self.spin.IsBeingDeleted():
+                return
+            
             if self.is_active():
                 function(event)
             event.Skip()
@@ -597,7 +603,12 @@ class DialogProperty(Property, _activator):
         self.text.ProcessEvent(wx.FocusEvent(wx.wxEVT_KILL_FOCUS, self.id))
 
     def bind_event(self, function):
-        wx.EVT_KILL_FOCUS(self.text, function)
+        def func_2(event):
+            if self.text.IsBeingDeleted():
+                return
+
+            function(event)
+        wx.EVT_KILL_FOCUS(self.text, func_2)
 
     def get_value(self):
         try: return self.text.GetValue()
@@ -813,10 +824,10 @@ class RadioProperty(Property, _activator):
         self.columns = columns
         self.panel = None
         self.label = label
+        self.val = owner[name][0]()
         if label is None:
             self.label = _mangle(name)
         if parent is not None: self.display(parent)
-        self.val = owner[name][0]()
 
     def display(self, parent):
         """\
