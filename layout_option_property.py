@@ -89,14 +89,30 @@ class LayoutOptionProperty(widget_properties.Property):
             self._bind_event_gridbag(function)
 
     def _bind_event_spin(self, function):
-        wx.EVT_KILL_FOCUS(self.spin, function)
+        def func_2(event):
+            if self.spin.IsBeingDeleted():
+                return
+            function(event)
+
+        wx.EVT_KILL_FOCUS(self.spin, func_2)
         if wx.Platform == '__WXMAC__':
-            wx.EVT_TEXT(self.spin, self.spin.GetId(), function)
-            wx.EVT_SPINCTRL(self.spin, self.spin.GetId(), function)
+            wx.EVT_TEXT(self.spin, self.spin.GetId(), func_2)
+            wx.EVT_SPINCTRL(self.spin, self.spin.GetId(), func_2)
 
     def _bind_event_gridbag(self, function):
-        wx.EVT_KILL_FOCUS(self.position, function)
-        wx.EVT_KILL_FOCUS(self.span, function)
+        def func_2(event):
+            if self.position.IsBeingDeleted():
+                return
+            function(event)
+
+        wx.EVT_KILL_FOCUS(self.position, func_2)
+        
+        def func_3(event):
+            if self.span.IsBeingDeleted():
+                return
+            function(event)
+
+        wx.EVT_KILL_FOCUS(self.span, func_3)
 
     def get_value(self):
         if not self.is_gridbag:

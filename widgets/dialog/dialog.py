@@ -33,7 +33,9 @@ class EditDialog(TopLevelBase):
                          'wxFULL_REPAINT_ON_RESIZE',
                          'wxCLIP_CHILDREN')
         #note that the tooltips are only for wxPython>=2.5
-	self.tooltips = (_("Equivalent to a combination of wxCAPTION, wxCLOSE_BOX and wxSYSTEM_MENU (the last one is not used under Unix)"),
+	self.tooltips = (_("Equivalent to a combination of wxCAPTION, "
+                           "wxCLOSE_BOX and wxSYSTEM_MENU "
+                           "(the last one is not used under Unix)"),
 		_("NO DESCRIPTION"),
 		_("Puts a caption on the dialog box."),
 		_("Display a resizeable frame around the window."),
@@ -43,8 +45,13 @@ class EditDialog(TopLevelBase):
 		_("Displays a minimize box on the dialog."),
 		_("Display a thick frame around the window."),
 		_("The dialog stays on top of all other windows."),
-		_("Under Windows, specifies that the child controls should not have 3D borders unless specified in the control."),
-		_("By default, a dialog created with a NULL parent window will be given the application's top level window as parent. Use this style to prevent this from happening and create an orphan dialog. This is not recommended for modal dialogs."),
+		_("Under Windows, specifies that the child controls should "
+                  "not have 3D borders unless specified in the control."),
+		_("By default, a dialog created with a NULL parent window "
+                  "will be given the application's top level window as parent. "
+                  "Use this style to prevent this from happening and create "
+                  "an orphan dialog. "
+                  "This is not recommended for modal dialogs."),
 		_("NO DESCRIPTION"),
 		_("NO DESCRIPTION"),
 		_("NO DESCRIPTION"))		

@@ -160,6 +160,31 @@ class XmlWidgetBuilder(XmlParser):
             app.set_use_old_namespace(not use_new_namespace)
             app.use_old_namespace_prop.set_value(not use_new_namespace)
             # ALB 2004-12-05
+            
+            indent_symbol = attrs.get("indent_symbol")
+            if indent_symbol == 'space':
+                app.indent_mode = 1
+            elif indent_symbol == 'tab':
+                app.indent_mode = 0
+            app.indent_mode_prop.set_value (app.indent_mode)
+            
+            indent = attrs.get("indent_amount")
+            if indent:
+                try: indent_amount = int(indent)
+                except (KeyError, ValueError): pass
+                else: 
+                    app.indent_amount = indent_amount
+                    app.indent_amount_prop.set_value (indent_amount)
+            
+            source_extension = attrs.get("source_extension")
+            if source_extension and source_extension[0] == '.':
+                app.source_ext = source_extension[1:]
+                app.source_ext_prop.set_value (source_extension[1:])
+            header_extension = attrs.get("header_extension")
+            if header_extension and header_extension[0] == '.':
+                app.header_ext = header_extension[1:]
+                app.header_ext_prop.set_value (header_extension[1:])
+
             try:
                 for_version = attrs['for_version']
                 app.for_version = for_version

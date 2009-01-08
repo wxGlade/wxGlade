@@ -69,6 +69,13 @@ class Application(object):
         self.notebook.Hide()
         panel = wx.ScrolledWindow(
             self.notebook, -1, style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
+        lang_panels = {}
+        def mkp():
+            return wx.ScrolledWindow(
+                self.notebook, -1,
+                style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
+        lang_panels['C++'] = mkp()
+        lang_panels['python'] = mkp()
         self.name = "app" # name of the wxApp instance to generate
         self.__saved = True # if True, there are no changes to save
         self.__filename = None # name of the output xml file
@@ -79,6 +86,20 @@ class Application(object):
             try: opt = int(value)
             except ValueError: pass
             else: self.codegen_opt = opt
+        self.indent_mode = 1
+        self.indent_amount = 4
+        def set_indent_mode(value):
+            try: opt = int(value)
+            except ValueError: pass
+            else: self.indent_mode = opt
+        def set_indent_amount(value):
+            try: opt = int(value)
+            except ValueError: pass
+            else: self.indent_amount = opt
+        self.source_ext = 'cpp'
+        self.header_ext = 'h'
+        def set_source_ext(value): self.source_ext = value
+        def set_header_ext(value): self.header_ext = value
         self.output_path = ""
         self.language = 'python' # output language
         def get_output_path(): return os.path.expanduser(self.output_path)
@@ -93,6 +114,10 @@ class Application(object):
             'name': (lambda : self.name, self.set_name),
             'class': (lambda : self.klass, self.set_klass), 
             'code_generation': (lambda : self.codegen_opt, set_codegen_opt),
+            'indent_mode': (lambda : self.indent_mode, set_indent_mode),
+            'indent_amount': (lambda : self.indent_amount, set_indent_amount),
+            'source_ext' : (lambda : self.source_ext, set_source_ext),
+            'header_ext' : (lambda : self.header_ext, set_header_ext),
             'output_path': (get_output_path, set_output_path),
             'language': (self.get_language, self.set_language),
             'encoding': (self.get_encoding, self.set_encoding),
@@ -118,7 +143,17 @@ class Application(object):
                                            _("Separate file for" \
                                            " each class")],
                                           label=_("Code Generation"))
-
+        self.indent_mode_prop = RadioProperty(self, "indent_mode",
+                                              lang_panels['C++'],
+                                              [_("Tabs"), _("Spaces")],
+                                              columns=2,
+                                              label=_("Indentation mode"))
+        self.indent_amount_prop = SpinProperty(self, 'indent_amount',
+                                               lang_panels['C++'], r=(1, 100))
+        self.source_ext_prop = TextProperty(self, 'source_ext',
+                                            lang_panels['C++'])
+        self.header_ext_prop = TextProperty(self, 'header_ext',
+                                            lang_panels['C++'])
         ext = getattr(common.code_writers.get('python'),
                       'default_extensions', [])
         wildcard = []
@@ -146,8 +181,8 @@ class Application(object):
         self.access_functions['use_new_namespace'] = (
             self.get_use_old_namespace, self.set_use_old_namespace)
         self.use_old_namespace_prop = CheckBoxProperty(
-            self, 'use_new_namespace', panel, _('Use old "from wxPython.wx"\n'
-            'import (python output only)'))
+            self, 'use_new_namespace', lang_panels['python'],
+            _('Use old "from wxPython.wx"\nimport'))
         
         # `overwrite' property - added 2003-07-15
         self.overwrite = False
@@ -178,19 +213,35 @@ class Application(object):
         sizer.Add(self.codegen_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
         sizer.Add(self.codewriters_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
         sizer.Add(self.for_version_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
-        sizer.Add(self.use_old_namespace_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.overwrite_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.outpath_prop.panel, 0, wx.EXPAND)
+                
         sizer.Add(btn, 0, wx.ALL|wx.EXPAND, 5)
-        
-        panel.SetAutoLayout(True)
-        panel.SetSizer(sizer)
-        sizer.Layout()
-        sizer.Fit(panel)
-        h = panel.GetSize()[1]
-        self.notebook.AddPage(panel, _("Application"))
+
         import math
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
+        def do_add(l, p, s):
+            p.SetAutoLayout(True)
+            p.SetSizer(s)
+            s.Layout()
+            s.Fit(p)
+            h = p.GetSize()[1]
+            self.notebook.AddPage(p, l)
+            p.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
+            
+        do_add(_('Application'), panel, sizer)
+
+        # lang_panels['python']
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.use_old_namespace_prop.panel, 0, wx.EXPAND)
+        do_add('Python', lang_panels['python'], sizer)
+
+        # lang_panels['C++']
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.indent_mode_prop.panel, 0, wx.ALL|wx.EXPAND, 4)
+        sizer.Add(self.indent_amount_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.source_ext_prop.panel, 0, wx.EXPAND)
+        sizer.Add(self.header_ext_prop.panel, 0, wx.EXPAND)
+        do_add('C++', lang_panels['C++'], sizer)
 
         wx.EVT_BUTTON(btn, BTN_ID, self.generate_code)
         wx.EVT_CHOICE(self.top_win_prop, TOP_WIN_ID, self.set_top_window)
@@ -323,6 +374,10 @@ class Application(object):
         self.name = "app"; self.name_prop.set_value("app")
         self.name_prop.toggle_active(False)
         self.codegen_opt = 0; self.codegen_prop.set_value(0)
+        self.indent_mode = 1
+        self.indent_amount = 4
+        self.cpp_source_ext = 'cpp'
+        self.cpp_header_ext = 'h'
         self.output_path = ""; self.outpath_prop.set_value("")
         # do not reset language, but call set_language anyway to update the
         # wildcard of the file dialog

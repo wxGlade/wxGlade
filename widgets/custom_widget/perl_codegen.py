@@ -24,10 +24,14 @@ class PerlCodeGenerator:
 
         
         if id_name: init.append(id_name)
-        arguments = _fix_arguments(prop.get('arguments', []), parent, id, prop.get('size', "-1, -1"))
-        init.append('use %s;\n' % widget.klass ) # yuck
-        init.append('$self->{%s} = %s->new(%s);\n' %
-            (widget.name, widget.klass, ", ".join(arguments)))
+        arguments = _fix_arguments(prop.get('arguments', []),
+                                   parent, id, prop.get('size', "-1, -1"))
+	ctor = widget.klass + '->new'
+	cust_ctor = prop.get('custom_ctor', '').strip()
+	if cust_ctor:
+            ctor = cust_ctor
+        init.append('$self->{%s} = %s(%s);\n' %
+                    (widget.name, ctor, ", ".join(arguments)))
         props_buf = plgen.generate_common_properties(widget)
 
         return init, props_buf, []
