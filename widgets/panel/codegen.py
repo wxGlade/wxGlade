@@ -39,6 +39,8 @@ class PythonCodeGenerator:
             else: klass = cn('wxPanel')
         else:
             klass = panel.klass
+            if klass in ('wxPanel', 'wxScrolledWindow'):
+                klass = cn(klass)
         init.append('self.%s = %s(%s, %s%s)\n' % \
                     (panel.name, klass, parent, id, style))
         props_buf = pygen.generate_common_properties(panel)
