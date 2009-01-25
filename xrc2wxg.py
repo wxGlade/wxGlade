@@ -140,7 +140,7 @@ _widgets_list = [
     'wxRadioButton', 'wxRadioBox', 'wxChoice', 'wxComboBox', 'wxListBox',
     'wxStaticLine', 'wxStaticBitmap', 'wxGrid', 'wxMenuBar', 'wxStatusBar',
     'wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer',
-    'wxTreeCtrl', 'wxListCtrl', 'wxToolBar',
+    'wxTreeCtrl', 'wxListCtrl', 'wxToolBar', 'wxScrolledWindow',
     ]
 _widgets = dict(zip(_widgets_list, [1] * len(_widgets_list)))
 
