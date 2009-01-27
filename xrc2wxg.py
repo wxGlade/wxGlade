@@ -130,6 +130,7 @@ def fix_widgets(document):
     fix_splitters(document)
     fix_spacers(document)
     fix_sliders(document)
+    fix_scrolled_windows(document)
     fix_toplevel_names(document)
 
 
@@ -378,6 +379,15 @@ def fix_spacers(document):
                 sizeritem.appendChild(spacer.removeChild(child))
         spacer.parentNode.replaceChild(sizeritem, spacer)
         sizeritem.appendChild(spacer)
+
+
+def fix_scrolled_windows(document):
+    def isscrollwin(node):
+        return node.getAttribute('class') == 'wxScrolledWindow'
+    for sw in filter(isscrollwin, document.getElementsByTagName('object')):
+        e = document.createElement('scrollable')
+        e.appendChild(document.createTextNode('1'))
+        sw.insertBefore(e, sw.firstChild)
 
 
 def fix_toplevel_names(document):
