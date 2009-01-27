@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Command line invocation</title><meta name="generator" content="DocBook XSL Stylesheets V1.61.2"/><link rel="home" href="index.html" title="wxGlade user manual"/><link rel="up" href="ch02.html" title="Chapter 2. Exploring wxGlade"/><link rel="previous" href="ch02s02.html" title="Basics of wxGlade"/><link rel="next" href="ch02s04.html" title="Using the source code"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Command line invocation</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s02.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Exploring wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch02s04.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id2852602"/>Command line invocation</h2></div></div><div/></div><p>You can run wxGlade without parameters to start the GUI on an empty application as follows:
+      </p><p><b class="command">wxglade.py</b> 
+      </p><p>Run wxGlade GUI on an existing application specifying the .wxg file as follow: 
+      </p><p><b class="command">wxglade.py FILENAME.wxg</b>
+      </p><p>If you only want to generate the code without starting the GUI, use the -g or 
+--generate-code option with the language as argument as follows:
+      </p><p><b class="command">wxglade.py -g LANG FILENAME.wxg</b> 
+      </p><p><b class="command">wxglade.py --generate-cod=LANG FILENAME.wxg</b>
+      </p><p>Possible values for LANG are &quot;python&quot;, &quot;XRC&quot;, &quot;perl&quot; or &quot;C++&quot;. 
+      </p><p>You can also specify the destination of the generated code 
+with -o or --output option:
+      </p><p><b class="command">wxglade.py -g LANG -o DESTINATION FILENAME.wxg</b>
+      </p><p>The DESTINATION argument can be a file or a directory. 
+It is a file when the FILENAME.wxg generates single-file source code. 
+It is a directory when the FILENAME.wxg generates multiple-file source code. 
+      </p><p>This is the complete description of the command line:
+      </p><div class="literallayout"><p><tt class="computeroutput">wxglade.py [OPTIONS] [FILENAME.wxg]<br/>
+OPTIONS:<br/>
+<br/>
+-g LANG, --generate-code=LANG<br/>
+	Generate the code in the LANG language. Possible values for LANG are C++, python, perl, XRC.<br/>
+<br/>
+-o DEST, --output=DEST<br/>
+	Only valid with the -g option. Specify the destination for the code generation.<br/>
+	The argument DEST can be a source code file or a directory.</tt></p></div><p>
+</p></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s02.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch02s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Basics of wxGlade </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Using the source code</td></tr></table></div></body></html>
