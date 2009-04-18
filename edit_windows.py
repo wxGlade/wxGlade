@@ -7,9 +7,8 @@
 
 import wx
 from widget_properties import *
-from tree import Tree, WidgetTree
-import math, misc, common, sys, config
-import os, re
+import math, misc, common, config
+import re
 
 # ALB 2004-12-05: event handling support
 from events_mixin import EventsMixin
@@ -1022,7 +1021,6 @@ class PreviewMixin:
         sizer_tmp.Fit(panel)
         w, h = panel.GetClientSize()
         self.property_window.Layout()
-        import math
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def preview(self, event):

@@ -5,8 +5,6 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-#from wxPython.wx import *
-#from wxPython.grid import *
 import wx
 import wx.grid
 

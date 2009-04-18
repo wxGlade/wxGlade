@@ -9,7 +9,7 @@ import wx
 from widget_properties import *
 from tree import Tree, WidgetTree
 import common, config, misc
-import math, sys, re
+import math, re
 
 class SizerSlot:
     "a window to represent a slot in a sizer"
@@ -423,7 +423,6 @@ def change_sizer(old, new, which_page=0, _hidden=[None]):
         if szr.sizer.widget:
             elem = szr.sizer.widget.GetChildren()[szr.pos]
             elem.SetSizer(szr.widget)
-    import common
     common.app_tree.change_node(szr.node, szr)
     old.toplevel = False
     szr.show_properties()
@@ -1256,7 +1255,6 @@ class SizerBase(Sizer):
         if not self.toplevel: return
         if not self.window.properties['size'].is_active():
             self.fit_parent()
-            import config
             w, h = self.widget.GetSize()
             prefix = ''
             if config.preferences.use_dialog_units:
@@ -2277,7 +2275,6 @@ def init_all():
     cwx['EditGridSizer'] = grid_xml_builder
     cwx['EditFlexGridSizer'] = grid_xml_builder
 
-    from tree import WidgetTree
     import os.path
     WidgetTree.images['EditStaticBoxSizer'] = os.path.join(common.wxglade_path,
                                                            'icons/sizer.xpm')
