@@ -5,7 +5,6 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-#from wxPython.wx import *
 import wx
 
 # Format used by wxGlade for the clipboard.

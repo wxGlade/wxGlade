@@ -5,13 +5,10 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-#from wxPython.wx import *
 import wx
-#from wxPython.html import *
 import wx.html
-#import wxPython.lib.wxpTag
 import wx.lib.wxpTag
-import common, misc, os.path, sys,gettext
+import common, misc, os.path, sys
 
 class wxGladeAboutBox(wx.Dialog):
     text = '''

@@ -8,7 +8,6 @@
 
 import wx
 from widget_properties import *
-from tree import Tree, WidgetTree
 import common, math, misc, os, config
 import traceback, re
 
@@ -218,7 +217,6 @@ class Application(object):
                 
         sizer.Add(btn, 0, wx.ALL|wx.EXPAND, 5)
 
-        import math
         def do_add(l, p, s):
             p.SetAutoLayout(True)
             p.SetSizer(s)
@@ -454,7 +452,7 @@ class Application(object):
             wx.MessageBox(_("Error generating code:\n%s") % msg, _("Error"),
                          wx.OK|wx.CENTRE|wx.ICON_ERROR)
         except Exception, msg:
-            import traceback; traceback.print_exc()
+            traceback.print_exc()
             wx.MessageBox(_("An exception occurred while generating the code "
                          "for the application.\n"
                          "This is the error message associated with it:\n"

@@ -194,7 +194,6 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     Returns:
       the newly created wxBitmapButton
     """
-    #from wxPython import wx
     import wx
     from tree import WidgetTree
     id = wx.NewId()
@@ -266,7 +265,7 @@ def save_file(filename, content, which='wxg'):
     'content' is the string to store into 'filename'
     'which' is the kind of backup: 'wxg' or 'codegen'
     """
-    import os, os.path, config
+    import config
     if which == 'wxg': ok = config.preferences.wxg_backup
     else: ok = config.preferences.codegen_backup
     try:
