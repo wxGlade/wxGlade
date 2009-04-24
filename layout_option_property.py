@@ -6,7 +6,6 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-#from wxPython.wx import *
 import wx
 
 import widget_properties

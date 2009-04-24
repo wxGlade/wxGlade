@@ -11,7 +11,29 @@ import os
 use_gui = True
 
 # version identification string
-version = 'HG'
+try:
+    def _get_version():
+        from mercurial.hg import repository
+        from mercurial.ui import ui
+        from mercurial.node import short
+        u = ui()
+        u.pushbuffer()
+        repo = repository(u, os.path.dirname(__file__))
+        ctx = repo[None]
+        parents = ctx.parents()
+        changed = ctx.files() + ctx.deleted()
+        if len(parents) == 1 and not changed:
+            tags = repo.nodetags(parents[0].node())
+            # look for the special 'rel_X.X' tag
+            for tag in tags:
+                if tag.startswith('rel_') and len(tag) > 4:
+                    return tag[4:]
+        return '+'.join(
+            [short(p.node()) for p in parents]) + (changed and '+' or "")
+    version = _get_version()
+    del _get_version
+except ImportError:
+    version = 'HG'
 
 # program path, set in wxglade.py
 wxglade_path = '.'
@@ -194,7 +216,6 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     Returns:
       the newly created wxBitmapButton
     """
-    #from wxPython import wx
     import wx
     from tree import WidgetTree
     id = wx.NewId()
@@ -266,7 +287,7 @@ def save_file(filename, content, which='wxg'):
     'content' is the string to store into 'filename'
     'which' is the kind of backup: 'wxg' or 'codegen'
     """
-    import os, os.path, config
+    import config
     if which == 'wxg': ok = config.preferences.wxg_backup
     else: ok = config.preferences.codegen_backup
     try:

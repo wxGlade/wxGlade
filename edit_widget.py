@@ -5,7 +5,7 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
-import common, misc, config
+import common, config
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *

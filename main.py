@@ -9,15 +9,12 @@
 import wxversion
 wxversion.ensureMinimal("2.6")
 
-#from wxPython.wx import *
 import wx
 from widget_properties import *
-from tree import Tree, WidgetTree
-import edit_sizers
+from tree import WidgetTree
 import common, os, os.path, misc, config
 import clipboard
 
-import xml_parse
 import template
 
 
@@ -948,7 +945,6 @@ def main(filename=None):
     if filename is not None, loads it
     """
     # first thing to do, patch wxSizerPtr's Insert if needed...
-##     from wxPython import wx
 ##     if wx.__version__ == '2.4.0.2':
 ##         wxSizerPtr.Insert = misc.sizer_fixed_Insert
 
