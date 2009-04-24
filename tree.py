@@ -5,7 +5,6 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-#from wxPython.wx import *
 import wx
 from xml.sax.saxutils import quoteattr
 import misc, common, os.path

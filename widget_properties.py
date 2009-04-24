@@ -11,14 +11,11 @@
 # property, otherwise on the properties tabs horizontal scrollbars are shown
 _label_initial_width = 5 
 
-#from wxPython.wx import *
-#from wxPython.grid import *
 import wx
 import wx.grid
 from xml.sax.saxutils import escape
 import common, misc
 try:
-    #from wxPython.lib.stattext import *
     import wx.lib.stattext
     wxGenStaticText = wx.lib.stattext.GenStaticText
 except ImportError:

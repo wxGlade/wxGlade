@@ -18,7 +18,6 @@ class wxGladeFontDialog(wx.Dialog):
     font_weights_to = {'normal': wx.NORMAL, 'light': wx.LIGHT, 'bold': wx.BOLD }
     font_weights_from = _reverse_dict(font_weights_to)
 
-    import misc
     if misc.check_wx_version(2, 3, 3):
         font_families_to['teletype'] = wx.TELETYPE 
         font_families_from[wx.TELETYPE] = 'teletype'

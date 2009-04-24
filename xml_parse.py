@@ -28,7 +28,6 @@ import xml.sax.expatreader
 
 
 if common.use_gui:
-    #from wxPython import wx
     import wx
 
 class XmlParsingError(SAXException):
