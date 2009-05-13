@@ -56,8 +56,8 @@ class EditBitmapButton(ManagedBase):
                         "automatically using the label bitmap only, providing"
                         " a 3D-look border. If this style is not specified, the "
                         "button will be drawn without borders and using all "
-                        "provided bitmaps. WIN32 only."
-                        "Left-justifies the bitmap label. WIN32 only."),
+                        "provided bitmaps. WIN32 only."),
+                        _("Left-justifies the bitmap label. WIN32 only."),
                         _("Right-justifies the bitmap label. WIN32 only."),
                         _("Aligns the bitmap label to the top of the button."
                         " WIN32 only."),
