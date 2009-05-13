@@ -1153,7 +1153,7 @@ class ComboBoxProperty(Property, _activator):
         except AttributeError: pass
 
     def write(self, outfile, tabs):
-        if self.write_always or self.get_value():
+        if self.write_always or (self.is_active() and self.get_value()):
             if self.getter: value = misc.wxstr(self.getter())
             else: value = misc.wxstr(self.owner[self.name][0]())
             if value != 'None':
