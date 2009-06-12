@@ -66,8 +66,24 @@ class Tree:
             fwrite('    ' * tabs + '<object class=%s name=%s base=%s%s>\n'
                    % (quoteattr(w.klass), quoteattr(w.name),
                       quoteattr(classname), no_custom))
+            
+            def write_by_omitter(widget, name, file, tabs):
+                """
+                Write to given output file:
+                - value of property
+                - values of properties that previous can block
+                - any omitter can be blocked as well
+                """
+                widget.properties[name].write(file, tabs)
+                if getattr(widget, 'get_property_blocking', None):
+                    items = widget.get_property_blocking(name)
+                    if items:
+                        for name in items:
+                            write_by_omitter(widget, name, file, tabs)
+                                            
             for p in w.properties:
-                w.properties[p].write(outfile, tabs+1)
+                if not getattr(w.properties[p], '_omitter', None):
+                    write_by_omitter(w, p, outfile, tabs+1)
 
             if class_names is not None and \
                    w.__class__.__name__ != 'CustomWidget':

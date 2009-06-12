@@ -134,31 +134,90 @@ class HiddenProperty(Property):
 
 class _activator:
     """\
-    a utility class which provides a method, toggle_active, to activate or
-    deactivate a Property of a widget
+    a utility class which provides:
+    - a method, toggle_active, to (de)activate a Property of a widget
+    - a method, toggle_blocked, to (un)block enabler of a Property of a widget
+    - a method, prepare_activator, to assign enabler and target with settings  
     """
-    def __init__(self, target=None, enabler=None):
+    def __init__(self, target=None, enabler=None, omitter=None):
         # target: name of the object to Enable/Disable
         # enabler: check box which provides the ability to Enable/Disable the
         #          Property
         self._target = target
         self._enabler = enabler
-        if self._target: self._active = self._target.IsEnabled()
+        if self._enabler: self._blocked = self.is_blocked()
+        else: self._blocked = False
+        if self.is_blocked(): self.toggle_active(False, False)
+        elif self._target: self._active = self.is_active()
         else: self._active = True
+        self.set_omitter( omitter)
 
-    def toggle_active(self, active):
-        self._active = active
+    def toggle_active(self, active=None, refresh=True):
+        # active is not given when refreshing target and enabler
+        if active and self.is_blocked():
+            self._active = False # blocked is always inactive (security measure)
+        elif active is not None:
+            self._active = active
         if not self._target: return
-        self._target.Enable(active)
-        import common
-        try: common.app_tree.app.saved = False
-        except AttributeError: pass # why does this happen on win at startup?
-        try: self._enabler.SetValue(active)
+        try:
+            for target in self._target: 
+                target.Enable(self._active)
+        except TypeError:
+            self._target.Enable(self._active)
+        if self._active and self._omitter:
+            try:
+                value = self.owner.access_functions[self.name][0]()
+                self.owner.access_functions[self.name][1](value)
+            except: pass
+        if refresh:
+            import common
+            try: common.app_tree.app.saved = False
+            except AttributeError: pass #why does this happen on win at startup?
+        try: self._enabler.SetValue(self._active)
         except AttributeError: pass
 
     def is_active(self):
-        if self._target: return self._target.IsEnabled()
+        if self.is_blocked(): return False
+        if self._target:
+            try:
+                return self._target[0].IsEnabled()
+            except TypeError:
+                return self._target.IsEnabled()
         return self._active
+
+    def toggle_blocked(self, blocked=None):
+        if blocked is not None:
+            self._blocked = blocked
+        if self._enabler:
+            self._enabler.Enable(not self._blocked)
+        if self.is_blocked(): # deactivate blocked
+            self.toggle_active(False, False)
+        elif self._enabler: # refresh activity of target and value of enabler
+            self.toggle_active(refresh=False)
+        elif not getattr(self, 'can_disable', None) and self._omitter:
+            # enable blocked widget (that would be always active) without _enabler
+            if self.owner.get_property_blocking(self._omitter):
+                self.toggle_active(True, False)
+
+    def is_blocked(self):
+        if self._enabler: return not self._enabler.IsEnabled()
+        return self._blocked
+
+    def prepare_activator(self, enabler=None, target=None):
+        if target:
+            self._target = target
+            if enabler:
+                self._enabler = enabler
+        self.toggle_blocked()
+
+    def set_omitter(self, omitter):
+        self._omitter = omitter
+        if omitter:
+            self.owner.set_property_blocking(omitter, self.name)
+
+    def remove_omitter(self):
+        if self._omitter:
+            self.owner.remove_property_blocking(self._omitter, self.name)
 
 # end of class _activator
 
@@ -168,14 +227,19 @@ class TextProperty(Property, _activator):
     Properties associated to a text control.
     """
     def __init__(self, owner, name, parent=None, can_disable=False,
-                 enabled=False, readonly=False, multiline=False, label=None):
+                 enabled=False, readonly=False, multiline=False,
+                 label=None, blocked=False, omitter=None):
         Property.__init__(self, owner, name, parent, label=label)
         self.val = misc.wxstr(owner[name][0]())
         self.can_disable = can_disable
         self.readonly = readonly
         self.multiline = multiline
-        _activator.__init__(self)
-        if can_disable: self.toggle_active(enabled)
+        _activator.__init__(self, omitter=omitter)
+        if self.name == 'size':
+            pass
+        if can_disable:
+            self.toggle_active(enabled)
+            self.toggle_blocked(blocked)
         self.panel = None
         if parent is not None: self.display(parent)
 
@@ -197,19 +261,19 @@ class TextProperty(Property, _activator):
         #label = wxStaticText(self.panel, -1, _mangle(self.dispName))
         label = wxGenStaticText(parent, -1, lbl,
                                 size=(_label_initial_width, -1))
-        if self.can_disable:
-            self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
         self.text = wx.TextCtrl(parent, self.id, val, style=style, size=(1, -1))
         if hasattr(self, 'tooltip'):
             label.SetToolTip(wx.ToolTip(self.tooltip))
         else:
             label.SetToolTip(wx.ToolTip(_mangle(self.dispName)))
+        enabler = None
+        if self.name == 'size':
+            pass
         if self.can_disable:
-            wx.EVT_CHECKBOX(self._enabler, self.id+1,
+            enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
+            wx.EVT_CHECKBOX(enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
-            self.text.Enable(self.is_active())
-            self._enabler.SetValue(self.is_active())
-            self._target = self.text
+        self.prepare_activator(enabler, self.text)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         if getattr(self, '_enabler', None) is not None:
@@ -266,18 +330,19 @@ class TextProperty(Property, _activator):
 # end of class TextProperty
 
 
-class CheckBoxProperty(Property):
+class CheckBoxProperty(Property, _activator):
     """\
     Properties whose values can be changed by one checkbox.
     """
     def __init__(self, owner, name, parent=None, label=None,
-                 write_always=False):
+                 write_always=False, omitter=None):
         Property.__init__(self, owner, name, parent, label=label)
         self.val = int(owner[name][0]())
         if label is None or label == name: label = _mangle(name)
         self.label = label
         self.panel = None
         self.write_always = write_always
+        _activator.__init__(self, omitter=omitter)
         if parent is not None: self.display(parent)
 
     def display(self, parent):
@@ -293,6 +358,7 @@ class CheckBoxProperty(Property):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 5, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 3)
         sizer.Add(self.cb, 0, wx.ALIGN_CENTER|wx.ALL, 3)
+        self.prepare_activator(target=self.cb)
 ##         self.panel.SetAutoLayout(True)
 ##         self.panel.SetSizer(sizer)
 ##         self.panel.SetSize(sizer.GetMinSize())
@@ -323,12 +389,12 @@ class CheckBoxProperty(Property):
 # end of class CheckBoxProperty
 
 
-class CheckListProperty(Property):
+class CheckListProperty(Property, _activator):
     """\
     Properties whose values can be changed by a list of checkboxes.
     """
     def __init__(self, owner, name, parent=None, labels=None, writer=None,
-                 tooltips=None):
+                 tooltips=None, omitter=None):
         """
         @type labels: list of strings
         @param labels: list of names of the labels of the checkboxes; a
@@ -347,6 +413,7 @@ class CheckListProperty(Property):
         # for this property
         self.writer = writer
         self.panel = None
+        _activator.__init__(self, omitter=omitter)
         if parent is not None: self.display(parent)
 
     def display(self, parent):
@@ -380,6 +447,7 @@ class CheckListProperty(Property):
         if tmp != tmp_sizer:
             tmp_sizer.Add(tmp, 0, wx.ALL|wx.EXPAND, 5)
 
+        self.prepare_activator(target=self.choices)
         for i in range(len(self.values)):
             self.choices[i].SetValue(self.values[i])
             
@@ -443,15 +511,18 @@ class SpinProperty(Property, _activator):
     Properties associated to a spin control.
     """
     def __init__(self, owner, name, parent=None, can_disable=False,
-                 r=None, enabled=False, immediate=False, label=None):
+                 r=None, enabled=False, immediate=False, label=None,
+                 blocked=False, omitter=None):
         # r = range of the spin (min, max)
         Property.__init__(self, owner, name, parent, label=label)
         self.can_disable = can_disable
         self.immediate = immediate # if true, changes to this property have an
                                    # immediate effect (instead of waiting the
                                    # focus change...)
-        _activator.__init__(self)
-        if can_disable: self.toggle_active(enabled)
+        _activator.__init__(self, omitter=omitter)
+        if can_disable:
+            self.toggle_active(enabled)
+            self.toggle_blocked(blocked)
         if r is not None:
             self.val_range = (r[0], max(r[0], r[1]))
         else:
@@ -474,21 +545,18 @@ class SpinProperty(Property, _activator):
         tip = getattr(self, 'tooltip', None)
         if tip is None: tip = lbl
         label.SetToolTip(wx.ToolTip(tip))
-        if self.can_disable:
-            self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
         self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
                                max=self.val_range[1])
         val = int(self.owner[self.name][0]())
         if not val:
             self.spin.SetValue(1) # needed for GTK to display a '0'
         self.spin.SetValue(val) #int(self.owner[self.name][0]()))
+        enabler = None
         if self.can_disable:
-            #self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
-            wx.EVT_CHECKBOX(self._enabler, self.id+1,
+            enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
+            wx.EVT_CHECKBOX(enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
-            self.spin.Enable(self.is_active())
-            self._enabler.SetValue(self.is_active())
-            self._target = self.spin
+        self.prepare_activator(enabler, self.spin)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         if getattr(self, '_enabler', None) is not None:
@@ -540,13 +608,15 @@ class DialogProperty(Property, _activator):
     get_value method.
     """
     def __init__(self, owner, name, parent, dialog, can_disable=False,
-                 enabled=False, label=None):
+                 enabled=False, label=None, blocked=False, omitter=None):
         Property.__init__(self, owner, name, parent, label=label)
         self.dialog = dialog
         self.panel = None
         self.can_disable = can_disable
-        _activator.__init__(self)
-        if can_disable: self.toggle_active(enabled)
+        _activator.__init__(self, omitter=omitter)
+        if can_disable:
+            self.toggle_active(enabled)
+            self.toggle_blocked(blocked)
         if parent is not None: self.display(parent)
         self.val = "%s" % owner[name][0]()
 
@@ -560,19 +630,17 @@ class DialogProperty(Property, _activator):
         label = wxGenStaticText(parent, -1, _mangle(self.dispName),
                                 size=(_label_initial_width, -1))
         label.SetToolTip(wx.ToolTip(_mangle(self.dispName)))
-        if self.can_disable:
-            self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
         self.text = wx.TextCtrl(parent, self.id, val, size=(1, -1))
         self.btn = wx.Button(parent, self.id+1, " ... ",
                             size=(_label_initial_width, -1))
+        enabler = None
         if self.can_disable:
-            #self._enabler = wxCheckBox(parent, self.id+1, '', size=(1, -1))
-            wx.EVT_CHECKBOX(self._enabler, self.id+1,
+            enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
+            wx.EVT_CHECKBOX(enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
-            self.text.Enable(self.is_active())
+        self.prepare_activator(enabler, self.text)
+        if self.can_disable:
             self.btn.Enable(self.is_active())
-            self._enabler.SetValue(self.is_active())
-            self._target = self.text
         wx.EVT_BUTTON(self.btn, self.id+1, self.display_dialog)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
@@ -620,10 +688,10 @@ class DialogProperty(Property, _activator):
         if self.is_active():
             Property.write(self, dest_file, tabs)
 
-    def toggle_active(self, active):
-        _activator.toggle_active(self, active)
+    def toggle_active(self, active=None, refresh=True):
+        _activator.toggle_active(self, active, refresh)
         try:
-            self.btn.Enable(active)
+            self.btn.Enable(self.is_active())
         except AttributeError:
             pass
 
@@ -653,7 +721,8 @@ class FileDialogProperty(DialogProperty):
     # end of class FileDialog
     
     def __init__(self, owner, name, parent=None, wildcard=_("All Files|*"),
-                 message=_("Choose a file"), can_disable=True, style=0, label=None):
+                 message=_("Choose a file"), can_disable=True, style=0,
+                 label=None, blocked=False, omitter=None):
         if not self.dialog[0]:
 ##             self.dialog[0] = wxFileDialog(parent, message,
 ##                                           wildcard=wildcard, style=style)
@@ -661,7 +730,8 @@ class FileDialogProperty(DialogProperty):
             self.dialog[0] = self.FileDialog(
                 parent, message, wildcard, style)
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
-                                can_disable, label=label)
+                                can_disable, label=label, blocked=blocked,
+                                omitter=omitter)
 
 # end of class FileDialogProperty
 
@@ -707,20 +777,22 @@ class ColorDialogProperty(DialogProperty):
     colors_to_str = _reverse_dict(str_to_colors)
 
     dialog = [None]
-    def __init__(self, owner, name, parent=None, can_disable=True, label=None):
+    def __init__(self, owner, name, parent=None, can_disable=True,
+                 label=None, blocked=False, omitter=None):
         if not self.dialog[0]:
             from color_dialog import wxGladeColorDialog
             self.dialog[0] = wxGladeColorDialog(self.str_to_colors)
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
-                                can_disable, label=label)
+                                can_disable, label=label, blocked=blocked,
+                                omitter=omitter)
 
     def display_dialog(self, event):
         self.dialog.set_value(self.get_value())
         DialogProperty.display_dialog(self, event)
 
-    def toggle_active(self, active):
-        DialogProperty.toggle_active(self, active)
-        if not active:
+    def toggle_active(self, active=None, refresh=True):
+        DialogProperty.toggle_active(self, active, refresh)
+        if not self.is_active():
             # restore the original value if toggled off
             color = self.owner._original.get(self.name, None)
             if color is not None and self.owner.widget is not None:
@@ -753,12 +825,14 @@ class FontDialogProperty(DialogProperty):
 
     dialog = [None]
 
-    def __init__(self, owner, name, parent=None, can_disable=True, label=None):
+    def __init__(self, owner, name, parent=None, can_disable=True,
+                 label=None, blocked=False, omitter=None):
         if not self.dialog[0]:
             import font_dialog
             self.dialog[0] = font_dialog.wxGladeFontDialog(parent, -1, "")
         DialogProperty.__init__(self, owner, name, parent, self.dialog[0],
-                                can_disable, label=label)
+                                can_disable, label=label, blocked=blocked,
+                                omitter=omitter)
 
     def display_dialog(self, event):
         try: props = eval(self.get_value())
@@ -791,9 +865,9 @@ class FontDialogProperty(DialogProperty):
             fwrite('%s<face>%s</face>\n' % (tstr, escape(props[5])))
             fwrite('    ' * tabs + '</%s>\n' % self.name)
 
-    def toggle_active(self, active):
-        DialogProperty.toggle_active(self, active)
-        if not active:
+    def toggle_active(self, active=None, refresh=True):
+        DialogProperty.toggle_active(self, active, refresh)
+        if not self.is_active():
             # restore the original value if toggled off
             font = self.owner._original['font']
             if font is not None and self.owner.widget is not None:
@@ -812,15 +886,19 @@ class RadioProperty(Property, _activator):
     properties controlled by a series of radio buttons.
     """
     def __init__(self, owner, name, parent, choices, can_disable=False,
-                 enabled=False, columns=1, label=None):
+                 enabled=False, columns=1, label=None, tooltips=None,
+                 blocked=False, omitter=None):
         Property.__init__(self, owner, name, parent, label=label)
         self.can_disable = can_disable
-        _activator.__init__(self)
-        if can_disable: self.toggle_active(enabled)
+        _activator.__init__(self, omitter=omitter)
+        if can_disable:
+            self.toggle_active(enabled)
+            self.toggle_blocked(blocked)
         self.choices = choices
         self.columns = columns
         self.panel = None
         self.label = label
+        self.tooltips = tooltips
         self.val = owner[name][0]()
         if label is None:
             self.label = _mangle(name)
@@ -838,21 +916,26 @@ class RadioProperty(Property, _activator):
             style=wx.RA_SPECIFY_COLS
         else: 
             szr = wx.StaticBoxSizer(wx.StaticBox(parent, -1, self.label),
-                                   wx.HORIZONTAL)
+                                    wx.HORIZONTAL)
         self.options = wx.RadioBox(parent, self.id, self.label,
-                                  choices=self.choices,
-                                  majorDimension=self.columns,
-                                  style=style)
+                                   choices=self.choices,
+                                   majorDimension=self.columns,
+                                   style=style)
+        #Set the tool-tips for the properties
+        if self.tooltips is not None:
+            for i in range(len(self.tooltips)):
+                if i >= len(self.choices): break
+                self.options.SetItemToolTip(i, self.tooltips[i])
         try: self.options.SetSelection(int(self.val))
         except: pass
+        enabler = None
         if self.can_disable:
-            self._enabler = wx.CheckBox(parent, self.id+1, "")
-            szr.Add(self._enabler)
-            wx.EVT_CHECKBOX(self._enabler, self.id+1,
+            enabler = wx.CheckBox(parent, self.id+1, "")
+            szr.Add(enabler)
+            wx.EVT_CHECKBOX(enabler, self.id+1,
                          lambda e: self.toggle_active(e.IsChecked()))
-            self.options.Enable(self.is_active())
             self.options.SetLabel("")
-            self._enabler.SetValue(self.is_active())
+        self.prepare_activator(enabler, self.options)
         szr.Add(self.options, 1, wx.EXPAND)
         self.panel = szr
         self.bind_event(self.on_change_val)
@@ -895,7 +978,7 @@ class RadioProperty(Property, _activator):
 # end of class RadioProperty
 
 
-class GridProperty(Property): 
+class GridProperty(Property, _activator): 
     """\
     Property whose values are modified through a wxGrid table.
     """
@@ -905,7 +988,7 @@ class GridProperty(Property):
                   lambda g, c: g.SetColFormatFloat(c),
                   lambda g, c: g.SetColFormatBool(c)]
     def __init__(self, owner, name, parent, cols, rows=1, can_add=True,
-                 can_remove=True, can_insert=True, label=None):
+                 can_remove=True, can_insert=True, label=None, omitter=None):
         # cols: list of 2-tuples with these fields:
         #     - label for the column
         #     - type: GridProperty.STRING, GridProperty.INT, GridProperty.FLOAT
@@ -919,6 +1002,7 @@ class GridProperty(Property):
         self.can_insert = can_insert
         self.panel = None
         self.cur_row = 0
+        _activator.__init__(self, omitter=omitter)
         if parent is not None: self.display(parent)
 
     def display(self, parent):
@@ -926,6 +1010,7 @@ class GridProperty(Property):
         Actually builds the grid to set the value of the property
         interactively
         """
+        children = []
         self.panel = wx.Panel(parent, -1) # why if the grid is not on this
                                           # panel it is not displayed???
         label = getattr(self, 'label', _mangle(self.dispName))
@@ -934,19 +1019,24 @@ class GridProperty(Property):
         self.btn_id = wx.NewId()
         self.btn = wx.Button(self.panel, self.btn_id, _("  Apply  "),
                              style=wx.BU_EXACTFIT)
+        children.append(self.btn)
         if self.can_add:
             self.add_btn = wx.Button(self.panel, self.btn_id+1, _("  Add  "),
                                      style=wx.BU_EXACTFIT)
+            children.append(self.add_btn)
         if self.can_insert:
             self.insert_btn = wx.Button(self.panel, self.btn_id+3,
                                         _("  Insert  "),
                                         style=wx.BU_EXACTFIT)
+            children.append(self.insert_btn)
         if self.can_remove:
             self.remove_btn = wx.Button(self.panel, self.btn_id+2,
                                         _("  Remove  "),
                                         style=wx.BU_EXACTFIT)
+            children.append(self.remove_btn)
         self.grid = wx.grid.Grid(self.panel, -1)
         self.grid.CreateGrid(self.rows, len(self.cols))
+        children.append(self.grid)
         if misc.check_wx_version(2, 3, 3):
             self.grid.SetMargins(0, 0)
         else:
@@ -989,6 +1079,7 @@ class GridProperty(Property):
         self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
 
+        self.prepare_activator(target=children)
         wx.grid.EVT_GRID_SELECT_CELL(self.grid, self.on_select_cell)
         self.bind_event(self.on_change_val)
         self.set_value(self.val)
@@ -1097,8 +1188,8 @@ class ComboBoxProperty(Property, _activator):
     Properties whose values can be changed with a combobox.
     """
     def __init__(self, owner, name, choices, parent=None, label=None,
-                 can_disable=False, enabled=False,
-                 write_always=False):
+                 can_disable=False, enabled=False, write_always=False,
+                 blocked=False, omitter=None):
         Property.__init__(self, owner, name, parent, label=label)
         self.val = misc.wxstr(owner[name][0]())
         if label is None: label = _mangle(name)
@@ -1107,8 +1198,10 @@ class ComboBoxProperty(Property, _activator):
         self.write_always = write_always
         self.choices = choices
         self.can_disable = can_disable
-        _activator.__init__(self)
-        if can_disable: self.toggle_active(enabled)
+        _activator.__init__(self, omitter=omitter)
+        if can_disable: 
+            self.toggle_active(enabled)
+            self.toggle_blocked(blocked)
         if parent is not None: self.display(parent)
 
     def display(self, parent):
@@ -1120,15 +1213,13 @@ class ComboBoxProperty(Property, _activator):
         self.cb = wx.ComboBox(parent, self.id, choices=self.choices,
                               style=wx.CB_DROPDOWN|wx.CB_READONLY)
         self.cb.SetValue(self.val)
-        if self.can_disable:
-            self._enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
         label = wx.StaticText(parent, -1, self.label)
+        enabler = None
         if self.can_disable:
-            wx.EVT_CHECKBOX(self._enabler, self.id+1,
+            enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
+            wx.EVT_CHECKBOX(enabler, self.id+1,
                          lambda event: self.toggle_active(event.IsChecked()))
-            self.cb.Enable(self.is_active())
-            self._enabler.SetValue(self.is_active())
-            self._target = self.cb
+        self.prepare_activator(enabler, self.cb)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 3)
         if getattr(self, '_enabler', None) is not None:
