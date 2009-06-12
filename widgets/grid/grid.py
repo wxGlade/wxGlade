@@ -126,66 +126,70 @@ class EditGrid(ManagedBase):
         props = self.properties
         af = self.access_functions
         af['create_grid'] = (self.get_create_grid, self.set_create_grid)
-        props['create_grid'] = CheckBoxProperty(self, 'create_grid', None,
-                                                write_always=True,
-                                                label=_("create_grid"))
+        props['create_grid'] = CheckBoxProperty(
+            self, 'create_grid', None,
+            write_always=True, label=_("create_grid"))
         af['row_label_size'] = (self.get_row_label_size,
                                 self.set_row_label_size)
-        props['row_label_size'] = SpinProperty(self, 'row_label_size',
-                                               None, can_disable=True,
-                                               label=_("row_label_size"))
+        props['row_label_size'] = SpinProperty(
+            self, 'row_label_size', None, can_disable=True,
+            label=_("row_label_size"), omitter='create_grid')
         af['col_label_size'] = (self.get_col_label_size,
                                 self.set_col_label_size)
-        props['col_label_size'] = SpinProperty(self, 'col_label_size',
-                                               None, can_disable=True,
-                                               label=_("col_label_size"))
+        props['col_label_size'] = SpinProperty(
+            self, 'col_label_size', None, can_disable=True,
+            label=_("col_label_size"), omitter='create_grid')
         af['enable_editing'] = (self.get_enable_editing,
                                 self.set_enable_editing)
-        props['enable_editing'] = CheckBoxProperty(self, 'enable_editing',
-                                                   None, write_always=True,
-                                                   label=_("enable_editing"))
+        props['enable_editing'] = CheckBoxProperty(
+            self, 'enable_editing', None, write_always=True,
+            label=_("enable_editing"), omitter='create_grid')
         af['enable_grid_lines'] = (self.get_enable_grid_lines,
                                    self.set_enable_grid_lines)
         props['enable_grid_lines']= CheckBoxProperty(
             self, 'enable_grid_lines', None, write_always=True,
-            label=_("enable_grid_lines"))
+            label=_("enable_grid_lines"), omitter='create_grid')
         af['rows_number'] = (self.get_rows_number, self.set_rows_number)
-        props['rows_number'] = SpinProperty(self, 'rows_number', None,
-                                            label=_("rows_number"))
+        props['rows_number'] = SpinProperty(
+            self, 'rows_number', None,
+            label=_("rows_number"), omitter='create_grid')
         af['enable_col_resize'] = (self.get_enable_col_resize,
                                    self.set_enable_col_resize)
         props['enable_col_resize']= CheckBoxProperty(
             self, 'enable_col_resize', None, write_always=True,
-            label=_("enable_col_resize"))
+            label=_("enable_col_resize"), omitter='create_grid')
         af['enable_row_resize'] = (self.get_enable_row_resize,
                                    self.set_enable_row_resize)
         props['enable_row_resize'] = CheckBoxProperty(
-            self, 'enable_row_resize',
-            None, write_always=True, label=_("enable_row_resize"))
+            self, 'enable_row_resize', None, write_always=True,
+            label=_("enable_row_resize"), omitter='create_grid')
         af['enable_grid_resize'] = (self.get_enable_grid_resize,
                                     self.set_enable_grid_resize)
         props['enable_grid_resize'] = CheckBoxProperty(
-            self, 'enable_grid_resize',
-            None, write_always=True, label=_("enable_grid_resize"))
+            self, 'enable_grid_resize', None, write_always=True,
+            label=_("enable_grid_resize"), omitter='create_grid')
         af['lines_color'] = (self.get_lines_color, self.set_lines_color)
         props['lines_color']= ColorDialogProperty(
-            self, 'lines_color', None, label=_("lines_color"))
+            self, 'lines_color', None,
+            label=_("lines_color"), omitter='create_grid')
         af['label_bg_color'] = (self.get_label_bg_color,
                                 self.set_label_bg_color)
         props['label_bg_color']= ColorDialogProperty(
-            self, 'label_bg_color', None, label=_("label_bg_color"))
+            self, 'label_bg_color', None,
+            label=_("label_bg_color"), omitter='create_grid')
         af['selection_mode'] = (self.get_selection_mode,
                                 self.set_selection_mode)
-        props['selection_mode'] = RadioProperty(self, 'selection_mode', None, 
-                                                ['wxGrid.wxGridSelectCells',
-                                                 'wxGrid.wxGridSelectRows',
-                                                 'wxGrid.wxGridSelectColumns'],
-                                                label=_("selection_mode"))
+        props['selection_mode'] = RadioProperty(
+            self, 'selection_mode', None,
+            ['wxGrid.wxGridSelectCells',
+             'wxGrid.wxGridSelectRows',
+             'wxGrid.wxGridSelectColumns'],
+            label=_("selection_mode"), omitter='create_grid')
         af['columns'] = (self.get_columns, self.set_columns)
-        props['columns'] = GridColsProperty(self, 'columns', None, 
-                                            [ ('Label', GridProperty.STRING),
-                                              ('Size', GridProperty.INT) ],
-                                            label=_("columns"))
+        props['columns'] = GridColsProperty(
+            self, 'columns', None,
+            [ ('Label', GridProperty.STRING), ('Size', GridProperty.INT) ],
+            label=_("columns"), omitter='create_grid')
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -203,6 +207,7 @@ class EditGrid(ManagedBase):
         self.properties['lines_color'].display(panel)
         self.properties['label_bg_color'].display(panel)
         self.properties['selection_mode'].display(panel)
+        self.toggle_blocked_properties()
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(self.properties['create_grid'].panel, 0, wx.EXPAND)
         szr.Add(wx.StaticLine(panel, -1), 0, wx.ALL|wx.EXPAND, 5)
@@ -270,11 +275,19 @@ class EditGrid(ManagedBase):
         EVT_GRID_CELL_RIGHT_CLICK(self.widget, self.popup_menu)
         EVT_GRID_LABEL_RIGHT_CLICK(self.widget, self.popup_menu)
 
+    def toggle_blocked_properties(self):
+        to_block = not self.get_create_grid()
+        for name in self.get_property_blocking('create_grid'):
+            widget = self.properties[name]
+            if getattr(widget, 'toggle_blocked', None):
+                widget.toggle_blocked(to_block)
+
     def get_create_grid(self):
         return self.create_grid
 
     def set_create_grid(self, value):
         self.create_grid = bool(int(value))
+        self.toggle_blocked_properties()
 
     def get_row_label_size(self):
         return self.row_label_size

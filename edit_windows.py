@@ -32,6 +32,7 @@ class EditBase(EventsMixin):
         # contained here, but in a separate list (see ManagedBase)
         # the keys of the dict are the names of the properties
         self.properties = {}
+        self.property_blocking = {}
         self.parent = parent
         # id used for internal purpose events
         self.id = id
@@ -376,6 +377,25 @@ constructor will be used. You should probably not use this if \
             self.properties['extraproperties']._show(self.notebook)
         except KeyError:
             pass
+
+    def set_property_blocking(self, key, item):
+        if self.property_blocking.has_key(key):
+            self.property_blocking[key].append(item)
+        else:
+            self.property_blocking[key] = [item]
+
+    def get_property_blocking(self, key):
+        if self.property_blocking.has_key(key):
+            return self.property_blocking[key]
+        return None
+
+    def remove_property_blocking(self, key, item):
+        if self.property_blocking.has_key(key):
+            for i in range(self.property_blocking[key].count(item)):
+                self.property_blocking[key].remove(item)
+            if not len(self.property_blocking[key]):
+                del self.property_blocking[key]
+
 
 # end of class EditBase
 
