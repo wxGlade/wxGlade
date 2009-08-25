@@ -57,7 +57,7 @@ class PerlCodeGenerator:
                     elif item.radio == '1':
                         item_type = 2
                         
-                    if item.name: itemname = '$self->{%s} = ' % item.name
+                    if item.name: itemname = '$self->{%s} = ' % plgen.quote_key(item.name)
                     else: itemname = ''
                     
                     if item_type:
@@ -72,12 +72,12 @@ class PerlCodeGenerator:
         #print 'menus = %s' % menus
 
         if obj.is_toplevel: obj_name = '$self'
-        else: obj_name = '$self->{%s}' % obj.name
+        else: obj_name = '$self->{%s}' % plgen.quote_key(obj.name)
 
         append('my $wxglade_tmp_menu;\n') # NOTE below name =
         for m in menus:
             menu = m.root
-            if menu.name: name = '$self->{%s}' % menu.name
+            if menu.name: name = '$self->{%s}' % plgen.quote_key(menu.name)
             else: name = '$wxglade_tmp_menu'
             append('%s = Wx::Menu->new();\n' % name)
             if menu.children:

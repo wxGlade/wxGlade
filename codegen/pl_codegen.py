@@ -252,6 +252,24 @@ def quote_str(s):
     else:
         return '"' + s + '"'
 
+def quote_key(s):
+    """\
+    returns a possibly quoted version of 's', suitable to insert in a perl
+    source file as a hask key. Takes care also of gettext support
+    """
+    if not s: return '""'
+    t = s
+    s = _quote_str_re.sub(r'\\\\', s )
+    s = s.replace('"', r'\"')
+    s = s.replace('$', r'\$')
+    s = s.replace('@', r'\@')
+    if _use_gettext:
+        return '_T("' + s + '")'
+    if t == s and s.find(' ') < 0:
+        return s;
+    else:
+        return '"' + s + '"'
+
 def quote_path(s):
     """\
     escapes all " and \ , thus making a path suitable to
