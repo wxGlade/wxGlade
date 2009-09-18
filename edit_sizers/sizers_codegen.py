@@ -43,7 +43,9 @@ class PythonStaticBoxSizerBuilder:
             ('self.%s_staticbox = ' + cn('wxStaticBox') + '(%s, -1, %s)\n') %
             (obj.name, parent, pygen.quote_str(label)),
             ('%s = ' + cn('wxStaticBoxSizer') + '(self.%s_staticbox, %s)\n') %
-            (obj.name, obj.name, cn(orient))
+            (obj.name, obj.name, cn(orient)),
+            ('self.%s_staticbox.Lower()\n') %
+            (obj.name),
             ]
         layout = []
         if obj.is_toplevel:
