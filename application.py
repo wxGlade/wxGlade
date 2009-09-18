@@ -422,7 +422,7 @@ class Application(object):
                                 "for the application"), _("Error"), wx.OK |
                                 wx.CENTRE | wx.ICON_EXCLAMATION, self.notebook)
                 
-        from cStringIO import StringIO
+        from StringIO import StringIO
         out = StringIO()
         #common.app_tree.write(out) # write the xml onto a temporary buffer
         from xml_parse import CodeWriter
