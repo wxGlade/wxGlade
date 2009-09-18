@@ -102,6 +102,9 @@ class ClassLines:
     Stores the lines of python code for a custom class
     """
     def __init__(self):
+        self.deps = []
+        self.child_order = []
+        self.init_lines = {}
         self.init = [] # lines of code to insert in the __init__ method
                        # (for children widgets)
         self.parents_init = [] # lines of code to insert in the __init__ for
@@ -521,6 +524,12 @@ def add_object(top_obj, sub_obj):
                 init.reverse()
                 klass.parents_init.extend(init)
             else: klass.init.extend(init)
+            
+            # Add a dependency of the current object on its parent
+            klass.deps.append((sub_obj, sub_obj.parent))
+            klass.child_order.append(sub_obj)
+            klass.init_lines[sub_obj] = init
+            
             # ---------------------------------------------------------------
             # ALB 2004-12-05
             mycn = getattr(builder, 'cn', cn)
@@ -560,8 +569,16 @@ def add_object(top_obj, sub_obj):
         else: # the object is a sizer
             # ALB 2004-09-17: workaround (hack) for static box sizers...
             if sub_obj.base == 'wxStaticBoxSizer':
-                klass.parents_init.insert(1, init.pop(0))
+                i = init.pop(0)
+                klass.parents_init.insert(1, i)
+                
+                # Add a dependency of the current object on its parent
+                klass.deps.append((sub_obj, sub_obj.parent))
+                klass.child_order.append(sub_obj)
+                klass.init_lines[sub_obj] = [i]
+                
             klass.sizers_init.extend(init)
+            
         klass.props.extend(props)
         klass.layout.extend(layout)
         if multiple_files and \
@@ -714,14 +731,46 @@ def add_class(code_obj):
     init_lines = classes[code_obj.klass].init
     # --- patch 2002-08-26 ---------------------------------------------------
     parents_init = classes[code_obj.klass].parents_init
-    parents_init.reverse()
-    for l in parents_init: write(tab+l)
+
+
+    # classes[code_obj.klass].deps now contains a mapping of child to parent 
+    # For all children we processed...
+    object_order = []
+    for obj in classes[code_obj.klass].child_order:
+        # Don't add it again if already present
+        if obj in object_order:
+            continue
+        
+        object_order.append(obj)
+        
+        # Insert parent and ancestor objects before the current object
+        current_object = obj
+        for child, parent in classes[code_obj.klass].deps[:]:
+            if child is current_object:
+                if parent not in object_order:
+                    idx = object_order.index(current_object)
+                    object_order.insert(idx, parent)
+                current_object = parent
+                
+                # We processed the dependency: remove it
+                classes[code_obj.klass].deps.remove((child, parent))
+    
+    #for l in parents_init: write(tab+l)
+    
+    # Write out the initialisation in the order we just generated 
+    for obj in object_order:
+        if obj in classes[code_obj.klass].init_lines:
+            for l in classes[code_obj.klass].init_lines[obj]:
+                write(tab + l)
+
+    
     # ------------------------------------------------------------------------
-    for l in init_lines: write(tab + l)
+    #for l in init_lines: write(tab + l)
 
     # now check if there are extra lines to add to the init method
     if hasattr(builder, 'get_init_code'):
-        for l in builder.get_init_code(code_obj): write(tab + l)
+        for l in builder.get_init_code(code_obj): 
+            write(tab + l)
     
     write('\n' + tab + 'self.__set_properties()\n')
     write(tab + 'self.__do_layout()\n')
