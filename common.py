@@ -32,7 +32,7 @@ try:
             [short(p.node()) for p in parents]) + (changed and '+' or "")
     version = _get_version()
     del _get_version
-except ImportError:
+except: # ImportError:
     version = 'HG'
 
 # program path, set in wxglade.py
