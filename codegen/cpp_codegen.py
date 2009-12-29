@@ -468,8 +468,10 @@ def finalize():
         # write the new file contents to disk
         common.save_file(previous_source.name + header_extension,
                          header_content, 'codegen')
+        if extra_source:
+            extra_source = '\n\n' + extra_source
         common.save_file(previous_source.name + source_extension,
-                         source_content + '\n\n' + extra_source, 'codegen')
+                         source_content + extra_source, 'codegen')
         
     elif not multiple_files:
         oh = os.path.basename(output_name).upper() + '_H'
