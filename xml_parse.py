@@ -69,7 +69,7 @@ class XmlParser(ContentHandler):
         self.parser.parse(source)
 
     def parse_string(self, source):
-        from cStringIO import StringIO
+        from StringIO import StringIO
         source = StringIO(source)
         self.parser.parse(source)
         source.close()
