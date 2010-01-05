@@ -1,28 +1,28 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# guillaume <gu_barthe@yahoo.fr>, 2009, 2010.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-02-09 23:22+0100\n"
-"PO-Revision-Date: 2008-07-28 20:15+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2010-01-03 09:56+0100\n"
+"Last-Translator: guillaume <gu_barthe@yahoo.fr>\n"
+"Language-Team: Français <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.0\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: about.py:49
 msgid "About wxGlade"
-msgstr ""
+msgstr "A propos de wxGlade"
 
 #: about.py:59
 msgid "wxGlade - License"
-msgstr ""
+msgstr "wxGlade - Licence"
 
 #: about.py:64
 msgid ""
@@ -30,12 +30,15 @@ msgid ""
 "You can get a copy at \n"
 "http://www.opensource.org/licenses/mit-license.php"
 msgstr ""
+"Impossible de trouver la licence!\n"
+"Vosu pouvez vous en procurer une copie sur \n"
+"http://www.opensource.org/licenses/mit-license.php"
 
 #: about.py:67 edit_windows.py:149 main.py:620 main.py:637 main.py:692
 #: main.py:705 main.py:753 main.py:815 zmain.py:482 zmain.py:499 zmain.py:538
 #: zmain.py:551 zmain.py:587 edit_sizers/edit_sizers.py:651
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 #: about.py:80
 msgid "Can't find the credits file!\n"
@@ -43,23 +46,23 @@ msgstr ""
 
 #: about.py:80
 msgid "Oops!"
-msgstr ""
+msgstr "Oops !"
 
 #: clipboard.py:40 clipboard.py:38
 msgid "Invalid data in the clipboard"
-msgstr ""
+msgstr "Données invalides dans le presse-papier"
 
 #: clipboard.py:65 clipboard.py:63
 msgid "Data can't be copied to clipboard."
-msgstr ""
+msgstr "Les données ne peuvent pas être copiées depuis le presse-papier."
 
 #: clipboard.py:71 clipboard.py:105 clipboard.py:69 clipboard.py:103
 msgid "Clipboard can't be opened."
-msgstr ""
+msgstr "Le presse-papier ne peut pas être ouvert."
 
 #: clipboard.py:98 clipboard.py:96
 msgid "Data can't be copied from clipboard."
-msgstr ""
+msgstr "Les données ne peuvent pas être copiées depuis le presse-papier."
 
 #: clipboard.py:129 clipboard.py:127
 msgid "Please only drop one file at a time"
@@ -67,11 +70,11 @@ msgstr ""
 
 #: color_dialog.py:18 color_dialog.py:19
 msgid "System colour"
-msgstr ""
+msgstr "Couleur système"
 
 #: color_dialog.py:22 color_dialog.py:23
 msgid "Custom colour"
-msgstr ""
+msgstr "Couleur personnalisée"
 
 #: color_dialog.py:25 configUI.py:38 color_dialog.py:26
 #: edit_sizers/edit_sizers.py:395 edit_sizers/edit_sizers.py:1808
@@ -79,17 +82,17 @@ msgstr ""
 #: widgets/gauge/gauge.py:104 widgets/menubar/menubar.py:71
 #: widgets/menubar/menubar.py:777 widgets/notebook/notebook.py:339
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: color_dialog.py:26 configUI.py:39 color_dialog.py:27
 #: edit_sizers/edit_sizers.py:396 edit_sizers/edit_sizers.py:1809
 #: widgets/menubar/menubar.py:73 widgets/menubar/menubar.py:778
 msgid "Cancel"
-msgstr ""
+msgstr "Annulé"
 
 #: color_dialog.py:70 color_dialog.py:71
 msgid "Select widget colour"
-msgstr ""
+msgstr "Sélectionner la couleur du widget"
 
 #: common.py:92
 #, python-format
@@ -113,12 +116,12 @@ msgstr ""
 #: common.py:137
 #, python-format
 msgid "ERROR loading \"%s\""
-msgstr ""
+msgstr "Erreur de chargement \"%s\""
 
 #: common.py:203
 #, python-format
 msgid "Add a %s"
-msgstr ""
+msgstr "Ajouter un %s"
 
 #: config.py:60
 #, python-format
@@ -126,26 +129,28 @@ msgid ""
 "Error reading config file:\n"
 "%s"
 msgstr ""
+"Erreur de lecture du fichier de configuration : \n"
+"%s"
 
 #: config.py:103
 msgid "Choose a directory:"
-msgstr ""
+msgstr "Sélectionner un répertoire : "
 
 #: config.py:246
 msgid "Changes will take effect after wxGlade is restarted"
-msgstr ""
+msgstr "Les changements prendront effet après redémarrage de wxGlade"
 
 #: config.py:247
 msgid "Preferences saved"
-msgstr ""
+msgstr "Préférences enregistrées"
 
 #: configUI.py:15
 msgid "Local widget path"
-msgstr ""
+msgstr "Chemin des widgets locaux"
 
 #: configUI.py:17
 msgid "Use icons in menu items"
-msgstr ""
+msgstr "Utiliser des icônes dans les items du menu"
 
 #: configUI.py:18
 msgid "Show properties and tree windows as small frames (Win32 only)"
@@ -165,7 +170,7 @@ msgstr ""
 
 #: configUI.py:22
 msgid "Use native file dialogs on KDE"
-msgstr ""
+msgstr "Utiliser les boîtes de dialogue de KDE"
 
 #: configUI.py:27
 msgid "Use dialog units by default for size properties"
@@ -189,11 +194,11 @@ msgstr ""
 
 #: configUI.py:33
 msgid "Auto save wxg files every "
-msgstr ""
+msgstr "Enregistrement automatique des fichiers wxg toutes les "
 
 #: configUI.py:35
 msgid "Backup options"
-msgstr ""
+msgstr "Options de sauvegarde"
 
 #: configUI.py:35
 msgid "append ~ to filename"
@@ -205,7 +210,7 @@ msgstr ""
 
 #: configUI.py:47
 msgid "wxGlade: preferences"
-msgstr ""
+msgstr "wxGlade : préférences"
 
 #: configUI.py:83
 msgid ""
@@ -221,31 +226,33 @@ msgstr ""
 
 #: configUI.py:90
 msgid "Number of items in file history"
-msgstr ""
+msgstr "Nombre d'éléments dans l'historique des fichiers"
 
 #: configUI.py:93
 msgid ""
 "Number of buttons per row\n"
 "in the main palette"
 msgstr ""
+"Nombre de boutons par ligne\n"
+"dans la palette principale"
 
 #: configUI.py:122
 msgid "Interface"
-msgstr ""
+msgstr "Interface"
 
 #: configUI.py:123
 msgid "Other"
-msgstr ""
+msgstr "Autre"
 
 #: wxglade.py:76 wxglade.py:78
 #, python-format
 msgid "Error: no writer for language \"%s\" available"
-msgstr ""
+msgstr "Erreur : pas de convertisseur pour le langage \"%s\""
 
 #: wxglade.py:80 wxglade.py:82
 #, python-format
 msgid "Error: %s"
-msgstr ""
+msgstr "Erreur : %s"
 
 #: wxglade.py:90 wxglade.py:92
 msgid ""
@@ -281,46 +288,48 @@ msgid ""
 "Name \"%s\" is already in use.\n"
 "Please enter a different one."
 msgstr ""
+"Le nom \"%s\" est déjà utilisé.\n"
+"Saisissez-en un nouveau."
 
 #: edit_windows.py:161 edit_windows.py:261 edit_sizers/edit_sizers.py:664
 #: edit_sizers/edit_sizers.py:706
 #, python-format
 msgid "Properties - <%s>"
-msgstr ""
+msgstr "Propriétés - <%s>"
 
 #: edit_windows.py:179 edit_windows.py:1024 edit_sizers/edit_sizers.py:87
 #: edit_sizers/edit_sizers.py:215 widgets/menubar/menubar.py:666
 msgid "Remove\tDel"
-msgstr ""
+msgstr "Supprimer\tDel"
 
 #: edit_windows.py:181 edit_sizers/edit_sizers.py:498
 msgid "Copy\tCtrl+C"
-msgstr ""
+msgstr "Copier\tCtrl+C"
 
 #: edit_windows.py:183 edit_sizers/edit_sizers.py:499
 msgid "Cut\tCtrl+X"
-msgstr ""
+msgstr "Couper\tCtrl+X"
 
 #: edit_windows.py:480 edit_sizers/edit_sizers.py:634
 #: widgets/menubar/menubar.py:587
 msgid "Common"
-msgstr ""
+msgstr "Commun"
 
 #: edit_windows.py:946
 msgid "Preview"
-msgstr ""
+msgstr "Aperçu"
 
 #: edit_windows.py:960
 msgid "Close Preview"
-msgstr ""
+msgstr "Fermer l'aperçu"
 
 #: edit_windows.py:1026 widgets/menubar/menubar.py:668
 msgid "Hide"
-msgstr ""
+msgstr "Masquer"
 
 #: edit_windows.py:1033 edit_sizers/edit_sizers.py:89
 msgid "Paste\tCtrl+V"
-msgstr ""
+msgstr "Coller\tCtrl+V"
 
 #: edit_windows.py:1041
 msgid ""
@@ -336,7 +345,7 @@ msgstr ""
 
 #: events_mixin.py:22
 msgid "Event"
-msgstr ""
+msgstr "Evènement"
 
 #: events_mixin.py:23
 msgid "Handler"
@@ -344,24 +353,24 @@ msgstr ""
 
 #: font_dialog.py:30
 msgid "Family:"
-msgstr ""
+msgstr "Famille : "
 
 #: font_dialog.py:31
 msgid "Style:"
-msgstr ""
+msgstr "Style : "
 
 #: font_dialog.py:32
 msgid "Weight:"
-msgstr ""
+msgstr "Hauteur : "
 
 #: font_dialog.py:97
 msgid "Select font attributes"
-msgstr ""
+msgstr "Sélectionner les attributs des polices"
 
 #: kdefiledialog.py:69
 #, python-format
 msgid "File '%s' already exists: do you really want to overwrite it?"
-msgstr ""
+msgstr "Le fichier '%s' existe déjà : voulez vous le remplacer ?"
 
 #: kdefiledialog.py:77 kdefiledialog.py:118
 msgid "Fork Error"
@@ -369,11 +378,11 @@ msgstr ""
 
 #: layout_option_property.py:40 layout_option_property.py:42
 msgid "Option"
-msgstr ""
+msgstr "Option"
 
 #: layout_option_property.py:62 layout_option_property.py:64
 msgid "Position"
-msgstr ""
+msgstr "Position"
 
 #: layout_option_property.py:72 layout_option_property.py:74
 msgid "Span"
@@ -385,63 +394,63 @@ msgstr ""
 
 #: main.py:168 zmain.py:151
 msgid "Show &Properties\tCtrl+P"
-msgstr ""
+msgstr "Afficher les &Propriétés\tCtrl+P"
 
 #: main.py:172 zmain.py:155
 msgid "&New\tCtrl+N"
-msgstr ""
+msgstr "&Nouveau\tCtrl+N"
 
 #: main.py:174 zmain.py:157
 msgid "&Open...\tCtrl+O"
-msgstr ""
+msgstr "&Ouvrir...\tCtrl+O"
 
 #: main.py:176 zmain.py:159
 msgid "&Save\tCtrl+S"
-msgstr ""
+msgstr "&Enregistrer\tCtrl+S"
 
 #: main.py:178 zmain.py:161
 msgid "Save As...\tShift+Ctrl+S"
-msgstr ""
+msgstr "Enregistrer sous...\tShift+Ctrl+S"
 
 #: main.py:182
 msgid "&Refresh\tf5"
-msgstr ""
+msgstr "&Actualiser\tf5"
 
 #: main.py:184 zmain.py:165
 msgid "&Generate Code\tCtrl+G"
-msgstr ""
+msgstr "&Générer le code\tCtrl+G"
 
 #: main.py:189
 msgid "&Import from XRC...\tCtrl+I"
-msgstr ""
+msgstr "&Import depuis XRC...\tCtrl+I"
 
 #: main.py:193 zmain.py:169
 msgid "E&xit\tCtrl+Q"
-msgstr ""
+msgstr "Quitter\tCtrl+Q"
 
 #: main.py:196 zmain.py:172
 msgid "Preferences..."
-msgstr ""
+msgstr "Préférences..."
 
 #: main.py:197 zmain.py:173
 msgid "&File"
-msgstr ""
+msgstr "&Fichier"
 
 #: main.py:198 zmain.py:174
 msgid "&View"
-msgstr ""
+msgstr "&Affichage"
 
 #: main.py:200 zmain.py:176
 msgid "Contents\tF1"
-msgstr ""
+msgstr "Aide\tF1"
 
 #: main.py:202 zmain.py:178
 msgid "About..."
-msgstr ""
+msgstr "A Propos..."
 
 #: main.py:203 main.py:210 zmain.py:179
 msgid "&Help"
-msgstr ""
+msgstr "&Aide"
 
 #: main.py:228 main.py:573
 msgid ""
@@ -450,7 +459,7 @@ msgstr ""
 
 #: main.py:230 main.py:478 main.py:575
 msgid "Auto save detected"
-msgstr ""
+msgstr "Enregistrement automatique en cours"
 
 #: main.py:274 zmain.py:219
 msgid "Core components"
@@ -458,11 +467,11 @@ msgstr ""
 
 #: main.py:274 zmain.py:219
 msgid "Custom components"
-msgstr ""
+msgstr "Composants personalisés"
 
 #: main.py:347 zmain.py:292
 msgid "Properties - <app>"
-msgstr ""
+msgstr "Propriétés - <app>"
 
 #: main.py:380 zmain.py:324
 msgid "wxGlade: Tree"
@@ -476,11 +485,11 @@ msgstr ""
 
 #: main.py:484
 msgid "Recovery from auto save complete"
-msgstr ""
+msgstr "Récupération à partir d'une sauvegarde automatique"
 
 #: main.py:491
 msgid "Auto saving... done"
-msgstr ""
+msgstr "Sauvegarde automatique... Terminée"
 
 #: main.py:525 zmain.py:421
 msgid "Save changes to the current app?"
@@ -488,7 +497,7 @@ msgstr ""
 
 #: main.py:525 zmain.py:421
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmer"
 
 #: main.py:549
 msgid "Impossible to reload an unsaved application"
@@ -496,16 +505,16 @@ msgstr ""
 
 #: main.py:550
 msgid "Alert"
-msgstr ""
+msgstr "Alerte"
 
 #: main.py:565 zmain.py:445
 msgid "Open file"
-msgstr ""
+msgstr "Ouvrir le fichier"
 
 #: main.py:619 zmain.py:481
 #, python-format
 msgid "Error loading file %s: %s"
-msgstr ""
+msgstr "Erreur de chargement du fichier %s: %s"
 
 #: main.py:632 zmain.py:494
 #, python-format
@@ -524,7 +533,7 @@ msgstr ""
 #: main.py:657
 #, python-format
 msgid "Loading time: %.5f"
-msgstr ""
+msgstr "Temps de chargement : %.5f"
 
 #: main.py:669
 #, python-format
@@ -537,6 +546,8 @@ msgid ""
 "Error saving app:\n"
 "%s"
 msgstr ""
+"Erreur d'enregistrement de l'application : \n"
+"%s"
 
 #: main.py:698 zmain.py:544
 #, python-format
@@ -551,11 +562,11 @@ msgstr ""
 #: main.py:714
 #, python-format
 msgid "Saved %s"
-msgstr ""
+msgstr "Enregistré %s"
 
 #: main.py:720 zmain.py:560
 msgid "Save project as..."
-msgstr ""
+msgstr "Enregistrer le projet sous..."
 
 #: main.py:752 zmain.py:587
 #, python-format
@@ -563,10 +574,12 @@ msgid ""
 "Error saving preferences:\n"
 "%s"
 msgstr ""
+"Erreur d'enregistrement des préférences : \n"
+"%s"
 
 #: main.py:797
 msgid "Import file"
-msgstr ""
+msgstr "Importer un fichier"
 
 #: main.py:810
 #, python-format
@@ -584,15 +597,15 @@ msgstr ""
 
 #: tree.py:32
 msgid "Properties - <>"
-msgstr ""
+msgstr "Propriétés - <>"
 
 #: tree.py:267
 msgid "Application"
-msgstr ""
+msgstr "Application"
 
 #: tree.py:280
 msgid "Show"
-msgstr ""
+msgstr "Afficher"
 
 #: tree.py:448
 #, python-format
@@ -601,11 +614,11 @@ msgstr ""
 
 #: widget_properties.py:641
 msgid "All Files|*"
-msgstr ""
+msgstr "Tous les fichiers|*"
 
 #: widget_properties.py:642
 msgid "Choose a file"
-msgstr ""
+msgstr "Choisissez un fichier"
 
 #: widget_properties.py:765
 #, python-format
@@ -614,35 +627,36 @@ msgstr ""
 
 #: widget_properties.py:918
 msgid "  Apply  "
-msgstr ""
+msgstr "  Appliquer "
 
 #: widget_properties.py:921
 msgid "  Add  "
-msgstr ""
+msgstr "  Ajouter "
 
 #: widget_properties.py:924
 msgid "  Insert  "
-msgstr ""
+msgstr "  Insérer "
 
 #: widget_properties.py:927
 msgid "  Remove  "
-msgstr ""
+msgstr "  Supprimer "
 
 #: xml_parse.py:253
 msgid "Loading..."
-msgstr ""
+msgstr "Chargement..."
 
 #: xml_parse.py:253
 msgid "Please wait while loading the app"
-msgstr ""
+msgstr "Patienter pendant le chargement de l'application"
 
 #: zmain.py:445 zmain.py:561
 msgid "wxGlade files (*.wxg)|*.wxg|XML files (*.xml)|*.xml|All files|*"
 msgstr ""
+"Fichier wxGlade (*.wxg)|*.wxg|fichier XML (*.xml)|*.xml|Tous les fichiers|*"
 
 #: edit_sizers/edit_sizers.py:83
 msgid "Options"
-msgstr ""
+msgstr "Options"
 
 #: edit_sizers/edit_sizers.py:286 edit_sizers/edit_sizers.py:287
 msgid "Select sizer type"
@@ -650,7 +664,7 @@ msgstr ""
 
 #: edit_sizers/edit_sizers.py:389
 msgid "Select a position"
-msgstr ""
+msgstr "Sélectionner une position"
 
 #: edit_sizers/edit_sizers.py:495 edit_sizers/edit_sizers.py:1492
 msgid "Add slot"
@@ -666,19 +680,19 @@ msgstr ""
 
 #: edit_sizers/edit_sizers.py:1494
 msgid "Add row"
-msgstr ""
+msgstr "Ajouter une ligne"
 
 #: edit_sizers/edit_sizers.py:1495
 msgid "Add column"
-msgstr ""
+msgstr "Ajouter une colonne"
 
 #: edit_sizers/edit_sizers.py:1496
 msgid "Insert row..."
-msgstr ""
+msgstr "Insérer une ligne..."
 
 #: edit_sizers/edit_sizers.py:1497
 msgid "Insert column..."
-msgstr ""
+msgstr "Insérer une colonne..."
 
 #: edit_sizers/edit_sizers.py:1885
 msgid "Growable Rows"
@@ -698,15 +712,15 @@ msgstr ""
 
 #: edit_sizers/edit_sizers.py:2002
 msgid "Orientation"
-msgstr ""
+msgstr "Orientation"
 
 #: edit_sizers/edit_sizers.py:2003 edit_sizers/edit_sizers.py:2049
 msgid "Horizontal"
-msgstr ""
+msgstr "Horizontal"
 
 #: edit_sizers/edit_sizers.py:2003
 msgid "Vertical"
-msgstr ""
+msgstr "Vertical"
 
 #: edit_sizers/edit_sizers.py:2006
 msgid "Slots: "
@@ -718,7 +732,7 @@ msgstr ""
 
 #: edit_sizers/edit_sizers.py:2022
 msgid "Label: "
-msgstr ""
+msgstr "Etiquette :"
 
 #: edit_sizers/edit_sizers.py:2098
 msgid "Select sizer attributes"
@@ -726,7 +740,7 @@ msgstr ""
 
 #: widgets/bitmap_button/bitmap_button.py:120
 msgid "Select the image for the button"
-msgstr ""
+msgstr "Sélectionner l'image du bouton"
 
 #: widgets/gauge/gauge.py:32
 msgid "Creates a horizontal gauge."
@@ -738,7 +752,7 @@ msgstr ""
 
 #: widgets/gauge/gauge.py:34
 msgid "Under Windows 95, creates a horizontal progress bar."
-msgstr ""
+msgstr "Sous Windows 95, créé une barre de progression horizontale."
 
 #: widgets/gauge/gauge.py:35
 msgid ""
@@ -748,7 +762,7 @@ msgstr ""
 
 #: widgets/gauge/gauge.py:91 widgets/slider/slider.py:131
 msgid "Select style"
-msgstr ""
+msgstr "Sélectionner le style"
 
 #: widgets/grid/grid.py:199
 msgid ""
@@ -761,7 +775,7 @@ msgstr ""
 #: widgets/static_text/static_text.py:65 widgets/text_ctrl/text_ctrl.py:76
 #: widgets/tree_ctrl/tree_ctrl.py:105
 msgid "Widget"
-msgstr ""
+msgstr "Widget"
 
 #: widgets/list_box/list_box.py:46
 msgid "Single-selection list."
@@ -824,7 +838,7 @@ msgstr ""
 
 #: widgets/list_ctrl/list_ctrl.py:77
 msgid "Icons align to the left."
-msgstr ""
+msgstr "Aligner les icônes à gauche"
 
 #: widgets/list_ctrl/list_ctrl.py:78
 msgid "Icons arrange themselves. Win32 only."
@@ -918,23 +932,23 @@ msgstr ""
 
 #: widgets/menubar/menubar.py:18
 msgid "Menu editor"
-msgstr ""
+msgstr "Editeur de menu"
 
 #: widgets/menubar/menubar.py:24
 msgid "Menu item:"
-msgstr ""
+msgstr "Eléments du menu : "
 
 #: widgets/menubar/menubar.py:32
 msgid "Label"
-msgstr ""
+msgstr "Etiquette"
 
 #: widgets/menubar/menubar.py:33
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
 #: widgets/menubar/menubar.py:34
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: widgets/menubar/menubar.py:35
 msgid "Help String"
@@ -942,47 +956,47 @@ msgstr ""
 
 #: widgets/menubar/menubar.py:36 widgets/menubar/menubar.py:58
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: widgets/menubar/menubar.py:38
 msgid "Event Handler"
-msgstr ""
+msgstr "Evènement"
 
 #: widgets/menubar/menubar.py:61
 msgid "Add"
-msgstr ""
+msgstr "Ajouter"
 
 #: widgets/menubar/menubar.py:62
 msgid "Remove"
-msgstr ""
+msgstr "Supprimer"
 
 #: widgets/menubar/menubar.py:63
 msgid "Add separator"
-msgstr ""
+msgstr "Ajouter un séparateur"
 
 #: widgets/menubar/menubar.py:66
 msgid "Up"
-msgstr ""
+msgstr "Monter"
 
 #: widgets/menubar/menubar.py:67
 msgid "Down"
-msgstr ""
+msgstr "Descendre"
 
 #: widgets/menubar/menubar.py:72
 msgid "Apply"
-msgstr ""
+msgstr "Appliquer"
 
 #: widgets/menubar/menubar.py:120
 msgid "Id   "
-msgstr ""
+msgstr "Id"
 
 #: widgets/menubar/menubar.py:122
 msgid "Label  "
-msgstr ""
+msgstr "Etiquette"
 
 #: widgets/menubar/menubar.py:124
 msgid "Name  "
-msgstr ""
+msgstr "Nom"
 
 #: widgets/menubar/menubar.py:126
 msgid "Help String  "
@@ -990,11 +1004,11 @@ msgstr ""
 
 #: widgets/menubar/menubar.py:128
 msgid "Event Handler  "
-msgstr ""
+msgstr "Evènement  "
 
 #: widgets/menubar/menubar.py:506
 msgid "Edit menus..."
-msgstr ""
+msgstr "Editer les menus..."
 
 #: widgets/menubar/menubar.py:766
 msgid "Select menubar class"
@@ -1006,23 +1020,23 @@ msgstr ""
 
 #: widgets/notebook/notebook.py:335
 msgid "Top"
-msgstr ""
+msgstr "Haut"
 
 #: widgets/notebook/notebook.py:335
 msgid "Bottom"
-msgstr ""
+msgstr "Bas"
 
 #: widgets/notebook/notebook.py:335
 msgid "Left"
-msgstr ""
+msgstr "Gauche"
 
 #: widgets/notebook/notebook.py:335
 msgid "Right"
-msgstr ""
+msgstr "Droite"
 
 #: widgets/radio_button/radio_button.py:37
 msgid "Clicked"
-msgstr ""
+msgstr "Cliqué"
 
 #: widgets/radio_button/radio_button.py:42
 msgid "Marks the beginning of a new group of radio buttons."
@@ -1086,13 +1100,15 @@ msgstr ""
 
 #: widgets/static_text/static_text.py:42
 msgid "Store as attribute"
-msgstr ""
+msgstr "Enregistrer en tant qu'attribut"
 
 #: widgets/tree_ctrl/tree_ctrl.py:79
 msgid " Tree Control:"
 msgstr ""
 
 #: widgets/tree_ctrl/tree_ctrl.py:82
-#, python-format
+#, fuzzy, python-format
 msgid " on wxGlade %s"
 msgstr ""
+
+
