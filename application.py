@@ -423,7 +423,16 @@ class Application(object):
                                 wx.CENTRE | wx.ICON_EXCLAMATION, self.notebook)
                 
         from StringIO import StringIO
-        out = StringIO()
+        class EncStringIO(StringIO):
+            def __init__(self, encoding=None):
+                StringIO.__init__(self)
+                self.encoding = encoding
+
+            def write(self, data):
+                StringIO.write(self, common._encode_to_xml(data, self.encoding))
+        # end of class EncStringIO
+
+        out = EncStringIO()
         #common.app_tree.write(out) # write the xml onto a temporary buffer
         from xml_parse import CodeWriter
         try:
