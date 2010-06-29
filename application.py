@@ -421,18 +421,24 @@ class Application(object):
             return wx.MessageBox(_("Please select a top window "
                                 "for the application"), _("Error"), wx.OK |
                                 wx.CENTRE | wx.ICON_EXCLAMATION, self.notebook)
-                
-        from StringIO import StringIO
-        class EncStringIO(StringIO):
+
+        from cStringIO import StringIO
+        class EncStringIO(object):
             def __init__(self, encoding=None):
-                StringIO.__init__(self)
+                self.out = StringIO()
                 self.encoding = encoding
 
             def write(self, data):
-                StringIO.write(self, common._encode_to_xml(data, self.encoding))
-        # end of class EncStringIO
+                if self.encoding is not None and type(data) == type(u''):
+                    data = data.encode(self.encoding)
+                self.out.write(data)
 
-        out = EncStringIO()
+            def getvalue(self):
+                return self.out.getvalue()
+
+        # end of class EncStringIO
+        
+        out = EncStringIO(self.encoding)
         #common.app_tree.write(out) # write the xml onto a temporary buffer
         from xml_parse import CodeWriter
         try:
