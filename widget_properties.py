@@ -30,8 +30,6 @@ def _mangle(label):
     """
     return misc.wxstr(label.capitalize().replace('_', ' '))
 
-
-import common
 _encode = common._encode_to_xml
 
 
@@ -170,7 +168,6 @@ class _activator:
                 self.owner.access_functions[self.name][1](value)
             except: pass
         if refresh:
-            import common
             try: common.app_tree.app.saved = False
             except AttributeError: pass #why does this happen on win at startup?
         try: self._enabler.SetValue(self._active)
@@ -1214,6 +1211,10 @@ class ComboBoxProperty(Property, _activator):
                               style=wx.CB_DROPDOWN|wx.CB_READONLY)
         self.cb.SetValue(self.val)
         label = wx.StaticText(parent, -1, self.label)
+        if hasattr(self, 'tooltip'):
+            label.SetToolTip(wx.ToolTip(self.tooltip))
+        else:
+            label.SetToolTip(wx.ToolTip(_mangle(self.dispName)))
         enabler = None
         if self.can_disable:
             enabler = wx.CheckBox(parent, self.id+1, '', size=(1, -1))
