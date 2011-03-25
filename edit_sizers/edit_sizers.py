@@ -407,9 +407,10 @@ def change_sizer(old, new, which_page=0, _hidden=[None]):
             # come before any other widget managed by the wx.StaticBoxSizer in
             # the GetChildren() list. Explicitly reparenting the widgets seems
             # to solve the problem
-            p = widget.widget.GetParent()
-            widget.widget.Reparent(_hidden[0])
-            widget.widget.Reparent(p)
+            if hasattr(widget.widget, 'GetParent'):
+                p = widget.widget.GetParent()
+                widget.widget.Reparent(_hidden[0])
+                widget.widget.Reparent(p)
             szr.widget.Insert(widget.pos, widget.widget,
                               int(widget.get_option()), widget.get_int_flag(),
                               int(widget.get_border()))
