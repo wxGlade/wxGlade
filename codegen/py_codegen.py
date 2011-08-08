@@ -88,7 +88,7 @@ def cn(class_name):
 
 def cn_f(flags):
     if use_new_namespace:
-        return "|".join([cn(f) for f in str(flags).split('|')])
+        return " | ".join([cn(f) for f in str(flags).split('|')])
     else:
         return str(flags)
 
@@ -411,7 +411,7 @@ def initialize(app_attrs):
                 output_file.write(line)
             output_file.write('<%swxGlade extra_modules>\n' % nonce)
             output_file.write('\n<%swxGlade replace extracode>\n\n' % nonce)
-            output_file.write('\n')
+            #output_file.write('\n')  # PEP 8
     else:
         previous_source = None
         global out_dir
@@ -472,7 +472,7 @@ def finalize():
         # extra code (see the 'extracode' property of top-level widgets)
         tag = '<%swxGlade replace extracode>' % nonce
         code = "\n".join(['# begin wxGlade: extracode'] + _current_extra_code +
-                         ['# end wxGlade\n'])
+                         ['# end wxGlade'])
         content = content.replace(tag, code)
         
         output_file.close()
@@ -701,7 +701,7 @@ def add_class(code_obj):
             klass = code_obj.klass + ('_%d' % random.randrange(10**8, 10**9))
         else:
             klass = code_obj.klass
-        write('class %s(%s):\n' % (without_package(klass), base))
+        write('\nclass %s(%s):\n' % (without_package(klass), base))
         write(tabs(1) + 'def __init__(self, *args, **kwds):\n')
     elif custom_base is not None:
         # custom base classes set, but "overwrite existing sources" not
@@ -885,7 +885,7 @@ def add_class(code_obj):
         buf = []
         for name, event, handler in event_handlers:
             if handler not in already_there:
-                buf.append(tabs(1) + 'def %s(self, event): '
+                buf.append(tabs(1) + 'def %s(self, event):  '
                            '# wxGlade: %s.<event_handler>\n'
                            % (handler, without_package(code_obj.klass)))
                 buf.append(
@@ -906,7 +906,7 @@ def add_class(code_obj):
         already_there = {}
         for name, event, handler in event_handlers:
             if handler not in already_there:
-                write('\n' + tabs(1) + 'def %s(self, event): '
+                write('\n' + tabs(1) + 'def %s(self, event):  '
                       '# wxGlade: %s.<event_handler>\n'
                       % (handler, without_package(code_obj.klass)))
                 write(tab + 'print "Event handler `%s\' not implemented!"\n' %
@@ -917,7 +917,7 @@ def add_class(code_obj):
     # the code has been generated
     classes[code_obj.klass].done = True
 
-    write('\n# end of class %s\n\n\n' % without_package(code_obj.klass))
+    write('\n# end of class %s\n' % without_package(code_obj.klass))
 
     if not multiple_files and prev_src is not None:
         # if this is a new class, add its code to the new_classes list of the
