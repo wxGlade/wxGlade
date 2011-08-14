@@ -6,8 +6,12 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import wxversion
-wxversion.ensureMinimal("2.6")
+import sys
+
+# ensure minimal wx version
+if not hasattr(sys, 'frozen'):
+    import wxversion
+    wxversion.ensureMinimal("2.6")
 
 import wx
 from widget_properties import *
