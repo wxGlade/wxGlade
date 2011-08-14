@@ -59,8 +59,10 @@ class PerlCodeGenerator:
         if not style: style = ''
 
         klass = obj.base;
-        if klass != obj.klass : klass = obj.klass; 
-        else: klass = klass.replace('wx','Wx::',1);
+        if klass != obj.klass:
+            klass = obj.klass
+        else:
+            klass = klass.replace('wx', 'Wx::', 1)
 
         init.append('%s = %s->new(%s, %s, %s, wxDefaultPosition, wxDefaultSize,'
                     ' %s);\n' %  (prefix, klass, parent, id, bmp, style))

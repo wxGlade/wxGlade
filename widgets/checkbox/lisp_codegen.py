@@ -29,11 +29,14 @@ class LispCodeGenerator:
             if style.find(' ') != -1:
                 style = '(logior %s)' % style
 
-        if id_name: init.append(id_name)
+        if id_name:
+            init.append(id_name)
 
-        klass = obj.base;
-        if klass != obj.klass : klass = obj.klass; 
-        else: klass = klass.replace('wx','Wx::',1);
+        klass = obj.base
+        if klass != obj.klass:
+            klass = obj.klass
+        else:
+            klass = klass.replace('wx', 'Wx::', 1)
 
         init.append('(setf (slot-%s obj) (wxCheckBox_Create %s %s %s -1 -1 -1 -1 %s))\n' %
                     (obj.name, parent, id, label, style))

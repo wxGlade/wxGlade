@@ -33,7 +33,7 @@ class EditGauge(ManagedBase):
                      _("Creates a vertical gauge."),
                      _("Under Windows 95, creates a horizontal progress bar."),
                      _("Creates smooth progress bar with one pixel wide update step (not supported by all platforms)."))
-        prop['style'] = CheckListProperty(self, 'style', None, style_labels,tooltips=self.tooltips)
+        prop['style'] = CheckListProperty(self, 'style', None, style_labels, tooltips=self.tooltips)
         prop['range'] = SpinProperty(self, 'range', None, label=_("range"))
 
     def create_widget(self):

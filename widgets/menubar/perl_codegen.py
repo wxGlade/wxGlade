@@ -91,9 +91,11 @@ class PerlCodeGenerator:
         """\
         function that generates Perl code for the menubar of a wxFrame.
         """
-        klass = obj.base;
-        if klass != obj.klass : klass = obj.klass; 
-        else: klass = klass.replace('wx','Wx::',1);
+        klass = obj.base
+        if klass != obj.klass:
+            klass = obj.klass
+        else:
+            klass = klass.replace('wx', 'Wx::', 1)
 
         plgen = common.code_writers['perl']
         init = [ '\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' %

@@ -23,12 +23,13 @@ class PerlCodeGenerator:
             parent = '$self'
 
         
-        if id_name: init.append(id_name)
+        if id_name:
+            init.append(id_name)
         arguments = _fix_arguments(prop.get('arguments', []),
                                    parent, id, prop.get('size', "-1, -1"))
-	ctor = widget.klass + '->new'
-	cust_ctor = prop.get('custom_ctor', '').strip()
-	if cust_ctor:
+        ctor = widget.klass + '->new'
+        cust_ctor = prop.get('custom_ctor', '').strip()
+        if cust_ctor:
             ctor = cust_ctor
         init.append('$self->{%s} = %s(%s);\n' %
                     (widget.name, ctor, ", ".join(arguments)))

@@ -19,11 +19,14 @@ class PerlCodeGenerator:
         else:
             parent = '$self'
 
-        if id_name: init.append(id_name)
+        if id_name:
+            init.append(id_name)
 
-        klass = obj.base;
-        if klass != obj.klass : klass = obj.klass; 
-        else: klass = klass.replace('wx','Wx::',1);
+        klass = obj.base
+        if klass != obj.klass:
+            klass = obj.klass
+        else:
+            klass = klass.replace('wx', 'Wx::', 1)
 
         init.append('$self->{%s} = %s->new(%s, %s, %s);\n' %
             (obj.name, klass, parent, id, label))

@@ -45,16 +45,18 @@ class EditComboBox(ManagedBase):
         ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer,
                              pos, property_window, show=show)
         self.choices = choices
-        if len(choices): self.selection = 0
-        else: self.selection = -1
+        if len(choices):
+            self.selection = 0
+        else:
+            self.selection = -1
         self.style = 0
         # properties
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = ('#section#' + _('Style'), 'wxCB_SIMPLE','wxCB_DROPDOWN',
+        style_labels = ('#section#' + _('Style'), 'wxCB_SIMPLE', 'wxCB_DROPDOWN',
                         'wxCB_READONLY', 'wxCB_SORT')
         self.style_pos = [ eval('wx.' + s[2:]) for s in style_labels[1:] ]
-	self.tooltips = (_("Creates a combobox with a permanently displayed list."
+        self.tooltips = (_("Creates a combobox with a permanently displayed list."
                          " Windows only."),
                          _("Creates a combobox with a drop-down list."),
                          _("Same as wxCB_DROPDOWN but only the strings specified "
@@ -119,7 +121,8 @@ class EditComboBox(ManagedBase):
         self.properties['selection'].set_range(0, len(self.choices)-1)
         if self.widget:
             self.widget.Clear()
-            for c in self.choices: self.widget.Append(c)
+            for c in self.choices:
+                self.widget.Append(c)
             if not self.properties['size'].is_active():
                 self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
@@ -129,7 +132,8 @@ class EditComboBox(ManagedBase):
             for i in range(len(self.style_pos)):
                 if self.style & self.style_pos[i]:
                     retval[i] = 1
-        except AttributeError: pass
+        except AttributeError:
+            pass
         return retval
 
     def set_style(self, value):
@@ -175,8 +179,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditComboBox objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
         raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     choice = EditComboBox(name, parent, wx.NewId(), [], sizer, pos,
@@ -186,8 +192,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 ##                    size=choice.GetBestSize())
     node = Tree.Node(choice)
     choice.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos-1)
     return choice
 
     

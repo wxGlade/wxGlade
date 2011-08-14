@@ -298,7 +298,7 @@ def initialize(app_attrs):
     header_extension = app_attrs.get('header_extension', '.h')
 
     # Inentation level based on the project options
-    global indent_symbol,indent_amount
+    global indent_symbol, indent_amount
     try:
         indent_symbol = app_attrs['indent_symbol']
         if indent_symbol == 'tab':

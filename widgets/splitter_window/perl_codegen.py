@@ -28,8 +28,10 @@ class PerlCodeGenerator:
             if id_name: l.append(id_name)
 
             klass = window.base
-            if klass != window.klass: klass = window.klass
-            else: klass = klass.replace('wx','Wx::',1)
+            if klass != window.klass:
+                klass = window.klass
+            else:
+                klass = klass.replace('wx', 'Wx::', 1)
 
             l.append('$self->{%s} = %s->new(%s, %s);\n' %
                 (window.name, plgen.cn(klass), parent,id))

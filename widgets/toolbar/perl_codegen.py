@@ -120,9 +120,11 @@ class PerlCodeGenerator:
         else:
             style = ''
 
-        klass = obj.base;
-        if klass != obj.klass : klass = obj.klass; 
-        else: klass = klass.replace('wx','Wx::',1);
+        klass = obj.base
+        if klass != obj.klass:
+            klass = obj.klass
+        else:
+            klass = klass.replace('wx', 'Wx::', 1)
 
         init = [
             '\n# Tool Bar\n',

@@ -238,7 +238,7 @@ class EditGrid(ManagedBase):
         self.properties['columns'].set_col_sizes([-1, 0])
 
     def create_widget(self):
-        self.widget = Grid(self.parent.widget, self.id,(200,200))
+        self.widget = Grid(self.parent.widget, self.id, (200, 200))
         self.widget.CreateGrid(self.rows_number, len(self.columns))
         if not self.properties['label_bg_color'].is_active():
             self.label_bg_color = misc.color_to_string(
