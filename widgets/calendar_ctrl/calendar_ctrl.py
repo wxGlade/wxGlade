@@ -44,13 +44,13 @@ class EditCalendarCtrl(ManagedBase):
         self.style_pos = (CAL_SUNDAY_FIRST, CAL_MONDAY_FIRST, 
             CAL_SHOW_HOLIDAYS, CAL_NO_YEAR_CHANGE, CAL_NO_MONTH_CHANGE,
             CAL_SHOW_SURROUNDING_WEEKS, CAL_SEQUENTIAL_MONTH_SELECTION)
-	self.tooltips=(_("Show Sunday as the first day in the week"),
-			_("Show Monday as the first day in the week"),
-			_("Highlight holidays in the calendar"),
-			_("Disable the year changing"),
-			_("Disable the month (and, implicitly, the year) changing"),
-			_("Show the neighbouring weeks in the previous and next months"),
-			_("Use alternative, more compact, style for the month and year selection controls."))
+        self.tooltips = (_("Show Sunday as the first day in the week"),
+                         _("Show Monday as the first day in the week"),
+                         _("Highlight holidays in the calendar"),
+                         _("Disable the year changing"),
+                         _("Disable the month (and, implicitly, the year) changing"),
+                         _("Show the neighbouring weeks in the previous and next months"),
+                         _("Use alternative, more compact, style for the month and year selection controls."))
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels,tooltips=self.tooltips)
         
@@ -76,7 +76,7 @@ class EditCalendarCtrl(ManagedBase):
     def create_widget(self):
         try:
             #TODO add all the other parameters for the CalendarCtrl especialy style=self.style and the initial date
-            self.widget = CalendarCtrl(self.parent.widget, self.id ,style=self.style)
+            self.widget = CalendarCtrl(self.parent.widget, self.id, style=self.style)
         except AttributeError:
             self.widget = CalendarCtrl(self.parent.widget, self.id)
 
@@ -102,7 +102,8 @@ class EditCalendarCtrl(ManagedBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        if self.widget: self.widget.SetWindowStyleFlag(self.style)
+        if self.widget:
+            self.widget.SetWindowStyleFlag(self.style)
 
 
 # end of class EditCalendarCtrl
@@ -129,16 +130,20 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditCalendarCtrl objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: label = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        label = attrs['name']
+    except KeyError:
+        raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
         raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer,
                         pos, common.property_panel, show=False)
     node = Tree.Node(calendar_ctrl)
     calendar_ctrl.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos-1)
     return calendar_ctrl
 
 

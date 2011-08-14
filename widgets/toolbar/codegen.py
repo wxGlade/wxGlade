@@ -368,7 +368,7 @@ class CppCodeGenerator:
 ##                         ids.append(' = '.join(tokens))
         return ids
 
-    def get_events(self,obj):
+    def get_events(self, obj):
         cppgen = common.code_writers['C++']
         out = []
 

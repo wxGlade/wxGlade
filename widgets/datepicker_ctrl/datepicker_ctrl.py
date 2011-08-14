@@ -35,11 +35,11 @@ class EditDatePickerCtrl(ManagedBase):
             'wxDP_DEFAULT', 'wxDP_ALLOWNONE', 'wxDP_SHOWCENTURY')
         self.style_pos = (wx.DP_SPIN, wx.DP_DROPDOWN, 
             wx.DP_DEFAULT, wx.DP_ALLOWNONE, wx.DP_SHOWCENTURY)
-	self.tooltips = (_("Creates a control without a month calendar drop down but with spin-control-like arrows to change individual date components. This style is not supported by the generic version."),
-		_("Creates a control with a month calendar drop-down part from which the user can select a date."),
-		_("Creates a control with the style that is best supported for the current platform (currently wxDP_SPIN under Windows and wxDP_DROPDOWN elsewhere)."),
-		_("With this style, the control allows the user to not enter any valid date at all. Without it - the default - the control always has some valid date."),
-		_("Forces display of the century in the default date format. Without this style the century could be displayed, or not, depending on the default date representation in the system."))
+        self.tooltips = (_("Creates a control without a month calendar drop down but with spin-control-like arrows to change individual date components. This style is not supported by the generic version."),
+                         _("Creates a control with a month calendar drop-down part from which the user can select a date."),
+                         _("Creates a control with the style that is best supported for the current platform (currently wxDP_SPIN under Windows and wxDP_DROPDOWN elsewhere)."),
+                         _("With this style, the control allows the user to not enter any valid date at all. Without it - the default - the control always has some valid date."),
+                         _("Forces display of the century in the default date format. Without this style the century could be displayed, or not, depending on the default date representation in the system."))
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels,tooltips=self.tooltips)
         
@@ -65,7 +65,7 @@ class EditDatePickerCtrl(ManagedBase):
     def create_widget(self):
         try:
             #TODO add all the other parameters for the DatePickerCtrl intial date
-            self.widget = wx.DatePickerCtrl(self.parent.widget, self.id ,style=self.style)
+            self.widget = wx.DatePickerCtrl(self.parent.widget, self.id, style=self.style)
         except AttributeError:
             self.widget = wx.DatePickerCtrl(self.parent.widget, self.id)
 
@@ -91,7 +91,8 @@ class EditDatePickerCtrl(ManagedBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        if self.widget: self.widget.SetWindowStyleFlag(self.style)
+        if self.widget:
+            self.widget.SetWindowStyleFlag(self.style)
 
 
 # end of class EditDatePickerCtrl
@@ -118,16 +119,20 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditDatePickerCtrl objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: label = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        label = attrs['name']
+    except KeyError:
+        raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
         raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer,
                         pos, common.property_panel, show=False)
     node = Tree.Node(datepicker_ctrl)
     datepicker_ctrl.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos-1)
     return datepicker_ctrl
 
 

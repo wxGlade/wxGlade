@@ -21,13 +21,17 @@ class PerlCodeGenerator:
         else:
             parent = '$self'
         style = prop.get("style")
-        if not style: style = ''
+        if not style:
+            style = ''
         init = []
-        if id_name: init.append(id_name)
+        if id_name:
+            init.append(id_name)
 
         klass = obj.base;
-        if klass != obj.klass : klass = obj.klass; 
-        else: klass = klass.replace('wx','Wx::',1);
+        if klass != obj.klass:
+            klass = obj.klass
+        else:
+            klass = klass.replace('wx', 'Wx::', 1)
 
         choices = ', '.join([plgen.quote_str(c) for c in choices])
         init.append('$self->{%s} = %s->new(%s, %s, wxDefaultPosition, \

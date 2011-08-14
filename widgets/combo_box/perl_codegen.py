@@ -31,9 +31,11 @@ class PerlCodeGenerator:
 
         choices = ', '.join([plgen.quote_str(c) for c in choices])
 
-        klass = obj.base;
-        if klass != obj.klass : klass = obj.klass; 
-        else: klass = klass.replace('wx','Wx::',1);
+        klass = obj.base
+        if klass != obj.klass:
+            klass = obj.klass
+        else:
+            klass = klass.replace('wx', 'Wx::', 1)
 
         init.append('$self->{%s} = %s->new(%s, %s, "", wxDefaultPosition, \
 wxDefaultSize, [%s], %s);\n' %

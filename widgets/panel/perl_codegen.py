@@ -29,11 +29,14 @@ class PerlCodeGenerator:
 
         if panel.is_toplevel:
             l = []
-            if id_name: l.append(id_name)
+            if id_name:
+                l.append(id_name)
 
-            klass = panel.base;
-            if klass != panel.klass : klass = panel.klass; 
-            else: klass = klass.replace('wx','Wx::',1);
+            klass = panel.base
+            if klass != panel.klass:
+                klass = panel.klass
+            else:
+                klass = klass.replace('wx', 'Wx::', 1)
 
             l.append('$self->{%s} = %s->new(%s, %s);\n' %
                  (panel.name, klass, parent, id))

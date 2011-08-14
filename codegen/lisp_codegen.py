@@ -1031,7 +1031,7 @@ def generate_code_foreground(obj):
         color = cn('(wxSystemSettings_GetColour ') + '%s)' % \
                 cn(obj.properties['foreground'])
     import_packages = import_packages | set(['wxColour'])
-    return self + '(wxWindow_SetForegroundColour %s %s)\n' % (self,color)
+    return self + '(wxWindow_SetForegroundColour %s %s)\n' % (self, color)
 
 
 def generate_code_background(obj):
@@ -1049,7 +1049,7 @@ def generate_code_background(obj):
                 cn(obj.properties['background'])
     import_packages = import_packages | set(['wxColour'])
     print import_packages
-    return  '(wxWindow_SetBackgroundColour %s %s)\n' % (self,color)
+    return  '(wxWindow_SetBackgroundColour %s %s)\n' % (self, color)
 
 
 def generate_code_font(obj):

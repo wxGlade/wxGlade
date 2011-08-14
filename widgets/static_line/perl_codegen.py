@@ -37,8 +37,10 @@ class PerlCodeGenerator:
             obj.name = '$' + obj.name    # the yuck (needed for pl_codegen.py)
 
         klass = obj.base;
-        if klass != obj.klass : klass = obj.klass; 
-        else: klass = klass.replace('wx','Wx::',1);
+        if klass != obj.klass:
+            klass = obj.klass 
+        else:
+            klass = klass.replace('wx', 'Wx::', 1)
 
         init.append('%s = %s->new(%s, %s, wxDefaultPosition, wxDefaultSize, \
 %s);\n' % (prefix, klass , parent, id, style))

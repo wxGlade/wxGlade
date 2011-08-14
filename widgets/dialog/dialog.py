@@ -33,28 +33,28 @@ class EditDialog(TopLevelBase):
                          'wxFULL_REPAINT_ON_RESIZE',
                          'wxCLIP_CHILDREN')
         #note that the tooltips are only for wxPython>=2.5
-	self.tooltips = (_("Equivalent to a combination of wxCAPTION, "
+        self.tooltips = (_("Equivalent to a combination of wxCAPTION, "
                            "wxCLOSE_BOX and wxSYSTEM_MENU "
                            "(the last one is not used under Unix)"),
-		_("NO DESCRIPTION"),
-		_("Puts a caption on the dialog box."),
-		_("Display a resizeable frame around the window."),
-		_("Display a system menu."),
-		_("Displays a close box on the frame."),
-		_("Displays a maximize box on the dialog."),
-		_("Displays a minimize box on the dialog."),
-		_("Display a thick frame around the window."),
-		_("The dialog stays on top of all other windows."),
-		_("Under Windows, specifies that the child controls should "
-                  "not have 3D borders unless specified in the control."),
-		_("By default, a dialog created with a NULL parent window "
-                  "will be given the application's top level window as parent. "
-                  "Use this style to prevent this from happening and create "
-                  "an orphan dialog. "
-                  "This is not recommended for modal dialogs."),
-		_("NO DESCRIPTION"),
-		_("NO DESCRIPTION"),
-		_("NO DESCRIPTION"))		
+                         _("NO DESCRIPTION"),
+                         _("Puts a caption on the dialog box."),
+                         _("Display a resizeable frame around the window."),
+                         _("Display a system menu."),
+                         _("Displays a close box on the frame."),
+                         _("Displays a maximize box on the dialog."),
+                         _("Displays a minimize box on the dialog."),
+                         _("Display a thick frame around the window."),
+                         _("The dialog stays on top of all other windows."),
+                         _("Under Windows, specifies that the child controls should "
+                           "not have 3D borders unless specified in the control."),
+                         _("By default, a dialog created with a NULL parent window "
+                           "will be given the application's top level window as parent. "
+                           "Use this style to prevent this from happening and create "
+                           "an orphan dialog. "
+                           "This is not recommended for modal dialogs."),
+                         _("NO DESCRIPTION"),
+                         _("NO DESCRIPTION"),
+                         _("NO DESCRIPTION"))
         self.style_pos = (wx.DEFAULT_DIALOG_STYLE,
                           wx.DIALOG_MODAL, wx.CAPTION, wx.RESIZE_BORDER,
                           wx.SYSTEM_MENU)
@@ -86,8 +86,10 @@ class EditDialog(TopLevelBase):
                                              label=_('Set Size Hints'))
 
     def create_widget(self):
-        if self.parent: w = self.parent.widget
-        else: w = common.palette
+        if self.parent:
+            w = self.parent.widget
+        else:
+            w = common.palette
         # we set always a default style because this is the best one for
         # editing the dialog (for example, a dialog without a caption would
         # be hard to move, etc.)
@@ -133,7 +135,8 @@ class EditDialog(TopLevelBase):
                 default = 1
                 style = style & ~wx.DEFAULT_DIALOG_STYLE
             for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]: retval[i] = 1
+                if style & self.style_pos[i]:
+                    retval[i] = 1
             retval[0] = default
         except AttributeError:
             pass
@@ -145,7 +148,8 @@ class EditDialog(TopLevelBase):
         for v in range(len(value)):
             if value[v]:
                 self.style |= self.style_pos[v]
-        if self.widget: self.widget.SetWindowStyleFlag(self.style)
+        if self.widget:
+            self.widget.SetWindowStyleFlag(self.style)
 
     def get_icon(self):
         return self.icon 
@@ -174,15 +178,19 @@ class EditDialog(TopLevelBase):
         return self.centered
 
     def set_centered(self, value):
-        try: self.centered = bool(int(value))
-        except ValueError: pass
+        try:
+            self.centered = bool(int(value))
+        except ValueError:
+            pass
 
     def get_sizehints(self):
         return self.sizehints
 
     def set_sizehints(self, value):
-        try: self.sizehints = bool(int(value))
-        except ValueError: pass
+        try:
+            self.sizehints = bool(int(value))
+        except ValueError:
+            pass
 
 # end of class EditDialog
 
@@ -205,8 +213,10 @@ def builder(parent, sizer, pos, number=[0]):
             if common.app_tree.app.get_language().lower() == 'xrc':
                 self.klass = 'wxDialog'
             else:
-                if not number[0]: self.klass = 'MyDialog'
-                else: self.klass = 'MyDialog%s' % number[0]
+                if not number[0]:
+                    self.klass = 'MyDialog'
+                else:
+                    self.klass = 'MyDialog%s' % number[0]
                 number[0] += 1
             self.klass_prop = TextProperty(self, 'class', None) #self)
             self.widget = 0
@@ -227,7 +237,8 @@ def builder(parent, sizer, pos, number=[0]):
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
-            if self.GetSize()[0] < 150: self.SetSize((150, -1))
+            if self.GetSize()[0] < 150:
+                self.SetSize((150, -1))
             self.klass_modified = False
             self.CenterOnScreen()
 
@@ -242,14 +253,20 @@ def builder(parent, sizer, pos, number=[0]):
         def set_widget(self, c):
             self.widget = int(c)
             if not self.klass_modified:
-                try: number = str(int(self.klass[-1]))
-                except ValueError: number = ''
+                try:
+                    number = str(int(self.klass[-1]))
+                except ValueError:
+                    number = ''
                 if common.app_tree.app.get_language().lower() == 'xrc':
-                    if self.widget == 0: self.klass = 'wxDialog'
-                    else: self.klass = 'wxPanel'
+                    if self.widget == 0:
+                        self.klass = 'wxDialog'
+                    else:
+                        self.klass = 'wxPanel'
                 else:
-                    if self.widget == 0: self.klass = 'MyDialog' + number
-                    else: self.klass = 'MyPanel' + number                    
+                    if self.widget == 0:
+                        self.klass = 'MyDialog' + number
+                    else:
+                        self.klass = 'MyPanel' + number                    
                 self.klass_prop.set_value(self.klass)
 
         def __getitem__(self, value):
@@ -267,8 +284,10 @@ def builder(parent, sizer, pos, number=[0]):
         # clean up resources
         class_dialog.Destroy()
         return
-    if class_dialog.widget == 0: name = 'dialog'
-    else: name = 'panel'
+    if class_dialog.widget == 0:
+        name = 'dialog'
+    else:
+        name = 'panel'
     label = '%s_%d' % (name, (number[0] or 1))
     while common.app_tree.has_name(label):
         number[0] += 1
@@ -289,8 +308,10 @@ def builder(parent, sizer, pos, number=[0]):
     common.app_tree.add(node)
     class_dialog.Destroy()
     if wx.Platform == '__WXMSW__':
-        if not is_panel: w = dialog.widget
-        else: w = dialog.widget.GetParent()
+        if not is_panel:
+            w = dialog.widget
+        else:
+            w = dialog.widget.GetParent()
         w.CenterOnScreen()
         w.Raise()
 
@@ -299,8 +320,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditDialog objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: label = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        label = attrs['name']
+    except KeyError:
+        raise XmlParsingError, _("'name' attribute missing")
     dialog = EditDialog(label, parent, wx.NewId(), "", common.property_panel,
                         show=False)
     node = Tree.Node(dialog)

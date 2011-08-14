@@ -602,9 +602,9 @@ class SizerBase(Sizer):
             'class' : (lambda : self.klass, self.change) #lambda v: None)
             }
         if not self.toplevel:
-            self.access_functions['option'] = (self.get_option,self.set_option)
+            self.access_functions['option'] = (self.get_option, self.set_option)
             self.access_functions['flag'] = (self.get_flag, self.set_flag)
-            self.access_functions['border'] = (self.get_border,self.set_border)
+            self.access_functions['border'] = (self.get_border, self.set_border)
             self.access_functions['pos'] = (self.get_pos, self.set_pos)
 
         self.name_prop = TextProperty(self, 'name', None, label=_('name'))
