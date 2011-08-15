@@ -70,7 +70,7 @@ class LispGridSizerBuilder:
         if not obj.parent.is_toplevel:
             parent = '(slot-%s obj)' % obj.parent.name
         else:
-                parent = '(slot-frame obj)'
+            parent = '(slot-frame obj)'
         rows = props.get('rows', '0')
         cols = props.get('cols', '0')
         vgap = props.get('vgap', '0')
