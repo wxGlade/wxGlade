@@ -673,17 +673,26 @@ class CodeWriter(XmlParser):
 class CodeObject:
     """\
     A class to store information needed to generate the code for a given object
+
+    @ivar is_container: If True, the widget is a container (frame, dialog,
+                        panel, ...)
+    @type is_container: Boolean
+
+    @ivar is_toplevel: If True, the object is a toplevel one: for window
+                       objects, this means that they are instances of a
+                       custom class, for sizers, that they are at the top
+                       of the hierarchy.
+    @type is_toplevel: Boolean
+
+    @ivar properties: Properties of the widget sizer
+    @type properties: Dictionary
     """
     def __init__(self, attrs, parser, preview=False):
         self.parser = parser
         self.in_windows = self.in_sizers = False
-        self.is_toplevel = False # if True, the object is a toplevel one:
-                             # for window objects, this means that they are
-                             # instances of a custom class, for sizers, that
-                             # they are at the top of the hierarchy
-        self.is_container = False # if True, the widget is a container
-                                  # (frame, dialog, panel, ...)
-        self.properties = {} # properties of the widget/sizer
+        self.is_toplevel = False
+        self.is_container = False
+        self.properties = {}
         # prop_handlers is a stack of custom handler functions to set
         # properties of this object
         self.prop_handlers = Stack()
