@@ -30,42 +30,45 @@ import re
 language = 'python'
 writer = sys.modules[__name__] # the writer is the module itself
 
-# default extensions for generated files: a list of file extensions
 default_extensions = ['py']
+"""Default extensions for generated files: a list of file extensions"""
 
+classes = None
 """\
 dictionary that maps the lines of code of a class to the name of such class:
 the lines are divided in 3 categories: '__init__', '__set_properties' and
 '__do_layout'
 """
-classes = None
 
-"""dictionary of ``writers'' for the various objects"""
 obj_builders = {}
+"""dictionary of ``writers'' for the various objects"""
 
+obj_properties = {}
 """\
 dictionary of ``property writer'' functions, used to set the properties of a
 toplevel object
 """
-obj_properties = {}
 
-# random number used to be sure that the replaced tags in the sources are
-# the right ones (see SourceFileContent and add_class)
 nonce = None
+"""\
+Random number used to be sure that the replaced tags in the sources are
+the right ones (see SourceFileContent and add_class)
+"""
 
-# lines common to all the generated files (import of wxPython, ...)
 header_lines = []
+"""Lines common to all the generated files (import of wxPython, ...)"""
 
-# if True, generate a file for each custom class
 multiple_files = False
+"""If True, generate a file for each custom class"""
 
 # if not None, it is the single source file to write into
 output_file = None
 output_file_name = None
 
-# if not None, it is the directory inside which the output files are saved
 out_dir = None
-
+"""\
+If not None, it is the directory inside which the output files are saved
+"""
 
 # ALB 2003-11-20: transition to the new wxPython, i.e. from:
 # from wxPython.wx import *
@@ -77,8 +80,13 @@ out_dir = None
 # w = wx.Window(...)
 
 use_new_namespace = True
+"""If True use the new name space (import wx)"""
 
 def cn(class_name):
+    """\
+    Return the class name properly formatted for the selected name space.
+    @see: L{use_new_namespace}
+    """
     if use_new_namespace:
         if class_name[:2] == 'wx': 
             return 'wx.' + class_name[2:]
@@ -87,6 +95,10 @@ def cn(class_name):
     return class_name
 
 def cn_f(flags):
+    """\
+    Return the flags properly formatted for the selected name space.
+    @see: L{use_new_namespace}
+    """
     if use_new_namespace:
         return " | ".join([cn(f) for f in str(flags).split('|')])
     else:
@@ -287,21 +299,28 @@ class SourceFileContent:
         
 # end of class SourceFileContent
 
-# if not None, it is an instance of SourceFileContent that keeps info about
-# the previous version of the source to generate
 previous_source = None 
+"""\
+If not None, it is an instance of SourceFileContent that keeps info about
+the previous version of the source to generate.
+"""
                   
     
 def tabs(number):
+    """\
+    Returns spaces to indent given number of levels
+    """
     return '    ' * number
 
 
-# if True, overwrite any previous version of the source file instead of
-# updating only the wxGlade blocks
 _overwrite = False
+"""\
+If True, overwrite any previous version of the source file instead of
+updating only the wxGlade blocks.
+"""
 
-# if True, enable gettext support
 _use_gettext = False
+"""If True, enable gettext support"""
 
 
 _quote_str_pattern = re.compile(r'\\[natbv"]?')
