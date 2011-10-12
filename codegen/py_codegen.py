@@ -26,9 +26,11 @@ from xml_parse import XmlParsingError
 import re
 
 
-# these two globals must be defined for every code generator module
 language = 'python'
-writer = sys.modules[__name__] # the writer is the module itself
+"""These two globals must be defined for every code generator module"""
+
+writer = sys.modules[__name__]
+"""The writer is the module itself"""
 
 default_extensions = ['py']
 """Default extensions for generated files: a list of file extensions"""
@@ -82,6 +84,9 @@ If not None, it is the directory inside which the output files are saved
 use_new_namespace = True
 """If True use the new name space (import wx)"""
 
+_app_added = False
+"""True after wxApp instance has been generated"""
+
 def cn(class_name):
     """\
     Return the class name properly formatted for the selected name space.
@@ -105,34 +110,41 @@ def cn_f(flags):
         return str(flags)
 
 
-# ALB 2004-12-05: wx version we are generating code for
+# ALB 2004-12-05
 for_version = (2, 4)
+"""wx version we are generating code for"""
 
 
 class ClassLines:
     """\
     Stores the lines of python code for a custom class
+
+    @ivar dependencies:      Names of the modules this class depends on
+    @ivar event_handlers:    Lines to bind events
+    @ivar extra_code:        Extra code to output before this class
+    @ivar done:              If True, the code for this class has already
+                             been generated
+    @ivar init:              Lines of code to insert in the __init__ method
+                             (for children widgets)
+    @ivar layout:            Lines to insert in the __do_layout method
+    @ivar parents_init:      Lines of code to insert in the __init__ for
+                             container widgets (panels, splitters, ...)
+    @ivar props:             Lines to insert in the __set_properties method
+    @ivar self.sizers_init : Lines related to sizer objects declarations
     """
     def __init__(self):
         self.deps = []
         self.child_order = []
         self.init_lines = {}
-        self.init = [] # lines of code to insert in the __init__ method
-                       # (for children widgets)
-        self.parents_init = [] # lines of code to insert in the __init__ for
-                               # container widgets (panels, splitters, ...)
-        self.sizers_init = [] # lines related to sizer objects declarations
-        self.props = [] # lines to insert in the __set_properties method
-        self.layout = [] # lines to insert in the __do_layout method
-        
-        self.dependencies = {} # names of the modules this class depends on
-        self.done = False # if True, the code for this class has already
-                          # been generated
-
-        # ALB 2004-12-05
-        self.event_handlers = [] # lines to bind events
-
-        self.extra_code = [] # extra code to output before this class
+        self.init = [] 
+        self.parents_init = []
+        self.sizers_init = []
+        self.props = []
+        self.layout = []
+        self.dependencies = {}
+        self.done = False
+        self.event_handlers = []
+        self.extra_code = []
 
 # end of class ClassLines
 
@@ -141,20 +153,25 @@ class SourceFileContent:
     """\
     Keeps info about an existing file that has to be updated, to replace only
     the lines inside a wxGlade block, an to keep the rest of the file as it was
+   
+    @ivar classes:        Classes declared in the file
+    @ivar content:        Content of the source file, if it existed
+                          before this session of code generation
+    @ivar event_handlers: List of event handlers for each class
+    @ivar name:           Name of the file
+    @ivar new_classes:    New classes to add to the file (they are inserted
+                          BEFORE the old ones)
+    @ivar spaces:         Indentation level for each class
     """
     def __init__(self, name=None, content=None, classes=None):
-        self.name = name # name of the file
-        self.content = content # content of the source file, if it existed
-                               # before this session of code generation
-        self.classes = classes # classes declared in the file
-        self.new_classes = [] # new classes to add to the file (they are
-                              # inserted BEFORE the old ones)
-        if classes is None: self.classes = {}
-        self.spaces = {} # indentation level for each class
-
-        # ALB 2004-12-05
-        self.event_handlers = {} # list of event handlers for each class
-
+        self.name = name
+        self.content = content
+        self.classes = classes
+        self.new_classes = []
+        if classes is None:
+            self.classes = {}
+        self.spaces = {}
+        self.event_handlers = {}
         if self.content is None:
             self.build_untouched_content()
 
@@ -278,12 +295,14 @@ class SourceFileContent:
         self.content = "".join(out_lines)
 
     def is_import_line(self, line):
+        """True if the line imports wx"""
         if use_new_namespace:
             return line.startswith('import wx')
         else:
             return line.startswith('from wxPython.wx import *')
         
     def is_end_of_class(self, line):
+        """True if the line is the marker for class end"""
         return line.strip().startswith('# end of class ')
 
     def add_package(self, class_name):
@@ -349,11 +368,13 @@ def quote_str(s, translate=True, escape_chars=True):
 def initialize(app_attrs): 
     """\
     Writer initialization function.
-    - app_attrs: dict of attributes of the application. The following two
-                 are always present:
-           path: output path for the generated code (a file if multi_files is
+
+    @param app_attrs: Dict of attributes of the application.
+    
+    The following two are always present:
+      - path: output path for the generated code (a file if multi_files is
                  False, a dir otherwise)
-         option: if True, generate a separate file for each custom class
+      - option: if True, generate a separate file for each custom class
     """
     out_path = app_attrs['path']
     multi_files = app_attrs['option']
@@ -1223,6 +1244,9 @@ def generate_code_tooltip(obj):
 
 
 def generate_code_disabled(obj):
+    """\
+    returns the code fragment that disables the given object.
+    """
     self = _get_code_name(obj)
     try: disabled = int(obj.properties['disabled'])
     except: disabled = False
@@ -1231,6 +1255,9 @@ def generate_code_disabled(obj):
 
 
 def generate_code_focused(obj):
+    """\
+    returns the code fragment that get the focus to the given object.
+    """
     self = _get_code_name(obj)
     try: focused = int(obj.properties['focused'])
     except: focused = False
@@ -1239,6 +1266,9 @@ def generate_code_focused(obj):
 
 
 def generate_code_hidden(obj):
+    """\
+    returns the code fragment that hides the given object.
+    """
     self = _get_code_name(obj)
     try: hidden = int(obj.properties['hidden'])
     except: hidden = False
@@ -1247,6 +1277,9 @@ def generate_code_hidden(obj):
 
 
 def generate_code_extraproperties(obj):
+    """\
+    returns the code fragment that set extra properties for the given object.
+    """
     self = _get_code_name(obj)
     prop = obj.properties['extraproperties']
     ret = []
@@ -1395,18 +1428,27 @@ _global_property_writers = { 'font': FontPropertyHandler,
                              'extraproperties': ExtraPropertiesPropertyHandler,
                              }
 
-# dictionary of dictionaries of property handlers specific for a widget
-# the keys are the class names of the widgets
-# Ex: _property_writers['wxRadioBox'] = {'choices', choices_handler}
 _property_writers = {}
+"""\
+Dictionary of dictionaries of property handlers specific for a widget
+the keys are the class names of the widgets
 
+Example: _property_writers['wxRadioBox'] = {'choices', choices_handler}
+"""
 
-# map of widget class names to a list of extra modules needed for the
-# widget. Example: 'wxGrid': 'from wxPython.grid import *\n'
 _widget_extra_modules = {}
+"""\
+Map of widget class names to a list of extra modules needed for the
+widget.
 
-# set of lines of extra modules to add to the current file
+Example: 'wxGrid': 'from wxPython.grid import *\n'
+"""
+
+_current_extra_code = []
+"""Set of lines for extra code to add to the current file"""
+
 _current_extra_modules = {} 
+"""Set of lines of extra modules to add to the current file"""
 
 def get_property_handler(property_name, widget_name):
     try: cls = _property_writers[widget_name][property_name]
