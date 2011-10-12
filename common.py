@@ -6,9 +6,12 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import os
-# if False, the program is invoked from the command-line in "batch" mode (for
-# code generation only)
+
 use_gui = True
+"""\
+If False, the program is invoked from the command-line in "batch" mode
+(for code generation only)
+"""
 
 # version identification string
 try:
@@ -35,65 +38,87 @@ try:
 except: # ImportError:
     version = 'HG'
 
-# program path, set in wxglade.py
 wxglade_path = '.'
+"""Program path, set in wxglade.py"""
 
-# widgets dictionary: each key is the name of some EditWidget class; the mapped
-# value is a 'factory' function which actually builds the object. Each of these
-# functions accept 3 parameters: the parent of the widget, the sizer by which
-# such widget is controlled, and the position inside this sizer.
 widgets = {}
+"""\
+Widgets dictionary: each key is the name of some EditWidget class; the mapped
+value is a 'factory' function which actually builds the object. Each of these
+functions accept 3 parameters: the parent of the widget, the sizer by which
+such widget is controlled, and the position inside this sizer.
+"""
 
-# widgets_from_xml dictionary: table of factory functions to build objects from
-# an xml file
 widgets_from_xml = {}
+"""\
+Widgets_from_xml dictionary: table of factory functions to build objects
+from an xml file
+"""
 
-# property_panel wxPanel: container inside which Properties of the current
-# focused widget are displayed
 property_panel = None
+"""\
+property_panel wxPanel: container inside which Properties of the current
+focused widget are displayed
+"""
 
-# app_tree Tree: represents the widget hierarchy of the application; the root 
-# is the application itself 
 app_tree = None
+"""\
+app_tree Tree: represents the widget hierarchy of the application; the
+root is the application itself
+"""
 
-# if True, the user is adding a widget to some sizer
 adding_widget = False
-# needed to add toplevel sizers
+"""If True, the user is adding a widget to some sizer"""
+
 adding_sizer = False
+"""Needed to add toplevel sizers"""
 
-# reference to the widget that is being added: this is a key in the
-# 'widgets' dictionary
 widget_to_add = None
+"""\
+Reference to the widget that is being added: this is a key in the
+'widgets' dictionary
+"""
 
-# reference to the main window (the one which contains the various buttons to
-# add the different widgets)
 palette = None
+"""\
+Reference to the main window (the one which contains the various buttons to
+add the different widgets)
+"""
 
-# dictionary which maps the ids used in the event handlers to the
-# corresponding widgets: used to call the appropriate builder function
-# when a dropping of a widget occurs, knowing only the id of the event
 refs = {}
+"""\
+Dictionary which maps the ids used in the event handlers to the
+corresponding widgets: used to call the appropriate builder function
+when a dropping of a widget occurs, knowing only the id of the event
+"""
 
-# dictionary which maps the name of the classes used by wxGlade to the
-# correspondent classes of wxWindows
 class_names = {}
+"""\
+Dictionary which maps the name of the classes used by wxGlade to the
+correspondent classes of wxWindows
+"""
 
-# names of the Edit* classes that can be toplevels, i.e. widgets for which to
-# generate a class declaration in the code
 toplevels = {}
+"""\
+Names of the Edit* classes that can be toplevels, i.e. widgets for which to
+generate a class declaration in the code
+"""
 
-# dictionary of objects used to generate the code in a given language.
-# NOTE: a code writer object must implement this interface:
-#   - initialize(out_path, multi_files)
-#   - language
-#   - add_widget_handler(widget_name, handler[, properties_handler])
-#   - add_property_handler(property_name, handler[, widget_name])
-#   - add_object(top_obj, sub_obj)
-#   - add_class(obj)
-#   - add_sizeritem(toplevel, sizer, obj_name, option, flag, border)
-#   - add_app(app_attrs, top_win_class)
-#   - ...
 code_writers = {}
+"""\
+Dictionary of objects used to generate the code in a given language.
+
+@note: A code writer object must implement this interface:
+ - initialize(out_path, multi_files)
+ - language
+ - add_widget_handler(widget_name, handler[, properties_handler])
+ - add_property_handler(property_name, handler[, widget_name])
+ - add_object(top_obj, sub_obj)
+ - add_class(obj)
+ - add_sizeritem(toplevel, sizer, obj_name, option, flag, border)
+ - add_app(app_attrs, top_win_class)
+ - ...
+"""
 
 
 def load_code_writers():
@@ -207,14 +232,13 @@ def add_toplevel_object(event):
 # toolbar
 def make_object_button(widget, icon_path, toplevel=False, tip=None):
     """\
-    creates a button for the widgets toolbar.
-    Params:
-      - widget: (name of) the widget the button will add to the app
-      - icon_path: path to the icon used for the button
-      - toplevel: true if the widget is a toplevel object (frame, dialog)
-      - tip: tool tip to display
-    Returns:
-      the newly created wxBitmapButton
+    Creates a button for the widgets toolbar.
+
+    @param widget: (name of) the widget the button will add to the app
+    @param icon_path: path to the icon used for the button
+    @param toplevel: true if the widget is a toplevel object (frame, dialog)
+    @param tip: tool tip to display
+    @return: The newly created wxBitmapButton
     """
     import wx
     from tree import WidgetTree
@@ -277,7 +301,8 @@ def _encode_to_xml(label, encoding=None):
     return str(label).decode(encoding).encode('utf-8')
 
 
-_backed_up = {} # set of filenames already backed up during this session
+_backed_up = {} 
+"""Set of filenames already backed up during this session"""
 
 def save_file(filename, content, which='wxg'):
     """\
