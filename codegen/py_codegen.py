@@ -110,7 +110,6 @@ def cn_f(flags):
         return str(flags)
 
 
-# ALB 2004-12-05
 for_version = (2, 4)
 """wx version we are generating code for"""
 
@@ -312,9 +311,12 @@ class SourceFileContent:
         if out_dir is not None:
             name = name.replace(out_dir, '')
         pkg = os.path.dirname(name).replace(os.sep, '.')
-        if pkg.startswith('.'): pkg = pkg[1:]
-        if pkg: return pkg + '.' + class_name
-        else: return class_name
+        if pkg.startswith('.'):
+            pkg = pkg[1:]
+        if pkg:
+            return pkg + '.' + class_name
+        else:
+            return class_name
         
 # end of class SourceFileContent
 
@@ -1474,8 +1476,10 @@ class WidgetHandler:
     Interface the various code generators for the widgets must implement
     """
     
-    """list of modules to import (eg. ['from wxPython.grid import *\n'])"""
     import_modules = []
+    """\
+    List of modules to import (eg. ['from wxPython.grid import *\n'])
+    """
 
     def get_code(self, obj):
         """\

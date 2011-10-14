@@ -32,45 +32,63 @@ except NameError:
 
 # these two globals must be defined for every code generator module
 language = 'lisp'
-writer = sys.modules[__name__] # the writer is the module itself
-
-# default extensions for generated files: a list of file extensions
-default_extensions = ['lisp']
-
+writer = sys.modules[__name__]
 """\
-dictionary that maps the lines of code of a class to the name of such class:
+The writer is the module itself
+"""
+
+default_extensions = ['lisp']
+"""\
+Default extensions for generated files: a list of file extensions
+"""
+
+classes = None
+"""\
+Dictionary that maps the lines of code of a class to the name of such class:
 the lines are divided in 3 categories: '__init__', '__set_properties' and
 '__do_layout'
 """
-classes = None
 
-"""dictionary of ``writers'' for the various objects"""
 obj_builders = {}
-
 """\
-dictionary of ``property writer'' functions, used to set the properties of a
+Dictionary of ``writers'' for the various objects
+"""
+
+obj_properties = {}
+"""\
+Dictionary of ``property writer'' functions, used to set the properties of a
 toplevel object
 """
-obj_properties = {}
 
-# random number used to be sure that the replaced tags in the sources are
-# the right ones (see SourceFileContent and add_class)
 nonce = None
+"""\
+Random number used to be sure that the replaced tags in the sources are
+the right ones (see SourceFileContent and add_class)
+"""
 
-# lines common to all the generated files (import of wxCL, ...)
 header_lines = []
+"""\
+Lines common to all the generated files (import of wxCL, ...)
+"""
 
 class_lines = []
 
 init_lines = []
 
-# if True, generate a file for each custom class
 multiple_files = False
+"""\
+If True, generate a file for each custom class
+"""
 
-# if not None, it is the single source file to write into
 output_file = None
-# if not None, it is the directory inside which the output files are saved
+"""\
+If not None, it is the single source file to write into
+"""
+
 out_dir = None
+"""\
+If not None, it is the directory inside which the output files are saved
+"""
 
 import_packages = []
 
@@ -91,9 +109,8 @@ def cn_f(flags):
         return str(flags)
 
 
-# ALB 2004-12-05: wx version we are generating code for
 for_version = (2, 4)
-
+"""wx version we are generating code for"""
 
 class ClassLines:
     """\
@@ -263,24 +280,31 @@ class SourceFileContent:
 
 # end of class SourceFileContent
 
-# if not None, it is an instance of SourceFileContent that keeps info about
-# the previous version of the source to generate
 previous_source = None 
-
+"""\
+If not None, it is an instance of SourceFileContent that keeps info about
+the previous version of the source to generate
+"""
 
 def tabs(number):
+    """\
+    Returns spaces to indent given number of levels
+    """
     return '    ' * number
 
-
-# if True, overwrite any previous version of the source file instead of
-# updating only the wxGlade blocks
 _overwrite = False
+"""\
+If True, overwrite any previous version of the source file instead of
+updating only the wxGlade blocks
+"""
 
-# if True, enable gettext support
 _use_gettext = False
-
+"""\
+If True, enable gettext support
+"""
 
 _quote_str_pattern = re.compile(r'\\[natbv"]?')
+
 def _do_replace(match):
     if match.group(0) == '\\': return '\\\\'
     else: return match.group(0)
@@ -306,11 +330,10 @@ def quote_str(s, translate=True, escape_chars=True):
 def initialize(app_attrs): 
     """\
     Writer initialization function.
-    - app_attrs: dict of attributes of the application. The following two
-        are always present:
-            path: output path for the generated code (a file if multi_files is
-                False, a dir otherwise)
-            option: if True, generate a separate file for each custom class
+
+    @keyword path: Output path for the generated code (a file if multi_files is
+                   False, a dir otherwise)
+    @keyword option: If True, generate a separate file for each custom class
     """
     out_path = app_attrs['path']
     multi_files = app_attrs['option']
@@ -1229,22 +1252,29 @@ class EventsPropertyHandler(object):
 # end of class EventsPropertyHandler
     
 
-# dictionary whose items are custom handlers for widget properties
 _global_property_writers = { 'font': FontPropertyHandler,
                              'events': EventsPropertyHandler, }
+"""\
+Dictionary whose items are custom handlers for widget properties
+"""
 
-# dictionary of dictionaries of property handlers specific for a widget
-# the keys are the class names of the widgets
-# Ex: _property_writers['wxRadioBox'] = {'choices', choices_handler}
 _property_writers = {}
+"""\
+Dictionary of dictionaries of property handlers specific for a widget
+the keys are the class names of the widgets
+Ex: _property_writers['wxRadioBox'] = {'choices', choices_handler}
+"""
 
-
-# map of widget class names to a list of extra modules needed for the
-# widget. Example: 'wxGrid': 'from wxLisp.grid import *\n'
 _widget_extra_modules = {}
+"""\
+Map of widget class names to a list of extra modules needed for the
+widget. Example: 'wxGrid': 'from wxLisp.grid import *\n'
+"""
 
-# set of lines of extra modules to add to the current file
 _current_extra_modules = {} 
+"""\
+Set of lines of extra modules to add to the current file
+"""
 
 def get_property_handler(property_name, widget_name):
     try: cls = _property_writers[widget_name][property_name]
@@ -1254,7 +1284,7 @@ def get_property_handler(property_name, widget_name):
 
 def add_property_handler(property_name, handler, widget_name=None):
     """\
-    sets a function to parse a portion of XML to get the value of the property
+    Sets a function to parse a portion of XML to get the value of the property
     property_name. If widget_name is not None, the function is called only if
     the property in inside a widget whose class is widget_name
     """
@@ -1270,8 +1300,8 @@ class WidgetHandler:
     Interface the various code generators for the widgets must implement
     """
     
-    """list of modules to import (eg. ['from wxLisp.grid import *\n'])"""
     import_modules = []
+    """list of modules to import (eg. ['from wxLisp.grid import *\n'])"""
 
     def get_code(self, obj):
         """\

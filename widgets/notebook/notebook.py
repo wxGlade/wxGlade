@@ -22,13 +22,13 @@ def _ugly_hack_for_win32_notebook_bug(notebook_widget):
     """\
     The name should say all. The problem is hard to explain, so let me
     just illustrate a way to reproduce the bug:
-    1. create a frame in wxGlade, add a notebook with two pages
-    2. put a button on the first page, and a text ctrl on the second one
-    3. save the app
-    4. exit wxGlade, and comment out the body of this function
-    5. restart wxGlade and load the previous app
-    6. Try to click on the button on the first page of the notebook, and see
-       what happens...
+     1. create a frame in wxGlade, add a notebook with two pages
+     2. put a button on the first page, and a text ctrl on the second one
+     3. save the app
+     4. exit wxGlade, and comment out the body of this function
+     5. restart wxGlade and load the previous app
+     6. Try to click on the button on the first page of the notebook, and see
+        what happens...
 
     If you don't see what I mean, please drop me an email with your version of
     Windows, Python and wxPython, because I really want to understand what's
