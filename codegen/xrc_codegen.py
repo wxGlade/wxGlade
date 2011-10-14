@@ -20,24 +20,38 @@ from xml.sax.saxutils import escape, quoteattr, unescape
 language = "XRC"
 writer = sys.modules[__name__]
 
-# default extensions for generated files: a list of file extensions
 default_extensions = ['xrc']
+"""\
+Default extensions for generated files: a list of file extensions
+"""
 
-# output string buffer for the code 
 output_file = None
+"""\
+Output string buffer for the code 
+"""
 
-# name of the output file
 output_file_name = None
+"""\
+Name of the output file
+"""
 
-# dictionary of ``writers'' for the various objects
 obj_builders = {}
+"""\
+Dictionary of ``writers'' for the various objects
+"""
 
-# current indentation level
 curr_tab = 0
-def tabs(number): return '    ' * number
+"""\
+Current indentation level
+"""
 
-# encoding of the application
+def tabs(number):
+    return '    ' * number
+
 app_encoding = 'ISO-8859-1' # default, if nothing else found
+"""\
+Encoding of the application
+"""
 
 
 class XrcObject:
@@ -57,6 +71,7 @@ class XrcObject:
 # end of class XrcObject
 
 
+xrc_objects = None 
 """\
 dictionary of active XrcObject instances: during the code generation it stores
 all the non-sizer objects that have children (i.e. frames, dialogs, panels,
@@ -66,7 +81,6 @@ is used to write their XML code (see finalize). The other objects are deleted
 when add_object is called with their corresponding code_object as argument (see
 add_object)
 """
-xrc_objects = None 
 
 
 class SizerItemXrcObject(XrcObject):
@@ -454,16 +468,20 @@ class ExtraPropertiesPropertyHandler(object):
 # end of class ExtraPropertiesPropertyHandler
 
 
-# dictionary whose items are custom handlers for widget properties
 _global_property_writers = { 'font': FontPropertyHandler,
                              'events': EventsPropertyHandler,
                              'extraproperties': ExtraPropertiesPropertyHandler,
                              }
+"""\
+Dictionary whose items are custom handlers for widget properties
+"""
 
-# dictionary of dictionaries of property handlers specific for a widget
-# the keys are the class names of the widgets
-# Ex: _property_writers['wxRadioBox'] = {'choices', choices_handler}
 _property_writers = {}
+"""\
+Dictionary of dictionaries of property handlers specific for a widget
+the keys are the class names of the widgets
+Ex: _property_writers['wxRadioBox'] = {'choices', choices_handler}
+"""
 
 def get_property_handler(property_name, widget_name):
     try: cls = _property_writers[widget_name][property_name]

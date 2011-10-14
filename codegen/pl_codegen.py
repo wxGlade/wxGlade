@@ -28,41 +28,59 @@ from xml_parse import XmlParsingError
 
 # these two globals must be defined for every code generator module
 language = 'perl'
-writer = sys.modules[__name__] # the writer is the module itself
-
-# default extensions for generated files: a list of file extensions
-default_extensions = ['pl','pm']
-
+writer = sys.modules[__name__]
 """\
-dictionary that maps the lines of code of a class to the name of such class:
+The writer is the module itself
+"""
+
+default_extensions = ['pl','pm']
+"""\
+Default extensions for generated files: a list of file extensions
+"""
+
+classes = None
+"""\
+Dictionary that maps the lines of code of a class to the name of such class:
 the lines are divided in 3 categories: '__init__', '__set_properties' and
 '__do_layout'
 """
-classes = None
 
-"""dictionary of ``writers'' for the various objects"""
 obj_builders = {}
-
 """\
-dictionary of ``property writer'' functions, used to set the properties of a
+Dictionary of ``writers'' for the various objects
+"""
+
+obj_properties = {}
+"""\
+Dictionary of ``property writer'' functions, used to set the properties of a
 toplevel object
 """
-obj_properties = {}
 
-# random number used to be sure that the replaced tags in the sources are
-# the right ones (see SourceFileContent and add_class)
 nonce = None
+"""\
+Random number used to be sure that the replaced tags in the sources are
+the right ones (see SourceFileContent and add_class)
+"""
 
-# lines common to all the generated files (use Wx [:everything], ...)
 header_lines = []
+"""\
+Lines common to all the generated files (use Wx [:everything], ...)
+"""
 
-# if True, generate a file for each custom class
 multiple_files = False
+"""\
+If True, generate a file for each custom class
+"""
 
-# if not None, it is the single source file to write into
 output_file = None
-# if not None, it is the directory inside which the output files are saved
+"""\
+If not None, it is the single source file to write into
+"""
+
 out_dir = None
+"""\
+If not None, it is the directory inside which the output files are saved
+"""
 
 def cn(class_name):
     if class_name[:2] == 'wx': 
@@ -223,16 +241,22 @@ class SourceFileContent:
 
 # end of class SourceFileContent
 
-# if not None, it is an instance of SourceFileContent that keeps info about
-# the previous version of the source to generate
 previous_source = None 
+"""\
+If not None, it is an instance of SourceFileContent that keeps info about
+the previous version of the source to generate
+"""
 
-# if True, overwrite any previous version of the source file instead of
-# updating only the wxGlade blocks
 _overwrite = False
+"""\
+If True, overwrite any previous version of the source file instead of
+updating only the wxGlade blocks
+"""
 
-# if True, enable gettext support
 _use_gettext = False
+"""\
+If True, enable gettext support
+"""
 
 import re
 _quote_str_re = re.compile( r'\\(?![nrt])' )
@@ -284,11 +308,10 @@ def quote_path(s):
 def initialize(app_attrs): 
     """\
     Writer initialization function.
-    - app_attrs: dict of attributes of the application. The following two
-                 are always present:
-           path: output path for the generated code (a file if multi_files is
-                 False, a dir otherwise)
-         option: if True, generate a separate file for each custom class
+
+    @keyword path: Output path for the generated code (a file if multi_files is
+                   False, a dir otherwise)
+    @keyword option: If True, generate a separate file for each custom class
     """
 
     out_path = app_attrs['path']
@@ -1248,24 +1271,31 @@ class ExtraPropertiesPropertyHandler(object):
 # end of class ExtraPropertiesPropertyHandler
 
 
-# dictionary whose items are custom handlers for widget properties
 _global_property_writers = { 'font': FontPropertyHandler,
                              'events': EventsPropertyHandler,
                              'extraproperties': ExtraPropertiesPropertyHandler,
                              }
+"""\
+Dictionary whose items are custom handlers for widget properties
+"""
 
-# dictionary of dictionaries of property handlers specific for a widget
-# the keys are the class names of the widgets
-# Ex: _property_writers['wxRadioBox'] = {'choices', choices_handler}
 _property_writers = {}
+"""\
+Dictionary of dictionaries of property handlers specific for a widget
+the keys are the class names of the widgets
+Ex: _property_writers['wxRadioBox'] = {'choices', choices_handler}
+"""
 
-
-# map of widget class names to a list of extra modules needed for the
-# widget. Example: 'wxGrid': 'use Wx::Grid;\n'
 _widget_extra_modules = {}
+"""\
+Map of widget class names to a list of extra modules needed for the
+widget. Example: 'wxGrid': 'use Wx::Grid;\n'
+"""
 
-# set of lines of extra modules to add to the current file
 _current_extra_modules = {} 
+"""\
+Set of lines of extra modules to add to the current file
+"""
 
 def get_property_handler(property_name, widget_name):
     try: cls = _property_writers[widget_name][property_name]
@@ -1291,11 +1321,11 @@ class WidgetHandler:
     Interface the various code generators for the widgets must implement
     """
     
-    """list of modules to import (eg. ['use Wx::Grid;\n'])"""
     import_modules = []
+    """list of modules to import (eg. ['use Wx::Grid;\n'])"""
     
-    """constructor signature ($self->SUPER::new(@stuff), see new_defaults )"""
     new_signature = []
+    """constructor signature ($self->SUPER::new(@stuff), see new_defaults )"""
 
     def get_code(self, obj):
         """\

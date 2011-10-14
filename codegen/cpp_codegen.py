@@ -12,47 +12,65 @@ from xml_parse import XmlParsingError
 
 # these two globals must be defined for every code generator module
 language = 'C++'
-writer = sys.modules[__name__] # the writer is the module itself
+writer = sys.modules[__name__]
+"""\
+The writer is the module itself
+"""
 
-# default extensions for generated files: a list of file extensions
 default_extensions = ['h', 'hh', 'hpp', 'H', 'hxx',
                       'cpp', 'cc', 'C', 'cxx', 'c++']
+"""\
+Default extensions for generated files: a list of file extensions
+"""
 
+classes = None
 """\
 dictionary that maps the lines of code of a class to the name of such class:
 the lines are divided in 3 categories: lines in the constructor,
 'set_properties' and 'do_layout'
 """
-classes = None
 
+obj_builders = {}
 """\
 dictionary of ``writers'' for the various objects. These are objects that must
 implement the WidgetHandler interface (see below)
 """
-obj_builders = {}
 
-# random number used to be sure that the replaced tags in the sources are
-# the right ones (see SourceFileContent and add_class)
 nonce = None
+"""\
+Random number used to be sure that the replaced tags in the sources are
+the right ones (see SourceFileContent and add_class)
+"""
 
-# lines common to all the generated files (include of <wx/wx.h>, ...)
 header_lines = []
+"""\
+Lines common to all the generated files (include of <wx/wx.h>, ...)
+"""
 
-# if True, generate a file for each custom class
 multiple_files = False
+"""\
+If True, generate a file for each custom class
+"""
 
-# if not None, they are the header and source file to write into
 output_header, output_source = None, None
-# if not None, name (without extension) of the file to write into
+"""\
+If not None, they are the header and source file to write into
+"""
+
 output_name = None
+"""\
+If not None, name (without extension) of the file to write into
+"""
 
-# if not None, it is the directory inside which the output files are saved
 out_dir = None
+"""\
+If not None, it is the directory inside which the output files are saved
+"""
 
-
-# ALB 2004-12-05: wx version we are generating code for
 for_version = (2, 4)
-
+"""\
+wx version we are generating code for
+"""
 
 class ClassLines:
     """\
@@ -243,23 +261,29 @@ class SourceFileContent:
 
 # end of class SourceFileContent
 
-# if not None, it is an instance of SourceFileContent that keeps info about
-# the previous version of the source to generate
 previous_source = None 
+"""\
+If not None, it is an instance of SourceFileContent that keeps info about
+the previous version of the source to generate
+"""
 
 
 def tabs(number):
     return indent_symbol * indent_amount * number
 
-
-# if True, overwrite any previous version of the source file instead of
-# updating only the wxGlade blocks
 _overwrite = False
+"""\
+If True, overwrite any previous version of the source file instead of
+updating only the wxGlade blocks
+"""
 
-# if True, enable gettext support
 _use_gettext = False
+"""\
+If True, enable gettext support
+"""
 
 _quote_str_pattern = re.compile(r'\\[natbv"]?')
+
 def _do_replace(match):
     if match.group(0) == '\\': return '\\\\'
     else: return match.group(0)
@@ -1565,19 +1589,25 @@ class ExtraPropertiesPropertyHandler(object):
 # end of class ExtraPropertiesPropertyHandler
 
 
-# dictionary whose items are custom handlers for widget properties
 _global_property_writers = { 'font': FontPropertyHandler,
                              'events': EventsPropertyHandler,
                              'extraproperties': ExtraPropertiesPropertyHandler,
                              }
+"""\
+Dictionary whose items are custom handlers for widget properties
+"""
 
-# dictionary of dictionaries of property handlers specific for a widget
-# the keys are the class names of the widgets
-# Ex: _property_writers['wxRadioBox'] = {'choices', choices_handler}
 _property_writers = {}
+"""\
+Dictionary of dictionaries of property handlers specific for a widget
+the keys are the class names of the widgets
+Ex: _property_writers['wxRadioBox'] = {'choices', choices_handler}
+"""
 
-# dictionary of additional headers for objects
 _obj_headers = {}
+"""\
+Dictionary of additional headers for objects
+"""
 
 def get_property_handler(property_name, widget_name):
     try: cls = _property_writers[widget_name][property_name]
@@ -1604,14 +1634,14 @@ class WidgetHandler:
     Interface the various code generators for the widgets must implement
     """
 
-    """``signature'' of the widget's constructor"""
     constructor = []
+    """``signature'' of the widget's constructor"""
     
-    """
-    if not None, list of extra header file, in the form
+    extra_headers = []
+    """\
+    If not None, list of extra header file, in the form
     <header.h> or "header.h"
     """
-    extra_headers = []
     
     def get_code(self, obj):
         """\
