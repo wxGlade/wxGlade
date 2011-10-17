@@ -8,9 +8,15 @@ import os, sys
 import cStringIO
 import optparse
 import glob
-import mercurial.commands as hg
 
-DEFAULT_REPO = 'http://wxglade.sourceforge.net/hg/wxGlade'
+# hg dispatch command location may differ ...
+import mercurial.commands
+if hasattr(mercurial.commands, 'dispatch'):
+    import mercurial.commands as hg
+else:
+    import mercurial.dispatch as hg
+
+DEFAULT_REPO = 'https://bitbucket.org/agriggio/wxglade'
 
 class BadCommand(Exception):
     def __init__(self, args):
