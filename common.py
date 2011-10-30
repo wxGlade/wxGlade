@@ -1,6 +1,6 @@
 # common.py: global variables
 # $Id: common.py,v 1.61 2007/08/07 12:21:56 agriggio Exp $
-# 
+#
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
@@ -19,6 +19,7 @@ nohg_version = 'HG'
 Version number to return if no hg repo has been found
 """
 
+
 def _get_version():
     """\
     Create the version identification string
@@ -27,7 +28,7 @@ def _get_version():
     return L{nohg_version}.
 
     @return: The current wxGlade version number
-    @rtype: String 
+    @rtype: String
     @see: L{nohg_version}
     """
     main_version = ''
@@ -44,13 +45,9 @@ def _get_version():
         # unkown failure
         main_version = nohg_version
     else:
-
-        u = ui()
-        u.pushbuffer()
-
         # try to open local hg repository
         try:
-            repo = repository(u, os.path.dirname(__file__))
+            repo = repository(ui(), os.path.dirname(__file__))
         except RepoError:
             # no mercurial repository found
             main_version = nohg_version
@@ -90,7 +87,9 @@ wxGlade version string
 """
 
 wxglade_path = '.'
-"""Program path, set in wxglade.py"""
+"""\
+Program path, set in wxglade.py
+"""
 
 widgets = {}
 """\
@@ -119,10 +118,14 @@ root is the application itself
 """
 
 adding_widget = False
-"""If True, the user is adding a widget to some sizer"""
+"""\
+If True, the user is adding a widget to some sizer
+"""
 
 adding_sizer = False
-"""Needed to add toplevel sizers"""
+"""\
+Needed to add toplevel sizers
+"""
 
 widget_to_add = None
 """\
@@ -177,23 +180,25 @@ def load_code_writers():
     Fills the common.code_writers dictionary: to do so, loads the modules
     found in the 'codegen/' subdir
     """
-    import sys
     codegen_path = os.path.join(wxglade_path, 'codegen')
     sys.path.insert(0, codegen_path)
     for module in os.listdir(codegen_path):
-        name, ext = os.path.splitext(module)
+        name = os.path.splitext(module)[0]
         if name not in sys.modules and \
                os.path.isfile(os.path.join(codegen_path, module)):
-            try: writer = __import__(name).writer
+            try:
+                writer = __import__(name).writer
             except (ImportError, AttributeError, ValueError):
                 if use_gui:
                     print _('"%s" is not a valid code generator module') % \
                           module
             else:
                 code_writers[writer.language] = writer
-                if hasattr(writer, 'setup'): writer.setup()
+                if hasattr(writer, 'setup'):
+                    writer.setup()
                 if use_gui:
                     print _('loaded code generator for %s') % writer.language
+
 
 def load_widgets():
     """\
@@ -206,7 +211,7 @@ def load_widgets():
     # load the "built-in" widgets
     built_in_dir = os.path.join(wxglade_path, 'widgets')
     buttons.extend(__load_widgets(built_in_dir))
-    
+
     # load the "local" widgets
     local_widgets_dir = config.preferences.local_widget_path
     return buttons, __load_widgets(local_widgets_dir)
@@ -218,17 +223,17 @@ def __load_widgets(widget_dir):
     widgets_file = os.path.join(widget_dir, 'widgets.txt')
     if not os.path.isfile(widgets_file):
         return buttons
-        
+
     # add the dir to the sys.path
-    import sys
     sys.path.append(widget_dir)
     modules = open(widgets_file)
     if use_gui:
-        print _('Found widgets listing -> %s') % widgets_file 
+        print _('Found widgets listing -> %s') % widgets_file
         print _('loading widget modules:')
     for line in modules:
         module = line.strip()
-        if not module or module.startswith('#'): continue
+        if not module or module.startswith('#'):
+            continue
         module = module.split('#')[0].strip()
         try:
             try:
@@ -237,20 +242,24 @@ def __load_widgets(widget_dir):
                 # try importing from a zip archive
                 if os.path.exists(os.path.join(widget_dir, module + '.zip')):
                     sys.path.append(os.path.join(widget_dir, module + '.zip'))
-                    try: b = __import__(module).initialize()
-                    finally: sys.path.pop()
+                    try:
+                        b = __import__(module).initialize()
+                    finally:
+                        sys.path.pop()
                 else:
                     raise
         except (ImportError, AttributeError):
             if use_gui:
                 print _('ERROR loading "%s"') % module
-                import traceback; traceback.print_exc()
+                import traceback
+                traceback.print_exc()
         else:
-            if use_gui: print '\t' + module
+            if use_gui:
+                print '\t' + module
             buttons.append(b)
     modules.close()
     return buttons
-    
+
 
 def load_sizers():
     import edit_sizers
@@ -279,11 +288,12 @@ def add_toplevel_object(event):
     app_tree.app.saved = False
 
 
-# function used by the various widget modules to add a button to the widgets
-# toolbar
 def make_object_button(widget, icon_path, toplevel=False, tip=None):
     """\
     Creates a button for the widgets toolbar.
+
+    Function used by the various widget modules to add a button to the
+    widgets toolbar.
 
     @param widget: (name of) the widget the button will add to the app
     @param icon_path: path to the icon used for the button
@@ -296,8 +306,10 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     id = wx.NewId()
     if not os.path.isabs(icon_path):
         icon_path = os.path.join(wxglade_path, icon_path)
-    if wx.Platform == '__WXGTK__': style = wx.NO_BORDER
-    else: style = wx.BU_AUTODRAW
+    if wx.Platform == '__WXGTK__':
+        style = wx.NO_BORDER
+    else:
+        style = wx.BU_AUTODRAW
     import misc
     bmp = misc.get_xpm_bitmap(icon_path)
     tmp = wx.BitmapButton(palette, id, bmp, size=(31, 31), style=style)
@@ -340,6 +352,7 @@ def _encode_from_xml(label, encoding=None):
         encoding = app_tree.app.encoding
     return label.encode(encoding, 'replace')
 
+
 def _encode_to_xml(label, encoding=None):
     """\
     returns a utf-8 encoded representation of label. This is equivalent to:
@@ -352,8 +365,11 @@ def _encode_to_xml(label, encoding=None):
     return str(label).decode(encoding).encode('utf-8')
 
 
-_backed_up = {} 
-"""Set of filenames already backed up during this session"""
+_backed_up = {}
+"""\
+Set of filenames already backed up during this session
+"""
+
 
 def save_file(filename, content, which='wxg'):
     """\
@@ -364,8 +380,10 @@ def save_file(filename, content, which='wxg'):
     'which' is the kind of backup: 'wxg' or 'codegen'
     """
     import config
-    if which == 'wxg': ok = config.preferences.wxg_backup
-    else: ok = config.preferences.codegen_backup
+    if which == 'wxg':
+        ok = config.preferences.wxg_backup
+    else:
+        ok = config.preferences.codegen_backup
     try:
         if ok and filename not in _backed_up and os.path.isfile(filename):
             # make a backup copy of filename
@@ -388,9 +406,12 @@ def save_file(filename, content, which='wxg'):
             outfile.write(content)
             outfile.close()
     finally:
-        if 'infile' in locals(): infile.close()
-        if 'outfile' in locals(): outfile.close()
-        if 'oldfile' in locals(): oldfile.close()
+        if 'infile' in locals():
+            infile.close()
+        if 'outfile' in locals():
+            outfile.close()
+        if 'oldfile' in locals():
+            oldfile.close()
 
 
 #------------------------------------------------------------------------------
@@ -398,7 +419,8 @@ def save_file(filename, content, which='wxg'):
 #------------------------------------------------------------------------------
 
 def get_name_for_autosave(filename=None):
-    if filename is None: filename = app_tree.app.filename
+    if filename is None:
+        filename = app_tree.app.filename
     if not filename:
         import config
         path, name = config._get_home(), ""
@@ -410,7 +432,7 @@ def get_name_for_autosave(filename=None):
 
 def autosave_current():
     if app_tree.app.saved:
-        return False # do nothing in this case...
+        return False         # do nothing in this case...
     try:
         outfile = open(get_name_for_autosave(), 'w')
         app_tree.write(outfile)
@@ -446,9 +468,10 @@ def check_autosaved(filename):
         else:
             return os.path.exists(autosaved)
     except OSError, e:
-        if e.errno != 2: print e
+        if e.errno != 2:
+            print e
         return False
-    
+
 
 def restore_from_autosaved(filename):
     autosaved = get_name_for_autosave(filename)
@@ -487,7 +510,8 @@ class MessageLogger(object):
             return
         kind = kind.upper()
         if use_gui:
-            import wx, misc
+            import misc
+##             import wx
             if args:
                 msg = misc.wxstr(fmt) % tuple([misc.wxstr(a) for a in args])
             else:
@@ -498,18 +522,21 @@ class MessageLogger(object):
 ##             else:
 ##                 wx.LogMessage(msg)
         else:
-            if args: msg = fmt % tuple(args)
-            else: msg = fmt
+            if args:
+                msg = fmt % tuple(args)
+            else:
+                msg = fmt
             print "%s: %s" % (kind, msg)
 
     def flush(self):
         if self.lines and use_gui:
-            if not self.logger: self._setup_logger()
+            if not self.logger:
+                self._setup_logger()
             self.logger.msg_list.Freeze()
             self.logger.msg_list.DeleteAllItems()
             for line in self.lines:
                 self.logger.msg_list.Append([line])
-            self.lines = []            
+            self.lines = []
             self.logger.msg_list.SetColumnWidth(0, -1)
             self.logger.msg_list.Thaw()
             self.logger.ShowModal()
