@@ -6,6 +6,7 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import os
+import sys
 
 use_gui = True
 """\
@@ -13,30 +14,80 @@ If False, the program is invoked from the command-line in "batch" mode
 (for code generation only)
 """
 
-# version identification string
-try:
-    def _get_version():
+nohg_version = 'HG'
+"""\
+Version number to return if no hg repo has been found
+"""
+
+def _get_version():
+    """\
+    Create the version identification string
+
+    Try to query the local hg repository to build the version string or
+    return L{nohg_version}.
+
+    @return: The current wxGlade version number
+    @rtype: String 
+    @see: L{nohg_version}
+    """
+    main_version = ''
+    repo_changed = []
+    try:
         from mercurial.hg import repository
         from mercurial.ui import ui
         from mercurial.node import short
+        from mercurial.error import RepoError
+    except ImportError:
+        # no mercurial module available
+        main_version = nohg_version
+    except:
+        # unkown failure
+        main_version = nohg_version
+    else:
+
         u = ui()
         u.pushbuffer()
-        repo = repository(u, os.path.dirname(__file__))
-        ctx = repo[None]
-        parents = ctx.parents()
-        changed = ctx.files() + ctx.deleted()
-        if len(parents) == 1 and not changed:
-            tags = repo.nodetags(parents[0].node())
-            # look for the special 'rel_X.X' tag
-            for tag in tags:
-                if tag.startswith('rel_') and len(tag) > 4:
-                    return tag[4:]
-        return '+'.join(
-            [short(p.node()) for p in parents]) + (changed and '+' or "")
-    version = _get_version()
-    del _get_version
-except: # ImportError:
-    version = 'HG'
+
+        # try to open local hg repository
+        try:
+            repo = repository(u, os.path.dirname(__file__))
+        except RepoError:
+            # no mercurial repository found
+            main_version = nohg_version
+        else:
+            ctx = repo[None]
+            parents = ctx.parents()
+            repo_changed = ctx.files() + ctx.deleted()
+            if len(parents) == 1 and not repo_changed:
+                node = parents[0].node()
+                tags = repo.nodetags(node)
+                # look for the special 'rel_X.X' tag
+                for tag in tags:
+                    if tag.startswith('rel_') and len(tag) > 4:
+                        main_version = tag[4:]
+                        break
+                # handle untagged version e.g. tip
+                if not main_version:
+                    main_version = short(node)
+            else:
+                main_version = '%s%s' % (
+                    '+'.join([short(p.node()) for p in parents]),
+                    repo_changed and '+' or ''
+                    )
+
+    suffix_changed = repo_changed and '+' or ''
+    suffix_edition = hasattr(sys, 'frozen') \
+                     and ' (standalone edition)' \
+                     or ''
+
+    ver = "%s%s%s" % (main_version, suffix_changed, suffix_edition)
+    return ver
+
+version = _get_version()
+"""\
+wxGlade version string
+@see: L{_get_version()}
+"""
 
 wxglade_path = '.'
 """Program path, set in wxglade.py"""
