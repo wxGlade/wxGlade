@@ -8,4 +8,10 @@ syntax: glob
 \#*\#
 **/\#*\#
 
+# automcatically generated source code documentation
 docs/apidocs
+
+# build related directories
+bdist
+build
+dist
