@@ -42,6 +42,86 @@ Filename: "{app}\wxglade.pyw"; Description: "Launch wxGlade"; Flags: nowait post
 
 [UninstallDelete]
 Type: files; Name: "{app}\wxglade.url"
+Name: "{app}\*.pyc"; Type: files
+Name: "{app}\*.pyo"; Type: files
+Name: "{app}\codegen\*.pyc"; Type: files
+Name: "{app}\codegen\*.pyo"; Type: files
+Name: "{app}\edit_sizers\*.pyc"; Type: files
+Name: "{app}\edit_sizers\*.pyo"; Type: files
+Name: "{app}\widgets\bitmap_button\*.pyc"; Type: files
+Name: "{app}\widgets\bitmap_button\*.pyo"; Type: files
+Name: "{app}\widgets\button\*.pyc"; Type: files
+Name: "{app}\widgets\button\*.pyo"; Type: files
+Name: "{app}\widgets\calendar_ctrl\*.pyc"; Type: files
+Name: "{app}\widgets\calendar_ctrl\*.pyo"; Type: files
+Name: "{app}\widgets\checkbox\*.pyc"; Type: files
+Name: "{app}\widgets\checkbox\*.pyo"; Type: files
+Name: "{app}\widgets\choice\*.pyc"; Type: files
+Name: "{app}\widgets\choice\*.pyo"; Type: files
+Name: "{app}\widgets\combo_box\*.pyc"; Type: files
+Name: "{app}\widgets\combo_box\*.pyo"; Type: files
+Name: "{app}\widgets\custom_widget\*.pyc"; Type: files
+Name: "{app}\widgets\custom_widget\*.pyo"; Type: files
+Name: "{app}\widgets\datepicker_ctrl\*.pyc"; Type: files
+Name: "{app}\widgets\datepicker_ctrl\*.pyo"; Type: files
+Name: "{app}\widgets\dialog\*.pyc"; Type: files
+Name: "{app}\widgets\dialog\*.pyo"; Type: files
+Name: "{app}\widgets\frame\*.pyc"; Type: files
+Name: "{app}\widgets\frame\*.pyo"; Type: files
+Name: "{app}\widgets\gauge\*.pyc"; Type: files
+Name: "{app}\widgets\gauge\*.pyo"; Type: files
+Name: "{app}\widgets\grid\*.pyc"; Type: files
+Name: "{app}\widgets\grid\*.pyo"; Type: files
+Name: "{app}\widgets\list_box\*.pyc"; Type: files
+Name: "{app}\widgets\list_box\*.pyo"; Type: files
+Name: "{app}\widgets\list_ctrl\*.pyc"; Type: files
+Name: "{app}\widgets\list_ctrl\*.pyo"; Type: files
+Name: "{app}\widgets\menubar\*.pyc"; Type: files
+Name: "{app}\widgets\menubar\*.pyo"; Type: files
+Name: "{app}\widgets\notebook\*.pyc"; Type: files
+Name: "{app}\widgets\notebook\*.pyo"; Type: files
+Name: "{app}\widgets\panel\*.pyc"; Type: files
+Name: "{app}\widgets\panel\*.pyo"; Type: files
+Name: "{app}\widgets\radio_box\*.pyc"; Type: files
+Name: "{app}\widgets\radio_box\*.pyo"; Type: files
+Name: "{app}\widgets\radio_button\*.pyc"; Type: files
+Name: "{app}\widgets\radio_button\*.pyo"; Type: files
+Name: "{app}\widgets\slider\*.pyc"; Type: files
+Name: "{app}\widgets\slider\*.pyo"; Type: files
+Name: "{app}\widgets\spacer\*.pyc"; Type: files
+Name: "{app}\widgets\spacer\*.pyo"; Type: files
+Name: "{app}\widgets\spin_button\*.pyc"; Type: files
+Name: "{app}\widgets\spin_button\*.pyo"; Type: files
+Name: "{app}\widgets\spin_ctrl\*.pyc"; Type: files
+Name: "{app}\widgets\spin_ctrl\*.pyo"; Type: files
+Name: "{app}\widgets\splitter_window\*.pyc"; Type: files
+Name: "{app}\widgets\splitter_window\*.pyo"; Type: files
+Name: "{app}\widgets\static_bitmap\*.pyc"; Type: files
+Name: "{app}\widgets\static_bitmap\*.pyo"; Type: files
+Name: "{app}\widgets\static_line\*.pyc"; Type: files
+Name: "{app}\widgets\static_line\*.pyo"; Type: files
+Name: "{app}\widgets\static_text\*.pyc"; Type: files
+Name: "{app}\widgets\static_text\*.pyo"; Type: files
+Name: "{app}\widgets\text_ctrl\*.pyc"; Type: files
+Name: "{app}\widgets\text_ctrl\*.pyo"; Type: files
+Name: "{app}\widgets\toggle_button\*.pyc"; Type: files
+Name: "{app}\widgets\toggle_button\*.pyo"; Type: files
+Name: "{app}\widgets\toolbar\*.pyc"; Type: files
+Name: "{app}\widgets\toolbar\*.pyo"; Type: files
+Name: "{app}\widgets\tree_ctrl\*.pyc"; Type: files
+Name: "{app}\widgets\tree_ctrl\*.pyo"; Type: files
+Name: "{app}\widgets\*.pyc"; Type: files
+Name: "{app}\widgets\*.pyo"; Type: files
+Name: "{app}\widgets"; Type: dirifempty
+Name: "{app}\install\pyinstaller\*.pyc"; Type: files
+Name: "{app}\install\pyinstaller\*.pyo"; Type: files
+Name: "{app}\install\srcpkgs\*.pyc"; Type: files
+Name: "{app}\install\srcpkgs\*.pyo"; Type: files
+Name: "{app}\install\*.pyc"; Type: files
+Name: "{app}\install\*.pyo"; Type: files
+
+; remove application directory too
+Name: "{app}"; Type: dirifempty
 
 [Registry]
 Root: HKCR; Subkey: ".wxg"; ValueType: string; ValueName: ""; ValueData: "wxGladeResourceFile"; Flags: uninsdeletevalue
