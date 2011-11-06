@@ -38,7 +38,10 @@ Name: "{userdesktop}\wxGlade"; Filename: "{app}\wxglade.pyw"; Tasks: desktopicon
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\wxGlade"; Filename: "{app}\wxglade.pyw"; Tasks: quicklaunchicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 
 [Run]
-Filename: "{app}\wxglade.pyw"; Description: "Launch wxGlade"; Flags: nowait postinstall skipifsilent; WorkingDir: "{app}"
+Filename: "{app}\wxglade.pyw"; \
+  Description: "Launch wxGlade"; \
+  Flags: nowait postinstall skipifsilent shellexec; \
+  WorkingDir: "{app}"
 
 [UninstallDelete]
 Type: files; Name: "{app}\wxglade.url"
