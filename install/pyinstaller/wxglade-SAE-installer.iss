@@ -24,21 +24,21 @@ Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "A
 Name: "quicklaunchicon"; Description: "Create a &Quick Launch icon"; GroupDescription: "Additional icons:"; Flags: unchecked
 
 [Files]
-Source: "{#DIST_DIR}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "{#DIST_DIR}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
 [INI]
 Filename: "{app}\wxglade.url"; Section: "InternetShortcut"; Key: "URL"; String: "http://wxglade.sourceforge.net"
 
 [Icons]
-Name: "{group}\wxGlade"; Filename: "{app}\wxglade.exe"; IconFilename: "{app}\icons\wxglade.ico"
+Name: "{group}\wxGlade (Standalone Edition)"; Filename: "{app}\wxglade.exe"; IconFilename: "{app}\icons\wxglade.ico"
 Name: "{group}\Home page"; Filename: "{app}\wxglade.url"
-Name: "{group}\Uninstall wxGlade"; Filename: "{uninstallexe}"
-Name: "{userdesktop}\wxGlade"; Filename: "{app}\wxglade.exe"; Tasks: desktopicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
+Name: "{group}\Uninstall wxGlade (Standalone Edition)"; Filename: "{uninstallexe}"
+Name: "{userdesktop}\wxGlade (Standalone Edition)"; Filename: "{app}\wxglade.exe"; Tasks: desktopicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\wxGlade"; Filename: "{app}\wxglade.exe"; Tasks: quicklaunchicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 
 [Run]
-Filename: "{app}\wxglade.exe"; Description: "Launch wxGlade"; Flags: nowait postinstall skipifsilent; WorkingDir: "{app}"
+Filename: "{app}\wxglade.exe"; Description: "Launch wxGlade (Standalone Edition)"; Flags: nowait postinstall skipifsilent; WorkingDir: "{app}"
 
 [UninstallDelete]
 Type: files; Name: "{app}\wxglade.url"
