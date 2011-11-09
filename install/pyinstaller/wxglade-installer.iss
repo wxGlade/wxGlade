@@ -3,7 +3,7 @@
 
 ; define own variables
 #define DIST_DIR        "..\.."
-#define PRODUCT_VERSION "0.6.4rc4"
+#define PRODUCT_VERSION "0.6.4rc5"
 
 [Setup]
 AppName=wxGlade
@@ -18,22 +18,37 @@ AllowNoIcons=yes
 ChangesAssociations=yes
 OutputBaseFilename=wxGlade-{#PRODUCT_VERSION}-setup
 OutputDir="..\..\dist"
+LicenseFile="..\..\license.txt"
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"
 Name: "quicklaunchicon"; Description: "Create a &Quick Launch icon"; GroupDescription: "Additional icons:"; Flags: unchecked
 
 [Files]
-Source: "{#DIST_DIR}\*"; Excludes: "\bdist\*,\build\*,\debian\*,\dist\*,\install\*,\.hg\*,\.hgignore,\.hgtags,\logdict*.log,*.pyc,*.pyo";  DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "{#DIST_DIR}\*"; \
+  Excludes: "\bdist\*,\build\*,\debian\*,\dist\*,\install\*,\.hg\*,\.hgignore,\.hgtags,\logdict*.log,\warnwxglade.txt,*.pyc,*.pyo,README.txt"; \
+  DestDir: "{app}"; \
+  Flags: ignoreversion recursesubdirs
+
+Source: "{#DIST_DIR}\README.txt"; \
+  DestDir: "{app}"; \
+  Flags: isreadme;
 
 [INI]
 Filename: "{app}\wxglade.url"; Section: "InternetShortcut"; Key: "URL"; String: "http://wxglade.sourceforge.net"
 
 [Icons]
-Name: "{group}\wxGlade"; Filename: "{app}\wxglade.pyw"; IconFilename: "{app}\icons\wxglade.ico"
+Name: "{group}\wxGlade"; Filename: "{app}\wxglade.pyw"; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 Name: "{group}\Home page"; Filename: "{app}\wxglade.url"
 Name: "{group}\Uninstall wxGlade"; Filename: "{uninstallexe}"
+Name: "{group}\Documentation\Tutorial"; Filename: "{app}\docs\tutorial.html"; WorkingDir: "{app}\docs"; Comment: "wxGlade Tutorial"
+Name: "{group}\Documentation\User Manual"; Filename: "{app}\docs\html/index.html"; WorkingDir: "{app}\docs\html"; Comment: "wxGlade User Manual"
+Name: "{group}\TODO"; Filename: "{app}\TODO.txt"; AfterInstall: Unix2Dos('{app}\TODO.txt');
+Name: "{group}\README"; Filename: "{app}\README.txt"; AfterInstall: Unix2Dos('{app}\README.txt');
+Name: "{group}\License"; Filename: "{app}\license.txt"; AfterInstall: Unix2Dos('{app}\license.txt');
+Name: "{group}\Credits"; Filename: "{app}\credits.txt"; AfterInstall: Unix2Dos('{app}\credits.txt');
+Name: "{group}\Changes"; Filename: "{app}\CHANGES.txt"; AfterInstall: Unix2Dos('{app}\CHANGES.txt');
 Name: "{userdesktop}\wxGlade"; Filename: "{app}\wxglade.pyw"; Tasks: desktopicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\wxGlade"; Filename: "{app}\wxglade.pyw"; Tasks: quicklaunchicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 
@@ -131,3 +146,22 @@ Root: HKCR; Subkey: ".wxg"; ValueType: string; ValueName: ""; ValueData: "wxGlad
 Root: HKCR; Subkey: "wxGladeResourceFile"; ValueType: string; ValueName: ""; ValueData: "wxGlade Resource File"; Flags: uninsdeletekey
 Root: HKCR; Subkey: "wxGladeResourceFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\wxglade.pyw"" ""%1"""
 Root: HKCR; Subkey: "wxGladeResourceFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\wxg_file.ico"
+
+[Code]
+// Convert a file from Unix EOL style (LF) to Windows EOL style (CRLF)
+procedure Unix2Dos(SrcFile: String);
+var
+    FileContent: String;
+begin
+    // Expand constants first
+    SrcFile := ExpandConstant(SrcFile);
+    Log('Convert Unix newline to Windows newline for ' + SrcFile);
+    //Load srcfile to a string
+    LoadStringFromFile(SrcFile, FileContent);
+    //Replace Fraomstring by toString in file string content
+    StringChangeEx(FileContent, #13, '', True);
+    StringChangeEx(FileContent, #10, #13#10, True);
+    //Replace old content srcfile by the new content
+    DeleteFile(SrcFile);
+    SaveStringToFile(SrcFile,FileContent, True);
+end;
