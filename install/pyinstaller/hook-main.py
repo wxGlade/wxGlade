@@ -1,3 +1,8 @@
+# -*- mode: python -*-
+#
+# License: MIT (see license.txt)
+# THIS PROGRAM COMES WITH NO WARRANTY
+
 """\
 List hidden imports of wxGlade
 """
