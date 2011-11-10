@@ -15,3 +15,7 @@ docs/apidocs
 bdist
 build
 dist
+
+# build related files
+logdict*.log
+warnwxglade.txt
