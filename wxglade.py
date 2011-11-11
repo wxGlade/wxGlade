@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # wxglade.py: entry point of wxGlade
-# $Id: wxglade.py,v 1.27 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import os, sys, gettext
+import os
+import sys
+import gettext
+import getopt
+import common
 
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
@@ -28,7 +31,7 @@ except NameError:
         l = list(l)[:]
         l.sort()
         return l
-    setattr(__builtins__, 'sorted', sorted)    
+    setattr(__builtins__, 'sorted', sorted)
 
 
 def _fix_path(path):
@@ -44,9 +47,12 @@ def _fix_path(path):
 
 
 def parse_command_line():
-    import getopt, common
-    try: options, args = getopt.getopt(sys.argv[1:], "g:o:",
-                                       ['generate-code=', 'output='])
+    try:
+        options, args = getopt.getopt(
+            sys.argv[1:],
+            "g:o:",
+            ['generate-code=', 'output=']
+            )
     except getopt.GetoptError:
         #import traceback; traceback.print_exc()
         usage()
@@ -57,12 +63,13 @@ def command_line_code_generation(options, args):
     """\
     starts a code generator without starting the GUI.
     """
-    import common
-    if not options: usage()
+    if not options:
+        usage()
     if not options[0]:
         usage() # a language for code generation must be provided
-    if len(args) != 1: usage() # an input file name must be provided
-    
+    if len(args) != 1:
+        usage() # an input file name must be provided
+
     common.use_gui = False # don't import wxPython.wx
     # use_gui has to be set before importing config
     import config
@@ -108,10 +115,10 @@ wxGlade usage:
     """)
     print msg
     print _('Valid LANGUAGE values:'),
-    import common
     common.use_gui = False
     common.load_code_writers()
-    for value in common.code_writers: print value,
+    for value in common.code_writers:
+        print value,
     print '\n'
     sys.exit(1)
 
@@ -137,11 +144,10 @@ def run_main():
     wxglade_path = determine_wxglade_path()
     #sys.path = [os.getcwd(), os.path.join(os.getcwd(), 'widgets')] + sys.path
     sys.path = [wxglade_path, os.path.join(wxglade_path, 'widgets')] + sys.path
-    
+
     # set the program's path
-    import common
     common.wxglade_path = wxglade_path #os.getcwd()
-    
+
     # before running the GUI, let's see if there are command line options for
     # code generation
     filename = None
@@ -159,17 +165,17 @@ def run_main():
         import wx
         print _("Starting wxGlade version %s on Python %s and wxPython %s") % (
             common.version,
-            sys.version.split()[0], 
-            wx.__version__, 
+            sys.version.split()[0],
+            wx.__version__,
             )
         # if there was no option, start the app in GUI mode
-        main.main(filename)        
+        main.main(filename)
     else:
         # print versions first
         print _("Starting wxGlade version %s on Python %s") % (
             common.version,
-            sys.version.split()[0], 
-            )        
+            sys.version.split()[0],
+            )
         command_line_code_generation(options, args)
 
 if __name__ == "__main__":
