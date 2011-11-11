@@ -137,24 +137,40 @@ def run_main():
     wxglade_path = determine_wxglade_path()
     #sys.path = [os.getcwd(), os.path.join(os.getcwd(), 'widgets')] + sys.path
     sys.path = [wxglade_path, os.path.join(wxglade_path, 'widgets')] + sys.path
+    
     # set the program's path
     import common
     common.wxglade_path = wxglade_path #os.getcwd()
+    
     # before running the GUI, let's see if there are command line options for
     # code generation
+    filename = None
+    start_gui = False
+    options, args = parse_command_line()
     if len(sys.argv) == 1:
-        # if there was no option, start the app in GUI mode
+        start_gui = True
+    elif not options:
+        filename = _fix_path(args[0])
+        start_gui = True
+
+    if start_gui:
+        # print versions first
         import main
-        main.main()
+        import wx
+        print _("Starting wxGlade version %s on Python %s and wxPython %s") % (
+            common.version,
+            sys.version.split()[0], 
+            wx.__version__, 
+            )
+        # if there was no option, start the app in GUI mode
+        main.main(filename)        
     else:
-        options, args = parse_command_line()
-        if not options:
-            # start the app in GUI mode, opening the given file
-            filename = _fix_path(args[0])
-            import main
-            main.main(filename)
-        else:
-            command_line_code_generation(options, args)
+        # print versions first
+        print _("Starting wxGlade version %s on Python %s") % (
+            common.version,
+            sys.version.split()[0], 
+            )        
+        command_line_code_generation(options, args)
 
 if __name__ == "__main__":
     run_main()
