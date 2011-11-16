@@ -53,7 +53,7 @@ Name: "quicklaunchicon"; Description: "Create a &Quick Launch icon"; GroupDescri
     Flags: ignoreversion recursesubdirs
 #else
   Source: "*"; \
-    Excludes: "\bdist\*,\build\*,\debian\*,dist\*,\install\*,.hg,\.hgignore,\.hgtags,\logdict*.log,\warnwxglade.txt,*.pyc,*.pyo,\README.txt";  \
+    Excludes: "\bdist\*,\build\*,\debian\*,dist\*,\install\*,.hg,\.hgignore,\.hgtags,\logdict*.log,\warnwxglade.txt,*.pyc,*.pyo,\README.txt,Makefile,setup.py";  \
     DestDir: "{app}"; \
     Flags: ignoreversion recursesubdirs
 #endif
