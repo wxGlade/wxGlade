@@ -3,7 +3,7 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-DESTDIR           = /tmp
+DESTDIR           = 
 
 # Makefile defaults
 SHELL             = /bin/sh
@@ -43,6 +43,14 @@ PYLINT_OPTS       = --additional-builtins=_ --disable=C \
 PYTHON_BIN        = python
 DB2MAN            = /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
 XP                = xsltproc --nonet
+
+MANUAL_HTML_DIR   = $(DOC_DIR)/html
+MANUAL_PDF_DIR    = $(DOC_DIR)/pdf
+MANUAL_SRC_DIR    = $(DOC_DIR)/src
+MANUAL_XML        = $(MANUAL_SRC_DIR)/manual.xml
+MANUAL_PICS       = $(wildcard $($(MANUAL_SRC_DIR)/*.png))
+MANUAL_PDF        = $(MANUAL_PDF_DIR)/manual.pdf
+MANUAL_HTML       = $(MANUAL_HTML_DIR)/index.html
 
 HELP= @grep -B1 '^[a-zA-Z\-]*:' Makefile |\
          awk 'function p(h,t){printf"%-12s=%s\n",h,t;};\
@@ -90,7 +98,7 @@ $(APIDOC_DIR)/index.html: $(SOURCE_FILES) $(EPYDOC_CONFIG)
 	@$(EPYDOC_BIN) $(EPYDOC_OPTS) $(EPYDOC_CONFIG)
 
 #+ Create documentation from source files
-doc: $(APIDOC_DIR)/index.html
+apidoc: $(APIDOC_DIR)/index.html
 
 #+ Check all source files for logical errors using pylint
 pylint:
@@ -110,18 +118,21 @@ $(DOC_DIR)/man/wxglade.1: $(DOC_DIR)/man/manpage.xml
 #+ Create manpage from source files
 man: $(DOC_DIR)/man/wxglade.1
 
-install-doc: $(DOC_DIR)/man/wxglade.1
+#+ Create install directories
+installdirs:
 	# create directories first
-	$(INSTALL) -d $(man1dir) $(docdir)
+	$(INSTALL) -d $(man1dir) $(docdir) $(PY_SITE_DIR) \
+	              $(bindir) $(datarootdir)/$(PACKAGE)
+
+#+ Install all documentation files
+install-doc: $(DOC_DIR)/man/wxglade.1
 	# copy files
 	$(INSTALL_DATA) $(DOC_DIR)/man/wxglade.1 $(man1dir)
 	gzip -9 $(man1dir)/wxglade.1
 	cp -a docs $(docdir)/
 
-install: install-doc
-	# create directories first
-	$(INSTALL) -d $(PY_SITE_DIR) $(bindir) $(datarootdir)/$(PACKAGE)
-	# copy files
+#+ Complete installation incl. creating directories and copying doc files
+install: installdirs install-doc
 	cp -a *.py codegen edit_sizers res widgets $(PY_SITE_DIR)
 	# fix executable flags
 	for f in configUI.py wxglade.py; do chmod 755 $(PY_SITE_DIR)/$$f; done
@@ -129,3 +140,27 @@ install: install-doc
 	cp -a icons $(datarootdir)/$(PACKAGE)
 	ln -s $(datarootdir)/$(PACKAGE)/icons $(PY_SITE_DIR)
 	$(INSTALL_PROGRAM) wxglade $(bindir)
+
+#+ Create documentation from source files
+doc: pdf html
+
+# Create PDF documentation
+$(MANUAL_PDF): $(MANUAL_XML) $(MANUAL_PICS)
+	xmlto --with-dblatex -o $(MANUAL_PDF_DIR) pdf $(MANUAL_XML)
+
+#+ Create PDF document based on manual xml file
+pdf: $(MANUAL_PDF)
+
+# Create HTML documentation
+$(MANUAL_HTML): $(MANUAL_XML) $(MANUAL_PICS)
+	$(INSTALL_DATA) -t $(MANUAL_HTML_DIR) $(MANUAL_SRC_DIR)/*.png
+	xmlto -o $(MANUAL_HTML_DIR) html $(MANUAL_XML)
+
+#+ Create a set of HTML documents based on manual xml file
+html: $(MANUAL_HTML)
+
+#+ Cleanup all automatically generated manuals (if you really know what you do)
+doc-clean:
+	$(RM) $(MANUAL_HTML_DIR)/*.html
+	$(RM) $(MANUAL_HTML_DIR)/*.png
+	$(RM) $(MANUAL_PDF)
