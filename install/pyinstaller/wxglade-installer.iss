@@ -69,7 +69,8 @@ Name: "{group}\wxGlade{#EDITION_LONG}"; Filename: "{#EXECUTABLE_NAME}"; IconFile
 Name: "{group}\Home page"; Filename: "{app}\wxglade.url"
 Name: "{group}\Uninstall wxGlade{#EDITION_LONG}"; Filename: "{uninstallexe}"
 Name: "{group}\Documentation\Tutorial"; Filename: "{app}\docs\tutorial.html"; WorkingDir: "{app}\docs"; Comment: "wxGlade Tutorial"
-Name: "{group}\Documentation\User Manual"; Filename: "{app}\docs\html/index.html"; WorkingDir: "{app}\docs\html"; Comment: "wxGlade User Manual"
+Name: "{group}\Documentation\User Manual (HTML)"; Filename: "{app}\docs\html\index.html"; WorkingDir: "{app}\docs\html"; Comment: "wxGlade User Manual (HTML)"
+Name: "{group}\Documentation\User Manual (PDF)"; Filename: "{app}\docs\pdf\manual.pdf"; WorkingDir: "{app}\docs\pdf"; Comment: "wxGlade User Manual (PDF)"
 Name: "{group}\TODO"; Filename: "{app}\TODO.txt"; AfterInstall: Unix2Dos('{app}\TODO.txt');
 Name: "{group}\README"; Filename: "{app}\README.txt"; AfterInstall: Unix2Dos('{app}\README.txt');
 Name: "{group}\License"; Filename: "{app}\license.txt"; AfterInstall: Unix2Dos('{app}\license.txt');
