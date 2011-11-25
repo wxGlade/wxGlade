@@ -19,6 +19,9 @@
   #undef  EDITION_SHORT
 #endif
 
+; Exclude from standalone edition as well as from full edition
+#define EXCLUDE_ALWAYS "\README.txt,\docs\src,\docs\man"
+
 [Setup]
 AppName=wxGlade
 AppVerName=wxGlade {#PRODUCT_VERSION}
@@ -48,12 +51,12 @@ Name: "quicklaunchicon"; Description: "Create a &Quick Launch icon"; GroupDescri
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 #ifdef EDITION_SHORT
   Source: "*"; \
-    Excludes: "\README.txt"; \
+    Excludes: "{#EXCLUDE_ALWAYS}"; \
     DestDir: "{app}"; \
     Flags: ignoreversion recursesubdirs
 #else
   Source: "*"; \
-    Excludes: "\bdist\*,\build\*,\debian\*,dist\*,\install\*,.hg,\.hgignore,\.hgtags,\logdict*.log,\warnwxglade.txt,*.pyc,*.pyo,\README.txt,Makefile,setup.py";  \
+    Excludes: "{#EXCLUDE_ALWAYS},\bdist\*,\build\*,\debian\*,dist\*,\install\*,.hg,\.hgignore,\.hgtags,\logdict*.log,\warnwxglade.txt,*.pyc,*.pyo,Makefile,setup.py";  \
     DestDir: "{app}"; \
     Flags: ignoreversion recursesubdirs
 #endif
@@ -68,15 +71,16 @@ Filename: "{app}\wxglade.url"; Section: "InternetShortcut"; Key: "URL"; String: 
 Name: "{group}\wxGlade{#EDITION_LONG}"; Filename: "{#EXECUTABLE_NAME}"; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 Name: "{group}\Home page"; Filename: "{app}\wxglade.url"
 Name: "{group}\Uninstall wxGlade{#EDITION_LONG}"; Filename: "{uninstallexe}"
-Name: "{group}\Documentation\Tutorial"; Filename: "{app}\docs\tutorial.html"; WorkingDir: "{app}\docs"; Comment: "wxGlade Tutorial"
+Name: "{group}\Documentation\Tutorial";           Filename: "{app}\docs\tutorial.html";   WorkingDir: "{app}\docs";      Comment: "wxGlade Tutorial"
 Name: "{group}\Documentation\User Manual (HTML)"; Filename: "{app}\docs\html\index.html"; WorkingDir: "{app}\docs\html"; Comment: "wxGlade User Manual (HTML)"
-Name: "{group}\Documentation\User Manual (PDF)"; Filename: "{app}\docs\pdf\manual.pdf"; WorkingDir: "{app}\docs\pdf"; Comment: "wxGlade User Manual (PDF)"
-Name: "{group}\TODO"; Filename: "{app}\TODO.txt"; AfterInstall: Unix2Dos('{app}\TODO.txt');
-Name: "{group}\README"; Filename: "{app}\README.txt"; AfterInstall: Unix2Dos('{app}\README.txt');
-Name: "{group}\License"; Filename: "{app}\license.txt"; AfterInstall: Unix2Dos('{app}\license.txt');
-Name: "{group}\Credits"; Filename: "{app}\credits.txt"; AfterInstall: Unix2Dos('{app}\credits.txt');
-Name: "{group}\Changes"; Filename: "{app}\CHANGES.txt"; AfterInstall: Unix2Dos('{app}\CHANGES.txt');
-Name: "{userdesktop}\wxGlade{#EDITION_LONG}"; Filename: "{#EXECUTABLE_NAME}"; Tasks: desktopicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
+Name: "{group}\Documentation\User Manual (PDF)";  Filename: "{app}\docs\pdf\manual.pdf";  WorkingDir: "{app}\docs\pdf";  Comment: "wxGlade User Manual (PDF)"
+Name: "{group}\Documentation\TODO";    Filename: "{app}\TODO.txt";    AfterInstall: Unix2Dos('{app}\TODO.txt');
+Name: "{group}\Documentation\README";  Filename: "{app}\README.txt";  AfterInstall: Unix2Dos('{app}\README.txt');
+Name: "{group}\Documentation\License"; Filename: "{app}\license.txt"; AfterInstall: Unix2Dos('{app}\license.txt');
+Name: "{group}\Documentation\Credits"; Filename: "{app}\credits.txt"; AfterInstall: Unix2Dos('{app}\credits.txt');
+Name: "{group}\Documentation\Changes"; Filename: "{app}\CHANGES.txt"; AfterInstall: Unix2Dos('{app}\CHANGES.txt');
+Name: "{group}\Documentation\Technical Notes"; Filename: "{app}\docs\tech_notes.txt"; AfterInstall: Unix2Dos('{app}\docs\tech_notes.txt');
+Name: "{userdesktop}\wxGlade{#EDITION_LONG}";  Filename: "{#EXECUTABLE_NAME}"; Tasks: desktopicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\wxGlade{#EDITION_LONG}"; Filename: "{#EXECUTABLE_NAME}"; Tasks: quicklaunchicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 
 [Run]
