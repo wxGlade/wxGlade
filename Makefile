@@ -20,10 +20,9 @@ docdir            = $(datarootdir)/doc/$(PACKAGE)
 mandir            = $(datarootdir)/man
 man1dir           = $(mandir)/man1
 PYVER             = 2.3
-PY_SITE_DIR       = $(prefix)/lib/python$(PYVER)/site-packages/wxglade
 
 BASE_DIR          = .
-BIN_FILES         = wxglade.py
+BIN_FILES         = wxglade.py configUI.py
 BUILD_DIR         = $(BASE_DIR)/build
 BDIST_DIR         = $(BASE_DIR)/bdist
 DOC_DIR           = $(BASE_DIR)/docs
@@ -118,29 +117,6 @@ $(DOC_DIR)/man/wxglade.1: $(DOC_DIR)/man/manpage.xml
 #+ Create manpage from source files
 man: $(DOC_DIR)/man/wxglade.1
 
-#+ Create install directories
-installdirs:
-	# create directories first
-	$(INSTALL) -d $(man1dir) $(docdir) $(PY_SITE_DIR) \
-	              $(bindir) $(datarootdir)/$(PACKAGE)
-
-#+ Install all documentation files
-install-doc: $(DOC_DIR)/man/wxglade.1
-	# copy files
-	$(INSTALL_DATA) $(DOC_DIR)/man/wxglade.1 $(man1dir)
-	gzip -9 $(man1dir)/wxglade.1
-	cp -a docs $(docdir)/
-
-#+ Complete installation incl. creating directories and copying doc files
-install: installdirs install-doc
-	cp -a *.py codegen edit_sizers res widgets $(PY_SITE_DIR)
-	# fix executable flags
-	for f in configUI.py wxglade.py; do chmod 755 $(PY_SITE_DIR)/$$f; done
-	for f in edit_widget.py config.py; do chmod 644 $(PY_SITE_DIR)/$$f; done
-	cp -a icons $(datarootdir)/$(PACKAGE)
-	ln -s $(datarootdir)/$(PACKAGE)/icons $(PY_SITE_DIR)
-	$(INSTALL_PROGRAM) wxglade $(bindir)
-
 #+ Create documentation from source files
 doc: pdf html
 
@@ -164,3 +140,26 @@ doc-clean:
 	$(RM) $(MANUAL_HTML_DIR)/*.html
 	$(RM) $(MANUAL_HTML_DIR)/*.png
 	$(RM) $(MANUAL_PDF)
+
+#+ Create official release packages
+release: rel-source rel-binary
+
+#+ Create Unix binary packages
+rel-binary: man pdf
+	@echo "Creating Unix release packages ..."
+	@$(RM) MANIFEST
+	$(PYTHON_BIN) setup.py bdist --format=zip
+	@$(RM) MANIFEST
+
+#+ Create Unix source release packages
+rel-source: man pdf
+	@echo "Creating source packages ..."
+	@$(RM) MANIFEST
+	$(PYTHON_BIN) setup.py sdist --formats=gztar,zip
+	@$(RM) MANIFEST
+
+#+ Install wxGlade locally at $(prefix)
+install: man pdf setup.py
+	@echo "Install wxGlade locally at $(prefix) ..."
+	$(PYTHON_BIN) setup.py install --prefix $(prefix)
+	gzip -9 $(man1dir)/wxglade.1
