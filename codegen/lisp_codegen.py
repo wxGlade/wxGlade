@@ -1348,6 +1348,7 @@ def setup():
     Code generator setup function. This is called once, when the code
     generator is loaded in wxglade.
     """
+    import sys
     # scan widgets.txt for widgets, load lisp_codegen's
     _widgets_dir = os.path.join(common.wxglade_path, 'widgets')
     widgets_file = os.path.join(_widgets_dir, 'widgets.txt')
@@ -1355,7 +1356,6 @@ def setup():
         print >> sys.stderr, "widgets file (%s) doesn't exist" % widgets_file
         return
 
-    import sys
     sys.path.append(_widgets_dir)
     modules = open(widgets_file)
     for line in modules:
