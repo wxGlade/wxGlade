@@ -1,2 +1,0 @@
-?package(python-wxglade):needs=X11 section=Apps/Programming\
-  title="WxGlade" command="/usr/bin/wxglade"
