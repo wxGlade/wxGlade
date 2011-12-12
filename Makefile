@@ -59,6 +59,9 @@ HELP= @grep -B1 '^[a-zA-Z\-]*:' Makefile |\
          END{p(h,t)}' |\
          sed -n 's/=.*\#+/:/gp'
 
+.PHONY: help clean distclean compile apidoc pylint permissions man doc \
+        pdf html doc-clean release rel-binary rel-source install
+
 # Rule to compile a single Python file
 %.pyc: %.py
 	@echo "Compile $< ..."
