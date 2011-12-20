@@ -56,6 +56,8 @@ def _get_version():
             parents = ctx.parents()
             repo_changed = ctx.files() + ctx.deleted()
             if len(parents) == 1 and not repo_changed:
+                # release tag isn't at tip it's -2 (one below tip)
+                parents = parents[0].parents()
                 node = parents[0].node()
                 tags = repo.nodetags(node)
                 # look for the special 'rel_X.X' tag
