@@ -1,5 +1,5 @@
 wxGlade: a GUI builder for wxPython/wxWindows
-version: 0.5
+version: 0.6.4
 license: MIT (see license.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
@@ -12,14 +12,15 @@ wxPython >= 2.6
 
 * Installation:
 ---------------
-If you are reding this file, you already did all the necessary :-)
+If you are reading this file, you already did all the necessary :-)
 To start the program, enter ``python wxglade.py'' in your shell
 
 
 * Documentation:
 ----------------
-In the docs/ subdir there's a short introductory tutorial.  In the examples/
-subdir there are some sample wxGlade apps (in xml format, .wxg file extension).
+There's a short introductory tutorial in the docs/ subdirectory.  In the
+examples/ subdirectory are some sample wxGlade apps (in xml format, .wxg file
+extension).
 
 
 * Known Bugs/Issues:
@@ -37,8 +38,8 @@ subdir there are some sample wxGlade apps (in xml format, .wxg file extension).
 - On GTK, menubars give troubles: they produce a lot of Gtk-WARNING and 
   Gtk-FATAL messages and may cause segfaults.
 
-- On GTK, notebooks can cause some Gtk-WARNING messages, but they seem to work 
-  anyway.
+- On GTK, notebooks can cause some Gtk-WARNING messages, but they seem to
+  work anyway.
 
 
 For any kind of question, there's a mailing list at 
@@ -48,5 +49,3 @@ If you don't want to follow the list, you can reach me at
 
 Enjoy!
 Alberto Griggio
-
-$Id: README.txt,v 1.14 2007/03/27 07:02:07 agriggio Exp $
