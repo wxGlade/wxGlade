@@ -1,5 +1,4 @@
 # common.py: global variables
-# $Id: common.py,v 1.61 2007/08/07 12:21:56 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -14,7 +13,7 @@ If False, the program is invoked from the command-line in "batch" mode
 (for code generation only)
 """
 
-nohg_version = '0.6.4'
+nohg_version = 'HG'
 """\
 Version number to return if no hg repo has been found
 """
