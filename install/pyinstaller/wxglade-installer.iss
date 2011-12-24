@@ -177,6 +177,8 @@ Root: HKCR; Subkey: ".wxg"; ValueType: string; ValueName: ""; ValueData: "wxGlad
 Root: HKCR; Subkey: "wxGladeResourceFile"; ValueType: string; ValueName: ""; ValueData: "wxGlade Resource File"; Flags: uninsdeletekey
 Root: HKCR; Subkey: "wxGladeResourceFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{#EXECUTABLE_NAME}"" ""%1"""
 Root: HKCR; Subkey: "wxGladeResourceFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\wxg_file.ico"
+Root: HKCU; Subkey: "Software\Microsoft\Windows\ShellNoRoam\MUICache"; ValueType: none; ValueName: "{uninstallexe}"; Flags: dontcreatekey uninsdeletevalue
+Root: HKCU; Subkey: "Software\Microsoft\Windows\ShellNoRoam\MUICache"; ValueType: none; ValueName: "{#EXECUTABLE_NAME}"; Flags: dontcreatekey uninsdeletevalue
 
 [Code]
 // Convert a file from Unix EOL style (LF) to Windows EOL style (CRLF)
