@@ -174,7 +174,7 @@ packages.append('wxglade')
 version = common.version
 
 setup(
-    name='wxglade',
+    name='wxGlade',
     version=version,
     author='Alberto Griggio',
     author_email='agriggio@users.sourceforge.net',
