@@ -155,7 +155,14 @@ data_files = [[
        glob('docs/pdf/*.pdf'),
     ],[
        'share/man/man1',
-       glob('docs/man/wxglade.1'),
+       ['docs/man/wxglade.1'],
+    # documentation source files :-)
+    ],[
+       'share/doc/wxglade',
+       ['docs/man/manpage.xml'],
+    ],[
+       'share/doc/wxglade',
+       ['docs/src/manual.xml'],
     ]]
 
 
