@@ -119,17 +119,15 @@ def find_packages(path, base="" ):
     return packages
 
 classifiers = """\
-Development Status :: 5 - Production/Stable
+Development Status :: 4 - Beta
+Intended Audience :: Developers
 License :: OSI Approved :: MIT License
 Natural Language :: English
-Operating System :: MacOS :: MacOS X
-Operating System :: Microsoft :: Windows :: Windows 95/98/2000
-Operating System :: Microsoft :: Windows :: Windows NT/2000
-Operating System :: POSIX
-Operating System :: Unix
+Operating System :: OS Independent (Written in an interpreted language)
 Programming Language :: Python :: 2
-Topic :: Software Development
-Topic :: Software Development :: Code Generators"""
+Topic :: Software Development :: Code Generators
+User Interface :: Textual :: Command-line
+User Interface :: Toolkits/Libraries :: wxWidgets"""
 
 description = \
     'GUI designer written in Python with the popular GUI toolkit wxPython'
