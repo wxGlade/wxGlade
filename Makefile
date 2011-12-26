@@ -1,4 +1,4 @@
-# Makefile for SMM
+# Makefile for wxGlade
 #
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
@@ -22,7 +22,7 @@ man1dir           = $(mandir)/man1
 PYVER             = 2.3
 
 BASE_DIR          = .
-BIN_FILES         = wxglade.py configUI.py
+BIN_FILES         = wxglade wxglade.py configUI.py
 BUILD_DIR         = $(BASE_DIR)/build
 BDIST_DIR         = $(BASE_DIR)/bdist
 DOC_DIR           = $(BASE_DIR)/docs
@@ -60,7 +60,8 @@ HELP= @grep -B1 '^[a-zA-Z\-]*:' Makefile |\
          sed -n 's/=.*\#+/:/gp'
 
 .PHONY: help clean distclean compile apidoc pylint permissions man doc \
-        pdf html doc-clean release rel-binary rel-source install
+        pdf html doc-clean release rel-binary rel-source install \
+        maintainer-clean
 
 # Rule to compile a single Python file
 %.pyc: %.py
@@ -90,6 +91,11 @@ clean:
 distclean: clean
 	@echo "Remove development files ..."
 	@$(RM) .hgtags .hgignore
+
+#+ Remove almost everything that can bee reconstructed with this Makefile
+maintainer-clean: distclean doc-clean
+	@echo "This command is intended for maintainers to use; it"
+	@echo 'deletes files that may need special tools to rebuild."
 
 #+ Compile all python files
 compile: $(BYTECODE_FILES)
