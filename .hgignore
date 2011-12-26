@@ -21,3 +21,8 @@ logdict*.log
 warnwxglade.txt
 MANIFEST
 docs/man/wxglade.1
+
+# eric ide stuff
+.eric4project
+.ropeproject
+wxGlade.e4p
