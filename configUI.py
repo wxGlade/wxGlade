@@ -10,11 +10,6 @@ import os
 
 _icon_path = os.path.join(common.wxglade_path, 'icons', 'icon.xpm')
 
-import common
-import os
-
-_icon_path = os.path.join(common.wxglade_path, 'icons', 'icon.xpm')
-
 # end wxGlade
 
 
@@ -147,15 +142,3 @@ class wxGladePreferencesUI(wx.Dialog):
         # end wxGlade
 
 # end of class wxGladePreferencesUI
-
-
-if __name__ == "__main__":
-    import gettext
-    gettext.install("app") # replace with the appropriate catalog name
-
-    app = wx.PySimpleApp(0)
-    wx.InitAllImageHandlers()
-    dialog_1 = wxGladePreferencesUI(None, -1, "")
-    app.SetTopWindow(dialog_1)
-    dialog_1.Show()
-    app.MainLoop()

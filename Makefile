@@ -22,7 +22,7 @@ man1dir           = $(mandir)/man1
 PYVER             = 2.3
 
 BASE_DIR          = .
-BIN_FILES         = wxglade wxglade.py configUI.py
+BIN_FILES         = wxglade wxglade.py
 BUILD_DIR         = $(BASE_DIR)/build
 BDIST_DIR         = $(BASE_DIR)/bdist
 DOC_DIR           = $(BASE_DIR)/docs

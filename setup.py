@@ -166,7 +166,7 @@ data_files = [[
     ]]
 
 
-scripts = ['wxglade.py', 'wxglade', 'configUI.py']
+scripts = ['wxglade.py', 'wxglade',]
 
 packages = find_packages(path=".", base='wxglade').keys()
 packages.append('wxglade')
