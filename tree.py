@@ -295,8 +295,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.cur_widget = None # reference to the selected widget
         Tree.__init__(self, root_node, application)
         image_list = wx.ImageList(21, 21)
-        image_list.Add(wx.Bitmap(os.path.join(common.wxglade_path,
-                                             'icons/application.xpm'),
+        image_list.Add(wx.Bitmap(os.path.join(common.icons_path,
+                                             'application.xpm'),
                                 wx.BITMAP_TYPE_XPM))
         for w in WidgetTree.images:
 ##             WidgetTree.images[w] = image_list.Add(wx.Bitmap(

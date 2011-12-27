@@ -50,7 +50,7 @@ class wxGladeAboutBox(wx.Dialog):
                 if href == 'show_license':
                     from wx.lib.dialogs import ScrolledMessageDialog
                     try:
-                        license = open(os.path.join(common.wxglade_path,
+                        license = open(os.path.join(common.docs_path,
                                                     'license.txt'))
                         dlg = ScrolledMessageDialog(self, license.read(),
                                                       _("wxGlade - License"))
@@ -66,7 +66,7 @@ class wxGladeAboutBox(wx.Dialog):
                 elif href == 'show_credits':
                     from wx.lib.dialogs import ScrolledMessageDialog
                     try:
-                        credits = open(os.path.join(common.wxglade_path,
+                        credits = open(os.path.join(common.docs_path,
                                                     'credits.txt'))
                         dlg = ScrolledMessageDialog(self, credits.read(),
                                                       _("wxGlade - Credits"))
@@ -87,8 +87,7 @@ class wxGladeAboutBox(wx.Dialog):
                 pass
         py_version = sys.version.split()[0]
         bgcolor = misc.color_to_string(self.GetBackgroundColour())
-        icon_path = os.path.join(common.wxglade_path,
-                                 'icons/wxglade_small.png')
+        icon_path = os.path.join(common.icons_path, 'wxglade_small.png')
         html.SetPage(self.text % (bgcolor, icon_path, common.version,
                                   py_version, wx.__version__))
         ir = html.GetInternalRepresentation()

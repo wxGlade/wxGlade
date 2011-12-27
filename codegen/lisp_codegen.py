@@ -572,14 +572,17 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     
     sizer.name = sizer.name.replace('_','-')
     obj_name = obj.name
-    try: w, h = [ int(s) for s in obj_name.split(',') ]
+    try:
+        w, h = [ int(s) for s in obj_name.split(',') ]
     except ValueError:
         if obj.base == 'wxNotebook' and for_version < (2, 5):
-              obj_name = cn('wxNotebookSizer') + '(%s)' % obj_name
+            obj_name = cn('wxNotebookSizer') + '(%s)' % obj_name
     else:
         obj_name = '(%d, %d)' % (w, h) # it was the dimension of a spacer
-    try: klass = classes[toplevel.klass]
-    except KeyError: klass = classes[toplevel.klass] = ClassLines()
+    try:
+        klass = classes[toplevel.klass]
+    except KeyError:
+        klass = classes[toplevel.klass] = ClassLines()
 
     flag = '%s' % cn_f(flag)
     flag = flag.strip().replace('|',' ')
@@ -1350,13 +1353,12 @@ def setup():
     """
     import sys
     # scan widgets.txt for widgets, load lisp_codegen's
-    _widgets_dir = os.path.join(common.wxglade_path, 'widgets')
-    widgets_file = os.path.join(_widgets_dir, 'widgets.txt')
+    widgets_file = os.path.join(common.widgets_path, 'widgets.txt')
     if not os.path.isfile(widgets_file):
         print >> sys.stderr, "widgets file (%s) doesn't exist" % widgets_file
         return
 
-    sys.path.append(_widgets_dir)
+    sys.path.append(common.widgets_path)
     modules = open(widgets_file)
     for line in modules:
         module_name = line.strip()

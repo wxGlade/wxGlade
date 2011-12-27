@@ -170,7 +170,7 @@ class EditDialog(TopLevelBase):
             else:
                 import os
                 icon = wx.EmptyIcon()
-                xpm = os.path.join(common.wxglade_path, 'icons', 'dialog.xpm')
+                xpm = os.path.join(common.icons_path, 'dialog.xpm')
                 icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
                 self.widget.SetIcon(icon)
 

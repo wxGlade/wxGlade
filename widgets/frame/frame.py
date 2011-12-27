@@ -397,7 +397,7 @@ class EditFrame(TopLevelBase):
                 # removing icon
                 icon = wx.EmptyIcon()
                 import os
-                xpm = os.path.join(common.wxglade_path, 'icons', 'frame.xpm')
+                xpm = os.path.join(common.icons_path, 'frame.xpm')
                 icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
                 self.widget.SetIcon(icon)
 
@@ -563,9 +563,12 @@ def initialize():
     # add statusbar icon to WidgetTree
     from tree import WidgetTree
     import os.path
-    WidgetTree.images['EditStatusBar'] = os.path.join(common.wxglade_path,
-                                                      'icons/statusbar.xpm')
-    WidgetTree.images['EditMDIChildFrame'] = os.path.join(common.wxglade_path,
-                                                          'icons/frame.xpm')
-       
+    WidgetTree.images['EditStatusBar'] = os.path.join(
+        common.icons_path,
+        'statusbar.xpm'
+        )
+    WidgetTree.images['EditMDIChildFrame'] = os.path.join(
+        common.icons_path,
+        'frame.xpm'
+        )       
     return common.make_object_button('EditFrame', 'icons/frame.xpm', 1)

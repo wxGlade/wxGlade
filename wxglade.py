@@ -140,14 +140,25 @@ def run_main():
     wxglade.pyw on windows
     """
     # prepend the widgets dir to the
-    # app's search path
     wxglade_path = determine_wxglade_path()
-    #sys.path = [os.getcwd(), os.path.join(os.getcwd(), 'widgets')] + sys.path
-    sys.path = [wxglade_path, os.path.join(wxglade_path, 'widgets')] + sys.path
+    
+    # set the program's paths
+    common.wxglade_path   = wxglade_path
+    common.docs_path      = os.path.join(wxglade_path, 'docs')
+    common.icons_path     = os.path.join(wxglade_path, 'icons')
+    common.widgets_path   = os.path.join(wxglade_path, 'widgets')
+    common.templates_path = os.path.join(wxglade_path, 'templates')
 
-    # set the program's path
-    common.wxglade_path = wxglade_path #os.getcwd()
+    # print used paths
+    print _('wxGlade base directory:             %s') % common.wxglade_path
+    print _('wxGlade documentation directory:    %s') % common.docs_path
+    print _('wxGlade icons directory:            %s') % common.icons_path
+    print _('wxGlade build-in widgets directory: %s') % common.widgets_path
+    print _('wxGlade template directory:         %s') % common.templates_path
 
+    # adapt application search path
+    sys.path = [common.wxglade_path, common.widgets_path] + sys.path
+    
     # before running the GUI, let's see if there are command line options for
     # code generation
     filename = None
