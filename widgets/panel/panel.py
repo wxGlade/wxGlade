@@ -302,7 +302,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
                        size=(400, 300)) 
         import os
         icon = wx.EmptyIcon()
-        xpm = os.path.join(common.wxglade_path, 'icons', 'panel.xpm')
+        xpm = os.path.join(common.icons_path, 'panel.xpm')
         icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
         win.SetIcon(icon)
         #self.widget = wx.Panel(win, self.id, style=0)
@@ -311,7 +311,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.widget.GetBestSize = self.get_widget_best_size
         #self.widget.SetSize = win.SetSize
         wx.EVT_CLOSE(win, self.hide_widget)
-        if wx.Platform == '__WXMSW__': win.CentreOnScreen()
+        if wx.Platform == '__WXMSW__':
+            win.CentreOnScreen()
 
     def show_widget(self, yes):
         oldval = self.get_size()
@@ -334,9 +335,11 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
 
     def delete(self):
         win = None
-        if self.widget: win = self.widget.GetParent()
+        if self.widget:
+            win = self.widget.GetParent()
         super(EditTopLevelPanel, self).delete()
-        if win is not None: win.Destroy()
+        if win is not None:
+            win.Destroy()
 
     def on_size(self, event):
         w, h = event.GetSize()
@@ -431,19 +434,22 @@ def initialize():
                                                           xml_toplevel_builder
     from tree import WidgetTree
     import os.path
-    icon = os.path.join(common.wxglade_path, 'icons/panel.xpm')
+    icon = os.path.join(common.icons_path, 'panel.xpm')
     WidgetTree.images['EditTopLevelPanel'] = icon
     WidgetTree.images['EditScrolledWindow'] = icon
     WidgetTree.images['EditTopLevelScrolledWindow'] = icon
 
     # these are for backwards compatibility (may be removed someday...)
     common.widgets_from_xml['SplitterPane'] = xml_builder
-    WidgetTree.images['SplitterPane'] = os.path.join(common.wxglade_path,
-                                                     'icons/panel.xpm')
+    WidgetTree.images['SplitterPane'] = os.path.join(
+        common.icons_path,
+        'panel.xpm'
+        )
     common.widgets_from_xml['NotebookPane'] = xml_builder
-    WidgetTree.images['NotebookPane'] = os.path.join(common.wxglade_path,
-                                                     'icons/panel.xpm')
-    
+    WidgetTree.images['NotebookPane'] = os.path.join(
+        common.icons_path,
+        'icons/panel.xpm'
+        )    
     return common.make_object_button('EditPanel', 'icons/panel.xpm',
                                      tip='Add a Panel/ScrolledWindow')
     

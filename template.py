@@ -96,9 +96,7 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
             self.author.SetValue(misc.wxstr(t.author))
             self.description.SetValue(misc.wxstr(t.description))
             self.instructions.SetValue(misc.wxstr(t.instructions))
-            wxglade_templates = os.path.join(common.wxglade_path,
-                                             'templates')
-            if os.path.dirname(self.selected_template) == wxglade_templates:
+            if os.path.dirname(self.selected_template) == common.templates_path:
                 self.btn_delete.Disable()
                 self.btn_edit.Disable()
             else:
@@ -150,8 +148,8 @@ def load_templates():
         extra = glob.glob(os.path.join(d, "templates", "*.wgt"))
     else:
         extra = []
-    return sorted(glob.glob(os.path.join(
-        common.wxglade_path, "templates", "*.wgt"))) + sorted(extra)
+    return sorted(glob.glob(os.path.join(common.templates_path, "*.wgt"))) + \
+           sorted(extra)
     
 
 def select_template():

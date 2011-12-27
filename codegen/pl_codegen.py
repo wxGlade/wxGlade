@@ -290,7 +290,7 @@ def quote_key(s):
     if _use_gettext:
         return '_T("' + s + '")'
     if t == s and s.find(' ') < 0:
-        return s;
+        return s
     else:
         return '"' + s + '"'
 
@@ -322,13 +322,12 @@ def initialize(app_attrs):
     import time, random
 
 ##     # scan widgets.txt for widgets, load perl_codegen's
-##     _widgets_dir = os.path.join(common.wxglade_path, 'widgets')
-##     widgets_file = os.path.join(_widgets_dir, 'widgets.txt')
+##     widgets_file = os.path.join(common.widgets_path, 'widgets.txt')
 ##     if not os.path.isfile(widgets_file):
 ##         print >> sys.stderr, "widgets file (%s) doesn't exist" % widgets_file
 ##         return
 ##     import sys
-##     sys.path.append(_widgets_dir)
+##     sys.path.append(common.widgets_path)
 ##     modules = open(widgets_file)
 ##     for line in modules:
 ##         module_name = line.strip()
@@ -1375,12 +1374,11 @@ def setup():
     """
     import sys
     # scan widgets.txt for widgets, load perl_codegen's
-    _widgets_dir = os.path.join(common.wxglade_path, 'widgets')
-    widgets_file = os.path.join(_widgets_dir, 'widgets.txt')
+    widgets_file = os.path.join(common.widgets_path, 'widgets.txt')
     if not os.path.isfile(widgets_file):
         print >> sys.stderr, "widgets file (%s) doesn't exist" % widgets_file
         return
-    sys.path.append(_widgets_dir)
+    sys.path.append(common.widgets_path)
     modules = open(widgets_file)
     for line in modules:
         module_name = line.strip()

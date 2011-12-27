@@ -92,6 +92,33 @@ wxglade_path = '.'
 Program path, set in wxglade.py
 """
 
+docs_path = ''
+"""\
+Path to wxGlade documentation (e.g. html tuturial, license.txt, credits.txt)
+
+Default: wxglade_path/docs
+"""
+
+icons_path = ''
+"""\
+Path to wxGlade icons
+
+Default: wxglade_path/icons
+"""
+
+templates_path = ''
+"""\
+Path to wxGlade templates
+
+Default: wxglade_path/templates
+"""
+widgets_path = ''
+"""\
+Path to wxGlade "built-in" widgets
+
+Default: wxglade_path/widgets
+"""
+
 widgets = {}
 """\
 Widgets dictionary: each key is the name of some EditWidget class; the mapped
@@ -210,8 +237,7 @@ def load_widgets():
     import config
     buttons = []
     # load the "built-in" widgets
-    built_in_dir = os.path.join(wxglade_path, 'widgets')
-    buttons.extend(__load_widgets(built_in_dir))
+    buttons.extend(__load_widgets(widgets_path))
 
     # load the "local" widgets
     local_widgets_dir = config.preferences.local_widget_path

@@ -55,8 +55,7 @@ class PythonCodeGenerator:
         else: obj_name = 'self.' + obj.name
 
         def _get_bitmap(bitmap):
-            bmp_preview_path = os.path.join(common.wxglade_path, "icons",
-                                            "icon.xpm")
+            bmp_preview_path = os.path.join(common.icons_path, "icon.xpm")
             if not bitmap:
                 return cn('wxNullBitmap')
             elif bitmap.startswith('var:'):

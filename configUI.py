@@ -8,7 +8,7 @@ import wx
 import common
 import os
 
-_icon_path = os.path.join(common.wxglade_path, 'icons', 'icon.xpm')
+_icon_path = os.path.join(common.icons_path, 'icon.xpm')
 
 # end wxGlade
 

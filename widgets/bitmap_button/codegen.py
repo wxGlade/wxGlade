@@ -14,8 +14,7 @@ class PythonCodeGenerator:
         prop = obj.properties
         id_name, id = pygen.generate_code_id(obj) 
         bmp_file = prop.get('bitmap', '')
-        bmp_preview_path = os.path.join(common.wxglade_path, "icons",
-                                        "icon.xpm")
+        bmp_preview_path = os.path.join(common.icons_path, "icon.xpm")
         if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
         else: parent = 'self'
         style = prop.get("style")

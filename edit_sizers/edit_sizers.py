@@ -2277,10 +2277,14 @@ def init_all():
     cwx['EditFlexGridSizer'] = grid_xml_builder
 
     import os.path
-    WidgetTree.images['EditStaticBoxSizer'] = os.path.join(common.wxglade_path,
-                                                           'icons/sizer.xpm')
+    WidgetTree.images['EditStaticBoxSizer'] = os.path.join(
+        common.icons_path,
+        'sizer.xpm'
+        )
     WidgetTree.images['EditFlexGridSizer'] = os.path.join(
-        common.wxglade_path, 'icons/grid_sizer.xpm')
+        common.icons_path,
+        'grid_sizer.xpm'
+        )
 
     return [common.make_object_button('EditBoxSizer', 'icons/sizer.xpm'),
             common.make_object_button('EditGridSizer', 'icons/grid_sizer.xpm')]

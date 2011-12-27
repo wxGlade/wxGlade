@@ -17,8 +17,7 @@ class PythonCodeGenerator:
 
         id_name, id = pygen.generate_code_id(obj) 
         bmp_file = prop.get('bitmap', '')
-        bmp_preview_path = os.path.join(common.wxglade_path, "icons",
-                                        "icon.xpm")
+        bmp_preview_path = os.path.join(common.icons_path, "icon.xpm")
         if not bmp_file:
             bmp = cn('wxNullBitmap')
         elif bmp_file.startswith('var:'):

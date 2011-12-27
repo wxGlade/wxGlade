@@ -121,8 +121,7 @@ class ToggleButtonBox(wx.Panel):
 class wxGladeArtProvider(wx.ArtProvider):
     def CreateBitmap(self, artid, client, size):
         if wx.Platform == '__WXGTK__' and artid == wx.ART_FOLDER:
-            return wx.Bitmap(os.path.join(common.wxglade_path, 'icons',
-                                         'closed_folder.xpm'),
+            return wx.Bitmap(os.path.join(common.icons_path, 'closed_folder.xpm'),
                             wx.BITMAP_TYPE_XPM)
         return wx.NullBitmap
 
@@ -145,8 +144,10 @@ class wxGladeFrame(wx.Frame):
         common.palette = self # to provide a reference accessible
                               # by the various widget classes
         icon = wx.EmptyIcon()
-        bmp = wx.Bitmap(os.path.join(common.wxglade_path, "icons/icon.xpm"),
-                       wx.BITMAP_TYPE_XPM)
+        bmp = wx.Bitmap(
+            os.path.join(common.icons_path, "icon.xpm"),
+            wx.BITMAP_TYPE_XPM
+            )
         icon.CopyFromBitmap(bmp)
         self.SetIcon(icon)
         self.SetBackgroundColour(wx.SystemSettings_GetColour(
@@ -835,7 +836,7 @@ class wxGladeFrame(wx.Frame):
         self.about_box.ShowModal()
 
     def show_tutorial(self, event):
-        docs_path = os.path.join(common.wxglade_path, 'docs', 'index.html')
+        docs_path = os.path.join(common.docs_path, 'html', 'index.html')
         if wx.Platform == "__WXMAC__":
             os.system('open -a Help\ Viewer.app %s' % docs_path)
         else:
