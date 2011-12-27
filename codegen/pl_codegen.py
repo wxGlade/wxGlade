@@ -965,7 +965,7 @@ def add_app(app_attrs, top_win_class):
         try:
             common.save_file(filename, out.getvalue(), 'codegen')
         except:
-            import traceback; traceback.print_wexc()
+            import traceback; traceback.print_exc()
         # make the file executable
         try: os.chmod(filename, 0755)
         except OSError: pass # this is not a bad error
