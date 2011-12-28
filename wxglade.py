@@ -124,14 +124,18 @@ wxGlade usage:
 
 
 def determine_wxglade_path():
-    try:
-        root = __file__
-        if os.path.islink(root):
-            root = os.path.realpath(root)
-        return os.path.dirname(os.path.abspath(root))
-    except:
-        # __file__ is not defined when building an .exe with McMillan
+    """\
+    @return: wxGlade application directory
+    """
+    # use directory of the exe in case of frozen packages e.g.
+    # PyInstaller or py2exe
+    if hasattr(sys, 'frozen'):
         return os.path.dirname(sys.argv[0])
+
+    root = __file__
+    if os.path.islink(root):
+        root = os.path.realpath(root)
+    return os.path.dirname(os.path.abspath(root))
 
 
 def run_main():
