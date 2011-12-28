@@ -448,7 +448,7 @@ def initialize():
     common.widgets_from_xml['NotebookPane'] = xml_builder
     WidgetTree.images['NotebookPane'] = os.path.join(
         common.icons_path,
-        'icons/panel.xpm'
+        'panel.xpm'
         )    
     return common.make_object_button('EditPanel', 'icons/panel.xpm',
                                      tip='Add a Panel/ScrolledWindow')
