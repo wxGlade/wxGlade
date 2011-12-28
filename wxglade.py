@@ -143,22 +143,56 @@ def run_main():
     This main procedure is started by calling either wxglade.py or
     wxglade.pyw on windows
     """
+    # print versions first
+    print _("Starting wxGlade version %s on Python %s") % (
+        common.version,
+        common.py_version,
+        )
+
     # prepend the widgets dir to the
     wxglade_path = determine_wxglade_path()
     
     # set the program's paths
     common.wxglade_path   = wxglade_path
+
+    # static paths
     common.docs_path      = os.path.join(wxglade_path, 'docs')
     common.icons_path     = os.path.join(wxglade_path, 'icons')
     common.widgets_path   = os.path.join(wxglade_path, 'widgets')
     common.templates_path = os.path.join(wxglade_path, 'templates')
+    common.tutorial_file  = os.path.join(common.docs_path, 'html', 'index.html')
+
+    # search credits file at two different locations
+    # - <wxglade_path>/docs/credits.txt for linux packages
+    # - <wxglade_path>/credits.txt at Windows or started from source directory
+    if os.path.exists(os.path.join(common.wxglade_path, 'credits.txt')):
+        common.credits_file = os.path.join(common.wxglade_path, 'credits.txt')
+    elif os.path.exists(os.path.join(common.docs_path, 'credits.txt')):
+        common.credits_file = os.path.join(common.docs_path, 'credits.txt')
+    else:
+        print _('ERROR: credits file "credits.txt" not found!')
+        common.credits_file = None
+
+    # search license file at two different locations
+    # - <wxglade_path>/docs/license.txt for linux packages
+    # - <wxglade_path>/license.txt at Windows or started from source directory
+    if os.path.exists(os.path.join(common.wxglade_path, 'license.txt')):
+        common.license_file = os.path.join(common.wxglade_path, 'license.txt')
+    elif os.path.exists(os.path.join(common.docs_path, 'license.txt')):
+        common.license_file = os.path.join(common.docs_path, 'license.txt')
+    else:
+        print _('ERROR: license file "license.txt" not found!')
+        common.license_file = None
 
     # print used paths
-    print _('wxGlade base directory:             %s') % common.wxglade_path
-    print _('wxGlade documentation directory:    %s') % common.docs_path
-    print _('wxGlade icons directory:            %s') % common.icons_path
-    print _('wxGlade build-in widgets directory: %s') % common.widgets_path
-    print _('wxGlade template directory:         %s') % common.templates_path
+    print _('Base directory:             %s') % common.wxglade_path
+    print _('Documentation directory:    %s') % common.docs_path
+    print _('Icons directory:            %s') % common.icons_path
+    print _('Build-in widgets directory: %s') % common.widgets_path
+    print _('Template directory:         %s') % common.templates_path
+    print _('Credits file:               %s') % common.credits_file
+    print _('License file:               %s') % common.license_file
+    print _('Tutorial file:              %s') % common.tutorial_file
 
     # adapt application search path
     sys.path = [common.wxglade_path, common.widgets_path] + sys.path
@@ -178,19 +212,10 @@ def run_main():
         # print versions first
         import main
         import wx
-        print _("Starting wxGlade version %s on Python %s and wxPython %s") % (
-            common.version,
-            sys.version.split()[0],
-            wx.__version__,
-            )
+        print _("Using wxPython %s") % wx.__version__
         # if there was no option, start the app in GUI mode
         main.main(filename)
     else:
-        # print versions first
-        print _("Starting wxGlade version %s on Python %s") % (
-            common.version,
-            sys.version.split()[0],
-            )
         command_line_code_generation(options, args)
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@
 import wx
 import wx.html
 import wx.lib.wxpTag
-import common, misc, os.path, sys
+import common, misc, os.path
 
 class wxGladeAboutBox(wx.Dialog):
     text = '''
@@ -48,33 +48,48 @@ class wxGladeAboutBox(wx.Dialog):
             def OnLinkClicked(self, linkinfo):
                 href = linkinfo.GetHref()
                 if href == 'show_license':
-                    from wx.lib.dialogs import ScrolledMessageDialog
-                    try:
-                        license = open(os.path.join(common.docs_path,
-                                                    'license.txt'))
-                        dlg = ScrolledMessageDialog(self, license.read(),
-                                                      _("wxGlade - License"))
-                        license.close()
-                        dlg.ShowModal()
-                        dlg.Destroy()
-                    except IOError:
+                    if common.license_file:
+                        from wx.lib.dialogs import ScrolledMessageDialog
+                        try:
+                            license_file = open(common.license_file)
+                            dlg = ScrolledMessageDialog(
+                                self,
+                                license_file.read(),
+                                _("wxGlade - License")
+                                )
+                            license_file.close()
+                            dlg.ShowModal()
+                            dlg.Destroy()
+                        except IOError:
+                            wx.MessageBox(_("Can't find the license!\n"
+                                         "You can get a copy at \n"
+                                         "http://www.opensource.org/licenses/"
+                                         "mit-license.php"), _("Error"),
+                                         wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
+                    else:
                         wx.MessageBox(_("Can't find the license!\n"
                                      "You can get a copy at \n"
                                      "http://www.opensource.org/licenses/"
                                      "mit-license.php"), _("Error"),
                                      wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
                 elif href == 'show_credits':
-                    from wx.lib.dialogs import ScrolledMessageDialog
-                    try:
-                        credits = open(os.path.join(common.docs_path,
-                                                    'credits.txt'))
-                        dlg = ScrolledMessageDialog(self, credits.read(),
-                                                      _("wxGlade - Credits"))
-                        credits.close()
-                        dlg.ShowModal()
-                        dlg.Destroy()
-                    except IOError:
-                        wx.MessageBox(_("Can't find the credits file!\n"), _("Oops!"),
+                    if common.credits_file:
+                        from wx.lib.dialogs import ScrolledMessageDialog
+                        try:
+                            credits_file = open(common.credits_file)
+                            dlg = ScrolledMessageDialog(
+                                self,
+                                credits_file.read(),
+                                _("wxGlade - Credits")
+                                )
+                            credits_file.close()
+                            dlg.ShowModal()
+                            dlg.Destroy()
+                        except IOError:
+                            wx.MessageBox(_("Can't find the credits file!\n"), _("Error"),
+                                         wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
+                    else:
+                        wx.MessageBox(_("Can't find the credits file!\n"), _("Error"),
                                      wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
                 else:
                     import webbrowser
@@ -85,11 +100,10 @@ class wxGladeAboutBox(wx.Dialog):
                 html.SetStandardFonts()
             except AttributeError:
                 pass
-        py_version = sys.version.split()[0]
         bgcolor = misc.color_to_string(self.GetBackgroundColour())
         icon_path = os.path.join(common.icons_path, 'wxglade_small.png')
         html.SetPage(self.text % (bgcolor, icon_path, common.version,
-                                  py_version, wx.__version__))
+                                  common.py_version, wx.__version__))
         ir = html.GetInternalRepresentation()
         ir.SetIndent(0, wx.html.HTML_INDENT_ALL)
         html.SetSize((ir.GetWidth(), ir.GetHeight()))

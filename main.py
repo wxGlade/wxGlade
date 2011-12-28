@@ -836,15 +836,14 @@ class wxGladeFrame(wx.Frame):
         self.about_box.ShowModal()
 
     def show_tutorial(self, event):
-        docs_path = os.path.join(common.docs_path, 'html', 'index.html')
         if wx.Platform == "__WXMAC__":
-            os.system('open -a Help\ Viewer.app %s' % docs_path)
+            os.system('open -a Help\ Viewer.app %s' % common.tutorial_file)
         else:
             import webbrowser, threading
             # ALB 2004-08-15: why did this block the program?????
             # (at least on linux - GTK)
             def go():
-                webbrowser.open_new(docs_path)
+                webbrowser.open_new(common.tutorial_file)
             t = threading.Thread(target=go)
             t.setDaemon(True)
             t.start()

@@ -87,6 +87,11 @@ wxGlade version string
 @see: L{_get_version()}
 """
 
+py_version = sys.version.split()[0]
+"""\
+Python version
+"""
+
 wxglade_path = '.'
 """\
 Program path, set in wxglade.py
@@ -112,11 +117,27 @@ Path to wxGlade templates
 
 Default: wxglade_path/templates
 """
+
 widgets_path = ''
 """\
 Path to wxGlade "built-in" widgets
 
 Default: wxglade_path/widgets
+"""
+
+credits_file = None
+"""\
+Path of the credits file "credits.txt"
+"""
+
+license_file = None
+"""\
+Path of the license file "license.txt"
+"""
+
+tutorial_file = None
+"""\
+Path to wxGlade tutorial (HTML)
 """
 
 widgets = {}
