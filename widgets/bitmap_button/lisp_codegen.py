@@ -69,7 +69,6 @@ class LispCodeGenerator:
                 props_buf.append(
                     '(wxBitmapButton_SetBitmapDisabled (slot-%s obj) %s)'
                     % (obj.name, plgen.quote_path(disabled_bmp)))
-                wxButton_SetDefault
         if not prop.has_key('size'):
             props_buf.append('(wxButton_SetDefault (slot-%s obj))'
                              %(obj.name))
