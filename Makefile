@@ -37,8 +37,11 @@ SOURCE_DIRS       = codegen edit_sizers widgets install
 SOURCE_FILES      = $(wildcard $(BASE_DIR)/*.py) $(shell find $(SOURCE_DIRS) -name "*.py")
 PYLINT_BIN        = pylint
 PYLINT_OPTS       = --additional-builtins=_ --disable=C \
-                    '--dummy-variables=_|dummy|event|empty|unused' \
+                    '--dummy-variables=_|dummy|event|empty|unused|i' \
+                    --disable=W0105,W0401,W0403,W0614 \
+                    --disable=R0201,R0901,R0902,R0904,R0912,R0913,R0914,R0915 \
                     --include-ids=y --reports=n
+PYLINT_PATH       = "$(BASE_DIR):$(BASE_DIR)/widgets"
 PYTHON_BIN        = python
 DB2MAN            = /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
 XP                = xsltproc --nonet
@@ -110,7 +113,7 @@ apidoc: $(APIDOC_DIR)/index.html
 
 #+ Check all source files for logical errors using pylint
 pylint:
-	$(PYLINT_BIN) $(PYLINT_OPTS) $(CHECK_FILES) || /bin/true
+	PYTHONPATH=$(PYLINT_PATH) $(PYLINT_BIN) $(PYLINT_OPTS) $(CHECK_FILES) || /bin/true
 
 #+ Set proper permissions for all files and directories
 permissions:
