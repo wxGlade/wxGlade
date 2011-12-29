@@ -97,32 +97,32 @@ wxglade_path = '.'
 Program path, set in wxglade.py
 """
 
-docs_path = ''
+docs_path = 'docs'
 """\
 Path to wxGlade documentation (e.g. html tuturial, license.txt, credits.txt)
 
-Default: wxglade_path/docs
+@note: This path will be set during initialisation
 """
 
-icons_path = ''
+icons_path = 'icons'
 """\
 Path to wxGlade icons
 
-Default: wxglade_path/icons
+@note: This path will be set during initialisation
 """
 
-templates_path = ''
+templates_path = 'templates'
 """\
 Path to wxGlade templates
 
-Default: wxglade_path/templates
+@note: This path will be set during initialisation
 """
 
-widgets_path = ''
+widgets_path = 'widgets'
 """\
 Path to wxGlade "built-in" widgets
 
-Default: wxglade_path/widgets
+@note: This path will be set during initialisation
 """
 
 credits_file = None
@@ -135,9 +135,11 @@ license_file = None
 Path of the license file "license.txt"
 """
 
-tutorial_file = None
+tutorial_file = 'docs/html/index.html'
 """\
 Path to wxGlade tutorial (HTML)
+
+@note: This path will be set during initialisation
 """
 
 widgets = {}
