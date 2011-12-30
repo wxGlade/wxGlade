@@ -211,8 +211,6 @@ def run_main():
     if start_gui:
         # print versions first
         import main
-        import wx
-        print _("Using wxPython %s") % wx.__version__
         # if there was no option, start the app in GUI mode
         main.main(filename)
     else:

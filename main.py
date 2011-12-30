@@ -947,6 +947,8 @@ def main(filename=None):
     """\
     if filename is not None, loads it
     """
+    print _("Using wxPython %s") % wx.__version__
+
     # first thing to do, patch wxSizerPtr's Insert if needed...
 ##     if wx.__version__ == '2.4.0.2':
 ##         wxSizerPtr.Insert = misc.sizer_fixed_Insert
