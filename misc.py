@@ -242,10 +242,10 @@ def append_item(menu, id, text, xpm_file_or_artid=None):
         use_menu_icons = 0
     item = wx.MenuItem(menu, id, text)
     if wx.Platform == '__WXMSW__':
-        path = 'icons/msw/'
+        path = 'msw/'
     else:
-        path = 'icons/gtk/'
-    path = os.path.join(common.wxglade_path, path)
+        path = 'gtk/'
+    path = os.path.join(common.icons_path, path)
     if use_menu_icons and xpm_file_or_artid is not None:
         bmp = None
         if not xpm_file_or_artid.startswith('wxART_'):
