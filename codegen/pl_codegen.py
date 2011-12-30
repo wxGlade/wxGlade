@@ -1,7 +1,7 @@
 # pl_codegen.py: perl code generator
-# $Id: pl_codegen.py,v 1.41 2007/08/07 12:26:20 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 #
@@ -20,7 +20,10 @@ the lines to add to the '__init__', '__set_properties' and '__do_layout'
 methods of the parent object.
 """
 
-import sys, os, os.path
+import os
+import os.path
+import re
+import sys
 import common, config
 import cStringIO
 from xml_parse import XmlParsingError
@@ -146,7 +149,6 @@ class SourceFileContent:
         WARNING: There is *NO* support for here documents: if you put wxGlade
         blocks inside a here document, you're likely going into troubles...
         """
-        import re
         class_name = None
         new_classes_inserted = False
         # regexp to match class declarations
@@ -258,7 +260,6 @@ _use_gettext = False
 If True, enable gettext support
 """
 
-import re
 _quote_str_re = re.compile( r'\\(?![nrt])' )
 
 def quote_str(s):
@@ -326,7 +327,6 @@ def initialize(app_attrs):
 ##     if not os.path.isfile(widgets_file):
 ##         print >> sys.stderr, "widgets file (%s) doesn't exist" % widgets_file
 ##         return
-##     import sys
 ##     sys.path.append(common.widgets_path)
 ##     modules = open(widgets_file)
 ##     for line in modules:
@@ -430,7 +430,6 @@ def finalize():
         # now remove all the remaining <123415wxGlade ...> tags from the
         # source: this may happen if we're not generating multiple files,
         # and one of the container class names is changed
-        import re
         tags = re.findall('(#<%swxGlade replace ([a-zA-Z_]\w*) +\w+>)' % nonce,
                           previous_source.content)
         for tag in tags:
@@ -1372,7 +1371,6 @@ def setup():
     Code generator setup function. This is called once, when the code
     generator is loaded in wxglade.
     """
-    import sys
     # scan widgets.txt for widgets, load perl_codegen's
     widgets_file = os.path.join(common.widgets_path, 'widgets.txt')
     if not os.path.isfile(widgets_file):

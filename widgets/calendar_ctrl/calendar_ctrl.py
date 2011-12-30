@@ -1,14 +1,14 @@
 # calendar_ctrl.py: wxCalendarCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/calendar_ctrl/calendar_ctrl.py,v 1.11 2007/03/27 07:02:04 agriggio Exp $
-
+#
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
 from edit_windows import ManagedBase
 from tree import Tree
-import common, misc
+import common
 from widget_properties import *
 #import needed modules for the wxCalendarCtrl
 from wx.calendar import *

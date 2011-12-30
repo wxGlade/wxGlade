@@ -1,7 +1,7 @@
 # edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# $Id: edit_sizers.py,v 1.80 2007/08/07 12:21:55 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -188,8 +188,10 @@ class SizerHandleButton(Button):
         self.sizer = sizer
         self.menu = menu
         self._rmenu = None
-        try: self.SetUseFocusIndicator(False)
-        except AttributeError: pass
+        try:
+            self.SetUseFocusIndicator(False)
+        except AttributeError:
+            pass
 ##         # provide popup menu for removal
 ##         REMOVE_ID = wxNewId() 
 ##         self._rmenu = misc.wxGladePopupMenu(sizer.name)
@@ -716,9 +718,11 @@ class SizerBase(Sizer):
             oldname = self.name
             self.name = value
             self._btn.set_menu_title(value)
-            try: common.app_tree.refresh_name(self.node, oldname) #, self.name)
+            try:
+                common.app_tree.refresh_name(self.node, oldname)
             except AttributeError:
-                import traceback; traceback.print_exc()
+                import traceback
+                traceback.print_exc()
             self.property_window.SetTitle(_('Properties - <%s>') % self.name)
     set_name_pattern = re.compile('^[a-zA-Z_]+[\w0-9]*$')
             
@@ -764,8 +768,10 @@ class SizerBase(Sizer):
         self.property_window.Layout()
         self.property_window.SetTitle(_('Properties - <%s>') % self.name)
         if hasattr(self, 'node'): common.app_tree.select_item(self.node)
-        try: self._btn.SetFocus()
-        except AttributeError: pass
+        try:
+            self._btn.SetFocus()
+        except AttributeError:
+            pass
         
     def fit_parent(self, *args):
         """\
@@ -794,7 +800,8 @@ class SizerBase(Sizer):
             self.children[pos] = SizerItem(item, pos, option, flag, border,
                                            size)
         except IndexError: # this shouldn't happen!
-            import traceback; traceback.print_exc()
+            import traceback
+            traceback.print_exc()
             print self.children, pos
             raise SystemExit
 
@@ -866,7 +873,7 @@ class SizerBase(Sizer):
                 self.widget.SetItemMinSize(item.widget, w, h)
                 #*item.widget.GetBestSize())
             #self.widget.SetItemMinSize(item.widget, w, h)
-        except Exception, e:
+        except Exception:
             #import traceback; traceback.print_exc()
             pass
         if force_layout: self.layout() # update the layout of self
@@ -897,7 +904,8 @@ class SizerBase(Sizer):
         """\
         Updates the layout of the item at the given pos.
         """
-        try: item = self.children[pos]
+        try:
+            item = self.children[pos]
         except IndexError: # this shouldn't happen
             import traceback; traceback.print_exc()
             raise SystemExit
@@ -917,8 +925,10 @@ class SizerBase(Sizer):
     def _set_item_widget(self, pos, option, flag, border, size, force_layout):
         if not self.widget: return
         
-        try: elem = self.widget.GetChildren()[pos]
-        except IndexError: return # this may happen during xml loading
+        try:
+            elem = self.widget.GetChildren()[pos]
+        except IndexError:
+            return # this may happen during xml loading
 
         if option is not None:
             if not misc.check_wx_version(2, 5):
@@ -1000,7 +1010,8 @@ class SizerBase(Sizer):
         for c in self.children:
             try:
                 c.item.widget.Refresh()
-            except Exception, e: pass
+            except Exception:
+                pass
         if recursive:
             if getattr(self, 'sizer', None) is not None:
                 self.sizer.layout(recursive)
@@ -1061,7 +1072,8 @@ class SizerBase(Sizer):
         try:
             self.sizer.set_item(self.pos, option=self.option)
             #print self.name, 'set_option', self.option
-        except AttributeError, e: pass
+        except AttributeError:
+            pass
         self.finish_set()
 
     def set_flag(self, value):
@@ -1075,8 +1087,10 @@ class SizerBase(Sizer):
             if value[v]:
                 flags |= self.flags_pos[v]
         self.flag = flags
-        try: self.sizer.set_item(self.pos, flag=flags)
-        except AttributeError, e: pass
+        try:
+            self.sizer.set_item(self.pos, flag=flags)
+        except AttributeError:
+            pass
         self.finish_set()
 
     def set_border(self, value):
@@ -1085,8 +1099,10 @@ class SizerBase(Sizer):
         value of the border property
         """
         self.border = int(value)
-        try: self.sizer.set_item(self.pos, border=self.border)
-        except AttributeError, e: print e
+        try:
+            self.sizer.set_item(self.pos, border=self.border)
+        except AttributeError, e:
+            print e
 
     def get_option(self):
         if not hasattr(self, 'sizer'): return '1'
@@ -1104,15 +1120,19 @@ class SizerBase(Sizer):
                 retval[0] = 1; retval[1:5] = [0, 0, 0, 0]
             else:
                 retval[0] = 0
-        except AttributeError: pass
+        except AttributeError:
+            pass
         return retval
 
     def get_int_flag(self):
-        try: return self.flag
-        except AttributeError: return wx.EXPAND
+        try:
+            return self.flag
+        except AttributeError:
+            return wx.EXPAND
 
     def get_border(self):
-        if not hasattr(self, 'sizer'): return '0'
+        if not hasattr(self, 'sizer'):
+            return '0'
         return str(self.border)
 
     def remove(self):
@@ -1147,8 +1167,10 @@ class SizerBase(Sizer):
         def finish_set(self):
             for c in self.children:
                 if c.item.widget:
-                    try: c.item.widget.Refresh()
-                    except AttributeError: pass # sizers have no Refresh
+                    try:
+                        c.item.widget.Refresh()
+                    except AttributeError:
+                        pass # sizers have no Refresh
     else:
         def finish_set(self): pass
 
@@ -1156,8 +1178,10 @@ class SizerBase(Sizer):
         # this will be self.widget.Refresh
         for c in self.children:
             if c.item.widget: 
-                try: c.item.widget.Refresh()
-                except AttributeError: pass
+                try:
+                    c.item.widget.Refresh()
+                except AttributeError:
+                    pass
 
     def update_view(self, selected):
         if self._btn is not None:
@@ -1794,8 +1818,10 @@ class GridSizerBase(SizerBase):
     def _set_item_widget(self, pos, option, flag, border, size, force_layout):
         if not self.widget: return
         
-        try: elem = self.widget.GetChildren()[pos]
-        except IndexError: return # this may happen during xml loading
+        try:
+            elem = self.widget.GetChildren()[pos]
+        except IndexError:
+            return # this may happen during xml loading
 
         if option is not None:
             if not misc.check_wx_version(2, 5):
@@ -1965,7 +1991,8 @@ class EditFlexGridSizer(GridSizerBase):
         sizer.Fit(page)
         
     def set_growable_rows(self, value):
-        try: self.grow_rows = [int(i) for i in value.split(',')]
+        try:
+            self.grow_rows = [int(i) for i in value.split(',')]
         except:
             if not value.strip(): self.grow_rows = []
             else:
@@ -1979,7 +2006,8 @@ class EditFlexGridSizer(GridSizerBase):
                              page)
 
     def set_growable_cols(self, value):
-        try: self.grow_cols = [int(i) for i in value.split(',')]
+        try:
+            self.grow_cols = [int(i) for i in value.split(',')]
         except:
             if not value.strip(): self.grow_cols = []
             else:
@@ -2122,8 +2150,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory function to build EditBoxSizer objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError, _("'name' attribute missing")
     orientation = wx.VERTICAL # default value
     if sizer is not None: topl = False
     else: topl = True
@@ -2238,8 +2268,10 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory function to build EditGridSizer objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError, _("'name' attribute missing")
     if attrs['base'] == 'EditGridSizer': constructor = EditGridSizer
     else: constructor = EditFlexGridSizer
     if sizer is not None: 

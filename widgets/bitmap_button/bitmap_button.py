@@ -1,12 +1,13 @@
 # bitmap_button.py: wxBitmapButton objects
-# $Id: bitmap_button.py,v 1.26 2007/04/12 07:15:34 guyru Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
-import common, misc, os
+import common
+import misc
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
@@ -177,8 +178,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditBitmapButton objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: label = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        label = attrs['name']
+    except KeyError:
+        raise XmlParsingError, _("'name' attribute missing")
     if sizer is None or sizeritem is None:
         raise XmlParsingError, _("sizer or sizeritem object cannot be None")
     button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos,
@@ -187,8 +190,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
                    border=sizeritem.border) #, size=button.GetBestSize())
     node = Tree.Node(button)
     button.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos-1)
     return button
 
 

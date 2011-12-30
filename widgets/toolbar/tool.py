@@ -1,11 +1,11 @@
 # tool.py: Tool objects
-# $Id: tool.py,v 1.8 2007/03/27 07:01:51 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-from xml.sax.saxutils import escape, quoteattr
+from xml.sax.saxutils import escape
 from common import _encode_to_xml
 
 class Tool:

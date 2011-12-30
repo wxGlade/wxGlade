@@ -1,15 +1,16 @@
 # notebook.py: wxNotebook objects
-# $Id: notebook.py,v 1.32 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
-import common, misc
+import common
+import misc
 from tree import Tree
 from widget_properties import *
-from edit_windows import ManagedBase, WindowBase
+from edit_windows import ManagedBase
 from edit_sizers.edit_sizers import Sizer, SizerSlot
 
 try:

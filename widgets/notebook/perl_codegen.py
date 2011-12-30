@@ -1,7 +1,7 @@
 # perl_codegen.py : perl generator functions for wxNotebook objects
-# $Id: perl_codegen.py,v 1.6 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -32,7 +32,7 @@ class PerlCodeGenerator:
 
         if window.is_toplevel:
             klass = window.base
-            if klass != window.klass: klass = window.klass;
+            if klass != window.klass: klass = window.klass
             else: klass = plgen.cn(klass) #klass.replace('wx','Wx::',1)
 
             l = []

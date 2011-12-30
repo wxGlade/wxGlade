@@ -1,15 +1,15 @@
 # splitter_window.py: wxSplitterWindow objects
-# $Id: splitter_window.py,v 1.28 2007/08/07 12:15:21 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
-import common, misc
+import common
 from tree import Tree
 from widget_properties import *
-from edit_windows import ManagedBase, WindowBase, EditBase
+from edit_windows import ManagedBase
 from edit_sizers.edit_sizers import Sizer, SizerSlot
 
 

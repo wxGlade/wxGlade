@@ -1,14 +1,14 @@
 # datepicker_ctrl.py: wxDatePickerCtrl objects
-# $Header: /home/alb/tmp/wxglade_cvs_backup/wxGlade/widgets/datepicker_ctrl/datepicker_ctrl.py,v 1.5 2007/03/27 07:02:01 agriggio Exp $
-
+#
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
 from edit_windows import ManagedBase
 from tree import Tree
-import common, misc
+import common
 from widget_properties import *
 
 

@@ -1,10 +1,13 @@
 # misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# $Id: misc.py,v 1.47 2007/08/07 12:21:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
+import common
+
+import os
 #from wxPython.wx import *
 import wx
 
@@ -26,8 +29,10 @@ if wx.Platform == '__WXMSW__':
             if label:
                 w, h = self.GetTextExtent(label)
                 w += self.__radio_size + self.GetCharWidth()
-                if h < self.__radio_size: h = self.__radio_size
-            else: w = h = self.__radio_size;
+                if h < self.__radio_size:
+                    h = self.__radio_size
+            else:
+                w = h = self.__radio_size
             return w, h
 
     # end of class wxGladeRadioButton
@@ -49,7 +54,8 @@ class SelectionTag(wx.Window):
     """
     def __init__(self, parent, pos=None):
         kwds = { 'size': (7, 7) }
-        if pos: kwds['position'] = pos
+        if pos:
+            kwds['position'] = pos
         wx.Window.__init__(self, parent, -1, **kwds)
         self.SetBackgroundColour(wx.BLUE) #wx.BLACK)
         self.Hide()
@@ -121,7 +127,6 @@ class SelectionMarker:
 
 #----------------------------------------------------------------------------
 
-import common
 _encode = common._encode_from_xml
 
 def bound(number, lower, upper):
@@ -235,7 +240,6 @@ def append_item(menu, id, text, xpm_file_or_artid=None):
         use_menu_icons = config.preferences.use_menu_icons
     if wx.Platform == '__WXGTK__' and wx.VERSION == (2, 4, 1, 2, ''):
         use_menu_icons = 0
-    import common, os.path
     item = wx.MenuItem(menu, id, text)
     if wx.Platform == '__WXMSW__':
         path = 'icons/msw/'
@@ -358,7 +362,7 @@ def set_geometry(win, geometry):
 #-----------------------------------------------------------------------------
 # snagged out of the Python cookbook
 def import_name(module_path, name):
-    import imp, os
+    import imp
     path, mname = os.path.split(module_path)
     #print 'path, mname =', path, mname
     mname = os.path.splitext(mname)[0]
@@ -370,7 +374,8 @@ def import_name(module_path, name):
         finally:
             mfile.close()
     except ImportError:
-        import traceback; traceback.print_exc()
+        import traceback
+        traceback.print_exc()
         return None
     return vars(module)[name]
 
@@ -457,7 +462,6 @@ _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
 del re
     
 def get_xpm_bitmap(path):
-    import os
     bmp = wx.NullBitmap
     if not os.path.exists(path):
         if '.zip' in path:
@@ -475,7 +479,8 @@ def get_xpm_bitmap(path):
 ##                     for d in data: print d
                     bmp = wx.BitmapFromXPMData(data)
                 except:
-                    import traceback; traceback.print_exc()
+                    import traceback
+                    traceback.print_exc()
                     bmp = wx.NullBitmap
     else:
         bmp = wx.Bitmap(path, wx.BITMAP_TYPE_XPM)
@@ -487,7 +492,6 @@ def get_relative_path(path, for_preview=False):
     Get an absolute path relative to the current output directory (where the
     code is generated).
     """
-    import os
     if os.path.isabs(path):
         return path
     p = common.app_tree.app.output_path

@@ -1,7 +1,7 @@
 # toolbar.py: wxToolBar objects
-# $Id: toolbar.py,v 1.26 2007/08/07 12:18:33 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -9,11 +9,14 @@ import wx
 #from wxPython.lib.filebrowsebutton import FileBrowseButton
 from wx.lib.filebrowsebutton import FileBrowseButton
 
-import common, math, misc, os
+import common
+import math
+import misc
+import os
 from tree import Tree
 from tool import *
 from widget_properties import *
-from edit_windows import EditBase, TopLevelBase, PreviewMixin
+from edit_windows import EditBase, PreviewMixin
 
 
 class _MyBrowseButton(FileBrowseButton):
@@ -529,7 +532,6 @@ class EditToolBar(EditBase, PreviewMixin):
             self._tb = wx.ToolBar(self.widget, -1, style=tb_style)
             self.widget.SetToolBar(self._tb)
             self.widget.SetBackgroundColour(self._tb.GetBackgroundColour())
-            import os
             icon = wx.EmptyIcon()
             xpm = os.path.join(common.icons_path, 'toolbar.xpm')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))

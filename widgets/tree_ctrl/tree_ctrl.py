@@ -1,14 +1,14 @@
 # text_ctrl.py: wxTreeCtrl objects
-# $Id: tree_ctrl.py,v 1.12 2007/03/27 07:01:50 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
 from edit_windows import ManagedBase
 from tree import Tree
-import common, misc
+import common
 from widget_properties import *
 
 

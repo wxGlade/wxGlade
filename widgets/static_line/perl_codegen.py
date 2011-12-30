@@ -1,7 +1,7 @@
 # perl_codegen.py : perl generator functions for wxStaticLine objects
-# $Id: perl_codegen.py,v 1.4 2005/08/15 07:45:36 crazyinsomniac Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -36,7 +36,7 @@ class PerlCodeGenerator:
             prefix = 'my $%s' % obj.name
             obj.name = '$' + obj.name    # the yuck (needed for pl_codegen.py)
 
-        klass = obj.base;
+        klass = obj.base
         if klass != obj.klass:
             klass = obj.klass 
         else:
