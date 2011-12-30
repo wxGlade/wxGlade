@@ -1,7 +1,7 @@
 # static_bitmap.py: wxStaticBitmap objects
-# $Id: static_bitmap.py,v 1.21 2007/03/27 07:01:53 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -10,7 +10,6 @@ import common, misc
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
-import os
 
 
 class EditStaticBitmap(ManagedBase):
@@ -144,8 +143,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditStaticBitmap objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: label = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    try:
+        label = attrs['name']
+    except KeyError:
+        raise XmlParsingError, "'name' attribute missing"
     if sizer is None or sizeritem is None:
         raise XmlParsingError, "sizer or sizeritem object cannot be None"
     bitmap = EditStaticBitmap(label, parent, wx.NewId(), '', sizer, pos,
@@ -154,8 +155,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
                    border=sizeritem.border) #, size=bitmap.GetBestSize())
     node = Tree.Node(bitmap)
     bitmap.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos-1)
     return bitmap
 
 

@@ -1,11 +1,11 @@
 # codegen.py: code generator functions for wxStaticBitmap objects
-# $Id: perl_codegen.py,v 1.11 2007/03/27 07:01:53 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import common, os
+import common
 
 #this should be in common 
 _bmp_str_types = {
@@ -56,9 +56,10 @@ class PerlCodeGenerator:
             prefix = '$self'
 
         style = prop.get('style')
-        if not style: style = ''
+        if not style:
+            style = ''
 
-        klass = obj.base;
+        klass = obj.base
         if klass != obj.klass:
             klass = obj.klass
         else:

@@ -1,7 +1,7 @@
 # button.py: wxButton objects
-# $Id: button.py,v 1.24 2007/03/31 09:55:43 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -124,7 +124,7 @@ class EditButton(ManagedBase):
     def set_stockitem(self, value):
         self.stockitem = misc.wxstr(value)
         if self.stockitem != "None":
-            l = ButtonStockItems.stock_ids[self.stockitem];
+            l = ButtonStockItems.stock_ids[self.stockitem]
             self.set_label(l)
             self.properties['label'].set_value(l)
             if self.properties['label'].panel is not None:

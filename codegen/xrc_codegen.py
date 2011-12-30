@@ -1,7 +1,7 @@
 # xrc_codegen.py: wxWidgets resources XRC code generator
-# $Id: xrc_codegen.py,v 1.21 2007/03/27 07:02:06 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -14,8 +14,7 @@ return an instance of XrcObject
 import common, config
 import sys
 import cStringIO
-from xml_parse import XmlParsingError
-from xml.sax.saxutils import escape, quoteattr, unescape
+from xml.sax.saxutils import escape, quoteattr
 
 language = "XRC"
 writer = sys.modules[__name__]

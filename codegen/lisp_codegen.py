@@ -1,7 +1,7 @@
 # lisp_codegen.py: lisp code generator
-# $Id: lisp_codegen.py,v 1.5 2006/11/30 16:25:33 jkt Exp $
 #
 # Copyright (c) 2005 Surendra K Singhi <efuzzyone@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -18,11 +18,14 @@ the lines to add to the '__init__', '__set_properties' and '__do_layout'
 methods of the parent object.
 """
 
-import sys, os, os.path
+import os
+import os.path
+import re
+import sys
+
 import common, config
 import cStringIO
 from xml_parse import XmlParsingError
-import re
 
 try:
     set
@@ -1351,7 +1354,6 @@ def setup():
     Code generator setup function. This is called once, when the code
     generator is loaded in wxglade.
     """
-    import sys
     # scan widgets.txt for widgets, load lisp_codegen's
     widgets_file = os.path.join(common.widgets_path, 'widgets.txt')
     if not os.path.isfile(widgets_file):

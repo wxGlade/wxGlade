@@ -1,14 +1,17 @@
 # cpp_codegen.py: C++ code generator
-# $Id: cpp_codegen.py,v 1.49 2007/03/30 06:37:53 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import sys, os, os.path
-import common, config
-import cStringIO, re
-from xml_parse import XmlParsingError
+import sys
+import os
+import os.path
+import common
+import config
+import cStringIO
+import re
 
 # these two globals must be defined for every code generator module
 language = 'C++'

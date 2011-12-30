@@ -1,8 +1,8 @@
 # main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
 # to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# $Id: main.py,v 1.84 2007/08/07 12:21:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -904,7 +904,6 @@ class wxGladeFrame(wx.Frame):
 
 class wxGlade(wx.App):
     def OnInit(self):
-        import sys
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         # needed for wx >= 2.3.4 to disable wxPyAssertionError exceptions

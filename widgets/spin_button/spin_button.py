@@ -1,15 +1,16 @@
 # spin_button.py: wxSpinButton objects
-# $Id: spin_button.py,v 1.5 2006/11/07 15:06:25 jkt Exp $
 #
 # Copyright (c) 2004 D.H. aka crazyinsomniac at users.sourceforge.net
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
+#
 # based on wxGlade/widgets/spin_ctrl/
 
 import wx
 from edit_windows import ManagedBase
 from tree import Tree
-import common, misc
+import common
 from widget_properties import *
 
    

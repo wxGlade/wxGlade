@@ -1,16 +1,16 @@
 # menubar.py: wxMenuBar objects
-# $Id: menubar.py,v 1.28 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
-import common, math, misc
+import common, misc
 from tree import Tree
 from MenuTree import *
 from widget_properties import *
-from edit_windows import EditBase, TopLevelBase, PreviewMixin
+from edit_windows import EditBase, PreviewMixin
 
 
 class MenuItemDialog(wx.Dialog):
