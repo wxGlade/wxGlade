@@ -38,8 +38,8 @@ SOURCE_FILES      = $(wildcard $(BASE_DIR)/*.py) $(shell find $(SOURCE_DIRS) -na
 PYLINT_BIN        = pylint
 PYLINT_OPTS       = --additional-builtins=_ --disable=C \
                     '--dummy-variables=_|dummy|event|empty|unused|i' \
-                    --disable=W0105,W0401,W0403,W0614 \
-                    --disable=R0201,R0901,R0902,R0904,R0912,R0913,R0914,R0915 \
+                    --disable=W0105,W0212,W0401,W0403,W0614 \
+                    --disable=R0201,R0901,R0902,R0903,R0904,R0912,R0913,R0914,R0915 \
                     --include-ids=y --reports=n
 PYLINT_PATH       = "$(BASE_DIR):$(BASE_DIR)/widgets"
 PYTHON_BIN        = python
