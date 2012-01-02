@@ -949,10 +949,6 @@ def main(filename=None):
     """
     print _("Using wxPython %s") % wx.__version__
 
-    # first thing to do, patch wxSizerPtr's Insert if needed...
-##     if wx.__version__ == '2.4.0.2':
-##         wxSizerPtr.Insert = misc.sizer_fixed_Insert
-
     # now, silence a deprecation warining for py2.3
     import warnings
     warnings.filterwarnings("ignore", "integer", DeprecationWarning,
