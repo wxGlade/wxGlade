@@ -235,20 +235,28 @@ def load_code_writers():
     sys.path.insert(0, codegen_path)
     for module in os.listdir(codegen_path):
         name = os.path.splitext(module)[0]
-        if name not in sys.modules and \
-               os.path.isfile(os.path.join(codegen_path, module)):
-            try:
-                writer = __import__(name).writer
-            except (ImportError, AttributeError, ValueError):
-                if use_gui:
-                    print _('"%s" is not a valid code generator module') % \
-                          module
-            else:
-                code_writers[writer.language] = writer
-                if hasattr(writer, 'setup'):
-                    writer.setup()
-                if use_gui:
-                    print _('loaded code generator for %s') % writer.language
+        # skip __init__
+        if name == "__init__":
+            continue
+        # allow regular files only
+        if not os.path.isfile(os.path.join(codegen_path, module)):
+            continue
+        # skip already imported modules
+        if name in sys.modules:
+            continue
+        # import file and initiate code writer
+        try:
+            writer = __import__(name).writer
+        except (ImportError, AttributeError, ValueError):
+            if use_gui:
+                print _('"%s" is not a valid code generator module') % \
+                      module
+        else:
+            code_writers[writer.language] = writer
+            if hasattr(writer, 'setup'):
+                writer.setup()
+            if use_gui:
+                print _('loaded code generator for %s') % writer.language
 
 
 def load_widgets():
