@@ -8,7 +8,6 @@
 import common
 
 import os
-#from wxPython.wx import *
 import wx
 
 if wx.Platform == '__WXMSW__':
@@ -186,7 +185,8 @@ if wx.Platform == '__WXGTK__':
         def SetTitle(self, title):
             self.SetLabel(self.TITLE_ID, title)
 
-else: wxGladePopupMenu = wx.Menu
+else:
+    wxGladePopupMenu = wx.Menu
 
 
 def check_wx_version(major, minor=0, release=0, revision=0):
@@ -194,8 +194,6 @@ def check_wx_version(major, minor=0, release=0, revision=0):
     returns True if the current wxPython version is at least
     major.minor.release
     """
-    #from wxPython import wx
-    import wx
     #return wx.__version__ >= "%d.%d.%d.%d" % (major, minor, release, revision)
     return wx.VERSION[:-1] >= (major, minor, release, revision)
 
