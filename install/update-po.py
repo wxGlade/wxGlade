@@ -101,6 +101,10 @@ def getlanguageDict():
 
     return languageDict
 
+# -----------------------------------------------------------------------------
+# m a k e P O ( )         -- Build the Portable Object file for the application --
+# ^^^^^^^^^^^^^^^
+#
 def makePO(applicationDirectoryPath,  applicationDomain=None, verbose=0) :
     """Build the Portable Object Template file for the application.
 
@@ -126,7 +130,7 @@ def makePO(applicationDirectoryPath,  applicationDomain=None, verbose=0) :
     """
 
     if applicationDomain is None:
-        applicationName = os.path.basename(os.path.splitext(applicationDirectoryPath)[0])
+        applicationName = fileBaseOf(applicationDirectoryPath,withPath=0)
     else:
         applicationName = applicationDomain
     currentDir = os.getcwd()
@@ -134,6 +138,13 @@ def makePO(applicationDirectoryPath,  applicationDomain=None, verbose=0) :
     if not os.path.exists('app.fil'):
         raise IOError(2,'No module file: app.fil')
 
+    # Steps:                                  
+    #  Use xgettext to parse all application modules
+    #  The following switches are used:
+    #  
+    #   -s                          : sort output by string content (easier to use when we need to merge several .po files)
+    #   --files-from=app.fil        : The list of files is taken from the file: app.fil
+    #   --output=                   : specifies the name of the output file (using a .pot extension)
     cmd = 'xgettext -s --no-wrap --files-from=app.fil --output=messages.pot'
     if verbose: print cmd
     os.system(cmd)                                                
@@ -151,12 +162,16 @@ def makePO(applicationDirectoryPath,  applicationDomain=None, verbose=0) :
                 os.system(cmd)
     os.chdir(currentDir)
 
+# -----------------------------------------------------------------------------
+# c a t P O ( )         -- Concatenate one or several PO files with the application domain files. --
+# ^^^^^^^^^^^^^
+#
 def catPO(applicationDirectoryPath, listOf_extraPo, applicationDomain=None, targetDir=None, verbose=0) :
     """Concatenate one or several PO files with the application domain files.
     """
 
     if applicationDomain is None:
-        applicationName = os.path.basename(os.path.splitext(applicationDirectoryPath)[0])
+        applicationName = fileBaseOf(applicationDirectoryPath,withPath=0)
     else:
         applicationName = applicationDomain
     currentDir = os.getcwd()
@@ -185,6 +200,10 @@ def catPO(applicationDirectoryPath, listOf_extraPo, applicationDomain=None, targ
                     os.system(cmd)
     os.chdir(currentDir)
 
+# -----------------------------------------------------------------------------
+# m a k e M O ( )         -- Compile the Portable Object files into the Machine Object stored in the right location. --
+# ^^^^^^^^^^^^^^^
+# 
 def makeMO(applicationDirectoryPath,targetDir='./locale',applicationDomain=None, verbose=0, forceEnglish=0) :
     """Compile the Portable Object files into the Machine Object stored in the right location.
 
@@ -208,7 +227,7 @@ def makeMO(applicationDirectoryPath,targetDir='./locale',applicationDomain=None,
         print "Target directory for .mo files is: %s" % targetDir
 
     if applicationDomain is None:
-        applicationName = os.path.basename(os.path.splitext(applicationDirectoryPath)[0])
+        applicationName = fileBaseOf(applicationDirectoryPath,withPath=0)
     else:
         applicationName = applicationDomain
     currentDir = os.getcwd()
@@ -224,18 +243,161 @@ def makeMO(applicationDirectoryPath,targetDir='./locale',applicationDomain=None,
             if os.path.exists(langPOfileName):
                 mo_targetDir = "%s/%s/LC_MESSAGES" % (targetDir,langCode) 
                 if not os.path.exists(mo_targetDir):
-                    os.makedirs(mo_targetDir)
+                    mkdir(mo_targetDir)
                 cmd = 'msgfmt --output-file="%s/%s.mo" "%s_%s.po"' % (mo_targetDir,applicationName,applicationName,langCode)
                 if verbose: print cmd
                 os.system(cmd)
     os.chdir(currentDir)
    
+# -----------------------------------------------------------------------------
+# p r i n t U s a g e         -- Displays how to use this script from the command line --
+# ^^^^^^^^^^^^^^^^^^^
+#
+def printUsage(errorMsg=None) :
+    """Displays how to use this script from the command line."""
+    print """
+    ##################################################################################
+    #   mki18n :   Make internationalization files.                                  #
+    #              Uses the GNU gettext system to create PO (Portable Object) files  #
+    #              from source code, coimpile PO into MO (Machine Object) files.     #
+    #              Supports C,C++,Python source files.                               #
+    #                                                                                #
+    #   Usage: mki18n {OPTION} [appDirPath]                                          #
+    #                                                                                #
+    #   Options:                                                                     #
+    #     -e               : When -m is used, forces English .mo file creation       #
+    #     -h               : prints this help                                        #
+    #     -m               : make MO from existing PO files                          #
+    #     -p               : make PO, update PO files: Creates a new messages.pot    #
+    #                        file. Creates a dom_xx.po.new for every existing        #
+    #                        language specific .po file. ('xx' stands for the ISO639 #
+    #                        two-letter language code and 'dom' stands for the       #
+    #                        application domain name).  mki18n requires that you     #
+    #                        write a 'app.fil' file  which contains the list of all  #
+    #                        source code to parse.                                   #
+    #     -v               : verbose (prints comments while running)                 #
+    #     --domain=appName : specifies the application domain name.  By default      #
+    #                        the directory name is used.                             #
+    #     --moTarget=dir : specifies the directory where .mo files are stored.       #
+    #                      If not specified, the target is './locale'                #
+    #                                                                                #
+    #   You must specify one of the -p or -m option to perform the work.  You can    #
+    #   specify the path of the target application.  If you leave it out mki18n      #
+    #   will use the current directory as the application main directory.            #        
+    #                                                                                #
+    ##################################################################################"""
+    if errorMsg:
+        print "\n   ERROR: %s" % errorMsg
+
+# -----------------------------------------------------------------------------
+# f i l e B a s e O f ( )         -- Return base name of filename --
+# ^^^^^^^^^^^^^^^^^^^^^^^
+# 
+def fileBaseOf(filename,withPath=0) :
+    """fileBaseOf(filename,withPath) ---> string
+
+    Return base name of filename.  The returned string never includes the extension.
+    Use os.path.basename() to return the basename with the extension.  The 
+    second argument is optional.  If specified and if set to 'true' (non zero) 
+    the string returned contains the full path of the file name.  Otherwise the 
+    path is excluded.
+ 
+    [Example]
+    >>> fn = 'd:/dev/telepath/tvapp/code/test.html'
+    >>> fileBaseOf(fn)
+    'test'
+    >>> fileBaseOf(fn)
+    'test'
+    >>> fileBaseOf(fn,1)
+    'd:/dev/telepath/tvapp/code/test'
+    >>> fileBaseOf(fn,0)
+    'test'
+    >>> fn = 'abcdef'
+    >>> fileBaseOf(fn)
+    'abcdef'
+    >>> fileBaseOf(fn,1)
+    'abcdef'
+    >>> fn = "abcdef."
+    >>> fileBaseOf(fn)
+    'abcdef'
+    >>> fileBaseOf(fn,1)
+    'abcdef'
+    """            
+    pos = filename.rfind('.')             
+    if pos > 0:
+        filename = filename[:pos]
+    if withPath:
+        return filename
+    else:
+        return os.path.basename(filename)
+# -----------------------------------------------------------------------------
+# m k d i r ( )         -- Create a directory (and possibly the entire tree) --
+# ^^^^^^^^^^^^^
+# 
+def mkdir(directory) :
+    """Create a directory (and possibly the entire tree).
+ 
+    The os.mkdir() will fail to create a directory if one of the
+    directory in the specified path does not exist.  mkdir()
+    solves this problem.  It creates every intermediate directory
+    required to create the final path. Under Unix, the function 
+    only supports forward slash separator, but under Windows and MacOS
+    the function supports the forward slash and the OS separator (backslash
+    under windows).
+    """ 
+ 
+    # translate the path separators
+    directory = unixpath(directory)
+    # build a list of all directory elements
+    aList = filter(lambda x: len(x)>0, directory.split('/'))
+    theLen = len(aList)                     
+    # if the first element is a Windows-style disk drive
+    # concatenate it with the first directory
+    if aList[0].endswith(':'):
+        if theLen > 1:
+            aList[1] = aList[0] + '/' + aList[1]
+            del aList[0]      
+            theLen -= 1         
+    # if the original directory starts at root,
+    # make sure the first element of the list 
+    # starts at root too
+    if directory[0] == '/':     
+        aList[0] = '/' + aList[0]
+    # Now iterate through the list, check if the 
+    # directory exists and if not create it
+    theDir = ''
+    for i in range(theLen):
+        theDir += aList[i]
+        if not os.path.exists(theDir):
+            os.mkdir(theDir)
+        theDir += '/'   
+       
+# -----------------------------------------------------------------------------
+# u n i x p a t h ( )         -- Return a path name that contains Unix separator. --
+# ^^^^^^^^^^^^^^^^^^^
+# 
+def unixpath(thePath) :
+    r"""Return a path name that contains Unix separator.
+ 
+    [Example]
+    >>> unixpath(r"d:\test")
+    'd:/test'
+    >>> unixpath("d:/test/file.txt")
+    'd:/test/file.txt'
+    >>> 
+    """
+    thePath = os.path.normpath(thePath)
+    if os.sep == '/':
+        return thePath
+    else:
+        return thePath.replace(os.sep,'/')
+
 # ----------------------------------------------------------------------------- 
 
 # S c r i p t   e x e c u t i o n               -- Runs when invoked from the command line --
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # 
-if __name__ == "__not_used__":#"__main__":
+if __name__ == "__main__":
     import getopt     # command line parsing
     argc = len(sys.argv)
     if argc == 1:
@@ -252,7 +414,7 @@ if __name__ == "__not_used__":#"__main__":
     option['domain'] = None
     option['moTarget'] = None
     try:
-	    optionList,pargs = getopt.getopt(sys.argv[1:],validOptions,validLongOptions):
+        optionList,pargs = getopt.getopt(sys.argv[1:],validOptions,validLongOptions)
     except getopt.GetoptError, e:
         printUsage(e[0])
         sys.exit(1)       
@@ -277,7 +439,7 @@ if __name__ == "__not_used__":#"__main__":
         sys.exit(1)
     if option['domain'] is None:
         # If no domain specified, use the name of the target directory
-        option['domain'] = os.path.basename(os.path.splitext(appDirPath)[0])
+        option['domain'] = fileBaseOf(appDirPath)
     if option['verbose']:
         print "Application domain used is: '%s'" % option['domain']
     if option['po']:
