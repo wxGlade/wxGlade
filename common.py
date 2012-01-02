@@ -561,7 +561,6 @@ class MessageLogger(object):
         kind = kind.upper()
         if use_gui:
             import misc
-##             import wx
             if args:
                 msg = misc.wxstr(fmt) % tuple([misc.wxstr(a) for a in args])
             else:

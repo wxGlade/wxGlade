@@ -95,11 +95,9 @@ class wxGladeAboutBox(wx.Dialog):
                     import webbrowser
                     webbrowser.open(linkinfo.GetHref(), new=True)
         html = HtmlWin(self, -1, size=(400, -1))
-        if misc.check_wx_version(2, 5, 3):
-            try:
-                html.SetStandardFonts()
-            except AttributeError:
-                pass
+        # it's recommended at least for GTK2 based wxPython
+        if "gtk2" in wx.PlatformInfo:
+            html.SetStandardFonts()
         bgcolor = misc.color_to_string(self.GetBackgroundColour())
         icon_path = os.path.join(common.icons_path, 'wxglade_small.png')
         html.SetPage(self.text % (bgcolor, icon_path, common.version,

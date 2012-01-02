@@ -1,7 +1,7 @@
 # edit_windows.py: base classes for windows used by wxGlade
-# $Id: edit_windows.py,v 1.90 2007/08/07 12:21:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -145,11 +145,7 @@ constructor will be used. You should probably not use this if \
         """
         self.notebook = wx.Notebook(self.property_window, -1)
 
-        if not misc.check_wx_version(2, 5, 2):
-            nb_sizer = wx.NotebookSizer(self.notebook)
-            self.notebook.sizer = nb_sizer
-        else:
-            self.notebook.sizer = None
+        self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
 
@@ -168,7 +164,7 @@ constructor will be used. You should probably not use this if \
         value = "%s" % value
         if not config.preferences.allow_duplicate_names and \
                (self.widget and common.app_tree.has_name(value, self.node)):
-            misc.wxCallAfter(
+            wx.CallAfter(
                 wx.MessageBox, _('Name "%s" is already in use.\n'
                 'Please enter a different one.') % value, _("Error"),
                 wx.OK|wx.ICON_ERROR)
@@ -210,7 +206,7 @@ constructor will be used. You should probably not use this if \
                 PREVIEW_ID = wx.NewId()
                 misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
                 def bind(method):
-                    return lambda e: misc.wxCallAfter(method)
+                    return lambda e: wx.CallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
                 wx.EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
                 wx.EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
@@ -510,7 +506,7 @@ class WindowBase(EditBase):
             done = False
             for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
-                    misc.wxCallAfter(function)
+                    wx.CallAfter(function)
                     done = True
                     break
             if not done:
@@ -711,8 +707,7 @@ class WindowBase(EditBase):
             self.size = value
             if self.widget:
                 if use_dialog_units: size = wx.DLG_SZE(self.widget, size)
-                if misc.check_wx_version(2, 5):
-                    self.widget.SetMinSize(size)
+                self.widget.SetMinSize(size)
                 self.widget.SetSize(size)
                 try:
                     #self.sizer.set_item(self.pos, size=self.widget.GetSize())
@@ -817,10 +812,9 @@ class ManagedBase(WindowBase):
                        'wxALIGN_CENTER_VERTICAL', 'wxSHAPED',
                        'wxADJUST_MINSIZE')
         # ALB 2004-08-16 - see the "wxPython migration guide" for details...
-        if misc.check_wx_version(2, 5, 2):
-            self.flag = wx.ADJUST_MINSIZE #wxFIXED_MINSIZE
-            self.flags_pos += (wx.FIXED_MINSIZE, )
-            flag_labels += ('wxFIXED_MINSIZE', )
+        self.flag = wx.ADJUST_MINSIZE #wxFIXED_MINSIZE
+        self.flags_pos += (wx.FIXED_MINSIZE, )
+        flag_labels += ('wxFIXED_MINSIZE', )
         sizer.add_item(self, pos)
 
         szprop = self.sizer_properties
@@ -1119,7 +1113,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
                                  wx.ART_DELETE)
                 misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
                 def bind(method):
-                    return lambda e: misc.wxCallAfter(method)
+                    return lambda e: wx.CallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
                 wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 # paste

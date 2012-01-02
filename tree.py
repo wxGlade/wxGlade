@@ -368,13 +368,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
             return
         name = child.widget.__class__.__name__
         image_index = WidgetTree.images.get(name, -1)
-        if parent is None: parent = parent.item = self.GetRootItem()
+        if parent is None:
+            parent = parent.item = self.GetRootItem()
 
         index = 0
-        if misc.check_wx_version(2, 5):
-            item, cookie = self.GetFirstChild(parent.item)
-        else:
-            item, cookie = self.GetFirstChild(parent.item, 1)
+        item, cookie = self.GetFirstChild(parent.item)
         while item.IsOk():
             item_pos = self.GetPyData(item).widget.pos
             if pos < item_pos: break
@@ -680,10 +678,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.select_item(node)
         
     def _get_first_child(self, item):
-        if misc.check_wx_version(2, 5):
-            return self.GetFirstChild(item)
-        else:
-            return self.GetFirstChild(item, 1)
+        return self.GetFirstChild(item)
         
 # end of class WidgetTree
 

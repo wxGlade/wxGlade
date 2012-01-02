@@ -248,13 +248,14 @@ class Preferences(ConfigParser):
         
 preferences = None
 
-if sys.platform == 'win32': _rc_name = 'wxglade.ini'
-else: _rc_name = 'wxgladerc'
+if sys.platform == 'win32':
+    _rc_name = 'wxglade.ini'
+else:
+    _rc_name = 'wxgladerc'
 
 _use_file_history = False
 if common.use_gui:
-    import misc
-    if misc.check_wx_version(2, 3, 3): _use_file_history = True
+    _use_file_history = True
 
 
 def init_preferences():
@@ -296,10 +297,7 @@ def save_preferences():
     # always save the file history
     if _use_file_history:
         fh = common.palette.file_history
-        if misc.check_wx_version(2, 5):
-            count = fh.GetCount()
-        else:
-            count = fh.GetNoHistoryFiles()
+        count = fh.GetCount()
         encoding = 'utf-8'
         filenames = [common._encode_to_xml(fh.GetHistoryFile(i), encoding)
                      for i in range(min(preferences.number_history, count))]

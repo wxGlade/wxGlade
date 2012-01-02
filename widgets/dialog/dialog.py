@@ -1,7 +1,7 @@
 # dialog.py: wxDialog objects
-# $Id: dialog.py,v 1.30 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -25,8 +25,7 @@ class EditDialog(TopLevelBase):
         style_labels = ('#section#' + _('Style'), 'wxDEFAULT_DIALOG_STYLE',
                         'wxDIALOG_MODAL', 'wxCAPTION',
                         'wxRESIZE_BORDER', 'wxSYSTEM_MENU')
-        if misc.check_wx_version(2, 5):
-            style_labels += ('wxCLOSE_BOX', 'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX')
+        style_labels += ('wxCLOSE_BOX', 'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX')
         style_labels += ('wxTHICK_FRAME',
                          'wxSTAY_ON_TOP', 'wxNO_3D', 'wxDIALOG_NO_PARENT',
                          'wxNO_FULL_REPAINT_ON_RESIZE',
@@ -58,8 +57,7 @@ class EditDialog(TopLevelBase):
         self.style_pos = (wx.DEFAULT_DIALOG_STYLE,
                           wx.DIALOG_MODAL, wx.CAPTION, wx.RESIZE_BORDER,
                           wx.SYSTEM_MENU)
-        if misc.check_wx_version(2, 5):
-            self.style_pos += (wx.CLOSE_BOX, wx.MAXIMIZE_BOX, wx.MINIMIZE_BOX)
+        self.style_pos += (wx.CLOSE_BOX, wx.MAXIMIZE_BOX, wx.MINIMIZE_BOX)
         self.style_pos += (wx.THICK_FRAME, wx.STAY_ON_TOP, wx.NO_3D,
                            wx.DIALOG_NO_PARENT, wx.NO_FULL_REPAINT_ON_RESIZE,
                            wx.FULL_REPAINT_ON_RESIZE,

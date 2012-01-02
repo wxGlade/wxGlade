@@ -21,8 +21,7 @@ class SizerSlot:
         self.menu = None
 
     def create_widget(self):
-        if misc.check_wx_version(2, 5, 2): style = wx.FULL_REPAINT_ON_RESIZE
-        else: style = 0
+        style = wx.FULL_REPAINT_ON_RESIZE
         self.widget = wx.Window(self.parent.widget, -1, size=(20, 20),
                                style=style)
         self.widget.SetBackgroundColour(wx.LIGHT_GREY)
@@ -40,7 +39,7 @@ class SizerSlot:
             evt_key = event.GetKeyCode()
             for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
-                    misc.wxCallAfter(function)
+                    wx.CallAfter(function)
                     break
             #event.Skip()
         wx.EVT_KEY_DOWN(self.widget, on_key_down)
@@ -89,7 +88,7 @@ class SizerSlot:
             misc.append_item(self.menu, PASTE_ID, _('Paste\tCtrl+V'),
                              wx.ART_PASTE)
             def bind(method):
-                return lambda e: misc.wxCallAfter(method)
+                return lambda e: wx.CallAfter(method)
             wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
             wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
 
@@ -218,7 +217,7 @@ class SizerHandleButton(Button):
             evt_key = event.GetKeyCode()
             for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
-                    misc.wxCallAfter(function)
+                    wx.CallAfter(function)
                     break
             #event.Skip()
         wx.EVT_KEY_DOWN(self, on_key_down)
@@ -237,7 +236,7 @@ class SizerHandleButton(Button):
             REMOVE_ID = wx.NewId() 
             self._rmenu = misc.wxGladePopupMenu(self.sizer.name)
             def bind(method):
-                return lambda e: misc.wxCallAfter(method)
+                return lambda e: wx.CallAfter(method)
             #self._rmenu.Append(REMOVE_ID, 'Remove\tDel')
             misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
                              wx.ART_DELETE)
@@ -640,7 +639,7 @@ class SizerBase(Sizer):
         return self.pos - 1
     
     def set_pos(self, value):
-        misc.wxCallAfter(self.sizer.change_item_pos, 
+        wx.CallAfter(self.sizer.change_item_pos, 
                          self, min(value + 1, len(self.sizer.children) - 1))
 
     def update_pos(self, value):
@@ -649,19 +648,14 @@ class SizerBase(Sizer):
         self.pos = value
 
     def change(self, *args):
-        # if wxPython < 2.3.3, wxCallAfter is defined in misc.py
-        misc.wxCallAfter(change_sizer, self, self.klass_prop.get_value())
+        wx.CallAfter(change_sizer, self, self.klass_prop.get_value())
 
     def create_properties(self):
         """\
         Displays the Properties of self
         """
         self.notebook = wx.Notebook(common.property_panel, -1)
-        if not misc.check_wx_version(2, 5, 2):
-            nb_sizer = wx.NotebookSizer(self.notebook)
-            self.notebook.sizer = nb_sizer
-        else:
-            self.notebook.sizer = None
+        self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
         panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         sizer_tmp = wx.BoxSizer(wx.VERTICAL)
@@ -706,7 +700,7 @@ class SizerBase(Sizer):
         value = "%s" % value
         if not config.preferences.allow_duplicate_names and \
                (self.widget and common.app_tree.has_name(value, self.node)):
-            misc.wxCallAfter(
+            wx.CallAfter(
                 wx.MessageBox, _('Name "%s" is already in use.\n'
                 'Please enter a different one.') % value, _("Error"),
                 wx.OK|wx.ICON_ERROR)
@@ -835,25 +829,12 @@ class SizerBase(Sizer):
             self.widget.SetItemMinSize(item.widget, w, h)
             return
 
-        if not misc.check_wx_version(2, 5):
-            if elem.IsWindow(): # remove the previous item at pos
-                w = elem.GetWindow()
-                elem.SetWindow(None)
-                w.Destroy()
-            try: # let's see if the item to add is a window
-                elem.SetWindow(item.widget)
-            except TypeError: # suppose the item to add is a sizer
-                elem.SetSizer(item.widget)
-            elem.SetOption(option)
-            elem.SetFlag(flag)
-            elem.SetBorder(border)
-        else:
-            self.widget.Insert(pos, item.widget, option, flag, border)
-            self.widget.Remove(pos+1)
-            if elem.IsWindow():
-                w = elem.GetWindow()
-                w.SetContainingSizer(None)
-                w.Destroy()
+        self.widget.Insert(pos, item.widget, option, flag, border)
+        self.widget.Remove(pos+1)
+        if elem.IsWindow():
+            w = elem.GetWindow()
+            w.SetContainingSizer(None)
+            w.Destroy()
                 
         try: # if the item was a window, set its size to a reasonable value
 ##         if elem.IsWindow():
@@ -863,8 +844,7 @@ class SizerBase(Sizer):
             if h == -1: h = item.widget.GetBestSize()[1]
 
             option = 0
-            if misc.check_wx_version(2, 5): option = elem.GetProportion()
-            else: option = elem.GetOption()
+            option = elem.GetProportion()
             flag = elem.GetFlag()
             if not size or (option == 0 or not (flag & wx.EXPAND)):
                 self.widget.SetItemMinSize(item.widget, w, h)
@@ -889,12 +869,9 @@ class SizerBase(Sizer):
         # no error checking at all, this is a "protected" method, so it should
         # be safe to assume the caller knows how to use it
         item = self.widget.GetChildren()[pos]
-        if not misc.check_wx_version(2, 5):
-            item.SetWindow(None)
-        else:
-            if item.IsWindow():
-                w = item.GetWindow()
-                w.SetContainingSizer(None)
+        if item.IsWindow():
+            w = item.GetWindow()
+            w.SetContainingSizer(None)
         item.SetSizer(notebook_sizer)
         if force_layout:
             self.layout()
@@ -931,10 +908,7 @@ class SizerBase(Sizer):
             return # this may happen during xml loading
 
         if option is not None:
-            if not misc.check_wx_version(2, 5):
-                elem.SetOption(option)
-            else:
-                elem.SetProportion(option)
+            elem.SetProportion(option)
         if flag is not None:
             elem.SetFlag(flag)
         if border is not None:
@@ -949,10 +923,7 @@ class SizerBase(Sizer):
             newelem.SetWindow(item)
             newelem.SetFlag(elem.GetFlag())
             newelem.SetBorder(elem.GetBorder())
-            if misc.check_wx_version(2, 5):
-                newelem.SetProportion(elem.GetProportion())
-            else:
-                newelem.SetOption(elem.GetOption())
+            newelem.SetProportion(elem.GetProportion())
             newelem.SetInitSize(w, h)
             self.widget.InsertItem(pos, newelem)
             #self.children[pos] = newelem
@@ -1000,8 +971,7 @@ class SizerBase(Sizer):
                               self.window.widget.GetId())
             wx.PostEvent(self.window.widget, evt)
             # don't change the size of the window
-            if misc.check_wx_version(2, 4, 1) and \
-                   not misc.check_wx_version(2, 6, 0):
+            if not misc.check_wx_version(2, 6, 0):
                 # this seems to work bad for 2.4.0 (and 2.6 too... 2005-05-01)
                 self.widget.FitInside(self.window.widget)
             return
@@ -1239,19 +1209,8 @@ class SizerBase(Sizer):
         self.children[pos] = item
         if self.widget:
             tmp.show_widget(True) # create the actual SizerSlot
-            if misc.check_wx_version(2, 6):
-                self.widget.Insert(pos+1, tmp.widget, 1, wx.EXPAND)
-                self.widget.Detach(pos)
-            else:
-                elem = self.widget.GetChildren()[pos]
-                elem.SetWindow(tmp.widget)
-                elem.SetSizer(None)
-                if not misc.check_wx_version(2, 5):
-                    elem.SetOption(1)
-                else:
-                    elem.SetProportion(1)
-                elem.SetBorder(0)
-                elem.SetFlag(wx.EXPAND)
+            self.widget.Insert(pos+1, tmp.widget, 1, wx.EXPAND)
+            self.widget.Detach(pos)
             if force_layout: self.layout()
 
     def is_visible(self):
@@ -1340,17 +1299,12 @@ class EditBoxSizer(SizerBase):
                 sp = c.item.properties.get('size')
                 if sp and sp.is_active():
                     if (c.option != 0 or (c.flag & wx.EXPAND)) and \
-                           (misc.check_wx_version(2, 4) or \
-                            not (c.flag & wx.FIXED_MINSIZE)):
+                           not (c.flag & wx.FIXED_MINSIZE):
                         c.item.widget.Layout()
                         w, h = c.item.widget.GetBestSize()
-                        if misc.check_wx_version(2, 5):
-                            #print "HERE:", w, h
-                            c.item.widget.SetMinSize((w, h))
+                        #print "HERE:", w, h
+                        c.item.widget.SetMinSize((w, h))
                     else:
-##                     if misc.check_wx_version(2, 4) or \
-##                            ((c.flag & wxFIXED_MINSIZE) and \
-##                             (c.option == 0 or not (c.flag & wxEXPAND))):
                         size = sp.get_value().strip()
                         if size[-1] == 'd':
                             size = size[:-1]
@@ -1359,13 +1313,8 @@ class EditBoxSizer(SizerBase):
                         w, h = [ int(v) for v in size.split(',') ]
                         if use_dialog_units:
                             w, h = wx.DLG_SZE(c.item.widget, (w, h))
-##                     else:
-##                         w, h = c.item.widget.GetBestSize()
                         # now re-set the item to update the size correctly...
                         to_lay_out.append((c.item.pos, (w, h)))
-##                 else:
-##                     w, h = c.item.widget.GetBestSize()
-##                 self.widget.SetItemMinSize(c.item.widget, w, h)
         for pos, size in to_lay_out:
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
@@ -1605,12 +1554,10 @@ class GridSizerBase(SizerBase):
                 sp = c.item.properties.get('size')
                 if sp and sp.is_active():
                     if (c.option != 0 or (c.flag & wx.EXPAND)) and \
-                           (misc.check_wx_version(2, 4) or \
-                            not (c.flag & wx.FIXED_MINSIZE)):
+                           not (c.flag & wx.FIXED_MINSIZE):
                         c.item.widget.Layout()
                         w, h = c.item.widget.GetBestSize()
-                        if misc.check_wx_version(2, 5):
-                            c.item.widget.SetMinSize((w, h))
+                        c.item.widget.SetMinSize((w, h))
                     else:
                         size = sp.get_value().strip()
                         if size[-1] == 'd':
@@ -1824,10 +1771,7 @@ class GridSizerBase(SizerBase):
             return # this may happen during xml loading
 
         if option is not None:
-            if not misc.check_wx_version(2, 5):
-                elem.SetOption(option)
-            else:
-                elem.SetProportion(option)
+            elem.SetProportion(option)
         if flag is not None:
             elem.SetFlag(flag)
         if border is not None:
@@ -2002,7 +1946,7 @@ class EditFlexGridSizer(GridSizerBase):
         if self.widget:
             if self.notebook: page = self.notebook.GetSelection()
             else: page = 0
-            misc.wxCallAfter(change_sizer, self, self.klass_prop.get_value(),
+            wx.CallAfter(change_sizer, self, self.klass_prop.get_value(),
                              page)
 
     def set_growable_cols(self, value):
@@ -2017,7 +1961,7 @@ class EditFlexGridSizer(GridSizerBase):
         if self.widget:
             if self.notebook: page = self.notebook.GetSelection()
             else: page = 0
-            misc.wxCallAfter(change_sizer, self, self.klass_prop.get_value(),
+            wx.CallAfter(change_sizer, self, self.klass_prop.get_value(),
                              page)
 
     def get_growable_rows(self):

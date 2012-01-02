@@ -59,11 +59,7 @@ class Application(object):
     def __init__(self, property_window):
         self.property_window = property_window
         self.notebook = wx.Notebook(self.property_window, -1)
-        if not misc.check_wx_version(2, 5, 2):
-            nb_sizer = wx.NotebookSizer(self.notebook)
-            self.notebook.sizer = nb_sizer
-        else:
-            self.notebook.sizer = None
+        self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
         panel = wx.ScrolledWindow(

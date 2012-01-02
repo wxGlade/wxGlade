@@ -1,7 +1,7 @@
 # frame.py: wxFrame and wxStatusBar objects
-# $Id: frame.py,v 1.46 2007/08/07 12:18:34 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -106,11 +106,10 @@ class EditStatusBar(EditBase):
             if self.widget: self.widget.Hide()
             EditBase.remove(self)
         else:
-            if misc.check_wx_version(2, 6):
-                if EditStatusBar._hidden_frame is None:
-                    EditStatusBar._hidden_frame = wx.Frame(None, -1, "")
-                if self.widget is not None:
-                    self.widget.Reparent(EditStatusBar._hidden_frame)
+            if EditStatusBar._hidden_frame is None:
+                EditStatusBar._hidden_frame = wx.Frame(None, -1, "")
+            if self.widget is not None:
+                self.widget.Reparent(EditStatusBar._hidden_frame)
             self.widget = None
 
     def popup_menu(self, *args):
@@ -207,9 +206,8 @@ class EditFrame(TopLevelBase):
                           wx.NO_FULL_REPAINT_ON_RESIZE,
                           wx.FULL_REPAINT_ON_RESIZE,
                           wx.TAB_TRAVERSAL, wx.CLIP_CHILDREN]
-        if misc.check_wx_version(2, 5):
-            style_labels.insert(5, 'wxCLOSE_BOX')
-            self.style_pos.insert(4, wx.CLOSE_BOX)
+        style_labels.insert(5, 'wxCLOSE_BOX')
+        self.style_pos.insert(4, wx.CLOSE_BOX)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # menubar property
         prop['menubar'] = CheckBoxProperty(self, 'menubar', None,
