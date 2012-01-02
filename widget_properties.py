@@ -1,8 +1,8 @@
 # widget_properties.py: classes to handle the various properties of the widgets
 # (name, size, color, etc.)
-# $Id: widget_properties.py,v 1.65 2007/08/07 12:21:56 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -19,8 +19,6 @@ try:
     import wx.lib.stattext
     wxGenStaticText = wx.lib.stattext.GenStaticText
 except ImportError:
-    # wxGenStaticText has been added in wx 2.3.3, so it may not be available
-    #wxGenStaticText = wxStaticText
     wxGenStaticText = wx.StaticText
 
 def _mangle(label):
@@ -298,7 +296,7 @@ class TextProperty(Property, _activator):
                 return
 
             if self.text.IsEnabled():
-                #misc.wxCallAfter(function, event)
+                #wx.CallAfter(function, event)
                 function(event)
             event.Skip()
         wx.EVT_KILL_FOCUS(self.text, func_2)
@@ -816,9 +814,8 @@ class FontDialogProperty(DialogProperty):
     font_weights_to = {'normal': wx.NORMAL, 'light': wx.LIGHT, 'bold': wx.BOLD }
     font_weights_from = _reverse_dict(font_weights_to)
     
-    if misc.check_wx_version(2, 3, 3):
-        font_families_to['teletype'] = wx.TELETYPE 
-        font_families_from[wx.TELETYPE] = 'teletype' 
+    font_families_to['teletype'] = wx.TELETYPE 
+    font_families_from[wx.TELETYPE] = 'teletype' 
 
     dialog = [None]
 
@@ -1034,11 +1031,7 @@ class GridProperty(Property, _activator):
         self.grid = wx.grid.Grid(self.panel, -1)
         self.grid.CreateGrid(self.rows, len(self.cols))
         children.append(self.grid)
-        if misc.check_wx_version(2, 3, 3):
-            self.grid.SetMargins(0, 0)
-        else:
-            # wx 2.3.2 seems to have some problems with grid scrollbars...
-            self.grid.SetMargins(0, self.grid.GetDefaultRowSize())
+        self.grid.SetMargins(0, 0)
 
         for i in range(len(self.cols)):
             self.grid.SetColLabelValue(i, misc.wxstr(self.cols[i][0]))
@@ -1050,8 +1043,7 @@ class GridProperty(Property, _activator):
 
         self.btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
         _w = self.btn.GetTextExtent(self.btn.GetLabel())[0]
-        if misc.check_wx_version(2, 5, 2): extra_flag = wx.FIXED_MINSIZE
-        else: extra_flag = 0
+        extra_flag = wx.FIXED_MINSIZE
         #self.btn.SetSize((_w, -1))
         self.btn_sizer.Add(self.btn, 0, extra_flag)
         if self.can_add:

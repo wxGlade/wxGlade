@@ -134,8 +134,7 @@ class wxGladeFrame(wx.Frame):
     """
     def __init__(self, parent=None):
         style = wx.SYSTEM_MENU|wx.CAPTION|wx.MINIMIZE_BOX|wx.RESIZE_BORDER
-        if misc.check_wx_version(2, 5):
-            style |= wx.CLOSE_BOX
+        style |= wx.CLOSE_BOX
         wx.Frame.__init__(self, parent, -1, "wxGlade v%s" % common.version,
                          style=style)
         self.CreateStatusBar(1)
@@ -222,31 +221,30 @@ class wxGladeFrame(wx.Frame):
             wx.App_SetMacHelpMenuTitleName(_('&Help'))
 
         # file history support
-        if misc.check_wx_version(2, 3, 3):
-            self.file_history = wx.FileHistory(
-                config.preferences.number_history)
-            self.file_history.UseMenu(file_menu)
-            files = config.load_history()
-            files.reverse()
-            for path in files:
-                self.file_history.AddFileToHistory(path.strip())
-                
-            def open_from_history(event):
-                if not self.ask_save(): return
-                infile = self.file_history.GetHistoryFile(
-                    event.GetId() - wx.ID_FILE1)
-                # ALB 2004-10-15 try to restore possible autosave content...
-                if common.check_autosaved(infile) and \
-                       wx.MessageBox(_("There seems to be auto saved data for "
-                                    "this file: do you want to restore it?"),
-                                    _("Auto save detected"),
-                                    style=wx.ICON_QUESTION|wx.YES_NO) == wx.YES:
-                    common.restore_from_autosaved(infile)
-                else:
-                    common.remove_autosaved(infile)
-                self._open_app(infile)
-                
-            wx.EVT_MENU_RANGE(self, wx.ID_FILE1, wx.ID_FILE9, open_from_history)
+        self.file_history = wx.FileHistory(
+            config.preferences.number_history)
+        self.file_history.UseMenu(file_menu)
+        files = config.load_history()
+        files.reverse()
+        for path in files:
+            self.file_history.AddFileToHistory(path.strip())
+            
+        def open_from_history(event):
+            if not self.ask_save(): return
+            infile = self.file_history.GetHistoryFile(
+                event.GetId() - wx.ID_FILE1)
+            # ALB 2004-10-15 try to restore possible autosave content...
+            if common.check_autosaved(infile) and \
+                   wx.MessageBox(_("There seems to be auto saved data for "
+                                "this file: do you want to restore it?"),
+                                _("Auto save detected"),
+                                style=wx.ICON_QUESTION|wx.YES_NO) == wx.YES:
+                common.restore_from_autosaved(infile)
+            else:
+                common.remove_autosaved(infile)
+            self._open_app(infile)
+            
+        wx.EVT_MENU_RANGE(self, wx.ID_FILE1, wx.ID_FILE9, open_from_history)
         
         wx.EVT_MENU(self, TREE_ID, self.show_tree)
         wx.EVT_MENU(self, PROPS_ID, self.show_props_window)
@@ -301,16 +299,14 @@ class wxGladeFrame(wx.Frame):
             show_core_custom = ToggleButtonBox(
                 self, -1, [_("Core components"), _("Custom components")], 0)
 
-            if misc.check_wx_version(2, 5):
-                core_sizer = wx.FlexGridSizer(
-                    0, config.preferences.buttons_per_row)
-                custom_sizer = wx.FlexGridSizer(
-                    0, config.preferences.buttons_per_row)
-            else:
-                core_sizer = wx.GridSizer(
-                    0, config.preferences.buttons_per_row)
-                custom_sizer = wx.GridSizer(
-                    0, config.preferences.buttons_per_row)                
+            core_sizer = wx.FlexGridSizer(
+                0,
+                config.preferences.buttons_per_row
+                )
+            custom_sizer = wx.FlexGridSizer(
+                0,
+                config.preferences.buttons_per_row
+                )
             self.SetAutoLayout(True)
             # core components
             for b in core_btns: core_sizer.Add(b)
@@ -318,43 +314,30 @@ class wxGladeFrame(wx.Frame):
             # custom components
             for b in custom_btns:
                 custom_sizer.Add(b)
-                if misc.check_wx_version(2, 5):
-                    custom_sizer.Show(b, False)
+                custom_sizer.Show(b, False)
             custom_sizer.Layout()
             main_sizer.Add(show_core_custom, 0, wx.EXPAND)
             main_sizer.Add(core_sizer, 0, wx.EXPAND)
             main_sizer.Add(custom_sizer, 0, wx.EXPAND)
             self.SetSizer(main_sizer)
-            if not misc.check_wx_version(2, 5):
-                main_sizer.Show(custom_sizer, False)
             #main_sizer.Show(1, False)
             main_sizer.Fit(self)
             # events to display core/custom components
-            if misc.check_wx_version(2, 5):
-                def on_show_core_custom(event):
-                    show_core = True
-                    show_custom = False
-                    if event.GetValue() == 1:
-                        show_core = False
-                        show_custom = True
-                    for b in custom_btns:
-                        custom_sizer.Show(b, show_custom)
-                    for b in core_btns:
-                        core_sizer.Show(b, show_core)
-                    for b in sizer_btns:
-                        core_sizer.Show(b, show_core)
-                    core_sizer.Layout()
-                    custom_sizer.Layout()
-                    main_sizer.Layout()
-            else:
-                def on_show_core_custom(event):
-                    to_show = core_sizer
-                    to_hide = custom_sizer
-                    if event.GetValue() == 1:
-                        to_show, to_hide = to_hide, to_show
-                    main_sizer.Show(to_show, True)
-                    main_sizer.Show(to_hide, False)
-                    main_sizer.Layout()           
+            def on_show_core_custom(event):
+                show_core = True
+                show_custom = False
+                if event.GetValue() == 1:
+                    show_core = False
+                    show_custom = True
+                for b in custom_btns:
+                    custom_sizer.Show(b, show_custom)
+                for b in core_btns:
+                    core_sizer.Show(b, show_core)
+                for b in sizer_btns:
+                    core_sizer.Show(b, show_core)
+                core_sizer.Layout()
+                custom_sizer.Layout()
+                main_sizer.Layout()
             EVT_TOGGLE_BOX(self, show_core_custom.GetId(), on_show_core_custom)
         # ... otherwise (the common case), just add the palette of core buttons
         else:
@@ -793,8 +776,7 @@ class wxGladeFrame(wx.Frame):
 
             self.save_app(event)
             self.cur_dir = os.path.dirname(fn)
-            if misc.check_wx_version(2, 3, 3):
-                self.file_history.AddFileToHistory(fn)
+            self.file_history.AddFileToHistory(fn)
 
     def save_app_as_template(self, event):
         data = getattr(common.app_tree.app, 'template_data', None)
@@ -827,7 +809,7 @@ class wxGladeFrame(wx.Frame):
             self.tree_frame.Destroy()
             self.Destroy()
             common.remove_autosaved() # ALB 2004-10-15
-            misc.wxCallAfter(wx.GetApp().ExitMainLoop)
+            wx.CallAfter(wx.GetApp().ExitMainLoop)
 
     def show_about_box(self, event):
         if self.about_box is None:
@@ -907,8 +889,7 @@ class wxGlade(wx.App):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         # needed for wx >= 2.3.4 to disable wxPyAssertionError exceptions
-        if misc.check_wx_version(2, 3, 4):
-            self.SetAssertMode(0)
+        self.SetAssertMode(0)
         wx.InitAllImageHandlers()
         config.init_preferences()
 

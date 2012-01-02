@@ -26,8 +26,7 @@ class _MyBrowseButton(FileBrowseButton):
         button =wx.Button(self, ID, misc.wxstr(self.buttonText))
         button.SetToolTipString(misc.wxstr(self.toolTip))
         w = button.GetTextExtent(self.buttonText)[0] + 10
-        if not misc.check_wx_version(2, 5, 2): button.SetSize((w, -1))
-        else: button.SetMinSize((w, -1))
+        button.SetMinSize((w, -1))
         wx.EVT_BUTTON(button, ID, self.OnBrowse)
         return button
 
@@ -155,10 +154,7 @@ class ToolsDialog(wx.Dialog):
         self.long_help_str.SetSize((150, -1))
         self.event_handler.SetSize((150, -1))
         szr = wx.FlexGridSizer(0, 2)
-        if misc.check_wx_version(2, 5, 2):
-            flag = wx.FIXED_MINSIZE
-        else:
-            flag = 0
+        flag = wx.FIXED_MINSIZE
         label_flag = wx.ALIGN_CENTER_VERTICAL
         szr.Add(wx.StaticText(self, -1, _("Id   ")), flag=label_flag)
         szr.Add(self.id, flag=flag)
@@ -480,19 +476,15 @@ class EditToolBar(EditBase, PreviewMixin):
         self.style = 0
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.style_pos  = [wx.TB_FLAT, wx.TB_DOCKABLE, wx.TB_3DBUTTONS]
-        if misc.check_wx_version(2, 3, 3):
-            self.style_pos += [wx.TB_TEXT, wx.TB_NOICONS, wx.TB_NODIVIDER,
-                               wx.TB_NOALIGN]
-        if misc.check_wx_version(2, 5, 0):
-            self.style_pos += [wx.TB_HORZ_LAYOUT, wx.TB_HORZ_TEXT]
+        self.style_pos += [wx.TB_TEXT, wx.TB_NOICONS, wx.TB_NODIVIDER,
+                           wx.TB_NOALIGN]
+        self.style_pos += [wx.TB_HORZ_LAYOUT, wx.TB_HORZ_TEXT]
  
         style_labels = ['#section#' + _('Style'), 'wxTB_FLAT', 'wxTB_DOCKABLE',
                         'wxTB_3DBUTTONS']
-        if misc.check_wx_version(2, 3, 3):
-            style_labels += ['wxTB_TEXT', 'wxTB_NOICONS',
-                             'wxTB_NODIVIDER', 'wxTB_NOALIGN']
-        if misc.check_wx_version(2, 5, 0):
-            style_labels += ['wxTB_HORZ_LAYOUT', 'wxTB_HORZ_TEXT']
+        style_labels += ['wxTB_TEXT', 'wxTB_NOICONS',
+                         'wxTB_NODIVIDER', 'wxTB_NOALIGN']
+        style_labels += ['wxTB_HORZ_LAYOUT', 'wxTB_HORZ_TEXT']
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
         self.bitmapsize = '16, 15'
@@ -699,29 +691,15 @@ class EditToolBar(EditBase, PreviewMixin):
                     if not bmp2 or not bmp2.Ok(): bmp2 = wx.EmptyBitmap(1, 1)
                 else:
                     bmp2 = wx.NullBitmap
-                # signature of AddTool for 2.3.2.1:
-                # wxToolBarToolBase *AddTool(
-                #    int id, const wxBitmap& bitmap,
-                #    const wxBitmap& pushedBitmap, bool toggle = FALSE,
-                #    wxObject *clientData = NULL,
-                #    const wxString& shortHelpString = wxEmptyString,
-                #    const wxString& longHelpString = wxEmptyString)
-                if not misc.check_wx_version(2, 3, 3):
-                    # use the old signature, some of the entries are ignored
-                    self._tb.AddTool(wx.NewId(), bmp1, bmp2, tool.type == 1,
-                                     shortHelpString=\
-                                     misc.wxstr(tool.short_help),
-                                     longHelpString=misc.wxstr(tool.long_help))
-                else:
-                    kinds = [wx.ITEM_NORMAL, wx.ITEM_CHECK, wx.ITEM_RADIO]
-                    try:
-                        kind = kinds[int(tool.type)]
-                    except (ValueError, IndexError):
-                        kind = wx.ITEM_NORMAL
-                    self._tb.AddLabelTool(wx.NewId(), misc.wxstr(tool.label),
-                                          bmp1, bmp2, kind,
-                                          misc.wxstr(tool.short_help),
-                                          misc.wxstr(tool.long_help))
+                kinds = [wx.ITEM_NORMAL, wx.ITEM_CHECK, wx.ITEM_RADIO]
+                try:
+                    kind = kinds[int(tool.type)]
+                except (ValueError, IndexError):
+                    kind = wx.ITEM_NORMAL
+                self._tb.AddLabelTool(wx.NewId(), misc.wxstr(tool.label),
+                                      bmp1, bmp2, kind,
+                                      misc.wxstr(tool.short_help),
+                                      misc.wxstr(tool.long_help))
         # this is required to refresh the toolbar properly
         self._refresh_widget()
 
@@ -765,7 +743,7 @@ class EditToolBar(EditBase, PreviewMixin):
                                  wx.ART_DELETE)
                 misc.append_item(self._rmenu, HIDE_ID, _('Hide')) 
                 def bind(method):
-                    return lambda e: misc.wxCallAfter(method)
+                    return lambda e: wx.CallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
                 wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 

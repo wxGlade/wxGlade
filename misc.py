@@ -197,35 +197,6 @@ def check_wx_version(major, minor=0, release=0, revision=0):
     #return wx.__version__ >= "%d.%d.%d.%d" % (major, minor, release, revision)
     return wx.VERSION[:-1] >= (major, minor, release, revision)
 
-
-if not check_wx_version(2, 3, 3):
-    # the following is copied from wx.py of version 2.3.3, as 2.3.2 doesn't
-    # have it
-    _wxCallAfterId = None
-
-    def wxCallAfter(callable, *args, **kw):
-        """
-        Call the specified function after the current and pending event
-        handlers have been completed.  This is also good for making GUI
-        method calls from non-GUI threads.
-        """
-        app = wxGetApp()
-        assert app, _('No wxApp created yet')
-
-        global _wxCallAfterId
-        if _wxCallAfterId is None:
-            _wxCallAfterId = wxNewId()
-            app.Connect(-1, -1, _wxCallAfterId,
-                  lambda event: apply(event.callable, event.args, event.kw) )
-        evt = wxPyEvent()
-        evt.SetEventType(_wxCallAfterId)
-        evt.callable = callable
-        evt.args = args
-        evt.kw = kw
-        wxPostEvent(app, evt)
-else:
-    wxCallAfter = wx.CallAfter
-
 #----------------------------------------------------------------------
 
 use_menu_icons = None

@@ -73,7 +73,7 @@ class NotebookVirtualSizer(Sizer):
             self.window.widget.InsertPage(pos, item.widget, label)
             self.window.widget.SetSelection(pos)
             try:
-                misc.wxCallAfter(item.sel_marker.update)
+                wx.CallAfter(item.sel_marker.update)
             except AttributeError, e:
                 #print e
                 pass
@@ -208,13 +208,11 @@ class EditNotebook(ManagedBase):
 
     def create_widget(self):
         self.widget = wx.Notebook(self.parent.widget, self.id, style=self.style)
-        if not misc.check_wx_version(2, 5, 2):
-            self.nb_sizer = wx.NotebookSizer(self.widget)
 
     def show_widget(self, yes):
         ManagedBase.show_widget(self, yes)
         if yes and wx.Platform in ('__WXMSW__', '__WXMAC__'):
-            misc.wxCallAfter(_ugly_hack_for_win32_notebook_bug, self.widget)
+            wx.CallAfter(_ugly_hack_for_win32_notebook_bug, self.widget)
         if self._create_slots:
             self._create_slots = False
             for i in range(len(self.tabs)):
@@ -225,8 +223,6 @@ class EditNotebook(ManagedBase):
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
         # replace 'self' with 'self.nb_sizer' in 'self.sizer'
-        if not misc.check_wx_version(2, 5, 2):
-            self.sizer._fix_notebook(self.pos, self.nb_sizer)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -260,7 +256,7 @@ class EditNotebook(ManagedBase):
             window.show_widget(True)
             self.virtual_sizer.set_item(pos)
             try:
-                misc.wxCallAfter(window.sel_marker.update)
+                wx.CallAfter(window.sel_marker.update)
             except AttributeError, e:
                 #print e
                 pass

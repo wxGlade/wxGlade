@@ -112,10 +112,7 @@ class MenuItemDialog(wx.Dialog):
         self.help_str.SetSize((150, -1))
         self.event_handler.SetSize((150, -1))
         szr = wx.FlexGridSizer(0, 2)
-        if misc.check_wx_version(2, 5, 2):
-            flag = wx.FIXED_MINSIZE
-        else:
-            flag = 0
+        flag = wx.FIXED_MINSIZE
         label_flag = wx.ALIGN_CENTER_VERTICAL
         szr.Add(wx.StaticText(self, -1, _("Id   ")), flag=label_flag)
         szr.Add(self.id, flag=flag)
@@ -650,10 +647,6 @@ class EditMenuBar(EditBase, PreviewMixin):
                 self.widget = None
             else:
                 if self.parent.widget:
-                    if wx.Platform == '__WXGTK__' and \
-                           not misc.check_wx_version(2, 5):
-                        self.widget.Reparent(EditMenuBar.__hidden_frame)
-                        self.widget.Hide()
                     self.parent.widget.SetMenuBar(None)
         else:
             if self.widget:
@@ -672,7 +665,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                                  wx.ART_DELETE)
                 misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
                 def bind(method):
-                    return lambda e: misc.wxCallAfter(method)
+                    return lambda e: wx.CallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
                 wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
                 

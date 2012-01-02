@@ -821,11 +821,7 @@ class Sizeritem:
                   'wxBOTTOM': wx.BOTTOM,
                   'wxSHAPED': wx.SHAPED,
                   'wxADJUST_MINSIZE': wx.ADJUST_MINSIZE, }
-        import misc
-        if misc.check_wx_version(2, 5, 2):
-            flags['wxFIXED_MINSIZE'] = wx.FIXED_MINSIZE
-        else:
-            flags['wxFIXED_MINSIZE'] = 0
+        flags['wxFIXED_MINSIZE'] = wx.FIXED_MINSIZE
 
     def __init__(self):
         self.option = self.border = 0
