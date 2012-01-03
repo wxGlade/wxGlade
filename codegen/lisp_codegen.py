@@ -599,7 +599,6 @@ def add_sizeritem(toplevel, sizer, obj, option, flag, border):
     else:
         buffer = '(wxSizer_AddWindow (slot-%s obj) (slot-%s obj) %s %s %s nil)\n' % \
                  (sizer.name, obj_name, option, flag,cn_f(border))
-    print 
     klass.layout.append(buffer)
 
 
