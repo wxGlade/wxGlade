@@ -616,7 +616,7 @@ def add_class(code_obj):
         # let's see if the file to generate exists, and in this case
         # create a SourceFileContent instance
         filename = os.path.join(out_dir,
-                                code_obj.klass.replace('.', '_') + '.py')
+                                code_obj.klass.replace('.', '_') + '.lisp')
         if _overwrite or not os.path.exists(filename): prev_src = None
         else: prev_src = SourceFileContent(filename)
         _current_extra_modules = {}
@@ -894,12 +894,12 @@ def add_class(code_obj):
                 # store the new file contents to disk
                 common.save_file(filename, prev_src.content, 'codegen')
             except:
-                raise IOError("py_codegen.add_class: %s, %s, %s" % \
+                raise IOError("lisp_codegen.add_class: %s, %s, %s" % \
                               (out_dir, prev_src.name, code_obj.klass))
             return
 
         # create the new source file
-        filename = os.path.join(out_dir, code_obj.klass + '.py')
+        filename = os.path.join(out_dir, code_obj.klass + '.lisp')
         out = cStringIO.StringIO()
         write = out.write
         # write the common lines
@@ -943,7 +943,7 @@ def add_app(app_attrs, top_win_class):
 
     if not multiple_files: prev_src = previous_source
     else:
-        filename = os.path.join(out_dir, name + '.py')
+        filename = os.path.join(out_dir, name + '.lisp')
         if not os.path.exists(filename): prev_src = None
         else:
             # prev_src doesn't need to be a SourceFileContent instance in this
@@ -994,7 +994,7 @@ def add_app(app_attrs, top_win_class):
     append("\n(unwind-protect\n\t(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)")
     append("\n  (ffi:close-foreign-library \"../miscellaneous/wxc-msw2.6.2.dll\"))\n")
     if multiple_files:
-        filename = os.path.join(out_dir, name + '.py')
+        filename = os.path.join(out_dir, name + '.lisp')
         out = cStringIO.StringIO()
         write = out.write
         write('#!/usr/bin/env lisp\n')
