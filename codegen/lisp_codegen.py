@@ -672,8 +672,10 @@ def add_class(code_obj):
         else:
             klass = code_obj.klass
         write('\n(defclass %s()\n' % klass)
-        write("\t((top-window :initform nil :accessor slot-top-window)")
-        for l in class_lines: write("\n"+tab+"("+l+" :initform nil :accessor slot-"+l+")")
+        write(tab + "((top-window :initform nil :accessor slot-top-window)")
+        for l in class_lines:
+            write("\n")
+            write(tab+"("+l+" :initform nil :accessor slot-"+l+")")
         write("))\n")
 
         write("\n(defun make-%s ()\n" % klass)
@@ -735,11 +737,11 @@ def add_class(code_obj):
         for win_id, event, handler in event_handlers:
             if win_id.startswith('#'):
                 write(tab + "(wxEvtHandler_Connect (slot-top-window obj) %s (exp%s)"
-                      "\n\t\t(wxClosure_Create #'%s obj))\n"
+                      "\n" + tabs(2) + "(wxClosure_Create #'%s obj))\n"
                       % (win_id[1:],event, handler, ))
             else:
                 write(tab + "(wxEvtHandler_Connect (slot-top-window obj) %s (exp%s)"
-                      "\n\t\t(wxClosure_Create #'%s obj))\n"
+                      "\n" + tabs(2) + "(wxClosure_Create #'%s obj))\n"
                       % (win_id,event, handler, ))
 
     # end tag
@@ -991,8 +993,9 @@ def add_app(app_attrs, top_win_class):
         append(tab + '(ELJApp_SetTopWindow (slot-top-window %s))\n' % top_win)
         append(tab + '(wxWindow_Show (slot-top-window %s))))\n' % top_win)
 
-    append("\n(unwind-protect\n\t(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)")
-    append("\n  (ffi:close-foreign-library \"../miscellaneous/wxc-msw2.6.2.dll\"))\n")
+    append("\n(unwind-protect\n")
+    append(tab + "(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)\n")
+    append(tab + "(ffi:close-foreign-library \"../miscellaneous/wxc-msw2.6.2.dll\"))\n")
     if multiple_files:
         filename = os.path.join(out_dir, name + '.lisp')
         out = cStringIO.StringIO()
