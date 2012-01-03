@@ -431,28 +431,36 @@ Set of filenames already backed up during this session
 
 def save_file(filename, content, which='wxg'):
     """\
-    Saves 'filename' and, if user's preferences say so and 'filename' exists,
-    makes a backup copy of it. Exceptions that may occur while performing the
-    operations are not handled.
-    'content' is the string to store into 'filename'
-    'which' is the kind of backup: 'wxg' or 'codegen'
+    Save I{content} to file named I{filename} and, if user's preferences say
+    so and I{filename} exists, makes a backup copy of it.
+    
+    @note: Exceptions that may occur while performing the operations are not
+           handled.
+
+    @param filename: Name of the file to create
+    @param content:  String to store into 'filename'
+    @param which:    Kind of backup: 'wxg' or 'codegen'
     """
     import config
     if which == 'wxg':
-        ok = config.preferences.wxg_backup
+        do_backup = config.preferences.wxg_backup
+    elif which == 'codegen':
+        do_backup = config.preferences.codegen_backup
     else:
-        ok = config.preferences.codegen_backup
+        raise NotImplementedError(
+            'Unknown value "%s" for parameter "which"!' % which
+            )
     try:
-        if ok and filename not in _backed_up and os.path.isfile(filename):
+        if do_backup and filename not in _backed_up and os.path.isfile(filename):
             # make a backup copy of filename
             infile = open(filename)
             outfile = open(filename + config.preferences.backup_suffix, 'w')
             outfile.write(infile.read())
             infile.close()
             outfile.close()
-            _backed_up[filename] = 1
+            _backed_up[filename] = True
         # save content to file (but only if content has changed)
-        savecontent = 1
+        savecontent = True
         if os.path.isfile(filename):
             oldfile = open(filename)
             savecontent = (oldfile.read() != content)
