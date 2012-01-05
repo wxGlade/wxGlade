@@ -33,15 +33,16 @@ EPYDOC_BIN        = epydoc
 EPYDOC_CONFIG     = $(BASE_DIR)/epydoc.conf
 EPYDOC_OPTS       = --config
 APIDOC_DIR        = $(BASE_DIR)/docs/apidocs
-SOURCE_DIRS       = codegen edit_sizers widgets install 
+SOURCE_DIRS       = codegen edit_sizers widgets install tests
 SOURCE_FILES      = $(wildcard $(BASE_DIR)/*.py) $(shell find $(SOURCE_DIRS) -name "*.py")
+TEST_BIN          = $(BASE_DIR)/test.py
 PYLINT_BIN        = pylint
 PYLINT_OPTS       = --additional-builtins=_ --disable=C \
                     '--dummy-variables=_|dummy|event|empty|unused|i' \
                     --disable=W0105,W0212,W0401,W0403,W0614 \
                     --disable=R0201,R0901,R0902,R0903,R0904,R0912,R0913,R0914,R0915 \
                     --include-ids=y --reports=n
-PYLINT_PATH       = "$(BASE_DIR):$(BASE_DIR)/widgets"
+PYLINT_PATH       = "$(BASE_DIR):$(BASE_DIR)/widgets:$(BASE_DIR)/codegen"
 PYTHON_BIN        = python
 DB2MAN            = /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
 XP                = xsltproc --nonet
@@ -64,7 +65,7 @@ HELP= @grep -B1 '^[a-zA-Z\-]*:' Makefile |\
 
 .PHONY: help clean distclean compile apidoc pylint permissions man doc \
         pdf html doc-clean release rel-binary rel-source install \
-        maintainer-clean
+        maintainer-clean test
 
 # Rule to compile a single Python file
 %.pyc: %.py
@@ -74,6 +75,10 @@ HELP= @grep -B1 '^[a-zA-Z\-]*:' Makefile |\
 #+ Show this text
 help:
 	$(HELP)
+
+#+ Run test package
+test:
+	@$(TEST_BIN)
 
 #+ Clean python compiler files and automatic generated documentation
 clean:
