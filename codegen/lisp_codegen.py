@@ -329,6 +329,14 @@ def quote_str(s, translate=True, escape_chars=True):
         if _use_gettext and translate: return '_(u"' + s + '")'
         else: return 'u"' + s + '"'
 
+def quote_path(s):
+    """\
+    escapes all " and \ , thus making a path suitable to
+    insert in a list source file
+    """ # " alb: comment needed to avoid emacs going insane with colorization..
+    s = s.replace('\\', '\\\\')
+    s = s.replace('"', r'\"')
+    return '"' + s + '"'
 
 def initialize(app_attrs): 
     """\
