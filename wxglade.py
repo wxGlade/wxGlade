@@ -14,26 +14,6 @@ import common
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
 
-# check to see if the Python release supports boolean identifiers
-# and bool built-in function (>= Python 2.2.1).
-try:
-    True, False, bool
-except NameError:
-    setattr(__builtins__, 'True', 1)
-    setattr(__builtins__, 'False', not True)
-    def bool(value): return not not value
-    setattr(__builtins__, 'bool', bool)
-# and this is for Python <= 2.3
-try:
-    sorted
-except NameError:
-    def sorted(l):
-        l = list(l)[:]
-        l.sort()
-        return l
-    setattr(__builtins__, 'sorted', sorted)
-
-
 def _fix_path(path):
     """\
     Returns an absolute version of path, accroding to the invoking dir of
