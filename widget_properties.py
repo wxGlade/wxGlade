@@ -350,6 +350,10 @@ class CheckBoxProperty(Property, _activator):
         self.cb = wx.CheckBox(parent, self.id, '')
         self.cb.SetValue(self.val)
         label = wxGenStaticText(parent, -1, self.label)
+        if hasattr(self, 'tooltip'):
+            label.SetToolTip(wx.ToolTip(self.tooltip))
+        else:
+            label.SetToolTip(wx.ToolTip(self.label))
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 5, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 3)
         sizer.Add(self.cb, 0, wx.ALIGN_CENTER|wx.ALL, 3)
