@@ -986,11 +986,13 @@ class GridProperty(Property, _activator):
                   lambda g, c: g.SetColFormatFloat(c),
                   lambda g, c: g.SetColFormatBool(c)]
     def __init__(self, owner, name, parent, cols, rows=1, can_add=True,
-                 can_remove=True, can_insert=True, label=None, omitter=None):
+                 can_remove=True, can_insert=True, label=None, omitter=None,
+                 col_sizes=[]):
         # cols: list of 2-tuples with these fields:
         #     - label for the column
         #     - type: GridProperty.STRING, GridProperty.INT, GridProperty.FLOAT
         # rows: number of rows
+        # col_sizes: list of column widths
         Property.__init__(self, owner, name, parent, label=label)
         self.val = owner[name][0]()
         self.set_value(self.val)
@@ -998,6 +1000,7 @@ class GridProperty(Property, _activator):
         self.can_add = can_add
         self.can_remove = can_remove
         self.can_insert = can_insert
+        self.col_sizes = col_sizes
         self.panel = None
         self.cur_row = 0
         _activator.__init__(self, omitter=omitter)
@@ -1044,6 +1047,8 @@ class GridProperty(Property, _activator):
         self.cols = len(self.cols)
         self.grid.SetRowLabelSize(0)
         self.grid.SetColLabelSize(20)
+        if self.col_sizes:
+            self.set_col_sizes(self.col_sizes)
 
         self.btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
         _w = self.btn.GetTextExtent(self.btn.GetLabel())[0]
