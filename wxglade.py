@@ -2,14 +2,16 @@
 # wxglade.py: entry point of wxGlade
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import os
 import sys
 import gettext
-import getopt
 import common
+import optparse
+
 
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
@@ -27,29 +29,107 @@ def _fix_path(path):
 
 
 def parse_command_line():
-    try:
-        options, args = getopt.getopt(
-            sys.argv[1:],
-            "g:o:",
-            ['generate-code=', 'output=']
-            )
-    except getopt.GetoptError:
-        #import traceback; traceback.print_exc()
-        usage()
-    return options, args
-
-
-def command_line_code_generation(options, args):
     """\
-    starts a code generator without starting the GUI.
+    Parse command line
     """
-    if not options:
-        usage()
-    if not options[0]:
-        usage() # a language for code generation must be provided
-    if len(args) != 1:
-        usage() # an input file name must be provided
+    # list of all available languages
+    # don't load code generators at this point!!
+    languages = ['C++', 'XRC', 'lisp', 'perl', 'python']
 
+    # inject 
+    optparse.OptionParser.format_description = lambda self, formatter: self.description
+
+    parser = optparse.OptionParser(
+        add_help_option=False,
+        usage="""\
+Usage: wxglade <WXG File>             start the wxGlade GUI
+ or:   wxglade <Options> <WXG File>   generate code from command line
+ or:   wxglade -v|--version           output version information and exit
+ or:   wxglade -h|--help              display this help and exit""",
+        version="""\
+wxGlade version %s
+Copyright (C) 2007-2012 Alberto Griggio
+License MIT: The MIT License
+             <http://www.opensource.org/licenses/mit-license.php>""" % common.version
+        )
+    parser.add_option(
+        '-h',
+        '--help',
+        dest='help',
+        action='store_true',
+        help='show this help message and exit',
+        )
+    parser.add_option(
+        "-g",
+        "--generate-code",
+        type="choice",
+        choices=languages,
+        metavar="LANG",
+        dest="language",
+        help="(required) output language, valid languages are: %s" % ", ".join(languages)
+        )
+    parser.add_option(
+        "-o",
+        "--output",
+        metavar="PATH",
+        dest="output",
+        help="(optional) output file in single-file mode or output directory in multi-file mode",
+        )
+
+    (options, args) = parser.parse_args()
+
+    # print epilog because OptionParser.epilog isn't available to Python 2.3
+    if options.help:
+        parser.print_help()
+        print """
+Example: Generate Python code out of myapp.wxg
+
+   wxglade -o temp -g python myapp.wxg
+
+Report bugs to:    <wxglade-general@lists.sourceforge.net> or at
+                   <http://sourceforge.net/projects/wxglade/>
+wxGlade home page: <http://wxglade.sourceforge.net/>"""
+        sys.exit()
+
+    # make absolute path
+    if len(args) == 1:
+        options.filename = _fix_path(args[0])
+    else:
+        options.filename = None
+
+    # check parameters
+    #  - language
+    #     - one file            -> cmdline code generation
+    #     - no / > one files    -> usage
+    #  - no language            -> start gui
+    if options.language:
+        if len(args) == 1:
+            options.start_gui = False
+        elif len(args) == 0:
+            print >> sys.stderr, "ERROR: No wxg file given!\n"
+            parser.print_help()
+            sys.exit(1)
+        else:
+            print >> sys.stderr, "ERROR: Too many wxg files given!\n"
+            parser.print_help()
+            sys.exit(1)
+    else:
+        options.start_gui = True
+
+    return options
+
+
+def command_line_code_generation(filename, language, out_path=None):
+    """\
+    Starts a code generator without starting the GUI.
+
+    @param filename: Name of wxg file to generate code from
+    @type filename:  String
+    @param language: Code generator language
+    @type language:  String
+    @param out_path: output file / output directory
+    @type out_path:  String
+    """
     common.use_gui = False # don't import wxPython.wx
     # use_gui has to be set before importing config
     import config
@@ -57,50 +137,16 @@ def command_line_code_generation(options, args):
     common.load_code_writers()
     common.load_widgets()
     common.load_sizers()
-    try:
-        from xml_parse import CodeWriter
-        out_path = None
-        language = ''
-        for option, arg in options:
-            if option == '-g' or option == '--generate-code':
-                language = arg
-            elif option == '-o' or option == '--output':
-                out_path = _fix_path(arg)
-        writer = common.code_writers[language]
-        CodeWriter(writer, _fix_path(args[0]), out_path=out_path)
-    except KeyError:
+
+    from xml_parse import CodeWriter
+    if not common.code_writers.has_key(language):
         print >> sys.stderr, \
-              _('Error: no writer for language "%s" available') % language
+            _('Error: no writer for language "%s" available') % language
         sys.exit(1)
-    except Exception, e:
-        print >> sys.stderr, _("Error: %s") % e
-        import traceback; traceback.print_exc()
-        sys.exit(1)
+
+    writer = common.code_writers[language]
+    CodeWriter(writer, filename, out_path)
     sys.exit(0)
-
-
-def usage():
-    """\
-    Prints a help message about the usage of wxGlade from the command line.
-    """
-    msg = _("""\
-wxGlade usage:
-- to start the GUI: python wxglade.py [WXG_FILE]
-- to generate code from the command line: python wxglade.py OPTIONS... FILE
-  OPTIONS are the following:
-  -g, --generate-code=LANGUAGE  (required) give the output language
-  -o, --output=PATH             (optional) name of the output file (in
-                                single-file mode) or directory (in
-                                multi-file mode)
-    """)
-    print msg
-    print _('Valid LANGUAGE values:'),
-    common.use_gui = False
-    common.load_code_writers()
-    for value in common.code_writers:
-        print value,
-    print '\n'
-    sys.exit(1)
 
 
 def determine_wxglade_path():
@@ -123,7 +169,10 @@ def run_main():
     This main procedure is started by calling either wxglade.py or
     wxglade.pyw on windows
     """
-    # print versions first
+    # check command line parameters first
+    options = parse_command_line()
+
+    # print versions 
     print _("Starting wxGlade version %s on Python %s") % (
         common.version,
         common.py_version,
@@ -176,25 +225,16 @@ def run_main():
 
     # adapt application search path
     sys.path = [common.wxglade_path, common.widgets_path] + sys.path
-    
-    # before running the GUI, let's see if there are command line options for
-    # code generation
-    filename = None
-    start_gui = False
-    options, args = parse_command_line()
-    if len(sys.argv) == 1:
-        start_gui = True
-    elif not options:
-        filename = _fix_path(args[0])
-        start_gui = True
 
-    if start_gui:
-        # print versions first
+    if options.start_gui:
         import main
-        # if there was no option, start the app in GUI mode
-        main.main(filename)
+        main.main(options.filename)
     else:
-        command_line_code_generation(options, args)
+        command_line_code_generation(
+            filename=options.filename,
+            language=options.language,
+            out_path=options.output,
+            )
 
 if __name__ == "__main__":
     run_main()
