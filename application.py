@@ -168,7 +168,7 @@ class Application(object):
         self.codewriters_prop.set_str_value('python')
 
         self.for_version_prop = RadioProperty(self, "for_version", panel,
-                                              ['2.4', '2.6', '2.8'], columns=3,
+                                              ['2.6', '2.8'], columns=2,
                                               label=_("wxWidgets compatibility"))
         self.for_version_prop.set_str_value(self.for_version)
         
