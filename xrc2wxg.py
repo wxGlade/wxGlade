@@ -2,9 +2,9 @@
 # xrc2wxg.py: Converts an XRC resource file (in a format wxGlade likes,
 # i.e. all windows inside sizers, no widget unknown to wxGlade, ...) into a
 # WXG file
-# $Id: xrc2wxg.py,v 1.19 2007/03/27 07:02:07 agriggio Exp $
 # 
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -14,8 +14,6 @@ import sys, getopt, os.path, time
 __version__ = '0.0.3'
 _name = 'xrc2wxg'
 
-try: True, False
-except NameError: True, False = 1, 0
 
 def get_child_elems(node):
     def ok(n): return n.nodeType == n.ELEMENT_NODE
