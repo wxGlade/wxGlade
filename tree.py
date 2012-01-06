@@ -460,7 +460,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.select_item(node)
             item = node.widget
         if not item.widget or not item.is_visible():
-            import edit_windows
+            #import edit_windows
             #if isinstance(item, edit_windows.TopLevelBase):
             if node.parent is self.root:
                 self._show_menu.SetTitle(item.name)
@@ -472,7 +472,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
             event.m_x, event.m_y = x, y
             item.popup_menu(event)
         except AttributeError:
-            import traceback; traceback.print_exc()
+            import traceback;
+            traceback.print_exc()
 
     def expand(self, node=None, yes=True):
         """\
