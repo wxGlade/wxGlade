@@ -41,23 +41,23 @@ def parse_command_line():
 
     parser = optparse.OptionParser(
         add_help_option=False,
-        usage="""\
+        usage=_("""\
 Usage: wxglade <WXG File>             start the wxGlade GUI
  or:   wxglade <Options> <WXG File>   generate code from command line
- or:   wxglade -v|--version           output version information and exit
- or:   wxglade -h|--help              display this help and exit""",
-        version="""\
+ or:   wxglade --version              show programs version number and exit
+ or:   wxglade -h|--help              show this help message and exit"""),
+        version=_("""\
 wxGlade version %s
 Copyright (C) 2007-2012 Alberto Griggio
 License MIT: The MIT License
-             <http://www.opensource.org/licenses/mit-license.php>""" % common.version
+             <http://www.opensource.org/licenses/mit-license.php>""") % common.version
         )
     parser.add_option(
         '-h',
         '--help',
         dest='help',
         action='store_true',
-        help='show this help message and exit',
+        help=_('show this help message and exit'),
         )
     parser.add_option(
         "-g",
@@ -66,14 +66,14 @@ License MIT: The MIT License
         choices=languages,
         metavar="LANG",
         dest="language",
-        help="(required) output language, valid languages are: %s" % ", ".join(languages)
+        help=_("(required) output language, valid languages are: %s") % ", ".join(languages)
         )
     parser.add_option(
         "-o",
         "--output",
         metavar="PATH",
         dest="output",
-        help="(optional) output file in single-file mode or output directory in multi-file mode",
+        help=_("(optional) output file in single-file mode or output directory in multi-file mode"),
         )
 
     (options, args) = parser.parse_args()
@@ -81,14 +81,14 @@ License MIT: The MIT License
     # print epilog because OptionParser.epilog isn't available to Python 2.3
     if options.help:
         parser.print_help()
-        print """
+        print _("""
 Example: Generate Python code out of myapp.wxg
 
    wxglade -o temp -g python myapp.wxg
 
 Report bugs to:    <wxglade-general@lists.sourceforge.net> or at
                    <http://sourceforge.net/projects/wxglade/>
-wxGlade home page: <http://wxglade.sourceforge.net/>"""
+wxGlade home page: <http://wxglade.sourceforge.net/>""")
         sys.exit()
 
     # make absolute path
@@ -106,11 +106,11 @@ wxGlade home page: <http://wxglade.sourceforge.net/>"""
         if len(args) == 1:
             options.start_gui = False
         elif len(args) == 0:
-            print >> sys.stderr, "ERROR: No wxg file given!\n"
+            print >> sys.stderr, _("ERROR: No wxg file given!\n")
             parser.print_help()
             sys.exit(1)
         else:
-            print >> sys.stderr, "ERROR: Too many wxg files given!\n"
+            print >> sys.stderr, _("ERROR: Too many wxg files given!\n")
             parser.print_help()
             sys.exit(1)
     else:
