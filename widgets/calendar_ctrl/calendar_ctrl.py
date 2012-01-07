@@ -17,7 +17,7 @@ class EditCalendarCtrl(ManagedBase):
 
     events = [
     'EVT_CALENDAR',
-    'EVT_CALENDAR_SEL_CHANGE',
+    'EVT_CALENDAR_SEL_CHANGED',
     'EVT_CALENDAR_DAY',
     'EVT_CALENDAR_MONTH',
     'EVT_CALENDAR_YEAR',
@@ -30,7 +30,7 @@ class EditCalendarCtrl(ManagedBase):
         """
         import config
         self.default = False
-        ManagedBase.__init__(self, name, 'CalendarCtrl', parent, id, sizer, pos,
+        ManagedBase.__init__(self, name, 'wxCalendarCtrl', parent, id, sizer, pos,
                              property_window, show=show)
         #self.access_functions['label'] = (self.get_label, self.set_label)
         #self.properties['label'] = TextProperty(self, 'label', None,
