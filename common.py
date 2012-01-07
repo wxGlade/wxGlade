@@ -466,8 +466,9 @@ def save_file(filename, content, which='wxg'):
             savecontent = (oldfile.read() != content)
             oldfile.close()
         if savecontent:
-            if not os.path.isdir(os.path.dirname(filename)):
-                os.mkdir(os.path.dirname(filename))
+            directory = os.path.dirname(filename)
+            if directory and not os.path.isdir(directory):
+                os.mkdir(directory)
             outfile = open(filename, 'w')
             outfile.write(content)
             outfile.close()
