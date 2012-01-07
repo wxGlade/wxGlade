@@ -11,6 +11,7 @@ General:
 Bugs:
   - Various bugs in Lisp code generators
   - Typo in Perl code generators
+  - Allow saving of generated code to filenames without directory part
 
 Documentation:
   - Update usage message and manpage

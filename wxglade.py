@@ -145,7 +145,11 @@ def command_line_code_generation(filename, language, out_path=None):
         sys.exit(1)
 
     writer = common.code_writers[language]
-    CodeWriter(writer, filename, out_path)
+    CodeWriter(
+        writer=writer,
+        input=filename,
+        out_path=out_path,
+        )
     sys.exit(0)
 
 
