@@ -68,7 +68,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc docs examples CHANGES.txt README.txt TODO.txt credits.txt license.txt
+%doc docs examples CHANGES.txt NEWS.txt README.txt TODO.txt credits.txt license.txt
 %{_prefix}/bin/wxglade
 %{_prefix}/lib/%{name}
 

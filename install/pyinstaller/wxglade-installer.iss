@@ -79,6 +79,7 @@ Name: "{group}\Documentation\README";  Filename: "{app}\README.txt";  AfterInsta
 Name: "{group}\Documentation\License"; Filename: "{app}\license.txt"; AfterInstall: Unix2Dos('{app}\license.txt');
 Name: "{group}\Documentation\Credits"; Filename: "{app}\credits.txt"; AfterInstall: Unix2Dos('{app}\credits.txt');
 Name: "{group}\Documentation\Changes"; Filename: "{app}\CHANGES.txt"; AfterInstall: Unix2Dos('{app}\CHANGES.txt');
+Name: "{group}\Documentation\News";    Filename: "{app}\NEWS.txt";    AfterInstall: Unix2Dos('{app}\NEWS.txt');
 Name: "{group}\Documentation\Technical Notes"; Filename: "{app}\docs\tech_notes.txt"; AfterInstall: Unix2Dos('{app}\docs\tech_notes.txt');
 Name: "{userdesktop}\wxGlade{#EDITION_LONG}";  Filename: "{#EXECUTABLE_NAME}"; Tasks: desktopicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\wxGlade{#EDITION_LONG}"; Filename: "{#EXECUTABLE_NAME}"; Tasks: quicklaunchicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"

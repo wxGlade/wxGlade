@@ -135,7 +135,7 @@ description = \
 data_files = [[
         'share/doc/wxglade',
         ['CHANGES.txt', 'credits.txt', 'epydoc.conf', 'license.txt',
-         'Makefile', 'README.txt', 'TODO.txt',],
+         'Makefile', 'NEWS.txt', 'README.txt', 'TODO.txt',],
     ],[
        'share/doc/wxglade/doc',
        glob('docs/*.html'),
