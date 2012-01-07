@@ -26,122 +26,207 @@ and docbook-xsl in your Build-Depends control field.
 
 -->
 
-  <!ENTITY dhfirstname "<firstname>Georges</firstname>">
-  <!ENTITY dhsurname   "<surname>Khaznadar</surname>">
-  <!ENTITY dhdate      "<date>octobre 25, 2004</date>">
-  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
-  <!ENTITY dhemail     "<email>georgesk@ofset.org</email>">
   <!ENTITY dhusername  "Georges Khaznadar">
-  <!ENTITY dhucpackage "<refentrytitle>WXGLADE</refentrytitle>">
   <!ENTITY dhpackage   "wxglade">
-
   <!ENTITY debian      "<productname>Debian</productname>">
   <!ENTITY gnu         "<acronym>GNU</acronym>">
-  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
 ]>
-
 <refentry>
+
+
   <refentryinfo>
-    <address>
-      &dhemail;
-    </address>
-    <author>
-      &dhfirstname;
-      &dhsurname;
-    </author>
+    <authorgroup>
+      <author>
+        <firstname>Georges</firstname>
+        <surname>Khaznadar</surname>
+        <affiliation>
+          <address>
+            <email>georgesk@ofset.org</email>
+          </address>
+        </affiliation>
+        <contrib>
+          This manual page was originally written by &dhusername; for
+          the &debian; system (but may be used by others).  Permission is
+          granted to copy, distribute and/or modify this document under
+          the terms of the &gnu; General Public License, Version 2 any 
+          later version published by the Free Software Foundation.
+          On &debian; systems, the complete text of the &gnu; General Public
+          License can be found in /usr/share/common-licenses/GPL.
+        </contrib>
+      </author>
+      <editor>
+        <firstname>Carsten</firstname>
+        <surname>Grohmann</surname>
+        <affiliation>
+          <address>
+            <email>mail@carstengrohmann.de</email>
+          </address>
+        </affiliation>
+        <contrib>
+          Update and extend manual page
+        </contrib>
+      </editor>
+    </authorgroup>
     <copyright>
       <year>2003</year>
-      <holder>&dhusername;</holder>
+      <holder>Georges Khaznadar</holder>
+      <year>2012</year>
+      <holder>Carsten Grohmann</holder>
     </copyright>
-    &dhdate;
+    <date>January 07, 2012</date>
   </refentryinfo>
-  <refmeta>
-    &dhucpackage;
 
-    &dhsection;
+
+  <refmeta>
+    <refentrytitle>wxGlade</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">wxGlade</refmiscinfo>
+    <refmiscinfo class="manual">User Commands</refmiscinfo>
+    <refmiscinfo class="date">January 07, 2012</refmiscinfo>
   </refmeta>
+
+
   <refnamediv>
     <refname>&dhpackage;</refname>
-
     <refpurpose>python program to build user interfaces based on the wxWidgets toolset.</refpurpose>
   </refnamediv>
+
+
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>&dhpackage;</command>
-      <arg><option>-g <replaceable>LANG</replaceable></option></arg>
-      <arg><option>--generate-cod <replaceable>LANG</replaceable></option></arg>
-      <arg><option>-o <replaceable>DESTINATION</replaceable></option></arg>
-      <arg><option>--output <replaceable>DESTINATION</replaceable></option></arg>
-      <arg><replaceable>FILENAME.wxg</replaceable></arg>
+      <group choice="opt">
+        <arg choice="plain">--help</arg>
+        <arg choice="plain">-h</arg>
+      </group>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <arg choice="opt">--version</arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <arg choice="opt">
+        <replaceable>FILENAME.wxg</replaceable>
+      </arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="req">
+        <arg choice="plain">-g <replaceable>LANG</replaceable></arg>
+        <arg choice="plain">--generate-code <replaceable>LANG</replaceable></arg>
+      </group>
+      <group hoice="opt">
+        <arg choice="plain">-o <replaceable>DESTINATION</replaceable></arg>
+        <arg choice="plain">--output <replaceable>DESTINATION</replaceable></arg>
+      </group>
+      <arg choice="plain">
+        <replaceable>FILENAME.wxg</replaceable>
+      </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
+  
+
   <refsect1>
     <title>DESCRIPTION</title>
-
     <para>
       <command>&dhpackage;</command> wxGlade is a GUI designer written in
       Python with the popular GUI toolkit wxPython, that helps you create
-      wxWidgets/wxPython user interfaces. At the moment it can generate Python,
-      C++ and XRC (wxWidgets' XML resources) code.
+      wxWidgets/wxPython user interfaces. At the moment it can generate
+      Python, Lisp, C++ and XRC (wxWidgets' XML resources) code.
     </para>
-
   </refsect1>
+
+
   <refsect1>
     <title>OPTIONS</title>
-
-    <para>These programs follow the usual &gnu; command line syntax,
+    <para>These programs follow the usual <acronym>GNU</acronym> command line syntax,
       with long options starting with two dashes (`-').  A summary of
       options is included below.  For a complete description, see the
       <application>Info</application> files.</para>
-
     <variablelist>
       <varlistentry>
         <term><option>-g</option> or
-          <option>--generate-cod</option> <replaceable>LANG</replaceable>
+          <option>--generate-code</option> <replaceable>LANG</replaceable>
         </term>
         <listitem>
           <para>If you only want to generate the code without starting the 
-	    GUI, use the -g or --generate-code option with the language as 
-	    argument
-	  </para>
-	  <para>
-	    Possible values for LANG are "python", "XRC", "perl" or "C++".
-	  </para>
+            GUI, use the -g or --generate-code option with the language as 
+            argument
+          </para>
+          <para>
+            Possible values for LANG are "python", "lisp", "XRC", "perl"
+            or "C++".
+          </para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>-o</option> or
-	  <option>--output</option> <replaceable>DESTINATION</replaceable>
+       <term><option>-o</option> or
+          <option>--output</option> <replaceable>DESTINATION</replaceable>
         </term>
         <listitem>
           <para>
-	    You can specify the destination of the generated code with -o
-	    or --output option.
-	  </para>
-	  <para>
-	    The DESTINATION argument can be a file or a directory. It is a file
-	    when the FILENAME.wxg generates single-file source code. It is a
-	    directory when the FILENAME.wxg generates multiple-file source
-	    code.
-	  </para>
+            You can specify the destination of the generated code with -o
+            or --output option.
+          </para>
+          <para>
+            The DESTINATION argument can be a file or a directory. It is a file
+            when the FILENAME.wxg generates single-file source code. It is a
+            directory when the FILENAME.wxg generates multiple-file source
+            code.
+          </para>
         </listitem>
       </varlistentry>
+      <varlistentry>
+        <term><option>-h</option> or
+          <option>--help</option>
+        </term>
+        <listitem>
+          <para>
+            Show the help message and exit            
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>--version</option>
+        </term>
+        <listitem>
+          <para>
+            Show programs version number and exit
+          </para>
+        </listitem>
+      </varlistentry>  
     </variablelist>
   </refsect1>
-  <refsect1>
-    <title>AUTHOR</title>
 
-    <para>This manual page was written by &dhusername; &dhemail; for
-      the &debian; system (but may be used by others).  Permission is
-      granted to copy, distribute and/or modify this document under
-      the terms of the &gnu; General Public License, Version 2 any 
-	  later version published by the Free Software Foundation.
+
+  <refsect1>
+    <title>EXAMPLES</title>
+    <para>
+      Example: Generate Python code out of <filename>myapp.wxg</filename>
     </para>
-	<para>
-	  On Debian systems, the complete text of the GNU General Public
-	  License can be found in /usr/share/common-licenses/GPL.
-	</para>
+    <para>
+      <command>&dhpackage;</command> -o /tmp -g python myapp.wxg
+    </para>
+  </refsect1>
+  
+  
+  <refsect1>
+    <title>BUGS</title>
+    <para>
+      Report wxGlade bugs to &lt;wxglade-general@lists.sourceforge.net&gt; or 
+      &lt;http://sourceforge.net/projects/wxglade/&gt;
+    </para>
+  </refsect1>  
+  
+  
+  <refsect1>
+    <title>SEE ALSO</title>
+    <para>
+      wxGlade home page &lt;http://wxgalde.sourceforge.net&gt;
+    </para>
 
   </refsect1>
+  
 </refentry>
-
