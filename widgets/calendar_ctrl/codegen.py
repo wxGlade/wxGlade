@@ -1,6 +1,7 @@
 # codegen.py: code generator functions for wxCalendarCtrl objects
-# $Id: codegen.py,v 1.7 2007/08/07 12:18:34 agriggio Exp $
+#
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -97,10 +98,14 @@ class CppCodeGenerator:
         cppgen = common.code_writers['C++']
         prop = obj.properties
         id_name, id = cppgen.generate_code_id(obj)
-        if id_name: ids = [ id_name ]
-        else: ids = []
-        if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-        else: parent = 'this'
+        if id_name:
+            ids = [ id_name ]
+        else:
+            ids = []
+        if not obj.parent.is_toplevel:
+            parent = '%s' % obj.parent.name
+        else:
+            parent = 'this'
         extra = ''
         style = prop.get("style")
         if style:
@@ -114,6 +119,13 @@ class CppCodeGenerator:
         if prop.get('default', False):
             props_buf.append('%s->SetDefault();\n' % obj.name)
         return init, ids, props_buf, []
+
+    def get_events(self, obj):
+        """\
+        wxCalendarCtrl uses wxCalendarEvent for event handling
+        """
+        cppgen = common.code_writers['C++']
+        return cppgen.get_events_with_type(obj, 'wxCalendarEvent')
 
 # end of class CppCodeGenerator
 

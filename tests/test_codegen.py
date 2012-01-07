@@ -87,3 +87,35 @@ class TestCodeGen(WXGladeBaseTest):
             delta,
             "Generated source file and expected result differs:\n%s" % delta,
             )
+
+    def test_CPP_wxCalendarCtrl(self):
+        """\
+        Test CPP code generation with a small wxCalendarCtrl example
+
+        The test also tests for Sourceforge bug #2782306
+
+        @see: L{wxglade.widgets.calendar_ctrl.calendar_ctrl}
+        """
+        source     = self.loadFile('CPP_wxCalendarCtrl', '.wxg')
+        result_cpp = self.loadFile('CPP_wxCalendarCtrl', '.cpp')
+        result_h   = self.loadFile('CPP_wxCalendarCtrl', '.h')
+
+        # generate Lisp code
+        self.generateCode('C++', source, 'CPP_wxCalendarCtrl')
+        generated_cpp = self.vFiles['CPP_wxCalendarCtrl.cpp'].getvalue()
+        generated_h   = self.vFiles['CPP_wxCalendarCtrl.h'].getvalue()
+
+        # compare source files
+        delta_cpp = self.diff(result_cpp, generated_cpp)
+        delta_h   = self.diff(result_h,   generated_h)
+
+        self.failIf(
+            delta_cpp,
+            "Generated source file and expected result differs:\n%s" % \
+                delta_cpp,
+            )
+        self.failIf(
+            delta_h,
+            "Generated header file and expected result differs:\n%s" % \
+                delta_h,
+            )
