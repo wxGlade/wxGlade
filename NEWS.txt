@@ -1,4 +1,4 @@
-Version 0.6.5 - 2012-01-XX:
+Version 0.6.5 - 2012-01-08:
 General: 
   - remove support for Python 2.2
   - remove support for wxPython < 2.6
@@ -6,12 +6,14 @@ General:
   - add tooltip for CheckBoxProperty (Davorin Kunstelj)
   - add column sizes parameter to GridProperty init parameters
     (Davorin Kunstelj)
+  - Improve searching and executeing of wxglade.py in shell script wxglade
   - some minor changes / improvements
 
 Bugs:
   - Various bugs in Lisp code generators
   - Typo in Perl code generators
   - Allow saving of generated code to filenames without directory part
+  - Solve issue "C++ CalendarControl issues in 0.6.3" (sf bug #2782306)
 
 Documentation:
   - Update usage message and manpage

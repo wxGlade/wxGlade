@@ -1,3 +1,472 @@
+2012-01-08  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Minor manpage changes
+
+	Files (added, modified or removed):
+	* docs/man/manpage.xml
+
+2012-01-07  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	[FIX] Solve issue "C++ CalendarControl issues in 0.6.3" (sf bug
+	#2782306)
+
+	Files (added, modified or removed):
+	* tests/casefiles/CPP_wxCalendarCtrl.cpp
+	* tests/casefiles/CPP_wxCalendarCtrl.h
+	* tests/casefiles/CPP_wxCalendarCtrl.wxg
+	* tests/test_codegen.py
+	* widgets/calendar_ctrl/calendar_ctrl.py
+	* widgets/calendar_ctrl/codegen.py
+
+	[FIX] Wrong parameters for CodeWriter() in
+	command_line_code_generation()
+
+	Bug was introduces with changeset changeset 1022 31fe078c5b0a.
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* wxglade.py
+
+	[FIX] Allow saving of generated code to filenames without directory
+	part
+
+	Files (added, modified or removed):
+	* common.py
+
+	Add new file NEWS.txt to summarise release changes
+
+	Files (added, modified or removed):
+	* CHANGES.txt
+	* NEWS.txt
+	* docs/ReleaseSteps.txt
+	* install/pyinstaller/wxglade-installer.iss
+	* install/pyinstaller/wxglade.spec
+	* install/rpm/wxglade.spec
+	* setup.py
+
+	Enable gettext for usage message
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+	Update and extend manual page
+
+	Files (added, modified or removed):
+	* docs/man/manpage.xml
+
+2012-01-06  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change option handling as well as add --version and --help
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+	remove support for Python 2.2
+
+	Files (added, modified or removed):
+	* wxglade.py
+	* xrc2wxg.py
+
+	Remove unused import edit_windows
+
+	Files (added, modified or removed):
+	* tree.py
+
+2012-01-06  Davorin Kunstelj  <Davorin Kunstelj>
+
+	Added column sizes parameter to GridProperty init parameters
+
+	Files (added, modified or removed):
+	* widget_properties.py
+
+	Added tooltip for CheckBoxProperty
+
+	Files (added, modified or removed):
+	* widget_properties.py
+
+2012-01-06  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Remove code to support wxPython < 2.6 (forgotten part)
+
+	Files (added, modified or removed):
+	* application.py
+
+2012-01-05  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add small test suite
+
+	Files (added, modified or removed):
+	* Makefile
+	* test.py
+	* tests/__init__.py
+	* tests/casefiles/Lisp_wxBitmapButton.lisp
+	* tests/casefiles/Lisp_wxBitmapButton.wxg
+	* tests/test_codegen.py
+
+	[FIX] Add missing path quotation to codegen.lisp_codegen
+
+	Files (added, modified or removed):
+	* codegen/lisp_codegen.py
+
+2012-01-03  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Remove needless print statement in Lisp code generator
+
+	Files (added, modified or removed):
+	* codegen/lisp_codegen.py
+
+	Replace tab characters by spaces in Lisp code generator
+
+	Files (added, modified or removed):
+	* codegen/lisp_codegen.py
+
+	[FIX] Wrong file extensions created by Lisp code generator
+
+	Files (added, modified or removed):
+	* codegen/lisp_codegen.py
+
+	Minor documentation and code reorg in common.save_file()
+
+	Files (added, modified or removed):
+	* common.py
+
+2012-01-02  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Minor code reorg in common.load_code_writers()
+
+	Files (added, modified or removed):
+	* common.py
+
+	Merge with original file
+
+	Files (added, modified or removed):
+	* install/update-po.py
+
+	Remove duplicate code EditComboBox.create_widget()
+
+	Files (added, modified or removed):
+	* widgets/combo_box/combo_box.py
+
+	Remove code to support wxPython < 2.6
+
+	Files (added, modified or removed):
+	* about.py
+	* application.py
+	* common.py
+	* config.py
+	* edit_sizers/edit_sizers.py
+	* edit_windows.py
+	* font_dialog.py
+	* main.py
+	* misc.py
+	* tree.py
+	* widget_properties.py
+	* widgets/dialog/dialog.py
+	* widgets/frame/frame.py
+	* widgets/menubar/menubar.py
+	* widgets/notebook/notebook.py
+	* widgets/panel/panel.py
+	* widgets/toolbar/toolbar.py
+	* xml_parse.py
+
+	Remove unused function misc.sizer_fixed_Insert()
+
+	Files (added, modified or removed):
+	* main.py
+	* misc.py
+
+	Adapt pylint settings in Makefile
+
+	Files (added, modified or removed):
+	* Makefile
+
+	Remove obsolete second "import wx"
+
+	Files (added, modified or removed):
+	* misc.py
+
+2011-12-30  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Move "Using wxPython <wx version>" to main.py to eliminate "import
+	wx"
+
+	Files (added, modified or removed):
+	* main.py
+	* wxglade.py
+
+2011-12-30  Davorin Kunstelj  <Davorin Kunstelj>
+
+	Adapt missed icon paths
+
+	Files (added, modified or removed):
+	* misc.py
+	* res/preferences.wxg
+
+2011-12-30  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Remove unused import and minor code elegancy changes
+
+	Files (added, modified or removed):
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/xrc_codegen.py
+	* edit_sizers/edit_sizers.py
+	* main.py
+	* misc.py
+	* tree.py
+	* widgets/bitmap_button/bitmap_button.py
+	* widgets/bitmap_button/lisp_codegen.py
+	* widgets/bitmap_button/perl_codegen.py
+	* widgets/button/button.py
+	* widgets/calendar_ctrl/calendar_ctrl.py
+	* widgets/choice/perl_codegen.py
+	* widgets/datepicker_ctrl/datepicker_ctrl.py
+	* widgets/gauge/gauge.py
+	* widgets/list_box/perl_codegen.py
+	* widgets/list_ctrl/list_ctrl.py
+	* widgets/list_ctrl/perl_codegen.py
+	* widgets/menubar/menubar.py
+	* widgets/notebook/notebook.py
+	* widgets/notebook/perl_codegen.py
+	* widgets/slider/slider.py
+	* widgets/spin_button/spin_button.py
+	* widgets/spin_ctrl/spin_ctrl.py
+	* widgets/splitter_window/splitter_window.py
+	* widgets/static_bitmap/lisp_codegen.py
+	* widgets/static_bitmap/perl_codegen.py
+	* widgets/static_bitmap/static_bitmap.py
+	* widgets/static_line/perl_codegen.py
+	* widgets/text_ctrl/text_ctrl.py
+	* widgets/toolbar/tool.py
+	* widgets/toolbar/toolbar.py
+	* widgets/tree_ctrl/tree_ctrl.py
+
+2011-12-29  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Adapt pylint settings in Makefile
+
+	Files (added, modified or removed):
+	* Makefile
+
+	[FIX] Remove wasted wxButton_SetDefault statement
+
+	The perl code sizer doesn't have this statement too. Thereby
+	removed.
+
+	Files (added, modified or removed):
+	* widgets/bitmap_button/lisp_codegen.py
+
+	Change some initial paths for documentation purposes only
+
+	All effected path variables will be overwritten during
+	initialisation.
+
+	Files (added, modified or removed):
+	* common.py
+
+2011-12-28  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add epydoc.conf to Windows installer exclude list
+
+	Files (added, modified or removed):
+	* install/pyinstaller/wxglade-installer.iss
+
+	Clean all possible wxGlade MUICache entries always
+
+	Files (added, modified or removed):
+	* install/pyinstaller/wxglade-installer.iss
+
+	Adapt missed icon path
+
+	Files (added, modified or removed):
+	* widgets/panel/panel.py
+
+	Continue introducing path variables e.g. credits and license file
+
+	This solves a bug preventing about dialog showing credits.txt and
+	license.txt. The location of both files differs depending packaging
+	method (Unix vs. Windows vs. running out of the devel directory).
+
+	Files (added, modified or removed):
+	* about.py
+	* common.py
+	* main.py
+	* wxglade.py
+
+	Minor reorg in determining wxGlade application directory
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+2011-12-27  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add separate path variables for icons, docs, templates and widgets
+
+	Files (added, modified or removed):
+	* about.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* common.py
+	* configUI.py
+	* edit_sizers/edit_sizers.py
+	* main.py
+	* misc.py
+	* template.py
+	* tree.py
+	* widgets/bitmap_button/codegen.py
+	* widgets/dialog/dialog.py
+	* widgets/frame/frame.py
+	* widgets/menubar/menubar.py
+	* widgets/panel/panel.py
+	* widgets/static_bitmap/codegen.py
+	* widgets/toolbar/codegen.py
+	* widgets/toolbar/toolbar.py
+	* wxglade.py
+
+	[FIX] Typo in printing exception details
+
+	Files (added, modified or removed):
+	* codegen/pl_codegen.py
+
+2011-12-26  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Update Trove Categorization
+
+	Files (added, modified or removed):
+	* setup.py
+
+	Just an update of the Unix file permissions
+
+	Files (added, modified or removed):
+	* config.py
+	* docs/html/design_window.png
+	* docs/html/main_window.png
+	* docs/html/preview_window.png
+	* docs/html/properties_window.png
+	* docs/html/tree_window.png
+	* docs/src/design_window.png
+	* docs/src/main_window.png
+	* docs/src/manual.xml
+	* docs/src/preview_window.png
+	* docs/src/properties_window.png
+	* docs/src/tree_window.png
+	* edit_widget.py
+	* msgdialog.py
+	* templates_ui.py
+	* wxglade.py
+	* xrc2wxg.py
+
+	Use only shell script wxglade to start wxGlade at Unix
+
+	Files (added, modified or removed):
+	* Makefile
+	* setup.py
+
+	Improve searching and executeing of wxglade.py in shell script
+	wxglade
+
+	Files (added, modified or removed):
+	* wxglade
+
+	Script has been replaced by setup.py in combination with Makefile
+
+	Files (added, modified or removed):
+	* install/srcpkgs/make_wxglade_release.py
+
+	No need for separately callable configUI.py (preferences dialog)
+
+	The preferences dialog is a menu item in the wxGlade GUI.
+
+	Files (added, modified or removed):
+	* Makefile
+	* TODO.txt
+	* configUI.py
+	* setup.py
+
+	Ignore files generated by Eric4 IDE too
+
+	Files (added, modified or removed):
+	* .hgignore
+
+	Add maintainer-clean target to Makefile and extend BIN_FILES
+
+	Files (added, modified or removed):
+	* Makefile
+
+2011-12-25  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change package file names from wxglade-* to wxGlade-*
+
+	Files (added, modified or removed):
+	* setup.py
+
+	Add source files of manpage and wxGlade manual to distribution
+
+	Files (added, modified or removed):
+	* setup.py
+
+2011-12-24  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Extend Windows installer to clean MUICache registry entries
+
+	There are some pages with more information about the MUI cache
+	mechanisms: http://windowsir.blogspot.com/2005/12/mystery-of-
+	muicachesolved.html http://forensicartifacts.com/2010/08/registry-
+	muicache/
+
+	Files (added, modified or removed):
+	* install/pyinstaller/wxglade-installer.iss
+
+	Set version numbers back to HG to start new development cycle
+
+	Files (added, modified or removed):
+	* common.py
+	* install/pyinstaller/wxglade-installer.iss
+
+2011-12-20  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Added tag rel_0.6.4 for changeset d62eb65d431e
+
+	Files (added, modified or removed):
+	* .hgtags
+
+	Bump version number to 0.6.4
+
+	Files (added, modified or removed):
+	* common.py
+	* install/pyinstaller/wxglade-installer.iss
+	* install/pyinstaller/wxglade.spec
+
+	Lot of documentation changes
+
+	Files (added, modified or removed):
+	* CHANGES.txt
+	* README.txt
+	* TODO.txt
+	* changelog.style
+	* docs/BuildingInstaller.txt
+	* docs/ReleaseSteps.txt
+	* install/README.txt
+
+	[FIX] Algorithm to get the release tag checked the wrong changeset
+
+	The release tag isn't located at tip it's located at the revision
+	prior to the tip.
+
+	Files (added, modified or removed):
+	* common.py
+
+	Added tag rel_0.5 for changeset 6a8223539dd8
+
+	Files (added, modified or removed):
+	* .hgtags
+
+	Removed tag v0.5
+
+	Files (added, modified or removed):
+	* .hgtags
+
 2011-12-12  Carsten Grohmann  <mail@carstengrohmann.de>
 
 	Add PHONY targets
@@ -9436,3 +9905,4 @@
 	creating vendor branch agriggio
 
 	Files (added, modified or removed):
+
