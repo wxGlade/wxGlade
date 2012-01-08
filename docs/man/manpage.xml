@@ -54,7 +54,7 @@ and docbook-xsl in your Build-Depends control field.
           License can be found in /usr/share/common-licenses/GPL.
         </contrib>
       </author>
-      <editor>
+      <author>
         <firstname>Carsten</firstname>
         <surname>Grohmann</surname>
         <affiliation>
@@ -65,7 +65,7 @@ and docbook-xsl in your Build-Depends control field.
         <contrib>
           Update and extend manual page
         </contrib>
-      </editor>
+      </author>
     </authorgroup>
     <copyright>
       <year>2003</year>
@@ -204,10 +204,16 @@ and docbook-xsl in your Build-Depends control field.
   <refsect1>
     <title>EXAMPLES</title>
     <para>
-      Example: Generate Python code out of <filename>myapp.wxg</filename>
+      Generate Python code out of <filename>myapp.wxg</filename>:
     </para>
     <para>
       <command>&dhpackage;</command> -o /tmp -g python myapp.wxg
+    </para>
+    <para>
+      Open file <filename>myapp.wxg</filename> in wxGlade GUI:
+    </para>
+    <para>
+      <command>&dhpackage;</command> myapp.wxg
     </para>
   </refsect1>
   
