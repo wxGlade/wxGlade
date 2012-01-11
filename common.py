@@ -1,6 +1,7 @@
 # common.py: global variables
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+#
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
@@ -13,7 +14,7 @@ If False, the program is invoked from the command-line in "batch" mode
 (for code generation only)
 """
 
-nohg_version = '0.6.5'
+nohg_version = 'HG'
 """\
 Version number to return if no hg repo has been found
 """
