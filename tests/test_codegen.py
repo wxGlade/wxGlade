@@ -11,6 +11,7 @@ from tests import WXGladeBaseTest
 import common
 from xml_parse import CodeWriter
 
+
 class TestCodeGen(WXGladeBaseTest):
     """\
     Test code generation
@@ -44,7 +45,7 @@ class TestCodeGen(WXGladeBaseTest):
     def test_Lisp_quote_path(self):
         """\
         Test codegen.lisp_codegen.quote_path()
-        
+
         @see: L{wxglade.codegen.lisp_codegen.quote_path()}
         """
         quote_path = common.code_writers['lisp'].quote_path
@@ -96,18 +97,111 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{wxglade.widgets.calendar_ctrl.calendar_ctrl}
         """
-        source     = self.loadFile('CPP_wxCalendarCtrl', '.wxg')
+        source = self.loadFile('CPP_wxCalendarCtrl', '.wxg')
         result_cpp = self.loadFile('CPP_wxCalendarCtrl', '.cpp')
-        result_h   = self.loadFile('CPP_wxCalendarCtrl', '.h')
+        result_h = self.loadFile('CPP_wxCalendarCtrl', '.h')
 
         # generate Lisp code
         self.generateCode('C++', source, 'CPP_wxCalendarCtrl')
         generated_cpp = self.vFiles['CPP_wxCalendarCtrl.cpp'].getvalue()
-        generated_h   = self.vFiles['CPP_wxCalendarCtrl.h'].getvalue()
+        generated_h = self.vFiles['CPP_wxCalendarCtrl.h'].getvalue()
 
         # compare source files
         delta_cpp = self.diff(result_cpp, generated_cpp)
-        delta_h   = self.diff(result_h,   generated_h)
+        delta_h = self.diff(result_h,   generated_h)
+
+        self.failIf(
+            delta_cpp,
+            "Generated source file and expected result differs:\n%s" % \
+                delta_cpp,
+            )
+        self.failIf(
+            delta_h,
+            "Generated header file and expected result differs:\n%s" % \
+                delta_h,
+            )
+
+    def test_Python_Preferences(self):
+        """\
+        Test Python code generation with preferences dialog
+
+        @see: L{wxglade.codegen.py_codegen}
+        """
+        source = self.loadFile('Preferences', '.wxg')
+        result = self.loadFile('Python_Preferences', '.py')
+
+        # generate Lisp code
+        self.generateCode('python', source, 'Python_Preferences.py')
+        generated = self.vFiles['Python_Preferences.py'].getvalue()
+
+        # compare source files
+        delta = self.diff(result, generated)
+
+        self.failIf(
+            delta,
+            "Generated source file and expected result differs:\n%s" % delta,
+            )
+
+    def test_Perl_Preferences(self):
+        """\
+        Test Perl code generation with preferences dialog
+
+        @see: L{wxglade.codegen.pl_codegen}
+        """
+        source = self.loadFile('Preferences', '.wxg')
+        result = self.loadFile('Perl_Preferences', '.pl')
+
+        # generate Lisp code
+        self.generateCode('perl', source, 'Perl_Preferences.pl')
+        generated = self.vFiles['Perl_Preferences.pl'].getvalue()
+
+        # compare source files
+        delta = self.diff(result, generated)
+
+        self.failIf(
+            delta,
+            "Generated source file and expected result differs:\n%s" % delta,
+            )
+
+    def test_Lisp_Preferences(self):
+        """\
+        Test Lisp code generation with preferences dialog
+
+        @see: L{wxglade.codegen.lisp_codegen}
+        """
+        source = self.loadFile('Preferences', '.wxg')
+        result = self.loadFile('Lisp_Preferences', '.lisp')
+
+        # generate Lisp code
+        self.generateCode('lisp', source, 'Lisp_Preferences.lisp')
+        generated = self.vFiles['Lisp_Preferences.lisp'].getvalue()
+
+        # compare source files
+        delta = self.diff(result, generated)
+
+        self.failIf(
+            delta,
+            "Generated source file and expected result differs:\n%s" % delta,
+            )
+
+    def test_CPP_Preferences(self):
+        """\
+        Test C++ code generation with preferences dialog
+
+        @see: L{wxglade.codegen.cpp_codegen}
+        """
+        source = self.loadFile('Preferences', '.wxg')
+        result_cpp = self.loadFile('CPP_Preferences', '.cpp')
+        result_h = self.loadFile('CPP_Preferences', '.h')
+
+        # generate Lisp code
+        self.generateCode('C++', source, 'CPP_Preferences')
+        generated_cpp = self.vFiles['CPP_Preferences.cpp'].getvalue()
+        generated_h = self.vFiles['CPP_Preferences.h'].getvalue()
+
+        # compare source files
+        delta_cpp = self.diff(result_cpp, generated_cpp)
+        delta_h = self.diff(result_h,   generated_h)
 
         self.failIf(
             delta_cpp,
