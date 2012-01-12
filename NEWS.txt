@@ -1,3 +1,22 @@
+Version 0.6.6 - 2012-XX-XX:
+General: 
+  - 
+  - ...
+
+Bugs:
+  - 
+  - ...
+
+Documentation:
+  - 
+  - ...
+
+API (for custom widgets):
+  - no changes
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
 Version 0.6.5 - 2012-01-08:
 General: 
   - remove support for Python 2.2
