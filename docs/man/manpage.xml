@@ -116,7 +116,7 @@ and docbook-xsl in your Build-Depends control field.
         <arg choice="plain">-g <replaceable>LANG</replaceable></arg>
         <arg choice="plain">--generate-code <replaceable>LANG</replaceable></arg>
       </group>
-      <group hoice="opt">
+      <group choice="opt">
         <arg choice="plain">-o <replaceable>DESTINATION</replaceable></arg>
         <arg choice="plain">--output <replaceable>DESTINATION</replaceable></arg>
       </group>
