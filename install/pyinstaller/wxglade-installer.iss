@@ -24,7 +24,7 @@
 
 [Setup]
 AppName=wxGlade
-AppVerName=wxGlade {#PRODUCT_VERSION}
+AppVerName=wxGlade {#EDITION_LONG} Version {#PRODUCT_VERSION}
 AppPublisher=the wxGlade team
 AppPublisherURL=http://wxglade.sourceforge.net
 AppSupportURL=http://wxglade.sourceforge.net
