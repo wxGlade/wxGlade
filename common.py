@@ -217,6 +217,7 @@ Dictionary of objects used to generate the code in a given language.
 @note: A code writer object must implement this interface:
  - initialize(out_path, multi_files)
  - language
+ - setup
  - add_widget_handler(widget_name, handler[, properties_handler])
  - add_property_handler(property_name, handler[, widget_name])
  - add_object(top_obj, sub_obj)
@@ -235,12 +236,15 @@ def load_code_writers():
     codegen_path = os.path.join(wxglade_path, 'codegen')
     sys.path.insert(0, codegen_path)
     for module in os.listdir(codegen_path):
-        name = os.path.splitext(module)[0]
+        name, ext = os.path.splitext(module)
         # skip __init__
         if name == "__init__":
             continue
         # allow regular files only
         if not os.path.isfile(os.path.join(codegen_path, module)):
+            continue
+        # ignore none python files
+        if ext not in ['.py', '.pyo', '.pyc']:
             continue
         # skip already imported modules
         if name in sys.modules:
@@ -248,10 +252,11 @@ def load_code_writers():
         # import file and initiate code writer
         try:
             writer = __import__(name).writer
-        except (ImportError, AttributeError, ValueError):
-            if use_gui:
-                print _('"%s" is not a valid code generator module') % \
-                      module
+        except (AttributeError, ImportError, SyntaxError, ValueError):
+            message(
+                _("WARNING"),
+                _('"%s" is not a valid code generator module') % module
+                )
         else:
             code_writers[writer.language] = writer
             if hasattr(writer, 'setup'):
