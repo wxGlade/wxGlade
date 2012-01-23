@@ -20,7 +20,7 @@
 #endif
 
 ; Exclude from standalone edition as well as from full edition
-#define EXCLUDE_ALWAYS "\README.txt,\docs\src,\docs\man"
+#define EXCLUDE_ALWAYS "\kdefiledialog.py,\README.txt,\docs\src,\docs\man"
 
 [Setup]
 AppName=wxGlade

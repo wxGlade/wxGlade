@@ -22,6 +22,11 @@ if common.use_gui:
     
             self.preferences = preferences
             self.set_values()
+
+            # disable CheckBox for selecting usage of KDE file dialogs
+            if wx.Platform != '__WXGTK__':
+                self.use_kde_dialogs.SetValue(False)
+                self.use_kde_dialogs.Enable(False)
             
         def set_values(self):
             try:
