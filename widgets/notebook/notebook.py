@@ -193,8 +193,14 @@ class EditNotebook(ManagedBase):
         self.properties['style'] = HiddenProperty(self, 'style', label=_("style"))
         self.access_functions['tabs'] = (self.get_tabs, self.set_tabs)
         tab_cols = [('Tab label', GridProperty.STRING)]
-        self.properties['tabs'] = NotebookPagesProperty(self, 'tabs', None,
-                                                        tab_cols, label=_("tabs"))
+        self.properties['tabs'] = NotebookPagesProperty(
+            self,
+            'tabs',
+            None,
+            tab_cols,
+            label=_("tabs"),
+            can_remove_last=False,
+            )
         del tab_cols
         self.nb_sizer = None
         self._create_slots = False
