@@ -979,6 +979,22 @@ class RadioProperty(Property, _activator):
 class GridProperty(Property, _activator): 
     """\
     Property whose values are modified through a wxGrid table.
+
+    @ivar can_add:    Add Button to add a new entry
+    @type can_add:    Boolean
+    @ivar can_insert: Add Button to insert a new entry
+    @type can_insert: Boolean
+    @ivar can_remove: Add Button to remove a new entry
+    @type can_remove: Boolean
+    @ivar can_remove_last: Allow to remove last entry
+    @type can_remove_last: Boolean
+    @ivar cols:       List of 2-tuples with these fields:
+                       - label for the column
+                       - type: GridProperty.STRING, GridProperty.INT, GridProperty.FLOAT
+    @ivar col_sizes:  List of column widths
+    @type col_sizes:  List of Integer
+    @ivar rows:       Number of rows
+    @type rows:       Integer
     """
     STRING, INT, FLOAT, BOOL = 0, 1, 2, 3
     col_format = [lambda g, c: None,
@@ -987,12 +1003,7 @@ class GridProperty(Property, _activator):
                   lambda g, c: g.SetColFormatBool(c)]
     def __init__(self, owner, name, parent, cols, rows=1, can_add=True,
                  can_remove=True, can_insert=True, label=None, omitter=None,
-                 col_sizes=[]):
-        # cols: list of 2-tuples with these fields:
-        #     - label for the column
-        #     - type: GridProperty.STRING, GridProperty.INT, GridProperty.FLOAT
-        # rows: number of rows
-        # col_sizes: list of column widths
+                 col_sizes=[], can_remove_last=True):
         Property.__init__(self, owner, name, parent, label=label)
         self.val = owner[name][0]()
         self.set_value(self.val)
@@ -1000,6 +1011,7 @@ class GridProperty(Property, _activator):
         self.can_add = can_add
         self.can_remove = can_remove
         self.can_insert = can_insert
+        self.can_remove_last = can_remove_last
         self.col_sizes = col_sizes
         self.panel = None
         self.cur_row = 0
@@ -1129,30 +1141,46 @@ class GridProperty(Property, _activator):
         if not hasattr(self, 'grid'): return
         # values is a list of lists with the values of the cells
         size = len(values)
+
+        # add or remove rows
         if self.rows < size:
             self.grid.AppendRows(size-self.rows)
             self.rows = size
         elif self.rows != size: self.grid.DeleteRows(size, self.rows-size)
+
+        # update content
         for i in range(len(self.val)):
             for j in range(len(self.val[i])):
                 self.grid.SetCellValue(i, j, self.val[i][j])
+
+        # update state of the remove button
+        self._update_remove_button()
             
     def add_row(self, event):
         self.grid.AppendRows()
         self.grid.MakeCellVisible(self.rows, 0)
         self.grid.ForceRefresh()
         self.rows += 1
+        self._update_remove_button()
 
     def remove_row(self, event):
+        if not self.can_remove_last and self.rows == 1:
+            common.message(
+                _('WARNING'),
+                _('You can not remove the last entry!')
+                )
+            return
         if self.rows > 0: #1:
             self.grid.DeleteRows(self.cur_row)
             self.rows -= 1
+        self._update_remove_button()
 
     def insert_row(self, event):
         self.grid.InsertRows(self.cur_row)
         self.grid.MakeCellVisible(self.cur_row, 0)
         self.grid.ForceRefresh()
         self.rows += 1
+        self._update_remove_button()
 
     def set_col_sizes(self, sizes):
         """\
@@ -1178,6 +1206,20 @@ class GridProperty(Property, _activator):
             w = self.grid.GetSize()[0] - total_w
             if w >= self.grid.GetColSize(col_to_expand):
                 self.grid.SetColSize(col_to_expand, w)
+
+    def _update_remove_button(self):
+        """\
+        Enable or disable remove button
+        
+        The state of the remove button depends on the number of rows and
+        L{self.can_remove_last}.
+
+        @see: L{self.can_remove_last}
+        @see: L{self.can_remove}
+        @see: L{self.rows}
+        """
+        if self.can_remove and not self.can_remove_last:
+            self.remove_btn.Enable(self.rows > 1)
 
 # end of class GridProperty
 
