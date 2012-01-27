@@ -1,142 +1,18 @@
+"""
+Configuration related stuff
+
+@see: L{configdialog}
+@copyright: 2007 Alberto Griggio
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+# import general python modules
+import os.path
+import sys
 from ConfigParser import *
-import common, sys, os, os.path
 
-if common.use_gui:
-    import wx
-    import misc
-
-    try:
-        wx.FIXED_MINSIZE
-    except NameError:
-        import configUI
-        configUI.wxFIXED_MINSIZE = 0
-    
-    from configUI import *
-
-    class wxGladePreferences(wxGladePreferencesUI):
-        def __init__(self, preferences):
-            wxGladePreferencesUI.__init__(self, None, -1, "")
-            
-            wx.EVT_BUTTON(self, self.choose_widget_path.GetId(),
-                          self.on_widget_path)
-    
-            self.preferences = preferences
-            self.set_values()
-
-            # disable CheckBox for selecting usage of KDE file dialogs
-            if wx.Platform != '__WXGTK__':
-                self.use_kde_dialogs.SetValue(False)
-                self.use_kde_dialogs.Enable(False)
-            
-        def set_values(self):
-            try:
-                self.use_menu_icons.SetValue(self.preferences.use_menu_icons)
-                self.frame_tool_win.SetValue(self.preferences.frame_tool_win)
-                self.open_save_path.SetValue(self.preferences.open_save_path)
-                self.codegen_path.SetValue(self.preferences.codegen_path)
-                self.use_dialog_units.SetValue(
-                    self.preferences.use_dialog_units)
-                self.number_history.SetValue(self.preferences.number_history)
-                self.show_progress.SetValue(self.preferences.show_progress)
-                self.wxg_backup.SetValue(self.preferences.wxg_backup)
-                self.codegen_backup.SetValue(self.preferences.codegen_backup)
-                #MARCELLO
-                self.default_border.SetValue(self.preferences.default_border)
-                self.default_border_size.SetValue(
-                    self.preferences.default_border_size)
-                if self.preferences.backup_suffix == '.bak':
-                    self.backup_suffix.SetSelection(1)
-                self.buttons_per_row.SetValue(self.preferences.buttons_per_row)
-                self.remember_geometry.SetValue(
-                    self.preferences.remember_geometry)
-                self.local_widget_path.SetValue(
-                    self.preferences.local_widget_path)
-                # ALB 2004-08-11
-                self.show_sizer_handle.SetValue(
-                    self.preferences.show_sizer_handle)
-                self.allow_duplicate_names.SetValue(
-                    self.preferences.allow_duplicate_names)
-                # ALB 2004-10-15
-                self.autosave.SetValue(self.preferences.autosave)
-                self.autosave_delay.SetValue(self.preferences.autosave_delay)
-                # ALB 2004-10-27
-                self.use_kde_dialogs.SetValue(self.preferences.use_kde_dialogs)
-
-                self.write_timestamp.SetValue(self.preferences.write_timestamp)
-                self.write_generated_from.SetValue(
-                    self.preferences.write_generated_from)
-
-                self._fix_spin_ctrls()
-            except Exception, e:
-                wx.MessageBox(_('Error reading config file:\n%s') % e, 'Error',
-                             wx.OK|wx.CENTRE|wx.ICON_ERROR)
-
-        def _fix_spin_ctrls(self):
-            """\
-            Workaround to a wxGTK 2.8.4.2 bug in wx.SpinCtrl.GetValue
-            """
-            done = {}
-            for name in ('buttons_per_row', 'autosave_delay', 'number_history',
-                         'default_border_size'):
-                def fix(n):
-                    done[n] = False
-                    def update(e):
-                        done[n] = True
-                        e.Skip()
-                    def get_val():
-                        if not done[n]:
-                            return getattr(self.preferences, n)
-                        else:
-                            return wx.SpinCtrl.GetValue(getattr(self, n))
-                    return update, get_val
-                spin = getattr(self, name)
-                if spin.GetValue() != getattr(self.preferences, name):
-                    update, get_val = fix(name)
-                    spin.GetValue = get_val
-                    spin.Bind(wx.EVT_SPINCTRL, update)
-    
-        def set_preferences(self):
-            prefs = self.preferences
-            prefs['use_menu_icons'] = self.use_menu_icons.GetValue()
-            prefs['frame_tool_win'] = self.frame_tool_win.GetValue()
-            prefs['open_save_path'] = self.open_save_path.GetValue()
-            prefs['codegen_path'] = self.codegen_path.GetValue()
-            prefs['use_dialog_units'] = self.use_dialog_units.GetValue()
-            prefs['number_history'] = self.number_history.GetValue()
-            prefs['show_progress'] = self.show_progress.GetValue()
-            prefs['wxg_backup'] = self.wxg_backup.GetValue()
-            prefs['codegen_backup'] = self.codegen_backup.GetValue()
-            #MARCELLO
-            prefs['default_border'] = self.default_border.GetValue()
-            prefs['default_border_size'] = self.default_border_size.GetValue()
-            if self.backup_suffix.GetSelection():
-                prefs['backup_suffix'] = '.bak'
-            else: prefs['backup_suffix'] = '~'
-            prefs['buttons_per_row'] = self.buttons_per_row.GetValue()
-            prefs['remember_geometry'] = self.remember_geometry.GetValue()
-            prefs['local_widget_path'] = self.local_widget_path.GetValue()
-            # ALB 2004-08-11
-            prefs['show_sizer_handle'] = self.show_sizer_handle.GetValue()
-            prefs['allow_duplicate_names'] = self.allow_duplicate_names.\
-                                             GetValue()
-            # ALB 2004-10-15
-            prefs['autosave'] = self.autosave.GetValue()
-            prefs['autosave_delay'] = self.autosave_delay.GetValue()
-            # ALB 2004-10-27
-            prefs['use_kde_dialogs'] = self.use_kde_dialogs.GetValue()
-
-            prefs['write_timestamp'] = self.write_timestamp.GetValue()
-            prefs['write_generated_from'] = self.write_generated_from.GetValue()
-            
-        def on_widget_path(self, event):
-            # create a file choice dialog
-            pth = misc.DirSelector(_("Choose a directory:"), os.getcwd(),
-                                   style=wx.DD_DEFAULT_STYLE |
-                                   wx.DD_NEW_DIR_BUTTON)
-            if pth:
-                self.local_widget_path.SetValue(pth)
-
-    # end of class wxGladePreferences
+import common
+import misc
 
 
 def _get_home(default=common.wxglade_path):
@@ -159,7 +35,7 @@ def _get_appdatapath(default=common.wxglade_path):
 class Preferences(ConfigParser):
     _has_home = os.path.expanduser('~') != '~'
     _defaults = {
-        'use_menu_icons': common.use_gui and wx.Platform != '__WXGTK__',
+        'use_menu_icons': common.use_gui and common.platform != '__WXGTK__',
         'frame_tool_win': True,
         'open_save_path': _get_home(),
         'codegen_path': _get_home(),
@@ -277,16 +153,6 @@ def init_preferences():
         preferences.read(search_path)
         if not preferences.has_section('wxglade'):
             preferences.add_section('wxglade')
-
-
-def edit_preferences():
-    dialog = wxGladePreferences(preferences)
-    if dialog.ShowModal() == wx.ID_OK:
-        wx.MessageBox(_('Changes will take effect after wxGlade is restarted'),
-                      _('Preferences saved'),
-                      wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
-        dialog.set_preferences()
-    dialog.Destroy()
 
 
 def save_preferences():

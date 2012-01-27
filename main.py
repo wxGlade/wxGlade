@@ -11,7 +11,12 @@ import sys
 import wx
 from widget_properties import *
 from tree import WidgetTree
-import common, os, os.path, misc, config
+import common
+import os
+import os.path
+import misc
+import config
+import configdialog
 import clipboard
 
 import template
@@ -501,7 +506,13 @@ class wxGladeFrame(wx.Frame):
             self.user_message(_("Auto saving... done"))
         
     def edit_preferences(self, event):
-        config.edit_preferences()
+        dialog = configdialog.wxGladePreferences(config.preferences)
+        if dialog.ShowModal() == wx.ID_OK:
+            wx.MessageBox(_('Changes will take effect after wxGlade is restarted'),
+                          _('Preferences saved'),
+                          wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
+            dialog.set_preferences()
+        dialog.Destroy()
 
     def show_tree(self, event):
         self.tree_frame.Show()
