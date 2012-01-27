@@ -1,9 +1,9 @@
-# common.py: global variables
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Global variables
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import os
 import sys
@@ -91,6 +91,11 @@ wxGlade version string
 py_version = sys.version.split()[0]
 """\
 Python version
+"""
+
+platform = None
+"""\
+Current platform (mostly wx.Platform)
 """
 
 wxglade_path = '.'
