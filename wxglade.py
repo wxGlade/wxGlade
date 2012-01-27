@@ -1,17 +1,16 @@
 #!/usr/bin/env python
-# wxglade.py: entry point of wxGlade
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Entry point of wxGlade
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import os
 import sys
 import gettext
 import common
 import optparse
-
 
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
@@ -130,14 +129,6 @@ def command_line_code_generation(filename, language, out_path=None):
     @param out_path: output file / output directory
     @type out_path:  String
     """
-    common.use_gui = False # don't import wxPython.wx
-    # use_gui has to be set before importing config
-    import config
-    config.init_preferences()
-    common.load_code_writers()
-    common.load_widgets()
-    common.load_sizers()
-
     from xml_parse import CodeWriter
     if not common.code_writers.has_key(language):
         print >> sys.stderr, \
@@ -168,20 +159,13 @@ def determine_wxglade_path():
     return os.path.dirname(os.path.abspath(root))
 
 
-def run_main():
+def init_stage1():
     """\
-    This main procedure is started by calling either wxglade.py or
-    wxglade.pyw on windows
+    Initialise paths for wxGlade (first stage)
+
+    Path initialisation is splitted because the test suite doesn't work
+    with proper initialised paths.
     """
-    # check command line parameters first
-    options = parse_command_line()
-
-    # print versions 
-    print _("Starting wxGlade version %s on Python %s") % (
-        common.version,
-        common.py_version,
-        )
-
     # prepend the widgets dir to the
     wxglade_path = determine_wxglade_path()
     
@@ -230,7 +214,58 @@ def run_main():
     # adapt application search path
     sys.path = [common.wxglade_path, common.widgets_path] + sys.path
 
+
+def init_stage2(use_gui):
+    """\
+    Initialise the remaining (non-path) parts of wxGlade (second stage)
+
+    @param use_gui: Starting wxGlade GUI
+    @type use_gui:  Boolean
+    """
+    common.use_gui = use_gui
+    if use_gui:
+        # ensure minimal wx version
+        if not hasattr(sys, 'frozen'):
+            import wxversion
+            wxversion.ensureMinimal("2.6")
+        
+        # store current platform (None is default)
+        import wx
+        common.platform = wx.Platform
+
+        # codewrites, widgets and sizers are loaded in class main.wxGladeFrame
+    else:
+        # use_gui has to be set before importing config
+        import config
+        config.init_preferences()
+        common.load_code_writers()
+        common.load_widgets()
+        common.load_sizers()
+
+
+def run_main():
+    """\
+    This main procedure is started by calling either wxglade.py or
+    wxglade.pyw on windows
+    """
+    # check command line parameters first
+    options = parse_command_line()
+
+    # print versions 
+    print _("Starting wxGlade version %s on Python %s") % (
+        common.version,
+        common.py_version,
+        )
+
+    # initialise wxGlade (first stage)
+    init_stage1()
+
+    # initialise wxGlade (second stage)
+    init_stage2(options.start_gui)
+
     if options.start_gui:
+        # late import of main (imported wx) for using wxversion  in
+        # init_stage2()
         import main
         main.main(options.filename)
     else:
