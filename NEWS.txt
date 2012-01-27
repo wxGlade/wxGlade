@@ -5,6 +5,7 @@ General:
 
 Bugs:
   - [FIX] Prevent caching effects in Lisp code generator
+  - [FIX] Prevent deleting last notebook tab (sf bug #3126974)
   - ...
 
 Documentation:
