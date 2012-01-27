@@ -13,6 +13,7 @@ import unittest
 
 # import project modules
 import common
+from wxglade import init_stage1, init_stage2
 
 class WXGladeBaseTest(unittest.TestCase):
     """\
@@ -45,17 +46,13 @@ class WXGladeBaseTest(unittest.TestCase):
         """\
         Initialise parts of wxGlade only
         """
-        # don't import wxPython
-        common.use_gui = False
+        # don't initialise path components
+        #init_stage1()
 
-        # use_gui has to be set before importing config
+        # initialise sizers, widgets, codewriter
+        init_stage2(use_gui=False)
+
         import config
-
-        config.init_preferences()
-
-        common.load_code_writers()
-        common.load_widgets()
-        common.load_sizers()
 
         # don't add timestamps to the files to generate
         config.preferences.write_timestamp = False
