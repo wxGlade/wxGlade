@@ -207,8 +207,6 @@ def append_item(menu, id, text, xpm_file_or_artid=None):
     if use_menu_icons is None:
         import config
         use_menu_icons = config.preferences.use_menu_icons
-    if wx.Platform == '__WXGTK__' and wx.VERSION == (2, 4, 1, 2, ''):
-        use_menu_icons = 0
     item = wx.MenuItem(menu, id, text)
     if wx.Platform == '__WXMSW__':
         path = 'msw/'
