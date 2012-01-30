@@ -13,7 +13,8 @@ import unittest
 
 # import project modules
 import common
-from wxglade import init_stage1, init_stage2
+import wxglade
+
 
 class WXGladeBaseTest(unittest.TestCase):
     """\
@@ -42,20 +43,35 @@ class WXGladeBaseTest(unittest.TestCase):
     Directory with input files and result files
     """
 
+    init_stage1 = False
+    """\
+    Initialise the first stage of wxGlade e.g. path settings
+    """
+
+    init_use_gui = False
+    """\
+    Initialise the GUI part of wxGlade
+    """
+
     def setUp(self):
         """\
         Initialise parts of wxGlade only
         """
-        # don't initialise path components
-        #init_stage1()
+        # initialise path settings
+        if self.init_stage1:
+            wxglade.init_stage1()
 
         # initialise sizers, widgets, codewriter
-        init_stage2(use_gui=False)
+        wxglade.init_stage2(use_gui=self.init_use_gui)
 
+        # initialise wxGlade configuration
         import config
+        config.init_preferences()
 
-        # don't add timestamps to the files to generate
+        # set some useful preferences
+        config.preferences.autosave = False
         config.preferences.write_timestamp = False
+        config.preferences.show_progress = False
 
         # initiate empty structure to store files and there content
         self.vFiles = {}
@@ -143,7 +159,6 @@ class WXGladeBaseTest(unittest.TestCase):
             }
 
         return content
-
 
     def diff(self, text1, text2):
         """\

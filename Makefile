@@ -76,9 +76,16 @@ HELP= @grep -B1 '^[a-zA-Z\-]*:' Makefile |\
 help:
 	$(HELP)
 
-#+ Run test package
-test:
+#+ Run all test package
+test: test-nongui test-gui
+
+#+ Run all non-GUI test package
+test-nongui:
 	@$(TEST_BIN)
+
+#+ Run all GUI test package
+test-gui:
+	@$(TEST_BIN) --gui
 
 #+ Clean python compiler files and automatic generated documentation
 clean:
