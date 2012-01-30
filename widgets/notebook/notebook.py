@@ -12,6 +12,7 @@ from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase
 from edit_sizers.edit_sizers import Sizer, SizerSlot
+from xml_parse import XmlParsingError
 
 try:
     from panel import EditPanel
@@ -87,7 +88,13 @@ class NotebookVirtualSizer(Sizer):
         Adds an item to self.window.
         """
         #print 'pos:', pos, 'item.name:', item.name
-        self.window.tabs[pos-1][1] = item
+        try:
+            self.window.tabs[pos-1][1] = item
+        except IndexError:
+            raise XmlParsingError(
+                _('Notebook widget "%s" does not have any tabs!') % \
+                self.window.name
+                )
         item._dont_destroy = True
 
     def free_slot(self, pos, force_layout=True):
