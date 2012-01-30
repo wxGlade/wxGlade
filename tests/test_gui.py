@@ -59,6 +59,10 @@ class TestGui(WXGladeBaseTest):
         self.frame.Destroy()
 
     def testNotebookWithoutTabs(self):
+        """\
+        Test loading Notebook without tabs
+        """
+        self._messageBox = None
         infile = cStringIO.StringIO(
             self.loadFile('Notebook_wo_tabs', '.wxg')
             )
@@ -76,6 +80,12 @@ class TestGui(WXGladeBaseTest):
             [err_msg, err_caption] == self._messageBox,
             '''Expected wxMessageBox(message=%s, caption=%s)''' % (err_msg, err_caption)
             )
+
+    def testNotebookWithTabs(self):
+        """\
+        Test loading Notebook with tabs
+        """
+        self._messageBox = None
         infile = cStringIO.StringIO(
             self.loadFile('Notebook_w_tabs', '.wxg')
             )
@@ -84,4 +94,9 @@ class TestGui(WXGladeBaseTest):
             use_progress_dialog=False,
             is_filelike=True,
             add_to_history=False,
+            )
+        self.failIf(
+            self._messageBox,
+            'Loading test wxg file caused an error message: %s' % \
+                self._messageBox
             )
