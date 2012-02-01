@@ -56,7 +56,7 @@ Name: "quicklaunchicon"; Description: "Create a &Quick Launch icon"; GroupDescri
     Flags: ignoreversion recursesubdirs
 #else
   Source: "*"; \
-    Excludes: "{#EXCLUDE_ALWAYS},\bdist\*,\build\*,dist\*,\install\*,.hg,\.hgignore,\.hgtags,\logdict*.log,\warnwxglade.txt,*.pyc,*.pyo,Makefile,epydoc.conf,setup.py";  \
+    Excludes: "{#EXCLUDE_ALWAYS},\bdist\*,\build\*,dist\*,\install\*,.hg,\.hgignore,\.hgtags,\logdict*.log,\tests,\test.py,\warnwxglade.txt,*.pyc,*.pyo,Makefile,epydoc.conf,setup.py";  \
     DestDir: "{app}"; \
     Flags: ignoreversion recursesubdirs
 #endif
