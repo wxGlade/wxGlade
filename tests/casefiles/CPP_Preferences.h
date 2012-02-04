@@ -13,11 +13,7 @@
 
 
 // begin wxGlade: ::extracode
-import common
-import os
-
-_icon_path = os.path.join(common.icons_path, 'icon.xpm')
-
+#define _icon_path wxT("icons/icon.xpm")
 // end wxGlade
 
 
