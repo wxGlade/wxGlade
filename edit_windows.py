@@ -405,7 +405,7 @@ class WindowBase(EditBase):
         EditBase.__init__(self, name, klass, parent, id, property_window,
                           show=False)
         # 'property' id (editable by the user) 
-        self.window_id = -1
+        self.window_id = "wxID_ANY"
 
         def set_id(value):
             self.window_id = value
