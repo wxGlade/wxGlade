@@ -37,11 +37,13 @@ class PythonStaticBoxSizerBuilder:
         cn = pygen.cn
         orient = obj.properties.get('orient', 'wxHORIZONTAL')
         label = obj.properties.get('label', '')
-        if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-        else: parent = 'self'
+        if not obj.parent.is_toplevel:
+            parent = 'self.%s' % obj.parent.name
+        else:
+            parent = 'self'
         init = [
-            ('self.%s_staticbox = ' + cn('wxStaticBox') + '(%s, -1, %s)\n') %
-            (obj.name, parent, pygen.quote_str(label)),
+            ('self.%s_staticbox = ' + cn('wxStaticBox') + '(%s, %s, %s)\n') %
+            (obj.name, parent, cn('wxID_ANY'), pygen.quote_str(label)),
             ('%s = ' + cn('wxStaticBoxSizer') + '(self.%s_staticbox, %s)\n') %
             (obj.name, obj.name, cn(orient)),
             ('self.%s_staticbox.Lower()\n') %
@@ -145,7 +147,7 @@ class CppStaticBoxSizerBuilder:
         if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
         else: parent = 'this'
         init = [
-            '%s_staticbox = new wxStaticBox(%s, -1, %s);\n' %
+            '%s_staticbox = new wxStaticBox(%s, wxID_ANY, %s);\n' %
             (obj.name, parent, cppgen.quote_str(label)),
             'wxStaticBoxSizer* %s = new wxStaticBoxSizer(%s_staticbox, %s);\n'
             % (obj.name, obj.name, orient)]

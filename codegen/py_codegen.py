@@ -1092,8 +1092,10 @@ def add_app(app_attrs, top_win_class):
             append(tab + 'gettext.install("%s") # replace with the appropriate'
                    ' catalog name\n\n' % name)
         append(tab + '%s = %s(0)\n' % (name, cn('wxPySimpleApp')))
-    append(tab + cn('wxInitAllImageHandlers') + '()\n') # to avoid troubles
-    append(tab + '%s = %s(None, -1, "")\n' % (top_win, top_win_class))
+    append(tab + '%s()\n' % cn('wxInitAllImageHandlers')) # to avoid troubles
+    append(tab + '%s = %s(None, %s, "")\n' % \
+        (top_win, top_win_class, cn('wxID_ANY'))
+        )
     if klass:
         append(tab + 'self.SetTopWindow(%s)\n' % top_win)
         append(tab + '%s.Show()\n' % top_win)
@@ -1224,7 +1226,7 @@ def generate_code_id(obj, id=None):
     if id is None:
         id = obj.properties.get('id')
     if id is None:
-        return '', '-1'
+        return '', cn('wxID_ANY')
     tokens = id.split('=')
     if len(tokens) > 1:
         name, val = tokens[:2]
