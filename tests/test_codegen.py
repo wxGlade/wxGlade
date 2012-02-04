@@ -148,7 +148,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{wxglade.codegen.pl_codegen}
         """
-        source = self.loadFile('Preferences', '.wxg')
+        source = self.loadFile('Perl_Preferences', '.wxg')
         result = self.loadFile('Perl_Preferences', '.pl')
 
         # generate Lisp code
@@ -190,7 +190,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{wxglade.codegen.cpp_codegen}
         """
-        source = self.loadFile('Preferences', '.wxg')
+        source = self.loadFile('CPP_Preferences', '.wxg')
         result_cpp = self.loadFile('CPP_Preferences', '.cpp')
         result_h = self.loadFile('CPP_Preferences', '.h')
 
