@@ -3,11 +3,13 @@
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
+from xml.sax.saxutils import escape, quoteattr
 
-import wx, wx.grid
+import wx
+import wx.grid
+
 import widget_properties
 from widget_properties import GridProperty
-from xml.sax.saxutils import escape, quoteattr
 
 
 class CodeProperty(widget_properties.TextProperty):
