@@ -6,6 +6,7 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import os.path
+import traceback
 import wx
 
 from xml.sax.saxutils import quoteattr
@@ -450,7 +451,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             except AttributeError:
                 pass
             except Exception:
-                import traceback
                 traceback.print_exc()
 
     def popup_menu(self, event):
@@ -472,7 +472,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             event.m_x, event.m_y = x, y
             item.popup_menu(event)
         except AttributeError:
-            import traceback;
             traceback.print_exc()
 
     def expand(self, node=None, yes=True):
