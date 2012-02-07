@@ -7,12 +7,8 @@
 # import test base class
 from tests import WXGladeBaseTest
 
-# import project modules
-import wxglade
-
 # import general python modules
 import cStringIO
-import os.path
 import sys
 
 
@@ -37,7 +33,6 @@ class TestGui(WXGladeBaseTest):
         # initialse base class
         WXGladeBaseTest.setUp(self)
 
-        import common
         import main
         import wx
 
@@ -64,7 +59,7 @@ class TestGui(WXGladeBaseTest):
         """
         self._messageBox = None
         infile = cStringIO.StringIO(
-            self.loadFile('Notebook_wo_tabs', '.wxg')
+            self._load_file('Notebook_wo_tabs.wxg')
             )
         self.frame._open_app(
             infilename=infile,
@@ -78,7 +73,10 @@ class TestGui(WXGladeBaseTest):
         err_caption = u'Error'
         self.failUnless(
             [err_msg, err_caption] == self._messageBox,
-            '''Expected wxMessageBox(message=%s, caption=%s)''' % (err_msg, err_caption)
+            '''Expected wxMessageBox(message=%s, caption=%s)''' % (
+                err_msg,
+                err_caption
+                )
             )
 
     def testNotebookWithTabs(self):
@@ -87,7 +85,7 @@ class TestGui(WXGladeBaseTest):
         """
         self._messageBox = None
         infile = cStringIO.StringIO(
-            self.loadFile('Notebook_w_tabs', '.wxg')
+            self._load_file('Notebook_w_tabs.wxg')
             )
         self.frame._open_app(
             infilename=infile,

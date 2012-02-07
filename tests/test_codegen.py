@@ -9,7 +9,6 @@ from tests import WXGladeBaseTest
 
 # import project modules
 import common
-from xml_parse import CodeWriter
 
 
 class TestCodeGen(WXGladeBaseTest):
@@ -17,30 +16,41 @@ class TestCodeGen(WXGladeBaseTest):
     Test code generation
     """
 
-    def generateCode(self, language, document, filename):
+    def test_CPP_wxCalendarCtrl(self):
         """\
-        Generate code for the given language.
+        Test CPP code generation with a small wxCalendarCtrl example
 
-        @param language: Language to generate code for
-        @param document: XML document to generate code for
-        @type document:  String
-        @param filename: Name of the virtual output file
-        @type filename:  String
+        The test also tests for Sourceforge bug #2782306
+
+        @see: L{wxglade.widgets.calendar_ctrl.calendar_ctrl}
         """
-        self.failUnless(
-            language in common.code_writers,
-            "No codewriter loaded for %s" % language
-            )
+        source = self._load_file('CPP_wxCalendarCtrl.wxg')
+        result_cpp = self._load_file('CPP_wxCalendarCtrl.cpp')
+        result_h = self._load_file('CPP_wxCalendarCtrl.h')
 
-        # generate code
-        CodeWriter(
-            writer=common.code_writers[language],
-            input=document,
-            from_string=True,
-            out_path=filename,
-            )
+        # generate and compare C++ code
+        self._generate_code('C++', source, 'CPP_wxCalendarCtrl')
+        generated_cpp = self.vFiles['CPP_wxCalendarCtrl.cpp'].getvalue()
+        generated_h = self.vFiles['CPP_wxCalendarCtrl.h'].getvalue()
+        self._compare(result_cpp, generated_cpp, 'C++ source')
+        self._compare(result_h, generated_h, 'C++ header')
 
-        return
+    def test_CPP_Preferences(self):
+        """\
+        Test C++ code generation with preferences dialog
+
+        @see: L{wxglade.codegen.cpp_codegen}
+        """
+        source = self._load_file('CPP_Preferences.wxg')
+        result_cpp = self._load_file('CPP_Preferences.cpp')
+        result_h = self._load_file('CPP_Preferences.h')
+
+        # generate and compare C++ code
+        self._generate_code('C++', source, 'CPP_Preferences')
+        generated_cpp = self.vFiles['CPP_Preferences.cpp'].getvalue()
+        generated_h = self.vFiles['CPP_Preferences.h'].getvalue()
+        self._compare(result_cpp, generated_cpp, 'C++ source')
+        self._compare(result_h, generated_h, 'C++ header')
 
     def test_Lisp_quote_path(self):
         """\
@@ -68,78 +78,28 @@ class TestCodeGen(WXGladeBaseTest):
                     )
                 )
 
+    def test_Lisp_Preferences(self):
+        """\
+        Test Lisp code generation with preferences dialog
+
+        @see: L{wxglade.codegen.lisp_codegen}
+        """
+        self._generate_and_compare(
+            'lisp',
+            'Preferences.wxg',
+            'Lisp_Preferences.lisp'
+            )
+
     def test_Lisp_wxBitmapButton(self):
         """\
         Test Lisp code generation with small wxBitmapButton example
 
         @see: L{wxglade.widgets.bitmap_button.lisp_codegen}
         """
-        source = self.loadFile('Lisp_wxBitmapButton', '.wxg')
-        result = self.loadFile('Lisp_wxBitmapButton', '.lisp')
-
-        # generate Lisp code
-        self.generateCode('lisp', source, 'Lisp_wxBitmapButton.lisp')
-        generated = self.vFiles['Lisp_wxBitmapButton.lisp'].getvalue()
-
-        # compare source files
-        delta = self.diff(result, generated)
-
-        self.failIf(
-            delta,
-            "Generated source file and expected result differs:\n%s" % delta,
-            )
-
-    def test_CPP_wxCalendarCtrl(self):
-        """\
-        Test CPP code generation with a small wxCalendarCtrl example
-
-        The test also tests for Sourceforge bug #2782306
-
-        @see: L{wxglade.widgets.calendar_ctrl.calendar_ctrl}
-        """
-        source = self.loadFile('CPP_wxCalendarCtrl', '.wxg')
-        result_cpp = self.loadFile('CPP_wxCalendarCtrl', '.cpp')
-        result_h = self.loadFile('CPP_wxCalendarCtrl', '.h')
-
-        # generate Lisp code
-        self.generateCode('C++', source, 'CPP_wxCalendarCtrl')
-        generated_cpp = self.vFiles['CPP_wxCalendarCtrl.cpp'].getvalue()
-        generated_h = self.vFiles['CPP_wxCalendarCtrl.h'].getvalue()
-
-        # compare source files
-        delta_cpp = self.diff(result_cpp, generated_cpp)
-        delta_h = self.diff(result_h,   generated_h)
-
-        self.failIf(
-            delta_cpp,
-            "Generated source file and expected result differs:\n%s" % \
-                delta_cpp,
-            )
-        self.failIf(
-            delta_h,
-            "Generated header file and expected result differs:\n%s" % \
-                delta_h,
-            )
-
-    def test_Python_Preferences(self):
-        """\
-        Test Python code generation with preferences dialog
-
-        @see: L{wxglade.codegen.py_codegen}
-        """
-        source = self.loadFile('Preferences', '.wxg')
-        result = self.loadFile('Python_Preferences', '.py')
-
-        # generate Lisp code
-        self.generateCode('python', source, 'Python_Preferences.py')
-        generated = self.vFiles['Python_Preferences.py'].getvalue()
-
-        # compare source files
-        delta = self.diff(result, generated)
-
-        self.failIf(
-            delta,
-            "Generated source file and expected result differs:\n%s" % delta,
+        self._generate_and_compare(
+            'lisp',
+            'Lisp_wxBitmapButton.wxg',
+            'Lisp_wxBitmapButton.lisp'
             )
 
     def test_Perl_Preferences(self):
@@ -148,68 +108,20 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{wxglade.codegen.pl_codegen}
         """
-        source = self.loadFile('Perl_Preferences', '.wxg')
-        result = self.loadFile('Perl_Preferences', '.pl')
-
-        # generate Lisp code
-        self.generateCode('perl', source, 'Perl_Preferences.pl')
-        generated = self.vFiles['Perl_Preferences.pl'].getvalue()
-
-        # compare source files
-        delta = self.diff(result, generated)
-
-        self.failIf(
-            delta,
-            "Generated source file and expected result differs:\n%s" % delta,
+        self._generate_and_compare(
+            'perl',
+            'Perl_Preferences.wxg',
+            'Perl_Preferences.pl'
             )
 
-    def test_Lisp_Preferences(self):
+    def test_Python_Preferences(self):
         """\
-        Test Lisp code generation with preferences dialog
+        Test Python code generation with preferences dialog
 
-        @see: L{wxglade.codegen.lisp_codegen}
+        @see: L{wxglade.codegen.py_codegen}
         """
-        source = self.loadFile('Preferences', '.wxg')
-        result = self.loadFile('Lisp_Preferences', '.lisp')
-
-        # generate Lisp code
-        self.generateCode('lisp', source, 'Lisp_Preferences.lisp')
-        generated = self.vFiles['Lisp_Preferences.lisp'].getvalue()
-
-        # compare source files
-        delta = self.diff(result, generated)
-
-        self.failIf(
-            delta,
-            "Generated source file and expected result differs:\n%s" % delta,
-            )
-
-    def test_CPP_Preferences(self):
-        """\
-        Test C++ code generation with preferences dialog
-
-        @see: L{wxglade.codegen.cpp_codegen}
-        """
-        source = self.loadFile('CPP_Preferences', '.wxg')
-        result_cpp = self.loadFile('CPP_Preferences', '.cpp')
-        result_h = self.loadFile('CPP_Preferences', '.h')
-
-        # generate Lisp code
-        self.generateCode('C++', source, 'CPP_Preferences')
-        generated_cpp = self.vFiles['CPP_Preferences.cpp'].getvalue()
-        generated_h = self.vFiles['CPP_Preferences.h'].getvalue()
-
-        # compare source files
-        delta_cpp = self.diff(result_cpp, generated_cpp)
-        delta_h = self.diff(result_h,   generated_h)
-
-        self.failIf(
-            delta_cpp,
-            "Generated source file and expected result differs:\n%s" % \
-                delta_cpp,
-            )
-        self.failIf(
-            delta_h,
-            "Generated header file and expected result differs:\n%s" % \
-                delta_h,
+        self._generate_and_compare(
+            'python',
+            'Preferences.wxg',
+            'Python_Preferences.py'
             )
