@@ -225,7 +225,9 @@ def init_stage2(use_gui):
     common.use_gui = use_gui
     if use_gui:
         # ensure minimal wx version
-        if not hasattr(sys, 'frozen') and 'wxversion' not in sys.modules:
+        if not hasattr(sys, 'frozen') and \
+           'wxversion' not in sys.modules and \
+           'wx' not in sys.modules:
             import wxversion
             wxversion.ensureMinimal("2.6")
         
