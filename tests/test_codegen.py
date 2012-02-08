@@ -133,6 +133,11 @@ class TestCodeGen(WXGladeBaseTest):
         @see: L{wxglade.codegen.pl_codegen}
         """
         self._generate_and_compare(
+            'lisp',
+            'GridEvents.wxg',
+            'GridEvents.lisp'
+            )
+        self._generate_and_compare(
             'perl',
             'GridEvents.wxg',
             'GridEvents.pl'

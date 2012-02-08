@@ -4,8 +4,9 @@ General:
   - ...
 
 Bugs:
-  - [FIX] Prevent caching effects in Lisp code generator
-  - [FIX] Prevent deleting last notebook tab (sf bug #3126974)
+  - Prevent caching effects in Lisp code generator
+  - Prevent deleting last notebook tab (sf bug #3126974)
+  - String formatting issue for event handlers in Lisp code generator
   - ...
 
 Documentation:
