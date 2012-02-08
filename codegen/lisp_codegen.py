@@ -725,14 +725,18 @@ def add_class(code_obj):
     if event_handlers: write('\n')
     for win_id, event, handler in event_handlers:
         if win_id.startswith('#'):
-            write(tab + "(wxEvtHandler_Connect (slot-top-window obj) %s (exp%s)"
-                  "\n" + tabs(2) + "(wxClosure_Create #'%s obj))\n"
-                  % (win_id[1:],event, handler, ))
+            write(
+                tab + \
+                "(wxEvtHandler_Connect (slot-top-window obj) %s (exp%s)" % (win_id[1:], event) + \
+                "\n" + tabs(2) + \
+                "(wxClosure_Create #'%s obj))\n" % handler
+                )
         else:
-            write(tab + "(wxEvtHandler_Connect (slot-top-window obj) %s (exp%s)"
-                  "\n" + tabs(2) + "(wxClosure_Create #'%s obj))\n"
-                  % (win_id,event, handler, ))
-
+            write(tab + \
+                  "(wxEvtHandler_Connect (slot-top-window obj) %s (exp%s)" % (win_id, event) + \
+                  "\n" + tabs(2) + \
+                  "(wxClosure_Create #'%s obj))\n" % handler
+                  )
     # end tag
     write(tab + ')\n')
     write(tab + ';;; end wxGlade\n')
