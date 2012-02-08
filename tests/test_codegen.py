@@ -125,3 +125,34 @@ class TestCodeGen(WXGladeBaseTest):
             'Preferences.wxg',
             'Python_Preferences.py'
             )
+
+    def test_GridEvents(self):
+        """\
+        Test Perl code generation with a grid widgets and handling events
+
+        @see: L{wxglade.codegen.pl_codegen}
+        """
+        self._generate_and_compare(
+            'perl',
+            'GridEvents.wxg',
+            'GridEvents.pl'
+            )
+        self._generate_and_compare(
+            'python',
+            'GridEvents.wxg',
+            'GridEvents.py'
+            )
+        self._generate_and_compare(
+            'XRC',
+            'GridEvents.wxg',
+            'GridEvents.xrc'
+            )
+        # check C++
+        source = self._load_file('GridEvents.wxg')
+        result_cpp = self._load_file('GridEvents.cpp')
+        result_h = self._load_file('GridEvents.h')
+        self._generate_code('C++', source, 'GridEvents')
+        generated_cpp = self.vFiles['GridEvents.cpp'].getvalue()
+        generated_h = self.vFiles['GridEvents.h'].getvalue()
+        self._compare(result_cpp, generated_cpp, 'C++ source')
+        self._compare(result_h, generated_h, 'C++ header')
