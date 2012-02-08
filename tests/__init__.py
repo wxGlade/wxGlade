@@ -133,8 +133,6 @@ class WXGladeBaseTest(unittest.TestCase):
 
         @param filename:  Name of the file to load
         @type filename:   String
-        @param extension: File extension e.g. I{.wxg} or I{.py}
-        @type extension:  String
         @return:          File content
         @rtype:           String
         """
@@ -274,5 +272,5 @@ class WXGladeBaseTest(unittest.TestCase):
         else:
             self.failIf(
                 delta,
-                "Generated file and expected result differs:\n%s"
+                "Generated file and expected result differs:\n%s" % delta
                 )
