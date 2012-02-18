@@ -484,8 +484,8 @@ def add_object(top_obj, sub_obj):
                     klass.event_handlers.append((id, event, handler))
             elif 'events' in sub_obj.properties:
                 id_name, id = generate_code_id(sub_obj)
-                #if id == '-1': id = 'self.%s.GetId()' % sub_obj.name
-                if id == '-1': id = '#$self->%s' % sub_obj.name
+                if id == '-1' or id == cn('wxID_ANY'):
+                    id = '#$self->%s' % sub_obj.name
                 for event, handler in sub_obj.properties['events'].iteritems():
                     klass.event_handlers.append((id, event, handler))
 
@@ -1031,24 +1031,28 @@ def generate_code_font(obj):
 
 def generate_code_id(obj, id=None):
     """\
-    returns a 2-tuple of strings representing the LOC that sets the id of the
-    given object: the first line is the declaration of the variable, and is
-    empty if the object's id is a constant, and the second line is the value
-    of the id
+    Returns a tuple of two string. The two strings are:
+     1. A line to the declare the variable. It's empty if the object id is a
+        constant
+     2. The value of the id
     """
     if obj and id is None:
         id = obj.properties.get('id')
-    if id is None:
-        return '', '-1'
-    tokens = id.split('=')
-    if len(tokens) > 1:
-        name, val = tokens[:2]
+    if not id:
+        return '', cn('wxID_ANY')
+    tokens = id.split('=', 1)
+    if len(tokens) == 2:
+        name, val = tokens
     else:
-        return '', tokens[0] # we assume name is declared elsewhere
+        return '', cn(tokens[0])   # we assume name is declared elsewhere
     if not name:
-        return '', val
-    if val.strip() == '?':
+        return '', cn(val)
+    name = name.strip()
+    val = val.strip()
+    if val == '?':
         val = 'Wx::NewId()'
+    else:
+        val = cn(val)
     return ('use constant %s => %s;\n' % (name, val), name)
 
 

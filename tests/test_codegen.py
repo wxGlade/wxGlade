@@ -10,6 +10,13 @@ from tests import WXGladeBaseTest
 # import project modules
 import common
 
+class MockCodeObject(object):
+    """\
+    Mock object for L{wxglade.xml_parse.CodeObject}
+    """
+    preview = False
+    properties = {}
+
 
 class TestCodeGen(WXGladeBaseTest):
     """\
@@ -161,3 +168,110 @@ class TestCodeGen(WXGladeBaseTest):
         generated_h = self.vFiles['GridEvents.h'].getvalue()
         self._compare(result_cpp, generated_cpp, 'C++ source')
         self._compare(result_h, generated_h, 'C++ header')
+
+    def test_generate_code_id(self):
+        """\
+        Test id code generation of all code generators
+
+        @see: L{wxglade.codegen.cpp_codegen.generate_code_id}
+        @see: L{wxglade.codegen.lisp_codegen.generate_code_id}
+        @see: L{wxglade.codegen.pl_codegen.generate_code_id}
+        @see: L{wxglade.codegen.py_codegen.generate_code_id}
+        """
+        # create dummy code object first
+        obj = MockCodeObject()
+        obj.preview = False
+        obj.properties = {'id': 'wxID_ANY'}
+
+        gen_id = common.code_writers['python'].generate_code_id
+        cn = common.code_writers['python'].cn
+
+        # check preview mode first
+        obj.preview = True
+        name, value = gen_id(obj)
+        self.failUnless(
+            (name, value) == ('', '-1'),
+            """Expect "('s', '-1')" got "('%s', '%s')"!""" % (name, value)
+            )
+
+        # now we check non-preview only
+        obj.preview = False
+
+        # test for Python
+        for test_id, target_decl, target_value in [
+            ['wxID_ANY', '', cn('wxID_ANY')],                  # id => "wxID_ANY"
+            ['=wxID_ANY', '', cn('wxID_ANY')],                 # id => "=wxID_ANY" (ugly!)
+            ['', '', cn('wxID_ANY')],                          # id => "" 
+            ['self.myid', '', 'self.myid'],                    # id => "self.myid"  (predefined class member)
+            ['self.myid=1', 'self.myid = 1\n', 'self.myid'],   # id => "self.myid=1" 
+            ['self.myid=?', 'self.myid = %s\n' % cn('wxNewId()') , 'self.myid'],             # id => "self.myid=?" 
+            ['myid', '', 'myid'],                              # id => "myid" (global value and not a class member)
+            ['myid = 1', 'global myid; myid = 1\n', 'myid'],   # id => "myid=1" (declare new global variable and store value)
+            ]:
+            obj.properties['id'] = test_id
+            act_decl, act_value = gen_id(obj)
+            self.failUnless(
+                (act_decl, act_value) == (target_decl, target_value),
+                """For Python expected "('%s', '%s')" got "('%s', '%s')"!""" % \
+                    (target_decl, target_value, act_decl, act_value)
+
+                )
+
+        # test for C++
+        gen_id = common.code_writers['C++'].generate_code_id
+        for test_id, target_decl, target_value in [
+            ['wxID_ANY', '', 'wxID_ANY'],                      # id => "wxID_ANY"
+            ['=wxID_ANY', '', 'wxID_ANY'],                     # id => "=wxID_ANY" (ugly!)
+            ['', '', 'wxID_ANY'],                              # id => "" 
+            ['myid', '', 'myid'],                              # id => "myid"  (predefined variable)
+            ['myid=1', 'myid = 1', 'myid'],                    # id => "myid=1" 
+            ['myid=?', 'myid = wxID_HIGHEST + 1000', 'myid'],  # id => "myid=?" 
+            ['myid=?', 'myid = wxID_HIGHEST + 1001', 'myid'],  # id => "myid=?" 
+            ]:
+            obj.properties['id'] = test_id
+            act_decl, act_value = gen_id(obj)
+            self.failUnless(
+                (act_decl, act_value) == (target_decl, target_value),
+                """For C++ expected "('%s', '%s')" got "('%s', '%s')"!""" % \
+                    (target_decl, target_value, act_decl, act_value)
+                )
+
+        # test for Perl
+        lang = 'Perl'
+        gen_id = common.code_writers['perl'].generate_code_id
+        cn = common.code_writers['perl'].cn
+        for test_id, target_decl, target_value in [
+            ['wxID_ANY', '', cn('wxID_ANY')],                  # id => "wxID_ANY"
+            ['=wxID_ANY', '', cn('wxID_ANY')],                 # id => "=wxID_ANY" (ugly!)
+            ['', '', cn('wxID_ANY')],                          # id => "" 
+            ['myid', '', 'myid'],                              # id => "myid"  (predefined variable)
+            ['myid=1', 'use constant myid => 1;\n', 'myid'],   # id => "myid=1" 
+            ['myid=?', 'use constant myid => %s;\n' % cn('wxNewId()') , 'myid'],  # id => "myid=?" 
+            ]:
+            obj.properties['id'] = test_id
+            act_decl, act_value = gen_id(obj)
+            self.failUnless(
+                (act_decl, act_value) == (target_decl, target_value),
+                """For Perl expected "('%s', '%s')" got "('%s', '%s')"!""" % \
+                    (target_decl, target_value, act_decl, act_value)
+
+                )
+
+        # test for Lisp
+        gen_id = common.code_writers['lisp'].generate_code_id
+        cn = common.code_writers['lisp'].cn
+        for test_id, target_decl, target_value in [
+            ['wxID_ANY', '', cn('wxID_ANY')],               # id => "wxID_ANY"
+            ['=wxID_ANY', '', cn('wxID_ANY')],              # id => "=wxID_ANY" (ugly!)
+            ['', '', cn('wxID_ANY')],                         # id => "" 
+            ['myid', '', 'myid'],                           # id => "myid"  (predefined variable)
+            ['myid=1', 'global myid; myid = 1\n', 'myid'],  # id => "myid=1" 
+            ['myid=?', 'global myid; myid = %s\n' % cn('wxNewId()') , 'myid'],  # id => "myid=?" 
+            ]:
+            obj.properties['id'] = test_id
+            act_decl, act_value = gen_id(obj)
+            self.failUnless(
+                (act_decl, act_value) == (target_decl, target_value),
+                """For Lisp expected "('%s', '%s')" got "('%s', '%s')"!""" % \
+                    (target_decl, target_value, act_decl, act_value)
+                )
