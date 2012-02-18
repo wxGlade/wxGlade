@@ -44,7 +44,7 @@ class PerlStaticBoxSizerBuilder:
         if not obj.parent.is_toplevel: parent = '$self->{%s}' % obj.parent.name
         else: parent = '$self'
         init = [
-          '$self->{%s_staticbox} = Wx::StaticBox->new(%s, -1, %s );\n'
+          '$self->{%s_staticbox} = Wx::StaticBox->new(%s, Wx::ID_ANY, %s );\n'
           % (obj.name, parent, plgen.quote_str(label)), # this get
           '$self->{%s}= Wx::StaticBoxSizer->new($self->{%s_staticbox}, %s);\n'
           % (obj.name,obj.name, orient)

@@ -29,7 +29,7 @@ sub new {
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{notebook_1} = Wx::Notebook->new($self, Wx::ID_ANY, wxDefaultPosition, wxDefaultSize, 0);
 	$self->{notebook_1_pane_2} = Wx::Panel->new($self->{notebook_1}, Wx::ID_ANY, wxDefaultPosition, wxDefaultSize, );
-	$self->{sizer_6_staticbox} = Wx::StaticBox->new($self->{notebook_1_pane_2}, -1, _T("Local widget path") );
+	$self->{sizer_6_staticbox} = Wx::StaticBox->new($self->{notebook_1_pane_2}, Wx::ID_ANY, _T("Local widget path") );
 	$self->{notebook_1_pane_1} = Wx::Panel->new($self->{notebook_1}, Wx::ID_ANY, wxDefaultPosition, wxDefaultSize, );
 	$self->{use_menu_icons} = Wx::CheckBox->new($self->{notebook_1_pane_1}, Wx::ID_ANY, _T("Use icons in menu items"), wxDefaultPosition, wxDefaultSize, );
 	$self->{frame_tool_win} = Wx::CheckBox->new($self->{notebook_1_pane_1}, Wx::ID_ANY, _T("Show properties and tree windows as small frames"), wxDefaultPosition, wxDefaultSize, );
