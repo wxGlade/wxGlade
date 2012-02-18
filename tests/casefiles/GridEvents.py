@@ -19,7 +19,7 @@ class MyFrame(wx.Frame):
         self.__set_properties()
         self.__do_layout()
 
-        self.Bind(wx.grid.EVT_GRID_CMD_CELL_LEFT_CLICK, self.myEVT_GRID_CELL_LEFT_CLICK, id=wx.ID_ANY)
+        self.Bind(wx.grid.EVT_GRID_CMD_CELL_LEFT_CLICK, self.myEVT_GRID_CELL_LEFT_CLICK, self.grid_1)
         # end wxGlade
 
     def __set_properties(self):

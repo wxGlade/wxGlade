@@ -1415,10 +1415,10 @@ def generate_code_font(obj):
 
 def generate_code_id(obj, id=None):
     """\
-    returns a 2-tuple of strings representing the LOC that sets the id of the
-    given object: the first line is the declaration of the variable, and is
-    empty if the object's id is a constant, and the second line is the value
-    of the id
+    Returns a tuple of two string. The two strings are:
+     1. A line to the declare the variable. It's empty if the object id is a
+        constant
+     2. The value of the id
     """
     global _last_generated_id
 
@@ -1426,16 +1426,20 @@ def generate_code_id(obj, id=None):
         id = obj.properties.get('id')
     if not id:
         return '', 'wxID_ANY'
-    tokens = id.split('=')
-    if len(tokens) > 1:
-        name, val = tokens[:2]
+    tokens = id.split('=', 1)
+    if len(tokens) == 2:
+        name, val = tokens
     else:
-        return '', tokens[0] # we assume name is declared elsewhere
+        return '', tokens[0]   # we assume name is declared elsewhere
     if not name:
         return '', val
-    if val.strip() == '?':
+    name = name.strip()
+    val = val.strip()
+    if val == '?':
         val = 'wxID_HIGHEST + ' + str(_last_generated_id)
         _last_generated_id += 1
+    else:
+        val = val
     return '%s = %s' % (name, val), name
 
 

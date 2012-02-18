@@ -31,8 +31,8 @@
 (defmethod init ((obj MyFrame))
 "Method creates the objects contained in the class."
         ;;;begin wxGlade: MyFrame.__init__
-        (setf (slot-top-window obj) (wxFrame_create nil -1 "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
-        (setf (slot-grid-1 obj) (wxGrid_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxWANTS_CHARS))
+        (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
+        (setf (slot-grid-1 obj) (wxGrid_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxWANTS_CHARS))
 
         (wxEvtHandler_Connect (slot-top-window obj) obj.grid-1 (expwxEVT_GRID_CMD_CELL_LEFT_CLICK)
         (wxClosure_Create #'myEVT_GRID_CELL_LEFT_CLICK obj))
