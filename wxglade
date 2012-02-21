@@ -3,14 +3,15 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 #
-# Copyright 2011 Carsten Grohmann
+# Copyright 2011-2012 Carsten Grohmann
 #
 # Shell script to start wxGlade
 # 
 # The wxGlade main script is called wxglade.py. It will be searched at
-# two places:
+# three places:
 #  1. parallel to this script
 #  2. in the module directory of the current Python
+#  3. in a parallel Python module directory
 
 # determinate current python version
 PY_VERSION=$(python -c 'import sys; print sys.version[:3]')
@@ -22,11 +23,15 @@ else
   WXGLADE_MODULE_PATH="/usr/lib/python${PY_VERSION}/wxglade"
 fi
 
+CURR_DIR=$(dirname $0)
+
 # search wxglade.py
-if [ -e "$(dirname $0)/wxglade.py" ]; then
-  WXG_PATH="$(dirname $0)/wxglade.py"
+if [ -e "${CURR_DIR}/wxglade.py" ]; then
+  WXG_PATH="${CURR_DIR}/wxglade.py"
 elif [ -e "${WXGLADE_MODULE_PATH}/wxglade.py" ]; then
   WXG_PATH="${WXGLADE_MODULE_PATH}/wxglade.py"
+elif [ -e "${CURR_DIR}/../lib/python${PY_VERSION}/site-packages/wxglade/wxglade.py" ]; then
+  WXG_PATH="${CURR_DIR}/../lib/python${PY_VERSION}/site-packages/wxglade/wxglade.py"
 else
   echo "ERROR: wxglade.py not found!"
   exit 1
