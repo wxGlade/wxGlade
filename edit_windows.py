@@ -51,6 +51,9 @@ class EditBase(EventsMixin):
         # these two properties are special and are not listed in
         # 'self.properties'
         self.name_prop = TextProperty(self, 'name', None, label=_("name"))
+        self.name_prop.tooltip = _("Name of the variable for assigning " \
+                                   "the reference to the created widget " \
+                                   "instance.")
         self.klass_prop = TextProperty(self, 'class', None,
                                        readonly=not custom_class, label=_("class"))
         if custom_class:
@@ -440,6 +443,17 @@ class WindowBase(EditBase):
 
         prop = self.properties
         prop['id'] = TextProperty(self, 'id', None, can_disable=True)
+        prop['id'].tooltip = _("""\
+The "Id" property could be 
+1) a constant numeric value
+2) a predefined identifier e.g. wxID_ANY
+3) a predefined variable like a class member e.g. self.myButtonID
+4) a variable assignment e.g. self.myButtonID=?
+
+The pattern of a variable assignment is always "variable=value". The \
+value could be again a numeric value, a predefined identifier, \
+another predefined variable or "?" a shortcut for "wxNewId()". \
+""")
         prop['size'] = TextProperty(self, 'size', None, can_disable=True, label=_("size"))
         prop['background'] = ColorDialogProperty(self, "background", None, label=_("background"))
         prop['foreground'] = ColorDialogProperty(self, "foreground", None, label=_("foreground"))
