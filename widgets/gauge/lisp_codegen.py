@@ -1,4 +1,4 @@
-# perl_codegen.py : perl generator functions for wxGauge objects
+# lisp_codegen.py : lisp generator functions for wxGauge objects
 # $Id: lisp_codegen.py,v 1.1 2005/09/22 06:59:38 efuzzyone Exp $
 #
 # Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
@@ -7,13 +7,13 @@
 
 import common
 
-class PerlCodeGenerator:
+class LispCodeGenerator:
     def get_code(self, obj):
         init = []
 
-        plgen = common.code_writers['perl']
+        lispgen = common.code_writers['lisp']
         prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj)
+        id_name, id = lispgen.generate_code_id(obj)
         g_range = prop.get('range', '10')
 
         if not obj.parent.is_toplevel:
@@ -33,16 +33,16 @@ class PerlCodeGenerator:
 
         init.append('(setf (slot-%s obj) (wxGauge_Create %s %s %s -1 -1 -1 -1 %s))\n' %
                     (obj.name, parent, id, g_range, style))
-        props_buf = plgen.generate_common_properties(obj)
+        props_buf = lispgen.generate_common_properties(obj)
 
         return init, props_buf, []
 
-# end of class PerlCodeGenerator
+# end of class LispCodeGenerator
 
 def initialize():
     common.class_names['EditGauge'] = 'wxGauge'
 
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxGauge', PerlCodeGenerator())
+    lispgen = common.code_writers.get('lisp')
+    if lispgen:
+        lispgen.add_widget_handler('wxGauge', LispCodeGenerator())
 
