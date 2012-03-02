@@ -135,9 +135,7 @@ class TestCodeGen(WXGladeBaseTest):
 
     def test_GridEvents(self):
         """\
-        Test Perl code generation with a grid widgets and handling events
-
-        @see: L{wxglade.codegen.pl_codegen}
+        Test code generation with a grid widgets and handling events
         """
         self._generate_and_compare(
             'lisp',
@@ -166,6 +164,40 @@ class TestCodeGen(WXGladeBaseTest):
         self._generate_code('C++', source, 'GridEvents')
         generated_cpp = self.vFiles['GridEvents.cpp'].getvalue()
         generated_h = self.vFiles['GridEvents.h'].getvalue()
+        self._compare(result_cpp, generated_cpp, 'C++ source')
+        self._compare(result_h, generated_h, 'C++ header')
+
+    def test_Gauge(self):
+        """\
+        Test code generation for a wxGauge
+        """
+        self._generate_and_compare(
+            'lisp',
+            'Gauge.wxg',
+            'Gauge.lisp'
+            )
+        self._generate_and_compare(
+            'perl',
+            'Gauge.wxg',
+            'Gauge.pl'
+            )
+        self._generate_and_compare(
+            'python',
+            'Gauge.wxg',
+            'Gauge.py'
+            )
+        self._generate_and_compare(
+            'XRC',
+            'Gauge.wxg',
+            'Gauge.xrc'
+            )
+        # check C++
+        source = self._load_file('Gauge.wxg')
+        result_cpp = self._load_file('Gauge.cpp')
+        result_h = self._load_file('Gauge.h')
+        self._generate_code('C++', source, 'Gauge')
+        generated_cpp = self.vFiles['Gauge.cpp'].getvalue()
+        generated_h = self.vFiles['Gauge.h'].getvalue()
         self._compare(result_cpp, generated_cpp, 'C++ source')
         self._compare(result_h, generated_h, 'C++ header')
 
