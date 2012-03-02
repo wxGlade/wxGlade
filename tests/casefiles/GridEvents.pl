@@ -27,7 +27,7 @@ sub new {
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{grid_1} = Wx::Grid->new($self, Wx::ID_ANY);
+	$self->{grid_1} = Wx::Grid->new($self, wxID_ANY);
 
 	$self->__set_properties();
 	$self->__do_layout();

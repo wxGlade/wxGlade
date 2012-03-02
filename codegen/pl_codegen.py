@@ -107,13 +107,48 @@ _app_added = False
 True after wxApp instance has been generated
 """
 
-def cn(class_name):
-    if class_name[:2] == 'wx':
-        return 'Wx::' + class_name[2:]
-    elif class_name[:4] == 'EVT_':
-        return 'Wx::' + class_name
+_perl_constant_list = [
+     "wxALL", "wxTOP", "wxBOTTOM", "wxLEFT", "wxRIGHT",
+     "wxNORTH", "wxSOUTH", "wxWEST", "wxEAST",
+     "wxEXPAND", "wxGROW", "wxSHAPED", "wxFIXED_MINSIZE",
+     "wxCAPTION", "wxMINIMIZE_BOX", "wxMAXIMIZE_BOX", "wxRESIZE_BORDER",
+     "wxYES_NO", "wxYES", "wxNO", "wxCANCEL", "wxOK",
+     "wxICON_EXCLAMATION", "wxICON_HAND", "wxICON_ERROR", "wxICON_QUESTION",
+     "wxICON_INFORMATION",
+     "wxBLACK", "wxWHITE", "wxRED", "wxBLUE", "wxGREEN", "wxCYAN",
+     "wxLIGHT_GREY",
+    ]
+"""\
+Incomplete list of wx constants used in wxPerl
+
+Constants don't follow the Wx::ObjectName name schema. There is a need
+to handle constants separately.
+
+@see: L{cn}
+"""
+
+def cn(name):
+    """\
+    Return the name properly formatted.
+
+    @see: L{_perl_constant_list}
+    """
+    # handles constants like event or language identifiers
+    if name.startswith('wxID_')       or \
+       name.startswith('wxK_')        or \
+       name.startswith('wxMOD_')      or \
+       name.startswith('wxLANGUAGE_') or \
+       name.startswith('wxALIGN_')    or \
+       name in _perl_constant_list:
+        return name
+
+    # use default for remaining names
+    elif name[:2] == 'wx':
+        return 'Wx::' + name[2:]
+    elif name[:4] == 'EVT_':
+        return 'Wx::' + name
     else:
-        return class_name
+        return name
 
 
 class ClassLines(BaseClassLines):
