@@ -117,6 +117,10 @@ _perl_constant_list = [
      "wxICON_INFORMATION",
      "wxBLACK", "wxWHITE", "wxRED", "wxBLUE", "wxGREEN", "wxCYAN",
      "wxLIGHT_GREY",
+     'wxDEFAULT', 'wxDECORATIVE', 'wxROMAN',  'wxSWISS', 'wxSCRIPT',
+     'wxMODERN', 'wxTELETYPE',
+     'wxNORMAL', 'wxSLANT', 'wxITALIC', 'wxNORMAL',  'wxLIGHT',
+     'wxBOLD',
     ]
 """\
 Incomplete list of wx constants used in wxPerl
