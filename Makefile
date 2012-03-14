@@ -53,6 +53,7 @@ MANUAL_SRC_DIR    = $(DOC_DIR)/src
 MANUAL_XML        = $(MANUAL_SRC_DIR)/manual.xml
 MANUAL_PICS       = $(wildcard $($(MANUAL_SRC_DIR)/*.png))
 MANUAL_PDF        = $(MANUAL_PDF_DIR)/manual.pdf
+MANUAL_PDF_XSL    = $(MANUAL_SRC_DIR)/pdf.xsl
 MANUAL_HTML       = $(MANUAL_HTML_DIR)/index.html
 
 HELP= @grep -B1 '^[a-zA-Z\-]*:' Makefile |\
@@ -146,7 +147,7 @@ doc: pdf html
 
 # Create PDF documentation
 $(MANUAL_PDF): $(MANUAL_XML) $(MANUAL_PICS)
-	xmlto --with-dblatex -o $(MANUAL_PDF_DIR) pdf $(MANUAL_XML)
+	dblatex -p $(MANUAL_PDF_XSL) -o $(MANUAL_PDF_DIR)/manual.pdf $(MANUAL_XML)
 
 #+ Create PDF document based on manual xml file
 pdf: $(MANUAL_PDF)
@@ -155,6 +156,7 @@ pdf: $(MANUAL_PDF)
 $(MANUAL_HTML): $(MANUAL_XML) $(MANUAL_PICS)
 	$(INSTALL_DATA) -t $(MANUAL_HTML_DIR) $(MANUAL_SRC_DIR)/*.png
 	xmlto -o $(MANUAL_HTML_DIR) html $(MANUAL_XML)
+	$(RM) $(MANUAL_HTML_DIR)/manual.proc
 
 #+ Create a set of HTML documents based on manual xml file
 html: $(MANUAL_HTML)
