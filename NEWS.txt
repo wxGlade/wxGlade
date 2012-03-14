@@ -10,7 +10,7 @@ Bugs:
   - ...
 
 Documentation:
-  - 
+  - Update wxGlade user manual
   - ...
 
 API (for custom widgets):
