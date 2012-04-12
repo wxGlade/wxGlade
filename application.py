@@ -6,10 +6,14 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
+import codecs
+import locale
+import re
+import traceback
+
 import wx
 from widget_properties import *
 import common, math, misc, os, config
-import traceback, re
 
 class FileDirDialog:
     """\
@@ -54,8 +58,9 @@ class FileDirDialog:
 
 class Application(object):
     """\
-    properties of the application being created
+    Properties of the application being created
     """
+
     def __init__(self, property_window):
         self.property_window = property_window
         self.notebook = wx.Notebook(self.property_window, -1)
@@ -264,10 +269,38 @@ class Application(object):
         """\
         Returns the name of the default character encoding of this machine
         """
-        import locale
-        locale.setlocale(locale.LC_ALL)
-        try: return locale.nl_langinfo(locale.CODESET)
-        except AttributeError: return 'ISO-8859-15' # this is what I use...
+        # try to set locale
+        try:
+            locale.setlocale(locale.LC_ALL)
+        except locale.Error:
+            # ignore problems by fallback to ascii
+            print 'WARNING: Setting locale failed. Use "ascii" instead'
+            return 'ascii'
+
+        # try to query character encoding used in the selected locale
+        try:
+            encoding = locale.nl_langinfo(locale.CODESET)
+        except AttributeError, e:
+            print 'WARNING: locale.nl_langinfo(locale.CODESET) failed: %s' % str(e)
+            # try getdefaultlocale, it used environment variables
+            try:
+                encoding = locale.getdefaultlocale()[1]
+            except ValueError:
+                encoding = 'ISO-8859-15'
+
+        # On Mac OS X encoding may None or '' somehow
+        if not encoding:
+            encoding = 'ISO-8859-15'
+            print 'WARNING: Empty encoding. Use "%s" instead' % encoding
+
+        # check if a codec for the encoding exists
+        try:
+            codecs.lookup(encoding)
+        except LookupError:
+            print 'WARNING: No codec for encoding "%s" found. Use "ascii" instead' % encoding
+            encoding = 'ascii'
+            
+        return encoding.upper()
 
     def get_encoding(self):
         return self.encoding

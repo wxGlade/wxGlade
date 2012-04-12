@@ -7,6 +7,7 @@ Bugs:
   - Prevent caching effects in Lisp code generator
   - Prevent deleting last notebook tab (sf bug #3126974)
   - String formatting issue for event handlers in Lisp code generator
+  - Encoding detection for Mac OS X
   - ...
 
 Documentation:
