@@ -15,7 +15,7 @@ class LispStatusBarCodeGenerator:
         """\
         function that generates code for the statusbar of a wxFrame.
         """
-        plgen = common.code_writers['lisp']
+        lispgen = common.code_writers['lisp']
         labels, widths = obj.properties['statusbar']
         style = obj.properties.get("style")
         if not style: style = '0'
@@ -30,7 +30,7 @@ class LispStatusBarCodeGenerator:
         i = 0
         for l in labels:
             append('\t (wxStatusBar_SetStatusText (slot-%s obj) %s %s)\n'
-                   % (obj.name, plgen.quote_str(l),i) )
+                   % (obj.name, lispgen.quote_str(l),i) )
             i=i+1
         return init, props, []
 
@@ -52,27 +52,27 @@ class LispFrameCodeGenerator:
         Returns a list of strings containing the generated code
         """
         prop = frame.properties
-        plgen = common.code_writers['lisp']
+        lispgen = common.code_writers['lisp']
         out = []
         title = prop.get('title')
         if title:
-            out.append('(wxFrame_SetTitle (slot-top-window %s) %s)\n' % plgen.quote_str(title))
+            out.append('(wxFrame_SetTitle (slot-top-window obj) %s)\n' % \
+                    lispgen.quote_str(title))
 
         icon = prop.get('icon')
         if icon:
-            out.append('my $icon = Wx::Icon->new();\n')
-            out.append('$icon->CopyFromBitmap(Wx::Bitmap->new(%s, '
-                       'wxBITMAP_TYPE_ANY));\n' % plgen.quote_str(icon))
-            out.append('(wxFrame_SetIcon (slot-top-window obj) $icon)\n')
+            out.append(
+                ';;; generating code for setting icons is not implemented\n'
+                )
             
-        out.extend(plgen.generate_common_properties(frame))
+        out.extend(lispgen.generate_common_properties(frame))
         return out
 
     def get_layout_code(self, frame):
-        ret = ['$self->Layout();\n']
+        ret = ['(wxFrame_layout (slot-%s slef))\n' % frame.name]
         try:
             if int(frame.properties['centered']):
-                ret.append('(wxFrame_Centre (slot-top-window obj) 0)\n')
+                ret.append('(wxFrame_Centre (slot-top-window obj) wxBOTH)\n')
         except (KeyError, ValueError):
             pass
         return ret
@@ -95,15 +95,15 @@ def initialize():
     common.toplevels['EditFrame'] = 1
     common.toplevels['EditMDIChildFrame'] = 1
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxFrame', LispFrameCodeGenerator())
-        plgen.add_widget_handler('wxMDIChildFrame',
+    lispgen = common.code_writers.get('lisp')
+    if lispgen:
+        lispgen.add_widget_handler('wxFrame', LispFrameCodeGenerator())
+        lispgen.add_widget_handler('wxMDIChildFrame',
                                   LispMDIChildFrameCodeGenerator())
         
-        plgen.add_widget_handler('wxStatusBar', LispStatusBarCodeGenerator())
+        lispgen.add_widget_handler('wxStatusBar', LispStatusBarCodeGenerator())
         
-        plgen.add_property_handler('fields', StatusFieldsHandler)
-        plgen.add_property_handler('menubar', plgen.DummyPropertyHandler)
-        plgen.add_property_handler('statusbar', plgen.DummyPropertyHandler)
+        lispgen.add_property_handler('fields', StatusFieldsHandler)
+        lispgen.add_property_handler('menubar', lispgen.DummyPropertyHandler)
+        lispgen.add_property_handler('statusbar', lispgen.DummyPropertyHandler)
 
