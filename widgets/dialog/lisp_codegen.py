@@ -20,23 +20,21 @@ class LispCodeGenerator:
 
     def get_properties_code(self, dialog):
         prop = dialog.properties
-        plgen = common.code_writers['lisp']
+        lispgen = common.code_writers['lisp']
         out = []
         title = prop.get('title')
         if title: out.append('(wxWindow_SetTitle (slot-%s self) %s)\n'
-                             % (dialog.name, plgen.quote_str(title)))
+                             % (dialog.name, lispgen.quote_str(title)))
 
         icon = prop.get('icon')
         if icon: 
-            out.append('my $icon = &Wx::wxNullIcon();\n')
-            out.append('$icon->CopyFromBitmap(Wx::Bitmap->new(%s, '
-                       'wxBITMAP_TYPE_ANY));\n' % plgen.quote_str(icon))
-            out.append('$self->SetIcon($icon);\n')
+            out.append(
+                ';;; generating code for setting icons is not implemented\n'
+                )
 
-        out.extend(plgen.generate_common_properties(dialog))
+        out.extend(lispgen.generate_common_properties(dialog))
 
         return out
-
 
     def get_layout_code(self, dialog):
         ret = ['(wxWindow_layout (slot-%s slef))\n' % dialog.name]
@@ -54,7 +52,6 @@ def initialize():
     cn['EditDialog'] = 'wxDialog'
     common.toplevels['EditDialog'] = 1
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxDialog', LispCodeGenerator())
-
+    lispgen = common.code_writers.get('lisp')
+    if lispgen:
+        lispgen.add_widget_handler('wxDialog', LispCodeGenerator())
