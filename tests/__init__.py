@@ -9,9 +9,11 @@ import cStringIO
 import difflib
 import glob
 import os.path
+import re
 import unittest
 
 # import project modules
+import codegen
 import common
 import wxglade
 from xml_parse import CodeWriter
@@ -34,9 +36,21 @@ class WXGladeBaseTest(unittest.TestCase):
     The filename is the key and the content is a StringIO instance.
     """
 
-    origSaveFile = None
+    orig_file_exists = None
     """\
-    Reference to the original I{save_file()} implementation
+    Reference to the original L{codegen.BaseCodeWriter._file_exists()}
+    implementation
+    """
+
+    orig_load_file = None
+    """\
+    Reference to the original L{codegen.BaseSourceFileContent._load_file()}
+    implementation
+    """
+
+    orig_save_file = None
+    """\
+    Reference to the original L{common.save_file()} implementation
     """
 
     caseDirectory = 'casefiles'
@@ -77,9 +91,14 @@ class WXGladeBaseTest(unittest.TestCase):
         # initiate empty structure to store files and there content
         self.vFiles = {}
 
-        # replace original save_file() by test specific implementation
-        self.origSaveFile = common.save_file
+        # replace some original implementations by test specific implementation
+        self.orig_save_file = common.save_file
         common.save_file = self._save_file
+        self.orig_load_file = codegen.BaseSourceFileContent._load_file 
+        codegen.BaseSourceFileContent._load_file = self._load_lines
+        self.orig_file_exists = codegen.BaseCodeWriter._file_exists 
+        codegen.BaseCodeWriter._file_exists = self._file_exists
+        codegen.BaseCodeWriter._show_warnings = False
 
         # set own version string to prevent diff mismatches
         common.version = '"faked test version"'
@@ -99,8 +118,10 @@ class WXGladeBaseTest(unittest.TestCase):
             self.vFiles[filename].close()
         self.vFiles = {}
 
-        # restore original save_file() implementation
-        common.save_file = self.origSaveFile
+        # restore original implementations
+        common.save_file = self.orig_save_file
+        codegen.BaseSourceFileContent._load_file = self.orig_load_file
+        codegen.BaseCodeWriter._file_exists = self.orig_file_exists
 
     def _generate_code(self, language, document, filename):
         """\
@@ -116,16 +137,47 @@ class WXGladeBaseTest(unittest.TestCase):
             language in common.code_writers,
             "No codewriter loaded for %s" % language
             )
+      
+        if language == "perl":
+            _document = self._modify_attrs(
+                document,
+                path=filename,
+                language='perl',
+                indent_amount='8',
+                indent_symbol='space',
+                )
+        else:
+            _document = self._modify_attrs(
+                document,
+                path=filename,
+                language=language,
+                indent_amount='4',
+                indent_symbol='space',
+                )
 
         # generate code
         CodeWriter(
             writer=common.code_writers[language],
-            input=document,
+            input=_document,
             from_string=True,
             out_path=filename,
             )
 
         return
+
+    def _file_exists(self, filename):
+        """\
+        Check if the file is a test case file
+
+        @rtype: Boolean
+        """
+        fullpath = os.path.join(self.caseDirectory, filename)
+        exists = os.path.isfile(fullpath)
+        self.failIf(
+            not exists,
+            'Case file %s does not exist' % filename
+            )
+        return exists
 
     def _load_file(self, filename):
         """\
@@ -169,6 +221,51 @@ class WXGladeBaseTest(unittest.TestCase):
             }
 
         return content
+
+    def _load_lines(self, filename):
+        """\
+        Return file content as a list of lines 
+        """
+        casename, extension = os.path.splitext(filename)
+        if extension == '.wxg':
+            filetype = 'input'
+        else:
+            filetype = 'result'
+
+        file_list = glob.glob(
+            os.path.join(self.caseDirectory, "%s*%s" % (casename, extension))
+            )
+        self.failIf(
+           len(file_list) == 0,
+           'No %s file for case "%s" found!' % (filetype, casename)
+           )
+        self.failIf(
+           len(file_list) > 1,
+           'More than one %s file for case "%s" found!' % (filetype, casename)
+           )
+
+        fh = open(file_list[0])
+        content = fh.readlines()
+        fh.close()
+
+        return content
+
+    def _modify_attrs(self, content, **kwargs):
+        """\
+        Modify general options inside a wxg (XML) file
+        """
+        modified = content
+        for option in kwargs:
+            # create regexp first
+            pattern = r'%s=".*?"' % option
+            modified = re.sub(
+                pattern, 
+                '%s="%s"' % (option, kwargs[option]),
+                modified,
+                1
+                )
+
+        return modified
 
     def _save_file(self, filename, content, which='wxg'):
         """\
@@ -247,6 +344,30 @@ class WXGladeBaseTest(unittest.TestCase):
         generated = self.vFiles[outname].getvalue()
         self._compare(expected, generated)
 
+    def _generate_and_compare_cpp(self, inname, outname):
+        """\
+        Generate C++ code and compare generated and expected code
+
+        @param inname:  Name of the XML input file
+        @type inname:   String
+        @param outname: Name of the output file without extension
+        @type outname:  String
+        """
+        name_h = '%s.h' % outname
+        name_cpp = '%s.cpp' % outname
+
+        # load XML input file
+        source = self._load_file(inname)
+        result_cpp = self._load_file(name_cpp)
+        result_h = self._load_file(name_h)
+
+        # generate and compare C++ code
+        self._generate_code('C++', source, outname)
+        generated_cpp = self.vFiles[name_cpp].getvalue()
+        generated_h = self.vFiles[name_h].getvalue()
+        self._compare(result_cpp, generated_cpp, 'C++ source')
+        self._compare(result_h, generated_h, 'C++ header')
+
     def _compare(self, expected, generated, filetype=None):
         """\
         Compare expected and generated content using a diff algorithm
@@ -265,7 +386,7 @@ class WXGladeBaseTest(unittest.TestCase):
             self.failIf(
                 delta,
                 "Generated %s file and expected result differs:\n%s" % (
-                    filetype.capitalize(),
+                    filetype,
                     delta,
                     )
                 )
