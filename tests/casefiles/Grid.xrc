@@ -12,6 +12,9 @@
                 <flag>wxEXPAND</flag>
                 <object class="wxGrid" name="grid_1">
                     <handler event="EVT_GRID_CMD_CELL_LEFT_CLICK">myEVT_GRID_CELL_LEFT_CLICK</handler>
+                    <bg>#00ffff</bg>
+                    <RowLabel>0, "Row 1"</RowLabel>
+                    <Value>0, 0, "1"</Value>
                 </object>
             </object>
         </object>

@@ -4,6 +4,8 @@
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import re
+
 # import test base class
 from tests import WXGladeBaseTest
 
@@ -31,39 +33,27 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{wxglade.widgets.calendar_ctrl.calendar_ctrl}
         """
-        source = self._load_file('CPP_wxCalendarCtrl.wxg')
-        result_cpp = self._load_file('CPP_wxCalendarCtrl.cpp')
-        result_h = self._load_file('CPP_wxCalendarCtrl.h')
-
-        # generate and compare C++ code
-        self._generate_code('C++', source, 'CPP_wxCalendarCtrl')
-        generated_cpp = self.vFiles['CPP_wxCalendarCtrl.cpp'].getvalue()
-        generated_h = self.vFiles['CPP_wxCalendarCtrl.h'].getvalue()
-        self._compare(result_cpp, generated_cpp, 'C++ source')
-        self._compare(result_h, generated_h, 'C++ header')
+        self._generate_and_compare_cpp(
+            'CPP_wxCalendarCtrl.wxg',
+            'CPP_wxCalendarCtrl'
+            )
 
     def test_CPP_Preferences(self):
         """\
         Test C++ code generation with preferences dialog
 
-        @see: L{wxglade.codegen.cpp_codegen}
+        @see: L{codegen.cpp_codegen}
         """
-        source = self._load_file('CPP_Preferences.wxg')
-        result_cpp = self._load_file('CPP_Preferences.cpp')
-        result_h = self._load_file('CPP_Preferences.h')
-
-        # generate and compare C++ code
-        self._generate_code('C++', source, 'CPP_Preferences')
-        generated_cpp = self.vFiles['CPP_Preferences.cpp'].getvalue()
-        generated_h = self.vFiles['CPP_Preferences.h'].getvalue()
-        self._compare(result_cpp, generated_cpp, 'C++ source')
-        self._compare(result_h, generated_h, 'C++ header')
+        self._generate_and_compare_cpp(
+            'CPP_Preferences.wxg',
+            'CPP_Preferences'
+            )
 
     def test_Lisp_quote_path(self):
         """\
         Test codegen.lisp_codegen.quote_path()
 
-        @see: L{wxglade.codegen.lisp_codegen.quote_path()}
+        @see: L{codegen.lisp_codegen.LispCodeWriter.quote_path()}
         """
         quote_path = common.code_writers['lisp'].quote_path
         examples = [
@@ -89,11 +79,11 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test Lisp code generation with preferences dialog
 
-        @see: L{wxglade.codegen.lisp_codegen}
+        @see: L{codegen.lisp_codegen}
         """
         self._generate_and_compare(
             'lisp',
-            'Preferences.wxg',
+            'Lisp_Preferences.wxg',
             'Lisp_Preferences.lisp'
             )
 
@@ -113,7 +103,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test Perl code generation with preferences dialog
 
-        @see: L{wxglade.codegen.pl_codegen}
+        @see: L{codegen.pl_codegen}
         """
         self._generate_and_compare(
             'perl',
@@ -125,7 +115,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test Python code generation with preferences dialog
 
-        @see: L{wxglade.codegen.py_codegen}
+        @see: L{codegen.py_codegen}
         """
         self._generate_and_compare(
             'python',
@@ -133,39 +123,34 @@ class TestCodeGen(WXGladeBaseTest):
             'Python_Preferences.py'
             )
 
-    def test_GridEvents(self):
+    def test_Grid(self):
         """\
         Test code generation with a grid widgets and handling events
         """
         self._generate_and_compare(
             'lisp',
-            'GridEvents.wxg',
-            'GridEvents.lisp'
+            'Grid.wxg',
+            'Grid.lisp'
             )
         self._generate_and_compare(
             'perl',
-            'GridEvents.wxg',
-            'GridEvents.pl'
+            'Grid.wxg',
+            'Grid.pl'
             )
         self._generate_and_compare(
             'python',
-            'GridEvents.wxg',
-            'GridEvents.py'
+            'Grid.wxg',
+            'Grid.py'
             )
         self._generate_and_compare(
             'XRC',
-            'GridEvents.wxg',
-            'GridEvents.xrc'
+            'Grid.wxg',
+            'Grid.xrc'
             )
-        # check C++
-        source = self._load_file('GridEvents.wxg')
-        result_cpp = self._load_file('GridEvents.cpp')
-        result_h = self._load_file('GridEvents.h')
-        self._generate_code('C++', source, 'GridEvents')
-        generated_cpp = self.vFiles['GridEvents.cpp'].getvalue()
-        generated_h = self.vFiles['GridEvents.h'].getvalue()
-        self._compare(result_cpp, generated_cpp, 'C++ source')
-        self._compare(result_h, generated_h, 'C++ header')
+        self._generate_and_compare_cpp(
+            'Grid.wxg',
+            'Grid'
+            )
 
     def test_Gauge(self):
         """\
@@ -191,24 +176,19 @@ class TestCodeGen(WXGladeBaseTest):
             'Gauge.wxg',
             'Gauge.xrc'
             )
-        # check C++
-        source = self._load_file('Gauge.wxg')
-        result_cpp = self._load_file('Gauge.cpp')
-        result_h = self._load_file('Gauge.h')
-        self._generate_code('C++', source, 'Gauge')
-        generated_cpp = self.vFiles['Gauge.cpp'].getvalue()
-        generated_h = self.vFiles['Gauge.h'].getvalue()
-        self._compare(result_cpp, generated_cpp, 'C++ source')
-        self._compare(result_h, generated_h, 'C++ header')
+        self._generate_and_compare_cpp(
+            'Gauge.wxg',
+            'Gauge'
+            )
 
     def test_generate_code_id(self):
         """\
         Test id code generation of all code generators
 
-        @see: L{wxglade.codegen.cpp_codegen.generate_code_id}
-        @see: L{wxglade.codegen.lisp_codegen.generate_code_id}
-        @see: L{wxglade.codegen.pl_codegen.generate_code_id}
-        @see: L{wxglade.codegen.py_codegen.generate_code_id}
+        @see: L{codegen.cpp_codegen.CPPCodeWriter.generate_code_id()}
+        @see: L{codegen.lisp_codegen.LispCodeWriter.generate_code_id()}
+        @see: L{codegen.pl_codegen.PerlCodeWriter.generate_code_id()}
+        @see: L{codegen.py_codegen.PythonCodeWriter.generate_code_id()}
         """
         # create dummy code object first
         obj = MockCodeObject()
@@ -293,9 +273,9 @@ class TestCodeGen(WXGladeBaseTest):
         gen_id = common.code_writers['lisp'].generate_code_id
         cn = common.code_writers['lisp'].cn
         for test_id, target_decl, target_value in [
-            ['wxID_ANY', '', cn('wxID_ANY')],               # id => "wxID_ANY"
+            ['wxID_ANY',  '', cn('wxID_ANY')],              # id => "wxID_ANY"
             ['=wxID_ANY', '', cn('wxID_ANY')],              # id => "=wxID_ANY" (ugly!)
-            ['', '', cn('wxID_ANY')],                         # id => "" 
+            ['', '', cn('wxID_ANY')],                       # id => "" 
             ['myid', '', 'myid'],                           # id => "myid"  (predefined variable)
             ['myid=1', 'global myid; myid = 1\n', 'myid'],  # id => "myid=1" 
             ['myid=?', 'global myid; myid = %s\n' % cn('wxNewId()') , 'myid'],  # id => "myid=?" 
@@ -306,4 +286,352 @@ class TestCodeGen(WXGladeBaseTest):
                 (act_decl, act_value) == (target_decl, target_value),
                 """For Lisp expected "('%s', '%s')" got "('%s', '%s')"!""" % \
                     (target_decl, target_value, act_decl, act_value)
+                )
+
+    def test_Python_Ogg1(self):
+        """\
+        Test Python code generation with overwriting a single existing file
+
+        @see: L{codegen.py_codegen.PythonCodeWriter}
+        """
+        self._generate_and_compare(
+            'python',
+            'PyOgg1.wxg',
+            'PyOgg1.py'
+            )
+
+    def test_Python_Ogg2(self):
+        """\
+        Test Python code generation with overwriting two existing files
+
+        @see: L{codegen.py_codegen.PythonCodeWriter}
+        """
+        source = self._load_file('PyOgg2.wxg')
+        source = self._modify_attrs(source,
+            overwrite='0',
+            )
+        result_app    = self._load_file('PyOgg2_app.py')
+        result_dialog = self._load_file('PyOgg2_MyDialog.py')
+        result_frame  = self._load_file('PyOgg2_MyFrame.py')
+        self._generate_code('python', source, './')
+        generated_app    = self.vFiles['./PyOgg2_app.py'].getvalue()
+        generated_dialog = self.vFiles['./PyOgg2_MyDialog.py'].getvalue()
+        generated_frame  = self.vFiles['./PyOgg2_MyFrame.py'].getvalue()
+        self._compare(result_app,    generated_app, 'PyOgg2_app.py')
+        self._compare(result_dialog, generated_dialog, 'PyOgg2_MyDialog.py')
+        self._compare(result_frame,  generated_frame , 'PyOgg2_MyFrame.py')
+
+    def test_Python_Ogg3(self):
+        """\
+        Test Python code generation with overwriting a single existing file
+
+        @see: L{codegen.py_codegen.PythonCodeWriter}
+        """
+        source = self._load_file('PyOgg2.wxg')
+        expected = self._load_file('PyOgg3.py')
+
+        # rename all occurencies of PyOgg2 to PyOgg3
+        source = source.replace('PyOgg2', 'PyOgg3')
+
+        # set option="0" for writing into a single file
+        source = self._modify_attrs(source,
+            option='0',
+            path='PyOgg3.py'
+            )
+
+        # generate and compare code
+        self._generate_code('python', source, 'PyOgg3.py')
+        generated = self.vFiles['PyOgg3.py'].getvalue()
+        self._compare(expected, generated, 'PyOgg3.py')
+
+    def test_Lisp_Ogg1(self):
+        """\
+        Test Lisp code generation with overwriting a single existing file
+
+        @see: L{codegen.py_codegen.LispCodeWriter}
+        """
+        self._generate_and_compare(
+            'lisp',
+            'LispOgg1.wxg',
+            'LispOgg1.lisp'
+            )
+
+    def test_Lisp_Ogg2(self):
+        """\
+        Test Lisp code generation with overwriting two existing files
+
+        @see: L{codegen.py_codegen.LispCodeWriter}
+        """
+        source = self._load_file('LispOgg2.wxg')
+        source = self._modify_attrs(source,
+            overwrite='0',
+            )
+        result_app    = self._load_file('LispOgg2_app.lisp')
+        result_dialog = self._load_file('LispOgg2_MyDialog.lisp')
+        result_frame  = self._load_file('LispOgg2_MyFrame.lisp')
+        self._generate_code('lisp', source, './')
+        generated_app    = self.vFiles['./LispOgg2_app.lisp'].getvalue()
+        generated_dialog = self.vFiles['./LispOgg2_MyDialog.lisp'].getvalue()
+        generated_frame  = self.vFiles['./LispOgg2_MyFrame.lisp'].getvalue()
+        self._compare(result_app,    generated_app, 'LispOgg2_app.lisp')
+        self._compare(result_dialog, generated_dialog, 'LispOgg2_MyDialog.lisp')
+        self._compare(result_frame,  generated_frame , 'LispOgg2_MyFrame.lisp')
+
+    def test_Lisp_Ogg3(self):
+        """\
+        Test Lisp code generation with overwriting a single existing file
+
+        @see: L{codegen.py_codegen.LispCodeWriter}
+        """
+        source = self._load_file('LispOgg2.wxg')
+        expected = self._load_file('LispOgg3.lisp')
+
+        # rename all occurencies of LispOgg2 to LispOgg3
+        source = source.replace('LispOgg2', 'LispOgg3')
+
+        # set option="0" for writing into a single file
+        source = self._modify_attrs(source,
+            option='0',
+            path='LispOgg3.lisp'
+            )
+
+        # generate and compare code
+        self._generate_code('lisp', source, 'LispOgg3.lisp')
+        generated = self.vFiles['LispOgg3.lisp'].getvalue()
+        self._compare(expected, generated, 'LispOgg3.lisp')
+
+    def test_Perl_Ogg1(self):
+        """\
+        Test Perl code generation with overwriting a single existing file
+
+        @see: L{codegen.pl_codegen.PerlCodeWriter}
+        """
+        self._generate_and_compare(
+            'perl',
+            'PlOgg1.wxg',
+            'PlOgg1.pl'
+            )
+
+    def test_Perl_Ogg2(self):
+        """\
+        Test Perl code generation with overwriting two existing files
+
+        @see: L{codegen.pl_codegen.PerlCodeWriter}
+        """
+        source = self._load_file('PlOgg2.wxg')
+        source = self._modify_attrs(source,
+            overwrite='0',
+            )
+        result_app    = self._load_file('PlOgg2_app.pl')
+        result_dialog = self._load_file('PlOgg2_MyDialog.pm')
+        result_frame  = self._load_file('PlOgg2_MyFrame.pm')
+        self._generate_code('perl', source, './')
+        generated_app    = self.vFiles['./PlOgg2_app.pl'].getvalue()
+        generated_dialog = self.vFiles['./PlOgg2_MyDialog.pm'].getvalue()
+        generated_frame  = self.vFiles['./PlOgg2_MyFrame.pm'].getvalue()
+        self._compare(result_app,    generated_app, 'PlOgg2_app.pl')
+        self._compare(result_dialog, generated_dialog, 'PlOgg2_MyDialog.pm')
+        self._compare(result_frame,  generated_frame , 'PlOgg2_MyFrame.pm')
+
+    def test_Perl_Ogg3(self):
+        """\
+        Test Perl code generation with overwriting a single existing file
+
+        @see: L{codegen.pl_codegen.PerlCodeWriter}
+        """
+        source = self._load_file('PyOgg2.wxg')
+        expected = self._load_file('PyOgg3.py')
+
+        # rename all occurencies of PyOgg2 to PyOgg3
+        source = source.replace('PyOgg2', 'PyOgg3')
+
+        # set option="0" for writing into a single file
+        source = self._modify_attrs(source,
+            option='0',
+            path='PyOgg3.py'
+            )
+
+        # generate and compare code
+        self._generate_code('python', source, 'PyOgg3.py')
+        generated = self.vFiles['PyOgg3.py'].getvalue()
+        self._compare(expected, generated, 'PyOgg3.py')
+
+    def test_CPP_Ogg1(self):
+        """\
+        Test C++ code generation with overwriting a single existing file
+
+        @see: L{codegen.cpp_codegen.PythonCodeWriter}
+        """
+        self._generate_and_compare_cpp(
+            'CPPOgg1.wxg',
+            'CPPOgg1'
+            )
+
+    def test_CPP_Ogg2(self):
+        """\
+        Test C++ code generation with overwriting two existing files
+
+        @see: L{codegen.cpp_codegen.CPPCodeWriter}
+        """
+        source = self._load_file('CPPOgg2.wxg')
+        source = self._modify_attrs(source,
+            overwrite='0',
+            )
+        result_app        = self._load_file('CPPOgg2_main.cpp')
+        result_dialog_cpp = self._load_file('CPPOgg2_MyDialog.cpp')
+        result_dialog_h   = self._load_file('CPPOgg2_MyDialog.h')
+        result_frame_cpp  = self._load_file('CPPOgg2_MyFrame.cpp')
+        result_frame_h    = self._load_file('CPPOgg2_MyFrame.h')
+        self._generate_code('C++', source, './')
+        generated_app    = self.vFiles['./main.cpp'].getvalue()
+        generated_dialog_cpp = self.vFiles['./CPPOgg2_MyDialog.cpp'].getvalue()
+        generated_dialog_h   = self.vFiles['./CPPOgg2_MyDialog.h'].getvalue()
+        generated_frame_cpp  = self.vFiles['./CPPOgg2_MyFrame.cpp'].getvalue()
+        generated_frame_h    = self.vFiles['./CPPOgg2_MyFrame.h'].getvalue()
+        self._compare(result_app,    generated_app, 'main.cpp')
+        self._compare(result_dialog_cpp, generated_dialog_cpp, 'CPPOgg2_MyDialog.cpp')
+        self._compare(result_dialog_h,   generated_dialog_h,   'CPPOgg2_MyDialog.h')
+        self._compare(result_frame_cpp,  generated_frame_cpp , 'CPPOgg2_MyFrame.cpp')
+        self._compare(result_frame_h,    generated_frame_h,    'CPPOgg2_MyFrame.h')
+
+    def test_CPP_Ogg3(self):
+        """\
+        Test C++ code generation with overwriting a single existing file
+
+        @see: L{codegen.cpp_codegen.CPPCodeWriter}
+        """
+        source = self._load_file('CPPOgg2.wxg')
+        result_cpp = self._load_file('CPPOgg3.cpp')
+        result_h   = self._load_file('CPPOgg3.h')
+
+        # rename all occurencies of CPPOgg2 to CPPOgg3
+        source = source.replace('CPPOgg2', 'CPPOgg3')
+
+        # set option="0" for writing into a single file
+        source = self._modify_attrs(source,
+            option='0',
+            path='CPPOgg3'
+            )
+
+        # generate and compare code
+        self._generate_code('C++', source, 'CPPOgg3')
+        generated_cpp = self.vFiles['CPPOgg3.cpp'].getvalue()
+        generated_h   = self.vFiles['CPPOgg3.h'].getvalue()
+        self._compare(result_cpp, generated_cpp, 'CPPOgg3.cpp')
+        self._compare(result_h,   generated_h,   'CPPOgg3.h')
+
+    def test_PerlSourceFileContent_regexp(self):
+        """\
+        Test some regular expessions used in L{codegen.pl_codegen.SourceFileContent}
+        """
+        import codegen.pl_codegen
+        lang = 'Perl'
+        source = codegen.pl_codegen.SourceFileContent
+        re = source.rec_block_start
+        for line, expected in [
+            ('# begin wxGlade: extracode',              ('', None, 'extracode')),
+            ('    # begin wxGlade: ::extracode',        ('    ', None, 'extracode')),
+            ('#begin wxGlade: dependencies',            ('', None, 'dependencies')),
+            ('#begin wxGlade: ::dependencies',          ('', None, 'dependencies')),
+            ('    # begin wxGlade: wxGladePreferencesUI::new',              ('    ', 'wxGladePreferencesUI', 'new')),
+            ('    # begin wxGlade: wxGladePreferencesUI::__do_layout',      ('    ', 'wxGladePreferencesUI', '__do_layout')),
+            ('    # begin wxGlade: wxGladePreferencesUI::__set_properties', ('    ', 'wxGladePreferencesUI', '__set_properties')),
+            ]:
+            result = re.match(line)
+            self.failUnless(
+                result,
+                '%s: Line "%s" does not fit pattern!' % (lang, line)
+                )
+            self.failUnless(
+                result.groups() == expected,
+                '%s: Unexpected result for line "%s":\n   got: "%s"\nexpect: "%s"' % (lang, line, result.groups(), expected)
+                )
+
+    def test_PythonSourceFileContent_regexp(self):
+        """\
+        Test some regular expessions used in L{codegen.py_codegen.SourceFileContent}
+        """
+        import codegen.py_codegen
+        lang = 'Python'
+        source = codegen.py_codegen.SourceFileContent
+        re = source.rec_block_start
+        for line, expected in [
+            ('# begin wxGlade: extracode',      ('', None, 'extracode')),
+            ('    # begin wxGlade: extracode',  ('    ', None, 'extracode')),
+            ('#begin wxGlade: dependencies',    ('', None, 'dependencies')),
+            ('    # begin wxGlade: PyOgg3_MyDialog.__init__',        ('    ', 'PyOgg3_MyDialog', '__init__')),
+            ('    # begin wxGlade: PyOgg3_MyFrame.__do_layout',      ('    ', 'PyOgg3_MyFrame', '__do_layout')),
+            ('    # begin wxGlade: PyOgg3_MyFrame.__set_properties', ('    ', 'PyOgg3_MyFrame', '__set_properties')),
+            ]:
+            result = re.match(line)
+            self.failUnless(
+                result,
+                '%s: Line "%s" does not fit pattern!' % (lang, line)
+                )
+            self.failUnless(
+                result.groups() == expected,
+                '%s: Unexpected result for line "%s":\n   got: "%s"\nexpect: "%s"' % (lang, line, result.groups(), expected)
+                )
+        re = source.rec_event_handler
+        for line, expected in [
+            ('   def myEVT_GRID_CELL_LEFT_CLICK(self, event):  # wxGlade: MyFrame.<event_handler>',   ('myEVT_GRID_CELL_LEFT_CLICK', 'MyFrame')),
+            ('   def startConverting(self, event):  # wxGlade: PyOgg1_MyDialog.<event_handler>',      ('startConverting', 'PyOgg1_MyDialog')),
+            ]:
+            result = re.match(line)
+            self.failUnless(
+                result,
+                '%s: Line "%s" does not fit pattern!' % (lang, line)
+                )
+            self.failUnless(
+                result.groups() == expected,
+                '%s: Unexpected result for line "%s":\n   got: "%s"\nexpect: "%s"' % (lang, line, result.groups(), expected)
+                )
+
+    def test_content_notfound(self):
+        """\
+        Test replacement of not found blocks with a warning message
+
+        @see: L{codegen.BaseCodeWriter._content_notfound()}
+        """
+        import codegen
+        codegen = codegen.BaseCodeWriter()
+        
+        # this is to be more sure to replace the right tags
+        codegen.nonce = '12G34'
+        codegen.comment_sign = "#"
+
+        source_sample = """\
+<12G34wxGlade replace %(pattern)s>
+        """
+
+        expected_sample = """\
+%(indent)s# Content of this block not found. Did you rename this class?
+
+        """
+
+        for pattern, indent in [
+            ('MissingClass method', '  '),
+            ('MissingClass method', '  '),
+            ('MissingClass Method', '---'),
+            ('MissingClass method', '\t'),
+            ('MissingClass method', ''),
+            ('MissingClass .',      ''),
+            ]:
+            source = source_sample % {
+                'pattern': pattern,
+                'indent':  indent,
+                }
+            expected = expected_sample % {
+                'pattern': pattern,
+                'indent':  indent,
+                }
+
+            result = codegen._content_notfound(
+                source,
+                indent,
+                )
+
+            self.failUnless(
+                result == expected,
+                'Unexpected result for pattern "%s":\n   got: "%s"\nexpect: "%s"' % (pattern, result, expected)
                 )

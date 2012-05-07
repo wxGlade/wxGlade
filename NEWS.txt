@@ -1,6 +1,8 @@
 Version 0.6.6 - 2012-XX-XX:
 General: 
   - Change default widget ID from -1 to wxID_ANY and adapt codegen
+  - Rework and unify code generators, all code generators support
+    extracode and extraproperties now
   - ...
 
 Bugs:
