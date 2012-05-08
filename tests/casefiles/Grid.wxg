@@ -14,8 +14,8 @@
                 <object class="wxGrid" name="grid_1" base="EditGrid">
                     <background>#00ffff</background>
                     <extraproperties>
-                        <property name="RowLabel">0, "Row 1"</property>
-                        <property name="Value">0, 0, "1"</property>
+                        <property name="RowLabelValue">0, "Row 1"</property>
+                        <property name="CellValue">0, 0, "1"</property>
                     </extraproperties>
                     <create_grid>1</create_grid>
                     <enable_editing>1</enable_editing>
