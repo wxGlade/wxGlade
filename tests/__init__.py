@@ -195,7 +195,7 @@ class WXGladeBaseTest(unittest.TestCase):
             filetype = 'result'
 
         file_list = glob.glob(
-            os.path.join(self.caseDirectory, "%s*%s" % (casename, extension))
+            os.path.join(self.caseDirectory, "%s%s" % (casename, extension))
             )
         self.failIf(
            len(file_list) == 0,
@@ -233,7 +233,7 @@ class WXGladeBaseTest(unittest.TestCase):
             filetype = 'result'
 
         file_list = glob.glob(
-            os.path.join(self.caseDirectory, "%s*%s" % (casename, extension))
+            os.path.join(self.caseDirectory, "%s%s" % (casename, extension))
             )
         self.failIf(
            len(file_list) == 0,

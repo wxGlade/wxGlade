@@ -300,6 +300,21 @@ class TestCodeGen(WXGladeBaseTest):
             'PyOgg1.py'
             )
 
+        # load XML input file
+        source = self._load_file('PyOgg1.wxg')
+        expected = self._load_file('PyOgg1_oldnamespace.py')
+        source = self._modify_attrs(source,
+            name='app',
+            overwrite='1',
+            path='PyOgg1_oldnamespace.py',
+            use_new_namespace='0',
+            )
+
+        # generate code
+        self._generate_code('python', source, 'PyOgg1_oldnamespace.py')
+        generated = self.vFiles['PyOgg1_oldnamespace.py'].getvalue()
+        self._compare(expected, generated)
+
     def test_Python_Ogg2(self):
         """\
         Test Python code generation with overwriting two existing files
