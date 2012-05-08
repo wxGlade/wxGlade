@@ -270,15 +270,11 @@ class PythonCodeWriter(BaseCodeWriter):
 
     def cn_f(self, flags):
         """\
-        Return the flags properly formatted for the selected name space.
+        Return the flags properly formatted
 
-        @see: L{use_new_namespace}
         @see: L{cn()}
         """
-        if self.use_new_namespace:
-            return " | ".join([self.cn(f) for f in str(flags).split('|')])
-        else:
-            return str(flags)
+        return " | ".join([self.cn(f) for f in str(flags).split('|')])
 
     def initialize(self, app_attrs):
         """\
