@@ -63,7 +63,7 @@ and docbook-xsl in your Build-Depends control field.
           </address>
         </affiliation>
         <contrib>
-          Update and extend manual page
+          Current maintainer of this manpage.
         </contrib>
       </author>
     </authorgroup>
