@@ -50,8 +50,8 @@ void MyFrame::set_properties()
     grid_1->SetColLabelValue(0, wxT("Column A"));
     grid_1->SetColLabelValue(1, wxT("Column B"));
     grid_1->SetBackgroundColour(wxColour(0, 255, 255));
-    grid_1->SetRowLabel(0, "Row 1");
-    grid_1->SetValue(0, 0, "1");
+    grid_1->SetCellValue(0, 0, "1");
+    grid_1->SetRowLabelValue(0, "Row 1");
     // end wxGlade
 }
 
