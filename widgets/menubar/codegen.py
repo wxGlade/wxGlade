@@ -1,5 +1,4 @@
 # codegen.py: code generator functions for wxMenuBar objects
-# $Id: codegen.py,v 1.21 2007/03/27 07:01:57 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -118,7 +117,6 @@ class PythonCodeGenerator:
         init.append('# Menu Bar end\n')
         return init, [], []
 
-    # 2004-12-05
     def get_events(self, obj):
         pygen = common.code_writers['python']
         cn = pygen.cn
@@ -128,7 +126,7 @@ class PythonCodeGenerator:
 
         def do_get(item):
             ret = []
-            if item.name and pygen.for_version > (2, 4):
+            if item.name:
                 val = '#self.%s' % item.name # see py_codegen.py, ~480
             else:
                 name, val = pygen.generate_code_id(None, item.id)
