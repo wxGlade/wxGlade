@@ -381,7 +381,7 @@ class PerlCodeWriter(BaseCodeWriter):
             # and one of the container class names is changed
             self.previous_source.content = self._content_notfound(
                 self.previous_source.content,
-                self.previous_source.spaces.get(tag[1], '\t'),
+                self.previous_source.spaces.get(tag[1], self.tabs(1)),
                 )
 
             tags = re.findall(
@@ -1033,7 +1033,6 @@ class PerlCodeWriter(BaseCodeWriter):
             klass = self.classes[toplevel.klass]
         else:
             klass = self.classes[toplevel.klass] = self.ClassLines()
-
         buffer = '$self->{%s}->Add(%s, %s, %s, %s);\n' % \
                  (sizer.name, obj_name, option, self.cn_f(flag), self.cn_f(border))
         klass.layout.append(buffer)
@@ -1068,11 +1067,14 @@ class PerlCodeWriter(BaseCodeWriter):
         else:
             method = 'SetMinSize'
         if use_dialog_units:
-            return objname + '->' + method + \
-                   '(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n' % \
-                   (objname, size[:-1])
-
-        return objname + '->' + method + '(Wx::Size->new(%s));\n' % size
+            return '%s->%s(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n' % (
+                   objname,
+                   method,
+                   objname,
+                   size[:-1],
+                   )
+        else:
+            return '%s->%s(Wx::Size->new(%s));\n' % (objname, method, size)
 
     def quote_str(self, s, translate=True, escape_chars=True):
         if not s:
