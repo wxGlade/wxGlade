@@ -229,11 +229,16 @@ class PythonCodeWriter(BaseCodeWriter):
     language = "python"
 
     code_statements = {
-        'disabled':        "%(objname)s.Enable(False)\n",
-        'extraproperties': "%(objname)s.Set%(propname)s(%(value)s)\n",
-        'focused':         "%(objname)s.SetFocus()\n",
-        'hidden':          "%(objname)s.Hide()\n",
-        'tooltip':         "%(objname)s.SetToolTipString(%(tooltip)s)\n",
+        'backgroundcolour': "%(objname)s.SetBackgroundColour(%(value)s)\n",
+        'disabled':         "%(objname)s.Enable(False)\n",
+        'extraproperties':  "%(objname)s.Set%(propname)s(%(value)s)\n",
+        'focused':          "%(objname)s.SetFocus()\n",
+        'foregroundcolour': "%(objname)s.SetForegroundColour(%(value)s)\n",
+        'hidden':           "%(objname)s.Hide()\n",
+        'setfont':          "%(objname)s.SetFont(%(cnfont)s(%(size)s, %(family)s, %(style)s, %(weight)s, %(underlined)s, %(face)s))\n",
+        'tooltip':          "%(objname)s.SetToolTipString(%(tooltip)s)\n",
+        'wxcolour':         "wxColour(%(value)s)",
+        'wxsystemcolour':   "wxSystemSettings_GetColour(%(value)s)",
         }
 
     comment_sign = '#'
@@ -990,38 +995,6 @@ class PythonCodeWriter(BaseCodeWriter):
         buffer = '%s.Add(%s, %s, %s, %s)\n' % \
                  (sizer.name, obj_name, option, self.cn_f(flag), self.cn_f(border))
         klass.layout.append(buffer)
-
-    def generate_code_background(self, obj):
-        objname = self._get_code_name(obj)
-        try:
-            color = self.cn('wxColour') + '(%s)' % \
-                    self._string_to_colour(obj.properties['background'])
-        except (IndexError, ValueError):  # the color is from system settings
-            color = self.cn('wxSystemSettings_GetColour') + '(%s)' % \
-                    self.cn(obj.properties['background'])
-        return objname + '.SetBackgroundColour(%s)\n' % color
-
-    def generate_code_font(self, obj):
-        font = obj.properties['font']
-        size = font['size']
-        family = self.cn(font['family'])
-        underlined = font['underlined']
-        style = self.cn(font['style'])
-        weight = self.cn(font['weight'])
-        face = '"%s"' % font['face'].replace('"', r'\"')
-        objname = self._get_code_name(obj)
-        return objname + '.SetFont(' + self.cn('wxFont') + '(%s, %s, %s, %s, %s, %s))\n' %\
-                (size, family, style, weight, underlined, face)
-
-    def generate_code_foreground(self, obj):
-        objname = self._get_code_name(obj)
-        try:
-            color = self.cn('wxColour') + '(%s)' % \
-                    self._string_to_colour(obj.properties['foreground'])
-        except (IndexError, ValueError):  # the color is from system settings
-            color = self.cn('wxSystemSettings_GetColour') + '(%s)' % \
-                    self.cn(obj.properties['foreground'])
-        return '%s.SetForegroundColour(%s)\n' % (objname, color)
 
     def generate_code_id(self, obj, id=None):
         if obj and obj.preview:

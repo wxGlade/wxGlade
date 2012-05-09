@@ -743,8 +743,24 @@ class BaseCodeWriter(object):
         the given object.
 
         @rtype: String
+
+        @see: L{_get_colour()}
         """
-        raise NotImplementedError
+        # check if there is an code template for this property
+        if 'backgroundcolour' not in self.code_statements:
+            msg = " %s WARNING: no code template for property '%s' " \
+                  "registered!\n" % (self.comment_sign, 'backgroundcolour')
+            self.warning(msg)
+            return msg
+
+        objname = self._get_code_name(obj)
+        color = self._get_colour(obj.properties['background'])
+        tmpl = self.code_statements['backgroundcolour']
+        stmt = tmpl % {
+            'objname': objname,
+            'value':   color,
+            }
+        return stmt
 
     def generate_code_disabled(self, obj):
         """\
@@ -790,7 +806,37 @@ class BaseCodeWriter(object):
 
         @rtype: String
         """
-        raise NotImplementedError
+        stmt = None
+
+        # check if there is an code template for this property
+        if 'setfont' not in self.code_statements:
+            msg = " %s WARNING: no code template for property '%s' " \
+                  "registered!\n" % (self.comment_sign, 'setfont')
+            self.warning(msg)
+            return msg
+
+        objname = self._get_code_name(obj)
+        cnfont = self.cn('wxFont')
+        font = obj.properties['font']
+        family = self.cn(font['family'])
+        face = '"%s"' % font['face'].replace('"', r'\"')
+        size = font['size']
+        style = self.cn(font['style'])
+        underlined = font['underlined']
+        weight = self.cn(font['weight'])
+
+        tmpl = self.code_statements['setfont']
+        stmt = tmpl % {
+            'objname':    objname,
+            'cnfont':     cnfont,
+            'face':       face,
+            'family':     family,
+            'size':       size,
+            'style':      style,
+            'underlined': underlined,
+            'weight':     weight,
+            }
+        return stmt
 
     def generate_code_foreground(self, obj):
         """\
@@ -798,8 +844,24 @@ class BaseCodeWriter(object):
         the given object.
 
         @rtype: String
+
+        @see: L{_get_colour()}
         """
-        raise NotImplementedError
+        # check if there is an code template for this property
+        if 'foregroundcolour' not in self.code_statements:
+            msg = " %s WARNING: no code template for property '%s' " \
+                  "registered!\n" % (self.comment_sign, 'foregroundcolour')
+            self.warning(msg)
+            return msg
+
+        objname = self._get_code_name(obj)
+        color = self._get_colour(obj.properties['foreground'])
+        tmpl = self.code_statements['foregroundcolour']
+        stmt = tmpl % {
+            'objname': objname,
+            'value':   color,
+            }
+        return stmt
 
     def generate_code_hidden(self, obj):
         """\
@@ -1128,6 +1190,32 @@ class BaseCodeWriter(object):
         @rtype: String
         """
         raise NotImplementedError
+
+    def _get_colour(self, colourvalue):
+        """\
+        Returns the language specific colour statement
+        """
+        # check if there is an code template for this properties
+        if 'wxcolour' not in self.code_statements:
+            msg = " %s WARNING: no code template for property '%s' " \
+                  "registered!\n" % (self.comment_sign, 'wxcolour')
+            self.warning(msg)
+            return msg
+        if 'wxsystemcolour' not in self.code_statements:
+            msg = " %s WARNING: no code template for property '%s' " \
+                  "registered!\n" % (self.comment_sign, 'wxsystemcolour')
+            self.warning(msg)
+            return msg
+        try:
+            value = self._string_to_colour(colourvalue)
+            func = self.cn(self.code_statements['wxcolour'])
+        except (IndexError, ValueError):  # the color is from system settings
+            value = self.cn(colourvalue)
+            func = self.cn(self.code_statements['wxsystemcolour'])
+        stmt = func % {
+            'value': value,
+            }
+        return stmt
 
     def _string_to_colour(self, s):
         """\

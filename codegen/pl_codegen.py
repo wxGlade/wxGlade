@@ -208,11 +208,16 @@ class PerlCodeWriter(BaseCodeWriter):
     language = "perl"
 
     code_statements = {
-        'disabled':        "%(objname)s->Enable(0);\n",
-        'extraproperties': "%(objname)s->Set%(propname)s(%(value)s);\n",
-        'focused':         "%(objname)s->SetFocus();\n",
-        'hidden':          "%(objname)s->Show(0);\n",
-        'tooltip':         "%(objname)s->SetToolTipString(%(tooltip)s);\n",
+        'backgroundcolour': "%(objname)s->SetBackgroundColour(%(value)s);\n",
+        'disabled':         "%(objname)s->Enable(0);\n",
+        'extraproperties':  "%(objname)s->Set%(propname)s(%(value)s);\n",
+        'focused':          "%(objname)s->SetFocus();\n",
+        'foregroundcolour': "%(objname)s->SetForegroundColour(%(value)s);\n",
+        'hidden':           "%(objname)s->Show(0);\n",
+        'setfont':          "%(objname)s->SetFont(Wx::Font->new(%(size)s, %(family)s, %(style)s, %(weight)s, %(underlined)s, %(face)s));\n",
+        'tooltip':          "%(objname)s->SetToolTipString(%(tooltip)s);\n",
+        'wxcolour':         "Wx::Colour->new(%(value)s)",
+        'wxsystemcolour':   "Wx::SystemSettings::GetColour(%(value)s)",
         }
 
     comment_sign = '#'
@@ -270,8 +275,12 @@ class PerlCodeWriter(BaseCodeWriter):
            name in self._perl_constant_list:
             return name
 
+        # don't process already formatted items again
+        if name.startswith('Wx::'):
+            return name
+
         # use default for remaining names
-        elif name[:2] == 'wx':
+        if name[:2] == 'wx':
             return 'Wx::' + name[2:]
         elif name[:4] == 'EVT_':
             return 'Wx::' + name
@@ -1028,39 +1037,6 @@ class PerlCodeWriter(BaseCodeWriter):
         buffer = '$self->{%s}->Add(%s, %s, %s, %s);\n' % \
                  (sizer.name, obj_name, option, self.cn_f(flag), self.cn_f(border))
         klass.layout.append(buffer)
-
-    def generate_code_background(self, obj):
-        objname = self._get_code_name(obj)
-        try:
-            color = 'Wx::Colour->new(%s)' % \
-                    self._string_to_colour(obj.properties['background'])
-        except (IndexError, ValueError):  # the color is from system settings
-            color = 'Wx::SystemSettings::GetColour(%s)' % \
-                    obj.properties['background']
-        return objname + '->SetBackgroundColour(%s);\n' % color
-
-    def generate_code_font(self, obj):
-        font = obj.properties['font']
-        size = font['size']
-        family = font['family']
-        underlined = font['underlined']
-        style = font['style']
-        weight = font['weight']
-        face = '"%s"' % font['face'].replace('"', r'\"')
-        objname = self._get_code_name(obj)
-        return objname + \
-            '->SetFont(Wx::Font->new(%s, %s, %s, %s, %s, %s));\n' % \
-                (size, family, style, weight, underlined, face)
-
-    def generate_code_foreground(self, obj):
-        objname = self._get_code_name(obj)
-        try:
-            color = 'Wx::Colour->new(%s)' % \
-                    self._string_to_colour(obj.properties['foreground'])
-        except (IndexError, ValueError):  # the color is from system settings
-            color = 'Wx::SystemSettings::GetColour(%s)' % \
-                    obj.properties['foreground']
-        return objname + '->SetForegroundColour(%s);\n' % color
 
     def generate_code_id(self, obj, id=None):
         if not id:

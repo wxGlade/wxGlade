@@ -185,11 +185,17 @@ class LispCodeWriter(BaseCodeWriter):
     language = "lisp"
 
     code_statements = {
-        'disabled':        "(wxWindow_IsEnabled %(objname)s0)\n",
-        'extraproperties': "(%(klass)s_Set%(propname)s (slot-%(objname)s obj) %(value)s)\n",
-        'focused':         "(wxWindow_SetFocus %(objname)s)\n",
-        'hidden':          "(wxWindow_Hide %(objname)s)\n",
-        'tooltip':         "(wxWindow_SetToolTip %(objname)s%(tooltip)s)\n",
+        'backgroundcolour': "(wxWindow_SetBackgroundColour %(objname)s %(value)s)\n",
+        'disabled':         "(wxWindow_IsEnabled %(objname)s0)\n",
+        'extraproperties':  "(%(klass)s_Set%(propname)s (slot-%(objname)s obj) %(value)s)\n",
+        'focused':          "(wxWindow_SetFocus %(objname)s)\n",
+        'foregroundcolour': "(wxWindow_SetForegroundColour %(objname)s %(value)s)\n",
+        'hidden':           "(wxWindow_Hide %(objname)s)\n",
+        'setfont':          "(wxWindow_SetFont %(objname)s (wxFont_Create %(size)s %(family)s "
+                            "%(style)s %(weight)s %(underlined)s %(face)s wxFONTENCODING_DEFAULT))\n",
+        'tooltip':          "(wxWindow_SetToolTip %(objname)s%(tooltip)s)\n",
+        'wxcolour':         "(wxColour_CreateRGB %(value)s)",
+        'wxsystemcolour':   "(wxSystemSettings_GetColour %(value)s)",
         }
 
     comment_sign = ';;;'
@@ -946,39 +952,16 @@ class LispCodeWriter(BaseCodeWriter):
         klass.layout.append(buffer)
 
     def generate_code_background(self, obj):
-        objname = self._get_code_name(obj)
-        try:
-            color = ('(wxColour_CreateRGB ') + '%s)' % \
-                    self._string_to_colour(obj.properties['background'])
-        except (IndexError, ValueError):  # the color is from system settings
-            color = self.cn('(wxSystemSettings_GetColour ') + '%s)' % \
-                    self.cn(obj.properties['background'])
         self.dependencies['(use-package :wxColour)'] = 1
-        return  '(wxWindow_SetBackgroundColour %s %s)\n' % (objname, color)
+        return BaseCodeWriter.generate_code_background(self, obj)
 
     def generate_code_font(self, obj):
-        font = obj.properties['font']
-        size = font['size']
-        family = self.cn(font['family'])
-        underlined = font['underlined']
-        style = self.cn(font['style'])
-        weight = self.cn(font['weight'])
-        face = '"%s"' % font['face'].replace('"', r'\"')
-        name = self._get_code_name(obj)
         self.dependencies['(use-package :wxFont)'] = 1
-        return ('(wxWindow_SetFont %s (wxFont_Create %s %s %s %s %s %s wxFONTENCODING_DEFAULT))\n' %
-                (name, size, family, style, weight, underlined, face))
+        return BaseCodeWriter.generate_code_font(self, obj)
 
     def generate_code_foreground(self, obj):
-        objname = self._get_code_name(obj)
-        try:
-            color = self.cn('(wxColour_CreateRGB ') + '%s)' % \
-                    self._string_to_colour(obj.properties['foreground'])
-        except (IndexError, ValueError):  # the color is from system settings
-            color = self.cn('(wxSystemSettings_GetColour ') + '%s)' % \
-                    self.cn(obj.properties['foreground'])
         self.dependencies['(use-package :wxColour)'] = 1
-        return objname + '(wxWindow_SetForegroundColour %s %s)\n' % (objname, color)
+        return BaseCodeWriter.generate_code_foreground(self, obj)
 
     def generate_code_id(self, obj, id=None):
         if not id:
