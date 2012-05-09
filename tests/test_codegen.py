@@ -123,6 +123,35 @@ class TestCodeGen(WXGladeBaseTest):
             'Python_Preferences.py'
             )
 
+    def test_FontColour(self):
+        """\
+        Test code generation for fonts and colours
+        """
+        self._generate_and_compare(
+            'lisp',
+            'FontColour.wxg',
+            'FontColour.lisp'
+            )
+        self._generate_and_compare(
+            'perl',
+            'FontColour.wxg',
+            'FontColour.pl'
+            )
+        self._generate_and_compare(
+            'python',
+            'FontColour.wxg',
+            'FontColour.py'
+            )
+        self._generate_and_compare(
+            'XRC',
+            'FontColour.wxg',
+            'FontColour.xrc'
+            )
+        self._generate_and_compare_cpp(
+            'FontColour.wxg',
+            'FontColour'
+            )
+
     def test_Grid(self):
         """\
         Test code generation with a grid widgets and handling events

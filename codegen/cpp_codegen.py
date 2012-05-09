@@ -320,11 +320,17 @@ class CPPCodeWriter(BaseCodeWriter):
     language = "C++"
 
     code_statements = {
-        'disabled':        "%(objname)sEnable(0);\n",
-        'extraproperties': "%(objname)sSet%(propname)s(%(value)s);\n",
-        'focused':         "%(objname)sSetFocus();\n",
-        'hidden':          "%(objname)sHide();\n",
-        'tooltip':         "%(objname)sSetToolTip(%(tooltip)s);\n",
+        'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
+        'disabled':         "%(objname)sEnable(0);\n",
+        'extraproperties':  "%(objname)sSet%(propname)s(%(value)s);\n",
+        'focused':          "%(objname)sSetFocus();\n",
+        'foregroundcolour': "%(objname)sSetForegroundColour(%(value)s);\n",
+        'hidden':           "%(objname)sHide();\n",
+        'setfont':          "%(objname)sSetFont(wxFont(%(size)s, %(family)s, "
+                            "%(style)s, %(weight)s, %(underlined)s, wxT(%(face)s)));\n",
+        'tooltip':          "%(objname)sSetToolTip(%(tooltip)s);\n",
+        'wxcolour':         "wxColour(%(value)s)",
+        'wxsystemcolour':   "wxSystemSettings::GetColour(%(value)s)",
         }
 
     comment_sign = '//'
@@ -1318,38 +1324,6 @@ class CPPCodeWriter(BaseCodeWriter):
         buffer = '%s->Add(%s, %s, %s, %s);\n' % \
                  (sizer.name, obj.name, option, flag, border)
         klass.layout.append(buffer)
-
-    def generate_code_background(self, obj):
-        objname = self._get_code_name(obj)
-        try:
-            color = 'wxColour(%s)' % \
-                    self._string_to_colour(obj.properties['background'])
-        except (IndexError, ValueError):  # the color is from system settings
-            color = 'wxSystemSettings::GetColour(%s)' % \
-                    obj.properties['background']
-        return objname + 'SetBackgroundColour(%s);\n' % color
-
-    def generate_code_font(self, obj):
-        font = obj.properties['font']
-        size = font['size']
-        family = font['family']
-        underlined = font['underlined']
-        style = font['style']
-        weight = font['weight']
-        face = '"%s"' % font['face'].replace('"', r'\"')
-        objname = self._get_code_name(obj)
-        return objname + 'SetFont(wxFont(%s, %s, %s, %s, %s, wxT(%s)));\n' % \
-               (size, family, style, weight, underlined, face)
-
-    def generate_code_foreground(self, obj):
-        objname = self._get_code_name(obj)
-        try:
-            color = 'wxColour(%s)' % \
-                    self._string_to_colour(obj.properties['foreground'])
-        except (IndexError, ValueError):  # the color is from system settings
-            color = 'wxSystemSettings::GetColour(%s)' % \
-                    obj.properties['foreground']
-        return objname + 'SetForegroundColour(%s);\n' % color
 
     def generate_code_id(self, obj, id=None):
         if not id:
