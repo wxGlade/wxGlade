@@ -995,8 +995,13 @@ class LispCodeWriter(BaseCodeWriter):
         else:
             method = 'SetMinSize'
         if use_dialog_units:
-            return "(" + method + ' ' + objname + '(' + self.cn('wxDLG_SZE') + \
-                   '(%s (%s)))\n' % (objname, size[:-1])
+            return '(%s %s(%s(%s (%s))))\n' % (
+                       method,
+                       objname,
+                       self.cn('wxDLG_SZE'),
+                       objname,
+                       size[:-1],
+                       )
         else:
             return '%s.%s((%s))\n' % (objname, method, size)
 
