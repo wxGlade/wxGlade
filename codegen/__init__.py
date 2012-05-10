@@ -296,7 +296,8 @@ class BaseCodeWriter(object):
     """\
     Dictionary of objects used to generate the code in a given language.
 
-    A code writer object B{must} implement this interface:
+    A code writer object B{must} implement those interface and set those
+    variables:
       - L{initialize()}
       - L{finalize()}
       - L{language}
@@ -314,7 +315,8 @@ class BaseCodeWriter(object):
       - L{_get_code_name()}
       - L{code_statements}
 
-    A code writer object B{could} implement this interfaces:
+    A code writer object B{could} implement those interfaces and set those
+    variables:
       - setup()
       - L{quote_str()}
       - L{quote_path()}
@@ -640,7 +642,77 @@ class BaseCodeWriter(object):
         """\
         Code generator finalization function.
         """
-        raise NotImplementedError
+        if self.previous_source:
+            # insert all the new custom classes inside the old file
+            tag = '<%swxGlade insert new_classes>' % self.nonce
+            if self.previous_source.new_classes:
+                code = "".join(self.previous_source.new_classes)
+            else:
+                code = ""
+            self.previous_source.content = self.previous_source.content.replace(tag, code)
+            tag = '<%swxGlade extra_modules>\n' % self.nonce
+            code = "".join(self._current_extra_modules.keys())
+            self.previous_source.content = self.previous_source.content.replace(tag, code)
+
+            # module dependecies of all classes
+            tag = '<%swxGlade replace dependencies>' % self.nonce
+            dep_list = self.dependencies.keys()
+            dep_list.sort()
+            code = self._tagcontent('dependencies', dep_list)
+            self.previous_source.content = \
+                self.previous_source.content.replace(tag, code)
+
+            # extra code (see the 'extracode' property of top-level widgets)
+            tag = '<%swxGlade replace extracode>' % self.nonce
+            code = self._tagcontent(
+                'extracode',
+                self._current_extra_code
+                )
+            self.previous_source.content = \
+                self.previous_source.content.replace(tag, code)
+
+            # now remove all the remaining <123415wxGlade ...> tags from the
+            # source: this may happen if we're not generating multiple files,
+            # and one of the container class names is changed
+            self.previous_source.content = self._content_notfound(
+                self.previous_source.content,
+                self.previous_source.spaces.get(tag[1], 0)
+                )
+
+            tags = re.findall(
+                '<%swxGlade event_handlers \w+>' % self.nonce,
+                self.previous_source.content
+                )
+            for tag in tags:
+                self.previous_source.content = self.previous_source.content.replace(tag, "")
+
+            # write the new file contents to disk
+            self.save_file(
+                self.previous_source.name,
+                self.previous_source.content,
+                content_only=True
+                )
+
+        elif not self.multiple_files:
+            em = "".join(self._current_extra_modules.keys())
+            content = self.output_file.getvalue().replace(
+                '<%swxGlade extra_modules>\n' % self.nonce, em)
+
+            # module dependecies of all classes
+            tag = '<%swxGlade replace dependencies>' % self.nonce
+            dep_list = self.dependencies.keys()
+            dep_list.sort()
+            code = self._tagcontent('dependencies', dep_list)
+            content = content.replace(tag, code)
+
+            # extra code (see the 'extracode' property of top-level widgets)
+            tag = '<%swxGlade replace extracode>' % self.nonce
+            code = self._tagcontent('extracode', self._current_extra_code)
+            content = content.replace(tag, code)
+
+            self.output_file.close()
+            self.save_file(self.output_file_name, content, self._app_added)
+            del self.output_file
 
     def add_app(self, app_attrs, top_win_class):
         """\
@@ -1083,7 +1155,7 @@ class BaseCodeWriter(object):
         if self._show_warnings:
             common.message("WARNING", msg)
 
-    def _content_notfound(self, source, indent="", add_command=""):
+    def _content_notfound(self, source, indent=""):
         """\
         Remove all the remaining <123415wxGlade ...> tags from the source
         and add a warning instead.
@@ -1097,10 +1169,6 @@ class BaseCodeWriter(object):
         @param indent: Indentation of the warning message
         @type indent:  String
 
-        @param add_command: Additional command to insert into the source code
-                            after the warning message.
-        @type add_command:  String
-
         @return: Changed content
         @rtype:  String
         """
@@ -1111,10 +1179,13 @@ class BaseCodeWriter(object):
         for tag in tags:
             comment = '%(indent)s%(comment_sign)s Content of this block not found. ' \
                       'Did you rename this class?\n'
-            if add_command:
-                comment += '%(indent)s%(add_command)s\n'
+            if 'contentnotfound' in self.code_statements:
+                comment += '%(indent)s%(command)s\n'
+                command = self.code_statements['contentnotfound']
+            else:
+                command = ""
             comment = comment % {
-                'add_command':  add_command,
+                'command':      command,
                 'comment_sign': self.comment_sign,
                 'indent':       indent,
                 }
