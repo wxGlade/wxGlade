@@ -17,10 +17,10 @@
 
 
 // begin wxGlade: ::extracode
-# extra code added using wxGlade
-import time
-# extra code added using wxGlade
-import datetime
+// extra code added using wxGlade
+#include <time.h>
+// extra code added using wxGlade
+#include <time.h>
 // end wxGlade
 
 
