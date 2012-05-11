@@ -16,8 +16,8 @@
 
 
 // begin wxGlade: ::extracode
-# extra code added using wxGlade
-#include <time.h>
+// extra code added using wxGlade
+#include <wx/utils.h>
 // end wxGlade
 
 

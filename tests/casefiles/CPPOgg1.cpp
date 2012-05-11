@@ -65,13 +65,16 @@ void CPPOgg1_MyDialog::set_properties()
     // begin wxGlade: CPPOgg1_MyDialog::set_properties
     SetTitle(_("mp3 2 ogg"));
     SetSize(wxSize(500, 300));
+    SetFocus();
     radio_box_1->SetSelection(0);
     checkbox_1->SetToolTip(_("Overwrite an existing file"));
     checkbox_1->SetValue(1);
     // end wxGlade
 
     // manually added
-    SetTitle(_("mp3 2 ogg - started at") + asctime())
+    wxString str(wxT("Current local time and date: "));
+    str += wxNow();
+    SetTitle(str);
 }
 
 
