@@ -236,7 +236,8 @@ class PythonCodeWriter(BaseCodeWriter):
         'focused':          "%(objname)s.SetFocus()\n",
         'foregroundcolour': "%(objname)s.SetForegroundColour(%(value)s)\n",
         'hidden':           "%(objname)s.Hide()\n",
-        'setfont':          "%(objname)s.SetFont(%(cnfont)s(%(size)s, %(family)s, %(style)s, %(weight)s, %(underlined)s, %(face)s))\n",
+        'setfont':          "%(objname)s.SetFont(%(cnfont)s(%(size)s, %(family)s, "
+                            "%(style)s, %(weight)s, %(underlined)s, %(face)s))\n",
         'tooltip':          "%(objname)s.SetToolTipString(%(tooltip)s)\n",
         'wxcolour':         "wxColour(%(value)s)",
         'wxsystemcolour':   "wxSystemSettings_GetColour(%(value)s)",
@@ -254,15 +255,13 @@ class PythonCodeWriter(BaseCodeWriter):
 
     tmpl_encoding = "# -*- coding: %s -*-\n"
 
-    _quote_str_pattern = re.compile(r'\\[natbv"]?')
-
     def __init__(self):
         BaseCodeWriter.__init__(self)
         self.use_new_namespace = True
 
     def cn(self, name):
         """\
-        Return the class name properly formatted for the selected name space.
+        Return the name properly formatted for the selected name space.
 
         @see: L{use_new_namespace}
         @see: L{cn_f()}

@@ -24,7 +24,6 @@ import cStringIO
 import os
 import os.path
 import re
-import sys
 
 import common
 from codegen import BaseCodeWriter,  \
@@ -214,7 +213,8 @@ class PerlCodeWriter(BaseCodeWriter):
         'focused':          "%(objname)s->SetFocus();\n",
         'foregroundcolour': "%(objname)s->SetForegroundColour(%(value)s);\n",
         'hidden':           "%(objname)s->Show(0);\n",
-        'setfont':          "%(objname)s->SetFont(Wx::Font->new(%(size)s, %(family)s, %(style)s, %(weight)s, %(underlined)s, %(face)s));\n",
+        'setfont':          "%(objname)s->SetFont(Wx::Font->new(%(size)s, %(family)s, "
+                            "%(style)s, %(weight)s, %(underlined)s, %(face)s));\n",
         'tooltip':          "%(objname)s->SetToolTipString(%(tooltip)s);\n",
         'wxcolour':         "Wx::Colour->new(%(value)s)",
         'wxsystemcolour':   "Wx::SystemSettings::GetColour(%(value)s)",
@@ -347,32 +347,14 @@ class PerlCodeWriter(BaseCodeWriter):
                 self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
 
     def setup(self):
-        # scan widgets.txt for widgets, load perl_codegen's
-        widgets_file = os.path.join(common.widgets_path, 'widgets.txt')
-        if not os.path.isfile(widgets_file):
-            self.warning("widgets file (%s) doesn't exist" % widgets_file)
-            return
-        sys.path.append(common.widgets_path)
-        modules = open(widgets_file)
-        for line in modules:
-            module_name = line.strip()
-            if not module_name or module_name.startswith('#'):
-                continue
-            module_name = module_name.split('#')[0].strip()
-            try:
-                m = __import__(
-                    module_name + '.perl_codegen', {}, {}, ['initialize'])
-                m.initialize()
-            except (ImportError, AttributeError):
-                pass
-##                 print 'ERROR loading "%s"' % module_name
-##                 import traceback;
-##                 traceback.print_exc()
-##             else:
-##                 print 'initialized perl generator for ', module_name
-        modules.close()
+        """\
+        Load language specific code generators and sizer code generators
 
-        # ...then, the sizers
+        @see: L{_setup()}
+        """
+        # load perl_codegen's ...
+        self._setup()
+        # ... then, the sizers
         import edit_sizers.perl_sizers_codegen
         edit_sizers.perl_sizers_codegen.initialize()
 
@@ -1035,9 +1017,6 @@ class PerlCodeWriter(BaseCodeWriter):
             return '"' + s + '"'
 
     def _get_code_name(self, obj):
-        """\
-        Returns the name of the variable ( either $self, $foo, or $self->{foo} )
-        """
         if obj.is_toplevel:
             return '$self'
         else:

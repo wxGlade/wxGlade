@@ -9,6 +9,7 @@ import os
 import os.path
 import random
 import re
+import sys
 import time
 import types
 
@@ -504,6 +505,8 @@ class BaseCodeWriter(object):
 
     @see: L{add_app()}
     """
+
+    _quote_str_pattern = re.compile(r'\\[natbv"]?')
 
     _show_warnings = True
     """\
@@ -1287,6 +1290,36 @@ class BaseCodeWriter(object):
             'value': value,
             }
         return stmt
+
+    def _setup(self):
+        """\
+        Load language specific code generators
+        """
+        # scan widgets.txt for widgets, load language specific code generators
+        widgets_file = os.path.join(common.widgets_path, 'widgets.txt')
+        if not os.path.isfile(widgets_file):
+            self.warning("widgets file (%s) doesn't exist" % widgets_file)
+            return
+        sys.path.append(common.widgets_path)
+        modules = open(widgets_file)
+        for line in modules:
+            module_name = line.strip()
+            if not module_name or module_name.startswith('#'):
+                continue
+            module_name = module_name.split('#')[0].strip()
+            try:
+                fqmn = "%s.%s_codegen" % (module_name, self.language)
+                m = __import__(
+                    fqmn, {}, {}, ['initialize'])
+                m.initialize()
+            except (ImportError, AttributeError):
+                pass
+##                 print 'ERROR loading "%s"' % module_name
+##                 import traceback;
+##                 traceback.print_exc()
+##             else:
+##                 print 'initialized %s generator for %s' % (self.language, module_name)
+        modules.close()
 
     def _string_to_colour(self, s):
         """\
