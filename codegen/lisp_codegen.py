@@ -21,9 +21,7 @@ methods of the parent object.
 import cStringIO
 import os
 import os.path
-import random
 import re
-import sys
 
 import common
 from codegen import BaseCodeWriter,  \
@@ -208,8 +206,6 @@ class LispCodeWriter(BaseCodeWriter):
 
     shebang = '#!/usr/bin/env lisp\n'
 
-    _quote_str_pattern = re.compile(r'\\[natbv"]?')
-
     def cn(self, name):
         """\
         Return the name properly formatted for the selected name space.
@@ -285,33 +281,14 @@ class LispCodeWriter(BaseCodeWriter):
                 self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
 
     def setup(self):
-        # scan widgets.txt for widgets, load lisp_codegen's
-        widgets_file = os.path.join(common.widgets_path, 'widgets.txt')
-        if not os.path.isfile(widgets_file):
-            self.warning("widgets file (%s) doesn't exist" % widgets_file)
-            return
+        """\
+        Load language specific code generators and sizer code generators
 
-        sys.path.append(common.widgets_path)
-        modules = open(widgets_file)
-        for line in modules:
-            module_name = line.strip()
-            if not module_name or module_name.startswith('#'):
-                continue
-            module_name = module_name.split('#')[0].strip()
-            try:
-                m = __import__(module_name + '.lisp_codegen', {}, {},
-                               ['initialize'])
-                m.initialize()
-            except (ImportError, AttributeError):
-                pass
-##                print 'ERROR loading "%s"' % module_name
-##                import traceback;
-##                traceback.print_exc()
-##          else:
-##              print 'initialized lisp generator for ', module_name
-        modules.close()
-
-        # ...then, the sizers
+        @see: L{_setup()}
+        """
+        # load lisp_codegen's ...
+        self._setup()
+        # ... then, the sizers
         import edit_sizers.lisp_sizers_codegen
         edit_sizers.lisp_sizers_codegen.initialize()
 
@@ -459,11 +436,7 @@ class LispCodeWriter(BaseCodeWriter):
         tab = indentation
         if is_new:
             base = mycn(code_obj.base)
-            if code_obj.preview and code_obj.klass == base:
-                klass = code_obj.klass + \
-                    ('_%d' % random.randrange(10 ** 8, 10 ** 9))
-            else:
-                klass = code_obj.klass
+            klass = code_obj.klass
             write('\n(defclass %s()\n' % klass)
             write(tab + "((top-window :initform nil :accessor slot-top-window)")
             for l in self.class_lines:
@@ -946,10 +919,6 @@ class LispCodeWriter(BaseCodeWriter):
             return '"%s"' % s
 
     def _get_code_name(self, obj):
-        """\
-        Returns the name of the variable ( either "(slot-top-window obj)" or
-        "(slot-%s obj)"
-        """
         if obj.is_toplevel:
             return '(slot-top-window obj)'
         else:

@@ -362,8 +362,6 @@ class CPPCodeWriter(BaseCodeWriter):
     
     shebang = '// -*- C++ -*-\n'
     
-    _quote_str_pattern = re.compile(r'\\[natbv"]?')
-
     class ClassLines(BaseCodeWriter.ClassLines):
         """\
         Stores the lines of C++ code for a custom class
