@@ -179,27 +179,29 @@ def init_stage1():
     common.templates_path = os.path.join(wxglade_path, 'templates')
     common.tutorial_file  = os.path.join(common.docs_path, 'html', 'index.html')
 
-    # search credits file at two different locations
-    # - <wxglade_path>/docs/credits.txt for linux packages
-    # - <wxglade_path>/credits.txt at Windows or started from source directory
-    if os.path.exists(os.path.join(common.wxglade_path, 'credits.txt')):
-        common.credits_file = os.path.join(common.wxglade_path, 'credits.txt')
-    elif os.path.exists(os.path.join(common.docs_path, 'credits.txt')):
-        common.credits_file = os.path.join(common.docs_path, 'credits.txt')
-    else:
+    # search files credits.txt and license.txt at different locations
+    # - <wxglade_path>/docs   for linux packages
+    # - <wxglade_path>   at Windows or started from source directory
+    # - <wxglade_path>/./../../../share/doc/wxglade/   for local installations
+    # BTW: <wxglade_path> is something like /.../lib/python2.7/site-packages/wxglade
+    common.credits_file = None
+    common.license_file = None
+    for searchdir in [
+        common.wxglade_path,
+	common.docs_path,
+	os.path.join(common.wxglade_path, '../../../../share/doc/wxglade'),
+        ]:
+	searchdir = os.path.normpath(searchdir) 
+	credits_file = os.path.join(searchdir, 'credits.txt')
+	license_file = os.path.join(searchdir, 'license.txt')
+	if os.path.exists(credits_file):
+	    common.credits_file = credits_file
+	if os.path.exists(license_file):
+	    common.license_file = license_file
+    if not common.credits_file:
         print _('ERROR: credits file "credits.txt" not found!')
-        common.credits_file = None
-
-    # search license file at two different locations
-    # - <wxglade_path>/docs/license.txt for linux packages
-    # - <wxglade_path>/license.txt at Windows or started from source directory
-    if os.path.exists(os.path.join(common.wxglade_path, 'license.txt')):
-        common.license_file = os.path.join(common.wxglade_path, 'license.txt')
-    elif os.path.exists(os.path.join(common.docs_path, 'license.txt')):
-        common.license_file = os.path.join(common.docs_path, 'license.txt')
-    else:
+    if not common.license_file:
         print _('ERROR: license file "license.txt" not found!')
-        common.license_file = None
 
     # print used paths
     print _('Base directory:             %s') % common.wxglade_path
