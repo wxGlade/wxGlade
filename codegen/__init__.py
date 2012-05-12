@@ -317,7 +317,7 @@ class BaseCodeWriter(object):
 
     A code writer object B{could} implement those interfaces and set those
     variables:
-      - setup()
+      - L{setup()}
       - L{quote_str()}
       - L{quote_path()}
       - L{cn()}
