@@ -10,7 +10,6 @@ use strict;
 use Wx::Grid;
 
 # begin wxGlade: dependencies
-use Wx::Locale gettext => '_T';
 # end wxGlade
 
 # begin wxGlade: extracode
@@ -22,6 +21,7 @@ use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
 
+use Wx::Locale gettext => '_T';
 sub new {
         my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
         $parent = undef              unless defined $parent;
@@ -45,7 +45,7 @@ sub new {
         $self->{text_ctrl_1} = Wx::TextCtrl->new($self->{notebook_1_pane_1}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, );
         $self->{button_3} = Wx::Button->new($self->{notebook_1_pane_1}, wxID_OPEN, "");
         $self->{radio_box_1} = Wx::RadioBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Sampling Rate"), wxDefaultPosition, wxDefaultSize, [_T("44 kbit"), _T("128 kbit")], 0, wxRA_SPECIFY_ROWS);
-        $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{notebook_1_pane_3}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_LINEWRAP);
+        $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{notebook_1_pane_3}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
         $self->{label_2} = Wx::StaticText->new($self->{notebook_1_pane_4}, wxID_ANY, _T("File name:"), wxDefaultPosition, wxDefaultSize, );
         $self->{text_ctrl_3} = Wx::TextCtrl->new($self->{notebook_1_pane_4}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, );
         $self->{button_4} = Wx::Button->new($self->{notebook_1_pane_4}, wxID_OPEN, "");
@@ -63,7 +63,7 @@ sub new {
 # end wxGlade
 
         # manually added code
-        print 'Dialog has been created at ', ctime()
+        print 'Dialog has been created at ', localtime();
 
         return $self;
 
@@ -179,7 +179,7 @@ sub new {
 # end wxGlade
 
         # manually added code
-        print 'Dialog has been created at ', gmctime()
+        print 'Dialog has been created at ', gmctime();
 
         return $self;
 
