@@ -520,18 +520,21 @@ class PerlCodeWriter(BaseCodeWriter):
 
         new_signature = getattr(builder, 'new_signature', [] )
 
-        if self._use_gettext:
-            self.dependencies["use Wx::Locale gettext => '_T';\n"] = 1
-
         if is_new:
             write('package %s;\n\n' % code_obj.klass)
             write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n'
                     % code_obj.base.replace('wx', 'Wx::', 1))
 
+            if self._use_gettext:
+                if self.multiple_files:
+                    self.classes[code_obj.klass].dependencies[
+                        "use Wx::Locale gettext => '_T';\n"] = 1
+                else:
+                    write("use Wx::Locale gettext => '_T';\n")
+
             if self.multiple_files:
                 # write the module dependecies for this class (package)
                 dep_list = self.classes[code_obj.klass].dependencies.keys()
-                dep_list.extend(self.dependencies.keys())
                 dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list, True)
                 write('\n')
@@ -547,6 +550,12 @@ class PerlCodeWriter(BaseCodeWriter):
             else:
                 new_signature = ['@_[1 .. $#_]']  # shift(@_)->SUPER::new(@_);
                 print code_obj.klass + " did not declare self.new_defaults "
+
+        # we don't need gettext in main context currently
+        #else: 
+        #    if self._use_gettext:
+        #        self.classes[code_obj.klass].dependencies[
+        #            "use Wx::Locale gettext => '_T';\n"] = 1
 
         # constructor (new) begin tag
         write(tab + '# begin wxGlade: %s::new\n\n' % code_obj.klass)

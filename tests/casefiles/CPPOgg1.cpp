@@ -32,7 +32,7 @@ CPPOgg1_MyDialog::CPPOgg1_MyDialog(wxWindow* parent, int id, const wxString& tit
         _("128 kbit")
     };
     radio_box_1 = new wxRadioBox(notebook_1_pane_2, wxID_ANY, _("Sampling Rate"), wxDefaultPosition, wxDefaultSize, 2, radio_box_1_choices, 0, wxRA_SPECIFY_ROWS);
-    text_ctrl_2 = new wxTextCtrl(notebook_1_pane_3, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_LINEWRAP);
+    text_ctrl_2 = new wxTextCtrl(notebook_1_pane_3, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
     label_2 = new wxStaticText(notebook_1_pane_4, wxID_ANY, _("File name:"));
     text_ctrl_3 = new wxTextCtrl(notebook_1_pane_4, wxID_ANY, wxEmptyString);
     button_4 = new wxButton(notebook_1_pane_4, wxID_OPEN, wxEmptyString);

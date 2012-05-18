@@ -76,7 +76,7 @@
         (setf (slot-text-ctrl-1 obj) (wxTextCtrl_Create (slot-notebook-1-pane-1 obj) wxID_ANY "" -1 -1 -1 -1 0))
         (setf (slot-button-3 obj) (wxButton_Create (slot-notebook-1-pane-1 obj) wxID_OPEN "" -1 -1 -1 -1 0))
         (setf (slot-radio-box-1 obj) (wxRadioBox_Create (slot-notebook-1-pane-2 obj) wxID_ANY (_"Sampling Rate") -1 -1 -1 -1 2 (vector (_"44 kbit") (_"128 kbit")) 0 wxRA_SPECIFY_ROWS))
-        (setf (slot-text-ctrl-2 obj) (wxTextCtrl_Create (slot-notebook-1-pane-3 obj) wxID_ANY "" -1 -1 -1 -1 (logior wxTE_MULTILINE wxTE_LINEWRAP)))
+        (setf (slot-text-ctrl-2 obj) (wxTextCtrl_Create (slot-notebook-1-pane-3 obj) wxID_ANY "" -1 -1 -1 -1 wxTE_MULTILINE))
         (setf (slot-label-2 obj) (wxStaticText_Create (slot-notebook-1-pane-4 obj) wxID_ANY (_"File name:") -1 -1 -1 -1 0))
         (setf (slot-text-ctrl-3 obj) (wxTextCtrl_Create (slot-notebook-1-pane-4 obj) wxID_ANY "" -1 -1 -1 -1 0))
         (setf (slot-button-4 obj) (wxButton_Create (slot-notebook-1-pane-4 obj) wxID_OPEN "" -1 -1 -1 -1 0))

@@ -28,7 +28,7 @@ class PyOgg1_MyDialog(wxDialog):
         self.notebook_1_pane_2 = wxPanel(self.notebook_1, wxID_ANY)
         self.radio_box_1 = wxRadioBox(self.notebook_1_pane_2, wxID_ANY, _("Sampling Rate"), choices=[_("44 kbit"), _("128 kbit")], majorDimension=0, style=wxRA_SPECIFY_ROWS)
         self.notebook_1_pane_3 = wxPanel(self.notebook_1, wxID_ANY)
-        self.text_ctrl_2 = wxTextCtrl(self.notebook_1_pane_3, wxID_ANY, "", style=wxTE_MULTILINE | wxTE_LINEWRAP)
+        self.text_ctrl_2 = wxTextCtrl(self.notebook_1_pane_3, wxID_ANY, "", style=wxTE_MULTILINE)
         self.notebook_1_pane_4 = wxPanel(self.notebook_1, wxID_ANY)
         self.label_2 = wxStaticText(self.notebook_1_pane_4, wxID_ANY, _("File name:"))
         self.text_ctrl_3 = wxTextCtrl(self.notebook_1_pane_4, wxID_ANY, "")
