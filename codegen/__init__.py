@@ -584,6 +584,7 @@ class BaseCodeWriter(object):
         """\
         Code generator initialization function.
         """
+        # check for mandatory attributes
         # this is to be more sure to replace the right tags
         self.nonce = self.create_nonce()
 
@@ -1118,12 +1119,17 @@ class BaseCodeWriter(object):
         except:
             import traceback
             traceback.print_exc()
-        if mainfile:
+        if mainfile and sys.platform in ['linux2', 'darwin']:
             try:
                 # make the file executable
                 os.chmod(filename, 0755)
-            except OSError:
-                pass  # this isn't necessary a bad error
+            except OSError, e:
+                # this isn't necessarily a bad errror
+                self.warning(
+                    _('Changing permission of main file "%s" failed: %s') % (
+                        filename,  str(e)
+                        )
+                    )
 
     def test_attribute(self, obj):
         """\
