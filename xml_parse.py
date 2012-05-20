@@ -556,14 +556,21 @@ class CodeWriter(XmlParser):
             except (KeyError, ValueError):
                 use_multiple_files = attrs['option'] = False
             if self.out_path is None:
-                try: self.out_path = attrs['path']
+                try:
+                    self.out_path = attrs['path']
                 except KeyError:
                     raise XmlParsingError(_("'path' attribute missing: could "
                                           "not generate code"))
-            else: attrs['path'] = self.out_path
+            else:
+                attrs['path'] = self.out_path
 
-            # ALB 2004-11-01: check if the values of
-            # use_multiple_files and out_path agree
+            # Prevent empty output path
+            if not self.out_path:
+                raise XmlParsingError(
+                    _("'path' attribute empty: could not generate code")
+                    )
+
+            # Check if the values of use_multiple_files and out_path agree
             if use_multiple_files:
                 if not os.path.isdir(self.out_path):
                     raise IOError(_("Output path must be an existing directory"
