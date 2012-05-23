@@ -1,6 +1,5 @@
 # xml_parse.py: parsers used to load an app and to generate the code
 # from an xml file.
-# $Id: xml_parse.py,v 1.46 2007/08/07 12:16:44 agriggio Exp $
 #
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
@@ -16,10 +15,13 @@
 #         return False -> no further processing needed
 
 import os
-import common, edit_sizers
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
 import traceback
+
+import common
+import edit_sizers
+import errors
 
 # ALB 2005-03-10: importing the module here prevents a segfault with python 2.4
 # hmmm... need to investigate this more (it seems that import of
@@ -573,12 +575,15 @@ class CodeWriter(XmlParser):
             # Check if the values of use_multiple_files and out_path agree
             if use_multiple_files:
                 if not os.path.isdir(self.out_path):
-                    raise IOError(_("Output path must be an existing directory"
-                                  " when generating multiple files"))
+                    raise errors.WxgOutputDirectoryNotExist(self.out_path)
+                if not os.access(self.out_path, os.W_OK):
+                    raise errors.WxgOutputDirectoryNotWritable(self.out_path)
             else:
                 if os.path.isdir(self.out_path):
-                    raise IOError(_("Output path can't be a directory when "
-                                  "generating a single file"))
+                    raise errors.WxgOutputPathIsDirectory(self.out_path)
+                dir = os.path.dirname(self.out_path)
+                if not os.access(dir, os.W_OK):
+                    raise errors.WxgOutputDirectoryNotWritable(dir)
             
             # initialize the writer
             self.code_writer.initialize(attrs)

@@ -11,9 +11,12 @@ import sys
 import gettext
 import common
 import optparse
+import traceback
 
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
+
+import errors
 
 def _fix_path(path):
     """\
@@ -26,6 +29,12 @@ def _fix_path(path):
         #getenv('WXGLADE_INVOKING_DIR', '.'), path)
     return path
 
+def error(msg):
+    """\
+    Print an error message at stderr and exits with return code 1
+    """
+    print >> sys.stderr, _("ERROR: %s") % msg
+    sys.exit(1)
 
 def parse_command_line():
     """\
@@ -131,16 +140,26 @@ def command_line_code_generation(filename, language, out_path=None):
     """
     from xml_parse import CodeWriter
     if not common.code_writers.has_key(language):
-        print >> sys.stderr, \
-            _('Error: no writer for language "%s" available') % language
-        sys.exit(1)
+        error(_('No writer for language "%s" available') % language)
 
     writer = common.code_writers[language]
-    CodeWriter(
-        writer=writer,
-        input=filename,
-        out_path=out_path,
-        )
+    try:
+        CodeWriter(
+            writer=writer,
+            input=filename,
+            out_path=out_path,
+            )
+    except (errors.WxgOutputDirectoryNotExist,
+            errors.WxgOutputDirectoryNotWritable,
+            errors.WxgOutputPathIsDirectory,
+            ), inst:
+        error(inst)
+    except Exception, msg:
+        traceback.print_exc()
+        error(
+            _("An exception occurred while generating the code for the application.\n"
+              "If you think this is a wxGlade bug, please report it.")
+             )
     sys.exit(0)
 
 

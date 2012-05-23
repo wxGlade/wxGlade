@@ -8,12 +8,17 @@
 
 import codecs
 import locale
+import os
 import re
 import traceback
-
 import wx
+
 from widget_properties import *
-import common, math, misc, os, config
+import common
+import config
+import errors
+import math
+import misc
 
 class FileDirDialog:
     """\
@@ -480,38 +485,57 @@ class Application(object):
                 self.overwrite = True
             class_names = common.app_tree.write(out) # write the xml onto a
                                                      # temporary buffer
-            if not os.path.isabs(self.output_path) and \
-               self.filename is not None:
+            if not os.path.isabs(self.output_path) and self.filename:
                 out_path = os.path.join(os.path.dirname(self.filename),
                                         self.output_path)
             else:
                 out_path = None
-            CodeWriter(common.code_writers[cw], out.getvalue(), True,
-                       preview=preview, out_path=out_path,
-                       class_names=class_names)
+            CodeWriter(
+                common.code_writers[cw],
+                out.getvalue(), True,
+                preview=preview,
+                out_path=out_path,
+                class_names=class_names,
+                )
             if preview and cw == 'python':
                 common.code_writers[cw].use_new_namespace = old
                 self.overwrite = overwrite
+        except (errors.WxgOutputDirectoryNotExist,
+                errors.WxgOutputDirectoryNotWritable,
+                errors.WxgOutputPathIsDirectory,
+                ), inst:
+            wx.MessageBox(
+                _("Error generating code:\n%s") % inst,
+                _("Error"),
+                wx.OK|wx.CENTRE|wx.ICON_ERROR,
+                )
         except (IOError, OSError), msg:
-            wx.MessageBox(_("Error generating code:\n%s") % msg, _("Error"),
-                         wx.OK|wx.CENTRE|wx.ICON_ERROR)
+            wx.MessageBox(
+                _("Error generating code:\n%s") % msg,
+                _("Error"),
+                wx.OK|wx.CENTRE|wx.ICON_ERROR,
+                )
         except Exception, msg:
             traceback.print_exc()
-            wx.MessageBox(_("An exception occurred while generating the code "
-                         "for the application.\n"
-                         "This is the error message associated with it:\n"
-                         "        %s\n"
-                         "For more details, look at the full traceback "
-                         "on the console.\nIf you think this is a wxGlade bug,"
-                         " please report it.") % msg, _("Error"),
-                         wx.OK|wx.CENTRE|wx.ICON_ERROR)
+            wx.MessageBox(
+                _("An exception occurred while generating the code "
+                  "for the application.\n"
+                  "This is the error message associated with it:\n"
+                  "        %s\n"
+                  "For more details, look at the full traceback "
+                  "on the console.\nIf you think this is a wxGlade bug,"
+                  " please report it.") % msg,
+                  _("Error"),
+                  wx.OK|wx.CENTRE|wx.ICON_ERROR,
+                  )
         else:
             if not preview:
                 wx.MessageBox(_("Code generation completed successfully"),
                              _("Information"), wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
 
     def get_name(self):
-        if self.name_prop.is_active(): return self.name
+        if self.name_prop.is_active():
+            return self.name
         return ''
 
     def get_class(self):
