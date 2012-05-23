@@ -31,10 +31,9 @@ def _fix_path(path):
 
 def error(msg):
     """\
-    Print an error message at stderr and exits with return code 1
+    Print an error message at stderr
     """
     print >> sys.stderr, _("ERROR: %s") % msg
-    sys.exit(1)
 
 def parse_command_line():
     """\
@@ -114,11 +113,11 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""")
         if len(args) == 1:
             options.start_gui = False
         elif len(args) == 0:
-            print >> sys.stderr, _("ERROR: No wxg file given!\n")
+            error(_("No wxg file given!\n"))
             parser.print_help()
             sys.exit(1)
         else:
-            print >> sys.stderr, _("ERROR: Too many wxg files given!\n")
+            error(_("Too many wxg files given!\n"))
             parser.print_help()
             sys.exit(1)
     else:
@@ -154,12 +153,14 @@ def command_line_code_generation(filename, language, out_path=None):
             errors.WxgOutputPathIsDirectory,
             ), inst:
         error(inst)
+        sys.exit(1)
     except Exception, msg:
         traceback.print_exc()
         error(
             _("An exception occurred while generating the code for the application.\n"
               "If you think this is a wxGlade bug, please report it.")
              )
+        sys.exit(1)
     sys.exit(0)
 
 
@@ -218,9 +219,9 @@ def init_stage1():
 	if os.path.exists(license_file):
 	    common.license_file = license_file
     if not common.credits_file:
-        print _('ERROR: credits file "credits.txt" not found!')
+        error(_('Credits file "credits.txt" not found!'))
     if not common.license_file:
-        print _('ERROR: license file "license.txt" not found!')
+        error(_('License file "license.txt" not found!'))
 
     # print used paths
     print _('Base directory:             %s') % common.wxglade_path
