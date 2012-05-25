@@ -1,8 +1,9 @@
-# Common code used by all code generators
-#
-# License: MIT (see license.txt)
-#
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Common code used by all code generators
+
+@copyright: 2011-2012 Carsten Grohmann <mail@carstengrohmann.de>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import cStringIO
 import os
@@ -584,7 +585,6 @@ class BaseCodeWriter(object):
         """\
         Code generator initialization function.
         """
-        # check for mandatory attributes
         # this is to be more sure to replace the right tags
         self.nonce = self.create_nonce()
 
