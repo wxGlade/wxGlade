@@ -1,14 +1,13 @@
-# xrc_codegen.py: wxWidgets resources XRC code generator
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
-
 """\
+XRC code generator
+
 Generates the xml code for the app in XRC format.
 Calls the appropriate ``writers'' of the various objects. These functions
 return an instance of XrcObject
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import cStringIO

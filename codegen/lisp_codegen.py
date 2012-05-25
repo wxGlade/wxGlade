@@ -1,12 +1,6 @@
-# lisp_codegen.py: lisp code generator
-#
-# Copyright (c) 2005 Surendra K Singhi <efuzzyone@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
-
-
 """\
+Lisp code generator
+
 How the code is generated: every time the end of an object is reached during
 the parsing of the xml tree, either the function 'add_object' or the function
 'add_class' is called: the latter when the object is a toplevel one, the former
@@ -16,6 +10,10 @@ function accepts one argument, the CodeObject representing the object for
 which the code has to be written, and returns 3 lists of strings, representing
 the lines to add to the '__init__', '__set_properties' and '__do_layout'
 methods of the parent object.
+
+@copyright: 2005 Surendra K Singhi <efuzzyone@users.sourceforge.net>
+@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import cStringIO
