@@ -10,6 +10,7 @@ Bugs:
   - Prevent deleting last notebook tab (sf bug #3126974)
   - String formatting issue for event handlers in Lisp code generator
   - Encoding detection for Mac OS X
+  - Same default names for multiple notebooks (sf bug #2000566)
   - ...
 
 Documentation:
