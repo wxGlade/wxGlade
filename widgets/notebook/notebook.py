@@ -183,15 +183,27 @@ class TabsHandler:
 class EditNotebook(ManagedBase):
 
     _custom_base_classes = True
-    number = 1
+    notebook_number = 1
     """\
-    Continuously number for notebook names.
+    @cvar: Next free number for notebook names. The number is continuously.
 
     Each notebook gets an own number. It's very useful for labeling
     panes. Deleting notebooks won't decrease this number.
 
+    @see: L{self.next_notebook_name()}
     @type: Integer
     @note: Use only C{+=1} for increasing!
+    """
+
+    pane_number = 1
+    """\
+    @ivar: Free number for pane names. This number is is continuously.
+
+    Each pane get an own number. It's very useful for labelung. Deleting
+    oanes won't decrease this number.
+
+    @see: L{self.next_pane_name()}
+    @type: Integer
     """
 
     events = ['EVT_NOTEBOOK_PAGE_CHANGED', 'EVT_NOTEBOOK_PAGE_CHANGING']
@@ -201,6 +213,13 @@ class EditNotebook(ManagedBase):
         """\
         Class to handle wxNotebook objects
         """
+        # create new and (still) unused notebook name
+        if not name:
+            name = self.next_notebook_name()
+
+        # Increase number of created notebooks
+        EditNotebook.notebook_number += 1
+
         ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer,
                              pos, property_window, show=show)
 
@@ -238,8 +257,8 @@ class EditNotebook(ManagedBase):
             self, 'no_custom_class',
             label=_("Don't generate code for this custom class"))
 
-        # Increase number of created notebooks
-        EditNotebook.number += 1
+        # first pane should have number 1
+        self.pane_number = 1
 
     def create_widget(self):
         self.widget = wx.Notebook(
@@ -323,21 +342,22 @@ class EditNotebook(ManagedBase):
             self._is_removing_pages = False
         elif delta < 0:
             # we have to add some pages
-            number = len(self.tabs) + 1
-            while common.app_tree.has_name(self.name + '_pane_%s' % number):
-                number += 1
             pos = len(self.tabs)
             for i in range(-delta):
                 self.tabs.append(['', None])
                 pos += 1
                 if _has_panel:
-                    window = EditPanel(self.name + '_pane_%s' % number, self,
-                                       wx.ID_ANY, self.virtual_sizer, pos,
-                                       self.property_window)
+                    window = EditPanel(
+                        self.next_pane_name(),
+                        self,
+                        wx.ID_ANY,
+                        self.virtual_sizer,
+                        pos,
+                        self.property_window,
+                        )
                     self._add_tab(window, pos)
                 else:
                     self._add_tab(None, pos)
-                number += 1
             if self.widget:
                 self.widget.SetSelection(self.widget.GetPageCount() - 1)
         # finally, we must update the labels of the tabs
@@ -388,6 +408,32 @@ class EditNotebook(ManagedBase):
     def set_no_custom_class(self, value):
         self.no_custom_class = bool(int(value))
 
+    def next_notebook_name(self):
+        """\
+        Return new and (still) unused notebook name
+
+        @see: L{self.notebook_number}
+        """
+        while True:
+            name = 'notebook_%d' % EditNotebook.notebook_number
+            if not common.app_tree.has_name(name):
+                break
+            EditNotebook.notebook_number += 1
+        return name
+
+    def next_pane_name(self):
+        """\
+        Return new and (still) unused pane name
+
+        @see: L{self.pane_number}
+        """
+        while True:
+            pane_name = "%s_pane_%d" % (self.name, self.pane_number)
+            self.pane_number += 1
+            if not common.app_tree.has_name(pane_name):
+                break
+        return pane_name
+
 # end of class EditNotebook
 
 
@@ -432,22 +478,17 @@ def builder(parent, sizer, pos, number=[1]):
 
     dialog = Dialog()
     dialog.ShowModal()
-    while True:
-        name = 'notebook_%d' % EditNotebook.number
-        if not common.app_tree.has_name(name):
-            break
-        EditNotebook.number += 1
-    window = EditNotebook(name, parent, wx.ID_ANY, dialog.style,
+    window = EditNotebook(None, parent, wx.ID_ANY, dialog.style,
                           sizer, pos, common.property_panel, show=False)
     if _has_panel:
-        pane_number = 1
-        while True:
-            pane_name = "%s_pane_%d" % (name, pane_number)
-            if not common.app_tree.has_name(pane_name):
-                break
-            pane_number += 1
-        pane1 = EditPanel(pane_name, window, wx.ID_ANY,
-                          window.virtual_sizer, 1, common.property_panel)
+        pane1 = EditPanel(
+            window.next_pane_name(),
+            window,
+            wx.ID_ANY,
+            window.virtual_sizer,
+            1,
+            common.property_panel,
+            )
 
     node = Tree.Node(window)
     window.node = node
