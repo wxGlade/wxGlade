@@ -208,16 +208,16 @@ def init_stage1():
     common.license_file = None
     for searchdir in [
         common.wxglade_path,
-	common.docs_path,
-	os.path.join(common.wxglade_path, '../../../../share/doc/wxglade'),
+        common.docs_path,
+        os.path.join(common.wxglade_path, '../../../../share/doc/wxglade'),
         ]:
-	searchdir = os.path.normpath(searchdir) 
-	credits_file = os.path.join(searchdir, 'credits.txt')
-	license_file = os.path.join(searchdir, 'license.txt')
-	if os.path.exists(credits_file):
-	    common.credits_file = credits_file
-	if os.path.exists(license_file):
-	    common.license_file = license_file
+        searchdir = os.path.normpath(searchdir) 
+        credits_file = os.path.join(searchdir, 'credits.txt')
+        license_file = os.path.join(searchdir, 'license.txt')
+        if os.path.exists(credits_file):
+            common.credits_file = credits_file
+        if os.path.exists(license_file):
+            common.license_file = license_file
     if not common.credits_file:
         error(_('Credits file "credits.txt" not found!'))
     if not common.license_file:
