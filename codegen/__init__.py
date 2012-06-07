@@ -949,10 +949,18 @@ class BaseCodeWriter(object):
 
     def generate_code_id(self, obj, id=None):
         """\
+        Generate the code for the widget ID.
+        
+        The parameter C{id} is evaluated first. An empty string for
+        C{id} returns C{'', 'wxID_ANY'}. 
+
         Returns a tuple of two string. The two strings are:
          1. A line to the declare the variable. It's empty if the object id
             is a constant
          2. The value of the id
+
+        @param obj: An instance of L{xml_parse.CodeObject}
+        @param id:  Widget ID definition as String.
 
         @rtype: Tuple of two strings
         """

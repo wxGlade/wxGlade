@@ -1330,7 +1330,7 @@ class CPPCodeWriter(BaseCodeWriter):
         klass.layout.append(buffer)
 
     def generate_code_id(self, obj, id=None):
-        if not id:
+        if id is None:
             id = obj.properties.get('id')
         if not id:
             return '', 'wxID_ANY'

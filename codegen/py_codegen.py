@@ -922,7 +922,7 @@ class PythonCodeWriter(BaseCodeWriter):
     def generate_code_id(self, obj, id=None):
         if obj and obj.preview:
             return '', '-1'  # never generate ids for preview code
-        if not id:
+        if id is None:
             id = obj.properties.get('id')
         if not id:
             return '', self.cn('wxID_ANY')

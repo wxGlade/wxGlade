@@ -255,7 +255,12 @@ class TestCodeGen(WXGladeBaseTest):
                 (act_decl, act_value) == (target_decl, target_value),
                 """For Python expected "('%s', '%s')" got "('%s', '%s')"!""" % \
                     (target_decl, target_value, act_decl, act_value)
-
+                )
+            act_decl, act_value = gen_id(None, test_id)
+            self.failUnless(
+                (act_decl, act_value) == (target_decl, target_value),
+                """For Python expected "('%s', '%s')" got "('%s', '%s')"!""" % \
+                    (target_decl, target_value, act_decl, act_value)
                 )
 
         # test for C++
@@ -271,6 +276,21 @@ class TestCodeGen(WXGladeBaseTest):
             ]:
             obj.properties['id'] = test_id
             act_decl, act_value = gen_id(obj)
+            self.failUnless(
+                (act_decl, act_value) == (target_decl, target_value),
+                """For C++ expected "('%s', '%s')" got "('%s', '%s')"!""" % \
+                    (target_decl, target_value, act_decl, act_value)
+                )
+        for test_id, target_decl, target_value in [
+            ['wxID_ANY', '', 'wxID_ANY'],                      # id => "wxID_ANY"
+            ['=wxID_ANY', '', 'wxID_ANY'],                     # id => "=wxID_ANY" (ugly!)
+            ['', '', 'wxID_ANY'],                              # id => "" 
+            ['myid', '', 'myid'],                              # id => "myid"  (predefined variable)
+            ['myid=1', 'myid = 1', 'myid'],                    # id => "myid=1" 
+            ['myid=?', 'myid = wxID_HIGHEST + 1002', 'myid'],  # id => "myid=?" 
+            ['myid=?', 'myid = wxID_HIGHEST + 1003', 'myid'],  # id => "myid=?" 
+            ]:
+            act_decl, act_value = gen_id(None, test_id)
             self.failUnless(
                 (act_decl, act_value) == (target_decl, target_value),
                 """For C++ expected "('%s', '%s')" got "('%s', '%s')"!""" % \
@@ -295,7 +315,12 @@ class TestCodeGen(WXGladeBaseTest):
                 (act_decl, act_value) == (target_decl, target_value),
                 """For Perl expected "('%s', '%s')" got "('%s', '%s')"!""" % \
                     (target_decl, target_value, act_decl, act_value)
-
+                )
+            act_decl, act_value = gen_id(None, test_id)
+            self.failUnless(
+                (act_decl, act_value) == (target_decl, target_value),
+                """For Perl expected "('%s', '%s')" got "('%s', '%s')"!""" % \
+                    (target_decl, target_value, act_decl, act_value)
                 )
 
         # test for Lisp
@@ -311,6 +336,12 @@ class TestCodeGen(WXGladeBaseTest):
             ]:
             obj.properties['id'] = test_id
             act_decl, act_value = gen_id(obj)
+            self.failUnless(
+                (act_decl, act_value) == (target_decl, target_value),
+                """For Lisp expected "('%s', '%s')" got "('%s', '%s')"!""" % \
+                    (target_decl, target_value, act_decl, act_value)
+                )
+            act_decl, act_value = gen_id(None, test_id)
             self.failUnless(
                 (act_decl, act_value) == (target_decl, target_value),
                 """For Lisp expected "('%s', '%s')" got "('%s', '%s')"!""" % \
