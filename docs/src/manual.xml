@@ -174,17 +174,40 @@
     </section>
 
     <section>
-      <title>Requirements and Installation</title>
+      <title>Requirements</title>
 
-      <para>wxGlade requires Python version 2.3 or later and wxPython version
-      2.6 or later generally. You may need wxWidgets on some systems to
-      install wxPython.</para>
-
-      <para>wxGlade is bundled in 3 different package types:</para>
+      <para>The wxGlade requirements are:</para>
 
       <itemizedlist>
         <listitem>
-          <para>the sources packages (.zip and .tar.gz)</para>
+          <para>Python 2 - at least 2.3 or any later version of Python
+          2</para>
+        </listitem>
+
+        <listitem>
+          <para>wxPython 2.6 or any later version</para>
+        </listitem>
+
+        <listitem>
+          <para>wxWidgets 2.6 or any later version, the wxWidgets are often
+          bundled with wxPython</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>wxWidgets are available at <ulink
+      url="???">http://www.wxwidgets.org</ulink> and wxPython at <ulink
+      url="???">http://www.wxpython.org</ulink>.</para>
+    </section>
+
+    <section>
+      <title>Installation</title>
+
+      <para>wxGlade is available in 4 different package types:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>the sources packages (<filename>.zip</filename> and
+          <filename>.tar.gz</filename>)</para>
         </listitem>
 
         <listitem>
@@ -196,12 +219,13 @@
           <para>the installer of the standalone edition at Microsoft Windows
           (<filename>wxGlade-SAE-VERSION-setup.exe</filename>)</para>
         </listitem>
-      </itemizedlist>
 
-      <para>wxWidgets are available at <ulink
-      url="http://www.wxwidgets.org">http://www.wxwidgets.org</ulink> and
-      wxPython at <ulink
-      url="http://www.wxpython.org">http://www.wxpython.org</ulink>.</para>
+        <listitem>
+          <para>development version fetched with Mercurial or downloaded the
+          current packaged development version from <ulink
+          url="???">https://bitbucket.org</ulink></para>
+        </listitem>
+      </itemizedlist>
 
       <section>
         <title>Installing at Microsoft Windows</title>
@@ -212,18 +236,18 @@
         separately.</para>
 
         <para>There is no need to install additional packages for the
-        standalone edition, because the standalone edition includes the needed
-        parts of Python, wxPython and wxWidgets.</para>
+        standalone edition, because the standalone edition includes the
+        required parts of Python, wxPython and wxWidgets.</para>
 
         <para>The installation process is quite simple. Just download the
-        installer file and execute it. Follow the installer
+        installer file, execute it and follow the installer
         instructions.</para>
       </section>
 
       <section>
         <title>Installing at Unix/Linux</title>
 
-        <para>The current Linux distributions have one packages of wxGlade.
+        <para>The current Linux distributions provides wxGlade packages.
         Please use the distribution specific install mechanism to install the
         wxGlade package and all dependencies.</para>
 
@@ -234,32 +258,47 @@
       <section>
         <title>Installing from Source</title>
 
-        <para>The installation from a source packages requires Python,
-        wxPython and wxWidgets. Those three components should be installed
-        first. Maybe you could use already packaged versions for your OS.
-        Otherwise read the installation documentation of the missing
-        components and follow the instructions.</para>
+        <para>The installation from scratch requires Python, wxPython and
+        wxWidgets. Those three components have to be installed first. Maybe
+        you could use already packaged versions of those components for your
+        operating system. Otherwise read the installation documentation of the
+        missing components and follow the instructions.</para>
 
         <para>There are two ways for installing wxGlade from source - single
         or multi user installation.</para>
 
+        <para>Download a source package or a development package in a first
+        step.</para>
+
         <section>
           <title>Single user installation</title>
 
-          <para>Just download a source package and extract it to a own
-          directory e.g. a subdirectory below users home directory. Change in
-          this directory and execute the <command>wxglade</command> file or
-          <command>wxglade.pyw</command> on Microsoft Windows. That's
-          all.</para>
+          <para>Extract the downloaded package into a separate directory e.g.
+          a subdirectory below users home directory. Change in this directory
+          and execute the <command>wxglade</command> file on Unix/Linux or
+          <command>wxglade.pyw</command> on Microsoft Windows.</para>
+
+          <para>That's all. Installations below users home directory don't
+          require administrative permissions.</para>
         </section>
 
         <section>
-          <title>Multi user installation</title>
+          <title>Multi user installation - variant 1</title>
 
-          <para>Download a source package (.zip or .tar.gz) in next step and
-          extract it into a temporary directory. Change in this directory and
-          execute the Python setup script <command>python setup.py</command>
-          in a terminal window.</para>
+          <para>The first variant of a multi user installation is very similar
+          to section <quote>Single user installation</quote> except the
+          installation directory. And probably you need administrative
+          permissions. You could extract the wxGlade source package e.g. into
+          <command>c:\program file\wxglade</command> on Microsoft Windows or
+          into <command>/opt/wxglade</command> on Unix/Linux.</para>
+        </section>
+
+        <section>
+          <title>Multi user installation - variant 2</title>
+
+          <para>Extract the downloaded package into a temporary directory.
+          Change in this directory and execute the Python setup script using
+          <command>python setup.py</command> in a terminal window.</para>
 
           <example>
             <title>Installing wxGlade at /opt/wxglade</title>
