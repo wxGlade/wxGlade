@@ -9,16 +9,15 @@
 //  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp
 //
 
-#include <wx/wx.h>
-#include <wx/image.h>
-// begin wxGlade: ::dependencies
-#include <wx/grid.h>
-// end wxGlade
-
-
 #ifndef GRID_H
 #define GRID_H
 
+#include <wx/wx.h>
+#include <wx/image.h>
+
+// begin wxGlade: ::dependencies
+#include <wx/grid.h>
+// end wxGlade
 
 // begin wxGlade: ::extracode
 // end wxGlade

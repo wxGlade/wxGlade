@@ -9,17 +9,16 @@
 //  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp
 //
 
+#ifndef CPPOGG1_H
+#define CPPOGG1_H
+
 #include <wx/wx.h>
 #include <wx/image.h>
+
 // begin wxGlade: ::dependencies
 #include <wx/notebook.h>
 #include <wx/statline.h>
 // end wxGlade
-
-
-#ifndef CPPOGG1_H
-#define CPPOGG1_H
-
 
 // begin wxGlade: ::extracode
 // extra code added using wxGlade

@@ -437,19 +437,23 @@ class CPPCodeWriter(BaseCodeWriter):
                 self.previous_source = None
                 self.output_header = cStringIO.StringIO()
                 self.output_source = cStringIO.StringIO()
-                for line in self.header_lines:
-                    self.output_header.write(line)
-                    #self.output_source.write(line)
+
                 # isolation directives
                 oh = os.path.basename(name + self.header_extension).upper().replace(
                     '.', '_')
-                # now, write the tag to store dependencies
-                self.output_header.write('<%swxGlade replace  dependencies>\n' % self.nonce)
-
-                self.output_header.write('\n#ifndef %s\n#define %s\n' % (oh, oh))
+                self.output_header.write('#ifndef %s\n#define %s\n' % (oh, oh))
                 self.output_header.write('\n')
-                # write the tag to store extra code
-                self.output_header.write('\n<%swxGlade replace  extracode>\n' % self.nonce)
+
+                for line in self.header_lines:
+                    self.output_header.write(line)
+                    #self.output_source.write(line)
+                self.output_header.write('\n')
+
+                # now, write the tags to store dependencies and extra code
+                self.output_header.write('<%swxGlade replace  dependencies>' % self.nonce)
+                self.output_header.write('\n<%swxGlade replace  extracode>' % self.nonce)
+
+                self.output_header.write('\n')
 
                 self.output_source.write('#include "%s%s"\n\n' % \
                                     (os.path.basename(name), self.header_extension))
@@ -1176,14 +1180,19 @@ class CPPCodeWriter(BaseCodeWriter):
             source_file = os.path.join(self.out_dir, code_obj.klass + self.source_extension)
             hout = cStringIO.StringIO()
             sout = cStringIO.StringIO()
+
             # header file
             hwrite = hout.write
+
+            # isolation directives
+            hn = os.path.basename(header_file).upper().replace('.', '_')
+            hwrite('#ifndef %s\n#define %s\n' % (hn, hn))
+            kwrite('\n')
+
             # write the common lines
             for line in self.header_lines:
                 hwrite(line)
-            # isolation directives
-            hn = os.path.basename(header_file).upper().replace('.', '_')
-            hwrite('\n#ifndef %s\n#define %s\n' % (hn, hn))
+            self.output_header.write('\n')
 
             # write the module dependecies for this class
             #extra_headers = classes[code_obj.klass].dependencies

@@ -9,11 +9,12 @@
 //  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp
 //
 
+#ifndef CPPOGG2_MYDIALOG_H
+#define CPPOGG2_MYDIALOG_H
+
 #include <wx/wx.h>
 #include <wx/image.h>
 
-#ifndef CPPOGG2_MYDIALOG_H
-#define CPPOGG2_MYDIALOG_H
 // begin wxGlade: ::dependencies
 #include <wx/notebook.h>
 #include <wx/statline.h>
