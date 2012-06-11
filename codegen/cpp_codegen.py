@@ -1187,12 +1187,12 @@ class CPPCodeWriter(BaseCodeWriter):
             # isolation directives
             hn = os.path.basename(header_file).upper().replace('.', '_')
             hwrite('#ifndef %s\n#define %s\n' % (hn, hn))
-            kwrite('\n')
+            hwrite('\n')
 
             # write the common lines
             for line in self.header_lines:
                 hwrite(line)
-            self.output_header.write('\n')
+            hwrite('\n')
 
             # write the module dependecies for this class
             #extra_headers = classes[code_obj.klass].dependencies
