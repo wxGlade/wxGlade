@@ -9,16 +9,15 @@
 //  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp
 //
 
-#include <wx/wx.h>
-#include <wx/image.h>
-// begin wxGlade: ::dependencies
-#include <wx/calctrl.h>
-// end wxGlade
-
-
 #ifndef CPP_WXCALENDARCTRL_H
 #define CPP_WXCALENDARCTRL_H
 
+#include <wx/wx.h>
+#include <wx/image.h>
+
+// begin wxGlade: ::dependencies
+#include <wx/calctrl.h>
+// end wxGlade
 
 // begin wxGlade: ::extracode
 // end wxGlade

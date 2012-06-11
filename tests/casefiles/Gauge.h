@@ -9,15 +9,14 @@
 //  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp
 //
 
-#include <wx/wx.h>
-#include <wx/image.h>
-// begin wxGlade: ::dependencies
-// end wxGlade
-
-
 #ifndef GAUGE_H
 #define GAUGE_H
 
+#include <wx/wx.h>
+#include <wx/image.h>
+
+// begin wxGlade: ::dependencies
+// end wxGlade
 
 // begin wxGlade: ::extracode
 // end wxGlade

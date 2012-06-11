@@ -9,17 +9,16 @@
 //  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp
 //
 
+#ifndef CPP_PREFERENCES_H
+#define CPP_PREFERENCES_H
+
 #include <wx/wx.h>
 #include <wx/image.h>
+
 // begin wxGlade: ::dependencies
 #include <wx/spinctrl.h>
 #include <wx/notebook.h>
 // end wxGlade
-
-
-#ifndef CPP_PREFERENCES_H
-#define CPP_PREFERENCES_H
-
 
 // begin wxGlade: ::extracode
 #define _icon_path wxT("icons/icon.xpm")
