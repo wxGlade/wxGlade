@@ -123,6 +123,30 @@ class TestCodeGen(WXGladeBaseTest):
             'Python_Preferences.py'
             )
 
+    def test_CalendarCtrl(self):
+        """\
+        Test code generation for a CalendarCtrl
+        """
+        self._generate_and_compare(
+            'perl',
+            'CalendarCtrl.wxg',
+            'CalendarCtrl.pl'
+            )
+        self._generate_and_compare(
+            'python',
+            'CalendarCtrl.wxg',
+            'CalendarCtrl.py'
+            )
+        self._generate_and_compare(
+            'XRC',
+            'CalendarCtrl.wxg',
+            'CalendarCtrl.xrc'
+            )
+        self._generate_and_compare_cpp(
+            'CalendarCtrl.wxg',
+            'CalendarCtrl'
+            )
+
     def test_FontColour(self):
         """\
         Test code generation for fonts and colours
