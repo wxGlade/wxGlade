@@ -154,7 +154,7 @@ def command_line_code_generation(filename, language, out_path=None):
             ), inst:
         error(inst)
         sys.exit(1)
-    except Exception, msg:
+    except Exception:
         traceback.print_exc()
         error(
             _("An exception occurred while generating the code for the application.\n"
