@@ -1,10 +1,9 @@
-# layout_option_property.py: Property class for the 'option' layout property of
-# widgets and non-toplevel sizers
-# $Id: layout_option_property.py,v 1.5 2007/08/07 12:21:56 agriggio Exp $
-# 
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Property class for the 'option' layout property of widgets and non-toplevel sizers
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 
@@ -38,7 +37,6 @@ class LayoutOptionProperty(widget_properties.Property):
         size = (widget_properties._label_initial_width, -1)
         label = widget_properties.wxGenStaticText(parent, -1, _('Proportion'),
                                                   size=size)
-        label.SetToolTip(wx.ToolTip(_('Proportion')))
         self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
                                max=self.val_range[1])
         val = int(self.owner[self.name][0]())
@@ -60,7 +58,6 @@ class LayoutOptionProperty(widget_properties.Property):
         szr = wx.BoxSizer(wx.HORIZONTAL)
         label = widget_properties.wxGenStaticText(parent, -1, _('Position'),
                                                   size=size)
-        label.SetToolTip(wx.ToolTip(_('Position')))
         szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         self.position = wx.TextCtrl(parent, -1)
         self.position.SetValue(val[:2])
@@ -70,7 +67,6 @@ class LayoutOptionProperty(widget_properties.Property):
         szr = wx.BoxSizer(wx.HORIZONTAL)
         label = widget_properties.wxGenStaticText(parent, -1, _('Span'),
                                                   size=size)
-        label.SetToolTip(wx.ToolTip(_('Span')))
         szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         self.span = wx.TextCtrl(parent, -1)
         self.span.SetValue(val[2:])
@@ -147,7 +143,6 @@ class LayoutOptionProperty(widget_properties.Property):
         self.is_gridbag = _is_gridbag(sizer)
 
 # end of class LayoutOptionProperty
-
 
 
 class LayoutPosProperty(widget_properties.SpinProperty):

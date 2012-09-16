@@ -1,11 +1,10 @@
-# widget_properties.py: classes to handle the various properties of the widgets
-# (name, size, color, etc.)
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Classes to handle the various properties of the widgets (name, size, color,
+etc.)
 
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 # this is needed for wx >= 2.3.4 to clip the label showing the name of the
 # property, otherwise on the properties tabs horizontal scrollbars are shown
@@ -25,24 +24,18 @@ try:
 except ImportError:
     wxGenStaticText = wx.StaticText
 
-
-def _mangle(label):
-    """\
-    returns a mangled version of the str label, suitable for displaying
-    the name of a property
-    """
-    return misc.wxstr(label.capitalize().replace('_', ' '))
-
 _encode = common._encode_to_xml
 
 
 class Property:
     """\
     A class to handle a single property of a widget.
+
+    @ivar owner: the widget this property belongs to
+    @ivar parent: the widget inside which the property is displayed
     """
-    def __init__(self, owner, name, parent, getter=None, setter=None, label=None):
-        # owner: the widget this property belongs to
-        # parent: the widget inside which the property is displayed
+    def __init__(self, owner, name, parent, getter=None, setter=None,
+                 label=None):
         """\
         Access to the property is made through the getter and setter functions,
         which are invoked also in the default event handler. If they are None,
@@ -75,9 +68,14 @@ class Property:
         first[0] = False
         event.Skip()
 
-    def write(self, outfile=None, tabs=0):
+    def write(self, outfile, tabs=0):
         """\
         Writes the xml code for this property onto the given file.
+
+        @param outfile: A file or a file-like object
+        @type outfile:  String
+        @param tabs: Indention level, Each level are four spaces
+        @type tabs:  Integer
         """
         if self.getter:
             value = self.getter()
@@ -91,15 +89,49 @@ class Property:
 
     def bind_event(self, function):
         """\
-        sets the default event handler for this property.
+        Sets the default event handler for this property.
         """
         raise NotImplementedError
 
     def get_value(self):
+        """\
+        Return the content of this propery.
+        """
         raise NotImplementedError
 
     def set_value(self, value):
+        """\
+        Set the content of this property to the given value.
+        """
         raise NotImplementedError
+
+    def _mangle(self,  label):
+        """\
+        Returns a mangled version of label, suitable for displaying
+        the name of a property.
+
+        @type label: String
+        @param label: Text to mangle
+        """
+        return misc.wxstr(label.capitalize().replace('_', ' '))
+
+    def _set_tooltip(self, *widgets):
+        """\
+        Set same tooltip text to all widgets. The text is taken from
+        C{self.tooltip}.
+
+        @param widgets: Widgets to set the same tooltip. C{None} is a valid
+                        and and will be ignored.
+        @type widgets:  List of widgets
+        """
+        tip = getattr(self, 'tooltip',  None)
+        if not tip:
+            return
+
+        # set tooltip, None widgets will be ignored
+        for widget in widgets:
+            if widget:
+                widget.SetToolTip(wx.ToolTip(tip))
 
 # end of class Property
 
@@ -117,10 +149,13 @@ class HiddenProperty(Property):
             if callable(value):
                 getter = value
             else:
+
                 def getter():
                     return value
+
             def setter(v):
                 pass
+
         self.panel = None  # this is needed to provide an uniform treatment,
                            # but is always None
         Property.__init__(self, owner, name, None, getter, setter, label=label)
@@ -170,7 +205,8 @@ class _activator:
     def toggle_active(self, active=None, refresh=True):
         # active is not given when refreshing target and enabler
         if active and self.is_blocked():
-            self._active = False  # blocked is always inactive (security measure)
+            self._active = False  # blocked is always inactive
+                                  # (security measure)
         elif active is not None:
             self._active = active
         if not self._target:
@@ -216,7 +252,8 @@ class _activator:
         elif self._enabler:  # refresh activity of target and value of enabler
             self.toggle_active(refresh=False)
         elif not getattr(self, 'can_disable', None) and self._omitter:
-            # enable blocked widget (that would be always active) without _enabler
+            # enable blocked widget (that would be always active) without
+            # _enabler
             if self.owner.get_property_blocking(self._omitter):
                 self.toggle_active(True, False)
 
@@ -283,14 +320,16 @@ class TextProperty(Property, _activator):
             val = val.replace('\\n', '\n')
         lbl = getattr(self, 'label', None)
         if lbl is None:
-            lbl = _mangle(self.dispName)
+            lbl = self._mangle(self.dispName)
         label = wxGenStaticText(parent, -1, lbl,
                                 size=(_label_initial_width, -1))
-        self.text = wx.TextCtrl(parent, self.id, val, style=style, size=(1, -1))
-        if hasattr(self, 'tooltip'):
-            label.SetToolTip(wx.ToolTip(self.tooltip))
-        else:
-            label.SetToolTip(wx.ToolTip(_mangle(self.dispName)))
+        self.text = wx.TextCtrl(
+            parent,
+            self.id,
+            val,
+            style=style,
+            size=(1, -1),
+            )
         enabler = None
         if self.name == 'size':
             pass
@@ -298,6 +337,7 @@ class TextProperty(Property, _activator):
             enabler = wx.CheckBox(parent, self.id + 1, '', size=(1, -1))
             wx.EVT_CHECKBOX(enabler, self.id + 1,
                          lambda event: self.toggle_active(event.IsChecked()))
+        self._set_tooltip(None, label, self.text, enabler)
         self.prepare_activator(enabler, self.text)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
@@ -352,7 +392,7 @@ class TextProperty(Property, _activator):
         except AttributeError:
             pass
 
-    def write(self, outfile, tabs):
+    def write(self, outfile, tabs=0):
         if self.is_active():
             Property.write(self, outfile, tabs)
 
@@ -368,7 +408,7 @@ class CheckBoxProperty(Property, _activator):
         Property.__init__(self, owner, name, parent, label=label)
         self.val = int(owner[name][0]())
         if label is None or label == name:
-            label = _mangle(name)
+            label = self._mangle(name)
         self.label = label
         self.panel = None
         self.write_always = write_always
@@ -386,17 +426,11 @@ class CheckBoxProperty(Property, _activator):
         self.cb = wx.CheckBox(parent, self.id, '')
         self.cb.SetValue(self.val)
         label = wxGenStaticText(parent, -1, self.label)
-        if hasattr(self, 'tooltip'):
-            label.SetToolTip(wx.ToolTip(self.tooltip))
-        else:
-            label.SetToolTip(wx.ToolTip(self.label))
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 5, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
         sizer.Add(self.cb, 0, wx.ALIGN_CENTER | wx.ALL, 3)
+        self._set_tooltip(label,  self.cb)
         self.prepare_activator(target=self.cb)
-##         self.panel.SetAutoLayout(True)
-##         self.panel.SetSizer(sizer)
-##         self.panel.SetSize(sizer.GetMinSize())
         self.panel = sizer
         self.bind_event(self.on_change_val)
 
@@ -416,7 +450,7 @@ class CheckBoxProperty(Property, _activator):
         except AttributeError:
             pass
 
-    def write(self, outfile, tabs):
+    def write(self, outfile, tabs=0):
         if self.write_always or self.get_value():
             if self.getter:
                 value = int(self.getter())
@@ -445,7 +479,7 @@ class CheckListProperty(Property, _activator):
         @type tooltips: tuple of strings
         @param tooltips: a list of strings to be displayed as the tool-tips for
         the properties
-        """  #" # ALB - fix for emacs's syntax highlight, don't remove please!
+        """
         Property.__init__(self, owner, name, parent, label=None)
         self.values = owner[name][0]()
         self.labels = labels
@@ -477,7 +511,7 @@ class CheckListProperty(Property, _activator):
             if self.labels[i].startswith('#section#'):
                 if tmp != tmp_sizer:
                     tmp_sizer.Add(tmp, 1, wx.ALL | wx.EXPAND, 5)
-                lbl = _mangle(self.labels[i].replace(u'#section#', ''))
+                lbl = self._mangle(self.labels[i].replace(u'#section#', ''))
                 s = wx.FULL_REPAINT_ON_RESIZE
                 tmp = wx.StaticBoxSizer(wx.StaticBox(parent, -1, lbl, style=s),
                                        wx.VERTICAL)
@@ -501,8 +535,6 @@ class CheckListProperty(Property, _activator):
                     break
                 self.choices[i].SetToolTip(wx.ToolTip(self.tooltips[i]))
 
-##         self.panel.SetSizer(tmp_sizer)
-##         self.panel.SetSize(tmp_sizer.GetMinSize())
         self.panel = tmp_sizer
         self.bind_event(self.on_change_val)
 
@@ -524,10 +556,11 @@ class CheckListProperty(Property, _activator):
         except AttributeError:
             pass
 
-    def write(self, outfile, tabs):
+    def write(self, outfile, tabs=0):
         if self.writer is not None:
             return self.writer(outfile, tabs)
         val = self.owner[self.name][0]()
+
         def filter_func(label):
             return not label.startswith('#section#')
         labels = filter(filter_func, self.labels)
@@ -594,13 +627,9 @@ class SpinProperty(Property, _activator):
             self.val_range = (0, 1000)
         lbl = getattr(self, 'label', None)
         if lbl is None:
-            lbl = _mangle(self.dispName)
+            lbl = self._mangle(self.dispName)
         label = wxGenStaticText(parent, -1, lbl,
                                 size=(_label_initial_width, -1))
-        tip = getattr(self, 'tooltip', None)
-        if tip is None:
-            tip = lbl
-        label.SetToolTip(wx.ToolTip(tip))
         self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
                                max=self.val_range[1])
         val = int(self.owner[self.name][0]())
@@ -612,6 +641,7 @@ class SpinProperty(Property, _activator):
             enabler = wx.CheckBox(parent, self.id + 1, '', size=(1, -1))
             wx.EVT_CHECKBOX(enabler, self.id + 1,
                          lambda event: self.toggle_active(event.IsChecked()))
+        self._set_tooltip(label,  self.spin,  enabler)
         self.prepare_activator(enabler, self.spin)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
@@ -657,7 +687,7 @@ class SpinProperty(Property, _activator):
         except AttributeError:
             pass
 
-    def write(self, outfile, tabs):
+    def write(self, outfile, tabs=0):
         if self.is_active():
             Property.write(self, outfile, tabs)
 
@@ -690,9 +720,8 @@ class DialogProperty(Property, _activator):
         """
         self.id = wx.NewId()
         val = misc.wxstr(self.owner[self.name][0]())
-        label = wxGenStaticText(parent, -1, _mangle(self.dispName),
+        label = wxGenStaticText(parent, -1, self._mangle(self.dispName),
                                 size=(_label_initial_width, -1))
-        label.SetToolTip(wx.ToolTip(_mangle(self.dispName)))
         self.text = wx.TextCtrl(parent, self.id, val, size=(1, -1))
         self.btn = wx.Button(parent, self.id + 1, " ... ",
                             size=(_label_initial_width, -1))
@@ -751,9 +780,9 @@ class DialogProperty(Property, _activator):
         except AttributeError:
             pass
 
-    def write(self, dest_file=None, tabs=0):
+    def write(self, outfile, tabs=0):
         if self.is_active():
-            Property.write(self, dest_file, tabs)
+            Property.write(self, outfile, tabs)
 
     def toggle_active(self, active=None, refresh=True):
         _activator.toggle_active(self, active, refresh)
@@ -841,6 +870,7 @@ class ColorDialogProperty(DialogProperty):
     colors_to_str = _reverse_dict(str_to_colors)
 
     dialog = [None]
+
     def __init__(self, owner, name, parent=None, can_disable=True,
                  label=None, blocked=False, omitter=None):
         if not self.dialog[0]:
@@ -917,7 +947,7 @@ class FontDialogProperty(DialogProperty):
                 self.dialog.set_value(props)
         DialogProperty.display_dialog(self, event)
 
-    def write(self, outfile=None, tabs=0):
+    def write(self, outfile, tabs=0):
         if self.is_active():
             try:
                 props = [_encode(s) for s in eval(self.get_value().strip())]
@@ -976,7 +1006,7 @@ class RadioProperty(Property, _activator):
         self.tooltips = tooltips
         self.val = owner[name][0]()
         if label is None:
-            self.label = _mangle(name)
+            self.label = self._mangle(name)
         if parent is not None:
             self.display(parent)
 
@@ -1057,7 +1087,7 @@ class RadioProperty(Property, _activator):
         except (AttributeError, ValueError):
             pass
 
-    def write(self, outfile, tabs):
+    def write(self, outfile, tabs=0):
         if self.is_active():
             outfile.write('    ' * tabs + '<%s>%s</%s>\n' %
                           (self.name, escape(_encode(self.get_str_value())),
@@ -1080,7 +1110,8 @@ class GridProperty(Property, _activator):
     @type can_remove_last: Boolean
     @ivar cols:       List of 2-tuples with these fields:
                        - label for the column
-                       - type: GridProperty.STRING, GridProperty.INT, GridProperty.FLOAT
+                       - type: GridProperty.STRING, GridProperty.INT,
+                         GridProperty.FLOAT
     @ivar col_sizes:  List of column widths
     @type col_sizes:  List of Integer
     @ivar rows:       Number of rows
@@ -1091,6 +1122,7 @@ class GridProperty(Property, _activator):
                   lambda g, c: g.SetColFormatNumber(c),
                   lambda g, c: g.SetColFormatFloat(c),
                   lambda g, c: g.SetColFormatBool(c)]
+
     def __init__(self, owner, name, parent, cols, rows=1, can_add=True,
                  can_remove=True, can_insert=True, label=None, omitter=None,
                  col_sizes=[], can_remove_last=True):
@@ -1117,7 +1149,7 @@ class GridProperty(Property, _activator):
         children = []
         self.panel = wx.Panel(parent, -1)  # why if the grid is not on this
                                            # panel it is not displayed???
-        label = getattr(self, 'label', _mangle(self.dispName))
+        label = getattr(self, 'label', self._mangle(self.dispName))
         sizer = wx.StaticBoxSizer(wx.StaticBox(self.panel, -1, label),
                                   wx.VERTICAL)
         self.btn_id = wx.NewId()
@@ -1157,7 +1189,12 @@ class GridProperty(Property, _activator):
         extra_flag = wx.FIXED_MINSIZE
         self.btn_sizer.Add(self.btn, 0, extra_flag)
         if self.can_add:
-            self.btn_sizer.Add(self.add_btn, 0, wx.LEFT | wx.RIGHT | extra_flag, 4)
+            self.btn_sizer.Add(
+                self.add_btn,
+                0,
+                wx.LEFT | wx.RIGHT | extra_flag,
+                4,
+                )
             wx.EVT_BUTTON(self.add_btn, self.btn_id + 1, self.add_row)
         if self.can_insert:
             self.btn_sizer.Add(
@@ -1204,6 +1241,7 @@ class GridProperty(Property, _activator):
         has changed
         """
         val = self.get_value()
+
         def ok():
             if len(self.val) != len(val):
                 return True
@@ -1325,7 +1363,7 @@ class ComboBoxProperty(Property, _activator):
         Property.__init__(self, owner, name, parent, label=label)
         self.val = misc.wxstr(owner[name][0]())
         if label is None:
-            label = _mangle(name)
+            label = self._mangle(name)
         self.label = label
         self.panel = None
         self.write_always = write_always
@@ -1348,15 +1386,12 @@ class ComboBoxProperty(Property, _activator):
                               style=wx.CB_DROPDOWN | wx.CB_READONLY)
         self.cb.SetValue(self.val)
         label = wx.StaticText(parent, -1, self.label)
-        if hasattr(self, 'tooltip'):
-            label.SetToolTip(wx.ToolTip(self.tooltip))
-        else:
-            label.SetToolTip(wx.ToolTip(_mangle(self.dispName)))
         enabler = None
         if self.can_disable:
             enabler = wx.CheckBox(parent, self.id + 1, '', size=(1, -1))
             wx.EVT_CHECKBOX(enabler, self.id + 1,
                          lambda event: self.toggle_active(event.IsChecked()))
+        self._set_tooltip(label,  self.cb,  enabler)
         self.prepare_activator(enabler, self.cb)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
@@ -1385,7 +1420,7 @@ class ComboBoxProperty(Property, _activator):
         except AttributeError:
             pass
 
-    def write(self, outfile, tabs):
+    def write(self, outfile, tabs=0):
         if self.write_always or (self.is_active() and self.get_value()):
             if self.getter:
                 value = misc.wxstr(self.getter())

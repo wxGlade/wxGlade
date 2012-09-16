@@ -4,6 +4,7 @@ General:
   - Rework and unify code generators, all code generators support
     extracode and extraproperties now
   - Write isolation directives at beginning in C++ header files
+  - Show existing tooltips at all elements of a property
   - ...
 
 Bugs:
