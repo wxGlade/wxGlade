@@ -1,9 +1,9 @@
-# button.py: wxButton objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+wxButton objects
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 import common, misc
@@ -35,14 +35,19 @@ class EditButton(ManagedBase):
                                               self.set_stockitem)
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("default"))
+        self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("Default"))
+        self.properties['default'].tooltip = \
+            _("This sets the button to be the default "
+              "item for the panel or dialog box.")
 
         #Get the list of items, and add a 'None'
         choices = ButtonStockItems.stock_ids.keys()
         choices.sort()
         choices[:0] = ['None']
         self.properties['stockitem'] = ComboBoxProperty(
-            self, 'stockitem', choices, can_disable=True, label=_("stockitem"))
+            self, 'stockitem', choices, can_disable=True, label=_("Stock item"))
+        self.properties['stockitem'].tooltip = \
+            _("Standard IDs for button identifiers")
 
         self.style_pos = (wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP, wx.BU_BOTTOM,
             wx.BU_EXACTFIT,wx.NO_BORDER)
