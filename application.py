@@ -200,7 +200,12 @@ class Application(object):
         self.outpath_prop = DialogProperty(self, "output_path", panel,
                                            dialog, label=_('Output path'))
         BTN_ID = wx.NewId()
-        btn = wx.Button(panel, BTN_ID, _("Generate code"))
+        btn = wx.Button(
+            panel,
+            BTN_ID,
+            _("Generate code"),
+            name="BtnGenerateCode",
+            )
 
         # layout of self.notebook
         sizer = wx.BoxSizer(wx.VERTICAL)
