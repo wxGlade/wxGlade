@@ -144,6 +144,7 @@ class WXGladeBaseTest(unittest.TestCase):
         Generate code for the given language.
 
         @param language: Language to generate code for
+        @type language:  String
         @param document: XML document to generate code for
         @type document:  String
         @param filename: Name of the virtual output file
@@ -154,27 +155,12 @@ class WXGladeBaseTest(unittest.TestCase):
             "No codewriter loaded for %s" % language
             )
       
-        if language == "perl":
-            _document = self._modify_attrs(
-                document,
-                path=filename,
-                language='perl',
-                indent_amount='8',
-                indent_symbol='space',
-                )
-        else:
-            _document = self._modify_attrs(
-                document,
-                path=filename,
-                language=language,
-                indent_amount='4',
-                indent_symbol='space',
-                )
+        document = self._prepare_wxg(language, document)
 
         # generate code
         CodeWriter(
             writer=common.code_writers[language],
-            input=_document,
+            input=document,
             from_string=True,
             out_path=filename,
             )
@@ -296,6 +282,33 @@ class WXGladeBaseTest(unittest.TestCase):
         if s == "./":
             return True
         return False
+
+    def _prepare_wxg(self, language, document):
+        """\
+        Set test specific options inside a wxg (XML) file
+
+        @param language: Language to generate code for
+        @type language:  String
+        @param document: XML document to generate code for
+        @type document:  String
+        @return: Modified XML document
+        @rtype:  String
+        """
+        if language == "perl":
+            _document = self._modify_attrs(
+                document,
+                language='perl',
+                indent_amount='8',
+                indent_symbol='space',
+                )
+        else:
+            _document = self._modify_attrs(
+                document,
+                language=language,
+                indent_amount='4',
+                indent_symbol='space',
+                )
+        return _document
 
     def _save_file(self, filename, content, which='wxg'):
         """\
