@@ -131,6 +131,24 @@ _encode = common._encode_from_xml
 def bound(number, lower, upper):
     return min(max(lower, number), upper)
 
+
+def capitalize(string):
+    """\
+    Return string with first character capitalised. Some acronym like
+    XML, XRC.
+
+    @param string: String to convert
+    @type string:  String (plain or unicode)
+
+    @note: Be carefully it possibly breaks i18n.
+    """
+    # Don't capitalise those terms
+    if string in ['XML', 'XRC']:
+        return string
+
+    return string.capitalize()
+
+
 def color_to_string(color):
     """\
     returns the hexadecimal string representation of the given color:

@@ -113,7 +113,7 @@ class Property:
         @type label: String
         @param label: Text to mangle
         """
-        return misc.wxstr(label.capitalize().replace('_', ' '))
+        return misc.wxstr(misc.capitalize(label).replace('_', ' '))
 
     def _set_tooltip(self, *widgets):
         """\
