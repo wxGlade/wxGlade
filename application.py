@@ -328,8 +328,9 @@ class Application(object):
         ext = getattr(common.code_writers[language], 'default_extensions', [])
         wildcard = []
         for e in ext:
-            wildcard.append(_('%s files (*.%s)|*.%s') % (language.capitalize(),
-                                                      e, e))
+            wildcard.append(
+                _('%s files (*.%s)|*.%s') % (misc.capitalize(language), e, e)
+                )
         wildcard.append(_('All files|*'))
         self.outpath_prop.dialog.set_wildcard('|'.join(wildcard))
         # check that the new language supports all the widgets in the tree
@@ -673,7 +674,7 @@ class Application(object):
                 common.message(_('WARNING'),
                                _('No %s code generator for %s (of type %s)'
                                ' available'),
-                               language.capitalize(), widget.name, cname)
+                               misc.capitalize(language), widget.name, cname)
         else:
             # in this case, we check all the widgets in the tree
             def check_rec(node):
