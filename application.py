@@ -159,13 +159,8 @@ class Application(object):
                                             lang_panels['C++'])
         self.header_ext_prop = TextProperty(self, 'header_ext',
                                             lang_panels['C++'])
-        ext = getattr(common.code_writers.get('python'),
-                      'default_extensions', [])
-        wildcard = []
-        for e in ext:
-            wildcard.append('%s files (*.%s)|*.%s' % ('Python', e, e))
-        wildcard.append('All files|*')
-        dialog = FileDirDialog(self, panel, '|'.join(wildcard),
+        wildcard = self._get_wildcard('python')
+        dialog = FileDirDialog(self, panel, wildcard,
                                _("Select output file"), _("Select output directory"),
                                wx.SAVE|wx.OVERWRITE_PROMPT)
 
@@ -325,14 +320,8 @@ class Application(object):
 
     def set_language(self, value):
         language = self.codewriters_prop.get_str_value()
-        ext = getattr(common.code_writers[language], 'default_extensions', [])
-        wildcard = []
-        for e in ext:
-            wildcard.append(
-                _('%s files (*.%s)|*.%s') % (misc.capitalize(language), e, e)
-                )
-        wildcard.append(_('All files|*'))
-        self.outpath_prop.dialog.set_wildcard('|'.join(wildcard))
+        wildcard = self._get_wildcard(language)
+        self.outpath_prop.dialog.set_wildcard(wildcard)
         # check that the new language supports all the widgets in the tree
         if self.language != language:
             self.language = language
@@ -644,11 +633,12 @@ class Application(object):
         return frame
 
     def get_use_old_namespace(self):
-        try: return not common.code_writers['python'].use_new_namespace
-        except: return False
+        try:
+            return not common.code_writers['python'].use_new_namespace
+        except:
+            return False
 
     def set_use_old_namespace(self, val):
-        #print "set use old namespace"
         try:
             common.code_writers['python'].use_new_namespace = not bool(int(val))
         except:
@@ -686,5 +676,19 @@ class Application(object):
             if common.app_tree.root.children:
                 for c in common.app_tree.root.children:
                     check_rec(c)
+
+    def _get_wildcard(self, language):
+        """\
+        Build a concatinated string of all default extensions to use in
+        a file dialog.
+        """
+        ext = getattr(common.code_writers[language], 'default_extensions', [])
+        wildcards = []
+        for e in ext:
+            wildcards.append(
+                _('%s files (*.%s)|*.%s') % (misc.capitalize(language), e, e)
+                )
+        wildcards.append(_('All files|*'))
+        return '|'.join(wildcards)
 
 # end of class Application
