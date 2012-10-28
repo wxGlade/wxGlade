@@ -988,21 +988,39 @@ class FontDialogProperty(DialogProperty):
 
 class RadioProperty(Property, _activator):
     """\
-    properties controlled by a series of radio buttons.
+    Properties controlled by a series of radio buttons.
+    
+    @ivar sort: Sort the the choices.
+    @type sort: Boolean
+    @ivar capitalize: Capitalise the first character of each entry in
+                      C{choices} list. Capitalising the first character is an
+                      internal process. It does not affect the functions
+                      L{get_str_value()}, L{set_str_value()}, L{set_value()}
+                      and L{get_value()}. They still handle the original
+                      entries.
+    @type capitalize: Boolean
+    
+    @ivar _cap2orig: Dictionary for reverse mapping between the capitalised
+                     entry and the original one.
+    @type _cap2orig: Dictionary
     """
     def __init__(self, owner, name, parent, choices, can_disable=False,
                  enabled=False, columns=1, label=None, tooltips=None,
-                 blocked=False, omitter=None):
+                 blocked=False, omitter=None,  sort=False,
+                 capitalize=False):
         Property.__init__(self, owner, name, parent, label=label)
         self.can_disable = can_disable
         _activator.__init__(self, omitter=omitter)
         if can_disable:
             self.toggle_active(enabled)
             self.toggle_blocked(blocked)
+        self._cap2orig = {}
+        self.capitalize = capitalize
         self.choices = choices
         self.columns = columns
         self.panel = None
         self.label = label
+        self.sort = sort
         self.tooltips = tooltips
         self.val = owner[name][0]()
         if label is None:
@@ -1023,6 +1041,15 @@ class RadioProperty(Property, _activator):
         else:
             szr = wx.StaticBoxSizer(wx.StaticBox(parent, -1, self.label),
                                     wx.HORIZONTAL)
+        if self.capitalize:
+            new_choices = []
+            for orig in self.choices:
+                cap = misc.capitalize(orig)
+                new_choices.append(cap)
+                self._cap2orig[cap] = orig
+            self.choices = new_choices
+        if self.sort:
+            self.choices.sort()
         self.options = wx.RadioBox(parent, self.id, self.label,
                                    choices=self.choices,
                                    majorDimension=self.columns,
@@ -1063,10 +1090,18 @@ class RadioProperty(Property, _activator):
 
     def get_str_value(self):
         try:
-            return self.options.GetStringSelection()
+            selected_string = self.options.GetStringSelection()
+            # reverse lookup for capitalized selections
+            if self.capitalize:
+                selected_string = self._cap2orig[selected_string]
+            return selected_string
         except AttributeError:
             if 0 <= self.val < len(self.choices):
-                return self.choices[self.val]
+                selected_string = self.choices[self.val]
+                # reverse lookup for capitalized selections
+                if self.capitalize:
+                    selected_string = self._cap2orig[selected_string]
+                return selected_string
             else:
                 return ''
 
@@ -1074,6 +1109,8 @@ class RadioProperty(Property, _activator):
         try:
             self.val = int(value)
         except ValueError:
+            if self.capitalize:
+                value = misc.capitalize(value)
             self.val = self.choices.index(value)
         try:
             self.options.SetSelection(self.val)
@@ -1081,6 +1118,8 @@ class RadioProperty(Property, _activator):
             pass
 
     def set_str_value(self, value):
+        if self.capitalize:
+            value = misc.capitalize(value)
         try:
             self.val = self.choices.index(value)
             self.options.SetSelection(self.val)
