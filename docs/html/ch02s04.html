@@ -50,7 +50,7 @@
         recreated every time the code generation is running.</p><p>In opposition the application start code of single-file projects
         will not updated if the name of the <span class="quote">&#8220;<span class="quote"><span class="guilabel">Top
         window</span></span>&#8221;</span> has changed and <span class="quote">&#8220;<span class="quote"><span class="guilabel">Overwrite
-        existing sources</span></span>&#8221;</span> is not set.</p><div class="example"><a name="idp3023880"></a><p class="title"><b>Example 2.1. Detailed application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package MyApp;
+        existing sources</span></span>&#8221;</span> is not set.</p><div class="example"><a name="idp3024048"></a><p class="title"><b>Example 2.1. Detailed application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package MyApp;
 use base qw(Wx::App);
 use strict;
 sub OnInit {
@@ -68,7 +68,7 @@ unless(caller){
         $local-&gt;AddCatalog("app"); # replace with the appropriate catalog name
         my $app = MyApp-&gt;new();
         $app-&gt;MainLoop();
-}</pre></div></div><p><br class="example-break"></p><div class="example"><a name="idp3025552"></a><p class="title"><b>Example 2.2. Simplified application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package main;
+}</pre></div></div><p><br class="example-break"></p><div class="example"><a name="idp3025720"></a><p class="title"><b>Example 2.2. Simplified application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package main;
 unless(caller){
         my $local = Wx::Locale-&gt;new("English", "en", "en"); # replace with ??
         $local-&gt;AddCatalog("PlOgg1_app"); # replace with the appropriate catalog name
@@ -79,14 +79,14 @@ unless(caller){
         $PlOgg1_app-&gt;SetTopWindow($Mp3_To_Ogg);
         $Mp3_To_Ogg-&gt;Show(1);
         $PlOgg1_app-&gt;MainLoop();
-}</pre></div></div><br class="example-break"></div><div class="section" title="Compiling C++ code"><div class="titlepage"><div><div><h3 class="title"><a name="idp3026968"></a>Compiling C++ code</h3></div></div></div><p>You can compile your wxGlade project after the generation of the
+}</pre></div></div><br class="example-break"></div><div class="section" title="Compiling C++ code"><div class="titlepage"><div><div><h3 class="title"><a name="idp3027136"></a>Compiling C++ code</h3></div></div></div><p>You can compile your wxGlade project after the generation of the
         C++ source and header files. The following examples demonstrate
-        compiling on Linux command line using <span class="command"><strong>g++</strong></span>.</p><div class="example"><a name="idp3027984"></a><p class="title"><b>Example 2.3. Compiling a single file C++ project on Linux</b></p><div class="example-contents"><pre class="programlisting"># g++ FontColour.cpp $(wx-config --libs) $(wx-config --cxxflags) -o FontColour
+        compiling on Linux command line using <span class="command"><strong>g++</strong></span>.</p><div class="example"><a name="idp3028152"></a><p class="title"><b>Example 2.3. Compiling a single file C++ project on Linux</b></p><div class="example-contents"><pre class="programlisting"># g++ FontColour.cpp $(wx-config --libs) $(wx-config --cxxflags) -o FontColour
 # ll FontColour*
 -rwxr-xr-x 1 carsten carsten 72493 Jun 15 09:22 FontColour
 -rwxr-xr-x 1 carsten carsten  1785 Mai 11 19:24 FontColour.cpp
 -rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h
-</pre></div></div><br class="example-break"><div class="example"><a name="idp3029024"></a><p class="title"><b>Example 2.4. Compiling a multi file C++ project on Linux</b></p><div class="example-contents"><pre class="programlisting"># g++  CPPOgg2_main.cpp $(wx-config --libs) $(wx-config --cxxflags) \
+</pre></div></div><br class="example-break"><div class="example"><a name="idp3029192"></a><p class="title"><b>Example 2.4. Compiling a multi file C++ project on Linux</b></p><div class="example-contents"><pre class="programlisting"># g++  CPPOgg2_main.cpp $(wx-config --libs) $(wx-config --cxxflags) \
        -o CPPOgg2_main CPPOgg2_MyDialog.cpp CPPOgg2_MyFrame.cpp
 # ll CPPOgg2*
 -rwxr-xr-x 1 carsten carsten 108354 Jun 15 09:33 CPPOgg2_main

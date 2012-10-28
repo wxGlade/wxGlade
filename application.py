@@ -168,7 +168,8 @@ class Application(object):
         columns = 3
 
         self.codewriters_prop = RadioProperty(self, "language", panel,
-                                              _writers, columns=columns)
+                                              _writers, columns=columns, 
+                                              sort=True, capitalize=True)
 
         self.codewriters_prop.set_str_value('python')
 
