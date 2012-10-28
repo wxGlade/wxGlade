@@ -179,15 +179,17 @@ class HiddenProperty(Property):
 
 class _activator:
     """\
-    a utility class which provides:
+    A utility class which provides:
     - a method, toggle_active, to (de)activate a Property of a widget
     - a method, toggle_blocked, to (un)block enabler of a Property of a widget
     - a method, prepare_activator, to assign enabler and target with settings
     """
     def __init__(self, target=None, enabler=None, omitter=None):
-        # target: name of the object to Enable/Disable
-        # enabler: check box which provides the ability to Enable/Disable the
-        #          Property
+        """\
+        @param target:  Name of the object to Enable/Disable
+        @param enabler: Check box which provides the ability to Enable/Disable
+                        the Property
+        """
         self._target = target
         self._enabler = enabler
         if self._enabler:
@@ -989,7 +991,7 @@ class FontDialogProperty(DialogProperty):
 class RadioProperty(Property, _activator):
     """\
     Properties controlled by a series of radio buttons.
-    
+
     @ivar sort: Sort the the choices.
     @type sort: Boolean
     @ivar capitalize: Capitalise the first character of each entry in
@@ -999,7 +1001,7 @@ class RadioProperty(Property, _activator):
                       and L{get_value()}. They still handle the original
                       entries.
     @type capitalize: Boolean
-    
+
     @ivar _cap2orig: Dictionary for reverse mapping between the capitalised
                      entry and the original one.
     @type _cap2orig: Dictionary
@@ -1083,12 +1085,18 @@ class RadioProperty(Property, _activator):
         wx.EVT_RADIOBOX(self.options, self.id, func_2)
 
     def get_value(self):
+        """\
+        Return the zero-based position if the selected entry
+        """
         try:
             return self.options.GetSelection()
         except AttributeError:
             return self.val
 
     def get_str_value(self):
+        """\
+        Return the content of the selected entry
+        """
         try:
             selected_string = self.options.GetStringSelection()
             # reverse lookup for capitalized selections
@@ -1118,6 +1126,9 @@ class RadioProperty(Property, _activator):
             pass
 
     def set_str_value(self, value):
+        """\
+        Select the entry specified by given value.
+        """
         if self.capitalize:
             value = misc.capitalize(value)
         try:
