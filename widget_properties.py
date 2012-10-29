@@ -3,6 +3,7 @@ Classes to handle the various properties of the widgets (name, size, color,
 etc.)
 
 @copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -31,8 +32,12 @@ class Property:
     """\
     A class to handle a single property of a widget.
 
-    @ivar owner: the widget this property belongs to
-    @ivar parent: the widget inside which the property is displayed
+    @ivar owner:   The widget this property belongs to
+    @ivar parent:  The widget inside which the property is displayed
+    @ivar tooltip: Tooltip text
+    @type tooltip: String
+    @ivar _tooltip_widgets: All widgets to set tooltips for
+    @type _tooltip_widgets: List
     """
     def __init__(self, owner, name, parent, getter=None, setter=None,
                  label=None):
@@ -46,6 +51,8 @@ class Property:
         self.owner = owner
         self.getter = getter
         self.setter = setter
+        self.tooltip = None
+        self._tooltip_widgets = []
         self.name = name
         if label:
             self.dispName = label
@@ -105,7 +112,7 @@ class Property:
         """
         raise NotImplementedError
 
-    def _mangle(self,  label):
+    def _mangle(self, label):
         """\
         Returns a mangled version of label, suitable for displaying
         the name of a property.
@@ -115,23 +122,29 @@ class Property:
         """
         return misc.wxstr(misc.capitalize(label).replace('_', ' '))
 
-    def _set_tooltip(self, *widgets):
+    def set_tooltip(self, text=None):
         """\
-        Set same tooltip text to all widgets. The text is taken from
-        C{self.tooltip}.
+        Set same tooltip text to all widgets in L{self._tooltip_widgets}.
+        
+        The text is taken from the C{text} paramater or from L{self.tooltip}. 
 
-        @param widgets: Widgets to set the same tooltip. C{None} is a valid
-                        and and will be ignored.
-        @type widgets:  List of widgets
+        C{text} will be stored in L{self.tooltip} if it is given.
+
+        @param text: Tooltip text
+        @type text: String
         """
-        tip = getattr(self, 'tooltip',  None)
-        if not tip:
+        # check parameter first
+        if text:
+            self.tooltip = text
+
+        # check for attributes
+        if not self.tooltip or not self._tooltip_widgets:
             return
 
-        # set tooltip, None widgets will be ignored
-        for widget in widgets:
+        # set tooltip
+        for widget in self._tooltip_widgets:
             if widget:
-                widget.SetToolTip(wx.ToolTip(tip))
+                widget.SetToolTip(wx.ToolTip(self.tooltip))
 
 # end of class Property
 
@@ -339,7 +352,8 @@ class TextProperty(Property, _activator):
             enabler = wx.CheckBox(parent, self.id + 1, '', size=(1, -1))
             wx.EVT_CHECKBOX(enabler, self.id + 1,
                          lambda event: self.toggle_active(event.IsChecked()))
-        self._set_tooltip(None, label, self.text, enabler)
+        self._tooltip_widgets = [label, self.text, enabler]
+        self.set_tooltip()
         self.prepare_activator(enabler, self.text)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
@@ -431,7 +445,8 @@ class CheckBoxProperty(Property, _activator):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 5, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
         sizer.Add(self.cb, 0, wx.ALIGN_CENTER | wx.ALL, 3)
-        self._set_tooltip(label,  self.cb)
+        self._tooltip_widgets = [label, self.cb]
+        self.set_tooltip()
         self.prepare_activator(target=self.cb)
         self.panel = sizer
         self.bind_event(self.on_change_val)
@@ -643,7 +658,8 @@ class SpinProperty(Property, _activator):
             enabler = wx.CheckBox(parent, self.id + 1, '', size=(1, -1))
             wx.EVT_CHECKBOX(enabler, self.id + 1,
                          lambda event: self.toggle_active(event.IsChecked()))
-        self._set_tooltip(label,  self.spin,  enabler)
+        self._tooltip_widgets = [label, self.spin, enabler]
+        self.set_tooltip()
         self.prepare_activator(enabler, self.spin)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
@@ -1008,7 +1024,7 @@ class RadioProperty(Property, _activator):
     """
     def __init__(self, owner, name, parent, choices, can_disable=False,
                  enabled=False, columns=1, label=None, tooltips=None,
-                 blocked=False, omitter=None,  sort=False,
+                 blocked=False, omitter=None, sort=False,
                  capitalize=False):
         Property.__init__(self, owner, name, parent, label=label)
         self.can_disable = can_disable
@@ -1441,7 +1457,8 @@ class ComboBoxProperty(Property, _activator):
             enabler = wx.CheckBox(parent, self.id + 1, '', size=(1, -1))
             wx.EVT_CHECKBOX(enabler, self.id + 1,
                          lambda event: self.toggle_active(event.IsChecked()))
-        self._set_tooltip(label,  self.cb,  enabler)
+        self._tooltip_widgets = [label, self.cb, enabler]
+        self.set_tooltip()
         self.prepare_activator(enabler, self.cb)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
