@@ -749,6 +749,8 @@ class DialogProperty(Property, _activator):
             wx.EVT_CHECKBOX(enabler, self.id + 1,
                          lambda event: self.toggle_active(event.IsChecked()))
         self.prepare_activator(enabler, self.text)
+        self._tooltip_widgets = [label, self.text, self.btn, enabler]
+        self.set_tooltip()
         if self.can_disable:
             self.btn.Enable(self.is_active())
         wx.EVT_BUTTON(self.btn, self.id + 1, self.display_dialog)
