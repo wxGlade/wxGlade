@@ -5,6 +5,7 @@ General:
     extracode and extraproperties now
   - Write isolation directives at beginning in C++ header files
   - Show existing tooltips at all elements of a property
+  - Add more tooltips to gui
   - ...
 
 Bugs:
