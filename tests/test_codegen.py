@@ -4,6 +4,7 @@
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import cStringIO
 import re
 
 # import test base class
@@ -11,6 +12,7 @@ from tests import WXGladeBaseTest
 
 # import project modules
 import common
+import misc
 
 class MockCodeObject(object):
     """\
@@ -18,7 +20,7 @@ class MockCodeObject(object):
     """
     preview = False
     properties = {}
-
+    
 
 class TestCodeGen(WXGladeBaseTest):
     """\
@@ -734,3 +736,67 @@ class TestCodeGen(WXGladeBaseTest):
                 result == expected,
                 'Unexpected result for pattern "%s":\n   got: "%s"\nexpect: "%s"' % (pattern, result, expected)
                 )
+
+    def test_add_app(self):
+        """\
+        Test the generation of application start code
+            
+        @see: L{codegen.py_codegen.PythonCodeWriter.add_app()}
+        """
+        for language, prefix, suffix in [
+            ['python', 'Py',    '.py'],
+            ['perl',   'Pl',    '.pl'], 
+            ['C++',    'CPP',   '.cpp'],
+            ['lisp',   'Lisp',  '.lisp']
+            ]:
+            for klass in ['MyStartApp', None]:
+                # prepare code writer
+                codewriter = common.code_writers[language]
+                for use_gettext in [0, 1]:
+                    codewriter.initialize({
+                        'use_new_namespace': 1, 
+                        'use_gettext': use_gettext,  # i18n
+                        'option': 0,                 # multiple files
+                        'overwrite': 1,              # overwrite existing files
+                        'path': 'myoutputfile', 
+                        'indent_amount': '4',
+                        'indent_symbol': 'space',
+                        'language': language, 
+                        })
+                        
+                    # clear output_file
+                    if language == 'C++':
+                        codewriter.output_source.close()
+                        codewriter.output_source = cStringIO.StringIO()
+                        output_file = codewriter.output_source
+                    else:
+                        codewriter.output_file.close()
+                        codewriter.output_file = cStringIO.StringIO()
+                        output_file = codewriter.output_file
+                    
+                    # generate application start code
+                    codewriter.add_app({
+                        'name': 'myapp',
+                        'class': klass, 
+                        'top_window': 'appframe', 
+                        }, 
+                        'MyAppFrame')
+                    
+                    if use_gettext:
+                        fn_gettext = '_gettext'
+                    else:
+                        fn_gettext = ''
+                    if klass:
+                        simple = '_detailed'
+                    else:
+                        simple = '_simple'
+                    filename = '%sAddApp%s%s%s' % \
+                        (prefix, fn_gettext, simple, suffix)
+                    generated = output_file.getvalue()
+                    expected = self._load_file(filename)
+                    self._compare(
+                        expected,
+                        generated,
+                        misc.capitalize(language), 
+                        )
+            
