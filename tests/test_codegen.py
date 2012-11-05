@@ -749,49 +749,79 @@ class TestCodeGen(WXGladeBaseTest):
             ['C++',    'CPP',   '.cpp'],
             ['lisp',   'Lisp',  '.lisp']
             ]:
-            for klass in ['MyStartApp', None]:
-                # prepare code writer
-                codewriter = common.code_writers[language]
-                for use_gettext in [0, 1]:
-                    codewriter.initialize({
-                        'use_new_namespace': 1, 
-                        'use_gettext': use_gettext,  # i18n
-                        'option': 0,                 # multiple files
-                        'overwrite': 1,              # overwrite existing files
-                        'path': 'myoutputfile', 
-                        'indent_amount': '4',
-                        'indent_symbol': 'space',
-                        'language': language, 
-                        })
+            for multiple_files in [0,  1]:
+                for klass in ['MyStartApp', None]:
+                    # prepare code writer
+                    codewriter = common.code_writers[language]
+                    
+                    # path must be a directory for multiple files
+                    if multiple_files:
+                        path = './'
+                    else:
+                        path = 'myoutputfile'
                         
-                    # clear output_file
-                    if codewriter.output_file:
-                        codewriter.output_file.close()
-                    codewriter.output_file = cStringIO.StringIO()
-                    
-                    # generate application start code
-                    codewriter.add_app({
-                        'name': 'myapp',
-                        'class': klass, 
-                        'top_window': 'appframe', 
-                        }, 
-                        'MyAppFrame')
-                    
-                    if use_gettext:
-                        fn_gettext = '_gettext'
-                    else:
-                        fn_gettext = ''
-                    if klass:
-                        simple = '_detailed'
-                    else:
-                        simple = '_simple'
-                    filename = '%sAddApp%s%s%s' % \
-                        (prefix, fn_gettext, simple, suffix)
-                    generated = codewriter.output_file.getvalue()
-                    expected = self._load_file(filename)
-                    self._compare(
-                        expected,
-                        generated,
-                        misc.capitalize(language), 
-                        )
-            
+                    for use_gettext in [0, 1]:
+                        codewriter.initialize({
+                            'use_new_namespace': 1, 
+                            'use_gettext': use_gettext,
+                            'option': multiple_files,    
+                            'overwrite': 1,
+                            'path': path, 
+                            'indent_amount': '4',
+                            'indent_symbol': 'space',
+                            'language': language, 
+                            })
+                            
+                        # clear output_file
+                        if codewriter.output_file:
+                            codewriter.output_file.close()
+                        codewriter.output_file = cStringIO.StringIO()
+                        
+                        # generate application start code
+                        codewriter.add_app({
+                            'name': 'myapp',
+                            'class': klass, 
+                            'top_window': 'appframe', 
+                            }, 
+                            'MyAppFrame')
+                        
+                        if use_gettext:
+                            fn_gettext = '_gettext'
+                        else:
+                            fn_gettext = ''
+                        if klass:
+                            simple = '_detailed'
+                        else:
+                            simple = '_simple'
+
+                        if language == 'C++':
+                            app_filename = './main.cpp'
+                        else:
+                            app_filename = './myapp%s' % suffix
+                            
+                        # C++ don't support simple startup code
+                        if language == 'C++' and not klass:
+                            continue
+                            
+                        if multiple_files:
+                            generated = self.vFiles[app_filename].getvalue()
+                            multiple = '_multi'
+                        else:
+                            generated = codewriter.output_file.getvalue()
+                            multiple = '_single'
+                            
+                        filename = '%sAddApp%s%s%s%s' % \
+                            (prefix, multiple, fn_gettext, simple, suffix)
+                        expected = self._load_file(filename)
+                        
+                        
+                        self._compare(
+                            expected,
+                            generated,
+                            '%s (%s)' % (misc.capitalize(language), filename), 
+                            )
+                        
+                        # close open virtual files
+                        for name in self.vFiles.keys():
+                            self.vFiles[name].close()
+                            del self.vFiles[name]
