@@ -765,14 +765,9 @@ class TestCodeGen(WXGladeBaseTest):
                         })
                         
                     # clear output_file
-                    if language == 'C++':
-                        codewriter.output_source.close()
-                        codewriter.output_source = cStringIO.StringIO()
-                        output_file = codewriter.output_source
-                    else:
+                    if codewriter.output_file:
                         codewriter.output_file.close()
-                        codewriter.output_file = cStringIO.StringIO()
-                        output_file = codewriter.output_file
+                    codewriter.output_file = cStringIO.StringIO()
                     
                     # generate application start code
                     codewriter.add_app({
@@ -792,7 +787,7 @@ class TestCodeGen(WXGladeBaseTest):
                         simple = '_simple'
                     filename = '%sAddApp%s%s%s' % \
                         (prefix, fn_gettext, simple, suffix)
-                    generated = output_file.getvalue()
+                    generated = codewriter.output_file.getvalue()
                     expected = self._load_file(filename)
                     self._compare(
                         expected,
