@@ -368,7 +368,7 @@ class BaseCodeWriter(object):
     @type out_dir: None or string
 
     @ivar output_file: Output string buffer for the code
-    @type output_file: None or string
+    @type output_file: None or StringIO
 
     @ivar output_file_name: Name of the output file
     @type output_file_name: String

@@ -352,11 +352,22 @@ class CPPCodeWriter(BaseCodeWriter):
     output_name = None
     """\
     If not None, name (without extension) of the file to write into
+    
+    @type: String
     """
     
-    output_header, output_source = None, None
+    output_header = None
     """\
-    Temporary storage (StringIO) of header and source file for writing into
+    Temporary storage of header file for writing into
+    
+    @type: StringIO
+    """
+    
+    output_file = None
+    """\
+    Temporary storage of source file for writing into
+    
+    @type: StringIO    
     """
     
     shebang = '// -*- C++ -*-\n'
@@ -436,7 +447,7 @@ class CPPCodeWriter(BaseCodeWriter):
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
                 self.output_header = cStringIO.StringIO()
-                self.output_source = cStringIO.StringIO()
+                self.output_file = cStringIO.StringIO()
 
                 # isolation directives
                 oh = os.path.basename(name + self.header_extension).upper().replace(
@@ -446,7 +457,7 @@ class CPPCodeWriter(BaseCodeWriter):
 
                 for line in self.header_lines:
                     self.output_header.write(line)
-                    #self.output_source.write(line)
+                    #self.output_file.write(line)
                 self.output_header.write('\n')
 
                 # now, write the tags to store dependencies and extra code
@@ -455,9 +466,9 @@ class CPPCodeWriter(BaseCodeWriter):
 
                 self.output_header.write('\n')
 
-                self.output_source.write('#include "%s%s"\n\n' % \
+                self.output_file.write('#include "%s%s"\n\n' % \
                                     (os.path.basename(name), self.header_extension))
-                self.output_source.write('<%swxGlade replace  extracode>\n\n' % self.nonce)
+                self.output_file.write('<%swxGlade replace  extracode>\n\n' % self.nonce)
 
     def finalize(self):
         if self.previous_source:
@@ -541,7 +552,7 @@ class CPPCodeWriter(BaseCodeWriter):
             self.output_header.write('\n#endif // %s\n' % oh)
             # write the list of include files
             header_content = self.output_header.getvalue()
-            source_content = self.output_source.getvalue()
+            source_content = self.output_file.getvalue()
             tags = re.findall('<%swxGlade replace  dependencies>' %
                               self.nonce, header_content)
             deps = []
@@ -625,7 +636,7 @@ class CPPCodeWriter(BaseCodeWriter):
             self.save_file(filename, out.getvalue(), True)
             out.close()
         else:
-            write = self.output_source.write
+            write = self.output_file.write
             for line in lines:
                 write(line)
 
@@ -1242,7 +1253,7 @@ class CPPCodeWriter(BaseCodeWriter):
             hwrite = self.output_header.write
             for line in header_buffer:
                 hwrite(line)
-            swrite = self.output_source.write
+            swrite = self.output_file.write
             for line in source_buffer:
                 swrite(line)
 
