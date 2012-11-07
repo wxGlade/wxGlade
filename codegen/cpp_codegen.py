@@ -21,7 +21,7 @@ import os
 import os.path
 import re
 
-from codegen import BaseCodeWriter,  \
+from codegen import BaseCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 
@@ -125,7 +125,7 @@ class SourceFileContent(BaseSourceFileContent):
         self.event_table_def = {}
         self.header_extension = header_extension
         self.source_extension = source_extension
-     
+
         # call inherited constructor
         BaseSourceFileContent.__init__(
             self, name, content, classes, nonce, out_dir, multiple_files
@@ -348,34 +348,59 @@ class CPPCodeWriter(BaseCodeWriter):
         '//  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp\n'
 
     last_generated_id = 1000
-    
+
     output_name = None
     """\
     If not None, name (without extension) of the file to write into
-    
+
     @type: String
     """
-    
+
     output_header = None
     """\
     Temporary storage of header file for writing into
-    
+
     @type: StringIO
     """
-    
+
     output_file = None
     """\
     Temporary storage of source file for writing into
-    
-    @type: StringIO    
+
+    @type: StringIO
     """
-    
+
     shebang = '// -*- C++ -*-\n'
-    
+
+    tmpl_appfile = """\
+%(overwrite)s\
+%(header_lines)s\
+#include "%(top_win_class)s.h"
+
+"""
+
+    tmpl_detailed = """\
+
+class %(klass)s: public wxApp {
+public:
+%(tab)sbool OnInit();
+};
+
+IMPLEMENT_APP(%(klass)s)
+
+bool %(klass)s::OnInit()
+{
+%(tab)swxInitAllImageHandlers();
+%(tab)s%(top_win_class)s* %(top_win)s = new %(top_win_class)s(NULL, wxID_ANY, wxEmptyString);
+%(tab)sSetTopWindow(%(top_win)s);
+%(tab)s%(top_win)s->Show();
+%(tab)sreturn true;
+}"""
+
     class ClassLines(BaseCodeWriter.ClassLines):
         """\
         Stores the lines of C++ code for a custom class
-    
+
         @ivar ids:             Ids declared in the source (to use for Event
                                handling): these are grouped together into a
                                public enum in the custom class
@@ -391,7 +416,7 @@ class CPPCodeWriter(BaseCodeWriter):
             self.extra_code_h = []
             self.extra_code_cpp = []
             self.dependencies = []     # List not dictionary
-    
+
     # end of class ClassLines
 
     def initialize(self, app_attrs):
@@ -404,6 +429,9 @@ class CPPCodeWriter(BaseCodeWriter):
         """
         # initialise parent class
         BaseCodeWriter.initialize(self, app_attrs)
+
+        self.app_filename = 'main.cpp'
+
         out_path = app_attrs['path']
 
         self.last_generated_id = 1000
@@ -580,65 +608,6 @@ class CPPCodeWriter(BaseCodeWriter):
                 source_content,
                 self._app_added
                 )
-
-    def add_app(self, app_attrs, top_win_class):
-        self._app_added = True
-
-        name = app_attrs.get('name')
-        if not name:
-            name = 'app'
-
-        if not self.multiple_files:
-            prev_src = self.previous_source
-        else:
-            # overwrite apps file always
-            prev_src = None
-
-        # do nothing if the file exists
-        if prev_src:
-            return
-
-        klass = app_attrs.get('class')
-        top_win = app_attrs.get('top_window')
-        if not klass or not top_win:
-            return  # do nothing in these cases
-
-        lines = []
-        append = lines.append
-        tab = self.tabs(1)
-        append('\nclass %s: public wxApp {\n' % klass)
-        append('public:\n')
-        append(tab + 'bool OnInit();\n')
-        append('};\n\n')
-        append('IMPLEMENT_APP(%s)\n\n' % klass)
-        append('bool %s::OnInit()\n{\n' % klass)
-        append(tab + 'wxInitAllImageHandlers();\n')  # we add this to avoid troubles
-        append(tab + '%s* %s = new %s(NULL, wxID_ANY, wxEmptyString);\n' % \
-               (top_win_class, top_win, top_win_class))
-        append(tab + 'SetTopWindow(%s);\n' % top_win)
-        append(tab + '%s->Show();\n' % top_win)
-        append(tab + 'return true;\n}\n')
-
-        if self.multiple_files:
-            filename = os.path.join(self.out_dir, 'main.cpp')
-            out = cStringIO.StringIO()
-            write = out.write
-            # write overwrite warning to standalone app file
-            write(self.tmpl_overwrite % {'comment_sign': self.comment_sign,})
-            # write the common lines
-            for line in self.header_lines:
-                write(line)
-            # import the top window module
-            write('#include "%s.h"\n\n' % top_win_class)
-            # write the wxApp code
-            for line in lines:
-                write(line)
-            self.save_file(filename, out.getvalue(), True)
-            out.close()
-        else:
-            write = self.output_file.write
-            for line in lines:
-                write(line)
 
     def add_class(self, code_obj):
         if self.classes.has_key(code_obj.klass) and self.classes[code_obj.klass].done:

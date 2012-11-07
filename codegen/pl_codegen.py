@@ -23,8 +23,7 @@ import os
 import os.path
 import re
 
-import common
-from codegen import BaseCodeWriter,  \
+from codegen import BaseCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 
@@ -231,14 +230,112 @@ class PerlCodeWriter(BaseCodeWriter):
 
     language_note = '# To get wxPerl visit http://wxPerl.sourceforge.net/\n',
 
-
     new_defaults = []
     """\
     Default class members, will be initialised during L{initialize()}
     """
 
-
     shebang = '#!/usr/bin/perl -w -- \n'
+
+    tmpl_appfile = """%(overwrite)s%(header_lines)s"""
+
+    tmpl_detailed = """\
+package %(klass)s;
+
+use base qw(Wx::App);
+use strict;
+%(pl_import)s
+sub OnInit {
+%(tab)smy( $self ) = shift;
+
+%(tab)sWx::InitAllImageHandlers();
+
+%(tab)smy $%(top_win)s = %(top_win_class)s->new();
+
+%(tab)s$self->SetTopWindow($%(top_win)s);
+%(tab)s$%(top_win)s->Show(1);
+
+%(tab)sreturn 1;
+}
+# end of class %(klass)s
+
+package main;
+
+unless(caller){
+%(tab)smy $%(name)s = %(klass)s->new();
+%(tab)s$%(name)s->MainLoop();
+}
+"""
+
+    tmpl_gettext_detailed = """\
+package %(klass)s;
+
+use base qw(Wx::App);
+use strict;
+%(pl_import)s
+sub OnInit {
+%(tab)smy( $self ) = shift;
+
+%(tab)sWx::InitAllImageHandlers();
+
+%(tab)smy $%(top_win)s = %(top_win_class)s->new();
+
+%(tab)s$self->SetTopWindow($%(top_win)s);
+%(tab)s$%(top_win)s->Show(1);
+
+%(tab)sreturn 1;
+}
+# end of class %(klass)s
+
+package main;
+
+unless(caller){
+%(tab)smy $local = Wx::Locale->new("English", "en", "en"); # replace with ??
+%(tab)s$local->AddCatalog("%(name)s"); # replace with the appropriate catalog name
+
+%(tab)smy $%(name)s = %(klass)s->new();
+%(tab)s$%(name)s->MainLoop();
+}
+"""
+
+    tmpl_simple = """\
+1;
+
+package main;
+%(pl_import)s
+unless(caller){
+%(tab)slocal *Wx::App::OnInit = sub{1};
+%(tab)smy $%(name)s = Wx::App->new();
+%(tab)sWx::InitAllImageHandlers();
+
+%(tab)smy $%(top_win)s = %(top_win_class)s->new();
+
+%(tab)s$%(name)s->SetTopWindow($%(top_win)s);
+%(tab)s$%(top_win)s->Show(1);
+%(tab)s$%(name)s->MainLoop();
+}
+"""
+
+    tmpl_gettext_simple = """\
+1;
+
+package main;
+%(pl_import)s
+unless(caller){
+%(tab)smy $local = Wx::Locale->new("English", "en", "en"); # replace with ??
+%(tab)s$local->AddCatalog("%(name)s"); # replace with the appropriate catalog name
+
+%(tab)slocal *Wx::App::OnInit = sub{1};
+%(tab)smy $%(name)s = Wx::App->new();
+%(tab)sWx::InitAllImageHandlers();
+
+%(tab)smy $%(top_win)s = %(top_win_class)s->new();
+
+%(tab)s$%(name)s->SetTopWindow($%(top_win)s);
+%(tab)s$%(top_win)s->Show(1);
+%(tab)s$%(name)s->MainLoop();
+}
+"""
 
     _perl_constant_list = [
          "wxALL", "wxTOP", "wxBOTTOM", "wxLEFT", "wxRIGHT",
@@ -250,9 +347,9 @@ class PerlCodeWriter(BaseCodeWriter):
          "wxICON_INFORMATION",
          "wxBLACK", "wxWHITE", "wxRED", "wxBLUE", "wxGREEN", "wxCYAN",
          "wxLIGHT_GREY",
-         'wxDEFAULT', 'wxDECORATIVE', 'wxROMAN',  'wxSWISS', 'wxSCRIPT',
+         'wxDEFAULT', 'wxDECORATIVE', 'wxROMAN', 'wxSWISS', 'wxSCRIPT',
          'wxMODERN', 'wxTELETYPE',
-         'wxNORMAL', 'wxSLANT', 'wxITALIC', 'wxNORMAL',  'wxLIGHT',
+         'wxNORMAL', 'wxSLANT', 'wxITALIC', 'wxNORMAL', 'wxLIGHT',
          'wxBOLD',
         ]
 
@@ -357,95 +454,21 @@ class PerlCodeWriter(BaseCodeWriter):
         edit_sizers.perl_sizers_codegen.initialize()
 
     def add_app(self, app_attrs, top_win_class):
-        self._app_added = True
-
-        name = app_attrs.get('name')
-        if not name:
-            name = 'app'
-
-        if not self.multiple_files:
-            prev_src = self.previous_source
-        else:
-            # overwrite apps file always
-            prev_src = None
-
-        # do nothing if the file exists
-        if prev_src:
+        top_win = app_attrs.get('top_window')
+        klass = app_attrs.get('class')
+        # do nothing if there is no top window
+        if not top_win:
             return
 
-        klass = app_attrs.get('class')
-        top_win = app_attrs.get('top_window')
-        if not top_win:
-            return  # do nothing if there is no top window
-        lines = []
-        append = lines.append
-        tab = self.tabs(1)
-        if klass:
-            append('package %s;\n' % klass)
-            append('\n')
-            append('use base qw(Wx::App);\n')
-            append('use strict;\n\n')
-            if self.multiple_files:
-                # import the top window module
-                append('use %s;\n\n' % top_win_class)
-            append('sub OnInit {\n')
-            append(tab + 'my( $self ) = shift;\n\n')
+        # add language specific mappings
+        if self.multiple_files and klass:
+            self.app_mapping['pl_import'] = "\nuse %s;\n" % top_win_class
+        elif self.multiple_files and not klass:
+            self.app_mapping['pl_import'] = "\nuse %s;\n\n" % top_win_class
         else:
-            append('1;\n\n')
-            append('package main;\n')
-            if self.multiple_files:
-                # import the top window module
-                append('\n')
-                append('use %s;\n\n' % top_win_class)
-            append('\n')
-            append('unless(caller){\n')
-            if self._use_gettext:
-                append(tab + 'my $local = Wx::Locale->new("English", "en", "en"); # replace with ??\n')
-                append(tab + '$local->AddCatalog("%s"); # replace with the appropriate catalog name\n\n' % name)
-            # and now,  basically fake wxPySimpleApp
-            append(tab + 'local *Wx::App::OnInit = sub{1};\n')
-            append(tab + 'my $%s = Wx::App->new();\n' % name)
+            self.app_mapping['pl_import'] = ''
 
-        append(tab + 'Wx::InitAllImageHandlers();\n\n')  # we add this to avoid troubles
-        append(tab + 'my $%s = %s->new();\n\n' % (top_win, top_win_class))
-
-        if klass:
-            append(tab + '$self->SetTopWindow($%s);\n' % top_win)
-            append(tab + '$%s->Show(1);\n\n' % top_win)
-            append(tab + 'return 1;\n}\n')
-            append('# end of class %s\n\n' % klass)
-            append('package main;\n\n')
-            append('unless(caller){\n')
-
-            if self._use_gettext:
-                append(tab + 'my $local = Wx::Locale->new("English", "en", "en");'
-                    + ' # replace with ??\n')
-                append(tab + '$local->AddCatalog("%s");' % name
-                    + ' # replace with the appropriate catalog name\n\n')
-            append(tab + 'my $%s = %s->new();\n' % (name, klass))
-        else:
-            append(tab + '$%s->SetTopWindow($%s);\n' % (name, top_win))
-            append(tab + '$%s->Show(1);\n' % top_win)
-        append(tab + '$%s->MainLoop();\n}\n' % name)
-
-        if self.multiple_files:
-            filename = os.path.join(self.out_dir, name + '.pl')
-            out = cStringIO.StringIO()
-            write = out.write
-            # write overwrite warning to standalone app file
-            write(self.tmpl_overwrite % {'comment_sign': self.comment_sign,})
-            # write the common lines
-            for line in self.header_lines:
-                write(line)
-            # write the wxApp code
-            for line in lines:
-                write(line)
-            self.save_file(filename, out.getvalue(), True)
-            out.close()
-        else:
-            write = self.output_file.write
-            for line in lines:
-                write(line)
+        BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):
         if self.multiple_files:
@@ -550,7 +573,7 @@ class PerlCodeWriter(BaseCodeWriter):
                 print code_obj.klass + " did not declare self.new_defaults "
 
         # we don't need gettext in main context currently
-        #else: 
+        #else:
         #    if self._use_gettext:
         #        self.classes[code_obj.klass].dependencies[
         #            "use Wx::Locale gettext => '_T';\n"] = 1
@@ -884,7 +907,7 @@ class PerlCodeWriter(BaseCodeWriter):
                     klass.parents_init.extend(init)
                 else:
                     klass.init.extend(init)
-                    
+
                 if hasattr(builder, 'get_events'):
                     evts = builder.get_events(sub_obj)
                     for id, event, handler in evts:

@@ -23,7 +23,7 @@ import os.path
 import random
 import re
 
-from codegen import BaseCodeWriter,  \
+from codegen import BaseCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 
@@ -180,7 +180,7 @@ class SourceFileContent(BaseSourceFileContent):
 
     def format_classname(self, class_name):
         """\
-        Format class name read from existing source file. 
+        Format class name read from existing source file.
 
         If we're in a subpackage, we should include the package name in the
         class name.
@@ -251,6 +251,65 @@ class PythonCodeWriter(BaseCodeWriter):
     shebang = '#!/usr/bin/env python\n'
 
     tmpl_encoding = "# -*- coding: %s -*-\n"
+
+    tmpl_appfile = """\
+%(overwrite)s\
+%(header_lines)s\
+from %(top_win_class)s import %(top_win_class)s\n\n"""
+
+    tmpl_detailed = """\
+class %(klass)s(%(cn_wxApp)s):
+%(tab)sdef OnInit(self):
+%(tab)s%(tab)s%(cn_wxInitAll)s()
+%(tab)s%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
+%(tab)s%(tab)sself.SetTopWindow(%(top_win)s)
+%(tab)s%(tab)s%(top_win)s.Show()
+%(tab)s%(tab)sreturn 1
+
+# end of class %(klass)s
+
+if __name__ == "__main__":
+%(tab)s%(name)s = %(klass)s(0)
+%(tab)s%(name)s.MainLoop()"""
+
+    tmpl_gettext_detailed = """\
+class %(klass)s(%(cn_wxApp)s):
+%(tab)sdef OnInit(self):
+%(tab)s%(tab)s%(cn_wxInitAll)s()
+%(tab)s%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
+%(tab)s%(tab)sself.SetTopWindow(%(top_win)s)
+%(tab)s%(tab)s%(top_win)s.Show()
+%(tab)s%(tab)sreturn 1
+
+# end of class %(klass)s
+
+if __name__ == "__main__":
+%(tab)simport gettext
+%(tab)sgettext.install("%(name)s") # replace with the appropriate catalog name
+
+%(tab)s%(name)s = %(klass)s(0)
+%(tab)s%(name)s.MainLoop()"""
+
+    tmpl_simple = """\
+if __name__ == "__main__":
+%(tab)s%(name)s = %(cn_wxPySimpleApp)s(0)
+%(tab)s%(cn_wxInitAll)s()
+%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
+%(tab)s%(name)s.SetTopWindow(%(top_win)s)
+%(tab)s%(top_win)s.Show()
+%(tab)s%(name)s.MainLoop()"""
+
+    tmpl_gettext_simple = """\
+if __name__ == "__main__":
+%(tab)simport gettext
+%(tab)sgettext.install("%(name)s") # replace with the appropriate catalog name
+
+%(tab)s%(name)s = %(cn_wxPySimpleApp)s(0)
+%(tab)s%(cn_wxInitAll)s()
+%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
+%(tab)s%(name)s.SetTopWindow(%(top_win)s)
+%(tab)s%(top_win)s.Show()
+%(tab)s%(name)s.MainLoop()"""
 
     def __init__(self):
         BaseCodeWriter.__init__(self)
@@ -331,83 +390,6 @@ class PythonCodeWriter(BaseCodeWriter):
                 self.output_file.write('\n')
                 self.output_file.write('<%swxGlade replace dependencies>\n' % self.nonce)
                 self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
-
-    def add_app(self, app_attrs, top_win_class):
-        self._app_added = True
-
-        name = app_attrs.get('name')
-        if not name:
-            name = 'app'
-
-        if not self.multiple_files:
-            prev_src = self.previous_source
-        else:
-            # overwrite apps file always
-            prev_src = None
-
-        # do nothing if the file exists
-        if prev_src:
-            return
-
-        klass = app_attrs.get('class')
-        top_win = app_attrs.get('top_window')
-        if not top_win:
-            return  # do nothing if there is no top window
-        lines = []
-        append = lines.append
-        if klass:
-            tab = self.tabs(2)
-            append('class %s(%s):\n' % (klass, self.cn('wxApp')))
-            append(self.tabs(1) + 'def OnInit(self):\n')
-        else:
-            tab = self.tabs(1)
-            append('if __name__ == "__main__":\n')
-            if self._use_gettext:
-                append(tab + 'import gettext\n')
-                append(tab + 'gettext.install("%s") # replace with the '
-                       'appropriate catalog name\n\n' % name)
-            append(tab + '%s = %s(0)\n' % (name, self.cn('wxPySimpleApp')))
-        append(tab + '%s()\n' % self.cn('wxInitAllImageHandlers'))  # to avoid troubles
-        append(tab + '%s = %s(None, %s, "")\n' % \
-            (top_win, top_win_class, self.cn('wxID_ANY'))
-            )
-        if klass:
-            append(tab + 'self.SetTopWindow(%s)\n' % top_win)
-            append(tab + '%s.Show()\n' % top_win)
-            append(tab + 'return 1\n\n')
-            append('# end of class %s\n\n' % klass)
-            append('if __name__ == "__main__":\n')
-            tab = self.tabs(1)
-            if self._use_gettext:
-                append(tab + 'import gettext\n')
-                append(tab + 'gettext.install("%s") # replace with the appropriate'
-                       ' catalog name\n\n' % name)
-            append(tab + '%s = %s(0)\n' % (name, klass))
-        else:
-            append(tab + '%s.SetTopWindow(%s)\n' % (name, top_win))
-            append(tab + '%s.Show()\n' % top_win)
-        append(tab + '%s.MainLoop()\n' % name)
-
-        if self.multiple_files:
-            filename = os.path.join(self.out_dir, name + '.py')
-            out = cStringIO.StringIO()
-            write = out.write
-            # write overwrite warning to standalone app file
-            write(self.tmpl_overwrite % {'comment_sign': self.comment_sign,})
-            # write the common lines
-            for line in self.header_lines:
-                write(line)
-            # import the top window module
-            write('from %s import %s\n\n' % (top_win_class, top_win_class))
-            # write the wxApp code
-            for line in lines:
-                write(line)
-            self.save_file(filename, out.getvalue(), True)
-            out.close()
-        else:
-            write = self.output_file.write
-            for line in lines:
-                write(line)
 
     def add_class(self, code_obj):
         if self.multiple_files:

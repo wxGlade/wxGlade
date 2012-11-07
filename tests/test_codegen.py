@@ -20,7 +20,7 @@ class MockCodeObject(object):
     """
     preview = False
     properties = {}
-    
+
 
 class TestCodeGen(WXGladeBaseTest):
     """\
@@ -268,10 +268,10 @@ class TestCodeGen(WXGladeBaseTest):
         for test_id, target_decl, target_value in [
             ['wxID_ANY', '', cn('wxID_ANY')],                  # id => "wxID_ANY"
             ['=wxID_ANY', '', cn('wxID_ANY')],                 # id => "=wxID_ANY" (ugly!)
-            ['', '', cn('wxID_ANY')],                          # id => "" 
+            ['', '', cn('wxID_ANY')],                          # id => ""
             ['self.myid', '', 'self.myid'],                    # id => "self.myid"  (predefined class member)
-            ['self.myid=1', 'self.myid = 1\n', 'self.myid'],   # id => "self.myid=1" 
-            ['self.myid=?', 'self.myid = %s\n' % cn('wxNewId()') , 'self.myid'],             # id => "self.myid=?" 
+            ['self.myid=1', 'self.myid = 1\n', 'self.myid'],   # id => "self.myid=1"
+            ['self.myid=?', 'self.myid = %s\n' % cn('wxNewId()') , 'self.myid'],             # id => "self.myid=?"
             ['myid', '', 'myid'],                              # id => "myid" (global value and not a class member)
             ['myid = 1', 'global myid; myid = 1\n', 'myid'],   # id => "myid=1" (declare new global variable and store value)
             ]:
@@ -294,11 +294,11 @@ class TestCodeGen(WXGladeBaseTest):
         for test_id, target_decl, target_value in [
             ['wxID_ANY', '', 'wxID_ANY'],                      # id => "wxID_ANY"
             ['=wxID_ANY', '', 'wxID_ANY'],                     # id => "=wxID_ANY" (ugly!)
-            ['', '', 'wxID_ANY'],                              # id => "" 
+            ['', '', 'wxID_ANY'],                              # id => ""
             ['myid', '', 'myid'],                              # id => "myid"  (predefined variable)
-            ['myid=1', 'myid = 1', 'myid'],                    # id => "myid=1" 
-            ['myid=?', 'myid = wxID_HIGHEST + 1000', 'myid'],  # id => "myid=?" 
-            ['myid=?', 'myid = wxID_HIGHEST + 1001', 'myid'],  # id => "myid=?" 
+            ['myid=1', 'myid = 1', 'myid'],                    # id => "myid=1"
+            ['myid=?', 'myid = wxID_HIGHEST + 1000', 'myid'],  # id => "myid=?"
+            ['myid=?', 'myid = wxID_HIGHEST + 1001', 'myid'],  # id => "myid=?"
             ]:
             obj.properties['id'] = test_id
             act_decl, act_value = gen_id(obj)
@@ -310,11 +310,11 @@ class TestCodeGen(WXGladeBaseTest):
         for test_id, target_decl, target_value in [
             ['wxID_ANY', '', 'wxID_ANY'],                      # id => "wxID_ANY"
             ['=wxID_ANY', '', 'wxID_ANY'],                     # id => "=wxID_ANY" (ugly!)
-            ['', '', 'wxID_ANY'],                              # id => "" 
+            ['', '', 'wxID_ANY'],                              # id => ""
             ['myid', '', 'myid'],                              # id => "myid"  (predefined variable)
-            ['myid=1', 'myid = 1', 'myid'],                    # id => "myid=1" 
-            ['myid=?', 'myid = wxID_HIGHEST + 1002', 'myid'],  # id => "myid=?" 
-            ['myid=?', 'myid = wxID_HIGHEST + 1003', 'myid'],  # id => "myid=?" 
+            ['myid=1', 'myid = 1', 'myid'],                    # id => "myid=1"
+            ['myid=?', 'myid = wxID_HIGHEST + 1002', 'myid'],  # id => "myid=?"
+            ['myid=?', 'myid = wxID_HIGHEST + 1003', 'myid'],  # id => "myid=?"
             ]:
             act_decl, act_value = gen_id(None, test_id)
             self.failUnless(
@@ -330,10 +330,10 @@ class TestCodeGen(WXGladeBaseTest):
         for test_id, target_decl, target_value in [
             ['wxID_ANY', '', cn('wxID_ANY')],                  # id => "wxID_ANY"
             ['=wxID_ANY', '', cn('wxID_ANY')],                 # id => "=wxID_ANY" (ugly!)
-            ['', '', cn('wxID_ANY')],                          # id => "" 
+            ['', '', cn('wxID_ANY')],                          # id => ""
             ['myid', '', 'myid'],                              # id => "myid"  (predefined variable)
-            ['myid=1', 'use constant myid => 1;\n', 'myid'],   # id => "myid=1" 
-            ['myid=?', 'use constant myid => %s;\n' % cn('wxNewId()') , 'myid'],  # id => "myid=?" 
+            ['myid=1', 'use constant myid => 1;\n', 'myid'],   # id => "myid=1"
+            ['myid=?', 'use constant myid => %s;\n' % cn('wxNewId()') , 'myid'],  # id => "myid=?"
             ]:
             obj.properties['id'] = test_id
             act_decl, act_value = gen_id(obj)
@@ -355,10 +355,10 @@ class TestCodeGen(WXGladeBaseTest):
         for test_id, target_decl, target_value in [
             ['wxID_ANY',  '', cn('wxID_ANY')],              # id => "wxID_ANY"
             ['=wxID_ANY', '', cn('wxID_ANY')],              # id => "=wxID_ANY" (ugly!)
-            ['', '', cn('wxID_ANY')],                       # id => "" 
+            ['', '', cn('wxID_ANY')],                       # id => ""
             ['myid', '', 'myid'],                           # id => "myid"  (predefined variable)
-            ['myid=1', 'global myid; myid = 1\n', 'myid'],  # id => "myid=1" 
-            ['myid=?', 'global myid; myid = %s\n' % cn('wxNewId()') , 'myid'],  # id => "myid=?" 
+            ['myid=1', 'global myid; myid = 1\n', 'myid'],  # id => "myid=1"
+            ['myid=?', 'global myid; myid = %s\n' % cn('wxNewId()') , 'myid'],  # id => "myid=?"
             ]:
             obj.properties['id'] = test_id
             act_decl, act_value = gen_id(obj)
@@ -696,7 +696,7 @@ class TestCodeGen(WXGladeBaseTest):
         """
         import codegen
         codegen = codegen.BaseCodeWriter()
-        
+
         # this is to be more sure to replace the right tags
         codegen.nonce = '12G34'
         codegen.comment_sign = "#"
@@ -740,12 +740,12 @@ class TestCodeGen(WXGladeBaseTest):
     def test_add_app(self):
         """\
         Test the generation of application start code
-            
+
         @see: L{codegen.py_codegen.PythonCodeWriter.add_app()}
         """
         for language, prefix, suffix in [
             ['python', 'Py',    '.py'],
-            ['perl',   'Pl',    '.pl'], 
+            ['perl',   'Pl',    '.pl'],
             ['C++',    'CPP',   '.cpp'],
             ['lisp',   'Lisp',  '.lisp']
             ]:
@@ -753,38 +753,38 @@ class TestCodeGen(WXGladeBaseTest):
                 for klass in ['MyStartApp', None]:
                     # prepare code writer
                     codewriter = common.code_writers[language]
-                    
+
                     # path must be a directory for multiple files
                     if multiple_files:
                         path = './'
                     else:
                         path = 'myoutputfile'
-                        
+
                     for use_gettext in [0, 1]:
                         codewriter.initialize({
-                            'use_new_namespace': 1, 
-                            'use_gettext': use_gettext,
-                            'option': multiple_files,    
-                            'overwrite': 1,
-                            'path': path, 
                             'indent_amount': '4',
                             'indent_symbol': 'space',
-                            'language': language, 
+                            'language': language,
+                            'name': 'myapp',
+                            'option': multiple_files,
+                            'overwrite': 1,
+                            'path': path,
+                            'use_gettext': use_gettext,
+                            'use_new_namespace': 1,
                             })
-                            
+
                         # clear output_file
                         if codewriter.output_file:
                             codewriter.output_file.close()
                         codewriter.output_file = cStringIO.StringIO()
-                        
+
                         # generate application start code
                         codewriter.add_app({
-                            'name': 'myapp',
-                            'class': klass, 
-                            'top_window': 'appframe', 
-                            }, 
+                            'class': klass,
+                            'top_window': 'appframe',
+                            },
                             'MyAppFrame')
-                        
+
                         if use_gettext:
                             fn_gettext = '_gettext'
                         else:
@@ -798,29 +798,29 @@ class TestCodeGen(WXGladeBaseTest):
                             app_filename = './main.cpp'
                         else:
                             app_filename = './myapp%s' % suffix
-                            
+
                         # C++ don't support simple startup code
                         if language == 'C++' and not klass:
                             continue
-                            
+
                         if multiple_files:
                             generated = self.vFiles[app_filename].getvalue()
                             multiple = '_multi'
                         else:
                             generated = codewriter.output_file.getvalue()
                             multiple = '_single'
-                            
+
                         filename = '%sAddApp%s%s%s%s' % \
                             (prefix, multiple, fn_gettext, simple, suffix)
                         expected = self._load_file(filename)
-                        
-                        
+
+
                         self._compare(
                             expected,
                             generated,
-                            '%s (%s)' % (misc.capitalize(language), filename), 
+                            '%s (%s)' % (misc.capitalize(language), filename),
                             )
-                        
+
                         # close open virtual files
                         for name in self.vFiles.keys():
                             self.vFiles[name].close()

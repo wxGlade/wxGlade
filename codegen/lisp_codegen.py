@@ -21,8 +21,7 @@ import os
 import os.path
 import re
 
-import common
-from codegen import BaseCodeWriter,  \
+from codegen import BaseCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 
@@ -204,6 +203,67 @@ class LispCodeWriter(BaseCodeWriter):
 
     shebang = '#!/usr/bin/env lisp\n'
 
+    tmpl_appfile = """\
+%(overwrite)s\
+%(header_lines)s\
+(require "%(top_win_class)s")
+
+"""
+
+    tmpl_detailed = """\
+(defun init-func (fun data evt)
+%(tab)s%(tab)s(let ((%(top_win)s (make-%(top_win_class)s)))
+%(tab)s%(tab)s(ELJApp_SetTopWindow (slot-top-window %(top_win)s))
+%(tab)s%(tab)s(wxWindow_Show (slot-top-window %(top_win)s))))
+;;; end of class %(klass)s
+
+
+(unwind-protect
+%(tab)s(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)
+%(tab)s(ffi:close-foreign-library "../miscellaneous/wxc-msw2.6.2.dll"))
+"""
+
+    tmpl_gettext_detailed = """\
+(defun init-func (fun data evt)
+%(tab)s%(tab)s(let ((%(top_win)s (make-%(top_win_class)s)))
+%(tab)s%(tab)s(ELJApp_SetTopWindow (slot-top-window %(top_win)s))
+%(tab)s%(tab)s(wxWindow_Show (slot-top-window %(top_win)s))))
+;;; end of class %(klass)s
+
+%(tab)s(setf (textdomain) "%(name)s") ;; replace with the appropriate catalog name
+%(tab)s(defun _ (msgid) (gettext msgid "%(name)s"))
+
+
+(unwind-protect
+%(tab)s(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)
+%(tab)s(ffi:close-foreign-library "../miscellaneous/wxc-msw2.6.2.dll"))
+"""
+    tmpl_simple = """\
+(defun init-func (fun data evt)
+%(tab)s(let ((%(top_win)s (make-%(top_win_class)s)))
+%(tab)s(ELJApp_SetTopWindow (slot-top-window %(top_win)s))
+%(tab)s(wxWindow_Show (slot-top-window %(top_win)s))))
+
+(unwind-protect
+%(tab)s(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)
+%(tab)s(ffi:close-foreign-library "../miscellaneous/wxc-msw2.6.2.dll"))
+"""
+
+
+    tmpl_gettext_simple = """\
+(defun init-func (fun data evt)
+%(tab)s(setf (textdomain) "%(name)s") ;; replace with the appropriate catalog name
+%(tab)s(defun _ (msgid) (gettext msgid "%(name)s"))
+
+%(tab)s(let ((%(top_win)s (make-%(top_win_class)s)))
+%(tab)s(ELJApp_SetTopWindow (slot-top-window %(top_win)s))
+%(tab)s(wxWindow_Show (slot-top-window %(top_win)s))))
+
+(unwind-protect
+%(tab)s(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)
+%(tab)s(ffi:close-foreign-library "../miscellaneous/wxc-msw2.6.2.dll"))
+"""
+
     def cn(self, name):
         """\
         Return the name properly formatted for the selected name space.
@@ -231,7 +291,7 @@ class LispCodeWriter(BaseCodeWriter):
         # initialise parent class
         BaseCodeWriter.initialize(self, app_attrs)
         out_path = app_attrs['path']
-        self.class_lines = []        
+        self.class_lines = []
 
         self.header_lines = [
             """(asdf:operate 'asdf:load-op 'wxcl)\n""",
@@ -291,77 +351,17 @@ class LispCodeWriter(BaseCodeWriter):
         edit_sizers.lisp_sizers_codegen.initialize()
 
     def add_app(self, app_attrs, top_win_class):
-        self._app_added = True
-
-        name = app_attrs.get('name')
-        if not name:
-            name = 'app'
-
-        if not self.multiple_files:
-            prev_src = self.previous_source
-        else:
-            # overwrite apps file always
-            prev_src = None
-
-        # do nothing if the file exists
-        if prev_src:
+        top_win = app_attrs.get('top_window')
+        # do nothing if there is no top window
+        if not top_win:
             return
 
-        klass = app_attrs.get('class')
-        top_win = app_attrs.get('top_window')
-        if not top_win:
-            return  # do nothing if there is no top window
-        lines = []
-        append = lines.append
-        if klass:
-            tab = self.tabs(2)
-            append('(defun init-func (fun data evt)\n')
-        else:
-            tab = self.tabs(1)
-            append('(defun init-func (fun data evt)\n')
-            if self._use_gettext:
-                append(tab + '(setf (textdomain) "%s") ;; replace with the '
-                             'appropriate catalog name\n' % name)
-                append(tab + '(defun _ (msgid) (gettext msgid "%s"))\n\n' % name)
+        # add language specific mappings
+        self.app_mapping = {
+            'top_win': top_win.replace('_', '-'),
+            }
 
-        top_win = top_win.replace('_', '-')
-        append(tab + '(let ((%s (make-%s)))\n' % (top_win, top_win_class))
-        if klass:
-            append(tab + '(ELJApp_SetTopWindow (slot-top-window %s))\n' % top_win)
-            append(tab + '(wxWindow_Show (slot-top-window %s))))\n' % top_win)
-            append(';;; end of class %s\n\n' % klass)
-            tab = self.tabs(1)
-            if self._use_gettext:
-                append(tab + '(setf (textdomain) "%s") ;; replace with the '
-                             'appropriate catalog name\n' % name)
-                append(tab + '(defun _ (msgid) (gettext msgid "%s"))\n\n' % name)
-        else:
-            append(tab + '(ELJApp_SetTopWindow (slot-top-window %s))\n' % top_win)
-            append(tab + '(wxWindow_Show (slot-top-window %s))))\n' % top_win)
-
-        append("\n(unwind-protect\n")
-        append(tab + """(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)\n""")
-        append(tab + """(ffi:close-foreign-library "../miscellaneous/wxc-msw2.6.2.dll"))\n""")
-        if self.multiple_files:
-            filename = os.path.join(self.out_dir, name + '.lisp')
-            out = cStringIO.StringIO()
-            write = out.write
-            # write overwrite warning to standalone app file
-            write(self.tmpl_overwrite % {'comment_sign': self.comment_sign,})
-            # write the common lines
-            for line in self.header_lines:
-                write(line)
-            # import the top window module
-            write('(require "%s")\n\n' % top_win_class)
-            # write the wxApp code
-            for line in lines:
-                write(line)
-            self.save_file(filename, out.getvalue(), True)
-            out.close()
-        else:
-            write = self.output_file.write
-            for line in lines:
-                write(line)
+        BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):
         if self.multiple_files:
