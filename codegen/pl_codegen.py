@@ -454,17 +454,9 @@ unless(caller){
         edit_sizers.perl_sizers_codegen.initialize()
 
     def add_app(self, app_attrs, top_win_class):
-        top_win = app_attrs.get('top_window')
-        klass = app_attrs.get('class')
-        # do nothing if there is no top window
-        if not top_win:
-            return
-
         # add language specific mappings
-        if self.multiple_files and klass:
+        if self.multiple_files:
             self.app_mapping['pl_import'] = "\nuse %s;\n" % top_win_class
-        elif self.multiple_files and not klass:
-            self.app_mapping['pl_import'] = "\nuse %s;\n\n" % top_win_class
         else:
             self.app_mapping['pl_import'] = ''
 

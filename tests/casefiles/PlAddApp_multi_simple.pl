@@ -16,7 +16,6 @@ package main;
 
 use MyAppFrame;
 
-
 unless(caller){
     local *Wx::App::OnInit = sub{1};
     my $myapp = Wx::App->new();

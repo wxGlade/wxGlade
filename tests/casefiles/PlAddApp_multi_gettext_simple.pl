@@ -16,7 +16,6 @@ package main;
 
 use MyAppFrame;
 
-
 unless(caller){
     my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
     $local->AddCatalog("myapp"); # replace with the appropriate catalog name

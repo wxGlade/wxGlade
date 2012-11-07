@@ -16,7 +16,6 @@ package main;
 
 use PlOgg2_MyDialog;
 
-
 unless(caller){
         my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
         $local->AddCatalog("PlOgg2_app"); # replace with the appropriate catalog name
