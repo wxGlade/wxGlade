@@ -313,7 +313,6 @@ if __name__ == "__main__":
 
     def __init__(self):
         BaseCodeWriter.__init__(self)
-        self.use_new_namespace = True
 
     def cn(self, name):
         """\
@@ -352,14 +351,12 @@ if __name__ == "__main__":
         try:
             self.use_new_namespace = int(app_attrs['use_new_namespace'])
         except (KeyError, ValueError):
-            pass  # use the default value
+            self.use_new_namespace = True
 
         if self.use_new_namespace:
             self.header_lines.append('import wx\n')
         else:
             self.header_lines.append('from wxPython.wx import *\n')
-
-        self.dependencies = {}
 
         if self.multiple_files:
             self.previous_source = None

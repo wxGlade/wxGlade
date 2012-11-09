@@ -617,19 +617,34 @@ class BaseCodeWriter(object):
         """\
         Initialise only instance variables using there defaults.
         """
+        self.obj_builders = {}
+        self.obj_properties = {}        
+        self._property_writers = {}        
+        self._init_vars()        
+        
+    def _init_vars(self):
+        """\
+        Set instance variables (back) to default values during class
+        instantiation L{__init__} and before loading new data
+        (L{initialize()}).
+        """
         self.app_encoding = 'ISO-8859-1'
         self.app_filename = None
         self.app_mapping = {}
         self.app_name = None
         self.classes = {}
         self.curr_tab = 0
+        self.dependencies = {}
         self.for_version = (2, 6)
         self.header_lines = []
         self.init_lines = []
+        self.indent_symbol = ' ' 
+        self.indent_amount = 4       
         self.multiple_files = False
-        self.nonce = None
-        self.obj_builders = {}
-        self.obj_properties = {}
+        
+        # this is to be more sure to replace the right tags
+        self.nonce = self.create_nonce()
+        
         self.out_dir = None
         self.output_file_name = None
         self.output_file = None
@@ -638,7 +653,6 @@ class BaseCodeWriter(object):
         self._current_extra_code = []
         self._current_extra_modules = {}
         self._overwrite = False
-        self._property_writers = {}
         self._use_gettext = False
         self._widget_extra_modules = {}
 
@@ -646,9 +660,9 @@ class BaseCodeWriter(object):
         """\
         Code generator initialization function.
         """
-        # this is to be more sure to replace the right tags
-        self.nonce = self.create_nonce()
-
+        # set (most of) instance variables back to default values
+        self._init_vars()
+        
         self.multiple_files = app_attrs['option']
 
         # application name

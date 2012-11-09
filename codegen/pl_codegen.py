@@ -410,8 +410,6 @@ unless(caller){
             'use strict;\n'
         ]
 
-        self.dependencies = {}
-
         if self.multiple_files:
             self.previous_source = None
             if not os.path.isdir(out_path):
