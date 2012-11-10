@@ -390,7 +390,7 @@ if __name__ == "__main__":
 
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings
-        self.app_mapping = {
+        self.lang_mapping = {
             'cn_wxApp': self.cn('wxApp'),
             'cn_wxIDANY': self.cn('wxID_ANY'),
             'cn_wxInitAll': self.cn('wxInitAllImageHandlers'),
@@ -401,7 +401,7 @@ if __name__ == "__main__":
         # Add gettext import statements
         if self._use_gettext:
             if self.multiple_files:
-                self.app_mapping['import_gettext'] = 'import gettext\n'
+                self.lang_mapping['import_gettext'] = 'import gettext\n'
             else:
                 self.dependencies['import gettext\n'] = 1
 

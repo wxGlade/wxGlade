@@ -357,7 +357,7 @@ class LispCodeWriter(BaseCodeWriter):
             return
 
         # add language specific mappings
-        self.app_mapping = {
+        self.lang_mapping = {
             'top_win': top_win.replace('_', '-'),
             }
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
