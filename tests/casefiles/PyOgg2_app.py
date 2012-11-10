@@ -9,10 +9,10 @@
 # Manual changes will be overwritten without warning!
 
 import wx
+import gettext
 from PyOgg2_MyDialog import PyOgg2_MyDialog
 
 if __name__ == "__main__":
-    import gettext
     gettext.install("PyOgg2_app") # replace with the appropriate catalog name
 
     PyOgg2_app = wx.PySimpleApp(0)

@@ -1,5 +1,4 @@
 if __name__ == "__main__":
-    import gettext
     gettext.install("myapp") # replace with the appropriate catalog name
 
     myapp = wx.PySimpleApp(0)

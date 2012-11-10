@@ -7,6 +7,10 @@
 
 import wx
 
+# begin wxGlade: dependencies
+import gettext
+# end wxGlade
+
 # begin wxGlade: extracode
 # extra code added using wxGlade
 import time
@@ -117,7 +121,6 @@ class PyOgg1_MyDialog(wx.Dialog):
 
 
 if __name__ == "__main__":
-    import gettext
     gettext.install("app") # replace with the appropriate catalog name
 
     app = wx.PySimpleApp(0)

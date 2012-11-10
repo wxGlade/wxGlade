@@ -8,6 +8,7 @@
 import wx
 
 # begin wxGlade: dependencies
+import gettext
 # end wxGlade
 
 # begin wxGlade: extracode
@@ -149,7 +150,6 @@ class wxGladePreferencesUI(wx.Dialog):
 
 # end of class wxGladePreferencesUI
 if __name__ == "__main__":
-    import gettext
     gettext.install("app") # replace with the appropriate catalog name
 
     app = wx.PySimpleApp(0)

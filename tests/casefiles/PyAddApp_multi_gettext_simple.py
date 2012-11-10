@@ -9,10 +9,10 @@
 # Manual changes will be overwritten without warning!
 
 import wx
+import gettext
 from MyAppFrame import MyAppFrame
 
 if __name__ == "__main__":
-    import gettext
     gettext.install("myapp") # replace with the appropriate catalog name
 
     myapp = wx.PySimpleApp(0)

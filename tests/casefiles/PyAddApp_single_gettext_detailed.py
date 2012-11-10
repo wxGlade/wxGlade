@@ -9,7 +9,6 @@ class MyStartApp(wx.App):
 # end of class MyStartApp
 
 if __name__ == "__main__":
-    import gettext
     gettext.install("myapp") # replace with the appropriate catalog name
 
     myapp = MyStartApp(0)

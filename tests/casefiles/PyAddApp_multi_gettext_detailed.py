@@ -9,6 +9,7 @@
 # Manual changes will be overwritten without warning!
 
 import wx
+import gettext
 from MyAppFrame import MyAppFrame
 
 class MyStartApp(wx.App):
@@ -22,7 +23,6 @@ class MyStartApp(wx.App):
 # end of class MyStartApp
 
 if __name__ == "__main__":
-    import gettext
     gettext.install("myapp") # replace with the appropriate catalog name
 
     myapp = MyStartApp(0)

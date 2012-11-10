@@ -8,6 +8,7 @@
 from wxPython.wx import *
 
 # begin wxGlade: dependencies
+import gettext
 # end wxGlade
 
 # begin wxGlade: extracode
@@ -103,7 +104,6 @@ class PyOgg1_MyDialog(wxDialog):
 
 # end of class PyOgg1_MyDialog
 if __name__ == "__main__":
-    import gettext
     gettext.install("app") # replace with the appropriate catalog name
 
     app = wxPySimpleApp(0)
