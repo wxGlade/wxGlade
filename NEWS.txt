@@ -8,6 +8,11 @@ General:
   - Add more tooltips to gui
   - Join code templates for application startup code in class variables
     and unify the code generation of this piece
+  - Minor GUI improvements
+  - Internal rework of code generator parts, this causes minor changes
+    in the generated code 
+  - Improve error handling
+  - Add Perl support to CalendarCtrl 
   - ...
 
 Bugs:
