@@ -360,7 +360,6 @@ class LispCodeWriter(BaseCodeWriter):
         self.app_mapping = {
             'top_win': top_win.replace('_', '-'),
             }
-
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):

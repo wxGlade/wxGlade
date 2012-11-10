@@ -457,7 +457,6 @@ unless(caller){
             self.app_mapping['pl_import'] = "\nuse %s;\n" % top_win_class
         else:
             self.app_mapping['pl_import'] = ''
-
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):
