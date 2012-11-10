@@ -332,9 +332,14 @@ class BaseCodeWriter(object):
                         multi file projects
     @type app_filename: String
 
-    @ivar app_mapping: Language specific mapping of template variables for
-                       substituting in templates
+    @ivar app_mapping: Default mapping of template variables for substituting
+                       in templates (see L{lang_mapping}, L{add_app()})
     @type app_mapping: Dictionary
+
+    @ivar lang_mapping: Language specific mapping of template variables for
+                        substituting in templates (see L{app_mapping},
+                        L{add_app()})
+    @type lang_mapping: Dictionary
 
     @ivar app_name: Application name
     @type app_name: String
@@ -525,46 +530,46 @@ class BaseCodeWriter(object):
     """\
     Template of the file header for standalone files with application start
     code.
-    
+
     A standalone file will be created if a separate file for each class is
     selected.
-    
+
     @type: None or string
     @see: L{add_app}
     """
-    
+
     tmpl_detailed = None
     """\
     Template for detailed application start code without gettext support
-    
+
     @type: None or string
     @see: L{add_app}
     """
-        
+
     tmpl_gettext_detailed = None
     """\
     Template for detailed application start code with gettext support
-    
+
     @type: None or string
     @see: L{add_app}
     """
-        
+
     tmpl_simple = None
     """\
     Template for simplified application start code without gettext support
-    
+
     @type: None or string
     @see: L{add_app}
     """
-        
+
     tmpl_gettext_simple = None
     """\
     Template for simplified application start code with gettext support
-    
+
     @type: None or string
     @see: L{add_app}
     """
-    
+
     _quote_str_pattern = re.compile(r'\\[natbv"]?')
 
     _show_warnings = True
@@ -618,10 +623,10 @@ class BaseCodeWriter(object):
         Initialise only instance variables using there defaults.
         """
         self.obj_builders = {}
-        self.obj_properties = {}        
-        self._property_writers = {}        
-        self._init_vars()        
-        
+        self.obj_properties = {}
+        self._property_writers = {}
+        self._init_vars()
+
     def _init_vars(self):
         """\
         Set instance variables (back) to default values during class
@@ -638,13 +643,14 @@ class BaseCodeWriter(object):
         self.for_version = (2, 6)
         self.header_lines = []
         self.init_lines = []
-        self.indent_symbol = ' ' 
-        self.indent_amount = 4       
+        self.indent_symbol = ' '
+        self.indent_amount = 4
+        self.lang_mapping = {}
         self.multiple_files = False
-        
+
         # this is to be more sure to replace the right tags
         self.nonce = self.create_nonce()
-        
+
         self.out_dir = None
         self.output_file_name = None
         self.output_file = None
@@ -662,7 +668,7 @@ class BaseCodeWriter(object):
         """
         # set (most of) instance variables back to default values
         self._init_vars()
-        
+
         self.multiple_files = app_attrs['option']
 
         # application name
@@ -803,18 +809,23 @@ class BaseCodeWriter(object):
         """\
         Generates the code for a wxApp instance.
         If the file to write into already exists, this function does nothing.
-        
+
         If gettext support is requested and there is not template with
         gettext support but there is a template without gettext support,
         template without gettext support will be used.
-        
+
         This fallback mechanism works bidirectional.
+
+        L{app_mapping} will be reset to default values and updated with
+        L{lang_mapping}.
 
         @see: L{tmpl_appfile}
         @see: L{tmpl_detailed}
         @see: L{tmpl_gettext_detailed}
         @see: L{tmpl_simple}
         @see: L{tmpl_gettext_simple}
+        @see: L{app_mapping}
+        @see: L{lang_mapping}
         """
         self._app_added = True
 
@@ -892,7 +903,7 @@ class BaseCodeWriter(object):
             return
 
         # map to substitude template variables
-        mapping = {
+        self.app_mapping = {
             'comment_sign': self.comment_sign,
             'header_lines': ''.join(self.header_lines),
             'klass': klass,
@@ -902,17 +913,17 @@ class BaseCodeWriter(object):
             'top_win_class': top_win_class,
             'top_win': top_win,
             }
-            
-        # extend default mapping with language specific mapping
-        if self.app_mapping:
-            mapping.update(self.app_mapping)
 
-        code = tmpl % (mapping)
+        # extend default mapping with language specific mapping
+        if self.lang_mapping:
+            self.app_mapping.update(self.lang_mapping)
+
+        code = tmpl % (self.app_mapping)
 
         if self.multiple_files:
             filename = os.path.join(self.out_dir, self.app_filename)
             code = "%s%s" % (
-                self.tmpl_appfile % (mapping),
+                self.tmpl_appfile % (self.app_mapping),
                 code,
                 )
             # write the wxApp code
