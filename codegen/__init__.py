@@ -625,7 +625,7 @@ class BaseCodeWriter(object):
     def _init_vars(self):
         """\
         Set instance variables (back) to default values during class
-        instantiation L{__init__} and before loading new data
+        instantiation (L{__init__}) and before loading new data
         (L{initialize()}).
         """
         self.app_encoding = 'ISO-8859-1'
@@ -893,10 +893,6 @@ class BaseCodeWriter(object):
 
         # map to substitude template variables
         mapping = {
-            'cn_wxApp': self.cn('wxApp'),
-            'cn_wxIDANY': self.cn('wxID_ANY'),
-            'cn_wxInitAll': self.cn('wxInitAllImageHandlers'),
-            'cn_wxPySimpleApp': self.cn('wxPySimpleApp'),
             'comment_sign': self.comment_sign,
             'header_lines': ''.join(self.header_lines),
             'klass': klass,

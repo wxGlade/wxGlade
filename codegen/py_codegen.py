@@ -387,6 +387,16 @@ if __name__ == "__main__":
                 self.output_file.write('\n')
                 self.output_file.write('<%swxGlade replace dependencies>\n' % self.nonce)
                 self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
+                
+    def add_app(self, app_attrs, top_win_class):
+        # add language specific mappings
+        self.app_mapping = {
+            'cn_wxApp': self.cn('wxApp'),
+            'cn_wxIDANY': self.cn('wxID_ANY'),
+            'cn_wxInitAll': self.cn('wxInitAllImageHandlers'),
+            'cn_wxPySimpleApp': self.cn('wxPySimpleApp'),            
+            }
+        BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):
         if self.multiple_files:
