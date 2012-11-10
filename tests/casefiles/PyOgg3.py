@@ -7,6 +7,10 @@
 
 import wx
 
+# begin wxGlade: dependencies
+import gettext
+# end wxGlade
+
 # begin wxGlade: extracode
 # extra code added using wxGlade
 import time
@@ -151,7 +155,6 @@ class PyOgg3_MyFrame(wx.Frame):
 # end of class PyOgg3_MyFrame
 
 if __name__ == "__main__":
-    import gettext
     gettext.install("app") # replace with the appropriate catalog name
 
     app = wx.PySimpleApp(0)

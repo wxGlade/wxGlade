@@ -8,6 +8,7 @@
 import wx
 
 # begin wxGlade: dependencies
+import gettext
 # end wxGlade
 
 # begin wxGlade: extracode
@@ -56,7 +57,6 @@ class MyApp(wx.App):
 # end of class MyApp
 
 if __name__ == "__main__":
-    import gettext
     gettext.install("app") # replace with the appropriate catalog name
 
     app = MyApp(0)

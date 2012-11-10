@@ -255,6 +255,7 @@ class PythonCodeWriter(BaseCodeWriter):
     tmpl_appfile = """\
 %(overwrite)s\
 %(header_lines)s\
+%(import_gettext)s\
 from %(top_win_class)s import %(top_win_class)s\n\n"""
 
     tmpl_detailed = """\
@@ -284,7 +285,6 @@ class %(klass)s(%(cn_wxApp)s):
 # end of class %(klass)s
 
 if __name__ == "__main__":
-%(tab)simport gettext
 %(tab)sgettext.install("%(name)s") # replace with the appropriate catalog name
 
 %(tab)s%(name)s = %(klass)s(0)
@@ -301,7 +301,6 @@ if __name__ == "__main__":
 
     tmpl_gettext_simple = """\
 if __name__ == "__main__":
-%(tab)simport gettext
 %(tab)sgettext.install("%(name)s") # replace with the appropriate catalog name
 
 %(tab)s%(name)s = %(cn_wxPySimpleApp)s(0)
@@ -340,9 +339,10 @@ if __name__ == "__main__":
         """\
         Writer initialization function.
 
-        @keyword path: Output path for the generated code (a file if multi_files is
-                       False, a dir otherwise)
-        @keyword option: If True, generate a separate file for each custom class
+        @keyword path: Output path for the generated code (a file if
+                       multi_files is False, a dir otherwise)
+        @keyword option: If True, generate a separate file for each custom
+                         class
         """
         # initialise parent class
         BaseCodeWriter.initialize(self, app_attrs)
@@ -366,9 +366,9 @@ if __name__ == "__main__":
             self.out_dir = out_path
         else:
             if not self._overwrite and self._file_exists(out_path):
-                # the file exists, we must keep all the lines not inside a wxGlade
-                # block. NOTE: this may cause troubles if out_path is not a valid
-                # source file, so be careful!
+                # the file exists, we must keep all the lines not inside a
+                # wxGlade block. NOTE: this may cause troubles if out_path is
+                # not a valid source file, so be careful!
                 self.previous_source = SourceFileContent(
                     out_path,
                     nonce=self.nonce,
@@ -387,15 +387,24 @@ if __name__ == "__main__":
                 self.output_file.write('\n')
                 self.output_file.write('<%swxGlade replace dependencies>\n' % self.nonce)
                 self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
-                
+
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings
         self.app_mapping = {
             'cn_wxApp': self.cn('wxApp'),
             'cn_wxIDANY': self.cn('wxID_ANY'),
             'cn_wxInitAll': self.cn('wxInitAllImageHandlers'),
-            'cn_wxPySimpleApp': self.cn('wxPySimpleApp'),            
+            'cn_wxPySimpleApp': self.cn('wxPySimpleApp'),
+            'import_gettext': '',
             }
+
+        # Add gettext import statements
+        if self._use_gettext:
+            if self.multiple_files:
+                self.app_mapping['import_gettext'] = 'import gettext\n'
+            else:
+                self.dependencies['import gettext\n'] = 1
+
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):
@@ -465,8 +474,9 @@ if __name__ == "__main__":
                         'code is correct!' % code_obj.name
                         )
 
-            # Don't add extra_code to self._current_extra_code here, that is handled
-            # later.  Otherwise we'll emit duplicate extra code for frames.
+            # Don't add extra_code to self._current_extra_code here, that is
+            # handled later.  Otherwise we'll emit duplicate extra code for
+            # frames.
 
         # ALB 2007-08-31 custom base classes support
         custom_base = getattr(code_obj, 'custom_base',
@@ -514,11 +524,10 @@ if __name__ == "__main__":
                   mycn(code_obj.base))
         tab = indentation
         init_lines = self.classes[code_obj.klass].init
-        # --- patch 2002-08-26 ---------------------------------------------------
         parents_init = self.classes[code_obj.klass].parents_init
 
-        # classes[code_obj.klass].deps now contains a mapping of child to parent
-        # For all children we processed...
+        # classes[code_obj.klass].deps now contains a mapping of child to
+        # parent for all children we processed...
         object_order = []
         for obj in self.classes[code_obj.klass].child_order:
             # Don't add it again if already present
@@ -780,8 +789,8 @@ if __name__ == "__main__":
             out.close()
         else:  # not self.multiple_files
             if prev_src:
-                # if this is a new class, add its code to the new_classes list of the
-                # SourceFileContent instance
+                # if this is a new class, add its code to the new_classes
+                # list of the SourceFileContent instance
                 if is_new:
                     prev_src.new_classes.append("".join(buffer))
                 elif self.classes[code_obj.klass].extra_code:
@@ -887,8 +896,8 @@ if __name__ == "__main__":
                 klass.dependencies[dep] = 1
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
-        # an ugly hack to allow the addition of spacers: if obj_name can be parsed
-        # as a couple of integers, it is the size of the spacer to add
+        # an ugly hack to allow the addition of spacers: if obj_name can be
+        # parsed as a couple of integers, it is the size of the spacer to add
         obj_name = obj.name
         try:
             w, h = [int(s) for s in obj_name.split(',')]
