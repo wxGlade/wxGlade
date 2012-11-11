@@ -16,29 +16,16 @@
 #include <wx/image.h>
 #include "MyAppFrame.h"
 
-#include "wx/intl.h"
 
-#ifndef APP_CATALOG
-#define APP_CATALOG "myapp"  // replace with the appropriate catalog name
-#endif
-
-class MyStartApp: public wxApp {
+class MyApp: public wxApp {
 public:
     bool OnInit();
-protected:
-    wxLocale m_locale;  // locale we'll be using
 };
 
-IMPLEMENT_APP(MyStartApp)
+IMPLEMENT_APP(MyApp)
 
-bool MyStartApp::OnInit()
+bool MyApp::OnInit()
 {
-    m_locale.Init();
-#ifdef APP_LOCALE_DIR
-    m_locale.AddCatalogLookupPathPrefix(wxT(APP_LOCALE_DIR));
-#endif
-    m_locale.AddCatalog(wxT(APP_CATALOG));
-
     wxInitAllImageHandlers();
     MyAppFrame* appframe = new MyAppFrame(NULL, wxID_ANY, wxEmptyString);
     SetTopWindow(appframe);

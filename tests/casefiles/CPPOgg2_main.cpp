@@ -19,7 +19,7 @@
 #include "wx/intl.h"
 
 #ifndef APP_CATALOG
-#define APP_CATALOG "CPPOgg2_app"  // replace with the appropriate catalog ame
+#define APP_CATALOG "CPPOgg2_app"  // replace with the appropriate catalog name
 #endif
 
 class MyApp: public wxApp {

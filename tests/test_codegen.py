@@ -799,10 +799,6 @@ class TestCodeGen(WXGladeBaseTest):
                         else:
                             app_filename = './myapp%s' % suffix
 
-                        # C++ don't support simple startup code
-                        if language == 'C++' and not klass:
-                            continue
-
                         if multiple_files:
                             generated = self.vFiles[app_filename].getvalue()
                             multiple = '_multi'
