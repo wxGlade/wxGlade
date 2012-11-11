@@ -14,13 +14,14 @@
 
 #include <wx/wx.h>
 #include <wx/image.h>
-#include "CPPOgg2_MyDialog.h"
-
 #include "wx/intl.h"
 
 #ifndef APP_CATALOG
 #define APP_CATALOG "CPPOgg2_app"  // replace with the appropriate catalog name
 #endif
+
+#include "CPPOgg2_MyDialog.h"
+
 
 class MyApp: public wxApp {
 public:

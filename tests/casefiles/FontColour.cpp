@@ -52,11 +52,6 @@ void MyFrame::do_layout()
     // end wxGlade
 }
 
-#include "wx/intl.h"
-
-#ifndef APP_CATALOG
-#define APP_CATALOG "app"  // replace with the appropriate catalog name
-#endif
 
 class MyApp: public wxApp {
 public:
