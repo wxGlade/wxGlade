@@ -311,6 +311,10 @@ class CPPCodeWriter(BaseCodeWriter):
                              used yet)
     @type last_generated_id: Integer
 
+    @cvar tmpl_init_gettext: Template for inclusion of i18n headers and
+                             defining APP_CATALOG constant
+    @type tmpl_init_gettext: None or string
+
     @see: L{BaseCodeWriter}
     """
 
@@ -379,6 +383,15 @@ class CPPCodeWriter(BaseCodeWriter):
 
 """
 
+    tmpl_init_gettext = """\
+#include "wx/intl.h"
+
+#ifndef APP_CATALOG
+#define APP_CATALOG "%(name)s"  // replace with the appropriate catalog name
+#endif
+
+"""
+
     tmpl_detailed = """\
 
 class %(klass)s: public wxApp {
@@ -398,11 +411,6 @@ bool %(klass)s::OnInit()
 }"""
 
     tmpl_gettext_detailed = """\
-#include "wx/intl.h"
-
-#ifndef APP_CATALOG
-#define APP_CATALOG "%(name)s"  // replace with the appropriate catalog name
-#endif
 
 class %(klass)s: public wxApp {
 public:
@@ -447,11 +455,6 @@ bool MyApp::OnInit()
 }"""
 
     tmpl_gettext_simple = """\
-#include "wx/intl.h"
-
-#ifndef APP_CATALOG
-#define APP_CATALOG "%(name)s"  // replace with the appropriate catalog name
-#endif
 
 class MyApp: public wxApp {
 public:
@@ -526,6 +529,12 @@ bool MyApp::OnInit()
             '#include <wx/wx.h>\n',
             '#include <wx/image.h>\n',
             ]
+
+        # include i18n / gettext
+        if self._use_gettext:
+            self.header_lines.append(
+                self.tmpl_init_gettext % {'name': self.app_name}
+                )
 
         # extra lines to generate (see the 'extracode' property of top-level
         # widgets)

@@ -129,11 +129,6 @@ void CPPOgg1_MyDialog::do_layout()
     // end wxGlade
 }
 
-#include "wx/intl.h"
-
-#ifndef APP_CATALOG
-#define APP_CATALOG "myapp"  // replace with the appropriate catalog name
-#endif
 
 class MyApp: public wxApp {
 public:

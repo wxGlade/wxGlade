@@ -14,13 +14,14 @@
 
 #include <wx/wx.h>
 #include <wx/image.h>
-#include "MyAppFrame.h"
-
 #include "wx/intl.h"
 
 #ifndef APP_CATALOG
 #define APP_CATALOG "myapp"  // replace with the appropriate catalog name
 #endif
+
+#include "MyAppFrame.h"
+
 
 class MyStartApp: public wxApp {
 public:
