@@ -12,6 +12,7 @@ General:
   - Internal rework of code generator parts, this causes minor changes
     in the generated code 
   - Improve error handling
+  - Add i18n support to C++ code generator
   - Add Perl support to CalendarCtrl 
   - ...
 

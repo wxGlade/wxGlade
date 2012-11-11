@@ -397,6 +397,38 @@ bool %(klass)s::OnInit()
 %(tab)sreturn true;
 }"""
 
+    tmpl_gettext_detailed = """\
+#include "wx/intl.h"
+
+#ifndef APP_CATALOG
+#define APP_CATALOG "%(name)s"  // replace with the appropriate catalog ame
+#endif
+
+class %(klass)s: public wxApp {
+public:
+%(tab)sbool OnInit();
+protected:
+%(tab)swxLocale m_locale;  // locale we'll be using
+};
+
+IMPLEMENT_APP(%(klass)s)
+
+bool %(klass)s::OnInit()
+{
+%(tab)sm_locale.Init();
+#ifdef APP_LOCALE_DIR
+%(tab)sm_locale.AddCatalogLookupPathPrefix(wxT(APP_LOCALE_DIR));
+#endif
+%(tab)sm_locale.AddCatalog(wxT(APP_CATALOG));
+
+%(tab)swxInitAllImageHandlers();
+%(tab)s%(top_win_class)s* %(top_win)s = new %(top_win_class)s(NULL, wxID_ANY, wxEmptyString);
+%(tab)sSetTopWindow(%(top_win)s);
+%(tab)s%(top_win)s->Show();
+%(tab)sreturn true;
+}"""
+
+
     class ClassLines(BaseCodeWriter.ClassLines):
         """\
         Stores the lines of C++ code for a custom class
