@@ -721,14 +721,6 @@ class BaseCodeWriter(object):
             if common.app_tree is not None:
                 self.for_version = common.app_tree.app.for_version
 
-        self.classes = {}
-        self._current_extra_modules = {}
-        self.header_lines = []
-
-        # extra lines to generate (see the 'extracode' property of top-level
-        # widgets)
-        self._current_extra_code = []
-
     def finalize(self):
         """\
         Code generator finalization function.
