@@ -13,6 +13,7 @@ General:
     in the generated code 
   - Improve error handling
   - Add i18n support to C++ code generator
+  - Add simple application start code to C++ code generator
   - Add Perl support to CalendarCtrl 
   - ...
 

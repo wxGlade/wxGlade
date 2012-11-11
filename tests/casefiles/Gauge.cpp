@@ -47,3 +47,19 @@ void MyFrame::do_layout()
     // end wxGlade
 }
 
+
+class MyApp: public wxApp {
+public:
+    bool OnInit();
+};
+
+IMPLEMENT_APP(MyApp)
+
+bool MyApp::OnInit()
+{
+    wxInitAllImageHandlers();
+    MyFrame* frame_1 = new MyFrame(NULL, wxID_ANY, wxEmptyString);
+    SetTopWindow(frame_1);
+    frame_1->Show();
+    return true;
+}
