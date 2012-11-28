@@ -131,6 +131,10 @@ class wxGladeArtProvider(wx.ArtProvider):
 class wxGladeFrame(wx.Frame):
     """\
     Main frame of wxGlade (palette)
+    
+    @ivar cur_dir: Last visited directory, used for wxFileDialog and not
+                   for KDE dialogs
+    @type cur_dir: String
     """
     def __init__(self, parent=None):
         style = wx.SYSTEM_MENU|wx.CAPTION|wx.MINIMIZE_BOX|wx.RESIZE_BORDER
@@ -723,11 +727,13 @@ class wxGladeFrame(wx.Frame):
         """\
         saves a wxGlade project onto an xml file
         """
-        if not common.app_tree.app.filename or common.app_tree.app.is_template:
+        if not common.app_tree.app.filename or \
+           common.app_tree.app.is_template:
             self.save_app_as(event)
         else:
             # check whether we are saving a template
-            if os.path.splitext(common.app_tree.app.filename)[1] == ".wgt":
+            ext = os.path.splitext(common.app_tree.app.filename)[1].lower()
+            if ext == ".wgt":
                 common.app_tree.app.is_template = True
             self._save_app(common.app_tree.app.filename)
 
@@ -769,6 +775,8 @@ class wxGladeFrame(wx.Frame):
         """\
         saves a wxGlade project onto an xml file chosen by the user
         """
+        # wx.SAVE & wx.OVERWRITE_PROMPT are wx2.6
+        # both flags occurs several times
         fn = misc.FileSelector(_("Save project as..."),
                                wildcard="wxGlade files (*.wxg)|*.wxg|"
                                "wxGlade Template files (*.wgt) |*.wgt|"
@@ -776,6 +784,11 @@ class wxGladeFrame(wx.Frame):
                                flags=wx.SAVE|wx.OVERWRITE_PROMPT,
                                default_path=self.cur_dir)
         if fn:
+            # check for file extension and add default extension if missing
+            ext = os.path.splitext(fn)[1].lower()
+            if not ext:
+                fn = "%s.wxg" % fn
+                
             common.app_tree.app.filename = fn
             #remove the template flag so we can save the file.
             common.app_tree.app.is_template = False
@@ -785,6 +798,9 @@ class wxGladeFrame(wx.Frame):
             self.file_history.AddFileToHistory(fn)
 
     def save_app_as_template(self, event):
+        """\
+        save a wxGlade project as a template
+        """
         data = getattr(common.app_tree.app, 'template_data', None)
         outfile, data = template.save_template(data)
         if outfile:
@@ -818,12 +834,20 @@ class wxGladeFrame(wx.Frame):
             wx.CallAfter(wx.GetApp().ExitMainLoop)
 
     def show_about_box(self, event):
+        """\
+        show the about dialog
+        
+        @see: L{about.wxGladeAboutBox}
+        """
         if self.about_box is None:
             import about
             self.about_box = about.wxGladeAboutBox(None)
         self.about_box.ShowModal()
 
     def show_tutorial(self, event):
+        """\
+        show the wxGlade user manual
+        """
         if wx.Platform == "__WXMAC__":
             os.system('open -a Help\ Viewer.app %s' % common.tutorial_file)
         else:
