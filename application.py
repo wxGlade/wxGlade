@@ -2,6 +2,7 @@
 Application class to store properties of the application being created
  
 @copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -22,28 +23,63 @@ import misc
 class FileDirDialog:
     """\
     Custom class which displays a FileDialog or a DirDialog, according to the
-    value of the codegen_opt of its parent (instance of Application)
+    value of the L{Application.codegen_opt} of its parent (instance of
+    L{Application}).
+    
+    @ivar default_extension: The default extension will be added to all
+                             file names without extension.
+    @type default_extension: String
+    
+    @ivar file_message: Message to show on the file dialog
+    @type file_message: String
+    
+    @ivar dir_message: Message to show on the directory dialog
+    @type dir_message: String
+    
+    @ivar file_style: Style for the file dialog
+    @ivar dir_style:  Style for the directory dialog
+    @ivar value:      Value returned by file or directory dialog on success
+    @ivar parent:     Parent instance of L{Application}
+    @ivar prev_dir:   Previous directory
     """
-    def __init__(self, owner, parent, wildcard=_("All Files|*"),
-                 file_message=_("Choose a file"), dir_message=None, style=0):
-        self.owner = owner
-        self.prev_dir = config.preferences.codegen_path
+    def __init__(self, parent, wildcard=_("All Files|*"),
+                 file_message=_("Choose a file"), dir_message=None, file_style=0):
+        self.prev_dir = config.preferences.codegen_path or ""
         self.wildcard = wildcard
         self.file_message = file_message
         self.dir_message = dir_message
-        self.file_style = style
+        self.file_style = file_style
         self.dir_style = wx.DD_DEFAULT_STYLE|wx.DD_NEW_DIR_BUTTON
         self.parent = parent
         self.value = None
+        self.default_extension = None
 
     def ShowModal(self):
-        if self.owner.codegen_opt == 0:
+        """\
+        Show a FileDialog or a DirDialog as a modal dialog. The selected
+        file or directory is stored in L{value} on success.
+        
+        @return: C{ID_OK} or C{ID_CANCEL}
+        @see: L{get_value()}
+        """
+        if self.parent.codegen_opt == 0:
             self.value = misc.FileSelector(
-                self.file_message, self.prev_dir or "",
-                wildcard=self.wildcard, flags=self.file_style)
+                self.file_message,
+                self.prev_dir,
+                wildcard=self.wildcard,
+                flags=self.file_style
+                )
+            # check for file extension and add default extension if missing
+            if self.value and self.default_extension:
+                ext = os.path.splitext(self.value)[1].lower()
+                if not ext:
+                    self.value = "%s%s" % (self.value, self.default_extension)
         else:
             self.value = misc.DirSelector(
-                self.dir_message, self.prev_dir or "", style=self.dir_style)
+                self.dir_message,
+                self.prev_dir,
+                style=self.dir_style
+                )
         if self.value:
             self.prev_dir = self.value
             if not os.path.isdir(self.prev_dir):
@@ -52,17 +88,26 @@ class FileDirDialog:
         return wx.ID_CANCEL
 
     def get_value(self):
+        """\
+        Return the dialog value returned during the last L{ShowModal()} call.
+        
+        @see: L{value}
+        """
         return self.value
 
-    def set_wildcard(self, wildcard):
-        self.wildcard = wildcard
-        
 # end of class FileDirDialog
 
 
 class Application(object):
     """\
     Properties of the application being created
+    
+    @ivar __filename:  Name of the output XML file
+    @ivar __saved:     If True, there are no changes to save
+    @ivar codegen_opt: If != 0, generates a separate file for each class
+    @ivar klass:       Name of the automatically generated class derived from
+                       wxApp
+    @ivar name:        Name of the wxApp instance to generate
     """
 
     def __init__(self, property_window):
@@ -80,12 +125,11 @@ class Application(object):
                 style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
         lang_panels['C++'] = mkp()
         lang_panels['python'] = mkp()
-        self.name = "app" # name of the wxApp instance to generate
-        self.__saved = True # if True, there are no changes to save
-        self.__filename = None # name of the output xml file
+        self.name = "app" 
+        self.__saved = True
+        self.__filename = None
         self.klass = "MyApp"
-        self.codegen_opt = 0 # if != 0, generates a separate file
-                             # for each class
+        self.codegen_opt = 0
         def set_codegen_opt(value):
             try: opt = int(value)
             except ValueError: pass
@@ -177,10 +221,6 @@ class Application(object):
                                             lang_panels['C++'])
         self.header_ext_prop = TextProperty(self, 'header_ext',
                                             lang_panels['C++'])
-        wildcard = self._get_wildcard('python')
-        dialog = FileDirDialog(self, panel, wildcard,
-                               _("Select output file"), _("Select output directory"),
-                               wx.SAVE|wx.OVERWRITE_PROMPT)
 
         _writers = common.code_writers.keys()
         columns = 3
@@ -216,11 +256,22 @@ class Application(object):
         self.overwrite_prop.set_tooltip(
             _("Overwrite existing source files or modify the code sequences generated by wxGlade in place")
             )
+            
+        dialog = FileDirDialog(
+            self,
+            _('All files|*'),
+            _("Select output file"),
+            _("Select output directory"),
+            wx.SAVE|wx.OVERWRITE_PROMPT
+            )
         self.outpath_prop = DialogProperty(self, "output_path", panel,
                                            dialog, label=_('Output path'))
+        # update wildcards and default extention in the dialog
+        self._update_dialog(self.outpath_prop.dialog, 'python')
         self.outpath_prop.set_tooltip(
             _("Output file or directory")
             )
+
         BTN_ID = wx.NewId()
         btn = wx.Button(
             panel,
@@ -350,8 +401,10 @@ class Application(object):
 
     def set_language(self, value):
         language = self.codewriters_prop.get_str_value()
-        wildcard = self._get_wildcard(language)
-        self.outpath_prop.dialog.set_wildcard(wildcard)
+        
+        # update wildcards and default extention in the dialog
+        self._update_dialog(self.outpath_prop.dialog, language)
+        
         # check that the new language supports all the widgets in the tree
         if self.language != language:
             self.language = language
@@ -709,10 +762,10 @@ class Application(object):
                 for c in common.app_tree.root.children:
                     check_rec(c)
 
-    def _get_wildcard(self, language):
+    def _update_dialog(self, dialog, language):
         """\
-        Build a concatinated string of all default extensions to use in
-        a file dialog.
+        Update wildcards and default extension in the generic file and
+        directory dialog (L{FileDirDialog}).
         """
         ext = getattr(common.code_writers[language], 'default_extensions', [])
         wildcards = []
@@ -721,6 +774,11 @@ class Application(object):
                 _('%s files (*.%s)|*.%s') % (misc.capitalize(language), e, e)
                 )
         wildcards.append(_('All files|*'))
-        return '|'.join(wildcards)
+        dialog.wildcard = '|'.join(wildcards)
+        
+        if ext:
+            dialog.default_extension = '.%s' % ext[0]
+        else:
+            dialog.default_extension = None
 
 # end of class Application

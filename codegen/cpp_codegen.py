@@ -318,8 +318,8 @@ class CPPCodeWriter(BaseCodeWriter):
     @see: L{BaseCodeWriter}
     """
 
-    default_extensions = ['h', 'hh', 'hpp', 'H', 'hxx',
-                          'cpp', 'cc', 'C', 'cxx', 'c++']
+    default_extensions = ['cpp', 'cc', 'C', 'cxx', 'c++',
+                          'h', 'hh', 'hpp', 'H', 'hxx', ]
     language = "C++"
 
     code_statements = {
