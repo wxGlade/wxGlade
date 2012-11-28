@@ -1,6 +1,7 @@
  Main Developer:
  ---------------------------------------------------------------------------
  - Alberto Griggio <agriggio@users.sourceforge.net>
+ - Carsten Grohmann <mail@carstengrohmann.de>
 
  Other Developers:
  ---------------------------------------------------------------------------
