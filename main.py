@@ -1,24 +1,26 @@
-# main.py: Main wxGlade module: defines wxGladeFrame which contains the buttons
-# to add widgets and initializes all the stuff (tree, property_frame, etc.)
-# 
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Main wxGlade module: defines wxGladeFrame which contains the buttons to add
+widgets and initializes all the stuff (tree, property_frame, etc.)
 
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+# import general python modules
+import os
+import os.path
 import sys
-
 import wx
+
+# import project modules
 from widget_properties import *
 from tree import WidgetTree
 import common
-import os
-import os.path
+import application
 import misc
 import config
 import configdialog
 import clipboard
-
 import template
 
 
@@ -271,12 +273,7 @@ class wxGladeFrame(wx.Frame):
         wx.EVT_MENU(self, RELOAD_ID, self.reload_app)
 
         PREVIEW_ID = wx.NewId()
-        def preview(event):
-            if common.app_tree.cur_widget is not None:
-                p = misc.get_toplevel_widget(common.app_tree.cur_widget)
-                if p is not None:
-                    p.preview(None)
-        wx.EVT_MENU(self, PREVIEW_ID, preview)
+        wx.EVT_MENU(self, PREVIEW_ID, self.preview)
 
         self.accel_table = wx.AcceleratorTable([
             (wx.ACCEL_CTRL, ord('N'), NEW_ID),
@@ -398,7 +395,6 @@ class wxGladeFrame(wx.Frame):
                                   style=frame_style)
         self.tree_frame.SetIcon(icon)
         
-        import application
         app = application.Application(common.property_panel)
         common.app_tree = WidgetTree(self.tree_frame, app)
         self.tree_frame.SetSize((300, 300))
@@ -517,6 +513,27 @@ class wxGladeFrame(wx.Frame):
                           wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
             dialog.set_preferences()
         dialog.Destroy()
+        
+    def preview(self, event):
+        """\
+        Generate preview of the current loaded project.
+        
+        A preview can be triggered by keyboard shortcut or by pressing the
+        preview button. The preview can be triggered for all selected widgets.
+        This doesn't mean that the widget is opened for editing.
+        
+        A good indicator for editing is the availability of the preview
+        button.
+       
+        @see: L{edit_windows.PreviewMixin.preview_button}
+        """
+        # Show preview only, if preview_button is available
+        #
+        if not getattr(common.app_tree.cur_widget, 'preview_button', None):
+            return
+        preview_widget = misc.get_toplevel_widget(common.app_tree.cur_widget)
+        if preview_widget is not None:
+            preview_widget.preview(None)
 
     def show_tree(self, event):
         self.tree_frame.Show()

@@ -1,36 +1,53 @@
-# edit_windows.py: base classes for windows used by wxGlade
-# 
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Base classes for windows used by wxGlade
 
-import wx
-from widget_properties import *
-import math, misc, common, config
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+# import general python modules
+import math
 import re
+import wx
 
-# ALB 2004-12-05: event handling support
+# import project modules
+from widget_properties import *
+import misc
+import common
+import config
+
+# event handling support
 from events_mixin import EventsMixin
-
 
 class EditBase(EventsMixin):
     """\
     Base class of every window available in the builder.
+    
+    @ivar custom_class: If true, the user can chage the value of the
+                        'class' property
+    @ivar name:  Name of the object
+    @ivar klass: Name of the object's class
+    @ivar property_window: Widget inside which Properties of this object are
+                           displayed
+    @ivar widget: This is the reference to the actual wxWindow widget; it is
+                  created only if needed, i.e. when it should become visible
+    @ivar _rmenu: Popup menu
     """
     def __init__(self, name, klass, parent, id, property_window, show=True,
                  custom_class=True):
-        # property_window: widget inside which Properties of this object
-        #                  are displayed
-        # name: name of the object
-        # klass: name of the object's class
-        # custom_class: if true, the user can chage the value of the 'class'
-        #               property
+        """\
+        Dictionary of properties relative to this object; the properties that
+        control the layout (i.e. the behaviour when inside a sizer) are not
+        contained here, but in a separate list (see L{ManagedBase})
+        the keys of the dict are the names of the properties
         
-        # dictionary of properties relative to this object; the properties that
-        # control the layout (i.e. the behaviour when inside a sizer) are not
-        # contained here, but in a separate list (see ManagedBase)
-        # the keys of the dict are the names of the properties
+        @param property_window: Widget inside which Properties of this object
+                                are displayed
+        @param name:  Name of the object
+        @param klass: Name of the object's class
+        @param custom_class: If true, the user can chage the value of the
+                            'class' property
+        """       
         self.properties = {}
         self.property_blocking = {}
         self.parent = parent
@@ -327,7 +344,7 @@ constructor will be used. You should probably not use this if \
 
     def get_property_handler(self, prop_name):
         """\
-        returns a custom handler function for the property 'prop_name', used
+        Returns a custom handler function for the property 'prop_name', used
         when loading this object from an xml file. handler must provide
         three methods: 'start_elem', 'end_elem' and 'char_data'
         """
@@ -336,7 +353,7 @@ constructor will be used. You should probably not use this if \
 
     def clipboard_copy(self, *args):
         """\
-        returns a copy of self to be inserted in the clipboard
+        Returns a copy of self to be inserted in the clipboard
         """
         import clipboard
         clipboard.copy(self)
@@ -356,8 +373,8 @@ constructor will be used. You should probably not use this if \
 
     def update_view(self, selected):
         """\
-        updates the widget's view to reflect its state, i.e. shows which widget
-        is currently selected; the default implementation does nothing.
+        Updates the widget's view to reflect its state, i.e. shows which
+        widget is currently selected; the default implementation does nothing.
         """
         pass
 
@@ -1033,7 +1050,12 @@ class ManagedBase(WindowBase):
 
 
 class PreviewMixin:
-    """Mixin class used to add preview to a widget"""
+    """\
+    Mixin class used to add preview to a widget
+    
+    @ivar preview_button: Button to show or close the preview window
+    @ivar preview_widget: Widget to be represented
+    """
     def __init__(self):
         self.preview_button = None
         self.preview_widget = None
@@ -1052,6 +1074,9 @@ class PreviewMixin:
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def preview(self, event):
+        """\
+        Create a preview of the selected widget
+        """
         #print 'frame class _> ', self.klass
         if self.preview_widget is None:
             self.preview_widget = common.app_tree.app.preview(self)
@@ -1062,6 +1087,11 @@ class PreviewMixin:
             self.preview_widget.Close()
 
     def preview_is_visible(self):
+        """\
+        True if the L{preview_button} is created
+        
+        @rtype: Boolean
+        """
         return self.preview_widget is not None
 
 # end of class PreviewMixin
