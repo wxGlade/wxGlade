@@ -3,25 +3,18 @@
 "/usr/share/sgml/docbook/xml-dtd-4.1.2-1.0-17/docbookx.dtd">
 <book>
   <title>wxGlade user manual</title>
-
   <bookinfo>
-    <date>2012-08-13</date>
-
+    <date>2012-12-04</date>
     <author>
       <firstname>Marcello</firstname>
-
       <surname>Semboli</surname>
     </author>
-
     <author>
       <firstname>Alberto</firstname>
-
       <surname>Griggio</surname>
     </author>
-
     <author>
       <firstname>Carsten</firstname>
-
       <surname>Grohmann</surname>
     </author>
   </bookinfo>
@@ -40,18 +33,12 @@
 
       <para>Check the project homepage <ulink
       url="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</ulink>
-      for the mailing list to discuss the project.</para>
+      for the mailing list to discuss the project. Use the lists for
+      questions, proposals, bug reports and collaboration. Information,
+      support and bug reports can be addressed to the wxGlade mailing list
+      too.</para>
 
-      <para>Use the lists for questions, proposals, bug reports and
-      collaboration.</para>
-
-      <para>If you don't want to follow the list, you can reach the author of
-      the program <quote>Alberto Griggio</quote> at
-      <email>agriggio@users.sourceforge.net</email>. Any kind of feedback is
-      always welcome.</para>
-
-      <para>Information, support and bug reports can be addressed to the
-      wxGlade mailing list.</para>
+      <para>Any kind of feedback is always welcome.</para>
 
       <para>Marcello Semboli <email>dinogen@siena.linux.it</email> has written
       the original version of this document. The current version of this
@@ -108,7 +95,28 @@
             <term><emphasis>wx</emphasis></term>
 
             <listitem>
-              <para>The wxWidgets open source C++ GUI framework.</para>
+              <para>abbreviation for <acronym>wxWidgets</acronym></para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>wxg</term>
+
+            <listitem>
+              <para>File extension used by wxGlade to store the project in a
+              XML file.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>wxWidgets</term>
+
+            <listitem>
+              <para>wxWidgets a widget toolkit and tools library for creating
+              graphical user interfaces (GUIs) for cross-platform
+              applications.</para>
+
+              <para>wxWidgets is open source and written in C++.</para>
             </listitem>
           </varlistentry>
 
@@ -127,6 +135,18 @@
               <para>The X Window System version 11.</para>
             </listitem>
           </varlistentry>
+
+          <varlistentry>
+            <term>XRC</term>
+
+            <listitem>
+              <para>XML-based system for describing wxWidgets resources like
+              dialogs, menus or toolbars.</para>
+
+              <para>Those resources are loaded into the application at
+              run-time.</para>
+            </listitem>
+          </varlistentry>
         </variablelist></para>
     </section>
   </preface>
@@ -135,12 +155,29 @@
     <title>Introduction to wxGlade</title>
 
     <section>
-      <title>What wxGlade is</title>
+      <title>What is wxGlade?</title>
 
-      <para>wxGlade is a GUI designer written in Python with the popular GUI
-      toolkit wxPython, that helps you create wxWidgets/wxPython user
-      interfaces. At the moment it can generate Python, Perl, Lisp, C++ and
-      XRC (wxWidgets' XML resources) code.</para>
+      <para>wxGlade is an open source graphical user interface builder written
+      in Python using popular widget toolkit wxWidgets.</para>
+
+      <figure>
+        <title>wxGlade windows</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="wxglade.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>wxGlade allows to create graphical user interfaces using
+      wxWidgets. The designer can arrange different widgets using a drag and
+      drop WYSIWYG editor. This simplifies the creation of a graphical user
+      interface in comparison with manual coded graphical user
+      interfaces.</para>
+
+      <para>wxGlade is able to generate source code for Python, Perl, Lisp,
+      C++ and XRC based on the designed GUI.</para>
 
       <para>As you can guess by the name, its model is Glade, the famous
       GTK+/GNOME GUI builder, with which wxGlade shares the philosophy and the
@@ -148,16 +185,91 @@
     </section>
 
     <section>
-      <title>What wxGlade is NOT</title>
+      <title>What Can You Do with wxGlade?</title>
 
-      <para>It is not (and will never be) a full featured IDE, but simply a
-      <quote>designer</quote>. The generated code does nothing apart from
-      displaying the created widgets. If you are looking for a complete IDE,
-      maybe Boa Constructor <ulink
+      <para>With wxGlade you can:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Design the whole GUI of your application inclusive simple or
+          complex dialogs as well as menu bars, different kinds of buttons and
+          text widgets, bitmaps, ...</para>
+        </listitem>
+
+        <listitem>
+          <para>Use the graphical editor for editing, cutting and pasting
+          widgets</para>
+        </listitem>
+
+        <listitem>
+          <para>Convert your design in source code of your favorite
+          language</para>
+        </listitem>
+
+        <listitem>
+          <para>Run wxGlade on a wide variety of operation systems since it is
+          written in Python</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>What is wxGlade NOT?</title>
+
+      <para>wxGlade is not a full featured IDE and will never be one. wxGlade
+      is just a graphical user interface builder. The generated code does
+      nothing apart from displaying the created widgets.</para>
+
+      <para>If you are looking for a complete IDE, maybe Boa Constructor
+      <ulink
       url="http://boa-constructor.sourceforge.net">http://boa-constructor.sourceforge.net</ulink>
       or PythonCard <ulink
       url="http://www.pythoncard.org">http://www.pythoncard.org</ulink> is the
       right tool.</para>
+    </section>
+
+    <section>
+      <title>Basics</title>
+
+      <para>You need to know the basics of wxWidgets or wxPython, as well as
+      the basics of C++, Python, Perl or Lisp. You can't use wxGlade if you do
+      not have any basic understanding of programming. You can't learn
+      wxWidgets programming from reading this manual either.</para>
+    </section>
+
+    <section>
+      <title>Requirements and Supported Platforms</title>
+
+      <para>wxGlade has been tested and run on Windows, Linux, Mac OSX.</para>
+
+      <para>Because wxGlade is written in Python using wxPython, it can also
+      be run on any platform that supports Python and wxPython.</para>
+
+      <para>Especially the wxGlade requirements are:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Python 2 - at least 2.3 or any later version of Python
+          2</para>
+        </listitem>
+
+        <listitem>
+          <para>wxPython 2.6 or 2.8</para>
+        </listitem>
+
+        <listitem>
+          <para>wxWidgets 2.6 or 2.8, the wxWidgets are often bundled with
+          wxPython</para>
+        </listitem>
+
+        <listitem>
+          <para>wxPython 2.9 is not supported yer</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>wxWidgets is available at <ulink
+      url="???">http://www.wxwidgets.org</ulink> and wxPython at <ulink
+      url="???">http://www.wxpython.org</ulink>.</para>
     </section>
 
     <section>
@@ -170,33 +282,9 @@
       <para>You can get the development version from <ulink
       url="https://bitbucket.org">Bitbucket.org</ulink> at <ulink
       url="https://bitbucket.org/agriggio/wxglade/overview">https://bitbucket.org/agriggio/wxglade/overview</ulink>
-      using anonymous Mercurial (<command>hg</command>) access.</para>
-    </section>
-
-    <section>
-      <title>Requirements</title>
-
-      <para>The wxGlade requirements are:</para>
-
-      <itemizedlist>
-        <listitem>
-          <para>Python 2 - at least 2.3 or any later version of Python
-          2</para>
-        </listitem>
-
-        <listitem>
-          <para>wxPython 2.6 or any later version</para>
-        </listitem>
-
-        <listitem>
-          <para>wxWidgets 2.6 or any later version, the wxWidgets are often
-          bundled with wxPython</para>
-        </listitem>
-      </itemizedlist>
-
-      <para>wxWidgets are available at <ulink
-      url="???">http://www.wxwidgets.org</ulink> and wxPython at <ulink
-      url="???">http://www.wxpython.org</ulink>.</para>
+      using anonymous <ulink
+      url="http://mercurial.selenic.com">Mercurial</ulink>
+      (<command>hg</command>) access.</para>
     </section>
 
     <section>
@@ -364,15 +452,6 @@ loading widget modules:
         </section>
       </section>
     </section>
-
-    <section>
-      <title>Basics</title>
-
-      <para>You need to know the basics of wxWidgets or wxPython, as well as
-      the basics of C++, Python, Perl or Lisp. You can't use wxGlade if you do
-      not have any basic understanding of programming. You can't learn
-      wxWidgets programming from reading this manual either.</para>
-    </section>
   </chapter>
 
   <chapter>
@@ -520,7 +599,7 @@ loading widget modules:
 
       <para>This is the complete description of the command line:</para>
 
-      <programlisting>wxglade --help
+      <programlisting># wxglade --help
 Usage: wxglade &lt;WXG File&gt;             start the wxGlade GUI
  or:   wxglade &lt;Options&gt; &lt;WXG File&gt;   generate code from command line
  or:   wxglade --version              show programs version number and exit
@@ -706,8 +785,7 @@ unless(caller){
 # ll FontColour*
 -rwxr-xr-x 1 carsten carsten 72493 Jun 15 09:22 FontColour
 -rwxr-xr-x 1 carsten carsten  1785 Mai 11 19:24 FontColour.cpp
--rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h
-</programlisting>
+-rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h</programlisting>
         </example>
 
         <example>
@@ -721,10 +799,60 @@ unless(caller){
 -rw-r--r-- 1 carsten carsten   5287 Mai 18 19:06 CPPOgg2_MyDialog.cpp
 -rw-r--r-- 1 carsten carsten   1829 Jun 11 07:11 CPPOgg2_MyDialog.h
 -rw-r--r-- 1 carsten carsten   1785 Mai 11 19:25 CPPOgg2_MyFrame.cpp
--rw-r--r-- 1 carsten carsten   1290 Jun 11 07:10 CPPOgg2_MyFrame.h
-</programlisting>
+-rw-r--r-- 1 carsten carsten   1290 Jun 11 07:10 CPPOgg2_MyFrame.h</programlisting>
         </example>
       </section>
+    </section>
+
+    <section>
+      <title>Handling XRC files</title>
+
+      <para>wxGlade is able to save projects as XRC files and to convert XRC
+      files into wxGlade projects.</para>
+
+      <para>One way for converting XRC files is the usage of the Python script
+      <command>xrc2wxg.py</command> at command line. The script is part of
+      wxGlade.</para>
+
+      <example>
+        <title>Converting a XRC file into a wxGlade project</title>
+
+        <programlisting># ./xrc2wxg.py FontColour.xrc
+
+# ls -l FontColour.*
+-rw-r--r-- 1 carsten carsten 5554 Dez  4 20:36 FontColour.wxg
+-rw-r--r-- 1 carsten carsten 4992 Dez  4 20:13 FontColour.xrc</programlisting>
+      </example>
+
+      <para>The <quote><guimenu>File</guimenu></quote> menu provides a menu
+      item <quote><guimenuitem>Import from XRC...</guimenuitem></quote> to
+      import and open a XRC file directly.</para>
+
+      <para>The following example shows how to load and show the frame
+      <quote>Main</quote> from XRC file <filename>test.xrc</filename>.</para>
+
+      <example>
+        <title>wxPython code to load and show a XRC resource</title>
+
+        <programlisting>#!/usr/bin/env python
+
+import wx
+from wx import xrc
+
+GUI_FILENAME = "test.xrc"
+GUI_MAINFRAME_NAME = "Main"
+
+class MyApp(wx.App):
+    def OnInit(self):
+        self.res = xrc.XmlResource(GUI_FILENAME)
+        self.frame = self.res.LoadFrame(None, GUI_MAINFRAME_NAME)
+        self.frame.Show()
+        return True
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.MainLoop()</programlisting>
+      </example>
     </section>
 
     <section id="basic.bitmaps.section">
