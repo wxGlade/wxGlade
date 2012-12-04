@@ -1,4 +1,4 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15"><title>Using the source code</title><meta name="generator" content="DocBook XSL Stylesheets V1.76.1"><link rel="home" href="index.html" title="wxGlade user manual"><link rel="up" href="ch02.html" title="Chapter 2. Exploring wxGlade"><link rel="prev" href="ch02s03.html" title="Command line invocation"><link rel="next" href="ch02s05.html" title="Specifying the path of bitmaps"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Using the source code</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Exploring wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch02s05.html">Next</a></td></tr></table><hr></div><div class="section" title="Using the source code"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="using.source.code.section"></a>Using the source code</h2></div></div></div><p>There are a lot of options to control the source code generation
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15"><title>Using the source code</title><meta name="generator" content="DocBook XSL Stylesheets V1.76.1"><link rel="home" href="index.html" title="wxGlade user manual"><link rel="up" href="ch02.html" title="Chapter 2. Exploring wxGlade"><link rel="prev" href="ch02s03.html" title="Command line invocation"><link rel="next" href="ch02s05.html" title="Handling XRC files"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Using the source code</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Exploring wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch02s05.html">Next</a></td></tr></table><hr></div><div class="section" title="Using the source code"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="using.source.code.section"></a>Using the source code</h2></div></div></div><p>There are a lot of options to control the source code generation
       process. They are bundled in the
       <span class="quote">&#8220;<span class="quote"><span class="guilabel">Properties</span></span>&#8221;</span> window (see <a class="xref" href="ch03s04.html#properties_window.fig" title="Figure 3.6. Application Properties">Figure 3.6, &#8220;Application Properties&#8221;</a>). Let's talk about three of those
       options -<span class="quote">&#8220;<span class="quote"><span class="guilabel">Single file</span></span>&#8221;</span>,
@@ -50,7 +50,7 @@
         recreated every time the code generation is running.</p><p>In opposition the application start code of single-file projects
         will not updated if the name of the <span class="quote">&#8220;<span class="quote"><span class="guilabel">Top
         window</span></span>&#8221;</span> has changed and <span class="quote">&#8220;<span class="quote"><span class="guilabel">Overwrite
-        existing sources</span></span>&#8221;</span> is not set.</p><div class="example"><a name="idp18528840"></a><p class="title"><b>Example 2.1. Detailed application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package MyApp;
+        existing sources</span></span>&#8221;</span> is not set.</p><div class="example"><a name="idp3090672"></a><p class="title"><b>Example 2.1. Detailed application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package MyApp;
 use base qw(Wx::App);
 use strict;
 sub OnInit {
@@ -68,7 +68,7 @@ unless(caller){
         $local-&gt;AddCatalog("app"); # replace with the appropriate catalog name
         my $app = MyApp-&gt;new();
         $app-&gt;MainLoop();
-}</pre></div></div><p><br class="example-break"></p><div class="example"><a name="idp18530512"></a><p class="title"><b>Example 2.2. Simplified application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package main;
+}</pre></div></div><p><br class="example-break"></p><div class="example"><a name="idp3092344"></a><p class="title"><b>Example 2.2. Simplified application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package main;
 unless(caller){
         my $local = Wx::Locale-&gt;new("English", "en", "en"); # replace with ??
         $local-&gt;AddCatalog("PlOgg1_app"); # replace with the appropriate catalog name
@@ -79,14 +79,13 @@ unless(caller){
         $PlOgg1_app-&gt;SetTopWindow($Mp3_To_Ogg);
         $Mp3_To_Ogg-&gt;Show(1);
         $PlOgg1_app-&gt;MainLoop();
-}</pre></div></div><br class="example-break"></div><div class="section" title="Compiling C++ code"><div class="titlepage"><div><div><h3 class="title"><a name="idp18531928"></a>Compiling C++ code</h3></div></div></div><p>You can compile your wxGlade project after the generation of the
+}</pre></div></div><br class="example-break"></div><div class="section" title="Compiling C++ code"><div class="titlepage"><div><div><h3 class="title"><a name="idp3093760"></a>Compiling C++ code</h3></div></div></div><p>You can compile your wxGlade project after the generation of the
         C++ source and header files. The following examples demonstrate
-        compiling on Linux command line using <span class="command"><strong>g++</strong></span>.</p><div class="example"><a name="idp18532944"></a><p class="title"><b>Example 2.3. Compiling a single file C++ project on Linux</b></p><div class="example-contents"><pre class="programlisting"># g++ FontColour.cpp $(wx-config --libs) $(wx-config --cxxflags) -o FontColour
+        compiling on Linux command line using <span class="command"><strong>g++</strong></span>.</p><div class="example"><a name="idp3094776"></a><p class="title"><b>Example 2.3. Compiling a single file C++ project on Linux</b></p><div class="example-contents"><pre class="programlisting"># g++ FontColour.cpp $(wx-config --libs) $(wx-config --cxxflags) -o FontColour
 # ll FontColour*
 -rwxr-xr-x 1 carsten carsten 72493 Jun 15 09:22 FontColour
 -rwxr-xr-x 1 carsten carsten  1785 Mai 11 19:24 FontColour.cpp
--rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h
-</pre></div></div><br class="example-break"><div class="example"><a name="idp18533984"></a><p class="title"><b>Example 2.4. Compiling a multi file C++ project on Linux</b></p><div class="example-contents"><pre class="programlisting"># g++  CPPOgg2_main.cpp $(wx-config --libs) $(wx-config --cxxflags) \
+-rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h</pre></div></div><br class="example-break"><div class="example"><a name="idp3095816"></a><p class="title"><b>Example 2.4. Compiling a multi file C++ project on Linux</b></p><div class="example-contents"><pre class="programlisting"># g++  CPPOgg2_main.cpp $(wx-config --libs) $(wx-config --cxxflags) \
        -o CPPOgg2_main CPPOgg2_MyDialog.cpp CPPOgg2_MyFrame.cpp
 # ll CPPOgg2*
 -rwxr-xr-x 1 carsten carsten 108354 Jun 15 09:33 CPPOgg2_main
@@ -94,5 +93,4 @@ unless(caller){
 -rw-r--r-- 1 carsten carsten   5287 Mai 18 19:06 CPPOgg2_MyDialog.cpp
 -rw-r--r-- 1 carsten carsten   1829 Jun 11 07:11 CPPOgg2_MyDialog.h
 -rw-r--r-- 1 carsten carsten   1785 Mai 11 19:25 CPPOgg2_MyFrame.cpp
--rw-r--r-- 1 carsten carsten   1290 Jun 11 07:10 CPPOgg2_MyFrame.h
-</pre></div></div><br class="example-break"></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch02s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Command line invocation </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Specifying the path of bitmaps</td></tr></table></div></body></html>
+-rw-r--r-- 1 carsten carsten   1290 Jun 11 07:10 CPPOgg2_MyFrame.h</pre></div></div><br class="example-break"></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch02s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Command line invocation </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Handling XRC files</td></tr></table></div></body></html>
