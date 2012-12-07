@@ -66,8 +66,10 @@ class ToggleBoxEvent(wx.PyCommandEvent):
 
 
 class ToggleButtonBox(wx.Panel):
-    def __init__(self, parent, id, choices=[], value=0):
+    def __init__(self, parent, id, choices=None, value=0):
         wx.Panel.__init__(self, parent, id)
+        if choices is None:
+            choices = []
         self.buttons = [wx.ToggleButton(self, -1, c) for c in choices]
         self.selected = None
         self.SetValue(value)
