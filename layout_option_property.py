@@ -1,5 +1,6 @@
 """
-Property class for the 'option' layout property of widgets and non-toplevel sizers
+Property class for the 'option' layout property of widgets and non-toplevel
+sizers.
 
 @copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
@@ -10,7 +11,7 @@ import wx
 import widget_properties
 #from edit_sizers import EditGridBagSizer
 
-def _is_gridbag(sizer):
+def _is_gridbag(dummy):
     return False
 
 
