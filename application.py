@@ -626,13 +626,13 @@ class Application(object):
 
     def is_visible(self): return True
 
-    def preview(self, widget, out_name=[None]):
-        if out_name[0] is None:
+    def preview(self, widget, out_name=None):
+        if out_name is None:
             import warnings
             warnings.filterwarnings("ignore", "tempnam", RuntimeWarning,
                                     "application")
-            out_name[0] = os.tempnam(None, 'wxg') + '.py'
-            #print 'Temporary name:', out_name[0]
+            out_name = os.tempnam(None, 'wxg') + '.py'
+            #print 'Temporary name:', out_name
         widget_class_name = widget.klass
 
         # make a valid name for the class (this can be invalid for
@@ -648,7 +648,7 @@ class Application(object):
                        (random.randrange(10**8, 10**9), widget.klass)
             
         self.real_output_path = self.output_path
-        self.output_path = out_name[0]
+        self.output_path = out_name
         real_codegen_opt = self.codegen_opt
         real_language = self.language
         real_use_gettext = self.use_gettext
