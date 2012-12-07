@@ -1192,7 +1192,7 @@ class GridProperty(Property, _activator):
 
     def __init__(self, owner, name, parent, cols, rows=1, can_add=True,
                  can_remove=True, can_insert=True, label=None, omitter=None,
-                 col_sizes=[], can_remove_last=True):
+                 col_sizes=None, can_remove_last=True):
         Property.__init__(self, owner, name, parent, label=label)
         self.val = owner[name][0]()
         self.set_value(self.val)
@@ -1201,7 +1201,10 @@ class GridProperty(Property, _activator):
         self.can_remove = can_remove
         self.can_insert = can_insert
         self.can_remove_last = can_remove_last
-        self.col_sizes = col_sizes
+        if col_sizes is None:
+            self.col_sizes = []
+        else:
+            self.col_sizes = col_sizes
         self.panel = None
         self.cur_row = 0
         _activator.__init__(self, omitter=omitter)
