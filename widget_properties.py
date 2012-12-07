@@ -59,7 +59,7 @@ class Property:
         else:
             self.dispName = name
 
-    def on_change_val(self, event, first=[True]):
+    def on_change_val(self, event):
         """\
         Event handler called to notify owner that the value of the Property
         has changed
@@ -72,7 +72,6 @@ class Property:
             else:
                 self.owner[self.name][1](val)
             self.val = self.get_value()
-        first[0] = False
         event.Skip()
 
     def write(self, outfile, tabs=0):
@@ -1303,7 +1302,7 @@ class GridProperty(Property, _activator):
             l.append(l2)
         return l
 
-    def on_change_val(self, event, first=[True]):
+    def on_change_val(self, event):
         """\
         Event handler called to notify owner that the value of the Property
         has changed
@@ -1325,7 +1324,6 @@ class GridProperty(Property, _activator):
             else:
                 self.owner[self.name][1](val)
             self.val = val
-        first[0] = False
         event.Skip()
 
     def set_value(self, values):
