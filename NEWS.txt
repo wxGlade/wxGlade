@@ -16,6 +16,7 @@ General:
   - Add simple application start code to C++ code generator
   - Add Perl support to CalendarCtrl 
   - Fix exceptions during widget preview triggered by keyboard shortcut
+  - Improve message logging
   - ...
 
 Bugs:

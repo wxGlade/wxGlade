@@ -1365,10 +1365,10 @@ class BaseCodeWriter(object):
 
         @param msg: Warning message
         @type msg:  String
-        @see: L{common.message}
+        @see: L{common.MessageLogger.warn()}
         """
         if self._show_warnings:
-            common.message("WARNING", msg)
+            common.message.warn(msg)
 
     def _content_notfound(self, source, indent=""):
         """\

@@ -1360,8 +1360,7 @@ class GridProperty(Property, _activator):
 
     def remove_row(self, event):
         if not self.can_remove_last and self.rows == 1:
-            common.message(
-                _('WARNING'),
+            common.message.warn(
                 _('You can not remove the last entry!')
                 )
             return
