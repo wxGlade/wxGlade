@@ -19,7 +19,6 @@ import os
 from cStringIO import StringIO
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
-import traceback
 
 import common
 import edit_sizers
@@ -426,8 +425,9 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 try:
                     self.top_obj = self.top().obj
                 except AttributeError:
-                    print _('Exception! obj: %s') % self.top_obj
-                    traceback.print_exc()
+                    common.message.exception(
+                        _('Exception! obj: %s') % self.top_obj
+                        )
             self.depth_level += 1
 
     def endElement(self, name):
@@ -442,8 +442,9 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     self.top_obj.show_properties()
                     common.app_tree.select_item(self.top_obj.node)
                 except AttributeError:
-                    print _('Exception! obj: %s') % self.top_obj
-                    traceback.print_exc()
+                    common.message.exception(
+                        _('Exception! obj: %s') % self.top_obj
+                        )
         XmlWidgetBuilder.endElement(self, name)
 
 # end of class ClipboardXmlWidgetBuilder
@@ -687,8 +688,7 @@ class CodeWriter(XmlParser):
                 if handler:
                     handler.start_elem(name, attrs)
             except AttributeError:
-                print 'ATTRIBUTE ERROR!!'
-                traceback.print_exc()
+                common.message.exception(_('ATTRIBUTE ERROR!!'))
             self._curr_prop = name
 
     def endElement(self, name):
