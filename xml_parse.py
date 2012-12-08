@@ -16,6 +16,7 @@ NOTE: custom tag handler interface (called by XmlWidgetBuilder)::
 """
 
 import os
+from cStringIO import StringIO
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
 import traceback
@@ -78,10 +79,19 @@ class XmlParser(ContentHandler):
         self.locator = None
 
     def parse(self, source):
+        # Permanent workaround for Python bug "Sax parser crashes if given
+        # unicode file name" (http://bugs.python.org/issue11159).
+        #
+        # This bug causes a UnicodeEncodeError if the SAX XML parser wants to
+        # store an unicode filename internally.
+        #
+        # That's not a general file handling issue because the parameter
+        # source is an open file already.
+        source = StringIO(source.read())
         self.parser.parse(source)
+        source.close()
 
     def parse_string(self, source):
-        from StringIO import StringIO
         source = StringIO(source)
         self.parser.parse(source)
         source.close()
