@@ -746,7 +746,7 @@ class Application(object):
                 ok = xrcgen.obj_builders.get(cname, None) is not \
                      xrcgen.NotImplementedXrcObject
             if not ok:
-                common.message(_('WARNING'),
+                common.message.warn(
                                _('No %s code generator for %s (of type %s)'
                                ' available'),
                                misc.capitalize(language), widget.name, cname)

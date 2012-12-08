@@ -690,22 +690,28 @@ class wxGladeFrame(wx.Frame):
             os.chdir(old_dir)
             return False            
         except Exception, msg:
-            import traceback; traceback.print_exc()
+            common.message.exception(
+                _('An exception occurred while loading file "%s".') % \
+                    infilename.encode('ascii', 'replace')
+                )
 
-            if locals().has_key('infile') and not is_filelike: infile.close()
+            if locals().has_key('infile') and not is_filelike:
+                infile.close()
             common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
-            wx.MessageBox(_("An exception occurred while loading file \"%s\".\n"
-                            "This is the error message associated with it:\n"
-                            "        %s\n"
-                            "For more details, look at the full traceback "
-                            "on the console.\n"
-                            "If you think this is a wxGlade bug,"
-                            " please report it.") % \
-                          (misc.wxstr(infilename), misc.wxstr(msg)),
-                          _("Error"),
-                          wx.OK|wx.CENTRE|wx.ICON_ERROR)
+            wx.MessageBox(
+                _("An exception occurred while loading file \"%s\".\n"
+                  "This is the error message associated with it:\n"
+                  "        %s\n"
+                  "For more details, look at the full traceback "
+                  "on the console.\n"
+                  "If you think this is a wxGlade bug,"
+                  " please report it.") % \
+                  (misc.wxstr(infilename), misc.wxstr(msg)),
+                _("Error"),
+                wx.OK|wx.CENTRE|wx.ICON_ERROR
+                )
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
             os.chdir(old_dir)
@@ -769,7 +775,10 @@ class wxGladeFrame(wx.Frame):
             wx.MessageBox(_("Error saving app:\n%s") % msg, _("Error"),
                          wx.OK|wx.CENTRE|wx.ICON_ERROR)
         except Exception, msg:
-            import traceback; traceback.print_exc()
+            common.message.exception(
+                _('An exception occurred while saving file "%s".') % \
+                    fn.encode('ascii', 'replace')
+                )
             common.app_tree.app.saved = False
             fn = filename
             wx.MessageBox(_("An exception occurred while saving file "
@@ -779,8 +788,10 @@ class wxGladeFrame(wx.Frame):
                             "For more details, look at the full traceback "
                             "on the console.\nIf you think this is a "
                             "wxGlade bug,"
-                            " please report it.") % (fn, msg), _("Error"),
-                          wx.OK|wx.CENTRE|wx.ICON_ERROR)
+                            " please report it.") % (fn, msg),
+                          _("Error"),
+                          wx.OK|wx.CENTRE|wx.ICON_ERROR
+                          )
         else:
             common.app_tree.app.saved = True
             common.remove_autosaved() # ALB 2004-10-15
@@ -896,28 +907,34 @@ class wxGladeFrame(wx.Frame):
         if not self.ask_save():
             return
         
-        infile = misc.FileSelector(_("Import file"),
+        infilename = misc.FileSelector(_("Import file"),
                                    wildcard="XRC files (*.xrc)"
                                    "|*.xrc|All files|*",
                                    flags=wx.OPEN|wx.FILE_MUST_EXIST,
                                    default_path=self.cur_dir)
-        if infile:
+        if infilename:
             buf = cStringIO.StringIO()
             try:
-                xrc2wxg.convert(infile, buf)
+                xrc2wxg.convert(infilename, buf)
                 buf.seek(0)
                 self._open_app(buf, is_filelike=True)
                 common.app_tree.app.saved = False
             except Exception, msg:
-                import traceback; traceback.print_exc()
-                wx.MessageBox(_("An exception occurred while importing file "
-                                "\"%s\".\nThis is the error message associated "
-                                "with it:\n        %s\n"
-                                "For more details, look at the full traceback "
-                                "on the console.\nIf you think this is a "
-                                "wxGlade bug, please report it.") % \
-                              (infile, msg), _("Error"),
-                              wx.OK|wx.CENTRE|wx.ICON_ERROR)
+                common.message.exception(
+                    _('An exception occurred while importing file "%s".') % \
+                        infilename.encode('ascii', 'replace')
+                    )                
+                wx.MessageBox(
+                    _("An exception occurred while importing file "
+                      "\"%s\".\nThis is the error message associated "
+                      "with it:\n        %s\n"
+                      "For more details, look at the full traceback "
+                      "on the console.\nIf you think this is a "
+                      "wxGlade bug, please report it.") % \
+                      (infilename, msg),
+                    _("Error"),
+                    wx.OK|wx.CENTRE|wx.ICON_ERROR
+                    )
 
     def manage_templates(self, event):
         to_edit = template.manage_templates()

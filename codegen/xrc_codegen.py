@@ -112,9 +112,9 @@ class XRCCodeWriter(BaseCodeWriter):
 
             @param msg: Warning message
             @type msg:  String
-            @see: L{common.message}
+            @see: L{common.MessageLogger.warn()}
             """
-            common.message("WARNING", msg)
+            common.message.warn(msg)
 
     # end of class XrcObject
 

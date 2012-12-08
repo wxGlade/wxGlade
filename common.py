@@ -7,6 +7,7 @@ Global variables
 
 import os
 import sys
+import traceback
 
 use_gui = True
 """\
@@ -257,9 +258,9 @@ def load_code_writers():
         # import file and initiate code writer
         try:
             writer = __import__(name).writer
-        except (AttributeError, ImportError, SyntaxError, ValueError):
-            message(
-                _("WARNING"),
+        except (AttributeError, ImportError, NameError, 
+                SyntaxError, ValueError):
+            message.exception(
                 _('"%s" is not a valid code generator module') % module
                 )
         else:
@@ -317,11 +318,9 @@ def __load_widgets(widget_dir):
                         sys.path.pop()
                 else:
                     raise
-        except (ImportError, AttributeError):
-            if use_gui:
-                print _('ERROR loading "%s"') % module
-                import traceback
-                traceback.print_exc()
+        except (AttributeError, ImportError, NameError, 
+                SyntaxError, ValueError):
+            message.exception(_('ERROR loading "%s"') % module)
         else:
             if use_gui:
                 print '\t' + module
@@ -444,7 +443,7 @@ def save_file(filename, content, which='wxg'):
     """\
     Save I{content} to file named I{filename} and, if user's preferences say
     so and I{filename} exists, makes a backup copy of it.
-    
+
     @note: Exceptions that may occur while performing the operations are not
            handled.
 
@@ -462,7 +461,9 @@ def save_file(filename, content, which='wxg'):
             'Unknown value "%s" for parameter "which"!' % which
             )
     try:
-        if do_backup and filename not in _backed_up and os.path.isfile(filename):
+        if do_backup and \
+           filename not in _backed_up and \
+           os.path.isfile(filename):
             # make a backup copy of filename
             infile = open(filename)
             outfile = open(filename + config.preferences.backup_suffix, 'w')
@@ -573,12 +574,27 @@ def generated_from():
 
 
 class MessageLogger(object):
+    """\
+    Small own logging facility
+    
+    @ivar disabled: If True log messages won't be processed
+    @type disabled: Boolean
+    
+    @ivar lines: Message buffer
+    @type lines: List of strings
+    
+    @ivar logger: Reference to an instance of L{msgdialog.MessageDialog}
+    """
+
     def __init__(self):
         self.disabled = False
         self.lines = []
         self.logger = None
 
     def _setup_logger(self):
+        """\
+        Create L{msgdialog.MessageDialog} instance.
+        """
         import msgdialog
         self.logger = msgdialog.MessageDialog(None, -1, "")
         self.logger.msg_list.InsertColumn(0, "")
@@ -594,18 +610,51 @@ class MessageLogger(object):
             else:
                 msg = misc.wxstr(fmt)
             self.lines.extend(msg.splitlines())
-##             if kind == 'WARNING':
-##                 wx.LogWarning(msg)
-##             else:
-##                 wx.LogMessage(msg)
-        else:
+
+        # show errors and exceptions always at console
+        if not use_gui or kind in [_("EXCEPTION"),  _("ERROR")]:
             if args:
                 msg = fmt % tuple(args)
             else:
                 msg = fmt
             print "%s: %s" % (kind, msg)
 
+    def debug(self, fmt, *args):
+        """\
+        Show debug messages
+        """
+        self.__call__(_("DEBUG"), fmt, *args)
+
+    def info(self, fmt, *args):
+        """\
+        Show informational messages
+        """
+        self.__call__(_("INFO"), fmt, *args)
+
+    def warn(self, fmt, *args):
+        """\
+        Show warning messages
+        """
+        self.__call__(_("WARNING"), fmt, *args)
+
+    def error(self, fmt, *args):
+        """\
+        Show error  messages
+        """
+        self.__call__(_("ERROR"), fmt, *args)
+        
+    def exception(self, fmt, *args):
+        """\
+        Show exception details
+        """
+        self.__call__(_("EXCEPTION"), fmt, *args)
+        self.__call__(_("EXCEPTION"), _("Exception details:"))
+        self.__call__(_("EXCEPTION"), traceback.format_exc())
+
     def flush(self):
+        """\
+        Show log messages if L{use_gui} is True
+        """
         if self.lines and use_gui:
             if not self.logger:
                 self._setup_logger()
@@ -621,3 +670,6 @@ class MessageLogger(object):
 # end of class MessageLogger
 
 message = MessageLogger()
+"""\
+L{MessageLogger} instance
+"""
