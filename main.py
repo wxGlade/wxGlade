@@ -669,9 +669,11 @@ class wxGladeFrame(wx.Frame):
             if not is_filelike:
                 os.chdir(os.path.dirname(infilename))
                 infile = open(infilename)
+                print _('Read wxGlade project from file "%s"') % infilename
             else:
                 infile = infilename
                 infilename = getattr(infile, 'name', None)
+                print _('Read wxGlade project from file-like object')
             if use_progress_dialog and config.preferences.show_progress:
                 p = ProgressXmlWidgetBuilder(input_file=infile)
             else:
