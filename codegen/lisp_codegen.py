@@ -729,6 +729,7 @@ class LispCodeWriter(BaseCodeWriter):
             klass = self.classes[top_obj.klass]
         else:
             klass = self.classes[top_obj.klass] = self.ClassLines()
+            
         try:
             builder = self.obj_builders[sub_obj.base]
         except KeyError:
@@ -742,80 +743,83 @@ class LispCodeWriter(BaseCodeWriter):
                 'code for %s (type %s) not generated: no suitable writer '
                 'found' % (sub_obj.name, sub_obj.klass)
                 )
+            return
+
+        sub_obj.name = sub_obj.name.replace('_', '-')
+        sub_obj.parent.name = sub_obj.parent.name.replace('_', '-')
+        if(sub_obj.name != "spacer"):
+            self.class_lines.append(sub_obj.name)
+        if (sub_obj.klass == "wxBoxSizer" or \
+            sub_obj.klass == "wxStaticBoxSizer" or \
+            sub_obj.klass == "wxGridSizer" or \
+            sub_obj.klass == "wxFlexGridSizer"):
+            self.dependencies['(use-package :wxSizer)'] = 1
         else:
-            try:
-                sub_obj.name = sub_obj.name.replace('_', '-')
-                sub_obj.parent.name = sub_obj.parent.name.replace('_', '-')
-                if(sub_obj.name != "spacer"):
-                    self.class_lines.append(sub_obj.name)
-                if (sub_obj.klass == "wxBoxSizer" or \
-                    sub_obj.klass == "wxStaticBoxSizer" or \
-                    sub_obj.klass == "wxGridSizer" or \
-                    sub_obj.klass == "wxFlexGridSizer"):
-                    self.dependencies['(use-package :wxSizer)'] = 1
-                else:
-                    if (sub_obj.klass != "spacer"):
-                        key = '(use-package :%s)' % sub_obj.klass
-                        self.dependencies[key] = 1
+            if (sub_obj.klass != "spacer"):
+                key = '(use-package :%s)' % sub_obj.klass
+                self.dependencies[key] = 1
 
-                if (sub_obj.klass == "wxMenuBar"):
-                    self.dependencies['(use-package :wxMenu)'] = 1
-                init, props, layout = builder.get_code(sub_obj)
-            except:
-                print sub_obj
-                raise  # this shouldn't happen
-            if sub_obj.in_windows:  # the object is a wxWindow instance
-                if sub_obj.is_container and not sub_obj.is_toplevel:
-                    init.reverse()
-                    klass.parents_init.extend(init)
-                else:
-                    klass.init.extend(init)
+        if (sub_obj.klass == "wxMenuBar"):
+            self.dependencies['(use-package :wxMenu)'] = 1
+            
+        try:
+            init, props, layout = builder.get_code(sub_obj)
+        except:
+            print sub_obj
+            raise  # this shouldn't happen
 
-                # Add a dependency of the current object on its parent
-                klass.deps.append((sub_obj, sub_obj.parent))
-                klass.child_order.append(sub_obj)
-                klass.init_lines[sub_obj] = init
+        if sub_obj.in_windows:  # the object is a wxWindow instance
+            if sub_obj.is_container and not sub_obj.is_toplevel:
+                init.reverse()
+                klass.parents_init.extend(init)
+            else:
+                klass.init.extend(init)
 
-                mycn = getattr(builder, 'cn', self.cn)
-                if hasattr(builder, 'get_events'):
-                    evts = builder.get_events(sub_obj)
-                    for id, event, handler in evts:
-                        klass.event_handlers.append((id, mycn(event), handler))
-                elif 'events' in sub_obj.properties:
-                    id_name, id = self.generate_code_id(sub_obj)
-                    if id == '-1' or id == self.cn('wxID_ANY'):
-                        id = '#obj.%s' % sub_obj.name
-                    for event, handler in sub_obj.properties['events'].iteritems():
-                        klass.event_handlers.append((id, mycn(event), handler))
+            # Add a dependency of the current object on its parent
+            klass.deps.append((sub_obj, sub_obj.parent))
+            klass.child_order.append(sub_obj)
+            klass.init_lines[sub_obj] = init
 
-                # try to see if there's some extra code to add to this class
-                extra_code = getattr(builder, 'extracode',
-                                     sub_obj.properties.get('extracode', ""))
-                if extra_code:
-                    extra_code = re.sub(r'\\n', '\n', extra_code)
-                    klass.extra_code.append(extra_code)
-                    # if we are not overwriting existing source, warn the user
-                    # about the presence of extra code
-                    if not self.multiple_files and self.previous_source:
-                        self.warning(
-                            '%s has extra code, but you are not '
-                            'overwriting existing sources: please check '
-                            'that the resulting code is correct!' % \
-                            sub_obj.name
-                            )
+            mycn = getattr(builder, 'cn', self.cn)
+            if hasattr(builder, 'get_events'):
+                evts = builder.get_events(sub_obj)
+                for id, event, handler in evts:
+                    klass.event_handlers.append((id, mycn(event), handler))
+            elif 'events' in sub_obj.properties:
+                id_name, id = self.generate_code_id(sub_obj)
+                if id == '-1' or id == self.cn('wxID_ANY'):
+                    id = '#obj.%s' % sub_obj.name
+                for event, handler in sub_obj.properties['events'].iteritems():
+                    klass.event_handlers.append((id, mycn(event), handler))
 
-            else:  # the object is a sizer
-                klass.sizers_init.extend(init)
+            # try to see if there's some extra code to add to this class
+            extra_code = getattr(builder, 'extracode',
+                                 sub_obj.properties.get('extracode', ""))
+            if extra_code:
+                extra_code = re.sub(r'\\n', '\n', extra_code)
+                klass.extra_code.append(extra_code)
+                # if we are not overwriting existing source, warn the user
+                # about the presence of extra code
+                if not self.multiple_files and self.previous_source:
+                    self.warning(
+                        '%s has extra code, but you are not '
+                        'overwriting existing sources: please check '
+                        'that the resulting code is correct!' % \
+                        sub_obj.name
+                        )
 
-            klass.props.extend(props)
-            klass.layout.extend(layout)
-            if self.multiple_files and \
-                   (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
-                key = '(require "%s")\n' % sub_obj.klass
-                klass.dependencies[key] = 1
-            for dep in getattr(self.obj_builders.get(sub_obj.base),
-                               'import_modules', []):
-                klass.dependencies[dep] = 1
+        else:  # the object is a sizer
+            klass.sizers_init.extend(init)
+
+        klass.props.extend(props)
+        klass.layout.extend(layout)
+        if self.multiple_files and \
+               (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
+            key = '(require "%s")\n' % sub_obj.klass
+            klass.dependencies[key] = 1
+        for dep in getattr(self.obj_builders.get(sub_obj.base),
+                           'import_modules', []):
+            klass.dependencies[dep] = 1
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         # an ugly hack to allow the addition of spacers: if obj_name can be parsed

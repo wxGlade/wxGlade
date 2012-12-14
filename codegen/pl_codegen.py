@@ -871,6 +871,7 @@ unless(caller){
             klass = self.classes[top_obj.klass]
         else:
             klass = self.classes[top_obj.klass] = self.ClassLines()
+            
         try:
             builder = self.obj_builders[sub_obj.base]
         except KeyError:
@@ -884,62 +885,64 @@ unless(caller){
                 'code for %s (type %s) not generated: no suitable writer '
                 'found' % (sub_obj.name, sub_obj.klass)
                 )
-        else:
-            try:
-                init, props, layout = builder.get_code(sub_obj)
-            except:
-                print sub_obj
-                raise  # this shouldn't happen
-            if sub_obj.in_windows:  # the object is a wxWindow instance
-                if sub_obj.is_container and not sub_obj.is_toplevel:
-                    init.reverse()
-                    klass.parents_init.extend(init)
-                else:
-                    klass.init.extend(init)
+            return
 
-                if hasattr(builder, 'get_events'):
-                    evts = builder.get_events(sub_obj)
-                    for id, event, handler in evts:
-                        klass.event_handlers.append((id, event, handler))
-                elif 'events' in sub_obj.properties:
-                    id_name, id = self.generate_code_id(sub_obj)
-                    if id == '-1' or id == self.cn('wxID_ANY'):
-                        id = '#$self->%s' % sub_obj.name
-                    for event, handler in sub_obj.properties['events'].iteritems():
-                        klass.event_handlers.append((id, event, handler))
+        try:
+            init, props, layout = builder.get_code(sub_obj)
+        except:
+            print sub_obj
+            raise  # this shouldn't happen
 
-                # try to see if there's some extra code to add to this class
-                if not sub_obj.preview:
-                    extra_code = getattr(builder, 'extracode',
-                                         sub_obj.properties.get('extracode', ""))
-                    if extra_code:
-                        extra_code = re.sub(r'\\n', '\n', extra_code)
-                        klass.extra_code.append(extra_code)
-                        # if we are not overwriting existing source, warn the user
-                        # about the presence of extra code
-                        if not self.multiple_files and self.previous_source:
-                            self.warning(
-                                '%s has extra code, but you are not '
-                                'overwriting existing sources: please check '
-                                'that the resulting code is correct!' % \
-                                sub_obj.name
-                                )
+        if sub_obj.in_windows:  # the object is a wxWindow instance
+            if sub_obj.is_container and not sub_obj.is_toplevel:
+                init.reverse()
+                klass.parents_init.extend(init)
+            else:
+                klass.init.extend(init)
 
-            else:  # the object is a sizer
-                if sub_obj.base == 'wxStaticBoxSizer':
-                    klass.parents_init.insert(1, init.pop(0))
-                    # ${staticboxsizername}_staticbox
-                klass.sizers_init.extend(init)
+            if hasattr(builder, 'get_events'):
+                evts = builder.get_events(sub_obj)
+                for id, event, handler in evts:
+                    klass.event_handlers.append((id, event, handler))
+            elif 'events' in sub_obj.properties:
+                id_name, id = self.generate_code_id(sub_obj)
+                if id == '-1' or id == self.cn('wxID_ANY'):
+                    id = '#$self->%s' % sub_obj.name
+                for event, handler in sub_obj.properties['events'].iteritems():
+                    klass.event_handlers.append((id, event, handler))
 
-            klass.props.extend(props)
-            klass.layout.extend(layout)
-            if self.multiple_files and \
-                   (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
-                key = 'use %s;\n' % sub_obj.klass
-                klass.dependencies[key] = 1
-            for dep in getattr(self.obj_builders.get(sub_obj.base),
-                               'import_modules', []):
-                klass.dependencies[dep] = 1
+            # try to see if there's some extra code to add to this class
+            if not sub_obj.preview:
+                extra_code = getattr(builder, 'extracode',
+                                     sub_obj.properties.get('extracode', ""))
+                if extra_code:
+                    extra_code = re.sub(r'\\n', '\n', extra_code)
+                    klass.extra_code.append(extra_code)
+                    # if we are not overwriting existing source, warn the user
+                    # about the presence of extra code
+                    if not self.multiple_files and self.previous_source:
+                        self.warning(
+                            '%s has extra code, but you are not '
+                            'overwriting existing sources: please check '
+                            'that the resulting code is correct!' % \
+                            sub_obj.name
+                            )
+
+        else:  # the object is a sizer
+            if sub_obj.base == 'wxStaticBoxSizer':
+                klass.parents_init.insert(1, init.pop(0))
+                # ${staticboxsizername}_staticbox
+            klass.sizers_init.extend(init)
+
+        klass.props.extend(props)
+        klass.layout.extend(layout)
+        if self.multiple_files and \
+               (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
+            key = 'use %s;\n' % sub_obj.klass
+            klass.dependencies[key] = 1
+        for dep in getattr(self.obj_builders.get(sub_obj.base),
+                           'import_modules', []):
+            klass.dependencies[dep] = 1
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         # an ugly hack to allow the addition of spacers: if obj_name can be parsed
