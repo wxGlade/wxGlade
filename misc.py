@@ -143,8 +143,8 @@ def capitalize(string):
     @note: Be carefully it possibly breaks i18n.
     """
     # Don't capitalise those terms
-    if string in ['XML', 'XRC']:
-        return string
+    if string.upper() in ['XML', 'XRC', 'URL']:
+        return string.upper()
 
     return string.capitalize()
 
