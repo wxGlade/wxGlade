@@ -1322,6 +1322,7 @@ bool MyApp::OnInit()
             klass = self.classes[top_obj.klass]
         else:
             klass = self.classes[top_obj.klass] = self.ClassLines()
+            
         try:
             builder = self.obj_builders[sub_obj.base]
         except KeyError:
@@ -1335,70 +1336,72 @@ bool MyApp::OnInit()
                 'code for %s (type %s) not generated: no suitable writer '
                 'found' % (sub_obj.name, sub_obj.klass)
                 )
-        else:
-            try:
-                init, ids, props, layout = builder.get_code(sub_obj)
-            except:
-                print sub_obj
-                raise  # this shouldn't happen
-            if sub_obj.in_windows:  # the object is a wxWindow instance
-                if sub_obj.is_container and not sub_obj.is_toplevel:
-                    init.reverse()
-                    klass.parents_init.extend(init)
-                else:
-                    klass.init.extend(init)
-                if hasattr(builder, 'get_events'):
-                    klass.event_handlers.extend(builder.get_events(sub_obj))
-                elif 'events' in sub_obj.properties:
-                    id_name, id = self.generate_code_id(sub_obj)
-                    for event, handler in sub_obj.properties['events'].iteritems():
-                        klass.event_handlers.append((id, event, handler))
-                # try to see if there's some extra code to add to this class
-                extra_code = getattr(builder, 'extracode',
-                                     sub_obj.properties.get('extracode', ""))
-                if extra_code:
-                    extra_code = re.sub(r'\\n', '\n', extra_code)
-                    extra_code = re.split(re.compile(r'^###\s*$', re.M),
-                                          extra_code, 1)
-                    klass.extra_code_h.append(extra_code[0])
-                    if len(extra_code) > 1:
-                        klass.extra_code_cpp.append(extra_code[1])
-                    # if we are not overwriting existing source, warn the user
-                    # about the presence of extra code
-                    if not self.multiple_files and self.previous_source:
-                        self.warning(
-                            '%s has extra code, but you are not '
-                            'overwriting existing sources: please check '
-                            'that the resulting code is correct!' % \
-                            sub_obj.name
-                            )
+            return
+            
+        try:
+            init, ids, props, layout = builder.get_code(sub_obj)
+        except:
+            print sub_obj
+            raise  # this shouldn't happen
 
-                klass.ids.extend(ids)
-                if sub_obj.klass != 'spacer':
-                    # attribute is a special property which control whether
-                    # sub_obj must be accessible as an attribute of top_obj,
-                    # or as a local variable in the do_layout method
-                    if self.test_attribute(sub_obj):
-                        klass.sub_objs.append((sub_obj.klass, sub_obj.name))
-            else:  # the object is a sizer
-                # ALB 2004-09-17: workaround (hack) for static box sizers...
-                if sub_obj.base == 'wxStaticBoxSizer':
-                    klass.sub_objs.insert(0, ('wxStaticBox',
-                                              '%s_staticbox' % sub_obj.name))
-                    klass.parents_init.insert(1, init.pop(0))
-                klass.sizers_init.extend(init)
-
-            klass.props.extend(props)
-            klass.layout.extend(layout)
-            if self.multiple_files and \
-                   (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
-                #print top_obj.name, sub_obj.name
-                klass.dependencies.append(sub_obj.klass)
+        if sub_obj.in_windows:  # the object is a wxWindow instance
+            if sub_obj.is_container and not sub_obj.is_toplevel:
+                init.reverse()
+                klass.parents_init.extend(init)
             else:
-                if sub_obj.base in self.obj_builders:
-                    headers = getattr(self.obj_builders[sub_obj.base],
-                                      'extra_headers', [])
-                    klass.dependencies.extend(headers)
+                klass.init.extend(init)
+            if hasattr(builder, 'get_events'):
+                klass.event_handlers.extend(builder.get_events(sub_obj))
+            elif 'events' in sub_obj.properties:
+                id_name, id = self.generate_code_id(sub_obj)
+                for event, handler in sub_obj.properties['events'].iteritems():
+                    klass.event_handlers.append((id, event, handler))
+            # try to see if there's some extra code to add to this class
+            extra_code = getattr(builder, 'extracode',
+                                 sub_obj.properties.get('extracode', ""))
+            if extra_code:
+                extra_code = re.sub(r'\\n', '\n', extra_code)
+                extra_code = re.split(re.compile(r'^###\s*$', re.M),
+                                      extra_code, 1)
+                klass.extra_code_h.append(extra_code[0])
+                if len(extra_code) > 1:
+                    klass.extra_code_cpp.append(extra_code[1])
+                # if we are not overwriting existing source, warn the user
+                # about the presence of extra code
+                if not self.multiple_files and self.previous_source:
+                    self.warning(
+                        '%s has extra code, but you are not '
+                        'overwriting existing sources: please check '
+                        'that the resulting code is correct!' % \
+                        sub_obj.name
+                        )
+
+            klass.ids.extend(ids)
+            if sub_obj.klass != 'spacer':
+                # attribute is a special property which control whether
+                # sub_obj must be accessible as an attribute of top_obj,
+                # or as a local variable in the do_layout method
+                if self.test_attribute(sub_obj):
+                    klass.sub_objs.append((sub_obj.klass, sub_obj.name))
+        else:  # the object is a sizer
+            # ALB 2004-09-17: workaround (hack) for static box sizers...
+            if sub_obj.base == 'wxStaticBoxSizer':
+                klass.sub_objs.insert(0, ('wxStaticBox',
+                                          '%s_staticbox' % sub_obj.name))
+                klass.parents_init.insert(1, init.pop(0))
+            klass.sizers_init.extend(init)
+
+        klass.props.extend(props)
+        klass.layout.extend(layout)
+        if self.multiple_files and \
+               (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
+            #print top_obj.name, sub_obj.name
+            klass.dependencies.append(sub_obj.klass)
+        else:
+            if sub_obj.base in self.obj_builders:
+                headers = getattr(self.obj_builders[sub_obj.base],
+                                  'extra_headers', [])
+                klass.dependencies.extend(headers)
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         if toplevel.klass in self.classes:
