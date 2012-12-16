@@ -935,8 +935,42 @@ class BaseCodeWriter(object):
     def add_object(self, top_obj, sub_obj):
         """\
         Adds the code to build 'sub_obj' to the class body of 'top_obj'.
+        
+        @see: L{_add_object_init()}
         """
         raise NotImplementedError
+        
+    def _add_object_init(self, top_obj, sub_obj):
+        """\
+        Perform some initial actions for L{add_object()}
+        
+        @return: Top level source code object and the widget builder instance
+        """
+        # initialise internal variables first
+        klass = None
+        builder = None
+       
+        # Check for proper source code instance
+        if top_obj.klass in self.classes:
+            klass = self.classes[top_obj.klass]
+        else:
+            klass = self.classes[top_obj.klass] = self.ClassLines()
+
+        # Check for widget builder object
+        try:
+            builder = self.obj_builders[sub_obj.base]
+        except KeyError:
+            # no code generator found: write a comment about it
+            klass.init.extend([
+                '\n',
+                '%s code for %s (type %s) not generated: no suitable writer ' \
+                'found' % (self.comment_sign, sub_obj.name, sub_obj.klass),
+                '\n'])
+            self.warning(
+                'code for %s (type %s) not generated: no suitable writer '
+                'found' % (sub_obj.name, sub_obj.klass)
+                )
+        return klass, builder
 
     def add_property_handler(self, property_name, handler, widget_name=None):
         """\
