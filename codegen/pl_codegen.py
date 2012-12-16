@@ -867,24 +867,8 @@ unless(caller){
                     write(line)
 
     def add_object(self, top_obj, sub_obj):
-        if top_obj.klass in self.classes:
-            klass = self.classes[top_obj.klass]
-        else:
-            klass = self.classes[top_obj.klass] = self.ClassLines()
-            
-        try:
-            builder = self.obj_builders[sub_obj.base]
-        except KeyError:
-            # no code generator found: write a comment about it
-            klass.init.extend([
-                '\n',
-                '%s code for %s (type %s) not generated: no suitable writer ' \
-                'found' % (self.comment_sign, sub_obj.name, sub_obj.klass),
-                '\n'])
-            self.warning(
-                'code for %s (type %s) not generated: no suitable writer '
-                'found' % (sub_obj.name, sub_obj.klass)
-                )
+        klass, builder = self._add_object_init(top_obj, sub_obj)
+        if not klass or not builder:
             return
 
         try:
