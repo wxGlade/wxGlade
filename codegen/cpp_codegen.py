@@ -1318,6 +1318,7 @@ bool MyApp::OnInit()
                 swrite(line)
 
     def add_object(self, top_obj, sub_obj):
+        # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(top_obj, sub_obj)
         if not klass or not builder:
             return
