@@ -453,11 +453,6 @@ class WindowBase(EditBase):
         self.tooltip = ''
         self.access_functions['tooltip'] = (self.get_tooltip, self.set_tooltip)
 
-        min_x = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_X)
-        min_y = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_Y)
-        max_x = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_X)
-        max_y = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y)
-
         self._original = {'background': None, 'foreground': None,
                           'font': None}        
 
@@ -549,10 +544,6 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
 
     def create_properties(self):
         EditBase.create_properties(self)
-        min_x = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_X)
-        min_y = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_Y)
-        max_x = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_X)
-        max_y = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y)
 
         panel = self._common_panel
 
@@ -915,11 +906,6 @@ class ManagedBase(WindowBase):
         if not self._has_layout: return
         panel = wx.ScrolledWindow(
             self.notebook, -1, style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
-
-        min_x = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_X)
-        min_y = wx.SystemSettings_GetMetric(wx.SYS_WINDOWMIN_Y)
-        max_x = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_X)
-        max_y = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y)
 
         szprop = self.sizer_properties
         szprop['pos'].display(panel)
