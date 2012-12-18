@@ -10,6 +10,9 @@ import math
 import re
 import wx
 
+try: set
+except NameError: from sets import Set as set
+
 # import project modules
 from widget_properties import *
 import misc
@@ -22,7 +25,7 @@ from events_mixin import EventsMixin
 class EditBase(EventsMixin):
     """\
     Base class of every window available in the builder.
-    
+
     @ivar custom_class: If true, the user can chage the value of the
                         'class' property
     @ivar name:  Name of the object
@@ -40,7 +43,7 @@ class EditBase(EventsMixin):
         control the layout (i.e. the behaviour when inside a sizer) are not
         contained here, but in a separate list (see L{ManagedBase})
         the keys of the dict are the names of the properties
-        
+
         @param property_window: Widget inside which Properties of this object
                                 are displayed
         @param name:  Name of the object
@@ -97,7 +100,7 @@ A comma-separated list of custom base classes. The first will be invoked \
 with the same parameters as this class, while for the others the default \
 constructor will be used. You should probably not use this if \
 "overwrite existing sources" is not set.""")
-            
+
         self.notebook = None
         self.property_window = property_window
 
@@ -126,7 +129,7 @@ constructor will be used. You should probably not use this if \
             self.create_widget()
             self.finish_widget_creation()
         if self.widget: self.widget.Show(yes)
-    
+
     def create_widget(self):
         """\
         Initializes self.widget and shows it
@@ -158,7 +161,7 @@ constructor will be used. You should probably not use this if \
         if self.widget and not self._dont_destroy:
             self.widget.Destroy()
         if misc.focused_widget is self: misc.focused_widget = None
-            
+
     def create_properties(self):
         """\
         Creates the notebook with the properties of self
@@ -330,8 +333,8 @@ constructor will be used. You should probably not use this if \
         try: common.app_tree.select_item(self.node)
         except AttributeError: pass
         self.widget.SetFocus()
-        
-        
+
+
     def on_set_focus(self, event):
         """\
         Event handler called when a window receives the focus: this in fact is
@@ -443,7 +446,7 @@ class WindowBase(EditBase):
         self.font = self._build_from_font(wx.SystemSettings_GetFont(
             wx.SYS_DEFAULT_GUI_FONT))
         self.font[1] = 'default'
-        
+
         self.access_functions['font'] = (self.get_font, self.set_font)
 
         # properties added 2002-08-15
@@ -484,7 +487,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         self.access_functions['disabled'] = (self.get_disabled,
                                              self.set_disabled)
         prop['disabled'] = CheckBoxProperty(self, 'disabled', None, _('disabled'))
-        
+
         self.focused_p = False
         self.access_functions['focused'] = (self.get_focused, self.set_focused)
         prop['focused'] = CheckBoxProperty(self, 'focused', None, _('focused'))
@@ -493,7 +496,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         self.access_functions['hidden'] = (self.get_hidden, self.set_hidden)
         prop['hidden'] = CheckBoxProperty(self, 'hidden', None, _('hidden'))
 
-        
+
 
     def finish_widget_creation(self, *args, **kwds):
         self._original['background'] = self.widget.GetBackgroundColour()
@@ -502,7 +505,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         if not fnt.Ok():
             fnt = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
         self._original['font'] = fnt
-        
+
         prop = self.properties
         size = prop['size'].get_value()
         if size:
@@ -552,18 +555,18 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         max_y = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y)
 
         panel = self._common_panel
-            
+
         prop = self.properties
         prop['id'].display(panel)
         prop['size'].display(panel)
-        
+
         prop['background'].display(panel) 
         prop['foreground'].display(panel)
-        try: prop['font'].display(panel) 
-        except KeyError: pass
-        # new properties 2002-08-15
+        try:
+            prop['font'].display(panel) 
+        except KeyError:
+            pass
         prop['tooltip'].display(panel)
-        # new properties 2003-05-15
         prop['disabled'].display(panel)
         prop['focused'].display(panel)
         prop['hidden'].display(panel)
@@ -577,13 +580,42 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         sizer_tmp.Add(prop['size'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(prop['background'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(prop['foreground'].panel, 0, wx.EXPAND)
-        try: sizer_tmp.Add(prop['font'].panel, 0, wx.EXPAND)
-        except KeyError: pass
+        try:
+            sizer_tmp.Add(prop['font'].panel, 0, wx.EXPAND)
+        except KeyError:
+            pass
         sizer_tmp.Add(prop['tooltip'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(prop['disabled'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(prop['focused'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(prop['hidden'].panel, 0, wx.EXPAND)
-        
+
+        # add a note if the widget don't support all supported wx versions
+        all_versions = set(common.app_tree.app.all_supported_versions)
+        supported = set(
+            [misc.format_for_version(version) \
+             for version in getattr(self, 'supported_by', [])]
+            )
+        not_supported = all_versions.difference(supported)
+        # hint text only if we have support information (supported_by) and
+        # not all versions are supported (not_supported)
+        if supported and not_supported:
+            text_supported = ', '.join(supported)
+            text_not_supported = ', '.join(not_supported)
+            note = wx.StaticText(
+                panel,
+                -1, 
+                _("This widget is only supported for wx %s") % \
+                text_supported
+                )
+            note.SetToolTip(wx.ToolTip(
+                _("This widgets is supported for wx versions %(supported)s "
+                  "and not at %(not_supported)s." ) % {
+                    'supported': text_supported,
+                    'not_supported': text_not_supported,
+                    }
+                ))
+            sizer_tmp.Add(note, 0, wx.ALL | wx.EXPAND, 3)        
+
         panel.SetAutoLayout(1)
         panel.SetSizer(sizer_tmp)
         sizer_tmp.Layout()
@@ -593,7 +625,6 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         self.notebook.AddPage(panel, _("Common"))
         self.property_window.Layout()
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
-
 
 
     def on_size(self, event):
@@ -656,7 +687,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
                 self.properties['background'].set_value(self.get_background())
                 return
         self.widget.Refresh()
-            
+
     def set_foreground(self, value):
         oldval = self.foreground
         self.foreground = value
@@ -678,7 +709,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
 
     def get_font(self):
         return str(self.font)
-    
+
     def _build_from_font(self, font):
         families = FontDialogProperty.font_families_from
         styles = FontDialogProperty.font_styles_from
@@ -822,7 +853,7 @@ class ManagedBase(WindowBase):
         self.option = 0
         self.flag = 0
         self.border = 0
-        
+
         self.sizer = sizer
         self.pos = pos
         self.access_functions['option'] = (self.get_option, self.set_option)
@@ -853,7 +884,7 @@ class ManagedBase(WindowBase):
         from layout_option_property import LayoutOptionProperty, \
              LayoutPosProperty
         szprop['option'] = LayoutOptionProperty(self, sizer)
-        
+
         szprop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
         szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000), label=_('border'))
 ##         pos_p = szprop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
@@ -909,13 +940,13 @@ class ManagedBase(WindowBase):
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, _("Layout"))
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
-        
+
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
 
     def on_move(self, event):
         self.sel_marker.update()
-        
+
     def on_size(self, event):
         old = self.size
         WindowBase.on_size(self, event)
@@ -1036,7 +1067,7 @@ class ManagedBase(WindowBase):
         """setter for the 'pos' property: calls self.sizer.change_item_pos"""
         self.sizer.change_item_pos(self, min(value + 1,
                                              len(self.sizer.children) - 1))
-        
+
     def update_pos(self, value):
         """\
         called by self.sizer.change_item_pos to update the item's position
@@ -1052,7 +1083,7 @@ class ManagedBase(WindowBase):
 class PreviewMixin:
     """\
     Mixin class used to add preview to a widget
-    
+
     @ivar preview_button: Button to show or close the preview window
     @ivar preview_widget: Widget to be represented
     """
@@ -1089,7 +1120,7 @@ class PreviewMixin:
     def preview_is_visible(self):
         """\
         True if the L{preview_button} is created
-        
+
         @rtype: Boolean
         """
         return self.preview_widget is not None
@@ -1103,7 +1134,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
     """
     _is_toplevel = True
     _custom_base_classes = True
-    
+
     def __init__(self, name, klass, parent, id, property_window, show=True,
                  has_title=True, title=None):
         WindowBase.__init__(self, name, klass, parent, id, property_window,
@@ -1196,7 +1227,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 ##             self.properties['title'].display(panel)
 ##             sizer_tmp.Add(self.properties['title'].panel, 0, wxEXPAND)
         PreviewMixin.create_properties(self)
-            
+
     def get_title(self):
         return self.title
 

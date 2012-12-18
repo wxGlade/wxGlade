@@ -16,6 +16,7 @@ import types
 
 import common
 import config
+import misc
 from xml_parse import XmlParsingError
 
 
@@ -935,21 +936,22 @@ class BaseCodeWriter(object):
     def add_object(self, top_obj, sub_obj):
         """\
         Adds the code to build 'sub_obj' to the class body of 'top_obj'.
-        
+
         @see: L{_add_object_init()}
         """
         raise NotImplementedError
-        
+
     def _add_object_init(self, top_obj, sub_obj):
         """\
         Perform some initial actions for L{add_object()}
-        
+
         @return: Top level source code object and the widget builder instance
+                 or C{None, None} in case of errors.
         """
         # initialise internal variables first
         klass = None
         builder = None
-       
+
         # Check for proper source code instance
         if top_obj.klass in self.classes:
             klass = self.classes[top_obj.klass]
@@ -961,15 +963,45 @@ class BaseCodeWriter(object):
             builder = self.obj_builders[sub_obj.base]
         except KeyError:
             # no code generator found: write a comment about it
+            msg = _("""\
+Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
+                sub_obj.name,
+                sub_obj.klass, 
+                )
             klass.init.extend([
                 '\n',
-                '%s code for %s (type %s) not generated: no suitable writer ' \
-                'found' % (self.comment_sign, sub_obj.name, sub_obj.klass),
+                '%s %s' % (self.comment_sign, msg),
                 '\n'])
-            self.warning(
-                'code for %s (type %s) not generated: no suitable writer '
-                'found' % (sub_obj.name, sub_obj.klass)
+            self.warning(msg)
+            return None, None
+
+        # check for supported versions
+        supported_by = getattr(builder, 'supported_by', ())
+        if supported_by and self.for_version not in supported_by:
+            supported_versions = ', '.join(
+                [misc.format_for_version(version) for version in supported_by]
                 )
+            msg = _("""\
+Code for instance "%(name)s" of "%(klass)s" was
+not created, because the widget is not available for wx
+version %(requested_version)s.
+It is available for wx versions %(supported_versions)s only.""") % {
+                    'name':  sub_obj.name, 
+                    'klass': sub_obj.klass, 
+                    'requested_version':  str(misc.format_for_version(self.for_version)), 
+                    'supported_versions': str(supported_versions), 
+                    }
+            init = []
+            init.append('\n')
+            for line in msg.split('\n'):
+                init.append(
+                    "%s %s\n" % (self.comment_sign, line)
+                    )
+            init.append('\n')
+            self.warning(msg)
+            klass.init.extend(init)
+            return None, None
+
         return klass, builder
 
     def add_property_handler(self, property_name, handler, widget_name=None):
