@@ -1,9 +1,9 @@
-# events_mixin.py: mixin class for 'events' property
-# $Id: events_mixin.py,v 1.7 2007/01/29 19:50:35 dinogen Exp $
-# 
-# Copyright (c) 2002-2004 Alberto Griggio <agriggio@users.sf.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Mixin class for 'events' property
+
+@copyright: 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 import wx.grid
@@ -11,7 +11,6 @@ import wx.grid
 import re
 
 from widget_properties import GridProperty
-from misc import enumerate
 from xml.sax.saxutils import escape, quoteattr
 
 
