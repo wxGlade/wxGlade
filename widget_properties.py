@@ -308,8 +308,6 @@ class TextProperty(Property, _activator):
         self.readonly = readonly
         self.multiline = multiline
         _activator.__init__(self, omitter=omitter)
-        if self.name == 'size':
-            pass
         if can_disable:
             self.toggle_active(enabled)
             self.toggle_blocked(blocked)
@@ -345,8 +343,6 @@ class TextProperty(Property, _activator):
             size=(1, -1),
             )
         enabler = None
-        if self.name == 'size':
-            pass
         if self.can_disable:
             enabler = wx.CheckBox(parent, self.id + 1, '', size=(1, -1))
             wx.EVT_CHECKBOX(enabler, self.id + 1,
