@@ -158,6 +158,7 @@ def color_to_string(color):
     return '#' + reduce(operator.add, ['%02x' % bound(c, 0, 255) for c in
                                        color.Get()])
 
+
 def string_to_color(color):
     """\
     returns the wxColour which corresponds to the given
@@ -167,7 +168,20 @@ def string_to_color(color):
     if len(color) != 7: raise ValueError
     return apply(wx.Colour, [int(color[i:i+2], 16) for i in range(1, 7, 2)])
 
-    
+
+def format_for_version(version):
+    """\
+    Return the version information in L{for_version} in a string.
+
+    Example::
+        >>> print format_for_version((2, 8))
+        2.8
+
+    @see: L{for_version}
+    """
+    return '%s.%s' % version
+
+
 def get_toplevel_parent(obj):
     if not isinstance(obj, wx.Window): window = obj.widget
     else: window = obj
