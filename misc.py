@@ -171,13 +171,13 @@ def string_to_color(color):
 
 def format_for_version(version):
     """\
-    Return the version information in L{for_version} in a string.
+    Return the version information in C{for_version} in a string.
 
     Example::
         >>> print format_for_version((2, 8))
         2.8
 
-    @see: L{for_version}
+    @see: L{wxglade.codegen.BaseCodeWriter.for_version}
     """
     return '%s.%s' % version
 
