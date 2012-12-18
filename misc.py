@@ -413,31 +413,6 @@ def wxstr(s, encoding=None):
 hidden_property_panel = None
 
 
-#------------------------------------------------------------------------------
-
-try:
-    enumerate = enumerate
-except NameError:
-    class enumerate(object):
-        """\
-        Python 2.2.x replacement for the `enumerate' builtin.
-        """
-        def __init__(self, iterable):
-            self.iterable = iterable
-            self.index = -1
-
-        def __iter__(self):
-            self.iterable = iter(self.iterable)
-            return self
-
-        def next(self):
-            val = self.iterable.next()
-            self.index += 1
-            return self.index, val
-
-    # end of class enumerate
-
-
 def design_title(title):
     return _('<Design> - ') + title
 
