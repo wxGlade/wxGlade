@@ -31,3 +31,4 @@ custom_widget
 menubar
 toolbar
 spacer
+hyperlink_ctrl
