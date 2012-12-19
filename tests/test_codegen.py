@@ -236,6 +236,51 @@ class TestCodeGen(WXGladeBaseTest):
             'Gauge'
             )
 
+    def test_HyperlinkCtrl(self):
+        """\
+        Test code generation for a HyperlinkCtrl for wxWidgets 2.6 and 2.8
+        """
+        # test for wxWidgets 2.6.X
+        self._generate_and_compare(
+            'perl',
+            'HyperlinkCtrl_26.wxg',
+            'HyperlinkCtrl_26.pl'
+            )
+        self._generate_and_compare(
+            'python',
+            'HyperlinkCtrl_26.wxg',
+            'HyperlinkCtrl_26.py'
+            )
+        self._generate_and_compare(
+            'XRC',
+            'HyperlinkCtrl_26.wxg',
+            'HyperlinkCtrl_26.xrc'
+            )
+        self._generate_and_compare_cpp(
+            'HyperlinkCtrl_26.wxg',
+            'HyperlinkCtrl_26'
+            )
+        # test for wxWidgets 2.8.X
+        self._generate_and_compare(
+            'perl',
+            'HyperlinkCtrl_28.wxg',
+            'HyperlinkCtrl_28.pl'
+            )
+        self._generate_and_compare(
+            'python',
+            'HyperlinkCtrl_28.wxg',
+            'HyperlinkCtrl_28.py'
+            )
+        self._generate_and_compare(
+            'XRC',
+            'HyperlinkCtrl_28.wxg',
+            'HyperlinkCtrl_28.xrc'
+            )
+        self._generate_and_compare_cpp(
+            'HyperlinkCtrl_28.wxg',
+            'HyperlinkCtrl_28'
+            )
+
     def test_generate_code_id(self):
         """\
         Test id code generation of all code generators

@@ -19,6 +19,7 @@ General:
     supported by wxGlade
   - Fix exceptions during widget preview triggered by keyboard shortcut
   - Improve message logging
+  - Add new widget HyperlinkCtrl
   - ...
 
 Bugs:
