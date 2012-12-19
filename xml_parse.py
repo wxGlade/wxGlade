@@ -659,7 +659,7 @@ class CodeWriter(XmlParser):
                 if os.path.isdir(self.out_path):
                     raise errors.WxgOutputPathIsDirectory(self.out_path)
                 directory = os.path.dirname(self.out_path)
-                if not os.access(directory, os.W_OK):
+                if directory and not os.access(directory, os.W_OK):
                     raise errors.WxgOutputDirectoryNotWritable(directory)
 
             # initialize the writer
