@@ -15,19 +15,18 @@ General:
   - Add i18n support to C++ code generator
   - Add simple application start code to C++ code generator
   - Add Perl support to CalendarCtrl 
-  - Add support for widget builder that don't support all wx versions
-    supported by wxGlade
   - Fix exceptions during widget preview triggered by keyboard shortcut
   - Improve message logging
   - Add new widget HyperlinkCtrl
   - ...
 
 Bugs:
+  - Encoding detection for Mac OS X
   - Prevent caching effects in Lisp code generator
   - Prevent deleting last notebook tab (sf bug #3126974)
-  - String formatting issue for event handlers in Lisp code generator
-  - Encoding detection for Mac OS X
   - Same default names for multiple notebooks (sf bug #2000566)
+  - String formatting issue for event handlers in Lisp code generator
+  - UnicodeEncodeError in xml.sax.expatreader (sf bug #149)
   - ...
 
 Documentation:
@@ -35,7 +34,9 @@ Documentation:
   - ...
 
 API (for custom widgets):
-  - no changes
+  - Add support for widget builder that don't support all wx versions
+    supported by wxGlade
+  - ...
 
 Note:
   - See CHANGES.txt for a full list of changes
