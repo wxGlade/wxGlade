@@ -425,6 +425,9 @@ class XRCCodeWriter(BaseCodeWriter):
             code_obj.xrc = xrc_obj
             # add the xrc_obj to the dict of the toplevel ones
             self.xrc_objects[code_obj] = xrc_obj
+            
+    def _format_comment(self, msg):
+        return '<!-- %s -->' % escape(msg.rstrip())
 
 # end of class XRCCodeWriter
 
