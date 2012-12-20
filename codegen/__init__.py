@@ -968,10 +968,7 @@ Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
                 sub_obj.name,
                 sub_obj.klass, 
                 )
-            klass.init.extend([
-                '\n',
-                '%s %s' % (self.comment_sign, msg),
-                '\n'])
+            self._source_warning(klass, msg)
             self.warning(msg)
             return None, None
 
@@ -983,23 +980,15 @@ Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
                 )
             msg = _("""\
 Code for instance "%(name)s" of "%(klass)s" was
-not created, because the widget is not available for wx
-version %(requested_version)s.
+not created, because the widget is not available for wx version %(requested_version)s.
 It is available for wx versions %(supported_versions)s only.""") % {
                     'name':  sub_obj.name, 
                     'klass': sub_obj.klass, 
                     'requested_version':  str(misc.format_for_version(self.for_version)), 
                     'supported_versions': str(supported_versions), 
                     }
-            init = []
-            init.append('\n')
-            for line in msg.split('\n'):
-                init.append(
-                    "%s %s\n" % (self.comment_sign, line)
-                    )
-            init.append('\n')
+            self._source_warning(klass, msg)
             self.warning(msg)
-            klass.init.extend(init)
             return None, None
 
         return klass, builder
@@ -1491,6 +1480,19 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @rtype: Boolean
         """
         return os.path.isfile(filename)
+ 
+    def _format_comment(self, msg):
+        """\
+        Return message formatted to add as a comment string in generating
+        source code.
+        
+        Trailing spaces will be removed. Leading spaces e.g. identation won't
+        be added.
+        
+        @type msg: String
+        @rtype: String
+        """
+        return "%s %s" % (self.comment_sign, msg.rstrip())
 
     def _generic_code(self, obj, prop_name):
         """\
@@ -1500,7 +1502,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @param prop_name: Name of the property to set
         @type prop_name:  String
 
-        @return: Code statement as string or None
+        @return: Code statement or None
+        @rtype: String
 
         @see: L{code_statements}
         """
@@ -1546,6 +1549,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
     def _get_colour(self, colourvalue):
         """\
         Returns the language specific colour statement
+        
+        @rtype: String
         """
         # check if there is an code template for this properties
         if 'wxcolour' not in self.code_statements:
@@ -1599,12 +1604,41 @@ It is available for wx versions %(supported_versions)s only.""") % {
 ##                 print 'initialized %s generator for %s' % (self.language, module_name)
         modules.close()
 
+    def _source_warning(self, klass, msg):
+        """\
+        Format and add a warning message to the source code.
+        
+        The message msg will be split into single lines and every line will
+        be proberly formatted added to the source code. 
+        
+        @param klass: Instance of L{ClassLines} to add the code in
+        @param msg:   Multiline message
+        @type msg:    String
+        
+        @see: L{_format_comment()}
+        """
+        # add leading empty line
+        klass.init.append('\n')
+        
+        # add a leading "WARNING:" to the message
+        if not msg.upper().startswith(_('WARNING:')):
+            msg = "%s %s" % (_('WARNING:'), msg)
+        
+        # add message text
+        for line in msg.split('\n'):
+            klass.init.append(
+                "%s\n" % self._format_comment(line.rstrip())
+                )
+
+        # add tailing empty line
+        klass.init.append('\n')
+
     def _string_to_colour(self, s):
         """\
         Convert a colour values out of a hex string to comma separated
         decimal values.
 
-        B{Example:}
+        Example::
 
             >>> self._string_to_colour('#FFFFFF')
             '255, 255, 255'
