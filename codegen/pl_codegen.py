@@ -525,8 +525,9 @@ unless(caller){
                     'code is correct!' % code_obj.name
                     )
 
-        # Don't add extra_code to self._current_extra_code here, that is handled
-        # later.  Otherwise we'll emit duplicate extra code for frames.
+        # Don't add extra_code to self._current_extra_code here, that is
+        # handled later.  Otherwise we'll emit duplicate extra code for
+        # frames.
 
         new_signature = getattr(builder, 'new_signature', [] )
 
@@ -579,10 +580,8 @@ unless(caller){
         write(tab + '$self = $self->SUPER::new( %s );\n' % ", ".join(new_signature))
 
         init_lines = self.classes[code_obj.klass].init
-
         parents_init = self.classes[code_obj.klass].parents_init
         parents_init.reverse()
-
         for l in parents_init:
             write(tab + l)
         for l in init_lines:
@@ -618,12 +617,13 @@ unless(caller){
 
         if prev_src and not is_new:
             # replace the lines inside the ctor wxGlade block with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass, 'new')
+            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
+                                                 'new')
             if prev_src.content.find(tag) < 0:
                 # no __init__ tag found, issue a warning and do nothing
                 self.warning(
-                    "wxGlade ::new block not found for %s, new code NOT "
-                    "generated" % code_obj.name
+                    "wxGlade ::new block not found for %s, new code "
+                    "NOT generated" % code_obj.name
                     )
             else:
                 prev_src.content = prev_src.content.replace(tag, "".join(buffer))
@@ -849,8 +849,8 @@ unless(caller){
             out.close()
         else:  # not self.multiple_files
             if prev_src:
-                # if this is a new class, add its code to the new_classes list of the
-                # SourceFileContent instance
+                # if this is a new class, add its code to the new_classes
+                # list of the SourceFileContent instance
                 if is_new:
                     prev_src.new_classes.append("".join(buffer))
                 elif self.classes[code_obj.klass].extra_code:
@@ -930,8 +930,8 @@ unless(caller){
             klass.dependencies[dep] = 1
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
-        # an ugly hack to allow the addition of spacers: if obj_name can be parsed
-        # as a couple of integers, it is the size of the spacer to add
+        # an ugly hack to allow the addition of spacers: if obj_name can be
+        # parsed as a couple of integers, it is the size of the spacer to add
         obj_name = obj.name
         try:
             w, h = [int(s) for s in obj_name.split(',')]
@@ -968,7 +968,7 @@ unless(caller){
         name = name.strip()
         val = val.strip()
         if val == '?':
-            val = 'Wx::NewId()'
+            val = self.cn('wxNewId()')
         else:
             val = self.cn(val)
         # check to see if we have to make the var global or not...

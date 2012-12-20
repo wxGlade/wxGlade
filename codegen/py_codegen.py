@@ -329,7 +329,7 @@ if __name__ == "__main__":
 
     def cn_f(self, flags):
         """\
-        Return the flags properly formatted
+        Return the flags properly formatted.
 
         @see: L{cn()}
         """
@@ -563,7 +563,6 @@ if __name__ == "__main__":
         write(tab + 'self.__set_properties()\n')
         write(tab + 'self.__do_layout()\n')
 
-        # ALB 2004-12-05 now let's write the "event table"...
         event_handlers = self.classes[code_obj.klass].event_handlers
         if hasattr(builder, 'get_events'):
             for id, event, handler in builder.get_events(code_obj):
@@ -860,7 +859,6 @@ if __name__ == "__main__":
                             )
 
         else:  # the object is a sizer
-            # ALB 2004-09-17: workaround (hack) for static box sizers...
             if sub_obj.base == 'wxStaticBoxSizer':
                 i = init.pop(0)
                 klass.parents_init.insert(1, i)

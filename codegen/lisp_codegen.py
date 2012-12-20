@@ -266,7 +266,7 @@ class LispCodeWriter(BaseCodeWriter):
 
     def cn(self, name):
         """\
-        Return the name properly formatted for the selected name space.
+        Return the name properly formatted.
         """
         if name[:2] == 'wx':
             return 'wx' + name[2:]
@@ -276,7 +276,9 @@ class LispCodeWriter(BaseCodeWriter):
 
     def cn_f(self, flags):
         """\
-        Return the flags properly formatted for the selected name space.
+        Return the flags properly formatted.
+
+        @see: L{cn()}
         """
         return "|".join([self.cn(f) for f in str(flags).split('|')])
 
@@ -284,9 +286,10 @@ class LispCodeWriter(BaseCodeWriter):
         """\
         Writer initialization function.
 
-        @keyword path: Output path for the generated code (a file if multi_files is
-                       False, a dir otherwise)
-        @keyword option: If True, generate a separate file for each custom class
+        @keyword path: Output path for the generated code (a file if
+                       multi_files is False, a dir otherwise)
+        @keyword option: If True, generate a separate file for each custom
+                         class
         """
         # initialise parent class
         BaseCodeWriter.initialize(self, app_attrs)
@@ -427,8 +430,9 @@ class LispCodeWriter(BaseCodeWriter):
                     'code is correct!' % code_obj.name
                     )
 
-        # Don't add extra_code to self._current_extra_code here, that is handled
-        # later.  Otherwise we'll emit duplicate extra code for frames.
+        # Don't add extra_code to self._current_extra_code here, that is
+        # handled later.  Otherwise we'll emit duplicate extra code for
+        # frames.
 
         tab = indentation
         if is_new:
@@ -469,12 +473,12 @@ class LispCodeWriter(BaseCodeWriter):
                 write(indentation + "(setf (slot-top-window obj) (wxDialog_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n" % style)
                 self.dependencies['(use-package :wxButton)'] = 1
 
-        self.init_lines = self.classes[code_obj.klass].init
+        init_lines = self.classes[code_obj.klass].init
         parents_init = self.classes[code_obj.klass].parents_init
         parents_init.reverse()
         for l in parents_init:
             write(tab + l)
-        for l in self.init_lines:
+        for l in init_lines:
             write(tab + l)
 
         # now check if there are extra lines to add to the init method
@@ -707,8 +711,8 @@ class LispCodeWriter(BaseCodeWriter):
             out.close()
         else:  # not self.multiple_files
             if prev_src:
-                # if this is a new class, add its code to the new_classes list of the
-                # SourceFileContent instance
+                # if this is a new class, add its code to the new_classes
+                # list of the SourceFileContent instance
                 if is_new:
                     prev_src.new_classes.append("".join(buffer))
                 elif self.classes[code_obj.klass].extra_code:
@@ -807,8 +811,8 @@ class LispCodeWriter(BaseCodeWriter):
             klass.dependencies[dep] = 1
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
-        # an ugly hack to allow the addition of spacers: if obj_name can be parsed
-        # as a couple of integers, it is the size of the spacer to add
+        # an ugly hack to allow the addition of spacers: if obj_name can be
+        # parsed as a couple of integers, it is the size of the spacer to add
 
         sizer.name = sizer.name.replace('_', '-')
         obj_name = obj.name

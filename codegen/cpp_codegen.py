@@ -986,14 +986,13 @@ bool MyApp::OnInit()
 ##                                                      code_obj.base, sign_inst))
         swrite(self.tabs(1) + '// begin wxGlade: %s::%s\n' % (code_obj.klass,
                                                          code_obj.klass))
+
         tab = self.tabs(1)
         init_lines = self.classes[code_obj.klass].init
-        # --- patch 2002-08-26 ------------------------------------------------
         parents_init = self.classes[code_obj.klass].parents_init
         parents_init.reverse()
         for l in parents_init:
             swrite(tab + l)
-        # ---------------------------------------------------------------------
         for l in init_lines:
             swrite(tab + l)
 
@@ -1026,7 +1025,6 @@ bool MyApp::OnInit()
             source_buffer = []
             swrite = source_buffer.append
 
-        # ALB 2004-12-08 event handling code
         if event_handlers:
             # 1) event table declaration/definition...
             if prev_src and code_obj.klass in prev_src.event_table_decl:
@@ -1149,8 +1147,6 @@ bool MyApp::OnInit()
             swrite(tab + l)
         for l in layout_lines:
             swrite(tab + l)
-
-        #if sizers_init_lines or layout_lines: swrite(tab + 'Layout();\n')
 
         # now, check if there are extra layout lines to add
         if hasattr(builder, 'get_layout_code'):
