@@ -897,21 +897,20 @@ unless(caller){
                     klass.event_handlers.append((id, event, handler))
 
             # try to see if there's some extra code to add to this class
-            if not sub_obj.preview:
-                extra_code = getattr(builder, 'extracode',
-                                     sub_obj.properties.get('extracode', ""))
-                if extra_code:
-                    extra_code = re.sub(r'\\n', '\n', extra_code)
-                    klass.extra_code.append(extra_code)
-                    # if we are not overwriting existing source, warn the user
-                    # about the presence of extra code
-                    if not self.multiple_files and self.previous_source:
-                        self.warning(
-                            '%s has extra code, but you are not '
-                            'overwriting existing sources: please check '
-                            'that the resulting code is correct!' % \
-                            sub_obj.name
-                            )
+            extra_code = getattr(builder, 'extracode',
+                                 sub_obj.properties.get('extracode', ""))
+            if extra_code:
+                extra_code = re.sub(r'\\n', '\n', extra_code)
+                klass.extra_code.append(extra_code)
+                # if we are not overwriting existing source, warn the user
+                # about the presence of extra code
+                if not self.multiple_files and self.previous_source:
+                    self.warning(
+                        '%s has extra code, but you are not '
+                        'overwriting existing sources: please check '
+                        'that the resulting code is correct!' % \
+                        sub_obj.name
+                        )
 
         else:  # the object is a sizer
             if sub_obj.base == 'wxStaticBoxSizer':
