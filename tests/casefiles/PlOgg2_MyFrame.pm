@@ -51,24 +51,19 @@ sub new {
 
 sub __set_properties {
         my $self = shift;
-
         # begin wxGlade: PlOgg2_MyFrame::__set_properties
-
         $self->SetTitle(_T("FrameOggCompressionDetails"));
         $self->SetSize(Wx::Size->new(400, 300));
         $self->{grid_1}->CreateGrid(8, 3);
         $self->{grid_1}->SetSelectionMode(wxGridSelectCells);
         $self->{button_6}->SetFocus();
         $self->{button_6}->SetDefault();
-
         # end wxGlade
 }
 
 sub __do_layout {
         my $self = shift;
-
         # begin wxGlade: PlOgg2_MyFrame::__do_layout
-
         $self->{sizer_5} = Wx::BoxSizer->new(wxVERTICAL);
         $self->{grid_sizer_3} = Wx::FlexGridSizer->new(3, 1, 0, 0);
         $self->{grid_sizer_3}->Add($self->{grid_1}, 1, wxEXPAND, 0);
@@ -79,7 +74,6 @@ sub __do_layout {
         $self->{sizer_5}->Add($self->{grid_sizer_3}, 1, wxEXPAND, 0);
         $self->SetSizer($self->{sizer_5});
         $self->Layout();
-
         # end wxGlade
 }
 

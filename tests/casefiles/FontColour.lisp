@@ -53,8 +53,8 @@
         (wxWindow_SetForegroundColour (slot-text-ctrl-1 obj) (wxColour_CreateRGB 255, 0, 0))
         (wxWindow_SetFont (slot-text-ctrl-1 obj) (wxFont_Create 10 wxDEFAULT wxNORMAL wxBOLD 0 "" wxFONTENCODING_DEFAULT))
         (wxWindow_SetFocus (slot-text-ctrl-1 obj))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod do-layout ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__do_layout
@@ -63,8 +63,8 @@
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
         (wxFrame_layout (slot-frame-1 slef))
-        )
         ;;; end wxGlade
+        )
 
 ;;; end of class MyFrame
 

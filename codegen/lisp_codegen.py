@@ -193,6 +193,7 @@ class LispCodeWriter(BaseCodeWriter):
         'wxsystemcolour':   "(wxSystemSettings_GetColour %(value)s)",
         }
 
+    class_separator = '.'
     comment_sign = ';;;'
 
     global_property_writers = {
@@ -202,6 +203,21 @@ class LispCodeWriter(BaseCodeWriter):
         }
 
     shebang = '#!/usr/bin/env lisp\n'
+        
+    tmpl_name_do_layout = '__do_layout'
+    tmpl_name_set_properties = '__set_properties'
+
+    tmpl_func_do_layout = '\n' \
+                          '(defmethod do-layout ((obj %(klass)s))\n' \
+                          '%(content)s' \
+                          '%(tab)s)\n'
+
+    tmpl_func_set_properties = '\n' \
+                          '(defmethod set-properties ((obj %(klass)s))\n' \
+                          '%(content)s' \
+                          '%(tab)s)\n'
+
+    tmpl_func_empty = '%(tab)spass\n'
 
     tmpl_appfile = """\
 %(overwrite)s\
@@ -454,8 +470,16 @@ class LispCodeWriter(BaseCodeWriter):
 
             write('\n(defmethod init ((obj %s))\n' % klass)
             write("\"Method creates the objects contained in the class.\"\n")
+
         # __init__ begin tag
-        write(indentation + ';;; begin wxGlade: %s.__init__\n' % code_obj.klass)
+        write(self.tmpl_block_begin % {
+            'class_separator': self.class_separator,
+            'comment_sign':    self.comment_sign,
+            'function':        '__init__', 
+            'klass':           self.cn_class(code_obj.klass),
+            'tab':             indentation,
+            })
+        
         prop = code_obj.properties
         style = prop.get("style", None)
         if style:
@@ -511,7 +535,8 @@ class LispCodeWriter(BaseCodeWriter):
         write(tab + ')\n')
         write(tab + ';;; end wxGlade\n')
         if prev_src and not is_new:
-            # replace the lines inside the ctor wxGlade block with the new ones
+            # replace the lines inside the ctor wxGlade block
+            # with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
                                                  '__init__')
             if prev_src.content.find(tag) < 0:
@@ -525,24 +550,16 @@ class LispCodeWriter(BaseCodeWriter):
             buffer = []
             write = buffer.append
 
-        # __set_properties
-        obj_p = getattr(builder, 'get_properties_code',
-                        self.generate_common_properties)(code_obj)
-        obj_p.extend(self.classes[code_obj.klass].props)
-        write_body = len(obj_p)
+        # generate code for __set_properties()
+        code_lines = self.generate_code_set_properties(
+            builder,
+            code_obj,
+            is_new,
+            tab
+            )
+        buffer.extend(code_lines)
 
-        if is_new:
-            write('\n(defmethod set-properties ((obj %s))\n' % klass)
-        # begin tag
-        write(tab + ';;; begin wxGlade: %s.__set_properties\n' % code_obj.klass)
-        if not write_body:
-            write(tab + 'pass\n')
-        else:
-            for l in obj_p:
-                write(tab + l)
-        # end tag
-        write(tab + ')\n')
-        write(tab + ';;; end wxGlade\n')
+        # replace code inside existing __set_properties() function
         if prev_src and not is_new:
             # replace the lines inside the __set_properties wxGlade block
             # with the new ones
@@ -559,33 +576,16 @@ class LispCodeWriter(BaseCodeWriter):
             buffer = []
             write = buffer.append
 
-        # __do_layout
-        if is_new:
-            write('\n' + '(defmethod do-layout ((obj %s))\n' % klass)
-        layout_lines = self.classes[code_obj.klass].layout
-        sizers_init_lines = self.classes[code_obj.klass].sizers_init
+        # generate code for __do_layout()
+        code_lines = self.generate_code_do_layout(
+            builder,
+            code_obj,
+            is_new,
+            tab
+            )
+        buffer.extend(code_lines)
 
-        # check if there are extra layout lines to add
-        if hasattr(builder, 'get_layout_code'):
-            extra_layout_lines = builder.get_layout_code(code_obj)
-        else:
-            extra_layout_lines = []
-
-        # begin tag
-        write(tab + ';;; begin wxGlade: %s.__do_layout\n' % code_obj.klass)
-        if layout_lines or sizers_init_lines or extra_layout_lines:
-            sizers_init_lines.reverse()
-            for l in sizers_init_lines:
-                write(tab + l)
-            for l in layout_lines:
-                write(tab + l)
-            for l in extra_layout_lines:
-                write(tab + l)
-        else:
-            write(tab + 'pass\n')
-        # end tag
-        write(tab + ')\n')
-        write(tab + ';;; end wxGlade\n')
+        # replace code inside existing __do_layout() function
         if prev_src and not is_new:
             # replace the lines inside the __do_layout wxGlade block
             # with the new ones

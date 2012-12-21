@@ -49,25 +49,19 @@ sub new {
 
 sub __set_properties {
         my $self = shift;
-
         # begin wxGlade: MyFrame::__set_properties
-
         $self->SetTitle(_T("frame_1"));
-
         # end wxGlade
 }
 
 sub __do_layout {
         my $self = shift;
-
         # begin wxGlade: MyFrame::__do_layout
-
         $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
         $self->{sizer_1}->Add($self->{hyperlink_1}, 0, wxALL, 5);
         $self->SetSizer($self->{sizer_1});
         $self->{sizer_1}->Fit($self);
         $self->Layout();
-
         # end wxGlade
 }
 

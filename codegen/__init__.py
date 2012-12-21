@@ -434,6 +434,16 @@ class BaseCodeWriter(object):
     @see: L{_generic_code()}
     @see: L{generate_code_extraproperties()}
     """
+    
+    class_separator = ''
+    """\
+    Separator between class and attribute or between different name space
+    elements.
+    
+    E.g "." for Python or "->" for Perl.
+    
+    @type: String
+    """
 
     comment_sign = ''
     """\
@@ -495,6 +505,30 @@ class BaseCodeWriter(object):
     @type: String
     @see:  L{save_file()}
     """
+    
+    tmpl_block_begin = \
+        '%(tab)s%(comment_sign)s begin wxGlade: ' \
+        '%(klass)s%(class_separator)s%(function)s\n'
+
+    tmpl_name_do_layout = ''
+    """\
+    Name of the function __do_layout() in wxGlade begin tag.
+    
+    This name differs between the various code generators.
+    
+    @type: String
+    @see: L{generate_code_do_layout()}
+    """
+
+    tmpl_name_set_properties = ''
+    """\
+    Name of the function __set_properties() in wxGlade begin tag.
+    
+    This name differs between the various code generators.
+    
+    @type: String
+    @see:  L{generate_code_set_properties()}
+    """
 
     tmpl_encoding = None
     """\
@@ -504,6 +538,35 @@ class BaseCodeWriter(object):
 
     @type: String
     @see: {app_encoding}
+    """
+    
+    tmpl_func_empty = ''
+    """\
+    Statement for an empty function e.g. "pass" for Python or "return;" for
+    perl.
+    
+    @note: This statement differs between the various code generators.
+    @type: String
+    """
+
+    tmpl_func_do_layout = ''
+    """\
+    Statement for the __do_layout() function.
+    
+    @note: This statement differs between the various code generators.
+    
+    @type: String
+    @see: L{generate_code_do_layout()}
+    """
+
+    tmpl_func_set_properties = ''
+    """\
+    Statement for the __set_properties() function.
+    
+    @note: This statement differs between the various code generators.
+    
+    @type: String
+    @see: L{generate_code_set_properties()}
     """
 
     tmpl_generated_by = \
@@ -1098,6 +1161,65 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @rtype: String
         """
         return self._generic_code(obj, 'disabled')
+        
+    def generate_code_do_layout(self, builder, code_obj, is_new, tab):
+        """\
+        Generate code for the function C{__do_layout()}.
+
+        If C{is_new} is set, this function returns source code for the whole
+        function. Otherwise it returns just the function body framed by
+        "begin wxGlade" and "end wxGlade".
+
+        @param builder: Widget specific builder
+
+        @param code_obj: Object to generate code for
+        @type code_obj:  Instance of L{CodeObject}
+
+        @param is_new: Indicates if previous source code exists
+        @type is_new:  Boolean
+
+        @param tab: Indentation of function body
+        @type tab:  String
+
+        @rtype: List of strings
+
+        @see: L{tmpl_name_do_layout}
+        @see: L{tmpl_func_do_layout}
+        @see: L{tmpl_func_empty}
+        @see: L{_generate_function()}
+        """
+        code_lines = []
+        write = code_lines.append
+
+        # generate content of function body first
+        layout_lines = self.classes[code_obj.klass].layout
+        sizers_init_lines = self.classes[code_obj.klass].sizers_init
+
+        # check if there are extra layout lines to add
+        if hasattr(builder, 'get_layout_code'):
+            extra_layout_lines = builder.get_layout_code(code_obj)
+        else:
+            extra_layout_lines = []
+
+        if layout_lines or sizers_init_lines or extra_layout_lines:
+            sizers_init_lines.reverse()
+            for l in sizers_init_lines:
+                write(l)
+            for l in layout_lines:
+                write(l)
+            for l in extra_layout_lines:
+                write(l)
+
+        code_lines = self._generate_function(
+            code_obj,
+            is_new,
+            tab,
+            self.tmpl_name_do_layout,
+            self.tmpl_func_do_layout,
+            code_lines,
+            )
+        
+        return code_lines
 
     def generate_code_extraproperties(self, obj):
         """\
@@ -1219,6 +1341,51 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """
         raise NotImplementedError
 
+    def generate_code_set_properties(self, builder, code_obj, is_new, tab):
+        """\
+        Generate code for the function C{__set_properties()}.
+
+        If C{is_new} is set, this function returns source code for the whole
+        function. Otherwise it returns just the function body framed by
+        "begin wxGlade" and "end wxGlade".
+
+        @param builder: Widget specific builder
+
+        @param code_obj: Object to generate code for
+        @type code_obj:  Instance of L{CodeObject}
+
+        @param is_new: Indicates if previous source code exists
+        @type is_new:  Boolean
+
+        @param tab: Indentation of function body
+        @type tab:  String
+
+        @rtype: List of strings
+
+        @see: L{tmpl_name_set_properties}
+        @see: L{tmpl_func_set_properties}
+        @see: L{tmpl_func_empty}
+        @see: L{_generate_function()}        
+        """
+        # check if there are property lines to add
+        _get_properties = getattr(
+            builder,
+            'get_properties_code',
+            self.generate_common_properties)
+        property_lines = _get_properties(code_obj)
+        property_lines.extend(self.classes[code_obj.klass].props)
+        
+        code_lines = self._generate_function(
+            code_obj,
+            is_new,
+            tab,
+            self.tmpl_name_set_properties,
+            self.tmpl_func_set_properties,
+            property_lines,
+            )
+        
+        return code_lines
+
     def generate_code_size(self, obj):
         """\
         Returns the code fragment that sets the size of the given object.
@@ -1282,6 +1449,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Return the class name properly formatted for the selected name space.
 
         @see: L{cn_f()}
+        @see: L{cn_class}
         """
         return name
 
@@ -1290,6 +1458,14 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Return the flags properly formatted for the selected name space.
         """
         return flags
+
+    def cn_class(self, klass):
+        """\
+        Return the klass name 
+        
+        @see: L{cn()}
+        """
+        return klass
 
     def quote_str(self, s, translate=True, escape_chars=True):
         """\
@@ -1573,6 +1749,65 @@ It is available for wx versions %(supported_versions)s only.""") % {
             'value': value,
             }
         return stmt
+
+    def _generate_function(self, code_obj, is_new, tab, fname, ftmpl, body):
+        """\
+        Generic function to generate a complete function from given parts.
+
+        @param code_obj: Object to generate code for
+        @type code_obj:  Instance of L{CodeObject}
+
+        @param is_new: Indicates if previous source code exists
+        @type is_new:  Boolean
+
+        @param tab: Indentation of function body
+        @type tab:  String
+        
+        @param fname: Name of the function
+        @type fname:  String
+        
+        @param ftmpl: Template of the function
+        @type ftmpl:  String
+        
+        @param body: Content of the function
+        @type body:  List of strings
+        
+        @rtype: List of strings
+        """
+        code_lines = []
+        write = code_lines.append
+
+        # begin tag
+        write(self.tmpl_block_begin % {
+            'class_separator': self.class_separator,
+            'comment_sign':    self.comment_sign,
+            'function':        fname,
+            'klass':           self.cn_class(code_obj.klass),
+            'tab':             tab,
+            })
+
+        if body:
+            for l in body:
+                write(tab + l)
+        else:
+            write(self.tmpl_func_empty % {'tab': tab})
+
+        # end tag
+        write('%s%s end wxGlade\n' % (tab, self.comment_sign))
+
+        # embed the content into function template
+        if is_new:
+            stmt = ftmpl % {
+                'tab':     tab,
+                'klass':   code_obj.klass,
+                'content': ''.join(code_lines),
+                }
+            code_lines = ["%s\n" % line.rstrip() for line in stmt.split('\n')]
+
+            # remove newline at last line
+            code_lines[-1] = code_lines[-1].rstrip()
+
+        return code_lines
 
     def _setup(self):
         """\

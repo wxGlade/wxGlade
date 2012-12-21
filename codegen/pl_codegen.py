@@ -217,6 +217,7 @@ class PerlCodeWriter(BaseCodeWriter):
         'wxsystemcolour':   "Wx::SystemSettings::GetColour(%(value)s)",
         }
 
+    class_separator = '::'
     comment_sign = '#'
 
     global_property_writers = {
@@ -236,6 +237,23 @@ class PerlCodeWriter(BaseCodeWriter):
     """
 
     shebang = '#!/usr/bin/perl -w -- \n'
+
+    tmpl_name_do_layout = '__do_layout'
+    tmpl_name_set_properties = '__set_properties'
+
+    tmpl_func_do_layout = '\n' \
+                          'sub __do_layout {\n' \
+                          '%(tab)smy $self = shift;\n' \
+                          '%(content)s' \
+                          '}\n'
+                          
+    tmpl_func_set_properties = '\n' \
+                          'sub __set_properties {\n' \
+                          '%(tab)smy $self = shift;\n' \
+                          '%(content)s' \
+                          '}\n'
+
+    tmpl_func_empty = '%(tab)sreturn;\n'
 
     tmpl_appfile = """%(overwrite)s%(header_lines)s"""
 
@@ -568,8 +586,17 @@ unless(caller){
         #        self.classes[code_obj.klass].dependencies[
         #            "use Wx::Locale gettext => '_T';\n"] = 1
 
-        # constructor (new) begin tag
-        write(tab + '# begin wxGlade: %s::new\n\n' % code_obj.klass)
+        # __init__ begin tag
+        write(self.tmpl_block_begin % {
+            'class_separator': self.class_separator,
+            'comment_sign':    self.comment_sign,
+            'function':        'new', 
+            'klass':           self.cn_class(code_obj.klass),
+            'tab':             tab,
+            })
+        write('\n')
+        
+        
         prop = code_obj.properties
         style = prop.get("style", None)
         if style:
@@ -616,7 +643,8 @@ unless(caller){
             write('}\n\n')
 
         if prev_src and not is_new:
-            # replace the lines inside the ctor wxGlade block with the new ones
+            # replace the lines inside the ctor wxGlade block
+            # with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
                                                  'new')
             if prev_src.content.find(tag) < 0:
@@ -630,32 +658,16 @@ unless(caller){
             buffer = []
             write = buffer.append
 
-        # __set_properties
-        obj_p = getattr(builder, 'get_properties_code',
-                        self.generate_common_properties)(code_obj)
-        obj_p.extend(self.classes[code_obj.klass].props)
-        write_body = len(obj_p)
+        # generate code for __set_properties()
+        code_lines = self.generate_code_set_properties(
+            builder,
+            code_obj,
+            is_new,
+            tab
+            )
+        buffer.extend(code_lines)
 
-        if is_new:
-            write('\n')
-            write('sub __set_properties {\n')
-            write(tab + 'my $self = shift;\n\n')
-
-        # begin tag
-        write(tab + '# begin wxGlade: %s::__set_properties\n\n' % code_obj.klass)
-
-        if not write_body:
-            write(tab + 'return;\n')
-        else:
-            for l in obj_p:
-                write(tab + l)
-        # end tag
-        write('\n')
-        write(tab + '# end wxGlade\n')
-
-        if is_new:
-            write('}\n')
-
+        # replace code inside existing __set_properties() function
         if prev_src and not is_new:
             # replace the lines inside the __set_properties wxGlade block
             # with the new ones
@@ -672,41 +684,16 @@ unless(caller){
             buffer = []
             write = buffer.append
 
-        # __do_layout
-        if is_new:
-            write('\n')
-            write('sub __do_layout {\n')
-            write(tab + 'my $self = shift;\n\n')
-        layout_lines = self.classes[code_obj.klass].layout
-        sizers_init_lines = self.classes[code_obj.klass].sizers_init
+        # generate code for __do_layout()
+        code_lines = self.generate_code_do_layout(
+            builder,
+            code_obj,
+            is_new,
+            tab
+            )
+        buffer.extend(code_lines)
 
-        # check if there are extra layout lines to add
-        if hasattr(builder, 'get_layout_code'):
-            extra_layout_lines = builder.get_layout_code(code_obj)
-        else:
-            extra_layout_lines = []
-
-        # begin tag
-        write(tab + '# begin wxGlade: %s::__do_layout\n\n' % code_obj.klass)
-
-        if layout_lines or sizers_init_lines or extra_layout_lines:
-            sizers_init_lines.reverse()
-            for l in sizers_init_lines:
-                write(tab + l)
-            for l in layout_lines:
-                write(tab + l)
-            for l in extra_layout_lines:
-                write(tab + l)
-        else:
-            write(tab + 'return;\n')
-
-        # end tag
-        write('\n')
-        write(tab + '# end wxGlade\n')
-
-        if is_new:
-            write('}\n')
-
+        # replace code inside existing __do_layout() function
         if prev_src and not is_new:
             # replace the lines inside the __do_layout wxGlade block
             # with the new ones
@@ -972,7 +959,7 @@ unless(caller){
             val = self.cn(val)
         # check to see if we have to make the var global or not...
         return ('use constant %s => %s;\n' % (name, val), name)
-
+        
     def generate_code_size(self, obj):
         objname = self._get_code_name(obj)
         size = obj.properties.get('size', '').strip()
