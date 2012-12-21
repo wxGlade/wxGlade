@@ -58,23 +58,23 @@ class LispCodeGenerator:
                 if var[0] != "$":
                     var = "$" + var
                 props_buf.append(
-                    '(wxBitmapButton_SetBitmapDisabled (slot-%s obj) %s)'
+                    '(wxBitmapButton_SetBitmapDisabled (slot-%s obj) %s)\n'
                     %(obj.name, var))
             elif disabled_bmp.startswith('code:'):
                 var = disabled_bmp[5:].strip()
                 props_buf.append(
-                    '(wxBitmapButton_SetBitmapDisabled (slot-%s obj) %s)'
+                    '(wxBitmapButton_SetBitmapDisabled (slot-%s obj) %s)\n'
                     % (obj.name, var))
             else:
                 props_buf.append(
-                    '(wxBitmapButton_SetBitmapDisabled (slot-%s obj) %s)'
+                    '(wxBitmapButton_SetBitmapDisabled (slot-%s obj) %s)\n'
                     % (obj.name, plgen.quote_path(disabled_bmp)))
         if not prop.has_key('size'):
-            props_buf.append('(wxButton_SetDefault (slot-%s obj))'
+            props_buf.append('(wxButton_SetDefault (slot-%s obj))\n'
                              %(obj.name))
 
         if prop.get('default', False):
-            props_buf.append('(wxButton_SetDefault (slot-%s obj))'
+            props_buf.append('(wxButton_SetDefault (slot-%s obj))\n'
                              %(obj.name))
         return init, props_buf, []
 
