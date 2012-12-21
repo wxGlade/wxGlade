@@ -77,9 +77,7 @@ sub new {
 
 sub __set_properties {
         my $self = shift;
-
         # begin wxGlade: wxGladePreferencesUI::__set_properties
-
         $self->SetTitle(_T("wxGlade: preferences"));
         my $icon = &Wx::wxNullIcon();
         $icon->CopyFromBitmap(Wx::Bitmap->new(_T("icons/icon.xpm"), wxBITMAP_TYPE_ANY));
@@ -102,15 +100,12 @@ sub __set_properties {
         $self->{write_timestamp}->SetValue(1);
         $self->{backup_suffix}->SetSelection(0);
         $self->{ok}->SetDefault();
-
         # end wxGlade
 }
 
 sub __do_layout {
         my $self = shift;
-
         # begin wxGlade: wxGladePreferencesUI::__do_layout
-
         $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
         $self->{sizer_2} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_5} = Wx::BoxSizer->new(wxVERTICAL);
@@ -169,7 +164,6 @@ sub __do_layout {
         $self->{sizer_1}->Fit($self);
         $self->Layout();
         $self->Centre();
-
         # end wxGlade
 }
 

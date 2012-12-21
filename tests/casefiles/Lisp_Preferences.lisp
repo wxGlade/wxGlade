@@ -140,8 +140,8 @@
         (wxCheckBox_SetValue (slot-write-timestamp obj) 1);
         (wxRadioBox_SetSelection (slot-backup-suffix obj) 0)
         (wxButton_SetDefault (slot-ok obj))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod do-layout ((obj wxGladePreferencesUI))
         ;;; begin wxGlade: wxGladePreferencesUI.__do_layout
@@ -203,8 +203,8 @@
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
         (wxWindow_layout (slot-dialog-1 slef))
         (wxWindow_Centre (slot-dialog-1 slef) wxBOTH)
-        )
         ;;; end wxGlade
+        )
 
 ;;; end of class wxGladePreferencesUI
 

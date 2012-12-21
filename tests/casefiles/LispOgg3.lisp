@@ -99,8 +99,8 @@
         (wxRadioBox_SetSelection (slot-radio-box-1 obj) 0)
         (wxWindow_SetToolTip (slot-checkbox-1 obj)(_"Overwrite an existing file"))
         (wxCheckBox_SetValue (slot-checkbox-1 obj) 1);
-        )
         ;;; end wxGlade
+        )
 
 (defmethod do-layout ((obj LispOgg3_MyDialog))
         ;;; begin wxGlade: LispOgg3_MyDialog.__do_layout
@@ -143,8 +143,8 @@
         (wxFlexGridSizer_AddGrowableCol (slot-sizer-1 obj) 0)
         (wxWindow_layout (slot-Mp3-To-Ogg slef))
         (wxWindow_Centre (slot-Mp3-To-Ogg slef) wxBOTH)
-        )
         ;;; end wxGlade
+        )
 
 (defun startConverting (function data event) ;;; wxGlade: LispOgg3_MyDialog.<event_handler>
         (print "Event handler `startConverting' not implemented!")
@@ -231,8 +231,8 @@
         (wxGrid_SetSelectionMode (slot-grid-1 obj) wxGridSelectCells)
         (wxWindow_SetFocus (slot-button-6 obj))
         (wxButton_SetDefault (slot-button-6 obj))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod do-layout ((obj LispOgg3_MyFrame))
         ;;; begin wxGlade: LispOgg3_MyFrame.__do_layout
@@ -246,8 +246,8 @@
         (wxSizer_AddSizer (slot-sizer-5  obj) (slot-grid-sizer-3 obj) 1 wxEXPAND 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-5 obj))
         (wxFrame_layout (slot-FrameOggCompressionDetails slef))
-        )
         ;;; end wxGlade
+        )
 
 ;;; end of class LispOgg3_MyFrame
 

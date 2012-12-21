@@ -48,25 +48,19 @@ sub new {
 
 sub __set_properties {
         my $self = shift;
-
         # begin wxGlade: MyDialog::__set_properties
-
         $self->SetTitle("dialog_1");
-
         # end wxGlade
 }
 
 sub __do_layout {
         my $self = shift;
-
         # begin wxGlade: MyDialog::__do_layout
-
         $self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_1}->Add($self->{calendar_ctrl_1}, 0, 0, 0);
         $self->SetSizer($self->{sizer_1});
         $self->{sizer_1}->Fit($self);
         $self->Layout();
-
         # end wxGlade
 }
 

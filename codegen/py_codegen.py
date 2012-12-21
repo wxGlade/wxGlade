@@ -240,6 +240,7 @@ class PythonCodeWriter(BaseCodeWriter):
         'wxsystemcolour':   "wxSystemSettings_GetColour(%(value)s)",
         }
 
+    class_separator = '.'
     comment_sign = '#'
 
     global_property_writers = {
@@ -250,8 +251,13 @@ class PythonCodeWriter(BaseCodeWriter):
 
     shebang = '#!/usr/bin/env python\n'
 
+    tmpl_name_do_layout = '__do_layout'
+    tmpl_name_set_properties = '__set_properties'
+
     tmpl_encoding = "# -*- coding: %s -*-\n"
 
+    tmpl_func_empty = '%(tab)spass\n'
+    
     tmpl_appfile = """\
 %(overwrite)s\
 %(header_lines)s\
@@ -334,6 +340,12 @@ if __name__ == "__main__":
         @see: L{cn()}
         """
         return " | ".join([self.cn(f) for f in str(flags).split('|')])
+
+    def cn_class(self, klass):
+        """\
+        Return the short class name 
+        """
+        return self.without_package(klass)
 
     def initialize(self, app_attrs):
         """\
@@ -505,12 +517,19 @@ if __name__ == "__main__":
                 )
 
         # __init__ begin tag
-        write(indentation + '# begin wxGlade: %s.__init__\n' % \
-              self.without_package(code_obj.klass))
+        write(self.tmpl_block_begin % {
+            'class_separator': self.class_separator,
+            'comment_sign':    self.comment_sign,
+            'function':        '__init__', 
+            'klass':           self.cn_class(code_obj.klass),
+            'tab':             indentation,
+            })
+            
         prop = code_obj.properties
         style = prop.get("style", None)
         if style:
             write(indentation + 'kwds["style"] = %s\n' % mycn_f(style))
+
         # __init__
         if custom_base:
             bases = [b.strip() for b in custom_base.split(',')]
@@ -586,8 +605,11 @@ if __name__ == "__main__":
 
         # end tag
         write(tab + '# end wxGlade\n')
+        
+        # replace code inside existing constructor block
         if prev_src and not is_new:
-            # replace the lines inside the ctor wxGlade block with the new ones
+            # replace the lines inside the ctor wxGlade block
+            # with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
                                                  '__init__')
             if prev_src.content.find(tag) < 0:
@@ -601,25 +623,16 @@ if __name__ == "__main__":
             buffer = []
             write = buffer.append
 
-        # __set_properties
-        obj_p = getattr(builder, 'get_properties_code',
-                        self.generate_common_properties)(code_obj)
-        obj_p.extend(self.classes[code_obj.klass].props)
-        write_body = len(obj_p)
+        # generate code for __set_properties()
+        code_lines = self.generate_code_set_properties(
+            builder,
+            code_obj,
+            is_new,
+            tab
+            )
+        buffer.extend(code_lines)
 
-        if is_new:
-            write('\n')
-            write('%sdef __set_properties(self):\n' % self.tabs(1))
-        # begin tag
-        write(tab + '# begin wxGlade: %s.__set_properties\n' % \
-              self.without_package(code_obj.klass))
-        if not write_body:
-            write(tab + 'pass\n')
-        else:
-            for l in obj_p:
-                write(tab + l)
-        # end tag
-        write(tab + '# end wxGlade\n')
+        # replace code inside existing __set_properties() function
         if prev_src and not is_new:
             # replace the lines inside the __set_properties wxGlade block
             # with the new ones
@@ -636,34 +649,16 @@ if __name__ == "__main__":
             buffer = []
             write = buffer.append
 
-        # __do_layout
-        if is_new:
-            write('\n')
-            write(self.tabs(1) + 'def __do_layout(self):\n')
-        layout_lines = self.classes[code_obj.klass].layout
-        sizers_init_lines = self.classes[code_obj.klass].sizers_init
+        # generate code for __do_layout()
+        code_lines = self.generate_code_do_layout(
+            builder,
+            code_obj,
+            is_new,
+            tab
+            )
+        buffer.extend(code_lines)
 
-        # check if there are extra layout lines to add
-        if hasattr(builder, 'get_layout_code'):
-            extra_layout_lines = builder.get_layout_code(code_obj)
-        else:
-            extra_layout_lines = []
-
-        # begin tag
-        write(tab + '# begin wxGlade: %s.__do_layout\n' % \
-              self.without_package(code_obj.klass))
-        if layout_lines or sizers_init_lines or extra_layout_lines:
-            sizers_init_lines.reverse()
-            for l in sizers_init_lines:
-                write(tab + l)
-            for l in layout_lines:
-                write(tab + l)
-            for l in extra_layout_lines:
-                write(tab + l)
-        else:
-            write(tab + 'pass\n')
-        # end tag
-        write(tab + '# end wxGlade\n')
+        # replace code inside existing __do_layout() function
         if prev_src and not is_new:
             # replace the lines inside the __do_layout wxGlade block
             # with the new ones
@@ -903,6 +898,22 @@ if __name__ == "__main__":
                  (sizer.name, obj_name, option, self.cn_f(flag), self.cn_f(border))
         klass.layout.append(buffer)
 
+    def generate_code_do_layout(self, builder, code_obj, is_new, tab):
+        # Python has two indentation levels
+        #  1st) for function declaration
+        #  2nd) for function body
+        self.tmpl_func_do_layout = '\n' + \
+                              self.tabs(1) + 'def __do_layout(self):\n' + \
+                              '%(content)s' + \
+                              ''
+        return BaseCodeWriter.generate_code_do_layout(
+            self,
+            builder,
+            code_obj,
+            is_new,
+            tab,
+            )
+
     def generate_code_id(self, obj, id=None):
         if obj and obj.preview:
             return '', '-1'  # never generate ids for preview code
@@ -927,6 +938,23 @@ if __name__ == "__main__":
         if '.' in name:
             return ('%s = %s\n' % (name, val), name)
         return ('global %s; %s = %s\n' % (name, name, val), name)
+
+    def generate_code_set_properties(self, builder, code_obj, is_new, tab):
+        # Python has two indentation levels
+        #  1st) for function declaration
+        #  2nd) for function body
+        self.tmpl_func_set_properties = '\n' + \
+                              self.tabs(1) + 'def __set_properties(self):\n' + \
+                              '%(content)s' + \
+                              ''        
+
+        return BaseCodeWriter.generate_code_set_properties(
+            self,
+            builder,
+            code_obj,
+            is_new,
+            tab,
+            )
 
     def generate_code_size(self, obj):
         objname = self._get_code_name(obj)

@@ -88,8 +88,8 @@
         (wxGrid_SetSelectionMode (slot-grid-1 obj) wxGridSelectCells)
         (wxWindow_SetFocus (slot-button-6 obj))
         (wxButton_SetDefault (slot-button-6 obj))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod do-layout ((obj LispOgg2_MyFrame))
         ;;; begin wxGlade: LispOgg2_MyFrame.__do_layout
@@ -103,8 +103,8 @@
         (wxSizer_AddSizer (slot-sizer-5  obj) (slot-grid-sizer-3 obj) 1 wxEXPAND 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-5 obj))
         (wxFrame_layout (slot-FrameOggCompressionDetails slef))
-        )
         ;;; end wxGlade
+        )
 
 ;;; end of class LispOgg2_MyFrame
 

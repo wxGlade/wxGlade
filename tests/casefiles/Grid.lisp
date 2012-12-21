@@ -59,8 +59,8 @@
         (wxWindow_SetBackgroundColour (slot-grid-1 obj) (wxColour_CreateRGB 0, 255, 255))
         (wxGrid_SetCellValue (slot-(slot-grid-1 obj) obj) 0, 0, "1")
         (wxGrid_SetRowLabelValue (slot-(slot-grid-1 obj) obj) 0, "Row 1")
-        )
         ;;; end wxGlade
+        )
 
 (defmethod do-layout ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__do_layout
@@ -69,8 +69,8 @@
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
         (wxFrame_layout (slot-frame-1 slef))
-        )
         ;;; end wxGlade
+        )
 
 (defun myEVT_GRID_CELL_LEFT_CLICK (function data event) ;;; wxGlade: MyFrame.<event_handler>
         (print "Event handler `myEVT_GRID_CELL_LEFT_CLICK' not implemented!")

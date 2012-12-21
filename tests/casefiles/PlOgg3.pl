@@ -72,23 +72,18 @@ sub new {
 
 sub __set_properties {
         my $self = shift;
-
         # begin wxGlade: PlOgg3_MyDialog::__set_properties
-
         $self->SetTitle(_T("mp3 2 ogg"));
         $self->SetSize(Wx::Size->new(500, 300));
         $self->{radio_box_1}->SetSelection(0);
         $self->{checkbox_1}->SetToolTipString(_T("Overwrite an existing file"));
         $self->{checkbox_1}->SetValue(1);
-
-# end wxGlade
+        # end wxGlade
 }
 
 sub __do_layout {
         my $self = shift;
-
         # begin wxGlade: PlOgg3_MyDialog::__do_layout
-
         $self->{sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
         $self->{sizer_2} = Wx::FlexGridSizer->new(1, 3, 0, 0);
         $self->{grid_sizer_2} = Wx::FlexGridSizer->new(2, 3, 0, 0);
@@ -128,8 +123,7 @@ sub __do_layout {
         $self->{sizer_1}->AddGrowableCol(0);
         $self->Layout();
         $self->Centre();
-
-# end wxGlade
+        # end wxGlade
 }
 
 sub startConverting {

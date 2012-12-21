@@ -336,6 +336,7 @@ class CPPCodeWriter(BaseCodeWriter):
         'wxsystemcolour':   "wxSystemSettings::GetColour(%(value)s)",
         }
 
+    class_separator = '::'
     comment_sign = '//'
 
     global_property_writers = {
@@ -375,6 +376,19 @@ class CPPCodeWriter(BaseCodeWriter):
     """
 
     shebang = '// -*- C++ -*-\n'
+        
+    tmpl_name_do_layout = 'do_layout'
+    tmpl_name_set_properties = 'set_properties'
+        
+    tmpl_func_do_layout = '\n' \
+                          'void %(klass)s::do_layout()\n{\n' \
+                          '%(content)s' \
+                          '}\n\n'
+
+    tmpl_func_set_properties = '\n' \
+                          'void %(klass)s::set_properties()\n{\n' \
+                          '%(content)s' \
+                          '}\n\n'
 
     tmpl_appfile = """\
 %(overwrite)s\
@@ -982,8 +996,9 @@ bool MyApp::OnInit()
 
             swrite('\n%s::%s(%s):\n%s%s\n{\n' % (code_obj.klass,
                                                  code_obj.klass,
-                                                 sign_decl2, self.tabs(1), base))
-##                                                      code_obj.base, sign_inst))
+                                                 sign_decl2,
+                                                 self.tabs(1),
+                                                 base))
         swrite(self.tabs(1) + '// begin wxGlade: %s::%s\n' % (code_obj.klass,
                                                          code_obj.klass))
 
@@ -1009,7 +1024,7 @@ bool MyApp::OnInit()
             swrite('}\n\n')
 
         if prev_src and not is_new:
-            # replace the lines inside the constructor wxGlade block
+            # replace the lines inside the ctor wxGlade block
             # with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
                                                  code_obj.klass)
@@ -1102,24 +1117,16 @@ bool MyApp::OnInit()
                 source_buffer = []
                 swrite = source_buffer.append
 
-        # set_properties
-        if hasattr(builder, 'get_properties_code'):
-            obj_p = builder.get_properties_code(code_obj)
-        else:
-            obj_p = self.generate_common_properties(code_obj)
+        # generate code for __set_properties()
+        code_lines = self.generate_code_set_properties(
+            builder,
+            code_obj,
+            is_new,
+            tab
+            )
+        source_buffer.extend(code_lines)
 
-        # set_properties
-        if is_new:
-            swrite('\nvoid %s::set_properties()\n{\n' % code_obj.klass)
-        swrite(tab + '// begin wxGlade: %s::set_properties\n' % code_obj.klass)
-        for l in obj_p:
-            swrite(tab + l)
-        for l in self.classes[code_obj.klass].props:
-            swrite(tab + l)
-        swrite(tab + '// end wxGlade\n')
-        if is_new:
-            swrite('}\n\n')
-
+        # replace code inside existing __set_properties() function
         if prev_src and not is_new:
             # replace the lines inside the set_properties wxGlade block
             # with the new ones
@@ -1136,37 +1143,26 @@ bool MyApp::OnInit()
             source_buffer = []
             swrite = source_buffer.append
 
-        # do_layout
-        if is_new:
-            swrite('\nvoid %s::do_layout()\n{\n' % code_obj.klass)
-        layout_lines = self.classes[code_obj.klass].layout
-        sizers_init_lines = self.classes[code_obj.klass].sizers_init
-        swrite(tab + '// begin wxGlade: %s::do_layout\n' % code_obj.klass)
-        sizers_init_lines.reverse()
-        for l in sizers_init_lines:
-            swrite(tab + l)
-        for l in layout_lines:
-            swrite(tab + l)
+        # generate code for __do_layout()
+        code_lines = self.generate_code_do_layout(
+            builder,
+            code_obj,
+            is_new,
+            tab
+            )
+        source_buffer.extend(code_lines)
 
-        # now, check if there are extra layout lines to add
-        if hasattr(builder, 'get_layout_code'):
-            for l in builder.get_layout_code(code_obj):
-                swrite(tab + l)
-
-        swrite(tab + '// end wxGlade\n')
-        if is_new:
-            swrite('}\n\n')
-
+        # replace code inside existing do_layout() function
         if prev_src and not is_new:
-            # replace the lines inside the constructor wxGlade block
+            # replace the lines inside the do_layout wxGlade block
             # with the new ones
-            tag = '<%swxGlade replace %s do_layout>' % \
-                (self.nonce, code_obj.klass)
+            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
+                                                 'do_layout')
             if prev_src.source_content.find(tag) < 0:
                 # no do_layout tag found, issue a warning and do nothing
                 self.warning(
-                    "wxGlade %s::do_layout block not found, relative code "
-                    "NOT generated" % code_obj.klass
+                    "wxGlade do_layout block not found for %s, do_layout "
+                    "code NOT generated" % code_obj.name
                     )
             else:
                 prev_src.source_content = prev_src.source_content.\

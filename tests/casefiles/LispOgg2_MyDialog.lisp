@@ -98,8 +98,8 @@
         (wxRadioBox_SetSelection (slot-radio-box-1 obj) 0)
         (wxWindow_SetToolTip (slot-checkbox-1 obj)(_"Overwrite an existing file"))
         (wxCheckBox_SetValue (slot-checkbox-1 obj) 1);
-        )
         ;;; end wxGlade
+        )
 
 (defmethod do-layout ((obj LispOgg2_MyDialog))
         ;;; begin wxGlade: LispOgg2_MyDialog.__do_layout
@@ -142,8 +142,8 @@
         (wxFlexGridSizer_AddGrowableCol (slot-sizer-1 obj) 0)
         (wxWindow_layout (slot-Mp3-To-Ogg slef))
         (wxWindow_Centre (slot-Mp3-To-Ogg slef) wxBOTH)
-        )
         ;;; end wxGlade
+        )
 
 (defun startConverting (function data event) ;;; wxGlade: LispOgg2_MyDialog.<event_handler>
         (print "Event handler `startConverting' not implemented!")

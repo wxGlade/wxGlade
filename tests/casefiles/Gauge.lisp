@@ -47,8 +47,8 @@
 (defmethod set-properties ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) "frame_1")
-        )
         ;;; end wxGlade
+        )
 
 (defmethod do-layout ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__do_layout
@@ -57,8 +57,8 @@
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
         (wxFrame_layout (slot-frame-1 slef))
-        )
         ;;; end wxGlade
+        )
 
 ;;; end of class MyFrame
 
