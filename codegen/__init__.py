@@ -953,8 +953,10 @@ class BaseCodeWriter(object):
         else:
             self.warning(
                 _('No application code template for klass "%(klass)s" '
-                  'and gettext "%(gettext)s" found!' % \
-                        (klass, self._use_gettext)
+                  'and gettext "%(gettext)s" found!' % {
+                        'klass':   klass,
+                        'gettext': self._use_gettext,
+                        }
                   ))
             return
 
