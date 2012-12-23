@@ -7,6 +7,7 @@
 (use-package "FFI")
 (ffi:default-foreign-language :stdc)
 
+
 ;;; begin wxGlade: dependencies
 (use-package :wxButton)
 (use-package :wxCL)
@@ -115,8 +116,8 @@
         (setf (slot-choose-widget-path obj) (wxButton_Create (slot-notebook-1-pane-2 obj) wxID_ANY (_"...") -1 -1 -1 -1 wxBU_EXACTFIT))
         (setf (slot-ok obj) (wxButton_Create (slot-top-window obj) wxID_OK "" -1 -1 -1 -1 0))
         (setf (slot-cancel obj) (wxButton_Create (slot-top-window obj) wxID_CANCEL "" -1 -1 -1 -1 0))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod set-properties ((obj wxGladePreferencesUI))
         ;;; begin wxGlade: wxGladePreferencesUI.__set_properties

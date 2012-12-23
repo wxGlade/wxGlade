@@ -7,6 +7,7 @@
 (use-package "FFI")
 (ffi:default-foreign-language :stdc)
 
+
 ;;; begin wxGlade: dependencies
 (use-package :wxCL)
 (use-package :wxColour)
@@ -41,8 +42,8 @@
         ;;; begin wxGlade: MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
         (setf (slot-hyperlink-1 obj) (wxHyperlinkCtrl (slot-top-window obj) wxID_ANY (_"Homepage wxGlade") (_"http://wxgalde.sf.net") -1 -1 -1 -1 wxHL_ALIGN_RIGHT))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod set-properties ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__set_properties

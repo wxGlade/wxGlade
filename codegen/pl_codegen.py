@@ -241,12 +241,33 @@ class PerlCodeWriter(BaseCodeWriter):
     tmpl_name_do_layout = '__do_layout'
     tmpl_name_set_properties = '__set_properties'
 
+    tmpl_cfunc_end = '%(tab)sreturn $self;\n' \
+                     '\n' \
+                     '}\n' \
+                     '\n'
+
+    tmpl_ctor_call_layout = '\n' \
+                            '%(tab)s$self->__set_properties();\n' \
+                            '%(tab)s$self->__do_layout();\n\n'
+
     tmpl_func_do_layout = '\n' \
                           'sub __do_layout {\n' \
                           '%(tab)smy $self = shift;\n' \
                           '%(content)s' \
                           '}\n'
-                          
+
+    tmpl_func_event_stub = """\
+
+sub %(handler)s {
+%(tab)smy ($self, $event) = @_;
+%(tab)s# wxGlade: %(klass)s::%(handler)s <event_handler>
+%(tab)swarn "Event handler (%(handler)s) not implemented";
+%(tab)s$event->Skip;
+%(tab)s# end wxGlade
+}
+
+"""
+
     tmpl_func_set_properties = '\n' \
                           'sub __set_properties {\n' \
                           '%(tab)smy $self = shift;\n' \
@@ -478,6 +499,10 @@ unless(caller){
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):
+        if self.classes.has_key(code_obj.klass) and \
+           self.classes[code_obj.klass].done:
+            return  # the code has already been generated
+
         if self.multiple_files:
             # let's see if the file to generate exists, and in this case
             # create a SourceFileContent instance
@@ -497,10 +522,6 @@ unless(caller){
             # in this case, previous_source is the SourceFileContent instance
             # that keeps info about the single file to generate
             prev_src = self.previous_source
-
-        if self.classes.has_key(code_obj.klass) and \
-           self.classes[code_obj.klass].done:
-            return  # the code has already been generated
 
         try:
             builder = self.obj_builders[code_obj.base]
@@ -524,11 +545,16 @@ unless(caller){
 
         buffer = []
         write = buffer.append
-        tab = self.tabs(1)
 
         if not self.classes.has_key(code_obj.klass):
             # if the class body was empty, create an empty ClassLines
             self.classes[code_obj.klass] = self.ClassLines()
+
+        # collect all event handlers
+        event_handlers = self.classes[code_obj.klass].event_handlers
+        if hasattr(builder, 'get_events'):
+            for id, event, handler in builder.get_events(code_obj):
+                event_handlers.append((id, mycn(event), handler))
 
         # try to see if there's some extra code to add to this class
         extra_code = getattr(builder, 'extracode',
@@ -547,8 +573,17 @@ unless(caller){
         # handled later.  Otherwise we'll emit duplicate extra code for
         # frames.
 
+        # custom base classes support
+        custom_base = getattr(code_obj, 'custom_base',
+                              code_obj.properties.get('custom_base', None))
+        if custom_base and not custom_base.strip():
+            custom_base = None
+
+        tab = self.tabs(1)
+
         new_signature = getattr(builder, 'new_signature', [] )
 
+        # generate constructor code
         if is_new:
             write('package %s;\n\n' % code_obj.klass)
             write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n'
@@ -580,11 +615,14 @@ unless(caller){
                 new_signature = ['@_[1 .. $#_]']  # shift(@_)->SUPER::new(@_);
                 print code_obj.klass + " did not declare self.new_defaults "
 
-        # we don't need gettext in main context currently
-        #else:
-        #    if self._use_gettext:
-        #        self.classes[code_obj.klass].dependencies[
-        #            "use Wx::Locale gettext => '_T';\n"] = 1
+        elif custom_base:
+            # custom base classes set, but "overwrite existing sources" not
+            # set. Issue a warning about this
+            self.warning(
+                '%s has custom base classes, but you are not overwriting '
+                'existing sources: please check that the resulting code is '
+                'correct!' % code_obj.name
+                )
 
         # __init__ begin tag
         write(self.tmpl_block_begin % {
@@ -594,8 +632,6 @@ unless(caller){
             'klass':           self.cn_class(code_obj.klass),
             'tab':             tab,
             })
-        write('\n')
-        
         
         prop = code_obj.properties
         style = prop.get("style", None)
@@ -614,34 +650,33 @@ unless(caller){
         for l in init_lines:
             write(tab + l)
 
-        # now check if there are extra lines to add to the init method
+        # now check if there are extra lines to add to the constructor
         if hasattr(builder, 'get_init_code'):
             for l in builder.get_init_code(code_obj):
                 write(tab + l)
 
-        write('\n')
-        write(tab + '$self->__set_properties();\n')
-        write(tab + '$self->__do_layout();\n\n')
+        write(self.tmpl_ctor_call_layout % {
+            'tab': tab,
+            })
 
-        event_handlers = self.classes[code_obj.klass].event_handlers
-        if hasattr(builder, 'get_events'):
-            for id, event, handler in builder.get_events(code_obj):
-                event_handlers.append((id, mycn(event), handler))
-        for win_id, event, handler in event_handlers:
-            if win_id.startswith('#'):
-                win_id = '$self->{' + win_id[8:] + '}->GetId'
-            write(tab + 'Wx::Event::%s($self, %s, \\&%s);\n' % \
-                  (event, win_id, handler))
-        if event_handlers:
-            write('\n')
+        # generate code for binding events
+        code_lines = self.generate_code_event_bind(
+            code_obj,
+            tab,
+            event_handlers,
+            )
+        buffer.extend(code_lines)
 
         # end tag
-        write(tab + '# end wxGlade\n')
+        write('%s%s end wxGlade\n' % (tab, self.comment_sign))
 
-        if is_new:
-            write(tab + 'return $self;\n\n')
-            write('}\n\n')
+        # write class function end statement
+        if self.tmpl_cfunc_end and is_new:
+            write(self.tmpl_cfunc_end % {
+                'tab': tab,
+                })
 
+        # replace code inside existing constructor block
         if prev_src and not is_new:
             # replace the lines inside the ctor wxGlade block
             # with the new ones
@@ -708,22 +743,19 @@ unless(caller){
             else:
                 prev_src.content = prev_src.content.replace(tag, "".join(buffer))
 
-        # now let's generate the event handler stubs...
+        # generate code for event handler stubs
+        code_lines = self.generate_code_event_handler(
+            code_obj,
+            is_new,
+            tab,
+            prev_src,
+            event_handlers,
+            )
+
+        # replace code inside existing event handlers
         if prev_src and not is_new:
-            already_there = prev_src.event_handlers.get(code_obj.klass, {})
-            buf = []
-            for name, event, handler in event_handlers:
-                if handler not in already_there:
-                    buf.append('\n')
-                    buf.append('sub %s {\n' % handler)
-                    buf.append(tab + 'my ($self, $event) = @_;\n')
-                    buf.append(tab + '# wxGlade: %s::%s <event_handler>\n\n' % (code_obj.klass, handler))
-                    buf.append(tab + 'warn "Event handler (%s) not implemented";\n' % handler)
-                    buf.append(tab + '$event->Skip;\n')
-                    buf.append('\n')
-                    buf.append(tab + '# end wxGlade\n}\n\n')
-                    already_there[handler] = 1
-            tag = '<%swxGlade event_handlers %s>' % (self.nonce, code_obj.klass)
+            tag = \
+                '<%swxGlade event_handlers %s>' % (self.nonce, code_obj.klass)
             if prev_src.content.find(tag) < 0:
                 # no event_handlers tag found, issue a warning and do nothing
                 self.warning(
@@ -731,21 +763,12 @@ unless(caller){
                     "event_handlers code NOT generated" % code_obj.name
                     )
             else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buf))
-            del buf
+                prev_src.content = prev_src.content.replace(
+                    tag,
+                    "".join(code_lines),
+                    )
         else:
-            already_there = {}
-            for name, event, handler in event_handlers:
-                if handler not in already_there:
-                    write('\n')
-                    write('sub %s {\n' % handler)
-                    write(tab + 'my ($self, $event) = @_;\n')
-                    write(tab + '# wxGlade: %s::%s <event_handler>\n\n' % (code_obj.klass, handler))
-                    write(tab + 'warn "Event handler (%s) not implemented";\n' % handler)
-                    write(tab + '$event->Skip;\n')
-                    write('\n')
-                    write(tab + '# end wxGlade\n}\n\n')
-                    already_there[handler] = 1
+            buffer.extend(code_lines)
 
         # the code has been generated
         self.classes[code_obj.klass].done = True
@@ -902,7 +925,6 @@ unless(caller){
         else:  # the object is a sizer
             if sub_obj.base == 'wxStaticBoxSizer':
                 klass.parents_init.insert(1, init.pop(0))
-                # ${staticboxsizername}_staticbox
             klass.sizers_init.extend(init)
 
         klass.props.extend(props)
@@ -938,6 +960,25 @@ unless(caller){
         buffer = '$self->{%s}->Add(%s, %s, %s, %s);\n' % \
                  (sizer.name, obj_name, option, self.cn_f(flag), self.cn_f(border))
         klass.layout.append(buffer)
+
+    def generate_code_event_bind(self, code_obj, tab, event_handlers):
+        code_lines = []
+        write = code_lines.append
+
+        for win_id, event, handler in event_handlers:
+            if win_id.startswith('#'):
+                win_id = '$self->{%s}->GetId' % win_id[8:]
+            write('%(tab)sWx::Event::%(event)s($self, %(win_id)s, \\&%(handler)s);\n' % {
+                'tab': tab,
+                'event': event,
+                'win_id': win_id,
+                'handler': handler,
+                })
+
+        if event_handlers:
+            write('\n')
+
+        return code_lines
 
     def generate_code_id(self, obj, id=None):
         if id is None:

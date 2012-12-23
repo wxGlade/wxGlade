@@ -31,7 +31,6 @@ sub new {
         $name   = ""                 unless defined $name;
 
         # begin wxGlade: MyFrame::new
-
         $style = wxDEFAULT_FRAME_STYLE 
                 unless defined $style;
 

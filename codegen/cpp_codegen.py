@@ -376,10 +376,16 @@ class CPPCodeWriter(BaseCodeWriter):
     """
 
     shebang = '// -*- C++ -*-\n'
-        
+
     tmpl_name_do_layout = 'do_layout'
     tmpl_name_set_properties = 'set_properties'
-        
+
+    tmpl_cfunc_end = '}\n\n'
+
+    tmpl_ctor_call_layout = '\n' \
+                            '%(tab)sset_properties();\n' \
+                            '%(tab)sdo_layout();\n'
+
     tmpl_func_do_layout = '\n' \
                           'void %(klass)s::do_layout()\n{\n' \
                           '%(content)s' \
@@ -590,7 +596,6 @@ bool MyApp::OnInit()
 
                 for line in self.header_lines:
                     self.output_header.write(line)
-                    #self.output_file.write(line)
                 self.output_header.write('\n')
 
                 # now, write the tags to store dependencies and extra code
@@ -715,14 +720,11 @@ bool MyApp::OnInit()
                 )
 
     def add_class(self, code_obj):
-        if self.classes.has_key(code_obj.klass) and self.classes[code_obj.klass].done:
+        if self.classes.has_key(code_obj.klass) and \
+           self.classes[code_obj.klass].done:
             return  # the code has already been generated
 
-        if not self.multiple_files:
-            # in this case, self.previous_source is the SourceFileContent instance
-            # that keeps info about the single file to generate
-            prev_src = self.previous_source
-        else:
+        if self.multiple_files:
             # let's see if the file to generate exists, and in this case
             # create a SourceFileContent instance
             filename = os.path.join(self.out_dir,
@@ -739,6 +741,10 @@ bool MyApp::OnInit()
                     header_extension=self.header_extension,
                     source_extension=self.source_extension,
                     )
+        else:
+            # in this case, previous_source is the SourceFileContent instance
+            # that keeps info about the single file to generate
+            prev_src = self.previous_source
 
         try:
             builder = self.obj_builders[code_obj.base]
@@ -762,6 +768,12 @@ bool MyApp::OnInit()
         if not self.classes.has_key(code_obj.klass):
             # if the class body was empty, create an empty ClassLines
             self.classes[code_obj.klass] = self.ClassLines()
+
+        # collect all event handlers
+        event_handlers = self.classes[code_obj.klass].event_handlers
+        if hasattr(builder, 'get_events'):
+            for id, event, handler in builder.get_events(code_obj):
+                event_handlers.append((id, mycn(event), handler))
 
         # try to see if there's some extra code to add to this class
         extra_code = getattr(builder, 'extracode',
@@ -788,7 +800,6 @@ bool MyApp::OnInit()
                     self.classes[code_obj.klass].extra_code_cpp[::-1]))
 
         default_sign = [('wxWindow*', 'parent'), ('int', 'id')]
-##         sign = obj_constructors.get(code_obj.base, default_sign)
         sign = getattr(builder, 'constructor', default_sign)
 
         defaults = []
@@ -805,18 +816,16 @@ bool MyApp::OnInit()
         sign_decl1 = ', '.join(tmp_sign)
         sign_inst = ', '.join([t[1] for t in sign])
 
-        # ALB 2004-12-08 event handling
-        event_handlers = self.classes[code_obj.klass].event_handlers
-        if hasattr(builder, 'get_events'):
-            event_handlers.extend(builder.get_events(code_obj))
-
-        # ALB 2007-08-31 custom base classes support
+        # custom base classes support
         custom_base = getattr(code_obj, 'custom_base',
                               code_obj.properties.get('custom_base', None))
         if custom_base and not custom_base.strip():
             custom_base = None
 
-        if not is_new and custom_base:
+        # generate constructor code
+        if is_new:
+            pass
+        elif custom_base:
             # custom base classes set, but "overwrite existing sources" not
             # set. Issue a warning about this
             self.warning(
@@ -1011,18 +1020,25 @@ bool MyApp::OnInit()
         for l in init_lines:
             swrite(tab + l)
 
-        # now see if there are extra init lines to add
+        # now check if there are extra lines to add to the constructor
         if hasattr(builder, 'get_init_code'):
             for l in builder.get_init_code(code_obj):
                 swrite(tab + l)
 
-        swrite('\n' + tab + 'set_properties();\n')
-        swrite(tab + 'do_layout();\n')
-        # end tag
-        swrite(tab + '// end wxGlade\n')
-        if is_new:
-            swrite('}\n\n')
+        swrite(self.tmpl_ctor_call_layout % {
+            'tab': tab,
+            })
 
+        # end tag
+        swrite('%s%s end wxGlade\n' % (tab, self.comment_sign))
+
+        # write class function end statement
+        if self.tmpl_cfunc_end and is_new:
+            swrite(self.tmpl_cfunc_end % {
+                'tab': tab,
+                })
+
+        # replace code inside existing constructor block
         if prev_src and not is_new:
             # replace the lines inside the ctor wxGlade block
             # with the new ones
@@ -1039,83 +1055,6 @@ bool MyApp::OnInit()
                                           replace(tag, "".join(source_buffer))
             source_buffer = []
             swrite = source_buffer.append
-
-        if event_handlers:
-            # 1) event table declaration/definition...
-            if prev_src and code_obj.klass in prev_src.event_table_decl:
-                has_event_table = True
-            else:
-                has_event_table = False
-            if is_new or not has_event_table:
-                swrite('\nBEGIN_EVENT_TABLE(%s, %s)\n' % \
-                       (code_obj.klass, code_obj.base))
-
-            swrite(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
-            for tpl in event_handlers:
-                win_id, event, handler = tpl[:3]
-                swrite(tab + '%s(%s, %s::%s)\n' % \
-                       (event, win_id, code_obj.klass, handler))
-            swrite(tab + '// end wxGlade\n')
-
-            if is_new or not has_event_table:
-                swrite('END_EVENT_TABLE();\n')
-
-            if prev_src and not is_new:
-                tag = '<%swxGlade replace %s event_table>' % (self.nonce, code_obj.klass)
-                if prev_src.source_content.find(tag) < 0:
-                    # no constructor tag found, issue a warning and do nothing
-                    self.warning(
-                        "wxGlade %s::event_table block not found, relative "
-                        "code NOT generated" % code_obj.klass
-                        )
-                else:
-                    prev_src.source_content = prev_src.source_content.\
-                                              replace(tag, "".join(source_buffer))
-                source_buffer = []
-                swrite = source_buffer.append
-
-            # 2) event handler stubs...
-            if prev_src:
-                already_there = prev_src.event_handlers.get(code_obj.klass, {})
-            else:
-                already_there = {}
-            for tpl in event_handlers:
-                if len(tpl) == 4:
-                    win_id, event, handler, evt_type = tpl
-                else:
-                    win_id, event, handler = tpl
-                    evt_type = 'wxCommandEvent'
-                if handler not in already_there:
-                    swrite('\n\nvoid %s::%s(%s &event)\n{\n' % \
-                           (code_obj.klass, handler, evt_type))
-                    swrite(tab + 'event.Skip();\n')
-                    swrite(tab + "// notify the user that he hasn't "
-                                 "implemented the event handler yet\n")
-                    swrite(tab + 'wxLogDebug(wxT("Event handler (%s::%s) not '
-                                 'implemented yet"));\n' % \
-                           (code_obj.klass, handler))
-                    swrite('}\n')
-                    already_there[handler] = 1
-            if is_new or not prev_src:
-                swrite('\n\n')
-            swrite('// wxGlade: add %s event handlers\n' % code_obj.klass)
-            if is_new or not prev_src:
-                swrite('\n')
-
-            if prev_src and not is_new:
-                tag = '<%swxGlade add %s event handlers>' % \
-                      (self.nonce, code_obj.klass)
-                if prev_src.source_content.find(tag) < 0:
-                    # no constructor tag found, issue a warning and do nothing
-                    self.warning(
-                        "wxGlade %s event handlers marker not found, relative "
-                        "code NOT generated" % code_obj.klass
-                        )
-                else:
-                    prev_src.source_content = prev_src.source_content.\
-                                              replace(tag, "".join(source_buffer))
-                source_buffer = []
-                swrite = source_buffer.append
 
         # generate code for __set_properties()
         code_lines = self.generate_code_set_properties(
@@ -1169,6 +1108,58 @@ bool MyApp::OnInit()
                                           replace(tag, "".join(source_buffer))
             source_buffer = []
             swrite = source_buffer.append
+
+        # generate code for event table
+        code_lines = self.generate_code_event_table(
+            code_obj,
+            is_new,
+            tab,
+            prev_src,
+            event_handlers,
+            )
+                              
+        if prev_src and not is_new:
+            tag = '<%swxGlade replace %s event_table>' % (self.nonce, code_obj.klass)
+            if prev_src.source_content.find(tag) < 0:
+                # no constructor tag found, issue a warning and do nothing
+                self.warning(
+                    "wxGlade %s::event_table block not found, relative "
+                    "code NOT generated" % code_obj.klass
+                    )
+            else:
+                prev_src.source_content = prev_src.source_content.replace(
+                    tag,
+                    "".join(code_lines),
+                    )
+        else:
+            source_buffer.extend(code_lines)
+
+        # generate code for event handler stubs
+        code_lines = self.generate_code_event_handler(
+            code_obj,
+            is_new,
+            tab,
+            prev_src,
+            event_handlers,
+            )
+
+        # replace code inside existing event handlers
+        if prev_src and not is_new:
+            tag = '<%swxGlade add %s event handlers>' % \
+                  (self.nonce, code_obj.klass)
+            if prev_src.source_content.find(tag) < 0:
+                # no constructor tag found, issue a warning and do nothing
+                self.warning(
+                    "wxGlade %s event handlers marker not found, relative "
+                    "code NOT generated" % code_obj.klass
+                    )
+            else:
+                prev_src.source_content = prev_src.source_content.replace(
+                    tag,
+                    "".join(code_lines),
+                    )
+        else:
+            source_buffer.extend(code_lines)
 
         # the code has been generated
         self.classes[code_obj.klass].done = True
@@ -1314,7 +1305,7 @@ bool MyApp::OnInit()
         klass, builder = self._add_object_init(top_obj, sub_obj)
         if not klass or not builder:
             return
-            
+
         try:
             init, ids, props, layout = builder.get_code(sub_obj)
         except:
@@ -1388,6 +1379,114 @@ bool MyApp::OnInit()
         buffer = '%s->Add(%s, %s, %s, %s);\n' % \
                  (sizer.name, obj.name, option, flag, border)
         klass.layout.append(buffer)
+
+    def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, \
+                                    event_handlers):
+        """\
+        Generate the event handler stubs
+        
+        @param code_obj: Object to generate code for
+        @type code_obj:  Instance of L{CodeObject}
+
+        @param is_new: Indicates if previous source code exists
+        @type is_new:  Boolean
+
+        @param tab: Indentation of function body
+        @type tab:  String
+        
+        @param prev_src: Previous source code
+        @type prev_src: Instance of L{SourceFileContent}
+        
+        @param event_handlers: List of event handlers
+        
+        @rtype: List of strings
+        @see: L{tmpl_func_event_stub}
+        """
+        code_lines = []
+        swrite = code_lines.append
+        
+        if not event_handlers:
+            return []
+            
+        tmpl_handler = """
+void %(klass)s::%(handler)s(%(evt_type)s &event)
+{
+%(tab)sevent.Skip();
+%(tab)s// notify the user that he hasn't implemented the event handler yet
+%(tab)swxLogDebug(wxT("Event handler (%(klass)s::%(handler)s) not implemented yet"));
+}
+"""
+        
+        if prev_src:
+            already_there = prev_src.event_handlers.get(code_obj.klass, {})
+        else:
+            already_there = {}
+        for tpl in event_handlers:
+            if len(tpl) == 4:
+                win_id, event, handler, evt_type = tpl
+            else:
+                win_id, event, handler = tpl
+                evt_type = 'wxCommandEvent'
+            if handler not in already_there:
+                swrite(tmpl_handler % {
+                    'evt_type': evt_type,
+                    'handler': handler,
+                    'klass': code_obj.klass,
+                    'tab': tab,
+                    })
+                already_there[handler] = 1
+        if is_new or not prev_src:
+            swrite('\n\n')
+        swrite('// wxGlade: add %s event handlers\n' % code_obj.klass)
+        if is_new or not prev_src:
+            swrite('\n')
+        
+        return code_lines
+
+    def generate_code_event_table(self, code_obj, is_new, tab, prev_src,
+                                  event_handlers):
+        """\
+        Generate code for event table declaration.
+        
+        @param code_obj: Object to generate code for
+        @type code_obj:  Instance of L{CodeObject}
+
+        @param is_new: Indicates if previous source code exists
+        @type is_new:  Boolean
+
+        @param tab: Indentation of function body
+        @type tab:  String
+        
+        @param prev_src: Previous source code
+        @type prev_src: Instance of L{SourceFileContent}
+        
+        @param event_handlers: List of event handlers
+        
+        @rtype: List of strings
+        """
+        code_lines = []
+        swrite = code_lines.append
+        
+        if not event_handlers:
+            return []
+            
+        if prev_src and code_obj.klass in prev_src.event_table_decl:
+            has_event_table = True
+        else:
+            has_event_table = False
+        if is_new or not has_event_table:
+            swrite('\nBEGIN_EVENT_TABLE(%s, %s)\n' % \
+                  (code_obj.klass, code_obj.base))
+        swrite(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
+        for tpl in event_handlers:
+            win_id, event, handler = tpl[:3]
+            swrite(tab + '%s(%s, %s::%s)\n' % \
+                   (event, win_id, code_obj.klass, handler))
+        swrite(tab + '// end wxGlade\n')
+        if is_new or not has_event_table:
+            swrite('END_EVENT_TABLE();\n\n')
+
+        return code_lines
 
     def generate_code_id(self, obj, id=None):
         if id is None:

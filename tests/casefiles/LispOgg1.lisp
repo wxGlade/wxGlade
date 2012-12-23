@@ -88,8 +88,8 @@
 
         (wxEvtHandler_Connect (slot-top-window obj) obj.button-1 (expwxEVT_BUTTON)
         (wxClosure_Create #'startConverting obj))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod set-properties ((obj LispOgg1_MyDialog))
         ;;; begin wxGlade: LispOgg1_MyDialog.__set_properties
@@ -146,7 +146,7 @@
         )
 
 (defun startConverting (function data event) ;;;wxGlade: LispOgg1_MyDialog.<event_handler>
-        (print "Event handler `startConverting' not implemented!")
+        (print "Event handler 'startConverting' not implemented!")
         (when event
                 (wxEvent:wxEvent_Skip event)))
 

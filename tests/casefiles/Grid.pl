@@ -31,7 +31,6 @@ sub new {
         $name   = ""                 unless defined $name;
 
         # begin wxGlade: MyFrame::new
-
         $style = wxDEFAULT_FRAME_STYLE 
                 unless defined $style;
 
@@ -79,10 +78,8 @@ sub __do_layout {
 sub myEVT_GRID_CELL_LEFT_CLICK {
         my ($self, $event) = @_;
         # wxGlade: MyFrame::myEVT_GRID_CELL_LEFT_CLICK <event_handler>
-
         warn "Event handler (myEVT_GRID_CELL_LEFT_CLICK) not implemented";
         $event->Skip;
-
         # end wxGlade
 }
 

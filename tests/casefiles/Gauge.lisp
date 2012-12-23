@@ -7,6 +7,7 @@
 (use-package "FFI")
 (ffi:default-foreign-language :stdc)
 
+
 ;;; begin wxGlade: dependencies
 (use-package :wxCL)
 (use-package :wxColour)
@@ -41,8 +42,8 @@
         ;;; begin wxGlade: MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
         (setf (slot-gauge-1 obj) (wxGauge_Create (slot-top-window obj) wxID_ANY 10 -1 -1 -1 -1 wxGA_HORIZONTAL))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod set-properties ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__set_properties

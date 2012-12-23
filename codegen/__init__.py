@@ -505,10 +505,37 @@ class BaseCodeWriter(object):
     @type: String
     @see:  L{save_file()}
     """
-    
+
+    tmpl_encoding = None
+    """\
+    Template of the encoding notices
+
+    The file encoding will be added to the output in L{save_file()}.
+
+    @type: String
+    @see: {app_encoding}
+    """
+
     tmpl_block_begin = \
         '%(tab)s%(comment_sign)s begin wxGlade: ' \
         '%(klass)s%(class_separator)s%(function)s\n'
+
+
+    tmpl_cfunc_end = ''
+    """\
+    Statement to add at the end of a class function. e.g.
+    'return $self;' for Perl.
+    
+    @type: String
+    """
+
+    tmpl_ctor_call_layout = ''
+    """\
+    Code add to the contructor to call '__do_layout()' and
+    '__set_properties()'.
+    
+    @type: String
+    """
 
     tmpl_name_do_layout = ''
     """\
@@ -529,16 +556,6 @@ class BaseCodeWriter(object):
     @type: String
     @see:  L{generate_code_set_properties()}
     """
-
-    tmpl_encoding = None
-    """\
-    Template of the encoding notices
-
-    The file encoding will be added to the output in L{save_file()}.
-
-    @type: String
-    @see: {app_encoding}
-    """
     
     tmpl_func_empty = ''
     """\
@@ -557,6 +574,16 @@ class BaseCodeWriter(object):
     
     @type: String
     @see: L{generate_code_do_layout()}
+    """
+
+    tmpl_func_event_stub = ''
+    """\
+    Statement for a event handler stub.
+    
+    @note: This statement differs between the various code generators.
+    
+    @type: String
+    @see: L{generate_code_event_handler()}
     """
 
     tmpl_func_set_properties = ''
@@ -1221,6 +1248,74 @@ It is available for wx versions %(supported_versions)s only.""") % {
             code_lines,
             )
         
+        return code_lines
+
+    def generate_code_event_bind(self, code_obj, tab, event_handlers):
+        """\
+        Generate to bind event handlers.
+        
+        This function is used for interpreted languages only.
+        
+        @param code_obj: Object to generate code for
+        @type code_obj:  Instance of L{CodeObject}
+
+        @param tab: Indentation of function body
+        @type tab:  String
+
+        @param event_handlers: List of event handlers        
+
+        @rtype: List of strings
+        """
+        return []
+
+    def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, \
+                                    event_handlers):
+        """\
+        Generate the event handler stubs
+        
+        @param code_obj: Object to generate code for
+        @type code_obj:  Instance of L{CodeObject}
+
+        @param is_new: Indicates if previous source code exists
+        @type is_new:  Boolean
+
+        @param tab: Indentation of function body
+        @type tab:  String
+
+        @param prev_src: Previous source code
+        @type prev_src: Language specific instance of SourceFileContent
+        
+        @param event_handlers: List of event handlers
+        
+        @rtype: List of strings
+        @see: L{tmpl_func_event_stub}
+        """
+        code_lines = []
+        write = code_lines.append
+
+        if prev_src and not is_new:
+            already_there = prev_src.event_handlers.get(code_obj.klass, {})
+        else:
+            already_there = {}
+            
+        for name, event, handler in event_handlers:
+            # don't create handler twice
+            if handler in already_there:
+                continue
+
+            # add an empty line for
+            # TODO: Remove later
+            if self.language in ['python', 'lisp',]:
+                if not (prev_src and not is_new):
+                    write('\n')
+
+            write(self.tmpl_func_event_stub % {
+                'tab':     tab,
+                'klass':   self.cn_class(code_obj.klass),
+                'handler': handler,
+                })
+            already_there[handler] = 1
+
         return code_lines
 
     def generate_code_extraproperties(self, obj):

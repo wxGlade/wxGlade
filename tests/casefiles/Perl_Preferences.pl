@@ -31,7 +31,6 @@ sub new {
         $name   = ""                 unless defined $name;
 
         # begin wxGlade: wxGladePreferencesUI::new
-
         $style = wxDEFAULT_DIALOG_STYLE 
                 unless defined $style;
 

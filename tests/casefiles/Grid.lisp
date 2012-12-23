@@ -7,6 +7,7 @@
 (use-package "FFI")
 (ffi:default-foreign-language :stdc)
 
+
 ;;; begin wxGlade: dependencies
 (use-package :wxCL)
 (use-package :wxColour)
@@ -44,8 +45,8 @@
 
         (wxEvtHandler_Connect (slot-top-window obj) obj.grid-1 (expwxEVT_GRID_CMD_CELL_LEFT_CLICK)
         (wxClosure_Create #'myEVT_GRID_CELL_LEFT_CLICK obj))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod set-properties ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__set_properties
@@ -73,7 +74,7 @@
         )
 
 (defun myEVT_GRID_CELL_LEFT_CLICK (function data event) ;;; wxGlade: MyFrame.<event_handler>
-        (print "Event handler `myEVT_GRID_CELL_LEFT_CLICK' not implemented!")
+        (print "Event handler 'myEVT_GRID_CELL_LEFT_CLICK' not implemented!")
         (when event
                 (wxEvent:wxEvent_Skip event)))
 

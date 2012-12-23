@@ -28,24 +28,6 @@ MyFrame::MyFrame(wxWindow* parent, int id, const wxString& title, const wxPoint&
 }
 
 
-BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-    // begin wxGlade: MyFrame::event_table
-    EVT_CALENDAR_SEL_CHANGED(wxID_ANY, MyFrame::myEVTCALENDAR_SEL_CHANGED)
-    // end wxGlade
-END_EVENT_TABLE();
-
-
-void MyFrame::myEVTCALENDAR_SEL_CHANGED(wxCalendarEvent &event)
-{
-    event.Skip();
-    // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::myEVTCALENDAR_SEL_CHANGED) not implemented yet"));
-}
-
-
-// wxGlade: add MyFrame event handlers
-
-
 void MyFrame::set_properties()
 {
     // begin wxGlade: MyFrame::set_properties
@@ -64,6 +46,24 @@ void MyFrame::do_layout()
     Layout();
     // end wxGlade
 }
+
+
+BEGIN_EVENT_TABLE(MyFrame, wxFrame)
+    // begin wxGlade: MyFrame::event_table
+    EVT_CALENDAR_SEL_CHANGED(wxID_ANY, MyFrame::myEVTCALENDAR_SEL_CHANGED)
+    // end wxGlade
+END_EVENT_TABLE();
+
+
+void MyFrame::myEVTCALENDAR_SEL_CHANGED(wxCalendarEvent &event)
+{
+    event.Skip();
+    // notify the user that he hasn't implemented the event handler yet
+    wxLogDebug(wxT("Event handler (MyFrame::myEVTCALENDAR_SEL_CHANGED) not implemented yet"));
+}
+
+
+// wxGlade: add MyFrame event handlers
 
 
 class MyApp: public wxApp {

@@ -30,7 +30,6 @@ sub new {
         $name   = ""                 unless defined $name;
 
         # begin wxGlade: MyDialog::new
-
         $style = wxDEFAULT_DIALOG_STYLE 
                 unless defined $style;
 

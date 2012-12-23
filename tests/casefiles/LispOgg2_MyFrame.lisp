@@ -5,6 +5,7 @@
 (use-package "FFI")
 (ffi:default-foreign-language :stdc)
 
+
 ;;; begin wxGlade: dependencies
 (use-package :wxButton)
 (use-package :wxCL)
@@ -77,8 +78,8 @@
         (setf (slot-grid-1 obj) (wxGrid_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxWANTS_CHARS))
         (setf (slot-static-line-2 obj) (wxStaticLine_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 0))
         (setf (slot-button-6 obj) (wxButton_Create (slot-top-window obj) wxID_CLOSE "" -1 -1 -1 -1 0))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod set-properties ((obj LispOgg2_MyFrame))
         ;;; begin wxGlade: LispOgg2_MyFrame.__set_properties
