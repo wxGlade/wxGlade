@@ -48,24 +48,6 @@ CPPOgg3_MyDialog::CPPOgg3_MyDialog(wxWindow* parent, int id, const wxString& tit
 }
 
 
-BEGIN_EVENT_TABLE(CPPOgg3_MyDialog, wxDialog)
-    // begin wxGlade: CPPOgg3_MyDialog::event_table
-    EVT_BUTTON(wxID_ANY, CPPOgg3_MyDialog::startConverting)
-    // end wxGlade
-END_EVENT_TABLE();
-
-
-void CPPOgg3_MyDialog::startConverting(wxCommandEvent &event)
-{
-    event.Skip();
-    // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (CPPOgg3_MyDialog::startConverting) not implemented yet"));
-}
-
-
-// wxGlade: add CPPOgg3_MyDialog event handlers
-
-
 void CPPOgg3_MyDialog::set_properties()
 {
     // begin wxGlade: CPPOgg3_MyDialog::set_properties
@@ -122,6 +104,24 @@ void CPPOgg3_MyDialog::do_layout()
     Centre();
     // end wxGlade
 }
+
+
+BEGIN_EVENT_TABLE(CPPOgg3_MyDialog, wxDialog)
+    // begin wxGlade: CPPOgg3_MyDialog::event_table
+    EVT_BUTTON(wxID_ANY, CPPOgg3_MyDialog::startConverting)
+    // end wxGlade
+END_EVENT_TABLE();
+
+
+void CPPOgg3_MyDialog::startConverting(wxCommandEvent &event)
+{
+    event.Skip();
+    // notify the user that he hasn't implemented the event handler yet
+    wxLogDebug(wxT("Event handler (CPPOgg3_MyDialog::startConverting) not implemented yet"));
+}
+
+
+// wxGlade: add CPPOgg3_MyDialog event handlers
 
 
 CPPOgg3_MyFrame::CPPOgg3_MyFrame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):

@@ -7,6 +7,7 @@
 (use-package "FFI")
 (ffi:default-foreign-language :stdc)
 
+
 ;;; begin wxGlade: dependencies
 (use-package :wxBitmapButton)
 (use-package :wxCL)
@@ -41,8 +42,8 @@
         ;;; begin wxGlade: MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
         (setf (slot-bitmap-button-1 obj) (wxBitmapButton_Create (slot-top-window obj) wxID_ANY (wxBitmap_CreateLoad "icons/wxglade_small.png", wxBITMAP_TYPE_ANY) -1 -1 -1 -1 0))
-        )
         ;;; end wxGlade
+        )
 
 (defmethod set-properties ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__set_properties

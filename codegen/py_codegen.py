@@ -255,6 +255,10 @@ class PythonCodeWriter(BaseCodeWriter):
     tmpl_name_set_properties = '__set_properties'
 
     tmpl_encoding = "# -*- coding: %s -*-\n"
+    
+    tmpl_ctor_call_layout = '\n' \
+                            '%(tab)sself.__set_properties()\n' \
+                            '%(tab)sself.__do_layout()\n'
 
     tmpl_func_empty = '%(tab)spass\n'
     
@@ -420,6 +424,10 @@ if __name__ == "__main__":
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):
+        if self.classes.has_key(code_obj.klass) and \
+           self.classes[code_obj.klass].done:
+            return  # the code has already been generated
+
         if self.multiple_files:
             # let's see if the file to generate exists, and in this case
             # create a SourceFileContent instance
@@ -440,10 +448,6 @@ if __name__ == "__main__":
             # in this case, previous_source is the SourceFileContent instance
             # that keeps info about the single file to generate
             prev_src = self.previous_source
-
-        if self.classes.has_key(code_obj.klass) and \
-           self.classes[code_obj.klass].done:
-            return  # the code has already been generated
 
         try:
             builder = self.obj_builders[code_obj.base]
@@ -472,6 +476,12 @@ if __name__ == "__main__":
             # if the class body was empty, create an empty ClassLines
             self.classes[code_obj.klass] = self.ClassLines()
 
+        # collect all event handlers
+        event_handlers = self.classes[code_obj.klass].event_handlers
+        if hasattr(builder, 'get_events'):
+            for id, event, handler in builder.get_events(code_obj):
+                event_handlers.append((id, mycn(event), handler))
+
         # try to see if there's some extra code to add to this class
         if not code_obj.preview:
             extra_code = getattr(builder, 'extracode',
@@ -490,12 +500,15 @@ if __name__ == "__main__":
             # handled later.  Otherwise we'll emit duplicate extra code for
             # frames.
 
-        # ALB 2007-08-31 custom base classes support
+        # custom base classes support
         custom_base = getattr(code_obj, 'custom_base',
                               code_obj.properties.get('custom_base', None))
         if code_obj.preview or (custom_base and not custom_base.strip()):
             custom_base = None
 
+        tab = indentation
+
+        # generate constructor code
         if is_new:
             base = mycn(code_obj.base)
             if custom_base:
@@ -524,13 +537,13 @@ if __name__ == "__main__":
             'klass':           self.cn_class(code_obj.klass),
             'tab':             indentation,
             })
-            
+
         prop = code_obj.properties
         style = prop.get("style", None)
         if style:
             write(indentation + 'kwds["style"] = %s\n' % mycn_f(style))
 
-        # __init__
+        # initialise custom base class
         if custom_base:
             bases = [b.strip() for b in custom_base.split(',')]
             for i, b in enumerate(bases):
@@ -541,7 +554,7 @@ if __name__ == "__main__":
         else:
             write(indentation + '%s.__init__(self, *args, **kwds)\n' % \
                   mycn(code_obj.base))
-        tab = indentation
+
         init_lines = self.classes[code_obj.klass].init
         parents_init = self.classes[code_obj.klass].parents_init
 
@@ -573,39 +586,32 @@ if __name__ == "__main__":
                 for l in self.classes[code_obj.klass].init_lines[obj]:
                     write(tab + l)
 
-        # now check if there are extra lines to add to the init method
+        # now check if there are extra lines to add to the constructor
         if hasattr(builder, 'get_init_code'):
             for l in builder.get_init_code(code_obj):
                 write(tab + l)
 
-        write('\n')
-        write(tab + 'self.__set_properties()\n')
-        write(tab + 'self.__do_layout()\n')
+        write(self.tmpl_ctor_call_layout % {
+            'tab': tab,
+            })
 
-        event_handlers = self.classes[code_obj.klass].event_handlers
-        if hasattr(builder, 'get_events'):
-            for id, event, handler in builder.get_events(code_obj):
-                event_handlers.append((id, mycn(event), handler))
-        if event_handlers:
-            write('\n')
-        if not self.use_new_namespace:
-            for win_id, event, handler in event_handlers:
-                if win_id.startswith('#'):
-                    win_id = win_id[1:] + '.GetId()'
-                write(tab + '%s(self, %s, self.%s)\n' % \
-                      (event, win_id, handler))
-        else:
-            for win_id, event, handler in event_handlers:
-                if win_id.startswith('#'):
-                    write(tab + 'self.Bind(%s, self.%s, %s)\n' % \
-                          (event, handler, win_id[1:]))
-                else:
-                    write(tab + 'self.Bind(%s, self.%s, id=%s)\n' % \
-                          (event, handler, win_id))
+        # generate code for binding events
+        code_lines = self.generate_code_event_bind(
+            code_obj,
+            tab,
+            event_handlers,
+            )
+        buffer.extend(code_lines)
 
         # end tag
-        write(tab + '# end wxGlade\n')
-        
+        write('%s%s end wxGlade\n' % (tab, self.comment_sign))
+
+        # write class function end statement
+        if self.tmpl_cfunc_end and is_new:
+            write(self.tmpl_cfunc_end % {
+                'tab': tab,
+                })
+
         # replace code inside existing constructor block
         if prev_src and not is_new:
             # replace the lines inside the ctor wxGlade block
@@ -673,22 +679,19 @@ if __name__ == "__main__":
             else:
                 prev_src.content = prev_src.content.replace(tag, "".join(buffer))
 
-        # now let's generate the event handler stubs...
+        # generate code for event handler stubs
+        code_lines = self.generate_code_event_handler(
+            code_obj,
+            is_new,
+            tab,
+            prev_src,
+            event_handlers,
+            )
+
+        # replace code inside existing event handlers
         if prev_src and not is_new:
-            already_there = prev_src.event_handlers.get(code_obj.klass, {})
-            buf = []
-            for name, event, handler in event_handlers:
-                if handler not in already_there:
-                    buf.append(self.tabs(1) + 'def %s(self, event):  '
-                               '# wxGlade: %s.<event_handler>\n'
-                               % (handler, self.without_package(code_obj.klass)))
-                    buf.append(tab +
-                        'print "Event handler `%s\' not implemented"\n' % \
-                        handler
-                        )
-                    buf.append(tab + 'event.Skip()\n\n')
-                    already_there[handler] = 1
-            tag = '<%swxGlade event_handlers %s>' % (self.nonce, code_obj.klass)
+            tag = \
+                '<%swxGlade event_handlers %s>' % (self.nonce, code_obj.klass)
             if prev_src.content.find(tag) < 0:
                 # no event_handlers tag found, issue a warning and do nothing
                 self.warning(
@@ -696,19 +699,12 @@ if __name__ == "__main__":
                     "event_handlers code NOT generated" % code_obj.name
                     )
             else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buf))
-            del buf
+                prev_src.content = prev_src.content.replace(
+                    tag,
+                    "".join(code_lines),
+                    )
         else:
-            already_there = {}
-            for name, event, handler in event_handlers:
-                if handler not in already_there:
-                    write('\n' + self.tabs(1) + 'def %s(self, event):  '
-                          '# wxGlade: %s.<event_handler>\n'
-                          % (handler, self.without_package(code_obj.klass)))
-                    write(tab + 'print "Event handler `%s\' not implemented!"\n' %
-                          handler)
-                    write(tab + 'event.Skip()\n')
-                    already_there[handler] = 1
+            buffer.extend(code_lines)
 
         # the code has been generated
         self.classes[code_obj.klass].done = True
@@ -728,6 +724,7 @@ if __name__ == "__main__":
                 # insert the module dependencies of this class
                 tag = '<%swxGlade replace dependencies>' % self.nonce
                 dep_list = self.classes[code_obj.klass].dependencies.keys()
+                dep_list.extend(self.dependencies.keys())
                 dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list)
                 prev_src.content = prev_src.content.replace(tag, code)
@@ -763,6 +760,7 @@ if __name__ == "__main__":
 
             # write the module dependecies for this class
             dep_list = self.classes[code_obj.klass].dependencies.keys()
+            dep_list.extend(self.dependencies.keys())
             dep_list.sort()
             code = self._tagcontent('dependencies', dep_list, True)
             write(code)
@@ -912,6 +910,55 @@ if __name__ == "__main__":
             code_obj,
             is_new,
             tab,
+            )
+
+    def generate_code_event_bind(self, code_obj, tab, event_handlers):
+        code_lines = []
+        write = code_lines.append
+
+        if event_handlers:
+            write('\n')
+
+        if not self.use_new_namespace:
+            for win_id, event, handler in event_handlers:
+                if win_id.startswith('#'):
+                    win_id = '%s.GetId()' % win_id[1:]
+                write('%(tab)s%(event)s(self, %(win_id)s, self.%(handler)s)\n' % {
+                    'tab':     tab,
+                    'event':   event,
+                    'win_id':  win_id,
+                    'handler': handler,
+                    })
+        else:
+            for win_id, event, handler in event_handlers:
+                if win_id.startswith('#'):
+                    win_id = win_id[1:]
+                write('%(tab)sself.Bind(%(event)s, self.%(handler)s, %(win_id)s)\n' % {
+                    'tab': tab,
+                    'event': event,
+                    'handler': handler,
+                    'win_id': win_id,
+                    })
+        
+        return code_lines
+
+    def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, \
+                                    event_handlers):
+        # Python has two indentation levels
+        #  1st) for function declaration
+        #  2nd) for function body
+        self.tmpl_func_event_stub = self.tabs(1) + """\
+def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
+%(tab)sprint "Event handler '%(handler)s' not implemented!"
+%(tab)sevent.Skip()
+"""
+        return BaseCodeWriter.generate_code_event_handler(
+            self,
+            code_obj,
+            is_new,
+            tab,
+            prev_src,
+            event_handlers,
             )
 
     def generate_code_id(self, obj, id=None):

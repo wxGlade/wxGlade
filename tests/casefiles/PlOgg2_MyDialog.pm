@@ -30,7 +30,6 @@ sub new {
         $name   = ""                 unless defined $name;
 
         # begin wxGlade: PlOgg2_MyDialog::new
-
         $style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
                 unless defined $style;
 
@@ -123,10 +122,8 @@ sub __do_layout {
 sub startConverting {
         my ($self, $event) = @_;
         # wxGlade: PlOgg2_MyDialog::startConverting <event_handler>
-
         warn "Event handler (startConverting) not implemented";
         $event->Skip;
-
         # end wxGlade
 }
 

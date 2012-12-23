@@ -28,24 +28,6 @@ MyFrame::MyFrame(wxWindow* parent, int id, const wxString& title, const wxPoint&
 }
 
 
-BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-    // begin wxGlade: MyFrame::event_table
-    EVT_GRID_CMD_CELL_LEFT_CLICK(wxID_ANY, MyFrame::myEVT_GRID_CELL_LEFT_CLICK)
-    // end wxGlade
-END_EVENT_TABLE();
-
-
-void MyFrame::myEVT_GRID_CELL_LEFT_CLICK(wxGridEvent &event)
-{
-    event.Skip();
-    // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::myEVT_GRID_CELL_LEFT_CLICK) not implemented yet"));
-}
-
-
-// wxGlade: add MyFrame event handlers
-
-
 void MyFrame::set_properties()
 {
     // begin wxGlade: MyFrame::set_properties
@@ -72,6 +54,24 @@ void MyFrame::do_layout()
     Layout();
     // end wxGlade
 }
+
+
+BEGIN_EVENT_TABLE(MyFrame, wxFrame)
+    // begin wxGlade: MyFrame::event_table
+    EVT_GRID_CMD_CELL_LEFT_CLICK(wxID_ANY, MyFrame::myEVT_GRID_CELL_LEFT_CLICK)
+    // end wxGlade
+END_EVENT_TABLE();
+
+
+void MyFrame::myEVT_GRID_CELL_LEFT_CLICK(wxGridEvent &event)
+{
+    event.Skip();
+    // notify the user that he hasn't implemented the event handler yet
+    wxLogDebug(wxT("Event handler (MyFrame::myEVT_GRID_CELL_LEFT_CLICK) not implemented yet"));
+}
+
+
+// wxGlade: add MyFrame event handlers
 
 
 class MyApp: public wxApp {

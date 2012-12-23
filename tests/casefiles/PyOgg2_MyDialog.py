@@ -96,7 +96,7 @@ class PyOgg2_MyDialog(wx.Dialog):
         # end wxGlade
 
     def startConverting(self, event):  # wxGlade: PyOgg2_MyDialog.<event_handler>
-        print "Event handler `startConverting' not implemented!"
+        print "Event handler 'startConverting' not implemented!"
         event.Skip()
 
 # end of class PyOgg2_MyDialog

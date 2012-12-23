@@ -207,10 +207,19 @@ class LispCodeWriter(BaseCodeWriter):
     tmpl_name_do_layout = '__do_layout'
     tmpl_name_set_properties = '__set_properties'
 
+    tmpl_cfunc_end = '%(tab)s)\n'
+
     tmpl_func_do_layout = '\n' \
                           '(defmethod do-layout ((obj %(klass)s))\n' \
                           '%(content)s' \
                           '%(tab)s)\n'
+
+    tmpl_func_event_stub = """\
+(defun %(handler)s (function data event) ;;; wxGlade: %(klass)s.<event_handler>
+%(tab)s(print "Event handler '%(handler)s' not implemented!")
+%(tab)s(when event
+%(tab)s%(tab)s(wxEvent:wxEvent_Skip event)))
+"""
 
     tmpl_func_set_properties = '\n' \
                           '(defmethod set-properties ((obj %(klass)s))\n' \
@@ -354,6 +363,7 @@ class LispCodeWriter(BaseCodeWriter):
                 for line in self.header_lines:
                     self.output_file.write(line)
                 self.output_file.write('<%swxGlade extra_modules>\n' % self.nonce)
+                self.output_file.write('\n')
                 self.output_file.write('<%swxGlade replace dependencies>\n' % self.nonce)
                 self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
 
@@ -382,6 +392,10 @@ class LispCodeWriter(BaseCodeWriter):
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):
+        if self.classes.has_key(code_obj.klass) and \
+           self.classes[code_obj.klass].done:
+            return  # the code has already been generated
+
         if self.multiple_files:
             # let's see if the file to generate exists, and in this case
             # create a SourceFileContent instance
@@ -401,10 +415,6 @@ class LispCodeWriter(BaseCodeWriter):
             # in this case, previous_source is the SourceFileContent instance
             # that keeps info about the single file to generate
             prev_src = self.previous_source
-
-        if self.classes.has_key(code_obj.klass) and \
-           self.classes[code_obj.klass].done:
-            return  # the code has already been generated
 
         try:
             builder = self.obj_builders[code_obj.base]
@@ -433,6 +443,12 @@ class LispCodeWriter(BaseCodeWriter):
             # if the class body was empty, create an empty ClassLines
             self.classes[code_obj.klass] = self.ClassLines()
 
+        # collect all event handlers
+        event_handlers = self.classes[code_obj.klass].event_handlers
+        if hasattr(builder, 'get_events'):
+            for id, event, handler in builder.get_events(code_obj):
+                event_handlers.append((id, mycn(event), handler))
+
         # try to see if there's some extra code to add to this class
         extra_code = getattr(builder, 'extracode',
                              code_obj.properties.get('extracode', ""))
@@ -450,7 +466,15 @@ class LispCodeWriter(BaseCodeWriter):
         # handled later.  Otherwise we'll emit duplicate extra code for
         # frames.
 
+        # custom base classes support
+        custom_base = getattr(code_obj, 'custom_base',
+                              code_obj.properties.get('custom_base', None))
+        if custom_base and not custom_base.strip():
+            custom_base = None
+
         tab = indentation
+
+        # generate constructor code
         if is_new:
             base = mycn(code_obj.base)
             klass = code_obj.klass
@@ -470,6 +494,15 @@ class LispCodeWriter(BaseCodeWriter):
 
             write('\n(defmethod init ((obj %s))\n' % klass)
             write("\"Method creates the objects contained in the class.\"\n")
+            
+        elif custom_base:
+            # custom base classes set, but "overwrite existing sources" not
+            # set. Issue a warning about this
+            self.warning(
+                '%s has custom base classes, but you are not overwriting '
+                'existing sources: please check that the resulting code is '
+                'correct!' % code_obj.name
+                )
 
         # __init__ begin tag
         write(self.tmpl_block_begin % {
@@ -477,9 +510,9 @@ class LispCodeWriter(BaseCodeWriter):
             'comment_sign':    self.comment_sign,
             'function':        '__init__', 
             'klass':           self.cn_class(code_obj.klass),
-            'tab':             indentation,
+            'tab':             tab,
             })
-        
+
         prop = code_obj.properties
         style = prop.get("style", None)
         if style:
@@ -492,10 +525,9 @@ class LispCodeWriter(BaseCodeWriter):
 
         if code_obj.base == "wxFrame":
             write(indentation + "(setf (slot-top-window obj) (wxFrame_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n" % style)
-        else:
-            if code_obj.base == "wxDialog":
-                write(indentation + "(setf (slot-top-window obj) (wxDialog_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n" % style)
-                self.dependencies['(use-package :wxButton)'] = 1
+        elif code_obj.base == "wxDialog":
+            write(indentation + "(setf (slot-top-window obj) (wxDialog_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n" % style)
+            self.dependencies['(use-package :wxButton)'] = 1
 
         init_lines = self.classes[code_obj.klass].init
         parents_init = self.classes[code_obj.klass].parents_init
@@ -505,35 +537,33 @@ class LispCodeWriter(BaseCodeWriter):
         for l in init_lines:
             write(tab + l)
 
-        # now check if there are extra lines to add to the init method
+        # now check if there are extra lines to add to the constructor
         if hasattr(builder, 'get_init_code'):
             for l in builder.get_init_code(code_obj):
                 write(tab + l)
 
-        # now let's write the "event table"...
-        event_handlers = self.classes[code_obj.klass].event_handlers
-        if hasattr(builder, 'get_events'):
-            for id, event, handler in builder.get_events(code_obj):
-                event_handlers.append((id, mycn(event), handler))
-        if event_handlers:
-            write('\n')
-        for win_id, event, handler in event_handlers:
-            if win_id.startswith('#'):
-                write(
-                    tab + \
-                    "(wxEvtHandler_Connect (slot-top-window obj) %s (exp%s)" % (win_id[1:], event) + \
-                    "\n" + self.tabs(2) + \
-                    "(wxClosure_Create #'%s obj))\n" % handler
-                    )
-            else:
-                write(tab + \
-                      "(wxEvtHandler_Connect (slot-top-window obj) %s (exp%s)" % (win_id, event) + \
-                      "\n" + self.tabs(2) + \
-                      "(wxClosure_Create #'%s obj))\n" % handler
-                      )
+        write(self.tmpl_ctor_call_layout % {
+            'tab': tab,
+            })
+
+        # generate code for binding events
+        code_lines = self.generate_code_event_bind(
+            code_obj,
+            tab,
+            event_handlers,
+            )
+        buffer.extend(code_lines)
+
         # end tag
-        write(tab + ')\n')
-        write(tab + ';;; end wxGlade\n')
+        write('%s%s end wxGlade\n' % (tab, self.comment_sign))
+
+        # write class function end statement
+        if self.tmpl_cfunc_end and is_new:
+            write(self.tmpl_cfunc_end % {
+                'tab': tab,
+                })
+
+        # replace code inside existing constructor block
         if prev_src and not is_new:
             # replace the lines inside the ctor wxGlade block
             # with the new ones
@@ -600,23 +630,19 @@ class LispCodeWriter(BaseCodeWriter):
             else:
                 prev_src.content = prev_src.content.replace(tag, "".join(buffer))
 
-        # now let's generate the event handler stubs...
+        # generate code for event handler stubs
+        code_lines = self.generate_code_event_handler(
+            code_obj,
+            is_new,
+            tab,
+            prev_src,
+            event_handlers,
+            )
+
+        # replace code inside existing event handlers
         if prev_src and not is_new:
-            already_there = prev_src.event_handlers.get(code_obj.klass, {})
-            buf = []
-            for name, event, handler in event_handlers:
-                if handler not in already_there:
-                    buf.append('(defun %s (function data event) '
-                               ';;; wxGlade: %s.<event_handler>\n'
-                               % (handler, code_obj.klass))
-                    buf.append(tab +
-                        '(print "Event handler `%s\' not implemented")\n' % \
-                        handler
-                        )
-                    buf.append(tab + '(when event\n')
-                    buf.append(tab + '(wxEvent:wxEvent_Skip event)))\n')
-                    already_there[handler] = 1
-            tag = '<%swxGlade event_handlers %s>' % (self.nonce, code_obj.klass)
+            tag = \
+                '<%swxGlade event_handlers %s>' % (self.nonce, code_obj.klass)
             if prev_src.content.find(tag) < 0:
                 # no event_handlers tag found, issue a warning and do nothing
                 self.warning(
@@ -624,20 +650,12 @@ class LispCodeWriter(BaseCodeWriter):
                     "event_handlers code NOT generated" % code_obj.name
                     )
             else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buf))
-            del buf
+                prev_src.content = prev_src.content.replace(
+                    tag,
+                    "".join(code_lines),
+                    )
         else:
-            already_there = {}
-            for name, event, handler in event_handlers:
-                if handler not in already_there:
-                    write('\n' + '(defun %s (function data event) '
-                          ';;; wxGlade: %s.<event_handler>\n'
-                          % (handler, code_obj.klass))
-                    write(tab + '(print "Event handler `%s\' not implemented!")\n' %
-                          handler)
-                    write(tab + '(when event\n')
-                    write(tab + tab + '(wxEvent:wxEvent_Skip event)))\n')
-                    already_there[handler] = 1
+            buffer.extend(code_lines)
 
         # the code has been generated
         self.classes[code_obj.klass].done = True
@@ -656,7 +674,8 @@ class LispCodeWriter(BaseCodeWriter):
 
                 # insert the module dependencies of this class
                 tag = '<%swxGlade replace dependencies>' % self.nonce
-                dep_list = self.dependencies.keys()
+                dep_list = self.classes[code_obj.klass].dependencies.keys()
+                dep_list.extend(self.dependencies.keys())
                 dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list)
                 prev_src.content = prev_src.content.replace(tag, code)
@@ -690,7 +709,8 @@ class LispCodeWriter(BaseCodeWriter):
                 write(line)
 
             # write the module dependecies for this class
-            dep_list = self.dependencies.keys()
+            dep_list = self.classes[code_obj.klass].dependencies.keys()
+            dep_list.extend(self.dependencies.keys())
             dep_list.sort()
             code = self._tagcontent('dependencies', dep_list, True)
             write(code)
@@ -844,6 +864,31 @@ class LispCodeWriter(BaseCodeWriter):
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
         return BaseCodeWriter.generate_code_background(self, obj)
+
+    def generate_code_event_bind(self, code_obj, tab, event_handlers):
+        code_lines = []
+        write = code_lines.append
+
+        if event_handlers:
+            write('\n')
+
+        for win_id, event, handler in event_handlers:
+            if win_id.startswith('#'):
+                win_id = win_id[1:]
+
+            write(
+                  "%(tab)s(wxEvtHandler_Connect (slot-top-window obj) %(win_id)s (exp%(event)s)" \
+                  "\n%(tab2)s" \
+                  "(wxClosure_Create #'%(handler)s obj))\n" % {
+                    'tab':     tab,
+                    'tab2':    self.tabs(2),
+                    'win_id':  win_id,
+                    'event':   event,
+                    'handler': handler,
+                    }
+                ) 
+
+        return code_lines
 
     def generate_code_font(self, obj):
         self.dependencies['(use-package :wxFont)'] = 1
