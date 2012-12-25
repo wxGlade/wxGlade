@@ -399,8 +399,7 @@ class LispCodeWriter(BaseCodeWriter):
         if self.multiple_files:
             # let's see if the file to generate exists, and in this case
             # create a SourceFileContent instance
-            filename = os.path.join(self.out_dir,
-                                    code_obj.klass.replace('.', '_') + '.lisp')
+            filename = self._get_class_filename(code_obj.klass)
             if self._overwrite or not self._file_exists(filename):
                 prev_src = None
             else:
@@ -700,8 +699,7 @@ class LispCodeWriter(BaseCodeWriter):
                 return
 
             # create the new source file
-            filename = os.path.join(self.out_dir,
-                                    code_obj.klass + '.lisp')
+            filename = self._get_class_filename(code_obj.klass)
             out = cStringIO.StringIO()
             write = out.write
             # write the common lines
@@ -952,6 +950,13 @@ class LispCodeWriter(BaseCodeWriter):
             return '(_"%s")' % s
         else:
             return '"%s"' % s
+
+    def _get_class_filename(self, klass):
+        filename = os.path.join(
+            self.out_dir,
+            klass.replace('.', '_') + '.lisp'
+            )
+        return filename
 
     def _get_code_name(self, obj):
         if obj.is_toplevel:

@@ -431,8 +431,7 @@ if __name__ == "__main__":
         if self.multiple_files:
             # let's see if the file to generate exists, and in this case
             # create a SourceFileContent instance
-            filename = os.path.join(self.out_dir,
-                                    code_obj.klass.replace('.', os.sep) + '.py')
+            filename = self._get_class_filename(code_obj.klass)
             if self._overwrite or not self._file_exists(filename):
                 prev_src = None
             else:
@@ -749,8 +748,7 @@ if __name__ == "__main__":
                 return
 
             # create the new source file
-            filename = os.path.join(self.out_dir,
-                                    code_obj.klass.replace('.', os.sep) + '.py')
+            filename = self._get_class_filename(code_obj.klass)
             out = cStringIO.StringIO()
             write = out.write
             # write the common lines
@@ -1047,6 +1045,13 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         Removes the package name from the given class name
         """
         return class_name.split('.')[-1]
+
+    def _get_class_filename(self, klass):
+        filename = os.path.join(
+            self.out_dir,
+            klass.replace('.', os.sep) + '.py'
+            )
+        return filename
 
     def _get_code_name(self, obj):
         if obj.is_toplevel:
