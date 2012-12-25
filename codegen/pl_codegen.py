@@ -118,7 +118,7 @@ class SourceFileContent(BaseSourceFileContent):
             elif not inside_block:
                 result = self.rec_block_start.match(line)
                 if result:
-##                    print ">> block %r %r %r" % (
+##                     print ">> block %r %r %r" % (
 ##                         result.group('spaces'), result.group('classname'), result.group('block'))
                     # replace the lines inside a wxGlade block with a tag that
                     # will be used later by add_class
@@ -506,8 +506,7 @@ unless(caller){
         if self.multiple_files:
             # let's see if the file to generate exists, and in this case
             # create a SourceFileContent instance
-            filename = os.path.join(self.out_dir,
-                                    code_obj.klass + '.pm')  # MODULE!!
+            filename = self._get_class_filename(code_obj.klass)
             if self._overwrite or not self._file_exists(filename):
                 prev_src = None
             else:
@@ -820,8 +819,7 @@ unless(caller){
                 return
 
             # create the new source file
-            filename = os.path.join(self.out_dir,
-                                    code_obj.klass.replace('::', os.sep) + '.pm')  # MODULE!!
+            filename = self._get_class_filename(code_obj.klass)
             out = cStringIO.StringIO()
             write = out.write
             # write the common lines
@@ -846,16 +844,8 @@ unless(caller){
             # write the class body
             for line in buffer:
                 write(line)
-            try:
-                dirname = os.path.dirname(filename)  # create Foo in Foo::Bar,
-                                                     # Foo/Bar.pm
-                if not os.path.exists(dirname):
-                    os.makedirs(dirname)
-                # store the contents to filename
-                self.save_file(filename, out.getvalue())
-            except:
-                import traceback
-                traceback.print_exc()
+            # store the contents to filename
+            self.save_file(filename, out.getvalue())
             out.close()
         else:  # not self.multiple_files
             if prev_src:
@@ -1049,6 +1039,22 @@ unless(caller){
             return s
         else:
             return '"' + s + '"'
+
+    def _get_class_filename(self, klass):
+        """
+        Returns the name for a Perl module (.pm) to store a single class
+        in multi file projects.
+
+        @param klass: Class name
+        @type klass:  String
+        
+        @rtype: String
+        """
+        filename = os.path.join(
+            self.out_dir,
+            klass.replace('::', os.sep) + '.pm'
+            )
+        return filename
 
     def _get_code_name(self, obj):
         if obj.is_toplevel:

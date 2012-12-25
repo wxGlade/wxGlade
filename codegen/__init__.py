@@ -1645,7 +1645,18 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         # add original file content
         tmp += content
+        
+        # check for sub necessary directories e.g. for Perl or Python modules
+        dirname = os.path.dirname(filename)
+        if dirname and not os.path.isdir(dirname):
+            try:
+                os.makedirs(dirname)
+            except:
+                common.message.exception(
+                    _('Can not create output directory "%s"'), dirname
+                    )
 
+        # save the file now
         try:
             common.save_file(filename, tmp, 'codegen')
         except IOError, e:
@@ -1846,6 +1857,17 @@ It is available for wx versions %(supported_versions)s only.""") % {
             'value': value,
             }
         return stmt
+
+    def _get_class_filename(self, klass):
+        """\
+        Returns the filename to store a single class in multi file projects.
+
+        @param klass: Class name
+        @type klass:  String
+
+        @rtype: String
+        """
+        return ''
 
     def _generate_function(self, code_obj, is_new, tab, fname, ftmpl, body):
         """\
