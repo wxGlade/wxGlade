@@ -18,6 +18,7 @@ General:
   - Fix exceptions during widget preview triggered by keyboard shortcut
   - Improve message logging
   - Add new widget HyperlinkCtrl
+  - Add more test cases
   - ...
 
 Bugs:
