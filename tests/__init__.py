@@ -51,11 +51,22 @@ class WXGladeBaseTest(unittest.TestCase):
     orig_os_access = None
     """\
     Reference to original C{os.access()} implementation
+    
+    @see: L{_os_access()}
+    """
+
+    orig_os_makedirs = None
+    """\
+    Reference to original C{os.makedirs()} implementation
+    
+    @see: L{_os_makedirs()}
     """
 
     orig_os_path_isdir = None
     """\
     Reference to original C{os.path.isdir()} implementation
+    
+    @see: L{_os_path_isdir()}
     """
 
     orig_save_file = None
@@ -109,6 +120,8 @@ class WXGladeBaseTest(unittest.TestCase):
         self.orig_file_exists = codegen.BaseCodeWriter._file_exists 
         self.orig_os_access = os.access
         os.access = self._os_access
+        self.orig_os_makedirs = os.makedirs
+        os.makedirs = self._os_makedirs
         self.orig_os_path_isdir = os.path.isdir
         os.path.isdir = self._os_path_isdir
         codegen.BaseCodeWriter._file_exists = self._file_exists
@@ -137,6 +150,7 @@ class WXGladeBaseTest(unittest.TestCase):
         codegen.BaseSourceFileContent._load_file = self.orig_load_file
         codegen.BaseCodeWriter._file_exists = self.orig_file_exists
         os.access = self.orig_os_access
+        os.makedirs = self.orig_os_makedirs
         os.path.isdir = self._os_path_isdir
 
     def _generate_code(self, language, document, filename):
@@ -274,6 +288,12 @@ class WXGladeBaseTest(unittest.TestCase):
         Fake implementation for C{os.access()} - returns always C{True}
         """
         return True
+
+    def _os_makedirs(self, path, mode):
+        """\
+        Fake implementation for C{os.makedirs()} - do nothing
+        """
+        pass
 
     def _os_path_isdir(self, s):
         """\
