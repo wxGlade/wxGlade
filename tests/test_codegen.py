@@ -866,3 +866,38 @@ class TestCodeGen(WXGladeBaseTest):
                         for name in self.vFiles.keys():
                             self.vFiles[name].close()
                             del self.vFiles[name]
+
+    def test_no_suitable_writer(self):
+        """\
+        Test the generation of a warning if no suitable writer has been found
+        for a specific widget.
+        
+        This tests only the case of a known widget but the language specific
+        widget handler is missing.
+        
+        This test doesn't cover the missing of a whole widget.
+        
+        @see: L{codegen.BaseCodeWriter._add_object_init()}
+        """
+        for lang, ext in [
+            ('python', '.py'),
+            ('perl', '.pl'),
+            ('lisp', '.lisp'),
+            ('XRC', '.xrc'),
+            ('C++', ''),
+            ]:
+            codegen = common.code_writers.get(lang)
+            handler = codegen.obj_builders['wxButton']
+            del codegen.obj_builders['wxButton']
+            if lang == 'C++':
+                self._generate_and_compare_cpp(
+                    'no_suitable_writer.wxg',
+                    'no_suitable_writer'
+                    )
+            else:
+                self._generate_and_compare(
+                    lang,
+                    'no_suitable_writer.wxg',
+                    'no_suitable_writer%s' % ext,
+                    )
+            codegen.obj_builders['wxButton'] = handler
