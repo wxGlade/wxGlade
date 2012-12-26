@@ -480,7 +480,7 @@ def save_file(filename, content, which='wxg'):
         if savecontent:
             directory = os.path.dirname(filename)
             if directory and not os.path.isdir(directory):
-                os.mkdir(directory)
+                os.makedirs(directory)
             outfile = open(filename, 'w')
             outfile.write(content)
             outfile.close()

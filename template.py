@@ -194,7 +194,7 @@ def save_template(data=None):
         d = os.path.join(config._get_appdatapath(), '.wxglade', 'templates')
         if not os.path.exists(d):
             try:
-                os.mkdir(d)
+                os.makedirs(d)
             except (OSError, IOError), e:
                 print _("ERROR creating %s: %s") % (d, e)
                 return None, retdata

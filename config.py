@@ -164,7 +164,7 @@ def save_preferences():
         if path != common.wxglade_path:
             path = os.path.join(path, '.wxglade')
     if not os.path.isdir(path):
-        os.mkdir(path)
+        os.makedirs(path)
     # always save the file history
     if _use_file_history:
         fh = common.palette.file_history
