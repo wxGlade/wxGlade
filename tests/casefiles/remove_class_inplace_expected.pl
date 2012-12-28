@@ -94,7 +94,7 @@ sub new {
         $size   = wxDefaultSize      unless defined $size;
         $name   = ""                 unless defined $name;
 
-0# Content of this block not found. Did you rename this class?
+        # Content of this block not found. Did you rename this class?
         return $self;
 
 }
@@ -102,12 +102,12 @@ sub new {
 
 sub __set_properties {
         my $self = shift;
-0# Content of this block not found. Did you rename this class?
+        # Content of this block not found. Did you rename this class?
 }
 
 sub __do_layout {
         my $self = shift;
-0# Content of this block not found. Did you rename this class?
+        # Content of this block not found. Did you rename this class?
 }
 
 # end of class MyDialog1
