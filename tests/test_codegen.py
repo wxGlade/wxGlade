@@ -901,3 +901,127 @@ class TestCodeGen(WXGladeBaseTest):
                     'no_suitable_writer%s' % ext,
                     )
             codegen.obj_builders['wxButton'] = handler
+
+    def test_add_class_inplace(self):
+        """\
+        Test appending of a new class to an existing file without overwriting.
+        """
+        # Test Lisp code generator
+        #=========================
+        # load XML input file
+        source = self._load_file('add_class_inplace_extended.wxg')
+        expected = self._load_file('add_class_inplace_extended.lisp')
+
+        # generate code
+        self._generate_code('lisp', source, 'add_class_inplace_orig.lisp')
+        generated = self.vFiles['add_class_inplace_orig.lisp'].getvalue()
+        self._compare(expected, generated)
+
+        # Test Perl code generator
+        #=========================
+        # load XML input file
+        source = self._load_file('add_class_inplace_extended.wxg')
+        expected = self._load_file('add_class_inplace_extended.pl')
+
+        # generate code
+        self._generate_code('perl', source, 'add_class_inplace_orig.pl')
+        generated = self.vFiles['add_class_inplace_orig.pl'].getvalue()
+        self._compare(expected, generated)
+
+        # Test Python code generator
+        #===========================
+        # load XML input file
+        source = self._load_file('add_class_inplace_extended.wxg')
+        expected = self._load_file('add_class_inplace_extended.py')
+
+        # generate code
+        self._generate_code('python', source, 'add_class_inplace_orig.py')
+        generated = self.vFiles['add_class_inplace_orig.py'].getvalue()
+        self._compare(expected, generated)
+
+        # Test XRC code generator
+        #========================
+        # load XML input file
+        source = self._load_file('add_class_inplace_extended.wxg')
+        expected = self._load_file('add_class_inplace_extended.xrc')
+
+        # generate code
+        self._generate_code('XRC', source, 'add_class_inplace_orig.xrc')
+        generated = self.vFiles['add_class_inplace_orig.xrc'].getvalue()
+        self._compare(expected, generated)
+
+        # Test C++ code generator
+        #========================
+        # load XML input file
+        source = self._load_file('add_class_inplace_extended.wxg')
+        expected_cpp = self._load_file('add_class_inplace_extended.cpp')
+        expected_h   = self._load_file('add_class_inplace_extended.h')
+
+        # generate code
+        self._generate_code('C++', source, 'add_class_inplace_orig.xrc')
+        gen_cpp = self.vFiles['add_class_inplace_orig.cpp'].getvalue()
+        gen_h   = self.vFiles['add_class_inplace_orig.h'].getvalue()
+        self._compare(expected_cpp, gen_cpp, 'C++ source')
+        self._compare(expected_h, gen_h, 'C++ header')
+
+    def test_remove_class_inplace(self):
+        """\
+        Test class removal in an existing file without overwriting.
+        """
+        # Test Lisp code generator
+        #=========================
+        # load XML input file
+        source = self._load_file('remove_class_inplace.wxg')
+        expected = self._load_file('remove_class_inplace_expected.lisp')
+
+        # generate code
+        self._generate_code('lisp', source, 'remove_class_inplace_input.lisp')
+        generated = self.vFiles['remove_class_inplace_input.lisp'].getvalue()
+        self._compare(expected, generated)
+
+        # Test Perl code generator
+        #=========================
+        # load XML input file
+        source = self._load_file('remove_class_inplace.wxg')
+        expected = self._load_file('remove_class_inplace_expected.pl')
+
+        # generate code
+        self._generate_code('perl', source, 'remove_class_inplace_input.pl')
+        generated = self.vFiles['remove_class_inplace_input.pl'].getvalue()
+        self._compare(expected, generated)
+
+        # Test Python code generator
+        #===========================
+        # load XML input file
+        source = self._load_file('remove_class_inplace.wxg')
+        expected = self._load_file('remove_class_inplace_expected.py')
+
+        # generate code
+        self._generate_code('python', source, 'remove_class_inplace_input.py')
+        generated = self.vFiles['remove_class_inplace_input.py'].getvalue()
+        self._compare(expected, generated)
+
+        # Test XRC code generator
+        #========================
+        # load XML input file
+        source = self._load_file('remove_class_inplace.wxg')
+        expected = self._load_file('remove_class_inplace_expected.xrc')
+
+        # generate code
+        self._generate_code('XRC', source, 'remove_class_inplace_input.xrc')
+        generated = self.vFiles['remove_class_inplace_input.xrc'].getvalue()
+        self._compare(expected, generated)
+
+        # Test C++ code generator
+        #========================
+        # load XML input file
+        source = self._load_file('remove_class_inplace.wxg')
+        expected_cpp = self._load_file('remove_class_inplace_expected.cpp')
+        expected_h   = self._load_file('remove_class_inplace_expected.h')
+
+        # generate code
+        self._generate_code('C++', source, 'remove_class_inplace_input.xrc')
+        gen_cpp = self.vFiles['remove_class_inplace_input.cpp'].getvalue()
+        gen_h   = self.vFiles['remove_class_inplace_input.h'].getvalue()
+        self._compare(expected_cpp, gen_cpp, 'C++ source')
+        self._compare(expected_h, gen_h, 'C++ header')
