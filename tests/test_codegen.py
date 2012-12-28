@@ -14,12 +14,20 @@ from tests import WXGladeBaseTest
 import common
 import misc
 
+
 class MockCodeObject(object):
     """\
-    Mock object for L{wxglade.xml_parse.CodeObject}
+    Mock object for L{xml_parse.CodeObject}
     """
     preview = False
     properties = {}
+
+
+class MockSourceFileContent(object):
+    """\
+    Mock object for L{codegen.BaseSourceFileContent}
+    """
+    spaces = {}
 
 
 class TestCodeGen(WXGladeBaseTest):
@@ -740,11 +748,12 @@ class TestCodeGen(WXGladeBaseTest):
         @see: L{codegen.BaseCodeWriter._content_notfound()}
         """
         import codegen
-        codegen = codegen.BaseCodeWriter()
+        base_codegen = codegen.BaseCodeWriter()
+        base_codegen.previous_source = MockSourceFileContent()
 
         # this is to be more sure to replace the right tags
-        codegen.nonce = '12G34'
-        codegen.comment_sign = "#"
+        base_codegen.nonce = '12G34'
+        base_codegen.comment_sign = "#"
 
         source_sample = """\
 <12G34wxGlade replace %(pattern)s>
@@ -772,9 +781,13 @@ class TestCodeGen(WXGladeBaseTest):
                 'indent':  indent,
                 }
 
-            result = codegen._content_notfound(
+            if indent:
+                base_codegen.previous_source.spaces['MissingClass'] = indent
+            else:
+                base_codegen.previous_source.spaces = {}
+
+            result = base_codegen._content_notfound(
                 source,
-                indent,
                 )
 
             self.failUnless(

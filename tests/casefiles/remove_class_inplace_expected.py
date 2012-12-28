@@ -18,16 +18,16 @@ import gettext
 
 class MyDialog1(wx.Dialog):
     def __init__(self, *args, **kwds):
-0# Content of this block not found. Did you rename this class?
-0pass
+        # Content of this block not found. Did you rename this class?
+        pass
 
     def __set_properties(self):
-0# Content of this block not found. Did you rename this class?
-0pass
+        # Content of this block not found. Did you rename this class?
+        pass
 
     def __do_layout(self):
-0# Content of this block not found. Did you rename this class?
-0pass
+        # Content of this block not found. Did you rename this class?
+        pass
 
 # end of class MyDialog1
 class MyDialog(wx.Dialog):

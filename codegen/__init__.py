@@ -849,8 +849,7 @@ class BaseCodeWriter(object):
             # source: this may happen if we're not generating multiple files,
             # and one of the container class names is changed
             self.previous_source.content = self._content_notfound(
-                self.previous_source.content,
-                self.previous_source.spaces.get(tag[1], 0)
+                self.previous_source.content
                 )
 
             tags = re.findall(
@@ -1709,7 +1708,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         if self._show_warnings:
             common.message.warn(msg)
 
-    def _content_notfound(self, source, indent=""):
+    def _content_notfound(self, source):
         """\
         Remove all the remaining <123415wxGlade ...> tags from the source
         and add a warning instead.
@@ -1717,11 +1716,12 @@ It is available for wx versions %(supported_versions)s only.""") % {
         This may happen if we're not generating multiple files, and one of
         the container class names is changed.
 
+        The indentation of the string depends values detected during the
+        initial parsing of the source file. Those values are stored in
+        L{BaseSourceFileContent.spaces}.
+
         @param source: Source content with tags to replace
         @type source:  String
-
-        @param indent: Indentation of the warning message
-        @type indent:  String
 
         @return: Changed content
         @rtype:  String
@@ -1731,6 +1731,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
             source
             )
         for tag in tags:
+            # re.findall() returned a list of tuples (caused by grouping)
+            # first element in tuple:  the whole match
+            # second element in tuple: the class / block name
+            indent = self.previous_source.spaces.get(tag[1], "")
             comment = '%(indent)s%(comment_sign)s Content of this block not found. ' \
                       'Did you rename this class?\n'
             if 'contentnotfound' in self.code_statements:

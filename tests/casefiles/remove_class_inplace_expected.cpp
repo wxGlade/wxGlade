@@ -61,19 +61,19 @@ void MyDialog::do_layout()
 MyDialog1::MyDialog1(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
-// Content of this block not found. Did you rename this class?
+    // Content of this block not found. Did you rename this class?
 }
 
 
 void MyDialog1::set_properties()
 {
-// Content of this block not found. Did you rename this class?
+    // Content of this block not found. Did you rename this class?
 }
 
 
 void MyDialog1::do_layout()
 {
-// Content of this block not found. Did you rename this class?
+    // Content of this block not found. Did you rename this class?
 }
 
 

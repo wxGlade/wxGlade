@@ -101,15 +101,15 @@
 
 (defmethod init ((obj MyDialog1))
 "Method creates the objects contained in the class."
-0;;; Content of this block not found. Did you rename this class?
+        ;;; Content of this block not found. Did you rename this class?
         )
 
 (defmethod set-properties ((obj MyDialog1))
-0;;; Content of this block not found. Did you rename this class?
+        ;;; Content of this block not found. Did you rename this class?
         )
 
 (defmethod do-layout ((obj MyDialog1))
-0;;; Content of this block not found. Did you rename this class?
+        ;;; Content of this block not found. Did you rename this class?
         )
 
 ;;; end of class MyDialog1
