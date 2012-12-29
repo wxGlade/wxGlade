@@ -17,6 +17,7 @@ from xml.sax.saxutils import escape, quoteattr
 from codegen import BaseCodeWriter, \
                     EventsPropertyHandler, \
                     ExtraPropertiesPropertyHandler
+from ordereddict import OrderedDict
 
 
 class FontPropertyHandler:
@@ -318,7 +319,7 @@ class XRCCodeWriter(BaseCodeWriter):
         self.out_file = cStringIO.StringIO()  # open(out_path, 'w')
         self.out_file.write('\n<resource version="2.3.0.1">\n')
         self.curr_tab = 1
-        self.xrc_objects = {}
+        self.xrc_objects = OrderedDict()
 
     def finalize(self):
         # write the code for every toplevel object
