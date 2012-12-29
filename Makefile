@@ -27,8 +27,8 @@ BUILD_DIR         = $(BASE_DIR)/build
 BDIST_DIR         = $(BASE_DIR)/bdist
 DOC_DIR           = $(BASE_DIR)/docs
 DIST_DIR          = $(BASE_DIR)/dist
-CHECK_FILES       = $(wildcard $(BASE_DIR)/*.py) \
-                    $(shell find $(SOURCE_DIRS) -name "*.py")
+CHECK_FILES       = $(filter-out $(BASE_DIR)/test.py, $(wildcard $(BASE_DIR)/*.py)) \
+                    $(filter-out tests/%.py, $(shell find $(SOURCE_DIRS) -name "*.py"))
 EPYDOC_BIN        = epydoc
 EPYDOC_CONFIG     = $(BASE_DIR)/epydoc.conf
 EPYDOC_OPTS       = --config
