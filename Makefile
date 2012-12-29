@@ -55,6 +55,7 @@ MANUAL_PICS       = $(wildcard $($(MANUAL_SRC_DIR)/*.png))
 MANUAL_PDF        = $(MANUAL_PDF_DIR)/manual.pdf
 MANUAL_PDF_XSL    = $(MANUAL_SRC_DIR)/pdf.xsl
 MANUAL_HTML       = $(MANUAL_HTML_DIR)/index.html
+MANUAL_HTML_XSL   = $(MANUAL_SRC_DIR)/html.xsl
 
 HELP= @grep -B1 '^[a-zA-Z\-]*:' Makefile |\
          awk 'function p(h,t){printf"%-12s=%s\n",h,t;};\
@@ -155,7 +156,7 @@ pdf: $(MANUAL_PDF)
 # Create HTML documentation
 $(MANUAL_HTML): $(MANUAL_XML) $(MANUAL_PICS)
 	$(INSTALL_DATA) -t $(MANUAL_HTML_DIR) $(MANUAL_SRC_DIR)/*.png
-	xmlto -o $(MANUAL_HTML_DIR) html $(MANUAL_XML)
+	xmlto -m $(MANUAL_HTML_XSL) -o $(MANUAL_HTML_DIR) html $(MANUAL_XML)
 	$(RM) $(MANUAL_HTML_DIR)/manual.proc
 
 #+ Create a set of HTML documents based on manual xml file
