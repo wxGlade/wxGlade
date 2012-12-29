@@ -65,16 +65,13 @@ class SourceFileContent(BaseSourceFileContent):
         r'\s*$'                                            # tailing spaces
         )
 
-    def __init__(self, name=None, content=None, classes=None, nonce=None,
-                 out_dir=None, multiple_files=None, use_new_namespace=None):
+    def __init__(self, name, code_writer):
 
         # initialise new variables first
-        self.use_new_namespace = use_new_namespace
+        self.use_new_namespace = code_writer.use_new_namespace
 
         # call inherited constructor
-        BaseSourceFileContent.__init__(
-            self, name, content, classes, nonce, out_dir, multiple_files
-            )
+        BaseSourceFileContent.__init__(self, name, code_writer)
 
     def build_untouched_content(self):
         BaseSourceFileContent.build_untouched_content(self)
@@ -385,13 +382,7 @@ if __name__ == "__main__":
                 # the file exists, we must keep all the lines not inside a
                 # wxGlade block. NOTE: this may cause troubles if out_path is
                 # not a valid source file, so be careful!
-                self.previous_source = SourceFileContent(
-                    out_path,
-                    nonce=self.nonce,
-                    out_dir=self.out_dir,
-                    multiple_files=self.multiple_files,
-                    use_new_namespace=self.use_new_namespace,
-                    )
+                self.previous_source = SourceFileContent(out_path, self)
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
@@ -435,13 +426,7 @@ if __name__ == "__main__":
             if self._overwrite or not self._file_exists(filename):
                 prev_src = None
             else:
-                prev_src = SourceFileContent(
-                    filename,
-                    nonce=self.nonce,
-                    out_dir=self.out_dir,
-                    multiple_files=self.multiple_files,
-                    use_new_namespace=self.use_new_namespace,
-                    )
+                prev_src = SourceFileContent(filename, self)
             self._current_extra_modules = {}
         else:
             # in this case, previous_source is the SourceFileContent instance

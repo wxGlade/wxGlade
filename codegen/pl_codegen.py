@@ -457,15 +457,10 @@ unless(caller){
             self.out_dir = out_path
         else:
             if not self._overwrite and self._file_exists(out_path):
-                # the file exists, we must keep all the lines not inside a wxGlade
-                # block. NOTE: this may cause troubles if out_path is not a valid
-                # source file, so be careful!
-                self.previous_source = SourceFileContent(
-                    out_path,
-                    nonce=self.nonce,
-                    out_dir=self.out_dir,
-                    multiple_files=self.multiple_files,
-                    )
+                # the file exists, we must keep all the lines not inside a
+                # wxGlade block. NOTE: this may cause troubles if out_path is
+                # not a valid source file, so be careful!
+                self.previous_source = SourceFileContent(out_path, self)
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
@@ -510,12 +505,7 @@ unless(caller){
             if self._overwrite or not self._file_exists(filename):
                 prev_src = None
             else:
-                prev_src = SourceFileContent(
-                    filename,
-                    nonce=self.nonce,
-                    out_dir=self.out_dir,
-                    multiple_files=self.multiple_files,
-                    )
+                prev_src = SourceFileContent(filename, self)
             self._current_extra_modules = {}
         else:
             # in this case, previous_source is the SourceFileContent instance
