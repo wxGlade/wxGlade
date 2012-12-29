@@ -158,6 +158,7 @@ class BaseSourceFileContent(object):
     @ivar event_handlers: List of event handlers for each class
 
     @ivar name:           Name of the file
+    @type name:           String
     @ivar new_classes:    New classes to add to the file (they are inserted
                           BEFORE the old ones)
 
@@ -165,7 +166,11 @@ class BaseSourceFileContent(object):
                                 been inserted in source file already
     @type new_classes_inserted: Boolean
 
-    @ivar spaces:         Indentation level for each class
+    @ivar code_writer: Reference to the parent code writer object
+    @type code_writer: Instance of L{BaseCodeWriter} or of a derived class
+    
+    @ivar spaces: Indentation level for each class
+    @type spaces: String  
 
     @cvar rec_block_start:   Regexp to match the begin of a wxglade block
     @cvar rec_block_end:     Regexp to match the end of a wxGlade block
@@ -173,21 +178,17 @@ class BaseSourceFileContent(object):
     @cvar rec_event_handler: Regexp to match event handlers
     """
 
-    def __init__(self, name=None, content=None, classes=None, nonce=None,
-                 out_dir=None, multiple_files=None):
-
+    def __init__(self, name, code_writer):
         self.name = name
-        self.content = content
+        self.code_writer = code_writer
+        self.content = None
         self.new_classes = []
-        if classes:
-            self.classes = classes
-        else:
-            self.classes = {}
+        self.classes = {}
         self.spaces = {}
         self.event_handlers = {}
-        self.nonce = nonce
-        self.out_dir = out_dir
-        self.multiple_files = multiple_files
+        self.nonce = code_writer.nonce
+        self.out_dir = code_writer.out_dir
+        self.multiple_files = code_writer.multiple_files
         if not self.content:
             self.build_untouched_content()
         self.class_name = None
@@ -216,7 +217,11 @@ class BaseSourceFileContent(object):
         return class_name
 
     def is_end_of_class(self, line):
-        """True if the line is the marker for class end"""
+        """\
+        True if the line is the marker for class end.
+        
+        @rtype: Boolean
+        """
         return line.strip().startswith('# end of class ')
 
     def is_import_line(self, line):
@@ -224,6 +229,8 @@ class BaseSourceFileContent(object):
         True if the line imports wx
 
         @note: You may overwrite this function in the derivated class
+        
+        @rtype: Boolean
         """
         return False
 
