@@ -246,19 +246,30 @@ class PythonCodeWriter(BaseCodeWriter):
         'extraproperties': BaseCodeWriter.ExtraPropertiesPropertyHandler,
         }
 
+    indent_level_func_body = 2
+
+    name_ctor = '__init__'
+
     shebang = '#!/usr/bin/env python\n'
+
+    SourceFileContent = SourceFileContent
 
     tmpl_name_do_layout = '__do_layout'
     tmpl_name_set_properties = '__set_properties'
 
     tmpl_encoding = "# -*- coding: %s -*-\n"
-    
+
+    tmpl_class_end = '\n' \
+                     '%(comment)s end of class %(klass)s\n'
+
     tmpl_ctor_call_layout = '\n' \
                             '%(tab)sself.__set_properties()\n' \
                             '%(tab)sself.__do_layout()\n'
 
     tmpl_func_empty = '%(tab)spass\n'
-    
+
+    tmpl_style = '%(tab)skwds["style"] = %(style)s\n'
+
     tmpl_appfile = """\
 %(overwrite)s\
 %(header_lines)s\
@@ -414,373 +425,6 @@ if __name__ == "__main__":
 
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
-    def add_class(self, code_obj):
-        if self.classes.has_key(code_obj.klass) and \
-           self.classes[code_obj.klass].done:
-            return  # the code has already been generated
-
-        if self.multiple_files:
-            # let's see if the file to generate exists, and in this case
-            # create a SourceFileContent instance
-            filename = self._get_class_filename(code_obj.klass)
-            if self._overwrite or not self._file_exists(filename):
-                prev_src = None
-            else:
-                prev_src = SourceFileContent(filename, self)
-            self._current_extra_modules = {}
-        else:
-            # in this case, previous_source is the SourceFileContent instance
-            # that keeps info about the single file to generate
-            prev_src = self.previous_source
-
-        try:
-            builder = self.obj_builders[code_obj.base]
-            mycn = getattr(builder, 'cn', self.cn)
-            mycn_f = getattr(builder, 'cn_f', self.cn_f)
-        except KeyError:
-            print code_obj
-            raise  # this is an error, let the exception be raised
-
-        if prev_src and prev_src.classes.has_key(code_obj.klass):
-            is_new = False
-            indentation = prev_src.spaces[code_obj.klass]
-        else:
-            # this class wasn't in the previous version of the source (if any)
-            is_new = True
-            indentation = self.tabs(2)
-            mods = getattr(builder, 'extra_modules', [])
-            if mods:
-                for m in mods:
-                    self._current_extra_modules[m] = 1
-
-        buffer = []
-        write = buffer.append
-
-        if not self.classes.has_key(code_obj.klass):
-            # if the class body was empty, create an empty ClassLines
-            self.classes[code_obj.klass] = self.ClassLines()
-
-        # collect all event handlers
-        event_handlers = self.classes[code_obj.klass].event_handlers
-        if hasattr(builder, 'get_events'):
-            for id, event, handler in builder.get_events(code_obj):
-                event_handlers.append((id, mycn(event), handler))
-
-        # try to see if there's some extra code to add to this class
-        if not code_obj.preview:
-            extra_code = getattr(builder, 'extracode',
-                                 code_obj.properties.get('extracode', ""))
-            if extra_code:
-                extra_code = re.sub(r'\\n', '\n', extra_code)
-                self.classes[code_obj.klass].extra_code.append(extra_code)
-                if not is_new:
-                    self.warning(
-                        '%s has extra code, but you are not overwriting '
-                        'existing sources: please check that the resulting '
-                        'code is correct!' % code_obj.name
-                        )
-
-            # Don't add extra_code to self._current_extra_code here, that is
-            # handled later.  Otherwise we'll emit duplicate extra code for
-            # frames.
-
-        # custom base classes support
-        custom_base = getattr(code_obj, 'custom_base',
-                              code_obj.properties.get('custom_base', None))
-        if code_obj.preview or (custom_base and not custom_base.strip()):
-            custom_base = None
-
-        tab = indentation
-
-        # generate constructor code
-        if is_new:
-            base = mycn(code_obj.base)
-            if custom_base:
-                base = ", ".join([b.strip() for b in custom_base.split(',')])
-            if code_obj.preview and code_obj.klass == base:
-                klass = code_obj.klass + \
-                    ('_%d' % random.randrange(10 ** 8, 10 ** 9))
-            else:
-                klass = code_obj.klass
-            write('\nclass %s(%s):\n' % (self.without_package(klass), base))
-            write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
-        elif custom_base:
-            # custom base classes set, but "overwrite existing sources" not
-            # set. Issue a warning about this
-            self.warning(
-                '%s has custom base classes, but you are not overwriting '
-                'existing sources: please check that the resulting code is '
-                'correct!' % code_obj.name
-                )
-
-        # __init__ begin tag
-        write(self.tmpl_block_begin % {
-            'class_separator': self.class_separator,
-            'comment_sign':    self.comment_sign,
-            'function':        '__init__', 
-            'klass':           self.cn_class(code_obj.klass),
-            'tab':             indentation,
-            })
-
-        prop = code_obj.properties
-        style = prop.get("style", None)
-        if style:
-            write(indentation + 'kwds["style"] = %s\n' % mycn_f(style))
-
-        # initialise custom base class
-        if custom_base:
-            bases = [b.strip() for b in custom_base.split(',')]
-            for i, b in enumerate(bases):
-                if not i:
-                    write(indentation + '%s.__init__(self, *args, **kwds)\n' % b)
-                else:
-                    write(indentation + '%s.__init__(self)\n' % b)
-        else:
-            write(indentation + '%s.__init__(self, *args, **kwds)\n' % \
-                  mycn(code_obj.base))
-
-        init_lines = self.classes[code_obj.klass].init
-        parents_init = self.classes[code_obj.klass].parents_init
-
-        # classes[code_obj.klass].deps now contains a mapping of child to
-        # parent for all children we processed...
-        object_order = []
-        for obj in self.classes[code_obj.klass].child_order:
-            # Don't add it again if already present
-            if obj in object_order:
-                continue
-
-            object_order.append(obj)
-
-            # Insert parent and ancestor objects before the current object
-            current_object = obj
-            for child, parent in self.classes[code_obj.klass].deps[:]:
-                if child is current_object:
-                    if parent not in object_order:
-                        idx = object_order.index(current_object)
-                        object_order.insert(idx, parent)
-                    current_object = parent
-
-                    # We processed the dependency: remove it
-                    self.classes[code_obj.klass].deps.remove((child, parent))
-
-        # Write out the initialisation in the order we just generated
-        for obj in object_order:
-            if obj in self.classes[code_obj.klass].init_lines:
-                for l in self.classes[code_obj.klass].init_lines[obj]:
-                    write(tab + l)
-
-        # now check if there are extra lines to add to the constructor
-        if hasattr(builder, 'get_init_code'):
-            for l in builder.get_init_code(code_obj):
-                write(tab + l)
-
-        write(self.tmpl_ctor_call_layout % {
-            'tab': tab,
-            })
-
-        # generate code for binding events
-        code_lines = self.generate_code_event_bind(
-            code_obj,
-            tab,
-            event_handlers,
-            )
-        buffer.extend(code_lines)
-
-        # end tag
-        write('%s%s end wxGlade\n' % (tab, self.comment_sign))
-
-        # write class function end statement
-        if self.tmpl_cfunc_end and is_new:
-            write(self.tmpl_cfunc_end % {
-                'tab': tab,
-                })
-
-        # replace code inside existing constructor block
-        if prev_src and not is_new:
-            # replace the lines inside the ctor wxGlade block
-            # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
-                                                 '__init__')
-            if prev_src.content.find(tag) < 0:
-                # no __init__ tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade __init__ block not found for %s, __init__ code "
-                    "NOT generated" % code_obj.name
-                    )
-            else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buffer))
-            buffer = []
-            write = buffer.append
-
-        # generate code for __set_properties()
-        code_lines = self.generate_code_set_properties(
-            builder,
-            code_obj,
-            is_new,
-            tab
-            )
-        buffer.extend(code_lines)
-
-        # replace code inside existing __set_properties() function
-        if prev_src and not is_new:
-            # replace the lines inside the __set_properties wxGlade block
-            # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
-                                                 '__set_properties')
-            if prev_src.content.find(tag) < 0:
-                # no __set_properties tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade __set_properties block not found for %s, "
-                    "__set_properties code NOT generated" % code_obj.name
-                    )
-            else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buffer))
-            buffer = []
-            write = buffer.append
-
-        # generate code for __do_layout()
-        code_lines = self.generate_code_do_layout(
-            builder,
-            code_obj,
-            is_new,
-            tab
-            )
-        buffer.extend(code_lines)
-
-        # replace code inside existing __do_layout() function
-        if prev_src and not is_new:
-            # replace the lines inside the __do_layout wxGlade block
-            # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
-                                                 '__do_layout')
-            if prev_src.content.find(tag) < 0:
-                # no __do_layout tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade __do_layout block not found for %s, __do_layout "
-                    "code NOT generated" % code_obj.name
-                    )
-            else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buffer))
-
-        # generate code for event handler stubs
-        code_lines = self.generate_code_event_handler(
-            code_obj,
-            is_new,
-            tab,
-            prev_src,
-            event_handlers,
-            )
-
-        # replace code inside existing event handlers
-        if prev_src and not is_new:
-            tag = \
-                '<%swxGlade event_handlers %s>' % (self.nonce, code_obj.klass)
-            if prev_src.content.find(tag) < 0:
-                # no event_handlers tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade event_handlers block not found for %s, "
-                    "event_handlers code NOT generated" % code_obj.name
-                    )
-            else:
-                prev_src.content = prev_src.content.replace(
-                    tag,
-                    "".join(code_lines),
-                    )
-        else:
-            buffer.extend(code_lines)
-
-        # the code has been generated
-        self.classes[code_obj.klass].done = True
-
-        write('\n# end of class %s\n' % self.without_package(code_obj.klass))
-
-        if self.multiple_files:
-            if prev_src:
-                tag = '<%swxGlade insert new_classes>' % self.nonce
-                prev_src.content = prev_src.content.replace(tag, "")
-
-                # insert the extra modules
-                tag = '<%swxGlade extra_modules>\n' % self.nonce
-                code = "".join(self._current_extra_modules.keys())
-                prev_src.content = prev_src.content.replace(tag, code)
-
-                # insert the module dependencies of this class
-                tag = '<%swxGlade replace dependencies>' % self.nonce
-                dep_list = self.classes[code_obj.klass].dependencies.keys()
-                dep_list.extend(self.dependencies.keys())
-                dep_list.sort()
-                code = self._tagcontent('dependencies', dep_list)
-                prev_src.content = prev_src.content.replace(tag, code)
-
-                # insert the extra code of this class
-                extra_code = "".join(self.classes[code_obj.klass].extra_code[::-1])
-                # if there's extra code but we are not overwriting existing
-                # sources, warn the user
-                if extra_code:
-                    self.warning(
-                        '%s (or one of its chilren) has extra code classes, '
-                        'but you are not overwriting existing sources: please '
-                        'check that the resulting code is correct!' % \
-                        code_obj.name
-                        )
-                tag = '<%swxGlade replace extracode>' % self.nonce
-                code = self._tagcontent('extracode', extra_code)
-                prev_src.content = prev_src.content.replace(tag, code)
-
-                # store the new file contents to disk
-                self.save_file(filename, prev_src.content, content_only=True)
-                return
-
-            # create the new source file
-            filename = self._get_class_filename(code_obj.klass)
-            out = cStringIO.StringIO()
-            write = out.write
-            # write the common lines
-            for line in self.header_lines:
-                write(line)
-            write('\n')
-
-            # write the module dependecies for this class
-            dep_list = self.classes[code_obj.klass].dependencies.keys()
-            dep_list.extend(self.dependencies.keys())
-            dep_list.sort()
-            code = self._tagcontent('dependencies', dep_list, True)
-            write(code)
-
-            # insert the extra code of this class
-            code = self._tagcontent(
-                'extracode',
-                self.classes[code_obj.klass].extra_code[::-1],
-                True
-                )
-            write(code)
-
-            # write the class body
-            for line in buffer:
-                write(line)
-            # store the contents to filename
-            self.save_file(filename, out.getvalue())
-            out.close()
-        else:  # not self.multiple_files
-            if prev_src:
-                # if this is a new class, add its code to the new_classes
-                # list of the SourceFileContent instance
-                if is_new:
-                    prev_src.new_classes.append("".join(buffer))
-                elif self.classes[code_obj.klass].extra_code:
-                    self._current_extra_code.extend(self.classes[code_obj.klass].extra_code[::-1])
-                return
-            else:
-                # write the class body onto the single source file
-                for dep in self.classes[code_obj.klass].dependencies:
-                    self._current_extra_modules[dep] = 1
-                if self.classes[code_obj.klass].extra_code:
-                    self._current_extra_code.extend(self.classes[code_obj.klass].extra_code[::-1])
-                write = self.output_file.write
-                for line in buffer:
-                    write(line)
-
     def add_object(self, top_obj, sub_obj):
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(top_obj, sub_obj)
@@ -878,6 +522,104 @@ if __name__ == "__main__":
         buffer = '%s.Add(%s, %s, %s, %s)\n' % \
                  (sizer.name, obj_name, option, self.cn_f(flag), self.cn_f(border))
         klass.layout.append(buffer)
+
+    def generate_code_ctor_stage1(self, code_obj, is_new, tab):
+        code_lines = []
+        write = code_lines.append
+        
+        builder = self.obj_builders[code_obj.base]
+        mycn = getattr(builder, 'cn', self.cn)
+        mycn_f = getattr(builder, 'cn_f', self.cn_f)
+
+        # custom base classes support
+        custom_base = getattr(code_obj, 'custom_base',
+                              code_obj.properties.get('custom_base', None))
+        if code_obj.preview or (custom_base and not custom_base.strip()):
+            custom_base = None
+
+        # generate constructor code
+        if is_new:
+            base = mycn(code_obj.base)
+            if custom_base:
+                base = ", ".join([b.strip() for b in custom_base.split(',')])
+            if code_obj.preview and code_obj.klass == base:
+                klass = code_obj.klass + \
+                    ('_%d' % random.randrange(10 ** 8, 10 ** 9))
+            else:
+                klass = code_obj.klass
+            write('\nclass %s(%s):\n' % (self.without_package(klass), base))
+            write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
+        elif custom_base:
+            # custom base classes set, but "overwrite existing sources" not
+            # set. Issue a warning about this
+            self.warning(
+                '%s has custom base classes, but you are not overwriting '
+                'existing sources: please check that the resulting code is '
+                'correct!' % code_obj.name
+                )
+
+        # __init__ begin tag
+        write(self.tmpl_block_begin % {
+            'class_separator': self.class_separator,
+            'comment_sign':    self.comment_sign,
+            'function':        self.name_ctor, 
+            'klass':           self.cn_class(code_obj.klass),
+            'tab':             tab,
+            })
+
+        prop = code_obj.properties
+        style = prop.get("style", None)
+        if style:
+            stmt_style = self._format_style(style, code_obj)
+            write(stmt_style % {
+                'style': mycn_f(style),
+                'tab': tab,
+                })
+
+        # initialise custom base class
+        if custom_base:
+            bases = [b.strip() for b in custom_base.split(',')]
+            for i, b in enumerate(bases):
+                if not i:
+                    write(tab + '%s.__init__(self, *args, **kwds)\n' % b)
+                else:
+                    write(tab + '%s.__init__(self)\n' % b)
+        else:
+            write(tab + '%s.__init__(self, *args, **kwds)\n' % \
+                  mycn(code_obj.base))
+
+        init_lines = self.classes[code_obj.klass].init
+        parents_init = self.classes[code_obj.klass].parents_init
+
+        # classes[code_obj.klass].deps now contains a mapping of child to
+        # parent for all children we processed...
+        object_order = []
+        for obj in self.classes[code_obj.klass].child_order:
+            # Don't add it again if already present
+            if obj in object_order:
+                continue
+
+            object_order.append(obj)
+
+            # Insert parent and ancestor objects before the current object
+            current_object = obj
+            for child, parent in self.classes[code_obj.klass].deps[:]:
+                if child is current_object:
+                    if parent not in object_order:
+                        idx = object_order.index(current_object)
+                        object_order.insert(idx, parent)
+                    current_object = parent
+
+                    # We processed the dependency: remove it
+                    self.classes[code_obj.klass].deps.remove((child, parent))
+
+        # Write out the initialisation in the order we just generated
+        for obj in object_order:
+            if obj in self.classes[code_obj.klass].init_lines:
+                for l in self.classes[code_obj.klass].init_lines[obj]:
+                    write(tab + l)
+
+        return code_lines
 
     def generate_code_do_layout(self, builder, code_obj, is_new, tab):
         # Python has two indentation levels
