@@ -10,7 +10,6 @@ import codecs
 import locale
 import os
 import re
-import traceback
 import wx
 
 from widget_properties import *
@@ -611,7 +610,7 @@ class Application(object):
                 wx.OK|wx.CENTRE|wx.ICON_ERROR,
                 )
         except Exception, msg:
-            traceback.print_exc()
+            common.message.exception(_('Internal Error'))
             wx.MessageBox(
                 _("An exception occurred while generating the code "
                   "for the application.\n"
@@ -717,7 +716,7 @@ class Application(object):
                 if os.path.isfile(name):
                     os.unlink(name)
         except Exception, e:
-            #traceback.print_exc()
+            #common.message.exception(_('Internal Error'))
             widget.preview_widget = None
             widget.preview_button.SetLabel(_('Preview'))
             wx.MessageBox(_("Problem previewing gui: %s") % str(e), _("Error"),

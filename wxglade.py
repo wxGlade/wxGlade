@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ #!/usr/bin/env python
 """
 Entry point of wxGlade
 
@@ -11,7 +11,6 @@ import sys
 import gettext
 import common
 import optparse
-import traceback
 
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
@@ -155,7 +154,7 @@ def command_line_code_generation(filename, language, out_path=None):
         error(inst)
         sys.exit(1)
     except Exception:
-        traceback.print_exc()
+        common.message.exception(_('Internal Error'))
         error(
             _("An exception occurred while generating the code for the application.\n"
               "If you think this is a wxGlade bug, please report it.")
