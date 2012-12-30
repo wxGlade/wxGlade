@@ -202,12 +202,23 @@ class LispCodeWriter(BaseCodeWriter):
         'extraproperties': BaseCodeWriter.ExtraPropertiesPropertyHandler,
         }
 
+    indent_level_func_body = 2
+
+    name_ctor = '__init__'
+
     shebang = '#!/usr/bin/env lisp\n'
-        
+
+    SourceFileContent = SourceFileContent
+
     tmpl_name_do_layout = '__do_layout'
     tmpl_name_set_properties = '__set_properties'
 
     tmpl_cfunc_end = '%(tab)s)\n'
+
+    tmpl_class_end = '\n' \
+                     '%(comment)s end of class %(klass)s\n' \
+                     '\n' \
+                     '\n'
 
     tmpl_func_do_layout = '\n' \
                           '(defmethod do-layout ((obj %(klass)s))\n' \
@@ -386,356 +397,6 @@ class LispCodeWriter(BaseCodeWriter):
             }
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
-    def add_class(self, code_obj):
-        if self.classes.has_key(code_obj.klass) and \
-           self.classes[code_obj.klass].done:
-            return  # the code has already been generated
-
-        if self.multiple_files:
-            # let's see if the file to generate exists, and in this case
-            # create a SourceFileContent instance
-            filename = self._get_class_filename(code_obj.klass)
-            if self._overwrite or not self._file_exists(filename):
-                prev_src = None
-            else:
-                prev_src = SourceFileContent(filename, self)
-            self._current_extra_modules = {}
-        else:
-            # in this case, previous_source is the SourceFileContent instance
-            # that keeps info about the single file to generate
-            prev_src = self.previous_source
-
-        try:
-            builder = self.obj_builders[code_obj.base]
-            mycn = getattr(builder, 'cn', self.cn)
-            mycn_f = getattr(builder, 'cn_f', self.cn_f)
-        except KeyError:
-            print code_obj
-            raise  # this is an error, let the exception be raised
-
-        if prev_src and prev_src.classes.has_key(code_obj.klass):
-            is_new = False
-            indentation = prev_src.spaces[code_obj.klass]
-        else:
-            # this class wasn't in the previous version of the source (if any)
-            is_new = True
-            indentation = self.tabs(2)
-            mods = getattr(builder, 'extra_modules', [])
-            if mods:
-                for m in mods:
-                    self._current_extra_modules[m] = 1
-
-        buffer = []
-        write = buffer.append
-
-        if not self.classes.has_key(code_obj.klass):
-            # if the class body was empty, create an empty ClassLines
-            self.classes[code_obj.klass] = self.ClassLines()
-
-        # collect all event handlers
-        event_handlers = self.classes[code_obj.klass].event_handlers
-        if hasattr(builder, 'get_events'):
-            for id, event, handler in builder.get_events(code_obj):
-                event_handlers.append((id, mycn(event), handler))
-
-        # try to see if there's some extra code to add to this class
-        extra_code = getattr(builder, 'extracode',
-                             code_obj.properties.get('extracode', ""))
-        if extra_code:
-            extra_code = re.sub(r'\\n', '\n', extra_code)
-            self.classes[code_obj.klass].extra_code.append(extra_code)
-            if not is_new:
-                self.warning(
-                    '%s has extra code, but you are not overwriting '
-                    'existing sources: please check that the resulting '
-                    'code is correct!' % code_obj.name
-                    )
-
-        # Don't add extra_code to self._current_extra_code here, that is
-        # handled later.  Otherwise we'll emit duplicate extra code for
-        # frames.
-
-        # custom base classes support
-        custom_base = getattr(code_obj, 'custom_base',
-                              code_obj.properties.get('custom_base', None))
-        if custom_base and not custom_base.strip():
-            custom_base = None
-
-        tab = indentation
-
-        # generate constructor code
-        if is_new:
-            base = mycn(code_obj.base)
-            klass = code_obj.klass
-            write('\n(defclass %s()\n' % klass)
-            write(tab + "((top-window :initform nil :accessor slot-top-window)")
-            for l in self.class_lines:
-                write("\n")
-                write(tab + "(" + l + " :initform nil :accessor slot-" + l + ")")
-            write("))\n")
-
-            write("\n(defun make-%s ()\n" % klass)
-            write(tab + "(let ((obj (make-instance '%s)))\n" % klass)
-            write(tab + "  (init obj)\n")
-            write(tab + "  (set-properties obj)\n")
-            write(tab + "  (do-layout obj)\n")
-            write(tab + "  obj))\n")
-
-            write('\n(defmethod init ((obj %s))\n' % klass)
-            write("\"Method creates the objects contained in the class.\"\n")
-            
-        elif custom_base:
-            # custom base classes set, but "overwrite existing sources" not
-            # set. Issue a warning about this
-            self.warning(
-                '%s has custom base classes, but you are not overwriting '
-                'existing sources: please check that the resulting code is '
-                'correct!' % code_obj.name
-                )
-
-        # __init__ begin tag
-        write(self.tmpl_block_begin % {
-            'class_separator': self.class_separator,
-            'comment_sign':    self.comment_sign,
-            'function':        '__init__', 
-            'klass':           self.cn_class(code_obj.klass),
-            'tab':             tab,
-            })
-
-        prop = code_obj.properties
-        style = prop.get("style", None)
-        if style:
-            style = mycn_f(style)
-
-        style = style.strip().replace('.', '')
-        style = style.replace('|', ' ')
-        if style.find(' ') != -1:
-            style = '(logior %s)' % style
-
-        if code_obj.base == "wxFrame":
-            write(indentation + "(setf (slot-top-window obj) (wxFrame_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n" % style)
-        elif code_obj.base == "wxDialog":
-            write(indentation + "(setf (slot-top-window obj) (wxDialog_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n" % style)
-            self.dependencies['(use-package :wxButton)'] = 1
-
-        init_lines = self.classes[code_obj.klass].init
-        parents_init = self.classes[code_obj.klass].parents_init
-        parents_init.reverse()
-        for l in parents_init:
-            write(tab + l)
-        for l in init_lines:
-            write(tab + l)
-
-        # now check if there are extra lines to add to the constructor
-        if hasattr(builder, 'get_init_code'):
-            for l in builder.get_init_code(code_obj):
-                write(tab + l)
-
-        write(self.tmpl_ctor_call_layout % {
-            'tab': tab,
-            })
-
-        # generate code for binding events
-        code_lines = self.generate_code_event_bind(
-            code_obj,
-            tab,
-            event_handlers,
-            )
-        buffer.extend(code_lines)
-
-        # end tag
-        write('%s%s end wxGlade\n' % (tab, self.comment_sign))
-
-        # write class function end statement
-        if self.tmpl_cfunc_end and is_new:
-            write(self.tmpl_cfunc_end % {
-                'tab': tab,
-                })
-
-        # replace code inside existing constructor block
-        if prev_src and not is_new:
-            # replace the lines inside the ctor wxGlade block
-            # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
-                                                 '__init__')
-            if prev_src.content.find(tag) < 0:
-                # no __init__ tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade __init__ block not found for %s, __init__ code "
-                    "NOT generated" % code_obj.name
-                    )
-            else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buffer))
-            buffer = []
-            write = buffer.append
-
-        # generate code for __set_properties()
-        code_lines = self.generate_code_set_properties(
-            builder,
-            code_obj,
-            is_new,
-            tab
-            )
-        buffer.extend(code_lines)
-
-        # replace code inside existing __set_properties() function
-        if prev_src and not is_new:
-            # replace the lines inside the __set_properties wxGlade block
-            # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
-                                                 '__set_properties')
-            if prev_src.content.find(tag) < 0:
-                # no __set_properties tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade __set_properties block not found for %s, "
-                    "__set_properties code NOT generated" % code_obj.name
-                    )
-            else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buffer))
-            buffer = []
-            write = buffer.append
-
-        # generate code for __do_layout()
-        code_lines = self.generate_code_do_layout(
-            builder,
-            code_obj,
-            is_new,
-            tab
-            )
-        buffer.extend(code_lines)
-
-        # replace code inside existing __do_layout() function
-        if prev_src and not is_new:
-            # replace the lines inside the __do_layout wxGlade block
-            # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
-                                                 '__do_layout')
-            if prev_src.content.find(tag) < 0:
-                # no __do_layout tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade __do_layout block not found for %s, __do_layout "
-                    "code NOT generated" % code_obj.name
-                    )
-            else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buffer))
-
-        # generate code for event handler stubs
-        code_lines = self.generate_code_event_handler(
-            code_obj,
-            is_new,
-            tab,
-            prev_src,
-            event_handlers,
-            )
-
-        # replace code inside existing event handlers
-        if prev_src and not is_new:
-            tag = \
-                '<%swxGlade event_handlers %s>' % (self.nonce, code_obj.klass)
-            if prev_src.content.find(tag) < 0:
-                # no event_handlers tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade event_handlers block not found for %s, "
-                    "event_handlers code NOT generated" % code_obj.name
-                    )
-            else:
-                prev_src.content = prev_src.content.replace(
-                    tag,
-                    "".join(code_lines),
-                    )
-        else:
-            buffer.extend(code_lines)
-
-        # the code has been generated
-        self.classes[code_obj.klass].done = True
-
-        write('\n;;; end of class %s\n\n\n' % code_obj.klass)
-
-        if self.multiple_files:
-            if prev_src:
-                tag = '<%swxGlade insert new_classes>' % self.nonce
-                prev_src.content = prev_src.content.replace(tag, "")
-
-                # insert the extra modules
-                tag = '<%swxGlade extra_modules>\n' % self.nonce
-                code = "".join(self._current_extra_modules.keys())
-                prev_src.content = prev_src.content.replace(tag, code)
-
-                # insert the module dependencies of this class
-                tag = '<%swxGlade replace dependencies>' % self.nonce
-                dep_list = self.classes[code_obj.klass].dependencies.keys()
-                dep_list.extend(self.dependencies.keys())
-                dep_list.sort()
-                code = self._tagcontent('dependencies', dep_list)
-                prev_src.content = prev_src.content.replace(tag, code)
-
-                # insert the extra code of this class
-                extra_code = "".join(self.classes[code_obj.klass].extra_code[::-1])
-                # if there's extra code but we are not overwriting existing
-                # sources, warn the user
-                if extra_code:
-                    self.warning(
-                        '%s (or one of its chilren) has extra code classes, '
-                        'but you are not overwriting existing sources: please '
-                        'check that the resulting code is correct!' % \
-                        code_obj.name
-                        )
-                tag = '<%swxGlade replace extracode>' % self.nonce
-                code = self._tagcontent('extracode', extra_code)
-                prev_src.content = prev_src.content.replace(tag, code)
-
-                # store the new file contents to disk
-                self.save_file(filename, prev_src.content, content_only=True)
-                return
-
-            # create the new source file
-            filename = self._get_class_filename(code_obj.klass)
-            out = cStringIO.StringIO()
-            write = out.write
-            # write the common lines
-            for line in self.header_lines:
-                write(line)
-
-            # write the module dependecies for this class
-            dep_list = self.classes[code_obj.klass].dependencies.keys()
-            dep_list.extend(self.dependencies.keys())
-            dep_list.sort()
-            code = self._tagcontent('dependencies', dep_list, True)
-            write(code)
-
-            # insert the extra code of this class
-            code = self._tagcontent(
-                'extracode',
-                self.classes[code_obj.klass].extra_code[::-1],
-                True
-                )
-            write(code)
-
-            # write the class body
-            for line in buffer:
-                write(line)
-            # store the contents to filename
-            self.save_file(filename, out.getvalue())
-            out.close()
-        else:  # not self.multiple_files
-            if prev_src:
-                # if this is a new class, add its code to the new_classes
-                # list of the SourceFileContent instance
-                if is_new:
-                    prev_src.new_classes.append("".join(buffer))
-                elif self.classes[code_obj.klass].extra_code:
-                    self._current_extra_code.extend(self.classes[code_obj.klass].extra_code[::-1])
-                return
-            else:
-                # write the class body onto the single source file
-                for dep in self.classes[code_obj.klass].dependencies:
-                    self._current_extra_modules[dep] = 1
-                if self.classes[code_obj.klass].extra_code:
-                    self._current_extra_code.extend(self.classes[code_obj.klass].extra_code[::-1])
-                write = self.output_file.write
-                for line in buffer:
-                    write(line)
-
     def add_object(self, top_obj, sub_obj):
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(top_obj, sub_obj)
@@ -840,8 +501,7 @@ class LispCodeWriter(BaseCodeWriter):
         if flag.find(' ') != -1:
             flag = '(logior %s)' % flag
 
-        if (obj.klass == "wxBoxSizer" or obj.klass == "wxStaticBoxSizer"
-            or obj.klass == "wxGridSizer" or obj.klass == "wxFlexGridSizer"):
+        if obj.klass in ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer']:
             buffer = '(wxSizer_AddSizer (slot-%s  obj) (slot-%s obj) %s %s %s nil)\n' % \
                      (sizer.name, obj_name, option, flag, self.cn_f(border))
         else:
@@ -852,6 +512,78 @@ class LispCodeWriter(BaseCodeWriter):
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
         return BaseCodeWriter.generate_code_background(self, obj)
+
+    def generate_code_ctor_stage1(self, code_obj, is_new, tab):
+        code_lines = []
+        write = code_lines.append
+        
+        builder = self.obj_builders[code_obj.base]
+        mycn = getattr(builder, 'cn', self.cn)
+        mycn_f = getattr(builder, 'cn_f', self.cn_f)
+
+        # custom base classes support
+        custom_base = getattr(code_obj, 'custom_base',
+                              code_obj.properties.get('custom_base', None))
+        if code_obj.preview or (custom_base and not custom_base.strip()):
+            custom_base = None
+
+        # generate constructor code
+        if is_new:
+            base = mycn(code_obj.base)
+            klass = code_obj.klass
+            write('\n(defclass %s()\n' % klass)
+            write(tab + "((top-window :initform nil :accessor slot-top-window)")
+            for l in self.class_lines:
+                write("\n")
+                write(tab + "(" + l + " :initform nil :accessor slot-" + l + ")")
+            write("))\n")
+
+            write("\n(defun make-%s ()\n" % klass)
+            write(tab + "(let ((obj (make-instance '%s)))\n" % klass)
+            write(tab + "  (init obj)\n")
+            write(tab + "  (set-properties obj)\n")
+            write(tab + "  (do-layout obj)\n")
+            write(tab + "  obj))\n")
+
+            write('\n(defmethod init ((obj %s))\n' % klass)
+            write("\"Method creates the objects contained in the class.\"\n")
+            
+        elif custom_base:
+            # custom base classes set, but "overwrite existing sources" not
+            # set. Issue a warning about this
+            self.warning(
+                '%s has custom base classes, but you are not overwriting '
+                'existing sources: please check that the resulting code is '
+                'correct!' % code_obj.name
+                )
+
+        # __init__ begin tag
+        write(self.tmpl_block_begin % {
+            'class_separator': self.class_separator,
+            'comment_sign':    self.comment_sign,
+            'function':        self.name_ctor, 
+            'klass':           self.cn_class(code_obj.klass),
+            'tab':             tab,
+            })
+
+        prop = code_obj.properties
+        style = prop.get("style", None)
+        if style:
+            stmt_style = self._format_style(style, code_obj)
+            write(stmt_style % {
+                'style': mycn_f(style),
+                'tab': tab,
+                })
+
+        init_lines = self.classes[code_obj.klass].init
+        parents_init = self.classes[code_obj.klass].parents_init
+        parents_init.reverse()
+        for l in parents_init:
+            write(tab + l)
+        for l in init_lines:
+            write(tab + l)
+
+        return code_lines
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         code_lines = []
@@ -940,6 +672,30 @@ class LispCodeWriter(BaseCodeWriter):
             return '(_"%s")' % s
         else:
             return '"%s"' % s
+
+    def _format_style(self, style, code_obj):
+        builder = self.obj_builders[code_obj.base]
+        mycn_f = getattr(builder, 'cn_f', self.cn_f)
+
+        if not style:
+            return ''
+            
+        style = mycn_f(style)
+
+        style = style.strip().replace('.', '')
+        style = style.replace('|', ' ')
+        if style.find(' ') != -1:
+            style = '(logior %s)' % style
+
+        if code_obj.base == "wxFrame":
+            stmt = '%%(tab)s(setf (slot-top-window obj) (wxFrame_create nil ' \
+                   'wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
+        elif code_obj.base == "wxDialog":
+            stmt = '%%(tab)s(setf (slot-top-window obj) (wxDialog_create ' \
+                   'nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
+            self.dependencies['(use-package :wxButton)'] = 1
+            
+        return stmt
 
     def _get_class_filename(self, klass):
         filename = os.path.join(

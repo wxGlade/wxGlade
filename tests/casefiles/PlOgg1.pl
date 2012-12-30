@@ -12,6 +12,8 @@ use strict;
 # end wxGlade
 
 # begin wxGlade: extracode
+# extra code added using wxGlade
+use Time::localtime;
 # end wxGlade
 
 package PlOgg1_MyDialog;
@@ -59,8 +61,11 @@ sub new {
         Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, \&startConverting);
 
         # end wxGlade
-        return $self;
 
+        # manually added code
+        print 'Dialog has been created at ', localtime();
+
+        return $self;
 }
 
 
