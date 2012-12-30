@@ -359,8 +359,7 @@ def import_name(module_path, name):
         finally:
             mfile.close()
     except ImportError:
-        import traceback
-        traceback.print_exc()
+        common.message.exception(_('Internal Error'))
         return None
     return vars(module)[name]
 
@@ -439,8 +438,7 @@ def get_xpm_bitmap(path):
 ##                     for d in data: print d
                     bmp = wx.BitmapFromXPMData(data)
                 except:
-                    import traceback
-                    traceback.print_exc()
+                    common.message.exception(_('Internal Error'))
                     bmp = wx.NullBitmap
     else:
         bmp = wx.Bitmap(path, wx.BITMAP_TYPE_XPM)

@@ -156,8 +156,7 @@ class HiddenProperty(Property):
         try:
             getter, setter = owner[name]
         except KeyError:
-            import traceback
-            traceback.print_exc()
+            common.message.exception(_('Internal Error'))
             if callable(value):
                 getter = value
             else:
@@ -955,8 +954,7 @@ class FontDialogProperty(DialogProperty):
         try:
             props = eval(self.get_value())
         except:
-            import traceback
-            traceback.print_exc()
+            common.message.exception(_('Internal Error'))
         else:
             if len(props) == 6:
                 self.dialog.set_value(props)
@@ -967,8 +965,7 @@ class FontDialogProperty(DialogProperty):
             try:
                 props = [_encode(s) for s in eval(self.get_value().strip())]
             except:
-                import traceback
-                traceback.print_exc()
+                common.message.exception(_('Internal Error'))
                 return
             if len(props) < 6:
                 print _('error in the value of the property "%s"') % self.name

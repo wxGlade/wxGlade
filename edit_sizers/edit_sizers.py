@@ -715,8 +715,7 @@ class SizerBase(Sizer):
             try:
                 common.app_tree.refresh_name(self.node, oldname)
             except AttributeError:
-                import traceback
-                traceback.print_exc()
+                common.message.exception(_('Internal Error'))
             self.property_window.SetTitle(_('Properties - <%s>') % self.name)
     set_name_pattern = re.compile('^[a-zA-Z_]+[\w0-9]*$')
             
@@ -794,8 +793,7 @@ class SizerBase(Sizer):
             self.children[pos] = SizerItem(item, pos, option, flag, border,
                                            size)
         except IndexError: # this shouldn't happen!
-            import traceback
-            traceback.print_exc()
+            common.message.exception(_('Internal Error'))
             print self.children, pos
             raise SystemExit
 
@@ -854,7 +852,7 @@ class SizerBase(Sizer):
                 #*item.widget.GetBestSize())
             #self.widget.SetItemMinSize(item.widget, w, h)
         except Exception:
-            #import traceback; traceback.print_exc()
+            #common.message.exception(_('Internal Error'))
             pass
         if force_layout: self.layout() # update the layout of self
 
@@ -884,7 +882,7 @@ class SizerBase(Sizer):
         try:
             item = self.children[pos]
         except IndexError: # this shouldn't happen
-            import traceback; traceback.print_exc()
+            common.message.exception(_('Internal Error'))
             raise SystemExit
         if option is not None:
             option = int(option)

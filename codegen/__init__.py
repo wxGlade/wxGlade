@@ -362,10 +362,6 @@ class BaseCodeWriter(object):
     @ivar curr_tab: Current indentation level
     @type curr_tab: Integer
 
-    @ivar init_lines: Code to instantiate child widgets (see:
-                      L{ClassLines.init})
-    @type init_lines: List of strings
-
     @ivar for_version: wx version we are generating code for (e.g. C{(2, 6)})
     @type for_version: Tuple of major and minor version number
 
@@ -777,7 +773,6 @@ class BaseCodeWriter(object):
         self.dependencies = {}
         self.for_version = (2, 6)
         self.header_lines = []
-        self.init_lines = []
         self.indent_symbol = ' '
         self.indent_amount = 4
         self.lang_mapping = {}
@@ -2017,8 +2012,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         except IOError, e:
             raise XmlParsingError(str(e))
         except:
-            import traceback
-            traceback.print_exc()
+            common.message.exception(_('Internal Error'))
         if mainfile and sys.platform in ['linux2', 'darwin']:
             try:
                 # make the file executable
@@ -2325,8 +2319,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             except (ImportError, AttributeError):
                 pass
 ##                 print 'ERROR loading "%s"' % module_name
-##                 import traceback;
-##                 traceback.print_exc()
+##                 common.message.exception(_('Internal Error'))
 ##             else:
 ##                 print 'initialized %s generator for %s' % (self.language, module_name)
         modules.close()

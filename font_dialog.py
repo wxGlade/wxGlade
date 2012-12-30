@@ -5,6 +5,7 @@
 
 import wx
 import misc
+import common
 
 _reverse_dict = misc._reverse_dict
 
@@ -88,7 +89,7 @@ class wxGladeFontDialog(wx.Dialog):
             self.underline.SetValue(underline)
             self.point_size.SetValue(int(props[0]))            
         except ValueError:
-            import traceback; traceback.print_exc()
+            common.message.exception(_('Internal Error'))
     
     def __set_properties(self):
         # begin wxGlade: wxGladeFontDialog.__set_properties

@@ -721,7 +721,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
             f = wx.Font(int(value[0]), families[value[1]], styles[value[2]],
                        weights[value[3]], int(value[4]), value[5])
         except:
-            #import traceback; traceback.print_exc()
+            #common.message.exception(_('Internal Error'))
             self.properties['font'].set_value(self.get_font())
         else:
             self.font = value
@@ -995,7 +995,7 @@ class ManagedBase(WindowBase):
                 size = list(self.widget.GetBestSize())
             self.sizer.set_item(self.pos, flag=flags, size=size)
         except AttributeError, e:
-            import traceback; traceback.print_exc()
+            common.message.exception(_('Internal Error'))
 
     def set_border(self, value):
         self.border = int(value)
@@ -1014,7 +1014,7 @@ class ManagedBase(WindowBase):
             if h == -1: h = self.widget.GetSize()[1]
             self.sizer.set_item(self.pos, border=int(value), size=(w, h))
         except AttributeError, e:
-            import traceback; traceback.print_exc()
+            common.message.exception(_('Internal Error'))
 
     def get_option(self):
         return self.option
