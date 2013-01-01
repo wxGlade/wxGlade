@@ -902,18 +902,50 @@ class TestCodeGen(WXGladeBaseTest):
             codegen = common.code_writers.get(lang)
             handler = codegen.obj_builders['wxButton']
             del codegen.obj_builders['wxButton']
+            
+            # don' use _generate_and_compare() resp.
+            # _generate_and_compare_cpp() because a failure wouldn't testore
+            # the temporarily removed widget
             if lang == 'C++':
-                self._generate_and_compare_cpp(
-                    'no_suitable_writer.wxg',
-                    'no_suitable_writer'
-                    )
+                inname = 'no_suitable_writer.wxg'
+                outname = 'no_suitable_writer'
+                name_h = '%s.h' % outname
+                name_cpp = '%s.cpp' % outname
+
+                # load XML input file
+                source = self._load_file(inname)
+                result_cpp = self._load_file(name_cpp)
+                result_h = self._load_file(name_h)
+
+                # generate and compare C++ code
+                self._generate_code('C++', source, outname)
+                generated_cpp = self.vFiles[name_cpp].getvalue()
+                generated_h = self.vFiles[name_h].getvalue()
+                
+                # testore deleted handler
+                codegen.obj_builders['wxButton'] = handler
+                
+                # compare generated and expected code
+                self._compare(result_cpp, generated_cpp, 'C++ source')
+                self._compare(result_h, generated_h, 'C++ header')
+
             else:
-                self._generate_and_compare(
-                    lang,
-                    'no_suitable_writer.wxg',
-                    'no_suitable_writer%s' % ext,
-                    )
-            codegen.obj_builders['wxButton'] = handler
+                # load XML input file
+                inname = 'no_suitable_writer.wxg'
+                outname = 'no_suitable_writer%s' % ext
+                source = self._load_file(inname)
+                expected = self._load_file(outname)
+
+                # generate code
+                self._generate_code(lang, source, outname)
+                generated = self.vFiles[outname].getvalue()
+                
+                # testore deleted handler
+                codegen.obj_builders['wxButton'] = handler
+                
+                # compare generated and expected code
+                self._compare(expected, generated)                
+            
 
     def test_add_class_inplace(self):
         """\
