@@ -382,29 +382,7 @@ if __name__ == "__main__":
         else:
             self.header_lines.append('from wxPython.wx import *\n')
 
-        if self.multiple_files:
-            self.previous_source = None
-            if not os.path.isdir(out_path):
-                raise IOError("'path' must be a directory when generating"\
-                                      " multiple output files")
-            self.out_dir = out_path
-        else:
-            if not self._overwrite and self._file_exists(out_path):
-                # the file exists, we must keep all the lines not inside a
-                # wxGlade block. NOTE: this may cause troubles if out_path is
-                # not a valid source file, so be careful!
-                self.previous_source = SourceFileContent(out_path, self)
-            else:
-                # if the file doesn't exist, create it and write the ``intro''
-                self.previous_source = None
-                self.output_file = cStringIO.StringIO()
-                self.output_file_name = out_path
-                for line in self.header_lines:
-                    self.output_file.write(line)
-                self.output_file.write('<%swxGlade extra_modules>\n' % self.nonce)
-                self.output_file.write('\n')
-                self.output_file.write('<%swxGlade replace dependencies>\n' % self.nonce)
-                self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
+        self._initialize_stage2(out_path)
 
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings
@@ -425,82 +403,6 @@ if __name__ == "__main__":
 
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
-    def add_object(self, top_obj, sub_obj):
-        # get top level source code object and the widget builder instance
-        klass, builder = self._add_object_init(top_obj, sub_obj)
-        if not klass or not builder:
-            return
-
-        try:
-            init, props, layout = builder.get_code(sub_obj)
-        except:
-            print sub_obj
-            raise  # this shouldn't happen
-
-        if sub_obj.in_windows:  # the object is a wxWindow instance
-            if sub_obj.is_container and not sub_obj.is_toplevel:
-                init.reverse()
-                klass.parents_init.extend(init)
-            else:
-                klass.init.extend(init)
-
-            # Add a dependency of the current object on its parent
-            klass.deps.append((sub_obj, sub_obj.parent))
-            klass.child_order.append(sub_obj)
-            klass.init_lines[sub_obj] = init
-
-            mycn = getattr(builder, 'cn', self.cn)
-            if hasattr(builder, 'get_events'):
-                evts = builder.get_events(sub_obj)
-                for id, event, handler in evts:
-                    klass.event_handlers.append((id, mycn(event), handler))
-            elif 'events' in sub_obj.properties:
-                id_name, id = self.generate_code_id(sub_obj)
-                if id == '-1' or id == self.cn('wxID_ANY'):
-                    id = '#self.%s' % sub_obj.name
-                for event, handler in sub_obj.properties['events'].iteritems():
-                    klass.event_handlers.append((id, mycn(event), handler))
-
-            # try to see if there's some extra code to add to this class
-            if not sub_obj.preview:
-                extra_code = getattr(builder, 'extracode',
-                                     sub_obj.properties.get('extracode', ""))
-                if extra_code:
-                    extra_code = re.sub(r'\\n', '\n', extra_code)
-                    klass.extra_code.append(extra_code)
-                    # if we are not overwriting existing source, warn the user
-                    # about the presence of extra code
-                    if not self.multiple_files and self.previous_source:
-                        self.warning(
-                            '%s has extra code, but you are not '
-                            'overwriting existing sources: please check '
-                            'that the resulting code is correct!' % \
-                            sub_obj.name
-                            )
-
-        else:  # the object is a sizer
-            if sub_obj.base == 'wxStaticBoxSizer':
-                i = init.pop(0)
-                klass.parents_init.insert(1, i)
-
-                # Add a dependency of the current object on its parent
-                klass.deps.append((sub_obj, sub_obj.parent))
-                klass.child_order.append(sub_obj)
-                klass.init_lines[sub_obj] = [i]
-
-            klass.sizers_init.extend(init)
-
-        klass.props.extend(props)
-        klass.layout.extend(layout)
-        if self.multiple_files and \
-               (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
-            key = 'from %s import %s\n' % (sub_obj.klass,
-                                           self.without_package(sub_obj.klass))
-            klass.dependencies[key] = 1
-        for dep in getattr(self.obj_builders.get(sub_obj.base),
-                           'import_modules', []):
-            klass.dependencies[dep] = 1
-
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         # an ugly hack to allow the addition of spacers: if obj_name can be
         # parsed as a couple of integers, it is the size of the spacer to add
@@ -512,7 +414,7 @@ if __name__ == "__main__":
                 # attribute is a special property, which tells us if the object
                 # is a local variable or an attribute of its parent
                 if self.test_attribute(obj):
-                    obj_name = 'self.' + obj_name
+                    obj_name = 'self.%s' % obj_name
         else:
             obj_name = '(%d, %d)' % (w, h)  # it was the dimension of a spacer
         if toplevel.klass in self.classes:
@@ -523,7 +425,7 @@ if __name__ == "__main__":
                  (sizer.name, obj_name, option, self.cn_f(flag), self.cn_f(border))
         klass.layout.append(buffer)
 
-    def generate_code_ctor_stage1(self, code_obj, is_new, tab):
+    def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
         write = code_lines.append
         
@@ -587,9 +489,6 @@ if __name__ == "__main__":
         else:
             write(tab + '%s.__init__(self, *args, **kwds)\n' % \
                   mycn(code_obj.base))
-
-        init_lines = self.classes[code_obj.klass].init
-        parents_init = self.classes[code_obj.klass].parents_init
 
         # classes[code_obj.klass].deps now contains a mapping of child to
         # parent for all children we processed...
@@ -772,6 +671,13 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         Removes the package name from the given class name
         """
         return class_name.split('.')[-1]
+
+    def _add_object_format_name(self, name):
+        return '#self.%s' % name
+
+    def _format_import(self, klass):
+        stmt = 'from %s import %s\n' % (klass, self.without_package(klass))
+        return stmt
 
     def _get_class_filename(self, klass):
         filename = os.path.join(

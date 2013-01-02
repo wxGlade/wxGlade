@@ -466,29 +466,7 @@ unless(caller){
             'use strict;\n'
         ]
 
-        if self.multiple_files:
-            self.previous_source = None
-            if not os.path.isdir(out_path):
-                raise IOError("'path' must be a directory when generating"\
-                                      " multiple output files")
-            self.out_dir = out_path
-        else:
-            if not self._overwrite and self._file_exists(out_path):
-                # the file exists, we must keep all the lines not inside a
-                # wxGlade block. NOTE: this may cause troubles if out_path is
-                # not a valid source file, so be careful!
-                self.previous_source = SourceFileContent(out_path, self)
-            else:
-                # if the file doesn't exist, create it and write the ``intro''
-                self.previous_source = None
-                self.output_file = cStringIO.StringIO()
-                self.output_file_name = out_path
-                for line in self.header_lines:
-                    self.output_file.write(line)
-                self.output_file.write('<%swxGlade extra_modules>\n' % self.nonce)
-                self.output_file.write('\n')
-                self.output_file.write('<%swxGlade replace dependencies>\n' % self.nonce)
-                self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
+        self._initialize_stage2(out_path)
 
     def setup(self):
         """\
@@ -509,67 +487,6 @@ unless(caller){
         else:
             self.lang_mapping['pl_import'] = ''
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
-
-    def add_object(self, top_obj, sub_obj):
-        # get top level source code object and the widget builder instance
-        klass, builder = self._add_object_init(top_obj, sub_obj)
-        if not klass or not builder:
-            return
-
-        try:
-            init, props, layout = builder.get_code(sub_obj)
-        except:
-            print sub_obj
-            raise  # this shouldn't happen
-
-        if sub_obj.in_windows:  # the object is a wxWindow instance
-            if sub_obj.is_container and not sub_obj.is_toplevel:
-                init.reverse()
-                klass.parents_init.extend(init)
-            else:
-                klass.init.extend(init)
-
-            if hasattr(builder, 'get_events'):
-                evts = builder.get_events(sub_obj)
-                for id, event, handler in evts:
-                    klass.event_handlers.append((id, event, handler))
-            elif 'events' in sub_obj.properties:
-                id_name, id = self.generate_code_id(sub_obj)
-                if id == '-1' or id == self.cn('wxID_ANY'):
-                    id = '#$self->%s' % sub_obj.name
-                for event, handler in sub_obj.properties['events'].iteritems():
-                    klass.event_handlers.append((id, event, handler))
-
-            # try to see if there's some extra code to add to this class
-            extra_code = getattr(builder, 'extracode',
-                                 sub_obj.properties.get('extracode', ""))
-            if extra_code:
-                extra_code = re.sub(r'\\n', '\n', extra_code)
-                klass.extra_code.append(extra_code)
-                # if we are not overwriting existing source, warn the user
-                # about the presence of extra code
-                if not self.multiple_files and self.previous_source:
-                    self.warning(
-                        '%s has extra code, but you are not '
-                        'overwriting existing sources: please check '
-                        'that the resulting code is correct!' % \
-                        sub_obj.name
-                        )
-
-        else:  # the object is a sizer
-            if sub_obj.base == 'wxStaticBoxSizer':
-                klass.parents_init.insert(1, init.pop(0))
-            klass.sizers_init.extend(init)
-
-        klass.props.extend(props)
-        klass.layout.extend(layout)
-        if self.multiple_files and \
-               (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
-            key = 'use %s;\n' % sub_obj.klass
-            klass.dependencies[key] = 1
-        for dep in getattr(self.obj_builders.get(sub_obj.base),
-                           'import_modules', []):
-            klass.dependencies[dep] = 1
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         # an ugly hack to allow the addition of spacers: if obj_name can be
@@ -595,7 +512,7 @@ unless(caller){
                  (sizer.name, obj_name, option, self.cn_f(flag), self.cn_f(border))
         klass.layout.append(buffer)
 
-    def generate_code_ctor_stage1(self, code_obj, is_new, tab):
+    def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
         write = code_lines.append
         
@@ -673,13 +590,33 @@ unless(caller){
         # class parent constructor
         write(tab + '$self = $self->SUPER::new( %s );\n' % ", ".join(new_signature))
 
-        init_lines = self.classes[code_obj.klass].init
-        parents_init = self.classes[code_obj.klass].parents_init
-        parents_init.reverse()
-        for l in parents_init:
-            write(tab + l)
-        for l in init_lines:
-            write(tab + l)
+        # classes[code_obj.klass].deps now contains a mapping of child to
+        # parent for all children we processed...
+        object_order = []
+        for obj in self.classes[code_obj.klass].child_order:
+            # Don't add it again if already present
+            if obj in object_order:
+                continue
+
+            object_order.append(obj)
+
+            # Insert parent and ancestor objects before the current object
+            current_object = obj
+            for child, parent in self.classes[code_obj.klass].deps[:]:
+                if child is current_object:
+                    if parent not in object_order:
+                        idx = object_order.index(current_object)
+                        object_order.insert(idx, parent)
+                    current_object = parent
+
+                    # We processed the dependency: remove it
+                    self.classes[code_obj.klass].deps.remove((child, parent))
+
+        # Write out the initialisation in the order we just generated
+        for obj in object_order:
+            if obj in self.classes[code_obj.klass].init_lines:
+                for l in self.classes[code_obj.klass].init_lines[obj]:
+                    write(tab + l)
 
         return code_lines
 
@@ -690,10 +627,13 @@ unless(caller){
         for win_id, event, handler in event_handlers:
             if win_id.startswith('#'):
                 win_id = '$self->{%s}->GetId' % win_id[8:]
+            # remove leading "Wx::" for already formatted event names
+            if event.startswith('Wx::EVT'):
+                event = event[4:]
             write('%(tab)sWx::Event::%(event)s($self, %(win_id)s, \\&%(handler)s);\n' % {
-                'tab': tab,
-                'event': event,
-                'win_id': win_id,
+                'tab':     tab,
+                'event':   event,
+                'win_id':  win_id,
                 'handler': handler,
                 })
 
@@ -722,7 +662,7 @@ unless(caller){
             val = self.cn(val)
         # check to see if we have to make the var global or not...
         return ('use constant %s => %s;\n' % (name, val), name)
-        
+
     def generate_code_size(self, obj):
         objname = self._get_code_name(obj)
         size = obj.properties.get('size', '').strip()
@@ -766,11 +706,18 @@ unless(caller){
         s = s.replace('$', r'\$')
         s = s.replace('@', r'\@')
         if self._use_gettext:
-            return '_T("' + s + '")'
+            return '_T("%s")' %s
         if t == s and s.find(' ') < 0:
             return s
         else:
-            return '"' + s + '"'
+            return '"%s"' % s
+
+    def _add_object_format_name(self, name):
+        return '#$self->%s' % name
+
+    def _format_import(self, klass):
+        stmt = 'use %s;\n' % klass
+        return stmt
 
     def _get_class_filename(self, klass):
         """

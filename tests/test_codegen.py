@@ -904,7 +904,7 @@ class TestCodeGen(WXGladeBaseTest):
             del codegen.obj_builders['wxButton']
             
             # don' use _generate_and_compare() resp.
-            # _generate_and_compare_cpp() because a failure wouldn't testore
+            # _generate_and_compare_cpp() because a failure wouldn't restore
             # the temporarily removed widget
             if lang == 'C++':
                 inname = 'no_suitable_writer.wxg'
@@ -922,7 +922,7 @@ class TestCodeGen(WXGladeBaseTest):
                 generated_cpp = self.vFiles[name_cpp].getvalue()
                 generated_h = self.vFiles[name_h].getvalue()
                 
-                # testore deleted handler
+                # restore deleted handler
                 codegen.obj_builders['wxButton'] = handler
                 
                 # compare generated and expected code
@@ -940,7 +940,7 @@ class TestCodeGen(WXGladeBaseTest):
                 self._generate_code(lang, source, outname)
                 generated = self.vFiles[outname].getvalue()
                 
-                # testore deleted handler
+                # restore deleted handler
                 codegen.obj_builders['wxButton'] = handler
                 
                 # compare generated and expected code

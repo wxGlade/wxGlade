@@ -36,8 +36,6 @@ sub new {
 
         $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
         $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
-        $self->{notebook_1_pane_2} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{sizer_6_staticbox} = Wx::StaticBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Local widget path") );
         $self->{notebook_1_pane_1} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
         $self->{use_menu_icons} = Wx::CheckBox->new($self->{notebook_1_pane_1}, wxID_ANY, _T("Use icons in menu items"), wxDefaultPosition, wxDefaultSize, );
         $self->{frame_tool_win} = Wx::CheckBox->new($self->{notebook_1_pane_1}, wxID_ANY, _T("Show properties and tree windows as small frames"), wxDefaultPosition, wxDefaultSize, );
@@ -49,6 +47,7 @@ sub new {
         $self->{codegen_path} = Wx::TextCtrl->new($self->{notebook_1_pane_1}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, );
         $self->{number_history} = Wx::SpinCtrl->new($self->{notebook_1_pane_1}, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, 4);
         $self->{buttons_per_row} = Wx::SpinCtrl->new($self->{notebook_1_pane_1}, wxID_ANY, "5", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100, 5);
+        $self->{notebook_1_pane_2} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
         $self->{use_dialog_units} = Wx::CheckBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Use dialog units by default for size properties"), wxDefaultPosition, wxDefaultSize, );
         $self->{wxg_backup} = Wx::CheckBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Create backup wxg files"), wxDefaultPosition, wxDefaultSize, );
         $self->{codegen_backup} = Wx::CheckBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Create backup files for generated source"), wxDefaultPosition, wxDefaultSize, );
@@ -62,6 +61,7 @@ sub new {
         $self->{backup_suffix} = Wx::RadioBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Backup options"), wxDefaultPosition, wxDefaultSize, [_T("append ~ to filename"), _T("append .bak to filename")], 2, wxRA_SPECIFY_COLS);
         $self->{local_widget_path} = Wx::TextCtrl->new($self->{notebook_1_pane_2}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, );
         $self->{choose_widget_path} = Wx::Button->new($self->{notebook_1_pane_2}, wxID_ANY, _T("..."), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+        $self->{sizer_6_staticbox} = Wx::StaticBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Local widget path") );
         $self->{ok} = Wx::Button->new($self, wxID_OK, "");
         $self->{cancel} = Wx::Button->new($self, wxID_CANCEL, "");
 
