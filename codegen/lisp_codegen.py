@@ -349,29 +349,7 @@ class LispCodeWriter(BaseCodeWriter):
             '(use-package :wxEvent)':      1,
             }
 
-        if self.multiple_files:
-            self.previous_source = None
-            if not os.path.isdir(out_path):
-                raise IOError("'path' must be a directory when generating"\
-                                      " multiple output files")
-            self.out_dir = out_path
-        else:
-            if not self._overwrite and self._file_exists(out_path):
-                # the file exists, we must keep all the lines not inside a
-                # wxGlade block. NOTE: this may cause troubles if out_path is
-                # not a valid source file, so be careful!
-                self.previous_source = SourceFileContent(out_path, self)
-            else:
-                # if the file doesn't exist, create it and write the ``intro''
-                self.previous_source = None
-                self.output_file = cStringIO.StringIO()
-                self.output_file_name = out_path
-                for line in self.header_lines:
-                    self.output_file.write(line)
-                self.output_file.write('<%swxGlade extra_modules>\n' % self.nonce)
-                self.output_file.write('\n')
-                self.output_file.write('<%swxGlade replace dependencies>\n' % self.nonce)
-                self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
+        self._initialize_stage2(out_path)
 
     def setup(self):
         """\
@@ -393,18 +371,22 @@ class LispCodeWriter(BaseCodeWriter):
 
         # add language specific mappings
         self.lang_mapping = {
-            'top_win': top_win.replace('_', '-'),
+            'top_win': self._format_name(top_win),
             }
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_object(self, top_obj, sub_obj):
+        # the lisp code gen add some hard coded depedencies 
+        # TODO: Move the hard coded dependencies to the widgets resp. sizers
+        
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(top_obj, sub_obj)
         if not klass or not builder:
             return
 
-        sub_obj.name = sub_obj.name.replace('_', '-')
-        sub_obj.parent.name = sub_obj.parent.name.replace('_', '-')
+        sub_obj.name = self._format_name(sub_obj.name)
+        sub_obj.parent.name = self._format_name(sub_obj.parent.name)
+
         if(sub_obj.name != "spacer"):
             self.class_lines.append(sub_obj.name)
         if (sub_obj.klass == "wxBoxSizer" or \
@@ -419,71 +401,14 @@ class LispCodeWriter(BaseCodeWriter):
 
         if (sub_obj.klass == "wxMenuBar"):
             self.dependencies['(use-package :wxMenu)'] = 1
-            
-        try:
-            init, props, layout = builder.get_code(sub_obj)
-        except:
-            print sub_obj
-            raise  # this shouldn't happen
-
-        if sub_obj.in_windows:  # the object is a wxWindow instance
-            if sub_obj.is_container and not sub_obj.is_toplevel:
-                init.reverse()
-                klass.parents_init.extend(init)
-            else:
-                klass.init.extend(init)
-
-            # Add a dependency of the current object on its parent
-            klass.deps.append((sub_obj, sub_obj.parent))
-            klass.child_order.append(sub_obj)
-            klass.init_lines[sub_obj] = init
-
-            mycn = getattr(builder, 'cn', self.cn)
-            if hasattr(builder, 'get_events'):
-                evts = builder.get_events(sub_obj)
-                for id, event, handler in evts:
-                    klass.event_handlers.append((id, mycn(event), handler))
-            elif 'events' in sub_obj.properties:
-                id_name, id = self.generate_code_id(sub_obj)
-                if id == '-1' or id == self.cn('wxID_ANY'):
-                    id = '#obj.%s' % sub_obj.name
-                for event, handler in sub_obj.properties['events'].iteritems():
-                    klass.event_handlers.append((id, mycn(event), handler))
-
-            # try to see if there's some extra code to add to this class
-            extra_code = getattr(builder, 'extracode',
-                                 sub_obj.properties.get('extracode', ""))
-            if extra_code:
-                extra_code = re.sub(r'\\n', '\n', extra_code)
-                klass.extra_code.append(extra_code)
-                # if we are not overwriting existing source, warn the user
-                # about the presence of extra code
-                if not self.multiple_files and self.previous_source:
-                    self.warning(
-                        '%s has extra code, but you are not '
-                        'overwriting existing sources: please check '
-                        'that the resulting code is correct!' % \
-                        sub_obj.name
-                        )
-
-        else:  # the object is a sizer
-            klass.sizers_init.extend(init)
-
-        klass.props.extend(props)
-        klass.layout.extend(layout)
-        if self.multiple_files and \
-               (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
-            key = '(require "%s")\n' % sub_obj.klass
-            klass.dependencies[key] = 1
-        for dep in getattr(self.obj_builders.get(sub_obj.base),
-                           'import_modules', []):
-            klass.dependencies[dep] = 1
-
+        
+        BaseCodeWriter.add_object(self, top_obj, sub_obj)
+ 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         # an ugly hack to allow the addition of spacers: if obj_name can be
         # parsed as a couple of integers, it is the size of the spacer to add
 
-        sizer.name = sizer.name.replace('_', '-')
+        sizer.name = self._format_name(sizer.name)
         obj_name = obj.name
         try:
             w, h = [int(s) for s in obj_name.split(',')]
@@ -513,7 +438,7 @@ class LispCodeWriter(BaseCodeWriter):
         self.dependencies['(use-package :wxColour)'] = 1
         return BaseCodeWriter.generate_code_background(self, obj)
 
-    def generate_code_ctor_stage1(self, code_obj, is_new, tab):
+    def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
         write = code_lines.append
         
@@ -575,13 +500,33 @@ class LispCodeWriter(BaseCodeWriter):
                 'tab': tab,
                 })
 
-        init_lines = self.classes[code_obj.klass].init
-        parents_init = self.classes[code_obj.klass].parents_init
-        parents_init.reverse()
-        for l in parents_init:
-            write(tab + l)
-        for l in init_lines:
-            write(tab + l)
+        # classes[code_obj.klass].deps now contains a mapping of child to
+        # parent for all children we processed...
+        object_order = []
+        for obj in self.classes[code_obj.klass].child_order:
+            # Don't add it again if already present
+            if obj in object_order:
+                continue
+
+            object_order.append(obj)
+
+            # Insert parent and ancestor objects before the current object
+            current_object = obj
+            for child, parent in self.classes[code_obj.klass].deps[:]:
+                if child is current_object:
+                    if parent not in object_order:
+                        idx = object_order.index(current_object)
+                        object_order.insert(idx, parent)
+                    current_object = parent
+
+                    # We processed the dependency: remove it
+                    self.classes[code_obj.klass].deps.remove((child, parent))
+
+        # Write out the initialisation in the order we just generated
+        for obj in object_order:
+            if obj in self.classes[code_obj.klass].init_lines:
+                for l in self.classes[code_obj.klass].init_lines[obj]:
+                    write(tab + l)
 
         return code_lines
 
@@ -673,6 +618,13 @@ class LispCodeWriter(BaseCodeWriter):
         else:
             return '"%s"' % s
 
+    def _add_object_format_name(self, name):
+        return '#obj.%s' % name
+
+    def _format_import(self, klass):
+        stmt = '(require "%s")\n' % klass
+        return stmt
+
     def _format_style(self, style, code_obj):
         builder = self.obj_builders[code_obj.base]
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
@@ -712,6 +664,9 @@ class LispCodeWriter(BaseCodeWriter):
                 return '(slot-%s obj)' % obj.name
             else:
                 return obj.name
+
+    def _format_name(self, name):
+        return name.replace('_', '-')
 
 # end of class LispCodeWriter
 

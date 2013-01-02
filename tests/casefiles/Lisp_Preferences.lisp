@@ -89,7 +89,6 @@
         ;;; begin wxGlade: wxGladePreferencesUI.__init__
         (setf (slot-top-window obj) (wxDialog_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_DIALOG_STYLE))
         (setf (slot-notebook-1 obj) (wxNotebook_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 0))
-        (setf (slot-notebook-1-pane-2 obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (setf (slot-notebook-1-pane-1 obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (setf (slot-use-menu-icons obj) (wxCheckBox_Create (slot-notebook-1-pane-1 obj) wxID_ANY (_"Use icons in menu items") -1 -1 -1 -1 0))
         (setf (slot-frame-tool-win obj) (wxCheckBox_Create (slot-notebook-1-pane-1 obj) wxID_ANY (_"Show properties and tree windows as small frames") -1 -1 -1 -1 0))
@@ -101,6 +100,7 @@
         (setf (slot-codegen-path obj) (wxTextCtrl_Create (slot-notebook-1-pane-1 obj) wxID_ANY "" -1 -1 -1 -1 0))
         (setf (slot-number-history obj) (wxSpinCtrl_Create (slot-notebook-1-pane-1 obj) wxID_ANY 4 -1 -1 -1 -1 wxSP_ARROW_KEYS 0 100 4))
         (setf (slot-buttons-per-row obj) (wxSpinCtrl_Create (slot-notebook-1-pane-1 obj) wxID_ANY 5 -1 -1 -1 -1 wxSP_ARROW_KEYS 1 100 5))
+        (setf (slot-notebook-1-pane-2 obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (setf (slot-use-dialog-units obj) (wxCheckBox_Create (slot-notebook-1-pane-2 obj) wxID_ANY (_"Use dialog units by default for size properties") -1 -1 -1 -1 0))
         (setf (slot-wxg-backup obj) (wxCheckBox_Create (slot-notebook-1-pane-2 obj) wxID_ANY (_"Create backup wxg files") -1 -1 -1 -1 0))
         (setf (slot-codegen-backup obj) (wxCheckBox_Create (slot-notebook-1-pane-2 obj) wxID_ANY (_"Create backup files for generated source") -1 -1 -1 -1 0))
@@ -114,6 +114,7 @@
         (setf (slot-backup-suffix obj) (wxRadioBox_Create (slot-notebook-1-pane-2 obj) wxID_ANY (_"Backup options") -1 -1 -1 -1 2 (vector (_"append ~ to filename") (_"append .bak to filename")) 2 wxRA_SPECIFY_COLS))
         (setf (slot-local-widget-path obj) (wxTextCtrl_Create (slot-notebook-1-pane-2 obj) wxID_ANY "" -1 -1 -1 -1 0))
         (setf (slot-choose-widget-path obj) (wxButton_Create (slot-notebook-1-pane-2 obj) wxID_ANY (_"...") -1 -1 -1 -1 wxBU_EXACTFIT))
+        (setf (slot-sizer-6 obj) (StaticBoxSizer_Create (wxStaticBox:wxStaticBox_Create (slot-notebook-1-pane-2 obj) (_"Local widget path")) wxHORIZONTAL))
         (setf (slot-ok obj) (wxButton_Create (slot-top-window obj) wxID_OK "" -1 -1 -1 -1 0))
         (setf (slot-cancel obj) (wxButton_Create (slot-top-window obj) wxID_CANCEL "" -1 -1 -1 -1 0))
         ;;; end wxGlade
@@ -149,7 +150,6 @@
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create  wxVERTICAL))
         (setf (slot-sizer-2 obj) (wxBoxSizer_Create  wxHORIZONTAL))
         (setf (slot-sizer-5 obj) (wxBoxSizer_Create  wxVERTICAL))
-        (setf (slot-sizer-6 obj) (StaticBoxSizer_Create (wxStaticBox:wxStaticBox_Create (slot-notebook-1-pane-2 obj) (_"Local widget path")) wxHORIZONTAL))
         (setf (slot-sizer-7-copy obj) (wxBoxSizer_Create  wxHORIZONTAL))
         (setf (slot-sizer-7 obj) (wxBoxSizer_Create  wxHORIZONTAL))
         (setf (slot-sizer-3 obj) (wxBoxSizer_Create  wxVERTICAL))
