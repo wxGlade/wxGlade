@@ -250,6 +250,11 @@ class TestCodeGen(WXGladeBaseTest):
         """
         # test for wxWidgets 2.6.X
         self._generate_and_compare(
+            'lisp',
+            'HyperlinkCtrl_26.wxg',
+            'HyperlinkCtrl_26.lisp'
+            )
+        self._generate_and_compare(
             'perl',
             'HyperlinkCtrl_26.wxg',
             'HyperlinkCtrl_26.pl'
@@ -269,6 +274,11 @@ class TestCodeGen(WXGladeBaseTest):
             'HyperlinkCtrl_26'
             )
         # test for wxWidgets 2.8.X
+        self._generate_and_compare(
+            'lisp',
+            'HyperlinkCtrl_28.wxg',
+            'HyperlinkCtrl_28.lisp'
+            )
         self._generate_and_compare(
             'perl',
             'HyperlinkCtrl_28.wxg',
