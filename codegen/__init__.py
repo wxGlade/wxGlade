@@ -1504,7 +1504,7 @@ Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
                 sub_obj.name,
                 sub_obj.klass, 
                 )
-            self._source_warning(klass, msg)
+            self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
             return None, None
 
@@ -1523,7 +1523,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
                     'requested_version':  str(misc.format_for_version(self.for_version)), 
                     'supported_versions': str(supported_versions), 
                     }
-            self._source_warning(klass, msg)
+            self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
             return None, None
 
@@ -2467,7 +2467,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
 ##                 print 'initialized %s generator for %s' % (self.language, module_name)
         modules.close()
 
-    def _source_warning(self, klass, msg):
+    def _source_warning(self, klass, msg, sub_obj):
         """\
         Format and add a warning message to the source code.
         
@@ -2478,10 +2478,15 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @param msg:   Multiline message
         @type msg:    String
         
+        @param sub_obj: Object to generate code for
+        @type sub_obj:  Instance of L{CodeObject}
+        
         @see: L{_format_comment()}
         """
+        code_lines = []
+        
         # add leading empty line
-        klass.init.append('\n')
+        code_lines.append('\n')
         
         # add a leading "WARNING:" to the message
         if not msg.upper().startswith(_('WARNING:')):
@@ -2489,12 +2494,22 @@ It is available for wx versions %(supported_versions)s only.""") % {
         
         # add message text
         for line in msg.split('\n'):
-            klass.init.append(
+            code_lines.append(
                 "%s\n" % self._format_comment(line.rstrip())
                 )
 
         # add tailing empty line
-        klass.init.append('\n')
+        code_lines.append('\n')
+
+        # Add warning message to source code
+        # TODO: Remove next three lines after C++ code gen uses dependencies
+        # like Python, Perl and Lisp
+        if self.language == 'C++':
+            klass.init.extend(code_lines)
+        else:
+            klass.deps.append((sub_obj, sub_obj.parent))
+            klass.child_order.append(sub_obj)
+            klass.init_lines[sub_obj] = code_lines
 
     def _string_to_colour(self, s):
         """\

@@ -21,6 +21,11 @@ class MyFrame(wx.Frame):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
 
+        # WARNING: Code for instance "hyperlink_1" of "wxHyperlinkCtrl" was
+        # not created, because the widget is not available for wx version 2.6.
+        # It is available for wx versions 2.8, 3.0 only.
+
+
         self.__set_properties()
         self.__do_layout()
         # end wxGlade
