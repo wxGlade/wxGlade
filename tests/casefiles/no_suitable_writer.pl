@@ -36,6 +36,9 @@ sub new {
 
         $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 
+        # WARNING: Code for instance "button_1" of "wxButton" not generated: no suitable writer found
+
+
         $self->__set_properties();
         $self->__do_layout();
 

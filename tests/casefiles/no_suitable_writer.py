@@ -21,6 +21,9 @@ class MyDialog(wx.Dialog):
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE
         wx.Dialog.__init__(self, *args, **kwds)
 
+        # WARNING: Code for instance "button_1" of "wxButton" not generated: no suitable writer found
+
+
         self.__set_properties()
         self.__do_layout()
         # end wxGlade

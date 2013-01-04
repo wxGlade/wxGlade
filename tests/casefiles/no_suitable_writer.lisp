@@ -41,6 +41,9 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyDialog.__init__
         (setf (slot-top-window obj) (wxDialog_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_DIALOG_STYLE))
+
+        ;;; WARNING: Code for instance "button_1" of "wxButton" not generated: no suitable writer found
+
         ;;; end wxGlade
         )
 
