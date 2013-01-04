@@ -59,7 +59,6 @@ sub __do_layout {
         my $self = shift;
         # begin wxGlade: MyDialog::__do_layout
         $self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_1}->Add($self->{button_1}, 0, wxALL, 5);
         $self->SetSizer($self->{sizer_1});
         $self->{sizer_1}->Fit($self);
         $self->Layout();

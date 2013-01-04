@@ -27,7 +27,6 @@
 
 (defclass MyDialog()
         ((top-window :initform nil :accessor slot-top-window)
-        (button-1 :initform nil :accessor slot-button-1)
         (sizer-1 :initform nil :accessor slot-sizer-1)))
 
 (defun make-MyDialog ()
@@ -42,7 +41,7 @@
         ;;; begin wxGlade: MyDialog.__init__
         (setf (slot-top-window obj) (wxDialog_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_DIALOG_STYLE))
 
-        ;;; WARNING: Code for instance "button_1" of "wxButton" not generated: no suitable writer found
+        ;;; WARNING: Code for instance "button-1" of "wxButton" not generated: no suitable writer found
 
         ;;; end wxGlade
         )
@@ -56,7 +55,6 @@
 (defmethod do-layout ((obj MyDialog))
         ;;; begin wxGlade: MyDialog.__do_layout
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create  wxHORIZONTAL))
-        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-button_1 obj) 0 wxALL 5 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
         (wxWindow_layout (slot-dialog-1 slef))

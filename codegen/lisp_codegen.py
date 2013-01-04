@@ -378,13 +378,13 @@ class LispCodeWriter(BaseCodeWriter):
         # the lisp code gen add some hard coded depedencies 
         # TODO: Move the hard coded dependencies to the widgets resp. sizers
         
+        sub_obj.name = self._format_name(sub_obj.name)
+        sub_obj.parent.name = self._format_name(sub_obj.parent.name)
+
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(top_obj, sub_obj)
         if not klass or not builder:
             return
-
-        sub_obj.name = self._format_name(sub_obj.name)
-        sub_obj.parent.name = self._format_name(sub_obj.parent.name)
 
         if(sub_obj.name != "spacer"):
             self.class_lines.append(sub_obj.name)
@@ -404,10 +404,14 @@ class LispCodeWriter(BaseCodeWriter):
         BaseCodeWriter.add_object(self, top_obj, sub_obj)
  
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
+        # don't process widgets listed in blacklisted_widgets
+        if obj in self.blacklisted_widgets:
+            return
+
+        sizer.name = self._format_name(sizer.name)        
+        
         # an ugly hack to allow the addition of spacers: if obj_name can be
         # parsed as a couple of integers, it is the size of the spacer to add
-
-        sizer.name = self._format_name(sizer.name)
         obj_name = obj.name
         try:
             w, h = [int(s) for s in obj_name.split(',')]

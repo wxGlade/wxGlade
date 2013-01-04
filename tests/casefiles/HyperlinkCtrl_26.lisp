@@ -40,7 +40,7 @@
         ;;; begin wxGlade: MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
 
-        ;;; WARNING: Code for instance "hyperlink_1" of "wxHyperlinkCtrl" was
+        ;;; WARNING: Code for instance "hyperlink-1" of "wxHyperlinkCtrl" was
         ;;; not created, because the widget is not available for wx version 2.6.
         ;;; It is available for wx versions 2.8, 3.0 only.
 
@@ -56,7 +56,6 @@
 (defmethod do-layout ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__do_layout
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create  wxVERTICAL))
-        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-hyperlink_1 obj) 0 wxALL 5 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
         (wxFrame_layout (slot-frame-1 slef))

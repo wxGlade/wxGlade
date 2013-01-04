@@ -38,7 +38,6 @@ class MyFrame(wx.Frame):
     def __do_layout(self):
         # begin wxGlade: MyFrame.__do_layout
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        sizer_1.Add(self.hyperlink_1, 0, wx.ALL, 5)
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
         self.Layout()

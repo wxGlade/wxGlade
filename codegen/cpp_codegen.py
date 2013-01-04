@@ -1357,6 +1357,10 @@ bool MyApp::OnInit()
                 klass.dependencies.extend(headers)
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
+        # don't process widgets listed in blacklisted_widgets
+        if obj in self.blacklisted_widgets:
+            return
+
         if toplevel.klass in self.classes:
             klass = self.classes[toplevel.klass]
         else:

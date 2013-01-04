@@ -403,6 +403,10 @@ if __name__ == "__main__":
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
+        # don't process widgets listed in blacklisted_widgets
+        if obj in self.blacklisted_widgets:
+            return
+
         # an ugly hack to allow the addition of spacers: if obj_name can be
         # parsed as a couple of integers, it is the size of the spacer to add
         obj_name = obj.name

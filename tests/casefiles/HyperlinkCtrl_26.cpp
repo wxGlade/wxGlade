@@ -44,7 +44,6 @@ void MyFrame::do_layout()
 {
     // begin wxGlade: MyFrame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
-    sizer_1->Add(hyperlink_1, 0, wxALL, 5);
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();
