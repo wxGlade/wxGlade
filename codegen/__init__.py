@@ -353,6 +353,11 @@ class BaseCodeWriter(object):
     @ivar app_name: Application name
     @type app_name: String
 
+    @ivar blacklisted_widgets: Don't add those widgets to sizers because they
+        are not supported for the requested wx version or there is no code
+        generator available.
+    @type blacklisted_widgets: Dictionary
+
     @ivar classes: Dictionary that maps the lines of code of a class to the
                    name of such class:
                    the lines are divided in 3 categories: '__init__',
@@ -775,6 +780,7 @@ class BaseCodeWriter(object):
         self.header_lines = []
         self.indent_symbol = ' '
         self.indent_amount = 4
+        self.blacklisted_widgets = {}
         self.lang_mapping = {}
         self.multiple_files = False
 
@@ -1400,13 +1406,13 @@ class BaseCodeWriter(object):
         @see: L{_add_object_init()}
         @see: L{_add_object_format_name()}
         """
+        sub_obj.name = self._format_name(sub_obj.name)
+        sub_obj.parent.name = self._format_name(sub_obj.parent.name)
+
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(top_obj, sub_obj)
         if not klass or not builder:
             return
-
-        sub_obj.name = self._format_name(sub_obj.name)
-        sub_obj.parent.name = self._format_name(sub_obj.parent.name)
 
         try:
             init, props, layout = builder.get_code(sub_obj)
@@ -1480,6 +1486,9 @@ class BaseCodeWriter(object):
     def _add_object_init(self, top_obj, sub_obj):
         """\
         Perform some initial actions for L{add_object()}
+        
+        Widgets without code generator or widget that are not supporting the
+        requested wx version are blacklisted at L{blacklisted_widgets}.
 
         @return: Top level source code object and the widget builder instance
                  or C{None, None} in case of errors.
@@ -1506,6 +1515,8 @@ Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
                 )
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
+            # ignore widget later too
+            self.blacklisted_widgets[sub_obj] = 1
             return None, None
 
         # check for supported versions
@@ -1525,6 +1536,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
                     }
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
+            # ignore widget later too
+            self.blacklisted_widgets[sub_obj] = 1
             return None, None
 
         return klass, builder
@@ -1548,6 +1561,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Writes the code to add the object 'obj' to the sizer 'sizer' in the
         'toplevel' object.
+        
+        All widgets in L{blacklisted_widgets} are ignored.
         """
         raise NotImplementedError
 

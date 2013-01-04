@@ -36,7 +36,6 @@ class MyDialog(wx.Dialog):
     def __do_layout(self):
         # begin wxGlade: MyDialog.__do_layout
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_1.Add(self.button_1, 0, wx.ALL, 5)
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
         self.Layout()

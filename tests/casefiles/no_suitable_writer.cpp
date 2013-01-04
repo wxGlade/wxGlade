@@ -42,7 +42,6 @@ void MyDialog::do_layout()
 {
     // begin wxGlade: MyDialog::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxHORIZONTAL);
-    sizer_1->Add(button_1, 0, wxALL, 5);
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();
