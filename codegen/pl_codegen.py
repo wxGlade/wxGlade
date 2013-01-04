@@ -18,7 +18,6 @@ Like all other perl parts, based on the pre-existing python generators
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import cStringIO
 import os
 import os.path
 import re

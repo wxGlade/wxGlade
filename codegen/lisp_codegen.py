@@ -16,7 +16,6 @@ methods of the parent object.
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import cStringIO
 import os
 import os.path
 import re
