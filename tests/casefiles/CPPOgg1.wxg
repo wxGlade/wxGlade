@@ -4,7 +4,7 @@
 <application path="CPPOgg1" name="CPPOgg1_app" class="MyApp" option="0" language="C++" top_window="Mp3_To_Ogg" encoding="ISO-8859-15" use_gettext="1" overwrite="0" use_new_namespace="1" for_version="2.8" is_template="0" indent_amount="4" indent_symbol="space" source_extension=".cpp" header_extension=".h">
     <object class="CPPOgg1_MyDialog" name="Mp3_To_Ogg" base="EditDialog">
         <extracode>// extra code added using wxGlade\n#include &lt;wx/utils.h&gt;</extracode>
-        <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME</style>
+        <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
         <title>mp3 2 ogg</title>
         <centered>1</centered>
         <focused>1</focused>

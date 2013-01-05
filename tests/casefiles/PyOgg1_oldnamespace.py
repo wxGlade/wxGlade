@@ -20,7 +20,7 @@ import time
 class PyOgg1_MyDialog(wxDialog):
     def __init__(self, *args, **kwds):
         # begin wxGlade: PyOgg1_MyDialog.__init__
-        kwds["style"] = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxTHICK_FRAME
+        kwds["style"] = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
         wxDialog.__init__(self, *args, **kwds)
         self.notebook_1 = wxNotebook(self, wxID_ANY, style=0)
         self.notebook_1_pane_1 = wxPanel(self.notebook_1, wxID_ANY)

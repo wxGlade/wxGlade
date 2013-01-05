@@ -30,7 +30,7 @@ sub new {
         $name   = ""                 unless defined $name;
 
         # begin wxGlade: PlOgg2_MyDialog::new
-        $style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
+        $style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
                 unless defined $style;
 
         $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
