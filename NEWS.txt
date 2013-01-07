@@ -19,6 +19,7 @@ General:
   - Improve message logging
   - Add new widget HyperlinkCtrl
   - Add more test cases
+  - When pasting: only search current top-level window for duplicate names
   - ...
 
 Bugs:

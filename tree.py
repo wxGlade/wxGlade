@@ -133,7 +133,7 @@ class Tree:
     def _find_toplevel(self, node):
         assert node is not None, _("None node in _find_toplevel")
         if node.parent is self.root:
-            return node.parent
+            return node
         while node.parent is not self.root:
             node = node.parent
         return node
