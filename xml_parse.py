@@ -376,6 +376,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
     """
     def __init__(self, parent, sizer, pos, option, flag, border):
         XmlWidgetBuilder.__init__(self)
+        self.parent_node = parent.node
 
         class XmlClipboardObject(object):
             def __init__(self, **kwds):
@@ -410,7 +411,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             oldname = str(attrs['name'])
             newname = oldname
             i = 0
-            while common.app_tree.has_name(newname):
+            while common.app_tree.has_name(newname,node=self.parent_node ):
                 if not i:
                     newname = '%s_copy' % oldname
                 else:
