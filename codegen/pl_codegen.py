@@ -405,6 +405,11 @@ unless(caller){
          'wxMODERN', 'wxTELETYPE',
          'wxNORMAL', 'wxSLANT', 'wxITALIC', 'wxNORMAL', 'wxLIGHT',
          'wxBOLD',
+         'wxHORIZONTAL', 'wxVERTICAL',
+         'wxALIGN_CENTER', 'wxALIGN_CENTRE', 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
+         'wxALIGN_TOP', 'wxALIGN_BOTTOM','wxALIGN_CENTER_VERTICAL',
+         'wxALIGN_CENTRE_VERTICAL', 'wxALIGN_CENTER_HORIZONTAL',
+         'wxALIGN_CENTRE_HORIZONTAL',
         ]
 
     _quote_str_pattern = re.compile(r'\\(?![nrt])')
