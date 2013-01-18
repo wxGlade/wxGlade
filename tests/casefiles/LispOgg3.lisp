@@ -107,8 +107,8 @@
         (setf (slot-sizer-1 obj) (wxGridSizer_Create 3 1 0 0))
         (setf (slot-sizer-2 obj) (wxGridSizer_Create 1 3 0 0))
         (setf (slot-grid-sizer-2 obj) (wxGridSizer_Create 2 3 0 0))
-        (setf (slot-sizer-3 obj) (wxBoxSizer_Create  wxHORIZONTAL))
-        (setf (slot-sizer-4 obj) (wxBoxSizer_Create  wxHORIZONTAL))
+        (setf (slot-sizer-3 obj) (wxBoxSizer_Create wxHORIZONTAL))
+        (setf (slot-sizer-4 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-grid-sizer-1 obj) (wxGridSizer_Create 1 3 0 0))
         (setf (slot-label-1 obj) (wxStaticText_Create (slot-notebook-1-pane-1 obj) wxID_ANY (_"File name:") -1 -1 -1 -1 0))
         (wxSizer_AddWindow (slot-grid-sizer-1 obj) (slot-label-1 obj) 0 (logior wxALL wxALIGN_CENTER_VERTICAL) 5 nil)
@@ -236,7 +236,7 @@
 
 (defmethod do-layout ((obj LispOgg3_MyFrame))
         ;;; begin wxGlade: LispOgg3_MyFrame.__do_layout
-        (setf (slot-sizer-5 obj) (wxBoxSizer_Create  wxVERTICAL))
+        (setf (slot-sizer-5 obj) (wxBoxSizer_Create wxVERTICAL))
         (setf (slot-grid-sizer-3 obj) (wxGridSizer_Create 3 1 0 0))
         (wxSizer_AddWindow (slot-grid-sizer-3 obj) (slot-grid-1 obj) 1 wxEXPAND 0 nil)
         (wxSizer_AddWindow (slot-grid-sizer-3 obj) (slot-static-line-2 obj) 0 (logior wxALL wxEXPAND) 5 nil)

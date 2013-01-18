@@ -147,12 +147,12 @@
 
 (defmethod do-layout ((obj wxGladePreferencesUI))
         ;;; begin wxGlade: wxGladePreferencesUI.__do_layout
-        (setf (slot-sizer-1 obj) (wxBoxSizer_Create  wxVERTICAL))
-        (setf (slot-sizer-2 obj) (wxBoxSizer_Create  wxHORIZONTAL))
-        (setf (slot-sizer-5 obj) (wxBoxSizer_Create  wxVERTICAL))
-        (setf (slot-sizer-7-copy obj) (wxBoxSizer_Create  wxHORIZONTAL))
-        (setf (slot-sizer-7 obj) (wxBoxSizer_Create  wxHORIZONTAL))
-        (setf (slot-sizer-3 obj) (wxBoxSizer_Create  wxVERTICAL))
+        (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
+        (setf (slot-sizer-2 obj) (wxBoxSizer_Create wxHORIZONTAL))
+        (setf (slot-sizer-5 obj) (wxBoxSizer_Create wxVERTICAL))
+        (setf (slot-sizer-7-copy obj) (wxBoxSizer_Create wxHORIZONTAL))
+        (setf (slot-sizer-7 obj) (wxBoxSizer_Create wxHORIZONTAL))
+        (setf (slot-sizer-3 obj) (wxBoxSizer_Create wxVERTICAL))
         (setf (slot-sizer-4 obj) (wxGridSizer_Create 4 2 0 0))
         (wxSizer_AddWindow (slot-sizer-3 obj) (slot-use-menu-icons obj) 0 (logior wxALL wxEXPAND) 5 nil)
         (wxSizer_AddWindow (slot-sizer-3 obj) (slot-frame-tool-win obj) 0 (logior wxALL wxEXPAND) 5 nil)

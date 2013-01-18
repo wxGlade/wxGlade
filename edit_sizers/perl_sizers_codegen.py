@@ -1,118 +1,77 @@
-# perl_sizers_codegen.py : perl generator functions for the various wxSizerS
-# $Id: perl_sizers_codegen.py,v 1.7 2006/12/02 11:20:29 agriggio Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
-#
+"""
+Perl generator functions for the various wxSizerS
+
+@copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@copyright: 2013 Carsten Grohmann <mail@carstengrohmann.de>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
 
 import common
-
-class PerlBoxSizerBuilder:
-    def get_code(self, obj):
-        orient = obj.properties.get('orient', 'wxHORIZONTAL')
-        init = [
-            '$self->{%s} = Wx::BoxSizer->new(%s);\n' % (obj.name, orient)
-            ]
-        layout = []
-
-        if obj.is_toplevel:
-            if not obj.parent.is_toplevel:
-                parent = '$self->{%s}' % obj.parent.name
-            else:
-                parent = '$self'
-
-            #layout.append('%s->SetAutoLayout(1);\n' % parent)
-            layout.append('%s->SetSizer($self->{%s});\n' % (parent, obj.name))
-
-            if not obj.parent.properties.has_key('size') and \
-                   obj.parent.is_toplevel:
-                layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-            if obj.parent.properties.get('sizehints', False):
-                layout.append('$self->{%s}->SetSizeHints(%s);\n'
-                              % (obj.name, parent))
-        return init, [], layout
-
-# end of class PerlBoxSizerBuilder
+from edit_sizers import BaseSizerBuilder
 
 
-class PerlStaticBoxSizerBuilder:
-    def get_code(self, obj):
-        plgen = common.code_writers['perl']
-        orient = obj.properties.get('orient', 'wxHORIZONTAL')
-        label = obj.properties.get('label', '')
-        if not obj.parent.is_toplevel: parent = '$self->{%s}' % obj.parent.name
-        else: parent = '$self'
-        init = [
-          '$self->{%s_staticbox} = Wx::StaticBox->new(%s, wxID_ANY, %s );\n'
-          % (obj.name, parent, plgen.quote_str(label)), # this get
-          '$self->{%s}= Wx::StaticBoxSizer->new($self->{%s_staticbox}, %s);\n'
-          % (obj.name,obj.name, orient)
-        ]
-        layout = []
-        if obj.is_toplevel:
-            #layout.append('%s->SetAutoLayout(1);\n' % parent)
-            layout.append('%s->SetSizer($self->{%s});\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size') and \
-                   obj.parent.is_toplevel:
-                layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-            if obj.parent.properties.get('sizehints', False):
-                layout.append('$self->{%s}->SetSizeHints(%s);\n'
-                              % (obj.name, parent))
-        return init, [], layout
+class BasePerlSizerBuilder(BaseSizerBuilder):
+    """\
+    Perl base class for all sizer code generators
+    """
 
-# end of class PerlStaticBoxSizerBuilder
+    language = 'perl'
 
+    tmpl_SetSizer = '%(parent_widget)s->SetSizer($self->{%(sizer_name)s});\n'
+    tmpl_Fit = '$self->{%(sizer_name)s}->Fit(%(parent_widget)s);\n'
+    tmpl_SetSizeHints = '$self->{%(sizer_name)s}->SetSizeHints(' \
+                        '%(parent_widget)s);\n'
 
-class PerlGridSizerBuilder:
-    klass = 'Wx::GridSizer'
-
-    def get_code(self, obj):
-        props = obj.properties
+    def _get_wparent(self, obj):
         if not obj.parent.is_toplevel:
             parent = '$self->{%s}' % obj.parent.name
         else:
             parent = '$self'
-        rows = props.get('rows', '0')
-        cols = props.get('cols', '0')
-        vgap = props.get('vgap', '0')
-        hgap = props.get('hgap', '0')
-        init = [
-            '$self->{%s} = %s->new(%s, %s, %s, %s);\n' %
-                (obj.name, self.klass.replace('wx','Wx::',1), rows,
-                    cols, vgap, hgap)
-            ]
-        layout = []
-        if obj.is_toplevel:
-            #layout.append('%s->SetAutoLayout(1);\n' % parent)
-            layout.append('%s->SetSizer($self->{%s});\n'
-                % (parent, obj.name))
-            if not obj.parent.properties.has_key('size') and \
-                   obj.parent.is_toplevel:
-                layout.append('$self->{%s}->Fit(%s);\n' % (obj.name, parent))
-            if obj.parent.properties.get('sizehints', False):
-                layout.append('$self->{%s}->SetSizeHints(%s);\n'
-                              % (obj.name, parent))
-        return init, [], layout   
+        return parent
+
+# end of class BasePerlSizerBuilder
+
+
+class PerlBoxSizerBuilder(BasePerlSizerBuilder):
+    klass = 'wxBoxSizer'
+    init_stmt = [
+        '$self->{%(sizer_name)s} = %(klass)s->new(%(orient)s);\n'
+        ]
+
+# end of class PerlBoxSizerBuilder
+
+
+class PerlStaticBoxSizerBuilder(BasePerlSizerBuilder):
+    klass = 'wxStaticBoxSizer'
+    init_stmt = [
+        '$self->{%(sizer_name)s_staticbox} = %(wxStaticBox)s->new('
+            '%(parent_widget)s, wxID_ANY, %(label)s );\n',
+        '$self->{%(sizer_name)s} = %(klass)s->new($self->{%(sizer_name)s'
+            '_staticbox}, %(orient)s);\n',
+        '$self->{%(sizer_name)s_staticbox}->Lower();\n',
+        ]
+
+# end of class PerlStaticBoxSizerBuilder
+
+
+class PerlGridSizerBuilder(BasePerlSizerBuilder):
+    klass = 'wxGridSizer'
+    init_stmt = [
+        '$self->{%(sizer_name)s} = %(klass)s->new(%(rows)s, %(cols)s, '
+            '%(vgap)s, %(hgap)s);\n'
+        ]
 
 # end of class PerlGridSizerBuilder
 
 
 class PerlFlexGridSizerBuilder(PerlGridSizerBuilder):
-    klass = 'Wx::FlexGridSizer'
+    klass = 'wxFlexGridSizer'
 
-    def get_code(self, obj):
-        init, p, layout = PerlGridSizerBuilder.get_code(self, obj)
-        props = obj.properties
-        if props.has_key('growable_rows'):
-            for r in props['growable_rows'].split(','):
-                layout.append('$self->{%s}->AddGrowableRow(%s);\n' %
-                              (obj.name, r.strip()))
-        if props.has_key('growable_cols'):
-            for r in props['growable_cols'].split(','):
-                layout.append('$self->{%s}->AddGrowableCol(%s);\n' %
-                              (obj.name, r.strip()))
-        return init, p, layout
+    tmpl_AddGrowableRow = '$self->{%(sizer_name)s}->AddGrowableRow' \
+                          '(%(row)s);\n'
+    tmpl_AddGrowableCol = '$self->{%(sizer_name)s}->AddGrowableCol' \
+                          '(%(col)s);\n'
 
 # end of class PerlFlexGridSizerBuilder
 
@@ -124,7 +83,7 @@ def initialize():
     cn['EditGridSizer'] = 'wxGridSizer'
     cn['EditFlexGridSizer'] = 'wxFlexGridSizer'
 
-    plgen  = common.code_writers.get("perl")
+    plgen = common.code_writers.get("perl")
     if plgen:
         awh = plgen.add_widget_handler
         awh('wxBoxSizer', PerlBoxSizerBuilder())

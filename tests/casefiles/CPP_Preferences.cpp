@@ -95,6 +95,7 @@ void wxGladePreferencesUI::do_layout()
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_2 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_5 = new wxBoxSizer(wxVERTICAL);
+    sizer_6_staticbox->Lower();
     wxStaticBoxSizer* sizer_6 = new wxStaticBoxSizer(sizer_6_staticbox, wxHORIZONTAL);
     wxBoxSizer* sizer_7_copy = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);

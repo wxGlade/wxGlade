@@ -54,7 +54,7 @@
 
 (defmethod do-layout ((obj MyDialog))
         ;;; begin wxGlade: MyDialog.__do_layout
-        (setf (slot-sizer-1 obj) (wxBoxSizer_Create  wxHORIZONTAL))
+        (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
         (wxWindow_layout (slot-dialog-1 slef))

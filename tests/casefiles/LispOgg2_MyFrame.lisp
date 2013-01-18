@@ -94,7 +94,7 @@
 
 (defmethod do-layout ((obj LispOgg2_MyFrame))
         ;;; begin wxGlade: LispOgg2_MyFrame.__do_layout
-        (setf (slot-sizer-5 obj) (wxBoxSizer_Create  wxVERTICAL))
+        (setf (slot-sizer-5 obj) (wxBoxSizer_Create wxVERTICAL))
         (setf (slot-grid-sizer-3 obj) (wxGridSizer_Create 3 1 0 0))
         (wxSizer_AddWindow (slot-grid-sizer-3 obj) (slot-grid-1 obj) 1 wxEXPAND 0 nil)
         (wxSizer_AddWindow (slot-grid-sizer-3 obj) (slot-static-line-2 obj) 0 (logior wxALL wxEXPAND) 5 nil)

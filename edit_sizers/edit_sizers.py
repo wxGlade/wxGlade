@@ -1,15 +1,201 @@
-# edit_sizers.py: hierarchy of Sizers supported by wxGlade
-# 
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Hierarchy of Sizers supported by wxGlade
 
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+# import general python modules
+import math
+import re
+
+# import project modules
 import wx
 from widget_properties import *
 from tree import Tree, WidgetTree
-import common, config, misc
-import math, re
+import common
+import config
+import misc
+
+
+class BaseSizerBuilder(object):
+    """\
+    Language independen base class for all sizer builders
+    
+    @cvar klass: Sizer class
+    @type klass: String
+    
+    @cvar language: Language to generate the code for
+    @type language: String
+    
+    @cvar init_stmt: Statements to generate the sizer from;
+                     lines have to end with a newline character
+    @type init_stmt: List of strings
+    
+    @cvar tmpl_AddGrowableRow: Template for wxFlexGridSizer to set growable
+                               rows
+    @type tmpl_AddGrowableRow: String
+    
+    @cvar tmpl_AddGrowableCol: Template for wxFlexGridSizer to set growable
+                               columns
+    @type tmpl_AddGrowableCol: String
+    
+    @cvar tmpl_SetSizer: Template to call SetSizer()
+    @type tmpl_SetSizer: String
+    
+    @cvar tmpl_Fit: Template to call Fit()
+    @type tmpl_Fit: String
+    
+    @cvar tmpl_SetSizeHints: Template to set the size hints
+    @type tmpl_SetSizeHints: String
+    
+    @ivar codegen: Language specific code generator
+    @type codegen: Instance of L{codegen.BaseCodeWriter}
+    
+    @ivar props_get_code: Properties to replace in L{init_stmt}
+    @type props_get_code: Dictionary
+    """
+
+    init_stmt = []
+
+    klass = ''
+    language = None
+
+    tmpl_SetSizer = ''
+    tmpl_Fit = ''
+    tmpl_SetSizeHints = ''
+    tmpl_AddGrowableRow = ''
+    tmpl_AddGrowableCol = ''
+    
+
+    def __init__(self):
+        """\
+        Initialise sizer builder
+        """
+        self.props_get_code = {}
+        self.codegen = common.code_writers[self.language]
+
+    def _get_wparent(self, obj):
+        """\
+        Return the parent widget or a reference to it.
+        
+        @rtype: String
+        """
+        raise NotImplementedError
+        
+    def _get_code(self, obj):
+        """\
+        Generates the language specific code for sizer specified in L{klass}
+        """
+        if not self.init_stmt:
+            return [], [], []
+
+        init = []
+        layout = []
+
+        # append default properties
+        self.props_get_code['sizer_name'] = obj.name
+        self.props_get_code['klass'] = self.codegen.cn(self.klass)
+        self.props_get_code['wxIDANY'] = self.codegen.cn('wxID_ANY')
+        self.props_get_code['parent_widget'] = self._get_wparent(obj)
+
+        # generate init lines from init_stmt filled with props_get_code
+        for line in self.init_stmt:
+            init.append(line % self.props_get_code)
+
+        # generate layout lines
+        if obj.is_toplevel:
+            layout.append(self.tmpl_SetSizer % self.props_get_code)
+            if not obj.parent.properties.has_key('size') and \
+                   obj.parent.is_toplevel:
+                layout.append(self.tmpl_Fit % self.props_get_code)
+            if obj.parent.properties.get('sizehints', False):
+                layout.append(self.tmpl_SetSizeHints % self.props_get_code)
+            
+        return init, [], layout
+        
+    def get_code(self, obj):
+        """\
+        Generates the language specific code for sizer specified in L{klass}
+        """
+        if self.klass == 'wxBoxSizer':
+            return self.get_code_wxBoxSizer(obj)
+        if self.klass == 'wxStaticBoxSizer':
+            return self.get_code_wxStaticBoxSizer(obj)
+        if self.klass == 'wxGridSizer':
+            return self.get_code_wxGridSizer(obj)
+        if self.klass == 'wxFlexGridSizer':
+            return self.get_code_wxFlexGridSizer(obj)            
+        return self._get_code(obj)
+        
+    def get_code_wxStaticBoxSizer(self, obj):
+        """\
+        Set sizer specific properties and generate the code
+        """
+        self.props_get_code.clear()
+        self.props_get_code['orient'] = self.codegen.cn(
+            obj.properties.get('orient', 'wxHORIZONTAL')
+            )
+        self.props_get_code['label'] = self.codegen.quote_str(
+            obj.properties.get('label', '')
+            )
+        self.props_get_code['wxStaticBox'] = self.codegen.cn('wxStaticBox')
+        return self._get_code(obj)
+        
+    def get_code_wxBoxSizer(self, obj):
+        """\
+        Set sizer specific properties and generate the code
+        """
+        self.props_get_code.clear()
+        self.props_get_code['orient'] = self.codegen.cn(
+            obj.properties.get('orient', 'wxHORIZONTAL')
+            )
+        return self._get_code(obj)      
+    
+    def get_code_wxGridSizer(self, obj):
+        """\
+        Set sizer specific properties and generate the code
+        """
+        self.props_get_code.clear()
+        self.props_get_code['rows'] = obj.properties.get('rows', '0')
+        self.props_get_code['cols'] = obj.properties.get('cols', '0')
+        self.props_get_code['vgap'] = obj.properties.get('vgap', '0')
+        self.props_get_code['hgap'] = obj.properties.get('hgap', '0')
+        return self._get_code(obj)
+
+    def get_code_wxFlexGridSizer(self, obj):
+        """\
+        Set sizer specific properties and generate the code
+        """
+        result = self.get_code_wxGridSizer(obj)
+        
+        # convert tuple to list
+        result = list(result)
+        
+        # extract layout lines
+        layout = result[-1]
+        del result[-1]
+        
+        props = obj.properties
+        if props.has_key('growable_rows'):
+            for row in props['growable_rows'].split(','):
+                layout.append(self.tmpl_AddGrowableRow % {
+                    'sizer_name': obj.name,
+                    'row': row.strip(),
+                    })
+        if props.has_key('growable_cols'):
+            for col in props['growable_cols'].split(','):
+                layout.append(self.tmpl_AddGrowableCol % {
+                    'sizer_name': obj.name,
+                    'col': col.strip(),
+                    })
+
+        # reappend layout lines
+        result.append(layout)
+        return result
+
+# end of class BaseSizerBuilder
+
 
 class SizerSlot:
     "a window to represent a slot in a sizer"

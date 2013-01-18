@@ -108,7 +108,8 @@ sub __do_layout {
         $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
         $self->{sizer_2} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_5} = Wx::BoxSizer->new(wxVERTICAL);
-        $self->{sizer_6}= Wx::StaticBoxSizer->new($self->{sizer_6_staticbox}, wxHORIZONTAL);
+        $self->{sizer_6_staticbox}->Lower();
+        $self->{sizer_6} = Wx::StaticBoxSizer->new($self->{sizer_6_staticbox}, wxHORIZONTAL);
         $self->{sizer_7_copy} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_7} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_3} = Wx::BoxSizer->new(wxVERTICAL);
