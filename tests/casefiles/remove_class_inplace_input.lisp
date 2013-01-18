@@ -65,7 +65,7 @@
 (defmethod do-layout ((obj MyDialog))
         ;;; begin wxGlade: MyDialog.__do_layout
         (setf (slot-grid-sizer-1 obj) (wxGridSizer_Create 3 1 0 0))
-        (setf (slot-sizer-1 obj) (wxBoxSizer_Create  wxHORIZONTAL))
+        (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (wxSizer_AddWindow (slot-grid-sizer-1 obj) (slot-text-ctrl-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxSizer_AddWindow (slot-grid-sizer-1 obj) (slot-static-line-1 obj) 0 (logior wxALL wxEXPAND) 5 nil)
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-button-2 obj) 0 wxALL 5 nil)
@@ -116,7 +116,7 @@
 
 (defmethod do-layout ((obj MyDialog1))
         ;;; begin wxGlade: MyDialog1.__do_layout
-        (setf (slot-sizer-2 obj) (wxBoxSizer_Create  wxHORIZONTAL))
+        (setf (slot-sizer-2 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (wxSizer_AddWindow (slot-sizer-2 obj) (slot-hyperlink-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-2 obj))
         (wxSizer_Fit (slot-sizer-2 obj) (slot-top-window obj))

@@ -59,7 +59,7 @@
 
 (defmethod do-layout ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__do_layout
-        (setf (slot-sizer-1 obj) (wxBoxSizer_Create  wxVERTICAL))
+        (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-text-ctrl-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))

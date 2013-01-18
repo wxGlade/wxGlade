@@ -1,93 +1,102 @@
-# sizers_codegen.py: code generation functions for the various wxSizerS
-# $Id: sizers_codegen.py,v 1.16 2007/03/27 07:02:06 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Code generation functions for the various wxSizerS
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2013 Carsten Grohmann <mail@carstengrohmann.de>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
 
 import common
+from edit_sizers import BaseSizerBuilder
 
 
-class PythonBoxSizerBuilder:
-    def get_code(self, obj):
-        pygen = common.code_writers['python']
-        cn = pygen.cn
-        orient = obj.properties.get('orient', 'wxHORIZONTAL')
-        init = [('%s = ' + cn('wxBoxSizer') + '(%s)\n') % \
-                (obj.name, cn(orient))]
-        layout = []
-        if obj.is_toplevel:
-            if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-            else: parent = 'self'
-            #layout.append('%s.SetAutoLayout(True)\n' % parent)
-            layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size') and \
-                   obj.parent.is_toplevel:
-                layout.append('%s.Fit(%s)\n' % (obj.name, parent))
-            if obj.parent.properties.get('sizehints', False):
-                layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
-        return init, [], layout
+class BasePythonSizerBuilder(BaseSizerBuilder):
+    """\
+    Python base class for all sizer code generators
+    """
 
-# end of class PythonBoxSizerBuilder
+    language = 'python'
 
+    tmpl_SetSizer = '%(parent_widget)s.SetSizer(%(sizer_name)s)\n'
+    tmpl_Fit = '%(sizer_name)s.Fit(%(parent_widget)s)\n'
+    tmpl_SetSizeHints = '%(sizer_name)s.SetSizeHints(%(parent_widget)s)\n'
 
-class PythonStaticBoxSizerBuilder:
-    def get_code(self, obj):
-        pygen = common.code_writers['python']
-        cn = pygen.cn
-        orient = obj.properties.get('orient', 'wxHORIZONTAL')
-        label = obj.properties.get('label', '')
+    def _get_wparent(self, obj):
         if not obj.parent.is_toplevel:
             parent = 'self.%s' % obj.parent.name
         else:
             parent = 'self'
-        init = [
-            ('self.%s_staticbox = ' + cn('wxStaticBox') + '(%s, %s, %s)\n') %
-            (obj.name, parent, cn('wxID_ANY'), pygen.quote_str(label)),
-            ('%s = ' + cn('wxStaticBoxSizer') + '(self.%s_staticbox, %s)\n') %
-            (obj.name, obj.name, cn(orient)),
-            ('self.%s_staticbox.Lower()\n') %
-            (obj.name),
-            ]
-        layout = []
-        if obj.is_toplevel:
-            #layout.append('%s.SetAutoLayout(True)\n' % parent)
-            layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size') and \
-                   obj.parent.is_toplevel:
-                layout.append('%s.Fit(%s)\n' % (obj.name, parent))
-            if obj.parent.properties.get('sizehints', False):
-                layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
-        return init, [], layout
+        return parent
+
+# end of class BasePythonSizerBuilder
+
+
+class BaseCPPSizerBuilder(BaseSizerBuilder):
+    """\
+    C++ base class for all sizer code generators
+    """
+
+    language = 'C++'
+
+    tmpl_SetSizer = '%(parent_ref)sSetSizer(%(sizer_name)s);\n'
+    tmpl_Fit = '%(sizer_name)s->Fit(%(parent_widget)s);\n'
+    tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
+
+    def _get_wparent(self, obj):
+        if not obj.parent.is_toplevel:
+            parent = '%s' % obj.parent.name
+        else:
+            parent = 'this'
+        return parent
+
+    def _get_parent_ref(self, obj):
+        if not obj.parent.is_toplevel:
+            parent_ref = '%s->' % obj.parent.name
+        else:
+            parent_ref = ''
+        return parent_ref
+
+    def _get_code(self, obj):
+        self.props_get_code['parent_ref'] = self._get_parent_ref(obj)
+        result = BaseSizerBuilder._get_code(self, obj)
+
+        # get_code() for C++ has different return values
+        result = list(result)
+        result.insert(2, [])
+        return result
+
+# end of class BaseCPPSizerBuilder
+
+
+class PythonBoxSizerBuilder(BasePythonSizerBuilder):
+    klass = 'wxBoxSizer'
+    init_stmt = [
+        '%(sizer_name)s = %(klass)s(%(orient)s)\n',
+        ]
+
+# end of class PythonBoxSizerBuilder
+
+
+class PythonStaticBoxSizerBuilder(BasePythonSizerBuilder):
+    klass = 'wxStaticBoxSizer'
+    init_stmt = [
+        'self.%(sizer_name)s_staticbox = %(wxStaticBox)s(%(parent_widget)s, '
+            '%(wxIDANY)s, %(label)s)\n',
+        '%(sizer_name)s = %(klass)s(self.%(sizer_name)s_staticbox, '
+            '%(orient)s)\n',
+        'self.%(sizer_name)s_staticbox.Lower()\n',
+        ]
 
 # end of class PythonStaticBoxSizerBuilder
 
 
-class PythonGridSizerBuilder:
+class PythonGridSizerBuilder(BasePythonSizerBuilder):
     klass = 'wxGridSizer'
-
-    def get_code(self, obj):
-        pygen = common.code_writers['python']
-        cn = pygen.cn
-        props = obj.properties
-        if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-        else: parent = 'self'
-        rows = props.get('rows', '0')
-        cols = props.get('cols', '0')
-        vgap = props.get('vgap', '0')
-        hgap = props.get('hgap', '0')
-        init = [ '%s = %s(%s, %s, %s, %s)\n' %
-                 (obj.name, cn(self.klass), rows, cols, vgap, hgap) ]
-        layout = []
-        if obj.is_toplevel:
-            #layout.append('%s.SetAutoLayout(True)\n' % parent)
-            layout.append('%s.SetSizer(%s)\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size') and \
-                   obj.parent.is_toplevel:
-                layout.append('%s.Fit(%s)\n' % (obj.name, parent))
-            if obj.parent.properties.get('sizehints', False):
-                layout.append('%s.SetSizeHints(%s)\n' % (obj.name, parent))
-        return init, [], layout   
+    init_stmt = [
+        '%(sizer_name)s = %(klass)s(%(rows)s, %(cols)s, '
+            '%(vgap)s, %(hgap)s)\n',
+        ]
 
 # end of class PythonGridSizerBuilder
 
@@ -95,105 +104,40 @@ class PythonGridSizerBuilder:
 class PythonFlexGridSizerBuilder(PythonGridSizerBuilder):
     klass = 'wxFlexGridSizer'
 
-    def get_code(self, obj):
-        init, p, layout = PythonGridSizerBuilder.get_code(self, obj)
-        props = obj.properties
-        if props.has_key('growable_rows'):
-            for r in props['growable_rows'].split(','):
-                layout.append('%s.AddGrowableRow(%s)\n' %
-                              (obj.name, r.strip()))
-        if props.has_key('growable_cols'):
-            for r in props['growable_cols'].split(','):
-                layout.append('%s.AddGrowableCol(%s)\n' %
-                              (obj.name, r.strip()))
-        return init, p, layout
+    tmpl_AddGrowableRow = '%(sizer_name)s.AddGrowableRow(%(row)s)\n'
+    tmpl_AddGrowableCol = '%(sizer_name)s.AddGrowableCol(%(col)s)\n'
 
 # end of class PythonFlexGridSizerBuilder
 
 
-class CppBoxSizerBuilder:
-    def get_code(self, obj):
-        """\
-        generates the C++ code for wxBoxSizer objects.
-        """
-        orient = obj.properties.get('orient', 'wxHORIZONTAL')
-        init = ['wxBoxSizer* %s = new wxBoxSizer(%s);\n' % (obj.name, orient)]
-        layout = []
-        if obj.is_toplevel:
-            if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name
-            else: parent = ''
-            #layout.append('%sSetAutoLayout(true);\n' % parent)
-            layout.append('%sSetSizer(%s);\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size'):
-                if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-                else: parent = 'this'
-                if obj.parent.is_toplevel:
-                    layout.append('%s->Fit(%s);\n' % (obj.name, parent))
-            if obj.parent.properties.get('sizehints', False):
-                layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
-        return init, [], [], layout
+class CppBoxSizerBuilder(BaseCPPSizerBuilder):
+    klass = 'wxBoxSizer'
+    init_stmt = [
+        '%(klass)s* %(sizer_name)s = new %(klass)s(%(orient)s);\n',
+        ]
 
 # end of class CppBoxSizerBuilder
 
 
-class CppStaticBoxSizerBuilder:
-    def get_code(self, obj):
-        """\
-        generates the C++ code for wxStaticBoxSizer objects.
-        """
-        cppgen = common.code_writers['C++']
-        orient = obj.properties.get('orient', 'wxHORIZONTAL')
-        label = obj.properties.get('label', '')
-        if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-        else: parent = 'this'
-        init = [
-            '%s_staticbox = new wxStaticBox(%s, wxID_ANY, %s);\n' %
-            (obj.name, parent, cppgen.quote_str(label)),
-            'wxStaticBoxSizer* %s = new wxStaticBoxSizer(%s_staticbox, %s);\n'
-            % (obj.name, obj.name, orient)]
-        layout = []
-        if obj.is_toplevel:
-            if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name
-            else: parent = ''
-            #layout.append('%sSetAutoLayout(true);\n' % parent)
-            layout.append('%sSetSizer(%s);\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size'):
-                if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-                else: parent = 'this'
-                if obj.parent.is_toplevel:
-                    layout.append('%s->Fit(%s);\n' % (obj.name, parent))
-            if obj.parent.properties.get('sizehints', False):
-                layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
-        return init, [], [], layout
+class CppStaticBoxSizerBuilder(BaseCPPSizerBuilder):
+    klass = 'wxStaticBoxSizer'
+    init_stmt = [
+        '%(sizer_name)s_staticbox = new wxStaticBox(%(parent_widget)s, '
+            'wxID_ANY, %(label)s);\n',
+        '%(klass)s* %(sizer_name)s = new %(klass)s(%(sizer_name)s_staticbox, '
+            '%(orient)s);\n',
+        '%(sizer_name)s_staticbox->Lower();\n'
+        ]
 
 # end of class CppStaticBoxSizerBuilder
 
 
-class CppGridSizerBuilder:
+class CppGridSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxGridSizer'
-
-    def get_code(self, obj):
-        props = obj.properties
-        rows = props.get('rows', '0')
-        cols = props.get('cols', '0')
-        vgap = props.get('vgap', '0')
-        hgap = props.get('hgap', '0')
-        init = [ '%s* %s = new %s(%s, %s, %s, %s);\n' % \
-                 (self.klass, obj.name, self.klass, rows, cols, vgap, hgap) ]
-        layout = []
-        if obj.is_toplevel:
-            if not obj.parent.is_toplevel: parent = '%s->' % obj.parent.name
-            else: parent = ''
-            #layout.append('%sSetAutoLayout(true);\n' % parent)
-            layout.append('%sSetSizer(%s);\n' % (parent, obj.name))
-            if not obj.parent.properties.has_key('size'):
-                if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-                else: parent = 'this'
-                if obj.parent.is_toplevel:
-                    layout.append('%s->Fit(%s);\n' % (obj.name, parent))
-            if obj.parent.properties.get('sizehints', False):
-                layout.append('%s->SetSizeHints(%s);\n' % (obj.name, parent))
-        return init, [], [], layout   
+    init_stmt = [
+        '%(klass)s* %(sizer_name)s = new %(klass)s(%(rows)s, %(cols)s, '
+            '%(vgap)s, %(hgap)s);\n',
+        ]
 
 # end of class CppGridSizerBuilder
 
@@ -201,33 +145,23 @@ class CppGridSizerBuilder:
 class CppFlexGridSizerBuilder(CppGridSizerBuilder):
     klass = 'wxFlexGridSizer'
 
-    def get_code(self, obj):
-        """\
-        function used to generate the C++ code for wxFlexGridSizer objects.
-        """
-        init, ids, p, layout = CppGridSizerBuilder.get_code(self, obj)
-        props = obj.properties
-        if props.has_key('growable_rows'):
-            for r in props['growable_rows'].split(','):
-                layout.append('%s->AddGrowableRow(%s);\n' %
-                              (obj.name, r.strip()))
-        if props.has_key('growable_cols'):
-            for r in props['growable_cols'].split(','):
-                layout.append('%s->AddGrowableCol(%s);\n' %
-                              (obj.name, r.strip()))
-        return init, ids, p, layout
+    tmpl_AddGrowableRow = '%(sizer_name)s->AddGrowableRow(%(row)s);\n'
+    tmpl_AddGrowableCol = '%(sizer_name)s->AddGrowableCol(%(col)s);\n'
 
 # end of class CppFlexGridSizerBuilder
 
 
 def xrc_wxFlexGridSizer_builder(obj):
     xrcgen = common.code_writers['XRC']
+
     class FlexGridSizerXrcObject(xrcgen.DefaultXrcObject):
         def write_property(self, name, val, outfile, tabs):
             if val and name in ('growable_rows', 'growable_cols'):
-                if name == 'growable_rows': name2 = 'growablerows'
-                else: name2 = 'growablecols'
-                outfile.write('    '*tabs + '<%s>%s</%s>\n' %
+                if name == 'growable_rows':
+                    name2 = 'growablerows'
+                else:
+                    name2 = 'growablecols'
+                outfile.write('    ' * tabs + '<%s>%s</%s>\n' %
                                   (name2, val, name2))
             else:
                 xrcgen.DefaultXrcObject.write_property(self, name, val,
@@ -236,7 +170,6 @@ def xrc_wxFlexGridSizer_builder(obj):
     # end of class FlexGridSizerXrcObject
 
     return FlexGridSizerXrcObject(obj)
-    
 
 
 def initialize():
