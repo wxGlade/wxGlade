@@ -215,11 +215,19 @@ class WXGladeBaseTest(unittest.TestCase):
             )
         self.failIf(
            len(file_list) == 0,
-           'No %s file for case "%s" found!' % (filetype, casename)
+           'No %s file "%s" for case "%s" found!' % (
+                filetype,
+                filename,
+                casename,
+                )
            )
         self.failIf(
            len(file_list) > 1,
-           'More than one %s file for case "%s" found!' % (filetype, casename)
+           'More than one %s file "%s" for case "%s" found!' % (
+                filetype,
+                filename,
+                casename,
+                )
            )
 
         fh = open(file_list[0])
