@@ -357,6 +357,29 @@ class WXGladeBaseTest(unittest.TestCase):
         outfile.write(content)
         self.vFiles[filename] = outfile
 
+    def _test_all(self, base):
+        """\
+        Generate code for all languages based on the base file name
+        
+        @param base: Base name of the test files
+        @type base: String
+        """
+        for lang, ext in [
+            ['lisp',   '.lisp'],
+            ['perl',   '.pl'],
+            ['python', '.py'],
+            ['XRC',    '.xrc'],
+            ['C++',    ''],
+            ]:
+            name_wxg = '%s.wxg' % base
+            name_lang = '%s%s' % (base, ext)
+            
+            if lang == 'C++':
+                self._generate_and_compare_cpp(name_wxg, name_lang)
+            else:
+                self._generate_and_compare(lang, name_wxg, name_lang)
+
+
     def _diff(self, text1, text2):
         """\
         Compare two lists, tailing spaces will be removed
