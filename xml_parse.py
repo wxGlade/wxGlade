@@ -456,13 +456,20 @@ class XmlWidgetObject(object):
     A class to encapsulate a widget read from an xml file: its purpose is to
     store various widget attributes until the widget can be created
 
+    @ivar in_sizers: If True, the widget is a sizer, opposite of L{in_windows}
+    @type in_sizers: Boolean
+    
+    @ivar in_windows: If True, the wiget is not a sizer, pposite of
+                      L{in_sizers}
+    @type in_windows: Boolean
+
     @ivar prop_handlers: Is a stack of custom handler functions to set
                          properties of this object
     """
     def __init__(self, attrs, parser):
         self.prop_handlers = Stack()
         self.parser = parser
-        self.in_windows, self.in_sizers = False, False
+        self.in_windows = self.in_sizers = False
         try:
             base = attrs.get('base', None)
             self.klass = attrs['class']
@@ -771,6 +778,13 @@ class CodeObject(object):
     """\
     A class to store information needed to generate the code for a given
     object.
+    
+    @ivar in_sizers: If True, the widget is a sizer, opposite of L{in_windows}
+    @type in_sizers: Boolean
+    
+    @ivar in_windows: If True, the wiget is not a sizer, pposite of
+                      L{in_sizers}
+    @type in_windows: Boolean
 
     @ivar is_container: If True, the widget is a container (frame, dialog,
                         panel, ...)
