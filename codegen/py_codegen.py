@@ -330,6 +330,10 @@ if __name__ == "__main__":
     def __init__(self):
         BaseCodeWriter.__init__(self)
 
+    def _init_vars(self):
+        self.use_new_namespace = True
+        BaseCodeWriter._init_vars(self)
+
     def cn(self, name):
         """\
         Return the name properly formatted for the selected name space.
