@@ -19,8 +19,8 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
     language = 'lisp'
 
     tmpl_SetSizer = '(wxWindow_SetSizer %(parent_widget)s ' \
-                    '(slot-%(sizer_name)s obj))\n'
-    tmpl_Fit = '(wxSizer_Fit (slot-%(sizer_name)s obj) %(parent_widget)s)\n'
+                    '(%(sizer_name)s obj))\n'
+    tmpl_Fit = '(wxSizer_Fit (%(sizer_name)s obj) %(parent_widget)s)\n'
     tmpl_SetSizeHints = '(wxSizer_SetSizeHints (slot-%(sizer_name)s obj) ' \
                         '%(parent_widget)s)\n'
 
@@ -50,7 +50,7 @@ class LispBoxSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxBoxSizer'
 
     init_stmt = [
-        '(setf (slot-%(sizer_name)s obj) (wxBoxSizer_Create %(orient)s))\n'
+        '(setf (%(sizer_name)s obj) (wxBoxSizer_Create %(orient)s))\n'
         ]
 
     tmpl_wparent = '(slot-top-window obj)'
@@ -61,7 +61,7 @@ class LispBoxSizerBuilder(BaseLispSizerBuilder):
 class LispStaticBoxSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxStaticBoxSizer'
     init_stmt = [
-        '(setf (slot-%(sizer_name)s obj) (StaticBoxSizer_Create '
+        '(setf (%(sizer_name)s obj) (StaticBoxSizer_Create '
             '(wxStaticBox:wxStaticBox_Create %(parent_widget)s %(label)s) '
             '%(orient)s))\n',
         ]
@@ -72,7 +72,7 @@ class LispStaticBoxSizerBuilder(BaseLispSizerBuilder):
 class LispGridSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxGridSizer'
     init_stmt = [
-        '(setf (slot-%(sizer_name)s obj) (wxGridSizer_Create %(rows)s '
+        '(setf (%(sizer_name)s obj) (wxGridSizer_Create %(rows)s '
             '%(cols)s %(vgap)s %(hgap)s))\n',
         ]
 
@@ -83,9 +83,9 @@ class LispFlexGridSizerBuilder(LispGridSizerBuilder):
     klass = 'wxFlexGridSizer'
 
     tmpl_AddGrowableRow = '(wxFlexGridSizer_AddGrowableRow ' \
-                          '(slot-%(sizer_name)s obj) %(row)s)\n'
+                          '(%(sizer_name)s obj) %(row)s)\n'
     tmpl_AddGrowableCol = '(wxFlexGridSizer_AddGrowableCol ' \
-                          '(slot-%(sizer_name)s obj) %(col)s)\n'
+                          '(%(sizer_name)s obj) %(col)s)\n'
 
 # end of class LispFlexGridSizerBuilder
 

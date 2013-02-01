@@ -45,7 +45,11 @@ class BaseSizerBuilder(object):
     
     @cvar tmpl_Fit: Template to call Fit()
     @type tmpl_Fit: String
-    
+
+    @cvar tmpl_StaticBox: Template for staticbox name used in combination with
+                          wxStaticBoxSizer.
+    @type tmpl_StaticBox: String
+
     @cvar tmpl_SetSizeHints: Template to set the size hints
     @type tmpl_SetSizeHints: String
     
@@ -64,6 +68,7 @@ class BaseSizerBuilder(object):
     tmpl_SetSizer = ''
     tmpl_Fit = ''
     tmpl_SetSizeHints = ''
+    tmpl_StaticBox = ''
     tmpl_AddGrowableRow = ''
     tmpl_AddGrowableCol = ''
     
@@ -98,6 +103,13 @@ class BaseSizerBuilder(object):
         self.props_get_code['klass'] = self.codegen.cn(self.klass)
         self.props_get_code['wxIDANY'] = self.codegen.cn('wxID_ANY')
         self.props_get_code['parent_widget'] = self._get_wparent(obj)
+
+        self.props_get_code['sizer_name'] = \
+            self.codegen._format_classattr(obj)
+
+        if self.klass == 'wxStaticBoxSizer' and self.tmpl_StaticBox:
+            self.props_get_code['staticbox_name'] = \
+                self.tmpl_StaticBox % obj.name
 
         # generate init lines from init_stmt filled with props_get_code
         for line in self.init_stmt:
@@ -179,16 +191,12 @@ class BaseSizerBuilder(object):
         props = obj.properties
         if props.has_key('growable_rows'):
             for row in props['growable_rows'].split(','):
-                layout.append(self.tmpl_AddGrowableRow % {
-                    'sizer_name': obj.name,
-                    'row': row.strip(),
-                    })
+                self.props_get_code['row'] = row.strip()
+                layout.append(self.tmpl_AddGrowableRow % self.props_get_code)
         if props.has_key('growable_cols'):
             for col in props['growable_cols'].split(','):
-                layout.append(self.tmpl_AddGrowableCol % {
-                    'sizer_name': obj.name,
-                    'col': col.strip(),
-                    })
+                self.props_get_code['col'] = col.strip()
+                layout.append(self.tmpl_AddGrowableCol % self.props_get_code)
 
         # reappend layout lines
         result.append(layout)
@@ -715,6 +723,7 @@ class SizerBase(Sizer):
     def __init__(self, name, klass, window, toplevel=True, show=True,
                  menu=None):
         Sizer.__init__(self, window)
+        self.attribute = 0
         self.id = wx.NewId()
         self.name = name
         self.klass = klass
@@ -786,7 +795,8 @@ class SizerBase(Sizer):
 
         self.access_functions = {
             'name' : (lambda : self.name, self.set_name),
-            'class' : (lambda : self.klass, self.change) #lambda v: None)
+            'class': (lambda: self.klass, self.change),
+            'attribute': (self.get_attribute, self.set_attribute),
             }
         if not self.toplevel:
             self.access_functions['option'] = (self.get_option, self.set_option)
@@ -798,6 +808,16 @@ class SizerBase(Sizer):
         #self.klass_prop = TextProperty(self, 'class', None, readonly=True)
         dialog = SizerClassDialog(self, None)
         self.klass_prop = DialogProperty(self, 'class', None, dialog, label=_('class'))
+
+        self.attr_prop = CheckBoxProperty(
+            self,
+            'attribute',
+            None,
+            _('Store as attribute'),
+            write_always=False,
+            )
+        self.properties['attribute'] = self.attr_prop
+
         if not self.toplevel:
             prop = self.sizer_properties = {}
 
@@ -828,6 +848,12 @@ class SizerBase(Sizer):
         wx.CallAfter(self.sizer.change_item_pos, 
                          self, min(value + 1, len(self.sizer.children) - 1))
 
+    def get_attribute(self):
+        return self.attribute
+
+    def set_attribute(self, value):
+        self.attribute = int(value)
+
     def update_pos(self, value):
         #print 'update pos', self.name, value
         self.sizer_properties['pos'].set_value(value-1)
@@ -848,8 +874,10 @@ class SizerBase(Sizer):
         self.name_prop.display(panel)
         self.klass_prop.display(panel)
         self.klass_prop.text.SetEditable(False)
+        self.attr_prop.display(panel)
         sizer_tmp.Add(self.name_prop.panel, 0, wx.EXPAND)
         sizer_tmp.Add(self.klass_prop.panel, 0, wx.EXPAND)
+        sizer_tmp.Add(self.attr_prop.panel, 0, wx.EXPAND)
         if not self.toplevel:
             prop = self.sizer_properties
             prop['pos'].display(panel)
@@ -1455,10 +1483,11 @@ class EditBoxSizer(SizerBase):
                  toplevel=True, show=True):
         SizerBase.__init__(self, name, 'wxBoxSizer', window, toplevel, show)
         self.access_functions['orient'] = (self.get_orient, self.set_orient)
-        self.properties = {'orient': HiddenProperty(self, 'orient',
-                                                    (orient==wx.HORIZONTAL and
-                                                     'wxHORIZONTAL' or
-                                                     'wxVERTICAL')) }
+        self.properties['orient'] = HiddenProperty(
+            self,
+            'orient',
+            (orient == wx.HORIZONTAL and 'wxHORIZONTAL' or 'wxVERTICAL'),
+            )
         class Dummy:
             widget = None
             name = ""
@@ -1545,10 +1574,11 @@ class EditStaticBoxSizer(SizerBase):
         SizerBase.__init__(self, name, 'wxStaticBoxSizer', window, toplevel,
                            show)
         self.access_functions['orient'] = (self.get_orient, self.set_orient)
-        self.properties['orient'] = HiddenProperty(self, 'orient',
-                                                   (orient==wx.HORIZONTAL and
-                                                    'wxHORIZONTAL' or
-                                                    'wxVERTICAL'))
+        self.properties['orient'] = HiddenProperty(
+            self,
+            'orient',
+            (orient==wx.HORIZONTAL and 'wxHORIZONTAL' or 'wxVERTICAL'),
+            )
         class Dummy: widget = None
         # add to self.children the SizerItem for self._btn
         self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]
@@ -1783,7 +1813,7 @@ class GridSizerBase(SizerBase):
                   'cols': SpinProperty(self, 'cols', None, label=_("cols")),
                   'hgap': SpinProperty(self, 'hgap', None, label=_("hgap")),
                   'vgap': SpinProperty(self, 'vgap', None, label=_("vgap")) }
-        self.properties = props
+        self.properties.update(props)
 
     def create_properties(self):
         SizerBase.create_properties(self)

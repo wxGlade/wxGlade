@@ -193,6 +193,8 @@ class LispCodeWriter(BaseCodeWriter):
         }
 
     class_separator = '.'
+    classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer',
+                        'wxFlexGridSizer']
     comment_sign = ';;;'
 
     global_property_writers = {
@@ -408,17 +410,15 @@ class LispCodeWriter(BaseCodeWriter):
         if obj in self.blacklisted_widgets:
             return
 
-        sizer.name = self._format_name(sizer.name)        
-        
         # an ugly hack to allow the addition of spacers: if obj_name can be
         # parsed as a couple of integers, it is the size of the spacer to add
         obj_name = obj.name
         try:
             w, h = [int(s) for s in obj_name.split(',')]
-        except ValueError:
-            pass
-        else:
             obj_name = '(%d, %d)' % (w, h)  # it was the dimension of a spacer
+        except ValueError:
+            obj_name = "slot-%s" % obj.name
+
         if toplevel.klass in self.classes:
             klass = self.classes[toplevel.klass]
         else:
@@ -428,13 +428,23 @@ class LispCodeWriter(BaseCodeWriter):
         flag = flag.strip().replace('|', ' ')
         if flag.find(' ') != -1:
             flag = '(logior %s)' % flag
+            
+        # check if sizer has to store as a class attribute
+        sizer_name = self._format_classattr(sizer)
 
-        if obj.klass in ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer']:
-            buffer = '(wxSizer_AddSizer (slot-%s  obj) (slot-%s obj) %s %s %s nil)\n' % \
-                     (sizer.name, obj_name, option, flag, self.cn_f(border))
+        if obj.in_sizers:
+            self.tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
         else:
-            buffer = '(wxSizer_AddWindow (slot-%s obj) (slot-%s obj) %s %s %s nil)\n' % \
-                     (sizer.name, obj_name, option, flag, self.cn_f(border))
+            self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
+
+        buffer = self.tmpl_sizeritem % (
+            sizer_name,
+            obj_name,
+            option,
+            flag,
+            self.cn_f(border),
+            )
+
         klass.layout.append(buffer)
 
     def generate_code_background(self, obj):
@@ -623,6 +633,19 @@ class LispCodeWriter(BaseCodeWriter):
 
     def _add_object_format_name(self, name):
         return '#obj.%s' % name
+
+    def _format_classattr(self, obj):
+        if not obj:
+            return ''
+        if not hasattr(obj, 'name'):
+            return ''
+        if obj.name.startswith('slot-'):
+            return obj.name
+        if not re.match('[a-zA-Z]', obj.name):
+            return obj.name
+        if self.test_attribute(obj):
+            return "slot-%s" % self._format_name(obj.name)
+        return self._format_name(obj.name)
 
     def _format_import(self, klass):
         stmt = '(require "%s")\n' % klass

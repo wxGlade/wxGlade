@@ -21,6 +21,10 @@ class MockCodeObject(object):
     """
     preview = False
     properties = {}
+    in_sizers = False
+    in_windows = False
+    name = ''
+    klass = ''
 
 
 class MockSourceFileContent(object):
@@ -966,3 +970,81 @@ class TestCodeGen(WXGladeBaseTest):
         gen_h   = self.vFiles['remove_class_inplace_input.h'].getvalue()
         self._compare(expected_cpp, gen_cpp, 'C++ source')
         self._compare(expected_h, gen_h, 'C++ header')
+
+    def test_format_classattr(self):
+        """\
+        Test formatting names as class attributes
+        
+        @see: L{codegen.BaseCodeWriter._format_classattr()}
+        """
+        details = {}
+        details['python'] = [
+                ('', ''),
+                ('self.mywidget', 'self.mywidget'),
+                ('1myclass', '1myclass'),
+                ('_myclass', '_myclass'),
+                ('myclass', 'self.myclass'),
+                ('(10, 10)', '(10, 10)')
+                ]
+        details['perl'] = [
+                ('', ''),
+                ('$self->{mywidget}', '$self->{mywidget}'),
+                ('1myclass', '1myclass'),
+                ('_myclass', '_myclass'),
+                ('$mybox', '$mybox'),
+                ('myclass', '$self->{myclass}'),
+                ('(10, 10)', '(10, 10)')
+                ]
+        details['lisp'] = [
+                ('', ''),
+                ('slot-mywidget', 'slot-mywidget'),
+                ('1myclass', '1myclass'),
+                ('_myclass', '_myclass'),
+                ('myclass', 'slot-myclass'),
+                ('my_class', 'slot-my-class'),
+                ('(10, 10)', '(10, 10)')
+                ]
+        details['C++'] = [
+                ('', ''),
+                ('mywidget', 'mywidget'),
+                ('1myclass', '1myclass'),
+                ('_myclass', '_myclass'),
+                ('myclass', 'myclass'),
+                ('my_class', 'my_class'),
+                ('(10, 10)', '(10, 10)')
+                ]
+        for lang in ['python', 'perl', 'lisp', 'C++']:
+            codegen = common.code_writers.get(lang)
+            ret = codegen._format_classattr(None)
+            self.failUnlessEqual(
+                '',
+                ret,
+                '%s: Unexpected result got: "%s" expect: "%s"' % (
+                    lang,
+                    ret,
+                    ''
+                    )
+                )
+            for name, expected in details[lang]:
+                obj = MockCodeObject()
+                obj.name = name
+                ret = codegen._format_classattr(obj)
+                self.failUnlessEqual(
+                    expected,
+                    ret,
+                    '%s: Unexpected result got: "%s" expect: "%s"' % (
+                        lang,
+                        ret,
+                        expected,
+                        )
+                    )
+
+    def test_sizer_references(self):
+        """\
+        Test storing references to sizers in class attributes
+        """
+        # don't store sizer references
+        self._test_all('Sizers_no_classattr')
+        
+        # store sizer references
+        self._test_all('Sizers_classattr')

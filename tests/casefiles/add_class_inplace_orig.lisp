@@ -69,7 +69,7 @@
         (wxSizer_AddWindow (slot-grid-sizer-1 obj) (slot-static-line-1 obj) 0 (logior wxALL wxEXPAND) 5 nil)
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-button-2 obj) 0 wxALL 5 nil)
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-button-1 obj) 0 wxALL 5 nil)
-        (wxSizer_AddSizer (slot-grid-sizer-1  obj) (slot-sizer-1 obj) 1 wxEXPAND 0 nil)
+        (wxSizer_AddSizer (slot-grid-sizer-1 obj) (slot-sizer-1 obj) 1 wxEXPAND 0 nil)
         (wxWindow_SetSizer (slot-frame obj) (slot-grid-sizer-1 obj))
         (wxSizer_Fit (slot-grid-sizer-1 obj) (slot-frame obj))
         (wxFlexGridSizer_AddGrowableRow (slot-grid-sizer-1 obj) 0)
