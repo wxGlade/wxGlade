@@ -1342,6 +1342,8 @@ bool MyApp::OnInit()
                 klass.sub_objs.insert(0, ('wxStaticBox',
                                           '%s_staticbox' % sub_obj.name))
                 klass.parents_init.insert(1, init.pop(0))
+            if self.test_attribute(sub_obj):
+                klass.sub_objs.append((sub_obj.klass, sub_obj.name))
             klass.sizers_init.extend(init)
 
         klass.props.extend(props)

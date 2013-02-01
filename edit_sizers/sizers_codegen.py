@@ -21,6 +21,7 @@ class BasePythonSizerBuilder(BaseSizerBuilder):
     tmpl_SetSizer = '%(parent_widget)s.SetSizer(%(sizer_name)s)\n'
     tmpl_Fit = '%(sizer_name)s.Fit(%(parent_widget)s)\n'
     tmpl_SetSizeHints = '%(sizer_name)s.SetSizeHints(%(parent_widget)s)\n'
+    tmpl_StaticBox = 'self.%s_staticbox'
 
     def _get_wparent(self, obj):
         if not obj.parent.is_toplevel:
@@ -42,6 +43,7 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
     tmpl_SetSizer = '%(parent_ref)sSetSizer(%(sizer_name)s);\n'
     tmpl_Fit = '%(sizer_name)s->Fit(%(parent_widget)s);\n'
     tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
+    tmpl_StaticBox = '%s_staticbox'
 
     def _get_wparent(self, obj):
         if not obj.parent.is_toplevel:
@@ -81,11 +83,10 @@ class PythonBoxSizerBuilder(BasePythonSizerBuilder):
 class PythonStaticBoxSizerBuilder(BasePythonSizerBuilder):
     klass = 'wxStaticBoxSizer'
     init_stmt = [
-        'self.%(sizer_name)s_staticbox = %(wxStaticBox)s(%(parent_widget)s, '
+        '%(staticbox_name)s = %(wxStaticBox)s(%(parent_widget)s, '
             '%(wxIDANY)s, %(label)s)\n',
-        '%(sizer_name)s = %(klass)s(self.%(sizer_name)s_staticbox, '
-            '%(orient)s)\n',
-        'self.%(sizer_name)s_staticbox.Lower()\n',
+        '%(sizer_name)s = %(klass)s(%(staticbox_name)s, %(orient)s)\n',
+        '%(staticbox_name)s.Lower()\n',
         ]
 
 # end of class PythonStaticBoxSizerBuilder
@@ -122,11 +123,11 @@ class CppBoxSizerBuilder(BaseCPPSizerBuilder):
 class CppStaticBoxSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxStaticBoxSizer'
     init_stmt = [
-        '%(sizer_name)s_staticbox = new wxStaticBox(%(parent_widget)s, '
+        '%(staticbox_name)s = new wxStaticBox(%(parent_widget)s, '
             'wxID_ANY, %(label)s);\n',
-        '%(klass)s* %(sizer_name)s = new %(klass)s(%(sizer_name)s_staticbox, '
+        '%(klass)s* %(sizer_name)s = new %(klass)s(%(staticbox_name)s, '
             '%(orient)s);\n',
-        '%(sizer_name)s_staticbox->Lower();\n'
+        '%(staticbox_name)s->Lower();\n'
         ]
 
 # end of class CppStaticBoxSizerBuilder

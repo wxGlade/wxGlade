@@ -1,4 +1,4 @@
-Version 0.6.6 - 2012-XX-XX:
+Version 0.6.6 - 2013-XX-XX:
 General: 
   - Change default widget ID from -1 to wxID_ANY and adapt codegen
   - Rework and unify code generators, all code generators support
@@ -19,6 +19,7 @@ General:
   - Improve message logging
   - Add new widget HyperlinkCtrl
   - Add more test cases
+  - Add "Store as attribute" for sizers
   - When pasting: only search current top-level window for duplicate names
   - ...
 

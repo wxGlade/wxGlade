@@ -266,6 +266,8 @@ class PythonCodeWriter(BaseCodeWriter):
                             '%(tab)sself.__do_layout()\n'
 
     tmpl_func_empty = '%(tab)spass\n'
+    
+    tmpl_sizeritem = '%s.Add(%s, %s, %s, %s)\n'
 
     tmpl_style = '%(tab)skwds["style"] = %(style)s\n'
 
@@ -416,20 +418,33 @@ if __name__ == "__main__":
         obj_name = obj.name
         try:
             w, h = [int(s) for s in obj_name.split(',')]
+            obj_name = '(%d, %d)' % (w, h)  # it was the dimension of a spacer
         except ValueError:
             if obj.in_windows:
-                # attribute is a special property, which tells us if the object
-                # is a local variable or an attribute of its parent
-                if self.test_attribute(obj):
-                    obj_name = 'self.%s' % obj_name
-        else:
-            obj_name = '(%d, %d)' % (w, h)  # it was the dimension of a spacer
+                # attribute is a special property, which tells us if the
+                # object is a local variable or an attribute of its parent
+                obj_name = self._format_classattr(obj)
+
         if toplevel.klass in self.classes:
             klass = self.classes[toplevel.klass]
         else:
             klass = self.classes[toplevel.klass] = self.ClassLines()
-        buffer = '%s.Add(%s, %s, %s, %s)\n' % \
-                 (sizer.name, obj_name, option, self.cn_f(flag), self.cn_f(border))
+
+        # check if sizer has to store as a class attribute
+        sizer_name = self._format_classattr(sizer)
+
+        # check if object to add also a sizer
+        if obj.in_sizers:
+            obj_name = self._format_classattr(obj)
+
+        buffer = self.tmpl_sizeritem % (
+            sizer_name,
+            obj_name,
+            option,
+            self.cn_f(flag),
+            self.cn_f(border),
+            )
+
         klass.layout.append(buffer)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
@@ -682,6 +697,19 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
     def _add_object_format_name(self, name):
         return '#self.%s' % name
 
+    def _format_classattr(self, obj):
+        if not obj:
+            return ''
+        if not hasattr(obj, 'name'):
+            return ''
+        if obj.name.startswith('self.'):
+            return obj.name
+        if not re.match('[a-zA-Z]', obj.name):
+            return obj.name
+        if self.test_attribute(obj):
+            return "self.%s" % obj.name
+        return obj.name
+
     def _format_import(self, klass):
         stmt = 'from %s import %s\n' % (klass, self.without_package(klass))
         return stmt
@@ -697,10 +725,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         if obj.is_toplevel:
             return 'self'
         else:
-            if self.test_attribute(obj):
-                return 'self.%s' % obj.name
-            else:
-                return obj.name
+            return self._format_classattr(obj)
 
 # end of class PythonCodeWriter
 

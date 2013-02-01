@@ -217,6 +217,8 @@ class PerlCodeWriter(BaseCodeWriter):
         }
 
     class_separator = '::'
+    classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer',
+                        'wxFlexGridSizer']
     comment_sign = '#'
 
     global_property_writers = {
@@ -285,7 +287,9 @@ sub %(handler)s {
                           '}\n'
 
     tmpl_func_empty = '%(tab)sreturn;\n'
-    
+
+    tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
+
     tmpl_style = \
         '%(tab)s$style = %(style)s \n' \
         '%(tab)s%(tab)sunless defined $style;\n' \
@@ -504,20 +508,29 @@ unless(caller){
             w, h = [int(s) for s in obj_name.split(',')]
         except ValueError:
             if obj.in_windows:
-                # attribute is a special property, which tells us if the object
-                # is a local variable or an attribute of its parent
-                if self.test_attribute(obj):
-                    obj_name = '$self->{%s}' % obj_name
-
-            if obj_name[0:1] != '$':
-                obj_name = '$self->{%s}' % obj_name
+                # attribute is a special property, which tells us if the
+                # object is a local variable or an attribute of its parent
+                obj_name = self._format_classattr(obj)
 
         if toplevel.klass in self.classes:
             klass = self.classes[toplevel.klass]
         else:
             klass = self.classes[toplevel.klass] = self.ClassLines()
-        buffer = '$self->{%s}->Add(%s, %s, %s, %s);\n' % \
-                 (sizer.name, obj_name, option, self.cn_f(flag), self.cn_f(border))
+
+        # check if sizer has to store as a class attribute
+        sizer_name = self._format_classattr(sizer)
+
+        # check if object to add also a sizer
+        obj_name = self._format_classattr(obj)
+
+        buffer = self.tmpl_sizeritem % (
+            sizer_name,
+            obj_name,
+            option,
+            self.cn_f(flag),
+            self.cn_f(border),
+            )
+
         klass.layout.append(buffer)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
@@ -723,6 +736,20 @@ unless(caller){
     def _add_object_format_name(self, name):
         return '#$self->%s' % name
 
+    def _format_classattr(self, obj):
+        if not obj:
+            return ''
+        if not hasattr(obj, 'name'):
+            return ''
+        if obj.name.startswith('$self->'):
+            return obj.name
+        if not re.match('[a-zA-Z]', obj.name):
+            return obj.name
+        # Perl stores sizers always in class attributes
+        if self.test_attribute(obj) or obj.in_sizers:
+            return "$self->{%s}" % obj.name
+        return "$%s" % obj.name
+
     def _format_import(self, klass):
         stmt = 'use %s;\n' % klass
         return stmt
@@ -747,13 +774,7 @@ unless(caller){
         if obj.is_toplevel:
             return '$self'
         else:
-            if self.test_attribute(obj):
-                return '$self->{%s}' % obj.name
-            else:  # it's an already declared lexical (my $foo)
-                if obj.name[0] == '$':
-                    return obj.name
-                else:
-                    return '$' + obj.name
+            return self._format_classattr(obj)
 
 # end of class PerlCodeWriter
 

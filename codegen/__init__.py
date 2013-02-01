@@ -443,7 +443,15 @@ class BaseCodeWriter(object):
     @see: L{_generic_code()}
     @see: L{generate_code_extraproperties()}
     """
+
+    classattr_always = []
+    """\
+    List of classes to store always as class attributes
     
+    @type: List of strings
+    @see: L{test_attribute()}
+    """
+
     class_separator = ''
     """\
     Separator between class and attribute or between different name space
@@ -652,6 +660,14 @@ class BaseCodeWriter(object):
 
     @type: String
     @see: L{add_app()}
+    """
+
+    tmpl_sizeritem = ''
+    """\
+    Template for adding a widget to a sizer.
+    
+    @type: String
+    @see: L{add_sizeritem()}
     """
 
     tmpl_style = ''
@@ -1563,6 +1579,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         'toplevel' object.
         
         All widgets in L{blacklisted_widgets} are ignored.
+        
+        @see: L{tmpl_sizeritem}
         """
         raise NotImplementedError
 
@@ -2156,13 +2174,28 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Returns True if 'obj' should be added as an attribute of its parent's
         class, False if it should be created as a local variable of
         C{__do_layout}.
-        To do so, tests for the presence of the special property 'attribute'
+        
+        The function returns True of the object klass is listed in
+        L{classattr_always}.
+
+        The function returns True for all widgets except sizers, if
+         - the property exists and is an integer greater equal 1
+         - the property does not exists
+         - the property contains a non-integer value
+
+        The function returns True for sizers, if
+         - the property exists and is an integer greater equal 1
 
         @rtype: Boolean
+        @see: L{classattr_always}
         """
+        if obj.klass in self.classattr_always:
+            return True
         try:
             return int(obj.properties['attribute'])
         except (KeyError, ValueError):
+            if obj.in_sizers:
+                return False
             return True  # this is the default
 
     def tabs(self, number):
@@ -2257,7 +2290,21 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @see: L{add_object()}
         """
         return name
- 
+
+    def _format_classattr(self, obj):
+        """\
+        Format the object name to store as a class attribute.
+        
+        @param obj: Instance of L{xml_parse.CodeObject}
+        
+        @rtype: String
+        """
+        if not obj:
+            return ''
+        if not hasattr(obj, 'name'):
+            return ''
+        return obj.name
+
     def _format_comment(self, msg):
         """\
         Return message formatted to add as a comment string in generating

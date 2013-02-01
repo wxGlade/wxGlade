@@ -101,7 +101,7 @@
         (wxSizer_AddWindow (slot-grid-sizer-3 obj) (slot-button-6 obj) 0 (logior wxALL wxALIGN_RIGHT) 5 nil)
         (wxFlexGridSizer_AddGrowableRow (slot-grid-sizer-3 obj) 0)
         (wxFlexGridSizer_AddGrowableCol (slot-grid-sizer-3 obj) 0)
-        (wxSizer_AddSizer (slot-sizer-5  obj) (slot-grid-sizer-3 obj) 1 wxEXPAND 0 nil)
+        (wxSizer_AddSizer (slot-sizer-5 obj) (slot-grid-sizer-3 obj) 1 wxEXPAND 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-5 obj))
         (wxFrame_layout (slot-FrameOggCompressionDetails slef))
         ;;; end wxGlade
