@@ -14,14 +14,14 @@ class LispCodeGenerator:
     ]
 
     def get_code(self, panel):
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = panel.properties
         try:
             scrollable = int(prop['scrollable'])
         except:
             scrollable = False
 
-        id_name, id = plgen.generate_code_id(panel)
+        id_name, id = codegen.generate_code_id(panel)
         if not panel.parent.is_toplevel:
             parent = '(slot-%s obj)' % panel.parent.name
         else:
@@ -37,20 +37,18 @@ class LispCodeGenerator:
 
         init = []
         if id_name: init.append(id_name)
+
         style = prop.get("style", 'wxTAB_TRAVERSAL')
         if not( scrollable or style != 'wxTAB_TRAVERSAL' ):
             style = 'wxTAB_TRAVERSAL'
         else:
-            style = style.strip().replace('|',' ')
-            if style.find(' ') != -1:
-                style = '(logior %s)' % style
-
+            style = codegen.cn_f(style)
 
         init.append('(setf (slot-%s obj) '
                     '(wxPanel_Create %s %s -1 -1 -1 -1 %s))\n'
                     % (panel.name, parent, id, style))
 
-        props_buf = plgen.generate_common_properties(panel)
+        props_buf = codegen.generate_common_properties(panel)
         if scrollable:
             sr = prop.get('scroll_rate', '0 0')
             sr = sr.replace(',',' ')
@@ -59,14 +57,14 @@ class LispCodeGenerator:
         return init, props_buf, []
 
     def get_properties_code(self, obj):
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = obj.properties
         try:
             scrollable = int(prop['scrollable'])
         except:
             scrollable = False
 
-        props_buf = plgen.generate_common_properties(obj)
+        props_buf = codegen.generate_common_properties(obj)
         if scrollable:
             sr = prop.get('scroll_rate', '0 0')
             props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate '
@@ -82,7 +80,7 @@ def initialize():
     common.toplevels['EditPanel'] = 1
     common.toplevels['EditTopLevelPanel'] = 1
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxPanel', LispCodeGenerator())
-        plgen.add_widget_handler('wxScrolledWindow', LispCodeGenerator())
+    codegen = common.code_writers.get('lisp')
+    if codegen:
+        codegen.add_widget_handler('wxPanel', LispCodeGenerator())
+        codegen.add_widget_handler('wxScrolledWindow', LispCodeGenerator())

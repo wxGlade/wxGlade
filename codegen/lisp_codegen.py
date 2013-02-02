@@ -19,6 +19,7 @@ methods of the parent object.
 import os
 import os.path
 import re
+import types
 
 from codegen import BaseCodeWriter, \
                     BaseSourceFileContent, \
@@ -317,7 +318,19 @@ class LispCodeWriter(BaseCodeWriter):
 
         @see: L{cn()}
         """
-        return "|".join([self.cn(f) for f in str(flags).split('|')])
+        # don't process integer values
+        if type(flags) == types.IntType:
+            return flags
+
+        # format single flags first
+        flags = [self.cn(f) for f in flags.split('|')]
+
+        if len(flags) == 1:
+            flags = flags[0]
+        else:
+            flags = '(logior %s)' % ' '.join(flags)
+            
+        return flags
 
     def initialize(self, app_attrs):
         """\
@@ -424,11 +437,6 @@ class LispCodeWriter(BaseCodeWriter):
         else:
             klass = self.classes[toplevel.klass] = self.ClassLines()
 
-        flag = '%s' % self.cn_f(flag)
-        flag = flag.strip().replace('|', ' ')
-        if flag.find(' ') != -1:
-            flag = '(logior %s)' % flag
-            
         # check if sizer has to store as a class attribute
         sizer_name = self._format_classattr(sizer)
 
@@ -441,8 +449,8 @@ class LispCodeWriter(BaseCodeWriter):
             sizer_name,
             obj_name,
             option,
-            flag,
-            self.cn_f(border),
+            self.cn_f(flag),
+            border,
             )
 
         klass.layout.append(buffer)
@@ -659,11 +667,7 @@ class LispCodeWriter(BaseCodeWriter):
             return ''
             
         style = mycn_f(style)
-
         style = style.strip().replace('.', '')
-        style = style.replace('|', ' ')
-        if style.find(' ') != -1:
-            style = '(logior %s)' % style
 
         if code_obj.base == "wxFrame":
             stmt = '%%(tab)s(setf (slot-top-window obj) (wxFrame_create nil ' \

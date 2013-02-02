@@ -22,12 +22,12 @@ _bmp_str_types = {
 class LispCodeGenerator:
     def get_code(self, obj):
         init = []
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = obj.properties
 
-        attribute = plgen.test_attribute(obj)
+        attribute = codegen.test_attribute(obj)
 
-        id_name, id = plgen.generate_code_id(obj) 
+        id_name, id = codegen.generate_code_id(obj) 
 
         if not obj.parent.is_toplevel:
             parent = '(slot-%s obj)' % obj.parent.name
@@ -47,7 +47,7 @@ class LispCodeGenerator:
             bmp = '(%s)' % bmp_file[5:].strip()
         else:
             bmp = '(wxBitmap_CreateLoad %s wxBITMAP_TYPE_ANY)' % \
-                  plgen.quote_path(bmp_file)
+                  codegen.quote_path(bmp_file)
 
         if id_name: init.append(id_name)
         if attribute:
@@ -59,14 +59,11 @@ class LispCodeGenerator:
         if not style:
             style = '0'
         else:
-            style = style.strip().replace('|',' ')
-            if style.find(' ') != -1:
-                style = '(logior %s)' % style
-
+            style = codegen.cn_f(style)
 
         init.append('(setf %s (wxStaticBitmap_Create %s %s  %s -1 -1 -1 -1 %s))\n' % 
                     (prefix, parent, id, bmp, style))
-        props_buf = plgen.generate_common_properties(obj)
+        props_buf = codegen.generate_common_properties(obj)
 
         if not attribute:
             # the object doesn't have to be stored as an attribute of the
@@ -80,6 +77,6 @@ class LispCodeGenerator:
 def initialize():
     common.class_names['EditStaticBitmap'] = 'wxStaticBitmap'
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxStaticBitmap', LispCodeGenerator())
+    codegen = common.code_writers.get('lisp')
+    if codegen:
+        codegen.add_widget_handler('wxStaticBitmap', LispCodeGenerator())

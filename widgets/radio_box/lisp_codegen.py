@@ -12,10 +12,10 @@ from ChoicesCodeHandler import *
 class LispCodeGenerator:
     def get_code(self, obj):
         init = []
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj) 
-        label = plgen.quote_str(prop.get('label', ''))
+        id_name, id = codegen.generate_code_id(obj) 
+        label = codegen.quote_str(prop.get('label', ''))
         choices = prop.get('choices', [])
         major_dim = prop.get('dimension', '0')
 
@@ -28,18 +28,16 @@ class LispCodeGenerator:
         if not style:
             style = '0'
         else:
-            style = style.strip().replace('|',' ')
-            if style.find(' ') != -1:
-                style = '(logior %s)' % style
+            style = codegen.cn_f(style)
 
         if id_name: init.append(id_name)
         
         length = len(choices)
-        choices = ' '.join([plgen.quote_str(c) for c in choices])
+        choices = ' '.join([codegen.quote_str(c) for c in choices])
         init.append('(setf (slot-%s obj) (wxRadioBox_Create %s %s %s -1 -1 -1 -1 %s (vector %s) %s %s))\n'
                     % (obj.name, parent, id, label, length, choices, major_dim, style))
 
-        props_buf = plgen.generate_common_properties(obj)
+        props_buf = codegen.generate_common_properties(obj)
         selection = prop.get('selection')
         if selection is not None:
             props_buf.append('(wxRadioBox_SetSelection (slot-%s obj) %s)\n' %
@@ -52,7 +50,7 @@ class LispCodeGenerator:
 def initialize():
     common.class_names['EditRadioBox'] = 'wxRadioBox'
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxRadioBox', LispCodeGenerator())
-        plgen.add_property_handler('choices', ChoicesCodeHandler)
+    codegen = common.code_writers.get('lisp')
+    if codegen:
+        codegen.add_widget_handler('wxRadioBox', LispCodeGenerator())
+        codegen.add_property_handler('choices', ChoicesCodeHandler)

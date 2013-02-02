@@ -15,16 +15,16 @@ class LispCodeGenerator:
     ]
 
     def get_code(self, window):
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = window.properties
-        id_name, id = plgen.generate_code_id(window)
+        id_name, id = codegen.generate_code_id(window)
 
         layout_props = [] 
         tabs = prop.get('tabs', [])
         for label, tab_win in tabs:
             tab_win = tab_win.replace('_','-')
             layout_props.append('(wxNotebook_AddPage (slot-%s obj) (slot-%s obj) %s 1 -1)\n' % \
-                                (window.name, tab_win, plgen.quote_str(label)))
+                                (window.name, tab_win, codegen.quote_str(label)))
 
         if not window.parent.is_toplevel:
             parent = '(slot-%s obj)' % window.parent.name
@@ -36,32 +36,31 @@ class LispCodeGenerator:
             if id_name: l.append(id_name)
             l.append('(setf (slot-%s obj) (wxNotebook_Create %s %s -1 -1 -1 -1 wxNB_TOP))\n' %
                 (window.name, parent,id))
-            return l, [], [] 
+            return l, [], []
+
         style = prop.get("style")
-        if style:
-            style = style.strip().replace('|',' ')
-            if style.find(' ') != -1:
-                style = '(logior %s)' % style
-        else:
+        if not style:
             style = 'wxNB_TOP'
-            
+        else:
+            style = codegen.cn_f(style)
+
         init = []
         if id_name: init.append(id_name)
         init.append('(setf (slot-%s obj) (wxNotebook_Create %s %s -1 -1 -1 -1 %s))\n'
                     % (window.name, parent, id, style))
 
-        props_buf = plgen.generate_common_properties(window)
+        props_buf = codegen.generate_common_properties(window)
         return init, props_buf, layout_props 
 
     def get_properties_code(self, obj):
         prop = obj.properties
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         props_buf = [] 
         tabs = prop.get('tabs', [])
         for label, window in tabs:
             props_buf.append('(wxNotebook_AddPage (slot-%s obj) page %s 1 -1);\n' % \
-                             (window, plgen.quote_str(label)))
-        props_buf.extend(plgen.generate_common_properties(obj))
+                             (window, codegen.quote_str(label)))
+        props_buf.extend(codegen.generate_common_properties(obj))
         return props_buf    
 
 # end of class LispCodeGenerator
@@ -73,7 +72,7 @@ def initialize():
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxNotebook', LispCodeGenerator())
-        plgen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
+    codegen = common.code_writers.get('lisp')
+    if codegen:
+        codegen.add_widget_handler('wxNotebook', LispCodeGenerator())
+        codegen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')

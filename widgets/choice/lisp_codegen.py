@@ -12,9 +12,9 @@ from ChoicesCodeHandler import *
 class LispCodeGenerator:
     def get_code(self, obj):
         init = []
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj)
+        id_name, id = codegen.generate_code_id(obj)
         choices = prop.get('choices', [])
 
         if not obj.parent.is_toplevel:
@@ -26,16 +26,14 @@ class LispCodeGenerator:
         if not style:
             style = '0'
         else:
-            style = style.strip().replace('|',' ')
-            if style.find(' ') != -1:
-                style = '(logior %s)' % style
+            style = codegen.cn_f(style)
 
         if id_name: init.append(id_name)
         length = len(choices)
-        choices = ' '.join([plgen.quote_str(c) for c in choices])
+        choices = ' '.join([codegen.quote_str(c) for c in choices])
         init.append('(setf (slot-%s obj) (wxChoice_Create %s %s -1 -1 -1 -1 %s (vector %s)  %s))\n' %
                     (obj.name, parent, id, length, choices, style))
-        props_buf = plgen.generate_common_properties(obj)
+        props_buf = codegen.generate_common_properties(obj)
 
         selection = prop.get('selection')
         if selection is not None:
@@ -50,7 +48,7 @@ class LispCodeGenerator:
 def initialize():
     common.class_names['EditChoice'] = 'wxChoice'
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxChoice', LispCodeGenerator())
-        plgen.add_property_handler('choices', ChoicesCodeHandler)
+    codegen = common.code_writers.get('lisp')
+    if codegen:
+        codegen.add_widget_handler('wxChoice', LispCodeGenerator())
+        codegen.add_property_handler('choices', ChoicesCodeHandler)

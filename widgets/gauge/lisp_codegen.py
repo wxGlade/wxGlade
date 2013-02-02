@@ -11,9 +11,9 @@ class LispCodeGenerator:
     def get_code(self, obj):
         init = []
 
-        lispgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = obj.properties
-        id_name, id = lispgen.generate_code_id(obj)
+        id_name, id = codegen.generate_code_id(obj)
         g_range = prop.get('range', '10')
 
         if not obj.parent.is_toplevel:
@@ -25,15 +25,13 @@ class LispCodeGenerator:
         if not style:
             style = '0'
         else:
-            style = style.strip().replace('|',' ')
-            if style.find(' ') != -1:
-                style = '(logior %s)' % style
+            style = codegen.cn_f(style)
 
         if id_name: init.append(id_name)
 
         init.append('(setf (slot-%s obj) (wxGauge_Create %s %s %s -1 -1 -1 -1 %s))\n' %
                     (obj.name, parent, id, g_range, style))
-        props_buf = lispgen.generate_common_properties(obj)
+        props_buf = codegen.generate_common_properties(obj)
 
         return init, props_buf, []
 
@@ -42,7 +40,7 @@ class LispCodeGenerator:
 def initialize():
     common.class_names['EditGauge'] = 'wxGauge'
 
-    lispgen = common.code_writers.get('lisp')
-    if lispgen:
-        lispgen.add_widget_handler('wxGauge', LispCodeGenerator())
+    codegen = common.code_writers.get('lisp')
+    if codegen:
+        codegen.add_widget_handler('wxGauge', LispCodeGenerator())
 

@@ -14,9 +14,9 @@ class LispCodeGenerator:
     ]
 
     def get_code(self, window):
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = window.properties
-        id_name, id = plgen.generate_code_id(window)
+        id_name, id = codegen.generate_code_id(window)
 
         if not window.parent.is_toplevel:
             parent = '(slot-%s obj)' % window.parent.name
@@ -35,9 +35,7 @@ class LispCodeGenerator:
         if not( style and style != 'wxSP_3D' ): # default style
             style = ''
         else:
-            style = style.strip().replace('|',' ')
-            if style.find(' ') != -1:
-                style = '(logior %s)' % style
+            style = codegen.cn_f(style)
 
         init = []
         if id_name: init.append(id_name)
@@ -45,7 +43,7 @@ class LispCodeGenerator:
         init.append('(setf (slot-%s obj) (wxSplitterWindow_Create %s %s -1 -1 -1 -1 %s))\n'
                     % (window.name, parent, id, style))
 
-        props_buf = plgen.generate_common_properties(window)
+        props_buf = codegen.generate_common_properties(window)
 
         layout_buf = []
         win_1 = prop.get('window_1')
@@ -77,7 +75,7 @@ class LispCodeGenerator:
 
 
     def get_layout_code(self, obj):
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         props_buf = []
         prop = obj.properties
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -117,6 +115,6 @@ def initialize():
     common.toplevels['EditSplitterWindow'] = 1
     common.toplevels['SplitterPane'] = 1
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxSplitterWindow', LispCodeGenerator())
+    codegen = common.code_writers.get('lisp')
+    if codegen:
+        codegen.add_widget_handler('wxSplitterWindow', LispCodeGenerator())

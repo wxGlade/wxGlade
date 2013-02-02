@@ -10,9 +10,9 @@ import common
 
 class LispCodeGenerator:
     def get_code(self, obj):
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj)
+        id_name, id = codegen.generate_code_id(obj)
         value = prop.get('value', '0')
 
         try:
@@ -29,10 +29,8 @@ class LispCodeGenerator:
         if not( style and style != 'wxSL_HORIZONTAL'): # default style
             style = '0'
         else:    
-            style = style.strip().replace('|',' ')
-            if style.find(' ') != -1:
-                style = '(logior %s)' % style
-            
+            style = codegen.cn_f(style)
+
         init = []
 
         if id_name: init.append(id_name)
@@ -40,7 +38,7 @@ class LispCodeGenerator:
         init.append('(setf (slot-%s obj) (wxSlider_Create %s %s %s %s %s -1 -1 -1 -1 %s))\n'
                     % (obj.name, parent, id, value, min_v, max_v, style))
 
-        props_buf = plgen.generate_common_properties(obj)
+        props_buf = codegen.generate_common_properties(obj)
 
         return init, props_buf, []
 
@@ -50,7 +48,7 @@ class LispCodeGenerator:
 def initialize():
     common.class_names['EditSlider'] = 'wxSlider'
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxSlider', LispCodeGenerator())
+    codegen = common.code_writers.get('lisp')
+    if codegen:
+        codegen.add_widget_handler('wxSlider', LispCodeGenerator())
 

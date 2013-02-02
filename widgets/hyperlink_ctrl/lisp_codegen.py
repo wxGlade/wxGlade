@@ -17,14 +17,14 @@ class LispCodeGenerator:
 
     def get_code(self, obj):
         init = []
-        lispgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = obj.properties
 
-        attribute = lispgen.test_attribute(obj)
+        attribute = codegen.test_attribute(obj)
 
-        id_name, id = lispgen.generate_code_id(obj)
-        label = lispgen.quote_str(prop.get('label', ''))
-        url = lispgen.quote_str(prop.get('url', ''))
+        id_name, id = codegen.generate_code_id(obj)
+        label = codegen.quote_str(prop.get('label', ''))
+        url = codegen.quote_str(prop.get('url', ''))
         if not obj.parent.is_toplevel:
             parent = '(slot-%s obj)' % obj.parent.name
         else:
@@ -34,9 +34,7 @@ class LispCodeGenerator:
         if not style:
             style = '0'
         else:
-            style = style.strip().replace('|', ' ')
-            if style.find(' ') != -1:
-                style = '(logior %s)' % style
+            style = codegen.cn_f(style)
 
         if id_name:
             init.append(id_name)
@@ -47,7 +45,7 @@ class LispCodeGenerator:
                         )
                    )
 
-        props_buf = lispgen.generate_common_properties(obj)
+        props_buf = codegen.generate_common_properties(obj)
         if not attribute:
             # the object doesn't have to be stored as an attribute of the
             # custom class, but it is just considered part of the layout
@@ -60,7 +58,7 @@ class LispCodeGenerator:
 def initialize():
 
     common.class_names['EditHyperlinkCtrl'] = 'wxHyperlinkCtrl'
-    lispgen = common.code_writers.get('lisp')
+    codegen = common.code_writers.get('lisp')
 
-    if lispgen:
-        lispgen.add_widget_handler('wxHyperlinkCtrl', LispCodeGenerator())
+    if codegen:
+        codegen.add_widget_handler('wxHyperlinkCtrl', LispCodeGenerator())
