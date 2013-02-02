@@ -11,10 +11,10 @@ import common
 class LispCodeGenerator:
     def get_code(self, obj):
         init = []
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj)
-        label = plgen.quote_str(prop.get('label', ''))
+        id_name, id = codegen.generate_code_id(obj)
+        label = codegen.quote_str(prop.get('label', ''))
 
         if not obj.parent.is_toplevel:
             parent = '(slot-%s obj)' % obj.parent.name
@@ -25,9 +25,7 @@ class LispCodeGenerator:
         if not style:
             style = '0'
         else:
-            style = style.strip().replace('|',' ')
-            if style.find(' ') != -1:
-                style = '(logior %s)' % style
+            style = codegen.cn_f(style)
 
         if id_name:
             init.append(id_name)
@@ -40,7 +38,7 @@ class LispCodeGenerator:
 
         init.append('(setf (slot-%s obj) (wxCheckBox_Create %s %s %s -1 -1 -1 -1 %s))\n' %
                     (obj.name, parent, id, label, style))
-        props_buf = plgen.generate_common_properties(obj)
+        props_buf = codegen.generate_common_properties(obj)
 
         checked = prop.get('checked')
         if checked: props_buf.append('(wxCheckBox_SetValue (slot-%s obj) 1);\n' % obj.name)
@@ -53,7 +51,7 @@ class LispCodeGenerator:
 def initialize():
     common.class_names['EditCheckBox'] = 'wxCheckBox'
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxCheckBox', LispCodeGenerator())
+    codegen = common.code_writers.get('lisp')
+    if codegen:
+        codegen.add_widget_handler('wxCheckBox', LispCodeGenerator())
 

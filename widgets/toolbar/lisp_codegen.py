@@ -17,7 +17,7 @@ from codegen import ToolsHandler
 class LispCodeGenerator:
     def get_properties_code(self, obj):
         prop = obj.properties
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         out = []
         append = out.append
         
@@ -55,7 +55,7 @@ class LispCodeGenerator:
 
     def get_init_code(self, obj):
         prop = obj.properties
-        plgen = common.code_writers['lisp']
+        codegen = common.code_writers['lisp']
         out = []
         append = out.append
         tools = obj.properties['toolbar']
@@ -76,13 +76,13 @@ class LispCodeGenerator:
                 return '(%s)' % bitmap[5:].strip()
             else:
                 return '(wxBitmap:wxBitmap_CreateLoad %s wxBITMAP_TYPE_ANY)' % \
-                       plgen.quote_str(bitmap)
+                       codegen.quote_str(bitmap)
 
         for tool in tools:
             if tool.id == '---': # item is a separator
                 append('(wxToolBar_AddSeparator %s)\n' % obj_name)
             else:
-                name, val = plgen.generate_code_id(None, tool.id)
+                name, val = codegen.generate_code_id(None, tool.id)
                 if not name and (not val or val == '-1'):
                     id = 'Wx::NewId()'
                 else:
@@ -97,9 +97,9 @@ class LispCodeGenerator:
                 bmp2 = _get_bitmap(tool.bitmap2)
 #                append('%s->AddLabelTool(%s, %s, %s, %s, %s, %s, %s);\n' %
                 append('(wxToolBar_AddTool %s %s %s %s %s %s %s %s)\n' %
-                       (obj_name, id, plgen.quote_str(tool.label),
-                        bmp1, bmp2, kind, plgen.quote_str(tool.short_help),
-                        plgen.quote_str(tool.long_help)))
+                       (obj_name, id, codegen.quote_str(tool.label),
+                        bmp1, bmp2, kind, codegen.quote_str(tool.short_help),
+                        codegen.quote_str(tool.long_help)))
         
         return ids + out
 
@@ -108,14 +108,15 @@ class LispCodeGenerator:
         """\
         function that generates Lisp code for the toolbar of a wxFrame.
         """
-        plgen = common.code_writers['lisp']
-        style = obj.properties.get('style')
-        if style:
-            style = style.strip().replace('|',' ')
-            if style.find(' ') != -1:
-                style = '(logior wxTB_HORIZONTAL %s)' % style
-        else:
+        codegen = common.code_writers['lisp']
+        prop = obj.properties
+
+        style = prop.get("style")
+        if not style:
             style = 'wxTB_HORIZONTAL'
+        else:
+            style += "|wxTB_HORIZONTAL"
+            style = codegen.cn_f(style)
 
         if not obj.parent.is_toplevel:
             parent = '(slot-%s obj)' % obj.parent.name
@@ -137,8 +138,8 @@ def initialize():
     common.class_names['EditToolBar'] = 'wxToolBar'
     common.toplevels['EditToolBar'] = 1
 
-    plgen = common.code_writers.get('lisp')
+    codegen = common.code_writers.get('lisp')
 
-    if plgen:
-        plgen.add_widget_handler('wxToolBar', LispCodeGenerator())
-        plgen.add_property_handler('tools', ToolsHandler)
+    if codegen:
+        codegen.add_widget_handler('wxToolBar', LispCodeGenerator())
+        codegen.add_property_handler('tools', ToolsHandler)
