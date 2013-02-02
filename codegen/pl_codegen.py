@@ -528,7 +528,7 @@ unless(caller){
             obj_name,
             option,
             self.cn_f(flag),
-            self.cn_f(border),
+            border,
             )
 
         klass.layout.append(buffer)

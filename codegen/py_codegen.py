@@ -442,7 +442,7 @@ if __name__ == "__main__":
             obj_name,
             option,
             self.cn_f(flag),
-            self.cn_f(border),
+            border,
             )
 
         klass.layout.append(buffer)
