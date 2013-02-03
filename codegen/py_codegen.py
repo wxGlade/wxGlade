@@ -21,6 +21,7 @@ import os
 import os.path
 import random
 import re
+import types
 
 from codegen import BaseCodeWriter, \
                     BaseSourceFileContent, \
@@ -356,7 +357,14 @@ if __name__ == "__main__":
 
         @see: L{cn()}
         """
-        return " | ".join([self.cn(f) for f in str(flags).split('|')])
+        # don't process integer values
+        if type(flags) == types.IntType:
+            return flags
+
+        # format single flags first
+        flags = [self.cn(f) for f in flags.split('|')]
+        
+        return ' | '.join(flags)
 
     def cn_class(self, klass):
         """\
