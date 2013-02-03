@@ -257,7 +257,7 @@ class Application(object):
             self, 'use_new_namespace', lang_panels['python'],
             _('Use old "from wxPython.wx"\nimport'))
         
-        self.overwrite = False
+        self.overwrite = True
         def get_overwrite(): return self.overwrite
         def set_overwrite(val): self.overwrite = bool(int(val))
         self.access_functions['overwrite'] = (get_overwrite, set_overwrite)
