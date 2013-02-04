@@ -419,41 +419,20 @@ class LispCodeWriter(BaseCodeWriter):
         BaseCodeWriter.add_object(self, top_obj, sub_obj)
  
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
-        # don't process widgets listed in blacklisted_widgets
-        if obj in self.blacklisted_widgets:
-            return
-
-        # an ugly hack to allow the addition of spacers: if obj_name can be
-        # parsed as a couple of integers, it is the size of the spacer to add
-        obj_name = obj.name
-        try:
-            w, h = [int(s) for s in obj_name.split(',')]
-            obj_name = '(%d, %d)' % (w, h)  # it was the dimension of a spacer
-        except ValueError:
-            obj_name = "slot-%s" % obj.name
-
-        if toplevel.klass in self.classes:
-            klass = self.classes[toplevel.klass]
-        else:
-            klass = self.classes[toplevel.klass] = self.ClassLines()
-
-        # check if sizer has to store as a class attribute
-        sizer_name = self._format_classattr(sizer)
-
         if obj.in_sizers:
             self.tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
         else:
             self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
-
-        buffer = self.tmpl_sizeritem % (
-            sizer_name,
-            obj_name,
+            
+        BaseCodeWriter.add_sizeritem(
+            self,
+            toplevel,
+            sizer,
+            obj,
             option,
-            self.cn_f(flag),
+            flag,
             border,
             )
-
-        klass.layout.append(buffer)
 
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
@@ -649,11 +628,17 @@ class LispCodeWriter(BaseCodeWriter):
             return ''
         if obj.name.startswith('slot-'):
             return obj.name
+        # spacer.name is "<width>, <height>" already, but wxLisp expect
+        # a tuple instead of two single values
+        if obj.klass == 'spacer':
+            return '(%s)' % obj.name
         if not re.match('[a-zA-Z]', obj.name):
             return obj.name
-        if self.test_attribute(obj):
-            return "slot-%s" % self._format_name(obj.name)
-        return self._format_name(obj.name)
+        # wxList use class attributes always (unfortunately)
+#        if self.test_attribute(obj):
+#            return "slot-%s" % self._format_name(obj.name)
+#        return self._format_name(obj.name)
+        return "slot-%s" % self._format_name(obj.name)
 
     def _format_import(self, klass):
         stmt = '(require "%s")\n' % klass
