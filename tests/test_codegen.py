@@ -984,7 +984,8 @@ class TestCodeGen(WXGladeBaseTest):
                 ('1myclass', '1myclass'),
                 ('_myclass', '_myclass'),
                 ('myclass', 'self.myclass'),
-                ('(10, 10)', '(10, 10)')
+                ('(10, 10)', '(10, 10)'),
+                ('20, 30', '20, 30'),
                 ]
         details['perl'] = [
                 ('', ''),
@@ -993,7 +994,8 @@ class TestCodeGen(WXGladeBaseTest):
                 ('_myclass', '_myclass'),
                 ('$mybox', '$mybox'),
                 ('myclass', '$self->{myclass}'),
-                ('(10, 10)', '(10, 10)')
+                ('(10, 10)', '(10, 10)'),
+                ('20, 30', '20, 30'),
                 ]
         details['lisp'] = [
                 ('', ''),
@@ -1002,7 +1004,8 @@ class TestCodeGen(WXGladeBaseTest):
                 ('_myclass', '_myclass'),
                 ('myclass', 'slot-myclass'),
                 ('my_class', 'slot-my-class'),
-                ('(10, 10)', '(10, 10)')
+                ('(10, 10)', '(10, 10)'),
+                ('20, 30', '20, 30'),
                 ]
         details['C++'] = [
                 ('', ''),
@@ -1011,7 +1014,8 @@ class TestCodeGen(WXGladeBaseTest):
                 ('_myclass', '_myclass'),
                 ('myclass', 'myclass'),
                 ('my_class', 'my_class'),
-                ('(10, 10)', '(10, 10)')
+                ('(10, 10)', '(10, 10)'),
+                ('20, 30', '20, 30'),
                 ]
         for lang in ['python', 'perl', 'lisp', 'C++']:
             codegen = common.code_writers.get(lang)

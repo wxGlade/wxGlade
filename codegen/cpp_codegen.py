@@ -373,10 +373,12 @@ class CPPCodeWriter(BaseCodeWriter):
 
     shebang = '// -*- C++ -*-\n'
 
+    tmpl_cfunc_end = '}\n\n'
+
     tmpl_name_do_layout = 'do_layout'
     tmpl_name_set_properties = 'set_properties'
 
-    tmpl_cfunc_end = '}\n\n'
+    tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
 
     tmpl_ctor_call_layout = '\n' \
                             '%(tab)sset_properties();\n' \
@@ -495,7 +497,6 @@ bool MyApp::OnInit()
 %(tab)s%(top_win)s->Show();
 %(tab)sreturn true;
 }"""
-
 
 
     class ClassLines(BaseCodeWriter.ClassLines):
@@ -1357,19 +1358,6 @@ bool MyApp::OnInit()
                 headers = getattr(self.obj_builders[sub_obj.base],
                                   'extra_headers', [])
                 klass.dependencies.extend(headers)
-
-    def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
-        # don't process widgets listed in blacklisted_widgets
-        if obj in self.blacklisted_widgets:
-            return
-
-        if toplevel.klass in self.classes:
-            klass = self.classes[toplevel.klass]
-        else:
-            klass = self.classes[toplevel.klass] = self.ClassLines()
-        buffer = '%s->Add(%s, %s, %s, %s);\n' % \
-                 (sizer.name, obj.name, option, flag, border)
-        klass.layout.append(buffer)
 
     def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, \
                                     event_handlers):

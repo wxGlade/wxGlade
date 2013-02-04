@@ -496,43 +496,6 @@ unless(caller){
             self.lang_mapping['pl_import'] = ''
         BaseCodeWriter.add_app(self, app_attrs, top_win_class)
 
-    def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
-        # don't process widgets listed in blacklisted_widgets
-        if obj in self.blacklisted_widgets:
-            return
-
-        # an ugly hack to allow the addition of spacers: if obj_name can be
-        # parsed as a couple of integers, it is the size of the spacer to add
-        obj_name = obj.name
-        try:
-            w, h = [int(s) for s in obj_name.split(',')]
-        except ValueError:
-            if obj.in_windows:
-                # attribute is a special property, which tells us if the
-                # object is a local variable or an attribute of its parent
-                obj_name = self._format_classattr(obj)
-
-        if toplevel.klass in self.classes:
-            klass = self.classes[toplevel.klass]
-        else:
-            klass = self.classes[toplevel.klass] = self.ClassLines()
-
-        # check if sizer has to store as a class attribute
-        sizer_name = self._format_classattr(sizer)
-
-        # check if object to add also a sizer
-        obj_name = self._format_classattr(obj)
-
-        buffer = self.tmpl_sizeritem % (
-            sizer_name,
-            obj_name,
-            option,
-            self.cn_f(flag),
-            border,
-            )
-
-        klass.layout.append(buffer)
-
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
         write = code_lines.append

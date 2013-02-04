@@ -1582,7 +1582,31 @@ It is available for wx versions %(supported_versions)s only.""") % {
         
         @see: L{tmpl_sizeritem}
         """
-        raise NotImplementedError
+        # don't process widgets listed in blacklisted_widgets
+        if obj in self.blacklisted_widgets:
+            return
+
+        # the name attribute of a spacer is already formatted
+        # "<width>, <height>". This string can simply inserted in Add() call.
+        obj_name = self._format_classattr(obj)
+
+        if toplevel.klass in self.classes:
+            klass = self.classes[toplevel.klass]
+        else:
+            klass = self.classes[toplevel.klass] = self.ClassLines()
+
+        # check if sizer has to store as a class attribute
+        sizer_name = self._format_classattr(sizer)
+
+        stmt = self.tmpl_sizeritem % (
+            sizer_name,
+            obj_name,
+            option,
+            self.cn_f(flag),
+            border,
+            )
+
+        klass.layout.append(stmt)
 
     def add_widget_handler(self, widget_name, handler, *args, **kwds):
         self.obj_builders[widget_name] = handler
