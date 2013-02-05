@@ -892,6 +892,9 @@ class SizerBase(Sizer):
             # button to Fit parent
             FIT_ID = wx.NewId()
             self.fit_btn = wx.Button(panel, FIT_ID, _('Fit parent'))
+            self.fit_btn.SetToolTip(wx.ToolTip(
+                _('Sizes the window so that it fits around its subwindows')
+                ))
             wx.EVT_BUTTON(self.fit_btn, FIT_ID, self.fit_parent)
             sizer_tmp.Add(self.fit_btn, 0, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(True)
@@ -1813,6 +1816,15 @@ class GridSizerBase(SizerBase):
                   'cols': SpinProperty(self, 'cols', None, label=_("cols")),
                   'hgap': SpinProperty(self, 'hgap', None, label=_("hgap")),
                   'vgap': SpinProperty(self, 'vgap', None, label=_("vgap")) }
+        props['rows'].set_tooltip(_('Numbers of sizer rows'))
+        props['cols'].set_tooltip(_('Numbers of sizer columns'))
+        props['vgap'].set_tooltip(
+                _('Vertical extra space between all children')
+                )
+        props['hgap'].set_tooltip(
+                _('Horizontal extra space between all children')
+                )
+
         self.properties.update(props)
 
     def create_properties(self):
@@ -2348,24 +2360,37 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
             self.cols = SpinProperty(self, 'cols', self, label=_("cols"))
             self.vgap = SpinProperty(self, 'vgap', self, label=_("vgap"))
             self.hgap = SpinProperty(self, 'hgap', self, label=_("hgap"))
-            self.flex = wx.CheckBox(self, -1, '')
+            self.rows.set_tooltip(_('Numbers of sizer rows'))
+            self.cols.set_tooltip(_('Numbers of sizer columns'))
+            self.vgap.set_tooltip(
+                _('Vertical extra space between all children')
+                )
+            self.hgap.set_tooltip(
+                _('Horizontal extra space between all children')
+                )
+            
+            self.flex = CheckBoxProperty(
+                self,
+                'flex',
+                self,
+                _('Flexible'),
+                write_always=True,
+                )
+            self.flex.set_tooltip(
+                _('Create a wxFlexGridSizer instead of a wxGridSizer')
+                )
 
             self.rows.set_value(3)
             self.cols.set_value(3)
             self.vgap.set_value(0)
             self.hgap.set_value(0)
 
-            szr = wx.BoxSizer(wx.HORIZONTAL)
-            szr.Add(wx.StaticText(self, -1, _('Flexible')), 2,
-                    wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
-            szr.Add(self.flex, 5, wx.ALL, 4)
-
             sizer = wx.BoxSizer(wx.VERTICAL)
             sizer.Add(self.rows.panel, 0, wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND, 10)
             sizer.Add(self.cols.panel, 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
             sizer.Add(self.vgap.panel, 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
             sizer.Add(self.hgap.panel, 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
-            sizer.Add(szr, 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
+            sizer.Add(self.flex.panel, 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
             szr = wx.BoxSizer(wx.HORIZONTAL)
             btn = wx.Button(self, wx.ID_OK, _('OK'))
             btn.SetDefault()            
@@ -2394,9 +2419,12 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
         number[0] += 1
         name = 'grid_sizer_%d' % number[0]
     topl = True
-    if dialog.flex.GetValue(): constructor = EditFlexGridSizer
-    else: constructor = EditGridSizer
-    if sizer is not None: topl = False
+    if dialog.flex.get_value():
+        constructor = EditFlexGridSizer
+    else:
+        constructor = EditGridSizer
+    if sizer is not None:
+        topl = False
     sz = constructor(name, parent, rows, cols, vgap, hgap, topl)
     if sizer is not None:
         sizer.add_item(sz, pos, 1, wx.EXPAND)
