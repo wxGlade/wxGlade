@@ -39,6 +39,13 @@ class TestCodeGen(WXGladeBaseTest):
     Test code generation
     """
 
+    def tearDown(self):
+        """\
+        Cleanup
+        """
+        common.code_writers['python'].use_new_namespace = 1
+        WXGladeBaseTest.tearDown(self)
+
     def test_CPP_wxCalendarCtrl(self):
         """\
         Test CPP code generation with a small wxCalendarCtrl example
@@ -1052,3 +1059,87 @@ class TestCodeGen(WXGladeBaseTest):
         
         # store sizer references
         self._test_all('Sizers_classattr')
+
+    def test_cn(self):
+        """\
+        Test formatting of names with cn().
+
+        @see: L{codegen.cpp_codegen.CPPCodeWriter.cn()}
+        @see: L{codegen.lisp_codegen.LispCodeWriter.cn()}
+        @see: L{codegen.pl_codegen.PerlCodeWriter.cn()}
+        @see: L{codegen.py_codegen.PythonCodeWriter.cn()}
+        """
+        details = {}
+        details['python_new'] = [  # new namespace
+            ('wxID_OK',        'wx.ID_OK'),
+            ('wxALL',          'wx.ALL'),
+            ('wxBLUE',         'wx.BLUE'),
+            ('wxALIGN_CENTER', 'wx.ALIGN_CENTER'),
+            ('wxFrame',        'wx.Frame'),
+            ('EVT_BUTTON',     'wx.EVT_BUTTON'),
+                ]
+        details['python_old'] = [  # old namespace
+            ('wxID_OK',        'wxID_OK'),
+            ('wxALL',          'wxALL'),
+            ('wxBLUE',         'wxBLUE'),
+            ('wxALIGN_CENTER', 'wxALIGN_CENTER'),
+            ('wxFrame',        'wxFrame'),
+            ('EVT_BUTTON',     'EVT_BUTTON'),
+            ]
+        details['perl'] = [
+            ('wxID_OK',        'wxID_OK'),
+            ('wxALL',          'wxALL'),
+            ('wxBLUE',         'wxBLUE'),
+            ('wxALIGN_CENTER', 'wxALIGN_CENTER'),
+            ('wxFrame',        'Wx::Frame'),
+            ('EVT_BUTTON',     'Wx::EVT_BUTTON'),
+            ]
+        details['lisp'] = [
+            ('wxID_OK',        'wxID_OK'),
+            ('wxALL',          'wxALL'),
+            ('wxBLUE',         'wxBLUE'),
+            ('wxALIGN_CENTER', 'wxALIGN_CENTER'),
+            ('wxFrame',        'wxFrame'),
+            ('EVT_BUTTON',     'wxEVT_BUTTON'),
+            ]
+        details['C++'] = [
+            ('wxID_OK',        'wxID_OK'),
+            ('wxALL',          'wxALL'),
+            ('wxBLUE',         'wxBLUE'),
+            ('wxALIGN_CENTER', 'wxALIGN_CENTER'),
+            ('wxFrame',        'wxFrame'),
+            ('EVT_BUTTON',     'EVT_BUTTON'),
+            ]
+
+        for lang in ['python_new', 'python_old', 'perl', 'lisp', 'C++']:
+            if lang.startswith('python'):
+                if lang == 'python_old':
+                    common.code_writers['python'].use_new_namespace = 0
+                elif lang == 'python_new':
+                    common.code_writers['python'].use_new_namespace = 1
+                cn = common.code_writers['python'].cn
+            else:
+                cn = common.code_writers[lang].cn
+
+            for unformatted, formatted in details[lang]:
+                ret = cn(unformatted)
+                self.failUnlessEqual(
+                    formatted,
+                    ret,
+                    '%s: Unexpected result got: "%s" expect: "%s"' % (
+                        lang,
+                        ret,
+                        formatted,
+                        )
+                    )
+                # test for prevent double formatting
+                ret = cn(formatted)
+                self.failUnlessEqual(
+                    formatted,
+                    ret,
+                    '%s: Unexpected result got: "%s" expect: "%s"' % (
+                        lang,
+                        ret,
+                        formatted,
+                        )
+                    )
