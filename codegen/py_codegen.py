@@ -345,6 +345,9 @@ if __name__ == "__main__":
         @see: L{cn_f()}
         """
         if self.use_new_namespace:
+            # don't process already formatted items again
+            if name.startswith('wx.'):
+                return name
             if name.startswith('wx'):
                 return 'wx.' + name[2:]
             elif name.startswith('EVT_'):
