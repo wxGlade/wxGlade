@@ -32,6 +32,7 @@ Bugs:
   - String formatting issue for event handlers in Lisp code generator
   - UnicodeEncodeError in xml.sax.expatreader (sf bug #149)
   - Don't add unsupported widgets to a sizer
+  - Setting invalid windows names hasn't blocked fully (sf bug #154)
   - ...
 
 Documentation:
