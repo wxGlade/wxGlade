@@ -194,6 +194,18 @@ constructor will be used. You should probably not use this if \
             self.name_prop.set_value(self.name)
             return
         if not re.match(self.set_name_pattern, value):
+            wx.CallAfter(
+                wx.MessageBox, _(
+                'The new name "%s" contains invalid characters. The\n'
+                'old name "%s" will be retain.\n'
+                '\n'
+                'Valid characters are alphanumeric characters, minus sign\n'
+                'and the underscore. Names start always with an alphabetic\n'
+                'character or an underscore.\n'
+                '\n'
+                'Please enter a different name.') % (value, self.name),
+                _("Error"),
+                wx.OK|wx.ICON_ERROR)
             self.name_prop.set_value(self.name)
         else:
             oldname = self.name
@@ -1256,9 +1268,14 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.sizer.refresh()
 
     def set_name(self, name):
-        if not misc.streq(self.name, name):
-            common.app_tree.app.update_top_window_name(self.name, name)
+        oldname = self.name
+
+        # check and set name
         WindowBase.set_name(self, name)
+
+        # update top window name
+        if not misc.streq(oldname, self.name):
+            common.app_tree.app.update_top_window_name(oldname, self.name)
 
     def delete(self, *args):
         if self.preview_widget is not None:
