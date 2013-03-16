@@ -74,6 +74,7 @@ sub __set_properties {
         # begin wxGlade: PlOgg1_MyDialog::__set_properties
         $self->SetTitle(_T("mp3 2 ogg"));
         $self->SetSize(Wx::Size->new(500, 300));
+        $self->SetFocus();
         $self->{radio_box_1}->SetSelection(0);
         $self->{checkbox_1}->SetToolTipString(_T("Overwrite an existing file"));
         $self->{checkbox_1}->SetValue(1);
