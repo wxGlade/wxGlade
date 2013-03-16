@@ -95,6 +95,7 @@
         ;;; begin wxGlade: LispOgg1_MyDialog.__set_properties
         (wxWindow_SetTitle (slot-Mp3-To-Ogg self) (_"mp3 2 ogg"))
         (slot-top-window obj).wxWindow_SetSize((500, 300))
+        (wxWindow_SetFocus (slot-top-window obj))
         (wxRadioBox_SetSelection (slot-radio-box-1 obj) 0)
         (wxWindow_SetToolTip (slot-checkbox-1 obj)(_"Overwrite an existing file"))
         (wxCheckBox_SetValue (slot-checkbox-1 obj) 1);

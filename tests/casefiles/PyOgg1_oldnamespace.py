@@ -50,6 +50,7 @@ class PyOgg1_MyDialog(wxDialog):
         # begin wxGlade: PyOgg1_MyDialog.__set_properties
         self.SetTitle(_("mp3 2 ogg"))
         self.SetSize((500, 300))
+        self.SetFocus()
         self.radio_box_1.SetSelection(0)
         self.checkbox_1.SetToolTipString(_("Overwrite an existing file"))
         self.checkbox_1.SetValue(1)

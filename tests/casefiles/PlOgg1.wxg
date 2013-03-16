@@ -7,6 +7,7 @@
         <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
         <title>mp3 2 ogg</title>
         <centered>1</centered>
+        <focused>1</focused>
         <size>500, 300</size>
         <object class="wxFlexGridSizer" name="sizer_1" base="EditFlexGridSizer">
             <hgap>0</hgap>
