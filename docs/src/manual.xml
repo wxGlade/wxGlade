@@ -5,7 +5,7 @@
   <title>wxGlade user manual</title>
 
   <bookinfo>
-    <date>2013-03-08</date>
+    <date>2013-03-29</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -647,8 +647,8 @@ loading widget modules:
 
             <listitem>
               <para>Enable internationalisation support. There are no
-              disadvantages if internationalization is active but not used.
-              </para>
+              disadvantages if internationalization is active but not
+              used.</para>
 
               <para>It's hard to add i18n and Unicode afterwards from project
               point of view.</para>
@@ -1216,7 +1216,12 @@ if __name__ == '__main__':
             <glossterm><quote><guilabel>Encoding</guilabel></quote></glossterm>
 
             <glossdef>
-              <para>Encoding of the generated source files</para>
+              <para>Encoding of the generated source files.</para>
+
+              <para>The encoding to use with new projects will be determinated
+              automatically based on the machine settings.
+              <quote>UTF-8</quote> will be used if the automatic detection
+              fails.</para>
             </glossdef>
           </glossentry>
 

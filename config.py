@@ -14,6 +14,48 @@ from ConfigParser import *
 import common
 import misc
 
+# default configuration values
+default_encoding = 'UTF-8'
+"""\
+Default value for encoding
+
+@type: String
+"""
+
+default_indent_amount = 4
+"""\
+Default value for indentation
+
+@type: Integer
+"""
+
+default_indent_symbol = ' '
+"""\
+Default value for indentation symbol
+
+@type: String
+"""
+
+default_multiple_files = 0
+"""\
+Default value for writing multiple files (each class in a separate file)
+
+@type: Integer
+"""
+
+default_overwrite = 1
+"""\
+Default value for overwriting existing sources
+
+@type: Integer
+"""
+
+default_use_gettext = 1
+"""\
+Default value to usage of gettext
+
+@type: Integer
+"""
 
 def _get_home(default=common.wxglade_path):
     h = os.path.expanduser('~')

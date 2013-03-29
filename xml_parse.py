@@ -21,6 +21,7 @@ from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
 
 import common
+import config
 import edit_sizers
 import errors
 
@@ -154,7 +155,7 @@ class XmlWidgetBuilder(XmlParser):
                 try:
                     option = int(option)
                 except ValueError:
-                    option = 0
+                    option = config.default_multiple_files
                 app.codegen_opt = option
                 app.codegen_prop.set_value(option)
             language = attrs.get('language')
@@ -167,7 +168,7 @@ class XmlWidgetBuilder(XmlParser):
             try:
                 use_gettext = int(attrs["use_gettext"])
             except (KeyError, ValueError):
-                use_gettext = False
+                use_gettext = config.default_use_gettext
             if use_gettext:
                 app.use_gettext = True
                 app.use_gettext_prop.set_value(True)
@@ -181,7 +182,7 @@ class XmlWidgetBuilder(XmlParser):
             try:
                 overwrite = int(attrs['overwrite'])
             except (KeyError, ValueError):
-                overwrite = False
+                overwrite = config.default_overwrite
             if overwrite:
                 app.overwrite = True
                 app.overwrite_prop.set_value(True)
@@ -204,7 +205,7 @@ class XmlWidgetBuilder(XmlParser):
                 try:
                     indent_amount = int(indent)
                 except (KeyError, ValueError):
-                    pass
+                    indent_amount = config.default_indent_amount
                 else:
                     app.indent_amount = indent_amount
                     app.indent_amount_prop.set_value(indent_amount)
@@ -627,9 +628,12 @@ class CodeWriter(XmlParser):
             unicode('a', encoding)
         except (KeyError, LookupError):
             if name == 'application':
-                encoding = str(attrs_impl.get('encoding', 'ISO-8859-1'))
+                encoding = str(attrs_impl.get(
+                    'encoding',
+                    config.default_encoding
+                    ))
             else:
-                encoding = 'ISO-8859-1'
+                encoding = config.default_encoding
         # turn all the attribute values from unicode to str objects
         for attr, val in attrs_impl.items():
             attrs[attr] = common._encode_from_xml(val, encoding)
@@ -641,7 +645,8 @@ class CodeWriter(XmlParser):
                 attrs['option'] = bool(int(attrs['option']))
                 use_multiple_files = attrs['option']
             except (KeyError, ValueError):
-                use_multiple_files = attrs['option'] = False
+                use_multiple_files = attrs['option'] = \
+                    config.default_multiple_files
             if self.out_path is None:
                 try:
                     self.out_path = attrs['path']
@@ -740,7 +745,7 @@ class CodeWriter(XmlParser):
                 encoding = self.app_attrs['encoding']
                 unicode('a', encoding)
             except (KeyError, LookupError):
-                encoding = 'ISO-8859-1'
+                encoding = config.default_encoding
             data = common._encode_from_xml(u"".join(self._curr_prop_val),
                                            encoding)
             if data:

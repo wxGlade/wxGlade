@@ -334,7 +334,8 @@ class BaseCodeWriter(object):
       - L{cn()}
       - L{cn_f()}
 
-    @ivar app_encoding: Encoding of the application
+    @ivar app_encoding: Encoding of the application; will be initialised with
+                        L{config.default_indent_amount}
     @type app_encoding: String
 
     @ivar app_filename: File name to store the application start code within
@@ -374,6 +375,15 @@ class BaseCodeWriter(object):
                         (import of wxCL, ...)
     @type header_lines: List of strings
 
+    @ivar indent_amount: An indentation level is L{indent_symbol} *
+                         L{indent_amount}; will be initialised
+                         with L{config.default_indent_amount}
+    @type indent_amount: Integer
+
+    @ivar indent_symbol: Character to use for identation; will be initialised
+                         with L{config.default_indent_symbol}
+    @type indent_symbol: String
+
     @ivar multiple_files: If True, generate a file for each custom class
     @type multiple_files: Boolean
 
@@ -402,7 +412,8 @@ class BaseCodeWriter(object):
     @ivar previous_source: If not None, it is an instance of
                            L{BaseSourceFileContent} that keeps info about the
                            previous version of the source to generate
-    @type previous_source: None or a derivated class of L{BaseSourceFileContent}
+    @type previous_source: None or a derivated class of
+                           L{BaseSourceFileContent}
 
     @ivar _app_added: True after wxApp instance has been generated
     @type _app_added: Boolean
@@ -416,7 +427,8 @@ class BaseCodeWriter(object):
     @type _current_extra_modules: List of strings
 
     @ivar _overwrite: If True, overwrite any previous version of the source
-                      file instead of updating only the wxGlade blocks
+                      file instead of updating only the wxGlade blocks; 
+                      will be initialised with L{config.default_overwrite}
     @type _overwrite: Boolean
 
     @ivar _property_writers: Dictionary of dictionaries of property handlers
@@ -426,7 +438,8 @@ class BaseCodeWriter(object):
                              choices_handler})
     @type _property_writers: Dictionary
 
-    @ivar _use_gettext: If True, enable gettext support
+    @ivar _use_gettext: If True, enable gettext support; will be initialised
+                        with L{config.default_use_gettext}
     @type _use_gettext: Boolean
 
     @ivar _widget_extra_modules: Map of widget class names to a list of extra
@@ -484,25 +497,11 @@ class BaseCodeWriter(object):
     @type: Dictionary
     """
 
-    indent_amount = 4
-    """\
-    An indentation level is L{indent_symbol} * L{indent_amount}
-
-    @type: Integer
-    """
-
     indent_level_func_body = 1
     """\
     Indentation level for bodies of class functions.
     
     @type: Integer
-    """
-
-    indent_symbol = ' '
-    """\
-    Character to use for identation
-
-    @type: String
     """
 
     language = None
@@ -551,7 +550,6 @@ class BaseCodeWriter(object):
     The file encoding will be added to the output in L{save_file()}.
 
     @type: String
-    @see: {app_encoding}
     """
 
     tmpl_block_begin = \
@@ -785,7 +783,7 @@ class BaseCodeWriter(object):
         instantiation (L{__init__}) and before loading new data
         (L{initialize()}).
         """
-        self.app_encoding = 'ISO-8859-1'
+        self.app_encoding = config.default_encoding
         self.app_filename = None
         self.app_mapping = {}
         self.app_name = None
@@ -794,8 +792,8 @@ class BaseCodeWriter(object):
         self.dependencies = {}
         self.for_version = (2, 6)
         self.header_lines = []
-        self.indent_symbol = ' '
-        self.indent_amount = 4
+        self.indent_symbol = config.default_indent_symbol
+        self.indent_amount = config.default_indent_amount
         self.blacklisted_widgets = {}
         self.lang_mapping = {}
         self.multiple_files = False
@@ -810,8 +808,8 @@ class BaseCodeWriter(object):
         self._app_added = False
         self._current_extra_code = []
         self._current_extra_modules = {}
-        self._overwrite = False
-        self._use_gettext = False
+        self._overwrite = config.default_overwrite
+        self._use_gettext = config.default_use_gettext
         self._widget_extra_modules = {}
 
     def initialize(self, app_attrs):
@@ -829,7 +827,10 @@ class BaseCodeWriter(object):
         self.app_name = app_attrs.get('name')
         if not self.app_name:
             self.app_name = 'app'
-        self.app_filename = '%s.%s' % (self.app_name, self.default_extensions[0])
+        self.app_filename = '%s.%s' % (
+            self.app_name,
+            self.default_extensions[0],
+            )
 
         # file encoding
         try:
@@ -839,7 +840,7 @@ class BaseCodeWriter(object):
                 self.app_encoding = 'ISO-8859-1'
         except (KeyError, ValueError):
             # set back to default
-            self.app_encoding = 'ISO-8859-1'
+            self.app_encoding = config.default_encoding
 
         # Inentation level based on the project options
         try:
@@ -849,24 +850,24 @@ class BaseCodeWriter(object):
             elif self.indent_symbol == 'space':
                 self.indent_symbol = ' '
             else:
-                self.indent_symbol = ' '
+                self.indent_symbol = config.default_indent_symbol
         except (KeyError, ValueError):
-            self.indent_symbol = ' '
+            self.indent_symbol = config.default_indent_symbol
 
         try:
             self.indent_amount = int(app_attrs['indent_amount'])
         except (KeyError, ValueError):
-            self.indent_amount = 4
+            self.indent_amount = config.default_indent_amount
 
         try:
             self._use_gettext = int(app_attrs['use_gettext'])
         except (KeyError, ValueError):
-            self._use_gettext = False
+            self._use_gettext = config.default_use_gettext
 
         try:
             self._overwrite = int(app_attrs['overwrite'])
         except (KeyError, ValueError):
-            self._overwrite = False
+            self._overwrite = config.default_overwrite
 
         try:
             self.for_version = tuple([int(t) for t in

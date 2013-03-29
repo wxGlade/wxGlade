@@ -135,13 +135,16 @@ class Application(object):
         self.__saved = True
         self.__filename = None
         self.klass = "MyApp"
-        self.codegen_opt = 0
+        self.codegen_opt = config.default_multiple_files
         def set_codegen_opt(value):
-            try: opt = int(value)
-            except ValueError: pass
-            else: self.codegen_opt = opt
+            try:
+                opt = int(value)
+            except ValueError:
+                pass
+            else:
+                self.codegen_opt = opt
         self.indent_mode = 1
-        self.indent_amount = 4
+        self.indent_amount = config.default_indent_amount
         def set_indent_mode(value):
             try: opt = int(value)
             except ValueError: pass
@@ -159,7 +162,7 @@ class Application(object):
         def get_output_path(): return os.path.expanduser(self.output_path)
         def set_output_path(value): self.output_path = value
         self.is_template = False
-        self.use_gettext = False
+        self.use_gettext = config.default_use_gettext
         def set_use_gettext(value): self.use_gettext = bool(int(value))
         self.for_version = wx.VERSION_STRING[:3]
         def set_for_version(value):
@@ -257,10 +260,9 @@ class Application(object):
             self, 'use_new_namespace', lang_panels['python'],
             _('Use old "from wxPython.wx"\nimport'))
         
-        self.overwrite = True
-        def get_overwrite(): return self.overwrite
-        def set_overwrite(val): self.overwrite = bool(int(val))
-        self.access_functions['overwrite'] = (get_overwrite, set_overwrite)
+        self.overwrite = config.default_overwrite
+        self.access_functions['overwrite'] = \
+            (self.get_overwrite, self.set_overwrite)
         self.overwrite_prop = CheckBoxProperty(
             self,
             'overwrite',
@@ -367,7 +369,10 @@ class Application(object):
 
     def _get_default_encoding(self):
         """\
-        Returns the name of the default character encoding of this machine
+        Return determinated machine default character encoding.
+       
+        The default application L{config.default_encoding} is the fallback
+        only.
         """
         # try to set locale
         try:
@@ -386,11 +391,11 @@ class Application(object):
             try:
                 encoding = locale.getdefaultlocale()[1]
             except ValueError:
-                encoding = 'ISO-8859-15'
+                encoding = config.default_encoding
 
         # On Mac OS X encoding may None or '' somehow
         if not encoding:
-            encoding = 'ISO-8859-15'
+            encoding = config.default_encoding
             print 'WARNING: Empty encoding. Use "%s" instead' % encoding
 
         # check if a codec for the encoding exists
@@ -437,7 +442,9 @@ class Application(object):
                 if t[0] == '*': common.app_tree.set_title(t[1:].strip())
     saved = property(_get_saved, _set_saved)
 
-    def _get_filename(self): return self.__filename
+    def _get_filename(self):
+        return self.__filename
+
     def _set_filename(self, value):
         if not misc.streq(self.__filename, value):
             self.__filename = value
@@ -448,7 +455,13 @@ class Application(object):
             else:
                 common.app_tree.set_title(flag)
     filename = property(_get_filename, _set_filename)
-       
+
+    def get_overwrite(self):
+        return self.overwrite
+
+    def set_overwrite(self, val):
+        self.overwrite = bool(int(val))
+
     def get_top_window(self): return self.top_window
 
     def set_top_window(self, *args):
@@ -498,9 +511,10 @@ class Application(object):
         self.name = "app"
         self.name_prop.set_value("app")
         self.name_prop.toggle_active(False)
-        self.codegen_opt = 0; self.codegen_prop.set_value(0)
+        self.codegen_opt = config.default_multiple_files
+        self.codegen_prop.set_value(config.default_multiple_files)
         self.indent_mode = 1
-        self.indent_amount = 4
+        self.indent_amount = config.default_indent_amount
         self.cpp_source_ext = 'cpp'
         self.cpp_header_ext = 'h'
         self.output_path = ""
