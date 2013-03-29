@@ -1,49 +1,45 @@
-Version 0.6.6 - 2013-XX-XX:
+Version 0.6.6 - 2013-03-29:
 General: 
-  - Change default widget ID from -1 to wxID_ANY and adapt codegen
-  - Rework and unify code generators, all code generators support
-    extracode and extraproperties now
-  - Write isolation directives at beginning in C++ header files
-  - Show existing tooltips at all elements of a property
+  - Add i18n support to C++ code generator
+  - Add more test cases
   - Add more tooltips to gui
+  - Add new widget HyperlinkCtrl
+  - Add Perl support to CalendarCtrl 
+  - Add simple application start code to C++ code generator
+  - Add "Store as attribute" for sizers
+  - Change default widget ID from -1 to wxID_ANY and adapt codegen
+  - Change some default settings and reorg internal handling
+  - Fix exceptions during widget preview triggered by keyboard shortcut
+  - Improve error handling
+  - Improve message logging
+  - Internal rework of code generator parts, this causes minor changes
+    in the generated code 
   - Join code templates for application startup code in class variables
     and unify the code generation of this piece
   - Minor GUI improvements
-  - Internal rework of code generator parts, this causes minor changes
-    in the generated code 
-  - Improve error handling
-  - Add i18n support to C++ code generator
-  - Add simple application start code to C++ code generator
-  - Add Perl support to CalendarCtrl 
-  - Fix exceptions during widget preview triggered by keyboard shortcut
-  - Improve message logging
-  - Add new widget HyperlinkCtrl
-  - Add more test cases
-  - Add "Store as attribute" for sizers
+  - Rework and unify code generators, all code generators support
+    extracode and extraproperties now
   - Set "Overwrite existing sources" for new projects
+  - Show existing tooltips at all elements of a property
   - When pasting: only search current top-level window for duplicate names
-  - Change some default settings and reorg internal handling
-  - ...
+  - Write isolation directives at beginning in C++ header files
 
 Bugs:
+  - Don't add unsupported widgets to a sizer
   - Encoding detection for Mac OS X
   - Prevent caching effects in Lisp code generator
   - Prevent deleting last notebook tab (sf bug #3126974)
   - Same default names for multiple notebooks (sf bug #2000566)
+  - Setting invalid windows names hasn't blocked fully (sf bug #154)
   - String formatting issue for event handlers in Lisp code generator
   - UnicodeEncodeError in xml.sax.expatreader (sf bug #149)
-  - Don't add unsupported widgets to a sizer
-  - Setting invalid windows names hasn't blocked fully (sf bug #154)
-  - ...
 
 Documentation:
   - Update wxGlade user manual
-  - ...
 
 API (for custom widgets):
   - Add support for widget builder that don't support all wx versions
     supported by wxGlade
-  - ...
 
 Note:
   - See CHANGES.txt for a full list of changes
