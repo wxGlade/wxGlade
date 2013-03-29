@@ -24,6 +24,8 @@
  - Brendan Oakley <pradoderobles@angelfire.com>: editor of the new user's
    manual 
  - Jack Thomasson <wxglade@jkt.mailsnare.net>: assist with port to wx namespace
+ - Roel van Os <roel.van.os@humanitech.nl>: for some patches integrated
+   from his Elentirmo repository
  
  Many thanks to:
  ---------------------------------------------------------------------------
