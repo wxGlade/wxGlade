@@ -227,11 +227,15 @@ class Application(object):
                                               label=_("Indentation mode"))
         self.indent_amount_prop = SpinProperty(self, 'indent_amount',
                                                panel_settings, r=(1, 100))
-        self.indent_amount_prop.set_tooltip(_('XXX'))
+        self.indent_amount_prop.set_tooltip(
+            _('Number of spaces or tabs used for one indentation level.')
+            )
         self.source_ext_prop = TextProperty(self, 'source_ext',
                                             panel_settings)
+        self.source_ext_prop.set_tooltip(_('Extension of the source file'))
         self.header_ext_prop = TextProperty(self, 'header_ext',
                                             panel_settings)
+        self.header_ext_prop.set_tooltip(_('Extension of the header file'))
 
         _writers = common.code_writers.keys()
         columns = 3
@@ -260,9 +264,13 @@ class Application(object):
             self.get_use_old_namespace, self.set_use_old_namespace)
         self.use_old_namespace_prop = CheckBoxProperty(
             self, 'use_new_namespace', panel_settings,
-            _('Use old "from wxPython.wx"\nimport'))
-        self.use_old_namespace_prop.set_tooltip(_('XXX'))
-        
+            _('Use old import\n"from wxPython.wx import *"'))
+        self.use_old_namespace_prop.set_tooltip(
+            _('It is generally recommended to use the new namespace. '
+              'The old one ("from wxPython.wx import *") has some '
+              'significant drawbacks like potential namespace conflicts.'
+              ))
+
         self.overwrite = config.default_overwrite
         self.access_functions['overwrite'] = \
             (self.get_overwrite, self.set_overwrite)
@@ -362,9 +370,9 @@ class Application(object):
 
         # add all to one sizer
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(sizer_general, 0, wx.EXPAND|wx.ALL, 4)
-        sizer.Add(sizer_python,  0, wx.EXPAND|wx.ALL, 4)
-        sizer.Add(sizer_cpp,     0, wx.EXPAND|wx.ALL, 4)
+        sizer.Add(sizer_general, 0, wx.EXPAND|wx.ALL, 3)
+        sizer.Add(sizer_python,  0, wx.EXPAND|wx.ALL, 3)
+        sizer.Add(sizer_cpp,     0, wx.EXPAND|wx.ALL, 3)
         self._add_page(_('Settings'), panel_settings, sizer)
         
         wx.EVT_BUTTON(btn, BTN_ID, self.generate_code)
