@@ -122,6 +122,8 @@ Name: "{app}\widgets\gauge\*.pyc"; Type: files
 Name: "{app}\widgets\gauge\*.pyo"; Type: files
 Name: "{app}\widgets\grid\*.pyc"; Type: files
 Name: "{app}\widgets\grid\*.pyo"; Type: files
+Name: "{app}\widgets\hyperlink_ctrl\*.pyc"; Type: files
+Name: "{app}\widgets\hyperlink_ctrl\*.pyo"; Type: files
 Name: "{app}\widgets\list_box\*.pyc"; Type: files
 Name: "{app}\widgets\list_box\*.pyo"; Type: files
 Name: "{app}\widgets\list_ctrl\*.pyc"; Type: files
