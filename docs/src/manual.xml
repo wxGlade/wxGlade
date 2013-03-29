@@ -741,9 +741,10 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
 
       <para>There are a lot of options to control the source code generation
       process. They are bundled in the
+      <quote><guilabel>Application</guilabel></quote> page of the
       <quote><guilabel>Properties</guilabel></quote> window (see <xref
-      linkend="properties_window.fig"/>). Let's talk about three of those
-      options -<quote><guilabel>Single file</guilabel></quote>,
+      linkend="properties_window_application.fig"/>). Let's talk about three
+      of those options -<quote><guilabel>Single file</guilabel></quote>,
       <quote><guilabel>Separate file for each class</guilabel></quote> and
       <quote><guilabel>Overwrite existing sources</guilabel></quote>.</para>
 
@@ -1167,6 +1168,220 @@ if __name__ == '__main__':
           <guimenuitem>Show Properties</guimenuitem>
         </menuchoice>.</para>
 
+      <section>
+        <title>Application Properties</title>
+
+        <para>The page <quote><guilabel>Application</guilabel></quote>
+        contains the general settings of the active wxGlade project.</para>
+
+        <para><figure id="properties_window_application.fig">
+            <title>Project Properties - Application settings</title>
+
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="properties_window_application.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure><glosslist>
+            <glossentry>
+              <glossterm><quote><guilabel>Name</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Name of the instance created from
+                <quote><guilabel>Class</guilabel></quote></para>
+
+                <para><xref
+                linkend="automatically.created.wxapp.instance.section"/>
+                provides more information</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Class</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Name of the automatically generated class derived from
+                <classname>wxApp</classname></para>
+
+                <para><xref
+                linkend="automatically.created.wxapp.instance.section"/>
+                provides more information</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Encoding</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Encoding of the generated source files.</para>
+
+                <para>The encoding to use with new projects will be
+                determinated automatically based on the machine settings.
+                <quote>UTF-8</quote> will be used if the automatic detection
+                fails.</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Enable gettext
+              support</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Enable internationalisation and localisation for the
+                generated source files</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Top
+              window</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>This widget is used as top window in the
+                <classname>wxApp</classname> start code</para>
+
+                <para><xref
+                linkend="automatically.created.wxapp.instance.section"/>
+                provides more information</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Code
+              Generation</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Write all source code in one file or split the source
+                into one file per class / widget</para>
+
+                <para><xref linkend="using.source.code.section"/> provides
+                more information</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Language</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Programming language to generate the source files
+                in</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>wxWidgets
+              compatibility</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Generate source files for the selected wxWidgets
+                version</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Overwrite existing
+              sources</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Overwrite existing source files or modify the code
+                sequences generated by wxGlade in place</para>
+
+                <para><xref linkend="using.source.code.section"/> provides
+                more information</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Output
+              path</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Output file or directory</para>
+
+                <para><xref linkend="output.path.filenames.section"/> provides
+                more information</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Generate
+              code</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Start generating source files</para>
+              </glossdef>
+            </glossentry>
+          </glosslist>The page <quote><guilabel>Settings</guilabel></quote>
+        contains the language specific settings of the active wxGlade
+        project.</para>
+
+        <para><figure>
+            <title>Project Properties - Language settings</title>
+
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="properties_window_settings.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure><glosslist>
+            <glossentry>
+              <glossterm><quote><guilabel>Indentation
+              mode</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Use spaces or tabs for indentation within the generated
+                source files.</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Indentation
+              amount</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Number of spaces or tabs used for one indentation
+                level.</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Use old import "from wxPython.wx
+              import *"</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>It is generally recommended to use the new
+                namespace.</para>
+
+                <para>The old one (<emphasis><quote>from wxPython.wx import
+                *</quote></emphasis>) has some significant drawbacks like
+                potential namespace conflicts.</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Source
+              ext</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Extension of the source file.</para>
+
+                <para>The extension doesn't has a leading dot.</para>
+              </glossdef>
+            </glossentry>
+
+            <glossentry>
+              <glossterm><quote><guilabel>Header
+              ext</guilabel></quote></glossterm>
+
+              <glossdef>
+                <para>Extension of the header file.</para>
+
+                <para>The extension doesn't has a leading dot.</para>
+              </glossdef>
+            </glossentry>
+          </glosslist></para>
+      </section>
+
       <section id="common.properties.section">
         <title>Common Properties</title>
 
@@ -1174,147 +1389,6 @@ if __name__ == '__main__':
         widgets. As shown in <xref linkend="properties_window_tab_1.fig"/> the
         common properties are related to name, class, size, colors, fonts and
         tooltip.</para>
-
-        <figure id="properties_window.fig">
-          <title>Application Properties</title>
-
-          <mediaobject>
-            <imageobject>
-              <imagedata fileref="properties_window.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-
-        <glosslist>
-          <glossentry>
-            <glossterm><quote><guilabel>Name</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>Name of the instance created from
-              <quote><guilabel>Class</guilabel></quote></para>
-
-              <para><xref
-              linkend="automatically.created.wxapp.instance.section"/>
-              provides more information</para>
-            </glossdef>
-          </glossentry>
-
-          <glossentry>
-            <glossterm><quote><guilabel>Class</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>Name of the automatically generated class derived from
-              <classname>wxApp</classname></para>
-
-              <para><xref
-              linkend="automatically.created.wxapp.instance.section"/>
-              provides more information</para>
-            </glossdef>
-          </glossentry>
-
-          <glossentry>
-            <glossterm><quote><guilabel>Encoding</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>Encoding of the generated source files.</para>
-
-              <para>The encoding to use with new projects will be determinated
-              automatically based on the machine settings.
-              <quote>UTF-8</quote> will be used if the automatic detection
-              fails.</para>
-            </glossdef>
-          </glossentry>
-
-          <glossentry>
-            <glossterm><quote><guilabel>Enable gettext
-            support</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>Enable internationalisation and localisation for the
-              generated source files</para>
-            </glossdef>
-          </glossentry>
-
-          <glossentry>
-            <glossterm><quote><guilabel>Top
-            window</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>This widget is used as top window in the
-              <classname>wxApp</classname> start code</para>
-
-              <para><xref
-              linkend="automatically.created.wxapp.instance.section"/>
-              provides more information</para>
-            </glossdef>
-          </glossentry>
-
-          <glossentry>
-            <glossterm><quote><guilabel>Code
-            Generation</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>Write all source code in one file or split the source into
-              one file per class / widget</para>
-
-              <para><xref linkend="using.source.code.section"/> provides more
-              information</para>
-            </glossdef>
-          </glossentry>
-
-          <glossentry>
-            <glossterm><quote><guilabel>Language</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>Programming language to generate the source files
-              in</para>
-            </glossdef>
-          </glossentry>
-
-          <glossentry>
-            <glossterm><quote><guilabel>wxWidgets
-            compatibility</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>Generate source files for the selected wxWidgets
-              version</para>
-            </glossdef>
-          </glossentry>
-
-          <glossentry>
-            <glossterm><quote><guilabel>Overwrite existing
-            sources</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>Overwrite existing source files or modify the code
-              sequences generated by wxGlade in place</para>
-
-              <para><xref linkend="using.source.code.section"/> provides more
-              information</para>
-            </glossdef>
-          </glossentry>
-
-          <glossentry>
-            <glossterm><quote><guilabel>Output
-            path</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>Output file or directory</para>
-
-              <para><xref linkend="output.path.filenames.section"/> provides
-              more information</para>
-            </glossdef>
-          </glossentry>
-
-          <glossentry>
-            <glossterm><quote><guilabel>Generate
-            code</guilabel></quote></glossterm>
-
-            <glossdef>
-              <para>Start generating source files</para>
-            </glossdef>
-          </glossentry>
-        </glosslist>
 
         <figure id="properties_window_tab_1.fig">
           <title>Common Properties</title>
