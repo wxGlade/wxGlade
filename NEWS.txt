@@ -22,6 +22,7 @@ General:
   - Add "Store as attribute" for sizers
   - Set "Overwrite existing sources" for new projects
   - When pasting: only search current top-level window for duplicate names
+  - Change some default settings and reorg internal handling
   - ...
 
 Bugs:
