@@ -335,7 +335,7 @@ class BaseCodeWriter(object):
       - L{cn_f()}
 
     @ivar app_encoding: Encoding of the application; will be initialised with
-                        L{config.default_indent_amount}
+                        L{config.default_encoding}
     @type app_encoding: String
 
     @ivar app_filename: File name to store the application start code within
