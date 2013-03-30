@@ -32,50 +32,49 @@ def _get_version():
     @rtype: String
     @see: L{nohg_version}
     """
-#    main_version = ''
-    main_version = nohg_version
+    main_version = ''
     repo_changed = []
-#    try:
-#        from mercurial.hg import repository
-#        from mercurial.ui import ui
-#        from mercurial.node import short
-#        from mercurial.error import RepoError
-#    except ImportError:
-#        # no mercurial module available
-#        main_version = nohg_version
-#    except:
-#        # unkown failure
-#        main_version = nohg_version
-#    else:
-#        # try to open local hg repository
-#        try:
-#            repo = repository(ui(), os.path.dirname(__file__))
-#        except RepoError:
-#            # no mercurial repository found
-#            main_version = nohg_version
-#        else:
-#            ctx = repo[None]
-#            parents = ctx.parents()
-#            repo_changed = ctx.files() + ctx.deleted()
-#            if len(parents) == 1 and not repo_changed:
-#                # release tag isn't at tip it's -2 (one below tip)
-#                parents = parents[0].parents()
-#                node = parents[0].node()
-#                tags = repo.nodetags(node)
-#                # look for the special 'rel_X.X' tag
-#                for tag in tags:
-#                    if tag.startswith('rel_') and len(tag) > 4:
-#                        main_version = tag[4:]
-#                        break
-#                # handle untagged version e.g. tip
-#                if not main_version:
-#                    main_version = short(node)
-#            else:
-#                main_version = '%s%s' % (
-#                    '+'.join([short(p.node()) for p in parents]),
-#                    repo_changed and '+' or ''
-#                    )
-#
+    try:
+        from mercurial.hg import repository
+        from mercurial.ui import ui
+        from mercurial.node import short
+        from mercurial.error import RepoError
+    except ImportError:
+        # no mercurial module available
+        main_version = nohg_version
+    except:
+        # unkown failure
+        main_version = nohg_version
+    else:
+        # try to open local hg repository
+        try:
+            repo = repository(ui(), os.path.dirname(__file__))
+        except RepoError:
+            # no mercurial repository found
+            main_version = nohg_version
+        else:
+            ctx = repo[None]
+            parents = ctx.parents()
+            repo_changed = ctx.files() + ctx.deleted()
+            if len(parents) == 1 and not repo_changed:
+                # release tag isn't at tip it's -2 (one below tip)
+                parents = parents[0].parents()
+                node = parents[0].node()
+                tags = repo.nodetags(node)
+                # look for the special 'rel_X.X' tag
+                for tag in tags:
+                    if tag.startswith('rel_') and len(tag) > 4:
+                        main_version = tag[4:]
+                        break
+                # handle untagged version e.g. tip
+                if not main_version:
+                    main_version = short(node)
+            else:
+                main_version = '%s%s' % (
+                    '+'.join([short(p.node()) for p in parents]),
+                    repo_changed and '+' or ''
+                    )
+
     suffix_changed = repo_changed and '+' or ''
     suffix_edition = hasattr(sys, 'frozen') \
                      and ' (standalone edition)' \

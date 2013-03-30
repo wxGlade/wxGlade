@@ -1,3 +1,19 @@
+Version 0.6.7 - 2013-XX-XX:
+General: 
+  - ...
+
+Bugs:
+  - ...
+
+Documentation:
+  - ...
+
+API (for custom widgets):
+  - ...
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
 Version 0.6.6 - 2013-03-29:
 General: 
   - Add i18n support to C++ code generator
