@@ -680,7 +680,7 @@ class Application(object):
                   wx.OK|wx.CENTRE|wx.ICON_ERROR,
                   )
         else:
-            if not preview:
+            if not preview and config.preferences.show_completion:
                 wx.MessageBox(_("Code generation completed successfully"),
                              _("Information"), wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
 
