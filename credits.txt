@@ -1,10 +1,10 @@
  Main Developer:
  ---------------------------------------------------------------------------
- - Alberto Griggio <agriggio@users.sourceforge.net>
  - Carsten Grohmann <mail@carstengrohmann.de>
 
  Other Developers:
  ---------------------------------------------------------------------------
+ - Alberto Griggio <agriggio@users.sourceforge.net>
  - Marcello Semboli <dinogen@siena.linux.it>
  - Guy Rutenberg <guyrutenberg@gmail.com>
  - D.H. <crazyinsomniac@yahoo.com> (Perl code generation)
