@@ -70,10 +70,8 @@ def _get_version():
                 if not main_version:
                     main_version = short(node)
             else:
-                main_version = '%s%s' % (
-                    '+'.join([short(p.node()) for p in parents]),
-                    repo_changed and '+' or ''
-                    )
+                main_version = '%s' % \
+                    '+'.join([short(p.node()) for p in parents])
 
     suffix_changed = repo_changed and '+' or ''
     suffix_edition = hasattr(sys, 'frozen') \
