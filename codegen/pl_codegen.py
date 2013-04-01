@@ -231,7 +231,8 @@ class PerlCodeWriter(BaseCodeWriter):
     indent_symbol = '\t'
     indent_level_func_body = 1
 
-    language_note = '# To get wxPerl visit http://wxPerl.sourceforge.net/\n',
+    language_note = '# To get wxPerl visit http://wxPerl.sourceforge.net/\n' \
+                    '#\n'
 
     name_ctor = 'new'
 
@@ -240,7 +241,7 @@ class PerlCodeWriter(BaseCodeWriter):
     Default class members, will be initialised during L{initialize()}
     """
 
-    shebang = '#!/usr/bin/perl -w -- \n'
+    shebang = '#!/usr/bin/perl -w -- \n#\n'
 
     SourceFileContent = SourceFileContent
 

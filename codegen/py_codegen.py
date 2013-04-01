@@ -250,14 +250,14 @@ class PythonCodeWriter(BaseCodeWriter):
 
     name_ctor = '__init__'
 
-    shebang = '#!/usr/bin/env python\n'
+    shebang = '#!/usr/bin/env python\n#\n'
 
     SourceFileContent = SourceFileContent
 
     tmpl_name_do_layout = '__do_layout'
     tmpl_name_set_properties = '__set_properties'
 
-    tmpl_encoding = "# -*- coding: %s -*-\n"
+    tmpl_encoding = "# -*- coding: %s -*-\n#\n"
 
     tmpl_class_end = '\n' \
                      '%(comment)s end of class %(klass)s\n'
