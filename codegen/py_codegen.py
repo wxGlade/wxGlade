@@ -250,7 +250,7 @@ class PythonCodeWriter(BaseCodeWriter):
 
     name_ctor = '__init__'
 
-    shebang = '#!/usr/bin/env python\n#\n'
+    shebang = '#!/usr/bin/env python\n'
 
     SourceFileContent = SourceFileContent
 

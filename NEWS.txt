@@ -4,6 +4,7 @@ General:
   - ...
 
 Bugs:
+  - Remove empty line between shebang and encoding statement in Python files
   - ...
 
 Documentation:
