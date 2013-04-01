@@ -208,7 +208,7 @@ class LispCodeWriter(BaseCodeWriter):
 
     name_ctor = '__init__'
 
-    shebang = '#!/usr/bin/env lisp\n'
+    shebang = '#!/usr/bin/env lisp\n;;;\n'
 
     SourceFileContent = SourceFileContent
 

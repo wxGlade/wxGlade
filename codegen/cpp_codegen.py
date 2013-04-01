@@ -346,7 +346,8 @@ class CPPCodeWriter(BaseCodeWriter):
         '//  g++ MyApp.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp\n' \
         '//\n' \
         '// Example for compiling a multi file project under Linux using g++:\n' \
-        '//  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp\n'
+        '//  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp\n' \
+        '//\n'
 
     last_generated_id = 1000
 
@@ -371,7 +372,7 @@ class CPPCodeWriter(BaseCodeWriter):
     @type: StringIO
     """
 
-    shebang = '// -*- C++ -*-\n'
+    shebang = '// -*- C++ -*-\n//\n'
 
     tmpl_cfunc_end = '}\n\n'
 

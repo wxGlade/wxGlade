@@ -82,7 +82,7 @@ class XRCCodeWriter(BaseCodeWriter):
     Dictionary of ``writers'' for the various objects
     """
 
-    tmpl_encoding = '<?xml version="1.0" encoding="%s"?>'
+    tmpl_encoding = '<?xml version="1.0" encoding="%s"?>\n'
     tmpl_generated_by = '<!-- %(generated_by)s -->'
 
     # Nested classes

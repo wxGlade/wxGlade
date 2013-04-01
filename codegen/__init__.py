@@ -2140,12 +2140,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
             # add shebang to main file
             if self.shebang and mainfile or self.language == 'C++':
                 tmp += self.shebang
-                tmp += "%s\n" % self.comment_sign
 
             # add file encoding notice
             if self.tmpl_encoding and self.app_encoding:
                 tmp += self.tmpl_encoding % self.app_encoding
-                tmp += "%s\n" % self.comment_sign
 
             # add created by notice
             if self.tmpl_generated_by:
@@ -2157,7 +2155,6 @@ It is available for wx versions %(supported_versions)s only.""") % {
             # add language specific note
             if self.language_note:
                 tmp += "%s" % self.language_note
-                tmp += "%s\n" % self.comment_sign
 
             # add a empty line
             tmp += "\n"
