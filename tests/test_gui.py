@@ -13,6 +13,7 @@ import sys
 import wx
 
 # import project modules
+import config
 import common
 
 
@@ -53,6 +54,9 @@ class TestGui(WXGladeBaseTest):
         # hide all windows
         self.frame.Hide()
         self.frame.hide_all()
+
+        # show dialog "Code generation completed successfully"
+        config.preferences.show_completion = True
 
     def tearDown(self):
         self.frame.Destroy()
