@@ -109,6 +109,7 @@ class Application(object):
     @ivar klass:       Name of the automatically generated class derived from
                        wxApp
     @ivar name:        Name of the wxApp instance to generate
+    @ivar notebook:    Notebook to show different property panels
     
     @cvar all_supported_versions: Supported wx versions
     @type all_supported_versions: List of strings
