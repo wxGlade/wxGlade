@@ -681,9 +681,19 @@ class Application(object):
                   wx.OK|wx.CENTRE|wx.ICON_ERROR,
                   )
         else:
-            if not preview and config.preferences.show_completion:
-                wx.MessageBox(_("Code generation completed successfully"),
-                             _("Information"), wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
+            if not preview:
+                if config.preferences.show_completion:
+                    # Show informational dialog
+                    wx.MessageBox(
+                        _("Code generation completed successfully"),
+                        _("Information"),
+                        wx.OK | wx.CENTRE | wx.ICON_INFORMATION,
+                        )
+                else:
+                    # Show message in application status bar
+                    app = wx.GetApp()
+                    frame = app.GetTopWindow()
+                    frame.user_message(_('Code generated'))
 
     def get_name(self):
         if self.name_prop.is_active():
