@@ -1,6 +1,7 @@
 Version 0.6.7 - 2013-XX-XX:
 General: 
   - Add a config option to suppress the code generation success message
+  - Preselect some dialog elements
   - ...
 
 Bugs:
