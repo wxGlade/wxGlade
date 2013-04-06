@@ -640,6 +640,8 @@ class InsertDialog(wx.Dialog):
         wx.Dialog.__init__(self, None, -1, _("Select a position"))
         self.pos = 0
         pos_prop = SpinProperty(self, 'position', self, r=(0, max_val), label=_("position"))
+        pos_prop.spin.SetFocus()
+        pos_prop.spin.SetSelection(-1, -1)        
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(pos_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
         szr2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -2368,7 +2370,9 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
             self.hgap.set_tooltip(
                 _('Horizontal extra space between all children')
                 )
-            
+            self.rows.spin.SetFocus()
+            self.rows.spin.SetSelection(-1, -1)
+
             self.flex = CheckBoxProperty(
                 self,
                 'flex',

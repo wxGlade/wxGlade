@@ -114,6 +114,8 @@ def builder(parent, sizer, pos):
             self.width = SpinProperty(self, 'width', self, label=_("width"))
             self.height = SpinProperty(self, 'height', self, label=_("height"))
             self.width.set_value(20)
+            self.width.spin.SetFocus()
+            self.width.spin.SetSelection(-1, -1)
             self.height.set_value(20)
             
             szr = wx.BoxSizer(wx.VERTICAL)
