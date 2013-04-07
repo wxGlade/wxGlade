@@ -6,6 +6,7 @@ General:
 
 Bugs:
   - Remove empty line between shebang and encoding statement in Python files
+  - Regression in generated Python code for bindung events 
   - ...
 
 Documentation:

@@ -551,6 +551,8 @@ if __name__ == "__main__":
             for win_id, event, handler in event_handlers:
                 if win_id.startswith('#'):
                     win_id = win_id[1:]
+                else:
+                    win_id = 'id=%s' % win_id
                 write('%(tab)sself.Bind(%(event)s, self.%(handler)s, %(win_id)s)\n' % {
                     'tab': tab,
                     'event': event,
