@@ -20,8 +20,8 @@ This procedure is tested using PyInstaller versions 1.5 and 1.5.1.
 - Type
   python.exe <path to PyInstaller>\Build.py --noconfirm --buildpath <path to source>\wxglade\build install\pyinstaller\wxglade.spec
 
-  If everything works, you should now have two new subdirectories, "build"
-  and "dist".
+  If everything works, you should now have three new subdirectories
+  "build", "bdist" and "dist".
 
 - Now you should have a working executable in "bdist", called "wxglade.exe".
   If it works, you can move on to the next step
