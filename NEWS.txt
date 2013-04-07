@@ -1,19 +1,17 @@
-Version 0.6.7 - 2013-XX-XX:
+Version 0.6.7 - 2013-04-07:
 General: 
   - Add a config option to suppress the code generation success message
   - Improve usability of some dialogs
-  - ...
 
 Bugs:
   - Remove empty line between shebang and encoding statement in Python files
   - Regression in generated Python code for bindung events 
-  - ...
 
 Documentation:
-  - ...
+  - no changes
 
 API (for custom widgets):
-  - ...
+  - no changes
 
 Note:
   - See CHANGES.txt for a full list of changes
