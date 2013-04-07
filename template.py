@@ -1,10 +1,11 @@
-# template.py: handles the template tags and description
-# 
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
-#
-# Author: Guy Rutenberg, Alberto Griggio
+"""
+Handles the template tags and description
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@author: Guy Rutenberg
+@author: Alberto Griggio
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 from xml.dom import minidom
 from xml.sax import saxutils
@@ -107,7 +108,8 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
             self.author.SetValue("")
             self.description.SetValue("")
             self.instructions.SetValue("")
-        event.Skip()
+        if event:
+            event.Skip()
 
     def set_template_name(self, name):
         self.template_name.SetLabel(_("wxGlade template:\n") + misc.wxstr(name))
@@ -133,8 +135,14 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
     def fill_template_list(self):
         self.templates = load_templates()
         self.template_names.Clear()
-        for n in self.templates:
-            self.template_names.Append(os.path.splitext(os.path.basename(n))[0])
+        if self.templates:
+            for n in self.templates:
+                self.template_names.Append(
+                    os.path.splitext(os.path.basename(n))[0]
+                    )
+                # show details of first template
+                self.template_names.SetSelection(0)
+                self.on_select_template(None)
 
 # end of class TemplateListDialog
 
