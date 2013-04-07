@@ -11,4 +11,9 @@ Steps to publish a new version
  6. Create all packages
     - build windows installer (see docs/BuildingInstaller.txt)
     - create zip and tar.gz source packages
- 7. Change version number in common.py and wxglade-installer.iss to HG
+ 7. Update web page at wxglade.sf.net
+    - upload packages to SF
+    - update news section in htdocs/bits/news.html
+    - update HTML and PDF manual in htdocs/manual
+ 8. Send notification email to wxGlade mailing list
+ 9. Change version number in common.py and wxglade-installer.iss to HG
