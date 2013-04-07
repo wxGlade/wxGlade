@@ -1,4 +1,169 @@
+2013-04-07  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Improve usability of the dialog to list and open templates
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* res/templates_ui.wxg
+	* template.py
+	* templates_ui.py
+
+	Regression in generated Python code for bindung events
+
+	The regression was introduced in 1173:95047b445b12 "Rework
+	generating constructor code in all code generators".
+
+	The generated code raised an AssertionError if the source of the
+	event is specified by an ID number instead of a widget.
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/py_codegen.py
+
+2013-04-06  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Preselect some dialog elements
+
+	Simplify usage of some dialogs by setting focus to first input
+	widget and select the widget content.
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* edit_sizers/edit_sizers.py
+	* res/templates_ui.wxg
+	* templates_ui.py
+	* widgets/spacer/spacer.py
+
+2013-04-03  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Show feedback in status bar if code generation dialog is suppressed
+
+	Files (added, modified or removed):
+	* application.py
+
+2013-04-01  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Repair GUI test broken with 1223:602859354d4b
+
+	Files (added, modified or removed):
+	* tests/test_gui.py
+
+	Remove empty line between shebang and encoding statement in Python
+	files
+
+	The additional empty line between the shebang and the encoding
+	statement violates PEP 0263 and causes some trouble with utf-8 on
+	win7.
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/py_codegen.py
+	* tests/casefiles/CalendarCtrl.py
+	* tests/casefiles/FontColour.py
+	* tests/casefiles/Gauge.py
+	* tests/casefiles/Grid.py
+	* tests/casefiles/HyperlinkCtrl_26.py
+	* tests/casefiles/HyperlinkCtrl_28.py
+	* tests/casefiles/PyAddApp_multi_detailed.py
+	* tests/casefiles/PyAddApp_multi_gettext_detailed.py
+	* tests/casefiles/PyAddApp_multi_gettext_simple.py
+	* tests/casefiles/PyAddApp_multi_simple.py
+	* tests/casefiles/PyOgg1.py
+	* tests/casefiles/PyOgg1_oldnamespace.py
+	* tests/casefiles/PyOgg2_app.py
+	* tests/casefiles/PyOgg3.py
+	* tests/casefiles/Python_Preferences.py
+	* tests/casefiles/Sizers_classattr.py
+	* tests/casefiles/Sizers_no_classattr.py
+	* tests/casefiles/add_class_inplace_extended.py
+	* tests/casefiles/add_class_inplace_orig.py
+	* tests/casefiles/no_suitable_writer.py
+	* tests/casefiles/remove_class_inplace_expected.py
+	* tests/casefiles/remove_class_inplace_input.py
+
+	Change handling of empty lines in file headers
+
+	Hardcoded empty lines are removed. The empty lines are added to the
+	variables shebang, tmpl_encoding and language_note. Thereby the
+	generated code has not changed.
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* codegen/xrc_codegen.py
+
+	Minor change in source documentation
+
+	Files (added, modified or removed):
+	* application.py
+
+2013-03-31  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Update Main Developer
+
+	Files (added, modified or removed):
+	* credits.txt
+
+	Add a config option to suppress the code generation success message
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* application.py
+	* config.py
+	* configUI.py
+	* configdialog.py
+	* res/preferences.wxg
+
+	Fix plus sign for uncommitted changes in version number.
+
+	"++" was shown due a logical bug. Now just "+" is shown. The plus
+	sign in version number indicates not committed changes.
+
+	Files (added, modified or removed):
+	* common.py
+
+2013-03-30  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Set version numbers back to HG to start new development cycle
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* common.py
+	* install/pyinstaller/wxglade-installer.iss
+
 2013-03-29  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Added tag rel_0.6.6 for changeset 9ee81dcd0dc1
+
+	Files (added, modified or removed):
+	* .hgtags
+
+	Uninstall byte-code files for hyperlink widget too
+
+	Files (added, modified or removed):
+	* install/pyinstaller/wxglade-installer.iss
+
+	Added tag rel_0.6.6 for changeset 4487d7edc422
+
+	Files (added, modified or removed):
+	* .hgtags
+
+	Bump version number to 0.6.6
+
+	Files (added, modified or removed):
+	* common.py
+	* install/pyinstaller/wxglade-installer.iss
+
+	Prerelease documentation updates
+
+	Files (added, modified or removed):
+	* CHANGES.txt
+	* NEWS.txt
+	* README.txt
+	* credits.txt
 
 	Combine language specific panels in application properties dialog
 
