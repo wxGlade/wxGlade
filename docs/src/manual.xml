@@ -5,7 +5,7 @@
   <title>wxGlade user manual</title>
 
   <bookinfo>
-    <date>2013-03-29</date>
+    <date>2013-04-12</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -281,18 +281,19 @@
         </listitem>
 
         <listitem>
-          <para>wxPython 2.6 or 2.8</para>
+          <para>wxPython 2.6, 2.8 or 30</para>
         </listitem>
 
         <listitem>
-          <para>wxWidgets 2.6 or 2.8, the wxWidgets are often bundled with
-          wxPython</para>
-        </listitem>
-
-        <listitem>
-          <para>wxPython 2.9 is not supported yer</para>
+          <para>wxWidgets 2.6, 2.8 or 3.0, the wxWidgets are often bundled
+          with wxPython</para>
         </listitem>
       </itemizedlist>
+
+      <note>
+        <para>The support for wxWidgets 3.0 as well as wxPython 3.0 based
+        currently on the development release series 2.9 of wxPython.</para>
+      </note>
 
       <para>wxWidgets is available at <ulink
       url="???">http://www.wxwidgets.org</ulink> and wxPython at <ulink
