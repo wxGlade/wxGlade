@@ -115,7 +115,7 @@ class Application(object):
     @type all_supported_versions: List of strings
     """
     
-    all_supported_versions = ['2.6', '2.8']
+    all_supported_versions = ['2.6', '2.8', '3.0']
 
     def __init__(self, property_window):
         self.property_window = property_window
@@ -255,7 +255,7 @@ class Application(object):
             "for_version",
             panel,
             self.all_supported_versions,
-            columns=2,
+            columns=3,
             label=_("wxWidgets compatibility"),
             tooltips=for_version_tooltips,
             )
