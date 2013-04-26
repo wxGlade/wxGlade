@@ -1143,3 +1143,9 @@ class TestCodeGen(WXGladeBaseTest):
                         formatted,
                         )
                     )
+
+    def test_ComplexExample(self):
+        """\
+        Test code generation for a complex example
+        """
+        self._test_all('ComplexExample')
