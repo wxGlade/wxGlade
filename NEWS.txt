@@ -4,6 +4,7 @@ General:
 
 Bugs:
   - Wrong SetSizeHint() call in Perl (Thanks to Eric McKeeth)
+  - Fix XRC code generation for notebooks with panes
 
 Documentation:
   - ...
