@@ -91,11 +91,14 @@ def xrc_code_generator(obj):
     class NotebookXrcObject(xrcgen.DefaultXrcObject):
 
         def write(self, outfile, ntabs):
+            # the "tabs" property contains the pages of a notebook
+            # be carefully: tabs in context of code generation are white
+            # spaces used for indenting lines!!
             if self.properties.has_key('tabs'):
-                self.tabs = self.properties['tabs']
+                self.pages = self.properties['tabs']
                 del self.properties['tabs']
             else:
-                self.tabs = []
+                self.pages = []
             self.index = 0
             # always use a wxNotebookSizer
             self.properties['usenotebooksizer'] = '1'
@@ -104,11 +107,11 @@ def xrc_code_generator(obj):
             xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
 
         def write_child_prologue(self, child, outfile, ntabs):
-            if self.tabs:
+            if self.pages:
                 tab_s = '    ' * ntabs
                 outfile.write(tab_s + '<object class="notebookpage">\n')
                 outfile.write(tab_s + '<label>%s</label>\n' % \
-                              escape(self.tabs[self.index][0]))
+                              escape(self.pages[self.index][0]))
                 self.index += 1
 
         def write_child_epilogue(self, child, outfile, ntabs):
