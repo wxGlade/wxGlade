@@ -2323,7 +2323,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """
         if not obj:
             return ''
-        if not hasattr(obj, 'name'):
+        elif not getattr(obj, 'name', None):
             return ''
         return obj.name
 
