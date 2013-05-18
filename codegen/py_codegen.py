@@ -672,20 +672,17 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         return '#self.%s' % name
 
     def _format_classattr(self, obj):
-        if not obj:
-            return ''
-        if not hasattr(obj, 'name'):
-            return ''
-        if obj.name.startswith('self.'):
+        res = BaseCodeWriter._format_classattr(self, obj)
+        if not res:
+            return res
+        elif obj.name.startswith('self.'):
             return obj.name
         # spacer.name is "<width>, <height>" already, but wxPython expect
         # a tuple instead of two single values
-        if obj.klass == 'spacer':
+        elif obj.klass == 'spacer':
             return '(%s)' % obj.name
-        if not re.match('[a-zA-Z]', obj.name):
-            return obj.name
-        if self.test_attribute(obj):
-            return "self.%s" % obj.name
+        elif self.test_attribute(obj):
+            return 'self.%s' % obj.name
         return obj.name
 
     def _format_import(self, klass):

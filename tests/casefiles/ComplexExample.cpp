@@ -47,7 +47,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, 
     };
     radio_box_1 = new wxRadioBox(notebook_1_pane_2, wxID_ANY, _("Sampling Rate"), wxDefaultPosition, wxDefaultSize, 2, radio_box_1_choices, 0, wxRA_SPECIFY_ROWS);
     text_ctrl_2 = new wxTextCtrl(notebook_1_pane_3, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-    label_2 = new wxStaticText(notebook_1_pane_4, wxID_ANY, _("File name:"));
+    _lbl_output_filename = new wxStaticText(notebook_1_pane_4, wxID_ANY, _("File name:"));
     text_ctrl_3 = new wxTextCtrl(notebook_1_pane_4, wxID_ANY, wxEmptyString);
     button_4 = new wxButton(notebook_1_pane_4, wxID_OPEN, wxEmptyString);
     checkbox_1 = new wxCheckBox(notebook_1_pane_4, wxID_ANY, _("Overwrite existing file"));
@@ -88,28 +88,28 @@ void PyOgg2_MyFrame::do_layout()
     // begin wxGlade: PyOgg2_MyFrame::do_layout
     wxFlexGridSizer* sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
     wxFlexGridSizer* sizer_2 = new wxFlexGridSizer(1, 3, 0, 0);
-    wxFlexGridSizer* grid_sizer_2 = new wxFlexGridSizer(2, 3, 0, 0);
-    wxBoxSizer* sizer_3 = new wxBoxSizer(wxHORIZONTAL);
+    wxFlexGridSizer* _gszr_pane4 = new wxFlexGridSizer(2, 3, 0, 0);
+    wxBoxSizer* _szr_pane3 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxHORIZONTAL);
-    wxFlexGridSizer* grid_sizer_1 = new wxFlexGridSizer(1, 3, 0, 0);
-    wxStaticText* label_1 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("File name:"));
-    grid_sizer_1->Add(label_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-    grid_sizer_1->Add(text_ctrl_1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL, 5);
-    grid_sizer_1->Add(button_3, 0, wxALL, 5);
-    notebook_1_pane_1->SetSizer(grid_sizer_1);
-    grid_sizer_1->AddGrowableCol(1);
+    wxFlexGridSizer* _gszr_pane1 = new wxFlexGridSizer(1, 3, 0, 0);
+    wxStaticText* _lbl_input_filename = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("File name:"));
+    _gszr_pane1->Add(_lbl_input_filename, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    _gszr_pane1->Add(text_ctrl_1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL, 5);
+    _gszr_pane1->Add(button_3, 0, wxALL, 5);
+    notebook_1_pane_1->SetSizer(_gszr_pane1);
+    _gszr_pane1->AddGrowableCol(1);
     sizer_4->Add(radio_box_1, 1, wxALL|wxEXPAND|wxSHAPED, 5);
     notebook_1_pane_2->SetSizer(sizer_4);
-    sizer_3->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
-    notebook_1_pane_3->SetSizer(sizer_3);
-    grid_sizer_2->Add(label_2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-    grid_sizer_2->Add(text_ctrl_3, 0, wxALL|wxEXPAND, 5);
-    grid_sizer_2->Add(button_4, 0, wxALL, 5);
-    grid_sizer_2->Add(20, 20, 0, 0, 0);
-    grid_sizer_2->Add(checkbox_1, 0, wxALL|wxEXPAND, 5);
-    grid_sizer_2->Add(20, 20, 0, 0, 0);
-    notebook_1_pane_4->SetSizer(grid_sizer_2);
-    grid_sizer_2->AddGrowableCol(1);
+    _szr_pane3->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
+    notebook_1_pane_3->SetSizer(_szr_pane3);
+    _gszr_pane4->Add(_lbl_output_filename, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    _gszr_pane4->Add(text_ctrl_3, 0, wxALL|wxEXPAND, 5);
+    _gszr_pane4->Add(button_4, 0, wxALL, 5);
+    _gszr_pane4->Add(20, 20, 0, 0, 0);
+    _gszr_pane4->Add(checkbox_1, 0, wxALL|wxEXPAND, 5);
+    _gszr_pane4->Add(20, 20, 0, 0, 0);
+    notebook_1_pane_4->SetSizer(_gszr_pane4);
+    _gszr_pane4->AddGrowableCol(1);
     notebook_1->AddPage(notebook_1_pane_1, _("Input File"));
     notebook_1->AddPage(notebook_1_pane_2, _("Converting Options"));
     notebook_1->AddPage(notebook_1_pane_3, _("Converting Progress"));
@@ -202,16 +202,16 @@ void MyFrameGrid::set_properties()
 void MyFrameGrid::do_layout()
 {
     // begin wxGlade: MyFrameGrid::do_layout
-    wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* _szr_frame = new wxBoxSizer(wxVERTICAL);
     wxFlexGridSizer* grid_sizer = new wxFlexGridSizer(3, 1, 0, 0);
     grid_sizer->Add(grid, 1, wxEXPAND, 0);
     grid_sizer->Add(static_line, 0, wxALL|wxEXPAND, 5);
     grid_sizer->Add(button, 0, wxALL|wxALIGN_RIGHT, 5);
     grid_sizer->AddGrowableRow(0);
     grid_sizer->AddGrowableCol(0);
-    sizer->Add(grid_sizer, 1, wxEXPAND, 0);
-    SetSizer(sizer);
-    sizer->SetSizeHints(this);
+    _szr_frame->Add(grid_sizer, 1, wxEXPAND, 0);
+    SetSizer(_szr_frame);
+    _szr_frame->SetSizeHints(this);
     Layout();
     // end wxGlade
 }
