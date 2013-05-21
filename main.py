@@ -10,7 +10,10 @@ widgets and initializes all the stuff (tree, property_frame, etc.)
 import os
 import os.path
 import sys
+import time
 import wx
+import cStringIO
+from xml.sax import SAXParseException
 
 # import project modules
 from widget_properties import *
@@ -22,6 +25,8 @@ import config
 import configdialog
 import clipboard
 import template
+from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, \
+    XmlParsingError
 
 
 class wxGladePropertyPanel(wx.Panel):
@@ -417,7 +422,7 @@ class wxGladeFrame(wx.Frame):
             try:
                 x, y, w, h = prefs.get_geometry('main')
                 misc.set_geometry(self, (x, y))
-            except Exception, e:
+            except Exception:
                 pass
             misc.set_geometry(self.frame2, prefs.get_geometry('properties'))
             misc.set_geometry(self.tree_frame, prefs.get_geometry('tree'))
@@ -625,8 +630,8 @@ class wxGladeFrame(wx.Frame):
         NOTE: this is very slow and needs optimisation efforts
         NOTE2: the note above should not be True anymore :)
         """
-        if not self.ask_save(): return
-        from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder
+        if not self.ask_save():
+            return
         infile = misc.FileSelector(_("Open file"),
                                    wildcard="wxGlade files (*.wxg)|*.wxg|"
                                    "wxGlade Template files (*.wgt)|*.wgt|"
@@ -648,11 +653,6 @@ class wxGladeFrame(wx.Frame):
 
     def _open_app(self, infilename, use_progress_dialog=True,
                   is_filelike=False, add_to_history=True):
-        import time
-        from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, \
-             XmlParsingError
-        from xml.sax import SAXParseException
-
         start = time.clock()
 
         common.app_tree.clear()
@@ -766,11 +766,9 @@ class wxGladeFrame(wx.Frame):
 
     def _save_app(self, filename):
         try:
-            from cStringIO import StringIO
-            buffer = StringIO()
-            common.app_tree.write(buffer)
-            common.save_file(filename,
-                             buffer.getvalue(), 'wxg')
+            obuffer = cStringIO.StringIO()
+            common.app_tree.write(obuffer)
+            common.save_file(filename, obuffer.getvalue(), 'wxg')
         except (IOError, OSError), msg:
             common.app_tree.app.saved = False
             wx.MessageBox(_("Error saving app:\n%s") % msg, _("Error"),
@@ -901,7 +899,7 @@ class wxGladeFrame(wx.Frame):
         self.frame2.Hide()
 
     def import_xrc(self, event):
-        import xrc2wxg, cStringIO
+        import xrc2wxg
 
         if not self.ask_save():
             return
@@ -912,11 +910,11 @@ class wxGladeFrame(wx.Frame):
                                    flags=wx.OPEN|wx.FILE_MUST_EXIST,
                                    default_path=self.cur_dir)
         if infilename:
-            buf = cStringIO.StringIO()
+            ibuffer = cStringIO.StringIO()
             try:
-                xrc2wxg.convert(infilename, buf)
-                buf.seek(0)
-                self._open_app(buf, is_filelike=True)
+                xrc2wxg.convert(infilename, ibuffer)
+                ibuffer.seek(0)
+                self._open_app(ibuffer, is_filelike=True)
                 common.app_tree.app.saved = False
             except Exception, msg:
                 common.message.exception(

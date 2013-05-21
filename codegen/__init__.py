@@ -1157,8 +1157,8 @@ class BaseCodeWriter(object):
                 for m in mods:
                     self._current_extra_modules[m] = 1
 
-        buffer = []
-        write = buffer.append
+        obuffer = []
+        write = obuffer.append
 
         if not self.classes.has_key(code_obj.klass):
             # if the class body was empty, create an empty ClassLines
@@ -1192,7 +1192,7 @@ class BaseCodeWriter(object):
 
         # generate code for first constructor stage
         code_lines = self.generate_code_ctor(code_obj, is_new, tab)
-        buffer.extend(code_lines)
+        obuffer.extend(code_lines)
 
         # now check if there are extra lines to add to the constructor
         if hasattr(builder, 'get_init_code'):
@@ -1209,7 +1209,7 @@ class BaseCodeWriter(object):
             tab,
             event_handlers,
             )
-        buffer.extend(code_lines)
+        obuffer.extend(code_lines)
 
         # end tag
         write('%s%s end wxGlade\n' % (tab, self.comment_sign))
@@ -1238,9 +1238,9 @@ class BaseCodeWriter(object):
                         }
                     )
             else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buffer))
-            buffer = []
-            write = buffer.append
+                prev_src.content = prev_src.content.replace(tag, "".join(obuffer))
+            obuffer = []
+            write = obuffer.append
 
         # generate code for __set_properties()
         code_lines = self.generate_code_set_properties(
@@ -1249,7 +1249,7 @@ class BaseCodeWriter(object):
             is_new,
             tab
             )
-        buffer.extend(code_lines)
+        obuffer.extend(code_lines)
 
         # replace code inside existing __set_properties() function
         if prev_src and not is_new:
@@ -1264,9 +1264,9 @@ class BaseCodeWriter(object):
                     "__set_properties code NOT generated" % code_obj.name
                     )
             else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buffer))
-            buffer = []
-            write = buffer.append
+                prev_src.content = prev_src.content.replace(tag, "".join(obuffer))
+            obuffer = []
+            write = obuffer.append
 
         # generate code for __do_layout()
         code_lines = self.generate_code_do_layout(
@@ -1275,7 +1275,7 @@ class BaseCodeWriter(object):
             is_new,
             tab
             )
-        buffer.extend(code_lines)
+        obuffer.extend(code_lines)
 
         # replace code inside existing __do_layout() function
         if prev_src and not is_new:
@@ -1290,7 +1290,7 @@ class BaseCodeWriter(object):
                     "code NOT generated" % code_obj.name
                     )
             else:
-                prev_src.content = prev_src.content.replace(tag, "".join(buffer))
+                prev_src.content = prev_src.content.replace(tag, "".join(obuffer))
 
         # generate code for event handler stubs
         code_lines = self.generate_code_event_handler(
@@ -1317,7 +1317,7 @@ class BaseCodeWriter(object):
                     "".join(code_lines),
                     )
         else:
-            buffer.extend(code_lines)
+            obuffer.extend(code_lines)
 
         # the code has been generated
         self.classes[code_obj.klass].done = True
@@ -1392,7 +1392,7 @@ class BaseCodeWriter(object):
             write(code)
 
             # write the class body
-            for line in buffer:
+            for line in obuffer:
                 write(line)
             # store the contents to filename
             self.save_file(filename, out.getvalue())
@@ -1402,7 +1402,7 @@ class BaseCodeWriter(object):
                 # if this is a new class, add its code to the new_classes
                 # list of the SourceFileContent instance
                 if is_new:
-                    prev_src.new_classes.append("".join(buffer))
+                    prev_src.new_classes.append("".join(obuffer))
                 elif self.classes[code_obj.klass].extra_code:
                     self._current_extra_code.extend(self.classes[code_obj.klass].extra_code[::-1])
                 return
@@ -1413,7 +1413,7 @@ class BaseCodeWriter(object):
                 if self.classes[code_obj.klass].extra_code:
                     self._current_extra_code.extend(self.classes[code_obj.klass].extra_code[::-1])
                 write = self.output_file.write
-                for line in buffer:
+                for line in obuffer:
                     write(line)
 
     def add_object(self, top_obj, sub_obj):
