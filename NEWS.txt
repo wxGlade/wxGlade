@@ -6,6 +6,7 @@ Bugs:
   - Wrong SetSizeHint() call in Perl (Thanks to Eric McKeeth)
   - Fix XRC code generation for notebooks with panes
   - Fix too strict sanity checks for class attributes
+  - Fix "Overwrite existing sources" for new projects
 
 Documentation:
   - ...

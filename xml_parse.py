@@ -186,6 +186,10 @@ class XmlWidgetBuilder(XmlParser):
             if overwrite:
                 app.overwrite = True
                 app.overwrite_prop.set_value(True)
+            else:
+                app.overwrite = False
+                app.overwrite_prop.set_value(False)
+
             try:
                 use_new_namespace = int(attrs['use_new_namespace'])
             except (KeyError, ValueError):
