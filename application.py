@@ -448,7 +448,15 @@ class Application(object):
         except LookupError:
             print 'WARNING: No codec for encoding "%s" found. Use "ascii" instead' % encoding
             encoding = 'ascii'
-            
+
+        # print current locale
+        loc_langcode, loc_encoding = locale.getlocale()
+        print _("Current locale settings are:\n  Language code: %s\n"
+                "  Encoding: %s") % (
+            loc_langcode,
+            loc_encoding,
+            )
+
         return encoding.upper()
 
     def get_encoding(self):
