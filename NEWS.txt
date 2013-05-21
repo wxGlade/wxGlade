@@ -7,6 +7,7 @@ Bugs:
   - Fix XRC code generation for notebooks with panes
   - Fix too strict sanity checks for class attributes
   - Fix "Overwrite existing sources" for new projects
+  - Fix an uninitialised variable in saving a project file (sf bug # 157)
 
 Documentation:
   - ...

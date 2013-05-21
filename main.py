@@ -773,16 +773,14 @@ class wxGladeFrame(wx.Frame):
                              buffer.getvalue(), 'wxg')
         except (IOError, OSError), msg:
             common.app_tree.app.saved = False
-            fn = filename
             wx.MessageBox(_("Error saving app:\n%s") % msg, _("Error"),
                          wx.OK|wx.CENTRE|wx.ICON_ERROR)
         except Exception, msg:
             common.message.exception(
                 _('An exception occurred while saving file "%s".') % \
-                    fn.encode('ascii', 'replace')
+                    filename.encode('ascii', 'replace')
                 )
             common.app_tree.app.saved = False
-            fn = filename
             wx.MessageBox(_("An exception occurred while saving file "
                             "\"%s\".\n"
                             "This is the error message associated with it:"
@@ -790,14 +788,13 @@ class wxGladeFrame(wx.Frame):
                             "For more details, look at the full traceback "
                             "on the console.\nIf you think this is a "
                             "wxGlade bug,"
-                            " please report it.") % (fn, msg),
+                            " please report it.") % (filename, msg),
                           _("Error"),
                           wx.OK|wx.CENTRE|wx.ICON_ERROR
                           )
         else:
             common.app_tree.app.saved = True
-            common.remove_autosaved() # ALB 2004-10-15
-            # ALB 2004-10-15
+            common.remove_autosaved()
             if config.preferences.autosave and \
                    self.autosave_timer is not None:
                 self.autosave_timer.Start()
