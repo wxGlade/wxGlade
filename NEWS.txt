@@ -1,6 +1,6 @@
 Version 0.6.8 - 2013-XX-XXX:
 General: 
-  - ...
+  - Add comfortable exception handler for more detailed bug reports
 
 Bugs:
   - Wrong SetSizeHint() call in Perl (Thanks to Eric McKeeth)

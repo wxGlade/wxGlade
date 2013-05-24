@@ -6,8 +6,10 @@ Global variables
 """
 
 import os
+import pprint
 import sys
 import traceback
+import types
 
 use_gui = True
 """\
@@ -410,6 +412,49 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     return tmp
 
 
+def exceptionHandler(exc_type, exc_value, exc_tb):
+    """\
+    Logs detailed information about uncatched exceptions
+
+    @param exc_type:  Type of the exception (normally a class object)
+    @param exc_value: The "value" of the exception
+    @param exc_tb:    Call stack of the exception
+    """
+    try:
+        tb = exc_tb
+        while tb.tb_next:
+            tb = tb.tb_next
+        frame_locals = tb.tb_frame.f_locals
+        # log exception details
+        message.error(_('An unexpected error occurs!'))
+        message.error(_('Error type:    %s'), exc_type)
+        message.error(_('Error details: %s'), exc_value)
+        message.error(_('Stack Trace:'))
+        lines = '\n'.join(traceback.format_exception(exc_type, exc_value, exc_tb)).split('\n')
+        for line in lines:
+            if not line:
+                continue
+            message.error(line)
+        message.error(_('Local variables of the last stack entry:'))
+        for varname in frame_locals.keys():
+            # convert variablen name and value to ascii
+            var = frame_locals[varname]
+            vartype = type(var)
+            if vartype == types.UnicodeType:
+                varvalue = frame_locals[varname]
+                varvalue = varvalue.encode('unicode_escape')
+            else:
+                varvalue = pprint.pformat(frame_locals[varname])
+                varvalue = varvalue
+            message.error(_('%s (%s): %s'), varname, vartype, varvalue)
+
+    # delete local references of tracebacks or part of tracebacks
+    # to avoid cirular references
+    finally:
+        del tb
+        del frame_locals
+
+
 def _encode_from_xml(label, encoding=None):
     """\
     Returns a str which is the encoded version of the unicode label
@@ -646,8 +691,10 @@ class MessageLogger(object):
         Show exception details
         """
         self.__call__(_("EXCEPTION"), fmt, *args)
-        self.__call__(_("EXCEPTION"), _("Exception details:"))
-        self.__call__(_("EXCEPTION"), traceback.format_exc())
+        if not sys.exc_info()[0]:
+            return
+        exceptionHandler(*sys.exc_info())
+        sys.exc_clear()
 
     def flush(self):
         """\
