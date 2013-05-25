@@ -63,7 +63,7 @@
                             <object class="sizeritem">
                                 <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
                                 <border>5</border>
-                                <object class="wxStaticText" name="label_1">
+                                <object class="wxStaticText" name="_lbl_input_filename">
                                     <label>File name:</label>
                                 </object>
                             </object>
@@ -137,7 +137,7 @@
                             <object class="sizeritem">
                                 <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
                                 <border>5</border>
-                                <object class="wxStaticText" name="label_2">
+                                <object class="wxStaticText" name="_lbl_output_filename">
                                     <label>File name:</label>
                                 </object>
                             </object>
@@ -217,6 +217,7 @@
         <size>492, 300</size>
         <title>FrameOggCompressionDetails</title>
         <object class="wxBoxSizer">
+            <attribute>1</attribute>
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
                 <option>1</option>
@@ -225,6 +226,7 @@
                     <hgap>0</hgap>
                     <growablerows>0</growablerows>
                     <rows>3</rows>
+                    <attribute>1</attribute>
                     <growablecols>0</growablecols>
                     <cols>1</cols>
                     <vgap>0</vgap>

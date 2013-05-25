@@ -56,7 +56,7 @@ protected:
     wxPanel* notebook_1_pane_2;
     wxTextCtrl* text_ctrl_2;
     wxPanel* notebook_1_pane_3;
-    wxStaticText* label_2;
+    wxStaticText* _lbl_output_filename;
     wxTextCtrl* text_ctrl_3;
     wxButton* button_4;
     wxCheckBox* checkbox_1;
@@ -96,6 +96,8 @@ protected:
     wxGrid* grid;
     wxStaticLine* static_line;
     wxButton* button;
+    wxFlexGridSizer* grid_sizer;
+    wxBoxSizer* _szr_frame;
     // end wxGlade
 }; // wxGlade: end class
 
