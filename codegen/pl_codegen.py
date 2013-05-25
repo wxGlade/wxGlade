@@ -673,6 +673,16 @@ unless(caller){
         s = s.replace('"', r'\"')
         s = s.replace('$', r'\$')
         s = s.replace('@', r'\@')
+        try:
+            dummy = unicode(s, 'ascii')
+        except UnicodeDecodeError:
+            # convert byte string to unicode, escape unicode characters and
+            # convert string back to ascii
+            s = s.decode('utf8')
+            s = s.encode('unicode-escape')
+            # convert Python style to Perl style
+            s = re.sub(r'\\u([0-9]{4})\b', r'\\N{U+\1}', s)
+
         if self._use_gettext and translate:
             return '_T("%s")' % s
         else:

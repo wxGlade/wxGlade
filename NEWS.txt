@@ -8,6 +8,7 @@ Bugs:
   - Fix too strict sanity checks for class attributes
   - Fix "Overwrite existing sources" for new projects
   - Fix an uninitialised variable in saving a project file (sf bug # 157)
+  - Fix handling of unicode characters in strings for Perl and Python
 
 Documentation:
   - ...

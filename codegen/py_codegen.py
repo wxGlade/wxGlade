@@ -651,12 +651,16 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         else:
             s = s.replace('\\', r'\\')  # just quote the backslashes
         try:
-            unicode(s, 'ascii')
+            dummy = unicode(s, 'ascii')
             if self._use_gettext and translate:
                 return '_("%s")' % s
             else:
                 return '"%s"' % s
         except UnicodeDecodeError:
+            # convert byte string to unicode, escape unicode characters and
+            # convert string back to ascii
+            s = s.decode('utf8')
+            s = s.encode('unicode-escape')
             if self._use_gettext and translate:
                 return '_(u"%s")' % s
             else:

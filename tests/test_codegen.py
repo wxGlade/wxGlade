@@ -1165,3 +1165,41 @@ class TestCodeGen(WXGladeBaseTest):
         Test code generation for a complex example
         """
         self._test_all('ComplexExample')
+
+    def test_quote_str(self):
+        """\
+        Test string quotation for Perl and Python
+        
+        @see: L{codegen.pl_codegen.PerlCodeWriter.quote_str()}
+        @see: L{codegen.py_codegen.PythonCodeWriter.quote_str()}
+        """
+        details = {}
+        details['python'] = [
+                (None, '""'),
+                ('', '""'),
+                ('My 1st and simple ascii test!', '_("My 1st and simple ascii test!")'),
+                ('\xe2\x99\xa5 Love this song', '_(u"\\u2665 Love this song")'),
+                ('\xe2\x99\xa5 Love \xe2\x99\xa5', '_(u"\\u2665 Love \\u2665")'),
+                ]
+        details['perl'] = [
+                (None, '""'),
+                ('', '""'),
+                ('My 1st and simple ascii test!', '_T("My 1st and simple ascii test!")'),
+                ('\xe2\x99\xa5 Love this song', '_T("\\N{U+2665} Love this song")'),
+                ('\xe2\x99\xa5 Love \xe2\x99\xa5', '_T("\\N{U+2665} Love \\N{U+2665}")'),
+                ('\xe2\x99\xa52 Love \xe2\x99\xa5', '_T("\u26652 Love \N{U+2665}")'),
+                ]
+        for lang in ['python', 'perl']:
+            codegen = common.code_writers.get(lang)
+            codegen._use_gettext = True
+            for unformatted, formatted in details[lang]:
+                ret = codegen.quote_str(unformatted)
+                self.failUnlessEqual(
+                    formatted,
+                    ret,
+                    '%s: Unexpected result got: "%s" expect: "%s"' % (
+                        lang,
+                        ret,
+                        formatted,
+                        )
+                    )
