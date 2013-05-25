@@ -1,4 +1,4 @@
-Version 0.6.7 - 2013-04-07:
+Version 0.6.7+ - 2013-05-25:
 General: 
   - Add a config option to suppress the code generation success message
   - Improve usability of some dialogs
@@ -6,6 +6,7 @@ General:
 Bugs:
   - Remove empty line between shebang and encoding statement in Python files
   - Regression in generated Python code for bindung events 
+  - Wrong SetSizeHint() call in Perl (Thanks to Eric McKeeth)
 
 Documentation:
   - no changes

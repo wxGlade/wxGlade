@@ -20,7 +20,7 @@ class BasePerlSizerBuilder(BaseSizerBuilder):
 
     tmpl_SetSizer = '%(parent_widget)s->SetSizer(%(sizer_name)s);\n'
     tmpl_Fit = '%(sizer_name)s->Fit(%(parent_widget)s);\n'
-    tmpl_SetSizeHints = '$self->{%(sizer_name)s}->SetSizeHints(' \
+    tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(' \
                         '%(parent_widget)s);\n'
     tmpl_StaticBox = '$self->{%s_staticbox}'
 
