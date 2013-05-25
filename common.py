@@ -443,6 +443,9 @@ def exceptionHandler(exc_type, exc_value, exc_tb):
             if vartype == types.UnicodeType:
                 varvalue = frame_locals[varname]
                 varvalue = varvalue.encode('unicode_escape')
+            elif vartype == types.StringType:
+                varvalue = frame_locals[varname]
+                varvalue = varvalue.encode('string-escape')
             else:
                 varvalue = pprint.pformat(frame_locals[varname])
                 varvalue = varvalue
