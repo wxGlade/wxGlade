@@ -6,14 +6,21 @@ Steps to publish a new version
  3. Set SHOW_CONSOLE to False in install/pyinstaller/wxglade.spec
  3. Commit all open changes
  4. Create a new Mercurial tag 
-   $ hg tag rel_0.6.4
- 5. Push changes into public repository
- 6. Create all packages
+   # hg tag rel_0.6.7
+ 5. Close last version branch
+   # hg update WXG-BRANCH-VERSION_0_6_6
+   # hg commit --close-branch -m "Closed WXG-BRANCH-VERSION_0_6_6 branch"
+   # hg update default
+ 6. Create a branch for maintaining stable release
+   # hg branch WXG-BRANCH-VERSION_0_6_7
+   # hg commit --message "Created WXG-BRANCH-VERSION_0_6_7 branch"
+ 7. Push changes into public repository
+ 8. Create all packages
     - build windows installer (see docs/BuildingInstaller.txt)
     - create zip and tar.gz source packages
- 7. Update web page at wxglade.sf.net
+ 9. Update web page at wxglade.sf.net
     - upload packages to SF
     - update news section in htdocs/bits/news.html
     - update HTML and PDF manual in htdocs/manual
- 8. Send notification email to wxGlade mailing list
- 9. Change version number in common.py and wxglade-installer.iss to HG
+10. Send notification email to wxGlade mailing list
+11. Change version number in common.py and wxglade-installer.iss to HG
