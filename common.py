@@ -15,7 +15,7 @@ If False, the program is invoked from the command-line in "batch" mode
 (for code generation only)
 """
 
-nohg_version = '0.6.7'
+nohg_version = '0.6.7+'
 """\
 Version number to return if no hg repo has been found
 """
