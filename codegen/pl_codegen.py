@@ -701,18 +701,20 @@ unless(caller){
         return '#$self->%s' % name
 
     def _format_classattr(self, obj):
-        if not obj:
-            return ''
-        if not hasattr(obj, 'name'):
-            return ''
-        if obj.name.startswith('$self->'):
+        res = BaseCodeWriter._format_classattr(self, obj)
+        if not res:
+            return res
+        elif obj.name.startswith('$self->'):
             return obj.name
-        if not re.match('[a-zA-Z]', obj.name):
+        elif obj.name.startswith('$'):
+            return obj.name
+        # spacer.name is "<width>, <height>" already
+        elif obj.klass == 'spacer':
             return obj.name
         # Perl stores sizers always in class attributes
-        if self.test_attribute(obj) or obj.in_sizers:
-            return "$self->{%s}" % obj.name
-        return "$%s" % obj.name
+        elif self.test_attribute(obj) or obj.in_sizers:
+            return '$self->{%s}' % obj.name
+        return '$%s' % obj.name
 
     def _format_import(self, klass):
         stmt = 'use %s;\n' % klass

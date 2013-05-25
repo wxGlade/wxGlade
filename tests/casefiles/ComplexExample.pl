@@ -69,7 +69,7 @@ sub new {
         $self->{notebook_1_pane_3} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
         $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{notebook_1_pane_3}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
         $self->{notebook_1_pane_4} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{label_2} = Wx::StaticText->new($self->{notebook_1_pane_4}, wxID_ANY, _T("File name:"), wxDefaultPosition, wxDefaultSize, );
+        $self->{_lbl_output_filename} = Wx::StaticText->new($self->{notebook_1_pane_4}, wxID_ANY, _T("File name:"), wxDefaultPosition, wxDefaultSize, );
         $self->{text_ctrl_3} = Wx::TextCtrl->new($self->{notebook_1_pane_4}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, );
         $self->{button_4} = Wx::Button->new($self->{notebook_1_pane_4}, wxID_OPEN, "");
         $self->{checkbox_1} = Wx::CheckBox->new($self->{notebook_1_pane_4}, wxID_ANY, _T("Overwrite existing file"), wxDefaultPosition, wxDefaultSize, );
@@ -120,28 +120,28 @@ sub __do_layout {
         # begin wxGlade: PyOgg2_MyFrame::__do_layout
         $self->{sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
         $self->{sizer_2} = Wx::FlexGridSizer->new(1, 3, 0, 0);
-        $self->{grid_sizer_2} = Wx::FlexGridSizer->new(2, 3, 0, 0);
-        $self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
+        $self->{_gszr_pane4} = Wx::FlexGridSizer->new(2, 3, 0, 0);
+        $self->{_szr_pane3} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_4} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{grid_sizer_1} = Wx::FlexGridSizer->new(1, 3, 0, 0);
-        my $label_1 = Wx::StaticText->new($self->{notebook_1_pane_1}, wxID_ANY, _T("File name:"), wxDefaultPosition, wxDefaultSize, );
-        $self->{grid_sizer_1}->Add($label_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-        $self->{grid_sizer_1}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL, 5);
-        $self->{grid_sizer_1}->Add($self->{button_3}, 0, wxALL, 5);
-        $self->{notebook_1_pane_1}->SetSizer($self->{grid_sizer_1});
-        $self->{grid_sizer_1}->AddGrowableCol(1);
+        $self->{_gszr_pane1} = Wx::FlexGridSizer->new(1, 3, 0, 0);
+        my $_lbl_input_filename = Wx::StaticText->new($self->{notebook_1_pane_1}, wxID_ANY, _T("File name:"), wxDefaultPosition, wxDefaultSize, );
+        $self->{_gszr_pane1}->Add($_lbl_input_filename, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+        $self->{_gszr_pane1}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL, 5);
+        $self->{_gszr_pane1}->Add($self->{button_3}, 0, wxALL, 5);
+        $self->{notebook_1_pane_1}->SetSizer($self->{_gszr_pane1});
+        $self->{_gszr_pane1}->AddGrowableCol(1);
         $self->{sizer_4}->Add($self->{radio_box_1}, 1, wxALL|wxEXPAND|wxSHAPED, 5);
         $self->{notebook_1_pane_2}->SetSizer($self->{sizer_4});
-        $self->{sizer_3}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
-        $self->{notebook_1_pane_3}->SetSizer($self->{sizer_3});
-        $self->{grid_sizer_2}->Add($self->{label_2}, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-        $self->{grid_sizer_2}->Add($self->{text_ctrl_3}, 0, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_2}->Add($self->{button_4}, 0, wxALL, 5);
-        $self->{grid_sizer_2}->Add(20, 20, 0, 0, 0);
-        $self->{grid_sizer_2}->Add($self->{checkbox_1}, 0, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_2}->Add(20, 20, 0, 0, 0);
-        $self->{notebook_1_pane_4}->SetSizer($self->{grid_sizer_2});
-        $self->{grid_sizer_2}->AddGrowableCol(1);
+        $self->{_szr_pane3}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
+        $self->{notebook_1_pane_3}->SetSizer($self->{_szr_pane3});
+        $self->{_gszr_pane4}->Add($self->{_lbl_output_filename}, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+        $self->{_gszr_pane4}->Add($self->{text_ctrl_3}, 0, wxALL|wxEXPAND, 5);
+        $self->{_gszr_pane4}->Add($self->{button_4}, 0, wxALL, 5);
+        $self->{_gszr_pane4}->Add(20, 20, 0, 0, 0);
+        $self->{_gszr_pane4}->Add($self->{checkbox_1}, 0, wxALL|wxEXPAND, 5);
+        $self->{_gszr_pane4}->Add(20, 20, 0, 0, 0);
+        $self->{notebook_1_pane_4}->SetSizer($self->{_gszr_pane4});
+        $self->{_gszr_pane4}->AddGrowableCol(1);
         $self->{notebook_1}->AddPage($self->{notebook_1_pane_1}, _T("Input File"));
         $self->{notebook_1}->AddPage($self->{notebook_1_pane_2}, _T("Converting Options"));
         $self->{notebook_1}->AddPage($self->{notebook_1_pane_3}, _T("Converting Progress"));
@@ -250,16 +250,16 @@ sub __set_properties {
 sub __do_layout {
         my $self = shift;
         # begin wxGlade: MyFrameGrid::__do_layout
-        $self->{sizer} = Wx::BoxSizer->new(wxVERTICAL);
+        $self->{_szr_frame} = Wx::BoxSizer->new(wxVERTICAL);
         $self->{grid_sizer} = Wx::FlexGridSizer->new(3, 1, 0, 0);
         $self->{grid_sizer}->Add($self->{grid}, 1, wxEXPAND, 0);
         $self->{grid_sizer}->Add($self->{static_line}, 0, wxALL|wxEXPAND, 5);
         $self->{grid_sizer}->Add($self->{button}, 0, wxALL|wxALIGN_RIGHT, 5);
         $self->{grid_sizer}->AddGrowableRow(0);
         $self->{grid_sizer}->AddGrowableCol(0);
-        $self->{sizer}->Add($self->{grid_sizer}, 1, wxEXPAND, 0);
-        $self->SetSizer($self->{sizer});
-        $self->{sizer}->SetSizeHints($self);
+        $self->{_szr_frame}->Add($self->{grid_sizer}, 1, wxEXPAND, 0);
+        $self->SetSizer($self->{_szr_frame});
+        $self->{_szr_frame}->SetSizeHints($self);
         $self->Layout();
         # end wxGlade
 }

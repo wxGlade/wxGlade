@@ -622,23 +622,20 @@ class LispCodeWriter(BaseCodeWriter):
         return '#obj.%s' % name
 
     def _format_classattr(self, obj):
-        if not obj:
-            return ''
-        if not hasattr(obj, 'name'):
-            return ''
-        if obj.name.startswith('slot-'):
+        res = BaseCodeWriter._format_classattr(self, obj)
+        if not res:
+            return res
+        elif obj.name.startswith('slot-'):
             return obj.name
         # spacer.name is "<width>, <height>" already, but wxLisp expect
         # a tuple instead of two single values
-        if obj.klass == 'spacer':
+        elif obj.klass == 'spacer':
             return '(%s)' % obj.name
-        if not re.match('[a-zA-Z]', obj.name):
-            return obj.name
         # wxList use class attributes always (unfortunately)
-#        if self.test_attribute(obj):
+#        elif self.test_attribute(obj):
 #            return "slot-%s" % self._format_name(obj.name)
 #        return self._format_name(obj.name)
-        return "slot-%s" % self._format_name(obj.name)
+        return 'slot-%s' % self._format_name(obj.name)
 
     def _format_import(self, klass):
         stmt = '(require "%s")\n' % klass

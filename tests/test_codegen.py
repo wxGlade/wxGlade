@@ -988,40 +988,52 @@ class TestCodeGen(WXGladeBaseTest):
         details['python'] = [
                 ('', ''),
                 ('self.mywidget', 'self.mywidget'),
-                ('1myclass', '1myclass'),
-                ('_myclass', '_myclass'),
-                ('myclass', 'self.myclass'),
-                ('(10, 10)', '(10, 10)'),
-                ('20, 30', '20, 30'),
+                ('1myclass', 'self.1myclass'),
+                ('_myclass', 'self._myclass'),
+                ('myclass',  'self.myclass'),
+                ('label1',   'self.label1'),
+                ('label_1',  'self.label_1'),
+                ('_label',   'self._label'),
+                ('_label_1', 'self._label_1'),
+                ('20, 30', '(20, 30)'),
                 ]
         details['perl'] = [
                 ('', ''),
                 ('$self->{mywidget}', '$self->{mywidget}'),
-                ('1myclass', '1myclass'),
-                ('_myclass', '_myclass'),
-                ('$mybox', '$mybox'),
-                ('myclass', '$self->{myclass}'),
-                ('(10, 10)', '(10, 10)'),
+                ('1myclass', '$self->{1myclass}'),
+                ('_myclass', '$self->{_myclass}'),
+                ('$mybox',   '$mybox'),
+                ('myclass',  '$self->{myclass}'),
+                ('label1',   '$self->{label1}'),
+                ('label_1',  '$self->{label_1}'),
+                ('_label',   '$self->{_label}'),
+                ('_label_1', '$self->{_label_1}'),
                 ('20, 30', '20, 30'),
                 ]
         details['lisp'] = [
                 ('', ''),
                 ('slot-mywidget', 'slot-mywidget'),
-                ('1myclass', '1myclass'),
-                ('_myclass', '_myclass'),
-                ('myclass', 'slot-myclass'),
+                ('1myclass', 'slot-1myclass'),
+                ('_myclass', 'slot--myclass'),
+                ('myclass',  'slot-myclass'),
                 ('my_class', 'slot-my-class'),
-                ('(10, 10)', '(10, 10)'),
-                ('20, 30', '20, 30'),
+                ('label1',   'slot-label1'),
+                ('label_1',  'slot-label-1'),
+                ('_label',   'slot--label'),
+                ('_label_1', 'slot--label-1'),
+                ('20, 30', '(20, 30)'),
                 ]
         details['C++'] = [
                 ('', ''),
                 ('mywidget', 'mywidget'),
                 ('1myclass', '1myclass'),
                 ('_myclass', '_myclass'),
-                ('myclass', 'myclass'),
+                ('myclass',  'myclass'),
                 ('my_class', 'my_class'),
-                ('(10, 10)', '(10, 10)'),
+                ('label1',   'label1'),
+                ('label_1',  'label_1'),
+                ('_label',   '_label'),
+                ('_label_1', '_label_1'),
                 ('20, 30', '20, 30'),
                 ]
         for lang in ['python', 'perl', 'lisp', 'C++']:
@@ -1031,7 +1043,7 @@ class TestCodeGen(WXGladeBaseTest):
                 '',
                 ret,
                 '%s: Unexpected result got: "%s" expect: "%s"' % (
-                    lang,
+                    lang.capitalize(),
                     ret,
                     ''
                     )
@@ -1039,12 +1051,16 @@ class TestCodeGen(WXGladeBaseTest):
             for name, expected in details[lang]:
                 obj = MockCodeObject()
                 obj.name = name
+                if name == '20, 30':
+                    obj.klass = 'spacer'
+                else:
+                    obj.klass = 'wxButton'
                 ret = codegen._format_classattr(obj)
                 self.failUnlessEqual(
                     expected,
                     ret,
                     '%s: Unexpected result got: "%s" expect: "%s"' % (
-                        lang,
+                        lang.capitalize(),
                         ret,
                         expected,
                         )
