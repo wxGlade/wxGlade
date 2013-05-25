@@ -65,7 +65,9 @@ sub new {
         $self->{text_ctrl_1} = Wx::TextCtrl->new($self->{notebook_1_pane_1}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, );
         $self->{button_3} = Wx::Button->new($self->{notebook_1_pane_1}, wxID_OPEN, "");
         $self->{notebook_1_pane_2} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{radio_box_1} = Wx::RadioBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Sampling Rate"), wxDefaultPosition, wxDefaultSize, [_T("44 kbit"), _T("128 kbit")], 0, wxRA_SPECIFY_ROWS);
+        $self->{rbx_sampling_rate} = Wx::RadioBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Sampling Rate"), wxDefaultPosition, wxDefaultSize, [_T("44 kbit"), _T("128 kbit")], 0, wxRA_SPECIFY_ROWS);
+        $self->{cbx_love} = Wx::CheckBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("\N{U+2665} Love this song"), wxDefaultPosition, wxDefaultSize, );
+        $self->{sizer_3_staticbox} = Wx::StaticBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Misc") );
         $self->{notebook_1_pane_3} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
         $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{notebook_1_pane_3}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
         $self->{notebook_1_pane_4} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
@@ -96,7 +98,7 @@ sub __set_properties {
         my $self = shift;
         # begin wxGlade: PyOgg2_MyFrame::__set_properties
         $self->SetTitle(_T("mp3 2 ogg"));
-        $self->SetSize(Wx::Size->new(550, 370));
+        $self->SetSize(Wx::Size->new(1160, 765));
         $self->{Mp3_To_Ogg_statusbar}->SetStatusWidths(-2,-1);
 
 	my( @Mp3_To_Ogg_statusbar_fields ) = (
@@ -109,7 +111,8 @@ sub __set_properties {
 		for 0 .. $#Mp3_To_Ogg_statusbar_fields ;
 	}
         $self->{Mp3_To_Ogg_toolbar}->Realize();
-        $self->{radio_box_1}->SetSelection(0);
+        $self->{rbx_sampling_rate}->SetSelection(0);
+        $self->{cbx_love}->SetValue(1);
         $self->{checkbox_1}->SetToolTipString(_T("Overwrite an existing file"));
         $self->{checkbox_1}->SetValue(1);
         # end wxGlade
@@ -123,6 +126,8 @@ sub __do_layout {
         $self->{_gszr_pane4} = Wx::FlexGridSizer->new(2, 3, 0, 0);
         $self->{_szr_pane3} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_4} = Wx::BoxSizer->new(wxHORIZONTAL);
+        $self->{sizer_3_staticbox}->Lower();
+        $self->{sizer_3} = Wx::StaticBoxSizer->new($self->{sizer_3_staticbox}, wxHORIZONTAL);
         $self->{_gszr_pane1} = Wx::FlexGridSizer->new(1, 3, 0, 0);
         my $_lbl_input_filename = Wx::StaticText->new($self->{notebook_1_pane_1}, wxID_ANY, _T("File name:"), wxDefaultPosition, wxDefaultSize, );
         $self->{_gszr_pane1}->Add($_lbl_input_filename, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
@@ -130,7 +135,9 @@ sub __do_layout {
         $self->{_gszr_pane1}->Add($self->{button_3}, 0, wxALL, 5);
         $self->{notebook_1_pane_1}->SetSizer($self->{_gszr_pane1});
         $self->{_gszr_pane1}->AddGrowableCol(1);
-        $self->{sizer_4}->Add($self->{radio_box_1}, 1, wxALL|wxEXPAND|wxSHAPED, 5);
+        $self->{sizer_4}->Add($self->{rbx_sampling_rate}, 1, wxALL|wxEXPAND, 5);
+        $self->{sizer_3}->Add($self->{cbx_love}, 1, wxALL|wxSHAPED, 5);
+        $self->{sizer_4}->Add($self->{sizer_3}, 1, wxALL|wxEXPAND, 5);
         $self->{notebook_1_pane_2}->SetSizer($self->{sizer_4});
         $self->{_szr_pane3}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
         $self->{notebook_1_pane_3}->SetSizer($self->{_szr_pane3});
