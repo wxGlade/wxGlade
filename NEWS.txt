@@ -7,6 +7,7 @@ Bugs:
   - Remove empty line between shebang and encoding statement in Python files
   - Regression in generated Python code for bindung events 
   - Wrong SetSizeHint() call in Perl (Thanks to Eric McKeeth)
+  - Fix XRC code generation for notebooks with panes
 
 Documentation:
   - no changes
