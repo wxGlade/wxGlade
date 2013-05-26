@@ -1,7 +1,12 @@
 # -*- coding: Latin-1 -*-
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Setup script to create release packages
+
+The 
+
+@copyright: 2011-2013 Carsten Grohmann <mail@carstengrohmann.de>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 from distutils.core import setup
 import distutils.command.sdist
@@ -18,7 +23,15 @@ def add_defaults_fixed(self):
     """Add all the default files to self.filelist:
       - README or README.txt
       - setup.py
-      - test/test*.py
+      - tests/test*.py
+      - tests/casefiles/*.cpp
+      - tests/casefiles/*.h
+      - tests/casefiles/*.lisp
+      - tests/casefiles/*.pl
+      - tests/casefiles/*.pm
+      - tests/casefiles/*.py
+      - tests/casefiles/*.wxg
+      - tests/casefiles/*.xrc
       - all pure Python modules mentioned in setup script
       - all files pointed by package_data (build_py)
       - all files defined in data_files.
@@ -48,7 +61,13 @@ def add_defaults_fixed(self):
             else:
                 self.warn("standard file '%s' not found" % fn)
 
-    optional = ['test/test*.py', 'setup.cfg']
+    optional = ['tests/test*.py',
+                'tests/casefiles/*.cpp',  'tests/casefiles/*.h',
+                'tests/casefiles/*.lisp', 'tests/casefiles/*.pl',
+                'tests/casefiles/*.pm',   'tests/casefiles/*.py',
+                'tests/casefiles/*.wxg',  'tests/casefiles/*.xrc',
+                 'setup.cfg',
+                 ]
     for pattern in optional:
         files = filter(os.path.isfile, glob(pattern))
         self.filelist.extend(files)
