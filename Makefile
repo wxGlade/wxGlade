@@ -172,14 +172,14 @@ doc-clean:
 release: rel-source rel-binary
 
 #+ Create Unix binary packages
-rel-binary: man pdf
+rel-binary: clean man pdf
 	@echo "Creating Unix release packages ..."
 	@$(RM) MANIFEST
 	$(PYTHON_BIN) setup.py bdist --format=zip
 	@$(RM) MANIFEST
 
 #+ Create Unix source release packages
-rel-source: man pdf
+rel-source: clean man pdf
 	@echo "Creating source packages ..."
 	@$(RM) MANIFEST
 	$(PYTHON_BIN) setup.py sdist --formats=gztar,zip
