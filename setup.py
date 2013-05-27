@@ -2,8 +2,6 @@
 """
 Setup script to create release packages
 
-The 
-
 @copyright: 2011-2013 Carsten Grohmann <mail@carstengrohmann.de>
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
