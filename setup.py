@@ -15,21 +15,14 @@ from types import *
 from glob import glob
 import common
 
+
 # distutils sdisk command is broken because it doesn't copy data_files
 # Bug: http://bugs.python.org/issue2279
 def add_defaults_fixed(self):
     """Add all the default files to self.filelist:
       - README or README.txt
       - setup.py
-      - tests/test*.py
-      - tests/casefiles/*.cpp
-      - tests/casefiles/*.h
-      - tests/casefiles/*.lisp
-      - tests/casefiles/*.pl
-      - tests/casefiles/*.pm
-      - tests/casefiles/*.py
-      - tests/casefiles/*.wxg
-      - tests/casefiles/*.xrc
+      - test/test*.py
       - all pure Python modules mentioned in setup script
       - all files pointed by package_data (build_py)
       - all files defined in data_files.
@@ -59,13 +52,7 @@ def add_defaults_fixed(self):
             else:
                 self.warn("standard file '%s' not found" % fn)
 
-    optional = ['tests/test*.py',
-                'tests/casefiles/*.cpp',  'tests/casefiles/*.h',
-                'tests/casefiles/*.lisp', 'tests/casefiles/*.pl',
-                'tests/casefiles/*.pm',   'tests/casefiles/*.py',
-                'tests/casefiles/*.wxg',  'tests/casefiles/*.xrc',
-                 'setup.cfg',
-                 ]
+    optional = ['test/test*.py', 'setup.cfg']
     for pattern in optional:
         files = filter(os.path.isfile, glob(pattern))
         self.filelist.extend(files)
@@ -88,7 +75,7 @@ def add_defaults_fixed(self):
     # getting distribution.data_files
     if self.distribution.has_data_files():
         for item in self.distribution.data_files:
-            if isinstance(item, str): # plain file
+            if isinstance(item, str):  # plain file
                 item = convert_path(item)
                 if os.path.isfile(item):
                     self.filelist.append(item)
@@ -115,18 +102,18 @@ def add_defaults_fixed(self):
 # Replace old implementation by the new own
 distutils.command.sdist.sdist.add_defaults = add_defaults_fixed
 
-def is_package(path):
-    return (
-        os.path.isdir(path) and
-        os.path.isfile(os.path.join(path, '__init__.py'))
-        )
 
-def find_packages(path, base="" ):
+def is_package(path):
+    return os.path.isdir(path) and \
+        os.path.isfile(os.path.join(path, '__init__.py'))
+
+
+def find_packages(path, base=""):
     """ Find all packages in path """
     packages = {}
     for item in os.listdir(path):
         dir = os.path.join(path, item)
-        if is_package( dir ):
+        if is_package(dir):
             if base:
                 module_name = "%(base)s.%(item)s" % vars()
             else:
@@ -149,39 +136,29 @@ User Interface :: Toolkits/Libraries :: wxWidgets"""
 description = \
     'GUI designer written in Python with the popular GUI toolkit wxPython'
 
-data_files = [[
-        'share/doc/wxglade',
-        ['CHANGES.txt', 'credits.txt', 'epydoc.conf', 'license.txt',
-         'Makefile', 'NEWS.txt', 'README.txt', 'TODO.txt',],
-    ],[
-       'share/doc/wxglade/doc',
-       glob('docs/*.html'),
-    ],[
-       'share/doc/wxglade/doc/img',
-       glob('docs/img/*.*'),
-    ],[
-       'share/doc/wxglade/doc',
-       glob('docs/*.txt'),
-    ],[
-       'share/doc/wxglade/doc/html',
-       glob('docs/html/*.*'),
-    ],[
-       'share/doc/wxglade/doc/pdf',
-       glob('docs/pdf/*.pdf'),
-    ],[
-       'share/man/man1',
-       ['docs/man/wxglade.1'],
-    # documentation source files :-)
-    ],[
-       'share/doc/wxglade',
-       ['docs/man/manpage.xml'],
-    ],[
-       'share/doc/wxglade',
-       ['docs/src/manual.xml'],
-    ]]
+long_description = """\
+wxGlade is a GUI designer written in Python with the popular GUI toolkit
+wxPython, that helps you create wxWidgets/wxPython user interfaces. At
+the moment it can generate Python, C++, Perl, Lisp and XRC (wxWidgets'
+XML resources) code."""
 
+text_files = ['CHANGES.txt', 'credits.txt', 'epydoc.conf', 'license.txt',
+              'Makefile', 'NEWS.txt', 'README.txt', 'TODO.txt']
 
-scripts = ['wxglade',]
+data_files = \
+    [
+    ['share/doc/wxglade', text_files],
+    ['share/doc/wxglade/doc', glob('docs/*.html')],
+    ['share/doc/wxglade/doc/img', glob('docs/img/*.*')],
+    ['share/doc/wxglade/doc', glob('docs/*.txt')],
+    ['share/doc/wxglade/doc/html', glob('docs/html/*.*')],
+    ['share/doc/wxglade/doc/pdf', glob('docs/pdf/*.pdf')],
+    ['share/man/man1', ['docs/man/wxglade.1']],
+    ['share/doc/wxglade', ['docs/man/manpage.xml']],
+    ['share/doc/wxglade', ['docs/src/manual.xml']],
+    ]
+
+scripts = ['wxglade']
 
 packages = find_packages(path=".", base='wxglade').keys()
 packages.append('wxglade')
@@ -191,18 +168,21 @@ version = common.version
 setup(
     name='wxGlade',
     version=version,
-    author='Alberto Griggio',
-    author_email='agriggio@users.sourceforge.net',
+    author='Alberto Griggio and the wxGlade developers',
+    maintainer='Carsten Grohmann',
+    maintainer_email='mail@carstengrohmann.de',
     url='http://wxglade.sourceforge.net/',
     classifiers=classifiers.split("\n"),
     description=description,
+    long_description=long_description,
     license='MIT License',
-    platforms = ['WIN32', 'OSX', 'POSIX'],
+    platforms=['WIN32', 'OSX', 'POSIX'],
     scripts=scripts,
     packages=packages,
     package_dir={'wxglade': '.'},
     package_data={'wxglade.widgets': ['widgets.txt'],
-                  'wxglade' : ['icons/*.*', 
+                  'wxglade.tests': ['casefiles/*.*'],
+                  'wxglade': ['icons/*.*',
                               'icons/gtk/*.*',
                               'icons/msw/*.*',
                               'res/*.*',
