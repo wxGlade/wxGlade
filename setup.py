@@ -156,6 +156,10 @@ data_files = \
     ['share/man/man1', ['docs/man/wxglade.1']],
     ['share/doc/wxglade', ['docs/man/manpage.xml']],
     ['share/doc/wxglade', ['docs/src/manual.xml']],
+    ['share/doc/wxglade/install', glob('install/*.*')],
+    ['share/doc/wxglade/install/rpm', glob('install/rpm/*.*')],
+    ['share/doc/wxglade/install/pyinstaller',
+     glob('install/pyinstaller/*.*')],
     ]
 
 scripts = ['wxglade']
