@@ -584,8 +584,19 @@ class CheckListProperty(Property, _activator):
 
     def prepare_value(self, old_val):
         """\
-        turns a string of tokens separated by '|' into a list of
-        boolean values
+        Convert token string into a list of boolean values.
+
+        The returned list shows the position of a token from old_val in
+        self.labels.
+
+        Example::
+            >>> self.prepare_value('wxALL|wxALIGN_CENTER_VERTICAL')
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+
+        @param old_val: String of tokens separated by '|'
+        @type old_val:  String
+
+        @rtype: List of boolean values (0 or 1)
         """
         try:
             old_val = old_val.split("|")
