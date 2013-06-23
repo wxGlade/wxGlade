@@ -513,7 +513,7 @@ def _make_builder(base_class):
         except KeyError: raise XmlParsingError, _("'name' attribute missing")
         frame = base_class(label, parent, wx.NewId(), "",
                            common.property_panel,
-                           show=False)
+                           show=False, style=0)
         node = Tree.Node(frame)
         frame.node = node
         common.app_tree.add(node)
