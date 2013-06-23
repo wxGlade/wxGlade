@@ -20,10 +20,21 @@ import common
 class TestGui(WXGladeBaseTest):
     """\
     Test GUI functionality
+    
+    Since Python created an own instance for each test, we use class varaibles
+    for persistent storing L{app} and L{frame}.
+    
+    @cvar app: Reference to a wx.App object. he object is persistent after the creation in L{setUp()}.
+    @cvar frame: Reference to L{main.wxGladeFrame}. The object is persistent after the creation in L{setUp()}.
+    @ivar orig_stdout: Original fd for stdout.
     """
 
     init_stage1 = True
     init_use_gui = True
+
+    app = None
+    frame = None
+    orig_stdout = None
 
     def mockMessageBox(self, message, caption, *args, **kwargs):
         """\
@@ -32,7 +43,8 @@ class TestGui(WXGladeBaseTest):
         self._messageBox = [message, caption]
 
     def setUp(self):
-        # fake stdout
+        # redirect stdout
+        self.orig_stdout = sys.stdout
         sys.stdout = cStringIO.StringIO()
 
         # initialse base class
@@ -46,20 +58,29 @@ class TestGui(WXGladeBaseTest):
         wx.MessageBox = self.mockMessageBox
 
         # create an simply application
-        self.app = wx.PySimpleApp()
-        wx.InitAllImageHandlers()
-        wx.ArtProvider.PushProvider(main.wxGladeArtProvider())
-        self.frame = main.wxGladeFrame()
+        if not TestGui.app:
+            TestGui.app = wx.PySimpleApp()
+            wx.InitAllImageHandlers()
+            wx.ArtProvider.PushProvider(main.wxGladeArtProvider())
 
-        # hide all windows
-        self.frame.Hide()
-        self.frame.hide_all()
+        if not TestGui.frame:
+            self.frame = main.wxGladeFrame()
+
+            # hide all windows
+            self.frame.Hide()
+            self.frame.hide_all()
+            TestGui.frame = self.frame
 
         # show dialog "Code generation completed successfully"
         config.preferences.show_completion = True
 
     def tearDown(self):
-        self.frame.Destroy()
+        # restore original stdout
+        if self.orig_stdout:
+            sys.stdout = self.orig_stdout
+
+        # initialse base class
+        WXGladeBaseTest.tearDown(self)
 
     def _FindWindowByName(self, name):
         """\
@@ -70,6 +91,19 @@ class TestGui(WXGladeBaseTest):
         top = app.GetTopWindow()
         return top.FindWindowByName(name)
 
+    def _generate_code(self):
+        """\
+        Search button with label "Generate code" and press it
+        """
+        # search wx.Button "Generate code" 
+        btn_codegen = self._FindWindowByName("BtnGenerateCode")
+        self.failUnless(
+            btn_codegen,
+            'Button with label "Generate code" not found'
+            )
+        # press button to generate code
+        self._press_button(btn_codegen)
+
     def _press_button(self, button):
         """\
         Simulate pressing the button by sending a button clicked event
@@ -79,6 +113,21 @@ class TestGui(WXGladeBaseTest):
             button.GetId()
             )
         button.GetEventHandler().ProcessEvent(event)
+
+    def _set_lang(self, lang):
+        """\
+        Set "Language" and simulate clicking radio button
+        
+        @param lang: Language to set
+        @type lang:  StringIO
+        """
+        radiobox= common.app_tree.app.codewriters_prop.options
+        radiobox.SetStringSelection(lang)
+        event = wx.CommandEvent(
+            wx.wxEVT_COMMAND_RADIOBOX_SELECTED,
+            radiobox.GetId()
+            )
+        radiobox.GetEventHandler().ProcessEvent(event)
 
     def testNotebookWithoutTabs(self):
         """\
@@ -143,18 +192,11 @@ class TestGui(WXGladeBaseTest):
             add_to_history=False,
             )
 
-        # search wx.Button "Generate code" 
-        btn_codegen = self._FindWindowByName("BtnGenerateCode")
-        self.failUnless(
-            btn_codegen,
-            'Button with label "Generate code" not found'
-            )
-
-        # press button to generate code
-        self._press_button(btn_codegen)
+        # generate code
+        self._generate_code()
 
         # first test should fail because no output file is given
-        print self._messageBox
+        #print self._messageBox
         err_msg = u'You must specify an output file\n' \
                    'before generating any code'
         err_caption = u'Error'
@@ -166,9 +208,6 @@ class TestGui(WXGladeBaseTest):
                 )
             )
         self._messageBox = None
-
-        # create aliases
-        radiobox = common.app_tree.app.codewriters_prop.options
 
         # now test full code generation
         for filename, language in [
@@ -195,19 +234,10 @@ class TestGui(WXGladeBaseTest):
                 add_to_history=False,
                 )
 
-            # set "Output path"
+            # set "Output path", language and generate code
             common.app_tree.app.output_path = filename
-
-            # set "Language" and simulate clicking radio button
-            radiobox.SetStringSelection(language)
-            event = wx.CommandEvent(
-                wx.wxEVT_COMMAND_RADIOBOX_SELECTED,
-                radiobox.GetId()
-                )
-            radiobox.GetEventHandler().ProcessEvent(event)
-
-            # press button to generate code
-            self._press_button(btn_codegen)
+            self._set_lang(language)
+            self._generate_code()
 
             success_msg = u'Code generation completed successfully'
             success_caption = u'Information'
