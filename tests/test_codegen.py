@@ -1203,3 +1203,9 @@ class TestCodeGen(WXGladeBaseTest):
                         formatted,
                         )
                     )
+
+    def test_StylelessDialog(self):
+        """\
+        Test code generation for a style less dialog
+        """
+        self._test_all('styleless-dialog')

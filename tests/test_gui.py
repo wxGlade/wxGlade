@@ -263,3 +263,64 @@ class TestGui(WXGladeBaseTest):
                 expected = self._load_file(filename)
                 generated = self.vFiles[filename].getvalue()
                 self._compare(expected, generated)
+
+    def test_StylelessDialog(self):
+        """\
+        Test code generation for a style less dialog
+        """
+        source = self._load_file('styleless-dialog.wxg')
+
+        # now test full code generation
+        for filename, language in [
+            ['styleless-dialog.lisp', 'lisp'],
+            ['styleless-dialog.pl',   'perl'],
+            ['styleless-dialog.py',   'python'],
+            ['styleless-dialog.xrc',  'XRC'],
+            ['styleless-dialog',      'C++'],
+            ]:
+
+            # check for langage first
+            self.failUnless(
+                language in common.code_writers,
+                "No codewriter loaded for %s" % language
+                )
+
+            # prepare and open wxg
+            source = self._prepare_wxg(language, source)
+            infile = cStringIO.StringIO(source)
+            self.frame._open_app(
+                infilename=infile,
+                use_progress_dialog=False,
+                is_filelike=True,
+                add_to_history=False,
+                )
+
+            # set "Output path", language and generate code
+            common.app_tree.app.output_path = filename
+            self._set_lang(language)
+            self._generate_code()
+
+            success_msg = u'Code generation completed successfully'
+            success_caption = u'Information'
+            self.failUnless(
+                [success_msg, success_caption] == self._messageBox,
+                '''Expected wxMessageBox(message=%s, caption=%s)''' % (
+                    success_msg,
+                    success_caption
+                    )
+                )
+            self._messageBox = None
+
+            if language == 'C++':
+                name_h = '%s.h' % filename
+                name_cpp = '%s.cpp' % filename
+                result_cpp = self._load_file(name_cpp)
+                result_h = self._load_file(name_h)
+                generated_cpp = self.vFiles[name_cpp].getvalue()
+                generated_h = self.vFiles[name_h].getvalue()
+                self._compare(result_cpp, generated_cpp, 'C++ source')
+                self._compare(result_h, generated_h, 'C++ header')
+            else:
+                expected = self._load_file(filename)
+                generated = self.vFiles[filename].getvalue()
+                self._compare(expected, generated)
