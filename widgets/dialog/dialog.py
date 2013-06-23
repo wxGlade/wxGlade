@@ -323,7 +323,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError:
         raise XmlParsingError, _("'name' attribute missing")
     dialog = EditDialog(label, parent, wx.NewId(), "", common.property_panel,
-                        show=False)
+                        show=False, style=0)
     node = Tree.Node(dialog)
     dialog.node = node
     common.app_tree.add(node)
