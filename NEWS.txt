@@ -11,6 +11,7 @@ Bugs:
   - Fix too strict sanity checks for class attribute
   - Fix "Overwrite existing sources" for new projects
   - Fix an uninitialised variable in saving a project file (sf bug # 157)
+  - Fix handling of style-less dialogs and frames (sf bug #145)
   
 Documentation:
   - no changes
