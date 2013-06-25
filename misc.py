@@ -1,50 +1,114 @@
-# misc.py: Miscellaneus stuff, used in many parts of wxGlade
-# 
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Miscellaneus stuff, used in many parts of wxGlade
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 
+from cStringIO import StringIO
 import os
+import re
 import wx
 
+accel_table = []
+"""\
+accelerator table to enable keyboard shortcuts for the popup menus of the
+various widgets (remove, cut, copy, paste)
+"""
+
+focused_widget = None
+"""\
+If not None, this is the currently selected widget - This is different from
+tree.WidgetTree.cur_widget because it takes into account also SizerSlot
+objects
+
+this is an implementation hack, used to handle keyboard shortcuts for
+popup menus properly (for example, to ensure that the object to remove is
+the currently highlighted one, ecc...)
+"""
+
+FileSelector = wx.FileSelector
+DirSelector = wx.DirSelector
+
+hidden_property_panel = None
+"""\
+wxPanel used to reparent the property-notebooks when they are hidden. This
+has been added on 2003-06-22 to fix what seems to me a (wx)GTK2 bug
+"""
+
+use_menu_icons = None
+
+_currently_under_mouse = None
+"""\
+If not None, this is the SizerSlot wich has the "mouse focus": this is used
+to restore the mouse cursor if the user cancelled the addition of a widget
+"""
+
+_encode = common._encode_from_xml
+
+_get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
+
+_item_bitmaps = {}
+
+
+class wxMSWRadioButton(wx.RadioButton):
+    """\Gg
+    Custom wxRadioButton class which tries to implement a better
+    GetBestSize than the default one for WXMSW (mostly copied from
+    wxCheckBox::DoGetBestSize in checkbox.cpp)
+    """
+    __radio_size = None
+
+    def GetBestSize(self):
+        if not self.__radio_size:
+            dc = wx.ScreenDC()
+            dc.SetFont(wx.SystemSettings_GetFont(
+                wx.SYS_DEFAULT_GUI_FONT))
+            self.__radio_size = (3*dc.GetCharHeight())/2
+        label = self.GetLabel()
+        if label:
+            w, h = self.GetTextExtent(label)
+            w += self.__radio_size + self.GetCharWidth()
+            if h < self.__radio_size:
+                h = self.__radio_size
+        else:
+            w = h = self.__radio_size
+        return w, h
+
+# end of class wxGladeRadioButton
+
+
+class wxGTKGladePopupMenu(wx.Menu):
+    """\
+    Default wxMenu seems to have probles with SetTitle on GTK
+    """
+
+    def __init__(self, title):
+        wx.Menu.__init__(self)
+        self.TITLE_ID = wx.NewId()
+        item = self.Append(self.TITLE_ID, title)
+        self.AppendSeparator()
+        font = item.GetFont()
+        font.SetWeight(wx.BOLD)
+        item.SetFont(wx.Font(font.GetPointSize(), font.GetFamily(),
+                             font.GetStyle(), wx.BOLD))
+
+    def SetTitle(self, title):
+        self.SetLabel(self.TITLE_ID, title)
+
 if wx.Platform == '__WXMSW__':
-    class wxGladeRadioButton(wx.RadioButton):
-        """
-        custom wxRadioButton class which tries to implement a better
-        GetBestSize than the default one for WXMSW (mostly copied from
-        wxCheckBox::DoGetBestSize in checkbox.cpp)
-        """
-        __radio_size = None
-        def GetBestSize(self):
-            if not self.__radio_size:
-                dc = wx.ScreenDC()
-                dc.SetFont(wx.SystemSettings_GetFont(
-                    wx.SYS_DEFAULT_GUI_FONT))
-                self.__radio_size = (3*dc.GetCharHeight())/2
-            label = self.GetLabel()
-            if label:
-                w, h = self.GetTextExtent(label)
-                w += self.__radio_size + self.GetCharWidth()
-                if h < self.__radio_size:
-                    h = self.__radio_size
-            else:
-                w = h = self.__radio_size
-            return w, h
-
-    # end of class wxGladeRadioButton
-
+    wxGladeRadioButton = wxMSWRadioButton
 else:
     wxGladeRadioButton = wx.RadioButton
 
 
-# ALB 2004-10-27
-FileSelector = wx.FileSelector
-DirSelector = wx.DirSelector
+if wx.Platform == '__WXGTK__':
+    wxGladePopupMenu = wxGTKGladePopupMenu
+else:
+    wxGladePopupMenu = wx.Menu
 
-#---------------------  Selection Markers  ----------------------------------
 
 class SelectionTag(wx.Window):
     """\
@@ -52,11 +116,11 @@ class SelectionTag(wx.Window):
     active widgets
     """
     def __init__(self, parent, pos=None):
-        kwds = { 'size': (7, 7) }
+        kwds = {'size': (7, 7)}
         if pos:
             kwds['position'] = pos
         wx.Window.__init__(self, parent, -1, **kwds)
-        self.SetBackgroundColour(wx.BLUE) #wx.BLACK)
+        self.SetBackgroundColour(wx.BLUE)
         self.Hide()
 
 # end of class SelectionTag
@@ -70,63 +134,89 @@ class SelectionMarker:
         self.visible = visible
         self.owner = owner
         self.parent = parent
-        if wx.Platform == '__WXMSW__': self.parent = owner
+        if wx.Platform == '__WXMSW__':
+            self.parent = owner
         self.tag_pos = None
         self.tags = None
-        #self.tags = [ SelectionTag(self.parent) for i in range(4) ]
         self.update()
         if visible:
-            for t in self.tags: t.Show()
+            for t in self.tags:
+                t.Show()
 
     def update(self, event=None):
-        if self.owner is self.parent: x, y = 0, 0
-        else: x, y = self.owner.GetPosition()
+        if self.owner is self.parent:
+            x, y = 0, 0
+        else:
+            x, y = self.owner.GetPosition()
         w, h = self.owner.GetClientSize()
+
         def position(j):
-            if not j: return x, y            # top-left
-            elif j == 1: return x+w-7, y     # top-right
-            elif j == 2: return x+w-7, y+h-7 # bottom-right
-            else: return x, y+h-7            # bottom-left
-##         for i in range(len(self.tags)):
-##             self.tags[i].SetPosition(position(i))
-        self.tag_pos = [ position(i) for i in range(4) ]
+            if not j:
+                return x, y          # top-left
+            elif j == 1:
+                return x+w-7, y      # top-right
+            elif j == 2:
+                return x+w-7, y+h-7  # bottom-right
+            else:
+                return x, y+h-7      # bottom-left
+
+        self.tag_pos = [position(i) for i in range(4)]
         if self.visible:
             if not self.tags:
-                self.tags = [ SelectionTag(self.parent) for i in range(4) ]
+                self.tags = [SelectionTag(self.parent) for i in range(4)]
             for i in range(4):
                 self.tags[i].SetPosition(self.tag_pos[i])
-        if event: event.Skip()
+        if event:
+            event.Skip()
 
     def Show(self, visible):
-##         self.visible = visible
-##         for tag in self.tags: tag.Show(visible)
         if self.visible != visible:
             self.visible = visible
             if self.visible:
                 if not self.tags:
-                    self.tags = [ SelectionTag(self.parent) for i in range(4) ]
+                    self.tags = [SelectionTag(self.parent) for i in range(4)]
                 for i in range(4):
                     self.tags[i].SetPosition(self.tag_pos[i])
                     self.tags[i].Show()
             else:
-                for tag in self.tags: tag.Destroy()
+                for tag in self.tags:
+                    tag.Destroy()
                 self.tags = None
 
     def Destroy(self):
         if self.tags:
-            for tag in self.tags: tag.Destroy()
+            for tag in self.tags:
+                tag.Destroy()
             self.tags = None
 
     def Reparent(self, parent):
         self.parent = parent
         if self.tags:
-            for tag in self.tags: tag.Reparent(parent)
+            for tag in self.tags:
+                tag.Reparent(parent)
 
 # end of class SelectionMarker
 
-#----------------------------------------------------------------------------
 
-_encode = common._encode_from_xml
+class EncStringIO(object):
+    """\
+    Wrapper class to store data in Unicode
+    """
+
+    def __init__(self, encoding=None):
+        self.out = StringIO()
+        self.encoding = encoding
+
+    def write(self, data):
+        if self.encoding is not None and type(data) == type(u''):
+            data = data.encode(self.encoding)
+        self.out.write(data)
+
+    def getvalue(self):
+        return self.out.getvalue()
+
+# end of class EncStringIO
+
 
 def bound(number, lower, upper):
     return min(max(lower, number), upper)
@@ -141,6 +231,7 @@ def capitalize(string):
     @type string:  String (plain or unicode)
 
     @note: Be carefully it possibly breaks i18n.
+    @rtype: String
     """
     # Don't capitalise those terms
     if string.upper() in ['XML', 'XRC', 'URL']:
@@ -151,8 +242,13 @@ def capitalize(string):
 
 def color_to_string(color):
     """\
-    returns the hexadecimal string representation of the given color:
-    for example: wxWHITE ==> #ffffff
+    returns the hexadecimal string representation of the given color
+
+    Example::
+        >>> color_to_string(wx.Colour(255, 255, 255))
+       '#ffffff'
+
+    @rtype: String
     """
     import operator
     return '#' + reduce(operator.add, ['%02x' % bound(c, 0, 255) for c in
@@ -161,11 +257,17 @@ def color_to_string(color):
 
 def string_to_color(color):
     """\
-    returns the wxColour which corresponds to the given
-    hexadecimal string representation:
-    for example: #ffffff ==> wxColour(255, 255, 255)
+    Returns the wxColour which corresponds to the given
+    hexadecimal string representation
+
+    Example::
+        >>> string_to_color("#ffffff")
+        wx.Colour(255, 255, 255)
+
+    @rtype: wx.Colour
     """
-    if len(color) != 7: raise ValueError
+    if len(color) != 7:
+        raise ValueError
     return apply(wx.Colour, [int(color[i:i+2], 16) for i in range(1, 7, 2)])
 
 
@@ -174,17 +276,20 @@ def format_for_version(version):
     Return the version information in C{for_version} in a string.
 
     Example::
-        >>> print format_for_version((2, 8))
-        2.8
+        >>> format_for_version((2, 8))
+        '2.8'
 
+    @rtype: String
     @see: L{wxglade.codegen.BaseCodeWriter.for_version}
     """
     return '%s.%s' % version
 
 
 def get_toplevel_parent(obj):
-    if not isinstance(obj, wx.Window): window = obj.widget
-    else: window = obj
+    if not isinstance(obj, wx.Window):
+        window = obj.widget
+    else:
+        window = obj
     while window and not window.IsTopLevel():
         window = window.GetParent()
     return window
@@ -195,30 +300,11 @@ def get_toplevel_widget(widget):
     from edit_sizers import Sizer
     if isinstance(widget, Sizer):
         widget = widget.window
-    assert isinstance(widget, EditBase), _("EditBase or SizerBase object needed")
+    assert isinstance(widget, EditBase), \
+        _("EditBase or SizerBase object needed")
     while widget and not isinstance(widget, TopLevelBase):
         widget = widget.parent
     return widget
-
-
-if wx.Platform == '__WXGTK__':
-    # default wxMenu seems to have probles with SetTitle on GTK
-    class wxGladePopupMenu(wx.Menu):
-        def __init__(self, title):
-            wx.Menu.__init__(self)
-            self.TITLE_ID = wx.NewId()
-            item = self.Append(self.TITLE_ID, title)
-            self.AppendSeparator()
-            font = item.GetFont()
-            font.SetWeight(wx.BOLD)
-            item.SetFont(wx.Font(font.GetPointSize(), font.GetFamily(),
-                                 font.GetStyle(), wx.BOLD))
-
-        def SetTitle(self, title):
-            self.SetLabel(self.TITLE_ID, title)
-
-else:
-    wxGladePopupMenu = wx.Menu
 
 
 def check_wx_version(major, minor=0, release=0, revision=0):
@@ -226,14 +312,9 @@ def check_wx_version(major, minor=0, release=0, revision=0):
     returns True if the current wxPython version is at least
     major.minor.release
     """
-    #return wx.__version__ >= "%d.%d.%d.%d" % (major, minor, release, revision)
     return wx.VERSION[:-1] >= (major, minor, release, revision)
 
-#----------------------------------------------------------------------
 
-use_menu_icons = None
-
-_item_bitmaps = {}
 def append_item(menu, id, text, xpm_file_or_artid=None):
     global use_menu_icons
     if use_menu_icons is None:
@@ -248,31 +329,25 @@ def append_item(menu, id, text, xpm_file_or_artid=None):
     if use_menu_icons and xpm_file_or_artid is not None:
         bmp = None
         if not xpm_file_or_artid.startswith('wxART_'):
-            try: bmp = _item_bitmaps[xpm_file_or_artid]
+            try:
+                bmp = _item_bitmaps[xpm_file_or_artid]
             except KeyError:
                 f = os.path.join(path, xpm_file_or_artid)
                 if os.path.isfile(f):
                     bmp = _item_bitmaps[xpm_file_or_artid] = \
-                          wx.Bitmap(f, wx.BITMAP_TYPE_XPM)
-                else: bmp = None
+                        wx.Bitmap(f, wx.BITMAP_TYPE_XPM)
+                else:
+                    bmp = None
         else:
             # xpm_file_or_artid is an id for wx.ArtProvider
             bmp = wx.ArtProvider.GetBitmap(
                 xpm_file_or_artid, wx.ART_MENU, (16, 16))
         if bmp is not None:
-            try: item.SetBitmap(bmp)
-            except AttributeError: pass
+            try:
+                item.SetBitmap(bmp)
+            except AttributeError:
+                pass
     menu.AppendItem(item)
-
-
-#----------- 2002-11-01 ------------------------------------------------------
-# if not None, this is the currently selected widget - This is different from
-# tree.WidgetTree.cur_widget because it takes into account also SizerSlot
-# objects
-# this is an implementation hack, used to handle keyboard shortcuts for
-# popup menus properly (for example, to ensure that the object to remove is
-# the currently highlighted one, ecc...)
-focused_widget = None
 
 
 def _remove():
@@ -280,33 +355,42 @@ def _remove():
     if focused_widget is not None:
         focused_widget.remove()
         focused_widget = None
-        
+
+
 def _cut():
     global focused_widget
     if focused_widget is not None:
-        try: focused_widget.clipboard_cut()
-        except AttributeError: pass
-        else: focused_widget = None
-        
+        try:
+            focused_widget.clipboard_cut()
+        except AttributeError:
+            pass
+        else:
+            focused_widget = None
+
+
 def _copy():
     if focused_widget is not None:
-        try: focused_widget.clipboard_copy()
-        except AttributeError: pass
+        try:
+            focused_widget.clipboard_copy()
+        except AttributeError:
+            pass
+
 
 def _paste():
     if focused_widget is not None:
-        try: focused_widget.clipboard_paste()
-        except AttributeError: pass
+        try:
+            focused_widget.clipboard_paste()
+        except AttributeError:
+            pass
 
-# accelerator table to enable keyboard shortcuts for the popup menus of the
-# various widgets (remove, cut, copy, paste)
+
 accel_table = [
     (0, wx.WXK_DELETE, _remove),
     (wx.ACCEL_CTRL, ord('C'), _copy),
     (wx.ACCEL_CTRL, ord('X'), _cut),
     (wx.ACCEL_CTRL, ord('V'), _paste),
     ]
-#-----------------------------------------------------------------------------
+
 
 def _reverse_dict(src):
     """\
@@ -317,13 +401,7 @@ def _reverse_dict(src):
         ret[val] = key
     return ret
 
-#-----
-# if not None, this is the SizerSlot wich has the "mouse focus": this is used
-# to restore the mouse cursor if the user cancelled the addition of a widget
-_currently_under_mouse = None
 
-
-#-----------------------------------------------------------------------------
 def get_geometry(win):
     x, y = win.GetPosition()
     w, h = win.GetSize()
@@ -334,7 +412,8 @@ def get_geometry(win):
 
 
 def set_geometry(win, geometry):
-    if geometry is None: return
+    if geometry is None:
+        return
     try:
         if len(geometry) == 4:
             win.SetDimensions(*[int(x) for x in geometry])
@@ -344,7 +423,6 @@ def set_geometry(win, geometry):
         print e
 
 
-#-----------------------------------------------------------------------------
 # snagged out of the Python cookbook
 def import_name(module_path, name):
     import imp
@@ -364,15 +442,17 @@ def import_name(module_path, name):
     return vars(module)[name]
 
 
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # helper functions to work with a Unicode-enabled wxPython
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 
 def streq(s1, s2):
     """\
     Returns True if the strings or unicode objects s1 and s2 are equal, i.e.
     contain the same text. Appropriate encoding/decoding are performed to
     make the comparison
+
+    @rtype: Boolean
     """
     try:
         return s1 == s2
@@ -386,7 +466,10 @@ def streq(s1, s2):
 
 def wxstr(s, encoding=None):
     """\
-    Converts the object s to str or unicode, according to what wxPython expects
+    Converts the object s to str or unicode, according to what wxPython
+    expects.
+
+    @rtype: String or Unicode
     """
     if encoding is None:
         if common.app_tree is None:
@@ -405,21 +488,10 @@ def wxstr(s, encoding=None):
             return str(s)
 
 
-#------------------------------------------------------------------------------
-# wxPanel used to reparent the property-notebooks when they are hidden. This
-# has been added on 2003-06-22 to fix what seems to me a (wx)GTK2 bug
-#------------------------------------------------------------------------------
-hidden_property_panel = None
-
-
 def design_title(title):
     return _('<Design> - ') + title
 
 
-import re
-_get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
-del re
-    
 def get_xpm_bitmap(path):
     bmp = wx.NullBitmap
     if not os.path.exists(path):
