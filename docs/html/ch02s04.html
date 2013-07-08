@@ -1,33 +1,6 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15"><title>Command line invocation</title><meta name="generator" content="DocBook XSL Stylesheets V1.76.1"><link rel="home" href="index.html" title="wxGlade user manual"><link rel="up" href="ch02.html" title="Chapter 2. Exploring wxGlade"><link rel="prev" href="ch02s03.html" title="Best Practice"><link rel="next" href="ch02s05.html" title="Using the source code"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Command line invocation</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Exploring wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch02s05.html">Next</a></td></tr></table><hr></div><div class="section" title="Command line invocation"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp3039072"></a>Command line invocation</h2></div></div></div><p>You can run wxGlade without parameters to start the GUI on an
-      empty application as follows:</p><p><span class="command"><strong>wxglade</strong></span></p><p>Run wxGlade GUI on an existing application specifying the
-      <code class="filename">.wxg</code> file as follow:</p><p><span class="command"><strong>wxglade &lt;WXG File&gt;</strong></span></p><p>If you only want to generate the code without starting the GUI,
-      use the <code class="option">-g</code> or <code class="option">--generate-code</code> option
-      with the language as argument as follows:</p><p><span class="command"><strong>wxglade -g &lt;LANGUAGE&gt; &lt;WXG
-      File&gt;</strong></span></p><p><span class="command"><strong>wxglade --generate-code=&lt;LANGUAGE&gt; &lt;WXG
-      File&gt;</strong></span></p><p>Possible values for LANGUAGE are "XRC", "python", "perl", "lisp"
-      or "C++".</p><p>You can also specify the destination of the generated code with
-      <code class="option">-o</code> or <code class="option">--output</code> option:</p><p><span class="command"><strong>wxglade -g &lt;LANGUAGE&gt; -o &lt;DESTINATION&gt;
-      &lt;WXG File&gt;</strong></span></p><p>The DESTINATION argument can be a file or a directory. If
-      DESTINATION is a file, wxGlade will generate single-file source code. In
-      case DESTINATION is a directory wxGlade will generate multiple-file
-      source code.</p><p>This is the complete description of the command line:</p><pre class="programlisting"># wxglade --help
-Usage: wxglade &lt;WXG File&gt;             start the wxGlade GUI
- or:   wxglade &lt;Options&gt; &lt;WXG File&gt;   generate code from command line
- or:   wxglade --version              show programs version number and exit
- or:   wxglade -h|--help              show this help message and exit
-Options:
-  --version             show program's version number and exit
-  -h, --help            show this help message and exit
-  -g LANG, --generate-code=LANG
-                        (required) output language, valid languages are: C++,
-                        XRC, lisp, perl, python
-  -o PATH, --output=PATH
-                        (optional) output file in single-file mode or output
-                        directory in multi-file mode
-Example: Generate Python code out of myapp.wxg
-   wxglade -o temp -g python myapp.wxg
-Report bugs to:    &lt;wxglade-general@lists.sourceforge.net&gt; or at
-                   &lt;http://sourceforge.net/projects/wxglade/&gt;
-wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
-</pre><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Use <span class="command"><strong>wxglade.pyw</strong></span> instead of
-        <span class="command"><strong>wxglade</strong></span> on Microsoft Windows.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch02s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Best Practice </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Using the source code</td></tr></table></div></body></html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15"><title>Language specific peculiarities</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ch02.html" title="Chapter 2. Exploring wxGlade"><link rel="prev" href="ch02s03.html" title="Best Practice"><link rel="next" href="ch02s05.html" title="Command line invocation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Language specific peculiarities</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Exploring wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch02s05.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp2998792"></a>Language specific peculiarities</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idp2999152"></a>Python</h3></div></div></div><p>It's not recommended to use nested classed and functions in
+        combination with disabled feature <span class="quote">&#8220;<span class="quote"><span class="guilabel">Overwrite existing
+        sources</span></span>&#8221;</span>. Use derived classes to implement your
+        functionality. See <a class="xref" href="ch02s03.html" title="Best Practice">the section called &#8220;Best Practice&#8221;</a>
+        also.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idp3000576"></a>Lisp</h3></div></div></div><p>The Lisp code generated by wxGlade may or may not working with a
+        current Lisp dialect.</p><p>Help to improve the Lisp support is really welcome.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch02s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Best Practice </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Command line invocation</td></tr></table></div></body></html>
