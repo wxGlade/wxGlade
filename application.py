@@ -240,10 +240,19 @@ class Application(object):
                                               sort=True, capitalize=True)
         self.codewriters_prop.set_str_value('python')
 
-        for_version_tooltips = [
-            _("Generate source files for wxWidgets version %s") % version
-            for version in self.all_supported_versions
-            ]
+        for_version_tooltips = []
+        for version in self.all_supported_versions:
+            if version == '3.0':
+                for_version_tooltips.append(
+                    _('Generate source files for wxWidgets version %s\n'
+                    'Starting with wxPython 3.0 old style import are not '
+                    'supported anymore.'
+                    ) % version
+                    )
+            else:
+                for_version_tooltips.append(
+                    _("Generate source files for wxWidgets version %s") % version
+                    )
         self.for_version_prop = RadioProperty(
             self,
             "for_version",
@@ -263,7 +272,9 @@ class Application(object):
         self.use_old_namespace_prop.set_tooltip(
             _('It is generally recommended to use the new namespace. '
               'The old one ("from wxPython.wx import *") has some '
-              'significant drawbacks like potential namespace conflicts.'
+              'significant drawbacks like potential namespace conflicts.\n'
+              'Starting with wxPython 3.0 old style import are not '
+              'supported anymore.'
               ))
 
         self.overwrite = config.default_overwrite
