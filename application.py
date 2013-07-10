@@ -398,6 +398,12 @@ class Application(object):
 
     def set_for_version(self, value):
         self.for_version = self.for_version_prop.get_str_value()
+        # disable selection of old or new style wx imports for wxPython 3.0
+        if self.for_version == "3.0":
+            self.use_old_namespace_prop.set_value(False)
+            self.use_old_namespace_prop.toggle_active(False)
+        else:
+            self.use_old_namespace_prop.toggle_active(True)
 
     def set_indent_mode(self, value):
         try:
