@@ -269,7 +269,12 @@ def init_stage2(use_gui):
 def run_main():
     """\
     This main procedure is started by calling either wxglade.py or
-    wxglade.pyw on windows
+    wxglade.pyw on windows.
+    
+    It parses the command line, install the exception handler and initialise
+    wxGlade.
+    
+    @see: L{common.exceptionHandler()}
     """
     # check command line parameters first
     options = parse_command_line()
@@ -279,6 +284,9 @@ def run_main():
         common.version,
         common.py_version,
         )
+
+    # install own exception handler
+    sys.excepthook = common.exceptionHandler
 
     # initialise wxGlade (first stage)
     init_stage1()
