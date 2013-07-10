@@ -191,15 +191,23 @@ class HiddenProperty(Property):
 class _activator:
     """\
     A utility class which provides:
-    - a method, toggle_active, to (de)activate a Property of a widget
-    - a method, toggle_blocked, to (un)block enabler of a Property of a widget
-    - a method, prepare_activator, to assign enabler and target with settings
+    - a method L{toggle_active()} to (de)activate a Property of a widget
+    - a method L{toggle_blocked()} to (un)block enabler of a Property of a widget
+    - a method L{prepare_activator()} to assign enabler and target with settings
+    
+    @ivar _enabler: CheckBox which provides the ability to Enable/Disable
+                    the Property
+    @type _enabler: Reference to a CheckBox instance
+    @ivar _target:  Object to enable/disable
+    @type _target:  A single widget or a list of widgets
     """
     def __init__(self, target=None, enabler=None, omitter=None):
         """\
-        @param target:  Name of the object to Enable/Disable
-        @param enabler: Check box which provides the ability to Enable/Disable
+        @param target:  Object to Enable/Disable
+        @type target:   A single widget or a list of widgets
+        @param enabler: CheckBox which provides the ability to Enable/Disable
                         the Property
+        @type enabler:  Reference to a CheckBox instance
         """
         self._target = target
         self._enabler = enabler
@@ -216,6 +224,9 @@ class _activator:
         self.set_omitter(omitter)
 
     def toggle_active(self, active=None, refresh=True):
+        """\
+        Toggle the activation state
+        """
         # active is not given when refreshing target and enabler
         if active and self.is_blocked():
             self._active = False  # blocked is always inactive
@@ -246,6 +257,9 @@ class _activator:
             pass
 
     def is_active(self):
+        """\
+        Return True for a non-blocked and enabled / active widget.
+        """
         if self.is_blocked():
             return False
         if self._target:
@@ -256,6 +270,9 @@ class _activator:
         return self._active
 
     def toggle_blocked(self, blocked=None):
+        """\
+        Toggle the blocked state
+        """
         if blocked is not None:
             self._blocked = blocked
         if self._enabler:
@@ -271,6 +288,9 @@ class _activator:
                 self.toggle_active(True, False)
 
     def is_blocked(self):
+        """\
+        Return True for a non-enabled or blocked widget.
+        """
         if self._enabler:
             return not self._enabler.IsEnabled()
         return self._blocked
