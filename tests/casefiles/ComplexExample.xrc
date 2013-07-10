@@ -6,7 +6,7 @@
         <style>wxDEFAULT_FRAME_STYLE</style>
         <title>mp3 2 ogg</title>
         <centered>1</centered>
-        <size>550, 370</size>
+        <size>1160, 765</size>
         <object class="wxMenuBar" name="Mp3_To_Ogg_menubar">
             <object class="wxMenu">
                 <label>_File</label>
@@ -91,9 +91,9 @@
                             <orient>wxHORIZONTAL</orient>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALL|wxEXPAND|wxSHAPED</flag>
+                                <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
-                                <object class="wxRadioBox" name="radio_box_1">
+                                <object class="wxRadioBox" name="rbx_sampling_rate">
                                     <content>
                                         <item>44 kbit</item>
                                         <item>128 kbit</item>
@@ -102,6 +102,24 @@
                                     <selection>0</selection>
                                     <dimension>0</dimension>
                                     <label>Sampling Rate</label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALL|wxEXPAND</flag>
+                                <border>5</border>
+                                <object class="wxStaticBoxSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <label>Misc</label>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxALL|wxSHAPED</flag>
+                                        <border>5</border>
+                                        <object class="wxCheckBox" name="cbx_love">
+                                            <checked>1</checked>
+                                            <label>♥ Love this song</label>
+                                        </object>
+                                    </object>
                                 </object>
                             </object>
                         </object>
