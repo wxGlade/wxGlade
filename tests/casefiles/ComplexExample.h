@@ -46,13 +46,15 @@ private:
 
 protected:
     // begin wxGlade: PyOgg2_MyFrame::attributes
+    wxStaticBox* sizer_3_staticbox;
     wxMenuBar* Mp3_To_Ogg_menubar;
     wxStatusBar* Mp3_To_Ogg_statusbar;
     wxToolBar* Mp3_To_Ogg_toolbar;
     wxTextCtrl* text_ctrl_1;
     wxButton* button_3;
     wxPanel* notebook_1_pane_1;
-    wxRadioBox* radio_box_1;
+    wxRadioBox* rbx_sampling_rate;
+    wxCheckBox* cbx_love;
     wxPanel* notebook_1_pane_2;
     wxTextCtrl* text_ctrl_2;
     wxPanel* notebook_1_pane_3;

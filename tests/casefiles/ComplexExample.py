@@ -44,7 +44,9 @@ class PyOgg2_MyFrame(wx.Frame):
         self.text_ctrl_1 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "")
         self.button_3 = wx.Button(self.notebook_1_pane_1, wx.ID_OPEN, "")
         self.notebook_1_pane_2 = wx.Panel(self.notebook_1, wx.ID_ANY)
-        self.radio_box_1 = wx.RadioBox(self.notebook_1_pane_2, wx.ID_ANY, _("Sampling Rate"), choices=[_("44 kbit"), _("128 kbit")], majorDimension=0, style=wx.RA_SPECIFY_ROWS)
+        self.rbx_sampling_rate = wx.RadioBox(self.notebook_1_pane_2, wx.ID_ANY, _("Sampling Rate"), choices=[_("44 kbit"), _("128 kbit")], majorDimension=0, style=wx.RA_SPECIFY_ROWS)
+        self.cbx_love = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _(u"\u2665 Love this song"))
+        self.sizer_3_staticbox = wx.StaticBox(self.notebook_1_pane_2, wx.ID_ANY, _("Misc"))
         self.notebook_1_pane_3 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.text_ctrl_2 = wx.TextCtrl(self.notebook_1_pane_3, wx.ID_ANY, "", style=wx.TE_MULTILINE)
         self.notebook_1_pane_4 = wx.Panel(self.notebook_1, wx.ID_ANY)
@@ -70,14 +72,15 @@ class PyOgg2_MyFrame(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: PyOgg2_MyFrame.__set_properties
         self.SetTitle(_("mp3 2 ogg"))
-        self.SetSize((550, 370))
+        self.SetSize((1160, 765))
         self.Mp3_To_Ogg_statusbar.SetStatusWidths([-2, -1])
         # statusbar fields
         Mp3_To_Ogg_statusbar_fields = [_("Mp3_To_Ogg_statusbar"), ""]
         for i in range(len(Mp3_To_Ogg_statusbar_fields)):
             self.Mp3_To_Ogg_statusbar.SetStatusText(Mp3_To_Ogg_statusbar_fields[i], i)
         self.Mp3_To_Ogg_toolbar.Realize()
-        self.radio_box_1.SetSelection(0)
+        self.rbx_sampling_rate.SetSelection(0)
+        self.cbx_love.SetValue(1)
         self.checkbox_1.SetToolTipString(_("Overwrite an existing file"))
         self.checkbox_1.SetValue(1)
         # end wxGlade
@@ -89,6 +92,8 @@ class PyOgg2_MyFrame(wx.Frame):
         _gszr_pane4 = wx.FlexGridSizer(2, 3, 0, 0)
         _szr_pane3 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer_3_staticbox.Lower()
+        sizer_3 = wx.StaticBoxSizer(self.sizer_3_staticbox, wx.HORIZONTAL)
         _gszr_pane1 = wx.FlexGridSizer(1, 3, 0, 0)
         _lbl_input_filename = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, _("File name:"))
         _gszr_pane1.Add(_lbl_input_filename, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
@@ -96,7 +101,9 @@ class PyOgg2_MyFrame(wx.Frame):
         _gszr_pane1.Add(self.button_3, 0, wx.ALL, 5)
         self.notebook_1_pane_1.SetSizer(_gszr_pane1)
         _gszr_pane1.AddGrowableCol(1)
-        sizer_4.Add(self.radio_box_1, 1, wx.ALL | wx.EXPAND | wx.SHAPED, 5)
+        sizer_4.Add(self.rbx_sampling_rate, 1, wx.ALL | wx.EXPAND, 5)
+        sizer_3.Add(self.cbx_love, 1, wx.ALL | wx.SHAPED, 5)
+        sizer_4.Add(sizer_3, 1, wx.ALL | wx.EXPAND, 5)
         self.notebook_1_pane_2.SetSizer(sizer_4)
         _szr_pane3.Add(self.text_ctrl_2, 1, wx.ALL | wx.EXPAND, 5)
         self.notebook_1_pane_3.SetSizer(_szr_pane3)

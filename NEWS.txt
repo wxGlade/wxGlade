@@ -1,6 +1,7 @@
 Version 0.6.7+ - 2013-05-25:
 General: 
   - Add comfortable exception handler for more detailed bug reports
+  - Fix handling of unicode characters in strings for Perl and Python
   - Add a config option to suppress the code generation success message
   - Improve usability of some dialogs
 

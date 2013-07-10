@@ -24,6 +24,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, 
     notebook_1_pane_4 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_3 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
+    sizer_3_staticbox = new wxStaticBox(notebook_1_pane_2, wxID_ANY, _("Misc"));
     notebook_1_pane_1 = new wxPanel(notebook_1, wxID_ANY);
     Mp3_To_Ogg_menubar = new wxMenuBar();
     wxMenu* wxglade_tmp_menu_1 = new wxMenu();
@@ -41,11 +42,12 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, 
     Mp3_To_Ogg_toolbar->Realize();
     text_ctrl_1 = new wxTextCtrl(notebook_1_pane_1, wxID_ANY, wxEmptyString);
     button_3 = new wxButton(notebook_1_pane_1, wxID_OPEN, wxEmptyString);
-    const wxString radio_box_1_choices[] = {
+    const wxString rbx_sampling_rate_choices[] = {
         _("44 kbit"),
         _("128 kbit")
     };
-    radio_box_1 = new wxRadioBox(notebook_1_pane_2, wxID_ANY, _("Sampling Rate"), wxDefaultPosition, wxDefaultSize, 2, radio_box_1_choices, 0, wxRA_SPECIFY_ROWS);
+    rbx_sampling_rate = new wxRadioBox(notebook_1_pane_2, wxID_ANY, _("Sampling Rate"), wxDefaultPosition, wxDefaultSize, 2, rbx_sampling_rate_choices, 0, wxRA_SPECIFY_ROWS);
+    cbx_love = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("♥ Love this song"));
     text_ctrl_2 = new wxTextCtrl(notebook_1_pane_3, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
     _lbl_output_filename = new wxStaticText(notebook_1_pane_4, wxID_ANY, _("File name:"));
     text_ctrl_3 = new wxTextCtrl(notebook_1_pane_4, wxID_ANY, wxEmptyString);
@@ -66,7 +68,7 @@ void PyOgg2_MyFrame::set_properties()
 {
     // begin wxGlade: PyOgg2_MyFrame::set_properties
     SetTitle(_("mp3 2 ogg"));
-    SetSize(wxSize(550, 370));
+    SetSize(wxSize(1160, 765));
     int Mp3_To_Ogg_statusbar_widths[] = { -2, -1 };
     Mp3_To_Ogg_statusbar->SetStatusWidths(2, Mp3_To_Ogg_statusbar_widths);
     const wxString Mp3_To_Ogg_statusbar_fields[] = {
@@ -76,7 +78,8 @@ void PyOgg2_MyFrame::set_properties()
     for(int i = 0; i < Mp3_To_Ogg_statusbar->GetFieldsCount(); ++i) {
         Mp3_To_Ogg_statusbar->SetStatusText(Mp3_To_Ogg_statusbar_fields[i], i);
     }
-    radio_box_1->SetSelection(0);
+    rbx_sampling_rate->SetSelection(0);
+    cbx_love->SetValue(1);
     checkbox_1->SetToolTip(_("Overwrite an existing file"));
     checkbox_1->SetValue(1);
     // end wxGlade
@@ -91,6 +94,8 @@ void PyOgg2_MyFrame::do_layout()
     wxFlexGridSizer* _gszr_pane4 = new wxFlexGridSizer(2, 3, 0, 0);
     wxBoxSizer* _szr_pane3 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxHORIZONTAL);
+    sizer_3_staticbox->Lower();
+    wxStaticBoxSizer* sizer_3 = new wxStaticBoxSizer(sizer_3_staticbox, wxHORIZONTAL);
     wxFlexGridSizer* _gszr_pane1 = new wxFlexGridSizer(1, 3, 0, 0);
     wxStaticText* _lbl_input_filename = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("File name:"));
     _gszr_pane1->Add(_lbl_input_filename, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
@@ -98,7 +103,9 @@ void PyOgg2_MyFrame::do_layout()
     _gszr_pane1->Add(button_3, 0, wxALL, 5);
     notebook_1_pane_1->SetSizer(_gszr_pane1);
     _gszr_pane1->AddGrowableCol(1);
-    sizer_4->Add(radio_box_1, 1, wxALL|wxEXPAND|wxSHAPED, 5);
+    sizer_4->Add(rbx_sampling_rate, 1, wxALL|wxEXPAND, 5);
+    sizer_3->Add(cbx_love, 1, wxALL|wxSHAPED, 5);
+    sizer_4->Add(sizer_3, 1, wxALL|wxEXPAND, 5);
     notebook_1_pane_2->SetSizer(sizer_4);
     _szr_pane3->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
     notebook_1_pane_3->SetSizer(_szr_pane3);
