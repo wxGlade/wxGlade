@@ -15,7 +15,11 @@ This procedure is tested using PyInstaller versions 1.5 and 1.5.1.
 2. Generate an executable
 -------------------------
 
-- Change into source base directory and open a command prompt
+- Open a command prompt and change into source base directory
+
+- To delete temporary Python bytecode files type
+  del /S *.pyo
+  del /S *.pyc
 
 - Type
   python.exe <path to PyInstaller>\Build.py --noconfirm --buildpath <path to source>\wxglade\build install\pyinstaller\wxglade.spec
