@@ -4,7 +4,7 @@
 ; THIS PROGRAM COMES WITH NO WARRANTY
 
 ; define own variables
-#define PRODUCT_VERSION "0.6.7"
+#define PRODUCT_VERSION "0.6.8"
 
 ; EDITION_SHORT will be defined in wxglade-SAE-installer.iss only
 
