@@ -1165,6 +1165,7 @@ class TestCodeGen(WXGladeBaseTest):
         Test code generation for a complex example
         """
         self._test_all('ComplexExample')
+        self._test_all('ComplexExample_30')
 
     def test_quote_str(self):
         """\
