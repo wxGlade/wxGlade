@@ -202,7 +202,7 @@ class PerlCodeWriter(BaseCodeWriter):
     default_extensions = ['pl', 'pm']
     language = "perl"
 
-    code_statements = {
+    _code_statements = {
         'backgroundcolour': "%(objname)s->SetBackgroundColour(%(value)s);\n",
         'disabled':         "%(objname)s->Enable(0);\n",
         'extraproperties':  "%(objname)s->Set%(propname)s(%(value)s);\n",

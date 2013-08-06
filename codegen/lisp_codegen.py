@@ -179,7 +179,7 @@ class LispCodeWriter(BaseCodeWriter):
     default_extensions = ['lisp']
     language = "lisp"
 
-    code_statements = {
+    _code_statements = {
         'backgroundcolour': "(wxWindow_SetBackgroundColour %(objname)s %(value)s)\n",
         'disabled':         "(wxWindow_IsEnabled %(objname)s0)\n",
         'extraproperties':  "(%(klass)s_Set%(propname)s (slot-%(objname)s obj) %(value)s)\n",

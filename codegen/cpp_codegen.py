@@ -318,7 +318,7 @@ class CPPCodeWriter(BaseCodeWriter):
                           'h', 'hh', 'hpp', 'H', 'hxx', ]
     language = "C++"
 
-    code_statements = {
+    _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
         'disabled':         "%(objname)sEnable(0);\n",
         'extraproperties':  "%(objname)sSet%(propname)s(%(value)s);\n",

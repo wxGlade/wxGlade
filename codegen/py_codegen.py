@@ -222,7 +222,7 @@ class PythonCodeWriter(BaseCodeWriter):
     default_extensions = ['py', 'pyw']
     language = "python"
 
-    code_statements = {
+    _code_statements = {
         'backgroundcolour': "%(objname)s.SetBackgroundColour(%(value)s)\n",
         'contentnotfound':  "pass",
         'disabled':         "%(objname)s.Enable(False)\n",
