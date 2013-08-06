@@ -2,6 +2,10 @@ Version 0.6.9 - 2013-XX-XX:
 General: 
   - Disable old import style for wxPython 3.0
 
+Generated Code:
+ - Use SetToolTip() instead of SetToolTipString() for wxPython 3.x
+ - ...
+
 Bugs:
   - ...
 

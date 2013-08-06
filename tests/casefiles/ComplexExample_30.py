@@ -81,7 +81,7 @@ class PyOgg2_MyFrame(wx.Frame):
         self.Mp3_To_Ogg_toolbar.Realize()
         self.rbx_sampling_rate.SetSelection(0)
         self.cbx_love.SetValue(1)
-        self.checkbox_1.SetToolTipString(_("Overwrite an existing file"))
+        self.checkbox_1.SetToolTip(wx.ToolTip(_("Overwrite an existing file")))
         self.checkbox_1.SetValue(1)
         # end wxGlade
 
