@@ -1,7 +1,7 @@
 """\
 Common code used by all code generators
 
-@copyright: 2011-2012 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2011-2013 Carsten Grohmann <mail@carstengrohmann.de>
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -324,7 +324,7 @@ class BaseCodeWriter(object):
       - L{generate_code_id()}
       - L{generate_code_size()}
       - L{_get_code_name()}
-      - L{code_statements}
+      - L{_code_statements}
 
     A code writer object B{could} implement those interfaces and set those
     variables:
@@ -448,11 +448,33 @@ class BaseCodeWriter(object):
     @type _widget_extra_modules: Dictionary
     """
 
-    code_statements = {}
+    _code_statements = {}
     """\
-    Language specific code templates for for small statements
+    Language specific code templates for for small statements.
+
+    The statements are stored in a dictionary. The property names are the
+    keys.
+    
+    The keys may have one of two different extensions: 
+     - "C{_<major version>X}" e.g. "C{tooltip_3X}" to generate tooltips source
+       code for wxWidgets 3.x
+     - "C{_<major version><minor version>}" e.g. "C{wxcolour_28}" to generate
+       source code for wxWidgets 2.8 only
+
+    The extensions will be evaluated from most specific to generic.
+
+    Example::
+        >>> _code_statements = {
+        ... 'disabled':    "<code sequence for all wxWidget versions>",
+        ... 'wxcolour_28': "<code sequence for wxWidgets 2.8 only>",
+        ... 'tooltip_3X':  "<code sequence for wxWidgets 3.X only>",
+        }
+
+    The function L{_get_code_statement()} handles the extensions properly and
+    returns the requested template.
 
     @type: Dictionary of strings
+    @see: L{_get_code_statement()}
     @see: L{_generic_code()}
     @see: L{generate_code_extraproperties()}
     """
@@ -1670,7 +1692,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @see: L{_get_colour()}
         """
         # check if there is an code template for this property
-        if 'backgroundcolour' not in self.code_statements:
+        tmpl = self._get_code_statement('backgroundcolour')
+        if not tmpl:
             msg = " %s WARNING: no code template for property '%s' " \
                   "registered!\n" % (self.comment_sign, 'backgroundcolour')
             self.warning(msg)
@@ -1678,7 +1701,6 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         objname = self._get_code_name(obj)
         color = self._get_colour(obj.properties['background'])
-        tmpl = self.code_statements['backgroundcolour']
         stmt = tmpl % {
             'objname': objname,
             'value':   color,
@@ -1843,13 +1865,13 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         @rtype: List of strings
         """
-        if not 'extraproperties' in self.code_statements:
+        tmpl = self._get_code_statement('extraproperties')
+        if not tmpl:
             return []
         objname = self._get_code_name(obj)
         prop = obj.properties['extraproperties']
         ret = []
         for name in sorted(prop):
-            tmpl = self.code_statements['extraproperties']
             stmt = tmpl % {
                 'klass':    obj.klass,
                 'objname':  objname,
@@ -1876,7 +1898,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         stmt = None
 
         # check if there is an code template for this property
-        if 'setfont' not in self.code_statements:
+        tmpl = self._get_code_statement('setfont' )
+        if not tmpl:
             msg = " %s WARNING: no code template for property '%s' " \
                   "registered!\n" % (self.comment_sign, 'setfont')
             self.warning(msg)
@@ -1892,7 +1915,6 @@ It is available for wx versions %(supported_versions)s only.""") % {
         underlined = font['underlined']
         weight = self.cn(font['weight'])
 
-        tmpl = self.code_statements['setfont']
         stmt = tmpl % {
             'objname':    objname,
             'cnfont':     cnfont,
@@ -1915,7 +1937,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @see: L{_get_colour()}
         """
         # check if there is an code template for this property
-        if 'foregroundcolour' not in self.code_statements:
+        tmpl = self._get_code_statement('foregroundcolour' )
+        if not tmpl:
             msg = " %s WARNING: no code template for property '%s' " \
                   "registered!\n" % (self.comment_sign, 'foregroundcolour')
             self.warning(msg)
@@ -1923,7 +1946,6 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         objname = self._get_code_name(obj)
         color = self._get_colour(obj.properties['foreground'])
-        tmpl = self.code_statements['foregroundcolour']
         stmt = tmpl % {
             'objname': objname,
             'value':   color,
@@ -2268,9 +2290,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
             indent = self.previous_source.spaces.get(tag[1], "")
             comment = '%(indent)s%(comment_sign)s Content of this block not found. ' \
                       'Did you rename this class?\n'
-            if 'contentnotfound' in self.code_statements:
+            tmpl = self._get_code_statement('contentnotfound' )
+            if tmpl:
                 comment += '%(indent)s%(command)s\n'
-                command = self.code_statements['contentnotfound']
+                command = tmpl
             else:
                 command = ""
             comment = comment % {
@@ -2381,15 +2404,16 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @type prop_name:  String
 
         @return: Code statement or None
-        @rtype: String
+        @rtype: String or None
 
-        @see: L{code_statements}
+        @see: L{_code_statements}
         """
         stmt = None
         value = None
 
         # check if there is an code template for this prop_name
-        if prop_name not in self.code_statements:
+        tmpl = self._get_code_statement(prop_name)
+        if not tmpl:
             msg = " %s WARNING: no code template for property '%s' " \
                   "registered!\n" % (self.comment_sign, prop_name)
             self.warning(msg)
@@ -2408,12 +2432,50 @@ It is available for wx versions %(supported_versions)s only.""") % {
             raise AssertionError("Unknown property name: %s" % prop_name)
 
         objname = self._get_code_name(obj)
-        tmpl = self.code_statements[prop_name]
         stmt = tmpl % {
             'objname': objname,
             'tooltip': value,
             }
         return stmt
+
+    def _get_code_statement(self, prop_name):
+        """\
+        Return non-formatted code statement related to prop_name.
+        
+        This function handled the properties extensions described in
+        L{_code_statements}.
+
+        @param prop_name: Name of the property to set
+        @type prop_name:  String
+
+        @return: Code statement or None
+        @rtype: String or None
+
+        @see: L{_code_statements}
+        """
+
+        prop_name_major = '%s_%dX' % (
+            prop_name,
+            self.for_version[0],
+            )
+        prop_name_detailed = '%s_%d%d' % (
+            prop_name,
+            self.for_version[0],
+            self.for_version[1],
+            )
+
+        # check if there is an code template for this prop_name
+        # most specific to generic
+        if prop_name_detailed in self._code_statements:
+            prop_name_use = prop_name_detailed 
+        elif prop_name_major in self._code_statements:
+            prop_name_use = prop_name_major
+        elif prop_name in self._code_statements:
+            prop_name_use = prop_name
+        else:
+            return None
+            
+        return self._code_statements[prop_name_use]
 
     def _get_code_name(self, obj):
         """\
@@ -2431,23 +2493,25 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @rtype: String
         """
         # check if there is an code template for this properties
-        if 'wxcolour' not in self.code_statements:
+        tmpl_wxcolour = self._get_code_statement('wxcolour' )
+        if not tmpl_wxcolour:
             msg = " %s WARNING: no code template for property '%s' " \
                   "registered!\n" % (self.comment_sign, 'wxcolour')
             self.warning(msg)
             return msg
-        if 'wxsystemcolour' not in self.code_statements:
+        tmpl_wxsystemcolour = self._get_code_statement('wxsystemcolour' )
+        if not tmpl_wxsystemcolour:
             msg = " %s WARNING: no code template for property '%s' " \
                   "registered!\n" % (self.comment_sign, 'wxsystemcolour')
             self.warning(msg)
             return msg
         try:
             value = self._string_to_colour(colourvalue)
-            func = self.cn(self.code_statements['wxcolour'])
+            tmpl = self.cn(tmpl_wxcolour)
         except (IndexError, ValueError):  # the color is from system settings
             value = self.cn(colourvalue)
-            func = self.cn(self.code_statements['wxsystemcolour'])
-        stmt = func % {
+            tmpl = self.cn(tmpl_wxsystemcolour)
+        stmt = tmpl % {
             'value': value,
             }
         return stmt
@@ -2601,7 +2665,6 @@ It is available for wx versions %(supported_versions)s only.""") % {
         decimal values.
 
         Example::
-
             >>> self._string_to_colour('#FFFFFF')
             '255, 255, 255'
             >>> self._string_to_colour('#ABCDEF')
