@@ -1,9 +1,9 @@
-# lisp_codegen.py : lisp generator functions for wxRadioBox objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 07:00:20 efuzzyone Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Lisp generator functions for wxRadioBox objects
+
+@copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 from ChoicesCodeHandler import *
@@ -14,7 +14,7 @@ class LispCodeGenerator:
         init = []
         codegen = common.code_writers['lisp']
         prop = obj.properties
-        id_name, id = codegen.generate_code_id(obj) 
+        id_name, id = codegen.generate_code_id(obj)
         label = codegen.quote_str(prop.get('label', ''))
         choices = prop.get('choices', [])
         major_dim = prop.get('dimension', '0')
@@ -30,12 +30,23 @@ class LispCodeGenerator:
         else:
             style = codegen.cn_f(style)
 
-        if id_name: init.append(id_name)
-        
+        if id_name:
+            init.append(id_name)
+
         length = len(choices)
         choices = ' '.join([codegen.quote_str(c) for c in choices])
-        init.append('(setf (slot-%s obj) (wxRadioBox_Create %s %s %s -1 -1 -1 -1 %s (vector %s) %s %s))\n'
-                    % (obj.name, parent, id, label, length, choices, major_dim, style))
+        init.append(
+            '(setf (slot-%s obj) (wxRadioBox_Create %s %s %s -1 -1 -1 -1 '
+            '%s (vector %s) %s %s))\n' % (
+                obj.name,
+                parent,
+                id,
+                label,
+                length,
+                choices,
+                major_dim,
+                style)
+            )
 
         props_buf = codegen.generate_common_properties(obj)
         selection = prop.get('selection')

@@ -1,9 +1,9 @@
-# perl_codegen.py : perl generator functions for wxRadioBox objects
-# $Id: perl_codegen.py,v 1.4 2005/08/15 07:41:59 crazyinsomniac Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Perl generator functions for wxRadioBox objects
+
+@copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 from ChoicesCodeHandler import *
@@ -14,7 +14,7 @@ class PerlCodeGenerator:
         init = []
         plgen = common.code_writers['perl']
         prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj) 
+        id_name, id = plgen.generate_code_id(obj)
         label = plgen.quote_str(prop.get('label', ''))
         choices = prop.get('choices', [])
         major_dim = prop.get('dimension', '0')
@@ -38,9 +38,18 @@ class PerlCodeGenerator:
             klass = klass.replace('wx', 'Wx::', 1)
 
         choices = ', '.join([plgen.quote_str(c) for c in choices])
-        init.append('$self->{%s} = %s->new(%s, %s, %s, wxDefaultPosition, \
-wxDefaultSize, [%s], %s, %s);\n' % (obj.name, klass, parent, id, label,
-            choices, major_dim, style))
+        init.append(
+            '$self->{%s} = %s->new(%s, %s, %s, wxDefaultPosition, '
+            'wxDefaultSize, [%s], %s, %s);\n' % (
+                obj.name,
+                klass,
+                parent,
+                id,
+                label,
+                choices,
+                major_dim,
+                style)
+            )
 
         props_buf = plgen.generate_common_properties(obj)
         selection = prop.get('selection')
