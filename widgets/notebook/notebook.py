@@ -1,4 +1,4 @@
-"""\
+"""
 wxNotebook objects
 
 @copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
@@ -93,7 +93,7 @@ class NotebookVirtualSizer(Sizer):
             self.window.tabs[pos - 1][1] = item
         except IndexError:
             raise XmlParsingError(
-                _('Notebook widget "%s" does not have any tabs!') % \
+                _('Notebook widget "%s" does not have any tabs!') %
                 self.window.name
                 )
         item._dont_destroy = True
@@ -164,9 +164,9 @@ class TabsHandler:
 
     def end_elem(self, name):
         if name == 'tabs':
-            self.parent.tabs = [[misc.wxstr(name), None] for name in \
+            self.parent.tabs = [[misc.wxstr(name), None] for name in
                                 self.tab_names]
-            self.parent.properties['tabs'].set_value([[name] for name in \
+            self.parent.properties['tabs'].set_value([[name] for name in
                                                       self.tab_names])
             return True
         elif name == 'tab':
@@ -234,7 +234,7 @@ class EditNotebook(ManagedBase):
         self.properties['style'] = HiddenProperty(
             self,
             'style',
-            label=_("style"),
+            label=_("Style"),
             )
         self.access_functions['tabs'] = (self.get_tabs, self.set_tabs)
         tab_cols = [('Tab label', GridProperty.STRING)]
@@ -243,7 +243,7 @@ class EditNotebook(ManagedBase):
             'tabs',
             None,
             tab_cols,
-            label=_("tabs"),
+            label=_("Tabs"),
             can_remove_last=False,
             )
         del tab_cols

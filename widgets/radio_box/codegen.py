@@ -1,9 +1,9 @@
-# codegen.py: code generator functions for wxRadioBox objects
-# $Id: codegen.py,v 1.13 2007/03/27 07:01:55 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Code generator functions for wxRadioBox objects
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 from ChoicesCodeHandler import *
@@ -13,20 +13,26 @@ class PythonCodeGenerator:
     def get_code(self, obj):
         pygen = common.code_writers['python']
         prop = obj.properties
-        id_name, id = pygen.generate_code_id(obj) 
+        id_name, id = pygen.generate_code_id(obj)
         label = pygen.quote_str(prop.get('label', ''))
         choices = prop.get('choices', [])
         major_dim = prop.get('dimension', '0')
-        if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-        else: parent = 'self'
+        if not obj.parent.is_toplevel:
+            parent = 'self.%s' % obj.parent.name
+        else:
+            parent = 'self'
         style = prop.get("style")
-        if style: style = ", style=%s" % pygen.cn_f(style)
-        else: style = ''
+        if style:
+            style = ", style=%s" % pygen.cn_f(style)
+        else:
+            style = ''
         init = []
-        if id_name: init.append(id_name)
+        if id_name:
+            init.append(id_name)
         choices = ', '.join([pygen.quote_str(c) for c in choices])
         klass = obj.klass
-        if klass == obj.base: klass = pygen.cn(klass)
+        if klass == obj.base:
+            klass = pygen.cn(klass)
         init.append('self.%s = %s(%s, %s, %s, choices=[%s], '
                     'majorDimension=%s%s)\n' % (obj.name, klass,
                                                 parent, id, label,
@@ -43,6 +49,7 @@ class PythonCodeGenerator:
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
+
     class RadioBoxXrcObject(xrcgen.DefaultXrcObject):
         def write_property(self, name, val, outfile, tabs):
             if name == 'choices':
@@ -64,12 +71,16 @@ class CppCodeGenerator:
         cppgen = common.code_writers['C++']
         prop = obj.properties
         id_name, id = cppgen.generate_code_id(obj)
-        if id_name: ids = [ id_name ]
-        else: ids = []
+        if id_name:
+            ids = [id_name]
+        else:
+            ids = []
         choices = prop.get('choices', [])
         major_dim = prop.get('dimension', '0')
-        if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-        else: parent = 'this'
+        if not obj.parent.is_toplevel:
+            parent = '%s' % obj.parent.name
+        else:
+            parent = 'this'
         number = len(choices)
         ch_arr = '{\n        %s\n    };\n' % \
                  ',\n        '.join([cppgen.quote_str(c) for c in choices])
@@ -78,7 +89,7 @@ class CppCodeGenerator:
         init = []
         init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
         init.append('%s = new %s(%s, %s, %s, wxDefaultPosition, '
-                    'wxDefaultSize, %s, %s_choices, %s, %s);\n' % \
+                    'wxDefaultSize, %s, %s_choices, %s, %s);\n' %
                     (obj.name, obj.klass, parent, id, label, number, obj.name,
                      major_dim, style))
         props_buf = cppgen.generate_common_properties(obj)
