@@ -368,7 +368,7 @@ class BaseCodeWriter(object):
     @ivar curr_tab: Current indentation level
     @type curr_tab: Integer
 
-    @ivar for_version: wx version we are generating code for (e.g. C{(2, 6)})
+    @ivar for_version: wx version we are generating code for (e.g. C{(2, 8)})
     @type for_version: Tuple of major and minor version number
 
     @ivar header_lines: Lines common to all the generated files
@@ -812,7 +812,7 @@ class BaseCodeWriter(object):
         self.classes = {}
         self.curr_tab = 0
         self.dependencies = {}
-        self.for_version = (2, 6)
+        self.for_version = (2, 8)
         self.header_lines = []
         self.indent_symbol = config.default_indent_symbol
         self.indent_amount = config.default_indent_amount
