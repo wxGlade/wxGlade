@@ -20,7 +20,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, 
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: PyOgg2_MyFrame::PyOgg2_MyFrame
-    notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+    notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
     notebook_1_pane_4 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_3 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
