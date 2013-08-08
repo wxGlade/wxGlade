@@ -230,11 +230,18 @@ class EditNotebook(ManagedBase):
                                       # (actually a list of
                                       # 2-list label, window)
 
-        self.access_functions['style'] = (self.get_tab_pos, self.set_tab_pos)
-        self.properties['style'] = HiddenProperty(
+        self.style_pos = [wx.NB_LEFT, wx.NB_RIGHT, wx.NB_BOTTOM,
+                          wx.NB_FIXEDWIDTH, wx.NB_MULTILINE,
+                          wx.NB_NOPAGETHEME]
+        style_labels = ['#section#' + _('Style'),  'wxNB_LEFT', 'wxNB_RIGHT',
+                        'wxNB_BOTTOM', 'wxNB_FIXEDWIDTH', 'wxNB_MULTILINE',
+                        'wxNB_NOPAGETHEME']
+        self.access_functions['style'] = (self.get_style, self.set_style)
+        self.properties['style'] = CheckListProperty(
             self,
             'style',
-            label=_("Style"),
+            None,
+            style_labels
             )
         self.access_functions['tabs'] = (self.get_tabs, self.set_tabs)
         tab_cols = [('Tab label', GridProperty.STRING)]
@@ -290,10 +297,12 @@ class EditNotebook(ManagedBase):
             style=wx.TAB_TRAVERSAL,
             )
         self.properties['no_custom_class'].display(panel)
+        self.properties['style'].display(panel)
         self.properties['tabs'].display(panel)
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.properties['no_custom_class'].panel, 0,
                   wx.ALL | wx.EXPAND, 3)
+        sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['tabs'].panel, 1, wx.ALL | wx.EXPAND, 3)
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer)
@@ -392,15 +401,22 @@ class EditNotebook(ManagedBase):
                     return -1
         return -1
 
-    def get_tab_pos(self):
-        styles = {wx.NB_LEFT: 'wxNB_LEFT', wx.NB_RIGHT: 'wxNB_RIGHT',
-                  wx.NB_BOTTOM: 'wxNB_BOTTOM'}
-        return styles.get(self.style, '0')
+    def get_style(self):
+        retval = [0] * len(self.style_pos)
+        try:
+            for i in range(len(self.style_pos)):
+                if self.style & self.style_pos[i]:
+                    retval[i] = 1
+        except AttributeError:
+            pass
+        return retval
 
-    def set_tab_pos(self, value):
-        styles = {'wxNB_LEFT': wx.NB_LEFT, 'wxNB_RIGHT': wx.NB_RIGHT,
-                  'wxNB_BOTTOM': wx.NB_BOTTOM}
-        self.style = styles.get(value, 0)
+    def set_style(self, value):
+        value = self.properties['style'].prepare_value(value)
+        self.style = 0
+        for v in range(len(value)):
+            if value[v]:
+                self.style |= self.style_pos[v]
 
     def get_no_custom_class(self):
         return self.no_custom_class

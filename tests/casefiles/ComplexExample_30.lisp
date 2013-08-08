@@ -100,7 +100,7 @@
         (wxFrame_SetToolBar (slot-top-window obj) (slot-Mp3-To-Ogg-toolbar obj))
         (wxToolBar_AddTool (slot-Mp3-To-Ogg-toolbar obj) wxID_OPEN (_"&Open") (wxBitmap:wxBitmap_CreateLoad (_"wxNullBitmap") wxBITMAP_TYPE_ANY) wxNullBitmap wxITEM_NORMAL (_"Open a file") (_"Open a MP3 file to convert into OGG format"))
         ;;; Tool Bar end
-        (setf (slot-notebook-1 obj) (wxNotebook_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 0))
+        (setf (slot-notebook-1 obj) (wxNotebook_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxNB_BOTTOM))
         (setf (slot-notebook-1-pane-1 obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (setf (slot-text-ctrl-1 obj) (wxTextCtrl_Create (slot-notebook-1-pane-1 obj) wxID_ANY "" -1 -1 -1 -1 0))
         (setf (slot-button-3 obj) (wxButton_Create (slot-notebook-1-pane-1 obj) wxID_OPEN "" -1 -1 -1 -1 0))
