@@ -10,6 +10,7 @@ import os
 import sys
 import gettext
 import common
+import logging
 import optparse
 
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
@@ -245,15 +246,25 @@ def init_stage2(use_gui):
     """
     common.use_gui = use_gui
     if use_gui:
-        # ensure minimal wx version
-        if not hasattr(sys, 'frozen') and \
-           'wxversion' not in sys.modules and \
-           'wx' not in sys.modules:
-            import wxversion
-            wxversion.ensureMinimal("2.6")
-        
+        # import proper wx-module using wxversion
+        if not hasattr(sys, "frozen") and 'wx' not in sys.modules:
+            try:
+                import wxversion
+                wxversion.ensureMinimal('2.6')
+            except ImportError:
+                logging.error(
+                    _('Please install missing python module "wxversion".'))
+                sys.exit(1)
+
+        try:
+            import wx
+        except ImportError:
+            logging.error(
+                _('Please install missing python module "wxPython".')
+                )
+            sys.exit(1)
+
         # store current platform (None is default)
-        import wx
         common.platform = wx.Platform
 
         # codewrites, widgets and sizers are loaded in class main.wxGladeFrame
