@@ -6,12 +6,16 @@ Entry point of wxGlade
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import codecs
+import locale
+import logging
 import os
 import sys
 import gettext
-import common
-import logging
 import optparse
+
+import common
+import config
 
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
@@ -28,12 +32,6 @@ def _fix_path(path):
         return os.path.join(os.getcwd(), path)
         #getenv('WXGLADE_INVOKING_DIR', '.'), path)
     return path
-
-def error(msg):
-    """\
-    Print an error message at stderr
-    """
-    print >> sys.stderr, _("ERROR: %s") % msg
 
 def parse_command_line():
     """\
@@ -113,11 +111,11 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""")
         if len(args) == 1:
             options.start_gui = False
         elif len(args) == 0:
-            error(_("No wxg file given!\n"))
+            logging.error(_("No wxg file given!\n"))
             parser.print_help()
             sys.exit(1)
         else:
-            error(_("Too many wxg files given!\n"))
+            logging.error(_("Too many wxg files given!\n"))
             parser.print_help()
             sys.exit(1)
     else:
@@ -139,7 +137,7 @@ def command_line_code_generation(filename, language, out_path=None):
     """
     from xml_parse import CodeWriter
     if not common.code_writers.has_key(language):
-        error(_('No writer for language "%s" available') % language)
+        logging.error(_('No writer for language "%s" available'), language)
 
     writer = common.code_writers[language]
     try:
@@ -152,11 +150,11 @@ def command_line_code_generation(filename, language, out_path=None):
             errors.WxgOutputDirectoryNotWritable,
             errors.WxgOutputPathIsDirectory,
             ), inst:
-        error(inst)
+        logging.error(inst)
         sys.exit(1)
     except Exception:
         common.message.exception(_('Internal Error'))
-        error(
+        logging.error(
             _("An exception occurred while generating the code for the application.\n"
               "If you think this is a wxGlade bug, please report it.")
              )
@@ -185,6 +183,9 @@ def init_stage1():
 
     Path initialisation is splitted because the test suite doesn't work
     with proper initialised paths.
+    
+    Initialise locale settings too. The determinated system locale will be
+    stored in L{config.encoding}.
     """
     # prepend the widgets dir to the
     wxglade_path = determine_wxglade_path()
@@ -198,6 +199,61 @@ def init_stage1():
     common.widgets_path   = os.path.join(wxglade_path, 'widgets')
     common.templates_path = os.path.join(wxglade_path, 'templates')
     common.tutorial_file  = os.path.join(common.docs_path, 'html', 'index.html')
+    
+    # TODO init logging
+    
+    # initialise localization
+    encoding = None
+    try:
+        locale.setlocale(locale.LC_ALL, '')
+    except locale.Error:
+        # ignore problems by fallback to ascii
+        logging.warning(
+            _('Setting locale failed. Use "ascii" instead')
+            )
+        encoding = 'ascii'
+
+    # try to query character encoding used in the selected locale
+    if not encoding:
+        try:
+            encoding = locale.nl_langinfo(locale.CODESET)
+        except AttributeError, e:
+            logging.warning(
+                _('locale.nl_langinfo(locale.CODESET) failed: %s') ,
+                str(e)
+                )
+                
+            # try getdefaultlocale, it used environment variables
+            try:
+                encoding = locale.getdefaultlocale()[1]
+            except ValueError:
+                encoding = config.default_encoding
+            
+    # On Mac OS X encoding may None or '' somehow
+    if not encoding:
+        encoding = config.default_encoding
+        logging.warning(
+            _('Empty encoding. Use "%s" instead'), encoding
+            )
+
+    # check if a codec for the encoding exists
+    try:
+        codecs.lookup(encoding)
+    except LookupError:
+        logging.warning(
+            _('No codec for encoding "%s" found. Use "ascii" instead'),
+            encoding
+            )
+        encoding = 'ascii'
+
+    # show current locale
+    loc_langcode, loc_encoding = locale.getlocale()
+    logging.info(_('Current locale settings are:'))
+    logging.info(_('  Language code: %s'), loc_langcode)
+    logging.info(_('  Encoding: '), loc_encoding)
+
+    # store determinated encoding
+    config.encoding = encoding.upper()
 
     # search files credits.txt and license.txt at different locations
     # - <wxglade_path>/docs   for linux packages
@@ -219,9 +275,9 @@ def init_stage1():
         if os.path.exists(license_file):
             common.license_file = license_file
     if not common.credits_file:
-        error(_('Credits file "credits.txt" not found!'))
+        logging.error(_('Credits file "credits.txt" not found!'))
     if not common.license_file:
-        error(_('License file "license.txt" not found!'))
+        logging.error(_('License file "license.txt" not found!'))
 
     # print used paths
     print _('Base directory:             %s') % common.wxglade_path
@@ -270,7 +326,6 @@ def init_stage2(use_gui):
         # codewrites, widgets and sizers are loaded in class main.wxGladeFrame
     else:
         # use_gui has to be set before importing config
-        import config
         config.init_preferences()
         common.load_code_writers()
         common.load_widgets()
