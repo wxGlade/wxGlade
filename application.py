@@ -6,8 +6,6 @@ Application class to store properties of the application being created
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import codecs
-import locale
 import os
 import random
 import re
@@ -181,7 +179,7 @@ class Application(object):
             _("Name of the automatically generated class derived from wxApp")
             )
 
-        self.encoding = self._get_default_encoding()
+        self.encoding = config.encoding
         self.encoding_prop = TextProperty(self, 'encoding', panel)
         self.encoding_prop.set_tooltip(
             _("Encoding of the generated source files")
@@ -468,56 +466,6 @@ class Application(object):
         self.notebook.AddPage(page, label)
         h = page.GetSize()[1]
         page.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
-
-    def _get_default_encoding(self):
-        """\
-        Return determinated machine default character encoding.
-
-        The default application L{config.default_encoding} is the fallback
-        only.
-        """
-        # try to set locale
-        try:
-            locale.setlocale(locale.LC_ALL)
-        except locale.Error:
-            # ignore problems by fallback to ascii
-            print 'WARNING: Setting locale failed. Use "ascii" instead'
-            return 'ascii'
-
-        # try to query character encoding used in the selected locale
-        try:
-            encoding = locale.nl_langinfo(locale.CODESET)
-        except AttributeError, e:
-            print _('WARNING: locale.nl_langinfo(locale.CODESET) '
-                    'failed: %s') % str(e)
-            # try getdefaultlocale, it used environment variables
-            try:
-                encoding = locale.getdefaultlocale()[1]
-            except ValueError:
-                encoding = config.default_encoding
-
-        # On Mac OS X encoding may None or '' somehow
-        if not encoding:
-            encoding = config.default_encoding
-            print _('WARNING: Empty encoding. Use "%s" instead') % encoding
-
-        # check if a codec for the encoding exists
-        try:
-            codecs.lookup(encoding)
-        except LookupError:
-            print _('WARNING: No codec for encoding "%s" found. '
-                    'Use "ascii" instead') % encoding
-            encoding = 'ascii'
-
-        # print current locale
-        loc_langcode, loc_encoding = locale.getlocale()
-        print _("Current locale settings are:\n  Language code: %s\n"
-                "  Encoding: %s") % (
-                    loc_langcode,
-                    loc_encoding,
-                    )
-
-        return encoding.upper()
 
     def get_encoding(self):
         return self.encoding

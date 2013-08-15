@@ -12,7 +12,6 @@ import sys
 from ConfigParser import *
 
 import common
-import misc
 
 # default configuration values
 default_encoding = 'UTF-8'
@@ -20,6 +19,7 @@ default_encoding = 'UTF-8'
 Default value for encoding
 
 @type: String
+@see: L{encoding}
 """
 
 default_indent_amount = 4
@@ -55,6 +55,17 @@ default_use_gettext = 1
 Default value to usage of gettext
 
 @type: Integer
+"""
+
+encoding = None
+"""\
+System default character encoding.
+
+The default application L{default_encoding} is the fallback only.
+
+@type: String or None
+@see: L{default_encoding}
+@see: L{wxglade.init_stage1()}
 """
 
 def _get_home(default=common.wxglade_path):
@@ -250,6 +261,7 @@ def load_history():
                 l = l[1:]
         history.close()
         if common.use_gui:
+            import misc
             l = [misc.wxstr(e, 'utf-8') for e in l]
         return l
     except IOError:
