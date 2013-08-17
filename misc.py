@@ -8,6 +8,7 @@ Miscellaneus stuff, used in many parts of wxGlade
 import common
 
 from cStringIO import StringIO
+import logging
 import os
 import re
 import wx
@@ -419,17 +420,17 @@ def set_geometry(win, geometry):
             win.SetDimensions(*[int(x) for x in geometry])
         else:
             win.SetPosition([int(x) for x in geometry])
-    except Exception, e:
-        print e
+    except Exception:
+        logging.exception(_('Internal Error'))
 
 
 # snagged out of the Python cookbook
 def import_name(module_path, name):
     import imp
     path, mname = os.path.split(module_path)
-    #print 'path, mname =', path, mname
+    #logging.debug('path=%s, mname=%s', path, mname)
     mname = os.path.splitext(mname)[0]
-    #print 'mname:', mname
+    #logging.debug('mname: %s', mname)
     try:
         mfile, pathname, description = imp.find_module(mname, [path])
         try:
@@ -437,7 +438,7 @@ def import_name(module_path, name):
         finally:
             mfile.close()
     except ImportError:
-        common.message.exception(_('Internal Error'))
+        logging.exception(_('Internal Error'))
         return None
     return vars(module)[name]
 
@@ -506,11 +507,12 @@ def get_xpm_bitmap(path):
                 try:
                     data = zipfile.ZipFile(archive).read(name)
                     data = [d[1:-1] for d in _get_xpm_bitmap_re.findall(data)]
-##                     print "DATA:"
-##                     for d in data: print d
+##                     logging.debug("DATA:")
+##                     for d in data:
+##                         logging.debug(d)
                     bmp = wx.BitmapFromXPMData(data)
                 except:
-                    common.message.exception(_('Internal Error'))
+                    logging.exception(_('Internal Error'))
                     bmp = wx.NullBitmap
     else:
         bmp = wx.Bitmap(path, wx.BITMAP_TYPE_XPM)

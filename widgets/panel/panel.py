@@ -1,10 +1,11 @@
-# panel.py: wxPanel objects
-# $Id: panel.py,v 1.38 2007/08/07 12:15:21 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+wxPanel objects
 
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+import logging
 import wx
 import common, misc
 from tree import Tree
@@ -13,6 +14,11 @@ from edit_windows import ManagedBase, TopLevelBase
 
 
 class PanelBase(object):
+    """\
+    Class PanelBase
+
+    @ivar _logger: Class specific logging instance
+    """
 
     _custom_base_classes = True
 
@@ -20,6 +26,10 @@ class PanelBase(object):
         """\
         Class to handle wxPanel objects
         """
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        # initialise instance
         super(PanelBase, self).__init__()
         self.top_sizer = None # sizer to handle the layout of children
         # ------ ALB 2005-11-19: option to disable custom class code generation
@@ -70,7 +80,9 @@ class PanelBase(object):
         # this must be done here since ManagedBase.finish_widget_creation
         # normally sets EVT_LEFT_DOWN to update_wiew
         if not self.widget.Disconnect(-1, -1, wx.wxEVT_LEFT_DOWN):
-            print _("EditPanel: Unable to disconnect the event hanlder")
+            self._logger.warning(
+                _("EditPanel: Unable to disconnect the event hanlder")
+                )
         wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         #wx.EVT_SCROLLWIN(self.widget, self._update_markers)
 
@@ -81,7 +93,7 @@ class PanelBase(object):
             return x+xx, y+yy
         old = self.widget.GetPosition
         self.widget.GetPosition = get_pos
-        #print self.widget, self.sel_marker.owner
+        #self._logger.debug("%s, %s", self.widget, self.sel_marker.owner)
         self.sel_marker.update()
         self.widget.GetPosition = old
         event.Skip()
@@ -279,8 +291,8 @@ class EditPanel(PanelBase, ManagedBase):
             if clipboard.paste(self, None, 0):
                 common.app_tree.app.saved = False
                 self.widget.SetSize(size)
-        except xml_parse.XmlParsingError, e:
-            print _('\nwxGlade-WARNING: only sizers can be pasted here')
+        except xml_parse.XmlParsingError:
+            self._logger.warning(_('Only sizers can be pasted here'))
             
 # end of class EditPanel
 

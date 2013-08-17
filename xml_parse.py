@@ -15,6 +15,7 @@ NOTE: custom tag handler interface (called by XmlWidgetBuilder)::
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import logging
 import os
 from cStringIO import StringIO
 from xml.sax import SAXException, make_parser
@@ -64,8 +65,10 @@ class XmlParser(ContentHandler):
     @ivar _sizers:     Stack of sizer objects
     @ivar _windows:    Stack of window objects (derived by wxWindow)
     @ivar locator:     Document locator
+    @ivar _logger: Instance specific logger
     """
     def __init__(self):
+        self._logger = logging.getLogger(self.__class__.__name__)
         self._objects = Stack()
         self._windows = Stack()
         self._sizers = Stack()
@@ -431,8 +434,10 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 try:
                     self.top_obj = self.top().obj
                 except AttributeError:
-                    common.message.exception(
-                        _('Exception! obj: %s') % self.top_obj
+                    self._logger.exception(_('Internal Error'))
+                    self._logger.error(
+                        _('Exception caused by obj: %s'),
+                        self.top_obj
                         )
             self.depth_level += 1
 
@@ -448,8 +453,10 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     self.top_obj.show_properties()
                     common.app_tree.select_item(self.top_obj.node)
                 except AttributeError:
-                    common.message.exception(
-                        _('Exception! obj: %s') % self.top_obj
+                    self._logger.exception(_('Internal Error'))
+                    self._logger.error(
+                        _('Exception caused by obj: %s'),
+                        self.top_obj
                         )
         XmlWidgetBuilder.endElement(self, name)
 
@@ -470,8 +477,13 @@ class XmlWidgetObject(object):
 
     @ivar prop_handlers: Is a stack of custom handler functions to set
                          properties of this object
+
+    @ivar _logger: Class specific logging instance
     """
     def __init__(self, attrs, parser):
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
         self.prop_handlers = Stack()
         self.parser = parser
         self.in_windows = self.in_sizers = False
@@ -564,7 +576,7 @@ class XmlWidgetObject(object):
         returned False
         """
         if name == 'pos':  # sanity check, this shouldn't happen...
-            print 'add_property pos'
+            self._logger.debug('add_property(name=pos)')
             return
         try:
             self.obj[name][1](val)  # call the setter for this property
@@ -577,9 +589,11 @@ class XmlWidgetObject(object):
         except KeyError:
             # unknown property for this object
             # issue a warning and ignore the property
-            import sys
-            print >> sys.stderr, _("Warning: property '%s' not supported "
-                  "by this object ('%s') ") % (name, self.obj)
+            self._logger.error(
+                _("Warning: property '%s' not supported by this object ('%s') "),
+                name,
+                self.obj,
+                )
 
 #end of class XmlWidgetObject
 
@@ -597,9 +611,11 @@ class CodeWriter(XmlParser):
                     XML file
     @ivar preview: If True, we are generating the code for the preview
     @type preview: Boolean
+    @ivar _logger: Instance specific logger
     """
     def __init__(self, writer, input, from_string=False, out_path=None,
                  preview=False, class_names=None):
+        self._logger = logging.getLogger(self.__class__.__name__)
         # writer: object that actually writes the code
         XmlParser.__init__(self)
         self._toplevels = Stack()
@@ -708,7 +724,7 @@ class CodeWriter(XmlParser):
                 if handler:
                     handler.start_elem(name, attrs)
             except AttributeError:
-                common.message.exception(_('ATTRIBUTE ERROR!!'))
+                self._logger.exception(_('ATTRIBUTE ERROR!!'))
             self._curr_prop = name
 
     def endElement(self, name):
@@ -813,8 +829,13 @@ class CodeObject(object):
 
     @ivar prop_handlers: Is a stack of custom handler functions to set
                          properties of this object
+
+    @ivar _logger: Class specific logging instance
     """
     def __init__(self, attrs, parser, preview=False):
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
         self.parser = parser
         self.in_windows = self.in_sizers = False
         self.is_toplevel = False
@@ -847,7 +868,7 @@ class CodeObject(object):
                 if int(attrs.get('no_custom_class', False)) and \
                        not self.preview:
                     self.is_toplevel = False
-                    #print 'OK:', str(self)
+                    #self._logger.debug('OK:', str(self))
                     #self.in_windows = True
                     #self.parser._windows.push(self)
                 else:
@@ -942,6 +963,9 @@ class Stack(object):
 
 
 class Sizeritem(object):
+    """\
+    @ivar _logger: Class specific logging instance
+    """
     if common.use_gui:
         flags = {'wxALL': wx.ALL,
                  'wxEXPAND': wx.EXPAND, 'wxALIGN_RIGHT': wx.ALIGN_RIGHT,
@@ -958,6 +982,9 @@ class Sizeritem(object):
     def __init__(self):
         self.option = self.border = 0
         self.flag = 0
+
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
 
     def __getitem__(self, name):
         if name != 'flag':
@@ -1006,8 +1033,11 @@ class Sizeritem(object):
                     tmp['wxALL'] = 1
                 tmp = '|'.join(tmp.keys())
             except:
-                print 'EXCEPTION: self.flags = %s, self.flag = %s' % \
-                      (self.flags, repr(self.flag))
+                self._logger.exception(
+                    'EXCEPTION: self.flags = %s, self.flag = %s',
+                      self.flags,
+                      repr(self.flag)
+                      )
                 raise
             if tmp:
                 return tmp

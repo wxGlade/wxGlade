@@ -93,7 +93,8 @@ DIRS2INCLUDE = [
     ('po', '*'),
     ('res', '*'),
     ('templates', '*'),
-    ('widgets',  '*.py'),
+    ('wcodegen',  '*.py'),
+    ('widgets',   '*.py'),
     ]
 '''\
 (DATA) directories to add to the collection process without processing
@@ -154,6 +155,7 @@ Scripts to run
 
 files2analyse += rescursiveFilelist('codegen')
 files2analyse += rescursiveFilelist('edit_sizers')
+files2analyse += rescursiveFilelist('wcodegen')
 files2analyse += rescursiveFilelist('widgets')
 if debug:
     for filename in files2analyse:

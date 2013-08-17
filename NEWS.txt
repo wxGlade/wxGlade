@@ -2,6 +2,7 @@ Version 0.6.9 - 2013-XX-XX:
 General: 
   - Disable old import style for wxPython 3.0
   - Add missing styles for wxNotebook (Thanks to Udi Fuchs)
+  - Use Python logging facility instead of print statements
 
 Generated Code:
  - Use SetToolTip() instead of SetToolTipString() for wxPython 3.x

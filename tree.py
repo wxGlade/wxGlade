@@ -5,6 +5,7 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
+import logging
 import os.path
 import wx
 
@@ -16,11 +17,13 @@ try: set
 except NameError: from sets import Set as set
 
 
-class Tree:
+class Tree(object):
     """\
     A class to represent a hierarchy of widgets.
+
+    @ivar _logger: Class specific logging instance
     """
-    class Node:
+    class Node(object):
         __empty_win = None
         def __init__(self, widget=None, children=None):
             self.widget = widget
@@ -123,6 +126,10 @@ class Tree:
     # end of class Node
 
     def __init__(self, root=None, app=None):
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        # initialise instance
         self.root = root
         if self.root is None: self.root = Tree.Node()
         self.current = self.root
@@ -140,16 +147,24 @@ class Tree:
 
     def has_name(self, name, node=None):
         if node is None:
-            #print '\nname to check:', name
+            #self._logger.debug('name to check: %s', name)
             for n in self.names:
-                #print 'names of %s: %s' % (n.widget.name, self.names[n])
+                #self._logger.debug(
+                #    'names of %s: %s',
+                #    n.widget.name,
+                #    self.names[n]
+                #)
                 if name in self.names[n]:
                     return True
             return False
         else:
             node = self._find_toplevel(node)
-            #print '\nname to check:', name
-            #print 'names of node %s: %s' % (node.widget.name, self.names[node])
+            #self._logger.debug('name to check: %s', name)
+            #self._logger.debug(
+            #    'names of node %s: %s',
+            #    node.widget.name,
+            #    self.names[node]
+            #    )
             return name in self.names[node]
         #return self.names.has_key(name)
 
@@ -284,8 +299,19 @@ class WidgetTree(wx.TreeCtrl, Tree):
     """\
     Tree with the ability to display the hierarchy of widgets
     """
-    images = {} # dictionary of icons of the widgets displayed
+    
+    images = {} 
+    """\
+    Dictionary of icons of the widgets displayed
+    """
+    
+    _logger = None
+    """\
+    Class specific logging instance
+    """
+    
     def __init__(self, parent, application):
+        self._logger = logging.getLogger(self.__class__.__name__)
         id = wx.NewId()
         style = wx.TR_DEFAULT_STYLE|wx.TR_HAS_VARIABLE_ROW_HEIGHT
         if wx.Platform == '__WXGTK__':
@@ -450,7 +476,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             except AttributeError:
                 pass
             except Exception:
-                common.message.exception(_('Internal Error'))
+                self._logger.exception(_('Internal Error'))
 
     def popup_menu(self, event):
         node = self._find_item_by_pos(*event.GetPosition())
@@ -471,7 +497,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             event.m_x, event.m_y = x, y
             item.popup_menu(event)
         except AttributeError:
-            common.message.exception(_('Internal Error'))
+            self._logger.exception(_('Internal Error'))
 
     def expand(self, node=None, yes=True):
         """\
@@ -484,8 +510,10 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def set_title(self, value):
         if value is None: value = ""
         self.title = value
-        try: self.GetParent().SetTitle(_('wxGlade: Tree %s') % value)
-        except: pass
+        try:
+            self.GetParent().SetTitle(_('wxGlade: Tree %s') % value)
+        except:
+            pass
 
     def get_title(self):
         if not self.title: self.title = ' '
@@ -584,7 +612,12 @@ class WidgetTree(wx.TreeCtrl, Tree):
         old_item = node.item
         image = self.GetItemImage(node.item)
         self.Freeze()
-        #print self._build_label(node), index, new_pos
+        #self._logger.debug(
+        #    '%s, %s, %s',
+        #    self._build_label(node),
+        #    index,
+        #    new_pos
+        #    )
         if index >= new_pos:
             node.item = self.InsertItemBefore(
                 node.parent.item, new_pos, self._build_label(node), image)
@@ -657,7 +690,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             if index == 0 and type(name) == type(()):
                 name, pos = name
             if misc.streq(widget.name, name):
-                #print 'OK:', widget.name
+                #self._logger.debug('OK: %s', widget.name)
                 #self.EnsureVisible(item)
                 itemok = item
                 if parent is None:
@@ -666,7 +699,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 item, cookie = self._get_first_child(item)
                 index += 1
             else:
-                #print 'NO:', widget.name
+                #self._logger.debug('NO: %s', widget.name)
                 item = self.GetNextSibling(item)
         if itemok is not None:
             node = self.GetPyData(itemok)

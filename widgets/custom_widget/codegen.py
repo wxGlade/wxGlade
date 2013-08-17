@@ -1,11 +1,12 @@
-# codegen.py: code generator functions for CustomWidget objects
-# $Id: codegen.py,v 1.13 2007/08/07 12:13:43 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Code generator functions for CustomWidget objects
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
+import wcodegen
 
 class ArgumentsCodeHandler:
     def __init__(self):
@@ -43,7 +44,7 @@ def _fix_arguments(arguments, parent, id, size):
     return arguments
 
 
-class PythonCodeGenerator:
+class PythonCodeGenerator(wcodegen.BaseWidgetCodeWriter):
     def get_code(self, widget):
         if widget.preview and widget.klass not in widget.parser.class_names:
             # if this CustomWidget refers to another class in the same wxg
@@ -107,7 +108,7 @@ def self_%s_on_paint(event):
 # end of class PythonCodeGenerator
 
 
-class CppCodeGenerator:
+class CppCodeGenerator(wcodegen.BaseWidgetCodeWriter):
     def get_code(self, widget):
         cppgen = common.code_writers['C++']
         prop = widget.properties
@@ -131,7 +132,6 @@ class CppCodeGenerator:
 # end of class CppCodeGenerator
 
 
-        
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
@@ -151,11 +151,13 @@ def xrc_code_generator(obj):
                 for arg in args:           
                     try:
                         name, val = [s.strip() for s in arg.split(':', 1)]
-                    except Exception, e:
-                        print 'Exception:', e
+                    except Exception:
+                        self._logger.exception(_('Internal Error'))
                         continue # silently ignore malformed arguments
                     self.properties[name] = val
             xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
+
+    # end of class CustomXrcObject
 
     return CustomXrcObject(obj)
 

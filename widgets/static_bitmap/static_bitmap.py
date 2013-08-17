@@ -1,10 +1,11 @@
-# static_bitmap.py: wxStaticBitmap objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+wxStaticBitmap objects
 
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+import logging
 import wx
 import common, misc
 from edit_windows import ManagedBase
@@ -13,11 +14,21 @@ from widget_properties import *
 
 
 class EditStaticBitmap(ManagedBase):
+    """\
+    Class EditStaticBitmap
+
+    @ivar _logger: Class specific logging instance
+    """
+
     def __init__(self, name, parent, id, bmp_file, sizer, pos, property_window,
                  show=True):
         """\
         Class to handle wxStaticBitmap objects
         """
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        # initialise instance
         self.attribute = True
         ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer,
                              pos, property_window, show=show)
@@ -95,7 +106,7 @@ class EditStaticBitmap(ManagedBase):
                not (self.bitmap.startswith('var:') or
                     self.bitmap.startswith('code:')):
             path = misc.get_relative_path(self.bitmap)
-            print "LOADING FROM:", path
+            self._logger.debug(_("Loading bitmap from: %s:"), path)
             return wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
         else:
             if empty[0] is None:

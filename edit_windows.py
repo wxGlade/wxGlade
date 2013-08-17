@@ -6,6 +6,7 @@ Base classes for windows used by wxGlade
 """
 
 # import general python modules
+import logging
 import math
 import re
 import wx
@@ -34,6 +35,8 @@ class EditBase(EventsMixin):
                            displayed
     @ivar widget: This is the reference to the actual wxWindow widget; it is
                   created only if needed, i.e. when it should become visible
+
+    @ivar _logger: Instance specific logger
     @ivar _rmenu: Popup menu
     """
     def __init__(self, name, klass, parent, id, property_window, show=True,
@@ -50,7 +53,11 @@ class EditBase(EventsMixin):
         @param klass: Name of the object's class
         @param custom_class: If true, the user can chage the value of the
                             'class' property
-        """       
+        """
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        # initialise instance
         self.properties = {}
         self.property_blocking = {}
         self.parent = parent
@@ -326,8 +333,8 @@ constructor will be used. You should probably not use this if \
                 if self.notebook.GetPageText(i) == title:
                     index = i
                     break
-        except AttributeError, e:
-            #print e
+        except AttributeError:
+            #self._logger.exception(_('Internel Error:'))
             index = -1
         w.Hide()
         if 0 <= index < self.notebook.GetPageCount():
@@ -342,8 +349,10 @@ constructor will be used. You should probably not use this if \
 
         self.property_window.Layout()
         self.property_window.SetTitle(_('Properties - <%s>') % self.name)
-        try: common.app_tree.select_item(self.node)
-        except AttributeError: pass
+        try:
+            common.app_tree.select_item(self.node)
+        except AttributeError:
+            pass
         self.widget.SetFocus()
 
 
@@ -436,6 +445,7 @@ class WindowBase(EditBase):
     Extends EditBase with the addition of the common properties available to
     almost every window: size, background and foreground colors, and font
     """
+    
     def __init__(self, name, klass, parent, id, property_window, show=True):
         EditBase.__init__(self, name, klass, parent, id, property_window,
                           show=False)
@@ -733,7 +743,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
             f = wx.Font(int(value[0]), families[value[1]], styles[value[2]],
                        weights[value[3]], int(value[4]), value[5])
         except:
-            #common.message.exception(_('Internal Error'))
+            #self._logger.exception(_('Internal Error'))
             self.properties['font'].set_value(self.get_font())
         else:
             self.font = value
@@ -974,8 +984,8 @@ class ManagedBase(WindowBase):
             else:
                 w, h = self.widget.GetBestSize()
             self.sizer.set_item(self.pos, option=value, size=(w, h))
-        except AttributeError, e:
-            print e
+        except AttributeError:
+            self._logger.exception(_('Internal Error'))
 
     def set_flag(self, value):
         value = self.sizer_properties['flag'].prepare_value(value)
@@ -1006,8 +1016,8 @@ class ManagedBase(WindowBase):
                not self.properties['size'].is_active():
                 size = list(self.widget.GetBestSize())
             self.sizer.set_item(self.pos, flag=flags, size=size)
-        except AttributeError, e:
-            common.message.exception(_('Internal Error'))
+        except AttributeError:
+            self._logger.exception(_('Internal Error'))
 
     def set_border(self, value):
         self.border = int(value)
@@ -1025,8 +1035,8 @@ class ManagedBase(WindowBase):
             if w == -1: w = self.widget.GetSize()[0]
             if h == -1: h = self.widget.GetSize()[1]
             self.sizer.set_item(self.pos, border=int(value), size=(w, h))
-        except AttributeError, e:
-            common.message.exception(_('Internal Error'))
+        except AttributeError:
+            self._logger.exception(_('Internal Error'))
 
     def get_option(self):
         return self.option
@@ -1071,7 +1081,7 @@ class ManagedBase(WindowBase):
         called by self.sizer.change_item_pos to update the item's position
         when another widget is moved
         """
-        #print 'update pos', self.name, value
+        #self._logger.exception('update pos %s, %s', self.name, value)
         self.sizer_properties['pos'].set_value(value-1)
         self.pos = value
 
@@ -1084,8 +1094,14 @@ class PreviewMixin:
 
     @ivar preview_button: Button to show or close the preview window
     @ivar preview_widget: Widget to be represented
+
+    @ivar _logger: Class specific logging instance
     """
     def __init__(self):
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        # initialise instance
         self.preview_button = None
         self.preview_widget = None
 
@@ -1106,7 +1122,7 @@ class PreviewMixin:
         """\
         Create a preview of the selected widget
         """
-        #print 'frame class _> ', self.klass
+        #self._logger.debug('frame class _> %s', self.klass)
         if self.preview_widget is None:
             self.preview_widget = common.app_tree.app.preview(self)
             self.preview_button.SetLabel(_('Close Preview'))
@@ -1204,7 +1220,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def clipboard_paste(self, *args):
         if self.sizer is not None:
-            print _('\nwxGlade-WARNING: sizer already set for this window')
+            self._logger.warning(
+                _('WARNING: sizer already set for this window')
+                )
             return
         import clipboard, xml_parse
         size = self.widget.GetSize()
@@ -1212,8 +1230,10 @@ class TopLevelBase(WindowBase, PreviewMixin):
             if clipboard.paste(self, None, 0):
                 common.app_tree.app.saved = False
                 self.widget.SetSize(size)
-        except xml_parse.XmlParsingError, e:
-            print _('\nwxGlade-WARNING: only sizers can be pasted here')
+        except xml_parse.XmlParsingError:
+            self._logger.warning(
+                _('WARNING: only sizers can be pasted here')
+                )
 
     def create_properties(self):
         WindowBase.create_properties(self)

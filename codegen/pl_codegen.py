@@ -102,7 +102,7 @@ class SourceFileContent(BaseSourceFileContent):
 
             result = self.rec_class_decl.match(line)
             if result:
-##                print ">> class %r" % result.group(1)
+##                self._logger.debug(">> class %r", result.group(1))
                 if not self.class_name:
                     # this is the first class declared in the file: insert the
                     # new ones before this
@@ -117,8 +117,11 @@ class SourceFileContent(BaseSourceFileContent):
             elif not inside_block:
                 result = self.rec_block_start.match(line)
                 if result:
-##                     print ">> block %r %r %r" % (
-##                         result.group('spaces'), result.group('classname'), result.group('block'))
+##                     self.logger.debug(">> block %r %r %r",
+##                         result.group('spaces'),
+##                         result.group('classname'),
+##                         result.group('block'),
+##                         )
                     # replace the lines inside a wxGlade block with a tag that
                     # will be used later by add_class
                     spaces = result.group('spaces')
@@ -155,7 +158,7 @@ class SourceFileContent(BaseSourceFileContent):
             else:
                 # ignore all the lines inside a wxGlade block
                 if self.rec_block_end.match(line):
-##                     print 'end block'
+##                     self._logger.debug('end block')
                     inside_block = False
         if not self.new_classes_inserted:
             # if we are here, the previous ``version'' of the file did not
@@ -543,7 +546,9 @@ unless(caller){
                         write(self.new_defaults[k])
             else:
                 new_signature = ['@_[1 .. $#_]']  # shift(@_)->SUPER::new(@_);
-                print code_obj.klass + " did not declare self.new_defaults "
+                self._logger.info(
+                    "%s did not declare self.new_defaults ", code_obj.klass
+                    )
 
         elif custom_base:
             # custom base classes set, but "overwrite existing sources" not

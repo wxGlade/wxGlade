@@ -7,6 +7,7 @@ inside sizers, no widget unknown to wxGlade, ...) into a WXG file.
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import logging
 import xml.dom.minidom
 import getopt
 import os.path
@@ -479,11 +480,10 @@ If WXG_FILE is not given, it defaults to INPUT_FILE.wxg
     sys.exit(1)
 
 
-def print_exception(exc):
+def print_exception():
     msg = """\
-An error occurred while trying to convert the XRC file. Here's the short error
-message:
-\t%s\n
+An error occurred while trying to convert the XRC file.
+\n
 If you think this is a bug, or if you want to know more about the cause of the
 error, run this script again in debug mode (-d switch). If you find a bug,
 please report it to the mailing list (wxglade-general@lists.sourceforge.net),
@@ -493,8 +493,8 @@ Please note that this doesn't handle ALL XRC files correctly, but only those
 which already are in a format which wxGlade likes (this basically means that
 every non-toplevel widget must be inside sizers, but there might be other
 cases).
-""" % str(exc)
-    print >> sys.stderr, msg
+"""
+    logging.exception(msg)
     sys.exit(1)
 
 
@@ -513,8 +513,8 @@ def main():
     if not options:
         try:
             convert(input, output)
-        except Exception, e:  # catch the exception and print a nice message
-            print_exception(e)
+        except Exception:  # catch the exception and print a nice message
+            print_exception()
     else:  # if in debug mode, let the traceback be printed
         convert(input, output)
 

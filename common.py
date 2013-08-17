@@ -5,11 +5,9 @@ Global variables
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import logging
 import os
-import pprint
 import sys
-import traceback
-import types
 
 use_gui = True
 """\
@@ -260,7 +258,7 @@ def load_code_writers():
             writer = __import__(name).writer
         except (AttributeError, ImportError, NameError, 
                 SyntaxError, ValueError):
-            message.exception(
+            logging.exception(
                 _('"%s" is not a valid code generator module') % module
                 )
         else:
@@ -268,7 +266,10 @@ def load_code_writers():
             if hasattr(writer, 'setup'):
                 writer.setup()
             if use_gui:
-                print _('loaded code generator for %s') % writer.language
+                logging.info(
+                    _('loaded code generator for %s'),
+                    writer.language
+                    )
 
 
 def load_widgets():
@@ -298,8 +299,8 @@ def __load_widgets(widget_dir):
     sys.path.append(widget_dir)
     modules = open(widgets_file)
     if use_gui:
-        print _('Found widgets listing -> %s') % widgets_file
-        print _('loading widget modules:')
+        logging.info(_('Found widgets listing -> %s'), widgets_file)
+        logging.info(_('loading widget modules:'))
     for line in modules:
         module = line.strip()
         if not module or module.startswith('#'):
@@ -320,10 +321,10 @@ def __load_widgets(widget_dir):
                     raise
         except (AttributeError, ImportError, NameError, 
                 SyntaxError, ValueError):
-            message.exception(_('ERROR loading "%s"') % module)
+            logging.exception(_('ERROR loading "%s"'), module)
         else:
             if use_gui:
-                print '\t' + module
+                logging.info('\t%s', module)
             buttons.append(b)
     modules.close()
     return buttons
@@ -395,7 +396,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     # add support for ESC key. We bind the handler to the button, because
     # (at least on GTK) EVT_CHAR are not generated for wxFrame objects...
     def on_char(event):
-        #print 'on_char'
+        #logging.debug('on_char')
         if event.HasModifiers() or event.GetKeyCode() != wx.WXK_ESCAPE:
             event.Skip()
             return
@@ -410,52 +411,6 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     wx.EVT_CHAR(tmp, on_char)
 
     return tmp
-
-
-def exceptionHandler(exc_type, exc_value, exc_tb):
-    """\
-    Logs detailed information about uncatched exceptions
-
-    @param exc_type:  Type of the exception (normally a class object)
-    @param exc_value: The "value" of the exception
-    @param exc_tb:    Call stack of the exception
-    """
-    try:
-        tb = exc_tb
-        while tb.tb_next:
-            tb = tb.tb_next
-        frame_locals = tb.tb_frame.f_locals
-        # log exception details
-        message.error(_('An unexpected error occurs!'))
-        message.error(_('Error type:    %s'), exc_type)
-        message.error(_('Error details: %s'), exc_value)
-        message.error(_('Stack Trace:'))
-        lines = '\n'.join(traceback.format_exception(exc_type, exc_value, exc_tb)).split('\n')
-        for line in lines:
-            if not line:
-                continue
-            message.error(line)
-        message.error(_('Local variables of the last stack entry:'))
-        for varname in frame_locals.keys():
-            # convert variablen name and value to ascii
-            var = frame_locals[varname]
-            vartype = type(var)
-            if vartype == types.UnicodeType:
-                varvalue = frame_locals[varname]
-                varvalue = varvalue.encode('unicode_escape')
-            elif vartype == types.StringType:
-                varvalue = frame_locals[varname]
-                varvalue = varvalue.encode('string-escape')
-            else:
-                varvalue = pprint.pformat(frame_locals[varname])
-                varvalue = varvalue
-            message.error(_('%s (%s): %s'), varname, vartype, varvalue)
-
-    # delete local references of tracebacks or part of tracebacks
-    # to avoid cirular references
-    finally:
-        del tb
-        del frame_locals
 
 
 def _encode_from_xml(label, encoding=None):
@@ -562,8 +517,8 @@ def autosave_current():
         outfile = open(get_name_for_autosave(), 'w')
         app_tree.write(outfile)
         outfile.close()
-    except Exception, e:
-        print e
+    except Exception:
+        logging.exception(_('Internal Error'))
         return False
     return True
 
@@ -573,8 +528,8 @@ def remove_autosaved(filename=None):
     if os.path.exists(autosaved):
         try:
             os.unlink(autosaved)
-        except OSError, e:
-            print e
+        except OSError:
+            logging.exception(_('Internal Error'))
 
 
 def check_autosaved(filename):
@@ -594,7 +549,7 @@ def check_autosaved(filename):
             return os.path.exists(autosaved)
     except OSError, e:
         if e.errno != 2:
-            print e
+            logging.exception(_('Internel Error'))
         return False
 
 
@@ -604,8 +559,8 @@ def restore_from_autosaved(filename):
     if os.access(autosaved, os.R_OK):
         try:
             save_file(filename, open(autosaved).read(), 'wxg')
-        except OSError, e:
-            print e
+        except OSError:
+            logging.exception(_('Internel Error'))
             return False
         return True
     return False
@@ -617,107 +572,3 @@ def generated_from():
            app_tree.app.filename:
         return ' from "' + app_tree.app.filename + '"'
     return ""
-
-
-class MessageLogger(object):
-    """\
-    Small own logging facility
-    
-    @ivar disabled: If True log messages won't be processed
-    @type disabled: Boolean
-    
-    @ivar lines: Message buffer
-    @type lines: List of strings
-    
-    @ivar logger: Reference to an instance of L{msgdialog.MessageDialog}
-    """
-
-    def __init__(self):
-        self.disabled = False
-        self.lines = []
-        self.logger = None
-
-    def _setup_logger(self):
-        """\
-        Create L{msgdialog.MessageDialog} instance.
-        """
-        import msgdialog
-        self.logger = msgdialog.MessageDialog(None, -1, "")
-        self.logger.msg_list.InsertColumn(0, "")
-
-    def __call__(self, kind, fmt, *args):
-        if self.disabled:
-            return
-        kind = kind.upper()
-        if use_gui:
-            import misc
-            if args:
-                msg = misc.wxstr(fmt) % tuple([misc.wxstr(a) for a in args])
-            else:
-                msg = misc.wxstr(fmt)
-            self.lines.extend(msg.splitlines())
-
-        # show errors and exceptions always at console
-        if not use_gui or kind in [_("EXCEPTION"),  _("ERROR")]:
-            if args:
-                msg = fmt % tuple(args)
-            else:
-                msg = fmt
-            print "%s: %s" % (kind, msg)
-
-    def debug(self, fmt, *args):
-        """\
-        Show debug messages
-        """
-        self.__call__(_("DEBUG"), fmt, *args)
-
-    def info(self, fmt, *args):
-        """\
-        Show informational messages
-        """
-        self.__call__(_("INFO"), fmt, *args)
-
-    def warn(self, fmt, *args):
-        """\
-        Show warning messages
-        """
-        self.__call__(_("WARNING"), fmt, *args)
-
-    def error(self, fmt, *args):
-        """\
-        Show error  messages
-        """
-        self.__call__(_("ERROR"), fmt, *args)
-        
-    def exception(self, fmt, *args):
-        """\
-        Show exception details
-        """
-        self.__call__(_("EXCEPTION"), fmt, *args)
-        if not sys.exc_info()[0]:
-            return
-        exceptionHandler(*sys.exc_info())
-        sys.exc_clear()
-
-    def flush(self):
-        """\
-        Show log messages if L{use_gui} is True
-        """
-        if self.lines and use_gui:
-            if not self.logger:
-                self._setup_logger()
-            self.logger.msg_list.Freeze()
-            self.logger.msg_list.DeleteAllItems()
-            for line in self.lines:
-                self.logger.msg_list.Append([line])
-            self.lines = []
-            self.logger.msg_list.SetColumnWidth(0, -1)
-            self.logger.msg_list.Thaw()
-            self.logger.ShowModal()
-
-# end of class MessageLogger
-
-message = MessageLogger()
-"""\
-L{MessageLogger} instance
-"""

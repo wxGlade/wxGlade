@@ -1,10 +1,11 @@
-# clipboard.py: support for cut & paste of wxGlade widgets
-# $Id: clipboard.py,v 1.19 2007/07/21 11:30:29 agriggio Exp $
-# 
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Support for cut & paste of wxGlade widgets
 
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+import logging
 import wx
 
 # Format used by wxGlade for the clipboard.
@@ -59,13 +60,13 @@ def copy(widget):
             wdo = _WidgetDataObject(option, flag, border,
                                     xml_str.getvalue())
             if not wx.TheClipboard.SetData(wdo):
-                print _("Data can't be copied to clipboard.")
+                logging.debug(_("Data can't be copied to clipboard."))
                 return False
             return True
         finally:
             wx.TheClipboard.Close()
     else:
-        print _("Clipboard can't be opened.")
+        logging.info(_("Clipboard can't be opened."))
         return False
 
 
@@ -92,14 +93,14 @@ def paste(parent, sizer, pos):
             if wx.TheClipboard.IsSupported(_widget_data_format):
                 wdo = _WidgetDataObject()
                 if not wx.TheClipboard.GetData(wdo):
-                    print _("Data can't be copied from clipboard.")
+                    logging.debug(_("Data can't be copied from clipboard."))
                     return False
             else:
                 return False
         finally:
             wx.TheClipboard.Close()
     else:
-        print _("Clipboard can't be opened.")
+        logging.info(_("Clipboard can't be opened."))
         return False
 
     option, flag, border, xml_str = wdo.GetWidgetData()
