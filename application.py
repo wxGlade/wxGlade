@@ -6,6 +6,7 @@ Application class to store properties of the application being created
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import logging
 import os
 import random
 import re
@@ -111,6 +112,7 @@ class Application(object):
                        wxApp
     @ivar name:        Name of the wxApp instance to generate
     @ivar notebook:    Notebook to show different property panels
+    @ivar _logger: Instance specific logger
 
     @cvar all_supported_versions: Supported wx versions
     @type all_supported_versions: List of strings
@@ -119,6 +121,7 @@ class Application(object):
     all_supported_versions = ['2.6', '2.8', '3.0']
 
     def __init__(self, property_window):
+        self._logger = logging.getLogger(self.__class__.__name__)
         self.property_window = property_window
         self.notebook = wx.Notebook(self.property_window, -1)
         self.notebook.sizer = None
@@ -691,7 +694,7 @@ class Application(object):
                 wx.OK | wx.CENTRE | wx.ICON_ERROR,
                 )
         except Exception, msg:
-            common.message.exception(_('Internal Error'))
+            self._logger.exception(_('Internal Error'))
             wx.MessageBox(
                 _("An exception occurred while generating the code "
                   "for the application.\n"
@@ -810,7 +813,7 @@ class Application(object):
                 if os.path.isfile(name):
                     os.unlink(name)
         except Exception, e:
-            common.message.exception(_('Internal Error'))
+            self._logger.exception(_('Internal Error'))
             widget.preview_widget = None
             widget.preview_button.SetLabel(_('Preview'))
             wx.MessageBox(
@@ -859,7 +862,7 @@ class Application(object):
                 ok = xrcgen.obj_builders.get(cname, None) is not \
                     xrcgen.NotImplementedXrcObject
             if not ok:
-                common.message.warn(
+                self._logger.warn(
                     _('No %s code generator for %s (of type %s) available'),
                     misc.capitalize(language),
                     widget.name,

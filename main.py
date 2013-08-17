@@ -7,24 +7,26 @@ widgets and initializes all the stuff (tree, property_frame, etc.)
 """
 
 # import general python modules
+import cStringIO
+import logging
 import os
 import os.path
 import sys
 import time
 import wx
-import cStringIO
 from xml.sax import SAXParseException
 
 # import project modules
-from widget_properties import *
-from tree import WidgetTree
-import common
 import application
-import misc
+import clipboard
+import common
 import config
 import configdialog
-import clipboard
+import log
+import misc
 import template
+from widget_properties import *
+from tree import WidgetTree
 from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, \
     XmlParsingError
 
@@ -144,8 +146,12 @@ class wxGladeFrame(wx.Frame):
     @ivar cur_dir: Last visited directory, used for wxFileDialog and not
                    for KDE dialogs
     @type cur_dir: String
+
+    @ivar _logger: Instance specific logger
     """
+    
     def __init__(self, parent=None):
+        self._logger = logging.getLogger(self.__class__.__name__)
         style = wx.SYSTEM_MENU|wx.CAPTION|wx.MINIMIZE_BOX|wx.RESIZE_BORDER
         style |= wx.CLOSE_BOX
         wx.Frame.__init__(self, parent, -1, "wxGlade v%s" % common.version,
@@ -418,7 +424,7 @@ class wxGladeFrame(wx.Frame):
         # check to see if there are some remembered values
         prefs = config.preferences
         if prefs.remember_geometry:
-            #print 'initializing geometry'
+            #self._logger.debug('initializing geometry')
             try:
                 x, y, w, h = prefs.get_geometry('main')
                 misc.set_geometry(self, (x, y))
@@ -598,7 +604,6 @@ class wxGladeFrame(wx.Frame):
             common.app_tree.app.filename = None
             common.app_tree.app.saved = True
             self.user_message("")
-            # ALB 2004-10-15
             common.remove_autosaved()
             if config.preferences.autosave and self.autosave_timer is not None:
                 self.autosave_timer.Start()
@@ -620,7 +625,7 @@ class wxGladeFrame(wx.Frame):
                           _("Alert"), style=wx.OK|wx.ICON_INFORMATION)
             return
         path = common.app_tree.get_selected_path()
-        #print 'path:', path
+        #self._logger.debug('path: %s', path)
         self._open_app(common.app_tree.app.filename, add_to_history=False)
         common.app_tree.select_path(path)
         
@@ -669,11 +674,14 @@ class wxGladeFrame(wx.Frame):
             if not is_filelike:
                 os.chdir(os.path.dirname(infilename))
                 infile = open(infilename)
-                print _('Read wxGlade project from file "%s"') % infilename
+                self._logger.info(
+                    _('Read wxGlade project from file "%s"'),
+                    infilename,
+                    )
             else:
                 infile = infilename
                 infilename = getattr(infile, 'name', None)
-                print _('Read wxGlade project from file-like object')
+                self._logger.info(_('Read wxGlade project from file-like object'))
             if use_progress_dialog and config.preferences.show_progress:
                 p = ProgressXmlWidgetBuilder(input_file=infile)
             else:
@@ -692,9 +700,9 @@ class wxGladeFrame(wx.Frame):
             os.chdir(old_dir)
             return False            
         except Exception, msg:
-            common.message.exception(
-                _('An exception occurred while loading file "%s".') % \
-                    infilename.encode('ascii', 'replace')
+            self._logger.exception(
+                _('An exception occurred while loading file "%s".'),
+                infilename.encode('ascii', 'replace')
                 )
 
             if locals().has_key('infile') and not is_filelike:
@@ -728,12 +736,12 @@ class wxGladeFrame(wx.Frame):
         common.app_tree.auto_expand = True
         common.app_tree.expand()
         if common.app_tree.app.is_template:
-            print _("Loaded template")
+            self._logger.info(_("Loaded template"))
             common.app_tree.app.template_data = template.Template(infilename)
             common.app_tree.app.filename = None
 
         end = time.clock()
-        print _('Loading time: %.5f') % (end-start)
+        self._logger.info(_('Loading time: %.5f'), end-start)
 
         common.app_tree.app.saved = True
         
@@ -774,9 +782,9 @@ class wxGladeFrame(wx.Frame):
             wx.MessageBox(_("Error saving app:\n%s") % msg, _("Error"),
                          wx.OK|wx.CENTRE|wx.ICON_ERROR)
         except Exception, msg:
-            common.message.exception(
-                _('An exception occurred while saving file "%s".') % \
-                    filename.encode('ascii', 'replace')
+            self._logger.exception(
+                _('An exception occurred while saving file "%s".'),
+                filename.encode('ascii', 'replace')
                 )
             common.app_tree.app.saved = False
             wx.MessageBox(_("An exception occurred while saving file "
@@ -917,9 +925,9 @@ class wxGladeFrame(wx.Frame):
                 self._open_app(ibuffer, is_filelike=True)
                 common.app_tree.app.saved = False
             except Exception, msg:
-                common.message.exception(
-                    _('An exception occurred while importing file "%s".') % \
-                        infilename.encode('ascii', 'replace')
+                self._logger.exception(
+                    _('An exception occurred while importing file "%s".'),
+                    infilename.encode('ascii', 'replace')
                     )                
                 wx.MessageBox(
                     _("An exception occurred while importing file "
@@ -948,6 +956,17 @@ class wxGladeFrame(wx.Frame):
 
 
 class wxGlade(wx.App):
+    """\
+    Class wxGlade
+    
+    @ivar _msg_dialog: Message dialog to show warning as well as error
+                       messages.
+
+    @type _msg_dialog: Instance of L{msgdialog.MessageDialog}
+    """
+
+    _msg_dialog = None
+
     def OnInit(self):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
@@ -981,8 +1000,39 @@ class wxGlade(wx.App):
         return True
 
     def on_idle(self, event):
-        common.message.flush()
+        """\
+        Show error messages if the GUI is idle.
+
+        @see: L{show_error_dialog()}
+        """
+        self.show_error_dialog()
         event.Skip()
+
+    def show_error_dialog(self):
+        """\
+        Show log messages if L{common.use_gui} is True
+
+        @see: L{main.wxGlade.on_idle()}
+        @see: L{log.getBufferAsList()}
+        """
+        log_msg = log.getBufferAsString(clean=True)
+        if not (log_msg and common.use_gui):
+            return
+
+        # initialise message dialog
+        if not self._msg_dialog:
+            import msgdialog
+            self._msg_dialog = msgdialog.MessageDialog(None, -1, "")
+            self._msg_dialog.msg_list.InsertColumn(0, "")
+
+        # clear dialog and show new messages
+        self._msg_dialog.msg_list.Freeze()
+        self._msg_dialog.msg_list.DeleteAllItems()
+        for line in log_msg.split('\n'):
+            self._msg_dialog.msg_list.Append([line, ])
+        self._msg_dialog.msg_list.SetColumnWidth(0, -1)
+        self._msg_dialog.msg_list.Thaw()
+        self._msg_dialog.ShowModal()
 
 # end of class wxGlade
 
@@ -991,13 +1041,17 @@ def main(filename=None):
     """\
     if filename is not None, loads it
     """
-    print _("Using wxPython %s") % wx.__version__
+    logging.info(_("Using wxPython %s"), wx.__version__)
 
     # now, silence a deprecation warining for py2.3
     import warnings
-    warnings.filterwarnings("ignore", "integer", DeprecationWarning,
-                            "wxPython.gdi")
-    
+    warnings.filterwarnings(
+        "ignore",
+        "integer",
+        DeprecationWarning,
+        "wxPython.gdi",
+        )
+
     app = wxGlade()
     if filename is not None:
         app.GetTopWindow()._open_app(filename, False)

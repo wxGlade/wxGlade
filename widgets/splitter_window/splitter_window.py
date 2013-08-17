@@ -1,11 +1,12 @@
-# splitter_window.py: wxSplitterWindow objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+wxSplitterWindow objects
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
+
 import common
 from tree import Tree
 from widget_properties import *
@@ -22,7 +23,7 @@ class SplitterWindowSizer(Sizer):
         """\
         Updates the layout of the item at the given pos.
         """
-        #print 'set_item'
+        #self._logger.debug('set_item()')
         if self.window.widget and \
                 self.window.window_old and self.window.window_old.widget:
             self.window.widget.Unsplit(self.window.window_old.widget)
@@ -35,7 +36,7 @@ class SplitterWindowSizer(Sizer):
         """\
         Adds an item to self.window.
         """
-        #print 'add_item', item.name
+        #self._logger.debug('add_item(): %s', item.name)
         if pos == 1:
             self.window.window_old = self.window.window_1
             self.window.window_1 = item

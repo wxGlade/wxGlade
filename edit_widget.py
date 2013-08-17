@@ -30,21 +30,24 @@ class EditWidget(ManagedBase):
             prefix = attr[0:4]
             if prefix == 'get_':
                 getter = attr
-                #print 'found getter ', getter
+                #self._logger.debug('found getter ', getter)
                 # extract the property name
                 prefix, name = attr.split('_', 1)
-                #print 'getter ', name
+                #self._logger.debug('getter ', name)
                 # check for a setter
                 setter = 'set_%s' % name
                 if not hasattr(self, setter):
-                    #print 'no setter for %s, skipping ' % name
+                    #self._logger.debug( 'no setter for %s, skipping ', name)
                     continue
                 # check for a get_name_widget
                 getter_widget = 'get_%s_widget' % name
                 if not hasattr(self, getter_widget):
-                    #print 'no widget getter for %s, skipping ' % name
+                    #self._logger.debug(
+                    #    'no widget getter for %s, skipping ',
+                    #    name,
+                    #    )
                     continue
-                #print 'adding property: %s' % name
+                #self._logger.debug('adding property: %s', name)
                 self.property_names.append(name)
                 self.access_functions[name] = (getattr(self, getter),
                                                getattr(self, setter))

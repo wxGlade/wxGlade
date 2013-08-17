@@ -7,6 +7,8 @@ etc.)
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import logging
+
 # this is needed for wx >= 2.3.4 to clip the label showing the name of the
 # property, otherwise on the properties tabs horizontal scrollbars are shown
 from xml.sax.saxutils import escape
@@ -36,6 +38,7 @@ class Property:
     @ivar parent:  The widget inside which the property is displayed
     @ivar tooltip: Tooltip text
     @type tooltip: String
+    @ivar _logger: Instance specific logger
     @ivar _tooltip_widgets: All widgets to set tooltips for
     @type _tooltip_widgets: List
     """
@@ -58,6 +61,7 @@ class Property:
             self.dispName = label
         else:
             self.dispName = name
+        self._logger = logging.getLogger(self.__class__.__name__)
 
     def on_change_val(self, event):
         """\
@@ -156,7 +160,7 @@ class HiddenProperty(Property):
         try:
             getter, setter = owner[name]
         except KeyError:
-            common.message.exception(_('Internal Error'))
+            self._logger.exception(_('Internal Error'))
             if callable(value):
                 getter = value
             else:
@@ -985,7 +989,7 @@ class FontDialogProperty(DialogProperty):
         try:
             props = eval(self.get_value())
         except:
-            common.message.exception(_('Internal Error'))
+            self._logger.exception(_('Internal Error'))
         else:
             if len(props) == 6:
                 self.dialog.set_value(props)
@@ -996,10 +1000,13 @@ class FontDialogProperty(DialogProperty):
             try:
                 props = [_encode(s) for s in eval(self.get_value().strip())]
             except:
-                common.message.exception(_('Internal Error'))
+                self._logger.exception(_('Internal Error'))
                 return
             if len(props) < 6:
-                print _('error in the value of the property "%s"') % self.name
+                self._logger.error(
+                    _('error in the value of the property "%s"'),
+                    self.name,
+                    )
                 return
             fwrite = outfile.write
             fwrite('    ' * tabs + '<%s>\n' % self.name)
@@ -1384,11 +1391,11 @@ class GridProperty(Property, _activator):
 
     def remove_row(self, event):
         if not self.can_remove_last and self.rows == 1:
-            common.message.warn(
+            self._logger.warning(
                 _('You can not remove the last entry!')
                 )
             return
-        if self.rows > 0:  # 1:
+        if self.rows > 0:
             self.grid.DeleteRows(self.cur_row)
             self.rows -= 1
         self._update_remove_button()

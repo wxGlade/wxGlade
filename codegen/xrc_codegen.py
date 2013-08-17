@@ -11,8 +11,8 @@ return an instance of XrcObject
 """
 
 import cStringIO
+import logging
 
-import common
 from xml.sax.saxutils import escape, quoteattr
 from codegen import BaseCodeWriter, \
                     EventsPropertyHandler, \
@@ -90,8 +90,11 @@ class XRCCodeWriter(BaseCodeWriter):
         """\
         Class to produce the XRC code for a given widget. This is a base class
         which does nothing
+
+        @ivar _logger: Instance specific logger
         """
         def __init__(self):
+            self._logger = logging.getLogger(self.__class__.__name__)
             self.properties = {}
             self.children = []  # sub-objects
 
@@ -113,9 +116,8 @@ class XRCCodeWriter(BaseCodeWriter):
 
             @param msg: Warning message
             @type msg:  String
-            @see: L{common.MessageLogger.warn()}
             """
-            common.message.warn(msg)
+            self._logger.warning(msg)
 
     # end of class XrcObject
 

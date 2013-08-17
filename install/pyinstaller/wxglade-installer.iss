@@ -98,6 +98,8 @@ Name: "{app}\codegen\*.pyc"; Type: files
 Name: "{app}\codegen\*.pyo"; Type: files
 Name: "{app}\edit_sizers\*.pyc"; Type: files
 Name: "{app}\edit_sizers\*.pyo"; Type: files
+Name: "{app}\wcodegen\*.pyc"; Type: files
+Name: "{app}\wcodegen\*.pyo"; Type: files
 Name: "{app}\widgets\bitmap_button\*.pyc"; Type: files
 Name: "{app}\widgets\bitmap_button\*.pyo"; Type: files
 Name: "{app}\widgets\button\*.pyc"; Type: files

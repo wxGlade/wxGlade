@@ -1,13 +1,15 @@
-# codegen.py: code generator functions for wxMenuBar objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Code generator functions for wxMenuBar objects
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
+import wcodegen
 from MenuTree import *
 
-class PythonCodeGenerator:
+class PythonCodeGenerator(wcodegen.BaseWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
         
@@ -85,7 +87,7 @@ class PythonCodeGenerator:
                             append('%s.Append(%s, %s, %s)\n' %
                                    (menu, id, pygen.quote_str(item.label),
                                     pygen.quote_str(item.help_str)))
-        #print 'menus = %s' % menus
+        #self._logger.debug('menus = %s', menus)
 
         if obj.is_toplevel: obj_name = 'self'
         else: obj_name = 'self.' + obj.name
@@ -122,7 +124,7 @@ class PythonCodeGenerator:
         cn = pygen.cn
         out = []
 
-        #print 'get_events', obj.properties['menubar']
+        #self._logger.debzg('get_events: %s', obj.properties['menubar'])
 
         def do_get(item):
             ret = []
@@ -258,7 +260,7 @@ def xrc_code_generator(obj):
     return MenuBarXrcObject(obj)
 
 
-class CppCodeGenerator:
+class CppCodeGenerator(wcodegen.BaseWidgetCodeWriter):
     constructor = []
 
     def get_code(self, obj):
@@ -327,7 +329,7 @@ class CppCodeGenerator:
                         append('%s->Append(%s, %s, %s);\n' %
                                (menu, id, cppgen.quote_str(item.label),
                                 cppgen.quote_str(item.help_str)))
-        #print 'menus = %s' % menus
+        #self._logger.debug('menus = %s', menus)
 
         if obj.is_toplevel: obj_name = ''
         else: obj_name = obj.name + '->'

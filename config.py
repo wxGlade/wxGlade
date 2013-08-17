@@ -7,6 +7,7 @@ Configuration related stuff
 """
 
 # import general python modules
+import logging
 import os.path
 import sys
 from ConfigParser import *
@@ -256,8 +257,8 @@ def load_history():
                 encoding = 'utf-8' 
                 #l = [common._encode_from_xml(e, encoding) for e in l[1:]]
                 l = [e.decode(encoding) for e in l[1:]]
-            except Exception, e:
-                print _("ERR:"), e
+            except Exception:
+                logging.exception(_("Internal Error"))
                 l = l[1:]
         history.close()
         if common.use_gui:

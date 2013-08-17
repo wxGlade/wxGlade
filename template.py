@@ -7,13 +7,17 @@ Handles the template tags and description
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import glob
+import logging
+import os
+import wx
 from xml.dom import minidom
 from xml.sax import saxutils
+
+import common
 import config
+import misc
 import templates_ui
-import common, misc
-import os, glob
-import wx
 
 
 class Template:
@@ -72,7 +76,16 @@ class Template:
 
 
 class TemplateListDialog(templates_ui.TemplateListDialog):
+    """\
+    Class TemplateListDialog
+
+    @ivar _logger: Class specific logging instance
+    """
+
     def __init__(self):
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
         templates_ui.TemplateListDialog.__init__(self, None, -1, "")
         self.templates = []
         self.fill_template_list()
@@ -127,8 +140,8 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
                              style=wx.YES|wx.NO|wx.CENTRE) == wx.YES:
                 try:
                     os.unlink(self.selected_template)
-                except Exception, e:
-                    print e
+                except Exception:
+                    self._logger.exception(_('Internal Error'))
                 self.fill_template_list()
                 self.selected_template = None
 
@@ -203,8 +216,8 @@ def save_template(data=None):
         if not os.path.exists(d):
             try:
                 os.makedirs(d)
-            except (OSError, IOError), e:
-                print _("ERROR creating %s: %s") % (d, e)
+            except (OSError, IOError):
+                logging.exception(_('ERROR creating directory "%s"'), d)
                 return None, retdata
         ret = os.path.join(d, ret + '.wgt')
     if ret and os.path.exists(ret) and \

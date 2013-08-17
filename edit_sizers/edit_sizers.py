@@ -6,6 +6,7 @@ Hierarchy of Sizers supported by wxGlade
 """
 
 # import general python modules
+import logging
 import math
 import re
 
@@ -205,9 +206,18 @@ class BaseSizerBuilder(object):
 # end of class BaseSizerBuilder
 
 
-class SizerSlot:
-    "a window to represent a slot in a sizer"
+class SizerSlot(object):
+    """\
+    A window to represent a slot in a sizer
+
+    @ivar _logger: Class specific logging instance
+    """
+
     def __init__(self, parent, sizer, pos=0):
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        # initialise instance
         self.widget = None # reference to the widget resembling the slot
         self.sizer = sizer
         self.parent = parent
@@ -323,7 +333,7 @@ class SizerSlot:
         import clipboard
         if clipboard.paste(self.parent, self.sizer, self.pos):
             common.app_tree.app.saved = False # update the status of the app
-            #print misc.focused_widget
+            #self._logger.debug('%s', misc.focused_widget)
 
     def select_and_paste(self, *args):
         """\
@@ -663,10 +673,15 @@ class InsertDialog(wx.Dialog):
 class Sizer:
     """\
     Base class for every Sizer handled by wxGlade
+
+    @ivar _logger: Instance specific logger
     """
     def __init__(self, window):
         self.window = window # window this sizer is responsible
                              # for the layout of
+
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
         
     def set_item(self, pos, option=None, flag=None, border=None, size=None,
                  force_layout=True):
@@ -857,7 +872,7 @@ class SizerBase(Sizer):
         self.attribute = int(value)
 
     def update_pos(self, value):
-        #print 'update pos', self.name, value
+        #self._logger.debug('update pos: %s, %s', self.name, value)
         self.sizer_properties['pos'].set_value(value-1)
         self.pos = value
 
@@ -934,7 +949,7 @@ class SizerBase(Sizer):
             try:
                 common.app_tree.refresh_name(self.node, oldname)
             except AttributeError:
-                common.message.exception(_('Internal Error'))
+                self._logger.exception(_('Internal Error'))
             self.property_window.SetTitle(_('Properties - <%s>') % self.name)
     set_name_pattern = re.compile('^[a-zA-Z_]+[\w0-9]*$')
             
@@ -963,8 +978,8 @@ class SizerBase(Sizer):
                 if self.notebook.GetPageText(i) == title:
                     index = i
                     break
-        except AttributeError, e:
-            #print e
+        except AttributeError:
+            #self._logger.exception(_('Internel Error'))
             index = -1
         w.Hide()
         if 0 <= index < self.notebook.GetPageCount():
@@ -1012,8 +1027,8 @@ class SizerBase(Sizer):
             self.children[pos] = SizerItem(item, pos, option, flag, border,
                                            size)
         except IndexError: # this shouldn't happen!
-            common.message.exception(_('Internal Error'))
-            print self.children, pos
+            self._logger.exception(_('Internal Error'))
+            self._logger.error('%s, %s', self.children, pos)
             raise SystemExit
 
         if hasattr(item, 'set_containing_sizer'):
@@ -1071,7 +1086,7 @@ class SizerBase(Sizer):
                 #*item.widget.GetBestSize())
             #self.widget.SetItemMinSize(item.widget, w, h)
         except Exception:
-            #common.message.exception(_('Internal Error'))
+            #self._logger.exception(_('Internal Error'))
             pass
         if force_layout: self.layout() # update the layout of self
 
@@ -1101,7 +1116,7 @@ class SizerBase(Sizer):
         try:
             item = self.children[pos]
         except IndexError: # this shouldn't happen
-            common.message.exception(_('Internal Error'))
+            self._logger.exception(_('Internal Error'))
             raise SystemExit
         if option is not None:
             option = int(option)
@@ -1209,10 +1224,9 @@ class SizerBase(Sizer):
         Changes the position of the 'item' so that it is at 'new_pos'
         'new_pos' must be a valid position
         """
-        if not self.widget: return
+        if not self.widget:
+            return
 
-        #print
-        
         old_pos = item.pos
         import copy
         new_item = copy.copy(self.children[old_pos])
@@ -1245,9 +1259,10 @@ class SizerBase(Sizer):
 
         if force_layout:
             self.layout()
-            if wx.Platform == '__WXMSW__': self.window.widget.Refresh()
+            if wx.Platform == '__WXMSW__':
+                self.window.widget.Refresh()
 
-        #print [c.item.name for c in self.children]
+        #self._logger.debug('%s', [c.item.name for c in self.children])
     # ------------------------------------------------------------------------
 
     def set_option(self, value):
@@ -1258,7 +1273,7 @@ class SizerBase(Sizer):
         self.option = int(value)
         try:
             self.sizer.set_item(self.pos, option=self.option)
-            #print self.name, 'set_option', self.option
+            #self._logger.debug('%s set_option(%s)', self.name, self.option)
         except AttributeError:
             pass
         self.finish_set()
@@ -1288,8 +1303,8 @@ class SizerBase(Sizer):
         self.border = int(value)
         try:
             self.sizer.set_item(self.pos, border=self.border)
-        except AttributeError, e:
-            print e
+        except AttributeError:
+            self._logger.exception(_('Internal Error'))
 
     def get_option(self):
         if not hasattr(self, 'sizer'): return '1'
@@ -1520,7 +1535,7 @@ class EditBoxSizer(SizerBase):
                            not (c.flag & wx.FIXED_MINSIZE):
                         c.item.widget.Layout()
                         w, h = c.item.widget.GetBestSize()
-                        #print "HERE:", w, h
+                        #self._logger.debug("HERE: %d, %d", w, h)
                         c.item.widget.SetMinSize((w, h))
                     else:
                         size = sp.get_value().strip()
@@ -1804,7 +1819,7 @@ class GridSizerBase(SizerBase):
 ##                     w, h = c.item.widget.GetBestSize()
 ##                 self.widget.SetItemMinSize(c.item.widget, w, h)
         for pos, size in to_lay_out:
-            #print 'set_item:', pos, size
+            #self._logger.debug('set_item: %s, %s', pos, size)
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
         
@@ -1942,7 +1957,7 @@ class GridSizerBase(SizerBase):
             rows = tot / cols
             if tot % cols:
                 rows += 1
-            # print 'fixed rows:', rows
+            #self._logger.debug('fixed rows: %s', rows)
             if rows * cols > tot:
                 for i in range(rows * cols - tot):
                     self.insert_slot(interactive=False, pos=tot+i+1,
@@ -1975,7 +1990,7 @@ class GridSizerBase(SizerBase):
             cols = tot / rows
             if tot % rows:
                 cols += 1
-            # print 'fixed cols:', cols
+            #self._logger.debug('fixed cols: %s', cols)
             if rows * cols > tot:
                 for i in range(rows * cols - tot):
                     self.insert_slot(interactive=False, pos=tot+i+1,

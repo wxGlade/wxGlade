@@ -41,7 +41,8 @@ def _ugly_hack_for_win32_notebook_bug(notebook_widget):
     app, but as time permits I'll try again... if you succeed, please let me
     know.
     """
-    #print '_ugly_hack_for_win32_notebook_bug'
+    #import logging
+    #logging.debug('_ugly_hack_for_win32_notebook_bug')
     index_ok = notebook_widget.GetSelection()
     for i in range(notebook_widget.GetPageCount()):
         notebook_widget.GetPage(i).Hide()
@@ -76,8 +77,8 @@ class NotebookVirtualSizer(Sizer):
             self.window.widget.SetSelection(pos)
             try:
                 wx.CallAfter(item.sel_marker.update)
-            except AttributeError, e:
-                #print e
+            except AttributeError:
+                #self._logger.exception(_('Internal Error'))
                 pass
         if self.window.sizer is not None:
             self.window.sizer.set_item(
@@ -88,7 +89,7 @@ class NotebookVirtualSizer(Sizer):
         """\
         Adds an item to self.window.
         """
-        #print 'pos:', pos, 'item.name:', item.name
+        #self._logger.debug('pos: %s, item.name: %s', pos, item.name)
         try:
             self.window.tabs[pos - 1][1] = item
         except IndexError:
@@ -105,7 +106,7 @@ class NotebookVirtualSizer(Sizer):
         if self.window._is_removing_pages or not self.window.widget:
             return
         slot = SizerSlot(self.window, self, pos)
-        #print 'free:', slot, slot.pos, pos
+        #self._logger.debug('free: %s, %s, %s', slot, slot.pos, pos)
         slot.show_widget(True)
         pos = pos - 1
         label, item = self.window.tabs[pos]
@@ -328,8 +329,8 @@ class EditNotebook(ManagedBase):
             self.virtual_sizer.set_item(pos)
             try:
                 wx.CallAfter(window.sel_marker.update)
-            except AttributeError, e:
-                #print e
+            except AttributeError:
+                #self._logger.exception(_('Internal Error'))
                 pass
 
     def get_tabs(self):

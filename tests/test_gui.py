@@ -196,7 +196,6 @@ class TestGui(WXGladeBaseTest):
         self._generate_code()
 
         # first test should fail because no output file is given
-        #print self._messageBox
         err_msg = u'You must specify an output file\n' \
                    'before generating any code'
         err_caption = u'Error'

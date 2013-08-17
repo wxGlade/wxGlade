@@ -6,6 +6,7 @@ Common code used by all code generators
 """
 
 import cStringIO
+import logging
 import os
 import os.path
 import random
@@ -17,6 +18,7 @@ import types
 import common
 import config
 import misc
+import wcodegen
 from xml_parse import XmlParsingError
 
 
@@ -177,9 +179,15 @@ class BaseSourceFileContent(object):
     @cvar rec_block_end:     Regexp to match the end of a wxGlade block
     @cvar rec_class_decl:    Regexp to match class declarations
     @cvar rec_event_handler: Regexp to match event handlers
+
+    @ivar _logger: Class specific logging instance
     """
 
     def __init__(self, name, code_writer):
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        # initialise instance
         self.name = name
         self.code_writer = code_writer
         self.content = None
@@ -302,8 +310,7 @@ class BaseWidgetHandler(object):
 
 # end of class BaseWidgetHandler
 
-
-class BaseCodeWriter(object):
+class BaseCodeWriter(wcodegen.BaseCodeWriterBase):
     """\
     Dictionary of objects used to generate the code in a given language.
 
@@ -794,6 +801,7 @@ class BaseCodeWriter(object):
         """\
         Initialise only instance variables using there defaults.
         """
+        wcodegen.BaseCodeWriterBase.__init__(self)
         self.obj_builders = {}
         self.obj_properties = {}
         self._property_writers = {}
@@ -1164,8 +1172,10 @@ class BaseCodeWriter(object):
             mycn = getattr(builder, 'cn', self.cn)
             mycn_f = getattr(builder, 'cn_f', self.cn_f)
         except KeyError:
-            print code_obj
-            raise  # this is an error, let the exception be raised
+            self._logger.error('%s', code_obj)
+            # this is an error, let the exception be raised
+            # the details are logged by the global exception handler
+            raise
 
         if prev_src and prev_src.classes.has_key(code_obj.klass):
             is_new = False
@@ -1456,8 +1466,10 @@ class BaseCodeWriter(object):
         try:
             init, props, layout = builder.get_code(sub_obj)
         except:
-            print sub_obj
-            raise  # this shouldn't happen
+            self._logger.error('%s', sub_obj)
+            # this is an error, let the exception be raised
+            # the details are logged by the global exception handler
+            raise
 
         if sub_obj.in_windows:  # the object is a wxWindow instance
             if sub_obj.is_container and not sub_obj.is_toplevel:
@@ -2190,7 +2202,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             try:
                 os.makedirs(dirname)
             except:
-                common.message.exception(
+                self._logger.exception(
                     _('Can not create output directory "%s"'), dirname
                     )
 
@@ -2200,7 +2212,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         except IOError, e:
             raise XmlParsingError(str(e))
         except:
-            common.message.exception(_('Internal Error'))
+            self._logger.exception(_('Internal Error'))
         if mainfile and sys.platform in ['linux2', 'darwin']:
             try:
                 # make the file executable
@@ -2256,10 +2268,9 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         @param msg: Warning message
         @type msg:  String
-        @see: L{common.MessageLogger.warn()}
         """
         if self._show_warnings:
-            common.message.warn(msg)
+            self._logger.warning(msg)
 
     def _content_notfound(self, source):
         """\
@@ -2609,10 +2620,14 @@ It is available for wx versions %(supported_versions)s only.""") % {
                 m.initialize()
             except (ImportError, AttributeError):
                 pass
-##                 print 'ERROR loading "%s"' % module_name
-##                 common.message.exception(_('Internal Error'))
+##                 self._logger.error(_('ERROR loading "%s"'), module_name)
+##                 self._logger.exception(_('Internal Error'))
 ##             else:
-##                 print 'initialized %s generator for %s' % (self.language, module_name)
+##                 self._logger.debug(
+##                     'initialized %s generator for %s',
+##                     self.language,
+##                     module_name,
+##                     )
         modules.close()
 
     def _source_warning(self, klass, msg, sub_obj):

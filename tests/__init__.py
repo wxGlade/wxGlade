@@ -8,6 +8,7 @@
 import cStringIO
 import difflib
 import glob
+import logging
 import os.path
 import re
 import unittest
@@ -15,6 +16,7 @@ import unittest
 # import project modules
 import codegen
 import common
+import log
 import wxglade
 from xml_parse import CodeWriter
 
@@ -93,6 +95,9 @@ class WXGladeBaseTest(unittest.TestCase):
         """\
         Initialise parts of wxGlade only
         """
+        # disable logging
+        logging.disable(999)
+        
         # initialise path settings
         if self.init_stage1:
             wxglade.init_stage1()
@@ -152,6 +157,9 @@ class WXGladeBaseTest(unittest.TestCase):
         os.access = self.orig_os_access
         os.makedirs = self.orig_os_makedirs
         os.path.isdir = self._os_path_isdir
+        
+        # deregister own logging
+        log.deinit()
 
     def _generate_code(self, language, document, filename):
         """\

@@ -6,6 +6,7 @@ Entry point of wxGlade
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import atexit
 import codecs
 import locale
 import logging
@@ -16,6 +17,7 @@ import optparse
 
 import common
 import config
+import log
 
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
@@ -153,11 +155,11 @@ def command_line_code_generation(filename, language, out_path=None):
         logging.error(inst)
         sys.exit(1)
     except Exception:
-        common.message.exception(_('Internal Error'))
         logging.error(
             _("An exception occurred while generating the code for the application.\n"
               "If you think this is a wxGlade bug, please report it.")
              )
+        logging.exception(_('Internal Error'))
         sys.exit(1)
     sys.exit(0)
 
@@ -200,7 +202,13 @@ def init_stage1():
     common.templates_path = os.path.join(wxglade_path, 'templates')
     common.tutorial_file  = os.path.join(common.docs_path, 'html', 'index.html')
     
-    # TODO init logging
+    # initialise own logging extensions
+    # TODO use an platform specific place to store the log file
+    log.init(
+        filename="%s/wxglade.log" % wxglade_path,
+        level="INFO",
+        )
+    atexit.register(log.deinit)
     
     # initialise localization
     encoding = None
@@ -246,11 +254,18 @@ def init_stage1():
             )
         encoding = 'ascii'
 
+    # print versions 
+    logging.info(
+        _("Starting wxGlade version %s on Python %s"),
+        common.version,
+        common.py_version,
+        )
+
     # show current locale
     loc_langcode, loc_encoding = locale.getlocale()
     logging.info(_('Current locale settings are:'))
     logging.info(_('  Language code: %s'), loc_langcode)
-    logging.info(_('  Encoding: '), loc_encoding)
+    logging.info(_('  Encoding: %s'), loc_encoding)
 
     # store determinated encoding
     config.encoding = encoding.upper()
@@ -280,14 +295,14 @@ def init_stage1():
         logging.error(_('License file "license.txt" not found!'))
 
     # print used paths
-    print _('Base directory:             %s') % common.wxglade_path
-    print _('Documentation directory:    %s') % common.docs_path
-    print _('Icons directory:            %s') % common.icons_path
-    print _('Build-in widgets directory: %s') % common.widgets_path
-    print _('Template directory:         %s') % common.templates_path
-    print _('Credits file:               %s') % common.credits_file
-    print _('License file:               %s') % common.license_file
-    print _('Tutorial file:              %s') % common.tutorial_file
+    logging.info(_('Base directory:             %s'), common.wxglade_path)
+    logging.info(_('Documentation directory:    %s'), common.docs_path)
+    logging.info(_('Icons directory:            %s'), common.icons_path)
+    logging.info(_('Build-in widgets directory: %s'), common.widgets_path)
+    logging.info(_('Template directory:         %s'), common.templates_path)
+    logging.info(_('Credits file:               %s'), common.credits_file)
+    logging.info(_('License file:               %s'), common.license_file)
+    logging.info(_('Tutorial file:              %s'), common.tutorial_file)
 
     # adapt application search path
     sys.path = [common.wxglade_path, common.widgets_path] + sys.path
@@ -336,26 +351,18 @@ def run_main():
     """\
     This main procedure is started by calling either wxglade.py or
     wxglade.pyw on windows.
-    
-    It parses the command line, install the exception handler and initialise
-    wxGlade.
-    
-    @see: L{common.exceptionHandler()}
     """
     # check command line parameters first
     options = parse_command_line()
 
+    # initialise wxGlade (first stage)
+    init_stage1()
+
     # print versions 
-    print _("Starting wxGlade version %s on Python %s") % (
+    logging.info(_("Starting wxGlade version %s on Python %s"),
         common.version,
         common.py_version,
         )
-
-    # install own exception handler
-    sys.excepthook = common.exceptionHandler
-
-    # initialise wxGlade (first stage)
-    init_stage1()
 
     # initialise wxGlade (second stage)
     init_stage2(options.start_gui)

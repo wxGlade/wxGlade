@@ -155,7 +155,7 @@ class SourceFileContent(BaseSourceFileContent):
             else:
                 result = self.rec_class_decl.match(line)
             if not inside_comment and not inside_block and result:
-##                print ">> class %r" % result.group(1)
+##                self._logger.debug(">> class %r", result.group(1))
                 if not self.class_name:
                     # this is the first class declared in the file: insert the
                     # new ones before this
@@ -170,8 +170,11 @@ class SourceFileContent(BaseSourceFileContent):
             elif not inside_block:
                 result = self.rec_block_start.match(line)
                 if not inside_comment and result:
-##                     print ">> block %r %r %r" % (
-##                         result.group('spaces'), result.group('classname'), result.group('block'))
+##                     self._logger.debug(">> block %r %r %r",
+##                         result.group('spaces'),
+##                         result.group('classname'),
+##                         result.group('block'),
+##                         )
                     # replace the lines inside a wxGlade block with a tag that
                     # will be used later by add_class
                     spaces = result.group('spaces')
@@ -634,7 +637,7 @@ bool MyApp::OnInit()
                 )
             for tag in tags:
                 if tag[2] == 'dependencies':
-                    #print 'writing dependencies'
+                    #self._logger.debug('writing dependencies')
                     deps = []
                     for code in self.classes.itervalues():
                         deps.extend(code.dependencies)
@@ -738,8 +741,10 @@ bool MyApp::OnInit()
             mycn = getattr(builder, 'cn', self.cn)
             mycn_f = getattr(builder, 'cn_f', self.cn_f)
         except KeyError:
-            print code_obj
-            raise  # this is an error, let the exception be raised
+            self._logger.error('%s', code_obj)
+            # this is an error, let the exception be raised
+            # the details are logged by the global exception handler
+            raise
 
         if prev_src and prev_src.classes.has_key(code_obj.klass):
             is_new = False
@@ -1170,7 +1175,11 @@ bool MyApp::OnInit()
 
                 # insert the module dependencies of this class
                 extra_modules = self.classes[code_obj.klass].dependencies
-                #print 'extra_modules:', extra_modules, code_obj.base
+#                self._logger.debug(
+#                    'extra_modules: %s, %s',
+#                    extra_modules,
+#                    code_obj.base,
+#                    )
                 # WARNING: there's a double space '  ' between 'replace' and
                 # 'dependencies' in the tag below, because there is no class name
                 # (see SourceFileContent, line ~147)

@@ -1,15 +1,16 @@
-# lisp_codegen.py : lisp generator functions for wxMenuBar objects
-# $Id: lisp_codegen.py,v 1.2 2005/09/25 08:23:37 efuzzyone Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Lisp generator functions for wxMenuBar objects
+
+@copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
+import wcodegen
 from MenuTree import *
 from codegen import MenuHandler
 
-class LispCodeGenerator:
+class LispCodeGenerator(wcodegen.BaseWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
         
@@ -54,7 +55,7 @@ class LispCodeGenerator:
                     append('(wxMenu_Append %s %s %s %s %s)\n' %
                            (menu, id, plgen.quote_str(item.label),
                             plgen.quote_str(item.help_str), item_type))
-        #print 'menus = %s' % menus
+        #self._logger.debug('menus = %s', menus)
 
 #        if obj.is_toplevel: obj_name = '$self'
  #       else: obj_name = '$self->{%s}' % obj.name

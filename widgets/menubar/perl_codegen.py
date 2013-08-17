@@ -1,15 +1,16 @@
-# perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.11 2007/06/23 10:57:58 agriggio Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Perl generator functions for wxMenuBar objects
+
+@copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
+import wcodegen
 from MenuTree import *
 from codegen import MenuHandler
 
-class PerlCodeGenerator:
+class PerlCodeGenerator(wcodegen.BaseWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
         
@@ -69,10 +70,12 @@ class PerlCodeGenerator:
                         append('%s%s->Append(%s, %s, %s);\n' %
                                (itemname, menu, id, plgen.quote_str(item.label),
                                 plgen.quote_str(item.help_str)))
-        #print 'menus = %s' % menus
+        #self._logger.debug('menus = %s', menus)
 
-        if obj.is_toplevel: obj_name = '$self'
-        else: obj_name = '$self->{%s}' % plgen.quote_key(obj.name)
+        if obj.is_toplevel:
+            obj_name = '$self'
+        else:
+            obj_name = '$self->{%s}' % plgen.quote_key(obj.name)
 
         append('my $wxglade_tmp_menu;\n') # NOTE below name =
         for m in menus:
@@ -111,8 +114,7 @@ class PerlCodeGenerator:
         pygen = common.code_writers['perl']
         cn = pygen.cn
         out = []
-
-        #print 'get_events', obj.properties['menubar']
+        #self._logger.debug('get_events: %s', obj.properties['menubar'])
 
         def do_get(item):
             ret = []

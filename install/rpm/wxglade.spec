@@ -43,6 +43,7 @@ cp -p *.py               $RPM_BUILD_ROOT%{_prefix}/lib/%{name}
 cp -p credits.txt        $RPM_BUILD_ROOT%{_prefix}/lib/%{name}
 cp -p license.txt        $RPM_BUILD_ROOT%{_prefix}/lib/%{name}
 cp -pr codegen           $RPM_BUILD_ROOT%{_prefix}/lib/%{name}
+cp -pr wcodegen          $RPM_BUILD_ROOT%{_prefix}/lib/%{name}
 cp -pr docs              $RPM_BUILD_ROOT%{_prefix}/lib/%{name}
 cp -pr edit_sizers       $RPM_BUILD_ROOT%{_prefix}/lib/%{name}
 cp -pr icons             $RPM_BUILD_ROOT%{_prefix}/lib/%{name}

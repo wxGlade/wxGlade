@@ -5,6 +5,7 @@ Mixin class for 'events' property
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import logging
 import wx
 import wx.grid
 
@@ -15,7 +16,17 @@ from xml.sax.saxutils import escape, quoteattr
 
 
 class EventsProperty(GridProperty):
+    """\
+    Class EventsProperty
+
+    @ivar _logger: Class specific logging instance
+    """
+
     def __init__(self, owner):
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        # initialise instance
         cols = [(_('Event'), GridProperty.STRING),
                 (_('Handler'), GridProperty.STRING)]
         GridProperty.__init__(self, owner, 'events', None, cols,
@@ -77,8 +88,18 @@ class EventsProperty(GridProperty):
 
 
 class EventsPropertyHandler(object):
+    """\
+    Class EventsPropertyHandler
+
+    @ivar _logger: Class specific logging instance
+    """
+
     def __init__(self, owner):
-        #print 'EventsPropertyHandler', owner.name
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        # initialise instance
+        #self._logger.debug('EventsPropertyHandler %s', owner.name)
         self.owner = owner
         self.handlers = {}
         self.event_name = None
