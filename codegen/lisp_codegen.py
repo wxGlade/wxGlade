@@ -21,7 +21,7 @@ import os.path
 import re
 import types
 
-from codegen import BaseCodeWriter, \
+from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 
@@ -172,11 +172,11 @@ class WidgetHandler(BaseWidgetHandler):
 # end of class WidgetHandler
 
 
-class LispCodeWriter(BaseCodeWriter):
+class LispCodeWriter(BaseLangCodeWriter):
     """\
     Code writer class for writing Lisp code out of the designed GUI elements
 
-    @see: L{BaseCodeWriter}
+    @see: L{BaseLangCodeWriter}
     """
 
     default_extensions = ['lisp']
@@ -202,9 +202,9 @@ class LispCodeWriter(BaseCodeWriter):
     comment_sign = ';;;'
 
     global_property_writers = {
-        'font':            BaseCodeWriter.FontPropertyHandler,
-        'events':          BaseCodeWriter.EventsPropertyHandler,
-        'extraproperties': BaseCodeWriter.ExtraPropertiesPropertyHandler,
+        'font':            BaseLangCodeWriter.FontPropertyHandler,
+        'events':          BaseLangCodeWriter.EventsPropertyHandler,
+        'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
         }
 
     indent_level_func_body = 2
@@ -345,7 +345,7 @@ class LispCodeWriter(BaseCodeWriter):
                          class
         """
         # initialise parent class
-        BaseCodeWriter.initialize(self, app_attrs)
+        BaseLangCodeWriter.initialize(self, app_attrs)
         out_path = app_attrs['path']
         self.class_lines = []
 
@@ -390,7 +390,7 @@ class LispCodeWriter(BaseCodeWriter):
         self.lang_mapping = {
             'top_win': self._format_name(top_win),
             }
-        BaseCodeWriter.add_app(self, app_attrs, top_win_class)
+        BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_object(self, top_obj, sub_obj):
         # the lisp code gen add some hard coded depedencies 
@@ -419,7 +419,7 @@ class LispCodeWriter(BaseCodeWriter):
         if (sub_obj.klass == "wxMenuBar"):
             self.dependencies['(use-package :wxMenu)'] = 1
         
-        BaseCodeWriter.add_object(self, top_obj, sub_obj)
+        BaseLangCodeWriter.add_object(self, top_obj, sub_obj)
  
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         if obj.in_sizers:
@@ -427,7 +427,7 @@ class LispCodeWriter(BaseCodeWriter):
         else:
             self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
             
-        BaseCodeWriter.add_sizeritem(
+        BaseLangCodeWriter.add_sizeritem(
             self,
             toplevel,
             sizer,
@@ -439,7 +439,7 @@ class LispCodeWriter(BaseCodeWriter):
 
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
-        return BaseCodeWriter.generate_code_background(self, obj)
+        return BaseLangCodeWriter.generate_code_background(self, obj)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
@@ -560,11 +560,11 @@ class LispCodeWriter(BaseCodeWriter):
 
     def generate_code_font(self, obj):
         self.dependencies['(use-package :wxFont)'] = 1
-        return BaseCodeWriter.generate_code_font(self, obj)
+        return BaseLangCodeWriter.generate_code_font(self, obj)
 
     def generate_code_foreground(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
-        return BaseCodeWriter.generate_code_foreground(self, obj)
+        return BaseLangCodeWriter.generate_code_foreground(self, obj)
 
     def generate_code_id(self, obj, id=None):
         if id is None:
@@ -625,7 +625,7 @@ class LispCodeWriter(BaseCodeWriter):
         return '#obj.%s' % name
 
     def _format_classattr(self, obj):
-        res = BaseCodeWriter._format_classattr(self, obj)
+        res = BaseLangCodeWriter._format_classattr(self, obj)
         if not res:
             return res
         elif obj.name.startswith('slot-'):

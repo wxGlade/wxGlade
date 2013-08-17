@@ -14,7 +14,7 @@ import cStringIO
 import logging
 
 from xml.sax.saxutils import escape, quoteattr
-from codegen import BaseCodeWriter, \
+from codegen import BaseLangCodeWriter, \
                     EventsPropertyHandler, \
                     ExtraPropertiesPropertyHandler
 from ordereddict import OrderedDict
@@ -40,7 +40,7 @@ class FontPropertyHandler:
 # end of class FontHandler
 
 
-class XRCCodeWriter(BaseCodeWriter):
+class XRCCodeWriter(BaseLangCodeWriter):
     """\
     Code writer class for writing XRC XML code out of the designed GUI elements
     """
@@ -304,13 +304,13 @@ class XRCCodeWriter(BaseCodeWriter):
     # end of class NotImplementedXrcObject
 
     def __init__(self):
-        BaseCodeWriter.__init__(self)
+        BaseLangCodeWriter.__init__(self)
         # Inject to all classed derivated from WrcObject
         XRCCodeWriter.XrcObject.tabs = self.tabs
 
     def initialize(self, app_attrs):
         # initialise parent class
-        BaseCodeWriter.initialize(self, app_attrs)
+        BaseLangCodeWriter.initialize(self, app_attrs)
 
         out_path = app_attrs['path']
 

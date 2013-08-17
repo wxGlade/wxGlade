@@ -652,10 +652,10 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test replacement of not found blocks with a warning message
 
-        @see: L{codegen.BaseCodeWriter._content_notfound()}
+        @see: L{codegen.BaseLangCodeWriter._content_notfound()}
         """
         import codegen
-        base_codegen = codegen.BaseCodeWriter()
+        base_codegen = codegen.BaseLangCodeWriter()
         base_codegen.previous_source = MockSourceFileContent()
 
         # this is to be more sure to replace the right tags
@@ -797,7 +797,7 @@ class TestCodeGen(WXGladeBaseTest):
         
         This test doesn't cover the missing of a whole widget.
         
-        @see: L{codegen.BaseCodeWriter._add_object_init()}
+        @see: L{codegen.BaseLangCodeWriter._add_object_init()}
         """
         for lang, ext in [
             ('python', '.py'),
@@ -982,7 +982,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test formatting names as class attributes
         
-        @see: L{codegen.BaseCodeWriter._format_classattr()}
+        @see: L{codegen.BaseLangCodeWriter._format_classattr()}
         """
         details = {}
         details['python'] = [

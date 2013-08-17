@@ -170,7 +170,7 @@ class BaseSourceFileContent(object):
     @type new_classes_inserted: Boolean
 
     @ivar code_writer: Reference to the parent code writer object
-    @type code_writer: Instance of L{BaseCodeWriter} or of a derived class
+    @type code_writer: Instance of L{BaseLangCodeWriter} or of a derived class
     
     @ivar spaces: Indentation level for each class
     @type spaces: String  
@@ -310,7 +310,7 @@ class BaseWidgetHandler(object):
 
 # end of class BaseWidgetHandler
 
-class BaseCodeWriter(wcodegen.BaseCodeWriterBase):
+class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
     """\
     Dictionary of objects used to generate the code in a given language.
 
@@ -2733,4 +2733,4 @@ It is available for wx versions %(supported_versions)s only.""") % {
             code_list.append('')
         return "\n".join(code_list)
 
-# end of class BaseCodeWriter
+# end of class BaseLangCodeWriter
