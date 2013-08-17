@@ -23,7 +23,7 @@ import random
 import re
 import types
 
-from codegen import BaseCodeWriter, \
+from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 
@@ -213,14 +213,14 @@ class WidgetHandler(BaseWidgetHandler):
 # end of class WidgetHandler
 
 
-class PythonCodeWriter(BaseCodeWriter):
+class PythonCodeWriter(BaseLangCodeWriter):
     """\
     Code writer class for writing Python code out of the designed GUI elements
 
     @ivar use_new_namespace: If True use the new name space (import wx)
     @type use_new_namespace: Boolean
 
-    @see: L{BaseCodeWriter}
+    @see: L{BaseLangCodeWriter}
     """
 
     default_extensions = ['py', 'pyw']
@@ -246,9 +246,9 @@ class PythonCodeWriter(BaseCodeWriter):
     comment_sign = '#'
 
     global_property_writers = {
-        'font':            BaseCodeWriter.FontPropertyHandler,
-        'events':          BaseCodeWriter.EventsPropertyHandler,
-        'extraproperties': BaseCodeWriter.ExtraPropertiesPropertyHandler,
+        'font':            BaseLangCodeWriter.FontPropertyHandler,
+        'events':          BaseLangCodeWriter.EventsPropertyHandler,
+        'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
         }
 
     indent_level_func_body = 2
@@ -336,11 +336,11 @@ if __name__ == "__main__":
 %(tab)s%(name)s.MainLoop()"""
 
     def __init__(self):
-        BaseCodeWriter.__init__(self)
+        BaseLangCodeWriter.__init__(self)
 
     def _init_vars(self):
         self.use_new_namespace = True
-        BaseCodeWriter._init_vars(self)
+        BaseLangCodeWriter._init_vars(self)
 
     def cn(self, name):
         """\
@@ -390,7 +390,7 @@ if __name__ == "__main__":
                          class
         """
         # initialise parent class
-        BaseCodeWriter.initialize(self, app_attrs)
+        BaseLangCodeWriter.initialize(self, app_attrs)
         out_path = app_attrs['path']
 
         try:
@@ -422,7 +422,7 @@ if __name__ == "__main__":
             else:
                 self.dependencies['import gettext\n'] = 1
 
-        BaseCodeWriter.add_app(self, app_attrs, top_win_class)
+        BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
@@ -527,7 +527,7 @@ if __name__ == "__main__":
                               self.tabs(1) + 'def __do_layout(self):\n' + \
                               '%(content)s' + \
                               ''
-        return BaseCodeWriter.generate_code_do_layout(
+        return BaseLangCodeWriter.generate_code_do_layout(
             self,
             builder,
             code_obj,
@@ -577,7 +577,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
 %(tab)sprint "Event handler '%(handler)s' not implemented!"
 %(tab)sevent.Skip()
 """
-        return BaseCodeWriter.generate_code_event_handler(
+        return BaseLangCodeWriter.generate_code_event_handler(
             self,
             code_obj,
             is_new,
@@ -620,7 +620,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
                               '%(content)s' + \
                               ''        
 
-        return BaseCodeWriter.generate_code_set_properties(
+        return BaseLangCodeWriter.generate_code_set_properties(
             self,
             builder,
             code_obj,
@@ -681,7 +681,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         return '#self.%s' % name
 
     def _format_classattr(self, obj):
-        res = BaseCodeWriter._format_classattr(self, obj)
+        res = BaseLangCodeWriter._format_classattr(self, obj)
         if not res:
             return res
         elif obj.name.startswith('self.'):

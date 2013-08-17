@@ -40,7 +40,7 @@ class WXGladeBaseTest(unittest.TestCase):
 
     orig_file_exists = None
     """\
-    Reference to the original L{codegen.BaseCodeWriter._file_exists()}
+    Reference to the original L{codegen.BaseLangCodeWriter._file_exists()}
     implementation
     """
 
@@ -122,15 +122,15 @@ class WXGladeBaseTest(unittest.TestCase):
         common.save_file = self._save_file
         self.orig_load_file = codegen.BaseSourceFileContent._load_file 
         codegen.BaseSourceFileContent._load_file = self._load_lines
-        self.orig_file_exists = codegen.BaseCodeWriter._file_exists 
+        self.orig_file_exists = codegen.BaseLangCodeWriter._file_exists 
         self.orig_os_access = os.access
         os.access = self._os_access
         self.orig_os_makedirs = os.makedirs
         os.makedirs = self._os_makedirs
         self.orig_os_path_isdir = os.path.isdir
         os.path.isdir = self._os_path_isdir
-        codegen.BaseCodeWriter._file_exists = self._file_exists
-        codegen.BaseCodeWriter._show_warnings = False
+        codegen.BaseLangCodeWriter._file_exists = self._file_exists
+        codegen.BaseLangCodeWriter._show_warnings = False
 
         # set own version string to prevent diff mismatches
         common.version = '"faked test version"'
@@ -153,7 +153,7 @@ class WXGladeBaseTest(unittest.TestCase):
         # restore original implementations
         common.save_file = self.orig_save_file
         codegen.BaseSourceFileContent._load_file = self.orig_load_file
-        codegen.BaseCodeWriter._file_exists = self.orig_file_exists
+        codegen.BaseLangCodeWriter._file_exists = self.orig_file_exists
         os.access = self.orig_os_access
         os.makedirs = self.orig_os_makedirs
         os.path.isdir = self._os_path_isdir

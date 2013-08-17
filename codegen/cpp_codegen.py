@@ -21,7 +21,7 @@ import os
 import os.path
 import re
 
-from codegen import BaseCodeWriter, \
+from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 
@@ -296,7 +296,7 @@ class WidgetHandler(BaseWidgetHandler):
 # end of class WidgetHandler
 
 
-class CPPCodeWriter(BaseCodeWriter):
+class CPPCodeWriter(BaseLangCodeWriter):
     """\
     Code writer class for writing C++ code out of the designed GUI elements
 
@@ -314,7 +314,7 @@ class CPPCodeWriter(BaseCodeWriter):
                              defining APP_CATALOG constant
     @type tmpl_init_gettext: None or string
 
-    @see: L{BaseCodeWriter}
+    @see: L{BaseLangCodeWriter}
     """
 
     default_extensions = ['cpp', 'cc', 'C', 'cxx', 'c++',
@@ -339,9 +339,9 @@ class CPPCodeWriter(BaseCodeWriter):
     comment_sign = '//'
 
     global_property_writers = {
-        'font':            BaseCodeWriter.FontPropertyHandler,
-        'events':          BaseCodeWriter.EventsPropertyHandler,
-        'extraproperties': BaseCodeWriter.ExtraPropertiesPropertyHandler,
+        'font':            BaseLangCodeWriter.FontPropertyHandler,
+        'events':          BaseLangCodeWriter.EventsPropertyHandler,
+        'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
         }
 
     language_note = \
@@ -503,7 +503,7 @@ bool MyApp::OnInit()
 }"""
 
 
-    class ClassLines(BaseCodeWriter.ClassLines):
+    class ClassLines(BaseLangCodeWriter.ClassLines):
         """\
         Stores the lines of C++ code for a custom class
 
@@ -516,7 +516,7 @@ bool MyApp::OnInit()
         @ivar extra_code_cpp:  Extra source code to output
         """
         def __init__(self):
-            BaseCodeWriter.ClassLines.__init__(self)
+            BaseLangCodeWriter.ClassLines.__init__(self)
             self.ids = []
             self.sub_objs = []
             self.extra_code_h = []
@@ -534,7 +534,7 @@ bool MyApp::OnInit()
         @keyword option: If True, generate a separate file for each custom class
         """
         # initialise parent class
-        BaseCodeWriter.initialize(self, app_attrs)
+        BaseLangCodeWriter.initialize(self, app_attrs)
 
         self.app_filename = 'main.cpp'
 

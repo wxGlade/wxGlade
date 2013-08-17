@@ -55,7 +55,7 @@ class BaseSizerBuilder(object):
     @type tmpl_SetSizeHints: String
     
     @ivar codegen: Language specific code generator
-    @type codegen: Instance of L{codegen.BaseCodeWriter}
+    @type codegen: Instance of L{codegen.BaseLangCodeWriter}
     
     @ivar props_get_code: Properties to replace in L{init_stmt}
     @type props_get_code: Dictionary

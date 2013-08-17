@@ -281,7 +281,7 @@ def format_for_version(version):
         '2.8'
 
     @rtype: String
-    @see: L{wxglade.codegen.BaseCodeWriter.for_version}
+    @see: L{wxglade.codegen.BaseLangCodeWriter.for_version}
     """
     return '%s.%s' % version
 

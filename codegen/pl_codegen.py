@@ -22,7 +22,7 @@ import os
 import os.path
 import re
 
-from codegen import BaseCodeWriter, \
+from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 
@@ -189,7 +189,7 @@ class WidgetHandler(BaseWidgetHandler):
 # end of class WidgetHandler
 
 
-class PerlCodeWriter(BaseCodeWriter):
+class PerlCodeWriter(BaseLangCodeWriter):
     """\
     Code writer class for writing Perl code out of the designed GUI elements
 
@@ -199,7 +199,7 @@ class PerlCodeWriter(BaseCodeWriter):
                                separately. See also L{cn}.
     @type _perl_constant_list: List of strings
 
-    @see: L{BaseCodeWriter}
+    @see: L{BaseLangCodeWriter}
     """
 
     default_extensions = ['pl', 'pm']
@@ -225,9 +225,9 @@ class PerlCodeWriter(BaseCodeWriter):
     comment_sign = '#'
 
     global_property_writers = {
-        'font':            BaseCodeWriter.FontPropertyHandler,
-        'events':          BaseCodeWriter.EventsPropertyHandler,
-        'extraproperties': BaseCodeWriter.ExtraPropertiesPropertyHandler,
+        'font':            BaseLangCodeWriter.FontPropertyHandler,
+        'events':          BaseLangCodeWriter.EventsPropertyHandler,
+        'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
         }
 
     indent_amount = 1
@@ -458,7 +458,7 @@ unless(caller){
                          class
         """
         # initialise parent class
-        BaseCodeWriter.initialize(self, app_attrs)
+        BaseLangCodeWriter.initialize(self, app_attrs)
         out_path = app_attrs['path']
 
         # initial new defaults late to use the proper indent characters
@@ -498,7 +498,7 @@ unless(caller){
             self.lang_mapping['pl_import'] = "\nuse %s;\n" % top_win_class
         else:
             self.lang_mapping['pl_import'] = ''
-        BaseCodeWriter.add_app(self, app_attrs, top_win_class)
+        BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
@@ -716,7 +716,7 @@ unless(caller){
         return '#$self->%s' % name
 
     def _format_classattr(self, obj):
-        res = BaseCodeWriter._format_classattr(self, obj)
+        res = BaseLangCodeWriter._format_classattr(self, obj)
         if not res:
             return res
         elif obj.name.startswith('$self->'):
