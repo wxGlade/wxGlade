@@ -750,6 +750,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
     """
 
     _quote_str_pattern = re.compile(r'\\[natbv"]?')
+    """\
+    Regular expression to find single characters to escape.
+    
+    @see: L{quote_str()}
+    """
 
     _show_warnings = True
     """\
@@ -2119,8 +2124,23 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
     def quote_str(self, s, translate=True, escape_chars=True):
         """\
-        returns a quoted version of 's', suitable to insert in a python source
-        file as a string object. Takes care also of gettext support
+        Returns a quoted / escaped version of 's', suitable to insert in a
+        source file as a string object. Takes care also of gettext support.
+
+        The added extra level of escaping will be reverted by the Python
+        interpreter automatically if this string is written into a file.
+
+        For example a non-escaped version of C{\\n} will cause a line break
+        in the generated source file. Thereby escaping of strings is strongly
+        recommended.
+
+        Escaped are (check language specific implementation for details):
+         - quotations marks
+         - backslash
+         - characters listed in L{_quote_str_pattern}
+
+        The combination of C{translate=False} and C{escape_chars=False} is
+        used to quote / escape filenames or paths.
 
         @param s:             String to quote
         @param translate:     Encapsulate string into a gettext statement,
@@ -2128,7 +2148,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @param escape_chars:  Escape special meaning characters like backspace
                               or quotes
 
-        @rtype: String
+        @return: A quoted / escaped version of 's'
+        @rtype:  String
+
+        @see: L{_quote_str_pattern}
         """
         raise NotImplementedError
 
