@@ -2127,13 +2127,6 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Returns a quoted / escaped version of 's', suitable to insert in a
         source file as a string object. Takes care also of gettext support.
 
-        The added extra level of escaping will be reverted by the Python
-        interpreter automatically if this string is written into a file.
-
-        For example a non-escaped version of C{\\n} will cause a line break
-        in the generated source file. Thereby escaping of strings is strongly
-        recommended.
-
         Escaped are (check language specific implementation for details):
          - quotations marks
          - backslash
@@ -2157,7 +2150,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
     def quote_path(self, s):
         """\
-        escapes all quotation marks and backslashes,
+        Escapes all quotation marks and backslashes,
         thus making a path suitable to insert in a list source file
 
         @note: You may overwrite this function in the derivated class

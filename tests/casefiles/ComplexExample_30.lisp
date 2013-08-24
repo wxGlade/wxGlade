@@ -134,7 +134,9 @@
         	 (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) "" 1)
         (wxToolBar_Realize (slot-Mp3-To-Ogg-toolbar obj))
         (wxRadioBox_SetSelection (slot-rbx-sampling-rate obj) 0)
+        (wxWindow_SetToolTip (slot-cbx-love obj)(_"Yes!\nWe ♥ it!"))
         (wxCheckBox_SetValue (slot-cbx-love obj) 1);
+        (wxWindow_SetToolTip (slot-text-ctrl-3 obj)(_"File name of the output file\nAn existing file will be overwritten without futher information!"))
         (wxWindow_SetToolTip (slot-checkbox-1 obj)(_"Overwrite an existing file"))
         (wxCheckBox_SetValue (slot-checkbox-1 obj) 1);
         ;;; end wxGlade
