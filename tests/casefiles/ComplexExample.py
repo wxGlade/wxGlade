@@ -80,7 +80,9 @@ class PyOgg2_MyFrame(wx.Frame):
             self.Mp3_To_Ogg_statusbar.SetStatusText(Mp3_To_Ogg_statusbar_fields[i], i)
         self.Mp3_To_Ogg_toolbar.Realize()
         self.rbx_sampling_rate.SetSelection(0)
+        self.cbx_love.SetToolTipString(_(u"Yes!\nWe \u2665 it!"))
         self.cbx_love.SetValue(1)
+        self.text_ctrl_3.SetToolTipString(_("File name of the output file\nAn existing file will be overwritten without futher information!"))
         self.checkbox_1.SetToolTipString(_("Overwrite an existing file"))
         self.checkbox_1.SetValue(1)
         # end wxGlade

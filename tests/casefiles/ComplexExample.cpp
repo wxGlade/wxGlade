@@ -79,7 +79,9 @@ void PyOgg2_MyFrame::set_properties()
         Mp3_To_Ogg_statusbar->SetStatusText(Mp3_To_Ogg_statusbar_fields[i], i);
     }
     rbx_sampling_rate->SetSelection(0);
+    cbx_love->SetToolTip(_("Yes!\nWe ♥ it!"));
     cbx_love->SetValue(1);
+    text_ctrl_3->SetToolTip(_("File name of the output file\nAn existing file will be overwritten without futher information!"));
     checkbox_1->SetToolTip(_("Overwrite an existing file"));
     checkbox_1->SetValue(1);
     // end wxGlade
