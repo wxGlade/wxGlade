@@ -117,6 +117,7 @@
                                         <border>5</border>
                                         <object class="wxCheckBox" name="cbx_love">
                                             <checked>1</checked>
+                                            <tooltip>Yes!\nWe ♥ it!</tooltip>
                                             <label>♥ Love this song</label>
                                         </object>
                                     </object>
@@ -163,6 +164,7 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxTextCtrl" name="text_ctrl_3">
+                                    <tooltip>File name of the output file\nAn existing file will be overwritten without futher information!</tooltip>
                                 </object>
                             </object>
                             <object class="sizeritem">

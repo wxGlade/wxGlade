@@ -1182,18 +1182,27 @@ class TestCodeGen(WXGladeBaseTest):
         details = {}
         details['python'] = [
                 (None, '""'),
-                ('', '""'),
-                ('My 1st and simple ascii test!', '_("My 1st and simple ascii test!")'),
-                ('\xe2\x99\xa5 Love this song', '_(u"\\u2665 Love this song")'),
+                ('',   '""'),
+                ('My 1st and simple ascii test!',  '_("My 1st and simple ascii test!")'),
+                ('\xe2\x99\xa5 Love this song',    '_(u"\\u2665 Love this song")'),
                 ('\xe2\x99\xa5 Love \xe2\x99\xa5', '_(u"\\u2665 Love \\u2665")'),
+                ('\xe2\x99\xa5 Love \\n',          '_(u"\\u2665 Love \\n")'),
+                ('Yes!\\nWe \xe2\x99\xa5 it!',     '_(u"Yes!\\nWe \\u2665 it!")'),
+                (r'double quote: "', '_("double quote: \\"")'),
+                (r'newline \n',      '_("newline \\n")'),
+                (r'tab \t',          '_("tab \\t")'),
                 ]
         details['perl'] = [
                 (None, '""'),
                 ('', '""'),
-                ('My 1st and simple ascii test!', '_T("My 1st and simple ascii test!")'),
-                ('\xe2\x99\xa5 Love this song', '_T("\\N{U+2665} Love this song")'),
-                ('\xe2\x99\xa5 Love \xe2\x99\xa5', '_T("\\N{U+2665} Love \\N{U+2665}")'),
+                ('My 1st and simple ascii test!',   '_T("My 1st and simple ascii test!")'),
+                ('\xe2\x99\xa5 Love this song',     '_T("\\N{U+2665} Love this song")'),
+                ('\xe2\x99\xa5 Love \xe2\x99\xa5',  '_T("\\N{U+2665} Love \\N{U+2665}")'),
                 ('\xe2\x99\xa52 Love \xe2\x99\xa5', '_T("\u26652 Love \N{U+2665}")'),
+                ('Yes!\\nWe \xe2\x99\xa5 it!',      '_T("Yes!\\nWe \N{U+2665} it!")'),
+                (r'double quote: "', '_T("double quote: \\"")'),
+                (r'newline \n',      '_T("newline \\n")'),
+                (r'tab \t',          '_T("tab \\t")'),
                 ]
         for lang in ['python', 'perl']:
             codegen = common.code_writers.get(lang)

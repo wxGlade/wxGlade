@@ -657,10 +657,11 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             else:
                 return '"%s"' % s
         except UnicodeDecodeError:
-            # convert byte string to unicode, escape unicode characters and
-            # convert string back to ascii
+            # convert byte string to unicode, escape unicode characters
+            # "raw-unicode-escape" just escaped unicode characters and not
+            # default escape sequences
             s = s.decode('utf8')
-            s = s.encode('unicode-escape')
+            s = s.encode('raw-unicode-escape')
             if self._use_gettext and translate:
                 return '_(u"%s")' % s
             else:

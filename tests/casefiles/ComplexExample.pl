@@ -112,7 +112,9 @@ sub __set_properties {
 	}
         $self->{Mp3_To_Ogg_toolbar}->Realize();
         $self->{rbx_sampling_rate}->SetSelection(0);
+        $self->{cbx_love}->SetToolTipString(_T("Yes!\nWe \N{U+2665} it!"));
         $self->{cbx_love}->SetValue(1);
+        $self->{text_ctrl_3}->SetToolTipString(_T("File name of the output file\nAn existing file will be overwritten without futher information!"));
         $self->{checkbox_1}->SetToolTipString(_T("Overwrite an existing file"));
         $self->{checkbox_1}->SetValue(1);
         # end wxGlade
