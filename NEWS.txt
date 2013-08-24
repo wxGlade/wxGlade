@@ -1,3 +1,19 @@
+Version 0.6.8.X - 2013-XX-XX:
+General: 
+  - ...
+
+Bugs:
+  - ...
+
+Documentation:
+  - ...
+
+API (for custom widgets):
+  - ...
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
 Version 0.6.8 - 2013-07-13:
 General: 
   - Add comfortable exception handler for more detailed bug reports
