@@ -9,6 +9,8 @@ Generated Code:
  - ...
 
 Bugs:
+  - Fix escape sequences in Unicode strings were escaped twice Perl and
+    Python
   - ...
 
 Documentation:
