@@ -41,7 +41,7 @@ class PythonCodeGenerator:
                 import misc
                 bmp_file = misc.get_relative_path(bmp_file, True)
             bmp = (cn('wxBitmap') + '(%s, ' + cn('wxBITMAP_TYPE_ANY') +
-                   ')') % pygen.quote_str(bmp_file, False, False)
+                   ')') % pygen.quote_path(bmp_file)
         init = []
         if id_name: init.append(id_name)
         klass = obj.klass
@@ -71,7 +71,7 @@ class PythonCodeGenerator:
                                   cn('wxBitmap') + '(%s, ' +
                                   cn('wxBITMAP_TYPE_ANY') + '))\n') % \
                                  (obj.name,
-                                  pygen.quote_str(disabled_bmp, False, False)))
+                                  pygen.quote_path(disabled_bmp)))
                 
         if not prop.has_key('size'):
             props_buf.append('self.%s.SetSize(self.%s.GetBestSize())\n' % \
@@ -109,7 +109,7 @@ class CppCodeGenerator:
             bmp = '(%s)' % bmp_file[5:].strip()
         else:
             bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
-                  cppgen.quote_str(bmp_file, False, False)
+                  cppgen.quote_path(bmp_file)
         init = [ '%s = new %s(%s, %s, %s%s);\n' % 
                  (obj.name, obj.klass, parent, id, bmp,extra) ]
         props_buf = cppgen.generate_common_properties(obj)
@@ -129,7 +129,7 @@ class CppCodeGenerator:
                 props_buf.append(
                     '%s->SetBitmapDisabled('
                     'wxBitmap(%s, wxBITMAP_TYPE_ANY));\n' % \
-                    (obj.name, cppgen.quote_str(disabled_bmp, False, False)))
+                    (obj.name, cppgen.quote_path(disabled_bmp)))
                 
         if not prop.has_key('size'):
             props_buf.append('%s->SetSize(%s->GetBestSize());\n' % \

@@ -38,7 +38,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, 
     Mp3_To_Ogg_statusbar = CreateStatusBar(2, 0);
     Mp3_To_Ogg_toolbar = new wxToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT);
     SetToolBar(Mp3_To_Ogg_toolbar);
-    Mp3_To_Ogg_toolbar->AddTool(wxID_OPEN, _("&Open"), wxBitmap(wxT("wxNullBitmap"), wxBITMAP_TYPE_ANY), wxNullBitmap, wxITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"));
+    Mp3_To_Ogg_toolbar->AddTool(wxID_OPEN, _("&Open"), wxBitmap("wxNullBitmap", wxBITMAP_TYPE_ANY), wxNullBitmap, wxITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"));
     Mp3_To_Ogg_toolbar->Realize();
     text_ctrl_1 = new wxTextCtrl(notebook_1_pane_1, wxID_ANY, wxEmptyString);
     button_3 = new wxButton(notebook_1_pane_1, wxID_OPEN, wxEmptyString);
