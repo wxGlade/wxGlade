@@ -77,7 +77,7 @@ class PythonCodeGenerator:
                     bitmap = misc.get_relative_path(bitmap, True)
                 return cn('wxBitmap') + \
                        ('(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \
-                       pygen.quote_str(bitmap, False, False)
+                       pygen.quote_path(bitmap)
                 
         for tool in tools:
             if tool.id == '---': # item is a separator
@@ -321,7 +321,7 @@ class CppCodeGenerator:
                 return '(%s)' % bitmap[5:].strip()
             else:
                 return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
-                       cppgen.quote_str(bitmap, False, False)
+                       cppgen.quote_path(bitmap)
                 
         for tool in tools:
             if tool.id == '---': # item is a separator

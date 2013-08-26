@@ -40,7 +40,7 @@ class PythonCodeGenerator:
                 out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
                 out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
                             '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') % \
-                           pygen.quote_str(icon, False, False))
+                           pygen.quote_path(icon))
                 out.append('self.SetIcon(_icon)\n')
         out.extend(pygen.generate_common_properties(dialog))
         return out
@@ -90,7 +90,7 @@ class CppCodeGenerator:
             else:
                 out.append('_icon.CopyFromBitmap(wxBitmap(%s, '
                            'wxBITMAP_TYPE_ANY));\n' % \
-                           cppgen.quote_str(icon, False, False))
+                           cppgen.quote_path(icon))
             out.append('SetIcon(_icon);\n')
         out.extend(cppgen.generate_common_properties(dialog))
         return out
