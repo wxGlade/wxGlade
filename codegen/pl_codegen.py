@@ -671,7 +671,7 @@ unless(caller){
         else:
             return '%s->%s(Wx::Size->new(%s));\n' % (objname, method, size)
 
-    def quote_str(self, s, translate=True, escape_chars=True):
+    def quote_str(self, s):
         if not s:
             return '""'
         s = self._quote_str_pattern.sub(r'\\\\', s )
@@ -689,7 +689,7 @@ unless(caller){
             # convert Python style to Perl style
             s = re.sub(r'\\u([0-9]{4})\b', r'\\N{U+\1}', s)
 
-        if self._use_gettext and translate:
+        if self._use_gettext:
             return '_T("%s")' % s
         else:
             return '"%s"' % s
