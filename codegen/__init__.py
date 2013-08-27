@@ -2122,7 +2122,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """
         return klass
 
-    def quote_str(self, s, translate=True, escape_chars=True):
+    def quote_str(self, s):
         """\
         Returns a quoted / escaped version of 's', suitable to insert in a
         source file as a string object. Takes care also of gettext support.
@@ -2135,11 +2135,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
         The combination of C{translate=False} and C{escape_chars=False} is
         used to quote / escape filenames or paths.
 
+        @note: Please use L{quote_path()} to quote / escape filenames or
+        paths.
+
         @param s:             String to quote
-        @param translate:     Encapsulate string into a gettext statement,
-                              if L{_use_gettext} is True
-        @param escape_chars:  Escape special meaning characters like backspace
-                              or quotes
 
         @return: A quoted / escaped version of 's'
         @rtype:  String

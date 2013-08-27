@@ -1530,15 +1530,12 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
             ret.append((id, event, handler, evt_type))
         return ret
 
-    def quote_str(self, s, translate=True, escape_chars=True):
+    def quote_str(self, s):
         if not s:
             return 'wxEmptyString'
         s = s.replace('"', r'\"')
-        if escape_chars:
-            s = self._quote_str_pattern.sub(self._do_replace, s)
-        else:
-            s = s.replace('\\', r'\\')  # just quote the backslashes
-        if self._use_gettext and translate:
+        s = self._quote_str_pattern.sub(self._do_replace, s)
+        if self._use_gettext:
             return '_("%s")' % s
         else:
             return 'wxT("%s")' % s

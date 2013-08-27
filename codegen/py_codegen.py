@@ -647,17 +647,14 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         else:
             return '%s.%s((%s))\n' % (objname, method, size)
 
-    def quote_str(self, s, translate=True, escape_chars=True):
+    def quote_str(self, s):
         if not s:
             return '""'
         s = s.replace('"', r'\"')
-        if escape_chars:
-            s = self._quote_str_pattern.sub(self._do_replace, s)
-        else:
-            s = s.replace('\\', r'\\')  # just quote the backslashes
+        s = self._quote_str_pattern.sub(self._do_replace, s)
         try:
             dummy = unicode(s, 'ascii')
-            if self._use_gettext and translate:
+            if self._use_gettext:
                 return '_("%s")' % s
             else:
                 return '"%s"' % s
@@ -667,7 +664,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             # default escape sequences
             s = s.decode('utf8')
             s = s.encode('raw-unicode-escape')
-            if self._use_gettext and translate:
+            if self._use_gettext:
                 return '_(u"%s")' % s
             else:
                 return 'u"%s"' % s

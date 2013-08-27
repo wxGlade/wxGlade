@@ -17,6 +17,8 @@ Documentation:
   - ...
 
 API (for custom widgets):
+  - Simplify signature of quote_str(), use quote_path() to quote /
+    escape filenames or paths
   - ...
 
 Note:
