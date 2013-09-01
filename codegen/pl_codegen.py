@@ -420,8 +420,6 @@ unless(caller){
          'wxALIGN_CENTRE_HORIZONTAL',
         ]
 
-    _quote_str_pattern = re.compile(r'\\(?![nrt])')
-
     def cn(self, name):
         """\
         Return the name properly formatted.
@@ -671,11 +669,7 @@ unless(caller){
         else:
             return '%s->%s(Wx::Size->new(%s));\n' % (objname, method, size)
 
-    def quote_str(self, s):
-        if not s:
-            return '""'
-        s = self._quote_str_pattern.sub(r'\\\\', s )
-        s = s.replace('"', r'\"')
+    def _quote_str(self, s):
         s = s.replace('$', r'\$')
         s = s.replace('@', r'\@')
         try:
@@ -687,7 +681,7 @@ unless(caller){
             s = s.decode('utf8')
             s = s.encode('raw-unicode-escape')
             # convert Python style to Perl style
-            s = re.sub(r'\\u([0-9]{4})\b', r'\\N{U+\1}', s)
+            s = re.sub(r'\\u([0-9a-f]{4})\b', r'\\N{U+\1}', s)
 
         if self._use_gettext:
             return '_T("%s")' % s
@@ -701,8 +695,11 @@ unless(caller){
         """
         if not s:
             return '""'
-        t = s
-        s = self._quote_str_pattern.sub(r'\\\\', s)
+        s = re.sub(
+            r'\\\\+',
+            self._do_replace_backslashes,
+            s
+            )
         s = s.replace('"', r'\"')
         s = s.replace('$', r'\$')
         s = s.replace('@', r'\@')

@@ -1183,9 +1183,20 @@ class TestCodeGen(WXGladeBaseTest):
                 ('\xe2\x99\xa5 Love \xe2\x99\xa5', '_(u"\\u2665 Love \\u2665")'),
                 ('\xe2\x99\xa5 Love \\n',          '_(u"\\u2665 Love \\n")'),
                 ('Yes!\\nWe \xe2\x99\xa5 it!',     '_(u"Yes!\\nWe \\u2665 it!")'),
-                (r'double quote: "', '_("double quote: \\"")'),
-                (r'newline \n',      '_("newline \\n")'),
-                (r'tab \t',          '_("tab \\t")'),
+
+                ('double quote: "', '_("double quote: \\"")'),
+                ('newline \\n',      '_("newline \\n")'),
+                ('tab \\t',          '_("tab \\t")'),
+                ('tailing single backslash \\', '_("tailing single backslash \\")'),
+
+                (r'escaped newline \\n', r'_("escaped newline \\\\n")'),
+                (r'escaped tab \\t', r'_("escaped tab \\\\t")'),
+                ('escaped double quote \"', '_("escaped double quote \\"")'),
+
+                ('euro \xe2\x82\xac and newline \\\\n', '_(u"euro \\u20ac and newline \\\\\\\\n")'),
+                ('euro \xe2\x82\xac and tab \\\\t', '_(u"euro \\u20ac and tab \\\\\\\\t")'),
+                ('euro \xe2\x82\xac and quoted newline \\\\n', '_(u"euro \u20ac and quoted newline \\\\\\\\n")'),
+                ('euro \xe2\x82\xac and quoted tab \\\\t', '_(u"euro \u20ac and quoted tab \\\\\\\\t")'),
                 ]
         details['perl'] = [
                 (None, '""'),
@@ -1193,13 +1204,62 @@ class TestCodeGen(WXGladeBaseTest):
                 ('My 1st and simple ascii test!',   '_T("My 1st and simple ascii test!")'),
                 ('\xe2\x99\xa5 Love this song',     '_T("\\N{U+2665} Love this song")'),
                 ('\xe2\x99\xa5 Love \xe2\x99\xa5',  '_T("\\N{U+2665} Love \\N{U+2665}")'),
-                ('\xe2\x99\xa52 Love \xe2\x99\xa5', '_T("\u26652 Love \N{U+2665}")'),
-                ('Yes!\\nWe \xe2\x99\xa5 it!',      '_T("Yes!\\nWe \N{U+2665} it!")'),
+                ('\xe2\x99\xa5 Love \xe2\x99\xa5', '_T("\\N{U+2665} Love \\N{U+2665}")'),
+                ('Yes!\\nWe \xe2\x99\xa5 it!',      '_T("Yes!\\nWe \\N{U+2665} it!")'),
+
                 (r'double quote: "', '_T("double quote: \\"")'),
                 (r'newline \n',      '_T("newline \\n")'),
                 (r'tab \t',          '_T("tab \\t")'),
+                ('tailing single backslash \\', '_T("tailing single backslash \\")'),
+                
+                (r'escaped newline \\n', r'_T("escaped newline \\\\n")'),
+                (r'escaped tab \\t', r'_T("escaped tab \\\\t")'),
+                (r'escaped double quote \"', '_T("escaped double quote \\\"")'),
+
+                ('euro \xe2\x82\xac and newline \\\\n', '_T("euro \N{U+20ac} and newline \\\\\\\\n")'),
+                ('euro \xe2\x82\xac and tab \\\\t', '_T("euro \N{U+20ac} and tab \\\\\\\\t")'),
+                ('euro \xe2\x82\xac and quoted newline \\\\n', '_T("euro \N{U+20ac} and quoted newline \\\\\\\\n")'),
+                ('euro \xe2\x82\xac and quoted tab \\\\t', '_T("euro \N{U+20ac} and quoted tab \\\\\\\\t")'),
                 ]
-        for lang in ['python', 'perl']:
+        details['lisp'] = [
+                (None, '""'),
+                ('', '""'),
+
+                # Lisp doesn't support unicode yet!
+
+                ('double quote: "', '(_"double quote: \\"")'),
+                ('newline \\n',      '(_"newline \\n")'),
+                ('tab \\t',          '(_"tab \\t")'),
+                ('tailing single backslash \\', '(_"tailing single backslash \\")'),
+
+                (r'escaped newline \\n', r'(_"escaped newline \\\\n")'),
+                (r'escaped tab \\t', r'(_"escaped tab \\\\t")'),
+                (r'escaped double quote \"', '(_"escaped double quote \\\"")'),
+                ]
+        details['C++'] = [
+                (None, 'wxEmptyString'),
+                ('', 'wxEmptyString'),
+                ('My 1st and simple ascii test!',  '_("My 1st and simple ascii test!")'),
+                ('\xe2\x99\xa5 Love this song',    '_("\xe2\x99\xa5 Love this song")'),
+                ('\xe2\x99\xa5 Love \xe2\x99\xa5', '_("\xe2\x99\xa5 Love \xe2\x99\xa5")'),
+                ('\xe2\x99\xa5 Love \\n',          '_("\xe2\x99\xa5 Love \\n")'),
+                ('Yes!\\nWe \xe2\x99\xa5 it!',     '_("Yes!\\nWe \xe2\x99\xa5 it!")'),
+                
+                ('double quote: "', '_("double quote: \\"")'),
+                ('newline \\n',      '_("newline \\n")'),
+                ('tab \\t',          '_("tab \\t")'),
+                ('tailing single backslash \\', '_("tailing single backslash \\")'),
+
+                (r'escaped newline \\n', r'_("escaped newline \\\\n")'),
+                (r'escaped tab \\t', r'_("escaped tab \\\\t")'),
+                (r'escaped double quote \"', '_("escaped double quote \\\"")'),
+
+                ('euro \xe2\x82\xac and newline \\\\n', '_("euro \xe2\x82\xac and newline \\\\\\\\n")'),
+                ('euro \xe2\x82\xac and tab \\\\t', '_("euro \xe2\x82\xac and tab \\\\\\\\t")'),
+                ('euro \xe2\x82\xac and quoted newline \\\\n', '_("euro \xe2\x82\xac and quoted newline \\\\\\\\n")'),
+                ('euro \xe2\x82\xac and quoted tab \\\\t', '_("euro \xe2\x82\xac and quoted tab \\\\\\\\t")'),
+                ]
+        for lang in ['python', 'perl', 'lisp', 'C++']:
             codegen = common.code_writers.get(lang)
             codegen._use_gettext = True
             for unformatted, formatted in details[lang]:

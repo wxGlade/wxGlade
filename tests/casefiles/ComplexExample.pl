@@ -36,7 +36,7 @@ sub new {
                 unless defined $style;
 
         $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-        
+    
 
         # Menu Bar
 
@@ -50,11 +50,11 @@ sub new {
         $wxglade_tmp_menu->Append(wxID_ABOUT, _T("&About"), _T("About dialog"));
         $self->{_T("Mp3_To_Ogg_menubar")}->Append($wxglade_tmp_menu, _T("&Help"));
         $self->SetMenuBar($self->{Mp3_To_Ogg_menubar});
-        
+    
 # Menu Bar end
 
         $self->{Mp3_To_Ogg_statusbar} = $self->CreateStatusBar(2, 0);
-        
+    
 # Tool Bar
         $self->{Mp3_To_Ogg_toolbar} = Wx::ToolBar->new($self, -1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT);
         $self->SetToolBar($self->{Mp3_To_Ogg_toolbar});
@@ -75,30 +75,32 @@ sub new {
         $self->{text_ctrl_3} = Wx::TextCtrl->new($self->{notebook_1_pane_4}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, );
         $self->{button_4} = Wx::Button->new($self->{notebook_1_pane_4}, wxID_OPEN, "");
         $self->{checkbox_1} = Wx::CheckBox->new($self->{notebook_1_pane_4}, wxID_ANY, _T("Overwrite existing file"), wxDefaultPosition, wxDefaultSize, );
+        $self->{notebook_1_pane_5} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+        $self->{label_1} = Wx::StaticText->new($self->{notebook_1_pane_5}, wxID_ANY, _T("Please check the format of those lines manually:\n\nSingle line without any special characters.\n\na line break between new and line: new\nline\na tab character between new and line: new\tline\ntwo backslash characters: \\\\ \nthree backslash characters: \\\\\\ \na double quote: \"\nan escaped new line sequence: \\\\n"), wxDefaultPosition, wxDefaultSize, );
         $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
         $self->{button_5} = Wx::Button->new($self, wxID_CLOSE, "");
         $self->{button_2} = Wx::Button->new($self, wxID_CANCEL, "", wxDefaultPosition, wxDefaultSize, wxBU_TOP);
         $self->{button_1} = Wx::Button->new($self, wxID_OK, "", wxDefaultPosition, wxDefaultSize, wxBU_TOP);
-
+    
         $self->__set_properties();
         $self->__do_layout();
-
+    
         Wx::Event::EVT_MENU($self, wxID_OPEN, \&OnOpen);
         Wx::Event::EVT_MENU($self, wxID_EXIT, \&OnClose);
         Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAboutDialog);
         Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, \&startConverting);
-
+    
         # end wxGlade
         return $self;
-
+    
 }
-
-
+    
+    
 sub __set_properties {
         my $self = shift;
         # begin wxGlade: PyOgg2_MyFrame::__set_properties
         $self->SetTitle(_T("mp3 2 ogg"));
-        $self->SetSize(Wx::Size->new(1160, 765));
+        $self->SetSize(Wx::Size->new(600, 500));
         $self->{Mp3_To_Ogg_statusbar}->SetStatusWidths(-2,-1);
 
 	my( @Mp3_To_Ogg_statusbar_fields ) = (
@@ -125,6 +127,7 @@ sub __do_layout {
         # begin wxGlade: PyOgg2_MyFrame::__do_layout
         $self->{sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
         $self->{sizer_2} = Wx::FlexGridSizer->new(1, 3, 0, 0);
+        $self->{sizer_5} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{_gszr_pane4} = Wx::FlexGridSizer->new(2, 3, 0, 0);
         $self->{_szr_pane3} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_4} = Wx::BoxSizer->new(wxHORIZONTAL);
@@ -151,10 +154,13 @@ sub __do_layout {
         $self->{_gszr_pane4}->Add(20, 20, 0, 0, 0);
         $self->{notebook_1_pane_4}->SetSizer($self->{_gszr_pane4});
         $self->{_gszr_pane4}->AddGrowableCol(1);
+        $self->{sizer_5}->Add($self->{label_1}, 1, wxALL|wxEXPAND, 5);
+        $self->{notebook_1_pane_5}->SetSizer($self->{sizer_5});
         $self->{notebook_1}->AddPage($self->{notebook_1_pane_1}, _T("Input File"));
         $self->{notebook_1}->AddPage($self->{notebook_1_pane_2}, _T("Converting Options"));
         $self->{notebook_1}->AddPage($self->{notebook_1_pane_3}, _T("Converting Progress"));
         $self->{notebook_1}->AddPage($self->{notebook_1_pane_4}, _T("Output File"));
+        $self->{notebook_1}->AddPage($self->{notebook_1_pane_5}, _T("Some Text"));
         $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
         $self->{sizer_1}->Add($self->{static_line_1}, 0, wxALL|wxEXPAND, 5);
         $self->{sizer_2}->Add($self->{button_5}, 0, wxALL|wxALIGN_RIGHT, 5);

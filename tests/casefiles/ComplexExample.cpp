@@ -21,6 +21,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, 
 {
     // begin wxGlade: PyOgg2_MyFrame::PyOgg2_MyFrame
     notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
+    notebook_1_pane_5 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_4 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_3 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
@@ -53,6 +54,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, 
     text_ctrl_3 = new wxTextCtrl(notebook_1_pane_4, wxID_ANY, wxEmptyString);
     button_4 = new wxButton(notebook_1_pane_4, wxID_OPEN, wxEmptyString);
     checkbox_1 = new wxCheckBox(notebook_1_pane_4, wxID_ANY, _("Overwrite existing file"));
+    label_1 = new wxStaticText(notebook_1_pane_5, wxID_ANY, _("Please check the format of those lines manually:\n\nSingle line without any special characters.\n\na line break between new and line: new\nline\na tab character between new and line: new\tline\ntwo backslash characters: \\\\ \nthree backslash characters: \\\\\\ \na double quote: \"\nan escaped new line sequence: \\\\n"));
     static_line_1 = new wxStaticLine(this, wxID_ANY);
     button_5 = new wxButton(this, wxID_CLOSE, wxEmptyString);
     button_2 = new wxButton(this, wxID_CANCEL, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBU_TOP);
@@ -68,7 +70,7 @@ void PyOgg2_MyFrame::set_properties()
 {
     // begin wxGlade: PyOgg2_MyFrame::set_properties
     SetTitle(_("mp3 2 ogg"));
-    SetSize(wxSize(1160, 765));
+    SetSize(wxSize(600, 500));
     int Mp3_To_Ogg_statusbar_widths[] = { -2, -1 };
     Mp3_To_Ogg_statusbar->SetStatusWidths(2, Mp3_To_Ogg_statusbar_widths);
     const wxString Mp3_To_Ogg_statusbar_fields[] = {
@@ -93,6 +95,7 @@ void PyOgg2_MyFrame::do_layout()
     // begin wxGlade: PyOgg2_MyFrame::do_layout
     wxFlexGridSizer* sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
     wxFlexGridSizer* sizer_2 = new wxFlexGridSizer(1, 3, 0, 0);
+    wxBoxSizer* sizer_5 = new wxBoxSizer(wxHORIZONTAL);
     wxFlexGridSizer* _gszr_pane4 = new wxFlexGridSizer(2, 3, 0, 0);
     wxBoxSizer* _szr_pane3 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxHORIZONTAL);
@@ -119,10 +122,13 @@ void PyOgg2_MyFrame::do_layout()
     _gszr_pane4->Add(20, 20, 0, 0, 0);
     notebook_1_pane_4->SetSizer(_gszr_pane4);
     _gszr_pane4->AddGrowableCol(1);
+    sizer_5->Add(label_1, 1, wxALL|wxEXPAND, 5);
+    notebook_1_pane_5->SetSizer(sizer_5);
     notebook_1->AddPage(notebook_1_pane_1, _("Input File"));
     notebook_1->AddPage(notebook_1_pane_2, _("Converting Options"));
     notebook_1->AddPage(notebook_1_pane_3, _("Converting Progress"));
     notebook_1->AddPage(notebook_1_pane_4, _("Output File"));
+    notebook_1->AddPage(notebook_1_pane_5, _("Some Text"));
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
     sizer_1->Add(static_line_1, 0, wxALL|wxEXPAND, 5);
     sizer_2->Add(button_5, 0, wxALL|wxALIGN_RIGHT, 5);

@@ -432,6 +432,9 @@ class XRCCodeWriter(BaseLangCodeWriter):
     def _format_comment(self, msg):
         return '<!-- %s -->' % escape(msg.rstrip())
 
+    def _quote_str(self, s):
+        return s
+
 # end of class XRCCodeWriter
 
 writer = XRCCodeWriter()

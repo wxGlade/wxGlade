@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2013-07-08</date>
+    <date>2013-09-01</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -75,10 +75,40 @@
 
       <para>The following abbreviations are used in this manual: <variablelist>
           <varlistentry>
+            <term>Escape sequence</term>
+
+            <listitem>
+              <para>Escape sequences are used to define certain special
+              characters within string literals. Escape sequences starts
+              mostly with a backslash (<quote>\</quote>).</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>gettext</term>
+
+            <listitem>
+              <para>Widespread internationalisation (i18n) and localisation
+              system.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
             <term><emphasis>GUI</emphasis></term>
 
             <listitem>
               <para>Graphical User Interface</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>i18n</term>
+
+            <listitem>
+              <para>Numeronyms for internationalisation support.</para>
+
+              <para>Internationalisation means adapting software to different
+              languages, regional differences, ...</para>
             </listitem>
           </varlistentry>
 
@@ -99,19 +129,19 @@
           </varlistentry>
 
           <varlistentry>
-            <term><emphasis>wx</emphasis></term>
-
-            <listitem>
-              <para>abbreviation for <acronym>wxWidgets</acronym></para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
             <term>wxg</term>
 
             <listitem>
               <para>File extension used by wxGlade to store the project in a
               XML file.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><emphasis>wx</emphasis></term>
+
+            <listitem>
+              <para>abbreviation for <acronym>wxWidgets</acronym></para>
             </listitem>
           </varlistentry>
 
@@ -152,26 +182,6 @@
 
               <para>Those resources are loaded into the application at
               run-time.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>i18n</term>
-
-            <listitem>
-              <para>Numeronyms for internationalisation support.</para>
-
-              <para>Internationalisation means adapting software to different
-              languages, regional differences, ...</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>gettext</term>
-
-            <listitem>
-              <para>Widespread internationalisation (i18n) and localisation
-              system.</para>
             </listitem>
           </varlistentry>
         </variablelist></para>
@@ -678,7 +688,7 @@ loading widget modules:
               <quote><guilabel>Extra code for this widget</guilabel></quote>
               or in generic input fields complicated changing the output
               langauge later e.g. to re-use GUI elements in another project
-              too. </para>
+              too.</para>
             </listitem>
           </varlistentry>
         </variablelist></para>
@@ -1040,6 +1050,27 @@ if __name__ == '__main__':
 
       <para>If you use <emphasis>var</emphasis>: or <emphasis>code:</emphasis>
       tags the preview window shows an empty bitmap of fixed size.</para>
+    </section>
+
+    <section>
+      <title>Escape Sequences</title>
+
+      <para>Escape sequences are used to define certain special characters
+      within string literals. wxGlade supports escape sequences
+      generally.</para>
+
+      <para>Escape sequences like <quote><emphasis>\n</emphasis></quote> or
+      <quote><emphasis>\t</emphasis></quote> will not touched by wxGlade.
+      Thereby the generated source code contains excatly the same sequence as
+      entered. The language interpreter or compiler will interpret and
+      probably convert the sequence into control characters. For example
+      <quote><emphasis>\n</emphasis></quote> will be converted into a line
+      break.</para>
+
+      <para>Escape sequences with at least two leading backslashes e.g.
+      <quote><emphasis>\\n</emphasis></quote> will be escaped to show exact
+      the same sequence and don't convert it into control characters. Question
+      marks especially double quotes will be escaped also.</para>
     </section>
   </chapter>
 

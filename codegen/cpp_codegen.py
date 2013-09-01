@@ -502,6 +502,7 @@ bool MyApp::OnInit()
 %(tab)sreturn true;
 }"""
 
+    tmpl_empty_string = 'wxEmptyString'
 
     class ClassLines(BaseLangCodeWriter.ClassLines):
         """\
@@ -1530,11 +1531,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
             ret.append((id, event, handler, evt_type))
         return ret
 
-    def quote_str(self, s):
-        if not s:
-            return 'wxEmptyString'
-        s = s.replace('"', r'\"')
-        s = self._quote_str_pattern.sub(self._do_replace, s)
+    def _quote_str(self, s):
         if self._use_gettext:
             return '_("%s")' % s
         else:
