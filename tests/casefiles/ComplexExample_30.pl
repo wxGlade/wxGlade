@@ -58,7 +58,7 @@ sub new {
 # Tool Bar
         $self->{Mp3_To_Ogg_toolbar} = Wx::ToolBar->new($self, -1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT);
         $self->SetToolBar($self->{Mp3_To_Ogg_toolbar});
-        $self->{Mp3_To_Ogg_toolbar}->AddTool(wxID_OPEN, _T("&Open"), Wx::Bitmap->new("wxNullBitmap", wxBITMAP_TYPE_ANY), wxNullBitmap, wxITEM_NORMAL, _T("Open a file"), _T("Open a MP3 file to convert into OGG format"));
+        $self->{Mp3_To_Ogg_toolbar}->AddTool(wxID_OPEN, _T("&Open"), (wxNullBitmap), wxNullBitmap, wxITEM_NORMAL, _T("Open a file"), _T("Open a MP3 file to convert into OGG format"));
         # Tool Bar end
         $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
         $self->{notebook_1_pane_1} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );

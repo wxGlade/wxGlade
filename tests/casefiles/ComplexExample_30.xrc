@@ -35,7 +35,7 @@
                 <label>&amp;Open</label>
                 <tooltip>Open a file</tooltip>
                 <longhelp>Open a MP3 file to convert into OGG format</longhelp>
-                <bitmap>wxNullBitmap</bitmap>
+                <bitmap>code:wxNullBitmap</bitmap>
             </object>
         </object>
         <object class="wxFlexGridSizer">
