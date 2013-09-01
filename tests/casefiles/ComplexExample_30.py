@@ -37,7 +37,7 @@ class PyOgg2_MyFrame(wx.Frame):
         # Tool Bar
         self.Mp3_To_Ogg_toolbar = wx.ToolBar(self, -1, style=wx.TB_HORIZONTAL | wx.TB_TEXT)
         self.SetToolBar(self.Mp3_To_Ogg_toolbar)
-        self.Mp3_To_Ogg_toolbar.AddLabelTool(wx.ID_OPEN, _("&Open"), wx.Bitmap("wxNullBitmap", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"))
+        self.Mp3_To_Ogg_toolbar.AddLabelTool(wx.ID_OPEN, _("&Open"), wx.NullBitmap, wx.NullBitmap, wx.ITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"))
         # Tool Bar end
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style=wx.NB_BOTTOM)
         self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)

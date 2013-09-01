@@ -70,7 +70,7 @@ class PythonCodeGenerator:
                     return "%s('%s', %s)" % (cn('wxBitmap'), bmp_preview_path,
                                              cn('wxBITMAP_TYPE_XPM') )
                 else:
-                    return '(%s)' % bitmap[5:].strip()
+                    return '%s' % cn(bitmap[5:].strip())
             else:
                 if obj.preview:
                     import misc
