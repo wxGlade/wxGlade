@@ -54,6 +54,8 @@ class PyOgg2_MyFrame(wx.Frame):
         self.text_ctrl_3 = wx.TextCtrl(self.notebook_1_pane_4, wx.ID_ANY, "")
         self.button_4 = wx.Button(self.notebook_1_pane_4, wx.ID_OPEN, "")
         self.checkbox_1 = wx.CheckBox(self.notebook_1_pane_4, wx.ID_ANY, _("Overwrite existing file"))
+        self.notebook_1_pane_5 = wx.Panel(self.notebook_1, wx.ID_ANY)
+        self.label_1 = wx.StaticText(self.notebook_1_pane_5, wx.ID_ANY, _("Please check the format of those lines manually:\n\nSingle line without any special characters.\n\na line break between new and line: new\nline\na tab character between new and line: new\tline\ntwo backslash characters: \\\\ \nthree backslash characters: \\\\\\ \na double quote: \"\nan escaped new line sequence: \\\\n"))
         self.static_line_1 = wx.StaticLine(self, wx.ID_ANY)
         self.button_5 = wx.Button(self, wx.ID_CLOSE, "")
         self.button_2 = wx.Button(self, wx.ID_CANCEL, "", style=wx.BU_TOP)
@@ -72,7 +74,7 @@ class PyOgg2_MyFrame(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: PyOgg2_MyFrame.__set_properties
         self.SetTitle(_("mp3 2 ogg"))
-        self.SetSize((1160, 765))
+        self.SetSize((600, 500))
         self.Mp3_To_Ogg_statusbar.SetStatusWidths([-2, -1])
         # statusbar fields
         Mp3_To_Ogg_statusbar_fields = [_("Mp3_To_Ogg_statusbar"), ""]
@@ -91,6 +93,7 @@ class PyOgg2_MyFrame(wx.Frame):
         # begin wxGlade: PyOgg2_MyFrame.__do_layout
         sizer_1 = wx.FlexGridSizer(3, 1, 0, 0)
         sizer_2 = wx.FlexGridSizer(1, 3, 0, 0)
+        sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
         _gszr_pane4 = wx.FlexGridSizer(2, 3, 0, 0)
         _szr_pane3 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
@@ -117,10 +120,13 @@ class PyOgg2_MyFrame(wx.Frame):
         _gszr_pane4.Add((20, 20), 0, 0, 0)
         self.notebook_1_pane_4.SetSizer(_gszr_pane4)
         _gszr_pane4.AddGrowableCol(1)
+        sizer_5.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 5)
+        self.notebook_1_pane_5.SetSizer(sizer_5)
         self.notebook_1.AddPage(self.notebook_1_pane_1, _("Input File"))
         self.notebook_1.AddPage(self.notebook_1_pane_2, _("Converting Options"))
         self.notebook_1.AddPage(self.notebook_1_pane_3, _("Converting Progress"))
         self.notebook_1.AddPage(self.notebook_1_pane_4, _("Output File"))
+        self.notebook_1.AddPage(self.notebook_1_pane_5, _("Some Text"))
         sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
         sizer_1.Add(self.static_line_1, 0, wx.ALL | wx.EXPAND, 5)
         sizer_2.Add(self.button_5, 0, wx.ALL | wx.ALIGN_RIGHT, 5)

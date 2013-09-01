@@ -63,6 +63,8 @@ protected:
     wxButton* button_4;
     wxCheckBox* checkbox_1;
     wxPanel* notebook_1_pane_4;
+    wxStaticText* label_1;
+    wxPanel* notebook_1_pane_5;
     wxNotebook* notebook_1;
     wxStaticLine* static_line_1;
     wxButton* button_5;

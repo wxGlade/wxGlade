@@ -647,11 +647,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         else:
             return '%s.%s((%s))\n' % (objname, method, size)
 
-    def quote_str(self, s):
-        if not s:
-            return '""'
-        s = s.replace('"', r'\"')
-        s = self._quote_str_pattern.sub(self._do_replace, s)
+    def _quote_str(self, s):
         try:
             dummy = unicode(s, 'ascii')
             if self._use_gettext:

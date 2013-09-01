@@ -749,11 +749,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
     @see: L{add_app}
     """
 
-    _quote_str_pattern = re.compile(r'\\[natbv"]?')
+    tmpl_empty_string = '""'
     """\
-    Regular expression to find single characters to escape.
-    
-    @see: L{quote_str()}
+    Template for an empty string.
     """
 
     _show_warnings = True
@@ -2127,23 +2125,59 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Returns a quoted / escaped version of 's', suitable to insert in a
         source file as a string object. Takes care also of gettext support.
 
-        Escaped are (check language specific implementation for details):
+        Escaped are (check implementation for details):
          - quotations marks
          - backslash
-         - characters listed in L{_quote_str_pattern}
-
-        The combination of C{translate=False} and C{escape_chars=False} is
-        used to quote / escape filenames or paths.
-
-        @note: Please use L{quote_path()} to quote / escape filenames or
-        paths.
+         - characters with special meaning
 
         @param s:             String to quote
 
         @return: A quoted / escaped version of 's'
         @rtype:  String
 
-        @see: L{_quote_str_pattern}
+        @note: Please use L{quote_path()} to quote / escape filenames or
+        paths.
+
+        @note: Please check the test case 
+        L{tests.test_codegen.TestCodeGen.test_quote_str()} for additional
+        details about the different cases to quote and to escape.
+
+        @note: The language specific implementations are in L{_quote_str()}.
+
+        @see: L{_do_replace_backslashes}
+        @see: L{_do_replace_doublequotes}
+        @see: L{tmpl_empty_string}
+        """
+        if not s:
+            return self.tmpl_empty_string
+
+        # find and escape backslashes
+        s = re.sub(
+            r'\\\\+',
+            self._do_replace_backslashes,
+            s
+            )
+        # the string will be embeded within double quotes, thereby double
+        # quotes inside have to escape
+        s = re.sub(
+            r'\\?"',
+            self._do_replace_doublequotes,
+            s,            
+            )
+        # a single tailing backslash breaks the quotation
+        s = re.sub(
+            r'(?<!\\)\\$',
+            r'\\',
+            s
+            )
+
+        return self._quote_str(s)
+
+    def _quote_str(self, s):
+        """\
+        Language specific implementation for escaping or quoting.
+        
+        @see: L{quote_str()}
         """
         raise NotImplementedError
 
@@ -2330,14 +2364,26 @@ It is available for wx versions %(supported_versions)s only.""") % {
             source = source.replace(tag[0], comment)
         return source
 
-    def _do_replace(self, match):
+    def _do_replace_backslashes(self, match):
         """\
         Escape double backslashed in first RE match group
+        
+        @see: L{quote_str()}
         """
-        if match.group(0) == '\\':
-            return '\\\\'
+        return 2 * match.group(0)
+
+    def _do_replace_doublequotes(self, match):
+        """\
+        Escape double quotes
+        
+        @see: L{quote_str()}
+        """
+        # " -> \"
+        # \" -> \\"
+        if match.group(0).startswith('\\'):
+            return '\\\"'
         else:
-            return match.group(0)
+            return '\\"'
 
     def _file_exists(self, filename):
         """\
