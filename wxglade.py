@@ -205,8 +205,9 @@ def init_stage1():
     # initialise own logging extensions
     # TODO use an platform specific place to store the log file
     log.init(
-        filename="%s/wxglade.log" % wxglade_path,
-        level="INFO",
+        filename='%s/wxglade.log' % wxglade_path,
+        encoding='utf-8',
+        level='INFO',
         )
     atexit.register(log.deinit)
     
