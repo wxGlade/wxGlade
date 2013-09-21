@@ -1,37 +1,50 @@
-# codegen.py: code generator functions for wxFrame objects
-# $Id: perl_codegen.py,v 1.10 2007/03/27 07:01:59 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Perl code generator functions for wxFrame objects
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2013 Carsten Grohmann <mail@carstengrohmann.de>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
+import wcodegen
 from MenuTree import *
 from codegen import StatusFieldsHandler
 
 
-class PerlStatusBarCodeGenerator:
+class PerlStatusBarCodeGenerator(wcodegen.BaseWidgetCodeWriter):
+
     def get_code(self, obj):
         """\
-        function that generates code for the statusbar of a wxFrame.
+        Function that generates code for the statusbar of a wxFrame.
         """
         plgen = common.code_writers['perl']
         labels, widths = obj.properties['statusbar']
         style = obj.properties.get("style")
-        if not style: style = '0'
+        if not style:
+            style = '0'
         init = [ '$self->{%s} = $self->CreateStatusBar(%s, %s);\n'
                  % (obj.name, len(labels), style) ]
         props = []
-        append = props.append
-        append('$self->{%s}->SetStatusWidths(%s);\n'
-            %  (obj.name, ','.join(map(str, widths))))
-        labels = ',\n\t\t'.join([plgen.quote_str(l) for l in labels])
-        append('\n\tmy( @%s_fields ) = (\n\t\t%s\n\t);\n\n' %
-               (obj.name, labels))
-        append('if( @%s_fields ) {\n' % obj.name)
-        append('\t$self->{%s}->SetStatusText($%s_fields[$_], $_) '
-            % (obj.name, obj.name) )
-        append('\n\t\tfor 0 .. $#%s_fields ;\n\t}\n' % obj.name)
+        sep = ',\n%s' % plgen.tabs(1)
+        labels = sep.join([plgen.quote_str(l) for l in labels])
+        stmt = """\
+$self->{%(obj_name)s}->SetStatusWidths(%(widths)s);
+
+my( @%(obj_name)s_fields ) = (
+%(tab)s%(labels)s
+);
+
+if( @%(obj_name)s_fields ) {
+%(tab)s$self->{%(obj_name)s}->SetStatusText($%(obj_name)s_fields[$_], $_) 
+%(tab)sfor 0 .. $#%(obj_name)s_fields ;
+}""" % {
+            'labels':   labels,
+            'obj_name': obj.name,
+            'tab':    plgen.tabs(1),
+            'widths': ','.join(map(str, widths)),
+            }
+        props.extend(self.stmt2list(stmt))
         return init, props, []
 
 # end of class PerlStatusBarCodeGenerator
