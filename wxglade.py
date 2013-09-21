@@ -266,6 +266,7 @@ def init_stage1():
     logging.info(_('Current locale settings are:'))
     logging.info(_('  Language code: %s'), loc_langcode)
     logging.info(_('  Encoding: %s'), loc_encoding)
+    logging.info(_('  Filesystem encoding: %s'), sys.getfilesystemencoding())
 
     # store determinated encoding
     config.encoding = encoding.upper()

@@ -625,7 +625,6 @@ class wxGladeFrame(wx.Frame):
                           _("Alert"), style=wx.OK|wx.ICON_INFORMATION)
             return
         path = common.app_tree.get_selected_path()
-        #self._logger.debug('path: %s', path)
         self._open_app(common.app_tree.app.filename, add_to_history=False)
         common.app_tree.select_path(path)
         
@@ -644,7 +643,6 @@ class wxGladeFrame(wx.Frame):
                                    flags=wx.OPEN|wx.FILE_MUST_EXIST,
                                    default_path=self.cur_dir)
         if infile:
-            # ALB 2004-10-15 try to restore possible autosave content...
             if common.check_autosaved(infile) and \
                    wx.MessageBox(_("There seems to be auto saved data for "
                                 "this file: do you want to restore it?"),
@@ -672,23 +670,26 @@ class wxGladeFrame(wx.Frame):
         old_dir = os.getcwd()
         try:
             if not is_filelike:
-                os.chdir(os.path.dirname(infilename))
-                infile = open(infilename)
                 self._logger.info(
                     _('Read wxGlade project from file "%s"'),
                     infilename,
                     )
+                os.chdir(os.path.dirname(infilename))
+                infile = open(infilename)
             else:
                 infile = infilename
                 infilename = getattr(infile, 'name', None)
-                self._logger.info(_('Read wxGlade project from file-like object'))
+                self._logger.info(
+                    _('Read wxGlade project from file-like object')
+                    )
             if use_progress_dialog and config.preferences.show_progress:
                 p = ProgressXmlWidgetBuilder(input_file=infile)
             else:
                 p = XmlWidgetBuilder()
             p.parse(infile)
         except (IOError, OSError, SAXParseException, XmlParsingError), msg:
-            if locals().has_key('infile') and not is_filelike: infile.close()
+            if locals().has_key('infile') and not is_filelike:
+                infile.close()
             common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
@@ -704,20 +705,20 @@ class wxGladeFrame(wx.Frame):
                 _('An exception occurred while loading file "%s".'),
                 infilename.encode('ascii', 'replace')
                 )
-
             if locals().has_key('infile') and not is_filelike:
                 infile.close()
             common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
             wx.MessageBox(
-                _("An exception occurred while loading file \"%s\".\n"
-                  "This is the error message associated with it:\n"
-                  "        %s\n"
-                  "For more details, look at the full traceback "
-                  "on the console.\n"
-                  "If you think this is a wxGlade bug,"
-                  " please report it.") % \
+                _('An exception occurred while loading file \n'
+                   '"%s".\n'
+                  'This is the error message associated with it:\n'
+                  '        %s\n'
+                  'For more details, look at the full traceback '
+                  'on the console.\n'
+                  'If you think this is a wxGlade bug,'
+                  ' please report it.') % \
                   (misc.wxstr(infilename), misc.wxstr(msg)),
                 _("Error"),
                 wx.OK|wx.CENTRE|wx.ICON_ERROR
