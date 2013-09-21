@@ -103,15 +103,15 @@ sub __set_properties {
         $self->SetSize(Wx::Size->new(600, 500));
         $self->{Mp3_To_Ogg_statusbar}->SetStatusWidths(-2,-1);
 
-	my( @Mp3_To_Ogg_statusbar_fields ) = (
-		_T("Mp3_To_Ogg_statusbar"),
-		""
-	);
+        my( @Mp3_To_Ogg_statusbar_fields ) = (
+                _T("Mp3_To_Ogg_statusbar"),
+                ""
+        );
 
         if( @Mp3_To_Ogg_statusbar_fields ) {
-        	$self->{Mp3_To_Ogg_statusbar}->SetStatusText($Mp3_To_Ogg_statusbar_fields[$_], $_)
-		for 0 .. $#Mp3_To_Ogg_statusbar_fields ;
-	}
+                $self->{Mp3_To_Ogg_statusbar}->SetStatusText($Mp3_To_Ogg_statusbar_fields[$_], $_)
+                for 0 .. $#Mp3_To_Ogg_statusbar_fields ;
+        }
         $self->{Mp3_To_Ogg_toolbar}->Realize();
         $self->{rbx_sampling_rate}->SetSelection(0);
         $self->{cbx_love}->SetToolTipString(_T("Yes!\nWe \N{U+2665} it!"));

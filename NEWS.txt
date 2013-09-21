@@ -7,6 +7,8 @@ General:
 
 Generated Code:
  - Use SetToolTip() instead of SetToolTipString() for wxPython 3.x
+ - Use configurable indents instead of hard coded tabs in wxFrame code
+   for Perl
  - ...
 
 Bugs:
