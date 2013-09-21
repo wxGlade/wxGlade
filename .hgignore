@@ -1,0 +1,28 @@
+# Files to be ignored by mercurial
+
+syntax: glob
+
+**.pyc
+**.pyo
+**~
+\#*\#
+**/\#*\#
+
+# automcatically generated source code documentation
+docs/apidocs
+
+# build related directories
+bdist
+build
+dist
+
+# build related files
+logdict*.log
+warnwxglade.txt
+MANIFEST
+docs/man/wxglade.1
+
+# eric ide stuff
+.eric4project
+.ropeproject
+wxGlade.e4p

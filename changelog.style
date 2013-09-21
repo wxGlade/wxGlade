@@ -1,0 +1,11 @@
+# changelog.style - Generate ChangeLog file out of hg log messages
+#
+# Copyright (c) 2012 Carsten Grohmann
+# License: MIT (see license.txt)
+#
+# Usage:
+#  $ hg log --style changelog.style
+
+header = '{date|shortdate}  {author|person}  <{author|email}>\n\n'
+changeset = '\t{desc|strip|fill68|tabindent}\n\n\tFiles (added, modified or removed):\n{files}\n'
+file = '\t* {file}\n'
