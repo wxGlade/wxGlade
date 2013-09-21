@@ -28,6 +28,25 @@ class BaseCodeWriterBase(object):
 # end of class BaseCodeWriterBase
 
 class BaseWidgetCodeWriter(BaseCodeWriterBase):
-    pass
+    """\
+    Base class for all widget code writer classes.
+    """
+
+    def stmt2list(self, stmt):
+        """\
+        Split a code statement into a list by conserving tailing newlines
+
+        Example::
+            >>> tmpl2list('line 1\\nline 2\\nline 3\\n')
+            ['line 1\\n', 'line 2\\n', 'line 3\\n', '\\n']
+        
+        @param stmt: Code statement
+        @type stmt:  String
+        
+        @rtype: List of strings
+        """
+        temp = ['%s\n' % line for line in stmt.split('\n')] 
+        return temp
+        
     
 # end of class BaseCodeWriterBase
