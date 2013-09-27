@@ -2515,11 +2515,11 @@ def init_all():
 
     import os.path
     WidgetTree.images['EditStaticBoxSizer'] = os.path.join(
-        common.icons_path,
+        config.icons_path,
         'sizer.xpm'
         )
     WidgetTree.images['EditFlexGridSizer'] = os.path.join(
-        common.icons_path,
+        config.icons_path,
         'grid_sizer.xpm'
         )
 

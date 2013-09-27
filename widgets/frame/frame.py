@@ -6,9 +6,11 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
-import common, math, misc
+import common
+import config
+import math
+import misc
 from tree import Tree
-#from MenuTree import *
 from widget_properties import *
 from edit_windows import EditBase, TopLevelBase
 
@@ -395,7 +397,7 @@ class EditFrame(TopLevelBase):
                 # removing icon
                 icon = wx.EmptyIcon()
                 import os
-                xpm = os.path.join(common.icons_path, 'frame.xpm')
+                xpm = os.path.join(config.icons_path, 'frame.xpm')
                 icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
                 self.widget.SetIcon(icon)
 
@@ -562,11 +564,11 @@ def initialize():
     from tree import WidgetTree
     import os.path
     WidgetTree.images['EditStatusBar'] = os.path.join(
-        common.icons_path,
+        config.icons_path,
         'statusbar.xpm'
         )
     WidgetTree.images['EditMDIChildFrame'] = os.path.join(
-        common.icons_path,
+        config.icons_path,
         'frame.xpm'
         )       
     return common.make_object_button('EditFrame', 'icons/frame.xpm', 1)

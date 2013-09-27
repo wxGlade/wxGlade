@@ -7,9 +7,9 @@ HyperlinkCtrl widget module initialization
 
 
 def initialize():
-    import common
+    import config
     import codegen
     codegen.initialize()
-    if common.use_gui:
+    if config.use_gui:
         import hyperlink_ctrl
         return hyperlink_ctrl.initialize()

@@ -28,8 +28,8 @@ Shortcut for L{edit_sizers._builder}
 def init_all():
     import sizers_codegen
     sizers_codegen.initialize()
-    import common
-    if common.use_gui:
+    import config
+    if config.use_gui:
         import edit_sizers
         global Sizer, SizerSlot, SizerBase, _builder
         Sizer = edit_sizers.Sizer

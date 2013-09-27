@@ -7,7 +7,9 @@ wxPanel objects
 
 import logging
 import wx
-import common, misc
+import common
+import config
+import misc
 from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase, TopLevelBase
@@ -314,7 +316,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
                        size=(400, 300)) 
         import os
         icon = wx.EmptyIcon()
-        xpm = os.path.join(common.icons_path, 'panel.xpm')
+        xpm = os.path.join(config.icons_path, 'panel.xpm')
         icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
         win.SetIcon(icon)
         #self.widget = wx.Panel(win, self.id, style=0)
@@ -446,7 +448,7 @@ def initialize():
                                                           xml_toplevel_builder
     from tree import WidgetTree
     import os.path
-    icon = os.path.join(common.icons_path, 'panel.xpm')
+    icon = os.path.join(config.icons_path, 'panel.xpm')
     WidgetTree.images['EditTopLevelPanel'] = icon
     WidgetTree.images['EditScrolledWindow'] = icon
     WidgetTree.images['EditTopLevelScrolledWindow'] = icon
@@ -454,12 +456,12 @@ def initialize():
     # these are for backwards compatibility (may be removed someday...)
     common.widgets_from_xml['SplitterPane'] = xml_builder
     WidgetTree.images['SplitterPane'] = os.path.join(
-        common.icons_path,
+        config.icons_path,
         'panel.xpm'
         )
     common.widgets_from_xml['NotebookPane'] = xml_builder
     WidgetTree.images['NotebookPane'] = os.path.join(
-        common.icons_path,
+        config.icons_path,
         'panel.xpm'
         )    
     return common.make_object_button('EditPanel', 'icons/panel.xpm',

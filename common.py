@@ -1,36 +1,30 @@
 """
 Global variables
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2013 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import ConfigParser
 import logging
 import os
+import os.path
 import sys
 
-use_gui = True
-"""\
-If False, the program is invoked from the command-line in "batch" mode
-(for code generation only)
-"""
-
-nohg_version = 'HG'
-"""\
-Version number to return if no hg repo has been found
-"""
+import config
 
 
-def _get_version():
+def set_version():
     """\
     Create the version identification string
 
     Try to query the local hg repository to build the version string or
-    return L{nohg_version}.
+    return L{config.version_nohgfound}.
 
     @return: The current wxGlade version number
     @rtype: String
-    @see: L{nohg_version}
+    @see: L{config.version_nohgfound}
     """
     main_version = ''
     repo_changed = []
@@ -41,17 +35,17 @@ def _get_version():
         from mercurial.error import RepoError
     except ImportError:
         # no mercurial module available
-        main_version = nohg_version
+        main_version = config.version_nohgfound
     except:
         # unkown failure
-        main_version = nohg_version
+        main_version = config.version_nohgfound
     else:
         # try to open local hg repository
         try:
             repo = repository(ui(), os.path.dirname(__file__))
         except RepoError:
             # no mercurial repository found
-            main_version = nohg_version
+            main_version = config.version_nohgfound
         else:
             ctx = repo[None]
             parents = ctx.parents()
@@ -80,72 +74,6 @@ def _get_version():
 
     ver = "%s%s%s" % (main_version, suffix_changed, suffix_edition)
     return ver
-
-version = _get_version()
-"""\
-wxGlade version string
-@see: L{_get_version()}
-"""
-
-py_version = sys.version.split()[0]
-"""\
-Python version
-"""
-
-platform = None
-"""\
-Current platform (mostly wx.Platform)
-"""
-
-wxglade_path = '.'
-"""\
-Program path, set in wxglade.py
-"""
-
-docs_path = 'docs'
-"""\
-Path to wxGlade documentation (e.g. html tuturial, license.txt, credits.txt)
-
-@note: This path will be set during initialisation
-"""
-
-icons_path = 'icons'
-"""\
-Path to wxGlade icons
-
-@note: This path will be set during initialisation
-"""
-
-templates_path = 'templates'
-"""\
-Path to wxGlade templates
-
-@note: This path will be set during initialisation
-"""
-
-widgets_path = 'widgets'
-"""\
-Path to wxGlade "built-in" widgets
-
-@note: This path will be set during initialisation
-"""
-
-credits_file = None
-"""\
-Path of the credits file "credits.txt"
-"""
-
-license_file = None
-"""\
-Path of the license file "license.txt"
-"""
-
-tutorial_file = 'docs/html/index.html'
-"""\
-Path to wxGlade tutorial (HTML)
-
-@note: This path will be set during initialisation
-"""
 
 widgets = {}
 """\
@@ -237,7 +165,7 @@ def load_code_writers():
     Fills the common.code_writers dictionary: to do so, loads the modules
     found in the 'codegen/' subdir
     """
-    codegen_path = os.path.join(wxglade_path, 'codegen')
+    codegen_path = os.path.join(config.wxglade_path, 'codegen')
     sys.path.insert(0, codegen_path)
     for module in os.listdir(codegen_path):
         name, ext = os.path.splitext(module)
@@ -265,7 +193,7 @@ def load_code_writers():
             code_writers[writer.language] = writer
             if hasattr(writer, 'setup'):
                 writer.setup()
-            if use_gui:
+            if config.use_gui:
                 logging.info(
                     _('loaded code generator for %s'),
                     writer.language
@@ -278,10 +206,9 @@ def load_widgets():
     and returns 2 lists of buttons to handle them: the first contains the
     ``core'' components, the second the user-defined ones
     """
-    import config
     buttons = []
     # load the "built-in" widgets
-    buttons.extend(__load_widgets(widgets_path))
+    buttons.extend(__load_widgets(config.widgets_path))
 
     # load the "local" widgets
     local_widgets_dir = config.preferences.local_widget_path
@@ -298,7 +225,7 @@ def __load_widgets(widget_dir):
     # add the dir to the sys.path
     sys.path.append(widget_dir)
     modules = open(widgets_file)
-    if use_gui:
+    if config.use_gui:
         logging.info(_('Found widgets listing -> %s'), widgets_file)
         logging.info(_('loading widget modules:'))
     for line in modules:
@@ -323,7 +250,7 @@ def __load_widgets(widget_dir):
                 SyntaxError, ValueError):
             logging.exception(_('ERROR loading "%s"'), module)
         else:
-            if use_gui:
+            if config.use_gui:
                 logging.info('\t%s', module)
             buttons.append(b)
     modules.close()
@@ -374,7 +301,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     from tree import WidgetTree
     id = wx.NewId()
     if not os.path.isabs(icon_path):
-        icon_path = os.path.join(wxglade_path, icon_path)
+        icon_path = os.path.join(config.wxglade_path, icon_path)
     if wx.Platform == '__WXGTK__':
         style = wx.NO_BORDER
     else:
@@ -434,12 +361,6 @@ def _encode_to_xml(label, encoding=None):
     return str(label).decode(encoding).encode('utf-8')
 
 
-_backed_up = {}
-"""\
-Set of filenames already backed up during this session
-"""
-
-
 def save_file(filename, content, which='wxg'):
     """\
     Save I{content} to file named I{filename} and, if user's preferences say
@@ -448,11 +369,12 @@ def save_file(filename, content, which='wxg'):
     @note: Exceptions that may occur while performing the operations are not
            handled.
 
+    @see: L{config._backed_up}
+
     @param filename: Name of the file to create
     @param content:  String to store into 'filename'
     @param which:    Kind of backup: 'wxg' or 'codegen'
     """
-    import config
     if which == 'wxg':
         do_backup = config.preferences.wxg_backup
     elif which == 'codegen':
@@ -463,7 +385,7 @@ def save_file(filename, content, which='wxg'):
             )
     try:
         if do_backup and \
-           filename not in _backed_up and \
+           filename not in config._backed_up and \
            os.path.isfile(filename):
             # make a backup copy of filename
             infile = open(filename)
@@ -471,7 +393,7 @@ def save_file(filename, content, which='wxg'):
             outfile.write(infile.read())
             infile.close()
             outfile.close()
-            _backed_up[filename] = True
+            config._backed_up[filename] = True
         # save content to file (but only if content has changed)
         savecontent = True
         if os.path.isfile(filename):
@@ -494,16 +416,11 @@ def save_file(filename, content, which='wxg'):
             oldfile.close()
 
 
-#------------------------------------------------------------------------------
-# Autosaving, added 2004-10-15
-#------------------------------------------------------------------------------
-
 def get_name_for_autosave(filename=None):
     if filename is None:
         filename = app_tree.app.filename
     if not filename:
-        import config
-        path, name = config._get_home(), ""
+        path, name = config.home_path, ""
     else:
         path, name = os.path.split(filename)
     ret = os.path.join(path, "#~wxg.autosave~%s#" % name)
@@ -566,9 +483,193 @@ def restore_from_autosaved(filename):
     return False
 
 
-def generated_from():
-    import config
-    if config.preferences.write_generated_from and app_tree and \
-           app_tree.app.filename:
-        return ' from "' + app_tree.app.filename + '"'
-    return ""
+def init_preferences():
+    """\
+    Load / initialise preferences
+    """
+    if config.preferences is None:
+        config.preferences = Preferences()
+        search_path = [os.path.join(config.wxglade_path, config.rc_file)]
+        if 'WXGLADE_CONFIG_PATH' in os.environ:
+            search_path.append(
+                os.path.expandvars('$WXGLADE_CONFIG_PATH/%s' % config.rc_file)
+            )
+        search_path.append(
+            os.path.join(config.appdata_path, '.wxglade', config.rc_file)
+        )
+        config.preferences.read(search_path)
+        if not config.preferences.has_section('wxglade'):
+            config.preferences.add_section('wxglade')
+
+
+def save_preferences():
+    """\
+    Save current settings as well as the file history
+    """
+    # let the exception be raised
+    if 'WXGLADE_CONFIG_PATH' in os.environ:
+        path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
+    else:
+        path = config.appdata_path
+        if path != config.wxglade_path:
+            path = os.path.join(path, '.wxglade')
+    if not os.path.isdir(path):
+        os.makedirs(path)
+        # always save the file history
+    if config.use_file_history:
+        fh = palette.file_history
+        count = fh.GetCount()
+        encoding = 'utf-8'
+        filenames = [_encode_to_xml(fh.GetHistoryFile(i), encoding)
+                     for i in
+                     range(min(config.preferences.number_history, count))]
+        outfile = open(os.path.join(path, 'file_history.txt'), 'w')
+        print >> outfile, "# -*- coding: %s -*-" % encoding
+        for filename in filenames:
+            print >> outfile, filename
+        outfile.close()
+    if config.preferences.changed:
+        outfile = open(os.path.join(path, config.rc_file), 'w')
+        # let the exception be raised to signal abnormal behaviour
+        config.preferences.write(outfile)
+        outfile.close()
+
+
+def load_history():
+    """\
+    Loads the file history and returns a list of paths
+    """
+    if 'WXGLADE_CONFIG_PATH' in os.environ:
+        path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
+    else:
+        path = config.appdata_path
+        if path != config.wxglade_path:
+            path = os.path.join(path, '.wxglade')
+    try:
+        history = open(os.path.join(path, 'file_history.txt'))
+        lines = history.readlines()
+        if lines and lines[0].startswith('# -*- coding:'):
+            try:
+                encoding = 'utf-8'
+                #lines = [common._encode_from_xml(e, encoding) for e in l[1:]]
+                lines = [e.decode(encoding) for e in lines[1:]]
+            except Exception:
+                logging.exception(_("Internal Error"))
+                lines = lines[1:]
+        history.close()
+        if config.use_gui:
+            import misc
+            lines = [misc.wxstr(e, 'utf-8') for e in lines]
+        return lines
+    except IOError:
+        # don't consider this an error
+        return []
+
+
+class Preferences(ConfigParser.ConfigParser):
+    _has_home = os.path.expanduser('~') != '~'
+    _defaults = {
+        'use_menu_icons': config.use_gui and config.platform != '__WXGTK__',
+        'frame_tool_win': True,
+        'open_save_path': '',
+        'codegen_path': '',
+        'use_dialog_units': False,
+        'number_history': 4,
+        'show_progress': True,
+        'wxg_backup': True,
+        'codegen_backup': True,
+        'backup_suffix': sys.platform == 'win32' and '.bak' or '~',
+        'buttons_per_row': 5,
+        'remember_geometry': False,
+        'local_widget_path': '',
+        'default_border': False,
+        'default_border_size': 3,
+        'show_sizer_handle': True,
+        'allow_duplicate_names': False,
+        'autosave': True,
+        'autosave_delay': 120,  # in seconds
+        'use_kde_dialogs': False,
+        'show_completion': True,
+        'write_timestamp': True,
+        'write_generated_from': False,
+        }
+
+    def __init__(self, defaults=None):
+        # set defaults of 'codegen_path', 'local_widget_path', and
+        # 'open_save_path' and 'codegen_path' if the class is
+        # instantiated first time, because the home_path is set later
+        if config.home_path and not self._defaults['open_save_path']:
+            self._defaults['open_save_path'] = config.home_path
+            self._defaults['codegen_path'] = config.home_path
+        if config.appdata_path and not self._defaults['local_widget_path']:
+            self._defaults['local_widget_path'] = os.path.join(
+                config.appdata_path, '.wxglade', 'widgets'
+                )
+        self.def_vals = defaults
+        if self.def_vals is None:
+            self.def_vals = Preferences._defaults
+        self.changed = False
+        ConfigParser.ConfigParser.__init__(self)
+        #self.default_border_size = 3
+
+    def __getattr__(self, attr):
+        val = self.def_vals.get(attr, "")
+        # UGLY!!!
+        cast = type(val)
+        if cast is bool:
+            cast = self._cast_to_bool
+        # ...but I haven't found a better way: the problem is that
+        # bool('0') == True, while int('0') == False, and we want the
+        # latter behaviour
+        try:
+            return cast(self.get('wxglade', attr))
+        except (ConfigParser.NoOptionError, ValueError):
+            return val
+
+    def __iter__(self):
+        def do_iter():
+            for key in self.def_vals:
+                yield key, self[key]
+        return do_iter()
+
+    def _cast_to_bool(self, val):
+        try:
+            return int(val)
+        except ValueError:
+            val = val.lower().strip()
+            if val in ('true', 'on'):
+                return 1
+            elif val in ('false', 'off'):
+                return 0
+            else:
+                raise
+
+    def __getitem__(self, attr):
+        return self.__getattr__(attr)
+
+    def __setitem__(self, attr, val):
+        self.set('wxglade', attr, str(val))
+        self.changed = True
+
+    def set_geometry(self, name, geometry):
+        if geometry is not None:
+            section = 'geometry_%s' % name
+            if not self.has_section(section):
+                self.add_section(section)
+            self.set(section, 'x', geometry[0])
+            self.set(section, 'y', geometry[1])
+            self.set(section, 'w', geometry[2])
+            self.set(section, 'h', geometry[3])
+
+    def get_geometry(self, name):
+        section = 'geometry_%s' % name
+        if self.has_section(section):
+            x = self.get(section, 'x')
+            y = self.get(section, 'y')
+            w = self.get(section, 'w')
+            h = self.get(section, 'h')
+            return x, y, w, h
+        else:
+            return None
+
+# end of class Preferences

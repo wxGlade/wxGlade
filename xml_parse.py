@@ -32,7 +32,7 @@ import errors
 import xml.sax.expatreader
 
 
-if common.use_gui:
+if config.use_gui:
     import wx
 
 
@@ -966,7 +966,7 @@ class Sizeritem(object):
     """\
     @ivar _logger: Class specific logging instance
     """
-    if common.use_gui:
+    if config.use_gui:
         flags = {'wxALL': wx.ALL,
                  'wxEXPAND': wx.EXPAND, 'wxALIGN_RIGHT': wx.ALIGN_RIGHT,
                  'wxALIGN_BOTTOM': wx.ALIGN_BOTTOM,
