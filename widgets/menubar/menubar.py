@@ -6,7 +6,9 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
-import common, misc
+import common
+import config
+import misc
 from tree import Tree
 from MenuTree import *
 from widget_properties import *
@@ -564,7 +566,7 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.widget.SetBackgroundColour(self._mb.GetBackgroundColour())
             import os
             icon = wx.EmptyIcon()
-            xpm = os.path.join(common.icons_path, 'menubar.xpm')
+            xpm = os.path.join(config.icons_path, 'menubar.xpm')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
             self.widget.SetIcon(icon)
             wx.EVT_CLOSE(self.widget, lambda e: self.hide_widget())
