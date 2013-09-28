@@ -8,7 +8,6 @@ Global variables
 
 import ConfigParser
 import logging
-import os
 import os.path
 import sys
 
@@ -483,21 +482,108 @@ def restore_from_autosaved(filename):
     return False
 
 
+def init_paths():
+    """\
+    Set all wxGlade related paths.
+
+    The paths will be stored in L{config}.
+    """
+    # use directory of the exe in case of frozen packages e.g.
+    # PyInstaller or py2exe
+    if hasattr(sys, 'frozen'):
+        wxglade_path = os.path.dirname(sys.argv[0])
+    else:
+        wxglade_path = __file__
+        if os.path.islink(wxglade_path):
+            wxglade_path = os.path.realpath(wxglade_path)
+        wxglade_path = os.path.dirname(os.path.abspath(wxglade_path))
+
+    # set the program's paths
+    config.wxglade_path = wxglade_path
+
+    # static paths
+    config.docs_path      = os.path.join(config.wxglade_path, 'docs')
+    config.icons_path     = os.path.join(config.wxglade_path, 'icons')
+    config.widgets_path   = os.path.join(config.wxglade_path, 'widgets')
+    config.templates_path = os.path.join(config.wxglade_path, 'templates')
+    config.tutorial_file  = os.path.join(config.docs_path, 'html', 'index.html')
+
+    # set home path
+    home_dir = os.path.expanduser('~')
+    if home_dir not in ('~', '%USERPROFILE%'):
+        config.home_path = home_dir
+    elif os.name == 'nt' and home_dir == '%USERPROFILE%':
+        config.home_path = os.environ.get('USERPROFILE', config.wxglade_path)
+    else:
+        config.home_path = config.wxglade_path
+
+    # set path of application data
+    if 'WXGLADE_CONFIG_PATH' in os.environ:
+        config.appdata_path = os.path.expandvars(
+            os.environ['WXGLADE_CONFIG_PATH']
+            )
+    elif os.name == 'nt' and 'APPDATA' in os.environ:
+        config.appdata_path = os.path.expandvars(os.environ['APPDATA'])
+        old_name = '%s/.wxglade' % config.appdata_path
+        new_name = '%s/wxglade' % config.appdata_path
+        if os.path.isdir(old_name):
+            logging.info(
+                _('Rename appdata path from "%s" to "%s"'), old_name, new_name
+            )
+            try:
+                os.rename(old_name, new_name)
+                config.appdata_path = new_name
+            except IOError, e:
+                # ignore rename errors and just write an info message
+                logging.info(_('Renaming failed: "%s"'), e)
+                logging.info(_('Using the old path "%s" instead'), old_name)
+                config.appdata_path = old_name
+        else:
+            config.appdata_path = new_name
+    else:
+        config.appdata_path = os.path.join(config.home_path, '.wxglade')
+
+    # search files credits.txt and license.txt at different locations
+    # - <wxglade_path>/docs   for linux packages
+    # - <wxglade_path>   at Windows or started from source directory
+    # - <wxglade_path>/./../../../share/doc/wxglade/   for local installations
+    # BTW: <wxglade_path> is something like /.../lib/python2.7/site-packages/wxglade
+    config.credits_file = None
+    config.license_file = None
+    for searchdir in [
+        config.wxglade_path,
+        config.docs_path,
+        os.path.join(config.wxglade_path, '../../../../share/doc/wxglade'),
+        ]:
+        searchdir = os.path.normpath(searchdir)
+        credits_file = os.path.join(searchdir, 'credits.txt')
+        license_file = os.path.join(searchdir, 'license.txt')
+        if os.path.exists(credits_file):
+            config.credits_file = credits_file
+        if os.path.exists(license_file):
+            config.license_file = license_file
+    if not config.credits_file:
+        logging.error(_('Credits file "credits.txt" not found!'))
+    if not config.license_file:
+        logging.error(_('License file "license.txt" not found!'))
+
+    # complete path to rc file
+    if os.name == 'nt':
+        config.rc_file = os.path.join(config.appdata_path, 'wxglade.ini')
+    else:
+        config.rc_file = os.path.join(config.appdata_path, 'wxgladerc')
+
+    config.history_file = os.path.join(
+        config.appdata_path, 'file_history.txt'
+        )
+
 def init_preferences():
     """\
     Load / initialise preferences
     """
     if config.preferences is None:
         config.preferences = Preferences()
-        search_path = [os.path.join(config.wxglade_path, config.rc_file)]
-        if 'WXGLADE_CONFIG_PATH' in os.environ:
-            search_path.append(
-                os.path.expandvars('$WXGLADE_CONFIG_PATH/%s' % config.rc_file)
-            )
-        search_path.append(
-            os.path.join(config.appdata_path, '.wxglade', config.rc_file)
-        )
-        config.preferences.read(search_path)
+        config.preferences.read(config.rc_file)
         if not config.preferences.has_section('wxglade'):
             config.preferences.add_section('wxglade')
 
@@ -505,14 +591,12 @@ def init_preferences():
 def save_preferences():
     """\
     Save current settings as well as the file history
+
+    @see: L{config.history_file}
+    @see: L{config.use_file_history}
     """
     # let the exception be raised
-    if 'WXGLADE_CONFIG_PATH' in os.environ:
-        path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
-    else:
-        path = config.appdata_path
-        if path != config.wxglade_path:
-            path = os.path.join(path, '.wxglade')
+    path = os.path.dirname(config.rc_file)
     if not os.path.isdir(path):
         os.makedirs(path)
         # always save the file history
@@ -523,13 +607,13 @@ def save_preferences():
         filenames = [_encode_to_xml(fh.GetHistoryFile(i), encoding)
                      for i in
                      range(min(config.preferences.number_history, count))]
-        outfile = open(os.path.join(path, 'file_history.txt'), 'w')
+        outfile = open(config.history_file, 'w')
         print >> outfile, "# -*- coding: %s -*-" % encoding
         for filename in filenames:
             print >> outfile, filename
         outfile.close()
     if config.preferences.changed:
-        outfile = open(os.path.join(path, config.rc_file), 'w')
+        outfile = open(config.rc_file, 'w')
         # let the exception be raised to signal abnormal behaviour
         config.preferences.write(outfile)
         outfile.close()
@@ -538,20 +622,18 @@ def save_preferences():
 def load_history():
     """\
     Loads the file history and returns a list of paths
+
+    @see: L{config.history_file}
+    @see: L{config.use_file_history}
+
+    @rtype: List of strings
     """
-    if 'WXGLADE_CONFIG_PATH' in os.environ:
-        path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
-    else:
-        path = config.appdata_path
-        if path != config.wxglade_path:
-            path = os.path.join(path, '.wxglade')
     try:
-        history = open(os.path.join(path, 'file_history.txt'))
+        history = open(config.history_file)
         lines = history.readlines()
         if lines and lines[0].startswith('# -*- coding:'):
             try:
                 encoding = 'utf-8'
-                #lines = [common._encode_from_xml(e, encoding) for e in l[1:]]
                 lines = [e.decode(encoding) for e in lines[1:]]
             except Exception:
                 logging.exception(_("Internal Error"))
@@ -603,7 +685,7 @@ class Preferences(ConfigParser.ConfigParser):
             self._defaults['codegen_path'] = config.home_path
         if config.appdata_path and not self._defaults['local_widget_path']:
             self._defaults['local_widget_path'] = os.path.join(
-                config.appdata_path, '.wxglade', 'widgets'
+                config.appdata_path, 'widgets'
                 )
         self.def_vals = defaults
         if self.def_vals is None:

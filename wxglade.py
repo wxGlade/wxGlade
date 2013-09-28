@@ -27,13 +27,13 @@ import errors
 
 def _fix_path(path):
     """\
-    Returns an absolute version of path, according to the invoking dir of
-    wxglade (which can be different from '.' if it is invoked from a shell
-    script)
+    Returns an absolute version of path.
+
+    According to the invoking dir of wxGlade (which can be different from '.'
+    if it is invoked from a shell script).
     """
     if not os.path.isabs(path):
         return os.path.join(os.getcwd(), path)
-        #getenv('WXGLADE_INVOKING_DIR', '.'), path)
     return path
 
 def parse_command_line():
@@ -165,67 +165,23 @@ def command_line_code_generation(filename, language, out_path=None):
     sys.exit(0)
 
 
-def determine_wxglade_path():
-    """\
-    @return: wxGlade application directory
-    """
-    # use directory of the exe in case of frozen packages e.g.
-    # PyInstaller or py2exe
-    if hasattr(sys, 'frozen'):
-        return os.path.dirname(sys.argv[0])
-
-    root = __file__
-    if os.path.islink(root):
-        root = os.path.realpath(root)
-    return os.path.dirname(os.path.abspath(root))
-
-
 def init_stage1():
     """\
     Initialise paths for wxGlade (first stage)
 
-    Path initialisation is splitted because the test suite doesn't work
-    with proper initialised paths.
+    Initialisation is split because the test suite doesn't work with proper
+    initialised paths.
     
-    Initialise locale settings too. The determinated system locale will be
+    Initialise locale settings too. The determined system locale will be
     stored in L{config.encoding}.
     """
-    # prepend the widgets dir to the
-    wxglade_path = determine_wxglade_path()
-    
-    # set the program's paths
-    config.wxglade_path = wxglade_path
-
-    # static paths
-    config.docs_path      = os.path.join(config.wxglade_path, 'docs')
-    config.icons_path     = os.path.join(config.wxglade_path, 'icons')
-    config.widgets_path   = os.path.join(config.wxglade_path, 'widgets')
-    config.templates_path = os.path.join(config.wxglade_path, 'templates')
-    config.tutorial_file  = os.path.join(config.docs_path, 'html', 'index.html')
-
-    # set home path
-    home_dir = os.path.expanduser('~')
-    if home_dir not in ('~', '%USERPROFILE%'):
-        config.home_path = home_dir
-    elif os.name == 'nt' and home_dir == '%USERPROFILE%':
-        config.home_path = os.environ.get('USERPROFILE', config.wxglade_path)
-    else:
-        config.home_path = config.wxglade_path
-    
-    # set path of application data
-    if os.name == 'nt':
-        appdata_path = os.environ.get('APPDATA')
-        if appdata_path:
-            config.appdata_path = appdata_path
-    else:
-        config.appdata_path = config.home_path
-
     config.version = common.set_version()
+    common.init_paths()
 
     # initialise own logging extensions
     # TODO use an platform specific place to store the log file
     log.init(
-        filename='%s/wxglade.log' % wxglade_path,
+        filename='%s/wxglade.log' % config.wxglade_path,
         encoding='utf-8',
         level='INFO',
         )
@@ -291,30 +247,6 @@ def init_stage1():
     # store determinated encoding
     config.encoding = encoding.upper()
 
-    # search files credits.txt and license.txt at different locations
-    # - <wxglade_path>/docs   for linux packages
-    # - <wxglade_path>   at Windows or started from source directory
-    # - <wxglade_path>/./../../../share/doc/wxglade/   for local installations
-    # BTW: <wxglade_path> is something like /.../lib/python2.7/site-packages/wxglade
-    config.credits_file = None
-    config.license_file = None
-    for searchdir in [
-        config.wxglade_path,
-        config.docs_path,
-        os.path.join(config.wxglade_path, '../../../../share/doc/wxglade'),
-        ]:
-        searchdir = os.path.normpath(searchdir) 
-        credits_file = os.path.join(searchdir, 'credits.txt')
-        license_file = os.path.join(searchdir, 'license.txt')
-        if os.path.exists(credits_file):
-            config.credits_file = credits_file
-        if os.path.exists(license_file):
-            config.license_file = license_file
-    if not config.credits_file:
-        logging.error(_('Credits file "credits.txt" not found!'))
-    if not config.license_file:
-        logging.error(_('License file "license.txt" not found!'))
-
     # print used paths
     logging.info(_('Base directory:             %s'), config.wxglade_path)
     logging.info(_('Documentation directory:    %s'), config.docs_path)
@@ -326,6 +258,8 @@ def init_stage1():
     logging.info(_('Credits file:               %s'), config.credits_file)
     logging.info(_('License file:               %s'), config.license_file)
     logging.info(_('Tutorial file:              %s'), config.tutorial_file)
+    logging.info(_('Configuration file:         %s'), config.rc_file)
+    logging.info(_('History file:               %s'), config.history_file)
 
     # adapt application search path
     sys.path = [config.wxglade_path, config.widgets_path] + sys.path
