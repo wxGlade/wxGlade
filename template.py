@@ -164,9 +164,9 @@ def load_templates():
     """\
     Finds all the available templates.
     """
-    d = os.path.join(config.appdata_path, '.wxglade')
-    if d != config.wxglade_path:
-        extra = glob.glob(os.path.join(d, "templates", "*.wgt"))
+    dir = config.appdata_path
+    if dir != config.wxglade_path:
+        extra = glob.glob(os.path.join(dir, "templates", "*.wgt"))
     else:
         extra = []
     return sorted(glob.glob(os.path.join(config.templates_path, "*.wgt"))) + \
@@ -212,14 +212,14 @@ def save_template(data=None):
     dlg.Destroy()
     name = ret
     if ret:
-        d = os.path.join(config.appdata_path, '.wxglade', 'templates')
-        if not os.path.exists(d):
+        dir = os.path.join(config.appdata_path, 'templates')
+        if not os.path.exists(dir):
             try:
-                os.makedirs(d)
+                os.makedirs(dir)
             except (OSError, IOError):
-                logging.exception(_('ERROR creating directory "%s"'), d)
+                logging.exception(_('ERROR creating directory "%s"'), dir)
                 return None, retdata
-        ret = os.path.join(d, ret + '.wgt')
+        ret = os.path.join(dir, ret + '.wgt')
     if ret and os.path.exists(ret) and \
        wx.MessageBox(_("A template called '%s' already exists:\ndo you want to"
                        " overwrite it?") % name, _("Question"),

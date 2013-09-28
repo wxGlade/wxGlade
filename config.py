@@ -67,7 +67,7 @@ The default application L{default_encoding} is the fallback only.
 
 appdata_path = ''
 """\
-Path to wxGlades application data like file history and templates
+Directory to wxGlades application data like file history and templates
 """
 
 credits_file = ''
@@ -111,7 +111,7 @@ Python version
 
 templates_path = 'templates'
 """\
-Path to wxGlade templates
+System template path
 
 @note: This path will be set during initialisation
 """
@@ -166,14 +166,15 @@ Instance of user preferences
 @see: L{common.Preferences}
 """
 
-rc_file = None
+rc_file = ''
 """\
-File name of the rc / ini file to store user preferences in it
+Path to the rc / ini file to store user preferences in it
 """
-if sys.platform == 'win32':
-    rc_file = 'wxglade.ini'
-else:
-    rc_file = 'wxgladerc'
+
+history_file = ''
+"""\
+Path to the history file, if used
+"""
 
 use_file_history = False
 """\
