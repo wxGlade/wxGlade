@@ -976,8 +976,9 @@ class wxGlade(wx.App):
         self.SetAssertMode(0)
         wx.InitAllImageHandlers()
         common.init_preferences()
+        if config.preferences.log_debug_info:
+            log.setDebugLevel()
 
-        # ALB 2004-10-27
         if wx.Platform == '__WXGTK__' and config.preferences.use_kde_dialogs:
             import kdefiledialog
             if kdefiledialog.test_kde():
@@ -987,13 +988,6 @@ class wxGlade(wx.App):
         wx.ArtProvider.PushProvider(wxGladeArtProvider())
 
         frame = wxGladeFrame()
-##         if wx.Platform == '__WXMSW__':
-##             def on_activate(event):
-##                 if event.GetActive() and not frame.IsIconized():
-##                     frame.show_and_raise()
-##                 event.Skip()
-##             wx.EVT_ACTIVATE_APP(self, on_activate)
-
         self.SetTopWindow(frame)
         self.SetExitOnFrameDelete(True)
 
@@ -1045,7 +1039,7 @@ def main(filename=None):
     """
     logging.info(_("Using wxPython %s"), wx.__version__)
 
-    # now, silence a deprecation warining for py2.3
+    # now, silence a deprecation warning for py2.3
     import warnings
     warnings.filterwarnings(
         "ignore",

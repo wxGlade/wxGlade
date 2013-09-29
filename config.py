@@ -182,3 +182,8 @@ Flag to use a file history
 """
 if use_gui:
     use_file_history = True
+
+log_file = None
+"""\
+Path to wxGlade log file
+"""

@@ -577,6 +577,10 @@ def init_paths():
         config.appdata_path, 'file_history.txt'
         )
 
+    config.log_file = os.path.join(
+        config.appdata_path, 'wxglade.log'
+        )
+
 def init_preferences():
     """\
     Load / initialise preferences
@@ -674,6 +678,7 @@ class Preferences(ConfigParser.ConfigParser):
         'show_completion': True,
         'write_timestamp': True,
         'write_generated_from': False,
+        'log_debug_info': False,
         }
 
     def __init__(self, defaults=None):
@@ -692,7 +697,6 @@ class Preferences(ConfigParser.ConfigParser):
             self.def_vals = Preferences._defaults
         self.changed = False
         ConfigParser.ConfigParser.__init__(self)
-        #self.default_border_size = 3
 
     def __getattr__(self, attr):
         val = self.def_vals.get(attr, "")
