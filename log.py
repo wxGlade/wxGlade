@@ -262,6 +262,10 @@ def init(filename='wxglade.log', encoding=None, level=None):
         )
     logger = logging.getLogger()
 
+    # check for installed handlers and remove them
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+
     # set newline sequence
     if os.name == 'nt':
         logging.StreamHandler.terminator = '\r\n'
@@ -296,10 +300,6 @@ def init(filename='wxglade.log', encoding=None, level=None):
     stringLoggerInstance.setLevel(logging.WARNING)
     stringLoggerInstance.setFormatter(default_formatter)
     logger.addHandler(stringLoggerInstance)
-
-    # check for installed handlers and remove them
-    for handler in logger.handlers[:]:
-        logger.removeHandler(handler)
 
     # don't filter log levels in root logger
     logger.setLevel(logging.NOTSET)
