@@ -1,7 +1,7 @@
 """
 Functions and classes to record and print out log messages.
 
-This module provides a own logger class as well as specific funtions to
+This module provides a own logger class as well as specific functions to
 improve Pythons logging facility.
 
 wxGlade uses the python logging instance with three log handler attached.
@@ -13,7 +13,7 @@ The second handler C{logging.StreamHandler} to print error messages to
 sys.stderr.
 
 The third handler C{logging.FileHandler} writes all messages into a file. This
-behaviour is useful to store logged expections permanently.
+behaviour is useful to store logged exceptions permanently.
 
 @note: Python versions older then 2.6.6 (released 24th August 2010) contains
 logging implementation that are not Unicode aware.
@@ -99,7 +99,7 @@ class StringHandler(logging.handlers.MemoryHandler):
             return msg
 
         # convert character string into a unicode string
-        if type(msg) != types.UnicodeType:
+        if not isinstance(msg, unicode):
             msg = msg.decode(self.encoding, 'replace')
         return msg
 
@@ -209,7 +209,7 @@ class wxGladeFormatter(logging.Formatter):
                     sio.write(_('%s (%s): %s\n') % (varname, vartype, varvalue))
 
         # delete local references of tracebacks or part of tracebacks
-        # to avoid cirular references
+        # to avoid circular references
         finally:
             del tb
             del frame_locals
@@ -229,6 +229,7 @@ class wxGladeFormatter(logging.Formatter):
 
 # end of class wxGladeFormatter
 
+
 def init(filename='wxglade.log', encoding=None, level=None):
     """\
     Initialise the logging facility
@@ -236,7 +237,9 @@ def init(filename='wxglade.log', encoding=None, level=None):
     Initialise and configure the logging itself as well as the handlers
     described above.
 
-    Our own execption handler will be installed finally.
+    Our own exception handler will be installed finally.
+
+    The file logger won't be instantiate if not file name is given.
 
     @param filename: Name of the log file
     @type filename:  String
@@ -273,14 +276,20 @@ def init(filename='wxglade.log', encoding=None, level=None):
     # install own exception handler
     installExceptionHandler()
 
-    # instanciate own handler
+    # instantiate own handler
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
     console.setFormatter(default_formatter)
 
-    fileLogger = logging.FileHandler(filename, encoding=encoding)
-    fileLogger.setFormatter(file_formatter)
-    fileLogger.setLevel(logging.NOTSET)
+    if filename:
+        fileLogger = logging.handlers.RotatingFileHandler(
+            filename,
+            maxBytes=100*1024,
+            backupCount=0,
+            encoding=encoding,
+            )
+        fileLogger.setFormatter(file_formatter)
+        fileLogger.setLevel(logging.NOTSET)
 
     stringLoggerInstance = StringHandler(storeAsUnicode=False)
     stringLoggerInstance.setLevel(logging.WARNING)
@@ -293,12 +302,13 @@ def init(filename='wxglade.log', encoding=None, level=None):
     # add new handler
     logger.addHandler(stringLoggerInstance)
     logger.addHandler(console)
-    logger.addHandler(fileLogger)
+    if filename:
+        logger.addHandler(fileLogger)
     logger.setLevel(logging.NOTSET)
 
-    # Set loglevel for file logger only
+    # Set log level for file logger only
     if level:
-        if level.upper() in logging._levelNames:                     # pylint: disable=W0212
+        if level.upper() in logging._levelNames:                 # pylint: disable=W0212
             logger.setLevel(logging._levelNames[level.upper()])  # pylint: disable=W0212
         else:
             logging.warning(
@@ -308,6 +318,7 @@ def init(filename='wxglade.log', encoding=None, level=None):
             logger.setLevel(logging.WARNING)
     else:
         logger.setLevel(logging.NOTSET)
+
 
 def deinit():
     """\
@@ -320,9 +331,17 @@ def deinit():
         atexit._exithandlers.remove(deinit)
 
 
+def setDebugLevel():
+    """\
+    Set the log level to DEBUG for all log handlers
+    """
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+
 def getBufferAsList(clean=True):
     """\
-    Returns all messages bufferred by L{stringLoggerInstance}.
+    Returns all messages buffered by L{stringLoggerInstance}.
 
     @param clean: Clean the internal message buffer
     @return:      Message buffer
@@ -336,7 +355,7 @@ def getBufferAsList(clean=True):
 
 def getBufferAsString(clean=True):
     """\
-    Returns all messages bufferred by L{stringLoggerInstance}.
+    Returns all messages buffered by L{stringLoggerInstance}.
 
     @param clean: Clean the internal message buffer
     @return:      Concatenated messages
@@ -401,7 +420,7 @@ def deinstallExceptionHandler():
 
 def exceptionHandler(exc_type, exc_value, exc_tb):
     """\
-    Logs detailed information about uncatched exceptions
+    Logs detailed information about uncaught exceptions
 
     @param exc_type:  Type of the exception (normally a class object)
     @param exc_value: The "value" of the exception
@@ -433,7 +452,7 @@ def exceptionHandler(exc_type, exc_value, exc_tb):
             
             logging.error(_('Local variables of the last stack entry:'))
             for varname in frame_locals.keys():
-                # convert variablen name and value to ascii
+                # convert variable name and value to ascii
                 var = frame_locals[varname]
                 vartype = type(var)
                 if vartype == types.UnicodeType:
@@ -448,7 +467,7 @@ def exceptionHandler(exc_type, exc_value, exc_tb):
                 logging.error(_('%s (%s): %s') % (varname, vartype, varvalue))
 
     # delete local references of tracebacks or part of tracebacks
-    # to avoid cirular references
+    # to avoid circular references
     finally:
         del tb
         del frame_locals

@@ -179,9 +179,8 @@ def init_stage1():
     common.init_paths()
 
     # initialise own logging extensions
-    # TODO use an platform specific place to store the log file
     log.init(
-        filename='%s/wxglade.log' % config.wxglade_path,
+        filename=config.log_file,
         encoding='utf-8',
         level='INFO',
         )
@@ -244,7 +243,7 @@ def init_stage1():
     logging.info(_('  Language code: %s'), loc_langcode)
     logging.info(_('  Encoding: %s'), loc_encoding)
 
-    # store determinated encoding
+    # store determined encoding
     config.encoding = encoding.upper()
 
     # print used paths
@@ -253,11 +252,11 @@ def init_stage1():
     logging.info(_('Icons directory:            %s'), config.icons_path)
     logging.info(_('Build-in widgets directory: %s'), config.widgets_path)
     logging.info(_('Template directory:         %s'), config.templates_path)
-    logging.info(_('Home directory:             %s'), config.home_path)
-    logging.info(_('Application data directory: %s'), config.appdata_path)
     logging.info(_('Credits file:               %s'), config.credits_file)
     logging.info(_('License file:               %s'), config.license_file)
     logging.info(_('Tutorial file:              %s'), config.tutorial_file)
+    logging.info(_('Home directory:             %s'), config.home_path)
+    logging.info(_('Application data directory: %s'), config.appdata_path)
     logging.info(_('Configuration file:         %s'), config.rc_file)
     logging.info(_('History file:               %s'), config.history_file)
 
@@ -299,6 +298,8 @@ def init_stage2(use_gui):
     else:
         # use_gui has to be set before importing config
         common.init_preferences()
+        if config.preferences.log_debug_info:
+            log.setDebugLevel()
         common.load_code_writers()
         common.load_widgets()
         common.load_sizers()
