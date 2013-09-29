@@ -16,6 +16,7 @@ import unittest
 # import project modules
 import codegen
 import common
+import config
 import log
 import wxglade
 from xml_parse import CodeWriter
@@ -106,8 +107,7 @@ class WXGladeBaseTest(unittest.TestCase):
         wxglade.init_stage2(use_gui=self.init_use_gui)
 
         # initialise wxGlade configuration
-        import config
-        config.init_preferences()
+        common.init_preferences()
 
         # set some useful preferences
         config.preferences.autosave = False
@@ -133,7 +133,7 @@ class WXGladeBaseTest(unittest.TestCase):
         codegen.BaseLangCodeWriter._show_warnings = False
 
         # set own version string to prevent diff mismatches
-        common.version = '"faked test version"'
+        config.version = '"faked test version"'
 
         # Determinate case directory
         self.caseDirectory = os.path.join(
@@ -244,12 +244,12 @@ class WXGladeBaseTest(unittest.TestCase):
 
         # replacing path entries
         content = content % {
-            'wxglade_path':   common.wxglade_path,
-            'docs_path':      common.docs_path,
-            'icons_path':     common.icons_path,
-            'widgets_path':   common.widgets_path,
-            'templates_path': common.templates_path,
-            'tutorial_file':  common.tutorial_file,
+            'wxglade_path':   config.wxglade_path,
+            'docs_path':      config.docs_path,
+            'icons_path':     config.icons_path,
+            'widgets_path':   config.widgets_path,
+            'templates_path': config.templates_path,
+            'tutorial_file':  config.tutorial_file,
             }
 
         return content

@@ -6,7 +6,10 @@
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx
-import common, math, misc
+import common
+import  config
+import math
+import misc
 from tree import Tree
 from widget_properties import *
 from edit_windows import TopLevelBase
@@ -168,7 +171,7 @@ class EditDialog(TopLevelBase):
             else:
                 import os
                 icon = wx.EmptyIcon()
-                xpm = os.path.join(common.icons_path, 'dialog.xpm')
+                xpm = os.path.join(config.icons_path, 'dialog.xpm')
                 icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
                 self.widget.SetIcon(icon)
 

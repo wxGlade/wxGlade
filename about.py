@@ -1,14 +1,16 @@
-# about.py: about box with general info
-# $Id: about.py,v 1.24 2007/03/27 07:02:07 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+About box with general info
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 import wx.html
 import wx.lib.wxpTag
-import common, misc, os.path
+import config
+import misc
+import os.path
 
 class wxGladeAboutBox(wx.Dialog):
     text = '''
@@ -48,10 +50,10 @@ class wxGladeAboutBox(wx.Dialog):
             def OnLinkClicked(self, linkinfo):
                 href = linkinfo.GetHref()
                 if href == 'show_license':
-                    if common.license_file:
+                    if config.license_file:
                         from wx.lib.dialogs import ScrolledMessageDialog
                         try:
-                            license_file = open(common.license_file)
+                            license_file = open(config.license_file)
                             dlg = ScrolledMessageDialog(
                                 self,
                                 license_file.read(),
@@ -73,10 +75,10 @@ class wxGladeAboutBox(wx.Dialog):
                                      "mit-license.php"), _("Error"),
                                      wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
                 elif href == 'show_credits':
-                    if common.credits_file:
+                    if config.credits_file:
                         from wx.lib.dialogs import ScrolledMessageDialog
                         try:
-                            credits_file = open(common.credits_file)
+                            credits_file = open(config.credits_file)
                             dlg = ScrolledMessageDialog(
                                 self,
                                 credits_file.read(),
@@ -99,9 +101,9 @@ class wxGladeAboutBox(wx.Dialog):
         if "gtk2" in wx.PlatformInfo:
             html.SetStandardFonts()
         bgcolor = misc.color_to_string(self.GetBackgroundColour())
-        icon_path = os.path.join(common.icons_path, 'wxglade_small.png')
-        html.SetPage(self.text % (bgcolor, icon_path, common.version,
-                                  common.py_version, wx.__version__))
+        icon_path = os.path.join(config.icons_path, 'wxglade_small.png')
+        html.SetPage(self.text % (bgcolor, icon_path, config.version,
+                                  config.py_version, wx.__version__))
         ir = html.GetInternalRepresentation()
         ir.SetIndent(0, wx.html.HTML_INDENT_ALL)
         html.SetSize((ir.GetWidth(), ir.GetHeight()))

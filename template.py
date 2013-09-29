@@ -110,7 +110,7 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
             self.author.SetValue(misc.wxstr(t.author))
             self.description.SetValue(misc.wxstr(t.description))
             self.instructions.SetValue(misc.wxstr(t.instructions))
-            if os.path.dirname(self.selected_template) == common.templates_path:
+            if os.path.dirname(self.selected_template) == config.templates_path:
                 self.btn_delete.Disable()
                 self.btn_edit.Disable()
             else:
@@ -164,12 +164,12 @@ def load_templates():
     """\
     Finds all the available templates.
     """
-    d = os.path.join(config._get_appdatapath(), '.wxglade')
-    if d != common.wxglade_path:
-        extra = glob.glob(os.path.join(d, "templates", "*.wgt"))
+    dir = config.appdata_path
+    if dir != config.wxglade_path:
+        extra = glob.glob(os.path.join(dir, "templates", "*.wgt"))
     else:
         extra = []
-    return sorted(glob.glob(os.path.join(common.templates_path, "*.wgt"))) + \
+    return sorted(glob.glob(os.path.join(config.templates_path, "*.wgt"))) + \
            sorted(extra)
     
 
@@ -212,14 +212,14 @@ def save_template(data=None):
     dlg.Destroy()
     name = ret
     if ret:
-        d = os.path.join(config._get_appdatapath(), '.wxglade', 'templates')
-        if not os.path.exists(d):
+        dir = os.path.join(config.appdata_path, 'templates')
+        if not os.path.exists(dir):
             try:
-                os.makedirs(d)
+                os.makedirs(dir)
             except (OSError, IOError):
-                logging.exception(_('ERROR creating directory "%s"'), d)
+                logging.exception(_('ERROR creating directory "%s"'), dir)
                 return None, retdata
-        ret = os.path.join(d, ret + '.wgt')
+        ret = os.path.join(dir, ret + '.wgt')
     if ret and os.path.exists(ret) and \
        wx.MessageBox(_("A template called '%s' already exists:\ndo you want to"
                        " overwrite it?") % name, _("Question"),

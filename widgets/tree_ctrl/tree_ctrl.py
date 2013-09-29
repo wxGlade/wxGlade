@@ -9,6 +9,7 @@ import wx
 from edit_windows import ManagedBase
 from tree import Tree
 import common
+import config
 from widget_properties import *
 
 
@@ -79,7 +80,7 @@ class EditTreeCtrl(ManagedBase):
         root = self.widget.AddRoot(_(' Tree Control:'))
         self._item_with_name = self.widget.AppendItem(root, ' ' + self.name)
         self.widget.AppendItem(self._item_with_name,
-                               _(' on wxGlade %s') % common.version)
+                               _(' on wxGlade %s') % config.version)
         self.widget.Expand(root)
         self.widget.Expand(self._item_with_name)
 

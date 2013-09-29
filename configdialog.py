@@ -61,7 +61,9 @@ class wxGladePreferences(wxGladePreferencesUI):
             self.show_completion.SetValue(self.preferences.show_completion)
             self.write_timestamp.SetValue(self.preferences.write_timestamp)
             self.write_generated_from.SetValue(
-                self.preferences.write_generated_from)
+                self.preferences.write_generated_from
+                )
+            self.log_debug_info.SetValue(self.preferences.log_debug_info)
             self._fix_spin_ctrls()
         except Exception, e:
             wx.MessageBox(
@@ -127,6 +129,7 @@ class wxGladePreferences(wxGladePreferencesUI):
 
         prefs['write_timestamp'] = self.write_timestamp.GetValue()
         prefs['write_generated_from'] = self.write_generated_from.GetValue()
+        prefs['log_debug_info'] = self.log_debug_info.GetValue()
 
     def on_widget_path(self, event):
         """\

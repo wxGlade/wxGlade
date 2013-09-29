@@ -22,7 +22,14 @@ warnwxglade.txt
 MANIFEST
 docs/man/wxglade.1
 
-# eric ide stuff
+# Eric IDE
 .eric4project
 .ropeproject
 wxGlade.e4p
+ericapi
+
+# wxGlade log file
+wxglade.log
+
+# PyCharm IDE
+.idea

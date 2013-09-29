@@ -10,6 +10,7 @@ import wx
 from wx.lib.filebrowsebutton import FileBrowseButton
 
 import common
+import config
 import math
 import misc
 import os
@@ -525,7 +526,7 @@ class EditToolBar(EditBase, PreviewMixin):
             self.widget.SetToolBar(self._tb)
             self.widget.SetBackgroundColour(self._tb.GetBackgroundColour())
             icon = wx.EmptyIcon()
-            xpm = os.path.join(common.icons_path, 'toolbar.xpm')
+            xpm = os.path.join(config.icons_path, 'toolbar.xpm')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
             self.widget.SetIcon(icon)
             wx.EVT_CLOSE(self.widget, lambda e: self.hide_widget())
