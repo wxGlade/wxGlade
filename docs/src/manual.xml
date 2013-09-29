@@ -1284,7 +1284,7 @@ if __name__ == '__main__':
                 <para>Encoding of the generated source files.</para>
 
                 <para>The encoding to use with new projects will be
-                determinated automatically based on the machine settings.
+                determined automatically based on the machine settings.
                 <quote>UTF-8</quote> will be used if the automatic detection
                 fails.</para>
               </glossdef>

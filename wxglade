@@ -13,10 +13,10 @@
 #  2. in the module directory of the current Python
 #  3. in a parallel Python module directory
 
-# determinate current python version
+# determined current python version
 PY_VERSION=$(python -c 'import sys; print sys.version[:3]')
 
-# determinate prefix of the Python module directory structure
+# determined prefix of the Python module directory structure
 if [ -e /etc/debian_version ]; then
   WXGLADE_MODULE_PATH="/usr/lib/pymodules/python${PY_VERSION}/wxglade"
 else
