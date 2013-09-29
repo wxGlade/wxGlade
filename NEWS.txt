@@ -6,6 +6,9 @@ General:
   - Rework quoting and escaping of special character sequences
   - Rework internal path handling
   - Write always an error log file
+  - Change configuration default to remember the position and geometry
+    of open of the three main windows. This change effects fresh installations
+    only.
 
 Generated Code:
  - Use SetToolTip() instead of SetToolTipString() for wxPython 3.x
