@@ -12,10 +12,10 @@ import gettext
 
 # begin wxGlade: extracode
 # Python specific extra code, non-python code will fail!
-import common
+import config
 import os
 
-_icon_path = os.path.join(common.icons_path, 'icon.xpm')
+_icon_path = os.path.join(config.icons_path, 'icon.xpm')
 # end wxGlade
 
 

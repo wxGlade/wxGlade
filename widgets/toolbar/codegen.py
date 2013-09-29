@@ -5,7 +5,9 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import common, os
+import common
+import config
+import os
 from tool import *
 
 class PythonCodeGenerator:
@@ -55,7 +57,7 @@ class PythonCodeGenerator:
         else: obj_name = 'self.' + obj.name
 
         def _get_bitmap(bitmap):
-            bmp_preview_path = os.path.join(common.icons_path, "icon.xpm")
+            bmp_preview_path = os.path.join(config.icons_path, "icon.xpm")
             if not bitmap:
                 return cn('wxNullBitmap')
             elif bitmap.startswith('var:'):

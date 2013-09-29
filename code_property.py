@@ -1,8 +1,10 @@
-# code_property.py: Property class for the 'code' property of toplevel widgets
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""
+Property class for the 'code' property of toplevel widgets
+
+@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
 from xml.sax.saxutils import escape, quoteattr
 
 import wx

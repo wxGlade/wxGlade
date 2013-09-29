@@ -6,6 +6,7 @@ Miscellaneus stuff, used in many parts of wxGlade
 """
 
 import common
+import config
 
 from cStringIO import StringIO
 import logging
@@ -319,14 +320,13 @@ def check_wx_version(major, minor=0, release=0, revision=0):
 def append_item(menu, id, text, xpm_file_or_artid=None):
     global use_menu_icons
     if use_menu_icons is None:
-        import config
         use_menu_icons = config.preferences.use_menu_icons
     item = wx.MenuItem(menu, id, text)
     if wx.Platform == '__WXMSW__':
         path = 'msw/'
     else:
         path = 'gtk/'
-    path = os.path.join(common.icons_path, path)
+    path = os.path.join(config.icons_path, path)
     if use_menu_icons and xpm_file_or_artid is not None:
         bmp = None
         if not xpm_file_or_artid.startswith('wxART_'):

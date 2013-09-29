@@ -4,6 +4,8 @@ General:
   - Add missing styles for wxNotebook (Thanks to Udi Fuchs)
   - Use Python logging facility instead of print statements
   - Rework quoting and escaping of special character sequences
+  - Rework internal path handling
+  - Write always an error log file
 
 Generated Code:
  - Use SetToolTip() instead of SetToolTipString() for wxPython 3.x

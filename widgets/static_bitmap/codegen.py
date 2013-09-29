@@ -5,7 +5,9 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-import common, os
+import common
+import config
+import os
 
 class PythonCodeGenerator:
     def get_code(self, obj):
@@ -17,7 +19,7 @@ class PythonCodeGenerator:
 
         id_name, id = pygen.generate_code_id(obj) 
         bmp_file = prop.get('bitmap', '')
-        bmp_preview_path = os.path.join(common.icons_path, "icon.xpm")
+        bmp_preview_path = os.path.join(config.icons_path, "icon.xpm")
         if not bmp_file:
             bmp = cn('wxNullBitmap')
         elif bmp_file.startswith('var:'):

@@ -132,7 +132,7 @@ class ToggleButtonBox(wx.Panel):
 class wxGladeArtProvider(wx.ArtProvider):
     def CreateBitmap(self, artid, client, size):
         if wx.Platform == '__WXGTK__' and artid == wx.ART_FOLDER:
-            return wx.Bitmap(os.path.join(common.icons_path, 'closed_folder.xpm'),
+            return wx.Bitmap(os.path.join(config.icons_path, 'closed_folder.xpm'),
                             wx.BITMAP_TYPE_XPM)
         return wx.NullBitmap
 
@@ -154,7 +154,7 @@ class wxGladeFrame(wx.Frame):
         self._logger = logging.getLogger(self.__class__.__name__)
         style = wx.SYSTEM_MENU|wx.CAPTION|wx.MINIMIZE_BOX|wx.RESIZE_BORDER
         style |= wx.CLOSE_BOX
-        wx.Frame.__init__(self, parent, -1, "wxGlade v%s" % common.version,
+        wx.Frame.__init__(self, parent, -1, "wxGlade v%s" % config.version,
                          style=style)
         self.CreateStatusBar(1)
 
@@ -163,7 +163,7 @@ class wxGladeFrame(wx.Frame):
                               # by the various widget classes
         icon = wx.EmptyIcon()
         bmp = wx.Bitmap(
-            os.path.join(common.icons_path, "icon.xpm"),
+            os.path.join(config.icons_path, "icon.xpm"),
             wx.BITMAP_TYPE_XPM
             )
         icon.CopyFromBitmap(bmp)
@@ -243,7 +243,7 @@ class wxGladeFrame(wx.Frame):
         self.file_history = wx.FileHistory(
             config.preferences.number_history)
         self.file_history.UseMenu(file_menu)
-        files = config.load_history()
+        files = common.load_history()
         files.reverse()
         for path in files:
             self.file_history.AddFileToHistory(path.strip())
@@ -856,8 +856,10 @@ class wxGladeFrame(wx.Frame):
                                    misc.get_geometry(self.frame2))
                 prefs.changed = True
             common.app_tree.clear()
-            if self.about_box: self.about_box.Destroy()
-            try: config.save_preferences()
+            if self.about_box:
+                self.about_box.Destroy()
+            try:
+                common.save_preferences()
             except Exception, e:
                 wx.MessageBox(_('Error saving preferences:\n%s') % e,
                               _('Error'),
@@ -885,13 +887,13 @@ class wxGladeFrame(wx.Frame):
         show the wxGlade user manual
         """
         if wx.Platform == "__WXMAC__":
-            os.system('open -a Help\ Viewer.app %s' % common.tutorial_file)
+            os.system('open -a Help\ Viewer.app %s' % config.tutorial_file)
         else:
             import webbrowser, threading
             # ALB 2004-08-15: why did this block the program?????
             # (at least on linux - GTK)
             def go():
-                webbrowser.open_new(common.tutorial_file)
+                webbrowser.open_new(config.tutorial_file)
             t = threading.Thread(target=go)
             t.setDaemon(True)
             t.start()
@@ -974,9 +976,10 @@ class wxGlade(wx.App):
         # needed for wx >= 2.3.4 to disable wxPyAssertionError exceptions
         self.SetAssertMode(0)
         wx.InitAllImageHandlers()
-        config.init_preferences()
+        common.init_preferences()
+        if config.preferences.log_debug_info:
+            log.setDebugLevel()
 
-        # ALB 2004-10-27
         if wx.Platform == '__WXGTK__' and config.preferences.use_kde_dialogs:
             import kdefiledialog
             if kdefiledialog.test_kde():
@@ -986,13 +989,6 @@ class wxGlade(wx.App):
         wx.ArtProvider.PushProvider(wxGladeArtProvider())
 
         frame = wxGladeFrame()
-##         if wx.Platform == '__WXMSW__':
-##             def on_activate(event):
-##                 if event.GetActive() and not frame.IsIconized():
-##                     frame.show_and_raise()
-##                 event.Skip()
-##             wx.EVT_ACTIVATE_APP(self, on_activate)
-
         self.SetTopWindow(frame)
         self.SetExitOnFrameDelete(True)
 
@@ -1011,13 +1007,13 @@ class wxGlade(wx.App):
 
     def show_error_dialog(self):
         """\
-        Show log messages if L{common.use_gui} is True
+        Show log messages if L{config.use_gui} is True
 
         @see: L{main.wxGlade.on_idle()}
         @see: L{log.getBufferAsList()}
         """
         log_msg = log.getBufferAsString(clean=True)
-        if not (log_msg and common.use_gui):
+        if not (log_msg and config.use_gui):
             return
 
         # initialise message dialog
@@ -1044,7 +1040,7 @@ def main(filename=None):
     """
     logging.info(_("Using wxPython %s"), wx.__version__)
 
-    # now, silence a deprecation warining for py2.3
+    # now, silence a deprecation warning for py2.3
     import warnings
     warnings.filterwarnings(
         "ignore",

@@ -3,16 +3,12 @@ Configuration related stuff
 
 @see: L{configdialog}
 @copyright: 2007 Alberto Griggio
+@copyright: 2013 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 # import general python modules
-import logging
-import os.path
 import sys
-from ConfigParser import *
-
-import common
 
 # default configuration values
 default_encoding = 'UTF-8'
@@ -69,202 +65,169 @@ The default application L{default_encoding} is the fallback only.
 @see: L{wxglade.init_stage1()}
 """
 
-def _get_home(default=common.wxglade_path):
-    h = os.path.expanduser('~')
-    if h not in ('~', '%USERPROFILE%'):
-        return h
-    if os.name == 'nt' and h == '%USERPROFILE%':
-        return os.environ.get('USERPROFILE', default)
-    return default
+appdata_path = ''
+"""\
+Directory to wxGlades application data like file history and templates
 
+@type: String
+@note: This path will be set during initialisation
+"""
 
-def _get_appdatapath(default=common.wxglade_path):
-    if os.name == 'nt':
-        result = os.environ.get('APPDATA')
-        if result:
-            return result
-    return _get_home(default)
+credits_file = ''
+"""\
+Path of the credits file "credits.txt"
 
+@type: String
+"""
 
-class Preferences(ConfigParser):
-    _has_home = os.path.expanduser('~') != '~'
-    _defaults = {
-        'use_menu_icons': common.use_gui and common.platform != '__WXGTK__',
-        'frame_tool_win': True,
-        'open_save_path': _get_home(),
-        'codegen_path': _get_home(),
-        'use_dialog_units': False,
-        'number_history': 4,
-        'show_progress': True,
-        'wxg_backup': True,
-        'codegen_backup': True,
-        'backup_suffix': sys.platform == 'win32' and '.bak' or '~',
-        'buttons_per_row': 5,
-        'remember_geometry': False,
-        'local_widget_path': (_get_appdatapath('') and \
-                              os.path.join(_get_appdatapath(),
-                                           '.wxglade', 'widgets')
-                              or ''),
-        'default_border' : False,
-        'default_border_size' : 3,
-        'show_sizer_handle': True,
-        'allow_duplicate_names': False,
-        'autosave': True,
-        'autosave_delay': 120, # in seconds
-        'use_kde_dialogs': False,
-        'show_completion': True,
-        'write_timestamp': True,
-        'write_generated_from': False,
-        }
-    def __init__(self, defaults=None):
-        self.def_vals = defaults
-        if self.def_vals is None:
-            self.def_vals = Preferences._defaults
-        self.changed = False
-        ConfigParser.__init__(self)
-        #self.default_border_size = 3
+docs_path = 'docs'
+"""\
+Path to wxGlade documentation (e.g. html tutorial, license.txt, credits.txt)
 
-    def __getattr__(self, attr):
-        val = self.def_vals.get(attr, "")
-        # UGLY!!!
-        cast = type(val)
-        if cast is bool: cast = self._cast_to_bool
-        # ...but I haven't found a better way: the problem is that
-        # bool('0') == True, while int('0') == False, and we want the
-        # latter behaviour
-        try:
-            return cast(self.get('wxglade', attr))
-        except (NoOptionError, ValueError):
-            return val
+@type: String
+@note: This path will be set during initialisation
+"""
 
-    def __iter__(self):
-        def do_iter():
-            for key in self.def_vals:
-                yield key, self[key]
-        return do_iter()
+home_path = ''
+"""\
+Users home directory
 
-    def _cast_to_bool(self, val):
-        try:
-            return int(val)
-        except ValueError:
-            val = val.lower().strip()
-            if val in ('true', 'on'): return 1
-            elif val in ('false', 'off'): return 0
-            else: raise
+@type: String
+@note: This path will be set during initialisation
+"""
 
-    def __getitem__(self, attr):
-        return self.__getattr__(attr)
-    
-    def __setitem__(self, attr, val):
-        self.set('wxglade', attr, str(val))
-        self.changed = True
+icons_path = 'icons'
+"""\
+Path to wxGlade icons
 
-    def set_geometry(self, name, geometry):
-        if geometry is not None:
-            section = 'geometry_%s' % name
-            if not self.has_section(section):
-                self.add_section(section)
-            self.set(section, 'x', geometry[0])
-            self.set(section, 'y', geometry[1])
-            self.set(section, 'w', geometry[2])
-            self.set(section, 'h', geometry[3])
+@type: String
+@note: This path will be set during initialisation
+"""
 
-    def get_geometry(self, name):
-        section = 'geometry_%s' % name
-        if self.has_section(section):
-            x = self.get(section, 'x')
-            y = self.get(section, 'y')
-            w = self.get(section, 'w')
-            h = self.get(section, 'h')
-            return (x, y, w, h)
-        else:
-            return None
+license_file = ''
+"""\
+Path of the license file "license.txt"
 
-# end of class Preferences
-        
+@type: String
+@note: This path will be set during initialisation
+"""
+
+platform = None
+"""\
+Current platform (mostly wx.Platform)
+
+@type: String
+@note: This path will be set during initialisation
+"""
+
+py_version = sys.version.split()[0]
+"""\
+Python version
+
+@type: String
+"""
+
+templates_path = 'templates'
+"""\
+System template path
+
+@type: String
+@note: This path will be set during initialisation
+"""
+
+tutorial_file = 'docs/html/index.html'
+"""\
+Path to wxGlade tutorial (HTML)
+
+@type: String
+@note: This path will be set during initialisation
+"""
+
+use_gui = True
+"""\
+If False, the program is invoked from the command-line in "batch" mode
+(for code generation only)
+
+@type: Boolean
+"""
+
+version = 'not_set'
+"""\
+wxGlade version string
+
+@type: String
+@note: This path will be set during initialisation
+@see: L{common.set_version()}
+"""
+
+version_nohgfound = 'HG'
+"""\
+Version number to return if no hg repo has been found
+
+@type: String
+@note: This path will be set during initialisation
+"""
+
+widgets_path = 'widgets'
+"""\
+Path to wxGlade "built-in" widgets
+
+@type: String
+@note: This path will be set during initialisation
+"""
+
+wxglade_path = '.'
+"""\
+Program path, set in wxglade.py
+
+@type: String
+"""
+
+_backed_up = {}
+"""\
+Set of file names already backed up during this session
+
+@type: Dictionary
+@see: L{common.save_file()}
+"""
+
 preferences = None
+"""\
+User preferences
 
-if sys.platform == 'win32':
-    _rc_name = 'wxglade.ini'
-else:
-    _rc_name = 'wxgladerc'
+@type: Instance of L{common.Preferences}
+@see: L{common.Preferences}
+"""
 
-_use_file_history = False
-if common.use_gui:
-    _use_file_history = True
+rc_file = ''
+"""\
+Path to the rc / ini file to store user preferences in it
 
+@type: String
+@note: This path will be set during initialisation
+"""
 
-def init_preferences():
-    global preferences
-    if preferences is None:
-        preferences = Preferences()
-        h = _get_appdatapath('')
-        search_path = [os.path.join(common.wxglade_path, _rc_name)]
-        if h:
-            search_path.append(os.path.join(h, '.wxglade', _rc_name))
-        if 'WXGLADE_CONFIG_PATH' in os.environ:
-            search_path.append(
-                os.path.expandvars('$WXGLADE_CONFIG_PATH/%s' % _rc_name))
-        preferences.read(search_path)
-        if not preferences.has_section('wxglade'):
-            preferences.add_section('wxglade')
+history_file = ''
+"""\
+Path to the history file, if used
 
+@type: String
+@note: This path will be set during initialisation
+"""
 
-def save_preferences():
-    # let the exception be raised
-    if 'WXGLADE_CONFIG_PATH' in os.environ:
-        path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
-    else:
-        path = _get_appdatapath()
-        if path != common.wxglade_path:
-            path = os.path.join(path, '.wxglade')
-    if not os.path.isdir(path):
-        os.makedirs(path)
-    # always save the file history
-    if _use_file_history:
-        fh = common.palette.file_history
-        count = fh.GetCount()
-        encoding = 'utf-8'
-        filenames = [common._encode_to_xml(fh.GetHistoryFile(i), encoding)
-                     for i in range(min(preferences.number_history, count))]
-        outfile = open(os.path.join(path, 'file_history.txt'), 'w')
-        print >> outfile, "# -*- coding: %s -*-" % encoding
-        for filename in filenames:
-            print >> outfile, filename
-        outfile.close()
-    if preferences.changed:
-        outfile = open(os.path.join(path, _rc_name), 'w')
-        # let the exception be raised to signal abnormal behaviour
-        preferences.write(outfile)
-        outfile.close()
+use_file_history = False
+"""\
+Flag to use a file history
 
+@type: Boolean
+"""
+if use_gui:
+    use_file_history = True
 
-def load_history():
-    """\
-    Loads the file history and returns a list of paths
-    """
-    if 'WXGLADE_CONFIG_PATH' in os.environ:
-        path = os.path.expandvars('$WXGLADE_CONFIG_PATH')
-    else:
-        path = _get_appdatapath()
-        if path != common.wxglade_path:
-            path = os.path.join(path, '.wxglade')
-    try:
-        history = open(os.path.join(path, 'file_history.txt'))
-        l = history.readlines()
-        if l and l[0].startswith('# -*- coding:'):
-            try:
-                encoding = 'utf-8' 
-                #l = [common._encode_from_xml(e, encoding) for e in l[1:]]
-                l = [e.decode(encoding) for e in l[1:]]
-            except Exception:
-                logging.exception(_("Internal Error"))
-                l = l[1:]
-        history.close()
-        if common.use_gui:
-            import misc
-            l = [misc.wxstr(e, 'utf-8') for e in l]
-        return l
-    except IOError:
-        # don't consider this an error
-        return [] 
+log_file = ''
+"""\
+Path to wxGlade log file
+
+@type: String
+@note: This path will be set during initialisation
+"""
