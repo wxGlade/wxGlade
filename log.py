@@ -84,6 +84,7 @@ class StringHandler(logging.handlers.MemoryHandler):
 
         @param storeAsUnicode: Store recorded log records as unicode strings
         """
+        self.buffer = []
         logging.handlers.MemoryHandler.__init__(self, sys.maxint, 99)
         self.storeAsUnicode = storeAsUnicode
 
@@ -172,7 +173,6 @@ class wxGladeFormatter(logging.Formatter):
         exc_type = ei[0]
         exc_value = ei[1]
         exc_tb = ei[2]
-        s = ''
         tb = None
         frame_locals = None
         var = None
@@ -280,30 +280,28 @@ def init(filename='wxglade.log', encoding=None, level=None):
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
     console.setFormatter(default_formatter)
+    logger.addHandler(console)
 
     if filename:
         fileLogger = logging.handlers.RotatingFileHandler(
             filename,
             maxBytes=100*1024,
-            backupCount=0,
             encoding=encoding,
             )
         fileLogger.setFormatter(file_formatter)
         fileLogger.setLevel(logging.NOTSET)
+        logger.addHandler(fileLogger)
 
     stringLoggerInstance = StringHandler(storeAsUnicode=False)
     stringLoggerInstance.setLevel(logging.WARNING)
     stringLoggerInstance.setFormatter(default_formatter)
+    logger.addHandler(stringLoggerInstance)
 
     # check for installed handlers and remove them
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
 
-    # add new handler
-    logger.addHandler(stringLoggerInstance)
-    logger.addHandler(console)
-    if filename:
-        logger.addHandler(fileLogger)
+    # don't filter log levels in root logger
     logger.setLevel(logging.NOTSET)
 
     # Set log level for file logger only
