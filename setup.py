@@ -13,7 +13,7 @@ from distutils.util import convert_path
 import os
 from types import *
 from glob import glob
-import common
+import config
 
 
 # distutils sdisk command is broken because it doesn't copy data_files
@@ -167,7 +167,7 @@ scripts = ['wxglade']
 packages = find_packages(path=".", base='wxglade').keys()
 packages.append('wxglade')
 
-version = common.version
+version = config.version
 
 setup(
     name='wxGlade',
@@ -192,4 +192,5 @@ setup(
                               'res/*.*',
                               ]},
     data_files=data_files,
+    install_requires=['wxPython >=2.6'],
     )
