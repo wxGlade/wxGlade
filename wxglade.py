@@ -198,7 +198,7 @@ def init_stage1():
         encoding = 'ascii'
 
     # try to query character encoding used in the selected locale
-    if not encoding:
+    if not encoding and hasattr(locale, 'nl_langinfo'):
         try:
             encoding = locale.nl_langinfo(locale.CODESET)
         except AttributeError, e:
@@ -206,12 +206,13 @@ def init_stage1():
                 _('locale.nl_langinfo(locale.CODESET) failed: %s') ,
                 str(e)
                 )
-                
-            # try getdefaultlocale, it used environment variables
-            try:
-                encoding = locale.getdefaultlocale()[1]
-            except ValueError:
-                encoding = config.default_encoding
+
+    # try getdefaultlocale, it used environment variables
+    if not encoding:
+        try:
+            encoding = locale.getdefaultlocale()[1]
+        except ValueError:
+            encoding = config.default_encoding
             
     # On Mac OS X encoding may None or '' somehow
     if not encoding:
