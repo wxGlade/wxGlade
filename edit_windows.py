@@ -311,7 +311,8 @@ constructor will be used. You should probably not use this if \
                         i = i + 1
         # End Marcello 13 oct. 2005
 
-        if not self.is_visible(): return # don't do anything if self is hidden
+        if not self.is_visible():
+            return  # don't do anything if self is hidden
         # create the notebook the first time the function is called: this
         # allows us to create only the notebooks we really need
         if self.notebook is None:
@@ -340,7 +341,11 @@ constructor will be used. You should probably not use this if \
         if 0 <= index < self.notebook.GetPageCount():
             self.notebook.SetSelection(index)
         self.notebook.Reparent(self.property_window)
-        child.SetWindow(self.notebook)
+        # SizerItem.SetWindow() is deprecated wxPython 2.9
+        if wx.VERSION[:2] >= (2, 9):
+            child.AssignWindow(self.notebook)
+        else:
+            child.SetWindow(self.notebook)
         w.Reparent(misc.hidden_property_panel)
 
         # ALB moved this before Layout, it seems to be needed for wx2.6...

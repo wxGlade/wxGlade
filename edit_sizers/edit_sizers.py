@@ -961,7 +961,8 @@ class SizerBase(Sizer):
         Updates common.property_panel to show the notebook with the Properties
         of self
         """
-        if not self.window.is_visible(): return
+        if not self.window.is_visible():
+            return  # don't do anything if self is hidden
         if not self.notebook:
             self.create_properties()
         sizer_tmp = self.property_window.GetSizer()
@@ -985,7 +986,11 @@ class SizerBase(Sizer):
         if 0 <= index < self.notebook.GetPageCount():
             self.notebook.SetSelection(index)
         self.notebook.Reparent(self.property_window)
-        child.SetWindow(self.notebook)
+        # SizerItem.SetWindow() is deprecated wxPython 2.9
+        if wx.VERSION[:2] >= (2, 9):
+            child.AssignWindow(self.notebook)
+        else:
+            child.SetWindow(self.notebook)
         w.Reparent(misc.hidden_property_panel)
 
         # ALB moved this before Layout, it seems to be needed for wx2.6...
@@ -1152,7 +1157,11 @@ class SizerBase(Sizer):
             if w == -1: w = item.GetBestSize()[0]
             if h == -1: h = item.GetBestSize()[1]
             newelem = wx.SizerItem()
-            newelem.SetWindow(item)
+            # SizerItem.SetWindow() is deprecated wxPython 2.9
+            if wx.VERSION[:2] >= (2, 9):
+                newelem.AssignWindow(item)
+            else:
+                newelem.SetWindow(item)
             newelem.SetFlag(elem.GetFlag())
             newelem.SetBorder(elem.GetBorder())
             newelem.SetProportion(elem.GetProportion())
@@ -1249,7 +1258,11 @@ class SizerBase(Sizer):
         # this fake_win trick seems necessary because wxSizer::Remove(int pos)
         # doesn't seem to work with grid sizers :-\
         fake_win = wx.Window(self.window.widget, -1)
-        elem.SetWindow(fake_win)
+        # SizerItem.SetWindow() is deprecated wxPython 2.9
+        if wx.VERSION[:2] >= (2, 9):
+            elem.AssignWindow(fake_win)
+        else:
+            elem.SetWindow(fake_win)
         self.widget.Remove(fake_win)
         fake_win.Destroy()
         self.widget.Insert(new_pos, item.widget, int(item.get_option()),
