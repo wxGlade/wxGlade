@@ -616,7 +616,11 @@ class Application(object):
         w.Hide()
 
         self.notebook.Reparent(self.property_window)
-        child.SetWindow(self.notebook)
+        # SizerItem.SetWindow() is deprecated wxPython 2.9
+        if wx.VERSION[:2] >= (2, 9):
+            child.AssignWindow(self.notebook)
+        else:
+            child.SetWindow(self.notebook)
         w.Reparent(misc.hidden_property_panel)
 
         self.notebook.Show(True)

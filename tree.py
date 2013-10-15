@@ -42,9 +42,15 @@ class Tree(object):
                     pw.SetTitle(_('Properties - <>'))
                     if Tree.Node.__empty_win is None:
                         Tree.Node.__empty_win = wx.Window(pw, -1)
-                    pw.GetSizer().GetChildren()[0].SetWindow(
-                        Tree.Node.__empty_win)
-                    #wxNotebook(node.widget.property_window, -1))
+                    # SizerItem.SetWindow() is deprecated wxPython 2.9
+                    if wx.VERSION[:2] >= (2, 9):
+                        pw.GetSizer().GetChildren()[0].AssignWindow(
+                            Tree.Node.__empty_win
+                            )
+                    else:
+                        pw.GetSizer().GetChildren()[0].SetWindow(
+                            Tree.Node.__empty_win
+                            )
                     # call the widget's ``destructor''
                     node.widget.delete()
                 node.widget = None
