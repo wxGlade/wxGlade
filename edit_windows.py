@@ -18,6 +18,7 @@ except NameError: from sets import Set as set
 from widget_properties import *
 import misc
 import common
+import compat
 import config
 
 # event handling support
@@ -342,10 +343,7 @@ constructor will be used. You should probably not use this if \
             self.notebook.SetSelection(index)
         self.notebook.Reparent(self.property_window)
         # SizerItem.SetWindow() is deprecated wxPython 2.9
-        if wx.VERSION[:2] >= (2, 9):
-            child.AssignWindow(self.notebook)
-        else:
-            child.SetWindow(self.notebook)
+        compat.SizerItem_SetWindow(child, window)
         w.Reparent(misc.hidden_property_panel)
 
         # ALB moved this before Layout, it seems to be needed for wx2.6...
