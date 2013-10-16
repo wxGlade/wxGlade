@@ -14,6 +14,7 @@ import wx
 
 from widget_properties import *
 import common
+import compat
 import config
 import errors
 import math
@@ -617,10 +618,7 @@ class Application(object):
 
         self.notebook.Reparent(self.property_window)
         # SizerItem.SetWindow() is deprecated wxPython 2.9
-        if wx.VERSION[:2] >= (2, 9):
-            child.AssignWindow(self.notebook)
-        else:
-            child.SetWindow(self.notebook)
+        compat.SizerItem_SetWindow(child, self.notebook)
         w.Reparent(misc.hidden_property_panel)
 
         self.notebook.Show(True)

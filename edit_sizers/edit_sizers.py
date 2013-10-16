@@ -15,6 +15,7 @@ import wx
 from widget_properties import *
 from tree import Tree, WidgetTree
 import common
+import compat
 import config
 import misc
 
@@ -987,10 +988,7 @@ class SizerBase(Sizer):
             self.notebook.SetSelection(index)
         self.notebook.Reparent(self.property_window)
         # SizerItem.SetWindow() is deprecated wxPython 2.9
-        if wx.VERSION[:2] >= (2, 9):
-            child.AssignWindow(self.notebook)
-        else:
-            child.SetWindow(self.notebook)
+        compat.SizerItem_SetWindow(child, self.notebook)
         w.Reparent(misc.hidden_property_panel)
 
         # ALB moved this before Layout, it seems to be needed for wx2.6...
@@ -1158,10 +1156,7 @@ class SizerBase(Sizer):
             if h == -1: h = item.GetBestSize()[1]
             newelem = wx.SizerItem()
             # SizerItem.SetWindow() is deprecated wxPython 2.9
-            if wx.VERSION[:2] >= (2, 9):
-                newelem.AssignWindow(item)
-            else:
-                newelem.SetWindow(item)
+            compat.SizerItem_SetWindow(newelem, item)
             newelem.SetFlag(elem.GetFlag())
             newelem.SetBorder(elem.GetBorder())
             newelem.SetProportion(elem.GetProportion())
@@ -1259,10 +1254,7 @@ class SizerBase(Sizer):
         # doesn't seem to work with grid sizers :-\
         fake_win = wx.Window(self.window.widget, -1)
         # SizerItem.SetWindow() is deprecated wxPython 2.9
-        if wx.VERSION[:2] >= (2, 9):
-            elem.AssignWindow(fake_win)
-        else:
-            elem.SetWindow(fake_win)
+        compat.SizerItem_SetWindow(elem, fake_win)
         self.widget.Remove(fake_win)
         fake_win.Destroy()
         self.widget.Insert(new_pos, item.widget, int(item.get_option()),

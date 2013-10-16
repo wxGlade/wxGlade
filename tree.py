@@ -12,6 +12,7 @@ import wx
 from xml.sax.saxutils import quoteattr
 import misc
 import common
+import compat
 import config
 
 try: set
@@ -43,14 +44,10 @@ class Tree(object):
                     if Tree.Node.__empty_win is None:
                         Tree.Node.__empty_win = wx.Window(pw, -1)
                     # SizerItem.SetWindow() is deprecated wxPython 2.9
-                    if wx.VERSION[:2] >= (2, 9):
-                        pw.GetSizer().GetChildren()[0].AssignWindow(
-                            Tree.Node.__empty_win
-                            )
-                    else:
-                        pw.GetSizer().GetChildren()[0].SetWindow(
-                            Tree.Node.__empty_win
-                            )
+                    compat.SizerItem_SetWindow(
+                        pw.GetSizer().GetChildren()[0],
+                        Tree.Node.__empty_win,
+                        )
                     # call the widget's ``destructor''
                     node.widget.delete()
                 node.widget = None
