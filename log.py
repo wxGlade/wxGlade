@@ -185,38 +185,46 @@ class wxGladeFormatter(logging.Formatter):
             sio.write(_('Error details: %s\n') % exc_value)
             sio.write(_('Stack Trace:\n'))
             traceback.print_exception(exc_type, exc_value, exc_tb, None, sio)
-            
-            if exc_tb:
-                tb = exc_tb
-                while tb.tb_next:
-                    tb = tb.tb_next
-                frame_locals = tb.tb_frame.f_locals
 
-                sio.write(_('Local variables of the last stack entry:\n'))
-                for varname in frame_locals.keys():
-                    # convert variablen name and value to ascii
-                    var = frame_locals[varname]
-                    vartype = type(var)
-                    if vartype == types.UnicodeType:
-                        varvalue = frame_locals[varname]
-                        varvalue = varvalue.encode('unicode_escape')
-                    elif vartype == types.StringType:
-                        varvalue = frame_locals[varname]
-                        varvalue = varvalue.encode('string-escape')
-                    else:
-                        varvalue = pprint.pformat(frame_locals[varname])
-                        varvalue = varvalue
-                    sio.write(_('%s (%s): %s\n') % (varname, vartype, varvalue))
+            # leave the exception handler if no traceback is available
+            if not exc_tb:
+                return
+
+            # determinate latest frame on stack
+            tb = exc_tb
+            while tb.tb_next:
+                tb = tb.tb_next
+
+            tb = exc_tb
+            while tb.tb_next:
+                tb = tb.tb_next
+            frame_locals = tb.tb_frame.f_locals
+
+            sio.write(_('Local variables of the last stack entry:\n'))
+            for varname in frame_locals.keys():
+                # convert variablen name and value to ascii
+                var = frame_locals[varname]
+                vartype = type(var)
+                if vartype == types.UnicodeType:
+                    varvalue = frame_locals[varname]
+                    varvalue = varvalue.encode('unicode_escape')
+                elif vartype == types.StringType:
+                    varvalue = frame_locals[varname]
+                    varvalue = varvalue.encode('string-escape')
+                else:
+                    varvalue = pprint.pformat(frame_locals[varname])
+                    varvalue = varvalue
+                sio.write(_('%s (%s): %s\n') % (varname, vartype, varvalue))
 
         # delete local references of tracebacks or part of tracebacks
         # to avoid circular references
         finally:
-            del tb
-            del frame_locals
             del ei
+            del exc_tb
             del exc_type,
             del exc_value,
-            del exc_tb
+            del frame_locals
+            del tb
             del var
             del vartype
             del varvalue
@@ -435,43 +443,47 @@ def exceptionHandler(exc_type, exc_value, exc_tb):
         logging.error(_('Error type:    %s') % exc_type)
         logging.error(_('Error details: %s') % exc_value)
         logging.error(_('Stack Trace:'))
-        logging.error(_(u'Stack Trace:'))
         lines = '\n'.join(traceback.format_exception(exc_type, exc_value, exc_tb)).split('\n')
         for line in lines:
             if not line:
                 continue
             logging.error(line.decode('ascii', 'replace'))
 
-        if exc_tb:
-            tb = exc_tb
-            while tb.tb_next:
-                tb = tb.tb_next
-            frame_locals = tb.tb_frame.f_locals
-            
-            logging.error(_('Local variables of the last stack entry:'))
-            for varname in frame_locals.keys():
-                # convert variable name and value to ascii
-                var = frame_locals[varname]
-                vartype = type(var)
-                if vartype == types.UnicodeType:
-                    varvalue = frame_locals[varname]
-                    varvalue = varvalue.encode('unicode_escape')
-                elif vartype == types.StringType:
-                    varvalue = frame_locals[varname]
-                    varvalue = varvalue.encode('string-escape')
-                else:
-                    varvalue = pprint.pformat(frame_locals[varname])
-                    varvalue = varvalue
-                logging.error(_('%s (%s): %s') % (varname, vartype, varvalue))
+        # leave the exception handler if no traceback is available
+        if not exc_tb:
+            return
+
+        # determinate latest frame on stack
+        tb = exc_tb
+        while tb.tb_next:
+            tb = tb.tb_next
+
+        frame_locals = tb.tb_frame.f_locals
+
+        logging.error(_('Local variables of the last stack entry:'))
+        for varname in frame_locals.keys():
+            # convert variable name and value to ascii
+            var = frame_locals[varname]
+            vartype = type(var)
+            if vartype == types.UnicodeType:
+                varvalue = frame_locals[varname]
+                varvalue = varvalue.encode('unicode_escape')
+            elif vartype == types.StringType:
+                varvalue = frame_locals[varname]
+                varvalue = varvalue.encode('string-escape')
+            else:
+                varvalue = pprint.pformat(frame_locals[varname])
+                varvalue = varvalue
+            logging.error(_('%s (%s): %s') % (varname, vartype, varvalue))
 
     # delete local references of tracebacks or part of tracebacks
     # to avoid circular references
     finally:
-        del tb
-        del frame_locals
+        del exc_tb
         del exc_type,
         del exc_value,
-        del exc_tb
+        del frame_locals
+        del tb
         del var
         del vartype
         del varvalue
