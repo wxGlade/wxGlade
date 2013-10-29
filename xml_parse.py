@@ -605,16 +605,32 @@ class CodeWriter(XmlParser):
     @ivar _toplevels: Toplevel objects, i.e. instances of a custom class
     @ivar app_attrs: Attributes of the app (name, class, top_window)
     @type app_attrs: Dictionary
+    @ivar code_writer: Language specific code writer
+    @type code_writer: L{wxglade.codegen.BaseLangCodeWriter}
     @ivar top_win: Class name of the top window of the app (if any)
     @type top_win: String
-    @ivar out_path: This allows to override the output path specified in the
-                    XML file
-    @ivar preview: If True, we are generating the code for the preview
+    @ivar out_path: Override the output path specified in the XML document
+    @type out_path: String
+    @ivar preview: True to generate code for the preview
     @type preview: Boolean
     @ivar _logger: Instance specific logger
     """
     def __init__(self, writer, input, from_string=False, out_path=None,
                  preview=False, class_names=None):
+        """\
+        @param writer: Language specific code writer; stored in
+                       L{self.code_writer}
+        @type writer:  L{wxglade.codegen.BaseLangCodeWriter}
+        @param input: Name of file to load or XML document as a String
+        @type input:  String
+        @param from_string: True if L{input} is a XML document as String
+        @type from_string:  Boolean
+        @param out_path: Override the output path specified in the XML document;
+                         stored in L{self.out_path}
+        @type out_path:  String or None
+        @param preview: True to generate code for the preview
+        @type preview:  Boolean
+        """
         self._logger = logging.getLogger(self.__class__.__name__)
         # writer: object that actually writes the code
         XmlParser.__init__(self)
