@@ -316,7 +316,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
 
     A code writer object B{must} implement those interface and set those
     variables:
-      - L{initialize()}
+      - L{init_lang()}
+      - L{init_files()}
       - L{finalize()}
       - L{language}
       - L{add_app()}
@@ -847,9 +848,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
 
     def initialize(self, app_attrs):
         """\
-        Code generator initialization function.
-        
-        @see: L{_initialize_stage2()}
+        Initialise generic and language independent code generator settings.
+
+        @see: L{init_lang()}
+        @see: L{init_files()}
         """
         # set (most of) instance variables back to default values
         self._init_vars()
@@ -909,14 +911,32 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
             if common.app_tree is not None:
                 self.for_version = common.app_tree.app.for_version
 
-    def _initialize_stage2(self, out_path):
+        # call initialisation of language specific settings
+        self.init_lang(app_attrs)
+
+        # check the validity of the set values
+        self.check_values()
+
+        # call initialisation of the file handling
+        self.init_files(app_attrs['path'])
+
+    def init_lang(self, app_attrs):
         """\
-        Second stage for code generator initialization.
-        
-        @param out_path: Output path
-        @type out_path:  String
-        
-        @see: L{initialize()}
+        Initialise language specific settings.
+
+        @note: You may overwrite this function in the derivated class
+        """
+        raise NotImplementedError
+
+    def init_files(self, out_path):
+        """\
+        Initialise the file handling
+
+        @param out_path: Output path for the generated code (a file if
+                         L{self.multiple_files} is False, a dir otherwise)
+        @type out_path: String or None
+
+        @note: You may overwrite this function in the derivated class
         """
         if self.multiple_files:
             self.previous_source = None
@@ -941,6 +961,15 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
                 self.output_file.write('\n')
                 self.output_file.write('<%swxGlade replace dependencies>\n' % self.nonce)
                 self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
+
+    def check_values(self):
+        """\
+        Check the validity of the set application values. Raises exceptions for
+        errors.
+
+        @see: L{errors}
+        """
+        pass
 
     def finalize(self):
         """\
