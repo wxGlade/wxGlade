@@ -380,19 +380,7 @@ if __name__ == "__main__":
         """
         return self.without_package(klass)
 
-    def initialize(self, app_attrs):
-        """\
-        Writer initialization function.
-
-        @keyword path: Output path for the generated code (a file if
-                       multi_files is False, a dir otherwise)
-        @keyword option: If True, generate a separate file for each custom
-                         class
-        """
-        # initialise parent class
-        BaseLangCodeWriter.initialize(self, app_attrs)
-        out_path = app_attrs['path']
-
+    def init_lang(self, app_attrs):
         try:
             self.use_new_namespace = int(app_attrs['use_new_namespace'])
         except (KeyError, ValueError):
@@ -402,8 +390,6 @@ if __name__ == "__main__":
             self.header_lines.append('import wx\n')
         else:
             self.header_lines.append('from wxPython.wx import *\n')
-
-        self._initialize_stage2(out_path)
 
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings

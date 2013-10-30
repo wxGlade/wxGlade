@@ -446,19 +446,7 @@ unless(caller){
             return 'Wx::' + name
         return name
 
-    def initialize(self, app_attrs):
-        """\
-        Writer initialization function.
-
-        @keyword path: Output path for the generated code (a file if
-                       multi_files is False, a dir otherwise)
-        @keyword option: If True, generate a separate file for each custom
-                         class
-        """
-        # initialise parent class
-        BaseLangCodeWriter.initialize(self, app_attrs)
-        out_path = app_attrs['path']
-
+    def init_lang(self, app_attrs):
         # initial new defaults late to use the proper indent characters
         tab = self.tabs(1)
         self.new_defaults = {
@@ -475,8 +463,6 @@ unless(caller){
             'use Wx 0.15 qw[:allclasses];\n',
             'use strict;\n'
         ]
-
-        self._initialize_stage2(out_path)
 
     def setup(self):
         """\

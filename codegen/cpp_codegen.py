@@ -526,20 +526,8 @@ bool MyApp::OnInit()
 
     # end of class ClassLines
 
-    def initialize(self, app_attrs):
-        """\
-        Writer initialization function.
-
-        @keyword path: Output path for the generated code (a file if multi_files is
-                       False, a dir otherwise)
-        @keyword option: If True, generate a separate file for each custom class
-        """
-        # initialise parent class
-        BaseLangCodeWriter.initialize(self, app_attrs)
-
+    def init_lang(self, app_attrs):
         self.app_filename = 'main.cpp'
-
-        out_path = app_attrs['path']
 
         self.last_generated_id = 1000
 
@@ -563,6 +551,7 @@ bool MyApp::OnInit()
         self._current_extra_code_h = []
         self._current_extra_code_cpp = []
 
+    def init_files(self, out_path):
         if self.multiple_files:
             self.previous_source = None
             if not os.path.isdir(out_path):

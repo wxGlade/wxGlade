@@ -308,20 +308,22 @@ class XRCCodeWriter(BaseLangCodeWriter):
         # Inject to all classed derivated from WrcObject
         XRCCodeWriter.XrcObject.tabs = self.tabs
 
-    def initialize(self, app_attrs):
-        # initialise parent class
-        BaseLangCodeWriter.initialize(self, app_attrs)
-
-        out_path = app_attrs['path']
-
+    def init_lang(self, app_attrs):
+        # for now we handle only single-file code generation
         if self.multiple_files:
-            # for now we handle only single-file code generation
             raise IOError("XRC code cannot be split into multiple files")
-        self.output_file_name = out_path
-        self.out_file = cStringIO.StringIO()  # open(out_path, 'w')
+
+        # overwrite existing sources always
+        self._overwrite = True
+
+        self.output_file_name = app_attrs['path']
+        self.out_file = cStringIO.StringIO()
         self.out_file.write('\n<resource version="2.3.0.1">\n')
         self.curr_tab = 1
         self.xrc_objects = OrderedDict()
+
+    def _init_file(self, out_path):
+        pass
 
     def finalize(self):
         # write the code for every toplevel object
