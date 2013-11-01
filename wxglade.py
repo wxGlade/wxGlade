@@ -153,6 +153,7 @@ def command_line_code_generation(filename, language, out_path=None):
     except (errors.WxgOutputDirectoryNotExist,
             errors.WxgOutputDirectoryNotWritable,
             errors.WxgOutputPathIsDirectory,
+            errors.WxgLispWx3NotSupported,
             ), inst:
         logging.error(inst)
         sys.exit(1)
