@@ -24,6 +24,7 @@ import types
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
+import errors
 
 
 class SourceFileContent(BaseSourceFileContent):
@@ -354,6 +355,10 @@ class LispCodeWriter(BaseLangCodeWriter):
             '(use-package :wxEvtHandler)': 1,
             '(use-package :wxEvent)':      1,
             }
+
+    def check_values(self):
+        if self.for_version > (2, 8):
+            raise errors.WxgLispWx3NotSupported("%d.%d" % self.for_version)
 
     def setup(self):
         """\
