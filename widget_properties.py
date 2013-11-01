@@ -1042,6 +1042,7 @@ class RadioProperty(Property, _activator):
 
     @ivar sort: Sort the the choices.
     @type sort: Boolean
+
     @ivar capitalize: Capitalise the first character of each entry in
                       C{choices} list. Capitalising the first character is an
                       internal process. It does not affect the functions
@@ -1049,6 +1050,9 @@ class RadioProperty(Property, _activator):
                       and L{get_value()}. They still handle the original
                       entries.
     @type capitalize: Boolean
+
+    @ivar choices: Choices shown in the radiobox
+    @type choices: List of strings
 
     @ivar _cap2orig: Dictionary for reverse mapping between the capitalised
                      entry and the original one.
@@ -1190,6 +1194,21 @@ class RadioProperty(Property, _activator):
             outfile.write('    ' * tabs + '<%s>%s</%s>\n' %
                           (self.name, escape(_encode(self.get_str_value())),
                            self.name))
+
+    def enable_item(self, item, flag):
+        """\
+        Enable or disable a single radiobox item.
+
+        @param item: Item text
+        @type item:  String
+
+        @param flag: Enable or disable this item
+        @type flag:  Boolean
+        """
+        if self.capitalize:
+            item = misc.capitalize(item)
+        index = self.choices.index(item)
+        self.options.EnableItem(index, flag)
 
 # end of class RadioProperty
 
