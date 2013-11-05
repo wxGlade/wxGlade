@@ -393,6 +393,7 @@ if __name__ == "__main__":
             self.header_lines.append('from wxPython.wx import *\n')
 
     def check_values(self):
+        BaseLangCodeWriter.check_values(self)
         if self.for_version > (2, 8) and not self.use_new_namespace:
             raise errors.WxgPythonOldNamespaceNotSupported()
 

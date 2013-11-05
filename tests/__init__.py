@@ -315,7 +315,7 @@ class WXGladeBaseTest(unittest.TestCase):
         """\
         Fake implementation for C{os.path.isdir()}
         """
-        if s in [".", "./"]:
+        if s in [".", "./", "/tmp", "/"]:
             return True
         return False
 

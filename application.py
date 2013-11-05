@@ -727,6 +727,7 @@ class Application(object):
         except (errors.WxgOutputDirectoryNotExist,
                 errors.WxgOutputDirectoryNotWritable,
                 errors.WxgOutputPathIsDirectory,
+                errors.WxgOutputPathIsNotDirectory,
                 errors.WxgLispWx3NotSupported,
                 errors.WxgPythonOldNamespaceNotSupported,
                 ), inst:

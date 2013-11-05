@@ -45,6 +45,14 @@ class WxgOutputPathIsDirectory(WxgBaseException):
             'single file')
 
 
+class WxgOutputPathIsNotDirectory(WxgBaseException):
+    """\
+    Raised if the output path is not a directory when generating multiple files
+    """
+    msg = _('Output path "%s" should be a directory when generating '
+            'multiple files')
+
+
 class WxgLispWx3NotSupported(WxgBaseException):
     """\
     Raised if Lisp code for wx 3.0 or newer should be generated
