@@ -1340,7 +1340,7 @@ class TestCodeGen(WXGladeBaseTest):
 
     def test_WxgOutputPathIsDirectory(self):
         """\
-        Test check for output directory
+        Test check for output directory.
 
         @see: L{errors.WxgOutputPathIsDirectory}
         @see: L{errors.WxgOutputDirectoryNotExist}
@@ -1368,4 +1368,28 @@ class TestCodeGen(WXGladeBaseTest):
             'python',
             source,
             '/non-existing',
+            )
+
+    def test_WxgXRCMultipleFilesNotSupported(self):
+        """\
+        Test for multi file XRC projects.
+
+        @see: L{errors.WxgXRCMultipleFilesNotSupported}
+        """
+        # load XML input file
+        source = self._load_file('Preferences.wxg')
+
+        # check to multiple files
+        source = self._modify_attrs(
+            source,
+            option=1,
+        )
+
+        # generate code and check for raising exception
+        self.failUnlessRaises(
+            errors.WxgXRCMultipleFilesNotSupported,
+            self._generate_code,
+            'XRC',
+            source,
+            'Preferences.xrc',
             )
