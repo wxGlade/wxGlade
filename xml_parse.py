@@ -677,6 +677,7 @@ class CodeWriter(XmlParser):
                     inputfile.close()
 
     def startElement(self, name, attrs_impl):
+        # check only existence of attributes not the logical correctness
         attrs = {}
         try:
             encoding = self.app_attrs['encoding']
@@ -717,25 +718,11 @@ class CodeWriter(XmlParser):
                     _("'path' attribute empty: could not generate code")
                     )
 
-            # Check if the values of use_multiple_files and out_path agree
-            if use_multiple_files:
-                if not os.path.isdir(self.out_path):
-                    raise errors.WxgOutputDirectoryNotExist(self.out_path)
-                if not os.access(self.out_path, os.W_OK):
-                    raise errors.WxgOutputDirectoryNotWritable(self.out_path)
-            else:
-                if os.path.isdir(self.out_path):
-                    raise errors.WxgOutputPathIsDirectory(self.out_path)
-                directory = os.path.dirname(self.out_path)
-                if directory:
-                    if not os.path.isdir(directory):
-                        raise errors.WxgOutputDirectoryNotExist(directory)
-                    if not os.access(directory, os.W_OK):
-                        raise errors.WxgOutputDirectoryNotWritable(directory)
-
-            # initialize the writer
+            # Initialize the writer, thereby a logical check will be performed
             self.code_writer.initialize(attrs)
+
             return
+
         if not self._appl_started:
             raise XmlParsingError(
                 _("the root of the tree must be <application>")

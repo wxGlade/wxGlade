@@ -24,7 +24,7 @@ import re
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
-
+import errors
 
 class SourceFileContent(BaseSourceFileContent):
     """\
@@ -554,9 +554,6 @@ bool MyApp::OnInit()
     def init_files(self, out_path):
         if self.multiple_files:
             self.previous_source = None
-            if not os.path.isdir(out_path):
-                raise IOError("'path' must be a directory when generating"\
-                                      " multiple output files")
             self.out_dir = out_path
         else:
             name = os.path.splitext(out_path)[0]

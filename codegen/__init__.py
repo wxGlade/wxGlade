@@ -17,6 +17,7 @@ import types
 
 import common
 import config
+import errors
 import misc
 import wcodegen
 from xml_parse import XmlParsingError
@@ -877,7 +878,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
             # set back to default
             self.app_encoding = config.default_encoding
 
-        # Inentation level based on the project options
+        # Indentation level based on the project options
         try:
             self.indent_symbol = app_attrs['indent_symbol']
             if self.indent_symbol == 'tab':
@@ -911,6 +912,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
             if common.app_tree is not None:
                 self.for_version = common.app_tree.app.for_version
 
+        self.out_dir = app_attrs['path']
+
         # call initialisation of language specific settings
         self.init_lang(app_attrs)
 
@@ -918,7 +921,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
         self.check_values()
 
         # call initialisation of the file handling
-        self.init_files(app_attrs['path'])
+        self.init_files(self.out_dir)
 
     def init_lang(self, app_attrs):
         """\
@@ -941,10 +944,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
         if self.multiple_files:
             self.previous_source = None
             if not os.path.isdir(out_path):
-                raise IOError("'path' must be a directory when generating"\
-                                      " multiple output files")
+                raise errors.WxgOutputPathIsNotDirectory(out_path)
             self.out_dir = out_path
         else:
+            if os.path.isdir(out_path):
+                raise errors.WxgOutputPathIsDirectory(out_path)
             if not self._overwrite and self._file_exists(out_path):
                 # the file exists, we must keep all the lines not inside a
                 # wxGlade block. NOTE: this may cause troubles if out_path is
@@ -969,7 +973,22 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
 
         @see: L{errors}
         """
-        pass
+        # Check if the values of use_multiple_files and out_path agree
+        if self.multiple_files:
+            if not os.path.isdir(self.out_dir):
+                raise errors.WxgOutputDirectoryNotExist(self.out_dir)
+            if not os.access(self.out_dir, os.W_OK):
+                raise errors.WxgOutputDirectoryNotWritable(self.out_dir)
+        else:
+            if os.path.isdir(self.out_dir):
+                raise errors.WxgOutputPathIsDirectory(self.out_dir)
+            directory = os.path.dirname(self.out_dir)
+            if directory:
+                if not os.path.isdir(directory):
+                    raise errors.WxgOutputDirectoryNotExist(directory)
+                if not os.access(directory, os.W_OK):
+                    raise errors.WxgOutputDirectoryNotWritable(directory)
+
 
     def finalize(self):
         """\

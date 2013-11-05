@@ -1337,3 +1337,35 @@ class TestCodeGen(WXGladeBaseTest):
             source,
             'Python_Preferences.py',
             )
+
+    def test_WxgOutputPathIsDirectory(self):
+        """\
+        Test check for output directory
+
+        @see: L{errors.WxgOutputPathIsDirectory}
+        @see: L{errors.WxgOutputDirectoryNotExist}
+        """
+        # load XML input file
+        source = self._load_file('Preferences.wxg')
+
+        # generate code and check for raising exception
+        self.failUnlessRaises(
+            errors.WxgOutputPathIsDirectory,
+            self._generate_code,
+            'python',
+            source,
+            '/tmp',
+            )
+
+        # check to multiple files
+        source = self._modify_attrs(
+            source,
+            option=1,
+        )
+        self.failUnlessRaises(
+            errors.WxgOutputDirectoryNotExist,
+            self._generate_code,
+            'python',
+            source,
+            '/non-existing',
+            )

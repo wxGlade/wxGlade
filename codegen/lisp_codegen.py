@@ -357,6 +357,7 @@ class LispCodeWriter(BaseLangCodeWriter):
             }
 
     def check_values(self):
+        BaseLangCodeWriter.check_values(self)
         if self.for_version > (2, 8):
             raise errors.WxgLispWx3NotSupported("%d.%d" % self.for_version)
 
