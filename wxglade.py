@@ -150,13 +150,7 @@ def command_line_code_generation(filename, language, out_path=None):
             input=filename,
             out_path=out_path,
             )
-    except (errors.WxgOutputDirectoryNotExist,
-            errors.WxgOutputDirectoryNotWritable,
-            errors.WxgOutputPathIsDirectory,
-            errors.WxgOutputPathIsNotDirectory,
-            errors.WxgLispWx3NotSupported,
-            errors.WxgPythonOldNamespaceNotSupported,
-            ), inst:
+    except errors.WxgBaseException, inst:
         logging.error(inst)
         sys.exit(1)
     except Exception:

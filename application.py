@@ -724,13 +724,7 @@ class Application(object):
             if preview and cw == 'python':
                 common.code_writers[cw].use_new_namespace = old
                 self.overwrite = overwrite
-        except (errors.WxgOutputDirectoryNotExist,
-                errors.WxgOutputDirectoryNotWritable,
-                errors.WxgOutputPathIsDirectory,
-                errors.WxgOutputPathIsNotDirectory,
-                errors.WxgLispWx3NotSupported,
-                errors.WxgPythonOldNamespaceNotSupported,
-                ), inst:
+        except errors.WxgBaseException, inst:
             wx.MessageBox(
                 _("Error generating code:\n%s") % inst,
                 _("Error"),
