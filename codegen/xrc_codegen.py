@@ -6,7 +6,7 @@ Calls the appropriate ``writers'' of the various objects. These functions
 return an instance of XrcObject
 
 @copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2012 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -18,6 +18,7 @@ from codegen import BaseLangCodeWriter, \
                     EventsPropertyHandler, \
                     ExtraPropertiesPropertyHandler
 from ordereddict import OrderedDict
+import errors
 
 
 class FontPropertyHandler:
@@ -305,13 +306,13 @@ class XRCCodeWriter(BaseLangCodeWriter):
 
     def __init__(self):
         BaseLangCodeWriter.__init__(self)
-        # Inject to all classed derivated from WrcObject
+        # Inject to all classed derived from WrcObject
         XRCCodeWriter.XrcObject.tabs = self.tabs
 
     def init_lang(self, app_attrs):
         # for now we handle only single-file code generation
         if self.multiple_files:
-            raise IOError("XRC code cannot be split into multiple files")
+            raise errors.WxgXRCMultipleFilesNotSupported()
 
         # overwrite existing sources always
         self._overwrite = True
@@ -366,7 +367,7 @@ class XRCCodeWriter(BaseLangCodeWriter):
             if sub_obj in self.xrc_objects:
                 del self.xrc_objects[sub_obj]
         # let's see if sub_obj's parent already has an XrcObject: if so, it is
-        # temporairly stored in the self.xrc_objects dict...
+        # temporarily stored in the self.xrc_objects dict...
         if top_obj in self.xrc_objects:
             top_xrc = self.xrc_objects[top_obj]
         else:
@@ -417,7 +418,7 @@ class XRCCodeWriter(BaseLangCodeWriter):
     def add_class(self, code_obj):
         """\
         Add class behaves very differently for XRC output than for other
-        lanaguages (i.e. pyhton): since custom classes are not supported in
+        languages (i.e. python): since custom classes are not supported in
         XRC, this has effect only for true toplevel widgets, i.e. frames and
         dialogs. For other kinds of widgets, this is equivalent to add_object
         """

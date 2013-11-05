@@ -66,3 +66,10 @@ class WxgPythonOldNamespaceNotSupported(WxgBaseException):
     """
     msg = _('Using the old wxPython namespace is not supported anymore '
             'starting wxPython 3.0')
+
+
+class WxgXRCMultipleFilesNotSupported(WxgBaseException):
+    """\
+    Raised multi file XRC designs.
+    """
+    msg = _('XRC code cannot be split into multiple files')
