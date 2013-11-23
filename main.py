@@ -668,73 +668,75 @@ class wxGladeFrame(wx.Frame):
         common.app_tree.auto_expand = False
 
         old_dir = os.getcwd()
-        try:
-            if not is_filelike:
-                self._logger.info(
-                    _('Read wxGlade project from file "%s"'),
-                    infilename,
-                    )
-                os.chdir(os.path.dirname(infilename))
-                infile = open(infilename)
-            else:
-                infile = infilename
-                infilename = getattr(infile, 'name', None)
-                self._logger.info(
-                    _('Read wxGlade project from file-like object')
-                    )
-            if use_progress_dialog and config.preferences.show_progress:
-                p = ProgressXmlWidgetBuilder(input_file=infile)
-            else:
-                p = XmlWidgetBuilder()
-            p.parse(infile)
-        except (IOError, OSError, SAXParseException, XmlParsingError), msg:
-            if locals().has_key('infile') and not is_filelike:
-                infile.close()
-            common.app_tree.clear()
-            common.property_panel.Reparent(self.frame2)
-            common.app_tree.app.saved = True
-            wx.MessageBox(_("Error loading file %s: %s") % \
-                          (misc.wxstr(infilename), misc.wxstr(msg)),
-                          _("Error"), wx.OK|wx.CENTRE|wx.ICON_ERROR)
-            # reset the auto-expansion of nodes
-            common.app_tree.auto_expand = True
-            os.chdir(old_dir)
-            return False            
-        except Exception, msg:
-            self._logger.exception(
-                _('An exception occurred while loading file "%s".'),
-                infilename.encode('ascii', 'replace')
-                )
-            if locals().has_key('infile') and not is_filelike:
-                infile.close()
-            common.app_tree.clear()
-            common.property_panel.Reparent(self.frame2)
-            common.app_tree.app.saved = True
-            wx.MessageBox(
-                _('An exception occurred while loading file \n'
-                   '"%s".\n'
-                  'This is the error message associated with it:\n'
-                  '        %s\n'
-                  'For more details, look at the full traceback '
-                  'on the console.\n'
-                  'If you think this is a wxGlade bug,'
-                  ' please report it.') % \
-                  (misc.wxstr(infilename), misc.wxstr(msg)),
-                _("Error"),
-                wx.OK|wx.CENTRE|wx.ICON_ERROR
-                )
-            # reset the auto-expansion of nodes
-            common.app_tree.auto_expand = True
-            os.chdir(old_dir)
-            return False
+        infile = None
+        error_msg = None
 
-        if not is_filelike:
-            infile.close()
+        try:
+            try:
+                if not is_filelike:
+                    self._logger.info(
+                        _('Read wxGlade project from file "%s"'), infilename
+                    )
+                    os.chdir(os.path.dirname(infilename))
+                    infile = open(infilename)
+                else:
+                    infile = infilename
+                    infilename = getattr(infile, 'name', None)
+                    self._logger.info(
+                        _('Read wxGlade project from file-like object')
+                    )
+                if use_progress_dialog and config.preferences.show_progress:
+                    p = ProgressXmlWidgetBuilder(input_file=infile)
+                else:
+                    p = XmlWidgetBuilder()
+                p.parse(infile)
+            except (IOError, OSError, SAXParseException, XmlParsingError), msg:
+                error_msg = _("Error loading file %s: %s") % \
+                    (misc.wxstr(infilename), misc.wxstr(msg))
+            except Exception, msg:
+                self._logger.exception(
+                    _('An exception occurred while loading file "%s".'),
+                    infilename.encode('ascii', 'replace')
+                )
+                error_msg = _(
+                    'An exception occurred while loading file \n'
+                    '"%s".\n'
+                    'This is the error message associated with it:\n'
+                    '        %s\n'
+                    'For more details, look at the full traceback '
+                    'on the console.\n'
+                    'If you think this is a wxGlade bug, please report it.'
+                    ) % (misc.wxstr(infilename), misc.wxstr(msg))
+        finally:
+            if infile and not is_filelike:
+                infile.close()
+
+            if error_msg:
+                common.app_tree.clear()
+                common.property_panel.Reparent(self.frame2)
+                common.app_tree.app.saved = True
+
+                # reset the auto-expansion of nodes
+                common.app_tree.auto_expand = True
+
+                os.chdir(old_dir)
+
+                # Show error message box
+                wx.MessageBox(
+                    error_msg,
+                    _('Error'),
+                    wx.OK | wx.CENTRE | wx.ICON_ERROR
+                )
+
+                return False
+
         common.app_tree.select_item(common.app_tree.root)
         common.app_tree.root.widget.show_properties()
         common.property_panel.Reparent(self.frame2)
+
         # reset the auto-expansion of nodes
         common.app_tree.auto_expand = True
+
         common.app_tree.expand()
         if common.app_tree.app.is_template:
             self._logger.info(_("Loaded template"))
@@ -742,20 +744,21 @@ class wxGladeFrame(wx.Frame):
             common.app_tree.app.filename = None
 
         end = time.clock()
-        self._logger.info(_('Loading time: %.5f'), end-start)
+        self._logger.info(_('Loading time: %.5f'), end - start)
 
         common.app_tree.app.saved = True
-        
+
         if hasattr(self, 'file_history') and infilename is not None and \
-               add_to_history and (not common.app_tree.app.is_template):
+                add_to_history and (not common.app_tree.app.is_template):
             self.file_history.AddFileToHistory(misc.wxstr(infilename))
 
-        # ALB 2004-10-15
         if config.preferences.autosave and self.autosave_timer is not None:
             self.autosave_timer.Start()
 
-        self.user_message(_("Loaded %s (%.2f seconds)") % \
-                          (misc.wxstr(common.app_tree.app.filename), end-start))
+        self.user_message(
+            _("Loaded %s (%.2f seconds)") %
+            (misc.wxstr(common.app_tree.app.filename), end - start)
+        )
 
         return True
 
