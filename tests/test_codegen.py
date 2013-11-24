@@ -1418,3 +1418,27 @@ class TestCodeGen(WXGladeBaseTest):
             source,
             'Preferences.xrc',
             )
+
+    def test_WxgTemplateCodegenNotPossible(self):
+        """\
+        Test for code generation from a template
+
+        @see: L{errors.WxgTemplateCodegenNotPossible}
+        """
+        # load XML input file
+        source = self._load_file('Preferences.wxg')
+
+        # check to multiple files
+        source = self._modify_attrs(
+            source,
+            is_template=1,
+        )
+
+        # generate code and check for raising exception
+        self.failUnlessRaises(
+            errors.WxgTemplateCodegenNotPossible,
+            self._generate_code,
+            'python',
+            source,
+            'Preferences.py',
+            )
