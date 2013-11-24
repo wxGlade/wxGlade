@@ -24,7 +24,6 @@ from xml.sax.handler import ContentHandler
 import common
 import config
 import edit_sizers
-import errors
 
 # ALB 2005-03-10: importing the module here prevents a segfault with python 2.4
 # hmmm... need to investigate this more (it seems that import of
