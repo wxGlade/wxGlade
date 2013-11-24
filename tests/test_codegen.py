@@ -1338,15 +1338,18 @@ class TestCodeGen(WXGladeBaseTest):
             'Python_Preferences.py',
             )
 
-    def test_WxgOutputPathIsDirectory(self):
+    def test_OutputFileAndDirectory(self):
         """\
-        Test check for output directory.
+        Test check for output file and directory.
 
         @see: L{errors.WxgOutputPathIsDirectory}
         @see: L{errors.WxgOutputDirectoryNotExist}
         """
         # load XML input file
         source = self._load_file('Preferences.wxg')
+
+        # Single output file out_path shouldn't be a directory
+        #=====================================================
 
         # generate code and check for raising exception
         self.failUnlessRaises(
@@ -1356,8 +1359,23 @@ class TestCodeGen(WXGladeBaseTest):
             source,
             '/tmp',
             )
+        self.failUnlessRaises(
+            errors.WxgOutputDirectoryNotExist,
+            self._generate_code,
+            'python',
+            source,
+            '/non-existing/result.py',
+            )
+        self.failUnlessRaises(
+            errors.WxgOutputDirectoryNotWritable,
+            self._generate_code,
+            'python',
+            source,
+            '/non-writable/result.py',
+            )
 
-        # check to multiple files
+        # Multiple output file out_path should be a writable directory
+        #=============================================================
         source = self._modify_attrs(
             source,
             option=1,
@@ -1368,6 +1386,13 @@ class TestCodeGen(WXGladeBaseTest):
             'python',
             source,
             '/non-existing',
+            )
+        self.failUnlessRaises(
+            errors.WxgOutputDirectoryNotWritable,
+            self._generate_code,
+            'python',
+            source,
+            '/non-writable',
             )
 
     def test_WxgXRCMultipleFilesNotSupported(self):
