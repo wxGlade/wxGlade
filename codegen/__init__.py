@@ -829,6 +829,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
         self.header_lines = []
         self.indent_symbol = config.default_indent_symbol
         self.indent_amount = config.default_indent_amount
+        self.is_template = 0
         self.blacklisted_widgets = {}
         self.lang_mapping = {}
         self.multiple_files = False
@@ -912,6 +913,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
             if common.app_tree is not None:
                 self.for_version = common.app_tree.app.for_version
 
+        try:
+            self.is_template = int(app_attrs['is_template'])
+        except (KeyError, ValueError):
+            self.is_template = 0
+
         self.out_dir = app_attrs['path']
 
         # call initialisation of language specific settings
@@ -989,6 +995,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
                 if not os.access(directory, os.W_OK):
                     raise errors.WxgOutputDirectoryNotWritable(directory)
 
+        # It's not possible to generate code from a template directly
+        if self.is_template:
+            raise errors.WxgTemplateCodegenNotPossible
 
     def finalize(self):
         """\

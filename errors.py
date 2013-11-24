@@ -73,3 +73,10 @@ class WxgXRCMultipleFilesNotSupported(WxgBaseException):
     Raised multi file XRC designs.
     """
     msg = _('XRC code cannot be split into multiple files')
+
+
+class WxgTemplateCodegenNotPossible(WxgBaseException):
+    """\
+    Code generation from a template is not possible
+    """
+    msg = _('Code generation from a template is not possible')
