@@ -80,3 +80,10 @@ class WxgTemplateCodegenNotPossible(WxgBaseException):
     Code generation from a template is not possible
     """
     msg = _('Code generation from a template is not possible')
+
+
+class WxgMissingCodeWriter(WxgBaseException):
+    """\
+    Code writer for the given language is not available
+    """
+    msg = _('Code writer for "%s" is not available')
