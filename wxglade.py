@@ -145,11 +145,12 @@ def command_line_code_generation(filename, language, out_path=None):
     @type out_path:  String
     """
     from xml_parse import CodeWriter
-    if language not in common.code_writers:
-        logging.error(_('No writer for language "%s" available'), language)
 
-    writer = common.code_writers[language]
     try:
+        if language not in common.code_writers:
+            raise errors.WxgMissingCodeWriter(language)
+
+        writer = common.code_writers[language]
         CodeWriter(
             writer=writer,
             input=filename,
