@@ -301,8 +301,10 @@ class WXGladeBaseTest(unittest.TestCase):
 
     def _os_access(self, path, mode):
         """\
-        Fake implementation for C{os.access()} - returns always C{True}
+        Fake implementation for C{os.access()}
         """
+        if path in ["/non-writable"]:
+            return False
         return True
 
     def _os_makedirs(self, path, mode):
@@ -315,7 +317,7 @@ class WXGladeBaseTest(unittest.TestCase):
         """\
         Fake implementation for C{os.path.isdir()}
         """
-        if s in [".", "./", "/tmp", "/"]:
+        if s in [".", "./", "/tmp", "/", "/non-writable"]:
             return True
         return False
 
