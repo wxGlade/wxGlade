@@ -3,7 +3,7 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 #
-# Copyright 2011-2012 Carsten Grohmann
+# Copyright 2011-2013 Carsten Grohmann
 #
 # Shell script to start wxGlade
 # 
@@ -13,8 +13,16 @@
 #  2. in the module directory of the current Python
 #  3. in a parallel Python module directory
 
+PYTHON_BIN=${PYTHON_BIN:=python2}
+
+${PYTHON_BIN} --version > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "ERROR: Python interpreter \"${PYTHON_BIN}\" found!"
+  exit 1
+fi
+
 # determined current python version
-PY_VERSION=$(python -c 'import sys; print sys.version[:3]')
+PY_VERSION=$(${PYTHON_BIN} -c 'import sys; print sys.version[:3]')
 
 # determined prefix of the Python module directory structure
 if [ -e /etc/debian_version ]; then
@@ -38,4 +46,4 @@ else
 fi
 
 # exec wxGlade
-exec python "${WXG_PATH}" "$@"
+exec ${PYTHON_BIN} "${WXG_PATH}" "$@"
