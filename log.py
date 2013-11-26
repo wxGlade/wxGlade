@@ -28,12 +28,12 @@ in revision 81919 (27.12.2010) in the public Python repository.
 
 import atexit
 import cStringIO
+import inspect
 import logging
 import logging.handlers
 import os
 import pprint
 import sys
-import traceback
 import types
 
 
@@ -167,67 +167,114 @@ class wxGladeFormatter(logging.Formatter):
 
     def formatException(self, ei):
         """
-        Format and return the specified exception information as a string.
+        Returns a detailed exception
+
+        @param ei: Tuple or list of exc_type, exc_value, exc_tb
+        @return: Formatted exception
+        @rtype:  String
         """
-        sio = cStringIO.StringIO()
+        context = None
+        exc_tb = ei[2]
         exc_type = ei[0]
         exc_value = ei[1]
-        exc_tb = ei[2]
-        tb = None
-        frame_locals = None
+        filename = None
+        frame = None
+        func_args = None
+        func_name = None
+        index = None
+        lineno = None
+        sio = cStringIO.StringIO()
+        stack_level = 0
+        stack_list = []
         var = None
-        vartype = None
-        varvalue = None
+        var_name = None
+        var_type = None
+        var_value = None
         try:
-            # log exception details
-            sio.write(_('An unexpected error occurs!\n'))
-            sio.write(_('Error type:    %s\n') % exc_type)
-            sio.write(_('Error details: %s\n') % exc_value)
-            sio.write(_('Stack Trace:\n'))
-            traceback.print_exception(exc_type, exc_value, exc_tb, None, sio)
+            try:
+                # log exception details
+                sio.write(_('An unexpected error occurred!\n'))
+                sio.write(_('Error type:    %s\n') % exc_type)
+                sio.write(_('Error details: %s\n') % exc_value)
+                sio.write(_('Application stack trace:\n'))
 
-            # leave the exception handler if no traceback is available
-            if not exc_tb:
-                return
+                # leave the exception handler if no traceback is available
+                if not exc_tb:
+                    return
 
-            # determinate latest frame on stack
-            tb = exc_tb
-            while tb.tb_next:
-                tb = tb.tb_next
+                # get stack frames
+                stack_list = inspect.getinnerframes(exc_tb, 7)
 
-            tb = exc_tb
-            while tb.tb_next:
-                tb = tb.tb_next
-            frame_locals = tb.tb_frame.f_locals
+                stack_level=len(stack_list)
+                for frame, filename, lineno, func_name, context, index in stack_list:
+                    stack_level -= 1
+                    func_args = inspect.formatargvalues(
+                        *inspect.getargvalues(frame)
+                    )
 
-            sio.write(_('Local variables of the last stack entry:\n'))
-            for varname in frame_locals.keys():
-                # convert variablen name and value to ascii
-                var = frame_locals[varname]
-                vartype = type(var)
-                if vartype == types.UnicodeType:
-                    varvalue = frame_locals[varname]
-                    varvalue = varvalue.encode('unicode_escape')
-                elif vartype == types.StringType:
-                    varvalue = frame_locals[varname]
-                    varvalue = varvalue.encode('string-escape')
-                else:
-                    varvalue = pprint.pformat(frame_locals[varname])
-                    varvalue = varvalue
-                sio.write(_('%s (%s): %s\n') % (varname, vartype, varvalue))
+                    msg = _('Stack frame at level %d' % stack_level)
+                    sio.write('%s\n' % msg)
+                    msg = '=' * len(msg)
+                    sio.write('%s\n' % msg)
+                    sio.write(_('  File "%s", line %d\n') % (filename, lineno))
+                    sio.write(_('  Function "%s%s"\n') % (func_name, func_args))
+                    sio.write(_('  Source code context:\n'))
 
-        # delete local references of tracebacks or part of tracebacks
-        # to avoid circular references
+                    pos = 0
+                    for line in context:
+                        line = line.rstrip()
+                        if pos == index:
+                            sio.write('  ->  %s\n' % line)
+                        else:
+                            sio.write('      %s\n' % line)
+                        pos += 1
+
+                    if frame.f_locals:
+                        sio.write(_('  Local variables:\n'))
+                        for var_name in frame.f_locals:
+                            # convert name and value to ascii characters
+                            var = frame.f_locals[var_name]
+                            var_type = type(var)
+                            if var_type == types.UnicodeType:
+                                var_value = frame.f_locals[var_name]
+                                var_value = var_value.encode('unicode_escape')
+                            elif var_type == types.StringType:
+                                var_value = frame.f_locals[var_name]
+                                var_value = var_value.encode('string-escape')
+                            else:
+                                var_value = pprint.pformat(frame.f_locals[var_name])
+                                var_value = var_value
+                            sio.write(_('  -> %s (%s): %s\n') % (
+                                var_name, var_type, var_value)
+                            )
+                    else:
+                        sio.write(_('  No local variables\n'))
+                    sio.write('\n')
+            except Exception, e:
+                # This code should NEVER be executed!
+                logging.error('Some strange things occurred: %s', e)
+                sys.exit(1)
+
+        # delete local references of trace backs or part of them  to avoid
+        # circular references
         finally:
+            del context
             del ei
             del exc_tb
             del exc_type,
             del exc_value,
-            del frame_locals
-            del tb
+            del filename
+            del frame
+            del func_args
+            del func_name
+            del index
+            del lineno
+            del stack_level
+            del stack_list
             del var
-            del vartype
-            del varvalue
+            del var_name
+            del var_type
+            del var_value
 
         s = sio.getvalue()
         sio.close()
@@ -426,67 +473,16 @@ def deinstallExceptionHandler():
 
 def exceptionHandler(exc_type, exc_value, exc_tb):
     """\
-    Logs detailed information about uncaught exceptions
+    Log detailed information about uncaught exceptions
 
     @param exc_type:  Type of the exception (normally a class object)
     @param exc_value: The "value" of the exception
     @param exc_tb:    Call stack of the exception
     """
-    tb = None
-    frame_locals = None
-    var = None
-    vartype = None
-    varvalue = None
-    try:
-        # log exception details
-        logging.error(_('An unexpected error occurs!'))
-        logging.error(_('Error type:    %s') % exc_type)
-        logging.error(_('Error details: %s') % exc_value)
-        logging.error(_('Stack Trace:'))
-        lines = '\n'.join(traceback.format_exception(exc_type, exc_value, exc_tb)).split('\n')
-        for line in lines:
-            if not line:
-                continue
-            logging.error(line.decode('ascii', 'replace'))
-
-        # leave the exception handler if no traceback is available
-        if not exc_tb:
-            return
-
-        # determinate latest frame on stack
-        tb = exc_tb
-        while tb.tb_next:
-            tb = tb.tb_next
-
-        frame_locals = tb.tb_frame.f_locals
-
-        logging.error(_('Local variables of the last stack entry:'))
-        for varname in frame_locals.keys():
-            # convert variable name and value to ascii
-            var = frame_locals[varname]
-            vartype = type(var)
-            if vartype == types.UnicodeType:
-                varvalue = frame_locals[varname]
-                varvalue = varvalue.encode('unicode_escape')
-            elif vartype == types.StringType:
-                varvalue = frame_locals[varname]
-                varvalue = varvalue.encode('string-escape')
-            else:
-                varvalue = pprint.pformat(frame_locals[varname])
-                varvalue = varvalue
-            logging.error(_('%s (%s): %s') % (varname, vartype, varvalue))
-
-    # delete local references of tracebacks or part of tracebacks
-    # to avoid circular references
-    finally:
-        del exc_tb
-        del exc_type,
-        del exc_value,
-        del frame_locals
-        del tb
-        del var
-        del vartype
-        del varvalue
+    logging.error(
+        _("An unhandled exception occurred"),
+        exc_info=(exc_type, exc_value, exc_tb)
+    )
 
 
 def getMessage(self):
