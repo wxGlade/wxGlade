@@ -346,6 +346,7 @@ def init(filename='wxglade.log', encoding=None, level=None):
             filename,
             maxBytes=100*1024,
             encoding=encoding,
+            backupCount=1,
             )
         fileLogger.setFormatter(file_formatter)
         fileLogger.setLevel(logging.NOTSET)
