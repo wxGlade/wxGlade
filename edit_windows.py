@@ -343,7 +343,7 @@ constructor will be used. You should probably not use this if \
             self.notebook.SetSelection(index)
         self.notebook.Reparent(self.property_window)
         # SizerItem.SetWindow() is deprecated wxPython 2.9
-        compat.SizerItem_SetWindow(child, window)
+        compat.SizerItem_SetWindow(child, self.notebook)
         w.Reparent(misc.hidden_property_panel)
 
         # ALB moved this before Layout, it seems to be needed for wx2.6...
