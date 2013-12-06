@@ -266,6 +266,7 @@ def init_stage1():
     logging.info(_('Application data directory: %s'), config.appdata_path)
     logging.info(_('Configuration file:         %s'), config.rc_file)
     logging.info(_('History file:               %s'), config.history_file)
+    logging.info(_('Log file:                   %s'), config.log_file)
 
     # adapt application search path
     sys.path = [config.wxglade_path, config.widgets_path] + sys.path
