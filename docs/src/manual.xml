@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-"/usr/share/sgml/docbook/xml-dtd-4.1.2-1.0-17/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"/usr/share/xml/docbook/xml-dtd-4.5/docbookx.dtd">
 <book>
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2013-09-01</date>
+    <date>2013-12-06</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -31,12 +31,12 @@
 
     <para>This manual describes Alberto Griggio's wxGlade program, a Python,
     Perl, Lisp, C++ and XRC Graphical User Interface (<quote>GUI</quote>)
-    editor for UNIX and Microsoft Windows. Each of the chapters in this manual
+    editor for Unix and Microsoft Windows. Each of the chapters in this manual
     is designed as a tutorial for using wxGlade and a reference for widgets
     supported until now.</para>
 
     <section>
-      <title>Contacts</title>
+      <title>Contact</title>
 
       <para>Check the project homepage <ulink
       url="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</ulink>
@@ -46,145 +46,14 @@
       too.</para>
 
       <para>Any kind of feedback is always welcome.</para>
-
-      <para>Marcello Semboli <email>dinogen@siena.linux.it</email> has written
-      the original version of this document. The current version of this
-      document is maintained by Carsten Grohmann.</para>
     </section>
 
     <section>
-      <title>Copyrights and Trademarks</title>
+      <title>License</title>
 
-      <para>wxGlade is Copyright 2002-2007 by Alberto Griggio. Use and
-      distribution of wxGlade is governed by the MIT license, located in
-      Appendix A.</para>
-
-      <para>wxWidgets is Copyright (C) 1998-2005 Julian Smart, Robert Roebling
-      et al. See: <ulink
-      url="http://www.wxwidgets.org">http://www.wxwidgets.org</ulink> for
-      details.</para>
-
-      <para>UNIX is a registered trademark of the X Open Group, Inc.</para>
-
-      <para>Microsoft and Windows are registered trademarks of Microsoft
-      Corporation.</para>
-    </section>
-
-    <section>
-      <title>Abbreviations</title>
-
-      <para>The following abbreviations are used in this manual: <variablelist>
-          <varlistentry>
-            <term>Escape sequence</term>
-
-            <listitem>
-              <para>Escape sequences are used to define certain special
-              characters within string literals. Escape sequences starts
-              mostly with a backslash (<quote>\</quote>).</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>gettext</term>
-
-            <listitem>
-              <para>Widespread internationalisation (i18n) and localisation
-              system.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term><emphasis>GUI</emphasis></term>
-
-            <listitem>
-              <para>Graphical User Interface</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>i18n</term>
-
-            <listitem>
-              <para>Numeronyms for internationalisation support.</para>
-
-              <para>Internationalisation means adapting software to different
-              languages, regional differences, ...</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term><emphasis>OS</emphasis></term>
-
-            <listitem>
-              <para>Operating system</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>SAE</term>
-
-            <listitem>
-              <para>Standalone Edition</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>wxg</term>
-
-            <listitem>
-              <para>File extension used by wxGlade to store the project in a
-              XML file.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term><emphasis>wx</emphasis></term>
-
-            <listitem>
-              <para>abbreviation for <acronym>wxWidgets</acronym></para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>wxWidgets</term>
-
-            <listitem>
-              <para>wxWidgets a widget toolkit and tools library for creating
-              graphical user interfaces (GUIs) for cross-platform
-              applications.</para>
-
-              <para>wxWidgets is open source and written in C++.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term><emphasis>WYSIWYG</emphasis></term>
-
-            <listitem>
-              <para>What You See Is What You Get.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term><emphasis>X11</emphasis></term>
-
-            <listitem>
-              <para>The X Window System version 11.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>XRC</term>
-
-            <listitem>
-              <para>XML-based system for describing wxWidgets resources like
-              dialogs, menus or toolbars.</para>
-
-              <para>Those resources are loaded into the application at
-              run-time.</para>
-            </listitem>
-          </varlistentry>
-        </variablelist></para>
+      <para>wxGlade is copyright 2002-2007 by Alberto Griggio. Use and
+      distribution of wxGlade is governed by the MIT license, located in <xref
+      linkend="appendix.a.section"/>.</para>
     </section>
   </preface>
 
@@ -222,7 +91,7 @@
     </section>
 
     <section>
-      <title>What Can You Do with wxGlade?</title>
+      <title>What can you do with wxGlade?</title>
 
       <para>With wxGlade you can:</para>
 
@@ -263,21 +132,18 @@
       or PythonCard <ulink
       url="http://www.pythoncard.org">http://www.pythoncard.org</ulink> is the
       right tool.</para>
-    </section>
 
-    <section>
-      <title>Basics</title>
-
-      <para>You need to know the basics of wxWidgets or wxPython, as well as
-      the basics of C++, Python, Perl or Lisp. You can't use wxGlade if you do
-      not have any basic understanding of programming. You can't learn
-      wxWidgets programming from reading this manual either.</para>
+      <para>wxGlade isn't a tool to learn programming with wxWidgets. You
+      can't use wxGlade if you do not have any basic understanding of
+      programming. You need to know the basics of wxWidgets, as well as the
+      basics of C++, Python, Perl or Lisp.</para>
     </section>
 
     <section>
       <title>Requirements and Supported Platforms</title>
 
-      <para>wxGlade has been tested and run on Windows, Linux, Mac OSX.</para>
+      <para>wxGlade has been tested and run on Microsoft Windows, Linux, OS
+      X.</para>
 
       <para>Because wxGlade is written in Python using wxPython, it can also
       be run on any platform that supports Python and wxPython.</para>
@@ -291,7 +157,11 @@
         </listitem>
 
         <listitem>
-          <para>wxPython 2.6, 2.8 or 30</para>
+          <para>wxPython 2.6, 2.8 or 3.0</para>
+
+          <para>Sometimes the wxPython module <quote>wxversion</quote> is
+          packaged separately e.g. in Debian. Please install the
+          <quote>wxversion</quote> package manually in such case,</para>
         </listitem>
 
         <listitem>
@@ -312,21 +182,6 @@
     </section>
 
     <section>
-      <title>Download</title>
-
-      <para>Source and binary packages for stable versions are available at
-      <ulink
-      url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>.</para>
-
-      <para>You can get the development version from <ulink
-      url="https://bitbucket.org">Bitbucket.org</ulink> at <ulink
-      url="https://bitbucket.org/agriggio/wxglade/overview">https://bitbucket.org/agriggio/wxglade/overview</ulink>
-      using anonymous <ulink
-      url="http://mercurial.selenic.com">Mercurial</ulink>
-      (<command>hg</command>) access.</para>
-    </section>
-
-    <section>
       <title>Installation</title>
 
       <para>wxGlade is available in 4 different package types:</para>
@@ -343,7 +198,7 @@
         </listitem>
 
         <listitem>
-          <para>the installer of the standalone edition at Microsoft Windows
+          <para>the installer of the Standalone Edition at Microsoft Windows
           (<filename>wxGlade-SAE-VERSION-setup.exe</filename>)</para>
         </listitem>
 
@@ -353,6 +208,21 @@
           url="https://bitbucket.org">https://bitbucket.org</ulink></para>
         </listitem>
       </itemizedlist>
+
+      <section>
+        <title>Download</title>
+
+        <para>Source and binary packages for stable versions are available at
+        <ulink
+        url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>.</para>
+
+        <para>You can get the development version from <ulink
+        url="https://bitbucket.org">Bitbucket.org</ulink> at <ulink
+        url="https://bitbucket.org/agriggio/wxglade/overview">https://bitbucket.org/agriggio/wxglade/overview</ulink>
+        using anonymous <ulink
+        url="http://mercurial.selenic.com">Mercurial</ulink>
+        (<command>hg</command>) access.</para>
+      </section>
 
       <section>
         <title>Installing at Microsoft Windows</title>
@@ -372,14 +242,15 @@
       </section>
 
       <section>
-        <title>Installing at Unix/Linux</title>
+        <title>Installing at Unix/Unix-like Operating Systems</title>
 
-        <para>The current Linux distributions provide wxGlade packages. Use
-        the distribution specific install mechanism to install the wxGlade
+        <para>Current Linux distributions provide wxGlade packages already.
+        Use the distribution specific install mechanism to install the wxGlade
         package and all dependencies.</para>
 
         <para>You may install wxGlade from the source package if your
-        distribution doesn't contain a proper package.</para>
+        distribution doesn't provide any package or the package is
+        out-of-date.</para>
       </section>
 
       <section>
@@ -402,8 +273,9 @@
 
           <para>Extract the downloaded package into a separate directory e.g.
           a subdirectory below user's home directory. Change in this directory
-          and execute the <command>wxglade</command> file on Unix/Linux or
-          <command>wxglade.pyw</command> on Microsoft Windows.</para>
+          and execute the <command>wxglade</command> file on Unix operating
+          systems or <command>wxglade.pyw</command> on Microsoft
+          Windows.</para>
 
           <para>That's all. Installations below users home directory don't
           require administrative permissions.</para>
@@ -417,7 +289,7 @@
           installation directory. And probably you need administrative
           permissions. You could extract the wxGlade source package e.g. into
           <command>c:\program file\wxglade</command> on Microsoft Windows or
-          into <command>/opt/wxglade</command> on Unix/Linux.</para>
+          into <command>/opt/wxglade</command> on Unix.</para>
         </section>
 
         <section>
@@ -491,19 +363,141 @@ loading widget modules:
         </section>
       </section>
     </section>
+
+    <section>
+      <title>Configuring wxGlade</title>
+
+      <section id="preferences.section">
+        <title>Preferences Dialog</title>
+
+        <para>You can access the Preferences Dialog with the menu item
+        <menuchoice>
+            <guimenu>View</guimenu>
+
+            <guimenuitem>Preferences</guimenuitem>
+          </menuchoice>. You can choose some decoration options, like whether
+        to show icons in menus or not, but also something more effective. For
+        example, you can modify the number of buttons in the Main Palette. If
+        you type a value of 15 or 30, you get a long toolbar-like Main
+        Palette. You can also choose the default path where you save wxGlade
+        files or generate source code.</para>
+
+        <para>Another useful option is to enable a default border of 3 around
+        some widgets. In many cases this can be useful to have set.</para>
+
+        <para>You need to restart wxGlade for changes to take effect.</para>
+
+        <figure>
+          <title>wxGlade preferences dialog</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="preferences.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+      </section>
+
+      <section id="config.files.section">
+        <title>Configuration files and Configuration directory</title>
+
+        <para>wxGlade stores user related information in <filename>a
+        </filename>own directory. The directory is named
+        <quote><filename>~/.wxglade</filename></quote> on Unix or in
+        <quote><filename>Application Data/wxglade</filename></quote> on
+        Microsoft Windows. The name of the directory
+        <quote><filename>Application Data</filename></quote> will be
+        translated to users langauge by Windows automatically.</para>
+
+        <para>The configuration file <filename>wxgladerc</filename> on Unix or
+        <filename>wxglade.ini</filename> on Microsoft Windows contains users
+        configuration. It's a text file. Be carefully if you are changing the
+        file manually. The last open files are listed in
+        <filename>file_history.txt</filename>. The subdirectors templates
+        contains wxGlade templates generated by the user itself.</para>
+
+        <para>The directory contains the log files also. The log files are
+        detailed described in <xref linkend="logging.section"/>.</para>
+      </section>
+
+      <section>
+        <title>Environment Variables</title>
+
+        <para>wxGlade supportes only one environment variable
+        <quote>WXGLADE_CONFIG_PATH</quote>.</para>
+
+        <para>If you want to store the whole configuration data inclusive user
+        generated templates and log files in a non-default directory, then
+        store the full path of the alternative directory in the environment
+        variable <quote>WXGLADE_CONFIG_PATH</quote> and start wxGlade with the
+        new environment.</para>
+      </section>
+
+      <section id="logging.section">
+        <title>Logging</title>
+
+        <para>wxGlade writes always a small error log file
+        <filename>wxglade.log</filename>. The file size is limited to 100 KB.
+        wxGlade will keep at most two log files
+        <filename>wxglade.log</filename> and
+        <filename>wxglade.log.1</filename>. The roll over from
+        <filename>wxglade.log</filename> to <filename>wxglade.log.1</filename>
+        will occur if the file size limit is reached. An already existing file
+        <filename>wxglade.log.1</filename> will be deleted automatically. The
+        log file is a text file in Unicode.</para>
+
+        <para>The log file location is described in <xref
+        linkend="config.files.section"/>.</para>
+      </section>
+    </section>
+
+    <section>
+      <title>How to Report a Bug</title>
+
+      <para>Writing a helpful bug report is easy if you follow some hints. The
+      items below should help you to integrate useful information. They are
+      not an absolute rule - it's more like a guideline.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>What did you? May you want to include a screenshoot.</para>
+        </listitem>
+
+        <listitem>
+          <para>What do you want to happen?</para>
+        </listitem>
+
+        <listitem>
+          <para>What actually happened?</para>
+        </listitem>
+
+        <listitem>
+          <para>Provide a short example to reproduce the issue.</para>
+        </listitem>
+
+        <listitem>
+          <para>Include the internal error log file <quote>wxglade.log</quote>
+          always.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>May you read <ulink
+      url="http://www.chiark.greenend.org.uk/~sgtatham/bugs.html">How to
+      Report Bugs Effectively</ulink> additionally.</para>
+    </section>
   </chapter>
 
   <chapter>
     <title>Exploring wxGlade</title>
 
     <section>
-      <title>Quick start</title>
+      <title>Quick example</title>
 
       <para>We will design a simple form.</para>
 
       <para>Start wxGlade by running the <command>wxglade</command> program on
-      Unix platforms or the <command>wxglade.pyw</command> program on
-      Microsoft Windows.</para>
+      Unix or the <command>wxglade.pyw</command> program on Microsoft
+      Windows.</para>
 
       <para>You will see a Main Palette with several buttons, and a Tree
       Window with an icon marked <guiicon>Application</guiicon>. A Properties
@@ -527,7 +521,7 @@ loading widget modules:
       boxes: they are the <quote>slots</quote> of the grid sizer where you
       will place the widgets.</para>
 
-      <para>You put a widget on a sizer by selecting it on the Main Window,
+      <para>You put a widget on a sizer by selecting it on the main window,
       then click on an empty slot on the frame on the designer window. Try
       adding a static text, a text control and a button.</para>
 
@@ -592,6 +586,29 @@ loading widget modules:
 
       <para>wxGlade does not manage events, file inclusion, function names,
       stubs or anything else but graphic interface code.</para>
+    </section>
+
+    <section>
+      <title>Escape Sequences</title>
+
+      <para>Escape sequences are used to define certain special characters
+      within string literals. wxGlade supports escape sequences generally. The
+      only exception is the null byte (<quote><emphasis>0</emphasis></quote>)
+      and the escape sequence (<quote><emphasis>\0</emphasis></quote>)
+      belonging to it. wxGlade can't handle null bytes.</para>
+
+      <para>Escape sequences like <quote><emphasis>\n</emphasis></quote> or
+      <quote><emphasis>\t</emphasis></quote> will not touched by wxGlade.
+      Thereby the generated source code contains excatly the same sequence as
+      entered. The language interpreter or compiler will interpret and
+      probably convert the sequence into control characters. For example
+      <quote><emphasis>\n</emphasis></quote> will be converted into a line
+      break.</para>
+
+      <para>Escape sequences with at least two leading backslashes e.g.
+      <quote><emphasis>\\n</emphasis></quote> will be escaped to show exact
+      the same sequence and don't convert it into control characters. Question
+      marks especially double quotes will be escaped also.</para>
     </section>
 
     <section id="best.practice.section">
@@ -705,15 +722,30 @@ loading widget modules:
         sources</guilabel></quote>. Use derived classes to implement your
         functionality. See <xref linkend="best.practice.section"/>
         also.</para>
+
+        <para>Old namespace (<quote><command>from wxPython.wx import
+        *</command></quote>) is not supported for wxPython 3.0. See <xref
+        linkend="best.practice.section"/> also.</para>
       </section>
 
       <section>
         <title>Lisp</title>
 
         <para>The Lisp code generated by wxGlade may or may not working with a
-        current Lisp dialect.</para>
+        current Lisp dialect. Help to improve the Lisp support is really
+        welcome.</para>
 
-        <para>Help to improve the Lisp support is really welcome.</para>
+        <para>Unsupported features in Lisp:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>Unicode support</para>
+          </listitem>
+
+          <listitem>
+            <para>Support for wxWidgets 3.0</para>
+          </listitem>
+        </itemizedlist>
       </section>
     </section>
 
@@ -1012,66 +1044,6 @@ if __name__ == '__main__':
     app.MainLoop()</programlisting>
       </example>
     </section>
-
-    <section id="basic.bitmaps.section">
-      <title>Specifying the path of bitmaps</title>
-
-      <para>In wxGlade some widgets need to specify a bitmap path. You can use
-      any graphic format supported by wxWidgets.</para>
-
-      <para>The bitmap can be specified in several ways:</para>
-
-      <para>Usually you can type an absolute path in a text box or browse for
-      a bitmap with a file dialog. This will produce a
-      <classname>wxBitmap</classname> object with the typed string as bitmap
-      path (e.g. <emphasis>wxBitmap("/usr/share/icons/application.png",
-      wxBITMAP_TYPE_ANY)</emphasis>)</para>
-
-      <para>You can enter a variable name using the <emphasis>var:</emphasis>
-      tag in the text box. This will produce a <classname>wxBitmap</classname>
-      object with the variable name as bitmap path (e.g.
-      <emphasis>var:my_bitmap_path</emphasis> produces
-      <emphasis>wxBitmap(my_bitmap_path, wxBITMAP_TYPE_ANY)</emphasis>). In
-      Perl code generation a <quote>$</quote> sign is added if you omit
-      it.</para>
-
-      <para>You can enter a code chunk returning a
-      <classname>wxBitmap</classname>, by using the <emphasis>code:</emphasis>
-      tag. This inserts verbatim the code you enter in brackets and nothing
-      more (e.g.: if <classname>wxSomeWidget</classname> needs a
-      <classname>wxBitmap</classname> as an argument, the string
-      <emphasis>code:if (x == 0) get_bitmap1() else get_bitmap2();</emphasis>
-      produces <emphasis>wxSomeWidget((if (x == 0) get_bitmap1() else
-      get_bitmap2();), option1, option2)</emphasis>).</para>
-
-      <para>wxGlade never declares or assigns variable or function names, so
-      after code generation, you have to provide extra code to declare your
-      variables or functions.</para>
-
-      <para>If you use <emphasis>var</emphasis>: or <emphasis>code:</emphasis>
-      tags the preview window shows an empty bitmap of fixed size.</para>
-    </section>
-
-    <section>
-      <title>Escape Sequences</title>
-
-      <para>Escape sequences are used to define certain special characters
-      within string literals. wxGlade supports escape sequences
-      generally.</para>
-
-      <para>Escape sequences like <quote><emphasis>\n</emphasis></quote> or
-      <quote><emphasis>\t</emphasis></quote> will not touched by wxGlade.
-      Thereby the generated source code contains excatly the same sequence as
-      entered. The language interpreter or compiler will interpret and
-      probably convert the sequence into control characters. For example
-      <quote><emphasis>\n</emphasis></quote> will be converted into a line
-      break.</para>
-
-      <para>Escape sequences with at least two leading backslashes e.g.
-      <quote><emphasis>\\n</emphasis></quote> will be escaped to show exact
-      the same sequence and don't convert it into control characters. Question
-      marks especially double quotes will be escaped also.</para>
-    </section>
   </chapter>
 
   <chapter>
@@ -1283,8 +1255,8 @@ if __name__ == '__main__':
               <glossdef>
                 <para>Encoding of the generated source files.</para>
 
-                <para>The encoding to use with new projects will be
-                determined automatically based on the machine settings.
+                <para>The encoding to use with new projects will be determined
+                automatically based on the machine settings.
                 <quote>UTF-8</quote> will be used if the automatic detection
                 fails.</para>
               </glossdef>
@@ -1838,27 +1810,6 @@ if __name__ == '__main__':
       </section>
     </section>
 
-    <section id="preferences.section">
-      <title>Preferences Dialog</title>
-
-      <para>You can access the Preferences Dialog with the menu item
-      <menuchoice>
-          <guimenu>View</guimenu>
-
-          <guimenuitem>Preferences</guimenuitem>
-        </menuchoice>. You can choose some decoration options, like whether to
-      show icons in menus or not, but also something more effective. For
-      example, you can modify the number of buttons in the Main Palette. If
-      you type a value of 15 or 30, you get a long toolbar-like Main Palette.
-      You can also choose the default path where you save wxGlade files or
-      generate source code.</para>
-
-      <para>Another useful option is to enable a default border of 3 around
-      some widgets. In many cases this can be useful to have set.</para>
-
-      <para>You need to restart wxGlade for changes to take effect.</para>
-    </section>
-
     <section id="menu.section">
       <title>The wxGlade Menu</title>
 
@@ -2059,8 +2010,47 @@ if __name__ == '__main__':
       properties and visual look of each one.</para>
     </section>
 
+    <section id="basic.bitmaps.section">
+      <title>Specifying the path of bitmaps</title>
+
+      <para>In wxGlade some widgets need to specify a bitmap path. You can use
+      any graphic format supported by wxWidgets.</para>
+
+      <para>The bitmap can be specified in several ways:</para>
+
+      <para>Usually you can type an absolute path in a text box or browse for
+      a bitmap with a file dialog. This will produce a
+      <classname>wxBitmap</classname> object with the typed string as bitmap
+      path (e.g. <emphasis>wxBitmap("/usr/share/icons/application.png",
+      wxBITMAP_TYPE_ANY)</emphasis>)</para>
+
+      <para>You can enter a variable name using the <emphasis>var:</emphasis>
+      tag in the text box. This will produce a <classname>wxBitmap</classname>
+      object with the variable name as bitmap path (e.g.
+      <emphasis>var:my_bitmap_path</emphasis> produces
+      <emphasis>wxBitmap(my_bitmap_path, wxBITMAP_TYPE_ANY)</emphasis>). In
+      Perl code generation a <quote>$</quote> sign is added if you omit
+      it.</para>
+
+      <para>You can enter a code chunk returning a
+      <classname>wxBitmap</classname>, by using the <emphasis>code:</emphasis>
+      tag. This inserts verbatim the code you enter in brackets and nothing
+      more (e.g.: if <classname>wxSomeWidget</classname> needs a
+      <classname>wxBitmap</classname> as an argument, the string
+      <emphasis>code:if (x == 0) get_bitmap1() else get_bitmap2();</emphasis>
+      produces <emphasis>wxSomeWidget((if (x == 0) get_bitmap1() else
+      get_bitmap2();), option1, option2)</emphasis>).</para>
+
+      <para>wxGlade never declares or assigns variable or function names, so
+      after code generation, you have to provide extra code to declare your
+      variables or functions.</para>
+
+      <para>If you use <emphasis>var</emphasis>: or <emphasis>code:</emphasis>
+      tags the preview window shows an empty bitmap of fixed size.</para>
+    </section>
+
     <section id="widgets.wlist.section">
-      <title>Widget list</title>
+      <title>Widget List</title>
 
       <para>Follow the widget list as it appears in the wxGlade main
       window.</para>
@@ -2092,7 +2082,7 @@ if __name__ == '__main__':
       </section>
 
       <section id="widgets.splitter.section">
-        <title>Splitter window</title>
+        <title>Splitter Window</title>
 
         <para>This produces a <classname>wxSplitterWindow</classname> and two
         associated panels as well. You can choose vertical or horizontal
@@ -2121,42 +2111,76 @@ if __name__ == '__main__':
         that you have made in the list to the design window.</para>
       </section>
 
-      <section id="widgets.button.section">
-        <title>Button</title>
+      <section>
+        <title>Buttons</title>
 
-        <para>This produces a <classname>wxButton</classname>. You can enter a
-        caption and the <quote>default</quote> flag. If you want to add an
-        image you need a bitmap button (see <xref
-        linkend="widgets.bitmap_button.section"/>).</para>
+        <section id="widgets.button.section">
+          <title>Button</title>
+
+          <para>This produces a <classname>wxButton</classname>. You can enter
+          a caption and the <quote>default</quote> flag. If you want to add an
+          image you need a bitmap button (see <xref
+          linkend="widgets.bitmap_button.section"/>).</para>
+        </section>
+
+        <section id="widgets.bitmap_button.section">
+          <title>Bitmap Button</title>
+
+          <para>This produces a <classname>wxBitmapButton</classname>. You can
+          set the <quote>default</quote> flag on or off. You also can choose
+          the bitmap for the button and, optionally, the bitmap for the
+          disabled status. Refer to <xref linkend="basic.bitmaps.section"/>
+          for bitmap path specifications.</para>
+        </section>
+
+        <section id="widgets.radio.section">
+          <title>Radio Button</title>
+
+          <para>This produces a <classname>wxRadioButton</classname>. In the
+          properties window you can enter the text, and the status, clicked or
+          not, and the style.</para>
+        </section>
+
+        <section id="widgets.toggle_button.section">
+          <title>Toggle Button</title>
+
+          <para>This produces a <classname>wxToggleButton</classname>. You can
+          enter a caption and the status (clicked or not) of the
+          button.</para>
+        </section>
       </section>
 
-      <section id="widgets.toggle_button.section">
-        <title>Toggle button</title>
+      <section id="widgets.gauge.section">
+        <title>Gauge</title>
 
-        <para>This produces a <classname>wxToggleButton</classname>. You can
-        enter a caption and the status (clicked or not) of the button.</para>
+        <para>This produces a <classname>wxGauge</classname>. In the
+        properties window you can enter the range and set the style.</para>
       </section>
 
-      <section id="widgets.bitmap_button.section">
-        <title>Bitmap button</title>
+      <section>
+        <title>Hyperlink Control</title>
 
-        <para>This produces a <classname>wxBitmapButton</classname>. You can
-        set the <quote>default</quote> flag on or off. You also can choose the
-        bitmap for the button and, optionally, the bitmap for the disabled
-        status. Refer to <xref linkend="basic.bitmaps.section"/> for bitmap
-        path specifications.</para>
-      </section>
-
-      <section id="widgets.textctrl.section">
-        <title>Text control</title>
-
-        <para>This produces a <classname>wxTextCtrl</classname>. In the
-        properties window you can enter the text and also set the
+        <para>This produces a <classname>wxHyperlinkCtrl</classname>. In the
+        property window you can enter the label, the URL and also set the
         style.</para>
       </section>
 
+      <section id="widgets.radiobox.section">
+        <title>Radio Box</title>
+
+        <para>This produces a <classname>wxRadioBox</classname>. In the
+        properties window you can enter the dimension. The style determines
+        whether the dimension is the number of rows or columns.</para>
+
+        <para>You also can set which button is selected with the
+        <quote>Selection</quote> spin starting from 0. You can edit the list
+        of choices, but remember to click on the
+        <quote><guibutton>Apply</guibutton></quote> button to consolidate
+        changes.</para>
+      </section>
+
       <section id="widgets.spinctrl.section">
-        <title>Spin control</title>
+        <title>Spin Control</title>
 
         <para>This produces a <classname>wxSpinCtrl</classname>. In the
         properties window you can enter the value, the range and also set the
@@ -2171,49 +2195,28 @@ if __name__ == '__main__':
         style.</para>
       </section>
 
-      <section id="widgets.gauge.section">
-        <title>Gauge</title>
-
-        <para>This produces a <classname>wxGauge</classname>. In the
-        properties window you can enter the range and set the style.</para>
-      </section>
-
       <section id="widgets.static_text.section">
-        <title>Static text</title>
+        <title>Static Text</title>
 
         <para>This produces a <classname>wxStaticText</classname>. In the
         properties window you can enter the text, set the style and tell
         wxGlade whether to store the control as an attribute.</para>
       </section>
 
+      <section id="widgets.textctrl.section">
+        <title>Text Control</title>
+
+        <para>This produces a <classname>wxTextCtrl</classname>. In the
+        properties window you can enter the text and also set the
+        style.</para>
+      </section>
+
       <section id="widgets.checkbox.section">
-        <title>Check box</title>
+        <title>Check Box</title>
 
         <para>This produces a <classname>wxCheckBox</classname>. In the
         properties window you can enter the text, and the status, checked or
         not, of the button.</para>
-      </section>
-
-      <section id="widgets.radio.section">
-        <title>Radio button</title>
-
-        <para>This produces a <classname>wxRadioButton</classname>. In the
-        properties window you can enter the text, and the status, clicked or
-        not, and the style.</para>
-      </section>
-
-      <section id="widgets.radiobox.section">
-        <title>Radio box</title>
-
-        <para>This produces a <classname>wxRadioBox</classname>. In the
-        properties window you can enter the dimension. The style determines
-        whether the dimension is the number of rows or columns.</para>
-
-        <para>You also can set which button is selected with the
-        <quote>Selection</quote> spin starting from 0. You can edit the list
-        of choices, but remember to click on the
-        <quote><guibutton>Apply</guibutton></quote> button to consolidate
-        changes.</para>
       </section>
 
       <section id="widgets.choice.section">
@@ -2247,7 +2250,7 @@ if __name__ == '__main__':
       </section>
 
       <section id="widgets.staticline.section">
-        <title>StaticLine</title>
+        <title>Static Line</title>
 
         <para>This produces a vertical or horizontal
         <classname>wxStaticLine</classname>. In the properties window you can
@@ -2256,7 +2259,7 @@ if __name__ == '__main__':
       </section>
 
       <section id="widgets.static_bitmap.section">
-        <title>Static bitmap</title>
+        <title>Static Bitmap</title>
 
         <para>This produces a <classname>wxStaticBitmap</classname>. You will
         be prompted for the bitmap path. Refer to <xref
@@ -2390,10 +2393,176 @@ if __name__ == '__main__':
   </chapter>
 
   <appendix>
+    <title>Abbreviations</title>
+
+    <para>The following abbreviations are used in this manual: <variablelist>
+        <varlistentry>
+          <term>Escape sequence</term>
+
+          <listitem>
+            <para>Escape sequences are used to define certain special
+            characters within string literals. Escape sequences starts mostly
+            with a backslash (<quote>\</quote>).</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>gettext</term>
+
+          <listitem>
+            <para>Widespread internationalisation (i18n) and localisation
+            system.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><emphasis>GUI</emphasis></term>
+
+          <listitem>
+            <para>Graphical User Interface</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>i18n</term>
+
+          <listitem>
+            <para>Numeronyms for internationalisation support.</para>
+
+            <para>Internationalisation means adapting software to different
+            languages, regional differences, ...</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><emphasis>OS</emphasis></term>
+
+          <listitem>
+            <para>Operating system</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>OS X</term>
+
+          <listitem>
+            <para>is a graphical UNIX operating system developed by Apple Inc.
+            OS X is certified by The Open Group.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>SAE</term>
+
+          <listitem>
+            <para>Standalone Edition</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>Unix</term>
+
+          <listitem>
+            <para>is a multitasking, multi-user operation system. Today the
+            trademark <quote>UNIX</quote> is owned by The Open Group.
+            Operating systems complaint with <quote>Single UNIX
+            Specification</quote> and certified by The Open Group are called
+            <quote>UNIX</quote>.</para>
+
+            <para>Unix-like operating systems behaves similar to
+            <quote>UNIX</quote> operating systems. They are not certified by
+            The Open Group.</para>
+
+            <para>This document use the term <quote>Unix</quote> for certified
+            <quote>UNIX</quote> operating systems as well as
+            <quote>Unix-like</quote> operating systems. Linux is an Unix-like
+            operating system.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>wxg</term>
+
+          <listitem>
+            <para>File extension used by wxGlade to store the project in a XML
+            file.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><emphasis>wx</emphasis></term>
+
+          <listitem>
+            <para>abbreviation for <acronym>wxWidgets</acronym></para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>wxWidgets</term>
+
+          <listitem>
+            <para>wxWidgets a widget toolkit and tools library for creating
+            graphical user interfaces (GUIs) for cross-platform
+            applications.</para>
+
+            <para>wxWidgets is open source and written in C++.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><emphasis>WYSIWYG</emphasis></term>
+
+          <listitem>
+            <para>What You See Is What You Get.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><emphasis>X11</emphasis></term>
+
+          <listitem>
+            <para>The X Window System version 11.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>XRC</term>
+
+          <listitem>
+            <para>XML-based system for describing wxWidgets resources like
+            dialogs, menus or toolbars.</para>
+
+            <para>Those resources are loaded into the application at
+            run-time.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist></para>
+  </appendix>
+
+  <appendix>
+    <title>Copyrights and Trademarks</title>
+
+    <para>wxGlade is copyright 2002-2007 by Alberto Griggio. Use and
+    distribution of wxGlade is governed by the MIT license, located in <xref
+    linkend="appendix.a.section"/>.</para>
+
+    <para>wxWidgets is copyright (C) 1998-2005 Julian Smart, Robert Roebling
+    et al. See <ulink
+    url="http://www.wxwidgets.org">http://www.wxwidgets.org</ulink> for
+    details.</para>
+
+    <para>Microsoft and Windows are registered trademarks of Microsoft
+    Corporation.</para>
+
+    <para>UNIX is a registered trademark of The Open Group.</para>
+
+    <para>All other trademarks are property of their respective owners.</para>
+  </appendix>
+
+  <appendix id="appendix.a.section">
     <title>wxGlade License Agreement</title>
 
-    <para>Copyright (c) 2002-2007 Alberto Griggio
-    <email>agriggio@users.sourceforge.net</email></para>
+    <para>Copyright (c) 2002-2007 Alberto Griggio</para>
 
     <para>Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files (the

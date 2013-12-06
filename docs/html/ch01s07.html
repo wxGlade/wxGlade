@@ -1,78 +1,33 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15"><title>Installation</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ch01.html" title="Chapter 1. Introduction to wxGlade"><link rel="prev" href="ch01s06.html" title="Download"><link rel="next" href="ch02.html" title="Chapter 2. Exploring wxGlade"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Installation</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch01s06.html">Prev</a> </td><th width="60%" align="center">Chapter 1. Introduction to wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch02.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp32478484"></a>Installation</h2></div></div></div><p>wxGlade is available in 4 different package types:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>the sources packages (<code class="filename">.zip</code> and
-          <code class="filename">.tar.gz</code>)</p></li><li class="listitem"><p>the full installer at Microsoft Windows
-          (<code class="filename">wxGlade-VERSION-setup.exe</code>)</p></li><li class="listitem"><p>the installer of the standalone edition at Microsoft Windows
-          (<code class="filename">wxGlade-SAE-VERSION-setup.exe</code>)</p></li><li class="listitem"><p>development version fetched with Mercurial or downloaded the
-          current packaged development version from <a class="ulink" href="https://bitbucket.org" target="_top">https://bitbucket.org</a></p></li></ul></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idp32482676"></a>Installing at Microsoft Windows</h3></div></div></div><p>The default installer requires a local installation Python and
-        wxPython. The wxWidgets are bundled with wxPython on Microsoft
-        Windows. Thereby you don't need to install wxWidgets
-        separately.</p><p>There is no need to install additional packages for the
-        standalone edition, because the standalone edition includes the
-        required parts of Python, wxPython and wxWidgets.</p><p>The installation process is quite simple. Just download the
-        installer file, execute it and follow the installer
-        instructions.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idp32484204"></a>Installing at Unix/Linux</h3></div></div></div><p>The current Linux distributions provide wxGlade packages. Use
-        the distribution specific install mechanism to install the wxGlade
-        package and all dependencies.</p><p>You may install wxGlade from the source package if your
-        distribution doesn't contain a proper package.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idp32485276"></a>Installing from Source</h3></div></div></div><p>The installation from scratch requires Python, wxPython and
-        wxWidgets. Those three components have to be installed first. Maybe
-        you could use already packaged versions of those components for your
-        operating system. Otherwise read the installation documentation of the
-        missing components and follow the instructions.</p><p>There are two ways for installing wxGlade from source - single
-        or multi user installation.</p><p>Download a source package or a development package in a first
-        step.</p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="single.user.install.section"></a>Single user installation</h4></div></div></div><p>Extract the downloaded package into a separate directory e.g.
-          a subdirectory below user's home directory. Change in this directory
-          and execute the <span class="command"><strong>wxglade</strong></span> file on Unix/Linux or
-          <span class="command"><strong>wxglade.pyw</strong></span> on Microsoft Windows.</p><p>That's all. Installations below users home directory don't
-          require administrative permissions.</p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="idp32493788"></a>Multi user installation - variant 1</h4></div></div></div><p>The first variant of a multi user installation is very similar
-          to <a class="xref" href="ch01s07.html#single.user.install.section" title="Single user installation">the section called &#8220;Single user installation&#8221;</a> except the
-          installation directory. And probably you need administrative
-          permissions. You could extract the wxGlade source package e.g. into
-          <span class="command"><strong>c:\program file\wxglade</strong></span> on Microsoft Windows or
-          into <span class="command"><strong>/opt/wxglade</strong></span> on Unix/Linux.</p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="idp32495508"></a>Multi user installation - variant 2</h4></div></div></div><p>Extract the downloaded package into a temporary directory.
-          Change in this directory and execute the Python setup script using
-          <span class="command"><strong>python setup.py</strong></span> in a terminal window.</p><div class="example"><a name="idp32935948"></a><p class="title"><b>Example 1.1. Installing wxGlade at /opt/wxglade</b></p><div class="example-contents"><pre class="programlisting"># python setup.py install --prefix /opt/wxglade
-running install
-running build
-running build_py
-creating build
-creating build/lib.linux-i686-2.7
-creating build/lib.linux-i686-2.7/wxglade
-creating build/lib.linux-i686-2.7/wxglade/widgets
-creating build/lib.linux-i686-2.7/wxglade/widgets/combo_box
-[...]
-copying docs/html/ch04s23.html -&gt; /opt/wxglade/share/doc/wxglade/doc/html
-copying docs/html/ch04s26.html -&gt; /opt/wxglade/share/doc/wxglade/doc/html
-copying docs/html/ch05s02.html -&gt; /opt/wxglade/share/doc/wxglade/doc/html
-copying docs/html/pr01.html -&gt; /opt/wxglade/share/doc/wxglade/doc/html
-creating /opt/wxglade/share/doc/wxglade/doc/pdf
-copying docs/pdf/manual.pdf -&gt; /opt/wxglade/share/doc/wxglade/doc/pdf
-creating /opt/share/man
-creating /opt/share/man/man1
-copying docs/man/wxglade.1 -&gt; /opt/wxglade/share/man/man1
-copying docs/man/manpage.xml -&gt; /opt/wxglade/share/doc/wxglade
-copying docs/src/manual.xml -&gt; /opt/wxglade/share/doc/wxglade
-running install_egg_info
-Writing /opt/wxglade/lib/python2.7/site-packages/wxGlade-0.6.5_-py2.7.egg-info
-</pre></div></div><br class="example-break"><p>After the installation has finished the wxGlade main script
-          <span class="command"><strong>wxglade </strong></span>is located at <span class="command"><strong>&lt;install
-          directory&gt;/bin</strong></span>.</p><p>Execute the script to start wxGlade</p><div class="example"><a name="idp32939476"></a><p class="title"><b>Example 1.2. Starting wxGlade at /opt/wxglade/bin/wxglade</b></p><div class="example-contents"><pre class="programlisting"># /opt/wxglade/bin/wxglade 
-Starting wxGlade version 0.6.5 on Python 2.7.2+
-Base directory:             /opt/wxglade/lib/python2.7/site-packages/wxglade
-Documentation directory:    /opt/wxglade/lib/python2.7/site-packages/wxglade/docs
-Icons directory:            /opt/wxglade/lib/python2.7/site-packages/wxglade/icons
-Build-in widgets directory: /opt/wxglade/lib/python2.7/site-packages/wxglade/widgets
-Template directory:         /opt/wxglade/lib/python2.7/site-packages/wxglade/templates
-Credits file:               /opt/wxglade/share/doc/wxglade/credits.txt
-License file:               /opt/wxglade/share/doc/wxglade/license.txt
-Tutorial file:              /opt/wxglade/lib/python2.7/site-packages/wxglade/docs/html/index.html
-Using wxPython 2.8.12.1
-loaded code generator for perl
-loaded code generator for XRC
-loaded code generator for python
-loaded code generator for lisp
-loaded code generator for C++
-Found widgets listing -&gt; /opt/wxglade/lib/python2.7/site-packages/wxglade/widgets/widgets.txt
-loading widget modules:
-        frame
-        dialog
-[...]
-</pre></div></div><br class="example-break"></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch01s06.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch01.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Download </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 2. Exploring wxGlade</td></tr></table></div></body></html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15"><title>Configuring wxGlade</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ch01.html" title="Chapter 1. Introduction to wxGlade"><link rel="prev" href="ch01s06.html" title="Installation"><link rel="next" href="ch01s08.html" title="How to Report a Bug"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Configuring wxGlade</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch01s06.html">Prev</a> </td><th width="60%" align="center">Chapter 1. Introduction to wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch01s08.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm140627658679872"></a>Configuring wxGlade</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="preferences.section"></a>Preferences Dialog</h3></div></div></div><p>You can access the Preferences Dialog with the menu item
+        <span class="guimenu">View</span> &#8594; <span class="guimenuitem">Preferences</span>. You can choose some decoration options, like whether
+        to show icons in menus or not, but also something more effective. For
+        example, you can modify the number of buttons in the Main Palette. If
+        you type a value of 15 or 30, you get a long toolbar-like Main
+        Palette. You can also choose the default path where you save wxGlade
+        files or generate source code.</p><p>Another useful option is to enable a default border of 3 around
+        some widgets. In many cases this can be useful to have set.</p><p>You need to restart wxGlade for changes to take effect.</p><div class="figure"><a name="idm140627658347648"></a><p class="title"><b>Figure 1.2. wxGlade preferences dialog</b></p><div class="figure-contents"><div class="mediaobject"><img src="preferences.png" alt="wxGlade preferences dialog"></div></div></div><br class="figure-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config.files.section"></a>Configuration files and Configuration directory</h3></div></div></div><p>wxGlade stores user related information in <code class="filename">a
+        </code>own directory. The directory is named
+        <span class="quote">&#8220;<span class="quote"><code class="filename">~/.wxglade</code></span>&#8221;</span> on Unix or in
+        <span class="quote">&#8220;<span class="quote"><code class="filename">Application Data/wxglade</code></span>&#8221;</span> on
+        Microsoft Windows. The name of the directory
+        <span class="quote">&#8220;<span class="quote"><code class="filename">Application Data</code></span>&#8221;</span> will be
+        translated to users langauge by Windows automatically.</p><p>The configuration file <code class="filename">wxgladerc</code> on Unix or
+        <code class="filename">wxglade.ini</code> on Microsoft Windows contains users
+        configuration. It's a text file. Be carefully if you are changing the
+        file manually. The last open files are listed in
+        <code class="filename">file_history.txt</code>. The subdirectors templates
+        contains wxGlade templates generated by the user itself.</p><p>The directory contains the log files also. The log files are
+        detailed described in <a class="xref" href="ch01s07.html#logging.section" title="Logging">the section called &#8220;Logging&#8221;</a>.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140627661460240"></a>Environment Variables</h3></div></div></div><p>wxGlade supportes only one environment variable
+        <span class="quote">&#8220;<span class="quote">WXGLADE_CONFIG_PATH</span>&#8221;</span>.</p><p>If you want to store the whole configuration data inclusive user
+        generated templates and log files in a non-default directory, then
+        store the full path of the alternative directory in the environment
+        variable <span class="quote">&#8220;<span class="quote">WXGLADE_CONFIG_PATH</span>&#8221;</span> and start wxGlade with the
+        new environment.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="logging.section"></a>Logging</h3></div></div></div><p>wxGlade writes always a small error log file
+        <code class="filename">wxglade.log</code>. The file size is limited to 100 KB.
+        wxGlade will keep at most two log files
+        <code class="filename">wxglade.log</code> and
+        <code class="filename">wxglade.log.1</code>. The roll over from
+        <code class="filename">wxglade.log</code> to <code class="filename">wxglade.log.1</code>
+        will occur if the file size limit is reached. An already existing file
+        <code class="filename">wxglade.log.1</code> will be deleted automatically. The
+        log file is a text file in Unicode.</p><p>The log file location is described in <a class="xref" href="ch01s07.html#config.files.section" title="Configuration files and Configuration directory">the section called &#8220;Configuration files and Configuration directory&#8221;</a>.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch01s06.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch01.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch01s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Installation </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> How to Report a Bug</td></tr></table></div></body></html>
