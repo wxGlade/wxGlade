@@ -297,22 +297,23 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     @return: The newly created wxBitmapButton
     """
     import wx
+    import misc
     from tree import WidgetTree
-    id = wx.NewId()
+
+    widget_id = wx.NewId()
     if not os.path.isabs(icon_path):
         icon_path = os.path.join(config.wxglade_path, icon_path)
     if wx.Platform == '__WXGTK__':
         style = wx.NO_BORDER
     else:
         style = wx.BU_AUTODRAW
-    import misc
     bmp = misc.get_xpm_bitmap(icon_path)
-    tmp = wx.BitmapButton(palette, id, bmp, size=(31, 31), style=style)
+    tmp = wx.BitmapButton(palette, widget_id, bmp, size=(31, 31), style=style)
     if not toplevel:
-        wx.EVT_BUTTON(tmp, id, add_object)
+        wx.EVT_BUTTON(tmp, widget_id, add_object)
     else:
-        wx.EVT_BUTTON(tmp, id, add_toplevel_object)
-    refs[id] = widget
+        wx.EVT_BUTTON(tmp, widget_id, add_toplevel_object)
+    refs[widget_id] = widget
     if not tip:
         tip = _('Add a %s') % widget.replace(_('Edit'), '')
     tmp.SetToolTip(wx.ToolTip(tip))
