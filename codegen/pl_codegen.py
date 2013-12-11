@@ -482,10 +482,10 @@ unless(caller){
         """\
         Load language specific code generators and sizer code generators
 
-        @see: L{_setup()}
+        @see: L{load_codegens()}
         """
         # load perl_codegen's ...
-        self._setup()
+        self.load_codegens()
         # ... then, the sizers
         import edit_sizers.perl_sizers_codegen
         edit_sizers.perl_sizers_codegen.initialize()

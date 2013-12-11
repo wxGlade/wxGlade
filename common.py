@@ -10,6 +10,7 @@ import ConfigParser
 import logging
 import os.path
 import sys
+import zipfile
 
 import config
 
@@ -73,6 +74,7 @@ def set_version():
 
     ver = "%s%s%s" % (main_version, suffix_changed, suffix_edition)
     return ver
+
 
 widgets = {}
 """\
@@ -183,8 +185,8 @@ def load_code_writers():
         # import file and initiate code writer
         try:
             writer = __import__(name).writer
-        except (AttributeError, ImportError, NameError, 
-                SyntaxError, ValueError):
+        except (AttributeError, ImportError, NameError, SyntaxError,
+                ValueError):
             logging.exception(
                 _('"%s" is not a valid code generator module') % module
                 )
@@ -196,67 +198,287 @@ def load_code_writers():
                 logging.info(
                     _('loaded code generator for %s'),
                     writer.language
-                    )
+                )
 
 
 def load_widgets():
     """\
-    Scans the 'widgets/' directory to find the installed widgets,
-    and returns 2 lists of buttons to handle them: the first contains the
-    ``core'' components, the second the user-defined ones
+    Load core and user widgets.
+
+    Scans the application 'widgets/' directory as well as the user widgets
+    directory to find the installed widgets.
+
+    If wxGlade has been started in GUI mode, the function returns two lists
+    of wxBitmapButton objects to handle them. The first contains the
+    built-in widgets and the second one the user widgets.
+
+    Both lists are empty in the batch mode.
+
+    @see: L{_load_widgets()}
+    @see: L{config.widgets_path}
+    @see: config.preferences.local_widget_path
+    """
+    # load the "built-in" widgets
+    core_buttons = _load_widgets(config.widgets_path)
+
+    # load the "user" widgets
+    local_buttons = _load_widgets(config.preferences.local_widget_path)
+
+    return core_buttons, local_buttons
+
+
+def _load_widgets(widget_dir):
+    """\
+    Load and initialise the all widgets in the given directory.
+
+    If widget ZIP files are found, they will be process first and the default
+    Python imports will be the second.
+
+    @param widget_dir: Directory to search for widgets
+    @type widget_dir:  String
+
+    @return: List of wxBitmapButton objects, each per widgets if the wxGlade
+             runs in GUI mode or an empty list in batch mode.
+
+    @see: L{common._import_module()}
     """
     buttons = []
-    # load the "built-in" widgets
-    buttons.extend(__load_widgets(config.widgets_path))
 
-    # load the "local" widgets
-    local_widgets_dir = config.preferences.local_widget_path
-    return buttons, __load_widgets(local_widgets_dir)
-
-
-def __load_widgets(widget_dir):
-    buttons = []
     # test if the "widgets.txt" file exists
-    widgets_file = os.path.join(widget_dir, 'widgets.txt')
-    if not os.path.isfile(widgets_file):
+    widgets_filename = os.path.join(widget_dir, 'widgets.txt')
+    if not os.path.isfile(widgets_filename):
+        logging.debug(_('File %s not found.'), widgets_filename)
+        return buttons
+    try:
+        widgets_file = open(widgets_filename)
+        module_list = widgets_file.readlines()
+        widgets_file.close()
+    except (IOError, OSError), inst:
+        logging.warning(
+            _("Can't read file %s file: %s"),
+            widgets_filename,
+            inst
+        )
         return buttons
 
-    # add the dir to the sys.path
+    # add widget directory to the sys.path
     sys.path.append(widget_dir)
-    modules = open(widgets_file)
+
     if config.use_gui:
-        logging.info(_('Found widgets listing -> %s'), widgets_file)
-        logging.info(_('loading widget modules:'))
-    for line in modules:
-        module = line.strip()
-        if not module or module.startswith('#'):
+        logging.info(_('Found widgets listing -> %s'), widgets_filename)
+        logging.info(_('Loading widget modules:'))
+    for line in module_list:
+        widget_button = None
+        module_name = line.strip()
+        if not module_name or module_name.startswith('#'):
             continue
-        module = module.split('#')[0].strip()
+        module_name = module_name.split('#')[0].strip()
         try:
-            try:
-                b = __import__(module).initialize()
-            except ImportError:
-                # try importing from a zip archive
-                if os.path.exists(os.path.join(widget_dir, module + '.zip')):
-                    sys.path.append(os.path.join(widget_dir, module + '.zip'))
-                    try:
-                        b = __import__(module).initialize()
-                    finally:
-                        sys.path.pop()
-                else:
-                    raise
-        except (AttributeError, ImportError, NameError, 
-                SyntaxError, ValueError):
-            logging.exception(_('ERROR loading "%s"'), module)
+            fqmn = "%s" % module_name
+            imported_module = _import_module(widget_dir, fqmn)
+            if not imported_module:
+                logging.info(_('Module %s not found.'), fqmn)
+                continue
+
+            if hasattr(imported_module, 'initialize'):
+                # use individual initialisation
+                widget_button = imported_module.initialize()
+            else:
+                # use generic initialisation
+                codegen_name = '%s.codegen' % module_name
+                codegen_module = _import_module(widget_dir, codegen_name)
+                codegen_module.initialize()
+                if config.use_gui:
+                    gui_name = '%s.%s' % (module_name, module_name)
+                    gui_module = _import_module(widget_dir, gui_name)
+                    widget_button = gui_module.initialize()
+
+        except (AttributeError, ImportError, NameError, SyntaxError,
+                ValueError):
+            logging.exception(_('ERROR loading "%s"'), module_name)
+        except:
+            logging.exception(
+                _('Unexpected error during import of widget module %s'),
+                module_name
+            )
         else:
             if config.use_gui:
-                logging.info('\t%s', module)
-            buttons.append(b)
-    modules.close()
+                logging.info('\t%s', module_name)
+            else:
+                logging.debug(
+                    _('Initialized widget %s'),
+                    module_name,
+                    )
+            if widget_button:
+                buttons.append(widget_button)
     return buttons
 
 
+def _import_module(widget_dir, module):
+    """\
+    Import a single module from a ZIP file or from the directory structure.
+
+    The consistency of ZIP files will be checked by calling L{is_valid_zip()}.
+
+    Example::
+        >>> _import_module('./mywidgets', 'static_text')
+       <module 'static_text' from 'mywidgets/static_text.zip/static_text/__init__.pyc'>
+
+    @param widget_dir: Directory to search for widgets
+    @type widget_dir:  String
+
+    @param module: Name of the module to import
+    @type module:  String
+
+    @return: Imported module or None in case of errors
+    @rtype:  None or ModuleType
+
+    @see: L{is_valid_zip()}
+    """
+    # split module name into module name and sub module name
+    basemodule = module.split('.', 1)[0]
+
+    zip_filename = os.path.join(widget_dir, '%s.zip' % basemodule)
+
+    if os.path.exists(zip_filename):
+        # check ZIP file formally
+        if not is_valid_zip(zip_filename, basemodule):
+            logging.warning(
+                _('ZIP file %s is not a valid ZIP file. Ignoring it.'),
+                zip_filename
+            )
+            zip_filename = None
+        else:
+            # add module to Python search path temporarily
+            sys.path.insert(0, zip_filename)
+    else:
+        zip_filename = None
+
+    # import module
+    try:
+        try:
+            imported_module = __import__(module, {}, {},
+                                         ['just_not_empty'])
+            return imported_module
+        except ImportError:
+            logging.info(_('Module %s not found.'), module)
+            return None
+        except (AttributeError, NameError, SyntaxError, ValueError):
+            if zip_filename:
+                logging.exception(
+                    _('Importing widget "%s" from ZIP file %s failed'),
+                    module,
+                    zip_filename
+                )
+            else:
+                logging.exception(
+                    _('Importing widget "%s" failed'),
+                    module
+                )
+            return None
+        except:
+            logging.exception(
+                _('Unexpected error during import of widget module %s'),
+                module
+            )
+            return None
+
+    finally:
+        # remove zip file from Python search path
+        if zip_filename and zip_filename in sys.path:
+            sys.path.remove(zip_filename)
+
+
+def is_valid_zip(filename, module_name):
+    """\
+    Check the consistency of the given ZIP files. It's a formal check as well
+    as a check of the content.
+
+    @param filename: Name of the ZIP file to check
+    @type filename:  String
+
+    @param module_name: Name of the module to import
+    @type module_name:  String
+
+    @return: True, if the ZIP is a valid widget zip file
+    @rtype:  Boolean
+    """
+    if not os.path.exists(filename):
+        logging.debug(_('File %s does not exists.'), filename)
+        return False
+
+    if not zipfile.is_zipfile(filename):
+        logging.warning(_('ZIP file %s is not a ZIP file.'), filename )
+        return False
+
+    zfile = None
+    try:
+        try:
+            zfile = zipfile.ZipFile(filename)
+        except zipfile.BadZipfile, inst:
+            logging.warning(
+                _('ZIP file %s is corrupt (%s). Ignoring ZIP file.'),
+                filename,
+                inst
+            )
+            return False
+        except zipfile.LargeZipFile, inst:
+            logging.warning(
+                _('ZIP file %s is bigger than 4GB (%s). Ignoring ZIP file.'),
+                filename,
+                inst
+            )
+            return False
+
+        #  check content of ZIP file
+        zfile = zipfile.ZipFile(filename)
+        content = zfile.namelist()
+        zfile.close()
+
+        # check for codegen.py[co]
+        found_file = False
+        for ext in ['.py', '.pyc', '.pyo']:
+            name = '%s/codegen%s' % (module_name, ext)
+            if name in content:
+                found_file = True
+                break
+        if not found_file:
+            logging.warning(
+                _('Missing file %s/codegen.py[co] in ZIP file %s. Ignoring '
+                  'ZIP file.'),
+                module_name,
+                filename
+            )
+            return False
+
+        # check for GUI module
+        found_file = False
+        for ext in ['.py', '.pyc', '.pyo']:
+            name = '%s/%s%s' % (module_name, module_name, ext)
+            if name in content:
+                found_file = True
+                break
+        if not found_file:
+            logging.warning(
+                _('Missing file %s/%s.py[co] in ZIP file %s. Ignoring '
+                  'ZIP file.'),
+                module_name,
+                module_name,
+                filename
+            )
+            return False
+    finally:
+        if zfile:
+            zfile.close()
+    return True
+
+
 def load_sizers():
+    """\
+    Load and initialise the sizer support modules.
+
+    @see: L{edit_sizers}
+    """
     import edit_sizers
     return edit_sizers.init_all()
 
@@ -335,6 +557,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         if misc._currently_under_mouse is not None:
             misc._currently_under_mouse.SetCursor(wx.STANDARD_CURSOR)
         event.Skip()
+
     wx.EVT_CHAR(tmp, on_char)
 
     return tmp
@@ -582,6 +805,7 @@ def init_paths():
         config.appdata_path, 'wxglade.log'
         )
 
+
 def init_preferences():
     """\
     Load / initialise preferences
@@ -717,6 +941,7 @@ class Preferences(ConfigParser.ConfigParser):
         def do_iter():
             for key in self.def_vals:
                 yield key, self[key]
+
         return do_iter()
 
     def _cast_to_bool(self, val):
