@@ -56,7 +56,7 @@ _item_bitmaps = {}
 
 
 class wxMSWRadioButton(wx.RadioButton):
-    """\Gg
+    """\
     Custom wxRadioButton class which tries to implement a better
     GetBestSize than the default one for WXMSW (mostly copied from
     wxCheckBox::DoGetBestSize in checkbox.cpp)
