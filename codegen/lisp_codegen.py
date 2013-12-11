@@ -372,10 +372,10 @@ class LispCodeWriter(BaseLangCodeWriter):
         """\
         Load language specific code generators and sizer code generators
 
-        @see: L{_setup()}
+        @see: L{load_codegens()}
         """
         # load lisp_codegen's ...
-        self._setup()
+        self.load_codegens()
         # ... then, the sizers
         import edit_sizers.lisp_sizers_codegen
         edit_sizers.lisp_sizers_codegen.initialize()

@@ -2663,38 +2663,83 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         return code_lines
 
-    def _setup(self):
+    def load_codegens(self):
         """\
-        Load language specific code generators
+        Load and initialise language specific code generators
+
+        @see: L{_load_codegens()}
+        @see: L{config.widgets_path}
+        @see: config.preferences.local_widget_path
         """
-        # scan widgets.txt for widgets, load language specific code generators
-        widgets_file = os.path.join(config.widgets_path, 'widgets.txt')
-        if not os.path.isfile(widgets_file):
-            self.warning("widgets file (%s) doesn't exist" % widgets_file)
+        # load the "built-in" code generators
+        self._load_codegens(config.widgets_path)
+
+        # load the "user" code generators
+        self._load_codegens(config.preferences.local_widget_path)
+
+        return
+
+    def _load_codegens(self, widget_dir):
+        """\
+        Load and initialise the all codegen widgets in the given directory.
+
+        If widget ZIP files are found, they will be process first and the default
+        Python imports will be the second.
+
+        @param widget_dir: Directory to search for widgets
+        @type widget_dir:  String
+
+        @see: L{common._import_module()}
+        """
+        # test if the "widgets.txt" file exists
+        widgets_filename = os.path.join(widget_dir, 'widgets.txt')
+        if not os.path.isfile(widgets_filename):
+            logging.debug(_('File %s not found.'), widgets_filename)
             return
-        sys.path.append(config.widgets_path)
-        modules = open(widgets_file)
-        for line in modules:
+        try:
+            widgets_file = open(widgets_filename)
+            module_list = widgets_file.readlines()
+            widgets_file.close()
+        except (IOError, OSError), inst:
+            logging.warning(
+                _("Can't read file %s file: %s"),
+                widgets_filename,
+                inst
+            )
+            return
+
+        # add widget directory to the sys.path
+        sys.path.append(widget_dir)
+
+        for line in module_list:
             module_name = line.strip()
             if not module_name or module_name.startswith('#'):
                 continue
             module_name = module_name.split('#')[0].strip()
+
             try:
                 fqmn = "%s.%s_codegen" % (module_name, self.language)
-                m = __import__(
-                    fqmn, {}, {}, ['initialize'])
-                m.initialize()
-            except (ImportError, AttributeError):
-                pass
-##                 self._logger.error(_('ERROR loading "%s"'), module_name)
-##                 self._logger.exception(_('Internal Error'))
-##             else:
-##                 self._logger.debug(
-##                     'initialized %s generator for %s',
-##                     self.language,
-##                     module_name,
-##                     )
-        modules.close()
+                imported_module = common._import_module(widget_dir, fqmn)
+                if not imported_module:
+                    logging.info(_('Module %s not found.'), fqmn)
+                    continue
+
+                imported_module.initialize()
+            except (AttributeError, ImportError, NameError, SyntaxError,
+                    ValueError):
+                self._logger.exception(_('ERROR loading "%s"'), module_name)
+            except:
+                self._logger.exception(
+                    _('Unexpected error during import of widget module %s'),
+                    module_name
+                )
+            else:
+                self._logger.debug(
+                    _('Initialized %s generator for %s'),
+                    self.language,
+                    module_name,
+                    )
+
 
     def _source_warning(self, klass, msg, sub_obj):
         """\
