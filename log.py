@@ -28,6 +28,7 @@ in revision 81919 (27.12.2010) in the public Python repository.
 
 import atexit
 import cStringIO
+import datetime
 import inspect
 import logging
 import logging.handlers
@@ -35,6 +36,8 @@ import os
 import pprint
 import sys
 import types
+
+import config
 
 
 stringLoggerInstance = None
@@ -193,9 +196,17 @@ class wxGladeFormatter(logging.Formatter):
         try:
             try:
                 # log exception details
+                now = datetime.datetime.now().isoformat()
                 sio.write(_('An unexpected error occurred!\n'))
-                sio.write(_('Error type:    %s\n') % exc_type)
-                sio.write(_('Error details: %s\n') % exc_value)
+                sio.write('\n')
+                sio.write(_('Date and time:      %s\n') % now)
+                sio.write(_('Python version:     %s\n') % config.py_version)
+                sio.write(_('wxPython version:   %s\n') % config.wx_version)
+                sio.write(_('wxWidgets platform: %s\n') % config.platform)
+                sio.write(_('wxGlade version:    %s\n') % config.version)
+                sio.write('\n')
+                sio.write(_('Exception type:    %s\n') % exc_type)
+                sio.write(_('Exception details: %s\n') % exc_value)
                 sio.write(_('Application stack trace:\n'))
 
                 # leave the exception handler if no traceback is available
@@ -204,10 +215,11 @@ class wxGladeFormatter(logging.Formatter):
 
                 # get stack frames
                 stack_list = inspect.getinnerframes(exc_tb, 7)
+                stack_list.reverse()
+                stack_level=-1
 
-                stack_level=len(stack_list)
                 for frame, filename, lineno, func_name, context, index in stack_list:
-                    stack_level -= 1
+                    stack_level += 1
                     func_args = inspect.formatargvalues(
                         *inspect.getargvalues(frame)
                     )
