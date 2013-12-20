@@ -188,7 +188,7 @@ def load_code_writers():
         except (AttributeError, ImportError, NameError, SyntaxError,
                 ValueError):
             logging.exception(
-                _('"%s" is not a valid code generator module') % module
+                _('"%s" is not a valid code generator module'), module
                 )
         else:
             code_writers[writer.language] = writer
@@ -208,109 +208,155 @@ def load_widgets():
     Scans the application 'widgets/' directory as well as the user widgets
     directory to find the installed widgets.
 
+    It loads built-in widgets and "user" widgets. The build-in widgets are
+    load from path in L{config.widgets_path}. The user widget path is stored
+    in C{config.preferences.local_widget_path}.
+
     If wxGlade has been started in GUI mode, the function returns two lists
     of wxBitmapButton objects to handle them. The first contains the
     built-in widgets and the second one the user widgets.
 
     Both lists are empty in the batch mode.
 
-    @see: L{_load_widgets()}
-    @see: L{config.widgets_path}
-    @see: config.preferences.local_widget_path
+    If widget ZIP files are found, they will be process first and the default
+    Python imports will be the second.
+
+    @see: L{load_widgets_from_dir()}
     """
     # load the "built-in" widgets
-    core_buttons = _load_widgets(config.widgets_path)
+    core_buttons = load_widgets_from_dir(
+        config.widgets_path,
+    )
 
     # load the "user" widgets
-    local_buttons = _load_widgets(config.preferences.local_widget_path)
+    local_buttons = load_widgets_from_dir(
+        config.preferences.local_widget_path,
+        )
 
     return core_buttons, local_buttons
 
 
-def _load_widgets(widget_dir):
+def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
     """\
-    Load and initialise the all widgets in the given directory.
+    Load and initialise the all widgets listed in widgets.txt in the given
+    directory.
 
-    If widget ZIP files are found, they will be process first and the default
-    Python imports will be the second.
+    The names of the modules to import, are read from the file widgets.txt.
+
+    If you need to import a submodule instead, just specify the name of the
+    submodule and "<module name>.<submodule>" will be imported. This is
+    useful to import language specific code generators.
+
+    If wxGlade run in the GUI mode, the imported module returns a
+    wxBitmapButton object. A list of such objects will be returned. In batch
+    mode or if submodules are imported, an empty list will be returned.
 
     @param widget_dir: Directory to search for widgets
     @type widget_dir:  String
 
-    @return: List of wxBitmapButton objects, each per widgets if the wxGlade
-             runs in GUI mode or an empty list in batch mode.
+    @param submodule: Submodule to import
+    @type submodule:  String
 
-    @see: L{common._import_module()}
+    @param logger: Logger instance to use. The default logger will be used,
+                   if no logging instance is given.
+    @type logger:  logging.Logger
+
+    @rtype: List
+
+    @see: L{_import_module()}
+    @see: L{config.use_gui} - for "GUI" or "batch" mode
     """
     buttons = []
+
+    if not logger:
+        logger = logging.getLogger()
+
+    is_codegen = bool(submodule and 'codegen' in submodule)
 
     # test if the "widgets.txt" file exists
     widgets_filename = os.path.join(widget_dir, 'widgets.txt')
     if not os.path.isfile(widgets_filename):
-        logging.debug(_('File %s not found.'), widgets_filename)
-        return buttons
+        logger.debug(_('File %s not found.'), widgets_filename)
+        return []
     try:
         widgets_file = open(widgets_filename)
         module_list = widgets_file.readlines()
         widgets_file.close()
     except (IOError, OSError), inst:
-        logging.warning(
+        logger.warning(
             _("Can't read file %s file: %s"),
             widgets_filename,
             inst
         )
-        return buttons
+        return []
 
     # add widget directory to the sys.path
-    sys.path.append(widget_dir)
+    if widget_dir not in sys.path:
+        sys.path.append(widget_dir)
 
-    if config.use_gui:
-        logging.info(_('Found widgets listing -> %s'), widgets_filename)
-        logging.info(_('Loading widget modules:'))
-    for line in module_list:
+    if config.use_gui and not is_codegen:
+        logger.info(_('Found widgets listing -> %s'), widgets_filename)
+        logger.info(_('Loading widget modules:'))
+    for module_name in module_list:
+        module_name = module_name.strip()
         widget_button = None
-        module_name = line.strip()
+
         if not module_name or module_name.startswith('#'):
             continue
         module_name = module_name.split('#')[0].strip()
+
         try:
-            fqmn = "%s" % module_name
-            imported_module = _import_module(widget_dir, fqmn)
-            if not imported_module:
-                logging.info(_('Module %s not found.'), fqmn)
+            if submodule:
+                fqmn = "%s.%s" % (module_name, submodule)
+            else:
+                fqmn = "%s" % module_name
+
+            module = _import_module(widget_dir, fqmn)
+            if not module:
+                logger.info(_('Module %s not found.'), fqmn)
                 continue
 
-            if hasattr(imported_module, 'initialize'):
+            if hasattr(module, 'initialize'):
                 # use individual initialisation
-                widget_button = imported_module.initialize()
+                widget_button = module.initialize()
+            elif not hasattr(module, 'initialize') and submodule:
+                    logger.warning(
+                        _('Missing function "initialize()" in imported '
+                          'module %s'),
+                        fqmn
+                    )
+                    continue
             else:
                 # use generic initialisation
+                # initialise Python code generator
                 codegen_name = '%s.codegen' % module_name
                 codegen_module = _import_module(widget_dir, codegen_name)
                 codegen_module.initialize()
+
+                # initialise GUI part
                 if config.use_gui:
                     gui_name = '%s.%s' % (module_name, module_name)
                     gui_module = _import_module(widget_dir, gui_name)
                     widget_button = gui_module.initialize()
+            if config.use_gui and widget_button and not submodule:
+                buttons.append(widget_button)
 
         except (AttributeError, ImportError, NameError, SyntaxError,
                 ValueError):
-            logging.exception(_('ERROR loading "%s"'), module_name)
+            logger.exception(_('ERROR loading "%s"'), module_name)
         except:
-            logging.exception(
+            logger.exception(
                 _('Unexpected error during import of widget module %s'),
                 module_name
             )
         else:
-            if config.use_gui:
-                logging.info('\t%s', module_name)
+            if config.use_gui and not is_codegen:
+                logger.info('\t%s', module_name)
             else:
-                logging.debug(
-                    _('Initialized widget %s'),
+                logger.debug(
+                    _('Widget %s imported'),
                     module_name,
                     )
-            if widget_button:
-                buttons.append(widget_button)
     return buttons
 
 
@@ -319,6 +365,9 @@ def _import_module(widget_dir, module):
     Import a single module from a ZIP file or from the directory structure.
 
     The consistency of ZIP files will be checked by calling L{is_valid_zip()}.
+
+    If widget ZIP files are found, they will be process first and the default
+    Python imports will be the second.
 
     Example::
         >>> _import_module('./mywidgets', 'static_text')
@@ -331,7 +380,7 @@ def _import_module(widget_dir, module):
     @type module:  String
 
     @return: Imported module or None in case of errors
-    @rtype:  None or ModuleType
+    @rtype:  Module or None
 
     @see: L{is_valid_zip()}
     """
