@@ -145,8 +145,8 @@ Path to wxGlade tutorial (HTML)
 
 use_gui = True
 """\
-If False, the program is invoked from the command-line in "batch" mode
-(for code generation only)
+If True, wxGlade runs in "GUI" mode. If False, the program is invoked
+from the command-line in "batch" mode for generating code only.
 
 @type: Boolean
 """
