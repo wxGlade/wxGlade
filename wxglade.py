@@ -299,8 +299,10 @@ def init_stage2(use_gui):
                 )
             sys.exit(1)
 
-        # store current platform (None is default)
+        # store current version and platform
+        # ('not_set' is default)
         config.platform = wx.Platform
+        config.wx_version = wx.__version__
 
         # codewrites, widgets and sizers are loaded in class main.wxGladeFrame
     else:

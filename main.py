@@ -1041,7 +1041,7 @@ def main(filename=None):
     """\
     if filename is not None, loads it
     """
-    logging.info(_("Using wxPython %s"), wx.__version__)
+    logging.info(_("Using wxPython %s"), config.wx_version)
 
     # now, silence a deprecation warning for py2.3
     import warnings

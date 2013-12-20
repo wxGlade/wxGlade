@@ -112,9 +112,26 @@ Path of the license file "license.txt"
 @note: This path will be set during initialisation
 """
 
-platform = None
+platform = 'not_set'
 """\
 Current platform (mostly wx.Platform)
+
+@type: String
+@note: This path will be set during initialisation
+"""
+
+version = 'not_set'
+"""\
+wxGlade version string
+
+@type: String
+@note: This path will be set during initialisation
+@see: L{common.set_version()}
+"""
+
+version_nohgfound = 'HG'
+"""\
+Version number to return if no hg repo has been found
 
 @type: String
 @note: This path will be set during initialisation
@@ -123,6 +140,13 @@ Current platform (mostly wx.Platform)
 py_version = sys.version.split()[0]
 """\
 Python version
+
+@type: String
+"""
+
+wx_version = 'not_set'
+"""\
+wxPython version
 
 @type: String
 """
@@ -149,23 +173,6 @@ If True, wxGlade runs in "GUI" mode. If False, the program is invoked
 from the command-line in "batch" mode for generating code only.
 
 @type: Boolean
-"""
-
-version = 'not_set'
-"""\
-wxGlade version string
-
-@type: String
-@note: This path will be set during initialisation
-@see: L{common.set_version()}
-"""
-
-version_nohgfound = 'HG'
-"""\
-Version number to return if no hg repo has been found
-
-@type: String
-@note: This path will be set during initialisation
 """
 
 widgets_path = 'widgets'
