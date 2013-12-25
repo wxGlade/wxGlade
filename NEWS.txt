@@ -8,8 +8,7 @@ General:
   - Write always an error log file
   - Improve widget import to be able to import widgets from ZIP files
   - Change configuration default to remember the position and geometry
-    of open of the three main windows. This change effects fresh installations
-    only.
+    of the three main windows. This change effects fresh installations only.
   - adapt GUI to run with wxPython 2.6 till 3.0
 
 Generated Code:
@@ -19,16 +18,15 @@ Generated Code:
  - ...
 
 Bugs:
-  - Fix escape sequences in Unicode strings were escaped twice Perl and
-    Python
+  - Fix escape sequences in Unicode strings were escaped twice Perl and Python
   - ...
 
 Documentation:
   - ...
 
 API (for custom widgets):
-  - Simplify signature of quote_str(), use quote_path() to quote /
-    escape filenames or paths
+  - Simplify signature of quote_str(), use quote_path() to quote / escape
+    filenames or paths
   - ...
 
 Note:
