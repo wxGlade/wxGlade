@@ -197,13 +197,18 @@ class wxGladeFormatter(logging.Formatter):
             try:
                 # log exception details
                 now = datetime.datetime.now().isoformat()
+                py_version = getattr(config, 'py_version', 'not found')
+                wx_version = getattr(config, 'wx_version', 'not found')
+                platform = getattr(config, 'platform', 'not found')
+                app_version = getattr(config, 'version', 'not found')
+
                 sio.write(_('An unexpected error occurred!\n'))
                 sio.write('\n')
                 sio.write(_('Date and time:      %s\n') % now)
-                sio.write(_('Python version:     %s\n') % config.py_version)
-                sio.write(_('wxPython version:   %s\n') % config.wx_version)
-                sio.write(_('wxWidgets platform: %s\n') % config.platform)
-                sio.write(_('wxGlade version:    %s\n') % config.version)
+                sio.write(_('Python version:     %s\n') % py_verion)
+                sio.write(_('wxPython version:   %s\n') % wx_version)
+                sio.write(_('wxWidgets platform: %s\n') % platform)
+                sio.write(_('wxGlade version:    %s\n') % app_version)
                 sio.write('\n')
                 sio.write(_('Exception type:    %s\n') % exc_type)
                 sio.write(_('Exception details: %s\n') % exc_value)
@@ -216,7 +221,7 @@ class wxGladeFormatter(logging.Formatter):
                 # get stack frames
                 stack_list = inspect.getinnerframes(exc_tb, 7)
                 stack_list.reverse()
-                stack_level=-1
+                stack_level = -1
 
                 for frame, filename, lineno, func_name, context, index in stack_list:
                     stack_level += 1
@@ -247,10 +252,10 @@ class wxGladeFormatter(logging.Formatter):
                             # convert name and value to ascii characters
                             var = frame.f_locals[var_name]
                             var_type = type(var)
-                            if var_type == types.UnicodeType:
+                            if isinstance(var_type, types.UnicodeType):
                                 var_value = frame.f_locals[var_name]
                                 var_value = var_value.encode('unicode_escape')
-                            elif var_type == types.StringType:
+                            elif isinstance(var_type, types.StringType):
                                 var_value = frame.f_locals[var_name]
                                 var_value = var_value.encode('string-escape')
                             else:
