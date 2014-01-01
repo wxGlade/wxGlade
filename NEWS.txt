@@ -22,6 +22,7 @@ Bugs:
   - Fix escape sequences in Unicode strings were escaped twice Perl and
     Python
   - Prevent code generation from a template file by commandline invocation
+  - Fix bug in generation of valid hash keys for Perl
   - ...
 
 Documentation:
