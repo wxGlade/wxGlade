@@ -22,7 +22,7 @@ in revision 81919 (27.12.2010) in the public Python repository.
 
 @todo: Integrate Unicode logging fix.
 
-@copyright: 2013 Carsten Grohmann
+@copyright: 2013-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -202,17 +202,17 @@ class wxGladeFormatter(logging.Formatter):
                 platform = getattr(config, 'platform', 'not found')
                 app_version = getattr(config, 'version', 'not found')
 
-                sio.write(_('An unexpected error occurred!\n'))
+                sio.write('An unexpected error occurred!\n')
                 sio.write('\n')
-                sio.write(_('Date and time:      %s\n') % now)
-                sio.write(_('Python version:     %s\n') % py_verion)
-                sio.write(_('wxPython version:   %s\n') % wx_version)
-                sio.write(_('wxWidgets platform: %s\n') % platform)
-                sio.write(_('wxGlade version:    %s\n') % app_version)
+                sio.write('Date and time:      %s\n' % now)
+                sio.write('Python version:     %s\n' % py_version)
+                sio.write('wxPython version:   %s\n' % wx_version)
+                sio.write('wxWidgets platform: %s\n' % platform)
+                sio.write('wxGlade version:    %s\n' % app_version)
                 sio.write('\n')
-                sio.write(_('Exception type:    %s\n') % exc_type)
-                sio.write(_('Exception details: %s\n') % exc_value)
-                sio.write(_('Application stack trace:\n'))
+                sio.write('Exception type:    %s\n' % exc_type)
+                sio.write('Exception details: %s\n' % exc_value)
+                sio.write('Application stack trace:\n')
 
                 # leave the exception handler if no traceback is available
                 if not exc_tb:
@@ -223,19 +223,21 @@ class wxGladeFormatter(logging.Formatter):
                 stack_list.reverse()
                 stack_level = -1
 
-                for frame, filename, lineno, func_name, context, index in stack_list:
+                for frame, filename, lineno, func_name, context, index in \
+                        stack_list:
+
                     stack_level += 1
                     func_args = inspect.formatargvalues(
                         *inspect.getargvalues(frame)
                     )
 
-                    msg = _('Stack frame at level %d' % stack_level)
+                    msg = 'Stack frame at level %d' % stack_level
                     sio.write('%s\n' % msg)
                     msg = '=' * len(msg)
                     sio.write('%s\n' % msg)
-                    sio.write(_('  File "%s", line %d\n') % (filename, lineno))
-                    sio.write(_('  Function "%s%s"\n') % (func_name, func_args))
-                    sio.write(_('  Source code context:\n'))
+                    sio.write('  File "%s", line %d\n' % (filename, lineno))
+                    sio.write('  Function "%s%s"\n' % (func_name, func_args))
+                    sio.write('  Source code context:\n')
 
                     pos = 0
                     for line in context:
@@ -247,7 +249,7 @@ class wxGladeFormatter(logging.Formatter):
                         pos += 1
 
                     if frame.f_locals:
-                        sio.write(_('  Local variables:\n'))
+                        sio.write('  Local variables:\n')
                         for var_name in frame.f_locals:
                             # convert name and value to ascii characters
                             var = frame.f_locals[var_name]
@@ -259,17 +261,19 @@ class wxGladeFormatter(logging.Formatter):
                                 var_value = frame.f_locals[var_name]
                                 var_value = var_value.encode('string-escape')
                             else:
-                                var_value = pprint.pformat(frame.f_locals[var_name])
+                                var_value = pprint.pformat(
+                                    frame.f_locals[var_name])
                                 var_value = var_value
-                            sio.write(_('  -> %s (%s): %s\n') % (
+                            sio.write('  -> %s (%s): %s\n' % (
                                 var_name, var_type, var_value)
                             )
                     else:
-                        sio.write(_('  No local variables\n'))
+                        sio.write('  No local variables\n')
                     sio.write('\n')
             except Exception, e:
                 # This code should NEVER be executed!
-                logging.error('Some strange things occurred: %s', e)
+                logging.error('An exception has been raised inside the '
+                              'exception handler: %s', e)
                 sys.exit(1)
 
         # delete local references of trace backs or part of them  to avoid
