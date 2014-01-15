@@ -283,7 +283,7 @@ def builder(parent, sizer, pos, number=[1]):
         label = 'radio_box_%d' % number[0]
     radio_box = EditRadioBox(label, parent, wx.NewId(), label,
                              [misc._encode('choice 1')],
-                             0, 0, sizer, pos, common.property_panel)
+                             1, 0, sizer, pos, common.property_panel)
     #sizer.set_item(pos, 0, 0, size=radio_box.GetSize())
     node = Tree.Node(radio_box)
     radio_box.node = node
@@ -302,7 +302,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    radio_box = EditRadioBox(label, parent, wx.NewId(), '', [], 0, 0,
+    radio_box = EditRadioBox(label, parent, wx.NewId(), '', [], 1, 0,
                              sizer, pos, common.property_panel)
     sizer.set_item(radio_box.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
