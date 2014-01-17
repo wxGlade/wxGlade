@@ -14,7 +14,7 @@ methods of the parent object.
 Like all other perl parts, based on the pre-existing python generators
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2012-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -196,7 +196,8 @@ class PerlCodeWriter(BaseLangCodeWriter):
     @cvar _perl_constant_list: Incomplete list of wx constants used in wxPerl
                                Constants don't follow the Wx::ObjectName name
                                schema. There is a need to handle constants
-                               separately. See also L{cn}.
+                               separately. See also L{cn} and
+                               wxPerl/trunk/Constant.xs.
     @type _perl_constant_list: List of strings
 
     @see: L{BaseLangCodeWriter}
@@ -400,25 +401,51 @@ unless(caller){
 """
 
     _perl_constant_list = [
-         "wxALL", "wxTOP", "wxBOTTOM", "wxLEFT", "wxRIGHT",
-         "wxNORTH", "wxSOUTH", "wxWEST", "wxEAST",
-         "wxEXPAND", "wxGROW", "wxSHAPED", "wxFIXED_MINSIZE",
-         "wxCAPTION", "wxMINIMIZE_BOX", "wxMAXIMIZE_BOX", "wxRESIZE_BORDER",
-         "wxYES_NO", "wxYES", "wxNO", "wxCANCEL", "wxOK",
-         "wxICON_EXCLAMATION", "wxICON_HAND", "wxICON_ERROR", "wxICON_QUESTION",
-         "wxICON_INFORMATION",
-         "wxBLACK", "wxWHITE", "wxRED", "wxBLUE", "wxGREEN", "wxCYAN",
-         "wxLIGHT_GREY",
-         'wxDEFAULT', 'wxDECORATIVE', 'wxROMAN', 'wxSWISS', 'wxSCRIPT',
-         'wxMODERN', 'wxTELETYPE',
-         'wxNORMAL', 'wxSLANT', 'wxITALIC', 'wxNORMAL', 'wxLIGHT',
-         'wxBOLD',
-         'wxHORIZONTAL', 'wxVERTICAL',
-         'wxALIGN_CENTER', 'wxALIGN_CENTRE', 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
-         'wxALIGN_TOP', 'wxALIGN_BOTTOM','wxALIGN_CENTER_VERTICAL',
-         'wxALIGN_CENTRE_VERTICAL', 'wxALIGN_CENTER_HORIZONTAL',
-         'wxALIGN_CENTRE_HORIZONTAL',
-        ]
+        "wxALL", "wxTOP", "wxBOTTOM", "wxLEFT", "wxRIGHT", "wxDOWN",
+
+        "wxNORTH", "wxSOUTH", "wxWEST", "wxEAST",
+
+        "wxEXPAND", "wxGROW", "wxSHAPED", "wxFIXED_MINSIZE",
+
+        "wxCAPTION", "wxMINIMIZE_BOX", "wxMAXIMIZE_BOX", "wxRESIZE_BORDER",
+
+        "wxYES_NO", "wxYES", "wxNO", 'wxYES_DEFAULT', 'wxNO_DEFAULT',
+        "wxCANCEL", "wxOK",
+
+        # Colours
+        "wxBLACK", "wxWHITE", "wxRED", "wxBLUE", "wxGREEN", "wxCYAN",
+        "wxLIGHT_GREY",
+
+        'wxDEFAULT', 'wxDECORATIVE', 'wxROMAN', 'wxSWISS', 'wxSCRIPT',
+        'wxMODERN', 'wxTELETYPE',
+        'wxNORMAL', 'wxSLANT', 'wxITALIC', 'wxNORMAL', 'wxLIGHT', 'wxBOLD',
+        'wxNORMAL_FONT', 'wxSMALL_FONT', 'wxITALIC_FONT', 'wxSWISS_FONT',
+
+        'wxHORIZONTAL', 'wxVERTICAL',
+        'wxALIGN_CENTER', 'wxALIGN_CENTRE', 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
+        'wxALIGN_TOP', 'wxALIGN_BOTTOM', 'wxALIGN_CENTER_VERTICAL',
+        'wxALIGN_CENTRE_VERTICAL', 'wxALIGN_CENTER_HORIZONTAL',
+        'wxALIGN_CENTRE_HORIZONTAL',
+        'wxSTANDARD_CURSOR', 'wxHOURGLASS_CURSOR', 'wxCROSS_CURSOR',
+
+        'wxTheClipboard', 'wxFormatInvalid', 'wxThePrintPaperDatabase',
+        'wxNullAnimation', 'wxNullBitmap', 'wxNullIcon', 'wxNullColour',
+        'wxNullColour', 'wxNullCursor', 'wxNullFont', 'wxNullPen',
+        'wxNullBrush', 'wxNullPalette', 'wxNullAcceleratorTable',
+
+        # wxStaticLine
+        'wxLI_HORIZONTAL', 'wxLI_VERTICAL',
+
+        # wxHyperlink
+        'wxHL_CONTEXTMENU', 'wxHL_ALIGN_LEFT', 'wxHL_ALIGN_RIGHT',
+        'wxHL_ALIGN_CENTRE', 'wxHL_DEFAULT_STYLE',
+
+        'wxMAJOR_VERSION', 'wxMINOR_VERSION',
+
+        # wxSplitterWindow
+        'wxSPLIT_HORIZONTAL', 'wxSPLIT_VERTICAL',
+
+    ]
 
     def cn(self, name):
         """\
@@ -427,11 +454,47 @@ unless(caller){
         @see: L{self._perl_constant_list}
         """
         # handles constants like event or language identifiers
-        if name.startswith('wxID_')       or \
-           name.startswith('wxK_')        or \
-           name.startswith('wxMOD_')      or \
+        if name.startswith('wxBITMAP_TYPE_') or \
+           name.startswith('wxBORDER_') or \
+           name.startswith('wxBRUSHSTYLE_') or \
+           name.startswith('wxBU_') or \
+           name.startswith('wxCB_') or \
+           name.startswith('wxCC_') or \
+           name.startswith('wxCHB_') or \
+           name.startswith('wxCHK_') or \
+           name.startswith('wxCURSOR_') or \
+           name.startswith('wxDD_') or \
+           name.startswith('wxEVT_') or \
+           name.startswith('wxFONTENCODING_') or \
+           name.startswith('wxFONTFAMILY_') or \
+           name.startswith('wxFONTSTYLE_') or \
+           name.startswith('wxFONTWEIGHT_') or \
+           name.startswith('wxFONTFLAG_') or \
+           name.startswith('wxFRAME_') or \
+           name.startswith('wxGA_') or \
+           name.startswith('wxICON_') or \
+           name.startswith('wxID_') or \
+           name.startswith('wxK_') or \
            name.startswith('wxLANGUAGE_') or \
-           name.startswith('wxALIGN_')    or \
+           name.startswith('wxLB_') or \
+           name.startswith('wxMOD_') or \
+           name.startswith('wxNB_') or \
+           name.startswith('wxALIGN_') or \
+           name.startswith('wxDefault') or \
+           name.startswith('wxPD_') or \
+           name.startswith('wxPROPSHEET_') or \
+           name.startswith('wxRA_') or \
+           name.startswith('wxRB_') or \
+           name.startswith('wxSL_') or \
+           name.startswith('wxSP_') or \
+           name.startswith('wxSPLASH_') or \
+           name.startswith('wxST_') or \
+           name.startswith('wxSys_') or \
+           name.startswith('wxSW_') or \
+           name.startswith('wxSASH_') or \
+           name.startswith('wxTB_') or \
+           name.startswith('wxTE_') or \
+           name.startswith('wxWIZARD_') or \
            name in self._perl_constant_list:
             return name
 
@@ -512,7 +575,7 @@ unless(caller){
         if code_obj.preview or (custom_base and not custom_base.strip()):
             custom_base = None
 
-        new_signature = getattr(builder, 'new_signature', [] )
+        new_signature = getattr(builder, 'new_signature', [])
 
         # generate constructor code
         if is_new:
@@ -691,7 +754,7 @@ unless(caller){
     def quote_key(self, s):
         """\
         returns a possibly quoted version of 's', suitable to insert in a perl
-        source file as a hask key. Takes care also of gettext support
+        source file as a hash key. Takes care also of gettext support
         """
         if not s:
             return '""'
