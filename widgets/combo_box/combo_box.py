@@ -161,7 +161,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'combo_box_%d' % number[0]
-    choice = EditComboBox(name, parent, wx.NewId(), #[misc._encode('choice 1')],
+    choice = EditComboBox(name, parent, wx.NewId(), #[misc.encode('choice 1')],
                           [], sizer, pos, common.property_panel)
     node = Tree.Node(choice)
 #    sizer.set_item(pos, size=choice.GetBestSize())

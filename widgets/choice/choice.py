@@ -117,7 +117,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'choice_%d' % number[0]
     choice = EditChoice(name, parent, wx.NewId(), [],
-                        #[misc._encode('choice 1')],
+                        #[misc.encode('choice 1')],
                         sizer, pos, common.property_panel)
     node = Tree.Node(choice)
     #sizer.set_item(pos, size=choice.GetBestSize())

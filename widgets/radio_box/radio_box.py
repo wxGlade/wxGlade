@@ -282,7 +282,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'radio_box_%d' % number[0]
     radio_box = EditRadioBox(label, parent, wx.NewId(), label,
-                             [misc._encode('choice 1')],
+                             [misc.encode('choice 1')],
                              1, 0, sizer, pos, common.property_panel)
     #sizer.set_item(pos, 0, 0, size=radio_box.GetSize())
     node = Tree.Node(radio_box)

@@ -170,7 +170,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'button_%d' % number[0]
-    button = EditButton(label, parent, wx.NewId(), misc._encode(label), sizer,
+    button = EditButton(label, parent, wx.NewId(), misc.encode(label), sizer,
                         pos, common.property_panel)
     node = Tree.Node(button)
     button.node = node

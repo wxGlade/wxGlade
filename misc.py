@@ -48,7 +48,7 @@ If not None, this is the SizerSlot wich has the "mouse focus": this is used
 to restore the mouse cursor if the user cancelled the addition of a widget
 """
 
-_encode = common._encode_from_xml
+encode = common._encode_from_xml
 
 _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
 
