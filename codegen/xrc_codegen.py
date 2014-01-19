@@ -364,7 +364,7 @@ class XRCCodeWriter(BaseLangCodeWriter):
             if sub_obj in self.xrc_objects:
                 del self.xrc_objects[sub_obj]
         # let's see if sub_obj's parent already has an XrcObject: if so, it is
-        # temporairly stored in the self.xrc_objects dict...
+        # temporarily stored in the self.xrc_objects dict...
         if top_obj in self.xrc_objects:
             top_xrc = self.xrc_objects[top_obj]
         else:
