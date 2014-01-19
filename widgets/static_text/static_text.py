@@ -1,12 +1,13 @@
-# static_text.py: wxStaticText objects
-# $Id: static_text.py,v 1.16 2007/03/27 07:01:52 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxStaticText objects
+
+@copyright: 2002-2007 Alberto Griggio
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
-import common, misc
+import common
+import misc
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *

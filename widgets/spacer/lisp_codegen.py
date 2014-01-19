@@ -1,24 +1,23 @@
+"""\
+Lisp generator functions for spacers
 
-# lisp_codegen.py : lisp generator functions for spacers
-# $Id: lisp_codegen.py,v 1.2 2007/02/09 22:24:06 dinogen Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
+import wcodegen
 
 
-class LispCodeGenerator:
-    def get_code(self, spacer):
-        prop = spacer.properties
-        width = prop.get('width', '0')
-        height = prop.get('height', '0')
-        # we must use the hack in plgen.add_sizeritem (see pl_codegen.py)
-        spacer.name = '%s, %s' % (width, height)
-        return [], [], []
+class LispSpacerGenerator(wcodegen.LispWidgetCodeWriter):
 
-# end of class LispCodeGenerator
+    # spacers are generally handled by a hack:
+    # The the implementations of add_sizeritem() contains more details.
+    # The code generation code is already implemented in base class.
+    pass
+
+# end of class LispSpacerGenerator
 
 
 def initialize():
@@ -26,4 +25,4 @@ def initialize():
 
     plgen = common.code_writers.get('lisp')
     if plgen:
-        plgen.add_widget_handler('spacer', LispCodeGenerator())
+        plgen.add_widget_handler('spacer', LispSpacerGenerator())

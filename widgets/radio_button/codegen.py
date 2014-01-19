@@ -1,62 +1,36 @@
-# codegen.py: code generator functions for wxRadioButton objects
-# $Id: codegen.py,v 1.14 2007/03/27 07:01:54 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Code generator functions for wxRadioButton objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
+import wcodegen
 
 
-class PythonCodeGenerator:
-    def get_code(self, obj):
-        pygen = common.code_writers['python']
-        prop = obj.properties
-        id_name, id = pygen.generate_code_id(obj)
-        label = pygen.quote_str(prop.get('label', ''))
-        if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-        else: parent = 'self'
-        style = prop.get("style")
-        if style: style = ", style=%s" % pygen.cn_f(style)
-        else: style = ''
-        init = []
-        if id_name: init.append(id_name)
-        klass = obj.klass
-        if klass == obj.base: klass = pygen.cn(klass)
-        init.append('self.%s = %s(%s, %s, %s%s)\n' %
-                    (obj.name, klass, parent, id, label, style))
-        props_buf = pygen.generate_common_properties(obj)
-        clicked = prop.get('clicked')
-        if clicked: props_buf.append('self.%s.SetValue(1)\n' % obj.name)
-        return init, props_buf, []
+class PythonRadioButtonGenerator(wcodegen.PythonWidgetCodeWriter):
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
 
-# end of class PythonCodeGenerator
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
+        self.has_setvalue1 = obj.properties.get('clicked', False)
+        return
+
+# end of class PythonRadioButtonGenerator
 
 
-class CppCodeGenerator:
-    def get_code(self, obj):
-        """\
-        generates the C++ code for wxRadioButton objects
-        """
-        cppgen = common.code_writers['C++']
-        prop = obj.properties
-        id_name, id = cppgen.generate_code_id(obj)
-        if id_name: ids = [ id_name ]
-        else: ids = []
-        label = cppgen.quote_str(prop.get('label', ''))
-        if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-        else: parent = 'this'
-        extra = ''
-        style = prop.get("style")
-        if style: extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        init = ['%s = new %s(%s, %s, %s%s);\n' %
-                (obj.name, obj.klass, parent, id, label, extra) ]
-        props_buf = cppgen.generate_common_properties(obj)
-        clicked = prop.get('clicked')
-        if clicked: props_buf.append('%s->SetValue(1);\n' % obj.name)
-        return init, ids, props_buf, []
+class CppRadioButtonGenerator(wcodegen.CppWidgetCodeWriter):
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
+           '%(label)s%(style)s);\n'
 
-# end of class CppCodeGenerator
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
+        self.has_setvalue1 = obj.properties.get('clicked', False)
+        return
+
+# end of class CppRadioButtonGenerator
 
 
 def xrc_code_generator(obj):
@@ -80,10 +54,10 @@ def initialize():
     # python code generation functions
     pygen = common.code_writers.get("python")
     if pygen:
-        pygen.add_widget_handler('wxRadioButton', PythonCodeGenerator())
+        pygen.add_widget_handler('wxRadioButton', PythonRadioButtonGenerator())
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        cppgen.add_widget_handler('wxRadioButton', CppCodeGenerator())
+        cppgen.add_widget_handler('wxRadioButton', CppRadioButtonGenerator())
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
         xrcgen.add_widget_handler('wxRadioButton', xrc_code_generator)

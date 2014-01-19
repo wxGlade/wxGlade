@@ -1,46 +1,32 @@
-# lisp_codegen.py : lisp generator functions for wxGauge objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:59:38 efuzzyone Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Lisp generator functions for wxGauge objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
 
 import common
+import wcodegen
 
-class LispCodeGenerator:
-    def get_code(self, obj):
-        init = []
 
-        codegen = common.code_writers['lisp']
-        prop = obj.properties
-        id_name, id = codegen.generate_code_id(obj)
-        g_range = prop.get('range', '10')
+class LispGaugeGenerator(wcodegen.LispWidgetCodeWriter):
 
-        if not obj.parent.is_toplevel:
-            parent = '(slot-%s obj)' % obj.parent.name
-        else:
-            parent = '(slot-top-window obj)'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
+           '%(range)s -1 -1 -1 -1 %(style)s))\n'
+    default_style = 'wxGA_HORIZONTAL'
 
-        style = prop.get("style")
-        if not style:
-            style = '0'
-        else:
-            style = codegen.cn_f(style)
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
+        self.tmpl_dict['range'] = obj.properties.get('range', '10')
+        return
 
-        if id_name: init.append(id_name)
-
-        init.append('(setf (slot-%s obj) (wxGauge_Create %s %s %s -1 -1 -1 -1 %s))\n' %
-                    (obj.name, parent, id, g_range, style))
-        props_buf = codegen.generate_common_properties(obj)
-
-        return init, props_buf, []
-
-# end of class LispCodeGenerator
+# end of class LispGaugeGenerator
 
 def initialize():
     common.class_names['EditGauge'] = 'wxGauge'
 
     codegen = common.code_writers.get('lisp')
     if codegen:
-        codegen.add_widget_handler('wxGauge', LispCodeGenerator())
-
+        codegen.add_widget_handler('wxGauge', LispGaugeGenerator())

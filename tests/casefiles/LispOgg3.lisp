@@ -98,7 +98,7 @@
         (slot-top-window obj).wxWindow_SetSize((500, 300))
         (wxRadioBox_SetSelection (slot-radio-box-1 obj) 0)
         (wxWindow_SetToolTip (slot-checkbox-1 obj)(_"Overwrite an existing file"))
-        (wxCheckBox_SetValue (slot-checkbox-1 obj) 1);
+        (wxCheckBox_SetValue (slot-checkbox-1 obj) 1)
         ;;; end wxGlade
         )
 
@@ -141,8 +141,8 @@
         (wxWindow_SetSizer (slot-frame obj) (slot-sizer-1 obj))
         (wxFlexGridSizer_AddGrowableRow (slot-sizer-1 obj) 0)
         (wxFlexGridSizer_AddGrowableCol (slot-sizer-1 obj) 0)
-        (wxWindow_layout (slot-Mp3-To-Ogg slef))
-        (wxWindow_Centre (slot-Mp3-To-Ogg slef) wxBOTH)
+        (wxWindow_layout (slot-Mp3-To-Ogg self))
+        (wxWindow_Centre (slot-Mp3-To-Ogg self) wxBOTH)
         ;;; end wxGlade
         )
 
@@ -245,7 +245,7 @@
         (wxFlexGridSizer_AddGrowableCol (slot-grid-sizer-3 obj) 0)
         (wxSizer_AddSizer (slot-sizer-5 obj) (slot-grid-sizer-3 obj) 1 wxEXPAND 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-5 obj))
-        (wxFrame_layout (slot-FrameOggCompressionDetails slef))
+        (wxFrame_layout (slot-FrameOggCompressionDetails self))
         ;;; end wxGlade
         )
 

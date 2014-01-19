@@ -58,7 +58,7 @@
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
-        (wxFrame_layout (slot-frame-1 slef))
+        (wxFrame_layout (slot-frame-1 self))
         ;;; end wxGlade
         )
 

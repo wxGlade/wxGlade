@@ -124,22 +124,22 @@
         ;;; begin wxGlade: wxGladePreferencesUI.__set_properties
         (wxWindow_SetTitle (slot-dialog-1 self) (_"wxGlade: preferences"))
         ;;; generating code for setting icons is not implemented
-        (wxCheckBox_SetValue (slot-use-menu-icons obj) 1);
-        (wxCheckBox_SetValue (slot-frame-tool-win obj) 1);
-        (wxCheckBox_SetValue (slot-show-progress obj) 1);
-        (wxCheckBox_SetValue (slot-remember-geometry obj) 1);
-        (wxCheckBox_SetValue (slot-show-sizer-handle obj) 1);
-        (wxCheckBox_SetValue (slot-use-kde-dialogs obj) 1);
+        (wxCheckBox_SetValue (slot-use-menu-icons obj) 1)
+        (wxCheckBox_SetValue (slot-frame-tool-win obj) 1)
+        (wxCheckBox_SetValue (slot-show-progress obj) 1)
+        (wxCheckBox_SetValue (slot-remember-geometry obj) 1)
+        (wxCheckBox_SetValue (slot-show-sizer-handle obj) 1)
+        (wxCheckBox_SetValue (slot-use-kde-dialogs obj) 1)
         (slot-open-save-path obj).SetMinSize((196, -1))
         (slot-codegen-path obj).SetMinSize((196, -1))
         (slot-number-history obj).SetMinSize((196, -1))
         (slot-buttons-per-row obj).SetMinSize((196, -1))
-        (wxCheckBox_SetValue (slot-wxg-backup obj) 1);
-        (wxCheckBox_SetValue (slot-codegen-backup obj) 1);
+        (wxCheckBox_SetValue (slot-wxg-backup obj) 1)
+        (wxCheckBox_SetValue (slot-codegen-backup obj) 1)
         (wxWindow_Hide (slot-allow-duplicate-names obj))
         (slot-default-border-size obj).SetMinSize((45, 22))
         (slot-autosave-delay obj).SetMinSize((45, 22))
-        (wxCheckBox_SetValue (slot-write-timestamp obj) 1);
+        (wxCheckBox_SetValue (slot-write-timestamp obj) 1)
         (wxRadioBox_SetSelection (slot-backup-suffix obj) 0)
         (wxButton_SetDefault (slot-ok obj))
         ;;; end wxGlade
@@ -202,8 +202,8 @@
         (wxSizer_AddSizer (slot-sizer-1 obj) (slot-sizer-2 obj) 0 (logior wxALL wxALIGN_RIGHT) 10 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
-        (wxWindow_layout (slot-dialog-1 slef))
-        (wxWindow_Centre (slot-dialog-1 slef) wxBOTH)
+        (wxWindow_layout (slot-dialog-1 self))
+        (wxWindow_Centre (slot-dialog-1 self) wxBOTH)
         ;;; end wxGlade
         )
 

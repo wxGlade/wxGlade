@@ -36,7 +36,7 @@ sub new {
 
         $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
         $self->{text_ctrl_1} = Wx::TextCtrl->new($self, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-        $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+        $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
         $self->{button_2} = Wx::Button->new($self, wxID_OK, "");
         $self->{button_1} = Wx::Button->new($self, wxID_CANCEL, "");
 

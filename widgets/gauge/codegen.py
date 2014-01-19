@@ -1,60 +1,38 @@
-# codegen.py: code generator functions for wxGauge objects
-# $Id: codegen.py,v 1.10 2007/03/27 07:01:59 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Code generator functions for wxGauge objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
-
-class PythonCodeGenerator:
-    def get_code(self, obj):
-        pygen = common.code_writers['python']
-        prop = obj.properties
-        id_name, id = pygen.generate_code_id(obj)
-        g_range = prop.get('range', '10')
-        if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-        else: parent = 'self'
-        style = prop.get("style")
-        if style and style != 'wxGA_HORIZONTAL':
-            style = ", style=%s" % pygen.cn_f(style)
-        else:
-            style = ''
-        init = []
-        if id_name: init.append(id_name)
-        klass = obj.klass
-        if klass == obj.base: klass = pygen.cn(klass)
-        init.append('self.%s = %s(%s, %s, %s%s)\n' %
-                    (obj.name, klass, parent, id, g_range, style))
-        props_buf = pygen.generate_common_properties(obj)
-        return init, props_buf, []
-
-# end of class PythonCodeGenerator
+import wcodegen
 
 
-class CppCodeGenerator:
-    def get_code(self, obj):
-        """\
-        generates the C++ code for wxGauge objects
-        """
-        cppgen = common.code_writers['C++']
-        prop = obj.properties
-        id_name, id = cppgen.generate_code_id(obj)
-        if id_name: ids = [ id_name ]
-        else: ids = []
-        g_range = prop.get('range', '10')
-        if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-        else: parent = 'this'
-        extra = ''
-        style = prop.get("style")
-        if style and style != 'wxGA_HORIZONTAL':
-            extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        init = ['%s = new %s(%s, %s, %s%s);\n' %
-                (obj.name, obj.klass, parent, id, g_range, extra)]
-        props_buf = cppgen.generate_common_properties(obj)
-        return init, ids, props_buf, []
+class PythonGaugeGenerator(wcodegen.PythonWidgetCodeWriter):
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(range)s%(style)s)\n'
+    default_style = 'wxGA_HORIZONTAL'
 
-# end of class CppCodeGenerator
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
+        self.tmpl_dict['range'] = obj.properties.get('range', '10')
+        return
+
+# end of class PythonGaugeGenerator
+
+
+class CppGaugeGenerator(wcodegen.CppWidgetCodeWriter):
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
+           '%(range)s%(style)s);\n'
+    default_style = 'wxGA_HORIZONTAL'
+
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
+        self.tmpl_dict['range'] = obj.properties.get('range', '10')
+        return
+
+# end of class CppGaugeGenerator
 
 
 def initialize():
@@ -62,8 +40,7 @@ def initialize():
 
     pygen = common.code_writers.get("python")
     if pygen:
-        pygen.add_widget_handler('wxGauge', PythonCodeGenerator())
+        pygen.add_widget_handler('wxGauge', PythonGaugeGenerator())
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        cppgen.add_widget_handler('wxGauge', CppCodeGenerator())
-    
+        cppgen.add_widget_handler('wxGauge', CppGaugeGenerator())

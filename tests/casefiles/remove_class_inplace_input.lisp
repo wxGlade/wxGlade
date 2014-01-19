@@ -74,7 +74,7 @@
         (wxWindow_SetSizer (slot-frame obj) (slot-grid-sizer-1 obj))
         (wxSizer_Fit (slot-grid-sizer-1 obj) (slot-frame obj))
         (wxFlexGridSizer_AddGrowableRow (slot-grid-sizer-1 obj) 0)
-        (wxWindow_layout (slot-dialog-1 slef))
+        (wxWindow_layout (slot-dialog-1 self))
         ;;; end wxGlade
         )
 
@@ -104,7 +104,7 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyDialog1.__init__
         (setf (slot-top-window obj) (wxDialog_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_DIALOG_STYLE))
-        (setf (slot-hyperlink-1 obj) (wxHyperlinkCtrl (slot-top-window obj) wxID_ANY (_"Visit wxGlade home page") (_"http://wxglade.sf.net") -1 -1 -1 -1 0))
+        (setf (slot-hyperlink-1 obj) (wxHyperlinkCtrl_Create (slot-top-window obj) wxID_ANY (_"Visit wxGlade home page") (_"http://wxglade.sf.net") -1 -1 -1 -1 0))
         ;;; end wxGlade
         )
 
@@ -120,7 +120,7 @@
         (wxSizer_AddWindow (slot-sizer-2 obj) (slot-hyperlink-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-2 obj))
         (wxSizer_Fit (slot-sizer-2 obj) (slot-top-window obj))
-        (wxWindow_layout (slot-dialog-2 slef))
+        (wxWindow_layout (slot-dialog-2 self))
         ;;; end wxGlade
         )
 

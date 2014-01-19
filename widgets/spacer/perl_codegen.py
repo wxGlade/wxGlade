@@ -1,23 +1,23 @@
-# perl_codegen.py : perl generator functions for spacers
-# $Id: perl_codegen.py,v 1.2 2004/09/17 13:09:50 agriggio Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Perl generator functions for spacers
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
+import wcodegen
 
 
-class PerlCodeGenerator:
-    def get_code(self, spacer):
-        prop = spacer.properties
-        width = prop.get('width', '0')
-        height = prop.get('height', '0')
-        # we must use the hack in plgen.add_sizeritem (see pl_codegen.py)
-        spacer.name = '%s, %s' % (width, height)
-        return [], [], []
+class PerlSpacerGenerator(wcodegen.PerlWidgetCodeWriter):
 
-# end of class PerlCodeGenerator
+    # spacers are generally handled by a hack:
+    # The the implementations of add_sizeritem() contains more details.
+    # The code generation code is already implemented in base class.
+    pass
+
+# end of class PerlSpacerGenerator
 
 
 def initialize():
@@ -25,4 +25,4 @@ def initialize():
 
     plgen = common.code_writers.get('perl')
     if plgen:
-        plgen.add_widget_handler('spacer', PerlCodeGenerator())
+        plgen.add_widget_handler('spacer', PerlSpacerGenerator())

@@ -29,7 +29,7 @@ CPPOgg2_MyDialog::CPPOgg2_MyDialog(wxWindow* parent, int id, const wxString& tit
     button_3 = new wxButton(notebook_1_pane_1, wxID_OPEN, wxEmptyString);
     const wxString radio_box_1_choices[] = {
         _("44 kbit"),
-        _("128 kbit")
+        _("128 kbit"),
     };
     radio_box_1 = new wxRadioBox(notebook_1_pane_2, wxID_ANY, _("Sampling Rate"), wxDefaultPosition, wxDefaultSize, 2, radio_box_1_choices, 0, wxRA_SPECIFY_ROWS);
     text_ctrl_2 = new wxTextCtrl(notebook_1_pane_3, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);

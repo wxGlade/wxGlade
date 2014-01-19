@@ -1,80 +1,76 @@
-# codegen.py: code generator functions for wxFrame objects
-# $Id: lisp_codegen.py,v 1.3 2007/03/27 07:02:00 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Code generator functions for wxFrame objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
+import wcodegen
 from MenuTree import *
 from codegen import StatusFieldsHandler
 
 
-class LispStatusBarCodeGenerator:
-    def get_code(self, obj):
-        """\
-        function that generates code for the statusbar of a wxFrame.
-        """
-        lispgen = common.code_writers['lisp']
-        labels, widths = obj.properties['statusbar']
-        style = obj.properties.get("style")
-        if not style: style = '0'
-        init = [ '(setf (slot-%s obj) (wxFrame_CreateStatusBar (slot-top-window obj) %s %s))\n'
-                 % (obj.name, len(labels), style) ]
-        props = []
+class LispStatusBarCodeGenerator(wcodegen.LispWidgetCodeWriter):
+    tmpl = '(setf %(name)s (wxFrame_CreateStatusBar ' \
+           '(slot-top-window obj) %(labels_len)s %(style)s))\n'
 
-        append = props.append
-        append('(wxStatusBar_SetStatusWidths (slot-%s obj) %s (vector %s))\n'
-            %  (obj.name, len(widths),' '.join(map(str, widths))))
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
+
+        labels, widths = obj.properties['statusbar']
+        self.tmpl_dict['labels_len'] = len(labels)
+        self.tmpl_dict['widths'] = ' '.join(map(str, widths))
+        self.tmpl_dict['widths_len'] = len(widths)
+
+        self.tmpl_props.append(
+            '(wxStatusBar_SetStatusWidths %(name)s %(widths_len)s '
+            '(vector %(widths)s))\n'
+        )
 
         i = 0
-        for l in labels:
-            append('\t (wxStatusBar_SetStatusText (slot-%s obj) %s %s)\n'
-                   % (obj.name, lispgen.quote_str(l),i) )
-            i=i+1
-        return init, props, []
+        for lb in labels:
+            stmt = '(wxStatusBar_SetStatusText %%(name)s %s %d)\n' % (
+                self.codegen.quote_str(lb), i)
+            self.tmpl_props.append(stmt)
+            i = +1
 
 # end of class LispStatusBarCodeGenerator
 
 
-class LispFrameCodeGenerator:
-#wxFrame(  parent, id, title, pos , size , style , name )
-    new_signature = [
-        '$parent', '$id', '$title', '$pos', '$size', '$style', '$name'
-    ]
+class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_code(self, obj):
-        return [], [], [], [] # the frame can't be a children
+        return [], [], [], []  # the frame can't be a children
 
-    def get_properties_code(self, frame):
-        """\
-        generates the code for the various wxFrame specific properties.
-        Returns a list of strings containing the generated code
-        """
-        prop = frame.properties
-        lispgen = common.code_writers['lisp']
+    def get_properties_code(self, obj):
         out = []
-        title = prop.get('title')
+        append = out.append
+        title = obj.properties.get('title')
         if title:
-            out.append('(wxFrame_SetTitle (slot-top-window obj) %s)\n' % \
-                    lispgen.quote_str(title))
+            append('(wxFrame_SetTitle (slot-top-window obj) %s)\n' %
+                   self.codegen.quote_str(title))
 
-        icon = prop.get('icon')
+        icon = obj.properties.get('icon')
         if icon:
-            out.append(
+            append(
                 ';;; generating code for setting icons is not implemented\n'
                 )
-            
-        out.extend(lispgen.generate_common_properties(frame))
+
+        out.extend(self.codegen.generate_common_properties(obj))
         return out
 
-    def get_layout_code(self, frame):
-        ret = ['(wxFrame_layout (slot-%s slef))\n' % frame.name]
+    def get_layout_code(self, obj):
+        ret = ['(wxFrame_layout (slot-%s self))\n' % obj.name]
         try:
-            if int(frame.properties['centered']):
+            if int(obj.properties['centered']):
                 ret.append('(wxFrame_Centre (slot-top-window obj) wxBOTH)\n')
         except (KeyError, ValueError):
             pass
+        if obj.properties.get('size', '').strip() and \
+           self.codegen.for_version < (2, 8):
+            ret.append(self.codegen.generate_code_size(obj))
         return ret
 
 # end of class LispFrameCodeGenerator
@@ -82,7 +78,6 @@ class LispFrameCodeGenerator:
 
 class LispMDIChildFrameCodeGenerator(LispFrameCodeGenerator):
     extra_headers = ['Wx::MDI']
-#wxMDIChildFrame(parent, id, title, pos, size, style, name )
 
 # end of class LispMDIChildFrameCodeGenerator
 
@@ -97,13 +92,12 @@ def initialize():
 
     lispgen = common.code_writers.get('lisp')
     if lispgen:
-        lispgen.add_widget_handler('wxFrame', LispFrameCodeGenerator())
-        lispgen.add_widget_handler('wxMDIChildFrame',
-                                  LispMDIChildFrameCodeGenerator())
-        
-        lispgen.add_widget_handler('wxStatusBar', LispStatusBarCodeGenerator())
-        
-        lispgen.add_property_handler('fields', StatusFieldsHandler)
-        lispgen.add_property_handler('menubar', lispgen.DummyPropertyHandler)
-        lispgen.add_property_handler('statusbar', lispgen.DummyPropertyHandler)
+        awh = lispgen.add_widget_handler
+        awh('wxFrame', LispFrameCodeGenerator())
+        awh('wxMDIChildFrame', LispMDIChildFrameCodeGenerator())
+        awh('wxStatusBar', LispStatusBarCodeGenerator())
 
+        aph = lispgen.add_property_handler
+        aph('fields', StatusFieldsHandler)
+        aph('menubar', lispgen.DummyPropertyHandler)
+        aph('statusbar', lispgen.DummyPropertyHandler)

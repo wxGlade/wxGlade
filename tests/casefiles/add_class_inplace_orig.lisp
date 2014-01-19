@@ -73,7 +73,7 @@
         (wxWindow_SetSizer (slot-frame obj) (slot-grid-sizer-1 obj))
         (wxSizer_Fit (slot-grid-sizer-1 obj) (slot-frame obj))
         (wxFlexGridSizer_AddGrowableRow (slot-grid-sizer-1 obj) 0)
-        (wxWindow_layout (slot-dialog-1 slef))
+        (wxWindow_layout (slot-dialog-1 self))
         ;;; end wxGlade
         )
 

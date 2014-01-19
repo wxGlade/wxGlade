@@ -36,7 +36,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, 
     wxglade_tmp_menu_2->Append(wxID_ABOUT, _("&About"), _("About dialog"), wxITEM_NORMAL);
     Mp3_To_Ogg_menubar->Append(wxglade_tmp_menu_2, _("&Help"));
     SetMenuBar(Mp3_To_Ogg_menubar);
-    Mp3_To_Ogg_statusbar = CreateStatusBar(2, 0);
+    Mp3_To_Ogg_statusbar = CreateStatusBar(2);
     Mp3_To_Ogg_toolbar = new wxToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT);
     SetToolBar(Mp3_To_Ogg_toolbar);
     Mp3_To_Ogg_toolbar->AddTool(wxID_OPEN, _("&Open"), (wxNullBitmap), wxNullBitmap, wxITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"));
@@ -45,7 +45,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, 
     button_3 = new wxButton(notebook_1_pane_1, wxID_OPEN, wxEmptyString);
     const wxString rbx_sampling_rate_choices[] = {
         _("44 kbit"),
-        _("128 kbit")
+        _("128 kbit"),
     };
     rbx_sampling_rate = new wxRadioBox(notebook_1_pane_2, wxID_ANY, _("Sampling Rate"), wxDefaultPosition, wxDefaultSize, 2, rbx_sampling_rate_choices, 0, wxRA_SPECIFY_ROWS);
     cbx_love = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("♥ Love this song"));
@@ -73,9 +73,11 @@ void PyOgg2_MyFrame::set_properties()
     SetSize(wxSize(600, 500));
     int Mp3_To_Ogg_statusbar_widths[] = { -2, -1 };
     Mp3_To_Ogg_statusbar->SetStatusWidths(2, Mp3_To_Ogg_statusbar_widths);
+
+    // statusbar fields
     const wxString Mp3_To_Ogg_statusbar_fields[] = {
         _("Mp3_To_Ogg_statusbar"),
-        wxEmptyString
+        wxEmptyString,
     };
     for(int i = 0; i < Mp3_To_Ogg_statusbar->GetFieldsCount(); ++i) {
         Mp3_To_Ogg_statusbar->SetStatusText(Mp3_To_Ogg_statusbar_fields[i], i);

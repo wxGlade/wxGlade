@@ -41,7 +41,7 @@ sub new {
         $self->{button_5} = Wx::Button->new($self, wxID_REMOVE, "");
         $self->{list_box_2} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
         $self->{sizer_3_staticbox} = Wx::StaticBox->new($self, wxID_ANY, _T("Assigned Permissions:") );
-        $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+        $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
         $self->{button_2} = Wx::Button->new($self, wxID_OK, "");
         $self->{button_1} = Wx::Button->new($self, wxID_CANCEL, "");
 
@@ -58,8 +58,6 @@ sub __set_properties {
         my $self = shift;
         # begin wxGlade: MyDialog::__set_properties
         $self->SetTitle(_T("dialog_1"));
-        $self->{list_box_1}->SetSelection(0);
-        $self->{list_box_2}->SetSelection(0);
         # end wxGlade
 }
 
