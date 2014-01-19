@@ -1,8 +1,8 @@
 """\
 Perl code generator functions for wxFrame objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-@copyright: 2013 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2013-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,86 +12,73 @@ from MenuTree import *
 from codegen import StatusFieldsHandler
 
 
-class PerlStatusBarCodeGenerator(wcodegen.BaseWidgetCodeWriter):
+class PerlStatusBarCodeGenerator(wcodegen.PerlWidgetCodeWriter):
+    tmpl = '%(name)s = $self->CreateStatusBar(%(labels_len)s%(style)s);\n'
 
-    def get_code(self, obj):
-        """\
-        Function that generates code for the statusbar of a wxFrame.
-        """
-        plgen = common.code_writers['perl']
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
+
         labels, widths = obj.properties['statusbar']
-        style = obj.properties.get("style")
-        if not style:
-            style = '0'
-        init = [ '$self->{%s} = $self->CreateStatusBar(%s, %s);\n'
-                 % (obj.name, len(labels), style) ]
-        props = []
-        sep = ',\n%s' % plgen.tabs(1)
-        labels = sep.join([plgen.quote_str(l) for l in labels])
+        self.tmpl_dict['labels_len'] = len(labels)
+        self.tmpl_dict['widths'] = ', '.join(map(str, widths))
+        self.tmpl_dict['widths_len'] = len(widths)
+        append = self.tmpl_props.append
+
+        append('%(name)s->SetStatusWidths(%(widths)s);\n')
+        append('\n')
+
+        append('%(comment)s statusbar fields\n')
+        append('my( @%(obj_name)s_fields ) = (\n')
+        for lb in labels:
+            append('%%(tab)s%s,\n' % self.codegen.quote_str(lb))
+        append(');\n')
+        append('\n')
+
         stmt = """\
-$self->{%(obj_name)s}->SetStatusWidths(%(widths)s);
-
-my( @%(obj_name)s_fields ) = (
-%(tab)s%(labels)s
-);
-
 if( @%(obj_name)s_fields ) {
-%(tab)s$self->{%(obj_name)s}->SetStatusText($%(obj_name)s_fields[$_], $_) 
+%(tab)s%(name)s->SetStatusText($%(obj_name)s_fields[$_], $_)
 %(tab)sfor 0 .. $#%(obj_name)s_fields ;
-}""" % {
-            'labels':   labels,
-            'obj_name': obj.name,
-            'tab':    plgen.tabs(1),
-            'widths': ','.join(map(str, widths)),
-            }
-        props.extend(self.stmt2list(stmt))
-        return init, props, []
+}"""
+        self.tmpl_props.extend(self.stmt2list(stmt))
 
 # end of class PerlStatusBarCodeGenerator
 
 
-class PerlFrameCodeGenerator:
-#wxFrame(  parent, id, title, pos , size , style , name )
+class PerlFrameCodeGenerator(wcodegen.PerlWidgetCodeWriter):
     new_signature = [
         '$parent', '$id', '$title', '$pos', '$size', '$style', '$name'
     ]
 
     def get_code(self, obj):
-        return [], [], [], [] # the frame can't be a children
+        return [], [], [], []  # the frame can't be a children
 
-    def get_properties_code(self, frame):
-        """\
-        generates the code for the various wxFrame specific properties.
-        Returns a list of strings containing the generated code
-        """
-        prop = frame.properties
-        plgen = common.code_writers['perl']
+    def get_properties_code(self, obj):
         out = []
-        title = prop.get('title')
+        append = out.append
+        title = obj.properties.get('title')
         if title:
-            out.append('$self->SetTitle(%s);\n' % plgen.quote_str(title))
+            append('$self->SetTitle(%s);\n' % self.codegen.quote_str(title))
 
-        icon = prop.get('icon')
+        icon = obj.properties.get('icon')
         if icon:
-            out.append('my $icon = Wx::Icon->new();\n')
-            out.append('$icon->CopyFromBitmap(Wx::Bitmap->new(%s, '
-                       'wxBITMAP_TYPE_ANY));\n' % plgen.quote_str(icon))
-            out.append('$self->SetIcon($icon);\n')
-            
-        out.extend(plgen.generate_common_properties(frame))
+            append('my $icon = Wx::Icon->new();\n')
+            append('$icon->CopyFromBitmap(Wx::Bitmap->new(%s, '
+                   'wxBITMAP_TYPE_ANY));\n' % self.codegen.quote_str(icon))
+            append('$self->SetIcon($icon);\n')
+
+        out.extend(self.codegen.generate_common_properties(obj))
         return out
 
-    def get_layout_code(self, frame):
+    def get_layout_code(self, obj):
         ret = ['$self->Layout();\n']
         try:
-            if int(frame.properties['centered']):
+            if int(obj.properties['centered']):
                 ret.append('$self->Centre();\n')
         except (KeyError, ValueError):
             pass
-        plgen = common.code_writers['perl']
-        if frame.properties.get('size', '').strip() and \
-               plgen.for_version < (2, 8):
-            ret.append(plgen.generate_code_size(frame))
+        if obj.properties.get('size', '').strip() and \
+           self.codegen.for_version < (2, 8):
+            ret.append(self.codegen.generate_code_size(obj))
         return ret
 
 # end of class PerlFrameCodeGenerator
@@ -99,7 +86,6 @@ class PerlFrameCodeGenerator:
 
 class PerlMDIChildFrameCodeGenerator(PerlFrameCodeGenerator):
     extra_headers = ['Wx::MDI']
-#wxMDIChildFrame(parent, id, title, pos, size, style, name )
 
 # end of class PerlMDIChildFrameCodeGenerator
 
@@ -114,13 +100,12 @@ def initialize():
 
     plgen = common.code_writers.get('perl')
     if plgen:
-        plgen.add_widget_handler('wxFrame', PerlFrameCodeGenerator())
-        plgen.add_widget_handler('wxMDIChildFrame',
-                                  PerlMDIChildFrameCodeGenerator())
-        
-        plgen.add_widget_handler('wxStatusBar', PerlStatusBarCodeGenerator())
-        
-        plgen.add_property_handler('fields', StatusFieldsHandler)
-        plgen.add_property_handler('menubar', plgen.DummyPropertyHandler)
-        plgen.add_property_handler('statusbar', plgen.DummyPropertyHandler)
+        awh = plgen.add_widget_handler
+        awh('wxFrame', PerlFrameCodeGenerator())
+        awh('wxMDIChildFrame', PerlMDIChildFrameCodeGenerator())
+        awh('wxStatusBar', PerlStatusBarCodeGenerator())
 
+        aph = plgen.add_property_handler
+        aph('fields', StatusFieldsHandler)
+        aph('menubar', plgen.DummyPropertyHandler)
+        aph('statusbar', plgen.DummyPropertyHandler)

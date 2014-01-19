@@ -10,6 +10,9 @@ General:
   - Change configuration default to remember the position and geometry
     of the three main windows. This change effects fresh installations only.
   - adapt GUI to run with wxPython 2.6 till 3.0
+  - Unify the code generation of widget specific code
+    This change causes some minor changes in the generated code.
+  - ...
 
 Generated Code:
  - Use SetToolTip() instead of SetToolTipString() for wxPython 3.x
@@ -19,6 +22,7 @@ Generated Code:
 
 Bugs:
   - Fix escape sequences in Unicode strings were escaped twice Perl and Python
+  - Wrong Lisp statement in wxHyperlinkCtrl and wxFrame
   - ...
 
 Documentation:

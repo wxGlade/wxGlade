@@ -34,7 +34,7 @@ sub new {
                 unless defined $style;
 
         $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-        $self->{gauge_1} = Wx::Gauge->new($self, wxID_ANY, 10, wxDefaultPosition,     wxDefaultSize, wxGA_HORIZONTAL);
+        $self->{gauge_1} = Wx::Gauge->new($self, wxID_ANY, 10);
 
         $self->__set_properties();
         $self->__do_layout();

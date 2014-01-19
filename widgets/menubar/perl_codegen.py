@@ -10,12 +10,11 @@ import wcodegen
 from MenuTree import *
 from codegen import MenuHandler
 
-class PerlCodeGenerator(wcodegen.BaseWidgetCodeWriter):
+class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
         
     def get_init_code(self, obj):
-        prop = obj.properties
         plgen = common.code_writers['perl']
         out = []
         append = out.append
@@ -91,39 +90,30 @@ class PerlCodeGenerator(wcodegen.BaseWidgetCodeWriter):
         return ids + out
 
     def get_code(self, obj):
-        """\
-        function that generates Perl code for the menubar of a wxFrame.
-        """
         klass = obj.base
         if klass != obj.klass:
             klass = obj.klass
         else:
             klass = klass.replace('wx', 'Wx::', 1)
 
-        plgen = common.code_writers['perl']
-        init = [ '\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' %
-                 (obj.name, klass) ]
-##                  '$self->SetMenuBar($self->{%s});\n' % obj.name ]
+        init = ['\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' %
+                (obj.name, klass)]
         init.extend(self.get_init_code(obj))
         init.append('$self->SetMenuBar($self->{%s});\n' % obj.name)
         init.append('\n# Menu Bar end\n\n')
         return init, [], []
 
-    # 2004-12-05
     def get_events(self, obj):
-        pygen = common.code_writers['perl']
-        cn = pygen.cn
         out = []
-        #self._logger.debug('get_events: %s', obj.properties['menubar'])
 
         def do_get(item):
             ret = []
             if item.name:
-                #val = '#self.%s' % item.name # see py_codegen.py, ~480
                 val = item.name
             else:
-                name, val = pygen.generate_code_id(None, item.id)
-                if not val: val = '-1' # but this is wrong anyway...
+                name, val = self.codegen.generate_code_id(None, item.id)
+                if not val:
+                    val = '-1'  # but this is wrong anyway...
             if item.handler:
                 ret.append((val, 'EVT_MENU', item.handler))
             if item.children:

@@ -1,51 +1,50 @@
-# lisp_codegen.py : lisp generator functions for wxDialog objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:59:14 efuzzyone Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Lisp generator functions for wxDialog objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 
 import common
+import wcodegen
 
 
-class LispCodeGenerator:
-#wxDialog( parent, id, title, pos, size, style, name )
-    new_signature = [
-        '$parent', '$id', '$title', '$pos', '$size', '$style', '$name'
-    ]
+class LispDialogGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_code(self, obj):
         return [], [], []
 
-    def get_properties_code(self, dialog):
-        prop = dialog.properties
-        lispgen = common.code_writers['lisp']
+    def get_properties_code(self, obj):
         out = []
-        title = prop.get('title')
-        if title: out.append('(wxWindow_SetTitle (slot-%s self) %s)\n'
-                             % (dialog.name, lispgen.quote_str(title)))
+        title = obj.properties.get('title')
+        if title:
+            out.append('(wxWindow_SetTitle (slot-%s self) %s)\n' % (
+                obj.name, self.codegen.quote_str(title)))
 
-        icon = prop.get('icon')
-        if icon: 
+        icon = obj.properties.get('icon')
+        if icon:
             out.append(
                 ';;; generating code for setting icons is not implemented\n'
                 )
 
-        out.extend(lispgen.generate_common_properties(dialog))
+        out.extend(self.codegen.generate_common_properties(obj))
 
         return out
 
-    def get_layout_code(self, dialog):
-        ret = ['(wxWindow_layout (slot-%s slef))\n' % dialog.name]
+    def get_layout_code(self, obj):
+        ret = ['(wxWindow_layout (slot-%s self))\n' % obj.name]
         try:
-            if int(dialog.properties['centered']):
-                ret.append('(wxWindow_Centre (slot-%s slef) wxBOTH)\n' % dialog.name)
+            if int(obj.properties['centered']):
+                ret.append('(wxWindow_Centre (slot-%s self) wxBOTH)\n' %
+                           obj.name)
         except (KeyError, ValueError):
             pass
         return ret
 
-# end of class LispCodeGenerator
+# end of class LispDialogGenerator
+
 
 def initialize():
     cn = common.class_names
@@ -54,4 +53,4 @@ def initialize():
 
     lispgen = common.code_writers.get('lisp')
     if lispgen:
-        lispgen.add_widget_handler('wxDialog', LispCodeGenerator())
+        lispgen.add_widget_handler('wxDialog', LispDialogGenerator())

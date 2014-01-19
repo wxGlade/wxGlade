@@ -44,7 +44,7 @@ def _fix_arguments(arguments, parent, id, size):
     return arguments
 
 
-class PythonCodeGenerator(wcodegen.BaseWidgetCodeWriter):
+class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, widget):
         if widget.preview and widget.klass not in widget.parser.class_names:
             # if this CustomWidget refers to another class in the same wxg
@@ -108,7 +108,7 @@ def self_%s_on_paint(event):
 # end of class PythonCodeGenerator
 
 
-class CppCodeGenerator(wcodegen.BaseWidgetCodeWriter):
+class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
     def get_code(self, widget):
         cppgen = common.code_writers['C++']
         prop = widget.properties

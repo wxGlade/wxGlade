@@ -10,12 +10,11 @@ import wcodegen
 from MenuTree import *
 from codegen import MenuHandler
 
-class LispCodeGenerator(wcodegen.BaseWidgetCodeWriter):
+class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
         
     def get_init_code(self, obj):
-        prop = obj.properties
         plgen = common.code_writers['lisp']
         out = []
         append = out.append
@@ -27,25 +26,25 @@ class LispCodeGenerator(wcodegen.BaseWidgetCodeWriter):
                 if item.name == '---': # item is a separator
                     append('(wxMenu_AppendSeparator %s)\n' % menu)
                     continue
-                name, val = plgen.generate_code_id(None, item.id)
-                if not name and ( not val or val == '-1'):
-                    id = '-1'
+                id_name, id_number = plgen.generate_code_id(None, item.id)
+                if not id_name and ( not id_number or id_number == '-1'):
+                    widget_id = '-1'
                 else:
-                    if name: ids.append(name)
-                    id = val
+                    if id_name: ids.append(id_name)
+                    widget_id = id_number
 
 
                 if item.children:
                     if item.name:
-                        name = item.name
+                        id_name = item.name
                     else:
-                        name = '%s_sub' % menu
+                        id_name = '%s_sub' % menu
 
-                    append('(let ((%s (wxMenu_Create "" 0)))\n' % name)
-                    append_items(name, item.children)
+                    append('(let ((%s (wxMenu_Create "" 0)))\n' % id_name)
+                    append_items(id_name, item.children)
                     append('(wxMenuBar_AppendSub %s %s %s %s %s))\n' %
-                           (menu, id, plgen.quote_str(item.label),
-                            name, plgen.quote_str(item.help_str)))
+                           (menu, widget_id, plgen.quote_str(item.label),
+                            id_name, plgen.quote_str(item.help_str)))
                 else:
                     item_type = 0
                     if item.checkable == '1':
@@ -53,18 +52,15 @@ class LispCodeGenerator(wcodegen.BaseWidgetCodeWriter):
                     elif item.radio == '1':
                         item_type = 2
                     append('(wxMenu_Append %s %s %s %s %s)\n' %
-                           (menu, id, plgen.quote_str(item.label),
+                           (menu, widget_id, plgen.quote_str(item.label),
                             plgen.quote_str(item.help_str), item_type))
-        #self._logger.debug('menus = %s', menus)
 
-#        if obj.is_toplevel: obj_name = '$self'
- #       else: obj_name = '$self->{%s}' % obj.name
-
-#        append('my $wxglade_tmp_menu;\n') # NOTE below name =
         for m in menus:
             menu = m.root
-            if menu.name: name = menu.name
-            else: name = 'wxglade_tmp_menu'
+            if menu.name:
+                name = menu.name
+            else:
+                name = 'wxglade_tmp_menu'
             append('(let ((%s (wxMenu_Create "" 0)))\n' % name)
             if menu.children:
                 append_items(name, menu.children)
@@ -74,19 +70,15 @@ class LispCodeGenerator(wcodegen.BaseWidgetCodeWriter):
         return ids + out
 
     def get_code(self, obj):
-        """\
-        function that generates Lisp code for the menubar of a wxFrame.
-        """
-
-        plgen = common.code_writers['lisp']
         init = [ '\n', ';;; Menu Bar\n', '(setf (slot-%s obj) (wxMenuBar_Create 0))\n' %
                  (obj.name) ]
-##                  '(wxFrame_SetMenuBar (slot-top-window obj) (slot-%s obj))\n' % obj.name ]
         init.extend(self.get_init_code(obj))
         init.append('(wxFrame_SetMenuBar (slot-top-window obj) ' \
                     '(slot-%s obj))\n' % obj.name)
         init.append(';;; Menu Bar end\n\n')
         return init, [], []
+
+
 
 # end of class LispCodeGenerator
 

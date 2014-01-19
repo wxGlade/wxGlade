@@ -2,42 +2,23 @@
 Perl generator functions for wxCalendarCtrl objects
 
 @copyright: 2012 Eric McKeeth
-
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
+import wcodegen
 
 
-class PerlCodeGenerator:
-    def get_code(self, obj):
-        plgen = common.code_writers['perl']
-        prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj)
+class PerlCalendarCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
+           'Wx::DateTime->new%(style)s);\n'
+    prefix_style = True
 
-        if not obj.parent.is_toplevel:
-            parent = '$self->{%s}' % obj.parent.name
-        else:
-            parent = '$self'
-
-        style = prop.get("style")
-        if not(style):
-            style = ''
-
-        init = []
-        if id_name:
-            init.append(id_name)
-
-        klass = obj.base
-        if klass != obj.klass:
-            klass = obj.klass
-        else:
-            klass = klass.replace('wx', 'Wx::', 1)
-
-        init.append('$self->{%s} = %s->new(%s, %s, Wx::DateTime->new, \
-wxDefaultPosition, wxDefaultSize, %s);\n' % (obj.name, klass, parent, id, style))
-        props_buf = plgen.generate_common_properties(obj)
-        return init, props_buf, []
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
+        self.has_setdefault = obj.properties.get('default', False)
+        return
 
 #end of code generator
 
@@ -47,4 +28,4 @@ def initialize():
 
     plgen = common.code_writers.get('perl')
     if plgen:
-        plgen.add_widget_handler('wxCalendarCtrl', PerlCodeGenerator())
+        plgen.add_widget_handler('wxCalendarCtrl', PerlCalendarCtrlGenerator())

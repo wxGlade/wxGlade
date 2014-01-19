@@ -1,43 +1,43 @@
-# codegen.py: code generator functions for wxComboBox objects
-# $Id: codegen.py,v 1.15 2007/03/27 07:02:02 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Code generator functions for wxComboBox objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
 
 import common
+import wcodegen
 from ChoicesCodeHandler import *
 
-class PythonCodeGenerator:
-    def get_code(self, obj):
-        pygen = common.code_writers['python']
-        prop = obj.properties
-        id_name, id = pygen.generate_code_id(obj)
-        choices = prop.get('choices', [])
-        if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-        else: parent = 'self'
-        style = prop.get("style", None)
-        if not style: style = pygen.cn('wxCB_DROPDOWN')
-        else: style = pygen.cn_f('wxCB_DROPDOWN|' + style)
-        init = []
-        if id_name: init.append(id_name)
-        choices = ', '.join([pygen.quote_str(c) for c in choices])
-        klass = obj.klass
-        if klass == obj.base: klass = pygen.cn(klass)
-        init.append('self.%s = %s(%s, %s, choices=[%s], style=%s)\n' %
-                    (obj.name, klass, parent, id, choices, style))
-        props_buf = pygen.generate_common_properties(obj)
-        selection = prop.get('selection')
-        if selection is not None and len(prop.get('choices', [])):
-            props_buf.append('self.%s.SetSelection(%s)\n' %
-                             (obj.name, selection))
-        return init, props_buf, []
 
-# end of class PythonCodeGenerator
+class PythonComboBoxGenerator(wcodegen.PythonWidgetCodeWriter):
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, ' \
+           'choices=[%(choices)s]%(style)s)\n'
+    default_style = 'wxCB_DROPDOWN'
+    set_default_style = True
+    has_choice = True
+
+# end of class PythonComboBoxGenerator
+
+
+class CppComboBoxGenerator(wcodegen.CppWidgetCodeWriter):
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxT(""), ' \
+           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, ' \
+           '%(name)s_choices, %(style)s);\n'
+
+    default_style = 'wxCB_DROPDOWN'
+    has_choice = True
+    prefix_style = False
+    set_default_style = True
+
+# end of class CppComboBoxGenerator
 
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
+
     class ComboBoxXrcObject(xrcgen.DefaultXrcObject):
         def write_property(self, name, val, outfile, tabs):
             if name == 'choices':
@@ -51,48 +51,12 @@ def xrc_code_generator(obj):
     return ComboBoxXrcObject(obj)
 
 
-class CppCodeGenerator:
-    def get_code(self, obj):
-        """\
-        generates the C++ code for wxComboBox objects
-        """
-        cppgen = common.code_writers['C++']
-        prop = obj.properties
-        id_name, id = cppgen.generate_code_id(obj)
-        if id_name: ids = [ id_name ]
-        else: ids = []
-        choices = prop.get('choices', [])
-        if not obj.parent.is_toplevel: parent = '%s' % obj.parent.name
-        else: parent = 'this'
-        number = len(choices)
-        ch_arr = '{\n        %s\n    };\n' % \
-                 ',\n        '.join([cppgen.quote_str(c) for c in choices])
-        style = prop.get("style")
-        if not style: style = 'wxCB_DROPDOWN'
-        else: style = 'wxCB_DROPDOWN|' + style
-        init = []
-        if number:
-            init.append('const wxString %s_choices[] = %s' % (obj.name, ch_arr))
-        else:
-            init.append('const wxString *%s_choices = NULL;\n' % obj.name)
-        init.append('%s = new %s(%s, %s, wxT(""), wxDefaultPosition, '
-                    'wxDefaultSize, %s, %s_choices, %s);\n' % \
-                    (obj.name, obj.klass, parent, id, number, obj.name, style))
-        props_buf = cppgen.generate_common_properties(obj)
-        selection = prop.get('selection')
-        if selection is not None and len(prop.get('choices', [])):
-            props_buf.append('%s->SetSelection(%s);\n' % (obj.name, selection))
-        return init, ids, props_buf, []
-
-# end of class CppCodeGenerator
-
-
 def initialize():
     common.class_names['EditComboBox'] = 'wxComboBox'
 
     pygen = common.code_writers.get("python")
     if pygen:
-        pygen.add_widget_handler('wxComboBox', PythonCodeGenerator())
+        pygen.add_widget_handler('wxComboBox', PythonComboBoxGenerator())
         pygen.add_property_handler('choices', ChoicesCodeHandler)
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
@@ -100,5 +64,5 @@ def initialize():
         xrcgen.add_property_handler('choices', ChoicesCodeHandler)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        cppgen.add_widget_handler('wxComboBox', CppCodeGenerator())
+        cppgen.add_widget_handler('wxComboBox', CppComboBoxGenerator())
         cppgen.add_property_handler('choices', ChoicesCodeHandler)

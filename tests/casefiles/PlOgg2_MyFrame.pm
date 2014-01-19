@@ -36,7 +36,7 @@ sub new {
 
         $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
         $self->{grid_1} = Wx::Grid->new($self, wxID_ANY);
-        $self->{static_line_2} = Wx::StaticLine->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+        $self->{static_line_2} = Wx::StaticLine->new($self, wxID_ANY);
         $self->{button_6} = Wx::Button->new($self, wxID_CLOSE, "");
 
         $self->__set_properties();

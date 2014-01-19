@@ -135,15 +135,15 @@
         (wxFrame_SetTitle (slot-top-window obj) (_"mp3 2 ogg"))
         (slot-top-window obj).wxWindow_SetSize((600, 500))
         (wxStatusBar_SetStatusWidths (slot-Mp3-To-Ogg-statusbar obj) 2 (vector -2 -1))
-        	 (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) (_"Mp3_To_Ogg_statusbar") 0)
-        	 (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) "" 1)
+        (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) (_"Mp3_To_Ogg_statusbar") 0)
+        (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) "" 1)
         (wxToolBar_Realize (slot-Mp3-To-Ogg-toolbar obj))
         (wxRadioBox_SetSelection (slot-rbx-sampling-rate obj) 0)
         (wxWindow_SetToolTip (slot-cbx-love obj)(_"Yes!\nWe ♥ it!"))
-        (wxCheckBox_SetValue (slot-cbx-love obj) 1);
+        (wxCheckBox_SetValue (slot-cbx-love obj) 1)
         (wxWindow_SetToolTip (slot-text-ctrl-3 obj)(_"File name of the output file\nAn existing file will be overwritten without futher information!"))
         (wxWindow_SetToolTip (slot-checkbox-1 obj)(_"Overwrite an existing file"))
-        (wxCheckBox_SetValue (slot-checkbox-1 obj) 1);
+        (wxCheckBox_SetValue (slot-checkbox-1 obj) 1)
         ;;; end wxGlade
         )
 
@@ -193,7 +193,7 @@
         (wxSizer_SetSizeHints (slot-slot-sizer-1 obj) (slot-frame obj))
         (wxFlexGridSizer_AddGrowableRow (slot-sizer-1 obj) 0)
         (wxFlexGridSizer_AddGrowableCol (slot-sizer-1 obj) 0)
-        (wxFrame_layout (slot-Mp3-To-Ogg slef))
+        (wxFrame_layout (slot-Mp3-To-Ogg self))
         (wxFrame_Centre (slot-top-window obj) wxBOTH)
         ;;; end wxGlade
         )
@@ -287,7 +287,7 @@
         (wxSizer_AddSizer (slot--szr-frame obj) (slot-grid-sizer obj) 1 wxEXPAND 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot--szr-frame obj))
         (wxSizer_SetSizeHints (slot-slot--szr-frame obj) (slot-top-window obj))
-        (wxFrame_layout (slot-FrameGrid slef))
+        (wxFrame_layout (slot-FrameGrid self))
         ;;; end wxGlade
         )
 

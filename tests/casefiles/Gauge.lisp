@@ -41,7 +41,7 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
-        (setf (slot-gauge-1 obj) (wxGauge_Create (slot-top-window obj) wxID_ANY 10 -1 -1 -1 -1 wxGA_HORIZONTAL))
+        (setf (slot-gauge-1 obj) (wxGauge_Create (slot-top-window obj) wxID_ANY 10 -1 -1 -1 -1 0))
         ;;; end wxGlade
         )
 
@@ -57,7 +57,7 @@
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-gauge-1 obj) 0 0 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
-        (wxFrame_layout (slot-frame-1 slef))
+        (wxFrame_layout (slot-frame-1 self))
         ;;; end wxGlade
         )
 

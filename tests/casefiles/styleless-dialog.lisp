@@ -48,7 +48,7 @@
 
 (defmethod do-layout ((obj StylelessDialog))
         ;;; begin wxGlade: StylelessDialog.__do_layout
-        (wxWindow_layout (slot-dialog slef))
+        (wxWindow_layout (slot-dialog self))
         ;;; end wxGlade
         )
 
@@ -84,7 +84,7 @@
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
-        (wxFrame_layout (slot-frame slef))
+        (wxFrame_layout (slot-frame self))
         ;;; end wxGlade
         )
 

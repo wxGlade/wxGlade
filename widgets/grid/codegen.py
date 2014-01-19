@@ -51,21 +51,18 @@ def _check_label(label, col):
     return label != "".join(s)
     
 
-class PythonCodeGenerator(wcodegen.BaseWidgetCodeWriter):
-    def __init__(self):
-        wcodegen.BaseWidgetCodeWriter.__init__(self)
-        self.pygen = common.code_writers['python']
-        
+class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
+
     def __get_import_modules(self):
-        if self.pygen.use_new_namespace:
+        if self.codegen.use_new_namespace:
             return ['import wx.grid\n']
         else:
             return ['from wxPython.grid import *\n']
     import_modules = property(__get_import_modules)
 
     def cn(self, c):
-        #self._logger.debug('PythonCodeGenerator.cn with arg:', c)
-        if self.pygen.use_new_namespace:
+        #self._logger.debug('PythonStaticTextGenerator.cn with arg:', c)
+        if self.codegen.use_new_namespace:
             if c[:2] == 'wx':
                 c = c[2:]
             return 'wx.grid.' + c
@@ -153,7 +150,7 @@ class PythonCodeGenerator(wcodegen.BaseWidgetCodeWriter):
 # end of class PythonCodeGenerator
 
 
-class CppCodeGenerator(wcodegen.BaseWidgetCodeWriter):
+class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
     extra_headers = ['<wx/grid.h>']
     
     def get_code(self, obj):

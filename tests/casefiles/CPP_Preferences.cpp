@@ -46,7 +46,7 @@ wxGladePreferencesUI::wxGladePreferencesUI(wxWindow* parent, int id, const wxStr
     write_generated_from = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Insert .wxg file name on generated source files"));
     const wxString backup_suffix_choices[] = {
         _("append ~ to filename"),
-        _("append .bak to filename")
+        _("append .bak to filename"),
     };
     backup_suffix = new wxRadioBox(notebook_1_pane_2, wxID_ANY, _("Backup options"), wxDefaultPosition, wxDefaultSize, 2, backup_suffix_choices, 2, wxRA_SPECIFY_COLS);
     local_widget_path = new wxTextCtrl(notebook_1_pane_2, wxID_ANY, wxEmptyString);

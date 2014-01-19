@@ -2,61 +2,28 @@
 Perl generator functions for wxRadioBox objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
+import wcodegen
 from ChoicesCodeHandler import *
 
 
-class PerlCodeGenerator:
-    def get_code(self, obj):
-        init = []
-        plgen = common.code_writers['perl']
-        prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj)
-        label = plgen.quote_str(prop.get('label', ''))
-        choices = prop.get('choices', [])
-        major_dim = prop.get('dimension', '0')
+class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s, ' \
+           'wxDefaultPosition, wxDefaultSize, [%(choices)s], ' \
+           '%(majorDimension)s, %(style)s);\n'
+    default_style = 'wxRA_SPECIFY_COLS'
+    has_choice = True
+    prefix_style = False
+    set_default_style = True
 
-        if not obj.parent.is_toplevel:
-            parent = '$self->{%s}' % obj.parent.name
-        else:
-            parent = '$self'
-
-        style = prop.get("style")
-        if not style:
-            style = ''
-
-        if id_name:
-            init.append(id_name)
-
-        klass = obj.base
-        if klass != obj.klass:
-            klass = obj.klass
-        else:
-            klass = klass.replace('wx', 'Wx::', 1)
-
-        choices = ', '.join([plgen.quote_str(c) for c in choices])
-        init.append(
-            '$self->{%s} = %s->new(%s, %s, %s, wxDefaultPosition, '
-            'wxDefaultSize, [%s], %s, %s);\n' % (
-                obj.name,
-                klass,
-                parent,
-                id,
-                label,
-                choices,
-                major_dim,
-                style)
-            )
-
-        props_buf = plgen.generate_common_properties(obj)
-        selection = prop.get('selection')
-        if selection is not None:
-            props_buf.append('$self->{%s}->SetSelection(%s);\n' %
-                             (obj.name, selection))
-        return init, props_buf, []
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
+        self.tmpl_dict['majorDimension'] = obj.properties.get('dimension', '1')
+        return
 
 # end of class PerlCodeGenerator
 

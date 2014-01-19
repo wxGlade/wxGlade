@@ -1,75 +1,63 @@
-# codegen.py: code generator functions for wxCalendarCtrl objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Code generator functions for wxCalendarCtrl objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
+import wcodegen
 
-class PythonCodeGenerator(object):
-    def __init__(self):
-        self.pygen = common.code_writers['python']
-        self.real_class_name = 'CalendarCtrl'
-     
-    def __get_import_modules(self):
-        if self.pygen.use_new_namespace:
-            return ['import wx.calendar\n']
-        else:
-            return ['from wxPython.calendar import *\n']
-    import_modules = property(__get_import_modules)
+
+class PythonCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
+
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
     def cn(self, c):
-        """ Create names according to if the new namescace (wx) was selected
-        @type c: string
-        @param c: the name which should be altered
-        @rtype: string
-        @return: the orignial name with a prefix according to which namespace
-        the user selected
-        """
-        if self.pygen.use_new_namespace:
+        if self.codegen.use_new_namespace:
             if c[:2] == 'wx':
                 c = c[2:]
             return 'wx.calendar.' + c
         else:
             return c
 
-    def cn_f(self, flags):
-        """ Same as cn(c) but for flags
-        @rtype: string
-        """
-        if self.pygen.use_new_namespace:
-            return "|".join([self.cn(f) for f in str(flags).split('|')])
+    def _reset_vars(self):
+        wcodegen.PythonWidgetCodeWriter._reset_vars(self)
+        if self.codegen.use_new_namespace:
+            self.import_modules = ['import wx.calendar\n']
         else:
-            return str(flags)
-    
-    def get_code(self, obj):
-        pygen = common.code_writers['python']
-        prop = obj.properties
-        id_name, id = pygen.generate_code_id(obj)
-        #label = pygen.quote_str(prop.get('label', ''))
-        if not obj.parent.is_toplevel: parent = 'self.%s' % obj.parent.name
-        else: parent = 'self'
-        style = prop.get("style")
-        if style: style = ", style=%s" % self.cn_f(style)
-        else: style = ''
-        init = []
-        if id_name: init.append(id_name)
-        klass = obj.klass
-        if klass == obj.base or klass == self.real_class_name: klass = self.cn(klass)
-        init.append('self.%s = %s(%s, %s%s)\n' %
-        #            (obj.name, klass, parent, id, label, style))
-                     (obj.name, klass,parent, id, style))
-        props_buf = pygen.generate_common_properties(obj)
-        if prop.get('default', False):
-            props_buf.append('self.%s.SetDefault()\n' % obj.name)
-        return init, props_buf, []
+            self.import_modules = ['from wxPython.calendar import *\n']
 
-# end of class PythonCodeGenerator
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
+        self.has_setdefault = obj.properties.get('default', False)
+        return
+
+# end of class PythonCalendarCtrlGenerator
+
+
+class CppCalendarCtrlGenerator(wcodegen.CppWidgetCodeWriter):
+    extra_headers = ['<wx/calctrl.h>']
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
+
+    def _prepare_tmpl_content(self, obj):
+        wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
+        self.has_setdefault = obj.properties.get('default', False)
+        return
+
+    def get_events(self, obj):
+        """\
+        wxCalendarCtrl uses wxCalendarEvent for event handling
+        """
+        return self.codegen.get_events_with_type(obj, 'wxCalendarEvent')
+
+# end of class CppCalendarCtrlGenerator
 
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
+
     class CalendarCtrlXrcObject(xrcgen.DefaultXrcObject):
         def write_property(self, name, val, outfile, tabs):
             if name == 'label':
@@ -78,9 +66,11 @@ def xrc_code_generator(obj):
                 if val.count('&&') > 0:
                     while True:
                         index = val.find('&&')
-                        if index < 0: break
+                        if index < 0:
+                            break
                         val = val2[:index] + '&&' + val2[index+2:]
-                else: val = val2
+                else:
+                    val = val2
             xrcgen.DefaultXrcObject.write_property(self, name, val,
                                                    outfile, tabs)
     # end of class CalendarCtrlXrcObject
@@ -88,56 +78,17 @@ def xrc_code_generator(obj):
     return CalendarCtrlXrcObject(obj)
 
 
-class CppCodeGenerator:
-    extra_headers = ['<wx/calctrl.h>']
-    
-    def get_code(self, obj):
-        """\
-        fuction that generates python code for wxCalendarCtrl objects.
-        """
-        cppgen = common.code_writers['C++']
-        prop = obj.properties
-        id_name, id = cppgen.generate_code_id(obj)
-        if id_name:
-            ids = [ id_name ]
-        else:
-            ids = []
-        if not obj.parent.is_toplevel:
-            parent = '%s' % obj.parent.name
-        else:
-            parent = 'this'
-        extra = ''
-        style = prop.get("style")
-        if style:
-            extra = ', wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, %s'\
-                    % style
-        #label = cppgen.quote_str(prop.get('label', ''))
-        init = [ '%s = new %s(%s, %s%s);\n' % 
-        #         (obj.name, obj.klass, parent, id, label, extra) ]
-                  (obj.name, obj.klass, parent, id, extra) ]
-        props_buf = cppgen.generate_common_properties(obj)
-        if prop.get('default', False):
-            props_buf.append('%s->SetDefault();\n' % obj.name)
-        return init, ids, props_buf, []
-
-    def get_events(self, obj):
-        """\
-        wxCalendarCtrl uses wxCalendarEvent for event handling
-        """
-        cppgen = common.code_writers['C++']
-        return cppgen.get_events_with_type(obj, 'wxCalendarEvent')
-
-# end of class CppCodeGenerator
-
-
 def initialize():
     common.class_names['EditCalendarCtrl'] = 'wxCalendarCtrl'
     pygen = common.code_writers.get('python')
     if pygen:
-        pygen.add_widget_handler('wxCalendarCtrl', PythonCodeGenerator())
+        pygen.add_widget_handler('wxCalendarCtrl',
+                                 PythonCalendarCtrlGenerator())
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
-        xrcgen.add_widget_handler('wxCalendarCtrl', xrc_code_generator)
+        xrcgen.add_widget_handler('wxCalendarCtrl',
+                                  xrc_code_generator)
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        cppgen.add_widget_handler('wxCalendarCtrl', CppCodeGenerator())
+        cppgen.add_widget_handler('wxCalendarCtrl',
+                                  CppCalendarCtrlGenerator())

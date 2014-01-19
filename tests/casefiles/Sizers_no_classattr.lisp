@@ -69,8 +69,6 @@
 (defmethod set-properties ((obj MyDialog))
         ;;; begin wxGlade: MyDialog.__set_properties
         (wxWindow_SetTitle (slot-dialog-1 self) (_"dialog_1"))
-        (wxListBox_SetSelection (slot-list-box-1 obj) 0 1)
-        (wxListBox_SetSelection (slot-list-box-2 obj) 0 1)
         ;;; end wxGlade
         )
 
@@ -103,7 +101,7 @@
         (wxSizer_Fit (slot-grid-sizer-1 obj) (slot-frame obj))
         (wxFlexGridSizer_AddGrowableRow (slot-grid-sizer-1 obj) 0)
         (wxFlexGridSizer_AddGrowableCol (slot-grid-sizer-1 obj) 0)
-        (wxWindow_layout (slot-dialog-1 slef))
+        (wxWindow_layout (slot-dialog-1 self))
         ;;; end wxGlade
         )
 

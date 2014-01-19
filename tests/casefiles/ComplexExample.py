@@ -32,7 +32,7 @@ class PyOgg2_MyFrame(wx.Frame):
         self.Mp3_To_Ogg_menubar.Append(wxglade_tmp_menu, _("&Help"))
         self.SetMenuBar(self.Mp3_To_Ogg_menubar)
         # Menu Bar end
-        self.Mp3_To_Ogg_statusbar = self.CreateStatusBar(2, 0)
+        self.Mp3_To_Ogg_statusbar = self.CreateStatusBar(2)
         
         # Tool Bar
         self.Mp3_To_Ogg_toolbar = wx.ToolBar(self, -1, style=wx.TB_HORIZONTAL | wx.TB_TEXT)
@@ -76,6 +76,7 @@ class PyOgg2_MyFrame(wx.Frame):
         self.SetTitle(_("mp3 2 ogg"))
         self.SetSize((600, 500))
         self.Mp3_To_Ogg_statusbar.SetStatusWidths([-2, -1])
+
         # statusbar fields
         Mp3_To_Ogg_statusbar_fields = [_("Mp3_To_Ogg_statusbar"), ""]
         for i in range(len(Mp3_To_Ogg_statusbar_fields)):
