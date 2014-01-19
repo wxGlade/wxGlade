@@ -1279,3 +1279,11 @@ class TestCodeGen(WXGladeBaseTest):
         Test code generation for a style less dialog
         """
         self._test_all('styleless-dialog')
+
+    def test_AllWidgets(self):
+        """\
+        Test code generation for a complex example
+        """
+        self._test_all('AllWidgets_28')
+        #self._test_all('AllWidgets_30')
+
