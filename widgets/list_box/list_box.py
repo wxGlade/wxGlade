@@ -141,7 +141,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'list_box_%d' % number[0]
     list_box = EditListBox(name, parent, wx.NewId(),
-                           #[misc._encode('choice 1')], sizer, pos,
+                           #[misc.encode('choice 1')], sizer, pos,
                            [], sizer, pos,
                            common.property_panel)
     node = Tree.Node(list_box)
