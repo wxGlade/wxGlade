@@ -13,6 +13,7 @@ import re
 import wx
 
 from widget_properties import *
+import bugdialog
 import common
 import compat
 import config
@@ -504,12 +505,10 @@ class Application(object):
     def set_encoding(self, value):
         try:
             unicode('a', value)
-        except LookupError, e:
-            wx.MessageBox(
-                str(e),
-                _("Error"),
-                wx.OK | wx.CENTRE | wx.ICON_ERROR,
-                )
+        except LookupError, inst:
+            dialog = bugdialog.BugReport()
+            dialog.SetContent(_('setting encoding'), inst)
+            dialog.ShowModal()
             self.encoding_prop.set_value(self.encoding)
         else:
             self.encoding = value
@@ -724,31 +723,16 @@ class Application(object):
             if preview and cw == 'python':
                 common.code_writers[cw].use_new_namespace = old
                 self.overwrite = overwrite
-        except errors.WxgBaseException, inst:
+        except (errors.WxgBaseException, IOError, OSError), inst:
             wx.MessageBox(
                 _("Error generating code:\n%s") % inst,
                 _("Error"),
                 wx.OK | wx.CENTRE | wx.ICON_ERROR,
                 )
-        except (IOError, OSError), msg:
-            wx.MessageBox(
-                _("Error generating code:\n%s") % msg,
-                _("Error"),
-                wx.OK | wx.CENTRE | wx.ICON_ERROR,
-                )
-        except Exception, msg:
-            self._logger.exception(_('Internal Error'))
-            wx.MessageBox(
-                _("An exception occurred while generating the code "
-                  "for the application.\n"
-                  "This is the error message associated with it:\n"
-                  "        %s\n"
-                  "For more details, look at the full traceback "
-                  "on the console.\nIf you think this is a wxGlade bug,"
-                  " please report it.") % msg,
-                _("Error"),
-                wx.OK | wx.CENTRE | wx.ICON_ERROR,
-                )
+        except Exception, inst:
+            dialog = bugdialog.BugReport()
+            dialog.SetContent(_('generating code'), inst)
+            dialog.ShowModal()
         else:
             if not preview:
                 if config.preferences.show_completion:
@@ -855,15 +839,12 @@ class Application(object):
                 name = self.output_path + ext
                 if os.path.isfile(name):
                     os.unlink(name)
-        except Exception, e:
-            self._logger.exception(_('Internal Error'))
+        except Exception, inst:
             widget.preview_widget = None
             widget.preview_button.SetLabel(_('Preview'))
-            wx.MessageBox(
-                _("Problem previewing gui: %s") % str(e),
-                _("Error"),
-                wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION,
-                )
+            dialog = bugdialog.BugReport()
+            dialog.SetContent(_("generating the preview"), inst)
+            dialog.ShowModal()
         # restore app state
         widget.klass = widget_class_name
         self.output_path = self.real_output_path
