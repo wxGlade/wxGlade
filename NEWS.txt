@@ -11,6 +11,7 @@ General:
     only.
   - adapt GUI to run with wxPython 2.6 till 3.0
   - Disable Lisp for wx 3.0
+  - Improve the internal error dialog
 
 Generated Code:
  - Use SetToolTip() instead of SetToolTipString() for wxPython 3.x

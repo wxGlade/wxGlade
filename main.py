@@ -2,7 +2,8 @@
 Main wxGlade module: defines wxGladeFrame which contains the buttons to add
 widgets and initializes all the stuff (tree, property_frame, etc.)
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2011-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -18,6 +19,7 @@ from xml.sax import SAXParseException
 
 # import project modules
 import application
+import bugdialog
 import clipboard
 import common
 import config
@@ -693,20 +695,11 @@ class wxGladeFrame(wx.Frame):
             except (IOError, OSError, SAXParseException, XmlParsingError), msg:
                 error_msg = _("Error loading file %s: %s") % \
                     (misc.wxstr(infilename), misc.wxstr(msg))
-            except Exception, msg:
-                self._logger.exception(
-                    _('An exception occurred while loading file "%s".'),
-                    infilename.encode('ascii', 'replace')
-                )
-                error_msg = _(
-                    'An exception occurred while loading file \n'
-                    '"%s".\n'
-                    'This is the error message associated with it:\n'
-                    '        %s\n'
-                    'For more details, look at the full traceback '
-                    'on the console.\n'
-                    'If you think this is a wxGlade bug, please report it.'
-                    ) % (misc.wxstr(infilename), misc.wxstr(msg))
+            except Exception, inst:
+                fn = os.path.basename(infilename).encode('ascii', 'replace')
+                dialog = bugdialog.BugReport()
+                dialog.SetContent(_('loading file "%s"') % fn, inst)
+                dialog.ShowModal()
         finally:
             if infile and not is_filelike:
                 infile.close()
@@ -781,27 +774,16 @@ class wxGladeFrame(wx.Frame):
             obuffer = cStringIO.StringIO()
             common.app_tree.write(obuffer)
             common.save_file(filename, obuffer.getvalue(), 'wxg')
-        except (IOError, OSError), msg:
+        except (IOError, OSError), inst:
             common.app_tree.app.saved = False
-            wx.MessageBox(_("Error saving app:\n%s") % msg, _("Error"),
-                         wx.OK|wx.CENTRE|wx.ICON_ERROR)
-        except Exception, msg:
-            self._logger.exception(
-                _('An exception occurred while saving file "%s".'),
-                filename.encode('ascii', 'replace')
-                )
+            wx.MessageBox(_("Error saving app:\n%s") % inst, _("Error"),
+                         wx.OK | wx.CENTRE | wx.ICON_ERROR)
+        except Exception, inst:
             common.app_tree.app.saved = False
-            wx.MessageBox(_("An exception occurred while saving file "
-                            "\"%s\".\n"
-                            "This is the error message associated with it:"
-                            "\n        %s\n"
-                            "For more details, look at the full traceback "
-                            "on the console.\nIf you think this is a "
-                            "wxGlade bug,"
-                            " please report it.") % (filename, msg),
-                          _("Error"),
-                          wx.OK|wx.CENTRE|wx.ICON_ERROR
-                          )
+            fn = os.path.basename(filename).encode('ascii', 'replace')
+            dialog = bugdialog.BugReport()
+            dialog.SetContent(_('saving file "%s"') % fn, inst)
+            dialog.ShowModal()
         else:
             common.app_tree.app.saved = True
             common.remove_autosaved()
@@ -930,22 +912,11 @@ class wxGladeFrame(wx.Frame):
                 ibuffer.seek(0)
                 self._open_app(ibuffer, is_filelike=True)
                 common.app_tree.app.saved = False
-            except Exception, msg:
-                self._logger.exception(
-                    _('An exception occurred while importing file "%s".'),
-                    infilename.encode('ascii', 'replace')
-                    )                
-                wx.MessageBox(
-                    _("An exception occurred while importing file "
-                      "\"%s\".\nThis is the error message associated "
-                      "with it:\n        %s\n"
-                      "For more details, look at the full traceback "
-                      "on the console.\nIf you think this is a "
-                      "wxGlade bug, please report it.") % \
-                      (infilename, msg),
-                    _("Error"),
-                    wx.OK|wx.CENTRE|wx.ICON_ERROR
-                    )
+            except Exception, inst:
+                fn = os.path.basename(infilename).encode('ascii', 'replace')
+                dialog = bugdialog.BugReport()
+                dialog.SetContent(_('importing file "%s"') % fn, inst)
+                dialog.ShowModal()
 
     def manage_templates(self, event):
         to_edit = template.manage_templates()
@@ -969,6 +940,9 @@ class wxGlade(wx.App):
                        messages.
 
     @type _msg_dialog: Instance of L{msgdialog.MessageDialog}
+
+    @ivar show_dialog: Show the error dialog automatically
+    @type show_dialog: Boolean
     """
 
     _msg_dialog = None
@@ -976,6 +950,7 @@ class wxGlade(wx.App):
     def OnInit(self):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
+        self.show_dialog = True
         # needed for wx >= 2.3.4 to disable wxPyAssertionError exceptions
         self.SetAssertMode(0)
         wx.InitAllImageHandlers()
@@ -1004,8 +979,10 @@ class wxGlade(wx.App):
         Show error messages if the GUI is idle.
 
         @see: L{show_error_dialog()}
+        @see: L{show_dialog}
         """
-        self.show_error_dialog()
+        if self.show_dialog:
+            self.show_error_dialog()
         event.Skip()
 
     def show_error_dialog(self):
