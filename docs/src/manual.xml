@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2013-12-06</date>
+    <date>2014-01-29</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -126,12 +126,10 @@
       is just a graphical user interface builder. The generated code does
       nothing apart from displaying the created widgets.</para>
 
-      <para>If you are looking for a complete IDE, maybe Boa Constructor
-      <ulink
-      url="http://boa-constructor.sourceforge.net">http://boa-constructor.sourceforge.net</ulink>
-      or PythonCard <ulink
-      url="http://www.pythoncard.org">http://www.pythoncard.org</ulink> is the
-      right tool.</para>
+      <para>If you are looking for a complete IDE, maybe <ulink
+      url="http://boa-constructor.sourceforge.net">Boa Constructor</ulink> or
+      <ulink url="http://www.pythoncard.org">PythonCard</ulink> is the right
+      tool.</para>
 
       <para>wxGlade isn't a tool to learn programming with wxWidgets. You
       can't use wxGlade if you do not have any basic understanding of
@@ -302,7 +300,7 @@
           <example>
             <title>Installing wxGlade at /opt/wxglade</title>
 
-            <programlisting># python setup.py install --prefix /opt/wxglade
+            <screen># python setup.py install --prefix /opt/wxglade
 running install
 running build
 running build_py
@@ -325,7 +323,7 @@ copying docs/man/manpage.xml -&gt; /opt/wxglade/share/doc/wxglade
 copying docs/src/manual.xml -&gt; /opt/wxglade/share/doc/wxglade
 running install_egg_info
 Writing /opt/wxglade/lib/python2.7/site-packages/wxGlade-0.6.5_-py2.7.egg-info
-</programlisting>
+</screen>
           </example>
 
           <para>After the installation has finished the wxGlade main script
@@ -337,7 +335,7 @@ Writing /opt/wxglade/lib/python2.7/site-packages/wxGlade-0.6.5_-py2.7.egg-info
           <example>
             <title>Starting wxGlade at /opt/wxglade/bin/wxglade</title>
 
-            <programlisting># /opt/wxglade/bin/wxglade 
+            <screen># /opt/wxglade/bin/wxglade 
 Starting wxGlade version 0.6.5 on Python 2.7.2+
 Base directory:             /opt/wxglade/lib/python2.7/site-packages/wxglade
 Documentation directory:    /opt/wxglade/lib/python2.7/site-packages/wxglade/docs
@@ -358,7 +356,7 @@ loading widget modules:
         frame
         dialog
 [...]
-</programlisting>
+</screen>
           </example>
         </section>
       </section>
@@ -460,7 +458,7 @@ loading widget modules:
 
       <itemizedlist>
         <listitem>
-          <para>What did you? May you want to include a screenshoot.</para>
+          <para>What did you? May you want to include a screenshot.</para>
         </listitem>
 
         <listitem>
@@ -484,6 +482,21 @@ loading widget modules:
       <para>May you read <ulink
       url="http://www.chiark.greenend.org.uk/~sgtatham/bugs.html">How to
       Report Bugs Effectively</ulink> additionally.</para>
+
+      <para>Please open a new bug in the <ulink url="???">wxGlade bug
+      tracker</ulink> at Sourceforge. Alternatively you can send the bug
+      report to the wxGlade mailing list. Keep in mind that you need a
+      subscription for sending emails to this mailing list.</para>
+
+      <figure>
+        <title>An error dialog example</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata contentwidth="80%" fileref="error_dialog.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
     </section>
   </chapter>
 
@@ -788,7 +801,7 @@ loading widget modules:
 
       <para>This is the complete description of the command line:</para>
 
-      <programlisting># wxglade --help
+      <screen># wxglade --help
 Usage: wxglade &lt;WXG File&gt;             start the wxGlade GUI
  or:   wxglade &lt;Options&gt; &lt;WXG File&gt;   generate code from command line
  or:   wxglade --version              show programs version number and exit
@@ -807,7 +820,7 @@ Example: Generate Python code out of myapp.wxg
 Report bugs to:    &lt;wxglade-general@lists.sourceforge.net&gt; or at
                    &lt;http://sourceforge.net/projects/wxglade/&gt;
 wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
-</programlisting>
+</screen>
 
       <note>
         <para>Use <command>wxglade.pyw</command> instead of
@@ -922,7 +935,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
         <para><example>
             <title>Detailed application start code in Perl</title>
 
-            <para><programlisting>package MyApp;
+            <para><programlisting language="perl" linenumbering="numbered">package MyApp;
 use base qw(Wx::App);
 use strict;
 sub OnInit {
@@ -946,7 +959,7 @@ unless(caller){
         <example>
           <title>Simplified application start code in Perl</title>
 
-          <para><programlisting>package main;
+          <para><programlisting language="perl" linenumbering="numbered">package main;
 unless(caller){
         my $local = Wx::Locale-&gt;new("English", "en", "en"); # replace with ??
         $local-&gt;AddCatalog("PlOgg1_app"); # replace with the appropriate catalog name
@@ -971,17 +984,17 @@ unless(caller){
         <example>
           <title>Compiling a single file C++ project on Linux</title>
 
-          <programlisting># g++ FontColour.cpp $(wx-config --libs) $(wx-config --cxxflags) -o FontColour
+          <screen># g++ FontColour.cpp $(wx-config --libs) $(wx-config --cxxflags) -o FontColour
 # ll FontColour*
 -rwxr-xr-x 1 carsten carsten 72493 Jun 15 09:22 FontColour
 -rwxr-xr-x 1 carsten carsten  1785 Mai 11 19:24 FontColour.cpp
--rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h</programlisting>
+-rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h</screen>
         </example>
 
         <example>
           <title>Compiling a multi file C++ project on Linux</title>
 
-          <programlisting># g++  CPPOgg2_main.cpp $(wx-config --libs) $(wx-config --cxxflags) \
+          <screen># g++  CPPOgg2_main.cpp $(wx-config --libs) $(wx-config --cxxflags) \
        -o CPPOgg2_main CPPOgg2_MyDialog.cpp CPPOgg2_MyFrame.cpp
 # ll CPPOgg2*
 -rwxr-xr-x 1 carsten carsten 108354 Jun 15 09:33 CPPOgg2_main
@@ -989,7 +1002,7 @@ unless(caller){
 -rw-r--r-- 1 carsten carsten   5287 Mai 18 19:06 CPPOgg2_MyDialog.cpp
 -rw-r--r-- 1 carsten carsten   1829 Jun 11 07:11 CPPOgg2_MyDialog.h
 -rw-r--r-- 1 carsten carsten   1785 Mai 11 19:25 CPPOgg2_MyFrame.cpp
--rw-r--r-- 1 carsten carsten   1290 Jun 11 07:10 CPPOgg2_MyFrame.h</programlisting>
+-rw-r--r-- 1 carsten carsten   1290 Jun 11 07:10 CPPOgg2_MyFrame.h</screen>
         </example>
       </section>
     </section>
@@ -1007,11 +1020,11 @@ unless(caller){
       <example>
         <title>Converting a XRC file into a wxGlade project</title>
 
-        <programlisting># ./xrc2wxg.py FontColour.xrc
+        <screen># ./xrc2wxg.py FontColour.xrc
 
 # ls -l FontColour.*
 -rw-r--r-- 1 carsten carsten 5554 Dez  4 20:36 FontColour.wxg
--rw-r--r-- 1 carsten carsten 4992 Dez  4 20:13 FontColour.xrc</programlisting>
+-rw-r--r-- 1 carsten carsten 4992 Dez  4 20:13 FontColour.xrc</screen>
       </example>
 
       <para>The <quote><guimenu>File</guimenu></quote> menu provides a menu
@@ -1024,7 +1037,7 @@ unless(caller){
       <example>
         <title>wxPython code to load and show a XRC resource</title>
 
-        <programlisting>#!/usr/bin/env python
+        <programlisting language="python" linenumbering="numbered">#!/usr/bin/env python
 
 import wx
 from wx import xrc
@@ -1481,7 +1494,8 @@ if __name__ == '__main__':
               <example>
                 <title>Generated Python code of a subclassed widget</title>
 
-                <para><programlisting linenumbering="numbered">class MyDialog(wxDialog):
+                <para><programlisting language="python"
+                linenumbering="numbered">class MyDialog(wxDialog):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyDialog.__init__
         kwds["style"] = wxDEFAULT_DIALOG_STYLE
@@ -1517,7 +1531,7 @@ if __name__ == '__main__':
                 <title>Generated Python code of a widget with two base
                 classes</title>
 
-                <programlisting linenumbering="numbered">class MyFrame(myFrameMixin, wxFrame):
+                <programlisting language="python" linenumbering="numbered">class MyFrame(myFrameMixin, wxFrame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -1574,7 +1588,8 @@ if __name__ == '__main__':
               <example>
                 <title>Generated Python code for a variable assignment</title>
 
-                <para><programlisting>class MyFrame(wx.Frame):
+                <para><programlisting language="python"
+                linenumbering="numbered">class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -1720,7 +1735,7 @@ if __name__ == '__main__':
           <title>Generated Python code of an <command>EVT_TEXT</command> event
           handler stub at line 12</title>
 
-          <programlisting linenumbering="numbered">class MyFrame(wx.Frame):
+          <programlisting language="python" linenumbering="numbered">class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -1791,7 +1806,7 @@ if __name__ == '__main__':
           <command>MaxLength</command> to <command>10</command> at line
           14</title>
 
-          <programlisting linenumbering="numbered">class MyFrame(wx.Frame):
+          <programlisting language="python" linenumbering="numbered">class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -2389,6 +2404,188 @@ if __name__ == '__main__':
       size, but remember to click on the
       <quote><guibutton>Apply</guibutton></quote> button to consolidate
       changes.</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Installing and Designing own Widget Plugins</title>
+
+    <para>wxGlade supports a simple plugin system for widgets to load all
+    widgets at the application startup dynamically. The plugin system loads
+    all</para>
+
+    <para>built-in widgets like <quote>Static Text</quote> widget or the
+    <quote>Gauge</quote> widget. It also loads widgets installed by
+    users.</para>
+
+    <section>
+      <title>Widgets packages</title>
+
+      <para>The wxGlade plugin system supports two different types of widget
+      packages:</para>
+
+      <para><orderedlist>
+          <listitem>
+            <para><quote>directory package</quote> - a single directory with
+            all necessary files inside</para>
+          </listitem>
+
+          <listitem>
+            <para><quote>ZIP package</quote> - a zipped version of a
+            "directory" package</para>
+          </listitem>
+        </orderedlist></para>
+
+      <example>
+        <title>Directory package</title>
+
+        <para><screen>static_text          &lt;- Directory named after the widget name
+|-- __init__.py      &lt;- Mostly an empty file or a file with just a comment
+|-- codegen.py       &lt;- Python and C++ code generators
+|-- lisp_codegen.py  &lt;- Lisp code generator
+|-- perl_codegen.py  &lt;- Perl code generator
+`-- static_text.py   &lt;- wxGlade GUI code
+</screen></para>
+      </example>
+
+      <example>
+        <title>ZIP package</title>
+
+        <para><screen># unzip -l static_text.zip 
+Archive:  static_text.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2013-12-09 10:02   static_text/
+      329  2013-12-09 10:02   static_text/__init__.py
+     3352  2013-12-09 10:02   static_text/codegen.py
+     1640  2013-12-09 10:02   static_text/lisp_codegen.py
+     1841  2013-12-09 10:02   static_text/perl_codegen.py
+     5917  2013-12-09 10:02   static_text/static_text.py
+---------                     -------
+    13079                     6 files
+</screen></para>
+      </example>
+    </section>
+
+    <section>
+      <title>Installing Widget Plugins locally</title>
+
+      <para>The installation of local plugins is a two-step process:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Place the widget package in the <guilabel>Local widget
+          path</guilabel> (see <xref linkend="preferences.section"/>). Create
+          this directory if it doesn't exist.</para>
+        </listitem>
+
+        <listitem>
+          <para>Add widget name to the text file named
+          <filename>widgets.txt</filename>. This file is also located in the
+          directory specified in <guilabel>Local widget path</guilabel>. Just
+          create a simple text file, if the file doesn't exists.</para>
+        </listitem>
+      </orderedlist>
+
+      <para>The new widget will be avalable after myrun has been
+      restarted.</para>
+    </section>
+
+    <section>
+      <title>Designing own Widget Plugins</title>
+
+      <note>
+        <para>This section is under constraction! Please use this information
+        carefully.</para>
+      </note>
+
+      <orderedlist>
+        <listitem>
+          <para>Create a new directory named like the widget and change in
+          this directory</para>
+        </listitem>
+
+        <listitem>
+          <para>Place an empty file <filename>__init__.py</filename> in that
+          directory</para>
+        </listitem>
+
+        <listitem>
+          <para>Create a Python file codegen.py with initial content
+          like</para>
+
+          <programlisting language="python" linenumbering="numbered">"""
+Code generator functions for myCtrl objects
+
+@copyright: &lt;Add year and your name&gt;
+@license: &lt;Choice a license&gt;
+"""
+
+import common
+
+
+class PythonMyCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
+
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
+
+# end of class PythonMyCtrlGenerator
+
+
+def initialize():
+    common.class_names['EditmyCtrl'] = 'myCtrl'
+
+    pygen = common.code_writers.get("python")
+    if pygen:
+        pygen.add_widget_handler('myCtrl', PythonMyCtrlGenerator())</programlisting>
+        </listitem>
+
+        <listitem>
+          <para>Create a Python file named like the widget directory e.g.
+          myctrl.py</para>
+        </listitem>
+
+        <listitem>
+          <para>Create remaining code generators</para>
+        </listitem>
+
+        <listitem>
+          <para>Example of the created structure</para>
+
+          <programlisting>myctrl
+|-- __init__.py
+|-- codegen.py
+`-- myctrl.py</programlisting>
+        </listitem>
+      </orderedlist>
+
+      <section>
+        <title>Create ZIP package</title>
+
+        <para>Creating a ZIP package is quite simple. Just create a ZIP
+        package from widgets directory with all Python and additional files.
+        Don't include Python bytecode files because they are not
+        platfrom-independend.<programlisting># tree static_text/
+static_text/
+|-- __init__.py
+|-- codegen.py
+|-- lisp_codegen.py
+|-- perl_codegen.py
+`-- static_text.py
+
+# zip -r static_text.zip static_text 
+  adding: static_text/ (stored 0%)
+  adding: static_text/__init__.py (deflated 36%)
+  adding: static_text/codegen.py (deflated 67%)
+  adding: static_text/lisp_codegen.py (deflated 54%)
+  adding: static_text/perl_codegen.py (deflated 56%)
+  adding: static_text/static_text.py (deflated 69%)
+</programlisting></para>
+
+        <para>Check the integrity of the created ZIP archive:</para>
+
+        <para><programlisting># zip -T static_text.zip 
+test of static_text.zip OK</programlisting></para>
+      </section>
     </section>
   </chapter>
 
