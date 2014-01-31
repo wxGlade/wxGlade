@@ -26,6 +26,7 @@
 #include <wx/notebook.h>
 #include <wx/statline.h>
 #include <wx/spinctrl.h>
+#include <wx/datectrl.h>
 #include <wx/listctrl.h>
 #include <wx/spinbutt.h>
 // end wxGlade
@@ -60,6 +61,8 @@ protected:
     wxComboBox* combo_box_empty;
     wxComboBox* combo_box_filled;
     wxPanel* notebook_1_wxComboBox;
+    wxDatePickerCtrl* datepicker_ctrl_1;
+    wxPanel* notebook_1_wxDatePickerCtrl;
     wxListBox* list_box_empty;
     wxListBox* list_box_filled;
     wxPanel* notebook_1_wxListBox;
