@@ -31,6 +31,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     notebook_1_wxRadioBox = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxListCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxListBox = new wxPanel(notebook_1, wxID_ANY);
+    notebook_1_wxDatePickerCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxComboBox = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxChoice = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxCalendarCtrl = new wxPanel(notebook_1, wxID_ANY);
@@ -52,6 +53,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
         _("Item 2"),
     };
     combo_box_filled = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 2, combo_box_filled_choices, wxCB_DROPDOWN);
+    datepicker_ctrl_1 = new wxDatePickerCtrl(notebook_1_wxDatePickerCtrl, wxID_ANY);
     const wxString *list_box_empty_choices = NULL;
     list_box_empty = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_empty_choices);
     const wxString list_box_filled_choices[] = {
@@ -137,6 +139,7 @@ void All_Widgets_Frame::do_layout()
     wxGridSizer* grid_sizer_1 = new wxGridSizer(2, 2, 0, 0);
     wxBoxSizer* sizer_3 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer_17 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_6 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_5 = new wxBoxSizer(wxHORIZONTAL);
@@ -153,6 +156,8 @@ void All_Widgets_Frame::do_layout()
     sizer_7->Add(combo_box_filled, 1, wxALL, 5);
     sizer_6->Add(sizer_7, 1, wxEXPAND, 0);
     notebook_1_wxComboBox->SetSizer(sizer_6);
+    sizer_17->Add(datepicker_ctrl_1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    notebook_1_wxDatePickerCtrl->SetSizer(sizer_17);
     sizer_4->Add(list_box_empty, 1, wxALL|wxEXPAND, 5);
     sizer_4->Add(list_box_filled, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxListBox->SetSizer(sizer_4);
@@ -195,6 +200,7 @@ void All_Widgets_Frame::do_layout()
     notebook_1->AddPage(notebook_1_wxCalendarCtrl, _("wxCalendarCtrl"));
     notebook_1->AddPage(notebook_1_wxChoice, _("wxChoice"));
     notebook_1->AddPage(notebook_1_wxComboBox, _("wxComboBox"));
+    notebook_1->AddPage(notebook_1_wxDatePickerCtrl, _("wxDatePickerCtrl"));
     notebook_1->AddPage(notebook_1_wxListBox, _("wxListBox"));
     notebook_1->AddPage(notebook_1_wxListCtrl, _("wxListCtrl"));
     notebook_1->AddPage(notebook_1_wxRadioBox, _("wxRadioBox"));

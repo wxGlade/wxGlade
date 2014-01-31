@@ -121,6 +121,21 @@
                     </object>
                     </object>
                     <object class="notebookpage">
+                    <label>wxDatePickerCtrl</label>
+                    <object class="wxPanel" name="notebook_1_wxDatePickerCtrl">
+                        <object class="wxBoxSizer">
+                            <orient>wxHORIZONTAL</orient>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+                                <border>5</border>
+                                <object class="wxDatePickerCtrl" name="datepicker_ctrl_1">
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                    </object>
+                    <object class="notebookpage">
                     <label>wxListBox</label>
                     <object class="wxPanel" name="notebook_1_wxListBox">
                         <style>wxTAB_TRAVERSAL</style>

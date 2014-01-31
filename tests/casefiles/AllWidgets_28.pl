@@ -46,6 +46,8 @@ sub new {
         $self->{notebook_1_wxComboBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
         $self->{combo_box_empty} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [], wxCB_DROPDOWN);
         $self->{combo_box_filled} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [_T("Item 1 (pre-selected)"), _T("Item 2")], wxCB_DROPDOWN);
+        $self->{notebook_1_wxDatePickerCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+        $self->{datepicker_ctrl_1} = Wx::DatePickerCtrl->new($self->{notebook_1_wxDatePickerCtrl}, wxID_ANY);
         $self->{notebook_1_wxListBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
         $self->{list_box_empty} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
         $self->{list_box_filled} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], );
@@ -130,6 +132,7 @@ sub __do_layout {
         $self->{grid_sizer_1} = Wx::GridSizer->new(2, 2, 0, 0);
         $self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_4} = Wx::BoxSizer->new(wxVERTICAL);
+        $self->{sizer_17} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_6} = Wx::BoxSizer->new(wxVERTICAL);
         $self->{sizer_7} = Wx::BoxSizer->new(wxHORIZONTAL);
         $self->{sizer_5} = Wx::BoxSizer->new(wxHORIZONTAL);
@@ -146,6 +149,8 @@ sub __do_layout {
         $self->{sizer_7}->Add($self->{combo_box_filled}, 1, wxALL, 5);
         $self->{sizer_6}->Add($self->{sizer_7}, 1, wxEXPAND, 0);
         $self->{notebook_1_wxComboBox}->SetSizer($self->{sizer_6});
+        $self->{sizer_17}->Add($self->{datepicker_ctrl_1}, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+        $self->{notebook_1_wxDatePickerCtrl}->SetSizer($self->{sizer_17});
         $self->{sizer_4}->Add($self->{list_box_empty}, 1, wxALL|wxEXPAND, 5);
         $self->{sizer_4}->Add($self->{list_box_filled}, 1, wxALL|wxEXPAND, 5);
         $self->{notebook_1_wxListBox}->SetSizer($self->{sizer_4});
@@ -188,6 +193,7 @@ sub __do_layout {
         $self->{notebook_1}->AddPage($self->{notebook_1_wxCalendarCtrl}, _T("wxCalendarCtrl"));
         $self->{notebook_1}->AddPage($self->{notebook_1_wxChoice}, _T("wxChoice"));
         $self->{notebook_1}->AddPage($self->{notebook_1_wxComboBox}, _T("wxComboBox"));
+        $self->{notebook_1}->AddPage($self->{notebook_1_wxDatePickerCtrl}, _T("wxDatePickerCtrl"));
         $self->{notebook_1}->AddPage($self->{notebook_1_wxListBox}, _T("wxListBox"));
         $self->{notebook_1}->AddPage($self->{notebook_1_wxListCtrl}, _T("wxListCtrl"));
         $self->{notebook_1}->AddPage($self->{notebook_1_wxRadioBox}, _T("wxRadioBox"));
