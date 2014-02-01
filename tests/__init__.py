@@ -330,20 +330,12 @@ class WXGladeBaseTest(unittest.TestCase):
         @return: Modified XML document
         @rtype:  String
         """
-        if language == "perl":
-            _document = self._modify_attrs(
-                document,
-                language='perl',
-                indent_amount='8',
-                indent_symbol='space',
-                )
-        else:
-            _document = self._modify_attrs(
-                document,
-                language=language,
-                indent_amount='4',
-                indent_symbol='space',
-                )
+        _document = self._modify_attrs(
+            document,
+            language=language,
+            indent_amount='4',
+            indent_symbol='space',
+        )
         return _document
 
     def _save_file(self, filename, content, which='wxg'):

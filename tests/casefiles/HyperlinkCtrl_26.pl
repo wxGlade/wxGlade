@@ -22,49 +22,49 @@ use strict;
 
 use Wx::Locale gettext => '_T';
 sub new {
-        my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
-        $parent = undef              unless defined $parent;
-        $id     = -1                 unless defined $id;
-        $title  = ""                 unless defined $title;
-        $pos    = wxDefaultPosition  unless defined $pos;
-        $size   = wxDefaultSize      unless defined $size;
-        $name   = ""                 unless defined $name;
+    my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
+    $parent = undef              unless defined $parent;
+    $id     = -1                 unless defined $id;
+    $title  = ""                 unless defined $title;
+    $pos    = wxDefaultPosition  unless defined $pos;
+    $size   = wxDefaultSize      unless defined $size;
+    $name   = ""                 unless defined $name;
 
-        # begin wxGlade: MyFrame::new
-        $style = wxDEFAULT_FRAME_STYLE 
-                unless defined $style;
+    # begin wxGlade: MyFrame::new
+    $style = wxDEFAULT_FRAME_STYLE 
+        unless defined $style;
 
-        $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 
-        # WARNING: Code for instance "hyperlink_1" of "wxHyperlinkCtrl" was
-        # not created, because the widget is not available for wx version 2.6.
-        # It is available for wx versions 2.8, 3.0 only.
+    # WARNING: Code for instance "hyperlink_1" of "wxHyperlinkCtrl" was
+    # not created, because the widget is not available for wx version 2.6.
+    # It is available for wx versions 2.8, 3.0 only.
 
 
-        $self->__set_properties();
-        $self->__do_layout();
+    $self->__set_properties();
+    $self->__do_layout();
 
-        # end wxGlade
-        return $self;
+    # end wxGlade
+    return $self;
 
 }
 
 
 sub __set_properties {
-        my $self = shift;
-        # begin wxGlade: MyFrame::__set_properties
-        $self->SetTitle(_T("frame_1"));
-        # end wxGlade
+    my $self = shift;
+    # begin wxGlade: MyFrame::__set_properties
+    $self->SetTitle(_T("frame_1"));
+    # end wxGlade
 }
 
 sub __do_layout {
-        my $self = shift;
-        # begin wxGlade: MyFrame::__do_layout
-        $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-        $self->SetSizer($self->{sizer_1});
-        $self->{sizer_1}->Fit($self);
-        $self->Layout();
-        # end wxGlade
+    my $self = shift;
+    # begin wxGlade: MyFrame::__do_layout
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->SetSizer($self->{sizer_1});
+    $self->{sizer_1}->Fit($self);
+    $self->Layout();
+    # end wxGlade
 }
 
 # end of class MyFrame
@@ -77,25 +77,25 @@ use base qw(Wx::App);
 use strict;
 
 sub OnInit {
-        my( $self ) = shift;
+    my( $self ) = shift;
 
-        Wx::InitAllImageHandlers();
+    Wx::InitAllImageHandlers();
 
-        my $frame_1 = MyFrame->new();
+    my $frame_1 = MyFrame->new();
 
-        $self->SetTopWindow($frame_1);
-        $frame_1->Show(1);
+    $self->SetTopWindow($frame_1);
+    $frame_1->Show(1);
 
-        return 1;
+    return 1;
 }
 # end of class MyApp
 
 package main;
 
 unless(caller){
-        my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-        $local->AddCatalog("app"); # replace with the appropriate catalog name
+    my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
+    $local->AddCatalog("app"); # replace with the appropriate catalog name
 
-        my $app = MyApp->new();
-        $app->MainLoop();
+    my $app = MyApp->new();
+    $app->MainLoop();
 }
