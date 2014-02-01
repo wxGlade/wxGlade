@@ -22,38 +22,38 @@ use strict;
 
 use Wx::Locale gettext => '_T';
 sub new {
-        my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
-        $parent = undef              unless defined $parent;
-        $id     = -1                 unless defined $id;
-        $title  = ""                 unless defined $title;
-        $pos    = wxDefaultPosition  unless defined $pos;
-        $size   = wxDefaultSize      unless defined $size;
-        $name   = ""                 unless defined $name;
+    my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
+    $parent = undef              unless defined $parent;
+    $id     = -1                 unless defined $id;
+    $title  = ""                 unless defined $title;
+    $pos    = wxDefaultPosition  unless defined $pos;
+    $size   = wxDefaultSize      unless defined $size;
+    $name   = ""                 unless defined $name;
 
-        # begin wxGlade: StylelessDialog::new
-        $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    # begin wxGlade: StylelessDialog::new
+    $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 
-        $self->__set_properties();
-        $self->__do_layout();
+    $self->__set_properties();
+    $self->__do_layout();
 
-        # end wxGlade
-        return $self;
+    # end wxGlade
+    return $self;
 
 }
 
 
 sub __set_properties {
-        my $self = shift;
-        # begin wxGlade: StylelessDialog::__set_properties
-        $self->SetTitle(_T("Style-less Dialog"));
-        # end wxGlade
+    my $self = shift;
+    # begin wxGlade: StylelessDialog::__set_properties
+    $self->SetTitle(_T("Style-less Dialog"));
+    # end wxGlade
 }
 
 sub __do_layout {
-        my $self = shift;
-        # begin wxGlade: StylelessDialog::__do_layout
-        $self->Layout();
-        # end wxGlade
+    my $self = shift;
+    # begin wxGlade: StylelessDialog::__do_layout
+    $self->Layout();
+    # end wxGlade
 }
 
 # end of class StylelessDialog
@@ -68,41 +68,41 @@ use strict;
 
 use Wx::Locale gettext => '_T';
 sub new {
-        my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
-        $parent = undef              unless defined $parent;
-        $id     = -1                 unless defined $id;
-        $title  = ""                 unless defined $title;
-        $pos    = wxDefaultPosition  unless defined $pos;
-        $size   = wxDefaultSize      unless defined $size;
-        $name   = ""                 unless defined $name;
+    my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
+    $parent = undef              unless defined $parent;
+    $id     = -1                 unless defined $id;
+    $title  = ""                 unless defined $title;
+    $pos    = wxDefaultPosition  unless defined $pos;
+    $size   = wxDefaultSize      unless defined $size;
+    $name   = ""                 unless defined $name;
 
-        # begin wxGlade: StylelessFrame::new
-        $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    # begin wxGlade: StylelessFrame::new
+    $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 
-        $self->__set_properties();
-        $self->__do_layout();
+    $self->__set_properties();
+    $self->__do_layout();
 
-        # end wxGlade
-        return $self;
+    # end wxGlade
+    return $self;
 
 }
 
 
 sub __set_properties {
-        my $self = shift;
-        # begin wxGlade: StylelessFrame::__set_properties
-        $self->SetTitle(_T("Style-less Frame"));
-        # end wxGlade
+    my $self = shift;
+    # begin wxGlade: StylelessFrame::__set_properties
+    $self->SetTitle(_T("Style-less Frame"));
+    # end wxGlade
 }
 
 sub __do_layout {
-        my $self = shift;
-        # begin wxGlade: StylelessFrame::__do_layout
-        $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-        $self->SetSizer($self->{sizer_1});
-        $self->{sizer_1}->Fit($self);
-        $self->Layout();
-        # end wxGlade
+    my $self = shift;
+    # begin wxGlade: StylelessFrame::__do_layout
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->SetSizer($self->{sizer_1});
+    $self->{sizer_1}->Fit($self);
+    $self->Layout();
+    # end wxGlade
 }
 
 # end of class StylelessFrame
@@ -114,16 +114,16 @@ sub __do_layout {
 package main;
 
 unless(caller){
-        my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-        $local->AddCatalog("app"); # replace with the appropriate catalog name
+    my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
+    $local->AddCatalog("app"); # replace with the appropriate catalog name
 
-        local *Wx::App::OnInit = sub{1};
-        my $app = Wx::App->new();
-        Wx::InitAllImageHandlers();
+    local *Wx::App::OnInit = sub{1};
+    my $app = Wx::App->new();
+    Wx::InitAllImageHandlers();
 
-        my $dialog = StylelessDialog->new();
+    my $dialog = StylelessDialog->new();
 
-        $app->SetTopWindow($dialog);
-        $dialog->Show(1);
-        $app->MainLoop();
+    $app->SetTopWindow($dialog);
+    $dialog->Show(1);
+    $app->MainLoop();
 }

@@ -22,210 +22,210 @@ use strict;
 
 use Wx::Locale gettext => '_T';
 sub new {
-        my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
-        $parent = undef              unless defined $parent;
-        $id     = -1                 unless defined $id;
-        $title  = ""                 unless defined $title;
-        $pos    = wxDefaultPosition  unless defined $pos;
-        $size   = wxDefaultSize      unless defined $size;
-        $name   = ""                 unless defined $name;
+    my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
+    $parent = undef              unless defined $parent;
+    $id     = -1                 unless defined $id;
+    $title  = ""                 unless defined $title;
+    $pos    = wxDefaultPosition  unless defined $pos;
+    $size   = wxDefaultSize      unless defined $size;
+    $name   = ""                 unless defined $name;
 
-        # begin wxGlade: All_Widgets_Frame::new
-        $style = wxDEFAULT_FRAME_STYLE 
-                unless defined $style;
+    # begin wxGlade: All_Widgets_Frame::new
+    $style = wxDEFAULT_FRAME_STYLE 
+        unless defined $style;
 
-        $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-        $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
-        $self->{notebook_1_wxBitmapButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{bitmap_button_1} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
-        $self->{notebook_1_wxCalendarCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{calendar_ctrl_1} = Wx::CalendarCtrl->new($self->{notebook_1_wxCalendarCtrl}, wxID_ANY, Wx::DateTime->new);
-        $self->{notebook_1_wxChoice} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{choice_empty} = Wx::Choice->new($self->{notebook_1_wxChoice}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
-        $self->{choice_filled} = Wx::Choice->new($self->{notebook_1_wxChoice}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], );
-        $self->{notebook_1_wxComboBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{combo_box_empty} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [], wxCB_DROPDOWN);
-        $self->{combo_box_filled} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [_T("Item 1 (pre-selected)"), _T("Item 2")], wxCB_DROPDOWN);
-        $self->{notebook_1_wxDatePickerCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{datepicker_ctrl_1} = Wx::DatePickerCtrl->new($self->{notebook_1_wxDatePickerCtrl}, wxID_ANY);
-        $self->{notebook_1_wxListBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{list_box_empty} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
-        $self->{list_box_filled} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], );
-        $self->{notebook_1_wxListCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{list_ctrl_1} = Wx::ListCtrl->new($self->{notebook_1_wxListCtrl}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxSUNKEN_BORDER);
-        $self->{notebook_1_wxRadioBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{radio_box_empty1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, [], 0, wxRA_SPECIFY_ROWS);
-        $self->{radio_box_filled1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_filled1"), wxDefaultPosition, wxDefaultSize, [_T("choice 1"), _T("choice 2 (pre-selected)"), _T("choice 3")], 0, wxRA_SPECIFY_ROWS);
-        $self->{radio_box_empty2} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, [], 0, wxRA_SPECIFY_COLS);
-        $self->{radio_box_filled2} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_filled2"), wxDefaultPosition, wxDefaultSize, [_T("choice 1"), _T("choice 2 (pre-selected)")], 0, wxRA_SPECIFY_COLS);
-        $self->{notebook_1_wxRadioButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{radio_btn_1} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Alice"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-        $self->{text_ctrl_1} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
-        $self->{radio_btn_2} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Bob"));
-        $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
-        $self->{radio_btn_3} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Malroy"));
-        $self->{text_ctrl_3} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
-        $self->{sizer_8_staticbox} = Wx::StaticBox->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("My RadioButton Group") );
-        $self->{notebook_1_wxSlider} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{gauge_1} = Wx::Gauge->new($self->{notebook_1_wxSlider}, wxID_ANY, 20);
-        $self->{notebook_1_wxSpinButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{spin_button_1} = Wx::SpinButton->new($self->{notebook_1_wxSpinButton}, wxID_ANY,);
-        $self->{notebook_1_wxSpinCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{spin_ctrl_1} = Wx::SpinCtrl->new($self->{notebook_1_wxSpinCtrl}, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_AUTO_URL, 0, 100, 4);
-        $self->{notebook_1_wxSplitterWindow} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{notebook_1_wxStaticBitmap} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{bitmap_code_nullbitmap} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, (wxNullBitmap));
-        $self->{bitmap_file} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
-        $self->{bitmap_nofile} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("non-existing.bmp", wxBITMAP_TYPE_ANY));
-        $self->{notebook_1_wxStaticLine} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{static_line_2} = Wx::StaticLine->new($self->{notebook_1_wxStaticLine}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
-        $self->{static_line_3} = Wx::StaticLine->new($self->{notebook_1_wxStaticLine}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
-        $self->{static_line_4} = Wx::StaticLine->new($self->{notebook_1_wxStaticLine}, wxID_ANY);
-        $self->{static_line_5} = Wx::StaticLine->new($self->{notebook_1_wxStaticLine}, wxID_ANY);
-        $self->{notebook_1_Spacer} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-        $self->{label_3} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("Two labels with a"));
-        $self->{label_2} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("spacer between"));
-        $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
-        $self->{button_5} = Wx::Button->new($self, wxID_CLOSE, "");
-        $self->{button_1} = Wx::Button->new($self, wxID_OK, "", wxDefaultPosition, wxDefaultSize, wxBU_TOP);
+    $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
+    $self->{notebook_1_wxBitmapButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{bitmap_button_1} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
+    $self->{notebook_1_wxCalendarCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{calendar_ctrl_1} = Wx::CalendarCtrl->new($self->{notebook_1_wxCalendarCtrl}, wxID_ANY, Wx::DateTime->new);
+    $self->{notebook_1_wxChoice} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{choice_empty} = Wx::Choice->new($self->{notebook_1_wxChoice}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
+    $self->{choice_filled} = Wx::Choice->new($self->{notebook_1_wxChoice}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], );
+    $self->{notebook_1_wxComboBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{combo_box_empty} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [], wxCB_DROPDOWN);
+    $self->{combo_box_filled} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [_T("Item 1 (pre-selected)"), _T("Item 2")], wxCB_DROPDOWN);
+    $self->{notebook_1_wxDatePickerCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{datepicker_ctrl_1} = Wx::DatePickerCtrl->new($self->{notebook_1_wxDatePickerCtrl}, wxID_ANY);
+    $self->{notebook_1_wxListBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{list_box_empty} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
+    $self->{list_box_filled} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], );
+    $self->{notebook_1_wxListCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{list_ctrl_1} = Wx::ListCtrl->new($self->{notebook_1_wxListCtrl}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxSUNKEN_BORDER);
+    $self->{notebook_1_wxRadioBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{radio_box_empty1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, [], 0, wxRA_SPECIFY_ROWS);
+    $self->{radio_box_filled1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_filled1"), wxDefaultPosition, wxDefaultSize, [_T("choice 1"), _T("choice 2 (pre-selected)"), _T("choice 3")], 0, wxRA_SPECIFY_ROWS);
+    $self->{radio_box_empty2} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, [], 0, wxRA_SPECIFY_COLS);
+    $self->{radio_box_filled2} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_filled2"), wxDefaultPosition, wxDefaultSize, [_T("choice 1"), _T("choice 2 (pre-selected)")], 0, wxRA_SPECIFY_COLS);
+    $self->{notebook_1_wxRadioButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{radio_btn_1} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Alice"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    $self->{text_ctrl_1} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
+    $self->{radio_btn_2} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Bob"));
+    $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
+    $self->{radio_btn_3} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Malroy"));
+    $self->{text_ctrl_3} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
+    $self->{sizer_8_staticbox} = Wx::StaticBox->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("My RadioButton Group") );
+    $self->{notebook_1_wxSlider} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{gauge_1} = Wx::Gauge->new($self->{notebook_1_wxSlider}, wxID_ANY, 20);
+    $self->{notebook_1_wxSpinButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{spin_button_1} = Wx::SpinButton->new($self->{notebook_1_wxSpinButton}, wxID_ANY,);
+    $self->{notebook_1_wxSpinCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{spin_ctrl_1} = Wx::SpinCtrl->new($self->{notebook_1_wxSpinCtrl}, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_AUTO_URL, 0, 100, 4);
+    $self->{notebook_1_wxSplitterWindow} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{notebook_1_wxStaticBitmap} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{bitmap_code_nullbitmap} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, (wxNullBitmap));
+    $self->{bitmap_file} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
+    $self->{bitmap_nofile} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("non-existing.bmp", wxBITMAP_TYPE_ANY));
+    $self->{notebook_1_wxStaticLine} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{static_line_2} = Wx::StaticLine->new($self->{notebook_1_wxStaticLine}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
+    $self->{static_line_3} = Wx::StaticLine->new($self->{notebook_1_wxStaticLine}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
+    $self->{static_line_4} = Wx::StaticLine->new($self->{notebook_1_wxStaticLine}, wxID_ANY);
+    $self->{static_line_5} = Wx::StaticLine->new($self->{notebook_1_wxStaticLine}, wxID_ANY);
+    $self->{notebook_1_Spacer} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{label_3} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("Two labels with a"));
+    $self->{label_2} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("spacer between"));
+    $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
+    $self->{button_5} = Wx::Button->new($self, wxID_CLOSE, "");
+    $self->{button_1} = Wx::Button->new($self, wxID_OK, "", wxDefaultPosition, wxDefaultSize, wxBU_TOP);
 
-        $self->__set_properties();
-        $self->__do_layout();
+    $self->__set_properties();
+    $self->__do_layout();
 
-        Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, \&startConverting);
+    Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, \&startConverting);
 
-        # end wxGlade
-        return $self;
+    # end wxGlade
+    return $self;
 
 }
 
 
 sub __set_properties {
-        my $self = shift;
-        # begin wxGlade: All_Widgets_Frame::__set_properties
-        $self->SetTitle(_T("All Widgets"));
-        $self->{bitmap_button_1}->SetSize($self->{bitmap_button_1}->GetBestSize());
-        $self->{bitmap_button_1}->SetDefault();
-        $self->{choice_filled}->SetSelection(1);
-        $self->{combo_box_filled}->SetSelection(0);
-        $self->{list_box_filled}->SetSelection(1);
-        $self->{radio_box_filled1}->SetSelection(1);
-        $self->{radio_box_filled2}->SetSelection(1);
-        # end wxGlade
+    my $self = shift;
+    # begin wxGlade: All_Widgets_Frame::__set_properties
+    $self->SetTitle(_T("All Widgets"));
+    $self->{bitmap_button_1}->SetSize($self->{bitmap_button_1}->GetBestSize());
+    $self->{bitmap_button_1}->SetDefault();
+    $self->{choice_filled}->SetSelection(1);
+    $self->{combo_box_filled}->SetSelection(0);
+    $self->{list_box_filled}->SetSelection(1);
+    $self->{radio_box_filled1}->SetSelection(1);
+    $self->{radio_box_filled2}->SetSelection(1);
+    # end wxGlade
 }
 
 sub __do_layout {
-        my $self = shift;
-        # begin wxGlade: All_Widgets_Frame::__do_layout
-        $self->{sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
-        $self->{sizer_2} = Wx::FlexGridSizer->new(1, 2, 0, 0);
-        $self->{grid_sizer_3} = Wx::FlexGridSizer->new(1, 3, 0, 0);
-        $self->{sizer_9} = Wx::BoxSizer->new(wxVERTICAL);
-        $self->{sizer_10} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_11} = Wx::BoxSizer->new(wxVERTICAL);
-        $self->{sizer_14} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_16} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_15} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_8_staticbox}->Lower();
-        $self->{sizer_8} = Wx::StaticBoxSizer->new($self->{sizer_8_staticbox}, wxHORIZONTAL);
-        $self->{grid_sizer_2} = Wx::FlexGridSizer->new(3, 2, 0, 0);
-        $self->{grid_sizer_1} = Wx::GridSizer->new(2, 2, 0, 0);
-        $self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_4} = Wx::BoxSizer->new(wxVERTICAL);
-        $self->{sizer_17} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_6} = Wx::BoxSizer->new(wxVERTICAL);
-        $self->{sizer_7} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_5} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_12} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_13} = Wx::BoxSizer->new(wxHORIZONTAL);
-        $self->{sizer_13}->Add($self->{bitmap_button_1}, 1, wxALL|wxEXPAND, 5);
-        $self->{notebook_1_wxBitmapButton}->SetSizer($self->{sizer_13});
-        $self->{sizer_12}->Add($self->{calendar_ctrl_1}, 1, wxALL|wxEXPAND, 5);
-        $self->{notebook_1_wxCalendarCtrl}->SetSizer($self->{sizer_12});
-        $self->{sizer_5}->Add($self->{choice_empty}, 1, wxALL, 5);
-        $self->{sizer_5}->Add($self->{choice_filled}, 1, wxALL, 5);
-        $self->{notebook_1_wxChoice}->SetSizer($self->{sizer_5});
-        $self->{sizer_7}->Add($self->{combo_box_empty}, 1, wxALL, 5);
-        $self->{sizer_7}->Add($self->{combo_box_filled}, 1, wxALL, 5);
-        $self->{sizer_6}->Add($self->{sizer_7}, 1, wxEXPAND, 0);
-        $self->{notebook_1_wxComboBox}->SetSizer($self->{sizer_6});
-        $self->{sizer_17}->Add($self->{datepicker_ctrl_1}, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-        $self->{notebook_1_wxDatePickerCtrl}->SetSizer($self->{sizer_17});
-        $self->{sizer_4}->Add($self->{list_box_empty}, 1, wxALL|wxEXPAND, 5);
-        $self->{sizer_4}->Add($self->{list_box_filled}, 1, wxALL|wxEXPAND, 5);
-        $self->{notebook_1_wxListBox}->SetSizer($self->{sizer_4});
-        $self->{sizer_3}->Add($self->{list_ctrl_1}, 1, wxALL|wxEXPAND, 5);
-        $self->{notebook_1_wxListCtrl}->SetSizer($self->{sizer_3});
-        $self->{grid_sizer_1}->Add($self->{radio_box_empty1}, 1, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_1}->Add($self->{radio_box_filled1}, 1, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_1}->Add($self->{radio_box_empty2}, 1, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_1}->Add($self->{radio_box_filled2}, 1, wxALL|wxEXPAND, 5);
-        $self->{notebook_1_wxRadioBox}->SetSizer($self->{grid_sizer_1});
-        $self->{grid_sizer_2}->Add($self->{radio_btn_1}, 1, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_2}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_2}->Add($self->{radio_btn_2}, 1, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_2}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_2}->Add($self->{radio_btn_3}, 1, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_2}->Add($self->{text_ctrl_3}, 1, wxALL|wxEXPAND, 5);
-        $self->{sizer_8}->Add($self->{grid_sizer_2}, 1, wxEXPAND, 0);
-        $self->{notebook_1_wxRadioButton}->SetSizer($self->{sizer_8});
-        $self->{sizer_15}->Add($self->{gauge_1}, 1, wxALL, 5);
-        $self->{notebook_1_wxSlider}->SetSizer($self->{sizer_15});
-        $self->{sizer_16}->Add($self->{spin_button_1}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-        $self->{notebook_1_wxSpinButton}->SetSizer($self->{sizer_16});
-        $self->{sizer_14}->Add($self->{spin_ctrl_1}, 1, wxALL, 5);
-        $self->{notebook_1_wxSpinCtrl}->SetSizer($self->{sizer_14});
-        $self->{sizer_11}->Add($self->{bitmap_code_nullbitmap}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-        $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-        $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-        $self->{notebook_1_wxStaticBitmap}->SetSizer($self->{sizer_11});
-        $self->{sizer_10}->Add($self->{static_line_2}, 1, wxALL|wxEXPAND, 5);
-        $self->{sizer_10}->Add($self->{static_line_3}, 1, wxALL|wxEXPAND, 5);
-        $self->{sizer_9}->Add($self->{sizer_10}, 1, wxEXPAND, 0);
-        $self->{sizer_9}->Add($self->{static_line_4}, 1, wxALL|wxEXPAND, 5);
-        $self->{sizer_9}->Add($self->{static_line_5}, 1, wxALL|wxEXPAND, 5);
-        $self->{notebook_1_wxStaticLine}->SetSizer($self->{sizer_9});
-        $self->{grid_sizer_3}->Add($self->{label_3}, 1, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_3}->Add(60, 20, 1, wxALL|wxEXPAND, 5);
-        $self->{grid_sizer_3}->Add($self->{label_2}, 1, wxALL|wxEXPAND, 5);
-        $self->{notebook_1_Spacer}->SetSizer($self->{grid_sizer_3});
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxBitmapButton}, _T("wxBitmapButton"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxCalendarCtrl}, _T("wxCalendarCtrl"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxChoice}, _T("wxChoice"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxComboBox}, _T("wxComboBox"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxDatePickerCtrl}, _T("wxDatePickerCtrl"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxListBox}, _T("wxListBox"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxListCtrl}, _T("wxListCtrl"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxRadioBox}, _T("wxRadioBox"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxRadioButton}, _T("wxRadioButton"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxSlider}, _T("wxSlider"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxSpinButton}, _T("wxSpinButton"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxSpinCtrl}, _T("wxSpinCtrl"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxSplitterWindow}, _T("wxSplitterWindow"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxStaticBitmap}, _T("wxStaticBitmap"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_wxStaticLine}, _T("wxStaticLine"));
-        $self->{notebook_1}->AddPage($self->{notebook_1_Spacer}, _T("wxStaticText (with Spacer)"));
-        $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
-        $self->{sizer_1}->Add($self->{static_line_1}, 0, wxALL|wxEXPAND, 5);
-        $self->{sizer_2}->Add($self->{button_5}, 0, wxALL|wxALIGN_RIGHT, 5);
-        $self->{sizer_2}->Add($self->{button_1}, 0, wxALL|wxALIGN_RIGHT, 5);
-        $self->{sizer_1}->Add($self->{sizer_2}, 0, wxALIGN_RIGHT, 0);
-        $self->SetSizer($self->{sizer_1});
-        $self->{sizer_1}->Fit($self);
-        $self->{sizer_1}->SetSizeHints($self);
-        $self->{sizer_1}->AddGrowableRow(0);
-        $self->{sizer_1}->AddGrowableCol(0);
-        $self->Layout();
-        $self->Centre();
-        # end wxGlade
+    my $self = shift;
+    # begin wxGlade: All_Widgets_Frame::__do_layout
+    $self->{sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
+    $self->{sizer_2} = Wx::FlexGridSizer->new(1, 2, 0, 0);
+    $self->{grid_sizer_3} = Wx::FlexGridSizer->new(1, 3, 0, 0);
+    $self->{sizer_9} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_10} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_11} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_14} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_16} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_15} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_8_staticbox}->Lower();
+    $self->{sizer_8} = Wx::StaticBoxSizer->new($self->{sizer_8_staticbox}, wxHORIZONTAL);
+    $self->{grid_sizer_2} = Wx::FlexGridSizer->new(3, 2, 0, 0);
+    $self->{grid_sizer_1} = Wx::GridSizer->new(2, 2, 0, 0);
+    $self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_4} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_17} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_6} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_7} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_5} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_12} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_13} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_13}->Add($self->{bitmap_button_1}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_wxBitmapButton}->SetSizer($self->{sizer_13});
+    $self->{sizer_12}->Add($self->{calendar_ctrl_1}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_wxCalendarCtrl}->SetSizer($self->{sizer_12});
+    $self->{sizer_5}->Add($self->{choice_empty}, 1, wxALL, 5);
+    $self->{sizer_5}->Add($self->{choice_filled}, 1, wxALL, 5);
+    $self->{notebook_1_wxChoice}->SetSizer($self->{sizer_5});
+    $self->{sizer_7}->Add($self->{combo_box_empty}, 1, wxALL, 5);
+    $self->{sizer_7}->Add($self->{combo_box_filled}, 1, wxALL, 5);
+    $self->{sizer_6}->Add($self->{sizer_7}, 1, wxEXPAND, 0);
+    $self->{notebook_1_wxComboBox}->SetSizer($self->{sizer_6});
+    $self->{sizer_17}->Add($self->{datepicker_ctrl_1}, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    $self->{notebook_1_wxDatePickerCtrl}->SetSizer($self->{sizer_17});
+    $self->{sizer_4}->Add($self->{list_box_empty}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_4}->Add($self->{list_box_filled}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_wxListBox}->SetSizer($self->{sizer_4});
+    $self->{sizer_3}->Add($self->{list_ctrl_1}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_wxListCtrl}->SetSizer($self->{sizer_3});
+    $self->{grid_sizer_1}->Add($self->{radio_box_empty1}, 1, wxALL|wxEXPAND, 5);
+    $self->{grid_sizer_1}->Add($self->{radio_box_filled1}, 1, wxALL|wxEXPAND, 5);
+    $self->{grid_sizer_1}->Add($self->{radio_box_empty2}, 1, wxALL|wxEXPAND, 5);
+    $self->{grid_sizer_1}->Add($self->{radio_box_filled2}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_wxRadioBox}->SetSizer($self->{grid_sizer_1});
+    $self->{grid_sizer_2}->Add($self->{radio_btn_1}, 1, wxALL|wxEXPAND, 5);
+    $self->{grid_sizer_2}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND, 5);
+    $self->{grid_sizer_2}->Add($self->{radio_btn_2}, 1, wxALL|wxEXPAND, 5);
+    $self->{grid_sizer_2}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
+    $self->{grid_sizer_2}->Add($self->{radio_btn_3}, 1, wxALL|wxEXPAND, 5);
+    $self->{grid_sizer_2}->Add($self->{text_ctrl_3}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_8}->Add($self->{grid_sizer_2}, 1, wxEXPAND, 0);
+    $self->{notebook_1_wxRadioButton}->SetSizer($self->{sizer_8});
+    $self->{sizer_15}->Add($self->{gauge_1}, 1, wxALL, 5);
+    $self->{notebook_1_wxSlider}->SetSizer($self->{sizer_15});
+    $self->{sizer_16}->Add($self->{spin_button_1}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    $self->{notebook_1_wxSpinButton}->SetSizer($self->{sizer_16});
+    $self->{sizer_14}->Add($self->{spin_ctrl_1}, 1, wxALL, 5);
+    $self->{notebook_1_wxSpinCtrl}->SetSizer($self->{sizer_14});
+    $self->{sizer_11}->Add($self->{bitmap_code_nullbitmap}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    $self->{notebook_1_wxStaticBitmap}->SetSizer($self->{sizer_11});
+    $self->{sizer_10}->Add($self->{static_line_2}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_10}->Add($self->{static_line_3}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_9}->Add($self->{sizer_10}, 1, wxEXPAND, 0);
+    $self->{sizer_9}->Add($self->{static_line_4}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_9}->Add($self->{static_line_5}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_wxStaticLine}->SetSizer($self->{sizer_9});
+    $self->{grid_sizer_3}->Add($self->{label_3}, 1, wxALL|wxEXPAND, 5);
+    $self->{grid_sizer_3}->Add(60, 20, 1, wxALL|wxEXPAND, 5);
+    $self->{grid_sizer_3}->Add($self->{label_2}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_Spacer}->SetSizer($self->{grid_sizer_3});
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxBitmapButton}, _T("wxBitmapButton"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxCalendarCtrl}, _T("wxCalendarCtrl"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxChoice}, _T("wxChoice"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxComboBox}, _T("wxComboBox"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxDatePickerCtrl}, _T("wxDatePickerCtrl"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxListBox}, _T("wxListBox"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxListCtrl}, _T("wxListCtrl"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxRadioBox}, _T("wxRadioBox"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxRadioButton}, _T("wxRadioButton"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxSlider}, _T("wxSlider"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxSpinButton}, _T("wxSpinButton"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxSpinCtrl}, _T("wxSpinCtrl"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxSplitterWindow}, _T("wxSplitterWindow"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxStaticBitmap}, _T("wxStaticBitmap"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxStaticLine}, _T("wxStaticLine"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_Spacer}, _T("wxStaticText (with Spacer)"));
+    $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
+    $self->{sizer_1}->Add($self->{static_line_1}, 0, wxALL|wxEXPAND, 5);
+    $self->{sizer_2}->Add($self->{button_5}, 0, wxALL|wxALIGN_RIGHT, 5);
+    $self->{sizer_2}->Add($self->{button_1}, 0, wxALL|wxALIGN_RIGHT, 5);
+    $self->{sizer_1}->Add($self->{sizer_2}, 0, wxALIGN_RIGHT, 0);
+    $self->SetSizer($self->{sizer_1});
+    $self->{sizer_1}->Fit($self);
+    $self->{sizer_1}->SetSizeHints($self);
+    $self->{sizer_1}->AddGrowableRow(0);
+    $self->{sizer_1}->AddGrowableCol(0);
+    $self->Layout();
+    $self->Centre();
+    # end wxGlade
 }
 
 sub startConverting {
-        my ($self, $event) = @_;
-        # wxGlade: All_Widgets_Frame::startConverting <event_handler>
-        warn "Event handler (startConverting) not implemented";
-        $event->Skip;
-        # end wxGlade
+    my ($self, $event) = @_;
+    # wxGlade: All_Widgets_Frame::startConverting <event_handler>
+    warn "Event handler (startConverting) not implemented";
+    $event->Skip;
+    # end wxGlade
 }
 
 
@@ -238,16 +238,16 @@ sub startConverting {
 package main;
 
 unless(caller){
-        my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-        $local->AddCatalog("ComplexExampleApp"); # replace with the appropriate catalog name
+    my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
+    $local->AddCatalog("ComplexExampleApp"); # replace with the appropriate catalog name
 
-        local *Wx::App::OnInit = sub{1};
-        my $ComplexExampleApp = Wx::App->new();
-        Wx::InitAllImageHandlers();
+    local *Wx::App::OnInit = sub{1};
+    my $ComplexExampleApp = Wx::App->new();
+    Wx::InitAllImageHandlers();
 
-        my $All_Widgets = All_Widgets_Frame->new();
+    my $All_Widgets = All_Widgets_Frame->new();
 
-        $ComplexExampleApp->SetTopWindow($All_Widgets);
-        $All_Widgets->Show(1);
-        $ComplexExampleApp->MainLoop();
+    $ComplexExampleApp->SetTopWindow($All_Widgets);
+    $All_Widgets->Show(1);
+    $ComplexExampleApp->MainLoop();
 }
