@@ -1,5 +1,5 @@
 """
-@copyright: 2012-2013 Carsten Grohmann
+@copyright: 2012-2014 Carsten Grohmann
 
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
@@ -175,53 +175,54 @@ class TestGui(WXGladeBaseTest):
                 self._messageBox
             )
 
-    def testCodeGeneration(self):
+    def load_and_generate(self, basename):
         """\
-        Test GUI code generation
+        Load a wxGlade document and generate code for all languages.
+
+        @param basename: Base name of the wxg file
+        @type basename:  String
         """
-        source = self._load_file('FontColour.wxg')
+        source = self._load_file('%s.wxg' % basename)
         source = self._modify_attrs(
             source,
             path='',
-            )
+        )
         infile = cStringIO.StringIO(source)
         self.frame._open_app(
             infilename=infile,
             use_progress_dialog=False,
             is_filelike=True,
             add_to_history=False,
-            )
-
+        )
         # generate code
         self._generate_code()
-
         # first test should fail because no output file is given
         err_msg = u'You must specify an output file\n' \
-                   'before generating any code'
+                  'before generating any code'
         err_caption = u'Error'
         self.failUnless(
             [err_msg, err_caption] == self._messageBox,
             '''Expected wxMessageBox(message=%s, caption=%s)''' % (
                 err_msg,
                 err_caption
-                )
             )
+        )
         self._messageBox = None
-
         # now test full code generation
-        for filename, language in [
-            ['FontColour.lisp', 'lisp'],
-            ['FontColour.pl',   'perl'],
-            ['FontColour.py',   'python'],
-            ['FontColour.xrc',  'XRC'],
-            ['FontColour',      'C++'],
-            ]:
+        for ext, language in [
+            ['.lisp', 'lisp'],
+            ['.pl', 'perl'],
+            ['.py', 'python'],
+            ['.xrc', 'XRC'],
+            ['', 'C++'],
+        ]:
+            filename = '%s%s' % (basename, ext)
 
             # check for langage first
             self.failUnless(
                 language in common.code_writers,
                 "No codewriter loaded for %s" % language
-                )
+            )
 
             # prepare and open wxg
             source = self._prepare_wxg(language, source)
@@ -231,7 +232,7 @@ class TestGui(WXGladeBaseTest):
                 use_progress_dialog=False,
                 is_filelike=True,
                 add_to_history=False,
-                )
+            )
 
             # set "Output path", language and generate code
             common.app_tree.app.output_path = filename
@@ -245,8 +246,8 @@ class TestGui(WXGladeBaseTest):
                 '''Expected wxMessageBox(message=%s, caption=%s)''' % (
                     success_msg,
                     success_caption
-                    )
                 )
+            )
             self._messageBox = None
 
             if language == 'C++':
@@ -262,6 +263,12 @@ class TestGui(WXGladeBaseTest):
                 expected = self._load_file(filename)
                 generated = self.vFiles[filename].getvalue()
                 self._compare(expected, generated)
+
+    def testCodeGeneration_FontColour(self):
+        """\
+        Test GUI code generation using "FontColour.wxg"
+        """
+        self.load_and_generate('FontColour')
 
     def test_StylelessDialog(self):
         """\
@@ -323,3 +330,9 @@ class TestGui(WXGladeBaseTest):
                 expected = self._load_file(filename)
                 generated = self.vFiles[filename].getvalue()
                 self._compare(expected, generated)
+
+    def testCodeGeneration_AllWidgets_28(self):
+        """\
+        Test GUI code generation using "AllWidgets_28.wxg"
+        """
+        self.load_and_generate('AllWidgets_28')
