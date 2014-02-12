@@ -82,34 +82,15 @@ class WXGladeBaseTest(unittest.TestCase):
     Directory with input files and result files
     """
 
-    init_stage1 = False
-    """\
-    Initialise the first stage of wxGlade e.g. path settings
-    """
-
-    init_use_gui = False
-    """\
-    Initialise the GUI part of wxGlade
-    """
-
     def setUp(self):
         """\
         Initialise parts of wxGlade only
         """
-        # disable logging
-        logging.disable(999)
-        
-        # initialise path settings
-        if self.init_stage1:
-            wxglade.init_stage1()
+        # set icon path back to the default default
+        config.icons_path = 'icons'
 
-        # initialise sizers, widgets, codewriter
-        wxglade.init_stage2(use_gui=self.init_use_gui)
-
-        # initialise wxGlade configuration
+        # initialise wxGlade preferences and set some useful values
         common.init_preferences()
-
-        # set some useful preferences
         config.preferences.autosave = False
         config.preferences.write_timestamp = False
         config.preferences.show_progress = False
