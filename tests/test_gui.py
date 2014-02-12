@@ -15,7 +15,7 @@ import wx
 # import project modules
 import config
 import common
-
+import main
 
 class TestGui(WXGladeBaseTest):
     """\
@@ -28,9 +28,6 @@ class TestGui(WXGladeBaseTest):
     @cvar frame: Reference to L{main.wxGladeFrame}. The object is persistent after the creation in L{setUp()}.
     @ivar orig_stdout: Original fd for stdout.
     """
-
-    init_stage1 = True
-    init_use_gui = True
 
     app = None
     frame = None
@@ -49,9 +46,6 @@ class TestGui(WXGladeBaseTest):
 
         # initialse base class
         WXGladeBaseTest.setUp(self)
-
-        import main
-        import wx
 
         # inject mock object for wxMessageBox
         self._messageBox = []

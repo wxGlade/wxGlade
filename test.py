@@ -4,12 +4,13 @@ Create a test suites and run all tests
 
 @see: L{wxglade.tests}
 
-@copyright: 2012 Carsten Grohmann
+@copyright: 2012,2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 # import general python modules
 import gettext
+import logging
 import imp
 import os
 import unittest
@@ -17,6 +18,8 @@ from optparse import OptionParser
 
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
+
+import wxglade
 
 
 def run_tests(gui_tests=False):
@@ -27,6 +30,12 @@ def run_tests(gui_tests=False):
     @type gui_tests:  Boolean
     """
     suites = []
+
+    # disable logging first because the initialisation logs path details and
+    # other details
+    logging.disable(999)
+    wxglade.init_stage1()
+    wxglade.init_stage2(gui_tests)
 
     # get a list of all test modules
     modules = os.listdir('./tests')
