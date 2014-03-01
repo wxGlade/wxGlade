@@ -320,12 +320,12 @@ def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
                 # use individual initialisation
                 widget_button = module.initialize()
             elif not hasattr(module, 'initialize') and submodule:
-                    logger.warning(
-                        _('Missing function "initialize()" in imported '
-                          'module %s'),
-                        fqmn
-                    )
-                    continue
+                logger.warning(
+                    _('Missing function "initialize()" in imported '
+                      'module %s'),
+                    fqmn
+                )
+                continue
             else:
                 # use generic initialisation
                 # initialise Python code generator
