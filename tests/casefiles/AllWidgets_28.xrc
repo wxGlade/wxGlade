@@ -495,6 +495,23 @@
                         </object>
                     </object>
                     </object>
+                    <object class="notebookpage">
+                    <label>wxTextCtrl</label>
+                    <object class="wxPanel" name="notebook_1_wxTextCtrl">
+                        <object class="wxBoxSizer">
+                            <orient>wxHORIZONTAL</orient>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALL|wxEXPAND</flag>
+                                <border>5</border>
+                                <object class="wxTextCtrl" name="text_ctrl">
+                                    <style>wxTE_MULTILINE|wxTE_LINEWRAP|wxTE_WORDWRAP</style>
+                                    <value>This\nis\na\nmultiline\nwxTextCtrl</value>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                    </object>
                 </object>
             </object>
             <object class="sizeritem">

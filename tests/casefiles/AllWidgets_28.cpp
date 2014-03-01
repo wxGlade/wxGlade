@@ -21,6 +21,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
 {
     // begin wxGlade: All_Widgets_Frame::All_Widgets_Frame
     notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
+    notebook_1_wxTextCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_Spacer = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxStaticLine = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxStaticBitmap = new wxPanel(notebook_1, wxID_ANY);
@@ -96,6 +97,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     static_line_5 = new wxStaticLine(notebook_1_wxStaticLine, wxID_ANY);
     label_3 = new wxStaticText(notebook_1_Spacer, wxID_ANY, _("Two labels with a"));
     label_2 = new wxStaticText(notebook_1_Spacer, wxID_ANY, _("spacer between"));
+    text_ctrl = new wxTextCtrl(notebook_1_wxTextCtrl, wxID_ANY, _("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_LINEWRAP|wxTE_WORDWRAP);
     static_line_1 = new wxStaticLine(this, wxID_ANY);
     button_5 = new wxButton(this, wxID_CLOSE, wxEmptyString);
     button_1 = new wxButton(this, wxID_OK, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBU_TOP);
@@ -126,6 +128,7 @@ void All_Widgets_Frame::do_layout()
     // begin wxGlade: All_Widgets_Frame::do_layout
     wxFlexGridSizer* sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
     wxFlexGridSizer* sizer_2 = new wxFlexGridSizer(1, 2, 0, 0);
+    wxBoxSizer* sizer_18 = new wxBoxSizer(wxHORIZONTAL);
     wxFlexGridSizer* grid_sizer_3 = new wxFlexGridSizer(1, 3, 0, 0);
     wxBoxSizer* sizer_9 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_10 = new wxBoxSizer(wxHORIZONTAL);
@@ -196,6 +199,8 @@ void All_Widgets_Frame::do_layout()
     grid_sizer_3->Add(60, 20, 1, wxALL|wxEXPAND, 5);
     grid_sizer_3->Add(label_2, 1, wxALL|wxEXPAND, 5);
     notebook_1_Spacer->SetSizer(grid_sizer_3);
+    sizer_18->Add(text_ctrl, 1, wxALL|wxEXPAND, 5);
+    notebook_1_wxTextCtrl->SetSizer(sizer_18);
     notebook_1->AddPage(notebook_1_wxBitmapButton, _("wxBitmapButton"));
     notebook_1->AddPage(notebook_1_wxCalendarCtrl, _("wxCalendarCtrl"));
     notebook_1->AddPage(notebook_1_wxChoice, _("wxChoice"));
@@ -212,6 +217,7 @@ void All_Widgets_Frame::do_layout()
     notebook_1->AddPage(notebook_1_wxStaticBitmap, _("wxStaticBitmap"));
     notebook_1->AddPage(notebook_1_wxStaticLine, _("wxStaticLine"));
     notebook_1->AddPage(notebook_1_Spacer, _("wxStaticText (with Spacer)"));
+    notebook_1->AddPage(notebook_1_wxTextCtrl, _("wxTextCtrl"));
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
     sizer_1->Add(static_line_1, 0, wxALL|wxEXPAND, 5);
     sizer_2->Add(button_5, 0, wxALL|wxALIGN_RIGHT, 5);

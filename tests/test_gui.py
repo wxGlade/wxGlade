@@ -21,11 +21,13 @@ class TestGui(WXGladeBaseTest):
     """\
     Test GUI functionality
     
-    Since Python created an own instance for each test, we use class varaibles
+    Since Python created an own instance for each test, we use class variables
     for persistent storing L{app} and L{frame}.
     
-    @cvar app: Reference to a wx.App object. he object is persistent after the creation in L{setUp()}.
-    @cvar frame: Reference to L{main.wxGladeFrame}. The object is persistent after the creation in L{setUp()}.
+    @cvar app: Reference to a wx.App object. he object is persistent after
+               the creation in L{setUp()}.
+    @cvar frame: Reference to L{main.wxGladeFrame}. The object is persistent
+                 after the creation in L{setUp()}.
     @ivar orig_stdout: Original fd for stdout.
     """
 
@@ -212,7 +214,7 @@ class TestGui(WXGladeBaseTest):
         ]:
             filename = '%s%s' % (basename, ext)
 
-            # check for langage first
+            # check for language first
             self.failUnless(
                 language in common.code_writers,
                 "No codewriter loaded for %s" % language
@@ -330,3 +332,106 @@ class TestGui(WXGladeBaseTest):
         Test GUI code generation using "AllWidgets_28.wxg"
         """
         self.load_and_generate('AllWidgets_28')
+
+    def test_StylesMixin(self):
+        """\
+        StyleMixin: Test converting of styles
+        """
+        import edit_windows
+        sm = edit_windows.StylesMixin()
+
+        # test converting attribute names to values
+        style_labels = ('wxMINIMIZE_BOX', 'wxMAXIMIZE_BOX',
+                        'wxRESIZE_BORDER')
+        sm.gen_style_pos(style_labels)
+        style_values = [1024, 512, 64]
+        self.failUnlessEqual(
+            sm._style_values,
+            style_values,
+            'StylesMixin.gen_style_pos() failed: got "%s" expect: "%s"' % (
+                sm._style_values,
+                style_values
+            )
+        )
+
+        # test converting a single style
+        style_labels = (
+            'wxDEFAULT_FRAME_STYLE',
+            'wxMINIMIZE_BOX', 'wxMAXIMIZE_BOX', 'wxRESIZE_BORDER',
+            'wxSYSTEM_MENU', 'wxCAPTION', 'wxCLOSE_BOX', 'wxCLIP_CHILDREN',
+        )
+        style_values = [541072960, 1024, 512, 64, 2048, 536870912,
+                        4096, 4194304,
+        ]
+        sm.gen_style_pos(style_labels)
+        self.failUnlessEqual(
+            sm._style_values,
+            style_values,
+            'StylesMixin.gen_style_pos() failed: got "%s" expect: "%s"' % (
+                sm._style_values,
+                style_values
+            )
+        )
+        sm.style = 2048
+        ret = sm.get_style()
+        expected = [0, 0, 0, 0, 1, 0, 0, 0]
+        self.failUnlessEqual(
+            ret,
+            expected,
+            'StylesMixin.StylesMixin.get_style(): got "%s" expect: "%s"' % (
+                ret, expected)
+        )
+
+        # test converting of a combined attribute
+        style_labels = ('#section#Border', 'wxALL',
+                        'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM')
+        style_values = [240, 16, 32, 64, 128]
+        sm.gen_style_pos(style_labels)
+        sm.combined_attr = 'wxALL'
+        self.failUnlessEqual(
+            sm._style_values,
+            style_values,
+            'StylesMixin.gen_style_pos() failed: got "%s" expect: "%s"' % (
+                sm._style_values,
+                style_values
+            )
+        )
+        sm.style = 240
+        ret = sm.get_style()
+        expected = [1, 0, 0, 0, 0]
+        self.failUnlessEqual(
+            ret,
+            expected,
+            'StylesMixin.get_style(): got "%s" expect: "%s"' % (ret, expected)
+        )
+
+        # test attributes with 0 values like wxALIGN_LEFT or compatibility
+        # reasons
+        style_labels = ('wxALL', 'wxLEFT', 'wxNO_FULL_REPAINT_ON_RESIZE')
+        style_values = [240, 16, 0]
+        sm.gen_style_pos(style_labels)
+        ret = sm.get_style()
+        self.failUnlessEqual(
+            sm._style_values,
+            style_values,
+            'StylesMixin.gen_style_pos() failed: got "%s" expect: "%s"' % (
+                sm._style_values,
+                style_values
+            )
+        )
+        sm.style = 240
+        ret = sm.get_style()
+        expected = [1, 0, 0]
+        self.failUnlessEqual(
+            ret,
+            expected,
+            'StylesMixin.get_style(): got "%s" expect: "%s"' % (ret, expected)
+        )
+        sm.style = None
+        sm.set_style('wxLEFT|wxNO_FULL_REPAINT_ON_RESIZE')
+        expected = 16
+        self.failUnlessEqual(
+            sm.style,
+            expected,
+            'StylesMixin.get_style(): got "%s" expect: "%s"' % (ret, expected)
+        )
