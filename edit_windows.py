@@ -1,7 +1,8 @@
 """
 Base classes for windows used by wxGlade
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright_ 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,8 +12,10 @@ import math
 import re
 import wx
 
-try: set
-except NameError: from sets import Set as set
+try:
+    set
+except NameError:
+    from sets import Set as set
 
 # import project modules
 from widget_properties import *
@@ -24,11 +27,12 @@ import config
 # event handling support
 from events_mixin import EventsMixin
 
+
 class EditBase(EventsMixin):
     """\
     Base class of every window available in the builder.
 
-    @ivar custom_class: If true, the user can chage the value of the
+    @ivar custom_class: If true, the user can change the value of the
                         'class' property
     @ivar name:  Name of the object
     @ivar klass: Name of the object's class
@@ -36,6 +40,12 @@ class EditBase(EventsMixin):
                            displayed
     @ivar widget: This is the reference to the actual wxWindow widget; it is
                   created only if needed, i.e. when it should become visible
+
+    @ivar access_functions: Getter and setter for each property
+    @type access_functions: Dictionary
+
+    @ivar properties: Property instance for each property
+    @type properties: Dictionary
 
     @ivar _logger: Instance specific logger
     @ivar _rmenu: Popup menu
@@ -72,8 +82,8 @@ class EditBase(EventsMixin):
         self._dont_destroy = False
 
         self.access_functions = {
-            'name' : (lambda : self.name, self.set_name),
-            'class' : (lambda : self.klass, self.set_klass)
+            'name': (lambda : self.name, self.set_name),
+            'class': (lambda : self.klass, self.set_klass)
             }
 
         # these two properties are special and are not listed in
@@ -146,7 +156,8 @@ constructor will be used. You should probably not use this if \
 
     def finish_widget_creation(self, *args, **kwds):
         """\
-        Creates the popup menu and connects some event handlers to self.widgets
+        Creates the popup menu and connects some event handlers to
+        self.widgets
         """
         wx.EVT_RIGHT_DOWN(self.widget, self.popup_menu)
 
@@ -358,7 +369,6 @@ constructor will be used. You should probably not use this if \
             pass
         self.widget.SetFocus()
 
-
     def on_set_focus(self, event):
         """\
         Event handler called when a window receives the focus: this in fact is
@@ -516,8 +526,6 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         self.access_functions['hidden'] = (self.get_hidden, self.set_hidden)
         prop['hidden'] = CheckBoxProperty(self, 'hidden', None, _('hidden'))
 
-
-
     def finish_widget_creation(self, *args, **kwds):
         self._original['background'] = self.widget.GetBackgroundColour()
         self._original['foreground'] = self.widget.GetForegroundColour()
@@ -641,7 +649,6 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         self.notebook.AddPage(panel, _("Common"))
         self.property_window.Layout()
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
-
 
     def on_size(self, event):
         """\
@@ -1309,3 +1316,253 @@ class TopLevelBase(WindowBase, PreviewMixin):
 # end of class TopLevelBase
 
 
+class StylesMixin(object):
+    """\
+    Mixin to handle styles within widget dialogs
+
+    @ivar style: Current style of the related widget
+    @type style: Integer
+
+    @ivar _style_values: List of set style attributes, 1 if the style is set
+    @type _style_values: List of boolean values (0 or 1)
+
+    @ivar _style_names: List of style names
+    @type _style_names: List of strings
+    """
+
+    combined_attr = None
+    """\
+    Combined attribute e.g. wxALL which is a combination of wxLEFT, wxRIGHT,
+    wxTOP and wxBOTTOM.
+
+    @type: List of strings
+    """
+
+    update_widget_style = True
+    """\
+    Flag to update the widget style if a style is set using L{set_style()}
+
+    @type: Boolean
+    """
+
+    _attr_cache = {}
+    """\
+    Attribute cache for L{wxname2attr()}.
+
+    @note: The attribute cache is shared between all instances of this class.
+
+    @type: Dictionary
+    """
+
+    def __init__(self):
+        self._style_values = []
+        self._style_names = []
+        self.style = 0
+
+    def get_style(self):
+        """\
+        Convert the current style in a list of boolean values. Each value
+        indicated if the style  at the same position in style_pos is set.
+
+        Example::
+            >>> self.style
+            4096
+            >>> pprint.pprint(self._style_list)
+            ['wxSP_ARROW_KEYS',
+             'wxSP_WRAP',
+             'wxTE_PROCESS_ENTER',
+             'wxTE_PROCESS_TAB',
+             'wxTE_MULTILINE',
+             'wxTE_PASSWORD',
+             'wxTE_READONLY',
+             'wxHSCROLL',
+             'wxTE_RICH',
+             'wxTE_RICH2',
+             'wxTE_AUTO_URL',
+             'wxTE_NOHIDESEL',
+             'wxTE_CENTRE',
+             'wxTE_RIGHT',
+             'wxTE_LINEWRAP',
+             'wxTE_WORDWRAP',
+             'wxNO_BORDER']
+            >>> self.get_style()
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+
+        @see: L{style}
+        @see: L{_style_values}
+
+        @return: List of style flags
+        @rtype: List of boolean values (0 or 1)
+        """
+        assert self._style_values
+        style_list = [0] * len(self._style_values)
+
+        if self.style == 0:
+            return style_list
+
+        style = self.style
+
+        # combined attributes will be removed from style to prevent hiding
+        # the remaining attributes
+        if self.combined_attr and self.combined_attr in self._style_names:
+            pos = self._style_names.index(self.combined_attr)
+            attr = self._style_values[pos]
+            if style & attr == attr:
+                style_list[pos] = 1
+                mask = ~attr
+                style &= mask
+
+        for i in xrange(len(self._style_values)):
+            attr = self._style_values[i]
+            # styles with value of 0 are sometimes available fof
+            # compatibility reasons
+            # there is no possibility to check for such styles
+            if not attr:
+                continue
+
+            if style & attr == attr:
+                style_list[i] = 1
+                # don't remove attributes values to allow processing other
+                # attributes with same value
+                #mask = ~attr
+                #style &= mask
+
+        #assert style == 0
+        return style_list
+
+    def _set_widget_style(self):
+        """\
+        Set a new widget style if the style has changed
+        """
+        if hasattr(self, 'widget'):
+            if self.widget and self.update_widget_style:
+                old_style = self.widget.GetWindowStyleFlag()
+                if old_style != self.style:
+                    self.widget.SetWindowStyleFlag(self.style)
+                    self.widget.Refresh()
+
+    def set_style(self, value):
+        """\
+        Convert a list of style flags into a single value and set this style.
+
+        Example::
+            >>> self.set_style('wxSP_ARROW_KEYS|wxTE_AUTO_URL')
+            >>> self.style
+            4096
+
+        @param value: Styles to set
+        @type value:  String
+
+        @see: L{style}
+        @see: L{_style_values}
+        @see: L{update_widget_style}
+        @see: L{_set_widget_style}
+        """
+        assert self._style_values
+
+        value = self.prepare_style_value(value)
+        self.style = 0
+        for pos in xrange(len(value)):
+            if value[pos]:
+                self.style |= self._style_values[pos]
+        self._set_widget_style()
+
+    def gen_style_pos(self, style_labels):
+        """\
+        Convert a list of style labels into a list of wx style attributes.
+
+        Example::
+            >>> gen_style_pos(('#section#Style', 'wxNB_LEFT', 'wxNB_RIGHT'))
+            [64, 128]
+
+        @param style_labels: Style labels
+        @type style_labels: List of strings
+
+        @note: Combination attributes like wxDEFAULT_FRAME_STYLE should be
+               positioned at the head of the label list.
+
+        @rtype: List of wx style attributes
+        @see: L{_style_values}
+        @see: L{_style_names}
+        """
+        self._style_values = []
+        self._style_names = []
+        for style_name in style_labels:
+            if style_name.startswith('#section#'):
+                continue
+            try:
+                attr = self.wxname2attr(style_name)
+                self._style_values.append(attr)
+                self._style_names.append(style_name)
+            except (AttributeError, NameError):
+                self._style_values.append(0)
+
+    def wxname2attr(self, name):
+        """\
+        Return the attribute specified by the name. Only wx attributes are
+        supported.
+
+        Use this function only if PythonCodeWriter.use_new_namespace is
+        True.
+
+        The values will be cached in L{_attr_cache}.
+
+        Example::
+            >>> wxname2attr('wx.version')
+            <function version at 0x2cc6398>
+            >>> wxname2attr('wx.VERSION')
+            (2, 8, 12, 1, '')
+
+        @param name: Attribute name
+        @type name:  String
+
+        @note: Exceptions especially NameError and AttributeError aren't
+        caught.
+
+        @see: L{_attr_cache}
+        """
+        pygen = common.code_writers.get("python")
+
+        assert pygen.use_new_namespace
+        assert name.startswith('wx')
+
+        if name in self._attr_cache:
+            return self._attr_cache[name]
+
+        cn = pygen.without_package(pygen.cn(name))
+        attr = getattr(wx, cn)
+        self._attr_cache[name] = attr
+        return attr
+
+    def prepare_style_value(self, old_val):
+        """\
+        Convert token string into a list of boolean values.
+
+        The returned list shows the position of a token from old_val in
+        self.labels.
+
+        Example::
+            >>> self.prepare_style_value('wxALL|wxALIGN_CENTER_VERTICAL')
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+
+        @param old_val: String of tokens separated by '|'
+        @type old_val:  String
+
+        @rtype: List of boolean values (0 or 1)
+
+        @note: This function is a copy of
+               widget_properties.CheckListProperty.prepare_style_value()
+        """
+        try:
+            old_val = old_val.split("|")
+        except AttributeError:
+            return list(old_val)
+        ret = []
+        for names in self._style_names:
+            if names in old_val:
+                ret.append(1)
+            else:
+                ret.append(0)
+        return ret
+
+# end of class StylesMixin

@@ -1,9 +1,10 @@
-# dialog.py: wxDialog objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxDialog objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 import common
@@ -12,18 +13,23 @@ import math
 import misc
 from tree import Tree
 from widget_properties import *
-from edit_windows import TopLevelBase
+from edit_windows import TopLevelBase, StylesMixin
 
-class EditDialog(TopLevelBase):
+class EditDialog(TopLevelBase, StylesMixin):
     def __init__(self, name, parent, id, title, property_window,
                  style=wx.DEFAULT_DIALOG_STYLE, show=True, klass='wxDialog'):
+
+        # Initialise parent classes
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, title=title)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
         self.base = 'wxDialog'
-        
         self.style = style
+
+        # initialise properties remaining staff
         prop = self.properties
-        # style property
         self.access_functions['style'] = (self.get_style, self.set_style)
         style_labels = ('#section#' + _('Style'), 'wxDEFAULT_DIALOG_STYLE',
                         'wxDIALOG_MODAL', 'wxCAPTION',
@@ -34,6 +40,7 @@ class EditDialog(TopLevelBase):
                          'wxNO_FULL_REPAINT_ON_RESIZE',
                          'wxFULL_REPAINT_ON_RESIZE',
                          'wxCLIP_CHILDREN')
+        self.gen_style_pos(style_labels)
         #note that the tooltips are only for wxPython>=2.5
         self.tooltips = (_("Equivalent to a combination of wxCAPTION, "
                            "wxCLOSE_BOX and wxSYSTEM_MENU "
@@ -57,14 +64,6 @@ class EditDialog(TopLevelBase):
                          _("NO DESCRIPTION"),
                          _("NO DESCRIPTION"),
                          _("NO DESCRIPTION"))
-        self.style_pos = (wx.DEFAULT_DIALOG_STYLE,
-                          wx.DIALOG_MODAL, wx.CAPTION, wx.RESIZE_BORDER,
-                          wx.SYSTEM_MENU)
-        self.style_pos += (wx.CLOSE_BOX, wx.MAXIMIZE_BOX, wx.MINIMIZE_BOX)
-        self.style_pos += (wx.THICK_FRAME, wx.STAY_ON_TOP, wx.NO_3D,
-                           wx.DIALOG_NO_PARENT, wx.NO_FULL_REPAINT_ON_RESIZE,
-                           wx.FULL_REPAINT_ON_RESIZE,
-                           wx.CLIP_CHILDREN)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels,
                                           tooltips=self.tooltips)
         # icon property
@@ -126,31 +125,6 @@ class EditDialog(TopLevelBase):
         self.notebook.AddPage(panel, 'Widget')
         w, h = panel.GetClientSizeTuple()
         panel.SetScrollbars(5, 5, int(math.ceil(w/5.0)), int(math.ceil(h/5.0)))
-
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        style = self.style
-        try:
-            default = 0
-            if style & wx.DEFAULT_DIALOG_STYLE == wx.DEFAULT_DIALOG_STYLE:
-                default = 1
-                style = style & ~wx.DEFAULT_DIALOG_STYLE
-            for i in range(len(self.style_pos)):
-                if style & self.style_pos[i]:
-                    retval[i] = 1
-            retval[0] = default
-        except AttributeError:
-            pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-        if self.widget:
-            self.widget.SetWindowStyleFlag(self.style)
 
     def get_icon(self):
         return self.icon 
@@ -316,6 +290,7 @@ def builder(parent, sizer, pos, number=[0]):
         w.CenterOnScreen()
         w.Raise()
 
+
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build EditDialog objects from an xml file
@@ -324,13 +299,14 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     try:
         label = attrs['name']
     except KeyError:
-        raise XmlParsingError, _("'name' attribute missing")
+        raise XmlParsingError(_("'name' attribute missing"))
     dialog = EditDialog(label, parent, wx.NewId(), "", common.property_panel,
                         show=False, style=0)
     node = Tree.Node(dialog)
     dialog.node = node
     common.app_tree.add(node)
     return dialog
+
 
 def initialize():
     """\

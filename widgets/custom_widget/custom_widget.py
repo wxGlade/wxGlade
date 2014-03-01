@@ -199,18 +199,21 @@ def builder(parent, sizer, pos, number=[1]):
     win.set_flag("wxEXPAND")
     win.show_widget(True)
 
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
     sizer.set_item(win.pos, 1, wx.EXPAND)
+
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build CustomWidget objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if not sizer or not sizeritem:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos,
                        common.property_panel, True)
     sizer.set_item(win.pos, option=sizeritem.option, flag=sizeritem.flag,
@@ -218,7 +221,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     node = Tree.Node(win)
     win.node = node
     if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    else: common.app_tree.insert(node, sizer.node, pos - 1)
     return win
 
 

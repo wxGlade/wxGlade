@@ -110,7 +110,7 @@ def builder(parent, sizer, pos, number=[1]):
     static_line.node = node
     static_line.set_flag("wxEXPAND")
     static_line.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1) 
+    common.app_tree.insert(node, sizer.node, pos - 1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -118,18 +118,22 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditStaticLine objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     static_line = EditStaticLine(name, parent, wx.NewId(), 0, sizer,
                                  pos, common.property_panel)
     sizer.set_item(static_line.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(static_line)
     static_line.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return static_line
 
 

@@ -396,7 +396,7 @@ def builder(parent, sizer, pos, number=[1]):
 
     panel.show_widget(True)
 
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
     sizer.set_item(panel.pos, 1, wx.EXPAND)
 
 
@@ -405,27 +405,33 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditPanel objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if not sizer or not sizeritem:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     panel = EditPanel(name, parent, wx.NewId(), sizer, pos,
                       common.property_panel, True, style=0)
     sizer.set_item(panel.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
     node = Tree.Node(panel)
     panel.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return panel
 
 
 def xml_toplevel_builder(attrs, parent, sizer, sizeritem, pos=None):
     from xml_parse import XmlParsingError
-    try: label = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
-    panel = EditTopLevelPanel(label, parent, wx.NewId(), common.property_panel,
-                              show=False, style=0)
+    try:
+        label = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
+    panel = EditTopLevelPanel(label, parent, wx.NewId(),
+                              common.property_panel, show=False, style=0)
     node = Tree.Node(panel)
     panel.node = node
     common.app_tree.add(node)

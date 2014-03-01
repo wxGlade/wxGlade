@@ -1,49 +1,54 @@
-# calendar_ctrl.py: wxCalendarCtrl objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxCalendarCtrl objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
-from edit_windows import ManagedBase
+from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 import common
+import config
 from widget_properties import *
-#import needed modules for the wxCalendarCtrl
 from wx.calendar import *
 
-class EditCalendarCtrl(ManagedBase):
+
+class EditCalendarCtrl(ManagedBase, StylesMixin):
+    """\
+    Class to handle wxCalendarCtrl objects
+    """
 
     events = [
-    'EVT_CALENDAR',
-    'EVT_CALENDAR_SEL_CHANGED',
-    'EVT_CALENDAR_DAY',
-    'EVT_CALENDAR_MONTH',
-    'EVT_CALENDAR_YEAR',
-    'EVT_CALENDAR_WEEKDAY_CLICKED']
+        'EVT_CALENDAR',
+        'EVT_CALENDAR_SEL_CHANGED',
+        'EVT_CALENDAR_DAY',
+        'EVT_CALENDAR_MONTH',
+        'EVT_CALENDAR_YEAR',
+        'EVT_CALENDAR_WEEKDAY_CLICKED']
 
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
-        """\
-        Class to handle wxCalendarCtrl objects
-        """
-        import config
-        self.default = False
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxCalendarCtrl', parent, id, sizer, pos,
                              property_window, show=show)
-        #self.access_functions['label'] = (self.get_label, self.set_label)
-        #self.properties['label'] = TextProperty(self, 'label', None,
-        #                                       multiline=True)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
+        self.default = False
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wx.ALL
+
+        # initialise properties remaining staff
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("default"))
-        style_labels = ('#section#' + _('Style'), 'wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST', 
-            'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE', 'wxCAL_NO_MONTH_CHANGE',
-            'wxCAL_SHOW_SURROUNDING_WEEKS','wxCAL_SEQUENTIAL_MONTH_SELECTION')
-        self.style_pos = (CAL_SUNDAY_FIRST, CAL_MONDAY_FIRST, 
-            CAL_SHOW_HOLIDAYS, CAL_NO_YEAR_CHANGE, CAL_NO_MONTH_CHANGE,
-            CAL_SHOW_SURROUNDING_WEEKS, CAL_SEQUENTIAL_MONTH_SELECTION)
+        style_labels = ('#section#' + _('Style'), 'wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST',
+                        'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE', 'wxCAL_NO_MONTH_CHANGE',
+                        'wxCAL_SHOW_SURROUNDING_WEEKS','wxCAL_SEQUENTIAL_MONTH_SELECTION')
+        self.gen_style_pos(style_labels)
         self.tooltips = (_("Show Sunday as the first day in the week"),
                          _("Show Monday as the first day in the week"),
                          _("Highlight holidays in the calendar"),
@@ -53,10 +58,6 @@ class EditCalendarCtrl(ManagedBase):
                          _("Use alternative, more compact, style for the month and year selection controls."))
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels,tooltips=self.tooltips)
-        
-        if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -86,26 +87,6 @@ class EditCalendarCtrl(ManagedBase):
     def set_default(self, value):
         self.default = bool(int(value))
 
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError:
-            pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-        if self.widget:
-            self.widget.SetWindowStyleFlag(self.style)
-
-
 # end of class EditCalendarCtrl
         
 
@@ -122,7 +103,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Tree.Node(calendar_ctrl)
     calendar_ctrl.node = node
     calendar_ctrl.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -133,17 +114,17 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     try:
         label = attrs['name']
     except KeyError:
-        raise XmlParsingError, _("'name' attribute missing")
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
-    calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer,
-                        pos, common.property_panel, show=False)
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
+    calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer, pos,
+                                     common.property_panel, show=False)
     node = Tree.Node(calendar_ctrl)
     calendar_ctrl.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return calendar_ctrl
 
 

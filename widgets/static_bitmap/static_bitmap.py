@@ -1,39 +1,43 @@
 """
 wxStaticBitmap objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import logging
 import wx
-import common, misc
-from edit_windows import ManagedBase
+import common
+import misc
+from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 from widget_properties import *
 
 
-class EditStaticBitmap(ManagedBase):
+class EditStaticBitmap(ManagedBase, StylesMixin):
     """\
-    Class EditStaticBitmap
+    Class to handle wxStaticBitmap objects
 
     @ivar _logger: Class specific logging instance
     """
 
+    update_widget_style = False
+
     def __init__(self, name, parent, id, bmp_file, sizer, pos, property_window,
                  show=True):
-        """\
-        Class to handle wxStaticBitmap objects
-        """
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
 
-        # initialise instance
-        self.attribute = True
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer,
                              pos, property_window, show=show)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
+        self._logger = logging.getLogger(self.__class__.__name__)
+        self.attribute = True
         self.set_bitmap(bmp_file)
-        # bitmap property
+
+        # initialise properties remaining staff
         self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
         def set_attribute(v): self.attribute = int(v)
         self.access_functions['attribute'] = (lambda : self.attribute,
@@ -44,20 +48,15 @@ class EditStaticBitmap(ManagedBase):
         self.properties['bitmap'] = self.bitmap_prop
         self.properties['attribute'] = CheckBoxProperty(
             self, 'attribute', None, _('Store as attribute'), write_always=True)
-        self.style = 0
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.style_pos  = (wx.SIMPLE_BORDER, wx.DOUBLE_BORDER, wx.SUNKEN_BORDER,
-                           wx.RAISED_BORDER, wx.STATIC_BORDER, wx.NO_3D,
-                           wx.TAB_TRAVERSAL, wx.WANTS_CHARS,
-                           wx.NO_FULL_REPAINT_ON_RESIZE,
-                           wx.FULL_REPAINT_ON_RESIZE,
-                           wx.CLIP_CHILDREN)
-        style_labels = (u'#section#' + _('Style'), 'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
+        style_labels = (u'#section#' + _('Style'),
+                        'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
                         'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
                         'wxSTATIC_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
                         'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
                         'wxFULL_REPAINT_ON_RESIZE',
                         'wxCLIP_CHILDREN')
+        self.gen_style_pos(style_labels)
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)  
 
@@ -113,23 +112,6 @@ class EditStaticBitmap(ManagedBase):
                 empty[0] = wx.EmptyBitmap(1, 1)
             return empty[0]
 
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError:
-            pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-
 # end of class EditStaticBitmap
         
 
@@ -147,7 +129,8 @@ def builder(parent, sizer, pos, number=[1]):
     node = Tree.Node(static_bitmap)
     static_bitmap.node = node
     static_bitmap.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
+
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
@@ -157,19 +140,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     try:
         label = attrs['name']
     except KeyError:
-        raise XmlParsingError, "'name' attribute missing"
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     bitmap = EditStaticBitmap(label, parent, wx.NewId(), '', sizer, pos,
                               common.property_panel)
     sizer.set_item(bitmap.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border) #, size=bitmap.GetBestSize())
+                   border=sizeritem.border)
     node = Tree.Node(bitmap)
     bitmap.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return bitmap
 
 

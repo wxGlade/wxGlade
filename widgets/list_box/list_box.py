@@ -1,66 +1,70 @@
-# list_box.py: wxListBox objects
-# $Id: list_box.py,v 1.22 2007/03/27 07:01:58 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxListBox objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
-import common, misc
-from edit_windows import ManagedBase
+import common
+import misc
+from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 from widget_properties import *
 from ChoicesProperty import *
 
-class EditListBox(ManagedBase):
+class EditListBox(ManagedBase, StylesMixin):
+    """\
+    Class to handle wxListBox objects
+    """
 
     events = ['EVT_LISTBOX', 'EVT_LISTBOX_DCLICK']
-    
+
     def __init__(self, name, parent, id, choices, sizer, pos, property_window,
                  show=True):
-        """\
-        Class to handle wxListBox objects
-        """
+
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxListBox', parent, id, sizer,
                              pos, property_window, show=show)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
         self.selection = 0
         self.choices = choices
-        # properties
+
+        # initialise properties remaining staff
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
-        self.properties['choices'] = ChoicesProperty(self, 'choices', None,
-                                                     [(_('Label'),
-                                                       GridProperty.STRING)],
-                                                     len(choices), label=_('choices'))
+        self.properties['choices'] = ChoicesProperty(
+            self, 'choices', None, [(_('Label'), GridProperty.STRING)],
+            len(choices), label=_('choices'))
         self.access_functions['selection'] = (self.get_selection,
                                               self.set_selection)
-        self.style = 0
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
                                                     r=(0, len(choices)-1), label=_('selection'))
-        self.style_pos  = (wx.LB_SINGLE, wx.LB_MULTIPLE, wx.LB_EXTENDED,
-                           wx.LB_HSCROLL, wx.LB_ALWAYS_SB, wx.LB_NEEDED_SB,
-                           wx.LB_SORT)
         style_labels  = ('#section#' + _('Style'), 'wxLB_SINGLE', 'wxLB_MULTIPLE',
                          'wxLB_EXTENDED', 'wxLB_HSCROLL', 'wxLB_ALWAYS_SB',
                          'wxLB_NEEDED_SB', 'wxLB_SORT')
+        self.gen_style_pos(style_labels)
         self.style_tooltips = (_('Single-selection list.'),
-            _('Multiple-selection list: the user can toggle multiple items on '
-              'and off.'),
-            _('Extended-selection list: the user can select multiple items '
-              'using the SHIFT key and the mouse or special key combinations.'),
-            _('Create horizontal scrollbar if contents are too wide '
-              '(Windows only).'),
-            _('Always show a vertical scrollbar.'),
-            _('Only create a vertical scrollbar if needed.'),
-            _('The listbox contents are sorted in alphabetical order.'))
+                               _('Multiple-selection list: the user can toggle multiple items on '
+                                 'and off.'),
+                               _('Extended-selection list: the user can select multiple items '
+                                 'using the SHIFT key and the mouse or special key combinations.'),
+                               _('Create horizontal scrollbar if contents are too wide '
+                                 '(Windows only).'),
+                               _('Always show a vertical scrollbar.'),
+                               _('Only create a vertical scrollbar if needed.'),
+                               _('The listbox contents are sorted in alphabetical order.'))
         self.properties['style'] = CheckListProperty(
             self, 'style', None, style_labels, tooltips=self.style_tooltips)
-        
+
     def create_widget(self):
         self.widget = wx.ListBox(self.parent.widget, self.id,
-                                choices=self.choices)
+                                 choices=self.choices)
         self.set_selection(self.selection)
-        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)        
+        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -82,7 +86,7 @@ class EditListBox(ManagedBase):
         panel.SetScrollbars(5, 5, int(ceil(w/5.0)), int(ceil(h/5.0)))
         self.notebook.AddPage(panel, 'Widget')
         self.properties['choices'].set_col_sizes([-1])
-        
+
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
             return ChoicesHandler(self)
@@ -101,23 +105,6 @@ class EditListBox(ManagedBase):
                 self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
             self.widget.SetSelection(
                 int(self.properties['selection'].get_value()))
-
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError: pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-        if self.widget: self.widget.SetWindowStyleFlag(self.style)
 
     def get_selection(self):
         return self.selection
@@ -148,26 +135,30 @@ def builder(parent, sizer, pos, number=[1]):
 ##     sizer.set_item(pos, size=list_box.GetBestSize())
     list_box.node = node
     list_box.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
+
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build EditListBox objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     list_box = EditListBox(name, parent, wx.NewId(), [], sizer, pos,
                            common.property_panel)
     sizer.set_item(list_box.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
-##                    size=list_box.GetBestSize())
     node = Tree.Node(list_box)
     list_box.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return list_box
 
     

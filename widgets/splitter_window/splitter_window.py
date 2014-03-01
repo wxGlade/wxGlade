@@ -1,7 +1,8 @@
 """
 wxSplitterWindow objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -10,7 +11,7 @@ import wx
 import common
 from tree import Tree
 from widget_properties import *
-from edit_windows import ManagedBase
+from edit_windows import ManagedBase, StylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
 
 
@@ -82,7 +83,10 @@ class SplitterWindowSizer(Sizer):
 # end of class SplitterWindowSizer
 
 
-class EditSplitterWindow(ManagedBase):
+class EditSplitterWindow(ManagedBase, StylesMixin):
+    """\
+    Class to handle wxSplitterWindow objects
+    """
 
     _custom_base_classes = True
     events = [
@@ -91,45 +95,44 @@ class EditSplitterWindow(ManagedBase):
         'EVT_SPLITTER_UNSPLIT',
         'EVT_SPLITTER_DCLICK',
         ]
+
+    combined_attr = 'wxSP_3D'
     
     def __init__(self, name, parent, id, style, win_1, win_2, orientation,
                  sizer, pos, property_window, show=True):
-        """\
-        Class to handle wxSplitterWindow objects
-        """
+
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer,
                              pos, property_window, show=show)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
         self.virtual_sizer = SplitterWindowSizer(self)
-        if style is None: style = wx.SP_3D
+        if style is None:
+            style = wx.SP_3D
         self.style = style
         self.window_1 = win_1 
         self.window_2 = win_2 
         self.orientation = orientation
         self.sash_pos = 0
 
+        # initialise properties remaining staff
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['sash_pos'] = (self.get_sash_pos,
                                              self.set_sash_pos)
 
-        self.style_pos  = (wx.SP_3D, wx.SP_3DSASH, wx.SP_3DBORDER,
-                           #wx.SP_FULLSASH,
-                           wx.SP_BORDER, wx.SP_NOBORDER,
-                           wx.SP_PERMIT_UNSPLIT, wx.SP_LIVE_UPDATE,
-                           wx.CLIP_CHILDREN)
         style_labels = ('#section#' + _('Style'), 'wxSP_3D', 'wxSP_3DSASH',
-                        'wxSP_3DBORDER', #'wxSP_FULLSASH',
-                        'wxSP_BORDER',
+                        'wxSP_3DBORDER', 'wxSP_BORDER',
                         'wxSP_NOBORDER', 'wxSP_PERMIT_UNSPLIT',
                         'wxSP_LIVE_UPDATE', 'wxCLIP_CHILDREN')
+        self.gen_style_pos(style_labels)
 
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
-        if self.orientation == wx.SPLIT_HORIZONTAL:
-            od = 'wxSPLIT_HORIZONTAL'
-        else: od = 'wxSPLIT_VERTICAL'
         self.access_functions['orientation'] = (self.get_orientation,
                                                 self.set_orientation)
-        self.properties['orientation'] = HiddenProperty(self, 'orientation', label=_("orientation"))
+        self.properties['orientation'] = HiddenProperty(
+            self, 'orientation', label=_("orientation"))
 
         self.access_functions['window_1'] = (self.get_win_1, lambda v: None)
         self.access_functions['window_2'] = (self.get_win_2, lambda v: None)
@@ -138,9 +141,9 @@ class EditSplitterWindow(ManagedBase):
         self.window_1 = SizerSlot(self, self.virtual_sizer, 1)
         self.window_2 = SizerSlot(self, self.virtual_sizer, 2)
 
-        self.properties['sash_pos'] = SpinProperty(self, 'sash_pos', None,
-                                                   r=(0, 20),
-                                                   can_disable=True, label=_("sash_pos")) 
+        self.properties['sash_pos'] = SpinProperty(
+            self, 'sash_pos', None, r=(0, 20), can_disable=True,
+            label=_("sash_pos"))
         self.no_custom_class = False
         self.access_functions['no_custom_class'] = (self.get_no_custom_class,
                                                     self.set_no_custom_class)
@@ -207,32 +210,6 @@ class EditSplitterWindow(ManagedBase):
             for w in self.window_1, self.window_2:
                 if hasattr(w, 'sel_marker'): w.sel_marker.update()
 
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        if not self.style:
-            # style is wxSP_NOBORDER
-            #retval[5] = 1
-            retval[4] = 1
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]: retval[i] = 1
-        except AttributeError: pass
-        if retval[1] and retval[2]:
-            # wx.SP_3D == wx.SP_3DSASH | wx.SP_3DBORDER
-            retval[0] = 1
-            retval[1] = retval[2] = 0
-        elif retval[1] or retval[2]:
-            retval[0] = 0
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-        if self.widget: self.widget.SetWindowStyleFlag(self.style)
-
     def get_sash_pos(self):
         return self.sash_pos
 
@@ -254,7 +231,8 @@ class EditSplitterWindow(ManagedBase):
                 self.widget.SetSashPosition(max_pos/2)
                 self.sash_pos = self.widget.GetSashPosition()
                 self.properties['sash_pos'].set_value(self.sash_pos)
-        except (AttributeError, KeyError): pass
+        except (AttributeError, KeyError):
+            pass
         ManagedBase.on_size(self, event)
 
     def on_sash_pos_changed(self, event):
@@ -263,13 +241,24 @@ class EditSplitterWindow(ManagedBase):
         event.Skip()
 
     def get_orientation(self):
-        od = { wx.SPLIT_HORIZONTAL: 'wxSPLIT_HORIZONTAL',
-               wx.SPLIT_VERTICAL: 'wxSPLIT_VERTICAL' }
+        """\
+        Return the attribute name of the selected orientation.
+
+        @rtype: String
+        """
+        od = {wx.SPLIT_HORIZONTAL: 'wxSPLIT_HORIZONTAL',
+              wx.SPLIT_VERTICAL: 'wxSPLIT_VERTICAL'}
         return od.get(self.orientation, 'wxSPLIT_VERTICAL')
 
     def set_orientation(self, value):
-        od = { 'wxSPLIT_HORIZONTAL': wx.SPLIT_HORIZONTAL,
-               'wxSPLIT_VERTICAL': wx.SPLIT_VERTICAL }
+        """\
+        Select a orientation
+
+        @param value: Attribute name e.g. 'wxSPLIT_HORIZONTAL'
+        @type value:  String
+        """
+        od = {'wxSPLIT_HORIZONTAL': wx.SPLIT_HORIZONTAL,
+              'wxSPLIT_VERTICAL': wx.SPLIT_VERTICAL}
         self.orientation = od.get(value, wx.SPLIT_VERTICAL)
 
     def get_win_1(self):
@@ -347,7 +336,7 @@ def builder(parent, sizer, pos, number=[1]):
     window.set_flag("wxEXPAND")
     window.show_widget(True)
 
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
 
     if have_panels:
         node2 = Tree.Node(window.window_1)
@@ -366,10 +355,12 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditSplitterWindow objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if not sizer or not sizeritem:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     window = EditSplitterWindow(name, parent, wx.NewId(), None, None, None,
                                 wx.SPLIT_VERTICAL,
                                 sizer, pos, common.property_panel, True)
@@ -378,8 +369,10 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     node = Tree.Node(window)
     window.node = node
     window.virtual_sizer.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return window
 
 

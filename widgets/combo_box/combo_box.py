@@ -1,13 +1,16 @@
-# combo_box.py: wxComboBox objects
-# $Id: combo_box.py,v 1.28 2007/03/27 07:02:02 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxComboBox objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
-import common, misc
-from edit_windows import ManagedBase
+import common
+import config
+import misc
+from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 from widget_properties import *
 
@@ -32,30 +35,39 @@ else:
     wxComboBox2 = wx.ComboBox
 
 
-class EditComboBox(ManagedBase):
+class EditComboBox(ManagedBase, StylesMixin):
+    """\
+    Class to handle wxComboBox objects
+    """
 
     events = ['EVT_COMBOBOX', 'EVT_TEXT', 'EVT_TEXT_ENTER']
+
+    update_widget_style = False
     
     def __init__(self, name, parent, id, choices, sizer, pos, property_window,
                  show=True):
-        """\
-        Class to handle wxComboBox objects
-        """
-        import config
+
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer,
                              pos, property_window, show=show)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
         self.choices = choices
         if len(choices):
             self.selection = 0
         else:
             self.selection = -1
-        self.style = 0
-        # properties
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wx.ALL
+
+        # initialise properties remaining staff
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
         self.access_functions['style'] = (self.get_style, self.set_style)
         style_labels = ('#section#' + _('Style'), 'wxCB_SIMPLE', 'wxCB_DROPDOWN',
                         'wxCB_READONLY', 'wxCB_SORT')
-        self.style_pos = [ eval('wx.' + s[2:]) for s in style_labels[1:] ]
+        self.gen_style_pos(style_labels)
         self.tooltips = (_("Creates a combobox with a permanently displayed list."
                          " Windows only."),
                          _("Creates a combobox with a drop-down list."),
@@ -76,10 +88,6 @@ class EditComboBox(ManagedBase):
         self.choices = list(choices)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
                                                     r=(0, len(choices)-1), label=_("selection"))
-        # 2003-09-04 added default_border
-        if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
 
     def create_widget(self):
         self.widget = wxComboBox2(self.parent.widget, self.id,
@@ -126,25 +134,6 @@ class EditComboBox(ManagedBase):
             if not self.properties['size'].is_active():
                 self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError:
-            pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-##         if self.widget:
-##             self.SetWindowStyleFlag(style)
-
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
             return ChoicesHandler(self)
@@ -161,13 +150,14 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'combo_box_%d' % number[0]
-    choice = EditComboBox(name, parent, wx.NewId(), #[misc.encode('choice 1')],
+    choice = EditComboBox(name, parent, wx.NewId(),
                           [], sizer, pos, common.property_panel)
     node = Tree.Node(choice)
 #    sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
     choice.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
+
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
@@ -177,20 +167,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     try:
         name = attrs['name']
     except KeyError:
-        raise XmlParsingError, _("'name' attribute missing")
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     choice = EditComboBox(name, parent, wx.NewId(), [], sizer, pos,
                           common.property_panel)
     sizer.set_item(choice.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
-##                    size=choice.GetBestSize())
     node = Tree.Node(choice)
     choice.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return choice
 
     
