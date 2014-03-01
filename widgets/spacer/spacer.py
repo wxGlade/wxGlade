@@ -143,8 +143,7 @@ def builder(parent, sizer, pos):
     node = Tree.Node(spacer)
     spacer.node = node
     spacer.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1) 
-    #sizer.set_item(spacer.pos, size=spacer.GetSize())
+    common.app_tree.insert(node, sizer.node, pos - 1)
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
@@ -152,15 +151,17 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     if not sizer or not sizeritem:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos,
                         common.property_panel, True)
     sizer.set_item(spacer.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
     node = Tree.Node(spacer)
     spacer.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return spacer
 
 

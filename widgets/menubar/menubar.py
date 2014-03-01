@@ -738,7 +738,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                     try: cm = self.curr_menu[-1]
                     except IndexError:
                         from xml_parse import XmlParsingError
-                        raise XmlParsingError, _("menu item outside a menu")
+                        raise XmlParsingError(_("menu item outside a menu"))
                     cm[0].children.append(self.curr_item)
                     self.curr_item.parent = cm[0]
                 elif name == 'menu':

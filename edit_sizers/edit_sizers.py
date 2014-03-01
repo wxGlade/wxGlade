@@ -2481,19 +2481,21 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     try:
         name = attrs['name']
     except KeyError:
-        raise XmlParsingError, _("'name' attribute missing")
+        raise XmlParsingError(_("'name' attribute missing"))
     if attrs['base'] == 'EditGridSizer': constructor = EditGridSizer
     else: constructor = EditFlexGridSizer
     if sizer is not None: 
         sz = constructor(name, parent, rows=0, cols=0, toplevel=False)
         if sizeritem is None:
-            raise XmlParsingError, _("'sizeritem' object not found")
+            raise XmlParsingError(_("'sizeritem' object not found"))
         sizer.add_item(sz, pos=pos, option=sizeritem.option,
                        flag=sizeritem.flag, border=sizeritem.border)
         node = Tree.Node(sz)
         sz.node = node
-        if pos is None: common.app_tree.add(node, sizer.node)
-        else: common.app_tree.insert(node, sizer.node, pos-1)
+        if pos is None:
+            common.app_tree.add(node, sizer.node)
+        else:
+            common.app_tree.insert(node, sizer.node, pos-1)
     else: 
         sz = constructor(name, parent, rows=0, cols=0, toplevel=True)
         parent.set_sizer(sz)

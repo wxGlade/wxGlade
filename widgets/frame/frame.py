@@ -1,9 +1,10 @@
-# frame.py: wxFrame and wxStatusBar objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxFrame and wxStatusBar objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 import common
@@ -12,32 +13,38 @@ import math
 import misc
 from tree import Tree
 from widget_properties import *
-from edit_windows import EditBase, TopLevelBase
+from edit_windows import EditBase, TopLevelBase, StylesMixin
 
-class EditStatusBar(EditBase):
+class EditStatusBar(EditBase, StylesMixin):
 
     _hidden_frame = None
+    update_widget_style = False
     
     def __init__(self, parent, property_window):
+        # Initialise parent classes
         EditBase.__init__(self, parent.name + '_statusbar',
                           'wxStatusBar', parent, id, property_window,
                           custom_class=False, show=False)
-        # style property
-        self.style_pos  = (wx.ST_SIZEGRIP,)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
+        self.node = Tree.Node(self)
+        common.app_tree.add(self.node, parent.node)
+
+        # initialise properties remaining staff
         style_labels = ('#section#' + _('Style'), 'wxST_SIZEGRIP')
+        self.gen_style_pos(style_labels)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
 
-        self.node = Tree.Node(self)
-        common.app_tree.add(self.node, parent.node)
-
-        self.fields = [ [self.name, "-1"] ] # list of 2-lists label, size
+        self.fields = [[self.name, "-1"]]   # list of 2-lists label, size
                                             # for the statusbar fields
         self.access_functions['fields'] = (self.get_fields, self.set_fields) 
         prop = self.properties['fields'] = GridProperty(
             self, 'fields', None,
             [("Text", GridProperty.STRING), ("Size", GridProperty.INT)])
+
         # replace the default 'write' method of 'prop' with a custom one
         def write_prop(outfile, tabs):
             from xml.sax.saxutils import escape, quoteattr
@@ -57,7 +64,8 @@ class EditStatusBar(EditBase):
         self.widget = wx.StatusBar(self.parent.widget, wx.NewId())
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         self.set_fields(self.fields)
-        if self.parent.widget: self.parent.widget.SetStatusBar(self.widget)
+        if self.parent.widget:
+            self.parent.widget.SetStatusBar(self.widget)
 
     def create_properties(self):
         EditBase.create_properties(self)
@@ -86,11 +94,14 @@ class EditStatusBar(EditBase):
         self.fields = []
         if self.widget: self.widget.SetFieldsCount(len(values))
         for i in range(len(values)):
-            try: v = int(values[i][1])
-            except: v = 0
+            try:
+                v = int(values[i][1])
+            except:
+                v = 0
             s = misc.wxstr(values[i][0])
             self.fields.append([s, str(v)])
-            if self.widget: self.widget.SetStatusText(s, i)
+            if self.widget:
+                self.widget.SetStatusText(s, i)
         if self.widget:
             self.widget.SetStatusWidths([int(i[1]) for i in self.fields])
 
@@ -103,9 +114,12 @@ class EditStatusBar(EditBase):
     def remove(self, *args, **kwds):
         if not kwds.get('do_nothing', False):
             if self.parent.widget: self.parent.widget.SetStatusBar(None)
-            try: self.parent.properties['statusbar'].set_value(0)
-            except KeyError: pass
-            if self.widget: self.widget.Hide()
+            try:
+                self.parent.properties['statusbar'].set_value(0)
+            except KeyError:
+                pass
+            if self.widget:
+                self.widget.Hide()
             EditBase.remove(self)
         else:
             if EditStatusBar._hidden_frame is None:
@@ -127,14 +141,15 @@ class EditStatusBar(EditBase):
                 self.width = -1
                 self.value = []
             def start_elem(self, name, attrs):
-                if name == 'fields': self.fields = []
-                else: # name == 'field'
+                if name == 'fields':
+                    self.fields = []
+                else:  # name == 'field'
                     self.value = []
                     self.width = attrs.get('width', '-1')
             def end_elem(self, name): 
                 if name == 'field':
                     self.fields.append(["".join(self.value), self.width])
-                else: # name == 'fields'
+                else:  # name == 'fields'
                     self.owner.fields = self.fields
                     self.owner.set_fields(self.owner.fields)
                     self.owner.properties['fields'].set_value(
@@ -142,36 +157,26 @@ class EditStatusBar(EditBase):
                     return True
             def char_data(self, data):
                 self.value.append(data)
-                return False # tell there's no need to go further
-                             # (i.e. to call add_property)
+                return False  # tell there's no need to go further
+                              # (i.e. to call add_property)
 
-        if name == 'fields': return FieldsHandler(self)
+        if name == 'fields':
+            return FieldsHandler(self)
         return None
-
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError: pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
 
 # end of class EditStatusBar
 
 
-class EditFrame(TopLevelBase):
+class EditFrame(TopLevelBase, StylesMixin):
+
+    combined_attr = 'wxDEFAULT_FRAME_STYLE'
+
     def __init__(self, name, parent, id, title, property_window,
                  style=wx.DEFAULT_FRAME_STYLE, show=True, klass='wxFrame'):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, title=title)
+        StylesMixin.__init__(self)
+
         self.base = 'wxFrame'
         self.style = style
         self.statusbar = None
@@ -189,7 +194,8 @@ class EditFrame(TopLevelBase):
         prop = self.properties
         style_labels = ['#section#' + _('Style'), 'wxDEFAULT_FRAME_STYLE',
                         'wxICONIZE', 'wxCAPTION',
-                        'wxMINIMIZE', 'wxMINIMIZE_BOX', 'wxMAXIMIZE',
+                        'wxMINIMIZE', 'wxMINIMIZE_BOX',
+                        'wxCLOSE_BOX', 'wxMAXIMIZE',
                         'wxMAXIMIZE_BOX', 'wxSTAY_ON_TOP', 'wxSYSTEM_MENU',
                         'wxSIMPLE_BORDER', 'wxRESIZE_BORDER',
                         'wxFRAME_TOOL_WINDOW', 'wxFRAME_NO_TASKBAR',
@@ -198,18 +204,7 @@ class EditFrame(TopLevelBase):
                         'wxNO_FULL_REPAINT_ON_RESIZE',
                         'wxFULL_REPAINT_ON_RESIZE',
                         'wxTAB_TRAVERSAL', 'wxCLIP_CHILDREN']
-        self.style_pos = [wx.DEFAULT_FRAME_STYLE,
-                          wx.ICONIZE, wx.CAPTION, wx.MINIMIZE,
-                          wx.MINIMIZE_BOX, wx.MAXIMIZE, wx.MAXIMIZE_BOX,
-                          wx.STAY_ON_TOP, wx.SYSTEM_MENU, wx.SIMPLE_BORDER,
-                          wx.RESIZE_BORDER, wx.FRAME_TOOL_WINDOW,
-                          wx.FRAME_NO_TASKBAR, wx.FRAME_FLOAT_ON_PARENT,
-                          wx.NO_BORDER,
-                          wx.NO_FULL_REPAINT_ON_RESIZE,
-                          wx.FULL_REPAINT_ON_RESIZE,
-                          wx.TAB_TRAVERSAL, wx.CLIP_CHILDREN]
-        style_labels.insert(5, 'wxCLOSE_BOX')
-        self.style_pos.insert(4, wx.CLOSE_BOX)
+        self.gen_style_pos(style_labels)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         # menubar property
         prop['menubar'] = CheckBoxProperty(self, 'menubar', None,
@@ -238,16 +233,16 @@ class EditFrame(TopLevelBase):
                                              label=_('Set Size Hints'))
 
     def create_widget(self):
-        if self.parent: w = self.parent.widget
-        else: w = common.palette
-        self.widget = wx.Frame(w, self.id, self.get_title())
+        if self.parent:
+            parent = self.parent.widget
+        else:
+            parent = common.palette
+        self.widget = wx.Frame(parent, self.id, self.get_title())
         self.set_icon(self.icon)
 
     def finish_widget_creation(self):
         TopLevelBase.finish_widget_creation(self)
         if not self.properties['size'].is_active():
-            #if self.sizer: self.sizer.fit_parent()
-            #else:
             self.widget.SetSize((400, 300))
         if wx.Platform == '__WXMSW__':
             self.widget.CenterOnScreen()
@@ -344,27 +339,6 @@ class EditFrame(TopLevelBase):
         else:
             self.toolbar = self.toolbar.remove()
             self.show_properties(None)
-
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            if self.style == wx.DEFAULT_FRAME_STYLE: retval[0] = 1
-            else:
-                for i in range(len(self.style_pos)):
-                    if self.style & self.style_pos[i]: retval[i] = 1
-                retval[0] = 0
-        except AttributeError:
-            pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        style = 0
-        for v in range(len(value)):
-            if value[v]:
-                style |= self.style_pos[v]
-        self.style = style
-        if self.widget: self.widget.SetWindowStyleFlag(style)
 
     def remove(self, *args):
         if self.menubar:
@@ -511,17 +485,19 @@ def builder(parent, sizer, pos, number=[0]):
 def _make_builder(base_class):
     def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         from xml_parse import XmlParsingError
-        try: label = attrs['name']
-        except KeyError: raise XmlParsingError, _("'name' attribute missing")
+        try:
+            label = attrs['name']
+        except KeyError:
+            raise XmlParsingError(_("'name' attribute missing"))
         frame = base_class(label, parent, wx.NewId(), "",
-                           common.property_panel,
-                           show=False, style=0)
+                           common.property_panel, show=False, style=0)
         node = Tree.Node(frame)
         frame.node = node
         common.app_tree.add(node)
         return frame
     return xml_builder
-        
+
+
 ## def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 ##     """\
 ##     factory to build EditFrame objects from an xml file
@@ -535,6 +511,7 @@ def _make_builder(base_class):
 ##     frame.node = node
 ##     common.app_tree.add(node)
 ##     return frame
+
 
 def statusbar_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\

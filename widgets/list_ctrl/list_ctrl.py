@@ -1,17 +1,19 @@
-# text_ctrl.py: wxListCtrl objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxListCtrl objects
 
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+import math
 import wx
-from edit_windows import ManagedBase
+from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 import common
 from widget_properties import *
 
-class EditListCtrl(ManagedBase):
+class EditListCtrl(ManagedBase, StylesMixin):
     """\
     Class to handle wxListCtrl objects
     """
@@ -38,24 +40,22 @@ class EditListCtrl(ManagedBase):
         'EVT_LIST_COL_END_DRAG',
         'EVT_LIST_CACHE_HINT',
         ]
+
+    update_widget_style = False
     
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True, style=wx.LC_REPORT|wx.SUNKEN_BORDER):
+
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos,
                              property_window, show=show)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
         self.style = style
+
+        # initialise properties remaining staff
         self.access_functions['style'] = (self.get_style, self.set_style)
-        # style property
-        self.style_pos  = (wx.LC_LIST, wx.LC_REPORT, wx.LC_ICON, wx.LC_VIRTUAL,
-                           wx.LC_SMALL_ICON, wx.LC_ALIGN_TOP, wx.LC_ALIGN_LEFT,
-                           wx.LC_AUTOARRANGE, wx.LC_EDIT_LABELS, wx.LC_NO_HEADER,
-                           wx.LC_SINGLE_SEL, wx.LC_SORT_ASCENDING,
-                           wx.LC_SORT_DESCENDING, wx.LC_HRULES, wx.LC_VRULES,
-                           wx.SIMPLE_BORDER,
-                           wx.DOUBLE_BORDER, wx.SUNKEN_BORDER, wx.RAISED_BORDER,
-                           wx.STATIC_BORDER, wx.NO_BORDER,
-                           wx.WANTS_CHARS, wx.NO_FULL_REPAINT_ON_RESIZE,
-                           wx.FULL_REPAINT_ON_RESIZE)
         style_labels = ('#section#' + _('Style'),
                         'wxLC_LIST', 'wxLC_REPORT', 'wxLC_ICON',
                         'wxLC_VIRTUAL', 'wxLC_SMALL_ICON',
@@ -68,6 +68,7 @@ class EditListCtrl(ManagedBase):
                         'wxRAISED_BORDER', 'wxSTATIC_BORDER', 'wxNO_BORDER',
                         'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
                         'wxFULL_REPAINT_ON_RESIZE')
+        self.gen_style_pos(style_labels)
         self.style_tooltips = (_("Multicolumn list view, with optional small icons. Columns are computed automatically, i.e. you don't set columns as in wxLC_REPORT. In other words, the list wraps, unlike a wxListBox."),
             _("Single or multicolumn report view, with optional header."),
             _("Large icon view, with optional labels."),
@@ -127,24 +128,7 @@ class EditListCtrl(ManagedBase):
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, 'Widget')
         self.property_window.Layout()
-        import math
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
-
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError: pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
 
 # end of class EditListCtrl
 
@@ -164,7 +148,7 @@ def builder(parent, sizer, pos, number=[1]):
     list_ctrl.set_option(1)
     list_ctrl.set_flag("wxEXPAND")
     list_ctrl.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
     sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
 
 
@@ -173,18 +157,22 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory function to build EditListCtrl objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos,
                              common.property_panel, style=0)
     sizer.set_item(list_ctrl.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
     node = Tree.Node(list_ctrl)
     list_ctrl.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return list_ctrl
 
 

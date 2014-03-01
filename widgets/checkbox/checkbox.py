@@ -95,7 +95,8 @@ def builder(parent, sizer, pos, number=[1]):
     node = Tree.Node(checkbox)
     checkbox.node = node
     checkbox.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
+
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
@@ -103,19 +104,18 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    except KeyError: raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     checkbox = EditCheckBox(label, parent, wx.NewId(),
                             "", sizer, pos,
                             common.property_panel, show=False) 
     sizer.set_item(checkbox.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border) #,
-##                   size=checkbox.GetBestSize())
+                   flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(checkbox)
     checkbox.node = node
     if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    else: common.app_tree.insert(node, sizer.node, pos - 1)
     return checkbox
 
 

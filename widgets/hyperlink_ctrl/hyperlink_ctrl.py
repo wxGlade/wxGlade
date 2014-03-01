@@ -1,20 +1,24 @@
 """
 wxHyperlinkCtrl objects
 
-@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2012,2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 
 import wx
 import common
+import config
 import misc
-from edit_windows import ManagedBase
+from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 from widget_properties import *
 
 
-class EditHyperlinkCtrl(ManagedBase):
+class EditHyperlinkCtrl(ManagedBase, StylesMixin):
+    """\
+    Class to handle wxHyperlinkCtrl objects
+    """
 
     events = [
         'EVT_HYPERLINK',
@@ -27,17 +31,21 @@ class EditHyperlinkCtrl(ManagedBase):
 
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
-        """\
-        Class to handle wxHyperlinkCtrl objects
-        """
-        import config
+
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, id, sizer,
                              pos, property_window, show=show)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
         self.attribute = True
         self.label = label
-        self.style = 0
         self.url = ""
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wx.ALL
 
+        # initialise properties remaining staff
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['url'] = (self.get_url, self.set_url)
@@ -65,21 +73,12 @@ class EditHyperlinkCtrl(ManagedBase):
         self.properties['url'].set_tooltip(
             _("URL associated with the given label")
             )
-        self.style_pos = (
-            wx.HL_ALIGN_LEFT,
-            wx.HL_ALIGN_RIGHT,
-            wx.HL_ALIGN_CENTRE,
-            wx.HL_CONTEXTMENU,
-            wx.HL_DEFAULT_STYLE,
-            )
         style_labels = (
             '#section#' + _('Style'),
-            'wxHL_ALIGN_LEFT',
-            'wxHL_ALIGN_RIGHT',
-            'wxHL_ALIGN_CENTRE',
-            'wxHL_CONTEXTMENU',
-            'wxHL_DEFAULT_STYLE',
+            'wxHL_ALIGN_LEFT', 'wxHL_ALIGN_RIGHT', 'wxHL_ALIGN_CENTRE',
+            'wxHL_CONTEXTMENU', 'wxHL_DEFAULT_STYLE',
             )
+        self.gen_style_pos(style_labels)
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
         self.properties['attribute'] = CheckBoxProperty(
@@ -89,10 +88,6 @@ class EditHyperlinkCtrl(ManagedBase):
             _('Store as attribute'),
             write_always=True
             )
-
-        if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
 
     def create_widget(self):
         self.widget = wx.HyperlinkCtrl(
@@ -138,31 +133,11 @@ class EditHyperlinkCtrl(ManagedBase):
                     self.sizer.set_item(self.pos,
                                         size=self.widget.GetBestSize())
 
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError:
-            pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-        if self.widget:
-            self.widget.SetWindowStyleFlag(self.style)
-
     def get_url(self):
         return self.url
 
     def set_url(self, url):
         self.url = url
-
 
 # end of class EditHyperlinkCtrl
 

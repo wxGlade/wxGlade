@@ -123,26 +123,30 @@ def builder(parent, sizer, pos, number=[1]):
     #sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
     choice.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
+
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build EditChoice objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     choice = EditChoice(name, parent, wx.NewId(), [], sizer, pos,
-                        common.property_panel) #, show=False)
+                        common.property_panel)
     sizer.set_item(choice.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
-##                    size=choice.GetBestSize())
     node = Tree.Node(choice)
     choice.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return choice
 
 

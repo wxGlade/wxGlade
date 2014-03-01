@@ -10,7 +10,7 @@ import common
 import misc
 from tree import Tree
 from widget_properties import *
-from edit_windows import ManagedBase
+from edit_windows import ManagedBase, StylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
 from xml_parse import XmlParsingError
 
@@ -50,9 +50,9 @@ def _ugly_hack_for_win32_notebook_bug(notebook_widget):
 
 
 class NotebookVirtualSizer(Sizer):
-    '''\
+    """\
     "Virtual sizer" responsible for the management of the pages of a Notebook.
-    '''
+    """
     def __init__(self, *args, **kwds):
         Sizer.__init__(self, *args, **kwds)
         self._itempos = 0
@@ -181,7 +181,10 @@ class TabsHandler:
 # end of class TabsHandler
 
 
-class EditNotebook(ManagedBase):
+class EditNotebook(ManagedBase, StylesMixin):
+    """\
+    Class to handle wxNotebook objects
+    """
 
     _custom_base_classes = True
     notebook_number = 1
@@ -209,11 +212,17 @@ class EditNotebook(ManagedBase):
 
     events = ['EVT_NOTEBOOK_PAGE_CHANGED', 'EVT_NOTEBOOK_PAGE_CHANGING']
 
+    update_widget_style = False
+
     def __init__(self, name, parent, id, style, sizer, pos,
                  property_window, show=True):
-        """\
-        Class to handle wxNotebook objects
-        """
+
+        # Initialise parent classes
+        ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer,
+                             pos, property_window, show=show)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
         # create new and (still) unused notebook name
         if not name:
             name = self.next_notebook_name()
@@ -221,22 +230,18 @@ class EditNotebook(ManagedBase):
         # Increase number of created notebooks
         EditNotebook.notebook_number += 1
 
-        ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer,
-                             pos, property_window, show=show)
-
         self.virtual_sizer = NotebookVirtualSizer(self)
         self._is_removing_pages = False
+
+        # initialise properties remaining staff
         self.style = style
         self.tabs = [['tab1', None]]  # list of pages of this notebook
                                       # (actually a list of
                                       # 2-list label, window)
-
-        self.style_pos = [wx.NB_LEFT, wx.NB_RIGHT, wx.NB_BOTTOM,
-                          wx.NB_FIXEDWIDTH, wx.NB_MULTILINE,
-                          wx.NB_NOPAGETHEME]
         style_labels = ['#section#' + _('Style'),  'wxNB_LEFT', 'wxNB_RIGHT',
                         'wxNB_BOTTOM', 'wxNB_FIXEDWIDTH', 'wxNB_MULTILINE',
                         'wxNB_NOPAGETHEME']
+        self.gen_style_pos(style_labels)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['style'] = CheckListProperty(
             self,
@@ -401,23 +406,6 @@ class EditNotebook(ManagedBase):
                 else:
                     return -1
         return -1
-
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError:
-            pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
 
     def get_no_custom_class(self):
         return self.no_custom_class

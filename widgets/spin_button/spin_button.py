@@ -1,20 +1,22 @@
-# spin_button.py: wxSpinButton objects
-#
-# Copyright (c) 2004 D.H. aka crazyinsomniac at users.sourceforge.net
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
-#
-# based on wxGlade/widgets/spin_ctrl/
+"""\
+wxSpinButton objects
+
+based on wxGlade/widgets/spin_ctrl/
+
+@copyright: 2004 D.H. aka crazyinsomniac at users.sourceforge.net
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
-from edit_windows import ManagedBase
+from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 import common
+import config
 from widget_properties import *
 
    
-class EditSpinButton(ManagedBase):
+class EditSpinButton(ManagedBase, StylesMixin):
     """\
     Class to handle wxSpinButton objects
     """
@@ -23,28 +25,31 @@ class EditSpinButton(ManagedBase):
     
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
-        import config
+
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxSpinButton', parent, id, sizer,
                              pos, property_window, show=show)
-        self.style = 0
-        self.value = 0
-        self.range = (0, 100) # Default values in wxSpinButton constructor.
+        StylesMixin.__init__(self)
 
+        # initialise instance variables
+        self.value = 0
+        self.range = (0, 100)  # Default values in wxSpinButton constructor.
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wx.ALL
+
+        # initialise properties remaining staff
         prop = self.properties
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
-        style_labels = ('#section#' + _('Style'), 'wxSP_HORIZONTAL', 'wxSP_VERTICAL',
+        style_labels = ('#section#' + _('Style'),
+                        'wxSP_HORIZONTAL', 'wxSP_VERTICAL',
                         'wxSP_ARROW_KEYS', 'wxSP_WRAP')
-        self.style_pos = (wx.SP_HORIZONTAL, wx.SP_VERTICAL, wx.SP_ARROW_KEYS,
-                          wx.SP_WRAP)
+        self.gen_style_pos(style_labels)
         prop['style'] = CheckListProperty(self, 'style', None, style_labels)
         prop['range'] = TextProperty(self, 'range', None, can_disable=True, label=_("range"))
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True, label=_("value"))
-        # 2003-09-04 added default_border
-        if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
 
     def create_widget(self):
         try:
@@ -69,35 +74,21 @@ class EditSpinButton(ManagedBase):
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')        
 
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError: pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-        if self.widget: self.widget.SetWindowStyleFlag(self.style)
-
     def get_range(self):
         # we cannot return self.range since this would become a "(0, 100)"
         # string, and we don't want the parens
         return "%s, %s" % self.range
 
     def set_range(self, val):
-        try: min_v, max_v = map(int, val.split(','))
-        except: self.properties['range'].set_value(self.get_range())
+        try:
+            min_v, max_v = map(int, val.split(','))
+        except:
+            self.properties['range'].set_value(self.get_range())
         else:
             self.range = (min_v, max_v)
             self.properties['value'].set_range(min_v, max_v)
-            if self.widget: self.widget.SetRange(min_v, max_v)
+            if self.widget:
+                self.widget.SetRange(min_v, max_v)
 
     def get_value(self):
         return self.value
@@ -124,27 +115,31 @@ def builder(parent, sizer, pos, number=[1]):
     node = Tree.Node(text)
     text.node = node
     text.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
+
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory function to build EditSpinButton objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     text = EditSpinButton(name, parent, wx.NewId(), sizer, pos,
                         common.property_panel)
     sizer.set_item(text.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
     node = Tree.Node(text)
     text.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return text
-
 
 
 def initialize():

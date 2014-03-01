@@ -2,13 +2,15 @@
 wxStaticText objects
 
 @copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 import common
+import config
 import misc
-from edit_windows import ManagedBase
+from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 from widget_properties import *
 
@@ -19,39 +21,43 @@ except ImportError:
     StaticText = wx.StaticText
 
 
-class EditStaticText(ManagedBase):
+class EditStaticText(ManagedBase, StylesMixin):
+    """\
+    Class to handle wxStaticText objects
+    """
+
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
-        """\
-        Class to handle wxStaticText objects
-        """
-        import config
+
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxStaticText', parent, id, sizer,
                              pos, property_window, show=show)
-        self.label = label
-        self.style = 0
-        self.attribute = True
+        StylesMixin.__init__(self)
 
+        # initialise instance variables
+        self.label = label
+        self.attribute = True
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wx.ALL
+
+        # initialise properties remaining staff
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        def set_attribute(v): self.attribute = int(v)
+        def set_attribute(v):
+            self.attribute = int(v)
         self.access_functions['attribute'] = (lambda : self.attribute,
                                               set_attribute)
 
         self.properties['label'] = TextProperty(self, 'label', None,
                                                 multiline=True, label=_('label'))
-        self.style_pos  = (wx.ALIGN_LEFT, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE,
-                           wx.ST_NO_AUTORESIZE)
         style_labels = ('#section#' + _('Style'), 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
                         'wxALIGN_CENTRE', 'wxST_NO_AUTORESIZE')
+        self.gen_style_pos(style_labels)
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
         self.properties['attribute'] = CheckBoxProperty(
             self, 'attribute', None, _('Store as attribute'), write_always=True)
-        # 2003-09-04 added default_border
-        if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
 
     def create_widget(self):
         self.widget = StaticText(self.parent.widget, self.id,
@@ -84,24 +90,6 @@ class EditStaticText(ManagedBase):
                     self.sizer.set_item(self.pos,
                                         size=self.widget.GetBestSize())
 
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError:
-            pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-        if self.widget: self.widget.SetWindowStyleFlag(self.style)
-
 # end of class EditStaticText
 
 
@@ -119,27 +107,30 @@ def builder(parent, sizer, pos, number=[1]):
     node = Tree.Node(static_text)
     static_text.node = node
     static_text.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
+
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build EditStaticText objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: label = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        label = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
-    static_text = EditStaticText(label, parent, wx.NewId(),
-                                 "", sizer, pos,
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
+    static_text = EditStaticText(label, parent, wx.NewId(), "", sizer, pos,
                                  common.property_panel)
     sizer.set_item(static_text.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
-##                    size=static_text.GetBestSize())
     node = Tree.Node(static_text)
     static_text.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return static_text
     
 

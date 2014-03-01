@@ -614,7 +614,7 @@ class CheckListProperty(Property, _activator):
         self.labels.
 
         Example::
-            >>> self.prepare_value('wxALL|wxALIGN_CENTER_VERTICAL')
+            >>> self.prepare_style_value('wxALL|wxALIGN_CENTER_VERTICAL')
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
 
         @param old_val: String of tokens separated by '|'

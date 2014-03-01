@@ -1,19 +1,20 @@
-# text_ctrl.py: wxTreeCtrl objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxTreeCtrl objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
-from edit_windows import ManagedBase
+from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 import common
 import config
 from widget_properties import *
 
 
-class EditTreeCtrl(ManagedBase):
+class EditTreeCtrl(ManagedBase, StylesMixin):
     """\
     Class to handle wx.TreeCtrl objects
     """
@@ -38,45 +39,43 @@ class EditTreeCtrl(ManagedBase):
         'EVT_TREE_KEY_DOWN',
         'EVT_TREE_ITEM_GETTOOLTIP',
         ]
+
+    update_widget_style = False
     
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True, style=wx.TR_HAS_BUTTONS|wx.SUNKEN_BORDER):
+
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, id, sizer, pos,
                              property_window, show=show)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
         self.style = style
+        self._item_with_name = None
+
+        # initialise properties remaining staff
         self.access_functions['style'] = (self.get_style, self.set_style)
-        # style property
-        self.style_pos  = (wx.TR_HAS_BUTTONS, wx.TR_NO_LINES, wx.TR_LINES_AT_ROOT,
-                           wx.TR_EDIT_LABELS, wx.TR_MULTIPLE, wx.TR_NO_BUTTONS,
-                           wx.TR_TWIST_BUTTONS, wx.TR_FULL_ROW_HIGHLIGHT,
-                           wx.TR_HIDE_ROOT, wx.TR_ROW_LINES,
-                           wx.TR_HAS_VARIABLE_ROW_HEIGHT,
-                           wx.TR_SINGLE, wx.TR_MULTIPLE, wx.TR_EXTENDED,
-                           wx.TR_DEFAULT_STYLE, wx.SIMPLE_BORDER, wx.DOUBLE_BORDER,
-                           wx.SUNKEN_BORDER, wx.RAISED_BORDER, wx.STATIC_BORDER,
-                           wx.NO_BORDER, wx.WANTS_CHARS, 
-                           wx.NO_FULL_REPAINT_ON_RESIZE,
-                           wx.FULL_REPAINT_ON_RESIZE)
         style_labels = ('#section#' + _('Style'), 'wxTR_HAS_BUTTONS', 'wxTR_NO_LINES',
                         'wxTR_LINES_AT_ROOT', 'wxTR_EDIT_LABELS',
                         'wxTR_MULTIPLE', 'wxTR_NO_BUTTONS',
                         'wxTR_TWIST_BUTTONS', 'wxTR_FULL_ROW_HIGHLIGHT',
-                        'wxTR_HIDE_ROOT', 'wxTR_ROW_LINES', 
-                        'wxTR_HAS_VARIABLE_ROW_HEIGHT','wxTR_SINGLE', 
+                        'wxTR_HIDE_ROOT', 'wxTR_ROW_LINES',
+                        'wxTR_HAS_VARIABLE_ROW_HEIGHT','wxTR_SINGLE',
                         'wxTR_MULTIPLE', 'wxTR_EXTENDED',
                         'wxTR_DEFAULT_STYLE', 'wxSIMPLE_BORDER',
                         'wxDOUBLE_BORDER', 'wxSUNKEN_BORDER',
                         'wxRAISED_BORDER', 'wxSTATIC_BORDER', 'wxNO_BORDER',
                         'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
                         'wxFULL_REPAINT_ON_RESIZE')
+        self.gen_style_pos(style_labels)
         self.properties['style'] = CheckListProperty(self, 'style', None,
                                                      style_labels)
-        self._item_with_name = None
 
     def create_widget(self):
         self.widget = wx.TreeCtrl(self.parent.widget, self.id,
                                  style=wx.TR_HAS_BUTTONS|wx.SUNKEN_BORDER)
-        # add a couple of items just for a better appearence
+        # add a couple of items just for a better appearance
         root = self.widget.AddRoot(_(' Tree Control:'))
         self._item_with_name = self.widget.AppendItem(root, ' ' + self.name)
         self.widget.AppendItem(self._item_with_name,
@@ -108,22 +107,6 @@ class EditTreeCtrl(ManagedBase):
         import math
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError: pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-
 # end of class EditTreeCtrl
 
 
@@ -142,7 +125,7 @@ def builder(parent, sizer, pos, number=[1]):
     tree_ctrl.set_option(1)
     tree_ctrl.set_flag("wxEXPAND")
     tree_ctrl.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
     sizer.set_item(tree_ctrl.pos, 1, wx.EXPAND)
 
 
@@ -151,18 +134,22 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory function to build EditTreeCtrl objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: name = attrs['name']
-    except KeyError: raise XmlParsingError, "'name' attribute missing"
+    try:
+        name = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, "sizer or sizeritem object cannot be None"
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos,
                              common.property_panel, style=0)
-    sizer.set_item(tree_ctrl.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    sizer.set_item(tree_ctrl.pos, option=sizeritem.option,
+                   flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(tree_ctrl)
     tree_ctrl.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return tree_ctrl
 
 

@@ -1,33 +1,45 @@
 """
 wxButton objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
-import common, misc
-from edit_windows import ManagedBase
+import config
+import common
+import misc
+from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 from widget_properties import *
 from button_stockitems import *
 
 
-class EditButton(ManagedBase):
+class EditButton(ManagedBase, StylesMixin):
+    """\
+    Class to handle wxButton objects
+    """
 
     events = ['EVT_BUTTON']
 
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
-        """\
-        Class to handle wxButton objects
-        """
-        import config
+
+        # Initialise parent classes
+        ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
+                             property_window, show=show)
+        StylesMixin.__init__(self)
+
+        # initialise instance variables
         self.label = label
         self.default = False
         self.stockitem = "None"
-        ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
-                             property_window, show=show)
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wx.ALL
+
+        # initialise properties remaining staff
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.properties['label'] = TextProperty(self, 'label', None,
                                                 multiline=True)
@@ -49,10 +61,9 @@ class EditButton(ManagedBase):
         self.properties['stockitem'].tooltip = \
             _("Standard IDs for button identifiers")
 
-        self.style_pos = (wx.BU_LEFT, wx.BU_RIGHT, wx.BU_TOP, wx.BU_BOTTOM,
-            wx.BU_EXACTFIT,wx.NO_BORDER)
-        style_labels = ('#section#' + _('Style'), 'wxBU_LEFT', 'wxBU_RIGHT', 
+        style_labels = ('#section#' + _('Style'), 'wxBU_LEFT', 'wxBU_RIGHT',
             'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT','wxNO_BORDER')
+        self.gen_style_pos((style_labels))
         
         #The tooltips tuple
         style_tooltips=(_("Left-justifies the label. Windows and GTK+ only."),
@@ -68,13 +79,10 @@ class EditButton(ManagedBase):
                         _("Creates a flat button. Windows and GTK+ only."))
         self.properties['style'] = CheckListProperty(
             self, 'style', None,
-            style_labels, tooltips=style_tooltips) # the tooltips tuple is
-                                                   # passed as the last
-                                                   # argument
-        # 2003-09-04 added default_border
-        if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
+            style_labels, tooltips=style_tooltips)  # the tooltips tuple is
+                                                    # passed as the last
+                                                    # argument
+
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -141,24 +149,6 @@ class EditButton(ManagedBase):
             if self.properties['label'].panel is not None:
                 self.properties['label'].text.Enable(True)
             
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError:
-            pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-        if self.widget: self.widget.SetWindowStyleFlag(self.style)
-
 # end of class EditButton
         
 
@@ -175,7 +165,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Tree.Node(button)
     button.node = node
     button.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(node, sizer.node, pos - 1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -183,16 +173,20 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     factory to build EditButton objects from an xml file
     """
     from xml_parse import XmlParsingError
-    try: label = attrs['name']
-    except KeyError: raise XmlParsingError, _("'name' attribute missing")
+    try:
+        label = attrs['name']
+    except KeyError:
+        raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
-        raise XmlParsingError, _("sizer or sizeritem object cannot be None")
+        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     button = EditButton(label, parent, wx.NewId(), '', sizer,
                         pos, common.property_panel, show=False)
     node = Tree.Node(button)
     button.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    if pos is None:
+        common.app_tree.add(node, sizer.node)
+    else:
+        common.app_tree.insert(node, sizer.node, pos - 1)
     return button
 
 
