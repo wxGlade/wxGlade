@@ -99,6 +99,8 @@ protected:
     wxStaticText* label_3;
     wxStaticText* label_2;
     wxPanel* notebook_1_Spacer;
+    wxTextCtrl* text_ctrl;
+    wxPanel* notebook_1_wxTextCtrl;
     wxNotebook* notebook_1;
     wxStaticLine* static_line_1;
     wxButton* button_5;

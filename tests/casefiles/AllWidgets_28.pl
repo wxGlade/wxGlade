@@ -85,6 +85,8 @@ sub new {
     $self->{notebook_1_Spacer} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{label_3} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("Two labels with a"));
     $self->{label_2} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("spacer between"));
+    $self->{notebook_1_wxTextCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{text_ctrl} = Wx::TextCtrl->new($self->{notebook_1_wxTextCtrl}, wxID_ANY, _T("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_LINEWRAP|wxTE_WORDWRAP);
     $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
     $self->{button_5} = Wx::Button->new($self, wxID_CLOSE, "");
     $self->{button_1} = Wx::Button->new($self, wxID_OK, "", wxDefaultPosition, wxDefaultSize, wxBU_TOP);
@@ -119,6 +121,7 @@ sub __do_layout {
     # begin wxGlade: All_Widgets_Frame::__do_layout
     $self->{sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
     $self->{sizer_2} = Wx::FlexGridSizer->new(1, 2, 0, 0);
+    $self->{sizer_18} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{grid_sizer_3} = Wx::FlexGridSizer->new(1, 3, 0, 0);
     $self->{sizer_9} = Wx::BoxSizer->new(wxVERTICAL);
     $self->{sizer_10} = Wx::BoxSizer->new(wxHORIZONTAL);
@@ -189,6 +192,8 @@ sub __do_layout {
     $self->{grid_sizer_3}->Add(60, 20, 1, wxALL|wxEXPAND, 5);
     $self->{grid_sizer_3}->Add($self->{label_2}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_Spacer}->SetSizer($self->{grid_sizer_3});
+    $self->{sizer_18}->Add($self->{text_ctrl}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_wxTextCtrl}->SetSizer($self->{sizer_18});
     $self->{notebook_1}->AddPage($self->{notebook_1_wxBitmapButton}, _T("wxBitmapButton"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxCalendarCtrl}, _T("wxCalendarCtrl"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxChoice}, _T("wxChoice"));
@@ -205,6 +210,7 @@ sub __do_layout {
     $self->{notebook_1}->AddPage($self->{notebook_1_wxStaticBitmap}, _T("wxStaticBitmap"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxStaticLine}, _T("wxStaticLine"));
     $self->{notebook_1}->AddPage($self->{notebook_1_Spacer}, _T("wxStaticText (with Spacer)"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxTextCtrl}, _T("wxTextCtrl"));
     $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
     $self->{sizer_1}->Add($self->{static_line_1}, 0, wxALL|wxEXPAND, 5);
     $self->{sizer_2}->Add($self->{button_5}, 0, wxALL|wxALIGN_RIGHT, 5);
