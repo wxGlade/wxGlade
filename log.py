@@ -57,6 +57,9 @@ Contains the original exception handler
 class StringHandler(logging.handlers.MemoryHandler):
     """\
     Stores the log records as a list of strings.
+
+    @ivar buffer: The message buffer itself
+    @type buffer: List of strings
     """
 
     storeAsUnicode = True
@@ -64,11 +67,6 @@ class StringHandler(logging.handlers.MemoryHandler):
     Stores the log records as unicode strings
 
     @type: Boolean
-    """
-
-    buffer = []
-    """\
-    The message buffer itself
     """
 
     encoding = sys.stdout.encoding or sys.getfilesystemencoding()
@@ -163,7 +161,7 @@ class StringHandler(logging.handlers.MemoryHandler):
 # end of class StringHandler
 
 
-class wxGladeFormatter(logging.Formatter):
+class ExceptionFormatter(logging.Formatter):
     """\
     Extended formatter to include more exception details automatically.
     """
@@ -303,10 +301,10 @@ class wxGladeFormatter(logging.Formatter):
             s = s[:-1]
         return s
 
-# end of class wxGladeFormatter
+# end of class ExceptionFormatter
 
 
-def init(filename='wxglade.log', encoding=None, level=None):
+def init(filename='wxglade.log', encoding='utf-8', level=None):
     """\
     Initialise the logging facility
 
@@ -328,12 +326,8 @@ def init(filename='wxglade.log', encoding=None, level=None):
     @see: L{stringLoggerInstance}
     @see: L{installExceptionHandler()}
     """
-    global stringLoggerInstance
-
-    default_formatter = wxGladeFormatter(
-        '%(levelname)-8s: %(message)s'
-        )
-    file_formatter = wxGladeFormatter(
+    default_formatter = ExceptionFormatter('%(levelname)-8s: %(message)s')
+    file_formatter = ExceptionFormatter(
         '%(asctime)s %(name)s %(levelname)s: %(message)s'
         )
     logger = logging.getLogger()
@@ -350,49 +344,56 @@ def init(filename='wxglade.log', encoding=None, level=None):
     else:
         logging.StreamHandler.terminator = '\n'
 
-    # inject own function
-    logging.LogRecord.getMessage = getMessage
+    # instantiate console handler
+    console_logger = logging.StreamHandler()
+    console_logger.setLevel(logging.INFO)
+    console_logger.setFormatter(default_formatter)
+    logger.addHandler(console_logger)
 
-    # install own exception handler
-    installExceptionHandler()
-
-    # instantiate own handler
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    console.setFormatter(default_formatter)
-    logger.addHandler(console)
-
+    # instantiate file handler
     if filename:
-        fileLogger = logging.handlers.RotatingFileHandler(
+        file_logger = logging.handlers.RotatingFileHandler(
             filename,
             maxBytes=100*1024,
             encoding=encoding,
             backupCount=1,
             )
-        fileLogger.setFormatter(file_formatter)
-        fileLogger.setLevel(logging.NOTSET)
-        logger.addHandler(fileLogger)
+        file_logger.setFormatter(file_formatter)
+        file_logger.setLevel(logging.NOTSET)
+        logger.addHandler(file_logger)
 
-    stringLoggerInstance = StringHandler(storeAsUnicode=False)
-    stringLoggerInstance.setLevel(logging.WARNING)
-    stringLoggerInstance.setFormatter(default_formatter)
-    logger.addHandler(stringLoggerInstance)
+    # instantiate string handler
+    string_logger = StringHandler(storeAsUnicode=False)
+    string_logger.setLevel(logging.WARNING)
+    string_logger.setFormatter(default_formatter)
+    logger.addHandler(string_logger)
+
+    # store string logger globally
+    global stringLoggerInstance
+    stringLoggerInstance = string_logger
 
     # don't filter log levels in root logger
     logger.setLevel(logging.NOTSET)
 
     # Set log level for file logger only
     if level:
-        if level.upper() in logging._levelNames:                 # pylint: disable=W0212
-            logger.setLevel(logging._levelNames[level.upper()])  # pylint: disable=W0212
+        if level.upper() in logging._levelNames:                      # pylint: disable=W0212
+            file_logger.setLevel(logging._levelNames[level.upper()])  # pylint: disable=W0212
         else:
             logging.warning(
                 _('Invalid log level "%s". Use "WARNING" instead.'),
                 level.upper(),
                 )
-            logger.setLevel(logging.WARNING)
+            file_logger.setLevel(logging.WARNING)
     else:
-        logger.setLevel(logging.NOTSET)
+        file_logger.setLevel(logging.NOTSET)
+
+    # Install own exception handler at the end because it can raise a debug
+    # messages. This debug messages triggers the creation of a default
+    # StreamHandler if no log handler exists.
+    # There is a period of time with no log handler during this log
+    # initialisation.
+    installExceptionHandler()
 
 
 def deinit():
@@ -535,3 +536,58 @@ def getMessage(self):
             # Errors caused by wrong message formatting
             logging.exception(_('Wrong format of a log message'))
     return msg
+
+# inject own (improved) function
+logging.LogRecord.getMessage = getMessage
+
+
+def emit(self, record):
+    """\
+    Emit a record.
+
+   If a formatter is specified, it is used to format the record.
+   The record is then written to the stream with a trailing newline.  If
+   exception information is present, it is formatted using
+   traceback.print_exception and appended to the stream.  If the stream
+   has an 'encoding' attribute, it is used to determine how to do the
+   output to the stream.
+
+   @note: This specific version to handle Unicode user-supplied arguments.
+
+   @note: The function is copied from the revision (81919 - 27.12.2010) of
+          Python's public SVN repository.It's because the implementations
+          included in Python 2.5 and some versions of Python 2.6 aren't
+          ready to handle Unicode properly.
+    """
+    try:
+        msg = self.format(record)
+        stream = self.stream
+        fs = "%%s%s" % self.terminator
+        try:
+            if (isinstance(msg, unicode) and
+                getattr(stream, 'encoding', None)):
+                ufs = fs.decode(stream.encoding)
+                try:
+                    stream.write(ufs % msg)
+                except UnicodeEncodeError:
+                    #Printing to terminals sometimes fails. For example,
+                    #with an encoding of 'cp1251', the above write will
+                    #work if written to a stream opened or wrapped by
+                    #the codecs module, but fail when writing to a
+                    #terminal even when the codepage is set to cp1251.
+                    #An extra encoding step seems to be needed.
+                    stream.write((ufs % msg).encode(stream.encoding))
+            else:
+                stream.write(fs % msg)
+        except UnicodeError:
+            # It looks like stream(encoding='latin-1') doesn't like Unicode
+            #stream.write(fs % msg.encode("UTF-8"))
+            stream.write(fs % msg.encode(stream.encoding, 'replace'))
+        self.flush()
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    except:
+        self.handleError(record)
+
+# inject own version that handles unicode properly
+logging.StreamHandler.emit = emit
