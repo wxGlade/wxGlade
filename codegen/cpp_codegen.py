@@ -16,7 +16,7 @@ methods of the parent object.
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import cStringIO
+import StringIO
 import os
 import os.path
 import re
@@ -566,8 +566,8 @@ bool MyApp::OnInit()
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
-                self.output_header = cStringIO.StringIO()
-                self.output_file = cStringIO.StringIO()
+                self.output_header = StringIO.StringIO()
+                self.output_file = StringIO.StringIO()
 
                 # isolation directives
                 oh = os.path.basename(name + self.header_extension).upper().replace(
@@ -1215,8 +1215,8 @@ bool MyApp::OnInit()
             # create the new source file
             header_file = os.path.join(self.out_dir, code_obj.klass + self.header_extension)
             source_file = os.path.join(self.out_dir, code_obj.klass + self.source_extension)
-            hout = cStringIO.StringIO()
-            sout = cStringIO.StringIO()
+            hout = StringIO.StringIO()
+            sout = StringIO.StringIO()
 
             # header file
             hwrite = hout.write

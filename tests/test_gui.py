@@ -8,7 +8,7 @@
 from tests import WXGladeBaseTest
 
 # import general python modules
-import cStringIO
+import StringIO
 import sys
 import wx
 
@@ -45,7 +45,7 @@ class TestGui(WXGladeBaseTest):
     def setUp(self):
         # redirect stdout
         self.orig_stdout = sys.stdout
-        sys.stdout = cStringIO.StringIO()
+        sys.stdout = StringIO.StringIO()
 
         # initialse base class
         WXGladeBaseTest.setUp(self)
@@ -134,7 +134,7 @@ class TestGui(WXGladeBaseTest):
         Test loading Notebook without tabs
         """
         self._messageBox = None
-        infile = cStringIO.StringIO(
+        infile = StringIO.StringIO(
             self._load_file('Notebook_wo_tabs.wxg')
             )
         self.frame._open_app(
@@ -160,7 +160,7 @@ class TestGui(WXGladeBaseTest):
         Test loading Notebook with tabs
         """
         self._messageBox = None
-        infile = cStringIO.StringIO(
+        infile = StringIO.StringIO(
             self._load_file('Notebook_w_tabs.wxg')
             )
         self.frame._open_app(
@@ -184,7 +184,7 @@ class TestGui(WXGladeBaseTest):
             source,
             path='',
             )
-        infile = cStringIO.StringIO(source)
+        infile = StringIO.StringIO(source)
         self.frame._open_app(
             infilename=infile,
             use_progress_dialog=False,
@@ -225,7 +225,7 @@ class TestGui(WXGladeBaseTest):
 
             # prepare and open wxg
             source = self._prepare_wxg(language, source)
-            infile = cStringIO.StringIO(source)
+            infile = StringIO.StringIO(source)
             self.frame._open_app(
                 infilename=infile,
                 use_progress_dialog=False,
@@ -286,7 +286,7 @@ class TestGui(WXGladeBaseTest):
 
             # prepare and open wxg
             source = self._prepare_wxg(language, source)
-            infile = cStringIO.StringIO(source)
+            infile = StringIO.StringIO(source)
             self.frame._open_app(
                 infilename=infile,
                 use_progress_dialog=False,
