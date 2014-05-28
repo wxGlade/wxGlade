@@ -151,9 +151,11 @@ def xrc_code_generator(obj):
                 for arg in args:           
                     try:
                         name, val = [s.strip() for s in arg.split(':', 1)]
+                    except ValueError:
+                        continue  # silently ignore malformed arguments
                     except Exception:
                         self._logger.exception(_('Internal Error'))
-                        continue # silently ignore malformed arguments
+                        continue
                     self.properties[name] = val
             xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
 

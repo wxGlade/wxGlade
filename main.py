@@ -8,7 +8,7 @@ widgets and initializes all the stuff (tree, property_frame, etc.)
 """
 
 # import general python modules
-import cStringIO
+import StringIO
 import logging
 import os
 import os.path
@@ -771,7 +771,7 @@ class wxGladeFrame(wx.Frame):
 
     def _save_app(self, filename):
         try:
-            obuffer = cStringIO.StringIO()
+            obuffer = StringIO.StringIO()
             common.app_tree.write(obuffer)
             common.save_file(filename, obuffer.getvalue(), 'wxg')
         except (IOError, OSError), inst:
@@ -906,7 +906,7 @@ class wxGladeFrame(wx.Frame):
                                    flags=wx.OPEN|wx.FILE_MUST_EXIST,
                                    default_path=self.cur_dir)
         if infilename:
-            ibuffer = cStringIO.StringIO()
+            ibuffer = StringIO.StringIO()
             try:
                 xrc2wxg.convert(infilename, ibuffer)
                 ibuffer.seek(0)

@@ -6,10 +6,13 @@ Support for cut & paste of wxGlade widgets
 """
 
 import logging
+import StringIO
 import wx
+
 
 # Format used by wxGlade for the clipboard.
 _widget_data_format = wx.CustomDataFormat("wxglade_widget")
+
 
 class _WidgetDataObject(wx.CustomDataObject):
     """\
@@ -49,8 +52,7 @@ def copy(widget):
     """\
     Copies widget and all its children to the clipboard.
     """
-    from cStringIO import StringIO
-    xml_str = StringIO()
+    xml_str = StringIO.StringIO()
     widget.node.write(xml_str, 0)
     flag = widget.get_int_flag() 
     option = widget.get_option()

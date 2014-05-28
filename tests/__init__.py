@@ -5,7 +5,7 @@
 """
 
 # import general python modules
-import cStringIO
+import StringIO
 import difflib
 import glob
 import logging
@@ -371,7 +371,7 @@ class WXGladeBaseTest(unittest.TestCase):
             filename,
             "No filename given",
             )
-        outfile = cStringIO.StringIO()
+        outfile = StringIO.StringIO()
         outfile.write(content)
         self.vFiles[filename] = outfile
 
