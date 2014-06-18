@@ -3,7 +3,8 @@
 Converts an XRC resource file (in a format wxGlade likes, i.e. all windows
 inside sizers, no widget unknown to wxGlade, ...) into a WXG file.
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -14,8 +15,11 @@ import os.path
 import sys
 import time
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 _name = 'xrc2wxg'
+"""\
+Application name
+"""
 
 _props = {
     'bg': 'background',
@@ -26,11 +30,17 @@ _props = {
     'growablecols': 'growable_cols',
     'enabled': 'disabled',
     'sashpos': 'sash_pos',
-    }
+}
+"""\
+Mapping for default attribute names from XRC to WXG
+"""
 
 _counter_name = 1
+"""\
+Counter to create unique names
+"""
 
-_widgets_list = [
+_widgets = [
     'wxFrame', 'wxDialog', 'wxPanel', 'wxSplitterWindow', 'wxNotebook',
     'wxButton', 'wxToggleButton', 'wxBitmapButton', 'wxTextCtrl',
     'wxSpinCtrl', 'wxSlider', 'wxGauge', 'wxStaticText', 'wxCheckBox',
@@ -38,44 +48,55 @@ _widgets_list = [
     'wxStaticLine', 'wxStaticBitmap', 'wxGrid', 'wxMenuBar', 'wxStatusBar',
     'wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer',
     'wxTreeCtrl', 'wxListCtrl', 'wxToolBar', 'wxScrolledWindow',
-    ]
-_widgets = dict(zip(_widgets_list, [1] * len(_widgets_list)))
+]
+"""\
+Supported widgets
+"""
 
 _special_class_names = [
-    'notebookpage', 'sizeritem', 'separator', 'tool', 'spacer',
-    ]
-_special_class_names = dict(zip(_special_class_names,
-                                [1] * len(_special_class_names)))
+    'notebookpage', 'separator', 'sizeritem', 'spacer', 'tool',
+]
+"""\
+Widget names with special meaning
+"""
 
 
 def get_child_elems(node):
     def ok(n):
         return n.nodeType == n.ELEMENT_NODE
+
     return filter(ok, node.childNodes)
 
 
 def get_text_elems(node):
     def ok(n):
         return n.nodeType == n.TEXT_NODE
+
     return filter(ok, node.childNodes)
 
 
-def convert(input, output):
+def convert(infilename, output_file):
+    """\
+    Convert the given XRC file to a wxGlade file
+
+    @param infilename:  Source filename
+    @param output_file: Filename or file (-like) object
+    """
     global _counter_name
     _counter_name = 1
 
-    document = xml.dom.minidom.parse(input)
+    document = xml.dom.minidom.parse(infilename)
     fix_fake_panels(document)
     set_base_classes(document)
     fix_properties(document)
     fix_widgets(document)
-    fix_encoding(input, document)
-    if not hasattr(output, 'write'):
-        output = open(output, 'w')
-        write_output(document, output)
-        output.close()
+    fix_encoding(infilename, document)
+    if not hasattr(output_file, 'write'):
+        output_file = open(output_file, 'w')
+        write_output(document, output_file)
+        output_file.close()
     else:
-        write_output(document, output)
+        write_output(document, output_file)
 
 
 def write_output(document, output):
@@ -135,9 +156,12 @@ def fix_properties(document):
     # special case...
     for elem in document.getElementsByTagName('disabled'):
         elem.tagName = 'disabled_bitmap'
+
+    # replace property names
     for prop in _props:
         for elem in document.getElementsByTagName(prop):
             elem.tagName = _props[prop]
+
     document.documentElement.tagName = 'application'
     if document.documentElement.hasAttribute('version'):
         document.documentElement.removeAttribute('version')
@@ -166,24 +190,26 @@ def fix_custom_widgets(document):
                 # if child is a 'simple' attribute, i.e
                 # <child>value</child>, convert it to an 'argument'
                 if len(child.childNodes) == 1 and \
-                       child.firstChild.nodeType == child.TEXT_NODE:
+                   child.firstChild.nodeType == child.TEXT_NODE:
                     arg = document.createElement('argument')
                     arg.appendChild(document.createTextNode(
                         child.tagName + ': ' + child.firstChild.data))
                     args.appendChild(arg)
                     # and remove it
                     elem.removeChild(child)
-                # otherwise, leave it where it is (it shouldn't hurt)
+                    # otherwise, leave it where it is (it shouldn't hurt)
             elem.appendChild(args)
 
 
 def fix_sizeritems(document):
-    def ok(node):
+    def issizeritem(node):
         return node.getAttribute('class') == 'sizeritem'
-    def ok2(node):
+
+    def isobject(node):
         return node.tagName == 'object'
-    for sitem in filter(ok, document.getElementsByTagName('object')):
-        for child in filter(ok2, get_child_elems(sitem)):
+
+    for sitem in filter(issizeritem, document.getElementsByTagName('object')):
+        for child in filter(isobject, get_child_elems(sitem)):
             sitem.appendChild(sitem.removeChild(child))
     fix_flag_property(document)
 
@@ -193,16 +219,17 @@ def fix_flag_property(document):
         tmp = elem.firstChild.data.replace('CENTRE', 'CENTER')
         elem.firstChild.data = tmp.replace('GROW', 'EXPAND')
         if elem.firstChild.data.find('wxALIGN_CENTER_HORIZONTAL') < 0 and \
-               elem.firstChild.data.find('wxALIGN_CENTER_VERTICAL') < 0:
+           elem.firstChild.data.find('wxALIGN_CENTER_VERTICAL') < 0:
             elem.firstChild.data = elem.firstChild.data.replace(
                 'wxALIGN_CENTER', 'wxALIGN_CENTER_HORIZONTAL|'
-                'wxALIGN_CENTER_VERTICAL')
+                                  'wxALIGN_CENTER_VERTICAL')
 
 
 def fix_menubars(document):
-    def ok(elem):
+    def ismenubar(elem):
         return elem.getAttribute('class') == 'wxMenuBar'
-    menubars = filter(ok, document.getElementsByTagName('object'))
+
+    menubars = filter(ismenubar, document.getElementsByTagName('object'))
     for mb in menubars:
         fix_menus(document, mb)
         if mb.parentNode is not document.documentElement:
@@ -212,10 +239,10 @@ def fix_menubars(document):
 
 
 def fix_menus(document, menubar):
-    def ok(elem):
+    def ismenu(elem):
         return elem.getAttribute('class') == 'wxMenu'
-    menus = filter(ok, get_child_elems(menubar))
-    menus_node = document.createElement('menus')
+
+    menus = filter(ismenu, get_child_elems(menubar))
     for menu in menus:
         try:
             label = [c for c in get_child_elems(menu)
@@ -267,9 +294,10 @@ def fix_sub_menus(document, menu, new_menu):
 
 
 def fix_toolbars(document):
-    def ok(elem):
+    def istoolbar(elem):
         return elem.getAttribute('class') == 'wxToolBar'
-    toolbars = filter(ok, document.getElementsByTagName('object'))
+
+    toolbars = filter(istoolbar, document.getElementsByTagName('object'))
     for tb in toolbars:
         fix_tools(document, tb)
         if tb.parentNode is not document.documentElement:
@@ -280,7 +308,8 @@ def fix_toolbars(document):
 
 def fix_tools(document, toolbar):
     tools = document.createElement('tools')
-    for tool in [c for c in get_child_elems(toolbar) if c.tagName == 'object']:
+    for tool in [c for c in get_child_elems(toolbar) if
+                 c.tagName == 'object']:
         if tool.getAttribute('class') == 'tool':
             new_tool = document.createElement('tool')
             id = document.createElement('id')
@@ -315,8 +344,10 @@ def fix_tools(document, toolbar):
 def fix_notebooks(document):
     def ispage(node):
         return node.getAttribute('class') == 'notebookpage'
+
     def isnotebook(node):
         return node.getAttribute('class') == 'wxNotebook'
+
     for nb in filter(isnotebook, document.getElementsByTagName('object')):
         pages = filter(ispage, get_child_elems(nb))
         tabs = document.createElement('tabs')
@@ -344,8 +375,10 @@ def fix_notebooks(document):
 def fix_splitters(document):
     def issplitter(node):
         return node.getAttribute('class') == 'wxSplitterWindow'
+
     def ispane(node):
         return node.tagName == 'object'
+
     for sp in filter(issplitter, document.getElementsByTagName('object')):
         panes = filter(ispane, get_child_elems(sp))
         assert len(panes) <= 2, "Splitter window with more than 2 panes!"
@@ -365,19 +398,21 @@ def fix_splitters(document):
 def fix_fake_panels(document):
     def isframe(node):
         return node.getAttribute('class') == 'wxFrame'
+
     for frame in filter(isframe, document.getElementsByTagName('object')):
         for c in get_child_elems(frame):
             if c.tagName == 'object' and c.getAttribute('class') == 'wxPanel' \
-               and c.getAttribute('name') == '':
+                    and c.getAttribute('name') == '':
                 elems = get_child_elems(c)
                 if len(elems) == 1 and \
-                       elems[0].getAttribute('class').find('Sizer') != -1:
+                   elems[0].getAttribute('class').find('Sizer') != -1:
                     frame.replaceChild(elems[0], c)
 
 
 def fix_spacers(document):
     def isspacer(node):
         return node.getAttribute('class') == 'spacer'
+
     for spacer in filter(isspacer, document.getElementsByTagName('object')):
         spacer.setAttribute('name', 'spacer')
         spacer.setAttribute('base', 'EditSpacer')
@@ -402,6 +437,7 @@ def fix_spacers(document):
 def fix_scrolled_windows(document):
     def isscrollwin(node):
         return node.getAttribute('class') == 'wxScrolledWindow'
+
     for sw in filter(isscrollwin, document.getElementsByTagName('object')):
         e = document.createElement('scrollable')
         e.appendChild(document.createTextNode('1'))
@@ -419,7 +455,7 @@ def fix_toplevel_names(document):
         klass_name = kn = klass.replace('wx', 'My')
         name = widget.getAttribute('name')
         i = 1
-        while names.has_key(klass_name) or klass_name == name:
+        while klass_name in names or klass_name == name:
             klass_name = kn + str(i)
             i += 1
         widget.setAttribute('class', klass_name)
@@ -429,6 +465,7 @@ def fix_sliders(document):
     def isslider(node):
         klass = node.getAttribute('class')
         return klass == 'wxSlider' or klass == 'wxSpinCtrl'
+
     for slider in filter(isslider, document.getElementsByTagName('object')):
         v1, v2 = 0, 100
         for child in get_child_elems(slider):
@@ -446,20 +483,22 @@ def fix_sliders(document):
 def fix_encoding(filename, document):
     # first try to find the encoding of the xml doc
     import re
+
     enc = re.compile(r'^\s*<\?xml\s+.*(encoding\s*=\s*"(.*?)").*\?>')
     tag = re.compile(r'<.+?>')
     for line in open(filename):
         match = re.match(enc, line)
-        if match is not None:
+        if match:
             document.documentElement.setAttribute('encoding', match.group(2))
             return
-        elif re.match(tag, line) is not None:
+        elif re.match(tag, line):
             break
+
     # if it's not specified, try to find a child of the root called 'encoding':
     # I don't know why, but XRCed does this
     for child in document.documentElement.childNodes:
         if child.nodeType == child.ELEMENT_NODE and \
-               child.tagName == 'encoding':
+           child.tagName == 'encoding':
             if child.firstChild is not None and \
                child.firstChild.nodeType == child.TEXT_NODE:
                 document.documentElement.setAttribute(
@@ -505,18 +544,18 @@ def main():
         usage()
     if not args:
         usage()
-    input = args[0]
+    infilename = args[0]
     try:
-        output = args[1]
+        out_filename = args[1]
     except IndexError:
-        output = os.path.splitext(input)[0] + '.wxg'
+        out_filename = os.path.splitext(infilename)[0] + '.wxg'
     if not options:
         try:
-            convert(input, output)
+            convert(infilename, out_filename)
         except Exception:  # catch the exception and print a nice message
             print_exception()
     else:  # if in debug mode, let the traceback be printed
-        convert(input, output)
+        convert(infilename, out_filename)
 
 
 if __name__ == '__main__':
