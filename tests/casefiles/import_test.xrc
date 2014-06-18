@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<resource class="wxDialog">
+  <object class="wxFrame" name="appFrame">
+    <object class="wxMenuBar" name="MyMenuBar">
+      <object class="wxMenu" name="MyFileMenu">
+        <object class="wxMenuItem" name="mnOpen">
+          <label>Open</label>
+          <help>Open a file</help>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="mnExit">
+          <label>Exit</label>
+          <help>Leave the application</help>
+        </object>
+        <label>File</label>
+        <help>File menu</help>
+      </object>
+      <object class="wxMenu" name="MyHelpMenu">
+        <object class="wxMenuItem" name="mnAbout">
+          <label>About</label>
+          <help>Show the about dialog</help>
+        </object>
+        <label>Help</label>
+        <help>Help Menu</help>
+      </object>
+    </object>
+    <object class="wxStatusBar" name="MyStatusBar">
+      <fields>1</fields>
+      <widths>100</widths>
+      <style>wxST_SIZEGRIP</style>
+    </object>
+    <size>200,200</size>
+    <title>XRC Import test</title>
+    <centered>1</centered>
+    <style>wxDEFAULT_DIALOG_STYLE|wxCAPTION|wxSYSTEM_MENU|wxRESIZE_BORDER</style>
+  </object>
+</resource>
