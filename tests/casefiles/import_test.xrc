@@ -24,6 +24,25 @@
         <help>Help Menu</help>
       </object>
     </object>
+    <object class="wxToolBar">
+      <object class="tool" name="toolOpen">
+        <bitmap stock_id="wxART_MISSING_IMAGE"/>
+        <bitmap2 stock_id="wxART_MISSING_IMAGE"/>
+        <radio>1</radio>
+        <tooltip>Open a existing file</tooltip>
+        <longhelp>Open a existing file</longhelp>
+        <label>Open</label>
+      </object>
+      <object class="separator"/>
+      <object class="tool" name="toolClose">
+        <bitmap stock_id="wxART_MISSING_IMAGE"/>
+        <bitmap2 stock_id="wxART_MISSING_IMAGE"/>
+        <tooltip>Close the active file</tooltip>
+        <longhelp>Close the active file</longhelp>
+        <label>Close</label>
+      </object>
+      <style>wxTB_TEXT</style>
+    </object>
     <object class="wxStatusBar" name="MyStatusBar">
       <fields>1</fields>
       <widths>100</widths>
@@ -33,5 +52,33 @@
     <title>XRC Import test</title>
     <centered>1</centered>
     <style>wxDEFAULT_DIALOG_STYLE|wxCAPTION|wxSYSTEM_MENU|wxRESIZE_BORDER</style>
+    <object class="wxFlexGridSizer">
+      <object class="sizeritem">
+        <object class="wxStaticLine"/>
+        <border>5</border>
+      </object>
+      <object class="sizeritem">
+        <object class="wxGridSizer">
+          <cols>2</cols>
+          <rows>1</rows>
+          <object class="sizeritem">
+            <object class="wxButton">
+              <label>Cancel</label>
+            </object>
+            <option>1</option>
+            <border>5</border>
+          </object>
+          <object class="sizeritem">
+            <object class="wxButton">
+              <label>OK</label>
+            </object>
+            <option>1</option>
+            <border>5</border>
+          </object>
+        </object>
+      </object>
+      <cols>1</cols>
+      <rows>3</rows>
+    </object>
   </object>
 </resource>

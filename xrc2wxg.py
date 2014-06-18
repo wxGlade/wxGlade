@@ -21,7 +21,7 @@ _name = 'xrc2wxg'
 Application name
 """
 
-_props = {
+_default_props = {
     'bg': 'background',
     'fg': 'foreground',
     'content': 'choices',
@@ -32,7 +32,28 @@ _props = {
     'sashpos': 'sash_pos',
 }
 """\
-Mapping for default attribute names from XRC to WXG
+Mapping of default attribute names from XRC to WXG
+
+@see: L{_class_props}
+"""
+
+_class_props = {
+    'wxMenuItem': {
+        'help': 'help_str',
+    },
+    'tool': {
+        'bitmap': 'bitmap1',
+        'tooltip': 'short_help',
+        'longhelp': 'long_help',
+        'toggle': 'type',
+    }
+}
+"""\
+Mapping of class specific attribute names from XRC to WXG.
+
+The class names are XRC class names.
+
+@see: L{_default_props}
 """
 
 _counter_name = 1
@@ -88,7 +109,8 @@ def convert(infilename, output_file):
     document = xml.dom.minidom.parse(infilename)
     fix_fake_panels(document)
     set_base_classes(document)
-    fix_properties(document)
+    fix_default_properties(document)
+    fix_class_properties(document)
     fix_widgets(document)
     fix_encoding(infilename, document)
     if not hasattr(output_file, 'write'):
@@ -100,10 +122,9 @@ def convert(infilename, output_file):
 
 
 def write_output(document, output):
-    """\
-    This code has been adapted from XRCed 0.0.7-3.
-    Many thanks to its author Roman Rolinsky.
-    """
+    # This code has been adapted from XRCed 0.0.7-3.
+    # Many thanks to its author Roman Rolinsky.
+
     dom_copy = xml.dom.minidom.Document()
 
     def indent(node, level=0):
@@ -152,19 +173,40 @@ def set_base_classes(document):
                 _counter_name += 1
 
 
-def fix_properties(document):
+def fix_default_properties(document):
+    """\
+    Rename generic properties
+
+    @see: L{_default_props}
+    """
     # special case...
     for elem in document.getElementsByTagName('disabled'):
         elem.tagName = 'disabled_bitmap'
 
     # replace property names
-    for prop in _props:
+    for prop in _default_props:
         for elem in document.getElementsByTagName(prop):
-            elem.tagName = _props[prop]
+            elem.tagName = _default_props[prop]
 
     document.documentElement.tagName = 'application'
     if document.documentElement.hasAttribute('version'):
         document.documentElement.removeAttribute('version')
+
+
+def fix_class_properties(document):
+    """\
+    Rename class specific properties
+
+    @see: L{_class_props}
+    """
+    for element in document.getElementsByTagName('object'):
+        klass = element.getAttribute('class')
+        if not klass or klass not in _class_props:
+            continue
+        for child in get_child_elems(element):
+            old_tagname = child.tagName
+            if old_tagname in _class_props[klass]:
+                child.tagName = _class_props[klass][old_tagname]
 
 
 def fix_widgets(document):
@@ -317,14 +359,6 @@ def fix_tools(document, toolbar):
                 tool.getAttribute('name')))
             new_tool.appendChild(id)
             for c in get_child_elems(tool):
-                if c.tagName == 'bitmap':
-                    c.tagName = 'bitmap1'
-                elif c.tagName == 'tooltip':
-                    c.tagName = 'short_help'
-                elif c.tagName == 'longhelp':
-                    c.tagName = 'long_help'
-                elif c.tagName == 'toggle':
-                    c.tagName = 'type'
                 new_tool.appendChild(c)
             tools.appendChild(new_tool)
             toolbar.removeChild(tool).unlink()
