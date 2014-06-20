@@ -62,13 +62,13 @@ Counter to create unique names
 """
 
 _widgets = [
-    'wxFrame', 'wxDialog', 'wxPanel', 'wxSplitterWindow', 'wxNotebook',
-    'wxButton', 'wxToggleButton', 'wxBitmapButton', 'wxTextCtrl',
-    'wxSpinCtrl', 'wxSlider', 'wxGauge', 'wxStaticText', 'wxCheckBox',
-    'wxRadioButton', 'wxRadioBox', 'wxChoice', 'wxComboBox', 'wxListBox',
-    'wxStaticLine', 'wxStaticBitmap', 'wxGrid', 'wxMenuBar', 'wxStatusBar',
-    'wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer',
-    'wxTreeCtrl', 'wxListCtrl', 'wxToolBar', 'wxScrolledWindow',
+    'wxBitmapButton', 'wxBoxSizer', 'wxButton', 'wxCheckBox', 'wxChoice',
+    'wxComboBox', 'wxDialog', 'wxFlexGridSizer', 'wxFrame', 'wxGauge',
+    'wxGrid', 'wxGridSizer', 'wxListBox', 'wxListCtrl', 'wxMenuBar', 'wxMenu'
+    'wxNotebook', 'wxPanel', 'wxRadioBox', 'wxRadioButton',
+    'wxScrolledWindow', 'wxSlider', 'wxSpinCtrl', 'wxSplitterWindow',
+    'wxStaticBitmap', 'wxStaticBoxSizer', 'wxStaticLine', 'wxStaticText',
+    'wxStatusBar', 'wxTextCtrl', 'wxToggleButton', 'wxToolBar', 'wxTreeCtrl',
 ]
 """\
 Supported widgets
@@ -284,8 +284,19 @@ def fix_menus(document, menubar):
     def ismenu(elem):
         return elem.getAttribute('class') == 'wxMenu'
 
-    menus = filter(ismenu, get_child_elems(menubar))
-    for menu in menus:
+    # all menus of a wxMenuBar have to span by <menus> and </menus>:
+    # <menus>
+    #   <menu>
+    #   ...
+    #   </menu>
+    #   <menu>
+    #   ...
+    #   </menu>
+    # </menus
+    wxg_menus = document.createElement('menus')
+
+    xrc_menus = filter(ismenu, get_child_elems(menubar))
+    for menu in xrc_menus:
         try:
             label = [c for c in get_child_elems(menu)
                      if c.tagName == 'label'][0]
@@ -296,10 +307,10 @@ def fix_menus(document, menubar):
         new_menu.setAttribute('name', menu.getAttribute('name'))
         new_menu.setAttribute('label', label)
         fix_sub_menus(document, menu, new_menu)
-        menus = document.createElement('menus')
-        menus.appendChild(new_menu)
+        wxg_menus.appendChild(new_menu)
         menubar.removeChild(menu).unlink()
-        menubar.appendChild(menus)
+
+    menubar.appendChild(wxg_menus)
 
 
 def fix_sub_menus(document, menu, new_menu):
