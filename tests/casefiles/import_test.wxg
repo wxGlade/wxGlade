@@ -20,8 +20,6 @@
                         <help_str>Leave the application</help_str>
                     </item>
                 </menu>
-            </menus>
-            <menus>
                 <menu label="Help" name="MyHelpMenu">
                     <item>
                         <name>mnAbout</name>
