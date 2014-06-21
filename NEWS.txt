@@ -24,8 +24,7 @@ Bugs:
     Python
   - Prevent code generation from a template file by commandline invocation
   - Fix bug in generation of valid hash keys for Perl
-  - Fix wrong wxMenuItem property name after importing from XRC file
-  - Fix wrong menu generation after importing from XRC file
+  - Fix various issues during transformation from XRC into wxGlade 
   - ...
 
 Documentation:
