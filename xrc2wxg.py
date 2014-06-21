@@ -23,12 +23,12 @@ Application name
 
 _default_props = {
     'bg': 'background',
-    'fg': 'foreground',
     'content': 'choices',
-    'item': 'choice',
-    'growablerows': 'growable_rows',
-    'growablecols': 'growable_cols',
     'enabled': 'disabled',
+    'fg': 'foreground',
+    'growablecols': 'growable_cols',
+    'growablerows': 'growable_rows',
+    'item': 'choice',
     'sashpos': 'sash_pos',
 }
 """\
@@ -176,6 +176,13 @@ def fix_default_properties(document):
     for prop in _default_props:
         for elem in document.getElementsByTagName(prop):
             elem.tagName = _default_props[prop]
+
+            # invert property value after renaming from enabled to disabled
+            if prop == "enabled":
+                if elem.firstChild.data == u'0':
+                    elem.firstChild.data = u'1'
+                else:
+                    elem.firstChild.data = u'0'
 
     document.documentElement.tagName = 'application'
     if document.documentElement.hasAttribute('version'):

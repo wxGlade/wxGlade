@@ -59,22 +59,31 @@
       </object>
       <object class="sizeritem">
         <object class="wxGridSizer">
-          <cols>2</cols>
-          <rows>1</rows>
           <object class="sizeritem">
-            <object class="wxButton">
+            <object class="wxButton" name="bu_Cancel">
               <label>Cancel</label>
             </object>
             <option>1</option>
             <border>5</border>
           </object>
           <object class="sizeritem">
-            <object class="wxButton">
+            <object class="wxButton" name="bu_OK">
               <label>OK</label>
+              <focused>1</focused>
             </object>
             <option>1</option>
             <border>5</border>
           </object>
+          <object class="sizeritem">
+            <object class="wxButton" name="bu_Help">
+              <label>Help</label>
+              <enabled>0</enabled>
+            </object>
+            <option>1</option>
+            <border>5</border>
+          </object>
+          <cols>3</cols>
+          <rows>1</rows>
         </object>
       </object>
       <cols>1</cols>
