@@ -76,22 +76,31 @@
             </object>
             <object class="sizeritem">
                 <object base="EditGridSizer" class="wxGridSizer" name="object_3">
-                    <cols>2</cols>
-                    <rows>1</rows>
                     <object class="sizeritem">
                         <option>1</option>
                         <border>5</border>
-                        <object base="EditButton" class="wxButton" name="object_4">
+                        <object base="EditButton" class="wxButton" name="bu_Cancel">
                             <label>Cancel</label>
                         </object>
                     </object>
                     <object class="sizeritem">
                         <option>1</option>
                         <border>5</border>
-                        <object base="EditButton" class="wxButton" name="object_5">
+                        <object base="EditButton" class="wxButton" name="bu_OK">
                             <label>OK</label>
+                            <focused>1</focused>
                         </object>
                     </object>
+                    <object class="sizeritem">
+                        <option>1</option>
+                        <border>5</border>
+                        <object base="EditButton" class="wxButton" name="bu_Help">
+                            <label>Help</label>
+                            <disabled>1</disabled>
+                        </object>
+                    </object>
+                    <cols>3</cols>
+                    <rows>1</rows>
                 </object>
             </object>
             <cols>1</cols>
