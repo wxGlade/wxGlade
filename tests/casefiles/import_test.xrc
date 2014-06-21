@@ -24,7 +24,7 @@
         <help>Help Menu</help>
       </object>
     </object>
-    <object class="wxToolBar">
+    <object class="wxToolBar" name="MyToolBar">
       <object class="tool" name="toolOpen">
         <bitmap stock_id="wxART_MISSING_IMAGE"/>
         <bitmap2 stock_id="wxART_MISSING_IMAGE"/>
@@ -44,8 +44,8 @@
       <style>wxTB_TEXT</style>
     </object>
     <object class="wxStatusBar" name="MyStatusBar">
-      <fields>1</fields>
-      <widths>100</widths>
+      <fields>2</fields>
+      <widths>-2,-1</widths>
       <style>wxST_SIZEGRIP</style>
     </object>
     <size>200,200</size>
