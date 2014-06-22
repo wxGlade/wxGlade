@@ -574,7 +574,7 @@ def fix_statusbar(document):
 
         if fields_count > len(widths_data):
             delta = fields_count - len(widths_data)
-            widths_data += [-1] * delta
+            widths_data += ["-1"] * delta
 
         for pos in range(fields_count):
             field = document.createElement('field')
