@@ -63,6 +63,7 @@
             <fields>
                 <field width="-2"></field>
                 <field width="-1"></field>
+                <field width="-1"></field>
             </fields>
         </object>
         <size>200,200</size>

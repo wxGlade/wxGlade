@@ -44,7 +44,7 @@
       <style>wxTB_TEXT</style>
     </object>
     <object class="wxStatusBar" name="MyStatusBar">
-      <fields>2</fields>
+      <fields>3</fields>
       <widths>-2,-1</widths>
       <style>wxST_SIZEGRIP</style>
     </object>
