@@ -324,7 +324,7 @@ class CPPCodeWriter(BaseLangCodeWriter):
     _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
         'disabled':         "%(objname)sEnable(0);\n",
-        'extraproperties':  "%(objname)sSet%(propname)s(%(value)s);\n",
+        'extraproperties':  "%(objname)sSet%(propname_cap)s(%(value)s);\n",
         'focused':          "%(objname)sSetFocus();\n",
         'foregroundcolour': "%(objname)sSetForegroundColour(%(value)s);\n",
         'hidden':           "%(objname)sHide();\n",

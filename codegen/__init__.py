@@ -81,8 +81,6 @@ class ExtraPropertiesPropertyHandler(DummyPropertyHandler):
     def start_elem(self, name, attrs):
         if name == 'property':
             name = attrs['name']
-            if name and name[0].islower():
-                name = name[0].upper() + name[1:]
             self.prop_name = name
 
     def end_elem(self, name, code_obj):
@@ -1947,13 +1945,16 @@ It is available for wx versions %(supported_versions)s only.""") % {
             return []
         objname = self._get_code_name(obj)
         prop = obj.properties['extraproperties']
+
         ret = []
         for name in sorted(prop):
+            name_cap = name[0].upper() + name[1:]
             stmt = tmpl % {
-                'klass':    obj.klass,
-                'objname':  objname,
+                'klass': obj.klass,
+                'objname': objname,
                 'propname': name,
-                'value':    prop[name],
+                'propname_cap': name_cap,
+                'value': prop[name],
                 }
             ret.append(stmt)
         return ret

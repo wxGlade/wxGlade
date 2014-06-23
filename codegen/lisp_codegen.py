@@ -186,7 +186,7 @@ class LispCodeWriter(BaseLangCodeWriter):
     _code_statements = {
         'backgroundcolour': "(wxWindow_SetBackgroundColour %(objname)s %(value)s)\n",
         'disabled':         "(wxWindow_IsEnabled %(objname)s0)\n",
-        'extraproperties':  "(%(klass)s_Set%(propname)s (slot-%(objname)s obj) %(value)s)\n",
+        'extraproperties':  "(%(klass)s_Set%(propname_cap)s (slot-%(objname)s obj) %(value)s)\n",
         'focused':          "(wxWindow_SetFocus %(objname)s)\n",
         'foregroundcolour': "(wxWindow_SetForegroundColour %(objname)s %(value)s)\n",
         'hidden':           "(wxWindow_Hide %(objname)s)\n",

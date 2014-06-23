@@ -208,7 +208,7 @@ class PerlCodeWriter(BaseLangCodeWriter):
     _code_statements = {
         'backgroundcolour': "%(objname)s->SetBackgroundColour(%(value)s);\n",
         'disabled':         "%(objname)s->Enable(0);\n",
-        'extraproperties':  "%(objname)s->Set%(propname)s(%(value)s);\n",
+        'extraproperties':  "%(objname)s->Set%(propname_cap)s(%(value)s);\n",
         'focused':          "%(objname)s->SetFocus();\n",
         'foregroundcolour': "%(objname)s->SetForegroundColour(%(value)s);\n",
         'hidden':           "%(objname)s->Show(0);\n",
