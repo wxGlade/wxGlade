@@ -25,6 +25,7 @@ Bugs:
   - Prevent code generation from a template file by commandline invocation
   - Fix bug in generation of valid hash keys for Perl
   - Fix various issues during transformation from XRC into wxGlade 
+  - Don't convert first char of a XRC extraproperty to upper case (sf bug #163)
   - ...
 
 Documentation:

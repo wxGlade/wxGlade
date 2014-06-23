@@ -231,7 +231,7 @@ class PythonCodeWriter(BaseLangCodeWriter):
         'backgroundcolour': "%(objname)s.SetBackgroundColour(%(value)s)\n",
         'contentnotfound':  "pass",
         'disabled':         "%(objname)s.Enable(False)\n",
-        'extraproperties':  "%(objname)s.Set%(propname)s(%(value)s)\n",
+        'extraproperties':  "%(objname)s.Set%(propname_cap)s(%(value)s)\n",
         'focused':          "%(objname)s.SetFocus()\n",
         'foregroundcolour': "%(objname)s.SetForegroundColour(%(value)s)\n",
         'hidden':           "%(objname)s.Hide()\n",
