@@ -1037,7 +1037,7 @@ unless(caller){
       <example>
         <title>wxPython code to load and show a XRC resource</title>
 
-        <programlisting language="python" linenumbering="numbered">#!/usr/bin/env python
+        <programlisting language="python" linenumbering="numbered">#!/usr/bin/env python2
 
 import wx
 from wx import xrc
