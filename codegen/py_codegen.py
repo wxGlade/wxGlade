@@ -311,7 +311,7 @@ class %(klass)s(%(cn_wxApp)s):
 # end of class %(klass)s
 
 if __name__ == "__main__":
-%(tab)sgettext.install("%(name)s") # replace with the appropriate catalog name
+%(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name
 
 %(tab)s%(name)s = %(klass)s(0)
 %(tab)s%(name)s.MainLoop()"""
@@ -327,7 +327,7 @@ if __name__ == "__main__":
 
     tmpl_gettext_simple = """\
 if __name__ == "__main__":
-%(tab)sgettext.install("%(name)s") # replace with the appropriate catalog name
+%(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name
 
 %(tab)s%(name)s = %(cn_wxPySimpleApp)s(0)
 %(tab)s%(cn_wxInitAll)s()

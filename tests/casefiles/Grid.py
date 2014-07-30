@@ -54,10 +54,3 @@ class MyFrame(wx.Frame):
         event.Skip()
 
 # end of class MyFrame
-if __name__ == "__main__":
-    app = wx.PySimpleApp(0)
-    wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, wx.ID_ANY, "")
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
-    app.MainLoop()

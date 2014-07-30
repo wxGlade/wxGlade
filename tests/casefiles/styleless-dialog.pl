@@ -109,21 +109,3 @@ sub __do_layout {
 
 1;
 
-1;
-
-package main;
-
-unless(caller){
-        my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-        $local->AddCatalog("app"); # replace with the appropriate catalog name
-
-        local *Wx::App::OnInit = sub{1};
-        my $app = Wx::App->new();
-        Wx::InitAllImageHandlers();
-
-        my $dialog = StylelessDialog->new();
-
-        $app->SetTopWindow($dialog);
-        $dialog->Show(1);
-        $app->MainLoop();
-}

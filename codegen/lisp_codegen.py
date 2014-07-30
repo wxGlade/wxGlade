@@ -272,8 +272,8 @@ class LispCodeWriter(BaseLangCodeWriter):
 %(tab)s%(tab)s(wxWindow_Show (slot-top-window %(top_win)s))))
 ;;; end of class %(klass)s
 
-%(tab)s(setf (textdomain) "%(name)s") ;; replace with the appropriate catalog name
-%(tab)s(defun _ (msgid) (gettext msgid "%(name)s"))
+%(tab)s(setf (textdomain) "%(textdomain)s") ;; replace with the appropriate catalog name
+%(tab)s(defun _ (msgid) (gettext msgid "%(textdomain)s"))
 
 
 (unwind-protect
@@ -294,8 +294,8 @@ class LispCodeWriter(BaseLangCodeWriter):
 
     tmpl_gettext_simple = """\
 (defun init-func (fun data evt)
-%(tab)s(setf (textdomain) "%(name)s") ;; replace with the appropriate catalog name
-%(tab)s(defun _ (msgid) (gettext msgid "%(name)s"))
+%(tab)s(setf (textdomain) "%(textdomain)s") ;; replace with the appropriate catalog name
+%(tab)s(defun _ (msgid) (gettext msgid "%(textdomain)s"))
 
 %(tab)s(let ((%(top_win)s (make-%(top_win_class)s)))
 %(tab)s(ELJApp_SetTopWindow (slot-top-window %(top_win)s))

@@ -42,12 +42,3 @@ class MyFrame(wx.Frame):
         # end wxGlade
 
 # end of class MyFrame
-if __name__ == "__main__":
-    gettext.install("app") # replace with the appropriate catalog name
-
-    app = wx.PySimpleApp(0)
-    wx.InitAllImageHandlers()
-    MyFrame = MyFrame(None, wx.ID_ANY, "")
-    app.SetTopWindow(MyFrame)
-    MyFrame.Show()
-    app.MainLoop()

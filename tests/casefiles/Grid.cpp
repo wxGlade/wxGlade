@@ -73,19 +73,3 @@ void MyFrame::myEVT_GRID_CELL_LEFT_CLICK(wxGridEvent &event)
 
 // wxGlade: add MyFrame event handlers
 
-
-class MyApp: public wxApp {
-public:
-    bool OnInit();
-};
-
-IMPLEMENT_APP(MyApp)
-
-bool MyApp::OnInit()
-{
-    wxInitAllImageHandlers();
-    MyFrame* frame_1 = new MyFrame(NULL, wxID_ANY, wxEmptyString);
-    SetTopWindow(frame_1);
-    frame_1->Show();
-    return true;
-}

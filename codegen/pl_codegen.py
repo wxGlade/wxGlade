@@ -353,7 +353,7 @@ package main;
 
 unless(caller){
 %(tab)smy $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-%(tab)s$local->AddCatalog("%(name)s"); # replace with the appropriate catalog name
+%(tab)s$local->AddCatalog("%(textdomain)s"); # replace with the appropriate catalog name
 
 %(tab)smy $%(name)s = %(klass)s->new();
 %(tab)s$%(name)s->MainLoop();
@@ -385,7 +385,7 @@ package main;
 %(pl_import)s
 unless(caller){
 %(tab)smy $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-%(tab)s$local->AddCatalog("%(name)s"); # replace with the appropriate catalog name
+%(tab)s$local->AddCatalog("%(textdomain)s"); # replace with the appropriate catalog name
 
 %(tab)slocal *Wx::App::OnInit = sub{1};
 %(tab)smy $%(name)s = Wx::App->new();

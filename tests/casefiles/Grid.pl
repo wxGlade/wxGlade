@@ -88,18 +88,3 @@ sub myEVT_GRID_CELL_LEFT_CLICK {
 
 1;
 
-1;
-
-package main;
-
-unless(caller){
-        local *Wx::App::OnInit = sub{1};
-        my $app = Wx::App->new();
-        Wx::InitAllImageHandlers();
-
-        my $frame_1 = MyFrame->new();
-
-        $app->SetTopWindow($frame_1);
-        $frame_1->Show(1);
-        $app->MainLoop();
-}

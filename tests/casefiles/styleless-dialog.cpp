@@ -72,27 +72,3 @@ void StylelessFrame::do_layout()
     // end wxGlade
 }
 
-
-class MyApp: public wxApp {
-public:
-    bool OnInit();
-protected:
-    wxLocale m_locale;  // locale we'll be using
-};
-
-IMPLEMENT_APP(MyApp)
-
-bool MyApp::OnInit()
-{
-    m_locale.Init();
-#ifdef APP_LOCALE_DIR
-    m_locale.AddCatalogLookupPathPrefix(wxT(APP_LOCALE_DIR));
-#endif
-    m_locale.AddCatalog(wxT(APP_CATALOG));
-
-    wxInitAllImageHandlers();
-    StylelessDialog* dialog = new StylelessDialog(NULL, wxID_ANY, wxEmptyString);
-    SetTopWindow(dialog);
-    dialog->Show();
-    return true;
-}
