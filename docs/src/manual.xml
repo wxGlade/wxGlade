@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2014-01-29</date>
+    <date>2014-07-30</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -909,20 +909,139 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
         <title>Automatically created <classname>wxApp</classname>
         instance</title>
 
-        <para>wxGlade is able to extent the created source for by a code
-        sequence to create and start an instance of projects
-        <quote><guilabel>Top window</guilabel></quote>.</para>
+        <para>wxGlade can create an additional code to start an instance of
+        projects <quote><guilabel>Top window</guilabel></quote>.</para>
 
-        <para>In case <quote><guilabel>Name</guilabel></quote> and
-        <quote><guilabel>Class</guilabel></quote> are set, a detailed start
-        code with a derived class of <classname>wxApp</classname> will be
-        created. If just <quote><guilabel>Name</guilabel></quote> is given, a
-        simplified start code will be generated.</para>
+        <para>There are two types of application start code:</para>
 
-        <para>There is a short explanation of
-        <quote><guilabel>Class</guilabel></quote> and
-        <quote><guilabel>Name</guilabel></quote>in <xref
-        linkend="common.properties.section"/>.</para>
+        <itemizedlist>
+          <listitem>
+            <para>simplified application start code</para>
+          </listitem>
+
+          <listitem>
+            <para>detailed application start code</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>The application start code generation is controlled by three
+        properties:</para>
+
+        <orderedlist>
+          <listitem>
+            <para><guilabel>Name</guilabel></para>
+          </listitem>
+
+          <listitem>
+            <para><guilabel>Class</guilabel></para>
+          </listitem>
+
+          <listitem>
+            <para><guilabel>Top window</guilabel></para>
+          </listitem>
+        </orderedlist>
+
+        <para>Those properties are explained in <xref
+        linkend="application.properties.section"/>. Different combinations of
+        those attributes generated different application start code. The table
+        below shows the type of application start code resulting from
+        different combinations of the three properties. The
+        <quote><guilabel>Enable gettext support</guilabel></quote> property
+        just triggers i18n-enabled source code.</para>
+
+        <table>
+          <title>Interaction between properties to generate different types of
+          start code</title>
+
+          <tgroup cols="4">
+            <colspec colnum="4" colwidth="2*"/>
+
+            <thead>
+              <row>
+                <entry align="left"><guilabel>Name</guilabel></entry>
+
+                <entry align="left"><guilabel>Class</guilabel></entry>
+
+                <entry align="left"><guilabel>Top window</guilabel></entry>
+
+                <entry align="left"><guilabel>Type of application start code
+                to generate</guilabel></entry>
+              </row>
+            </thead>
+
+            <tbody>
+              <row>
+                <entry>not selected</entry>
+
+                <entry>not selected</entry>
+
+                <entry>not selected</entry>
+
+                <entry>not generated</entry>
+              </row>
+
+              <row>
+                <entry>selected</entry>
+
+                <entry>not selected</entry>
+
+                <entry>not selected</entry>
+
+                <entry>not generated</entry>
+              </row>
+
+              <row>
+                <entry>not selected</entry>
+
+                <entry>selected</entry>
+
+                <entry>not selected</entry>
+
+                <entry>not generated</entry>
+              </row>
+
+              <row>
+                <entry>selected</entry>
+
+                <entry>selected</entry>
+
+                <entry>not selected</entry>
+
+                <entry>not generated</entry>
+              </row>
+
+              <row>
+                <entry>selected</entry>
+
+                <entry>not selected</entry>
+
+                <entry>selected</entry>
+
+                <entry>simplified start code</entry>
+              </row>
+
+              <row>
+                <entry>not selected</entry>
+
+                <entry>selected</entry>
+
+                <entry>selected</entry>
+
+                <entry>not generated</entry>
+              </row>
+
+              <row>
+                <entry>selected</entry>
+
+                <entry>selected</entry>
+
+                <entry>selected</entry>
+
+                <entry>detailed start code</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
 
         <para>The application start code of a multi-file project will be
         recreated every time the code generation is running.</para>
@@ -1221,7 +1340,7 @@ if __name__ == '__main__':
           <guimenuitem>Show Properties</guimenuitem>
         </menuchoice>.</para>
 
-      <section>
+      <section id="application.properties.section">
         <title>Application Properties</title>
 
         <para>The page <quote><guilabel>Application</guilabel></quote>
@@ -1282,6 +1401,10 @@ if __name__ == '__main__':
               <glossdef>
                 <para>Enable internationalisation and localisation for the
                 generated source files</para>
+
+                <para><xref
+                linkend="automatically.created.wxapp.instance.section"/>
+                provides more information</para>
               </glossdef>
             </glossentry>
 
