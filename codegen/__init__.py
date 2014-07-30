@@ -445,8 +445,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
                              choices_handler})
     @type _property_writers: Dictionary
 
+    @ivar _textdomain: gettext textdomain (see L{_use_gettext})
+    @type _textdomain: String
+
     @ivar _use_gettext: If True, enable gettext support; will be initialised
-                        with L{config.default_use_gettext}
+                        with L{config.default_use_gettext} (see
+                        L{_textdomain})
     @type _use_gettext: Boolean
 
     @ivar _widget_extra_modules: Map of widget class names to a list of extra
@@ -843,6 +847,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
         self._current_extra_code = []
         self._current_extra_modules = {}
         self._overwrite = config.default_overwrite
+        self._textdomain = 'app'
         self._use_gettext = config.default_use_gettext
         self._widget_extra_modules = {}
 
@@ -860,12 +865,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
 
         # application name
         self.app_name = app_attrs.get('name')
-        if not self.app_name:
-            self.app_name = 'app'
-        self.app_filename = '%s.%s' % (
-            self.app_name,
-            self.default_extensions[0],
+        if self.app_name:
+            self.app_filename = '%s.%s' % (
+                self.app_name,
+                self.default_extensions[0],
             )
+            self._textdomain = self.app_name
 
         # file encoding
         try:
@@ -906,7 +911,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
 
         try:
             self.for_version = tuple([int(t) for t in
-                                 app_attrs['for_version'].split('.')[:2]])
+                                      app_attrs['for_version'].split('.')[:2]])
         except (KeyError, ValueError):
             if common.app_tree is not None:
                 self.for_version = common.app_tree.app.for_version
@@ -1109,16 +1114,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
         klass = app_attrs.get('class')
         top_win = app_attrs.get('top_window')
 
-        # do nothing if there is no top window
-        if not top_win:
+        # top window and application name are mandatory
+        if not top_win or not self.app_name:
             return
 
         # check for templates for detailed startup code
         if klass and self._use_gettext:
             if self.tmpl_gettext_detailed:
                 tmpl = self.tmpl_gettext_detailed
-            elif self.tmpl_detailed:
-                tmpl = self.tmpl_detailed
             else:
                 self.warning(
                     _("Skip generating detailed startup code "
@@ -1129,8 +1132,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
         elif klass and not self._use_gettext:
             if self.tmpl_detailed:
                 tmpl = self.tmpl_detailed
-            elif self.tmpl_gettext_detailed:
-                tmpl = self.tmpl_gettext_detailed
             else:
                 self.warning(
                     _("Skip generating detailed startup code "
@@ -1142,8 +1143,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
         elif not klass and self._use_gettext:
             if self.tmpl_gettext_simple:
                 tmpl = self.tmpl_gettext_simple
-            elif self.tmpl_simple:
-                tmpl = self.tmpl_simple
             else:
                 self.warning(
                     _("Skip generating simple startup code "
@@ -1153,8 +1152,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
         elif not klass and not self._use_gettext:
             if self.tmpl_simple:
                 tmpl = self.tmpl_simple
-            elif self.tmpl_gettext_simple:
-                tmpl = self.tmpl_gettext_simple
             else:
                 self.warning(
                     _("Skip generating simple startup code "
@@ -1179,6 +1176,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
             'name': self.app_name,
             'overwrite': self.tmpl_overwrite % {'comment_sign': self.comment_sign},
             'tab': self.tabs(1),
+            'textdomain': self._textdomain,
             'top_win_class': top_win_class,
             'top_win': top_win,
             }

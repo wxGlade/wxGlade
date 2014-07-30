@@ -40,10 +40,3 @@ class MyDialog(wx.Dialog):
         # end wxGlade
 
 # end of class MyDialog
-if __name__ == "__main__":
-    app = wx.PySimpleApp(0)
-    wx.InitAllImageHandlers()
-    dialog_1 = MyDialog(None, wx.ID_ANY, "")
-    app.SetTopWindow(dialog_1)
-    dialog_1.Show()
-    app.MainLoop()

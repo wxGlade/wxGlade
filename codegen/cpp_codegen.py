@@ -409,7 +409,7 @@ class CPPCodeWriter(BaseLangCodeWriter):
 #include "wx/intl.h"
 
 #ifndef APP_CATALOG
-#define APP_CATALOG "%(name)s"  // replace with the appropriate catalog name
+#define APP_CATALOG "%(textdomain)s"  // replace with the appropriate catalog name
 #endif
 
 """
@@ -541,9 +541,9 @@ bool MyApp::OnInit()
             ]
 
         # include i18n / gettext
-        if self._use_gettext:
+        if self._use_gettext and self._textdomain:
             self.header_lines.append(
-                self.tmpl_init_gettext % {'name': self.app_name}
+                self.tmpl_init_gettext % {'textdomain': self._textdomain}
                 )
 
         # extra lines to generate (see the 'extracode' property of top-level
