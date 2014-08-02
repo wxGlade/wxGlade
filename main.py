@@ -696,9 +696,14 @@ class wxGladeFrame(wx.Frame):
                 error_msg = _("Error loading file %s: %s") % \
                     (misc.wxstr(infilename), misc.wxstr(msg))
             except Exception, inst:
-                fn = os.path.basename(infilename).encode('ascii', 'replace')
+                if not is_filelike:
+                    fn = os.path.basename(infilename).encode('ascii',
+                                                             'replace')
+                    msg = _('loading file "%s"') % fn
+                else:
+                    msg = _('loading from a file-like object')
                 dialog = bugdialog.BugReport()
-                dialog.SetContent(_('loading file "%s"') % fn, inst)
+                dialog.SetContent(msg, inst)
                 dialog.ShowModal()
         finally:
             if infile and not is_filelike:
