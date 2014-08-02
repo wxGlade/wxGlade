@@ -4,7 +4,7 @@ Create a test suites and run all tests
 
 @see: L{wxglade.tests}
 
-@copyright: 2012 Carsten Grohmann
+@copyright: 2012-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,6 +12,7 @@ Create a test suites and run all tests
 import gettext
 import imp
 import os
+import sys
 import unittest
 from optparse import OptionParser
 
@@ -33,6 +34,19 @@ def run_tests(gui_tests=False):
     if '__init__.py' in modules:
         modules.remove('__init__.py')
 
+    # select proper wxversion
+    if gui_tests:
+        # import proper wx-module using wxversion
+        if not hasattr(sys, "frozen") and 'wx' not in sys.modules:
+            try:
+                import wxversion
+                # Currently we use wxPython 2.8 only
+                wxversion.select('2.8')
+                #wxversion.ensureMinimal('2.8')
+            except ImportError:
+                print _('Please install missing python module "wxversion".')
+                sys.exit(1)
+
     # try to import all files as modules
     for module_name in modules:
         if (not module_name.endswith('.py')) or \
@@ -49,7 +63,7 @@ def run_tests(gui_tests=False):
             if fp:
                 fp.close()
 
-        # search all testcases in the loaded module
+        # search all test cases in the loaded module
         suites.append(unittest.findTestCases(module))
 
     # summarise all suites and run tests
