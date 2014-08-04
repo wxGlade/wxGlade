@@ -35,11 +35,7 @@ class CppCheckBoxGenerator(wcodegen.CppWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditCheckBox'] = 'wxCheckBox'
-
-    pygen = common.code_writers.get("python")
-    if pygen:
-        pygen.add_widget_handler('wxCheckBox', PythonCheckBoxGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxCheckBox', CppCheckBoxGenerator())
+    klass = 'wxCheckBox'
+    common.class_names['EditCheckBox'] = klass
+    common.register('python', klass, PythonCheckBoxGenerator(klass))
+    common.register('C++', klass, CppCheckBoxGenerator(klass))

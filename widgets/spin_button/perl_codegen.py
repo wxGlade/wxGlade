@@ -18,8 +18,6 @@ class PerlSpinButtonGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditSpinButton'] = 'wxSpinButton'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxSpinButton', PerlSpinButtonGenerator())
+    klass = 'wxSpinButton'
+    common.class_names['EditSpinButton'] = klass
+    common.register('perl', klass, PerlSpinButtonGenerator(klass))

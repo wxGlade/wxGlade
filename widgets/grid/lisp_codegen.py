@@ -1,12 +1,13 @@
-# lisp_codegen.py : lisp generator functions for wxGrid objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:59:42 efuzzyone Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Lisp generator functions for wxGrid objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 from codegen import ColsCodeHandler, _check_label
+
 
 class LispCodeGenerator:
 #    import_modules = ['use Wx::Grid;\n']
@@ -92,10 +93,9 @@ class LispCodeGenerator:
 
 # end of class LispCodeGenerator
 
-def initialize():
-    common.class_names['EditGrid'] = 'wxGrid'
 
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxGrid', LispCodeGenerator())
-        plgen.add_property_handler('columns', ColsCodeHandler)
+def initialize():
+    klass = 'wxGrid'
+    common.class_names['EditGrid'] = klass
+    common.register('lisp', klass, LispCodeGenerator(),
+                    'columns', ColsCodeHandler)

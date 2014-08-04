@@ -2,7 +2,7 @@
 Code generator functions for wxButton objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2013 Carsten Grohmann
+@copyright: 2013-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -87,13 +87,8 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditButton'] = 'wxButton'
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxButton', PythonButtonGenerator())
-    xrcgen = common.code_writers.get("XRC")
-    if xrcgen:
-        xrcgen.add_widget_handler('wxButton', xrc_code_generator)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxButton', CppButtonGenerator())
+    klass = 'wxButton'
+    common.class_names['EditButton'] = klass
+    common.register('python', klass, PythonButtonGenerator(klass))
+    common.register('C++', klass, CppButtonGenerator(klass))
+    common.register('XRC', klass, xrc_code_generator)

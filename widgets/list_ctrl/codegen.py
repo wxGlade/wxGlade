@@ -29,11 +29,7 @@ class CppListCtrlGenerator(wcodegen.CppWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditListCtrl'] = 'wxListCtrl'
-
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxListCtrl', PythonListCtrlGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxListCtrl', CppListCtrlGenerator())
+    klass = 'wxListCtrl'
+    common.class_names['EditListCtrl'] = klass
+    common.register('python', klass, PythonListCtrlGenerator(klass))
+    common.register('C++', klass, CppListCtrlGenerator(klass))

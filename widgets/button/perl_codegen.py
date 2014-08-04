@@ -34,8 +34,6 @@ class PerlButtonGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditButton'] = 'wxButton'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxButton', PerlButtonGenerator())
+    klass = 'wxButton'
+    common.class_names['EditButton'] = klass
+    common.register('perl', klass, PerlButtonGenerator(klass))

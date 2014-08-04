@@ -54,13 +54,8 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditDatePickerCtrl'] = 'wxDatePickerCtrl'
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxDatePickerCtrl', PythonDatePickerCtrlGenerator())
-    xrcgen = common.code_writers.get("XRC")
-    if xrcgen:
-        xrcgen.add_widget_handler('wxDatePickerCtrl', xrc_code_generator)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxDatePickerCtrl', CppDatePickerCtrlGenerator())
+    klass = 'wxDatePickerCtrl'
+    common.class_names['EditDatePickerCtrl'] = klass
+    common.register('python', klass, PythonDatePickerCtrlGenerator(klass))
+    common.register('C++', klass, CppDatePickerCtrlGenerator(klass))
+    common.register('XRC', klass, xrc_code_generator)

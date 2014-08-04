@@ -25,8 +25,6 @@ class LispGaugeGenerator(wcodegen.LispWidgetCodeWriter):
 # end of class LispGaugeGenerator
 
 def initialize():
-    common.class_names['EditGauge'] = 'wxGauge'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxGauge', LispGaugeGenerator())
+    klass = 'wxGauge'
+    common.class_names['EditGauge'] = klass
+    common.register('lisp', klass, LispGaugeGenerator(klass))

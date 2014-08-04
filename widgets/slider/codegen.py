@@ -77,14 +77,8 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditSlider'] = 'wxSlider'
-
-    pygen = common.code_writers.get("python")
-    if pygen:
-        pygen.add_widget_handler('wxSlider', PythonSliderGenerator())
-    xrcgen = common.code_writers.get("XRC")
-    if xrcgen:
-        xrcgen.add_widget_handler('wxSlider', xrc_code_generator)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxSlider', CppSliderGenerator())
+    klass = 'wxSlider'
+    common.class_names['EditSlider'] = klass
+    common.register('python', klass, PythonSliderGenerator(klass))
+    common.register('C++', klass, CppSliderGenerator(klass))
+    common.register('XRC', klass, xrc_code_generator)

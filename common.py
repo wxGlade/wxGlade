@@ -522,6 +522,30 @@ def is_valid_zip(filename, module_name):
     return True
 
 
+def register(lang, klass_name, code_writer, property_name=None,
+             property_handler=None, widget_name=None):
+    """\
+    Initialise and register widget code generator instance. The property
+    handler will registered additionally.
+
+    @param lang:             Code code_writer language
+    @param klass_name:       wxWidget class name
+    @param code_writer:      Code generator class
+    @param property_name:    Property name
+    @param property_handler: Property handler
+    @param widget_name:      Widget name
+
+    @see: L{codegen.BaseLangCodeWriter.add_widget_handler()}
+    @see: L{codegen.BaseLangCodeWriter.add_property_handler()}
+    """
+    codegen = code_writers[lang]
+    if codegen:
+        codegen.add_widget_handler(klass_name, code_writer)
+        if property_name and property_handler:
+            codegen.add_property_handler(property_name, property_handler,
+                                         widget_name)
+
+
 def load_sizers():
     """\
     Load and initialise the sizer support modules.

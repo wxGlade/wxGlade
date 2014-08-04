@@ -1,4 +1,4 @@
-"""
+"""\
 Perl generator functions for wxNotebook objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
@@ -9,7 +9,7 @@ import common
 from codegen import TabsCodeHandler
 
 
-class PerlCodeGenerator:
+class PerlNotebookGenerator:
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'
     ]
@@ -75,16 +75,14 @@ class PerlCodeGenerator:
         props_buf.extend(plgen.generate_common_properties(obj))
         return props_buf
 
-# end of class PerlCodeGenerator
+# end of class PerlNotebookGenerator
 
 
 def initialize():
-    common.class_names['EditNotebook'] = 'wxNotebook'
+    klass = 'wxNotebook'
+    common.class_names['EditNotebook'] = klass
     common.class_names['NotebookPane'] = 'wxPanel'
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxNotebook', PerlCodeGenerator())
-        plgen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
+    common.register('perl', klass, PerlNotebookGenerator(),
+                    'tabs', TabsCodeHandler, klass)

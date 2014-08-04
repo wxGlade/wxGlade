@@ -40,14 +40,8 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditStaticLine'] = 'wxStaticLine'
-
-    pygen = common.code_writers.get("python")
-    if pygen:
-        pygen.add_widget_handler('wxStaticLine', PythonStaticLineGenerator())
-    cppgen = common.code_writers.get("C++")
-    if cppgen:
-        cppgen.add_widget_handler('wxStaticLine', CppStaticLineGenerator())
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('wxStaticLine', xrc_code_generator)
+    klass = 'wxStaticLine'
+    common.class_names['EditStaticLine'] = klass
+    common.register('python', klass, PythonStaticLineGenerator(klass))
+    common.register('C++', klass, CppStaticLineGenerator(klass))
+    common.register('XRC', klass, xrc_code_generator)

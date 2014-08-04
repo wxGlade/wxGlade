@@ -24,8 +24,6 @@ class LispRadioButtonGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditRadioButton'] = 'wxRadioButton'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxRadioButton', LispRadioButtonGenerator())
+    klass = 'wxRadioButton'
+    common.class_names['EditRadioButton'] = klass
+    common.register('lisp', klass, LispRadioButtonGenerator(klass))

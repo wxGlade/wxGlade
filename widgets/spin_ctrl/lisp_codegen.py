@@ -33,8 +33,6 @@ class LispSpinCtrlGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditSpinCtrl'] = 'wxSpinCtrl'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxSpinCtrl', LispSpinCtrlGenerator())
+    klass = 'wxSpinCtrl'
+    common.class_names['EditSpinCtrl'] = klass
+    common.register('lisp', klass, LispSpinCtrlGenerator(klass))

@@ -1,9 +1,10 @@
-# perl_codegen.py : perl generator functions for wxBitmapButton objects
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Perl generator functions for wxBitmapButton objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 
@@ -18,7 +19,8 @@ _bmp_str_types = {
     '.pcx' : 'wxBITMAP_TYPE_PCX'
     }
 
-class PerlCodeGenerator:
+
+class PerlBitmapButtonGenerator:
     def get_code(self, obj):
         plgen = common.code_writers['perl']
         prop = obj.properties
@@ -89,13 +91,10 @@ class PerlCodeGenerator:
             props_buf.append('$self->{%s}->SetDefault();\n' % obj.name)
         return init, props_buf, []
 
-# end of class PerlCodeGenerator
-
+# end of class PerlBitmapButtonGenerator
 
 
 def initialize():
-    common.class_names['EditBitmapButton'] = 'wxBitmapButton'
-    plgen = common.code_writers.get('perl')
-
-    if plgen:
-        plgen.add_widget_handler('wxBitmapButton', PerlCodeGenerator())
+    klass = 'wxBitmapButton'
+    common.class_names['EditBitmapButton'] = klass
+    common.register('perl', klass, PerlBitmapButtonGenerator())

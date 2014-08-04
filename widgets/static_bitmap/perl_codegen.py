@@ -41,8 +41,6 @@ class PerlStaticBitmapGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditStaticBitmap'] = 'wxStaticBitmap'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxStaticBitmap', PerlStaticBitmapGenerator())
+    klass = 'wxStaticBitmap'
+    common.class_names['EditStaticBitmap'] = klass
+    common.register('perl', klass, PerlStaticBitmapGenerator(klass))

@@ -31,12 +31,7 @@ class CppSpacerGenerator(wcodegen.CppWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditSpacer'] = 'spacer'
-
-    # python code generation functions
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('spacer', PythonSpacerGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('spacer', CppSpacerGenerator())
+    klass = 'spacer'
+    common.class_names['EditSpacer'] = klass
+    common.register('python', klass, PythonSpacerGenerator(klass))
+    common.register('C++', klass, CppSpacerGenerator(klass))

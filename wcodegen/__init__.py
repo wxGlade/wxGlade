@@ -64,6 +64,13 @@ class BaseWidgetCodeWriter(BaseCodeWriterBase):
     @type: List of strings
     """
 
+    klass = None
+    """\
+    wxWidgets class name
+
+    @type: String or None
+    """
+
     supported_by = ()
     """\
     This widget is only available at the listed wx versions. An empty list
@@ -210,9 +217,11 @@ class BaseWidgetCodeWriter(BaseCodeWriterBase):
     @see: L{prefix_style}
     """
 
-    def __init__(self):
+    def __init__(self, klass=None):
         # call inherited constructor
         BaseCodeWriterBase.__init__(self)
+        if klass:
+            self.klass = klass
         self.codegen = common.code_writers[self.language]
         self._reset_vars()
 

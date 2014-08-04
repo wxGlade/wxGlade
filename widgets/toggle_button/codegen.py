@@ -26,14 +26,7 @@ class CppToggleButtonGenerator(wcodegen.CppWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditToggleButton'] = 'wxToggleButton'
-
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler(
-            'wxToggleButton',
-            PythonToggleButtonGenerator()
-        )
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxToggleButton', CppToggleButtonGenerator())
+    klass = 'wxToggleButton'
+    common.class_names['EditToggleButton'] = klass
+    common.register('python', klass, PythonToggleButtonGenerator(klass))
+    common.register('C++', klass, CppToggleButtonGenerator(klass))

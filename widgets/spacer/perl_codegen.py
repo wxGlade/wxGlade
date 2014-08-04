@@ -21,8 +21,6 @@ class PerlSpacerGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditSpacer'] = 'spacer'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('spacer', PerlSpacerGenerator())
+    klass = 'spacer'
+    common.class_names['EditSpacer'] = klass
+    common.register('perl', klass, PerlSpacerGenerator(klass))

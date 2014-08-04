@@ -9,7 +9,7 @@ import common
 import wcodegen
 from MenuTree import *
 
-class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
+class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
         
@@ -138,7 +138,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             out.extend(do_get(menu.root))
         return out
 
-# end of class PythonCodeGenerator
+# end of class PythonMenubarGenerator
 
 
 class MenuHandler:
@@ -254,7 +254,7 @@ def xrc_code_generator(obj):
     return MenuBarXrcObject(obj)
 
 
-class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
+class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
     constructor = []
 
     def get_code(self, obj):
@@ -364,22 +364,16 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
             out.extend(do_get(menu.root))
         return out
 
-# end of class CppCodeGenerator
+# end of class CppMenubarGenerator
 
 
 def initialize():
-    common.class_names['EditMenuBar'] = 'wxMenuBar'
+    klass = 'wxMenuBar'
+    common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxMenuBar', PythonCodeGenerator())
-        pygen.add_property_handler('menus', MenuHandler)
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('wxMenuBar', xrc_code_generator)
-        xrcgen.add_property_handler('menus', MenuHandler)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxMenuBar', CppCodeGenerator())
-        cppgen.add_property_handler('menus', MenuHandler)
+    common.register('python', klass, PythonMenubarGenerator(klass),
+                    'menus', MenuHandler)
+    common.register('C++', klass, CppMenubarGenerator(klass),
+                    'menus', MenuHandler)
+    common.register('XRC', klass, xrc_code_generator,
+                    'menus', MenuHandler)

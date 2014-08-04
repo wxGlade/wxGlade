@@ -1,16 +1,17 @@
-# perl_codegen.py : perl generator functions for CustomWidget objects
-# $Id: perl_codegen.py,v 1.4 2004/09/17 13:09:53 agriggio Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Perl generator functions for CustomWidget objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 
 import common
 from codegen import ArgumentsCodeHandler, _fix_arguments
 
 
-class PerlCodeGenerator:
+class PerlCustomWidgetGenerator:
     def get_code(self, widget):
         init = []
         plgen = common.code_writers['perl']
@@ -37,13 +38,11 @@ class PerlCodeGenerator:
 
         return init, props_buf, []
 
-# end of class PerlCodeGenerator
+# end of class PerlCustomWidgetGenerator
+
 
 def initialize():
-    common.class_names['CustomWidget'] = 'CustomWidget'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('CustomWidget', PerlCodeGenerator())
-        plgen.add_property_handler('arguments', ArgumentsCodeHandler,
-                                    'CustomWidget')
+    klass = 'CustomWidget'
+    common.class_names[klass] = klass
+    common.register('perl', klass, PerlCustomWidgetGenerator(),
+                    'arguments', ArgumentsCodeHandler, klass)

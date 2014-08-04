@@ -49,15 +49,8 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditRadioButton'] = 'wxRadioButton'
-
-    # python code generation functions
-    pygen = common.code_writers.get("python")
-    if pygen:
-        pygen.add_widget_handler('wxRadioButton', PythonRadioButtonGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxRadioButton', CppRadioButtonGenerator())
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('wxRadioButton', xrc_code_generator)
+    klass = 'wxRadioButton'
+    common.class_names['EditRadioButton'] = klass
+    common.register('python', klass, PythonRadioButtonGenerator(klass))
+    common.register('C++', klass, CppRadioButtonGenerator(klass))
+    common.register('XRC', klass, xrc_code_generator)

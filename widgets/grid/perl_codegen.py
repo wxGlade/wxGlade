@@ -1,12 +1,13 @@
-# perl_codegen.py : perl generator functions for wxGrid objects
-# $Id: perl_codegen.py,v 1.7 2005/08/15 07:38:56 crazyinsomniac Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Perl generator functions for wxGrid objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 from codegen import ColsCodeHandler, _check_label
+
 
 class PerlCodeGenerator:
     import_modules = ['use Wx::Grid;\n']
@@ -97,10 +98,9 @@ class PerlCodeGenerator:
 
 # end of class PerlCodeGenerator
 
-def initialize():
-    common.class_names['EditGrid'] = 'wxGrid'
 
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxGrid', PerlCodeGenerator())
-        plgen.add_property_handler('columns', ColsCodeHandler)
+def initialize():
+    klass = 'wxGrid'
+    common.class_names['EditGrid'] = klass
+    common.register('perl', klass, PerlCodeGenerator(),
+                    'columns', ColsCodeHandler)

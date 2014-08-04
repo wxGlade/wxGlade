@@ -1,23 +1,21 @@
-# perl_codegen.py : perl generator functions for wxMenuBar objects
-# $Id: perl_codegen.py,v 1.11 2005/08/15 08:03:02 crazyinsomniac Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Perl generator functions for wxToolBar objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 
 import common
 from tool import *
 
-# yay
 from codegen import ToolsHandler
-
 
 
 class PerlCodeGenerator:
     def get_properties_code(self, obj):
         prop = obj.properties
-        plgen = common.code_writers['perl']
         out = []
         append = out.append
         
@@ -56,7 +54,6 @@ class PerlCodeGenerator:
 
 
     def get_init_code(self, obj):
-        prop = obj.properties
         plgen = common.code_writers['perl']
         out = []
         append = out.append
@@ -100,7 +97,6 @@ class PerlCodeGenerator:
                     kind = 'wxITEM_NORMAL'
                 bmp1 = _get_bitmap(tool.bitmap1)
                 bmp2 = _get_bitmap(tool.bitmap2)
-#                append('%s->AddLabelTool(%s, %s, %s, %s, %s, %s, %s);\n' %
                 append('%s->AddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
                        (obj_name, id, plgen.quote_str(tool.label),
                         bmp1, bmp2, kind, plgen.quote_str(tool.short_help),
@@ -111,9 +107,8 @@ class PerlCodeGenerator:
 
     def get_code(self, obj):
         """\
-        function that generates Perl code for the menubar of a wxFrame.
+        function that generates Perl code for the toolbar of a wxFrame.
         """
-        plgen = common.code_writers['perl']
         style = obj.properties.get('style')
         if style:
             style = 'wxTB_HORIZONTAL|' + style
@@ -138,12 +133,10 @@ wxDefaultSize, %s);\n' % (obj.name, klass, style),
 
 # end of class PerlCodeGenerator
 
+
 def initialize():
-    common.class_names['EditToolBar'] = 'wxToolBar'
+    klass = 'wxToolBar'
+    common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-
-    plgen = common.code_writers.get('perl')
-
-    if plgen:
-        plgen.add_widget_handler('wxToolBar', PerlCodeGenerator())
-        plgen.add_property_handler('tools', ToolsHandler)
+    common.register('perl', klass, PerlCodeGenerator(),
+                    'tools', ToolsHandler)

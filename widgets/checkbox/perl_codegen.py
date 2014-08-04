@@ -11,7 +11,7 @@ import common
 import wcodegen
 
 
-class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
+class PerlCheckBoxGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
            '%(label)s%(style)s);\n'
 
@@ -20,12 +20,10 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         self.has_setvalue1 = obj.properties.get('checked', False)
         return
 
-# end of class PerlCodeGenerator
+# end of class PerlCheckBoxGenerator
 
 
 def initialize():
-    common.class_names['EditCheckBox'] = 'wxCheckBox'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxCheckBox', PerlCodeGenerator())
+    klass = 'wxCheckBox'
+    common.class_names['EditCheckBox'] = klass
+    common.register('perl', klass, PerlCheckBoxGenerator(klass))

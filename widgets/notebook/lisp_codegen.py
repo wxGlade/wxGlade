@@ -1,4 +1,4 @@
-"""
+"""\
 Lisp generator functions for wxNotebook objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
@@ -9,7 +9,7 @@ import common
 from codegen import TabsCodeHandler
 
 
-class LispCodeGenerator:
+class LispNotebookGenerator:
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'
     ]
@@ -88,16 +88,15 @@ class LispCodeGenerator:
         props_buf.extend(codegen.generate_common_properties(obj))
         return props_buf
 
-# end of class LispCodeGenerator
+# end of class LispNotebookGenerator
 
 
 def initialize():
-    common.class_names['EditNotebook'] = 'wxNotebook'
+    klass = 'wxNotebook'
+    common.class_names['EditNotebook'] = klass
     common.class_names['NotebookPane'] = 'wxPanel'
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
 
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxNotebook', LispCodeGenerator())
-        codegen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
+    common.register('lisp', klass, LispNotebookGenerator(),
+                    'tabs', TabsCodeHandler, klass)

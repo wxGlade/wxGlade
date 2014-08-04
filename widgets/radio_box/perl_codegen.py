@@ -11,7 +11,7 @@ import wcodegen
 from ChoicesCodeHandler import *
 
 
-class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
+class PerlRadioBoxGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s, ' \
            'wxDefaultPosition, wxDefaultSize, [%(choices)s], ' \
            '%(majorDimension)s, %(style)s);\n'
@@ -25,13 +25,11 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         self.tmpl_dict['majorDimension'] = obj.properties.get('dimension', '1')
         return
 
-# end of class PerlCodeGenerator
+# end of class PerlRadioBoxGenerator
 
 
 def initialize():
-    common.class_names['EditRadioBox'] = 'wxRadioBox'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxRadioBox', PerlCodeGenerator())
-        plgen.add_property_handler('choices', ChoicesCodeHandler)
+    klass = 'wxRadioBox'
+    common.class_names['EditRadioBox'] = klass
+    common.register('perl', klass, PerlRadioBoxGenerator(klass),
+                    'choices', ChoicesCodeHandler)

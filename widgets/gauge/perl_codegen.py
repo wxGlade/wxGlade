@@ -25,8 +25,6 @@ class PerlGaugeGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditGauge'] = 'wxGauge'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxGauge', PerlGaugeGenerator())
+    klass = 'wxGauge'
+    common.class_names['EditGauge'] = klass
+    common.register('perl', klass, PerlGaugeGenerator(klass))

@@ -50,17 +50,11 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditListBox'] = 'wxListBox'
-
-    pygen = common.code_writers.get("python")
-    if pygen:
-        pygen.add_widget_handler('wxListBox', PythonListBoxGenerator())
-        pygen.add_property_handler('choices', ChoicesCodeHandler)
-    xrcgen = common.code_writers.get("XRC")
-    if xrcgen:
-        xrcgen.add_widget_handler('wxListBox', xrc_code_generator)
-        xrcgen.add_property_handler('choices', ChoicesCodeHandler)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxListBox', CppListBoxGenerator())
-        cppgen.add_property_handler('choices', ChoicesCodeHandler)
+    klass = 'wxListBox'
+    common.class_names['EditListBox'] = klass
+    common.register('python', klass, PythonListBoxGenerator(klass),
+                    'choices', ChoicesCodeHandler)
+    common.register('C++', klass, CppListBoxGenerator(klass),
+                    'choices', ChoicesCodeHandler)
+    common.register('XRC', klass, xrc_code_generator,
+                    'choices', ChoicesCodeHandler)

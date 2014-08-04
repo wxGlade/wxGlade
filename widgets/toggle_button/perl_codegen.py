@@ -18,8 +18,6 @@ class PerlToggleButtonGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditToggleButton'] = 'wxToggleButton'
-    plgen = common.code_writers.get('perl')
-
-    if plgen:
-        plgen.add_widget_handler('wxToggleButton', PerlToggleButtonGenerator())
+    klass = 'wxToggleButton'
+    common.class_names['EditToggleButton'] = klass
+    common.register('perl', klass, PerlToggleButtonGenerator(klass))

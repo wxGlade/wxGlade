@@ -31,8 +31,6 @@ class LispSliderGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditSlider'] = 'wxSlider'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxSlider', LispSliderGenerator())
+    klass = 'wxSlider'
+    common.class_names['EditSlider'] = klass
+    common.register('lisp', klass, LispSliderGenerator(klass))

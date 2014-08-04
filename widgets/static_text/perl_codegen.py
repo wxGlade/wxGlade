@@ -18,9 +18,6 @@ class PerlStaticTextGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-
-    common.class_names['EditStaticText'] = 'wxStaticText'
-    plgen = common.code_writers.get('perl')
-
-    if plgen:
-        plgen.add_widget_handler('wxStaticText', PerlStaticTextGenerator())
+    klass = 'wxStaticText'
+    common.class_names['EditStaticText'] = klass
+    common.register('perl', klass, PerlStaticTextGenerator(klass))

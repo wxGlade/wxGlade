@@ -16,19 +16,15 @@ class PythonTextCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 # end of class PythonTextCtrlGenerator
 
 
-class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
+class CppTextCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
            '%(value)s%(style)s);\n'
 
-# end of class CppCodeGenerator
+# end of class CppTextCtrlGenerator
 
 
 def initialize():
-    common.class_names['EditTextCtrl'] = 'wxTextCtrl'
-
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxTextCtrl', PythonTextCtrlGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxTextCtrl', CppCodeGenerator())
+    klass = 'wxTextCtrl'
+    common.class_names['EditTextCtrl'] = klass
+    common.register('python', klass, PythonTextCtrlGenerator(klass))
+    common.register('C++', klass, CppTextCtrlGenerator(klass))

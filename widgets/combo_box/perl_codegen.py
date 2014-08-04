@@ -25,9 +25,7 @@ class PerlComboBoxGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditComboBox'] = 'wxComboBox'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxComboBox', PerlComboBoxGenerator())
-        plgen.add_property_handler('choices', ChoicesCodeHandler)
+    klass = 'wxComboBox'
+    common.class_names['EditComboBox'] = klass
+    common.register('perl', klass, PerlComboBoxGenerator(klass),
+                    'choices', ChoicesCodeHandler)

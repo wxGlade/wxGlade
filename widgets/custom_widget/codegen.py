@@ -44,7 +44,7 @@ def _fix_arguments(arguments, parent, id, size):
     return arguments
 
 
-class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
+class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, widget):
         if widget.preview and widget.klass not in widget.parser.class_names:
             # if this CustomWidget refers to another class in the same wxg
@@ -105,10 +105,10 @@ def self_%s_on_paint(event):
                (widget.name, widget.name))
         return init, [], []
 
-# end of class PythonCodeGenerator
+# end of class PythonCustomWidgetGenerator
 
 
-class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
+class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
     def get_code(self, widget):
         cppgen = common.code_writers['C++']
         prop = widget.properties
@@ -129,7 +129,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         props_buf = cppgen.generate_common_properties(widget)
         return init, ids, props_buf, []
 
-# end of class CppCodeGenerator
+# end of class CppCustomWidgetGenerator
 
 
 def xrc_code_generator(obj):
@@ -163,21 +163,11 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['CustomWidget'] = 'CustomWidget'
-
-    # python code generation functions
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('CustomWidget', PythonCodeGenerator())
-        pygen.add_property_handler('arguments', ArgumentsCodeHandler,
-                                   'CustomWidget')
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('CustomWidget', CppCodeGenerator())
-        cppgen.add_property_handler('arguments', ArgumentsCodeHandler,
-                                    'CustomWidget')
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('CustomWidget', xrc_code_generator)
-        xrcgen.add_property_handler('arguments', ArgumentsCodeHandler,
-                                    'CustomWidget')
+    klass = 'CustomWidget'
+    common.class_names[klass] = klass
+    common.register('python', klass, PythonCustomWidgetGenerator(klass),
+                    'arguments', ArgumentsCodeHandler, klass)
+    common.register('C++', klass, CppCustomWidgetGenerator(klass),
+                    'arguments', ArgumentsCodeHandler, klass)
+    common.register('XRC', klass, xrc_code_generator,
+                    'arguments', ArgumentsCodeHandler, klass)

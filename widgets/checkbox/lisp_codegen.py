@@ -24,8 +24,6 @@ class LispCheckBoxGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditCheckBox'] = 'wxCheckBox'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxCheckBox', LispCheckBoxGenerator())
+    klass = 'wxCheckBox'
+    common.class_names['EditCheckBox'] = klass
+    common.register('lisp', klass, LispCheckBoxGenerator(klass))

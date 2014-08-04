@@ -19,8 +19,6 @@ class LispToggleButtonGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditToggleButton'] = 'wxToggleButton'
-    plgen = common.code_writers.get('lisp')
-
-    if plgen:
-        plgen.add_widget_handler('wxToggleButton', LispToggleButtonGenerator())
+    klass = 'wxToggleButton'
+    common.class_names['EditToggleButton'] = klass
+    common.register('lisp', klass, LispToggleButtonGenerator(klass))

@@ -35,8 +35,6 @@ class PerlSpinCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditSpinCtrl'] = 'wxSpinCtrl'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxSpinCtrl', PerlSpinCtrlGenerator())
+    klass = 'wxSpinCtrl'
+    common.class_names['EditSpinCtrl'] = klass
+    common.register('perl', klass, PerlSpinCtrlGenerator(klass))

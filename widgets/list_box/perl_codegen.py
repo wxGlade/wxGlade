@@ -21,9 +21,6 @@ class PerlListBoxGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditListBox'] = 'wxListBox'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxListBox', PerlListBoxGenerator())
-        plgen.add_property_handler('choices', ChoicesCodeHandler)
+    klass = 'wxListBox'
+    common.class_names['EditListBox'] = klass
+    common.register('perl', klass, PerlListBoxGenerator(klass))

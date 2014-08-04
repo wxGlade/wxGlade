@@ -19,8 +19,6 @@ class LispSpinButtonGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditSpinButton'] = 'wxSpinButton'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxSpinButton', LispSpinButtonGenerator())
+    klass = 'wxSpinButton'
+    common.class_names['EditSpinButton'] = klass
+    common.register('lisp', klass, LispSpinButtonGenerator(klass))

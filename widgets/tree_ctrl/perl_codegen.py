@@ -18,8 +18,6 @@ class PerlTreeCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditTreeCtrl'] = 'wxTreeCtrl'
-    plgen = common.code_writers.get('perl')
-
-    if plgen:
-        plgen.add_widget_handler('wxTreeCtrl', PerlTreeCtrlGenerator())
+    klass = 'wxTreeCtrl'
+    common.class_names['EditTreeCtrl'] = klass
+    common.register('perl', klass, PerlTreeCtrlGenerator(klass))

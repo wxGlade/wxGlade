@@ -1,12 +1,13 @@
 """
 Code generator functions for wxGrid objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
+
 
 class ColsCodeHandler:
     def __init__(self):
@@ -266,15 +267,10 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditGrid'] = 'wxGrid'
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_property_handler('columns', ColsCodeHandler, 'wxGrid')
-        pygen.add_widget_handler('wxGrid', PythonCodeGenerator())
-    xrcgen = common.code_writers.get("XRC")
-    if xrcgen:
-        xrcgen.add_widget_handler('wxGrid', xrc_code_generator)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_property_handler('columns', ColsCodeHandler, 'wxGrid')
-        cppgen.add_widget_handler('wxGrid', CppCodeGenerator())
+    klass = 'wxGrid'
+    common.class_names['EditGrid'] = klass
+    common.register('python', klass, PythonCodeGenerator(klass),
+                    'columns', ColsCodeHandler, klass)
+    common.register('C++', klass, CppCodeGenerator(klass),
+                    'columns', ColsCodeHandler, klass)
+    common.register('XRC', klass, xrc_code_generator)

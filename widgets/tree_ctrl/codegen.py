@@ -17,20 +17,16 @@ class PythonTreeCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 # end of class PythonTreeCtrlGenerator
 
 
-class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
+class CppTreeCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     extra_headers = ['<wx/treectrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
     default_style = 'wxTR_HAS_BUTTONS'
 
-# end of class CppCodeGenerator
+# end of class CppTreeCtrlGenerator
 
 
 def initialize():
-    common.class_names['EditTreeCtrl'] = 'wxTreeCtrl'
-
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxTreeCtrl', PythonTreeCtrlGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxTreeCtrl', CppCodeGenerator())
+    klass = 'wxTreeCtrl'
+    common.class_names['EditTreeCtrl'] = klass
+    common.register('python', klass, PythonTreeCtrlGenerator(klass))
+    common.register('C++', klass, CppTreeCtrlGenerator(klass))

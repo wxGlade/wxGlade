@@ -25,8 +25,6 @@ class PerlRadioButtonGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditRadioButton'] = 'wxRadioButton'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxRadioButton', PerlRadioButtonGenerator())
+    klass = 'wxRadioButton'
+    common.class_names['EditRadioButton'] = klass
+    common.register('perl', klass, PerlRadioButtonGenerator(klass))

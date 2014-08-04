@@ -18,8 +18,6 @@ class LispTextCtrlGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditTextCtrl'] = 'wxTextCtrl'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxTextCtrl', LispTextCtrlGenerator())
+    klass = 'wxTextCtrl'
+    common.class_names['EditTextCtrl'] = klass
+    common.register('lisp', klass, LispTextCtrlGenerator(klass))

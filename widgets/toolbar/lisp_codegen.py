@@ -1,23 +1,21 @@
-# lisp_codegen.py : lisp generator functions for wxMenuBar objects
-# $Id: lisp_codegen.py,v 1.2 2005/09/25 08:23:40 efuzzyone Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Lisp generator functions for wxToolBar objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 
 import common
 from tool import *
 
-# yay
 from codegen import ToolsHandler
-
 
 
 class LispCodeGenerator:
     def get_properties_code(self, obj):
         prop = obj.properties
-        codegen = common.code_writers['lisp']
         out = []
         append = out.append
         
@@ -54,7 +52,6 @@ class LispCodeGenerator:
 
 
     def get_init_code(self, obj):
-        prop = obj.properties
         codegen = common.code_writers['lisp']
         out = []
         append = out.append
@@ -134,12 +131,10 @@ class LispCodeGenerator:
 
 # end of class LispCodeGenerator
 
+
 def initialize():
-    common.class_names['EditToolBar'] = 'wxToolBar'
+    klass = 'wxToolBar'
+    common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-
-    codegen = common.code_writers.get('lisp')
-
-    if codegen:
-        codegen.add_widget_handler('wxToolBar', LispCodeGenerator())
-        codegen.add_property_handler('tools', ToolsHandler)
+    common.register('lisp', klass, LispCodeGenerator(),
+                    'tools', ToolsHandler)

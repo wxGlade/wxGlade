@@ -40,9 +40,6 @@ class LispStaticBitmapGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditStaticBitmap'] = 'wxStaticBitmap'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxStaticBitmap',
-                                   LispStaticBitmapGenerator())
+    klass = 'wxStaticBitmap'
+    common.class_names['EditStaticBitmap'] = klass
+    common.register('lisp', klass, LispStaticBitmapGenerator(klass))

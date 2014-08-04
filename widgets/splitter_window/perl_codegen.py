@@ -1,14 +1,15 @@
-# perl_codegen.py : perl generator functions for wxSplitterWindow objects
-# $Id: perl_codegen.py,v 1.8 2007/08/07 12:15:21 agriggio Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Perl generator functions for wxSplitterWindow objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 
-class PerlCodeGenerator:
-#wxSplitterWindow(  parent, id, pos , size , style , name )
+
+class PerlSplitterWindowGenerator:
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'
     ]
@@ -110,15 +111,13 @@ class PerlCodeGenerator:
 
         return props_buf    
 
-# end of class PerlCodeGenerator
+# end of class PerlSplitterWindowGenerator
 
 
 def initialize():
-    common.class_names['EditSplitterWindow'] = 'wxSplitterWindow'
+    klass = 'wxSplitterWindow'
+    common.class_names['EditSplitterWindow'] = klass
     common.class_names['SplitterPane'] = 'wxPanel'
     common.toplevels['EditSplitterWindow'] = 1
     common.toplevels['SplitterPane'] = 1
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxSplitterWindow', PerlCodeGenerator())
+    common.register('perl', klass, PerlSplitterWindowGenerator())

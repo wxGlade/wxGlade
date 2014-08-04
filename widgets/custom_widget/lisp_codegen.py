@@ -1,16 +1,17 @@
-# perl_codegen.py : perl generator functions for CustomWidget objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 06:59:00 efuzzyone Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Lisp generator functions for CustomWidget objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 
 import common
 from codegen import ArgumentsCodeHandler, _fix_arguments
 
 
-class LispCodeGenerator:
+class LispCustomWidgetGenerator:
     def get_code(self, widget):
         init = []
         plgen = common.code_writers['lisp']
@@ -35,10 +36,7 @@ class LispCodeGenerator:
 # end of class PerlCodeGenerator
 
 def initialize():
-    common.class_names['CustomWidget'] = 'CustomWidget'
-
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('CustomWidget', LispCodeGenerator())
-        plgen.add_property_handler('arguments', ArgumentsCodeHandler,
-                                    'CustomWidget')
+    klass = 'CustomWidget'
+    common.class_names[klass] = klass
+    common.register('lisp', klass, LispCustomWidgetGenerator(),
+                    'arguments', ArgumentsCodeHandler, klass)
