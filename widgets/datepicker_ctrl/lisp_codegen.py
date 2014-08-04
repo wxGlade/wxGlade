@@ -18,9 +18,6 @@ class LispDatePickerCtrlGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditDatePickerCtrl'] = 'wxDatePickerCtrl'
-    lispgen = common.code_writers.get('lisp')
-
-    if lispgen:
-        lispgen.add_widget_handler('wxDatePickerCtrl',
-                                   LispDatePickerCtrlGenerator())
+    klass = 'wxDatePickerCtrl'
+    common.class_names['EditDatePickerCtrl'] = klass
+    common.register('lisp', klass, LispDatePickerCtrlGenerator(klass))

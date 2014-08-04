@@ -26,12 +26,6 @@ class LispHyperlinkCtrlGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-
-    common.class_names['EditHyperlinkCtrl'] = 'wxHyperlinkCtrl'
-    codegen = common.code_writers.get('lisp')
-
-    if codegen:
-        codegen.add_widget_handler(
-            'wxHyperlinkCtrl',
-            LispHyperlinkCtrlGenerator()
-        )
+    klass = 'wxHyperlinkCtrl'
+    common.class_names['EditHyperlinkCtrl'] = klass
+    common.register('lisp', klass, LispHyperlinkCtrlGenerator(klass))

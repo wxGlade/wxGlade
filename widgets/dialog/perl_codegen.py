@@ -51,10 +51,7 @@ class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    cn = common.class_names
-    cn['EditDialog'] = 'wxDialog'
+    klass = 'wxDialog'
+    common.class_names['EditDialog'] = klass
     common.toplevels['EditDialog'] = 1
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxDialog', PerlDialogGenerator())
+    common.register('perl', klass, PerlDialogGenerator(klass))

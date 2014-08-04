@@ -26,12 +26,6 @@ class PerlHyperlinkCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-
-    common.class_names['EditHyperlinkCtrl'] = 'wxHyperlinkCtrl'
-    plgen = common.code_writers.get('perl')
-
-    if plgen:
-        plgen.add_widget_handler(
-            'wxHyperlinkCtrl',
-            PerlHyperlinkCtrlGenerator()
-        )
+    klass = 'wxHyperlinkCtrl'
+    common.class_names['EditHyperlinkCtrl'] = klass
+    common.register('perl', klass, PerlHyperlinkCtrlGenerator(klass))

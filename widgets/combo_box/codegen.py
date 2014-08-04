@@ -52,17 +52,11 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditComboBox'] = 'wxComboBox'
-
-    pygen = common.code_writers.get("python")
-    if pygen:
-        pygen.add_widget_handler('wxComboBox', PythonComboBoxGenerator())
-        pygen.add_property_handler('choices', ChoicesCodeHandler)
-    xrcgen = common.code_writers.get("XRC")
-    if xrcgen:
-        xrcgen.add_widget_handler('wxComboBox', xrc_code_generator)
-        xrcgen.add_property_handler('choices', ChoicesCodeHandler)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxComboBox', CppComboBoxGenerator())
-        cppgen.add_property_handler('choices', ChoicesCodeHandler)
+    klass = 'wxComboBox'
+    common.class_names['EditComboBox'] = klass
+    common.register('python', klass, PythonComboBoxGenerator(klass),
+                    'choices', ChoicesCodeHandler)
+    common.register('C++', klass, CppComboBoxGenerator(klass),
+                    'choices', ChoicesCodeHandler)
+    common.register('XRC', klass, xrc_code_generator,
+                    'choices', ChoicesCodeHandler)

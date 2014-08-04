@@ -122,16 +122,9 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    cn = common.class_names
-    cn['EditDialog'] = 'wxDialog'
+    klass = 'wxDialog'
+    common.class_names['EditDialog'] = klass
     common.toplevels['EditDialog'] = 1
-
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxDialog', PythonDialogGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxDialog', CppDialogGenerator())
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('wxDialog', xrc_code_generator)
+    common.register('python', klass, PythonDialogGenerator(klass))
+    common.register('C++', klass, CppDialogGenerator(klass))
+    common.register('XRC', klass, xrc_code_generator)

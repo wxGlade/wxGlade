@@ -1,4 +1,4 @@
-"""
+"""\
 Code generator functions for wxNotebook objects
 
 @copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
@@ -38,7 +38,7 @@ class TabsCodeHandler:
 # end of class TabsCodeHandler
 
 
-class PythonCodeGenerator:
+class PythonNotebookGenerator:
     def get_code(self, window):
         pygen = common.code_writers['python']
         prop = window.properties
@@ -90,7 +90,7 @@ class PythonCodeGenerator:
         props_buf.extend(pygen.generate_common_properties(obj))
         return props_buf
 
-# end of class PythonCodeGenerator
+# end of class PythonNotebookGenerator
 
 
 def xrc_code_generator(obj):
@@ -130,7 +130,7 @@ def xrc_code_generator(obj):
     return NotebookXrcObject(obj)
 
 
-class CppCodeGenerator:
+class CppNotebookGenerator:
     constructor = [('wxWindow*', 'parent'), ('int', 'id'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
@@ -191,25 +191,18 @@ class CppCodeGenerator:
         cppgen = common.code_writers['C++']
         return cppgen.get_events_with_type(obj, 'wxNotebookEvent')
 
-# end of class CppCodeGenerator
+# end of class CppNotebookGenerator
 
 
 def initialize():
-    common.class_names['EditNotebook'] = 'wxNotebook'
+    klass = 'wxNotebook'
+    common.class_names['EditNotebook'] = klass
     common.class_names['NotebookPane'] = 'wxPanel'
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
-
-    # python code generation functions
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxNotebook', PythonCodeGenerator())
-        pygen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('wxNotebook', xrc_code_generator)
-        xrcgen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxNotebook', CppCodeGenerator())
-        cppgen.add_property_handler('tabs', TabsCodeHandler, 'wxNotebook')
+    common.register('python', klass, PythonNotebookGenerator(),
+                    'tabs', TabsCodeHandler, klass)
+    common.register('C++', klass, CppNotebookGenerator(),
+                    'tabs', TabsCodeHandler, klass)
+    common.register('XRC', klass, xrc_code_generator,
+                    'tabs', TabsCodeHandler, klass)

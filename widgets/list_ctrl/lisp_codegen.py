@@ -19,8 +19,6 @@ class LispListCtrlGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditListCtrl'] = 'wxListCtrl'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxListCtrl', LispListCtrlGenerator())
+    klass = 'wxListCtrl'
+    common.class_names['EditListCtrl'] = klass
+    common.register('lisp', klass, LispListCtrlGenerator(klass))

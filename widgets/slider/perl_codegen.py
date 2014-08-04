@@ -31,8 +31,6 @@ class PerlSliderGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditSlider'] = 'wxSlider'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxSlider', PerlSliderGenerator())
+    klass = 'wxSlider'
+    common.class_names['EditSlider'] = klass
+    common.register('perl', klass, PerlSliderGenerator(klass))

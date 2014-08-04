@@ -28,9 +28,7 @@ class LispRadioBoxGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditRadioBox'] = 'wxRadioBox'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxRadioBox', LispRadioBoxGenerator())
-        codegen.add_property_handler('choices', ChoicesCodeHandler)
+    klass = 'wxRadioBox'
+    common.class_names['EditRadioBox'] = klass
+    common.register('lisp', klass, LispRadioBoxGenerator(klass),
+                    'choices', ChoicesCodeHandler)

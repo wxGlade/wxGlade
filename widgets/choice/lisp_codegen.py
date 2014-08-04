@@ -21,9 +21,7 @@ class LispChoiceGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditChoice'] = 'wxChoice'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxChoice', LispChoiceGenerator())
-        codegen.add_property_handler('choices', ChoicesCodeHandler)
+    klass = 'wxChoice'
+    common.class_names['EditChoice'] = klass
+    common.register('lisp', klass, LispChoiceGenerator(klass),
+                    'choices', ChoicesCodeHandler)

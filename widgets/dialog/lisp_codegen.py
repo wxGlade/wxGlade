@@ -47,10 +47,7 @@ class LispDialogGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    cn = common.class_names
-    cn['EditDialog'] = 'wxDialog'
+    klass = 'wxDialog'
+    common.class_names['EditDialog'] = klass
     common.toplevels['EditDialog'] = 1
-
-    lispgen = common.code_writers.get('lisp')
-    if lispgen:
-        lispgen.add_widget_handler('wxDialog', LispDialogGenerator())
+    common.register('lisp', klass, LispDialogGenerator(klass))

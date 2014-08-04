@@ -21,9 +21,7 @@ class PerlChoiceGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditChoice'] = 'wxChoice'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxChoice', PerlChoiceGenerator())
-        plgen.add_property_handler('choices', ChoicesCodeHandler)
+    klass = 'wxChoice'
+    common.class_names['EditChoice'] = klass
+    common.register('perl', klass, PerlChoiceGenerator(klass),
+                    'choices', ChoicesCodeHandler)

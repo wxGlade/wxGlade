@@ -1,9 +1,10 @@
-# codegen.py: code generator functions for wxToolBar objects
-# $Id: codegen.py,v 1.23 2007/03/27 07:01:51 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Code generator functions for wxToolBar objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 import config
@@ -13,7 +14,6 @@ from tool import *
 class PythonCodeGenerator:
     def get_properties_code(self, obj):
         prop = obj.properties
-        pygen = common.code_writers['python']
         out = []
         append = out.append
         
@@ -45,7 +45,6 @@ class PythonCodeGenerator:
         return out
 
     def get_init_code(self, obj):
-        prop = obj.properties
         pygen = common.code_writers['python']
         cn = pygen.cn
         out = []
@@ -126,13 +125,12 @@ class PythonCodeGenerator:
 
     def get_events(self, obj):
         pygen = common.code_writers['python']
-        cn = pygen.cn
         out = []
 
         def do_get(tool):
             ret = []
             name, val = pygen.generate_code_id(None, tool.id)
-            if not val: val = '-1' # but this is wrong anyway...
+            if not val: val = '-1'  # but this is wrong anyway...
             if tool.handler:
                 ret.append((val, 'EVT_TOOL', tool.handler))
             return ret
@@ -268,7 +266,6 @@ class CppCodeGenerator:
         """\
         generates C++ code for the toolbar of a wxFrame.
         """
-        cppgen = common.code_writers['C++']
         style = obj.properties.get('style')
         if style:
             style = ', wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|' + \
@@ -389,18 +386,12 @@ class CppCodeGenerator:
 
 
 def initialize():
-    common.class_names['EditToolBar'] = 'wxToolBar'
+    klass = 'wxToolBar'
+    common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxToolBar', PythonCodeGenerator())
-        pygen.add_property_handler('tools', ToolsHandler)
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('wxToolBar', xrc_code_generator)
-        xrcgen.add_property_handler('tools', ToolsHandler)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxToolBar', CppCodeGenerator())
-        cppgen.add_property_handler('tools', ToolsHandler)
+    common.register('python', klass, PythonCodeGenerator(),
+                    'tools', ToolsHandler)
+    common.register('C++', klass, CppCodeGenerator(),
+                    'tools', ToolsHandler)
+    common.register('XRC', klass, xrc_code_generator,
+                    'tools', ToolsHandler)

@@ -10,7 +10,8 @@ import wcodegen
 from MenuTree import *
 from codegen import MenuHandler
 
-class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
+
+class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
         
@@ -78,15 +79,12 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         init.append(';;; Menu Bar end\n\n')
         return init, [], []
 
+# end of class LispMenubarGenerator
 
-
-# end of class LispCodeGenerator
 
 def initialize():
-    common.class_names['EditMenuBar'] = 'wxMenuBar'
+    klass = 'wxMenuBar'
+    common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('wxMenuBar', LispCodeGenerator())
-        plgen.add_property_handler('menus', MenuHandler)
+    common.register('lisp', klass, LispMenubarGenerator(klass),
+                    'menus', MenuHandler)

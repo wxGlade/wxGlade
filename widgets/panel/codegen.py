@@ -1,14 +1,14 @@
-# codegen.py: code generator functions for wxPanel objects
-# $Id: codegen.py,v 1.19 2007/08/07 12:15:21 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Code generator functions for wxPanel objects
+
+@copyright: 2002-2007 Alberto Griggio
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 
 
-class PythonCodeGenerator:
+class PythonPanelGenerator:
     def get_code(self, panel):
         pygen = common.code_writers['python']
         cn = pygen.cn
@@ -60,10 +60,10 @@ class PythonCodeGenerator:
             props_buf.append('self.SetScrollRate(%s)\n' % sr)
         return props_buf
 
-# end of class PythonCodeGenerator
+# end of class PythonPanelGenerator
 
 
-class CppCodeGenerator:
+class CppPanelGenerator:
     constructor = [('wxWindow*', 'parent'), ('int', 'id'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
@@ -115,7 +115,7 @@ class CppCodeGenerator:
             props_buf.append('SetScrollRate(%s);\n' % sr)
         return props_buf
 
-# end of class CppCodeGenerator
+# end of class CppPanelGenerator
 
 
 def xrc_code_generator(obj):
@@ -139,8 +139,9 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditPanel'] = 'wxPanel'
-    common.class_names['EditTopLevelPanel'] = 'wxPanel'
+    klass = 'wxPanel'
+    common.class_names['EditPanel'] = klass
+    common.class_names['EditTopLevelPanel'] = klass
     common.toplevels['EditPanel'] = 1
     common.toplevels['EditTopLevelPanel'] = 1
 
@@ -149,16 +150,9 @@ def initialize():
     common.toplevels['EditScrolledWindow'] = 1
     common.toplevels['EditTopLevelScrolledWindow'] = 1
 
-    # python code generation functions
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxPanel', PythonCodeGenerator())
-        pygen.add_widget_handler('wxScrolledWindow', PythonCodeGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxPanel', CppCodeGenerator())
-        cppgen.add_widget_handler('wxScrolledWindow', CppCodeGenerator())
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('wxPanel', xrc_code_generator)
-        xrcgen.add_widget_handler('wxScrolledWindow', xrc_code_generator)
+    common.register('python', klass, PythonPanelGenerator())
+    common.register('python', 'wxScrolledWindow', PythonPanelGenerator())
+    common.register('C++', klass, CppPanelGenerator())
+    common.register('C++', 'wxScrolledWindow', CppPanelGenerator())
+    common.register('XRC', klass, xrc_code_generator)
+    common.register('XRC', 'wxScrolledWindow', xrc_code_generator)

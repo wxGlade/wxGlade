@@ -46,17 +46,11 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditChoice'] = 'wxChoice'
-
-    pygen = common.code_writers.get("python")
-    if pygen:
-        pygen.add_widget_handler('wxChoice', PythonChoiceGenerator())
-        pygen.add_property_handler('choices', ChoicesCodeHandler)
-    xrcgen = common.code_writers.get("XRC")
-    if xrcgen:
-        xrcgen.add_widget_handler('wxChoice', xrc_code_generator)
-        xrcgen.add_property_handler('choices', ChoicesCodeHandler)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxChoice', CppChoiceGenerator())
-        cppgen.add_property_handler('choices', ChoicesCodeHandler)
+    klass = 'wxChoice'
+    common.class_names['EditChoice'] = klass
+    common.register('python', klass, PythonChoiceGenerator(klass),
+                    'choices', ChoicesCodeHandler)
+    common.register('C++', klass, CppChoiceGenerator(klass),
+                    'choices', ChoicesCodeHandler)
+    common.register('XRC', klass, xrc_code_generator,
+                    'choices', ChoicesCodeHandler)

@@ -10,7 +10,8 @@ import wcodegen
 from MenuTree import *
 from codegen import MenuHandler
 
-class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
+
+class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
         
@@ -125,14 +126,12 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
             out.extend(do_get(menu.root))
         return out
 
-# end of class PerlCodeGenerator
+# end of class PerlMenubarGenerator
 
 
 def initialize():
-    common.class_names['EditMenuBar'] = 'wxMenuBar'
+    klass = 'wxMenuBar'
+    common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxMenuBar', PerlCodeGenerator())
-        plgen.add_property_handler('menus', MenuHandler)
+    common.register('perl', klass, PerlMenubarGenerator(klass),
+                    'menus', MenuHandler)

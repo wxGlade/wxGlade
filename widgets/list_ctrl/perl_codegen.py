@@ -19,8 +19,6 @@ class PerlListCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditListCtrl'] = 'wxListCtrl'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxListCtrl', PerlListCtrlGenerator())
+    klass = 'wxListCtrl'
+    common.class_names['EditListCtrl'] = klass
+    common.register('perl', klass, PerlListCtrlGenerator(klass))

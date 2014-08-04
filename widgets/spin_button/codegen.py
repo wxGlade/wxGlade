@@ -52,14 +52,8 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditSpinButton'] = 'wxSpinButton'
-
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxSpinButton', PythonSpinButtonGenerator())
-    xrcgen = common.code_writers.get("XRC")
-    if xrcgen:
-        xrcgen.add_widget_handler('wxSpinButton', xrc_code_generator)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxSpinButton', CppSpinButtonGenerator())
+    klass = 'wxSpinButton'
+    common.class_names['EditSpinButton'] = klass
+    common.register('python', klass, PythonSpinButtonGenerator(klass))
+    common.register('C++', klass, CppSpinButtonGenerator(klass))
+    common.register('XRC', klass, xrc_code_generator)

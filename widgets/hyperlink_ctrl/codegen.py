@@ -55,20 +55,8 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditHyperlinkCtrl'] = 'wxHyperlinkCtrl'
-
-    pygen = common.code_writers.get("python")
-    if pygen:
-        pygen.add_widget_handler(
-            'wxHyperlinkCtrl',
-            PythonHyperlinkCtrlGenerator()
-        )
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler(
-            'wxHyperlinkCtrl',
-            CppHyperlinkCtrlGenerator()
-        )
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('wxHyperlinkCtrl', xrc_code_generator)
+    klass = 'wxHyperlinkCtrl'
+    common.class_names['EditHyperlinkCtrl'] = klass
+    common.register('python', klass, PythonHyperlinkCtrlGenerator(klass))
+    common.register('C++', klass, CppHyperlinkCtrlGenerator(klass))
+    common.register('XRC', klass, xrc_code_generator)

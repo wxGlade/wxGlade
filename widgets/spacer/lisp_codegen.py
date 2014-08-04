@@ -21,8 +21,6 @@ class LispSpacerGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditSpacer'] = 'spacer'
-
-    plgen = common.code_writers.get('lisp')
-    if plgen:
-        plgen.add_widget_handler('spacer', LispSpacerGenerator())
+    klass = 'spacer'
+    common.class_names['EditSpacer'] = klass
+    common.register('lisp', klass, LispSpacerGenerator(klass))

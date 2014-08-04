@@ -20,8 +20,6 @@ class LispStaticLineGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditStaticLine'] = 'wxStaticLine'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxStaticLine', LispStaticLineGenerator())
+    klass = 'wxStaticLine'
+    common.class_names['EditStaticLine'] = klass
+    common.register('lisp', klass, LispStaticLineGenerator(klass))

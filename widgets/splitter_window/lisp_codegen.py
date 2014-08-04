@@ -1,14 +1,15 @@
-# lisp_codegen.py : lisp generator functions for wxSplitterWindow objects
-# $Id: lisp_codegen.py,v 1.1 2005/09/22 07:00:47 efuzzyone Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Lisp generator functions for wxSplitterWindow objects
+
+@copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 
-class LispCodeGenerator:
-#wxSplitterWindow(  parent, id, pos , size , style , name )
+
+class LispSplitterWindowGenerator:
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'
     ]
@@ -106,15 +107,13 @@ class LispCodeGenerator:
 
         return props_buf    
 
-# end of class LispCodeGenerator
+# end of class LispSplitterWindowGenerator
 
 
 def initialize():
-    common.class_names['EditSplitterWindow'] = 'wxSplitterWindow'
+    klass = 'wxSplitterWindow'
+    common.class_names['EditSplitterWindow'] = klass
     common.class_names['SplitterPane'] = 'wxPanel'
     common.toplevels['EditSplitterWindow'] = 1
     common.toplevels['SplitterPane'] = 1
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxSplitterWindow', LispCodeGenerator())
+    common.register('lisp', klass, LispSplitterWindowGenerator())

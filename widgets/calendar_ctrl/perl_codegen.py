@@ -24,8 +24,6 @@ class PerlCalendarCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditCalendarCtrl'] = 'wxCalendarCtrl'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxCalendarCtrl', PerlCalendarCtrlGenerator())
+    klass = 'wxCalendarCtrl'
+    common.class_names['EditCalendarCtrl'] = klass
+    common.register('perl', klass, PerlCalendarCtrlGenerator(klass))

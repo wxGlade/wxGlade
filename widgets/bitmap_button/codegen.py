@@ -1,15 +1,17 @@
-# codegen.py: code generator functions for wxBitmapButton objects
-# $Id: codegen.py,v 1.26 2007/08/07 12:18:34 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Code generator functions for wxBitmapButton objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 import config
 import os
 
-class PythonCodeGenerator:
+
+class PythonBitmapButtonGenerator:
     def get_code(self, obj):
         pygen = common.code_writers['python']
         cn = pygen.cn
@@ -82,13 +84,13 @@ class PythonCodeGenerator:
             props_buf.append('self.%s.SetDefault()\n' % obj.name)
         return init, props_buf, []
 
-# end of class PythonCodeGenerator
+# end of class PythonBitmapButtonGenerator
 
 
-class CppCodeGenerator:
+class CppBitmapButtonGenerator:
     def get_code(self, obj):
         """\
-        fuction that generates C++ code for wxBitmapButton objects.
+        function that generates C++ code for wxBitmapButton objects.
         """
         cppgen = common.code_writers['C++']
         prop = obj.properties
@@ -140,7 +142,7 @@ class CppCodeGenerator:
             props_buf.append('%s->SetDefault();\n' % obj.name)
         return init, ids, props_buf, []
 
-# end of class CppCodeGenerator
+# end of class CppBitmapButtonGenerator
 
 
 def xrc_code_generator(obj):
@@ -158,13 +160,8 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditBitmapButton'] = 'wxBitmapButton'
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxBitmapButton', PythonCodeGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxBitmapButton', CppCodeGenerator())
-    xrcgen = common.code_writers.get("XRC")
-    if xrcgen:
-        xrcgen.add_widget_handler('wxBitmapButton', xrc_code_generator)
+    klass = 'wxBitmapButton'
+    common.class_names['EditBitmapButton'] = klass
+    common.register('python', klass, PythonBitmapButtonGenerator())
+    common.register('C++', klass, CppBitmapButtonGenerator())
+    common.register('XRC', klass, xrc_code_generator)

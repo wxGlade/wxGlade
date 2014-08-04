@@ -94,17 +94,8 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditStaticBitmap'] = 'wxStaticBitmap'
-
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxStaticBitmap',
-                                 PythonStaticBitmapGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxStaticBitmap',
-                                  CppStaticBitmapGenerator())
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('wxStaticBitmap',
-                                  xrc_code_generator)
+    klass = 'wxStaticBitmap'
+    common.class_names['EditStaticBitmap'] = klass
+    common.register('python', klass, PythonStaticBitmapGenerator(klass))
+    common.register('C++', klass, CppStaticBitmapGenerator(klass))
+    common.register('XRC', klass, xrc_code_generator)

@@ -36,11 +36,7 @@ class CppGaugeGenerator(wcodegen.CppWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditGauge'] = 'wxGauge'
-
-    pygen = common.code_writers.get("python")
-    if pygen:
-        pygen.add_widget_handler('wxGauge', PythonGaugeGenerator())
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxGauge', CppGaugeGenerator())
+    klass = 'wxGauge'
+    common.class_names['EditGauge'] = klass
+    common.register('python', klass, PythonGaugeGenerator(klass))
+    common.register('C++', klass, CppGaugeGenerator(klass))

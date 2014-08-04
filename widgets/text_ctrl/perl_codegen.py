@@ -10,16 +10,14 @@ import common
 import wcodegen
 
 
-class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
+class PerlTextCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(value)s' \
            '%(style)s);\n'
 
-# end of class PerlCodeGenerator
+# end of class PerlTextCtrlGenerator
 
 
 def initialize():
-    common.class_names['EditTextCtrl'] = 'wxTextCtrl'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxTextCtrl', PerlCodeGenerator())
+    klass = 'wxTextCtrl'
+    common.class_names['EditTextCtrl'] = klass
+    common.register('perl', klass, PerlTextCtrlGenerator(klass))

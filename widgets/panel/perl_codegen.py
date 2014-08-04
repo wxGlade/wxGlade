@@ -1,14 +1,14 @@
-# perl_codegen.py : perl generator functions for wxPanel objects
-# $Id: perl_codegen.py,v 1.11 2007/08/07 12:15:21 agriggio Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Perl generator functions for wxPanel objects
+
+@copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 
-class PerlCodeGenerator:
-#wxScrolledWindow(parent, id, pos, size, style, name )
+
+class PerlPanelGenerator:
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'
     ]
@@ -81,16 +81,14 @@ wxDefaultPosition, wxDefaultSize, %s);\n'
             props_buf.append('$self->SetScrollRate(%s);\n' % sr)
         return props_buf
 
-# end of class PerlCodeGenerator
+# end of class PerlPanelGenerator
 
 
 def initialize():
-    common.class_names['EditPanel'] = 'wxPanel'
-    common.class_names['EditTopLevelPanel'] = 'wxPanel'
+    klass = 'wxPanel'
+    common.class_names['EditPanel'] = klass
+    common.class_names['EditTopLevelPanel'] = klass
     common.toplevels['EditPanel'] = 1
     common.toplevels['EditTopLevelPanel'] = 1
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxPanel', PerlCodeGenerator())
-        plgen.add_widget_handler('wxScrolledWindow', PerlCodeGenerator())
+    common.register('perl', klass, PerlPanelGenerator())
+    common.register('perl', 'wxScrolledWindow', PerlPanelGenerator())

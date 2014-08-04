@@ -1,14 +1,15 @@
-# codegen.py: code generator functions for wxSplitterWindow objects
-# $Id: codegen.py,v 1.18 2007/08/07 12:15:21 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Code generator functions for wxSplitterWindow objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 
 
-class PythonCodeGenerator:
+class PythonSplitterWindowGenerator:
     def get_code(self, window):
         pygen = common.code_writers['python']
         prop = window.properties
@@ -81,10 +82,10 @@ class PythonCodeGenerator:
             elif win_2: add_sub(win_2)
         return props_buf    
 
-# end of class PythonCodeGenerator
+# end of class PythonSplitterWindowGenerator
 
 
-class CppCodeGenerator:
+class CppSplitterWindowGenerator:
     constructor = [('wxWindow*', 'parent'), ('int', 'id'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
@@ -162,7 +163,7 @@ class CppCodeGenerator:
         cppgen = common.code_writers['C++']
         return cppgen.get_events_with_type(obj, 'wxSplitterEvent')
 
-# end of class CppCodeGenerator
+# end of class CppSplitterWindowGenerator
 
 
 def xrc_code_generator(obj):
@@ -200,17 +201,11 @@ def xrc_code_generator(obj):
 
 
 def initialize():
-    common.class_names['EditSplitterWindow'] = 'wxSplitterWindow'
+    klass = 'wxSplitterWindow'
+    common.class_names['EditSplitterWindow'] = klass
     common.class_names['SplitterPane'] = 'wxPanel'
     common.toplevels['EditSplitterWindow'] = 1
     common.toplevels['SplitterPane'] = 1
-
-    pygen = common.code_writers.get('python')
-    if pygen:
-        pygen.add_widget_handler('wxSplitterWindow', PythonCodeGenerator())
-    xrcgen = common.code_writers.get('XRC')
-    if xrcgen:
-        xrcgen.add_widget_handler('wxSplitterWindow', xrc_code_generator)#xrcgen.NotImplementedXrcObject)
-    cppgen = common.code_writers.get('C++')
-    if cppgen:
-        cppgen.add_widget_handler('wxSplitterWindow', CppCodeGenerator())
+    common.register('python', klass, PythonSplitterWindowGenerator())
+    common.register('C++', klass, CppSplitterWindowGenerator())
+    common.register('XRC', klass, xrc_code_generator)

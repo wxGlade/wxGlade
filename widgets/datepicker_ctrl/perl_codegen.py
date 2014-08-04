@@ -21,8 +21,6 @@ class PerlDatePickerCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditDatePickerCtrl'] = 'wxDatePickerCtrl'
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxDatePickerCtrl',
-                                 PerlDatePickerCtrlGenerator())
+    klass = 'wxDatePickerCtrl'
+    common.class_names['EditDatePickerCtrl'] = klass
+    common.register('perl', klass, PerlDatePickerCtrlGenerator(klass))

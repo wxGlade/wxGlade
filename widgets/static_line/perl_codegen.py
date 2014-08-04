@@ -19,8 +19,6 @@ class PerlStaticLineGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditStaticLine'] = 'wxStaticLine'
-
-    plgen = common.code_writers.get('perl')
-    if plgen:
-        plgen.add_widget_handler('wxStaticLine', PerlStaticLineGenerator())
+    klass = 'wxStaticLine'
+    common.class_names['EditStaticLine'] = klass
+    common.register('perl', klass, PerlStaticLineGenerator(klass))

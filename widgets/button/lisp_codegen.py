@@ -33,8 +33,6 @@ class LispButtonGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditButton'] = 'wxButton'
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxButton', LispButtonGenerator())
+    klass = 'wxButton'
+    common.class_names['EditButton'] = klass
+    common.register('lisp', klass, LispButtonGenerator(klass))

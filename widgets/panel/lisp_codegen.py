@@ -1,14 +1,14 @@
-# lisp_codegen.py : lisp generator functions for wxPanel objects
-# $Id: lisp_codegen.py,v 1.2 2007/08/07 12:15:21 agriggio Exp $
-#
-# Copyright (c) 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Lisp generator functions for wxPanel objects
+
+@copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import common
 
-class LispCodeGenerator:
-#wxScrolledWindow(parent, id, pos, size, style, name )
+
+class LispPanelGenerator:
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'
     ]
@@ -71,16 +71,14 @@ class LispCodeGenerator:
                              '(slot-%s obj))\n' % sr)
         return props_buf
 
-# end of class LispCodeGenerator
+# end of class LispPanelGenerator
 
 
 def initialize():
-    common.class_names['EditPanel'] = 'wxPanel'
-    common.class_names['EditTopLevelPanel'] = 'wxPanel'
+    klass = 'wxPanel'
+    common.class_names['EditPanel'] = klass
+    common.class_names['EditTopLevelPanel'] = klass
     common.toplevels['EditPanel'] = 1
     common.toplevels['EditTopLevelPanel'] = 1
-
-    codegen = common.code_writers.get('lisp')
-    if codegen:
-        codegen.add_widget_handler('wxPanel', LispCodeGenerator())
-        codegen.add_widget_handler('wxScrolledWindow', LispCodeGenerator())
+    common.register('lisp', klass, LispPanelGenerator())
+    common.register('lisp', 'wxScrolledWindow', LispPanelGenerator())

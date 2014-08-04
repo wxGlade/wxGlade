@@ -19,8 +19,6 @@ class LispTreeCtrlGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 def initialize():
-    common.class_names['EditTreeCtrl'] = 'wxTreeCtrl'
-    codegen = common.code_writers.get('lisp')
-
-    if codegen:
-        codegen.add_widget_handler('wxTreeCtrl', LispTreeCtrlGenerator())
+    klass = 'wxTreeCtrl'
+    common.class_names['EditTreeCtrl'] = klass
+    common.register('lisp', klass, LispTreeCtrlGenerator(klass))
