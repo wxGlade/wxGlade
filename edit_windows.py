@@ -613,32 +613,32 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         sizer_tmp.Add(prop['focused'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(prop['hidden'].panel, 0, wx.EXPAND)
 
-        # add a note if the widget don't support all supported wx versions
-        all_versions = set(common.app_tree.app.all_supported_versions)
-        supported = set(
-            [misc.format_for_version(version) \
-             for version in getattr(self, 'supported_by', [])]
-            )
-        not_supported = all_versions.difference(supported)
-        # hint text only if we have support information (supported_by) and
-        # not all versions are supported (not_supported)
-        if supported and not_supported:
-            text_supported = ', '.join(supported)
-            text_not_supported = ', '.join(not_supported)
-            note = wx.StaticText(
-                panel,
-                -1, 
-                _("This widget is only supported for wx %s") % \
-                text_supported
-                )
-            note.SetToolTip(wx.ToolTip(
-                _("This widgets is supported for wx versions %(supported)s "
-                  "and not at %(not_supported)s." ) % {
-                    'supported': text_supported,
-                    'not_supported': text_not_supported,
-                    }
-                ))
-            sizer_tmp.Add(note, 0, wx.ALL | wx.EXPAND, 3)        
+#        # add a note if the widget don't support all supported wx versions
+#        all_versions = set(common.app_tree.app.all_supported_versions)
+#        supported = set(
+#            [misc.format_supported_by(version) \
+#             for version in getattr(self, 'supported_by', [])]
+#            )
+#        not_supported = all_versions.difference(supported)
+#        # hint text only if we have support information (supported_by) and
+#        # not all versions are supported (not_supported)
+#        if supported and not_supported:
+#            text_supported = ', '.join(supported)
+#            text_not_supported = ', '.join(not_supported)
+#            note = wx.StaticText(
+#                panel,
+#                -1,
+#                _("This widget is only supported for wx %s") % \
+#                text_supported
+#                )
+#            note.SetToolTip(wx.ToolTip(
+#                _("This widgets is supported for wx versions %(supported)s "
+#                  "and not at %(not_supported)s." ) % {
+#                    'supported': text_supported,
+#                    'not_supported': text_not_supported,
+#                    }
+#                ))
+#            sizer_tmp.Add(note, 0, wx.ALL | wx.EXPAND, 3)
 
         panel.SetAutoLayout(1)
         panel.SetSizer(sizer_tmp)

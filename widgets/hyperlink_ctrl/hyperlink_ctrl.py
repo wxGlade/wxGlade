@@ -24,11 +24,6 @@ class EditHyperlinkCtrl(ManagedBase, StylesMixin):
         'EVT_HYPERLINK',
         ]
 
-    supported_by = ((2, 8), (3, 0),)
-    """\
-    wxHyperlinkCtrl is only available at wx 2.8 and newer
-    """
-
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
 

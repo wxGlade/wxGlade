@@ -177,6 +177,7 @@ class wxGladeFrame(wx.Frame):
         wx.ToolTip_SetDelay(1000)
 
         # load the available code generators
+        common.load_config()
         common.load_code_writers()
         # load the available widgets and sizers
         core_btns, custom_btns = common.load_widgets()

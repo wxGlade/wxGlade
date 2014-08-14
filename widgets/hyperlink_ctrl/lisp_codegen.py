@@ -11,8 +11,6 @@ import wcodegen
 
 class LispHyperlinkCtrlGenerator(wcodegen.LispWidgetCodeWriter):
 
-    supported_by = ((2, 8), (3, 0),)
-
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
            '%(label)s %(url)s -1 -1 -1 -1 %(style)s))\n'
 

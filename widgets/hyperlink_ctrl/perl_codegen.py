@@ -11,8 +11,6 @@ import wcodegen
 
 class PerlHyperlinkCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
 
-    supported_by = ((2, 8), (3, 0),)
-
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s, ' \
            '%(url)s%(style)s);\n'
 

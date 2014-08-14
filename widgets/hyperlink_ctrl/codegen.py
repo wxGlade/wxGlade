@@ -11,7 +11,6 @@ import wcodegen
 
 class PythonHyperlinkCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
-    supported_by = ((2, 8), (3, 0),)
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
            '%(url)s%(style)s)\n'
 
@@ -27,7 +26,6 @@ class PythonHyperlinkCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 class CppHyperlinkCtrlGenerator(wcodegen.CppWidgetCodeWriter):
 
     extra_headers = ['<wx/hyperlink.h>']
-    supported_by = ((2, 8), (3, 0),)
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
            '%(url)s%(style)s);\n'
 

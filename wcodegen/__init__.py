@@ -7,7 +7,9 @@ Common code used by all widget code generators
 
 import common
 
+import copy
 import logging
+import types
 
 
 class BaseCodeWriterBase(object):
@@ -42,6 +44,12 @@ class BaseWidgetCodeWriter(BaseCodeWriterBase):
 
     @ivar codegen: Language specific code generator
     @type codegen: Instance of L{codegen.BaseLangCodeWriter}
+
+    @ivar config: Widgets specific configuration (see L{common.widget_config})
+    @type config: Dictionary
+
+    @ivar klass: wxWidgets class name
+    @type klass: String or None
     """
 
     default_style = None
@@ -64,11 +72,13 @@ class BaseWidgetCodeWriter(BaseCodeWriterBase):
     @type: List of strings
     """
 
-    klass = None
-    """\
-    wxWidgets class name
+    lang_config = {}
+    """
+    Language specific widget style settings. This settings will merged with
+    the generic settings stored in L{common.widget_config}.
 
-    @type: String or None
+    @type: Dictionary
+    @see: L{common.widget_config}
     """
 
     supported_by = ()
@@ -88,7 +98,7 @@ class BaseWidgetCodeWriter(BaseCodeWriterBase):
     Template for instructions to execute after the widget is initialised
 
     @type: List of strings
-    @see. L{tmpl_before}
+    @see: L{tmpl_before}
     """
 
     tmpl_before = []
@@ -220,8 +230,19 @@ class BaseWidgetCodeWriter(BaseCodeWriterBase):
     def __init__(self, klass=None):
         # call inherited constructor
         BaseCodeWriterBase.__init__(self)
+        self.config = {}
+        self.klass = None
         if klass:
             self.klass = klass
+            if self.klass in common.widget_config:
+                # do a deep-copy to prevent changes at original data
+                # triggered by merge with language specific
+                self.config = copy.deepcopy(common.widget_config[self.klass])
+                if self.lang_config:
+                    if 'styles' not in self.config:
+                        self.config['styles'] = {}
+                    self.config['styles'].update(self.lang_config)
+
         self.codegen = common.code_writers[self.language]
         self._reset_vars()
 
@@ -441,7 +462,39 @@ class BaseWidgetCodeWriter(BaseCodeWriterBase):
 
         return layout_lines
 
-# end of class BaseCodeWriterBase
+    def is_supported(self, major, minor=None):
+        """\
+        Check if the widget is supported for the given version
+
+        @param major: Major version number
+        @type major:  Integer
+        @param minor: Minor version number
+        @type minor:  Integer
+
+        @return: True if the widget is supported by the specified wx version
+        @rtype:  Boolean
+
+        @see: L{common.widget_config}
+        """
+        assert isinstance(major, types.IntType)
+        assert isinstance(minor, (types.IntType, types.NoneType))
+
+        # no restrictions exists
+        if 'supported_by' not in self.config:
+            return True
+
+        if minor:
+            version_specific = 'wx%s%s' % (major, minor)
+            if version_specific in self.config['supported_by']:
+                return True
+
+        version_generic = 'wx%s' % major
+        if version_generic in self.config['supported_by']:
+            return True
+
+        return False
+
+# end of class BaseWidgetCodeWriter
 
 
 class CppWidgetCodeWriter(BaseWidgetCodeWriter):

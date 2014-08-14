@@ -1274,6 +1274,39 @@ class TestCodeGen(WXGladeBaseTest):
                         )
                     )
 
+    def test_is_supported(self):
+        """\
+        Test check if the widget is supported with the requested version
+
+        @see: L{wcodegen.BaseWidgetCodeWriter.is_supported()}
+        @see: L{common.widget_config}
+        """
+        import wcodegen
+        obj = wcodegen.PythonWidgetCodeWriter('test_nonexisting')
+        obj.config = {}
+
+        # no restrictions -> True
+        self.assertTrue(obj.is_supported(3, 0))
+
+        obj.config['supported_by'] = ['wx31', 'wx2']
+
+        # wx1 is not listed -> False
+        self.assertFalse(obj.is_supported(1))
+
+        # wx2 is listed -> True
+        self.assertTrue(obj.is_supported(2))
+
+        # wx3 is not listed -> False
+        self.assertFalse(obj.is_supported(3))
+
+        # wx31 is listed -> True
+        self.assertTrue(obj.is_supported(3, 1))
+
+        # wx32 is not listed -> False
+        self.assertFalse(obj.is_supported(3, 2))
+
+        self.assertRaises(AssertionError, obj.is_supported, (2, 6))
+
     def test_StylelessDialog(self):
         """\
         Test code generation for a style less dialog
