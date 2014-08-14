@@ -82,12 +82,37 @@ Widgets dictionary: each key is the name of some EditWidget class; the mapped
 value is a 'factory' function which actually builds the object. Each of these
 functions accept 3 parameters: the parent of the widget, the sizer by which
 such widget is controlled, and the position inside this sizer.
+
+@type: dict
 """
 
 widgets_from_xml = {}
 """\
-Widgets_from_xml dictionary: table of factory functions to build objects
-from an xml file
+Factory functions to build objects from an xml file
+
+@type: dict
+"""
+
+widget_config = {}
+"""\
+Dictionary to store widget generic widget details like tooltips, different
+names, ...
+
+Example::
+    config = {}
+    config[<wx class name>] = {}
+    config[<wx class name>]['supported_by'] = ['wx28', 'wx3']
+
+Elements:
+  - I{supported_by} - This widget is only available at the listed wx
+    versions. An empty list or a non-existing entry means the widgets is
+    always available.
+
+Language specific style settings from
+L{wcodegen.BaseWidgetCodeWriter.lang_config} will be merged with the styles
+dictionary in L{wcodegen.BaseWidgetCodeWriter.__init__()}.
+
+@type: dict
 """
 
 property_panel = None
@@ -129,18 +154,24 @@ refs = {}
 Dictionary which maps the ids used in the event handlers to the
 corresponding widgets: used to call the appropriate builder function
 when a dropping of a widget occurs, knowing only the id of the event
+
+@type: dict
 """
 
 class_names = {}
 """\
 Dictionary which maps the name of the classes used by wxGlade to the
 correspondent classes of wxWindows
+
+@type: dict
 """
 
 toplevels = {}
 """\
 Names of the Edit* classes that can be toplevels, i.e. widgets for which to
 generate a class declaration in the code
+
+@type: dict
 """
 
 code_writers = {}
@@ -158,6 +189,8 @@ Dictionary of objects used to generate the code in a given language.
  - add_sizeritem(toplevel, sizer, obj_name, option, flag, border)
  - add_app(app_attrs, top_win_class)
  - ...
+
+@type: dict
 """
 
 
@@ -199,6 +232,27 @@ def load_code_writers():
                     _('loaded code generator for %s'),
                     writer.language
                 )
+
+
+def load_config():
+    """\
+    Load widget configuration.
+
+    @see: L{load_widgets_from_dir()}
+    """
+    # load the "built-in" widgets
+    core_buttons = load_widgets_from_dir(
+        config.widgets_path,
+        'config'
+    )
+
+    # load the "user" widgets
+    local_buttons = load_widgets_from_dir(
+        config.preferences.local_widget_path,
+        'config'
+        )
+
+    return
 
 
 def load_widgets():
@@ -319,12 +373,33 @@ def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
             if hasattr(module, 'initialize'):
                 # use individual initialisation
                 widget_button = module.initialize()
-            elif not hasattr(module, 'initialize') and submodule:
-                logger.warning(
-                    _('Missing function "initialize()" in imported '
-                      'module %s'),
-                    fqmn
-                )
+            elif submodule:
+
+                # load and store generic widget details
+                if submodule == 'config':
+                    if hasattr(module, 'config'):
+                        config_dict = getattr(module, 'config')
+
+                        # check mandatory attributes
+                        if 'wxklass' not in config_dict:
+                            logger.warning(
+                                _('Missing mandatory configuration item '
+                                  '"wxklass". Ignoring whole configuration '
+                                  'settings')
+                            )
+                            continue
+                        widget_config[config_dict['wxklass']] = config_dict
+                    else:
+                        logger.debug(
+                            _('Missing configuration in module %s'), fqmn
+                        )
+                        continue
+                elif not hasattr(module, 'initialize'):
+                    logger.warning(
+                        _('Missing function "initialize()" in imported '
+                          'module %s'),
+                        fqmn
+                    )
                 continue
             else:
                 # use generic initialisation

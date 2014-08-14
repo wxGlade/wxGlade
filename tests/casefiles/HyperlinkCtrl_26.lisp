@@ -42,7 +42,7 @@
 
         ;;; WARNING: Code for instance "hyperlink-1" of "wxHyperlinkCtrl" was
         ;;; not created, because the widget is not available for wx version 2.6.
-        ;;; It is available for wx versions 2.8, 3.0 only.
+        ;;; It is available for wx versions 2.8, 3 only.
 
         ;;; end wxGlade
         )

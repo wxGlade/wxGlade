@@ -1565,10 +1565,14 @@ Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
             return None, None
 
         # check for supported versions
-        supported_by = getattr(builder, 'supported_by', ())
-        if supported_by and self.for_version not in supported_by:
+        if hasattr(builder, 'is_supported'):
+            is_supported = builder.is_supported(*self.for_version)
+        else:
+            is_supported = True
+        if not is_supported:
             supported_versions = ', '.join(
-                [misc.format_for_version(version) for version in supported_by]
+                [misc.format_supported_by(version) for version in
+                 builder.config['supported_by']]
                 )
             msg = _("""\
 Code for instance "%(name)s" of "%(klass)s" was

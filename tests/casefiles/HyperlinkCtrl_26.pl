@@ -38,7 +38,7 @@ sub new {
 
     # WARNING: Code for instance "hyperlink_1" of "wxHyperlinkCtrl" was
     # not created, because the widget is not available for wx version 2.6.
-    # It is available for wx versions 2.8, 3.0 only.
+    # It is available for wx versions 2.8, 3 only.
 
 
     $self->__set_properties();

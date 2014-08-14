@@ -270,7 +270,7 @@ def string_to_color(color):
     """
     if len(color) != 7:
         raise ValueError
-    return apply(wx.Colour, [int(color[i:i+2], 16) for i in range(1, 7, 2)])
+    return apply(wx.Colour, [int(color[i:i + 2], 16) for i in range(1, 7, 2)])
 
 
 def format_for_version(version):
@@ -285,6 +285,36 @@ def format_for_version(version):
     @see: L{wxglade.codegen.BaseLangCodeWriter.for_version}
     """
     return '%s.%s' % version
+
+
+def format_supported_by(version):
+    """\
+    Return formatted version string.
+
+    Example::
+        >>> format_supported_by('wx3')
+        '3'
+        >>> format_supported_by('wx28')
+        '2.8'
+
+    @param version: Version as specified in L{common.widget_config}
+    @type version:  String
+
+    @rtype: String
+
+    @see: L{wcodegen.BaseWidgetCodeWriter.is_supported()}
+    @see: L{common.widget_config}
+    """
+    assert isinstance(version, str)
+
+    if len(version) == 3:
+        formatted = '%s' % version[2]
+    elif len(version) == 4:
+        formatted = '%s.%s' % (version[2], version[3])
+    else:
+        raise ValueError(_('Unknown version format for "%s"') %
+                         repr(version))
+    return formatted
 
 
 def get_toplevel_parent(obj):
