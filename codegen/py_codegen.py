@@ -224,7 +224,8 @@ class PythonCodeWriter(BaseLangCodeWriter):
     """
 
     default_extensions = ['py', 'pyw']
-    language = "python"
+    language = 'python'
+    lang_prefix = 'py'
 
     _code_statements = {
         'backgroundcolour': "%(objname)s.SetBackgroundColour(%(value)s)\n",

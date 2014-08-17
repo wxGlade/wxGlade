@@ -46,7 +46,8 @@ class XRCCodeWriter(BaseLangCodeWriter):
     """
 
     default_extensions = ['xrc']
-    language = "XRC"
+    language = 'XRC'
+    lang_prefix = 'xrc'
 
     xrc_objects = None
     """\

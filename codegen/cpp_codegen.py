@@ -319,7 +319,8 @@ class CPPCodeWriter(BaseLangCodeWriter):
 
     default_extensions = ['cpp', 'cc', 'C', 'cxx', 'c++',
                           'h', 'hh', 'hpp', 'H', 'hxx', ]
-    language = "C++"
+    language = 'C++'
+    lang_prefix = 'cpp'
 
     _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",

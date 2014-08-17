@@ -225,8 +225,6 @@ def load_code_writers():
                 )
         else:
             code_writers[writer.language] = writer
-            if hasattr(writer, 'setup'):
-                writer.setup()
             if config.use_gui:
                 logging.info(
                     _('loaded code generator for %s'),
@@ -287,6 +285,18 @@ def load_widgets():
         config.preferences.local_widget_path,
         )
 
+    # load (remaining) widget code generators
+    # Python, C++ and XRC are often loaded via load_widgets_from_dir() above
+    for path in [config.widgets_path,
+                 config.preferences.local_widget_path]:
+        for lang in ['perl', 'lisp']:
+            if lang not in code_writers:
+                continue
+            codegen_name = '%s_codegen' % code_writers[lang].lang_prefix
+            load_widgets_from_dir(
+                path,
+                submodule=codegen_name,
+            )
     return core_buttons, local_buttons
 
 
@@ -627,8 +637,24 @@ def load_sizers():
 
     @see: L{edit_sizers}
     """
+    for lang in code_writers.keys():
+        module_name = 'edit_sizers.%s_sizers_codegen' % \
+                      code_writers[lang].lang_prefix
+        try:
+            codegen_module = _import_module(config.wxglade_path, module_name)
+            codegen_module.initialize()
+        except (AttributeError, ImportError, NameError, SyntaxError,
+                ValueError):
+            logging.exception(_('ERROR loading "%s"'), module_name)
+        except:
+            logging.exception(
+                _('Unexpected error during import of widget module %s'),
+                module_name
+            )
+
+    # initialise sizer GUI elements
     import edit_sizers
-    return edit_sizers.init_all()
+    return edit_sizers.init_gui()
 
 
 def add_object(event):

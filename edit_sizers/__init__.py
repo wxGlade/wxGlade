@@ -1,9 +1,12 @@
 """
 Sizers module initialization
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
+
+import config
 
 Sizer = None
 """\
@@ -25,15 +28,15 @@ _builder = None
 Shortcut for L{edit_sizers._builder}
 """
 
-def init_all():
-    import sizers_codegen
-    sizers_codegen.initialize()
-    import config
-    if config.use_gui:
-        import edit_sizers
-        global Sizer, SizerSlot, SizerBase, _builder
-        Sizer = edit_sizers.Sizer
-        SizerSlot = edit_sizers.SizerSlot
-        SizerBase = edit_sizers.SizerBase
-        _builder = edit_sizers._builder
-        return edit_sizers.init_all()
+
+def init_gui():
+    if not config.use_gui:
+        return
+
+    import edit_sizers
+    global Sizer, SizerSlot, SizerBase, _builder
+    Sizer = edit_sizers.Sizer
+    SizerSlot = edit_sizers.SizerSlot
+    SizerBase = edit_sizers.SizerBase
+    _builder = edit_sizers._builder
+    return edit_sizers.init_all()

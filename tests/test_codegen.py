@@ -124,7 +124,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test Perl code generation with preferences dialog
 
-        @see: L{codegen.pl_codegen}
+        @see: L{codegen.perl_codegen}
         """
         self._generate_and_compare(
             'perl',
@@ -202,7 +202,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{codegen.cpp_codegen.CPPCodeWriter.generate_code_id()}
         @see: L{codegen.lisp_codegen.LispCodeWriter.generate_code_id()}
-        @see: L{codegen.pl_codegen.PerlCodeWriter.generate_code_id()}
+        @see: L{codegen.perl_codegen.PerlCodeWriter.generate_code_id()}
         @see: L{codegen.py_codegen.PythonCodeWriter.generate_code_id()}
         """
         # create dummy code object first
@@ -465,7 +465,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test Perl code generation with overwriting a single existing file
 
-        @see: L{codegen.pl_codegen.PerlCodeWriter}
+        @see: L{codegen.perl_codegen.PerlCodeWriter}
         """
         self._generate_and_compare(
             'perl',
@@ -477,7 +477,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test Perl code generation with overwriting two existing files
 
-        @see: L{codegen.pl_codegen.PerlCodeWriter}
+        @see: L{codegen.perl_codegen.PerlCodeWriter}
         """
         source = self._load_file('PlOgg2.wxg')
         source = self._modify_attrs(source,
@@ -498,7 +498,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test Perl code generation with overwriting a single existing file
 
-        @see: L{codegen.pl_codegen.PerlCodeWriter}
+        @see: L{codegen.perl_codegen.PerlCodeWriter}
         """
         source = self._load_file('PyOgg2.wxg')
         expected = self._load_file('PyOgg3.py')
@@ -583,11 +583,11 @@ class TestCodeGen(WXGladeBaseTest):
 
     def test_PerlSourceFileContent_regexp(self):
         """\
-        Test some regular expessions used in L{codegen.pl_codegen.SourceFileContent}
+        Test some regular expessions used in L{codegen.perl_codegen.SourceFileContent}
         """
-        import codegen.pl_codegen
+        import codegen.perl_codegen
         lang = 'Perl'
-        source = codegen.pl_codegen.SourceFileContent
+        source = codegen.perl_codegen.SourceFileContent
         re = source.rec_block_start
         for line, expected in [
             ('# begin wxGlade: extracode',              ('', None, 'extracode')),
@@ -1082,7 +1082,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{codegen.cpp_codegen.CPPCodeWriter.cn()}
         @see: L{codegen.lisp_codegen.LispCodeWriter.cn()}
-        @see: L{codegen.pl_codegen.PerlCodeWriter.cn()}
+        @see: L{codegen.perl_codegen.PerlCodeWriter.cn()}
         @see: L{codegen.py_codegen.PythonCodeWriter.cn()}
         """
         details = {}
@@ -1171,7 +1171,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test string quotation for Perl and Python
         
-        @see: L{codegen.pl_codegen.PerlCodeWriter.quote_str()}
+        @see: L{codegen.perl_codegen.PerlCodeWriter.quote_str()}
         @see: L{codegen.py_codegen.PythonCodeWriter.quote_str()}
         """
         details = {}

@@ -12,7 +12,7 @@ the lines to add to the '__init__', '__set_properties' and '__do_layout'
 methods of the parent object.
 
 @copyright: 2005 Surendra K Singhi <efuzzyone@users.sourceforge.net>
-@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2012-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -180,7 +180,8 @@ class LispCodeWriter(BaseLangCodeWriter):
     """
 
     default_extensions = ['lisp']
-    language = "lisp"
+    language = 'lisp'
+    lang_prefix = 'lisp'
 
     _code_statements = {
         'backgroundcolour': "(wxWindow_SetBackgroundColour %(objname)s %(value)s)\n",
@@ -367,18 +368,6 @@ class LispCodeWriter(BaseLangCodeWriter):
             }
 
         self._initialize_stage2(out_path)
-
-    def setup(self):
-        """\
-        Load language specific code generators and sizer code generators
-
-        @see: L{load_codegens()}
-        """
-        # load lisp_codegen's ...
-        self.load_codegens()
-        # ... then, the sizers
-        import edit_sizers.lisp_sizers_codegen
-        edit_sizers.lisp_sizers_codegen.initialize()
 
     def add_app(self, app_attrs, top_win_class):
         top_win = app_attrs.get('top_window')
