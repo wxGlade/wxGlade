@@ -37,7 +37,7 @@ palette of buttons. The initialization of wxGladeFrame consists of three steps:
    returns a wxBitmapButton instance to be added to the main palette. 
    The loading of the sizers is more or less the same, except that all the
    sizers are in the same module, 'edit_sizers', and the initialization
-   function (called 'init_all') returns a list of wxBitmapButton objects
+   function (called 'init_gui') returns a list of wxBitmapButton objects
 
 
 2. Adding a toplevel widget

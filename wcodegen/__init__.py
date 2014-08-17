@@ -26,6 +26,13 @@ class BaseCodeWriterBase(object):
     @type: String
     """
 
+    lang_prefix = None
+    """\
+    Language prefix to use in filenames to specify language specific code.
+
+    @type: String
+    """
+
     def __init__(self):
         """\
         Initialise only instance variables using there defaults.
@@ -502,7 +509,8 @@ class CppWidgetCodeWriter(BaseWidgetCodeWriter):
     Base class for all C++ widget code writer classes.
     """
     prefix_style = True
-    language = "C++"
+    language = 'C++'
+    lang_prefix = 'cpp'
     tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
     tmpl_setdefault = '%(name)s->SetDefault();\n'
     tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
@@ -571,6 +579,7 @@ class LispWidgetCodeWriter(BaseWidgetCodeWriter):
     Base class for all Lisp widget code writer classes.
     """
     language = 'lisp'
+    lang_prefix = 'lisp'
     tmpl_setvalue = '(%(klass)s_SetValue %(name)s %(value_unquoted)s)\n'
     tmpl_setdefault = '(%(klass)s_SetDefault %(name)s)\n'
     tmpl_selection = '(%(klass)s_SetSelection %(name)s %(selection)s)\n'
@@ -610,7 +619,8 @@ class PerlWidgetCodeWriter(BaseWidgetCodeWriter):
     Base class for all Perl widget code writer classes.
     """
     prefix_style = True
-    language = "perl"
+    language = 'perl'
+    lang_prefix = 'perl'
     tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
     tmpl_setdefault = '%(name)s->SetDefault();\n'
     tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
@@ -639,7 +649,8 @@ class PythonWidgetCodeWriter(BaseWidgetCodeWriter):
     """\
     Base class for all Python widget code writer classes.
     """
-    language = "python"
+    language = 'python'
+    lang_prefix = 'py'
     tmpl_setvalue = '%(name)s.SetValue(%(value_unquoted)s)\n'
     tmpl_setdefault = '%(name)s.SetDefault()\n'
     tmpl_selection = '%(name)s.SetSelection(%(selection)s)\n'

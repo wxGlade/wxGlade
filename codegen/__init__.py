@@ -2658,21 +2658,6 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         return code_lines
 
-    def load_codegens(self):
-        """\
-        Load and initialise language code generators.
-
-        More details are mentioned in L{common.load_widgets_from_dir()}.
-        """
-        for path in [config.widgets_path,
-                     config.preferences.local_widget_path]:
-            common.load_widgets_from_dir(
-                path,
-                submodule='%s_codegen' % self.language,
-                logger=self._logger
-            )
-        return
-
     def _source_warning(self, klass, msg, sub_obj):
         """\
         Format and add a warning message to the source code.

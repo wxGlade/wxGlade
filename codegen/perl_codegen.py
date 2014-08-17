@@ -204,7 +204,8 @@ class PerlCodeWriter(BaseLangCodeWriter):
     """
 
     default_extensions = ['pl', 'pm']
-    language = "perl"
+    language = 'perl'
+    lang_prefix = 'perl'
 
     _code_statements = {
         'backgroundcolour': "%(objname)s->SetBackgroundColour(%(value)s);\n",
@@ -540,18 +541,6 @@ unless(caller){
         ]
 
         self._initialize_stage2(out_path)
-
-    def setup(self):
-        """\
-        Load language specific code generators and sizer code generators
-
-        @see: L{load_codegens()}
-        """
-        # load perl_codegen's ...
-        self.load_codegens()
-        # ... then, the sizers
-        import edit_sizers.perl_sizers_codegen
-        edit_sizers.perl_sizers_codegen.initialize()
 
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings

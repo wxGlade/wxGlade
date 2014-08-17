@@ -2507,8 +2507,10 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 def init_all():
     """\
-    module initialization function: returns a list of buttons (to add to the
-    main palette) to add the various sizers
+    Module initialization function
+
+    @return: A list of buttons (to add to the main palette) to add the
+             various sizers
     """
     cw = common.widgets
     cw['EditBoxSizer'] = builder
