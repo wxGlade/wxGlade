@@ -17,6 +17,7 @@ import config
 import common
 import main
 
+
 class TestGui(WXGladeBaseTest):
     """\
     Test GUI functionality
@@ -46,7 +47,7 @@ class TestGui(WXGladeBaseTest):
         self.orig_stdout = sys.stdout
         sys.stdout = cStringIO.StringIO()
 
-        # initialse base class
+        # initialise base class
         WXGladeBaseTest.setUp(self)
 
         # inject mock object for wxMessageBox
@@ -117,7 +118,7 @@ class TestGui(WXGladeBaseTest):
         @param lang: Language to set
         @type lang:  StringIO
         """
-        radiobox= common.app_tree.app.codewriters_prop.options
+        radiobox = common.app_tree.app.codewriters_prop.options
         radiobox.SetStringSelection(lang)
         event = wx.CommandEvent(
             wx.wxEVT_COMMAND_RADIOBOX_SELECTED,
@@ -145,9 +146,12 @@ class TestGui(WXGladeBaseTest):
         err_caption = u'Error'
         self.failUnless(
             [err_msg, err_caption] == self._messageBox,
-            '''Expected wxMessageBox(message=%s, caption=%s)''' % (
+            'Expected wxMessageBox(message="%s", caption="%s") '
+            'got wxMessageBox(message="%s", caption="%s")' % (
                 err_msg,
-                err_caption
+                err_caption,
+                self._messageBox[0],
+                self._messageBox[1],
                 )
             )
 
@@ -167,8 +171,8 @@ class TestGui(WXGladeBaseTest):
             )
         self.failIf(
             self._messageBox,
-            'Loading test wxg file caused an error message: %s' % \
-                self._messageBox
+            'Loading test wxg file caused an error message: %s' %
+            self._messageBox
             )
 
     def load_and_generate(self, basename):
@@ -198,9 +202,12 @@ class TestGui(WXGladeBaseTest):
         err_caption = u'Error'
         self.failUnless(
             [err_msg, err_caption] == self._messageBox,
-            '''Expected wxMessageBox(message=%s, caption=%s)''' % (
+            'Expected wxMessageBox(message="%s", caption="%s") '
+            'got wxMessageBox(message="%s", caption="%s")' % (
                 err_msg,
-                err_caption
+                err_caption,
+                self._messageBox[0],
+                self._messageBox[1],
             )
         )
         self._messageBox = None
@@ -239,9 +246,12 @@ class TestGui(WXGladeBaseTest):
             success_caption = u'Information'
             self.failUnless(
                 [success_msg, success_caption] == self._messageBox,
-                '''Expected wxMessageBox(message=%s, caption=%s)''' % (
+                'Expected wxMessageBox(message="%s", caption="%s") '
+                'got wxMessageBox(message="%s", caption="%s")' % (
                     success_msg,
-                    success_caption
+                    success_caption,
+                    self._messageBox[0],
+                    self._messageBox[1],
                 )
             )
             self._messageBox = None
@@ -281,7 +291,7 @@ class TestGui(WXGladeBaseTest):
             ['styleless-dialog',      'C++'],
             ]:
 
-            # check for langage first
+            # check for language first
             self.failUnless(
                 language in common.code_writers,
                 "No codewriter loaded for %s" % language
@@ -306,9 +316,12 @@ class TestGui(WXGladeBaseTest):
             success_caption = u'Information'
             self.failUnless(
                 [success_msg, success_caption] == self._messageBox,
-                '''Expected wxMessageBox(message=%s, caption=%s)''' % (
+                'Expected wxMessageBox(message="%s", caption="%s") '
+                'got wxMessageBox(message="%s", caption="%s")' % (
                     success_msg,
-                    success_caption
+                    success_caption,
+                    self._messageBox[0],
+                    self._messageBox[1],
                     )
                 )
             self._messageBox = None
