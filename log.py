@@ -225,9 +225,14 @@ class ExceptionFormatter(logging.Formatter):
                         stack_list:
 
                     stack_level += 1
-                    func_args = inspect.formatargvalues(
-                        *inspect.getargvalues(frame)
-                    )
+                    try:
+                        func_args = inspect.formatargvalues(
+                            *inspect.getargvalues(frame)
+                        )
+                    except:
+                        # sometimes frames contains non-printable values:
+                        # e.g. TypeError: __repr__ returned non-string (type NoneType)
+                        func_args = '(<unknown arguments>)'
 
                     msg = 'Stack frame at level %d' % stack_level
                     sio.write('%s\n' % msg)
@@ -259,9 +264,13 @@ class ExceptionFormatter(logging.Formatter):
                                 var_value = frame.f_locals[var_name]
                                 var_value = var_value.encode('string-escape')
                             else:
-                                var_value = pprint.pformat(
-                                    frame.f_locals[var_name])
-                                var_value = var_value
+                                try:
+                                    var_value = pprint.pformat(
+                                        frame.f_locals[var_name])
+                                    var_value = var_value.encode(
+                                        'ascii', 'replace')
+                                except:
+                                    var_value = '<unknown content>'
                             sio.write('  -> %s (%s): %s\n' % (
                                 var_name, var_type, var_value)
                             )
