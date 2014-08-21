@@ -22,19 +22,22 @@ in revision 81919 (27.12.2010) in the public Python repository.
 
 @todo: Integrate Unicode logging fix.
 
-@copyright: 2013 Carsten Grohmann
+@copyright: 2013-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import atexit
 import cStringIO
+import datetime
+import inspect
 import logging
 import logging.handlers
 import os
 import pprint
 import sys
-import traceback
 import types
+
+import config
 
 
 stringLoggerInstance = None
@@ -54,6 +57,9 @@ Contains the original exception handler
 class StringHandler(logging.handlers.MemoryHandler):
     """\
     Stores the log records as a list of strings.
+
+    @ivar buffer: The message buffer itself
+    @type buffer: List of strings
     """
 
     storeAsUnicode = True
@@ -61,11 +67,6 @@ class StringHandler(logging.handlers.MemoryHandler):
     Stores the log records as unicode strings
 
     @type: Boolean
-    """
-
-    buffer = []
-    """\
-    The message buffer itself
     """
 
     encoding = sys.stdout.encoding or sys.getfilesystemencoding()
@@ -160,66 +161,148 @@ class StringHandler(logging.handlers.MemoryHandler):
 # end of class StringHandler
 
 
-class wxGladeFormatter(logging.Formatter):
+class ExceptionFormatter(logging.Formatter):
     """\
     Extended formatter to include more exception details automatically.
     """
 
     def formatException(self, ei):
         """
-        Format and return the specified exception information as a string.
+        Returns a detailed exception
+
+        @param ei: Tuple or list of exc_type, exc_value, exc_tb
+        @return: Formatted exception
+        @rtype:  String
         """
-        sio = cStringIO.StringIO()
+        context = None
+        exc_tb = ei[2]
         exc_type = ei[0]
         exc_value = ei[1]
-        exc_tb = ei[2]
-        tb = None
-        frame_locals = None
+        filename = None
+        frame = None
+        func_args = None
+        func_name = None
+        index = None
+        lineno = None
+        sio = cStringIO.StringIO()
+        stack_level = 0
+        stack_list = []
         var = None
-        vartype = None
-        varvalue = None
+        var_name = None
+        var_type = None
+        var_value = None
         try:
-            # log exception details
-            sio.write(_('An unexpected error occurs!\n'))
-            sio.write(_('Error type:    %s\n') % exc_type)
-            sio.write(_('Error details: %s\n') % exc_value)
-            sio.write(_('Stack Trace:\n'))
-            traceback.print_exception(exc_type, exc_value, exc_tb, None, sio)
-            
-            if exc_tb:
-                tb = exc_tb
-                while tb.tb_next:
-                    tb = tb.tb_next
-                frame_locals = tb.tb_frame.f_locals
+            try:
+                # log exception details
+                now = datetime.datetime.now().isoformat()
+                py_version = getattr(config, 'py_version', 'not found')
+                wx_version = getattr(config, 'wx_version', 'not found')
+                platform = getattr(config, 'platform', 'not found')
+                app_version = getattr(config, 'version', 'not found')
 
-                sio.write(_('Local variables of the last stack entry:\n'))
-                for varname in frame_locals.keys():
-                    # convert variablen name and value to ascii
-                    var = frame_locals[varname]
-                    vartype = type(var)
-                    if vartype == types.UnicodeType:
-                        varvalue = frame_locals[varname]
-                        varvalue = varvalue.encode('unicode_escape')
-                    elif vartype == types.StringType:
-                        varvalue = frame_locals[varname]
-                        varvalue = varvalue.encode('string-escape')
+                sio.write('An unexpected error occurred!\n')
+                sio.write('\n')
+                sio.write('Date and time:      %s\n' % now)
+                sio.write('Python version:     %s\n' % py_version)
+                sio.write('wxPython version:   %s\n' % wx_version)
+                sio.write('wxWidgets platform: %s\n' % platform)
+                sio.write('wxGlade version:    %s\n' % app_version)
+                sio.write('\n')
+                sio.write('Exception type:    %s\n' % exc_type)
+                sio.write('Exception details: %s\n' % exc_value)
+                sio.write('Application stack trace:\n')
+
+                # leave the exception handler if no traceback is available
+                if not exc_tb:
+                    return
+
+                # get stack frames
+                stack_list = inspect.getinnerframes(exc_tb, 7)
+                stack_list.reverse()
+                stack_level = -1
+
+                for frame, filename, lineno, func_name, context, index in \
+                        stack_list:
+
+                    stack_level += 1
+                    try:
+                        func_args = inspect.formatargvalues(
+                            *inspect.getargvalues(frame)
+                        )
+                    except:
+                        # sometimes frames contains non-printable values:
+                        # e.g. TypeError: __repr__ returned non-string (type NoneType)
+                        func_args = '(<unknown arguments>)'
+
+                    msg = 'Stack frame at level %d' % stack_level
+                    sio.write('%s\n' % msg)
+                    msg = '=' * len(msg)
+                    sio.write('%s\n' % msg)
+                    sio.write('  File "%s", line %d\n' % (filename, lineno))
+                    sio.write('  Function "%s%s"\n' % (func_name, func_args))
+                    sio.write('  Source code context:\n')
+
+                    pos = 0
+                    for line in context:
+                        line = line.rstrip()
+                        if pos == index:
+                            sio.write('  ->  %s\n' % line)
+                        else:
+                            sio.write('      %s\n' % line)
+                        pos += 1
+
+                    if frame.f_locals:
+                        sio.write('  Local variables:\n')
+                        for var_name in frame.f_locals:
+                            # convert name and value to ascii characters
+                            var = frame.f_locals[var_name]
+                            var_type = type(var)
+                            if isinstance(var_type, types.UnicodeType):
+                                var_value = frame.f_locals[var_name]
+                                var_value = var_value.encode('unicode_escape')
+                            elif isinstance(var_type, types.StringType):
+                                var_value = frame.f_locals[var_name]
+                                var_value = var_value.encode('string-escape')
+                            else:
+                                try:
+                                    var_value = pprint.pformat(
+                                        frame.f_locals[var_name])
+                                    var_value = var_value.encode(
+                                        'ascii', 'replace')
+                                except:
+                                    var_value = '<unknown content>'
+                            sio.write('  -> %s (%s): %s\n' % (
+                                var_name, var_type, var_value)
+                            )
                     else:
-                        varvalue = pprint.pformat(frame_locals[varname])
-                        varvalue = varvalue
-                    sio.write(_('%s (%s): %s\n') % (varname, vartype, varvalue))
+                        sio.write('  No local variables\n')
+                    sio.write('\n')
+            except Exception, e:
+                # This code should NEVER be executed!
+                logging.error('An exception has been raised inside the '
+                              'exception handler: %s', e)
+                sys.exit(1)
 
-        # delete local references of tracebacks or part of tracebacks
-        # to avoid circular references
+        # delete local references of trace backs or part of them  to avoid
+        # circular references
         finally:
-            del tb
-            del frame_locals
+            del context
             del ei
+            del exc_tb
             del exc_type,
             del exc_value,
-            del exc_tb
+            del filename
+            del frame
+            del func_args
+            del func_name
+            del index
+            del lineno
+            del stack_level
+            del stack_list
             del var
-            del vartype
-            del varvalue
+            del var_name
+            del var_type
+            del var_value
 
         s = sio.getvalue()
         sio.close()
@@ -227,10 +310,10 @@ class wxGladeFormatter(logging.Formatter):
             s = s[:-1]
         return s
 
-# end of class wxGladeFormatter
+# end of class ExceptionFormatter
 
 
-def init(filename='wxglade.log', encoding=None, level=None):
+def init(filename='wxglade.log', encoding='utf-8', level=None):
     """\
     Initialise the logging facility
 
@@ -252,12 +335,8 @@ def init(filename='wxglade.log', encoding=None, level=None):
     @see: L{stringLoggerInstance}
     @see: L{installExceptionHandler()}
     """
-    global stringLoggerInstance
-
-    default_formatter = wxGladeFormatter(
-        '%(levelname)-8s: %(message)s'
-        )
-    file_formatter = wxGladeFormatter(
+    default_formatter = ExceptionFormatter('%(levelname)-8s: %(message)s')
+    file_formatter = ExceptionFormatter(
         '%(asctime)s %(name)s %(levelname)s: %(message)s'
         )
     logger = logging.getLogger()
@@ -274,48 +353,56 @@ def init(filename='wxglade.log', encoding=None, level=None):
     else:
         logging.StreamHandler.terminator = '\n'
 
-    # inject own function
-    logging.LogRecord.getMessage = getMessage
+    # instantiate console handler
+    console_logger = logging.StreamHandler()
+    console_logger.setLevel(logging.INFO)
+    console_logger.setFormatter(default_formatter)
+    logger.addHandler(console_logger)
 
-    # install own exception handler
-    installExceptionHandler()
-
-    # instantiate own handler
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    console.setFormatter(default_formatter)
-    logger.addHandler(console)
-
+    # instantiate file handler
     if filename:
-        fileLogger = logging.handlers.RotatingFileHandler(
+        file_logger = logging.handlers.RotatingFileHandler(
             filename,
             maxBytes=100*1024,
             encoding=encoding,
+            backupCount=1,
             )
-        fileLogger.setFormatter(file_formatter)
-        fileLogger.setLevel(logging.NOTSET)
-        logger.addHandler(fileLogger)
+        file_logger.setFormatter(file_formatter)
+        file_logger.setLevel(logging.NOTSET)
+        logger.addHandler(file_logger)
 
-    stringLoggerInstance = StringHandler(storeAsUnicode=False)
-    stringLoggerInstance.setLevel(logging.WARNING)
-    stringLoggerInstance.setFormatter(default_formatter)
-    logger.addHandler(stringLoggerInstance)
+    # instantiate string handler
+    string_logger = StringHandler(storeAsUnicode=False)
+    string_logger.setLevel(logging.WARNING)
+    string_logger.setFormatter(default_formatter)
+    logger.addHandler(string_logger)
+
+    # store string logger globally
+    global stringLoggerInstance
+    stringLoggerInstance = string_logger
 
     # don't filter log levels in root logger
     logger.setLevel(logging.NOTSET)
 
     # Set log level for file logger only
     if level:
-        if level.upper() in logging._levelNames:                 # pylint: disable=W0212
-            logger.setLevel(logging._levelNames[level.upper()])  # pylint: disable=W0212
+        if level.upper() in logging._levelNames:                      # pylint: disable=W0212
+            file_logger.setLevel(logging._levelNames[level.upper()])  # pylint: disable=W0212
         else:
             logging.warning(
                 _('Invalid log level "%s". Use "WARNING" instead.'),
                 level.upper(),
                 )
-            logger.setLevel(logging.WARNING)
+            file_logger.setLevel(logging.WARNING)
     else:
-        logger.setLevel(logging.NOTSET)
+        file_logger.setLevel(logging.NOTSET)
+
+    # Install own exception handler at the end because it can raise a debug
+    # messages. This debug messages triggers the creation of a default
+    # StreamHandler if no log handler exists.
+    # There is a period of time with no log handler during this log
+    # initialisation.
+    installExceptionHandler()
 
 
 def deinit():
@@ -418,63 +505,16 @@ def deinstallExceptionHandler():
 
 def exceptionHandler(exc_type, exc_value, exc_tb):
     """\
-    Logs detailed information about uncaught exceptions
+    Log detailed information about uncaught exceptions
 
     @param exc_type:  Type of the exception (normally a class object)
     @param exc_value: The "value" of the exception
     @param exc_tb:    Call stack of the exception
     """
-    tb = None
-    frame_locals = None
-    var = None
-    vartype = None
-    varvalue = None
-    try:
-        # log exception details
-        logging.error(_('An unexpected error occurs!'))
-        logging.error(_('Error type:    %s') % exc_type)
-        logging.error(_('Error details: %s') % exc_value)
-        logging.error(_('Stack Trace:'))
-        logging.error(_(u'Stack Trace:'))
-        lines = '\n'.join(traceback.format_exception(exc_type, exc_value, exc_tb)).split('\n')
-        for line in lines:
-            if not line:
-                continue
-            logging.error(line.decode('ascii', 'replace'))
-
-        if exc_tb:
-            tb = exc_tb
-            while tb.tb_next:
-                tb = tb.tb_next
-            frame_locals = tb.tb_frame.f_locals
-            
-            logging.error(_('Local variables of the last stack entry:'))
-            for varname in frame_locals.keys():
-                # convert variable name and value to ascii
-                var = frame_locals[varname]
-                vartype = type(var)
-                if vartype == types.UnicodeType:
-                    varvalue = frame_locals[varname]
-                    varvalue = varvalue.encode('unicode_escape')
-                elif vartype == types.StringType:
-                    varvalue = frame_locals[varname]
-                    varvalue = varvalue.encode('string-escape')
-                else:
-                    varvalue = pprint.pformat(frame_locals[varname])
-                    varvalue = varvalue
-                logging.error(_('%s (%s): %s') % (varname, vartype, varvalue))
-
-    # delete local references of tracebacks or part of tracebacks
-    # to avoid circular references
-    finally:
-        del tb
-        del frame_locals
-        del exc_type,
-        del exc_value,
-        del exc_tb
-        del var
-        del vartype
-        del varvalue
+    logging.error(
+        _("An unhandled exception occurred"),
+        exc_info=(exc_type, exc_value, exc_tb)
+    )
 
 
 def getMessage(self):
@@ -505,3 +545,58 @@ def getMessage(self):
             # Errors caused by wrong message formatting
             logging.exception(_('Wrong format of a log message'))
     return msg
+
+# inject own (improved) function
+logging.LogRecord.getMessage = getMessage
+
+
+def emit(self, record):
+    """\
+    Emit a record.
+
+   If a formatter is specified, it is used to format the record.
+   The record is then written to the stream with a trailing newline.  If
+   exception information is present, it is formatted using
+   traceback.print_exception and appended to the stream.  If the stream
+   has an 'encoding' attribute, it is used to determine how to do the
+   output to the stream.
+
+   @note: This specific version to handle Unicode user-supplied arguments.
+
+   @note: The function is copied from the revision (81919 - 27.12.2010) of
+          Python's public SVN repository.It's because the implementations
+          included in Python 2.5 and some versions of Python 2.6 aren't
+          ready to handle Unicode properly.
+    """
+    try:
+        msg = self.format(record)
+        stream = self.stream
+        fs = "%%s%s" % self.terminator
+        try:
+            if (isinstance(msg, unicode) and
+                getattr(stream, 'encoding', None)):
+                ufs = fs.decode(stream.encoding)
+                try:
+                    stream.write(ufs % msg)
+                except UnicodeEncodeError:
+                    #Printing to terminals sometimes fails. For example,
+                    #with an encoding of 'cp1251', the above write will
+                    #work if written to a stream opened or wrapped by
+                    #the codecs module, but fail when writing to a
+                    #terminal even when the codepage is set to cp1251.
+                    #An extra encoding step seems to be needed.
+                    stream.write((ufs % msg).encode(stream.encoding))
+            else:
+                stream.write(fs % msg)
+        except UnicodeError:
+            # It looks like stream(encoding='latin-1') doesn't like Unicode
+            #stream.write(fs % msg.encode("UTF-8"))
+            stream.write(fs % msg.encode(stream.encoding, 'replace'))
+        self.flush()
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    except:
+        self.handleError(record)
+
+# inject own version that handles unicode properly
+logging.StreamHandler.emit = emit
