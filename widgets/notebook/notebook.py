@@ -216,28 +216,27 @@ class EditNotebook(ManagedBase, StylesMixin):
 
     def __init__(self, name, parent, id, style, sizer, pos,
                  property_window, show=True):
+        # create new and (still) unused notebook name
+        if not name:
+            name = self.next_notebook_name()
 
-        # Initialise parent classes
+        # increase number of created notebooks
+        EditNotebook.notebook_number += 1
+
+        # initialise parent classes
         ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer,
                              pos, property_window, show=show)
         StylesMixin.__init__(self)
 
         # initialise instance variables
-        # create new and (still) unused notebook name
-        if not name:
-            name = self.next_notebook_name()
-
-        # Increase number of created notebooks
-        EditNotebook.notebook_number += 1
-
         self.virtual_sizer = NotebookVirtualSizer(self)
         self._is_removing_pages = False
 
         # initialise properties remaining staff
         self.style = style
         self.tabs = [['tab1', None]]  # list of pages of this notebook
-                                      # (actually a list of
-                                      # 2-list label, window)
+        # (actually a list of
+        # 2-list label, window)
         style_labels = ['#section#' + _('Style'),  'wxNB_LEFT', 'wxNB_RIGHT',
                         'wxNB_BOTTOM', 'wxNB_FIXEDWIDTH', 'wxNB_MULTILINE',
                         'wxNB_NOPAGETHEME']
@@ -248,7 +247,7 @@ class EditNotebook(ManagedBase, StylesMixin):
             'style',
             None,
             style_labels
-            )
+        )
         self.access_functions['tabs'] = (self.get_tabs, self.set_tabs)
         tab_cols = [('Tab label', GridProperty.STRING)]
         self.properties['tabs'] = NotebookPagesProperty(
