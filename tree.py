@@ -1,9 +1,10 @@
-# tree.py: classes to handle and display the structure of a wxGlade app
-# 
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Classes to handle and display the structure of a wxGlade app
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright_ 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import logging
 import os.path
@@ -14,9 +15,6 @@ import misc
 import common
 import compat
 import config
-
-try: set
-except NameError: from sets import Set as set
 
 
 class Tree(object):

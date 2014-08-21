@@ -12,11 +12,6 @@ import math
 import re
 import wx
 
-try:
-    set
-except NameError:
-    from sets import Set as set
-
 # import project modules
 from widget_properties import *
 import misc
