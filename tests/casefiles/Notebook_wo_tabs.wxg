@@ -12,7 +12,6 @@
                 <border>0</border>
                 <option>1</option>
                 <object class="wxNotebook" name="notebook_1" base="EditNotebook">
-                    <style>0</style>
                     <tabs>
                     </tabs>
                     <object class="wxPanel" name="notebook_1_pane_1" base="EditPanel">

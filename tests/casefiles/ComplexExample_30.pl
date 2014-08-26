@@ -81,21 +81,21 @@ sub new {
     $self->{button_5} = Wx::Button->new($self, wxID_CLOSE, "");
     $self->{button_2} = Wx::Button->new($self, wxID_CANCEL, "", wxDefaultPosition, wxDefaultSize, wxBU_TOP);
     $self->{button_1} = Wx::Button->new($self, wxID_OK, "", wxDefaultPosition, wxDefaultSize, wxBU_TOP);
-    
+
     $self->__set_properties();
     $self->__do_layout();
-    
+
     Wx::Event::EVT_MENU($self, wxID_OPEN, \&OnOpen);
     Wx::Event::EVT_MENU($self, wxID_EXIT, \&OnClose);
     Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAboutDialog);
     Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, \&startConverting);
-    
+
     # end wxGlade
     return $self;
-    
+
 }
-    
-    
+
+
 sub __set_properties {
     my $self = shift;
     # begin wxGlade: PyOgg2_MyFrame::__set_properties
@@ -136,8 +136,8 @@ sub __do_layout {
     $self->{sizer_3} = Wx::StaticBoxSizer->new($self->{sizer_3_staticbox}, wxHORIZONTAL);
     $self->{_gszr_pane1} = Wx::FlexGridSizer->new(1, 3, 0, 0);
     my $_lbl_input_filename = Wx::StaticText->new($self->{notebook_1_pane_1}, wxID_ANY, _T("File name:"));
-    $self->{_gszr_pane1}->Add($_lbl_input_filename, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-    $self->{_gszr_pane1}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL, 5);
+    $self->{_gszr_pane1}->Add($_lbl_input_filename, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    $self->{_gszr_pane1}->Add($self->{text_ctrl_1}, 1, wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     $self->{_gszr_pane1}->Add($self->{button_3}, 0, wxALL, 5);
     $self->{notebook_1_pane_1}->SetSizer($self->{_gszr_pane1});
     $self->{_gszr_pane1}->AddGrowableCol(1);
@@ -147,7 +147,7 @@ sub __do_layout {
     $self->{notebook_1_pane_2}->SetSizer($self->{sizer_4});
     $self->{_szr_pane3}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_pane_3}->SetSizer($self->{_szr_pane3});
-    $self->{_gszr_pane4}->Add($self->{_lbl_output_filename}, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    $self->{_gszr_pane4}->Add($self->{_lbl_output_filename}, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     $self->{_gszr_pane4}->Add($self->{text_ctrl_3}, 0, wxALL|wxEXPAND, 5);
     $self->{_gszr_pane4}->Add($self->{button_4}, 0, wxALL, 5);
     $self->{_gszr_pane4}->Add(20, 20, 0, 0, 0);
@@ -164,9 +164,9 @@ sub __do_layout {
     $self->{notebook_1}->AddPage($self->{notebook_1_pane_5}, _T("Some Text"));
     $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
     $self->{sizer_1}->Add($self->{static_line_1}, 0, wxALL|wxEXPAND, 5);
-    $self->{sizer_2}->Add($self->{button_5}, 0, wxALL|wxALIGN_RIGHT, 5);
-    $self->{sizer_2}->Add($self->{button_2}, 0, wxALL|wxALIGN_RIGHT, 5);
-    $self->{sizer_2}->Add($self->{button_1}, 0, wxALL|wxALIGN_RIGHT, 5);
+    $self->{sizer_2}->Add($self->{button_5}, 0, wxALIGN_RIGHT|wxALL, 5);
+    $self->{sizer_2}->Add($self->{button_2}, 0, wxALIGN_RIGHT|wxALL, 5);
+    $self->{sizer_2}->Add($self->{button_1}, 0, wxALIGN_RIGHT|wxALL, 5);
     $self->{sizer_1}->Add($self->{sizer_2}, 0, wxALIGN_RIGHT, 0);
     $self->SetSizer($self->{sizer_1});
     $self->{sizer_1}->SetSizeHints($self);
@@ -270,7 +270,7 @@ sub __do_layout {
     $self->{grid_sizer} = Wx::FlexGridSizer->new(3, 1, 0, 0);
     $self->{grid_sizer}->Add($self->{grid}, 1, wxEXPAND, 0);
     $self->{grid_sizer}->Add($self->{static_line}, 0, wxALL|wxEXPAND, 5);
-    $self->{grid_sizer}->Add($self->{button}, 0, wxALL|wxALIGN_RIGHT, 5);
+    $self->{grid_sizer}->Add($self->{button}, 0, wxALIGN_RIGHT|wxALL, 5);
     $self->{grid_sizer}->AddGrowableRow(0);
     $self->{grid_sizer}->AddGrowableCol(0);
     $self->{_szr_frame}->Add($self->{grid_sizer}, 1, wxEXPAND, 0);

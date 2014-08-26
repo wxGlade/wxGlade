@@ -97,7 +97,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     static_line_5 = new wxStaticLine(notebook_1_wxStaticLine, wxID_ANY);
     label_3 = new wxStaticText(notebook_1_Spacer, wxID_ANY, _("Two labels with a"));
     label_2 = new wxStaticText(notebook_1_Spacer, wxID_ANY, _("spacer between"));
-    text_ctrl = new wxTextCtrl(notebook_1_wxTextCtrl, wxID_ANY, _("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_LINEWRAP|wxTE_WORDWRAP);
+    text_ctrl = new wxTextCtrl(notebook_1_wxTextCtrl, wxID_ANY, _("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_LINEWRAP|wxTE_MULTILINE|wxTE_WORDWRAP);
     static_line_1 = new wxStaticLine(this, wxID_ANY);
     button_5 = new wxButton(this, wxID_CLOSE, wxEmptyString);
     button_1 = new wxButton(this, wxID_OK, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBU_TOP);
@@ -159,7 +159,7 @@ void All_Widgets_Frame::do_layout()
     sizer_7->Add(combo_box_filled, 1, wxALL, 5);
     sizer_6->Add(sizer_7, 1, wxEXPAND, 0);
     notebook_1_wxComboBox->SetSizer(sizer_6);
-    sizer_17->Add(datepicker_ctrl_1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    sizer_17->Add(datepicker_ctrl_1, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
     notebook_1_wxDatePickerCtrl->SetSizer(sizer_17);
     sizer_4->Add(list_box_empty, 1, wxALL|wxEXPAND, 5);
     sizer_4->Add(list_box_filled, 1, wxALL|wxEXPAND, 5);
@@ -181,13 +181,13 @@ void All_Widgets_Frame::do_layout()
     notebook_1_wxRadioButton->SetSizer(sizer_8);
     sizer_15->Add(gauge_1, 1, wxALL, 5);
     notebook_1_wxSlider->SetSizer(sizer_15);
-    sizer_16->Add(spin_button_1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    sizer_16->Add(spin_button_1, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     notebook_1_wxSpinButton->SetSizer(sizer_16);
     sizer_14->Add(spin_ctrl_1, 1, wxALL, 5);
     notebook_1_wxSpinCtrl->SetSizer(sizer_14);
-    sizer_11->Add(bitmap_code_nullbitmap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    sizer_11->Add(bitmap_file, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    sizer_11->Add(bitmap_nofile, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    sizer_11->Add(bitmap_code_nullbitmap, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_file, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_nofile, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     notebook_1_wxStaticBitmap->SetSizer(sizer_11);
     sizer_10->Add(static_line_2, 1, wxALL|wxEXPAND, 5);
     sizer_10->Add(static_line_3, 1, wxALL|wxEXPAND, 5);
@@ -220,8 +220,8 @@ void All_Widgets_Frame::do_layout()
     notebook_1->AddPage(notebook_1_wxTextCtrl, _("wxTextCtrl"));
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
     sizer_1->Add(static_line_1, 0, wxALL|wxEXPAND, 5);
-    sizer_2->Add(button_5, 0, wxALL|wxALIGN_RIGHT, 5);
-    sizer_2->Add(button_1, 0, wxALL|wxALIGN_RIGHT, 5);
+    sizer_2->Add(button_5, 0, wxALIGN_RIGHT|wxALL, 5);
+    sizer_2->Add(button_1, 0, wxALIGN_RIGHT|wxALL, 5);
     sizer_1->Add(sizer_2, 0, wxALIGN_RIGHT, 0);
     SetSizer(sizer_1);
     sizer_1->Fit(this);

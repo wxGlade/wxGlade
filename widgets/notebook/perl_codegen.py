@@ -2,14 +2,16 @@
 Perl generator functions for wxNotebook objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
+import wcodegen
 from codegen import TabsCodeHandler
 
 
-class PerlNotebookGenerator:
+class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'
     ]
@@ -51,15 +53,14 @@ class PerlNotebookGenerator:
             return l, [], []
         style = prop.get("style")
         if style:
-            style = "%s" % style
+            style = ", wxDefaultPosition, wxDefaultSize, %s" % self.cn_f(style)
         else:
             style = ''
         init = []
         if id_name:
             init.append(id_name)
-        init.append('$self->{%s} = %s->new(%s, %s, '
-                    'wxDefaultPosition, wxDefaultSize, %s);\n' %
-                    (window.name, plgen.cn(window.klass), parent, id, style))
+        init.append('$self->{%s} = %s->new(%s, %s%s);\n' %
+                    (window.name, self.cn(window.klass), parent, id, style))
 
         props_buf = plgen.generate_common_properties(window)
         return init, props_buf, layout_props

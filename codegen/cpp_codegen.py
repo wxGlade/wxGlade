@@ -976,14 +976,16 @@ bool MyApp::OnInit()
                     "NOT generated" % code_obj.name
                     )
             else:
-                prev_src.header_content = prev_src.header_content.\
-                                          replace(tag, "".join(header_buffer))
+                prev_src.header_content = \
+                    prev_src.header_content.replace(
+                        tag, "".join(header_buffer))
 
         # source file
         # set the window's style
         prop = code_obj.properties
         style = prop.get("style", None)
         if style:
+            style = mycn_f(style)
             sign_inst = sign_inst.replace('style', '%s' % style)
 
         # constructor

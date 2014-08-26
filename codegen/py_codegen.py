@@ -245,6 +245,7 @@ class PythonCodeWriter(BaseLangCodeWriter):
 
     class_separator = '.'
     comment_sign = '#'
+    format_flags = True
 
     global_property_writers = {
         'font':            BaseLangCodeWriter.FontPropertyHandler,
@@ -271,6 +272,8 @@ class PythonCodeWriter(BaseLangCodeWriter):
     tmpl_ctor_call_layout = '\n' \
                             '%(tab)sself.__set_properties()\n' \
                             '%(tab)sself.__do_layout()\n'
+
+    tmpl_flag_join = ' | '
 
     tmpl_func_empty = '%(tab)spass\n'
     
@@ -359,21 +362,6 @@ if __name__ == "__main__":
             elif name.startswith('EVT_'):
                 return 'wx.' + name
         return name
-
-    def cn_f(self, flags):
-        """\
-        Return the flags properly formatted.
-
-        @see: L{cn()}
-        """
-        # don't process integer values
-        if type(flags) == types.IntType:
-            return flags
-
-        # format single flags first
-        flags = [self.cn(f) for f in flags.split('|')]
-        
-        return ' | '.join(flags)
 
     def cn_class(self, klass):
         """\

@@ -20,7 +20,7 @@ CPPOgg1_MyDialog::CPPOgg1_MyDialog(wxWindow* parent, int id, const wxString& tit
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
 {
     // begin wxGlade: CPPOgg1_MyDialog::CPPOgg1_MyDialog
-    notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+    notebook_1 = new wxNotebook(this, wxID_ANY);
     notebook_1_pane_4 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_3 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
@@ -76,8 +76,8 @@ void CPPOgg1_MyDialog::do_layout()
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxHORIZONTAL);
     wxFlexGridSizer* grid_sizer_1 = new wxFlexGridSizer(1, 3, 0, 0);
     wxStaticText* label_1 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("File name:"));
-    grid_sizer_1->Add(label_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-    grid_sizer_1->Add(text_ctrl_1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL, 5);
+    grid_sizer_1->Add(label_1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    grid_sizer_1->Add(text_ctrl_1, 1, wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     grid_sizer_1->Add(button_3, 0, wxALL, 5);
     notebook_1_pane_1->SetSizer(grid_sizer_1);
     grid_sizer_1->AddGrowableCol(1);
@@ -85,7 +85,7 @@ void CPPOgg1_MyDialog::do_layout()
     notebook_1_pane_2->SetSizer(sizer_4);
     sizer_3->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
     notebook_1_pane_3->SetSizer(sizer_3);
-    grid_sizer_2->Add(label_2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    grid_sizer_2->Add(label_2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     grid_sizer_2->Add(text_ctrl_3, 0, wxALL|wxEXPAND, 5);
     grid_sizer_2->Add(button_4, 0, wxALL, 5);
     grid_sizer_2->Add(20, 20, 0, 0, 0);
@@ -99,9 +99,9 @@ void CPPOgg1_MyDialog::do_layout()
     notebook_1->AddPage(notebook_1_pane_4, _("Output File"));
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
     sizer_1->Add(static_line_1, 0, wxALL|wxEXPAND, 5);
-    sizer_2->Add(button_5, 0, wxALL|wxALIGN_RIGHT, 5);
-    sizer_2->Add(button_2, 0, wxALL|wxALIGN_RIGHT, 5);
-    sizer_2->Add(button_1, 0, wxALL|wxALIGN_RIGHT, 5);
+    sizer_2->Add(button_5, 0, wxALIGN_RIGHT|wxALL, 5);
+    sizer_2->Add(button_2, 0, wxALIGN_RIGHT|wxALL, 5);
+    sizer_2->Add(button_1, 0, wxALIGN_RIGHT|wxALL, 5);
     sizer_1->Add(sizer_2, 0, wxALIGN_RIGHT, 0);
     SetSizer(sizer_1);
     sizer_1->AddGrowableRow(0);

@@ -67,7 +67,7 @@ sub __do_layout {
     $self->{grid_sizer_3} = Wx::FlexGridSizer->new(3, 1, 0, 0);
     $self->{grid_sizer_3}->Add($self->{grid_1}, 1, wxEXPAND, 0);
     $self->{grid_sizer_3}->Add($self->{static_line_2}, 0, wxALL|wxEXPAND, 5);
-    $self->{grid_sizer_3}->Add($self->{button_6}, 0, wxALL|wxALIGN_RIGHT, 5);
+    $self->{grid_sizer_3}->Add($self->{button_6}, 0, wxALIGN_RIGHT|wxALL, 5);
     $self->{grid_sizer_3}->AddGrowableRow(0);
     $self->{grid_sizer_3}->AddGrowableCol(0);
     $self->{sizer_5}->Add($self->{grid_sizer_3}, 1, wxEXPAND, 0);

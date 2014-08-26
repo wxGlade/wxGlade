@@ -79,7 +79,7 @@ class BaseWidgetCodeWriter(BaseCodeWriterBase):
     @type: List of strings
     """
 
-    lang_config = {}
+    lang_styles = {}
     """
     Language specific widget style settings. This settings will merged with
     the generic settings stored in L{common.widget_config}.
@@ -239,16 +239,41 @@ class BaseWidgetCodeWriter(BaseCodeWriterBase):
         BaseCodeWriterBase.__init__(self)
         self.config = {}
         self.klass = None
-        if klass:
+
+        # All copy operation of styles uses always a deep-copy to prevent
+        # changing original data
+
+        # merge generic specific styles
+        self.config['styles'] = copy.deepcopy(
+            common.widget_config['generic_styles'])
+
+        # merge widget specific settings
+        if klass and klass in common.widget_config:
             self.klass = klass
-            if self.klass in common.widget_config:
-                # do a deep-copy to prevent changes at original data
-                # triggered by merge with language specific
-                self.config = copy.deepcopy(common.widget_config[self.klass])
-                if self.lang_config:
-                    if 'styles' not in self.config:
-                        self.config['styles'] = {}
-                    self.config['styles'].update(self.lang_config)
+            for item in common.widget_config[self.klass]:
+                if item == 'styles':
+                    try:
+                        self.config[item].update(copy.deepcopy(
+                            common.widget_config[self.klass]['styles']))
+                    except KeyError:
+                        pass
+                else:
+                    self.config[item] = \
+                        copy.deepcopy(common.widget_config[self.klass][item]
+                    )
+
+        # merge language specific styles
+        if self.lang_styles:
+            self.config['styles'].update(self.lang_styles)
+
+        # convert 'combination' from string to set
+        for style in self.config['styles'].keys():
+            try:
+                self.config['styles'][style]['combination'] = set(
+                    self.config['styles'][style]['combination'].split('|')
+                )
+            except KeyError:
+                pass
 
         self.codegen = common.code_writers[self.language]
         self._reset_vars()
@@ -356,7 +381,10 @@ class BaseWidgetCodeWriter(BaseCodeWriterBase):
         return self.codegen.cn(name)
 
     def cn_f(self, flags):
-        return self.codegen.cn_f(flags)
+        try:
+            return self.codegen.cn_f(flags, self.config['styles'])
+        except KeyError:
+            return self.codegen.cn_f(flags)
 
     def get_code(self, obj):
         """\

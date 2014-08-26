@@ -526,6 +526,15 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
     @type: Dictionary
     """
 
+    format_flags = False
+    """\
+    Format single flags with L{cn()} before joining flags in L{cn_f()}
+
+    @type: Boolean
+    @see: L{cn_f()}
+    @see: L{cn()}
+    """
+
     indent_level_func_body = 1
     """\
     Indentation level for bodies of class functions.
@@ -598,6 +607,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
     '__set_properties()'.
     
     @type: String
+    """
+
+    tmpl_flag_join = '|'
+    """\
+    Separator used to concatenate flags
+
+    @type: String
+    @see: L{cn_f}
     """
 
     tmpl_name_do_layout = ''
@@ -2099,23 +2116,104 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
     def cn(self, name):
         """\
-        Return the class name properly formatted for the selected name space.
+        Return the properly formatted class name.
 
+        @rtype: String
         @see: L{cn_f()}
-        @see: L{cn_class}
+        @see: L{cn_class()}
         """
         return name
 
-    def cn_f(self, flags):
+    def cn_f(self, flags, styles=None):
         """\
-        Return the flags properly formatted for the selected name space.
+        Rearrange and format flags.
+
+        Steps to rearrange:
+         1. Split given string using delimiter '|'
+         2. Remove duplicate flags
+         3. Rename flags using the 'alternative' entry
+            (see L{common.widget_config})
+         4. Combine flags using the 'combination' entry
+         5. Format single flags with L{cn()} if L{format_flags} is True
+         6. Sort and recombine flags using L{tmpl_flag_join}
+
+        The style details are described in L{common.widget_config}. The
+        access to the details is only available in widget writer instances.
+
+        Sometime the flag is a digit as a string. The function doesn't
+        process such kind of flags. It returns this flags unchanged.
+
+        Example C++::
+            >>> self.cn_f('wxLC_REPORT|wxSUNKEN_BORDER')
+            'wxLC_REPORT|wxSUNKEN_BORDER'
+
+        Example Python::
+            >>> self.cn_f('wxLC_REPORT|wxSUNKEN_BORDER')
+            'wxLC_REPORT | wxSUNKEN_BORDER'
+
+        @param flags: wxWidget styles joined by '|'
+        @type flags:  String
+
+        @param styles: Style details passed by widget writer instances
+        @type styles:  Dictionary
+
+        @rtype: String
+        @see: L{cn()}
+        @see: L{format_flags}
+        @see: L{tmpl_flag_join}
+        @see: L{common.widget_config}
         """
+        assert isinstance(flags, str)
+        if flags.isdigit():
+            return flags
+
+        # split flags to set first
+        flags = set(flags.split('|'))
+
+        # check for non-supported, renamed flags and ...
+        if styles:
+            for flag in flags.copy():
+                if flag not in styles:
+                    continue
+
+                # check for alternative names
+                try:
+                    flags.add(styles[flag]['alternative'])
+                    flags.remove(flag)
+                except KeyError:
+                    pass
+
+            # combined flags: replace children by parent flag
+            for style in styles:
+                try:
+                    if styles[style]['combination'] >= flags:
+                        flags -= styles[style]['combination']
+                        flags.add(style)
+                except KeyError:
+                    pass
+
+            # combined flags: remove flags that are part of other flags
+            # already
+            for flag in flags.copy():
+                # ignore already eliminated flags
+                if flag not in flags:
+                    continue
+                try:
+                    flags -= styles[flag]['combination']
+                except (KeyError, TypeError):
+                    pass
+
+        if self.format_flags:
+            flags = [self.cn(f) for f in flags]
+
+        flags = self.tmpl_flag_join.join(sorted(flags))
         return flags
 
     def cn_class(self, klass):
         """\
-        Return the klass name 
-        
+        Return the class name
+
+        @rtype: String
         @see: L{cn()}
         """
         return klass

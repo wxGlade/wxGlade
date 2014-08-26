@@ -20,7 +20,7 @@ wxGladePreferencesUI::wxGladePreferencesUI(wxWindow* parent, int id, const wxStr
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: wxGladePreferencesUI::wxGladePreferencesUI
-    notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+    notebook_1 = new wxNotebook(this, wxID_ANY);
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
     sizer_6_staticbox = new wxStaticBox(notebook_1_pane_2, wxID_ANY, _("Local widget path"));
     notebook_1_pane_1 = new wxPanel(notebook_1, wxID_ANY);
@@ -108,17 +108,17 @@ void wxGladePreferencesUI::do_layout()
     sizer_3->Add(show_sizer_handle, 0, wxALL|wxEXPAND, 5);
     sizer_3->Add(use_kde_dialogs, 0, wxALL|wxEXPAND, 5);
     wxStaticText* label_1 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Initial path for \nfile opening/saving dialogs:"));
-    sizer_4->Add(label_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-    sizer_4->Add(open_save_path, 1, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    sizer_4->Add(label_1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sizer_4->Add(open_save_path, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     wxStaticText* label_2_copy = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Initial path for \ncode generation file dialogs:"));
-    sizer_4->Add(label_2_copy, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-    sizer_4->Add(codegen_path, 1, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    sizer_4->Add(label_2_copy, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sizer_4->Add(codegen_path, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     wxStaticText* label_2 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Number of items in file history"));
-    sizer_4->Add(label_2, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-    sizer_4->Add(number_history, 1, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    sizer_4->Add(label_2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sizer_4->Add(number_history, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     wxStaticText* label_2_copy_1 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Number of buttons per row\nin the main palette"));
-    sizer_4->Add(label_2_copy_1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-    sizer_4->Add(buttons_per_row, 1, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    sizer_4->Add(label_2_copy_1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sizer_4->Add(buttons_per_row, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     sizer_4->AddGrowableCol(1);
     sizer_3->Add(sizer_4, 0, wxEXPAND, 3);
     notebook_1_pane_1->SetSizer(sizer_3);
@@ -126,19 +126,19 @@ void wxGladePreferencesUI::do_layout()
     sizer_5->Add(wxg_backup, 0, wxALL|wxEXPAND, 5);
     sizer_5->Add(codegen_backup, 0, wxALL|wxEXPAND, 5);
     sizer_5->Add(allow_duplicate_names, 0, wxALL|wxEXPAND, 5);
-    sizer_7->Add(default_border, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    sizer_7->Add(default_border, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     sizer_7->Add(default_border_size, 0, wxALL, 5);
     sizer_5->Add(sizer_7, 0, wxEXPAND, 0);
-    sizer_7_copy->Add(autosave, 0, wxLEFT|wxTOP|wxBOTTOM|wxALIGN_CENTER_VERTICAL, 5);
-    sizer_7_copy->Add(autosave_delay, 0, wxTOP|wxBOTTOM, 5);
+    sizer_7_copy->Add(autosave, 0, wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxTOP, 5);
+    sizer_7_copy->Add(autosave_delay, 0, wxBOTTOM|wxTOP, 5);
     wxStaticText* label_3 = new wxStaticText(notebook_1_pane_2, wxID_ANY, _(" seconds"));
-    sizer_7_copy->Add(label_3, 0, wxTOP|wxBOTTOM|wxALIGN_CENTER_VERTICAL|wxFIXED_MINSIZE, 5);
+    sizer_7_copy->Add(label_3, 0, wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxFIXED_MINSIZE|wxTOP, 5);
     sizer_5->Add(sizer_7_copy, 0, wxEXPAND, 0);
     sizer_5->Add(write_timestamp, 0, wxALL|wxEXPAND, 5);
     sizer_5->Add(write_generated_from, 0, wxALL|wxEXPAND, 5);
     sizer_5->Add(backup_suffix, 0, wxALL|wxEXPAND, 5);
     sizer_6->Add(local_widget_path, 1, wxALL, 3);
-    sizer_6->Add(choose_widget_path, 0, wxALL|wxALIGN_CENTER_VERTICAL, 3);
+    sizer_6->Add(choose_widget_path, 0, wxALIGN_CENTER_VERTICAL|wxALL, 3);
     sizer_5->Add(sizer_6, 0, wxALL|wxEXPAND, 5);
     notebook_1_pane_2->SetSizer(sizer_5);
     notebook_1->AddPage(notebook_1_pane_1, _("Interface"));
@@ -146,7 +146,7 @@ void wxGladePreferencesUI::do_layout()
     sizer_1->Add(notebook_1, 1, wxALL|wxEXPAND, 5);
     sizer_2->Add(ok, 0, 0, 0);
     sizer_2->Add(cancel, 0, wxLEFT, 10);
-    sizer_1->Add(sizer_2, 0, wxALL|wxALIGN_RIGHT, 10);
+    sizer_1->Add(sizer_2, 0, wxALIGN_RIGHT|wxALL, 10);
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

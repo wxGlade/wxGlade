@@ -49,7 +49,7 @@ void CPPOgg2_MyFrame::do_layout()
     wxFlexGridSizer* grid_sizer_3 = new wxFlexGridSizer(3, 1, 0, 0);
     grid_sizer_3->Add(grid_1, 1, wxEXPAND, 0);
     grid_sizer_3->Add(static_line_2, 0, wxALL|wxEXPAND, 5);
-    grid_sizer_3->Add(button_6, 0, wxALL|wxALIGN_RIGHT, 5);
+    grid_sizer_3->Add(button_6, 0, wxALIGN_RIGHT|wxALL, 5);
     grid_sizer_3->AddGrowableRow(0);
     grid_sizer_3->AddGrowableCol(0);
     sizer_5->Add(grid_sizer_3, 1, wxEXPAND, 0);
