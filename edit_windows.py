@@ -1428,6 +1428,8 @@ class StylesMixin(object):
     def _set_widget_style(self):
         """\
         Set a new widget style if the style has changed
+
+        @see: L{EditBase.widget}
         """
         if hasattr(self, 'widget'):
             if self.widget and self.update_widget_style:

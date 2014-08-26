@@ -201,6 +201,7 @@ class LispCodeWriter(BaseLangCodeWriter):
     classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer',
                         'wxFlexGridSizer']
     comment_sign = ';;;'
+    format_flags = True
 
     global_property_writers = {
         'font':            BaseLangCodeWriter.FontPropertyHandler,
@@ -316,24 +317,14 @@ class LispCodeWriter(BaseLangCodeWriter):
             return 'wx' + name
         return name
 
-    def cn_f(self, flags):
-        """\
-        Return the flags properly formatted.
-
-        @see: L{cn()}
-        """
-        # don't process integer values
-        if type(flags) == types.IntType:
-            return flags
-
-        # format single flags first
-        flags = [self.cn(f) for f in flags.split('|')]
-
+    def cn_f(self, flags, styles=None):
+        flags = BaseLangCodeWriter.cn_f(self, flags, styles)
+        # split again
+        flags = flags.split('|')
         if len(flags) == 1:
             flags = flags[0]
         else:
             flags = '(logior %s)' % ' '.join(flags)
-            
         return flags
 
     def initialize(self, app_attrs):

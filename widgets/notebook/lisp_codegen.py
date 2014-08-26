@@ -2,14 +2,16 @@
 Lisp generator functions for wxNotebook objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
+import wcodegen
 from codegen import TabsCodeHandler
 
 
-class LispNotebookGenerator:
+class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'
     ]
@@ -52,10 +54,10 @@ class LispNotebookGenerator:
             return l, [], []
 
         style = prop.get("style")
-        if not style:
-            style = 'wxNB_TOP'
+        if style:
+            style = self.cn_f(style)
         else:
-            style = codegen.cn_f(style)
+            style = 'wxNB_TOP'
 
         init = []
         if id_name:

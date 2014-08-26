@@ -43,7 +43,7 @@ class PyOgg2_MyFrame(wx.Frame):
         grid_sizer_3 = wx.FlexGridSizer(3, 1, 0, 0)
         grid_sizer_3.Add(self.grid_1, 1, wx.EXPAND, 0)
         grid_sizer_3.Add(self.static_line_2, 0, wx.ALL | wx.EXPAND, 5)
-        grid_sizer_3.Add(self.button_6, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
+        grid_sizer_3.Add(self.button_6, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
         grid_sizer_3.AddGrowableRow(0)
         grid_sizer_3.AddGrowableCol(0)
         sizer_5.Add(grid_sizer_3, 1, wx.EXPAND, 0)

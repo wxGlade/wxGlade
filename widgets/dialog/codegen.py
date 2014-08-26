@@ -15,7 +15,6 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
         return [], [], []
 
     def get_properties_code(self, obj):
-        cn = self.codegen.cn
         out = []
         title = obj.properties.get('title')
         if title:
@@ -24,14 +23,14 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
         if icon:
             if icon.startswith('var:'):
                 if not obj.preview:
-                    out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
-                    out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
-                                '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') %
+                    out.append('_icon = ' + self.cn('wxEmptyIcon') + '()\n')
+                    out.append(('_icon.CopyFromBitmap(' + self.cn('wxBitmap') +
+                                '(%s, ' + self.cn('wxBITMAP_TYPE_ANY') + '))\n') %
                                icon[4:].strip())
                     out.append('self.SetIcon(_icon)\n')
             elif icon.startswith('code:'):
                 if not obj.preview:
-                    out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
+                    out.append('_icon = ' + self.cn('wxEmptyIcon') + '()\n')
                     out.append(('_icon.CopyFromBitmap(%s)\n') %
                                icon[5:].strip())
                     out.append('self.SetIcon(_icon)\n')
@@ -39,9 +38,9 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
                 if obj.preview:
                     import misc
                     icon = misc.get_relative_path(icon, True)
-                out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
-                out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
-                            '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') %
+                out.append('_icon = ' + self.cn('wxEmptyIcon') + '()\n')
+                out.append(('_icon.CopyFromBitmap(' + self.cn('wxBitmap') +
+                            '(%s, ' + self.cn('wxBITMAP_TYPE_ANY') + '))\n') %
                            self.codegen.quote_path(icon))
                 out.append('self.SetIcon(_icon)\n')
         out.extend(self.codegen.generate_common_properties(obj))

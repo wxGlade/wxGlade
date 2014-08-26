@@ -33,7 +33,7 @@ class PyOgg1_MyDialog(wx.Dialog):
         # begin wxGlade: PyOgg1_MyDialog.__init__
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         wx.Dialog.__init__(self, *args, **kwds)
-        self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style=0)
+        self.notebook_1 = wx.Notebook(self, wx.ID_ANY)
         self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.text_ctrl_1 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "")
         self.button_3 = wx.Button(self.notebook_1_pane_1, wx.ID_OPEN, "")
@@ -79,8 +79,8 @@ class PyOgg1_MyDialog(wx.Dialog):
         sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
         grid_sizer_1 = wx.FlexGridSizer(1, 3, 0, 0)
         label_1 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, _("File name:"))
-        grid_sizer_1.Add(label_1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
-        grid_sizer_1.Add(self.text_ctrl_1, 1, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, 5)
+        grid_sizer_1.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        grid_sizer_1.Add(self.text_ctrl_1, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALL | wx.EXPAND, 5)
         grid_sizer_1.Add(self.button_3, 0, wx.ALL, 5)
         self.notebook_1_pane_1.SetSizer(grid_sizer_1)
         grid_sizer_1.AddGrowableCol(1)
@@ -88,7 +88,7 @@ class PyOgg1_MyDialog(wx.Dialog):
         self.notebook_1_pane_2.SetSizer(sizer_4)
         sizer_3.Add(self.text_ctrl_2, 1, wx.ALL | wx.EXPAND, 5)
         self.notebook_1_pane_3.SetSizer(sizer_3)
-        grid_sizer_2.Add(self.label_2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+        grid_sizer_2.Add(self.label_2, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         grid_sizer_2.Add(self.text_ctrl_3, 0, wx.ALL | wx.EXPAND, 5)
         grid_sizer_2.Add(self.button_4, 0, wx.ALL, 5)
         grid_sizer_2.Add((20, 20), 0, 0, 0)
@@ -102,9 +102,9 @@ class PyOgg1_MyDialog(wx.Dialog):
         self.notebook_1.AddPage(self.notebook_1_pane_4, _("Output File"))
         sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
         sizer_1.Add(self.static_line_1, 0, wx.ALL | wx.EXPAND, 5)
-        sizer_2.Add(self.button_5, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
-        sizer_2.Add(self.button_2, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
-        sizer_2.Add(self.button_1, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
+        sizer_2.Add(self.button_5, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
+        sizer_2.Add(self.button_2, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
+        sizer_2.Add(self.button_1, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
         sizer_1.Add(sizer_2, 0, wx.ALIGN_RIGHT, 0)
         self.SetSizer(sizer_1)
         sizer_1.AddGrowableRow(0)
@@ -118,14 +118,12 @@ class PyOgg1_MyDialog(wx.Dialog):
         event.Skip()
 
 # end of class PyOgg1_MyDialog
-
-
 if __name__ == "__main__":
-    gettext.install("app") # replace with the appropriate catalog name
+    gettext.install("PyOgg1_app") # replace with the appropriate catalog name
 
-    app = wx.PySimpleApp(0)
+    PyOgg1_app = wx.PySimpleApp(0)
     wx.InitAllImageHandlers()
     Mp3_To_Ogg = PyOgg1_MyDialog(None, wx.ID_ANY, "")
-    app.SetTopWindow(Mp3_To_Ogg)
+    PyOgg1_app.SetTopWindow(Mp3_To_Ogg)
     Mp3_To_Ogg.Show()
-    app.MainLoop()
+    PyOgg1_app.MainLoop()

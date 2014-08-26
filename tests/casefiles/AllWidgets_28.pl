@@ -86,7 +86,7 @@ sub new {
     $self->{label_3} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("Two labels with a"));
     $self->{label_2} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("spacer between"));
     $self->{notebook_1_wxTextCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-    $self->{text_ctrl} = Wx::TextCtrl->new($self->{notebook_1_wxTextCtrl}, wxID_ANY, _T("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_LINEWRAP|wxTE_WORDWRAP);
+    $self->{text_ctrl} = Wx::TextCtrl->new($self->{notebook_1_wxTextCtrl}, wxID_ANY, _T("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_LINEWRAP|wxTE_MULTILINE|wxTE_WORDWRAP);
     $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
     $self->{button_5} = Wx::Button->new($self, wxID_CLOSE, "");
     $self->{button_1} = Wx::Button->new($self, wxID_OK, "", wxDefaultPosition, wxDefaultSize, wxBU_TOP);
@@ -152,7 +152,7 @@ sub __do_layout {
     $self->{sizer_7}->Add($self->{combo_box_filled}, 1, wxALL, 5);
     $self->{sizer_6}->Add($self->{sizer_7}, 1, wxEXPAND, 0);
     $self->{notebook_1_wxComboBox}->SetSizer($self->{sizer_6});
-    $self->{sizer_17}->Add($self->{datepicker_ctrl_1}, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    $self->{sizer_17}->Add($self->{datepicker_ctrl_1}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
     $self->{notebook_1_wxDatePickerCtrl}->SetSizer($self->{sizer_17});
     $self->{sizer_4}->Add($self->{list_box_empty}, 1, wxALL|wxEXPAND, 5);
     $self->{sizer_4}->Add($self->{list_box_filled}, 1, wxALL|wxEXPAND, 5);
@@ -174,13 +174,13 @@ sub __do_layout {
     $self->{notebook_1_wxRadioButton}->SetSizer($self->{sizer_8});
     $self->{sizer_15}->Add($self->{gauge_1}, 1, wxALL, 5);
     $self->{notebook_1_wxSlider}->SetSizer($self->{sizer_15});
-    $self->{sizer_16}->Add($self->{spin_button_1}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    $self->{sizer_16}->Add($self->{spin_button_1}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxSpinButton}->SetSizer($self->{sizer_16});
     $self->{sizer_14}->Add($self->{spin_ctrl_1}, 1, wxALL, 5);
     $self->{notebook_1_wxSpinCtrl}->SetSizer($self->{sizer_14});
-    $self->{sizer_11}->Add($self->{bitmap_code_nullbitmap}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    $self->{sizer_11}->Add($self->{bitmap_code_nullbitmap}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxStaticBitmap}->SetSizer($self->{sizer_11});
     $self->{sizer_10}->Add($self->{static_line_2}, 1, wxALL|wxEXPAND, 5);
     $self->{sizer_10}->Add($self->{static_line_3}, 1, wxALL|wxEXPAND, 5);
@@ -213,8 +213,8 @@ sub __do_layout {
     $self->{notebook_1}->AddPage($self->{notebook_1_wxTextCtrl}, _T("wxTextCtrl"));
     $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
     $self->{sizer_1}->Add($self->{static_line_1}, 0, wxALL|wxEXPAND, 5);
-    $self->{sizer_2}->Add($self->{button_5}, 0, wxALL|wxALIGN_RIGHT, 5);
-    $self->{sizer_2}->Add($self->{button_1}, 0, wxALL|wxALIGN_RIGHT, 5);
+    $self->{sizer_2}->Add($self->{button_5}, 0, wxALIGN_RIGHT|wxALL, 5);
+    $self->{sizer_2}->Add($self->{button_1}, 0, wxALIGN_RIGHT|wxALL, 5);
     $self->{sizer_1}->Add($self->{sizer_2}, 0, wxALIGN_RIGHT, 0);
     $self->SetSizer($self->{sizer_1});
     $self->{sizer_1}->Fit($self);

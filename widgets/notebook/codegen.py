@@ -1,11 +1,13 @@
 """\
 Code generator functions for wxNotebook objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
+import wcodegen
 
 
 class TabsCodeHandler:
@@ -38,7 +40,7 @@ class TabsCodeHandler:
 # end of class TabsCodeHandler
 
 
-class PythonNotebookGenerator:
+class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, window):
         pygen = common.code_writers['python']
         prop = window.properties
@@ -64,7 +66,7 @@ class PythonNotebookGenerator:
             return l, [], []
         style = prop.get("style")
         if style:
-            style = ", style=%s" % pygen.cn_f(style)
+            style = ", style=%s" % self.cn_f(style)
         else:
             style = ''
         klass = window.klass
@@ -130,7 +132,7 @@ def xrc_code_generator(obj):
     return NotebookXrcObject(obj)
 
 
-class CppNotebookGenerator:
+class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
     constructor = [('wxWindow*', 'parent'), ('int', 'id'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
@@ -165,12 +167,14 @@ class CppNotebookGenerator:
             l = ['%s = new %s(%s, %s);\n' %
                  (window.name, window.klass, parent, id)]
             return l, ids, [], []
-        extra = ''
         style = prop.get('style')
         if style:
-            extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
+            style = ', wxDefaultPosition, wxDefaultSize, %s' % self.cn_f(
+                style)
+        else:
+            style = ''
         init = ['%s = new %s(%s, %s%s);\n' %
-                (window.name, window.klass, parent, id, extra)]
+                (window.name, window.klass, parent, id, style)]
 
         props_buf = cppgen.generate_common_properties(window)
 

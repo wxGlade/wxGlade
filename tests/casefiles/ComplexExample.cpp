@@ -105,8 +105,8 @@ void PyOgg2_MyFrame::do_layout()
     wxStaticBoxSizer* sizer_3 = new wxStaticBoxSizer(sizer_3_staticbox, wxHORIZONTAL);
     wxFlexGridSizer* _gszr_pane1 = new wxFlexGridSizer(1, 3, 0, 0);
     wxStaticText* _lbl_input_filename = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("File name:"));
-    _gszr_pane1->Add(_lbl_input_filename, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
-    _gszr_pane1->Add(text_ctrl_1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL, 5);
+    _gszr_pane1->Add(_lbl_input_filename, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    _gszr_pane1->Add(text_ctrl_1, 1, wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     _gszr_pane1->Add(button_3, 0, wxALL, 5);
     notebook_1_pane_1->SetSizer(_gszr_pane1);
     _gszr_pane1->AddGrowableCol(1);
@@ -116,7 +116,7 @@ void PyOgg2_MyFrame::do_layout()
     notebook_1_pane_2->SetSizer(sizer_4);
     _szr_pane3->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
     notebook_1_pane_3->SetSizer(_szr_pane3);
-    _gszr_pane4->Add(_lbl_output_filename, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    _gszr_pane4->Add(_lbl_output_filename, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     _gszr_pane4->Add(text_ctrl_3, 0, wxALL|wxEXPAND, 5);
     _gszr_pane4->Add(button_4, 0, wxALL, 5);
     _gszr_pane4->Add(20, 20, 0, 0, 0);
@@ -133,9 +133,9 @@ void PyOgg2_MyFrame::do_layout()
     notebook_1->AddPage(notebook_1_pane_5, _("Some Text"));
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
     sizer_1->Add(static_line_1, 0, wxALL|wxEXPAND, 5);
-    sizer_2->Add(button_5, 0, wxALL|wxALIGN_RIGHT, 5);
-    sizer_2->Add(button_2, 0, wxALL|wxALIGN_RIGHT, 5);
-    sizer_2->Add(button_1, 0, wxALL|wxALIGN_RIGHT, 5);
+    sizer_2->Add(button_5, 0, wxALIGN_RIGHT|wxALL, 5);
+    sizer_2->Add(button_2, 0, wxALIGN_RIGHT|wxALL, 5);
+    sizer_2->Add(button_1, 0, wxALIGN_RIGHT|wxALL, 5);
     sizer_1->Add(sizer_2, 0, wxALIGN_RIGHT, 0);
     SetSizer(sizer_1);
     sizer_1->SetSizeHints(this);
@@ -223,7 +223,7 @@ void MyFrameGrid::do_layout()
     wxFlexGridSizer* grid_sizer = new wxFlexGridSizer(3, 1, 0, 0);
     grid_sizer->Add(grid, 1, wxEXPAND, 0);
     grid_sizer->Add(static_line, 0, wxALL|wxEXPAND, 5);
-    grid_sizer->Add(button, 0, wxALL|wxALIGN_RIGHT, 5);
+    grid_sizer->Add(button, 0, wxALIGN_RIGHT|wxALL, 5);
     grid_sizer->AddGrowableRow(0);
     grid_sizer->AddGrowableCol(0);
     _szr_frame->Add(grid_sizer, 1, wxEXPAND, 0);

@@ -453,8 +453,8 @@ def builder(parent, sizer, pos, number=[1]):
                 wx.ID_ANY,
                 _('Select tab placement'),
                 )
-            self.styles = [0, wx.NB_BOTTOM, wx.NB_LEFT, wx.NB_RIGHT]
-            self.style = 0
+            self.styles = [wx.NB_TOP, wx.NB_BOTTOM, wx.NB_LEFT, wx.NB_RIGHT]
+            self.style = wx.NB_TOP
             prop = RadioProperty(
                 self,
                 'tab_placement',

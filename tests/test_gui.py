@@ -142,7 +142,7 @@ class TestGui(WXGladeBaseTest):
             )
         err_msg = u'Error loading file None: Notebook widget' \
                   ' "notebook_1" does not have any tabs! ' \
-                  '_((line: 18, column:  20))'
+                  '_((line: 17, column:  20))'
         err_caption = u'Error'
         self.failUnless(
             [err_msg, err_caption] == self._messageBox,

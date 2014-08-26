@@ -14,6 +14,12 @@
 
 #include <wx/wx.h>
 #include <wx/image.h>
+#include "wx/intl.h"
+
+#ifndef APP_CATALOG
+#define APP_CATALOG "CPPOgg2_app"  // replace with the appropriate catalog name
+#endif
+
 
 // begin wxGlade: ::dependencies
 #include <wx/notebook.h>

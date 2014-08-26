@@ -93,23 +93,62 @@ Factory functions to build objects from an xml file
 @type: dict
 """
 
-widget_config = {}
+widget_config = {
+    'generic_styles': {
+        'wxALL': {
+            'desc': 'from wxSizer',
+            'combination': 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM',
+            },
+        'wxDEFAULT_DIALOG_STYLE': {
+            'desc': 'from wxDialog',
+            'combination': 'wxCAPTION|wxCLOSE_BOX|wxSYSTEM_MENU',
+        },
+    }
+}
 """\
 Dictionary to store widget generic widget details like tooltips, different
 names, ...
 
 Example::
-    config = {}
-    config[<wx class name>] = {}
-    config[<wx class name>]['supported_by'] = ['wx28', 'wx3']
+    config = {
+        'wxSplitterWindow' = {
+            'supported_by': ('wx28', 'wx3'),
+            'styles': {
+                'wxSP_3D': {
+                'desc': 'Draws a 3D effect border and sash',
+                'combination': 'wxSP_3DBORDER|wxSP_3DSASH',
+            },
+        },
+        'wxHyperlinkCtrl': {
+            'supported_by': ('wx28', 'wx3'),
+        },
+        'generic_styles': {
+            'wxALL': {
+                'desc': 'from wxSizer',
+                'combination': 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM',
+            },
+        },
+
+    }
 
 Elements:
   - I{supported_by} - This widget is only available at the listed wx
     versions. An empty list or a non-existing entry means the widgets is
     always available.
 
+  - I{styles} - Dictionary with style specific settings
+
+  - I{generic_styles} - Generic item to concentrate styles that are not
+    part of a specific widget e.g. sizer styles.
+
+Style attributes:
+  - I{desc} - Short style description
+  - I{combination} - The style is defined as a combination of different
+    other styles.
+  - I{synonym} - Alternative name
+
 Language specific style settings from
-L{wcodegen.BaseWidgetCodeWriter.lang_config} will be merged with the styles
+L{wcodegen.BaseWidgetCodeWriter.lang_styles} will be merged with the styles
 dictionary in L{wcodegen.BaseWidgetCodeWriter.__init__()}.
 
 @type: dict
@@ -241,13 +280,13 @@ def load_config():
     # load the "built-in" widgets
     core_buttons = load_widgets_from_dir(
         config.widgets_path,
-        'config'
+        'wconfig'
     )
 
     # load the "user" widgets
     local_buttons = load_widgets_from_dir(
         config.preferences.local_widget_path,
-        'config'
+        'wconfig'
         )
 
     return
@@ -386,7 +425,7 @@ def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
             elif submodule:
 
                 # load and store generic widget details
-                if submodule == 'config':
+                if submodule == 'wconfig':
                     if hasattr(module, 'config'):
                         config_dict = getattr(module, 'config')
 

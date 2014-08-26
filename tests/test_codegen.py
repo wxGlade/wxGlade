@@ -1,5 +1,5 @@
 """
-@copyright: 2012-2013 Carsten Grohmann
+@copyright: 2012-2014 Carsten Grohmann
 
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
@@ -46,30 +46,6 @@ class TestCodeGen(WXGladeBaseTest):
         common.code_writers['python'].use_new_namespace = 1
         WXGladeBaseTest.tearDown(self)
 
-    def test_CPP_wxCalendarCtrl(self):
-        """\
-        Test CPP code generation with a small wxCalendarCtrl example
-
-        The test also tests for Sourceforge bug #2782306
-
-        @see: L{wxglade.widgets.calendar_ctrl.calendar_ctrl}
-        """
-        self._generate_and_compare_cpp(
-            'CPP_wxCalendarCtrl.wxg',
-            'CPP_wxCalendarCtrl'
-            )
-
-    def test_CPP_Preferences(self):
-        """\
-        Test C++ code generation with preferences dialog
-
-        @see: L{codegen.cpp_codegen}
-        """
-        self._generate_and_compare_cpp(
-            'CPP_Preferences.wxg',
-            'CPP_Preferences'
-            )
-
     def test_Lisp_quote_path(self):
         """\
         Test codegen.lisp_codegen.quote_path()
@@ -96,18 +72,6 @@ class TestCodeGen(WXGladeBaseTest):
                     )
                 )
 
-    def test_Lisp_Preferences(self):
-        """\
-        Test Lisp code generation with preferences dialog
-
-        @see: L{codegen.lisp_codegen}
-        """
-        self._generate_and_compare(
-            'lisp',
-            'Lisp_Preferences.wxg',
-            'Lisp_Preferences.lisp'
-            )
-
     def test_Lisp_wxBitmapButton(self):
         """\
         Test Lisp code generation with small wxBitmapButton example
@@ -120,29 +84,30 @@ class TestCodeGen(WXGladeBaseTest):
             'Lisp_wxBitmapButton.lisp'
             )
 
-    def test_Perl_Preferences(self):
+    def test_Preferences_dialog(self):
         """\
-        Test Perl code generation with preferences dialog
-
-        @see: L{codegen.perl_codegen}
+        Test code generation with preferences dialog
         """
-        self._generate_and_compare(
-            'perl',
-            'Perl_Preferences.wxg',
-            'Perl_Preferences.pl'
-            )
+        for language, prefix, suffix in [
+            ['python', 'Python', '.py'],
+            ['perl', 'Perl', '.pl'],
+            ['C++', 'CPP', '.cpp'],
+            ['lisp', 'Lisp', '.lisp']]:
+            inname = '%s_Preferences.wxg' % prefix
 
-    def test_Python_Preferences(self):
-        """\
-        Test Python code generation with preferences dialog
-
-        @see: L{codegen.py_codegen}
-        """
-        self._generate_and_compare(
-            'python',
-            'Preferences.wxg',
-            'Python_Preferences.py'
-            )
+            if language == 'C++':
+                outname = '%s_Preferences' % prefix
+                self._generate_and_compare_cpp(
+                    inname,
+                    outname
+                )
+            else:
+                outname = '%s_Preferences%s' % (prefix, suffix)
+                self._generate_and_compare(
+                    language,
+                    inname,
+                    outname
+                )
 
     def test_CalendarCtrl(self):
         """\
@@ -1159,6 +1124,34 @@ class TestCodeGen(WXGladeBaseTest):
                         formatted,
                         )
                     )
+
+    def test_cn_f(self):
+        """\
+        Test formatting of names with cn_f().
+
+        @see: L{codegen.BaseLangCodeWriter.cn_f()}
+        """
+        details = [
+            ('wxALL', 'wxALL'),
+            ('wxALL|wxALL', 'wxALL'),
+            ('0', '0'),
+            ('wxALL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM', 'wxALL'),
+            ('wxALL|wxLEFT|wxTOP|wxBOTTOM', 'wxALL'),
+            ('wxLEFT|wxRIGHT|wxTOP|wxBOTTOM', 'wxALL'),
+            ('wxNonexistingFlag|wxALL', 'wxALL|wxNonexistingFlag'),
+            ('', '')
+        ]
+        handler = common.code_writers['C++'].obj_builders['wxDialog']
+        for unformatted, formatted in details:
+            ret = handler.cn_f(unformatted)
+            self.failUnlessEqual(
+                formatted,
+                ret,
+                'Unexpected result got: "%s" expect: "%s"' % (
+                    ret,
+                    formatted,
+                    )
+                )
 
     def test_ComplexExample(self):
         """\

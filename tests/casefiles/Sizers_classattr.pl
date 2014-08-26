@@ -31,7 +31,7 @@ sub new {
     $name   = ""                 unless defined $name;
 
     # begin wxGlade: MyDialog::new
-    $style = wxDEFAULT_DIALOG_STYLE 
+    $style = wxDEFAULT_DIALOG_STYLE
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -80,7 +80,7 @@ sub __do_layout {
     $self->{sizer_4}->Add(20, 20, 0, wxEXPAND, 0);
     $self->{sizer_4}->AddGrowableRow(0);
     $self->{sizer_4}->AddGrowableRow(3);
-    $self->{grid_sizer_2}->Add($self->{sizer_4}, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    $self->{grid_sizer_2}->Add($self->{sizer_4}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxEXPAND, 0);
     $self->{sizer_3}->Add($self->{list_box_2}, 1, wxALL|wxEXPAND, 5);
     $self->{grid_sizer_2}->Add($self->{sizer_3}, 1, wxEXPAND, 0);
     $self->{grid_sizer_2}->AddGrowableRow(0);
@@ -90,7 +90,7 @@ sub __do_layout {
     $self->{grid_sizer_1}->Add($self->{static_line_1}, 0, wxALL|wxEXPAND, 5);
     $self->{sizer_1}->Add($self->{button_2}, 0, wxALL, 5);
     $self->{sizer_1}->Add($self->{button_1}, 0, wxALL, 5);
-    $self->{grid_sizer_1}->Add($self->{sizer_1}, 1, wxEXPAND|wxALIGN_RIGHT, 0);
+    $self->{grid_sizer_1}->Add($self->{sizer_1}, 1, wxALIGN_RIGHT|wxEXPAND, 0);
     $self->SetSizer($self->{grid_sizer_1});
     $self->{grid_sizer_1}->Fit($self);
     $self->{grid_sizer_1}->AddGrowableRow(0);

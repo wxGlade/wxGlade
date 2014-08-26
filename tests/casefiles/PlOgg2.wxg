@@ -20,7 +20,6 @@
                 <border>0</border>
                 <option>1</option>
                 <object class="wxNotebook" name="notebook_1" base="EditNotebook">
-                    <style>0</style>
                     <tabs>
                         <tab window="notebook_1_pane_1">Input File</tab>
                         <tab window="notebook_1_pane_2">Converting Options</tab>
