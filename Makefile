@@ -19,7 +19,6 @@ datadir           = $(datarootdir)
 docdir            = $(datarootdir)/doc/$(PACKAGE)
 mandir            = $(datarootdir)/man
 man1dir           = $(mandir)/man1
-PYVER             = 2.3
 
 BASE_DIR          = .
 BIN_FILES         = wxglade
@@ -43,7 +42,7 @@ PYLINT_OPTS       = --additional-builtins=_ --disable=C \
                     --disable=R0201,R0901,R0902,R0903,R0904,R0912,R0913,R0914,R0915 \
                     --include-ids=y --reports=n
 PYLINT_PATH       = "$(BASE_DIR):$(BASE_DIR)/widgets:$(BASE_DIR)/codegen"
-PYTHON_BIN        = python
+PYTHON_BIN        = python2
 DB2MAN            = /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
 XP                = xsltproc --nonet
 
