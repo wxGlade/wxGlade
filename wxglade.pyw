@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # wxglade.pyw: entry point of wxGlade on windows
 # $Id: wxglade.pyw,v 1.1 2004/10/27 11:11:19 agriggio Exp $
 #
