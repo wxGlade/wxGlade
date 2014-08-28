@@ -1,4 +1,4 @@
-#!/usr/bin/env  python
+#!/usr/bin/env  python2
 """
 Create a test suites and run all tests
 
