@@ -43,7 +43,7 @@ PYLINT_OPTS       = --additional-builtins=_ --disable=C \
                     --reports=n
 PYLINT_PATH       = "$(BASE_DIR):$(BASE_DIR)/widgets:$(BASE_DIR)/codegen"
 PYTHON_BIN        = python2
-DB2MAN            = /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
+MANPAGE_XSL       = /usr/share/xml/docbook/xsl-stylesheets-1.78.1/manpages/docbook.xsl
 XP                = xsltproc --nonet
 
 MANUAL_HTML_DIR   = $(DOC_DIR)/html
@@ -137,7 +137,7 @@ permissions:
 
 # Create the manpage
 $(DOC_DIR)/man/wxglade.1: $(DOC_DIR)/man/manpage.xml
-	$(XP) --output $@ $(DB2MAN) $<
+	$(XP) --output $@ $(MANPAGE_XSL) $<
 
 #+ Create manpage from source files
 man: $(DOC_DIR)/man/wxglade.1
