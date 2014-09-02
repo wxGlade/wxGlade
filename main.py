@@ -1,8 +1,9 @@
-"""
+"""\
 Main wxGlade module: defines wxGladeFrame which contains the buttons to add
 widgets and initializes all the stuff (tree, property_frame, etc.)
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -152,15 +153,16 @@ class wxGladeFrame(wx.Frame):
     
     def __init__(self, parent=None):
         self._logger = logging.getLogger(self.__class__.__name__)
-        style = wx.SYSTEM_MENU|wx.CAPTION|wx.MINIMIZE_BOX|wx.RESIZE_BORDER
-        style |= wx.CLOSE_BOX
+        style = wx.SYSTEM_MENU | wx.CAPTION | wx.MINIMIZE_BOX\
+        style |= wx.RESIZE_BORDER | wx.CLOSE_BOX
         wx.Frame.__init__(self, parent, -1, "wxGlade v%s" % config.version,
-                         style=style)
+                          style=style)
         self.CreateStatusBar(1)
 
-        if parent is None: parent = self
-        common.palette = self # to provide a reference accessible
-                              # by the various widget classes
+        if parent is None:
+            parent = self
+        common.palette = self  # to provide a reference accessible
+                               # by the various widget classes
         icon = wx.EmptyIcon()
         bmp = wx.Bitmap(
             os.path.join(config.icons_path, "icon.xpm"),
@@ -177,11 +179,7 @@ class wxGladeFrame(wx.Frame):
         wx.ToolTip_SetDelay(1000)
 
         # load the available code generators
-        common.load_config()
-        common.load_code_writers()
-        # load the available widgets and sizers
-        core_btns, custom_btns = common.load_widgets()
-        sizer_btns = common.load_sizers()
+        core_buttons, local_buttons, sizer_buttons = common.init_codegen()
         
         append_item = misc.append_item
         self.TREE_ID = TREE_ID = wx.NewId()
@@ -205,8 +203,8 @@ class wxGladeFrame(wx.Frame):
         SAVE_TEMPLATE_ID = wx.NewId()
         append_item(file_menu, SAVE_TEMPLATE_ID, _("Save As Template..."))
         file_menu.AppendSeparator()
-        RELOAD_ID = wx.ID_REFRESH #wx.NewId()
-        append_item(file_menu, RELOAD_ID, _("&Refresh\tf5")) #, wx.ART_REDO)
+        RELOAD_ID = wx.ID_REFRESH
+        append_item(file_menu, RELOAD_ID, _("&Refresh\tf5"))
         GENERATE_CODE_ID = wx.NewId()
         append_item(file_menu, GENERATE_CODE_ID, _("&Generate Code\tCtrl+G"),
                     wx.ART_EXECUTABLE_FILE)
@@ -218,7 +216,7 @@ class wxGladeFrame(wx.Frame):
         EXIT_ID = wx.NewId()
         file_menu.AppendSeparator()
         append_item(file_menu, EXIT_ID, _('E&xit\tCtrl+Q'), wx.ART_QUIT)
-        PREFS_ID = wx.ID_PREFERENCES #NewId()
+        PREFS_ID = wx.ID_PREFERENCES
         view_menu.AppendSeparator()
         MANAGE_TEMPLATES_ID = wx.NewId()
         append_item(view_menu, MANAGE_TEMPLATES_ID, _('Templates Manager...'))
@@ -229,8 +227,8 @@ class wxGladeFrame(wx.Frame):
         menu_bar.Append(view_menu, _("&View"))
         TUT_ID = wx.NewId()
         append_item(help_menu, TUT_ID, _('Contents\tF1'), wx.ART_HELP)
-        ABOUT_ID = wx.ID_ABOUT #wx.NewId()
-        append_item(help_menu, ABOUT_ID, _('About...'))#, wx.ART_QUESTION)
+        ABOUT_ID = wx.ID_ABOUT
+        append_item(help_menu, ABOUT_ID, _('About...'))
         menu_bar.Append(help_menu, _('&Help'))
         parent.SetMenuBar(menu_bar)
         # Mac tweaks...
@@ -305,11 +303,9 @@ class wxGladeFrame(wx.Frame):
             (wx.ACCEL_CTRL, ord('P'), PREVIEW_ID),
             ])
 
-        # Tutorial window
-##         self.tut_frame = None
         # layout
         # if there are custom components, add the toggle box...
-        if custom_btns:
+        if local_buttons:
             main_sizer = wx.BoxSizer(wx.VERTICAL)
             show_core_custom = ToggleButtonBox(
                 self, -1, [_("Core components"), _("Custom components")], 0)
@@ -324,10 +320,12 @@ class wxGladeFrame(wx.Frame):
                 )
             self.SetAutoLayout(True)
             # core components
-            for b in core_btns: core_sizer.Add(b)
-            for sb in sizer_btns: core_sizer.Add(sb)
+            for b in core_buttons:
+                core_sizer.Add(b)
+            for sb in sizer_buttons:
+                core_sizer.Add(sb)
             # custom components
-            for b in custom_btns:
+            for b in local_buttons:
                 custom_sizer.Add(b)
                 custom_sizer.Show(b, False)
             custom_sizer.Layout()
@@ -335,7 +333,6 @@ class wxGladeFrame(wx.Frame):
             main_sizer.Add(core_sizer, 0, wx.EXPAND)
             main_sizer.Add(custom_sizer, 0, wx.EXPAND)
             self.SetSizer(main_sizer)
-            #main_sizer.Show(1, False)
             main_sizer.Fit(self)
             # events to display core/custom components
             def on_show_core_custom(event):
@@ -344,11 +341,11 @@ class wxGladeFrame(wx.Frame):
                 if event.GetValue() == 1:
                     show_core = False
                     show_custom = True
-                for b in custom_btns:
+                for b in local_buttons:
                     custom_sizer.Show(b, show_custom)
-                for b in core_btns:
+                for b in core_buttons:
                     core_sizer.Show(b, show_core)
-                for b in sizer_btns:
+                for b in sizer_buttons:
                     core_sizer.Show(b, show_core)
                 core_sizer.Layout()
                 custom_sizer.Layout()
@@ -359,8 +356,10 @@ class wxGladeFrame(wx.Frame):
             sizer = wx.GridSizer(0, config.preferences.buttons_per_row)
             self.SetAutoLayout(True)
             # core components
-            for b in core_btns: sizer.Add(b)
-            for sb in sizer_btns: sizer.Add(sb)
+            for b in core_buttons:
+                sizer.Add(b)
+            for sb in sizer_buttons:
+                sizer.Add(sb)
             self.SetSizer(sizer)
             sizer.Fit(self)
         
@@ -373,7 +372,7 @@ class wxGladeFrame(wx.Frame):
             if wx.Platform != '__WXGTK__': frame_style |= wx.FRAME_TOOL_WINDOW
         
         self.frame2 = wx.Frame(self, -1, _('Properties - <app>'),
-                              style=frame_style)
+                               style=frame_style)
         self.frame2.SetBackgroundColour(wx.SystemSettings_GetColour(
             wx.SYS_COLOUR_BTNFACE))
         self.frame2.SetIcon(icon)
