@@ -2,7 +2,7 @@
 Global variables
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2013 Carsten Grohmann
+@copyright: 2013-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -674,6 +674,8 @@ def load_sizers():
     """\
     Load and initialise the sizer support modules.
 
+    @return: A list of BitmapButton objects to handle sizer buttons
+
     @see: L{edit_sizers}
     """
     for lang in code_writers.keys():
@@ -695,6 +697,29 @@ def load_sizers():
     import edit_sizers
     return edit_sizers.init_gui()
 
+def init_codegen():
+    """\
+    Load available code generators, core and user widgets as well as sizers
+
+    If wxGlade has been started in GUI mode, the function returns three lists
+    of wxBitmapButton objects to handle them. The first contains the
+    built-in widgets and the second one the user widgets and the third list
+    contains the sizers.
+
+    @return: List of core buttons, list of local buttons and list of sizer
+             buttons
+
+    @see: L{load_config()}
+    @see: L{load_code_writers()}
+    @see: L{load_widgets()}
+    @see: L{load_sizers()}
+    """
+    load_config()
+    load_code_writers()
+    core_buttons, local_buttons = load_widgets()
+    sizer_buttons = load_sizers()
+
+    return core_buttons, local_buttons, sizer_buttons
 
 def add_object(event):
     """\

@@ -304,10 +304,7 @@ def init_stage2(use_gui):
         common.init_preferences()
         if config.preferences.log_debug_info:
             log.setDebugLevel()
-        common.load_config()
-        common.load_code_writers()
-        common.load_widgets()
-        common.load_sizers()
+        common.init_codegen()
 
 
 def run_main():
