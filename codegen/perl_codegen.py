@@ -747,6 +747,7 @@ unless(caller){
         """
         if not s:
             return '""'
+        unchanged = s
         s = re.sub(
             r'\\\\+',
             self._do_replace_backslashes,
@@ -757,7 +758,8 @@ unless(caller){
         s = s.replace('@', r'\@')
         if self._use_gettext:
             return '_T("%s")' %s
-        if t == s and s.find(' ') < 0:
+        # don't quote string if it's not modified and doesn't contains spaces
+        if unchanged == s and s.find(' ') < 0:
             return s
         else:
             return '"%s"' % s
