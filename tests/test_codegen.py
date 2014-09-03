@@ -4,6 +4,7 @@
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import copy
 import cStringIO
 import re
 
@@ -1313,3 +1314,50 @@ class TestCodeGen(WXGladeBaseTest):
         self._test_all('AllWidgets_28')
         #self._test_all('AllWidgets_30')
 
+    def test_copy_py_codegen(self):
+        """\
+        Test creation of an independent instance of the Python code generator
+        """
+        py_codegen = common.code_writers['python']
+        new_codegen = common.code_writers['python'].copy()
+
+        # set new target version
+        new_codegen.for_version = (3, 0)
+
+        # check for different code generator objects
+        self.failIfEqual(
+            id(py_codegen),
+            id(new_codegen),
+            'Code generator objects are not different objects'
+        )
+
+        # for_version object and content should be different
+        self.failIfEqual(
+            id(py_codegen.for_version),
+            id(new_codegen.for_version),
+            'for_version are not different objects'
+        )
+        self.failIfEqual(
+            py_codegen.for_version,
+            new_codegen.for_version,
+            'for_version content is not different'
+        )
+
+        # logging instance should be the same
+        self.failUnlessEqual(
+            id(py_codegen._logger),
+            id(new_codegen._logger),
+            'Logging instance _logger is not the same object'
+        )
+
+        # obj_builders should be the same and equal
+        self.failUnlessEqual(
+            id(py_codegen.obj_builders),
+            id(new_codegen.obj_builders),
+            'obj_builders should be the same instance'
+        )
+        self.failUnlessEqual(
+            py_codegen.obj_builders,
+            new_codegen.obj_builders,
+            'obj_builders content is not equal'
+        )

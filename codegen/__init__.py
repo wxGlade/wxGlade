@@ -1,10 +1,11 @@
 """\
 Common code used by all code generators
 
-@copyright: 2011-2013 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2011-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import copy
 import cStringIO
 import logging
 import os
@@ -2219,6 +2220,15 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """
         return klass
 
+    def copy(self):
+        """\
+        Return a copy of the current instance and L{initialize()} it with
+        defaults (empty parameter C{app_attrs}).
+        """
+        new_codegen = copy.copy(self)
+        new_codegen.initialize({})
+        return new_codegen
+
     def quote_str(self, s):
         """\
         Returns a quoted / escaped version of 's', suitable to insert in a
@@ -2366,7 +2376,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
                 # make the file executable
                 os.chmod(filename, 0755)
             except OSError, e:
-                # this isn't necessarily a bad errror
+                # this isn't necessarily a bad error
                 self.warning(
                     _('Changing permission of main file "%s" failed: %s') % (
                         filename, str(e)
