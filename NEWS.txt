@@ -10,6 +10,7 @@ General:
   - Change configuration default to remember the position and geometry
     of the three main windows. This change effects fresh installations only.
   - adapt GUI to run with wxPython 2.6 till 3.0
+  - Disable Lisp for wx 3.0
   - Unify the code generation of widget specific code
     This change causes some minor changes in the generated code.
   - Add Lisp and Perl support for wxDatePickerCtrl
@@ -24,6 +25,7 @@ Generated Code:
 Bugs:
   - Fix escape sequences in Unicode strings were escaped twice Perl and Python
   - Wrong Lisp statement in wxHyperlinkCtrl and wxFrame
+  - Fix bug in generation of valid hash keys for Perl
   - ...
 
 Documentation:
