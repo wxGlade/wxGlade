@@ -862,12 +862,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
         # set (most of) instance variables back to default values
         self._init_vars()
 
-        self.multiple_files = app_attrs['option']
+        self.multiple_files = app_attrs.get('option',
+                                            config.default_multiple_files)
 
         # application name
         self.app_name = app_attrs.get('name')
         if not self.app_name:
-            self.app_name = 'app'
+            self.app_name = config.default_app_name
         self.app_filename = '%s.%s' % (
             self.app_name,
             self.default_extensions[0],

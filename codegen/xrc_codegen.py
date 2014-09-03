@@ -5,8 +5,8 @@ Generates the xml code for the app in XRC format.
 Calls the appropriate ``writers'' of the various objects. These functions
 return an instance of XrcObject
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2012 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -18,6 +18,7 @@ from codegen import BaseLangCodeWriter, \
                     EventsPropertyHandler, \
                     ExtraPropertiesPropertyHandler
 from ordereddict import OrderedDict
+import config
 
 
 class FontPropertyHandler:
@@ -313,7 +314,7 @@ class XRCCodeWriter(BaseLangCodeWriter):
         # initialise parent class
         BaseLangCodeWriter.initialize(self, app_attrs)
 
-        out_path = app_attrs['path']
+        out_path = app_attrs.get('path', config.default_path)
 
         if self.multiple_files:
             # for now we handle only single-file code generation

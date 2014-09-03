@@ -11,6 +11,13 @@ Configuration related stuff
 import sys
 
 # default configuration values
+default_app_name = 'app'
+"""\
+Default value for the application name
+
+@type: String
+"""
+
 default_encoding = 'UTF-8'
 """\
 Default value for encoding
@@ -45,6 +52,13 @@ default_overwrite = 1
 Default value for overwriting existing sources
 
 @type: Integer
+"""
+
+default_path = './'
+"""\
+Default output path
+
+@type: String
 """
 
 default_use_gettext = 1

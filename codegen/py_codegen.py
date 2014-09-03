@@ -12,8 +12,8 @@ the lines to add to the '__init__', '__set_properties' and '__do_layout'
 methods of the parent object.
 
 @copyright: John Dubery
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2012-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -21,12 +21,11 @@ import os
 import os.path
 import random
 import re
-import types
 
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
-
+import config
 
 class SourceFileContent(BaseSourceFileContent):
 
@@ -380,7 +379,7 @@ if __name__ == "__main__":
         """
         # initialise parent class
         BaseLangCodeWriter.initialize(self, app_attrs)
-        out_path = app_attrs['path']
+        out_path = app_attrs.get('path', config.default_path)
 
         try:
             self.use_new_namespace = int(app_attrs['use_new_namespace'])
