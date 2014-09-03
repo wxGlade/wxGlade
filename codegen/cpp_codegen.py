@@ -11,8 +11,8 @@ which the code has to be written, and returns 3 lists of strings, representing
 the lines to add to the '__init__', '__set_properties' and '__do_layout'
 methods of the parent object.
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2012-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -24,7 +24,7 @@ import re
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
-
+import config
 
 class SourceFileContent(BaseSourceFileContent):
     """\
@@ -540,7 +540,7 @@ bool MyApp::OnInit()
 
         self.app_filename = 'main.cpp'
 
-        out_path = app_attrs['path']
+        out_path = app_attrs.get('path', config.default_path)
 
         self.last_generated_id = 1000
 

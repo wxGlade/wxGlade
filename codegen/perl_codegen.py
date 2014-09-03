@@ -25,7 +25,7 @@ import re
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
-
+import config
 
 class SourceFileContent(BaseSourceFileContent):
 
@@ -521,7 +521,7 @@ unless(caller){
         """
         # initialise parent class
         BaseLangCodeWriter.initialize(self, app_attrs)
-        out_path = app_attrs['path']
+        out_path = app_attrs.get('path', config.default_path)
 
         # initial new defaults late to use the proper indent characters
         tab = self.tabs(1)

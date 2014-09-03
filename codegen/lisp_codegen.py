@@ -19,12 +19,11 @@ methods of the parent object.
 import os
 import os.path
 import re
-import types
 
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
-
+import config
 
 class SourceFileContent(BaseSourceFileContent):
 
@@ -338,7 +337,7 @@ class LispCodeWriter(BaseLangCodeWriter):
         """
         # initialise parent class
         BaseLangCodeWriter.initialize(self, app_attrs)
-        out_path = app_attrs['path']
+        out_path = app_attrs.get('path', config.default_path)
         self.class_lines = []
 
         self.header_lines = [

@@ -153,7 +153,7 @@ class wxGladeFrame(wx.Frame):
     
     def __init__(self, parent=None):
         self._logger = logging.getLogger(self.__class__.__name__)
-        style = wx.SYSTEM_MENU | wx.CAPTION | wx.MINIMIZE_BOX\
+        style = wx.SYSTEM_MENU | wx.CAPTION | wx.MINIMIZE_BOX
         style |= wx.RESIZE_BORDER | wx.CLOSE_BOX
         wx.Frame.__init__(self, parent, -1, "wxGlade v%s" % config.version,
                           style=style)
