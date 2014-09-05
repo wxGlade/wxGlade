@@ -42,31 +42,34 @@ class TestGui(WXGladeBaseTest):
         """
         self._messageBox = [message, caption]
 
+    @classmethod
+    def setUpClass(cls):
+        """\
+        XXX
+        """
+        WXGladeBaseTest.setUpClass()
+
+        # create an simply application
+        cls.app = wx.PySimpleApp()
+        wx.InitAllImageHandlers()
+        wx.ArtProvider.PushProvider(main.wxGladeArtProvider())
+        cls.frame = main.wxGladeFrame()
+
+        # hide all windows
+        cls.frame.Hide()
+        cls.frame.hide_all()
+
     def setUp(self):
         # redirect stdout
         self.orig_stdout = sys.stdout
-        sys.stdout = cStringIO.StringIO()
+        #sys.stdout = cStringIO.StringIO()
 
         # initialise base class
         WXGladeBaseTest.setUp(self)
 
         # inject mock object for wxMessageBox
-        self._messageBox = []
         wx.MessageBox = self.mockMessageBox
-
-        # create an simply application
-        if not TestGui.app:
-            TestGui.app = wx.PySimpleApp()
-            wx.InitAllImageHandlers()
-            wx.ArtProvider.PushProvider(main.wxGladeArtProvider())
-
-        if not TestGui.frame:
-            self.frame = main.wxGladeFrame()
-
-            # hide all windows
-            self.frame.Hide()
-            self.frame.hide_all()
-            TestGui.frame = self.frame
+        self._messageBox = []
 
         # show dialog "Code generation completed successfully"
         config.preferences.show_completion = True
@@ -126,7 +129,7 @@ class TestGui(WXGladeBaseTest):
             )
         radiobox.GetEventHandler().ProcessEvent(event)
 
-    def testNotebookWithoutTabs(self):
+    def test_NotebookWithoutTabs(self):
         """\
         Test loading Notebook without tabs
         """
@@ -155,7 +158,7 @@ class TestGui(WXGladeBaseTest):
                 )
             )
 
-    def testNotebookWithTabs(self):
+    def test_NotebookWithTabs(self):
         """\
         Test loading Notebook with tabs
         """
@@ -270,7 +273,7 @@ class TestGui(WXGladeBaseTest):
                 generated = self.vFiles[filename].getvalue()
                 self._compare(expected, generated)
 
-    def testCodeGeneration_FontColour(self):
+    def test_CodeGeneration_FontColour(self):
         """\
         Test GUI code generation using "FontColour.wxg"
         """
@@ -340,7 +343,7 @@ class TestGui(WXGladeBaseTest):
                 generated = self.vFiles[filename].getvalue()
                 self._compare(expected, generated)
 
-    def testCodeGeneration_AllWidgets_28(self):
+    def test_CodeGeneration_AllWidgets_28(self):
         """\
         Test GUI code generation using "AllWidgets_28.wxg"
         """
