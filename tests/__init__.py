@@ -45,6 +45,13 @@ class WXGladeBaseTest(unittest.TestCase):
     implementation
     """
 
+    orig_for_version = {}
+    """\
+    Original values for code generator for_version instance variable.
+
+    @see: L{L{codegen.BaseLangCodeWriter.for_version}
+    """
+
     orig_load_file = None
     """\
     Reference to the original L{codegen.BaseSourceFileContent._load_file()}
@@ -82,9 +89,10 @@ class WXGladeBaseTest(unittest.TestCase):
     Directory with input files and result files
     """
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         """\
-        Initialise parts of wxGlade only
+        Initialise parts of wxGlade before individual tests starts
         """
         # set icon path back to the default default
         config.icons_path = 'icons'
@@ -95,15 +103,36 @@ class WXGladeBaseTest(unittest.TestCase):
         config.preferences.write_timestamp = False
         config.preferences.show_progress = False
 
+        # set own version string to prevent diff mismatches
+        config.version = '"faked test version"'
+
+        # Determinate case directory
+        cls.caseDirectory = os.path.join(
+            os.path.dirname(__file__),
+            cls.caseDirectory,
+            )
+
+    @classmethod
+    def tearDownClass(cls):
+        """\
+        Cleanup after all individual tests are done
+        """
+        # de-register own logging
+        log.deinit()
+
+    def setUp(self):
+        """\
+        Initialise
+        """
         # initiate empty structure to store files and there content
         self.vFiles = {}
 
         # replace some original implementations by test specific implementation
         self.orig_save_file = common.save_file
         common.save_file = self._save_file
-        self.orig_load_file = codegen.BaseSourceFileContent._load_file 
+        self.orig_load_file = codegen.BaseSourceFileContent._load_file
         codegen.BaseSourceFileContent._load_file = self._load_lines
-        self.orig_file_exists = codegen.BaseLangCodeWriter._file_exists 
+        self.orig_file_exists = codegen.BaseLangCodeWriter._file_exists
         self.orig_os_access = os.access
         os.access = self._os_access
         self.orig_os_makedirs = os.makedirs
@@ -113,14 +142,10 @@ class WXGladeBaseTest(unittest.TestCase):
         codegen.BaseLangCodeWriter._file_exists = self._file_exists
         codegen.BaseLangCodeWriter._show_warnings = False
 
-        # set own version string to prevent diff mismatches
-        config.version = '"faked test version"'
-
-        # Determinate case directory
-        self.caseDirectory = os.path.join(
-            os.path.dirname(__file__),
-            self.caseDirectory,
-            )
+        # save code generator settings
+        for lang in common.code_writers:
+            self.orig_for_version[lang] = \
+                common.code_writers[lang].for_version
 
     def tearDown(self):
         """\
@@ -138,9 +163,11 @@ class WXGladeBaseTest(unittest.TestCase):
         os.access = self.orig_os_access
         os.makedirs = self.orig_os_makedirs
         os.path.isdir = self._os_path_isdir
-        
-        # deregister own logging
-        log.deinit()
+
+        # restore code generator settings
+        for lang in common.code_writers:
+            common.code_writers[lang].for_version = \
+                self.orig_for_version[lang]
 
     def _generate_code(self, language, document, filename):
         """\
@@ -367,7 +394,6 @@ class WXGladeBaseTest(unittest.TestCase):
                 self._generate_and_compare_cpp(name_wxg, name_lang)
             else:
                 self._generate_and_compare(lang, name_wxg, name_lang)
-
 
     def _diff(self, text1, text2):
         """\
