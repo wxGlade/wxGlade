@@ -5,12 +5,13 @@
 """
 
 # import general python modules
-import cStringIO
+import StringIO
 import difflib
 import glob
 import logging
 import os.path
 import re
+import types
 import unittest
 
 # import project modules
@@ -369,7 +370,7 @@ class WXGladeBaseTest(unittest.TestCase):
             filename,
             "No filename given",
             )
-        outfile = cStringIO.StringIO()
+        outfile = StringIO.StringIO()
         outfile.write(content)
         self.vFiles[filename] = outfile
 
@@ -407,8 +408,8 @@ class WXGladeBaseTest(unittest.TestCase):
         @return: Changes formatted as unified diff
         @rtype:  String
         """
-        self.assertEqual(type(text1), type(""))
-        self.assertEqual(type(text2), type(""))
+        self.assertTrue(isinstance(text1, types.StringTypes))
+        self.assertTrue(isinstance(text2, types.StringTypes))
 
         # split into lists, because difflib needs lists and remove
         # tailing spaces

@@ -10,7 +10,7 @@ return an instance of XrcObject
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import cStringIO
+import StringIO
 import logging
 
 from xml.sax.saxutils import escape, quoteattr
@@ -43,7 +43,8 @@ class FontPropertyHandler:
 
 class XRCCodeWriter(BaseLangCodeWriter):
     """\
-    Code writer class for writing XRC XML code out of the designed GUI elements
+    Code writer class for writing XRC XML code out of the designed GUI
+    elements.
     """
 
     default_extensions = ['xrc']
@@ -195,8 +196,9 @@ class XRCCodeWriter(BaseLangCodeWriter):
         def write_property(self, name, val, outfile, ntabs):
             if val:
                 name = escape(name)
-                outfile.write(self.tabs(ntabs) + '<%s>%s</%s>\n' % \
-                              (name, escape(val), name))
+                line = self.tabs(ntabs) + '<%s>%s</%s>\n' % (
+                    name, escape(val), name)
+                outfile.write(line)
 
         def write(self, out_file, ntabs):
             write = out_file.write
@@ -320,7 +322,7 @@ class XRCCodeWriter(BaseLangCodeWriter):
             # for now we handle only single-file code generation
             raise IOError("XRC code cannot be split into multiple files")
         self.output_file_name = out_path
-        self.out_file = cStringIO.StringIO()  # open(out_path, 'w')
+        self.out_file = StringIO.StringIO()  # open(out_path, 'w')
         self.out_file.write('\n<resource version="2.3.0.1">\n')
         self.curr_tab = 1
         self.xrc_objects = OrderedDict()

@@ -17,7 +17,7 @@ NOTE: custom tag handler interface (called by XmlWidgetBuilder)::
 
 import logging
 import os
-from cStringIO import StringIO
+import StringIO
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
 
@@ -90,12 +90,12 @@ class XmlParser(ContentHandler):
         #
         # That's not a general file handling issue because the parameter
         # source is an open file already.
-        source = StringIO(source.read())
+        source = StringIO.StringIO(source.read())
         self.parser.parse(source)
         source.close()
 
     def parse_string(self, source):
-        source = StringIO(source)
+        source = StringIO.StringIO(source)
         self.parser.parse(source)
         source.close()
 
