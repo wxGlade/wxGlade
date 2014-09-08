@@ -27,7 +27,7 @@ in revision 81919 (27.12.2010) in the public Python repository.
 """
 
 import atexit
-import cStringIO
+import StringIO
 import datetime
 import inspect
 import logging
@@ -184,7 +184,7 @@ class ExceptionFormatter(logging.Formatter):
         func_name = None
         index = None
         lineno = None
-        sio = cStringIO.StringIO()
+        sio = StringIO.StringIO()
         stack_level = 0
         stack_list = []
         var = None

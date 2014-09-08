@@ -8,7 +8,7 @@ Miscellaneus stuff, used in many parts of wxGlade
 import common
 import config
 
-from cStringIO import StringIO
+import StringIO
 import logging
 import os
 import re
@@ -206,7 +206,7 @@ class EncStringIO(object):
     """
 
     def __init__(self, encoding=None):
-        self.out = StringIO()
+        self.out = StringIO.StringIO()
         self.encoding = encoding
 
     def write(self, data):

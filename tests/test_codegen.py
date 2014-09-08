@@ -5,7 +5,7 @@
 """
 
 import copy
-import cStringIO
+import StringIO
 import re
 
 # import test base class
@@ -707,7 +707,7 @@ class TestCodeGen(WXGladeBaseTest):
                         # clear output_file
                         if codewriter.output_file:
                             codewriter.output_file.close()
-                        codewriter.output_file = cStringIO.StringIO()
+                        codewriter.output_file = StringIO.StringIO()
 
                         # generate application start code
                         codewriter.add_app({

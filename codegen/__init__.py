@@ -6,7 +6,7 @@ Common code used by all code generators
 """
 
 import copy
-import cStringIO
+import StringIO
 import logging
 import os
 import os.path
@@ -943,7 +943,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
-                self.output_file = cStringIO.StringIO()
+                self.output_file = StringIO.StringIO()
                 self.output_file_name = out_path
                 for line in self.header_lines:
                     self.output_file.write(line)
@@ -1415,7 +1415,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
 
             # create the new source file
             filename = self._get_class_filename(code_obj.klass)
-            out = cStringIO.StringIO()
+            out = StringIO.StringIO()
             write = out.write
             # write the common lines
             for line in self.header_lines:
@@ -2239,7 +2239,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
          - backslash
          - characters with special meaning
 
-        @param s:             String to quote
+        @param s: String to quote
 
         @return: A quoted / escaped version of 's'
         @rtype:  String
