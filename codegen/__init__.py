@@ -257,6 +257,17 @@ class BaseSourceFileContent(object):
         fh.close()
         return lines
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state['_logger']
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+        # re-initialise logger instance deleted from __getstate__
+        self._logger = logging.getLogger(self.__class__.__name__)
+
 # end of class BaseSourceFileContent
 
 
@@ -2220,15 +2231,6 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """
         return klass
 
-    def copy(self):
-        """\
-        Return a copy of the current instance and L{initialize()} it with
-        defaults (empty parameter C{app_attrs}).
-        """
-        new_codegen = copy.copy(self)
-        new_codegen.initialize({})
-        return new_codegen
-
     def quote_str(self, s):
         """\
         Returns a quoted / escaped version of 's', suitable to insert in a
@@ -2869,5 +2871,46 @@ It is available for wx versions %(supported_versions)s only.""") % {
         if newline:
             code_list.append('')
         return "\n".join(code_list)
+
+    def copy(self):
+        """\
+        Return a deep copy of the current instance. The instance will be
+        reinitialised with defaults automatically in L{__setstate__()}.
+
+        @see: L{__getstate__()}
+        @see: L{__setstate__()}
+        """
+        new_codegen = copy.deepcopy(self)
+        return new_codegen
+
+    def __getstate__(self):
+        """\
+        Return the state of this instance except the L{_logger} and the
+        L{classes} attributes.
+
+        Both attributes caused copy errors due to file locking resp. weak
+        references in XML SAX module.
+
+        @rtype: dict
+        """
+        state = self.__dict__.copy()
+        del state['_logger']
+        del state['classes']
+        return state
+
+    def __setstate__(self, state):
+        """\
+        Update the instance using values from C{state}. The code generator
+        will be reinitialised after the state has been updated.
+
+        @type state: dict
+        @see: L{initialize()}
+        """
+        self.__dict__.update(state)
+
+        # re-initialise logger instance deleted from __getstate__ and
+        # instance variables
+        self._logger = logging.getLogger(self.__class__.__name__)
+        self.initialize({})
 
 # end of class BaseLangCodeWriter

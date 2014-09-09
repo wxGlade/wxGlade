@@ -219,7 +219,7 @@ class SizerSlot(object):
         self._logger = logging.getLogger(self.__class__.__name__)
 
         # initialise instance
-        self.widget = None # reference to the widget resembling the slot
+        self.widget = None  # reference to the widget resembling the slot
         self.sizer = sizer
         self.parent = parent
         self.pos = pos
@@ -374,13 +374,24 @@ class SizerSlot(object):
         if p is not None:
             p.preview(None)
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state['_logger']
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+        # re-initialise logger instance deleted from __getstate__
+        self._logger = logging.getLogger(self.__class__.__name__)
+
 # end of class SizerSlot
 
-if 0: #wxPlatform != '__WXMAC__':
+if 0:  #wxPlatform != '__WXMAC__':
     Button = wx.Button
 else:
-    #from wxPython.lib.buttons import wxGenButton as Button
     from wx.lib.buttons import GenButton as Button
+
 
 class SizerHandleButton(Button):
     """\
@@ -678,8 +689,8 @@ class Sizer:
     @ivar _logger: Instance specific logger
     """
     def __init__(self, window):
-        self.window = window # window this sizer is responsible
-                             # for the layout of
+        self.window = window  # window this sizer is responsible
+                              # for the layout of
 
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -730,6 +741,17 @@ class Sizer:
         tree of widgets correctly
         """
         raise NotImplementedError
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state['_logger']
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+        # re-initialise logger instance deleted from __getstate__
+        self._logger = logging.getLogger(self.__class__.__name__)
 
 # end of class Sizer
 

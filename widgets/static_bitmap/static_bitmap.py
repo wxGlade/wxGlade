@@ -6,7 +6,6 @@ wxStaticBitmap objects
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging
 import wx
 import common
 import misc
@@ -18,8 +17,6 @@ from widget_properties import *
 class EditStaticBitmap(ManagedBase, StylesMixin):
     """\
     Class to handle wxStaticBitmap objects
-
-    @ivar _logger: Class specific logging instance
     """
 
     update_widget_style = False
@@ -33,7 +30,6 @@ class EditStaticBitmap(ManagedBase, StylesMixin):
         StylesMixin.__init__(self)
 
         # initialise instance variables
-        self._logger = logging.getLogger(self.__class__.__name__)
         self.attribute = True
         self.set_bitmap(bmp_file)
 

@@ -40,7 +40,16 @@ class BaseCodeWriterBase(object):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
-        # initialise instance
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state['_logger']
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+        # re-initialise logger instance deleted from __getstate__
+        self._logger = logging.getLogger(self.__class__.__name__)
 
 # end of class BaseCodeWriterBase
 

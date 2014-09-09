@@ -1,5 +1,5 @@
 """
-@copyright: 2012-2013 Carsten Grohmann
+@copyright: 2012-2014 Carsten Grohmann
 
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
@@ -28,8 +28,7 @@ class WXGladeBaseTest(unittest.TestCase):
     Provide basic functions for all tests
 
     All test cases uses an own implementation to L{common.save_file()} to
-    catch the results. This behaviour is limitied to single file
-    creation.
+    catch the results. This behaviour is limited to single file creation.
     """
 
     vFiles = {}
@@ -50,7 +49,7 @@ class WXGladeBaseTest(unittest.TestCase):
     """\
     Original values for code generator for_version instance variable.
 
-    @see: L{L{codegen.BaseLangCodeWriter.for_version}
+    @see: L{codegen.BaseLangCodeWriter.for_version}
     """
 
     orig_load_file = None

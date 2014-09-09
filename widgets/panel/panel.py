@@ -216,6 +216,17 @@ class PanelBase(object):
     def set_no_custom_class(self, value):
         self.no_custom_class = bool(int(value))
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state['_logger']
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+        # re-initialise logger instance deleted from __getstate__
+        self._logger = logging.getLogger(self.__class__.__name__)
+
 # end of class PanelBase
     
 

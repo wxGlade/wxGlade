@@ -62,7 +62,7 @@ class TestGui(WXGladeBaseTest):
     def setUp(self):
         # redirect stdout
         self.orig_stdout = sys.stdout
-        #sys.stdout = StringIO.StringIO()
+        sys.stdout = StringIO.StringIO()
 
         # initialise base class
         WXGladeBaseTest.setUp(self)
@@ -79,7 +79,7 @@ class TestGui(WXGladeBaseTest):
         if self.orig_stdout:
             sys.stdout = self.orig_stdout
 
-        # initialse base class
+        # initialise base class
         WXGladeBaseTest.tearDown(self)
 
     def _FindWindowByName(self, name):
