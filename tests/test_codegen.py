@@ -1350,14 +1350,37 @@ class TestCodeGen(WXGladeBaseTest):
             'Logging instance _logger is not the same object'
         )
 
-        # obj_builders should be the same and equal
-        self.failUnlessEqual(
+        # obj_builders should be the different
+        self.failIfEqual(
             id(py_codegen.obj_builders),
             id(new_codegen.obj_builders),
-            'obj_builders should be the same instance'
+            'obj_builders should be different'
         )
-        self.failUnlessEqual(
+        self.failIfEqual(
             py_codegen.obj_builders,
             new_codegen.obj_builders,
-            'obj_builders content is not equal'
+            'obj_builders content is not different'
+        )
+
+        # widget generator objects should be different
+        old_gen = py_codegen.obj_builders['wxDialog']
+        new_gen = new_codegen.obj_builders['wxDialog']
+        self.failIfEqual(
+            id(old_gen),
+            id(new_gen),
+            'widget generator objects for wxDialog are not different'
+        )
+
+        # code generators used by widget generators should be different
+        self.failIfEqual(
+            id(old_gen.codegen),
+            id(new_gen.codegen),
+            'code generators used by widget generators are not different'
+        )
+
+        # for_version too ...
+        self.failIfEqual(
+            id(old_gen.codegen.for_version),
+            id(new_gen.codegen.for_version),
+            'for_version used by widget generators are not different'
         )
