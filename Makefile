@@ -31,7 +31,7 @@ CHECK_FILES       = $(filter-out $(BASE_DIR)/test.py, $(wildcard $(BASE_DIR)/*.p
                     $(filter-out tests/%.py, $(shell find $(SOURCE_DIRS) -name "*.py"))
 EPYDOC_BIN        = epydoc
 EPYDOC_CONFIG     = $(BASE_DIR)/epydoc.conf
-EPYDOC_OPTS       = --config
+EPYDOC_OPTS       = --config $(EPYDOC_CONFIG)
 APIDOC_DIR        = $(BASE_DIR)/docs/apidocs
 SOURCE_DIRS       = codegen wcodegen edit_sizers widgets install tests
 SOURCE_FILES      = $(wildcard $(BASE_DIR)/*.py) $(shell find $(SOURCE_DIRS) -name "*.py")
@@ -120,7 +120,7 @@ compile: $(BYTECODE_FILES)
 # Create the documentation
 $(APIDOC_DIR)/index.html: $(SOURCE_FILES) $(EPYDOC_CONFIG)
 	@echo "Create documentation from source ..."
-	@$(EPYDOC_BIN) $(EPYDOC_OPTS) $(EPYDOC_CONFIG)
+	@$(EPYDOC_BIN) $(EPYDOC_OPTS)
 
 #+ Create documentation from source files
 apidoc: $(APIDOC_DIR)/index.html
