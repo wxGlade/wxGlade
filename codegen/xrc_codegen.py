@@ -6,7 +6,7 @@ Calls the appropriate ``writers'' of the various objects. These functions
 return an instance of XrcObject
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2012 Carsten Grohmann
+@copyright: 2012,2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -19,6 +19,7 @@ from codegen import BaseLangCodeWriter, \
                     ExtraPropertiesPropertyHandler
 from ordereddict import OrderedDict
 import config
+import wcodegen
 
 
 class FontPropertyHandler:
@@ -41,16 +42,11 @@ class FontPropertyHandler:
 # end of class FontHandler
 
 
-class XRCCodeWriter(BaseLangCodeWriter):
+class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     """\
     Code writer class for writing XRC XML code out of the designed GUI
     elements.
     """
-
-    default_extensions = ['xrc']
-    language = 'XRC'
-    lang_prefix = 'xrc'
-
     xrc_objects = None
     """\
     dictionary of active L{XrcObject} instances: during the code generation

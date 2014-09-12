@@ -24,6 +24,7 @@ from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 import config
+import wcodegen
 
 class SourceFileContent(BaseSourceFileContent):
 
@@ -171,16 +172,12 @@ class WidgetHandler(BaseWidgetHandler):
 # end of class WidgetHandler
 
 
-class LispCodeWriter(BaseLangCodeWriter):
+class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
     """\
     Code writer class for writing Lisp code out of the designed GUI elements
 
     @see: L{BaseLangCodeWriter}
     """
-
-    default_extensions = ['lisp']
-    language = 'lisp'
-    lang_prefix = 'lisp'
 
     _code_statements = {
         'backgroundcolour': "(wxWindow_SetBackgroundColour %(objname)s %(value)s)\n",
@@ -199,8 +196,6 @@ class LispCodeWriter(BaseLangCodeWriter):
     class_separator = '.'
     classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer',
                         'wxFlexGridSizer']
-    comment_sign = ';;;'
-    format_flags = True
 
     global_property_writers = {
         'font':            BaseLangCodeWriter.FontPropertyHandler,
@@ -305,26 +300,6 @@ class LispCodeWriter(BaseLangCodeWriter):
 %(tab)s(Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)
 %(tab)s(ffi:close-foreign-library "../miscellaneous/wxc-msw2.6.2.dll"))
 """
-
-    def cn(self, name):
-        """\
-        Return the name properly formatted.
-        """
-        if name[:2] == 'wx':
-            return 'wx' + name[2:]
-        elif name[:4] == 'EVT_':
-            return 'wx' + name
-        return name
-
-    def cn_f(self, flags, styles=None):
-        flags = BaseLangCodeWriter.cn_f(self, flags, styles)
-        # split again
-        flags = flags.split('|')
-        if len(flags) == 1:
-            flags = flags[0]
-        else:
-            flags = '(logior %s)' % ' '.join(flags)
-        return flags
 
     def initialize(self, app_attrs):
         """\

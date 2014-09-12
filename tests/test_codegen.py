@@ -44,7 +44,6 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Cleanup
         """
-        common.code_writers['python'].use_new_namespace = 1
         WXGladeBaseTest.tearDown(self)
 
     def test_Lisp_quote_path(self):
@@ -311,21 +310,6 @@ class TestCodeGen(WXGladeBaseTest):
             'PyOgg1.wxg',
             'PyOgg1.py'
             )
-
-        # load XML input file
-        source = self._load_file('PyOgg1.wxg')
-        expected = self._load_file('PyOgg1_oldnamespace.py')
-        source = self._modify_attrs(source,
-            name='app',
-            overwrite='1',
-            path='PyOgg1_oldnamespace.py',
-            use_new_namespace='0',
-            )
-
-        # generate code
-        self._generate_code('python', source, 'PyOgg1_oldnamespace.py')
-        generated = self.vFiles['PyOgg1_oldnamespace.py'].getvalue()
-        self._compare(expected, generated)
 
     def test_Python_Ogg2(self):
         """\
@@ -701,7 +685,6 @@ class TestCodeGen(WXGladeBaseTest):
                             'overwrite': 1,
                             'path': path,
                             'use_gettext': use_gettext,
-                            'use_new_namespace': 1,
                             })
 
                         # clear output_file
@@ -1052,7 +1035,7 @@ class TestCodeGen(WXGladeBaseTest):
         @see: L{codegen.py_codegen.PythonCodeWriter.cn()}
         """
         details = {}
-        details['python_new'] = [  # new namespace
+        details['python'] = [
             ('wxID_OK',        'wx.ID_OK'),
             ('wxALL',          'wx.ALL'),
             ('wxBLUE',         'wx.BLUE'),
@@ -1060,14 +1043,6 @@ class TestCodeGen(WXGladeBaseTest):
             ('wxFrame',        'wx.Frame'),
             ('EVT_BUTTON',     'wx.EVT_BUTTON'),
                 ]
-        details['python_old'] = [  # old namespace
-            ('wxID_OK',        'wxID_OK'),
-            ('wxALL',          'wxALL'),
-            ('wxBLUE',         'wxBLUE'),
-            ('wxALIGN_CENTER', 'wxALIGN_CENTER'),
-            ('wxFrame',        'wxFrame'),
-            ('EVT_BUTTON',     'EVT_BUTTON'),
-            ]
         details['perl'] = [
             ('wxID_OK',        'wxID_OK'),
             ('wxALL',          'wxALL'),
@@ -1093,15 +1068,8 @@ class TestCodeGen(WXGladeBaseTest):
             ('EVT_BUTTON',     'EVT_BUTTON'),
             ]
 
-        for lang in ['python_new', 'python_old', 'perl', 'lisp', 'C++']:
-            if lang.startswith('python'):
-                if lang == 'python_old':
-                    common.code_writers['python'].use_new_namespace = 0
-                elif lang == 'python_new':
-                    common.code_writers['python'].use_new_namespace = 1
-                cn = common.code_writers['python'].cn
-            else:
-                cn = common.code_writers[lang].cn
+        for lang in ['python', 'perl', 'lisp', 'C++']:
+            cn = common.code_writers[lang].cn
 
             for unformatted, formatted in details[lang]:
                 ret = cn(unformatted)
@@ -1130,7 +1098,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test formatting of names with cn_f().
 
-        @see: L{codegen.BaseLangCodeWriter.cn_f()}
+        @see: L{wcodegen.BaseLanguageMixin.cn_f()}
         """
         details = [
             ('wxALL', 'wxALL'),

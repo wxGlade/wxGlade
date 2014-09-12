@@ -25,6 +25,8 @@ from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 import config
+import wcodegen
+
 
 class SourceFileContent(BaseSourceFileContent):
     """\
@@ -296,7 +298,7 @@ class WidgetHandler(BaseWidgetHandler):
 # end of class WidgetHandler
 
 
-class CPPCodeWriter(BaseLangCodeWriter):
+class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     """\
     Code writer class for writing C++ code out of the designed GUI elements
 
@@ -317,11 +319,6 @@ class CPPCodeWriter(BaseLangCodeWriter):
     @see: L{BaseLangCodeWriter}
     """
 
-    default_extensions = ['cpp', 'cc', 'C', 'cxx', 'c++',
-                          'h', 'hh', 'hpp', 'H', 'hxx', ]
-    language = 'C++'
-    lang_prefix = 'cpp'
-
     _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
         'disabled':         "%(objname)sEnable(0);\n",
@@ -337,7 +334,6 @@ class CPPCodeWriter(BaseLangCodeWriter):
         }
 
     class_separator = '::'
-    comment_sign = '//'
 
     global_property_writers = {
         'font':            BaseLangCodeWriter.FontPropertyHandler,
