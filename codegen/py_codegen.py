@@ -26,6 +26,8 @@ from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 import config
+import wcodegen
+
 
 class SourceFileContent(BaseSourceFileContent):
 
@@ -212,7 +214,7 @@ class WidgetHandler(BaseWidgetHandler):
 # end of class WidgetHandler
 
 
-class PythonCodeWriter(BaseLangCodeWriter):
+class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     """\
     Code writer class for writing Python code out of the designed GUI elements
 
@@ -221,10 +223,6 @@ class PythonCodeWriter(BaseLangCodeWriter):
 
     @see: L{BaseLangCodeWriter}
     """
-
-    default_extensions = ['py', 'pyw']
-    language = 'python'
-    lang_prefix = 'py'
 
     _code_statements = {
         'backgroundcolour': "%(objname)s.SetBackgroundColour(%(value)s)\n",
@@ -243,8 +241,6 @@ class PythonCodeWriter(BaseLangCodeWriter):
         }
 
     class_separator = '.'
-    comment_sign = '#'
-    format_flags = True
 
     global_property_writers = {
         'font':            BaseLangCodeWriter.FontPropertyHandler,
@@ -271,8 +267,6 @@ class PythonCodeWriter(BaseLangCodeWriter):
     tmpl_ctor_call_layout = '\n' \
                             '%(tab)sself.__set_properties()\n' \
                             '%(tab)sself.__do_layout()\n'
-
-    tmpl_flag_join = ' | '
 
     tmpl_func_empty = '%(tab)spass\n'
     
@@ -344,23 +338,6 @@ if __name__ == "__main__":
     def _init_vars(self):
         self.use_new_namespace = True
         BaseLangCodeWriter._init_vars(self)
-
-    def cn(self, name):
-        """\
-        Return the name properly formatted for the selected name space.
-
-        @see: L{use_new_namespace}
-        @see: L{cn_f()}
-        """
-        if self.use_new_namespace:
-            # don't process already formatted items again
-            if name.startswith('wx.'):
-                return name
-            if name.startswith('wx'):
-                return 'wx.' + name[2:]
-            elif name.startswith('EVT_'):
-                return 'wx.' + name
-        return name
 
     def cn_class(self, klass):
         """\

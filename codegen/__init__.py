@@ -322,7 +322,7 @@ class BaseWidgetHandler(object):
 
 # end of class BaseWidgetHandler
 
-class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
+class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Dictionary of objects used to generate the code in a given language.
 
@@ -330,7 +330,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
     variables:
       - L{initialize()}
       - L{finalize()}
-      - L{language}
+      - L{wcodegen.BaseLanguageMixin.language}
       - L{add_app()}
       - L{add_class()}
       - L{add_object()}
@@ -350,8 +350,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
       - L{setup()}
       - L{quote_str()}
       - L{quote_path()}
-      - L{cn()}
-      - L{cn_f()}
+      - L{wcodegen.BaseLanguageMixin.cn()}
+      - L{wcodegen.BaseLanguageMixin.cn_f()}
 
     @ivar app_encoding: Encoding of the application; will be initialised with
                         L{config.default_encoding}
@@ -516,35 +516,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
     @type: String
     """
 
-    comment_sign = ''
-    """\
-    Character(s) to start a comment (e.g. C{#} for Python and Perl or
-    C{;;;} for lisp).
-
-    @type: String
-    """
-
-    default_extensions = []
-    """\
-    Default extensions for generated files: a list of file extensions
-
-    @type: List of strings
-    """
-
     global_property_writers = {}
     """\
     Custom handlers for widget properties
 
     @type: Dictionary
-    """
-
-    format_flags = False
-    """\
-    Format single flags with L{cn()} before joining flags in L{cn_f()}
-
-    @type: Boolean
-    @see: L{cn_f()}
-    @see: L{cn()}
     """
 
     indent_level_func_body = 1
@@ -619,14 +595,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
     '__set_properties()'.
     
     @type: String
-    """
-
-    tmpl_flag_join = '|'
-    """\
-    Separator used to concatenate flags
-
-    @type: String
-    @see: L{cn_f}
     """
 
     tmpl_name_do_layout = ''
@@ -824,7 +792,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriterBase):
         """\
         Initialise only instance variables using there defaults.
         """
-        wcodegen.BaseCodeWriterBase.__init__(self)
+        wcodegen.BaseCodeWriter.__init__(self)
         self.obj_builders = {}
         self.obj_properties = {}
         self._property_writers = {}
@@ -2126,110 +2094,6 @@ It is available for wx versions %(supported_versions)s only.""") % {
         if prop.get('extraproperties') and not widget.preview:
             out.extend(self.generate_code_extraproperties(widget))
         return out
-
-    def cn(self, name):
-        """\
-        Return the properly formatted class name.
-
-        @rtype: String
-        @see: L{cn_f()}
-        @see: L{cn_class()}
-        """
-        return name
-
-    def cn_f(self, flags, styles=None):
-        """\
-        Rearrange and format flags.
-
-        Steps to rearrange:
-         1. Split given string using delimiter '|'
-         2. Remove duplicate flags
-         3. Rename flags using the 'alternative' entry
-            (see L{common.widget_config})
-         4. Combine flags using the 'combination' entry
-         5. Format single flags with L{cn()} if L{format_flags} is True
-         6. Sort and recombine flags using L{tmpl_flag_join}
-
-        The style details are described in L{common.widget_config}. The
-        access to the details is only available in widget writer instances.
-
-        Sometime the flag is a digit as a string. The function doesn't
-        process such kind of flags. It returns this flags unchanged.
-
-        Example C++::
-            >>> self.cn_f('wxLC_REPORT|wxSUNKEN_BORDER')
-            'wxLC_REPORT|wxSUNKEN_BORDER'
-
-        Example Python::
-            >>> self.cn_f('wxLC_REPORT|wxSUNKEN_BORDER')
-            'wxLC_REPORT | wxSUNKEN_BORDER'
-
-        @param flags: wxWidget styles joined by '|'
-        @type flags:  String
-
-        @param styles: Style details passed by widget writer instances
-        @type styles:  Dictionary
-
-        @rtype: String
-        @see: L{cn()}
-        @see: L{format_flags}
-        @see: L{tmpl_flag_join}
-        @see: L{common.widget_config}
-        """
-        assert isinstance(flags, str)
-        if flags.isdigit():
-            return flags
-
-        # split flags to set first
-        flags = set(flags.split('|'))
-
-        # check for non-supported, renamed flags and ...
-        if styles:
-            for flag in flags.copy():
-                if flag not in styles:
-                    continue
-
-                # check for alternative names
-                try:
-                    flags.add(styles[flag]['alternative'])
-                    flags.remove(flag)
-                except KeyError:
-                    pass
-
-            # combined flags: replace children by parent flag
-            for style in styles:
-                try:
-                    if styles[style]['combination'] >= flags:
-                        flags -= styles[style]['combination']
-                        flags.add(style)
-                except KeyError:
-                    pass
-
-            # combined flags: remove flags that are part of other flags
-            # already
-            for flag in flags.copy():
-                # ignore already eliminated flags
-                if flag not in flags:
-                    continue
-                try:
-                    flags -= styles[flag]['combination']
-                except (KeyError, TypeError):
-                    pass
-
-        if self.format_flags:
-            flags = [self.cn(f) for f in flags]
-
-        flags = self.tmpl_flag_join.join(sorted(flags))
-        return flags
-
-    def cn_class(self, klass):
-        """\
-        Return the class name
-
-        @rtype: String
-        @see: L{cn()}
-        """
-        return klass
 
     def quote_str(self, s):
         """\

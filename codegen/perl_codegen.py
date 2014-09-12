@@ -26,6 +26,8 @@ from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 import config
+import wcodegen
+
 
 class SourceFileContent(BaseSourceFileContent):
 
@@ -189,23 +191,12 @@ class WidgetHandler(BaseWidgetHandler):
 # end of class WidgetHandler
 
 
-class PerlCodeWriter(BaseLangCodeWriter):
+class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
     """\
     Code writer class for writing Perl code out of the designed GUI elements
 
-    @cvar _perl_constant_list: Incomplete list of wx constants used in wxPerl
-                               Constants don't follow the Wx::ObjectName name
-                               schema. There is a need to handle constants
-                               separately. See also L{cn} and
-                               wxPerl/trunk/Constant.xs.
-    @type _perl_constant_list: List of strings
-
     @see: L{BaseLangCodeWriter}
     """
-
-    default_extensions = ['pl', 'pm']
-    language = 'perl'
-    lang_prefix = 'perl'
 
     _code_statements = {
         'backgroundcolour': "%(objname)s->SetBackgroundColour(%(value)s);\n",
@@ -224,7 +215,6 @@ class PerlCodeWriter(BaseLangCodeWriter):
     class_separator = '::'
     classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer',
                         'wxFlexGridSizer']
-    comment_sign = '#'
 
     global_property_writers = {
         'font':            BaseLangCodeWriter.FontPropertyHandler,
@@ -400,115 +390,6 @@ unless(caller){
 %(tab)s$%(name)s->MainLoop();
 }
 """
-
-    _perl_constant_list = [
-        "wxALL", "wxTOP", "wxBOTTOM", "wxLEFT", "wxRIGHT", "wxDOWN",
-
-        "wxNORTH", "wxSOUTH", "wxWEST", "wxEAST",
-
-        "wxEXPAND", "wxGROW", "wxSHAPED", "wxFIXED_MINSIZE",
-
-        "wxCAPTION", "wxMINIMIZE_BOX", "wxMAXIMIZE_BOX", "wxRESIZE_BORDER",
-
-        "wxYES_NO", "wxYES", "wxNO", 'wxYES_DEFAULT', 'wxNO_DEFAULT',
-        "wxCANCEL", "wxOK",
-
-        # Colours
-        "wxBLACK", "wxWHITE", "wxRED", "wxBLUE", "wxGREEN", "wxCYAN",
-        "wxLIGHT_GREY",
-
-        'wxDEFAULT', 'wxDECORATIVE', 'wxROMAN', 'wxSWISS', 'wxSCRIPT',
-        'wxMODERN', 'wxTELETYPE',
-        'wxNORMAL', 'wxSLANT', 'wxITALIC', 'wxNORMAL', 'wxLIGHT', 'wxBOLD',
-        'wxNORMAL_FONT', 'wxSMALL_FONT', 'wxITALIC_FONT', 'wxSWISS_FONT',
-
-        'wxHORIZONTAL', 'wxVERTICAL',
-        'wxALIGN_CENTER', 'wxALIGN_CENTRE', 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
-        'wxALIGN_TOP', 'wxALIGN_BOTTOM', 'wxALIGN_CENTER_VERTICAL',
-        'wxALIGN_CENTRE_VERTICAL', 'wxALIGN_CENTER_HORIZONTAL',
-        'wxALIGN_CENTRE_HORIZONTAL',
-        'wxSTANDARD_CURSOR', 'wxHOURGLASS_CURSOR', 'wxCROSS_CURSOR',
-
-        'wxTheClipboard', 'wxFormatInvalid', 'wxThePrintPaperDatabase',
-        'wxNullAnimation', 'wxNullBitmap', 'wxNullIcon', 'wxNullColour',
-        'wxNullColour', 'wxNullCursor', 'wxNullFont', 'wxNullPen',
-        'wxNullBrush', 'wxNullPalette', 'wxNullAcceleratorTable',
-
-        # wxStaticLine
-        'wxLI_HORIZONTAL', 'wxLI_VERTICAL',
-
-        # wxHyperlink
-        'wxHL_CONTEXTMENU', 'wxHL_ALIGN_LEFT', 'wxHL_ALIGN_RIGHT',
-        'wxHL_ALIGN_CENTRE', 'wxHL_DEFAULT_STYLE',
-
-        'wxMAJOR_VERSION', 'wxMINOR_VERSION',
-
-        # wxSplitterWindow
-        'wxSPLIT_HORIZONTAL', 'wxSPLIT_VERTICAL',
-
-    ]
-
-    def cn(self, name):
-        """\
-        Return the name properly formatted.
-
-        @see: L{self._perl_constant_list}
-        """
-        # handles constants like event or language identifiers
-        if name.startswith('wxBITMAP_TYPE_') or \
-           name.startswith('wxBORDER_') or \
-           name.startswith('wxBRUSHSTYLE_') or \
-           name.startswith('wxBU_') or \
-           name.startswith('wxCB_') or \
-           name.startswith('wxCC_') or \
-           name.startswith('wxCHB_') or \
-           name.startswith('wxCHK_') or \
-           name.startswith('wxCURSOR_') or \
-           name.startswith('wxDD_') or \
-           name.startswith('wxEVT_') or \
-           name.startswith('wxFONTENCODING_') or \
-           name.startswith('wxFONTFAMILY_') or \
-           name.startswith('wxFONTSTYLE_') or \
-           name.startswith('wxFONTWEIGHT_') or \
-           name.startswith('wxFONTFLAG_') or \
-           name.startswith('wxFRAME_') or \
-           name.startswith('wxGA_') or \
-           name.startswith('wxICON_') or \
-           name.startswith('wxID_') or \
-           name.startswith('wxK_') or \
-           name.startswith('wxLANGUAGE_') or \
-           name.startswith('wxLB_') or \
-           name.startswith('wxMOD_') or \
-           name.startswith('wxNB_') or \
-           name.startswith('wxALIGN_') or \
-           name.startswith('wxDefault') or \
-           name.startswith('wxPD_') or \
-           name.startswith('wxPROPSHEET_') or \
-           name.startswith('wxRA_') or \
-           name.startswith('wxRB_') or \
-           name.startswith('wxSL_') or \
-           name.startswith('wxSP_') or \
-           name.startswith('wxSPLASH_') or \
-           name.startswith('wxST_') or \
-           name.startswith('wxSys_') or \
-           name.startswith('wxSW_') or \
-           name.startswith('wxSASH_') or \
-           name.startswith('wxTB_') or \
-           name.startswith('wxTE_') or \
-           name.startswith('wxWIZARD_') or \
-           name in self._perl_constant_list:
-            return name
-
-        # don't process already formatted items again
-        if name.startswith('Wx::'):
-            return name
-
-        # use default for remaining names
-        if name[:2] == 'wx':
-            return 'Wx::' + name[2:]
-        elif name[:4] == 'EVT_':
-            return 'Wx::' + name
-        return name
 
     def initialize(self, app_attrs):
         """\
