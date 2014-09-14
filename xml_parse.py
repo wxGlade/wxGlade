@@ -579,7 +579,9 @@ class XmlWidgetObject(object):
             self._logger.debug('add_property(name=pos)')
             return
         try:
-            self.obj[name][1](val)  # call the setter for this property
+            # call the setter for this property
+            setter = self.obj[name][1]
+            setter(val)
             try:
                 prop = self.obj.properties[name]
                 prop.set_value(val)
@@ -590,7 +592,8 @@ class XmlWidgetObject(object):
             # unknown property for this object
             # issue a warning and ignore the property
             self._logger.error(
-                _("Warning: property '%s' not supported by this object ('%s') "),
+                _("Warning: property '%s' not supported by this object "
+                  "('%s') "),
                 name,
                 self.obj,
                 )
