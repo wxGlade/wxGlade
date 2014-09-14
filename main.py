@@ -693,35 +693,40 @@ class wxGladeFrame(wx.Frame):
             common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
-            wx.MessageBox(_("Error loading file %s: %s") % \
+            wx.MessageBox(_("Error loading file %s: %s") %
                           (misc.wxstr(infilename), misc.wxstr(msg)),
-                          _("Error"), wx.OK|wx.CENTRE|wx.ICON_ERROR)
+                          _("Error"), wx.OK | wx.CENTRE | wx.ICON_ERROR)
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
             os.chdir(old_dir)
             return False            
         except Exception, msg:
-            self._logger.exception(
-                _('An exception occurred while loading file "%s".'),
-                infilename.encode('ascii', 'replace')
-                )
+            if infilename:
+                details = _('An exception occurred while loading file '
+                            '"%s".') % infilename.encode('ascii', 'replace')
+                mbox = _('An exception occurred while loading file\n'
+                         '"%s".') % infilename.encode('ascii', 'replace')
+            else:
+                details = _('An exception occurred while loading from a '
+                            'file-like object')
+                mbox = _('An exception occurred while loading from a\n'
+                         'file-like object.')
+            self._logger.exception(details)
             if locals().has_key('infile') and not is_filelike:
                 infile.close()
             common.app_tree.clear()
             common.property_panel.Reparent(self.frame2)
             common.app_tree.app.saved = True
             wx.MessageBox(
-                _('An exception occurred while loading file \n'
-                   '"%s".\n'
+                _('%s\n'
                   'This is the error message associated with it:\n'
                   '        %s\n'
                   'For more details, look at the full traceback '
                   'on the console.\n'
-                  'If you think this is a wxGlade bug,'
-                  ' please report it.') % \
-                  (misc.wxstr(infilename), misc.wxstr(msg)),
+                  'If you think this is a wxGlade bug, please report it.') %
+                (mbox, misc.wxstr(msg)),
                 _("Error"),
-                wx.OK|wx.CENTRE|wx.ICON_ERROR
+                wx.OK | wx.CENTRE | wx.ICON_ERROR
                 )
             # reset the auto-expansion of nodes
             common.app_tree.auto_expand = True
