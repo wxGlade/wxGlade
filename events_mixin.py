@@ -131,7 +131,7 @@ class EventsPropertyHandler(object):
 default_events = []
 
 
-class EventsMixin:
+class EventsMixin(object):
     def __init__(self):
         if not hasattr(self, 'events'):
             self.events = default_events

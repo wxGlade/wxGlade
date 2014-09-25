@@ -85,5 +85,5 @@ def initialize():
     common.class_names['NotebookPane'] = 'wxPanel'
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
-    common.register('perl', klass, PerlNotebookGenerator(),
+    common.register('perl', klass, PerlNotebookGenerator(klass),
                     'tabs', TabsCodeHandler, klass)

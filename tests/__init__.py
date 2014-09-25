@@ -8,7 +8,6 @@
 import StringIO
 import difflib
 import glob
-import logging
 import os.path
 import re
 import types

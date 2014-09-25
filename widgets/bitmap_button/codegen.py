@@ -10,8 +10,10 @@ import common
 import config
 import os
 
+import wcodegen
 
-class PythonBitmapButtonGenerator:
+
+class PythonBitmapButtonGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, obj):
         pygen = common.code_writers['python']
         cn = pygen.cn
@@ -87,7 +89,7 @@ class PythonBitmapButtonGenerator:
 # end of class PythonBitmapButtonGenerator
 
 
-class CppBitmapButtonGenerator:
+class CppBitmapButtonGenerator(wcodegen.CppWidgetCodeWriter):
     def get_code(self, obj):
         """\
         function that generates C++ code for wxBitmapButton objects.
@@ -162,6 +164,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxBitmapButton'
     common.class_names['EditBitmapButton'] = klass
-    common.register('python', klass, PythonBitmapButtonGenerator())
-    common.register('C++', klass, CppBitmapButtonGenerator())
+    common.register('python', klass, PythonBitmapButtonGenerator(klass))
+    common.register('C++', klass, CppBitmapButtonGenerator(klass))
     common.register('XRC', klass, xrc_code_generator)

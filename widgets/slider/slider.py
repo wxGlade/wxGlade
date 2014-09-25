@@ -8,6 +8,7 @@ wxSlider objects
 
 import wx
 import common
+import wcodegen
 from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 from widget_properties import *
@@ -39,7 +40,7 @@ class EditSlider(ManagedBase, StylesMixin):
         StylesMixin.__init__(self)
 
         # initialise instance variables
-        self.style = style
+        self.set_style(style)
         self.value = 0
         self.range = (0, 10)
 
@@ -48,28 +49,17 @@ class EditSlider(ManagedBase, StylesMixin):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
-        style_labels = ('#section#' + _('Style'), 'wxSL_HORIZONTAL', 'wxSL_VERTICAL',
-                        'wxSL_AUTOTICKS', 'wxSL_LABELS', 'wxSL_LEFT',
-                        'wxSL_RIGHT', 'wxSL_TOP', 'wxSL_BOTTOM',
-                        'wxSL_SELRANGE', 'wxSL_INVERSE')
-        self.gen_style_pos(style_labels)
-        tooltips = (_("Displays the slider horizontally (this is the default)."),
-                    _("Displays the slider vertically."),
-                    _("Displays tick marks."),
-                    _("Displays minimum, maximum and value labels."),
-                    _("Displays ticks on the left and forces the slider to be vertical."),
-                    _("Displays ticks on the right and forces the slider to be vertical."),
-                    _("Displays ticks on the top."),
-                    _("Displays ticks on the bottom (this is the default)."),
-                    _("Allows the user to select a range on the slider. Windows only."),
-                    _("Inverses the mininum and maximum endpoints on the slider. Not compatible with wxSL_SELRANGE."))
-        prop['style'] = CheckListProperty(self, 'style', None, style_labels, tooltips=tooltips)
-        prop['range'] = TextProperty(self, 'range', None, can_disable=True, label=_("range"))
-        prop['value'] = SpinProperty(self, 'value', None, can_disable=True, label=_("value"))
+        prop['style'] = CheckListProperty(
+            self, 'style', self.widget_writer)
+        prop['range'] = TextProperty(
+            self, 'range', None, can_disable=True, label=_("range"))
+        prop['value'] = SpinProperty(
+            self, 'value', None, can_disable=True, label=_("value"))
 
     def create_widget(self):
         self.widget = wx.Slider(self.parent.widget, self.id, self.value,
-                                self.range[0], self.range[1], style=self.style)
+                                self.range[0], self.range[1],
+                                style=self.get_int_style())
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -112,91 +102,70 @@ class EditSlider(ManagedBase, StylesMixin):
 
 # end of class EditSlider
 
-        
+
+editor_class = EditSlider
+editor_icon = 'icons/slider.xpm'
+editor_name = 'EditSlider'
+editor_style = ''
+
+dlg_title = _('wxSlider')
+box_title = _('Orientation')
+choices = 'wxSL_HORIZONTAL|wxSL_VERTICAL'
+tmpl_label = 'slider'
+
+
 def builder(parent, sizer, pos, number=[1]):
     """\
-    factory function for EditStaticLine objects.
+    factory function for editor objects from GUI.
     """
-    class Dialog(wx.Dialog, StylesMixin):
-        update_widget_style = False
-        def __init__(self):
-            wx.Dialog.__init__(self, None, -1, _('Select style'))
-            StylesMixin.__init__(self)
-            self.orientations = [ wx.SL_HORIZONTAL, wx.SL_VERTICAL ]
-            self.orientation = wx.SL_HORIZONTAL
-            prop = RadioProperty(self, 'orientation', self,
-                                 ['wxSL_HORIZONTAL', 'wxSL_VERTICAL'], label=_("orientation"))
-            szr = wx.BoxSizer(wx.VERTICAL)
-            szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
-            style_labels = ('#section#', 'wxSL_AUTOTICKS', 'wxSL_LABELS',
-                            'wxSL_LEFT', 'wxSL_RIGHT', 'wxSL_TOP')
-            self.gen_style_pos(style_labels)
-            self.style_prop = CheckListProperty(self, 'style', self,
-                                                style_labels)
-            szr.Add(self.style_prop.panel, 0, wx.ALL | wx.EXPAND, 10)
-            btn = wx.Button(self, wx.ID_OK, _('OK'))
-            btn.SetDefault()
-            szr.Add(btn, 0, wx.BOTTOM|wx.ALIGN_CENTER, 10)
-            self.SetAutoLayout(True)
-            self.SetSizer(szr)
-            szr.Fit(self)
-            self.CenterOnScreen()
-            
-        def __getitem__(self, value):
-            if value == 'orientation':
-                def set_orientation(o): self.orientation = self.orientations[o]
-                return (lambda: self.orientation, set_orientation)
-            else:
-                return (self.get_style, self.set_style)
-            
-    # end of inner class
+    dialog = wcodegen.WidgetStyleSelectionDialog(
+        dlg_title, box_title, choices)
 
-    dialog = Dialog()
-    dialog.ShowModal()
-    
-    label = 'slider_%d' % number[0]
+    if not dialog.ShowModal() == wx.ID_OK:
+        return
+
+    label = '%s_%d' % (tmpl_label, number[0])
     while common.app_tree.has_name(label):
         number[0] += 1
-        label = 'slider_%d' % number[0]
-    slider = EditSlider(label, parent, wx.NewId(), dialog.orientation |
-                        dialog.style, sizer, pos, common.property_panel)
-    node = Tree.Node(slider)
-    slider.node = node
-    slider.show_widget(True)
+        label = tmpl_label % number[0]
+    widget = editor_class(label, parent, wx.ID_ANY, dialog.get_selection(),
+                          sizer, pos, common.property_panel)
+    node = Tree.Node(widget)
+    widget.node = node
+    widget.set_style("wxEXPAND")
+    widget.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditSlider objects from an xml file
+    Factory to build editor objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    style = 0
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    slider = EditSlider(name, parent, wx.NewId(), style, sizer,
-                        pos, common.property_panel) 
-    sizer.set_item(slider.pos, option=sizeritem.option,
+    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer,
+                          pos, common.property_panel)
+    sizer.set_item(widget.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(slider)
-    slider.node = node
+    node = Tree.Node(widget)
+    widget.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
         common.app_tree.insert(node, sizer.node, pos - 1)
-    return slider
-   
+    return widget
+
 
 def initialize():
     """\
     initialization function for the module: returns a wxBitmapButton to be
     added to the main palette.
     """
-    common.widgets['EditSlider'] = builder
-    common.widgets_from_xml['EditSlider'] = xml_builder
-    
-    return common.make_object_button('EditSlider', 'icons/slider.xpm')
+    common.widgets[editor_name] = builder
+    common.widgets_from_xml[editor_name] = xml_builder
+    return common.make_object_button(editor_name, editor_icon)

@@ -7,9 +7,10 @@ Lisp generator functions for wxSplitterWindow objects
 """
 
 import common
+import wcodegen
 
 
-class LispSplitterWindowGenerator:
+class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'
     ]
@@ -26,20 +27,22 @@ class LispSplitterWindowGenerator:
 
         if window.is_toplevel:
             l = []
-            if id_name: l.append(id_name)
+            if id_name:
+                l.append(id_name)
 
             l.append('(setf (slot-%s obj) (wxSplitterWindow_Create %s %s))\n' %
-                     (window.name, parent,id))
+                     (window.name, parent, id))
             return l, [], []
 
         style = prop.get("style")
-        if not( style and style != 'wxSP_3D' ): # default style
+        if not(style and style != 'wxSP_3D'):
             style = ''
         else:
             style = codegen.cn_f(style)
 
         init = []
-        if id_name: init.append(id_name)
+        if id_name:
+            init.append(id_name)
 
         init.append('(setf (slot-%s obj) (wxSplitterWindow_Create %s %s -1 -1 -1 -1 %s))\n'
                     % (window.name, parent, id, style))
@@ -59,8 +62,8 @@ class LispSplitterWindowGenerator:
             else:
                 f_name = 'SplitHorizontally'
 
-            layout_buf.append('(%s %s %s %s %s)\n'
-                % (f_name, window.name, win_1, win_2, sash_pos))
+            layout_buf.append('(%s %s %s %s %s)\n' %
+                              (f_name, window.name, win_1, win_2, sash_pos))
         else:
             def add_sub(win):
                 layout_buf.append('(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n'
@@ -74,9 +77,7 @@ class LispSplitterWindowGenerator:
 
         return init, props_buf, layout_buf
 
-
     def get_layout_code(self, obj):
-        codegen = common.code_writers['lisp']
         props_buf = []
         prop = obj.properties
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -116,4 +117,4 @@ def initialize():
     common.class_names['SplitterPane'] = 'wxPanel'
     common.toplevels['EditSplitterWindow'] = 1
     common.toplevels['SplitterPane'] = 1
-    common.register('lisp', klass, LispSplitterWindowGenerator())
+    common.register('lisp', klass, LispSplitterWindowGenerator(klass))

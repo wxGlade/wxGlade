@@ -47,7 +47,8 @@ class EditButton(ManagedBase, StylesMixin):
                                               self.set_stockitem)
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("Default"))
+        self.properties['default'] = CheckBoxProperty(
+            self, 'default', None, label=_("Default"))
         self.properties['default'].tooltip = \
             _("This sets the button to be the default "
               "item for the panel or dialog box.")
@@ -57,32 +58,12 @@ class EditButton(ManagedBase, StylesMixin):
         choices.sort()
         choices[:0] = ['None']
         self.properties['stockitem'] = ComboBoxProperty(
-            self, 'stockitem', choices, can_disable=True, label=_("Stock item"))
+            self, 'stockitem', choices, can_disable=True,
+            label=_("Stock item"))
         self.properties['stockitem'].tooltip = \
             _("Standard IDs for button identifiers")
-
-        style_labels = ('#section#' + _('Style'), 'wxBU_LEFT', 'wxBU_RIGHT',
-            'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT','wxNO_BORDER')
-        self.gen_style_pos((style_labels))
-        
-        #The tooltips tuple
-        style_tooltips=(_("Left-justifies the label. Windows and GTK+ only."),
-                        _("Right-justifies the bitmap label. Windows and GTK+ "
-                        "only."),
-                        _("Aligns the label to the top of the button. Windows "
-                        "and GTK+ only."),
-                        _("Aligns the label to the bottom of the button. "
-                        "Windows and GTK+ only."),
-                        _("Creates the button as small as possible instead of "
-                        "making it of the standard size (which is the default "
-                        "behaviour )."),
-                        _("Creates a flat button. Windows and GTK+ only."))
         self.properties['style'] = CheckListProperty(
-            self, 'style', None,
-            style_labels, tooltips=style_tooltips)  # the tooltips tuple is
-                                                    # passed as the last
-                                                    # argument
-
+            self, 'style', self.widget_writer)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -96,7 +77,7 @@ class EditButton(ManagedBase, StylesMixin):
         szr.Add(self.properties['stockitem'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
-        panel.SetAutoLayout(1)
+        panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
@@ -121,7 +102,7 @@ class EditButton(ManagedBase, StylesMixin):
     def create_widget(self):
         try:
             self.widget = wx.Button(self.parent.widget, self.id, self.label,
-                                    style=self.style)
+                                    style=self.get_int_style())
         except AttributeError:
             self.widget = wx.Button(self.parent.widget, self.id, self.label)
 
@@ -156,11 +137,11 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditButton objects.
     """
-    label = 'button_%d' % number[0]
-    while common.app_tree.has_name(label):
+    name = 'button_%d' % number[0]
+    while common.app_tree.has_name(name):
         number[0] += 1
-        label = 'button_%d' % number[0]
-    button = EditButton(label, parent, wx.NewId(), misc.encode(label), sizer,
+        name = 'button_%d' % number[0]
+    button = EditButton(name, parent, wx.NewId(), misc.encode(name), sizer,
                         pos, common.property_panel)
     node = Tree.Node(button)
     button.node = node
@@ -170,7 +151,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditButton objects from an xml file
+    factory to build EditButton objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:
@@ -179,8 +160,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditButton(label, parent, wx.NewId(), '', sizer,
-                        pos, common.property_panel, show=False)
+    button = EditButton(label, parent, wx.NewId(), '', sizer, pos,
+                        common.property_panel, show=False)
     node = Tree.Node(button)
     button.node = node
     if pos is None:

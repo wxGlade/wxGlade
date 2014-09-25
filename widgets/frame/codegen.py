@@ -8,32 +8,6 @@ Code generator functions for wxFrame objects
 
 import common
 import wcodegen
-from MenuTree import *
-
-
-class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = self.CreateStatusBar(%(labels_len)s%(style)s)\n'
-
-    def _prepare_tmpl_content(self, obj):
-        wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-
-        labels, widths = obj.properties['statusbar']
-        self.tmpl_dict['labels'] = ', '.join(
-            [self.codegen.quote_str(lb) for lb in labels])
-        self.tmpl_dict['labels_len'] = len(labels)
-        self.tmpl_dict['widths'] = repr(widths)
-        self.tmpl_dict['widths_len'] = len(widths)
-        append = self.tmpl_props.append
-
-        append('%(name)s.SetStatusWidths(%(widths)s)\n')
-        append('\n')
-
-        append('%(comment)s statusbar fields\n')
-        append('%(obj_name)s_fields = [%(labels)s]\n')
-        append('for i in range(len(%(obj_name)s_fields)):\n')
-        append('%(tab)s%(name)s.SetStatusText(%(obj_name)s_fields[i], i)\n')
-
-# end of class PythonStatusBarGenerator
 
 
 class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -156,38 +130,6 @@ def xrc_statusbar_code_generator(obj):
     return StatusbarXrcObject(obj)
 
 
-class CppStatusBarGenerator(wcodegen.CppWidgetCodeWriter):
-
-    tmpl = '%(name)s = CreateStatusBar(%(labels_len)s%(style)s);\n'
-    prefix_style = False
-
-    def _prepare_tmpl_content(self, obj):
-        wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-
-        labels, widths = obj.properties['statusbar']
-        self.tmpl_dict['labels_len'] = len(labels)
-        self.tmpl_dict['widths'] = ', '.join(map(str, widths))
-        self.tmpl_dict['widths_len'] = len(widths)
-        append = self.tmpl_props.append
-
-        append('int %(name)s_widths[] = { %(widths)s };\n')
-        append('%(name)s->SetStatusWidths(%(widths_len)s, '
-               '%(name)s_widths);\n')
-        append('\n')
-
-        append('%(comment)s statusbar fields\n')
-        append('const wxString %(name)s_fields[] = {\n')
-        for lb in labels:
-            append('%%(tab)s%s,\n' % self.codegen.quote_str(lb))
-        append('};\n')
-
-        append('for(int i = 0; i < %(name)s->GetFieldsCount(); ++i) {\n')
-        append('%(tab)s%(name)s->SetStatusText(%(name)s_fields[i], i);\n')
-        append('}\n')
-
-# end of class CppStatusBarGenerator
-
-
 class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
     constructor = [('wxWindow*', 'parent'), ('int', 'id'),
                    ('const wxString&', 'title'),
@@ -249,23 +191,20 @@ class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
 
 
 def initialize():
+    klass = 'wxFrame'
     cn = common.class_names
-    cn['EditFrame'] = 'wxFrame'
+    cn['EditFrame'] = klass
     cn['EditMDIChildFrame'] = 'wxMDIChildFrame'
-    cn['EditStatusBar'] = 'wxStatusBar'
     common.toplevels['EditFrame'] = 1
     common.toplevels['EditMDIChildFrame'] = 1
 
     pygen = common.code_writers.get('python')
     if pygen:
         awh = pygen.add_widget_handler
-        awh('wxFrame', PythonFrameCodeGenerator())
-        awh('wxMDIChildFrame', PythonFrameCodeGenerator())
-        awh('wxStatusBar', PythonStatusBarGenerator())
+        awh('wxFrame', PythonFrameCodeGenerator(klass))
+        awh('wxMDIChildFrame', PythonFrameCodeGenerator(klass))
 
         aph = pygen.add_property_handler
-        aph('statusbar', pygen.DummyPropertyHandler)
-        aph('fields', StatusFieldsHandler)
         aph('menubar', pygen.DummyPropertyHandler)
 
     xrcgen = common.code_writers.get('XRC')
@@ -273,18 +212,12 @@ def initialize():
         awh = xrcgen.add_widget_handler
         awh('wxFrame', xrc_frame_code_generator)
         awh('wxMDIChildFrame', xrcgen.NotImplementedXrcObject)
-        awh('wxStatusBar', xrc_statusbar_code_generator)
-
-        xrcgen.add_property_handler('fields', StatusFieldsHandler)
 
     cppgen = common.code_writers.get('C++')
     if cppgen:
         awh = cppgen.add_widget_handler
-        awh('wxFrame', CppFrameCodeGenerator())
-        awh('wxMDIChildFrame', CppMDIChildFrameCodeGenerator())
-        awh('wxStatusBar', CppStatusBarGenerator())
+        awh('wxFrame', CppFrameCodeGenerator(klass))
+        awh('wxMDIChildFrame', CppMDIChildFrameCodeGenerator(klass))
 
         aph = cppgen.add_property_handler
-        aph('fields', StatusFieldsHandler)
         aph('menubar', cppgen.DummyPropertyHandler)
-        aph('statusbar', cppgen.DummyPropertyHandler)

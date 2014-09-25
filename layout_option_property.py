@@ -2,14 +2,13 @@
 Property class for the 'option' layout property of widgets and non-toplevel
 sizers.
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
-
 import widget_properties
-#from edit_sizers import EditGridBagSizer
+
 
 def _is_gridbag(dummy):
     return False
@@ -35,15 +34,15 @@ class LayoutOptionProperty(widget_properties.Property):
         """
         self.id = wx.NewId()
         self.val_range = (0, 1000)
-        size = (widget_properties._label_initial_width, -1)
+        size = (widget_properties.label_initial_width, -1)
         label = widget_properties.wxGenStaticText(parent, -1, _('Proportion'),
                                                   size=size)
         self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
-                               max=self.val_range[1])
+                                max=self.val_range[1])
         val = int(self.owner[self.name][0]())
         if not val:
-            self.spin.SetValue(1) # needed for GTK to display a '0'
-        self.spin.SetValue(val) #int(self.owner[self.name][0]()))
+            self.spin.SetValue(1)  # needed for GTK to display a '0'
+        self.spin.SetValue(val)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         option = 5
@@ -53,7 +52,7 @@ class LayoutOptionProperty(widget_properties.Property):
 
     def _display_gridbag(self, parent):
         sizer = wx.BoxSizer(wx.VERTICAL)
-        size = (widget_properties._label_initial_width, -1)
+        size = (widget_properties.label_initial_width, -1)
         val = self.owner[self.name][0]()
         
         szr = wx.BoxSizer(wx.HORIZONTAL)
@@ -76,7 +75,6 @@ class LayoutOptionProperty(widget_properties.Property):
 
         self.panel = sizer
         self.bind_event(self.on_change_val)
-        
         
     def bind_event(self, function):
         if not self.is_gridbag:
@@ -124,8 +122,10 @@ class LayoutOptionProperty(widget_properties.Property):
     def set_value(self, value):
         if not self.is_gridbag:
             self.val = int(value)
-            try: self.spin.SetValue(int(value))
-            except AttributeError: pass
+            try:
+                self.spin.SetValue(int(value))
+            except AttributeError:
+                pass
         else:
             self.val = value
             try:
@@ -137,8 +137,10 @@ class LayoutOptionProperty(widget_properties.Property):
     def set_range(self, min_v, max_v):
         if not self.is_gridbag:
             self.val_range = (min_v, max_v)
-            try: self.spin.SetRange(min_v, max_v)
-            except AttributeError: pass
+            try:
+                self.spin.SetRange(min_v, max_v)
+            except AttributeError:
+                pass
 
     def set_sizer(self, sizer):
         self.is_gridbag = _is_gridbag(sizer)
@@ -150,7 +152,7 @@ class LayoutPosProperty(widget_properties.SpinProperty):
     def __init__(self, owner, sizer, parent=None):
         self.is_gridbag = _is_gridbag(sizer)
         widget_properties.SpinProperty.__init__(
-            self, owner, 'pos', parent, 0, (0, 1000))#, immediate=True)
+            self, owner, 'pos', parent, 0, (0, 1000))
         self.label = _('Position')
 
     def set_sizer(self, sizer):

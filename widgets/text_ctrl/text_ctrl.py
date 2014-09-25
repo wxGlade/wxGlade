@@ -48,22 +48,14 @@ class EditTextCtrl(ManagedBase, StylesMixin):
         self.access_functions['style'] = (self.get_style, self.set_style)
         prop['value'] = TextProperty(self, 'value', None,
                                      multiline=True, label=_("value"))
-        # style property
-        style_labels = ('#section#' + _('Style'), 'wxTE_PROCESS_ENTER',
-                        'wxTE_PROCESS_TAB', 'wxTE_MULTILINE', 'wxTE_PASSWORD',
-                        'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH',
-                        'wxTE_RICH2', 'wxTE_AUTO_URL', 'wxTE_NOHIDESEL',
-                        'wxTE_CENTRE', 'wxTE_RIGHT', 'wxTE_LINEWRAP',
-                        'wxTE_WORDWRAP', 'wxNO_BORDER')
-        self.gen_style_pos(style_labels)
-        prop['style'] = CheckListProperty(self, 'style', None, style_labels)
+        prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
 
     def create_widget(self):
         value = self.value
-        if self.style & wx.TE_MULTILINE:
+        if 'wxTE_MULTILINE' in self.get_string_style():
             value = value.replace('\\n', '\n')
         self.widget = wx.TextCtrl(self.parent.widget, self.id, value=value,
-                                  style=self.style)
+                                  style=self.get_int_style())
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -88,7 +80,7 @@ class EditTextCtrl(ManagedBase, StylesMixin):
         value = misc.wxstr(value)
         if not misc.streq(value, self.value):
             self.value = value
-            if self.style & wx.TE_MULTILINE:
+            if 'wxTE_MULTILINE' in self.get_string_style():
                 value = value.replace('\\n', '\n')
             if self.widget:
                 self.widget.SetValue(value)
@@ -104,7 +96,8 @@ class EditTextCtrl(ManagedBase, StylesMixin):
         # be only set during control creation.
         if self.widget:
             old_style = self.widget.GetWindowStyleFlag()
-            if old_style != self.style:
+            new_style = self.get_int_style()
+            if old_style != new_style:
                 focused = misc.focused_widget is self
                 self.sel_marker.Destroy()
                 # hide old frame, create_widget() creates a new one
@@ -139,7 +132,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory function to build EditTextCtrl objects from an xml file
+    factory function to build EditTextCtrl objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

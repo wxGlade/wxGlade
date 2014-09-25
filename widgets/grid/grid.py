@@ -1,32 +1,34 @@
-# Grid.py: wxGrid objects
-# $Id: grid.py,v 1.33 2007/03/27 07:01:58 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxGrid objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 from wx.grid import *
-import common, misc
+import common
+import misc
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
+
 
 class GridColsProperty(GridProperty):
     def write(self, outfile, tabs):
         from xml.sax.saxutils import escape, quoteattr
         write = outfile.write
         write('    ' * tabs + '<columns>\n')
-        tab_s = '    ' * (tabs+1)
+        tab_s = '    ' * (tabs + 1)
         import widget_properties
-        value = self.get_value() # this is a list
+        value = self.get_value()  # this is a list
         for i in range(len(value)):
-            val = value[i] # this is another list
+            val = value[i]  # this is another list
             _label = escape(widget_properties._encode(val[0]))
             _size  = escape(widget_properties._encode(val[1]))
-            write('%s<column size=%s>%s</column>\n' % (tab_s,
-                                                       quoteattr(_size),
-                                                       _label ))
+            write('%s<column size=%s>%s</column>\n' % (
+                tab_s, quoteattr(_size), _label))
         write('    ' * tabs + '</columns>\n')
 
     def _get_label(self, col):
@@ -117,9 +119,10 @@ class EditGrid(ManagedBase):
         self.enable_grid_resize = True
         self.lines_color = '#000000'
         self.label_bg_color = '#C0C0C0'
-        self.selection_mode = 0 # == wxGrid.wxGridSelectCells
+        # XXX als Konstante nutzen??
+        self.selection_mode = 0  # == wxGrid.wxGridSelectCells
         self.create_grid = True
-        self.columns = [ ['A','-1'] , ['B','-1'] , ['C','-1'] ]
+        self.columns = [['A', '-1'], ['B', '-1'], ['C', '-1']]
         
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
                              property_window, show=show)
@@ -127,8 +130,7 @@ class EditGrid(ManagedBase):
         af = self.access_functions
         af['create_grid'] = (self.get_create_grid, self.set_create_grid)
         props['create_grid'] = CheckBoxProperty(
-            self, 'create_grid', None,
-            write_always=True, label=_("create_grid"))
+            self, 'create_grid', write_always=True, label=_("create_grid"))
         af['row_label_size'] = (self.get_row_label_size,
                                 self.set_row_label_size)
         props['row_label_size'] = SpinProperty(
@@ -260,8 +262,10 @@ class EditGrid(ManagedBase):
             self.label_bg_color))
         i = 0
         for l, s in self.columns:
-            try: s1 = int(s)
-            except: s1 = 0
+            try:
+                s1 = int(s)
+            except:
+                s1 = 0
             self.widget.SetColLabelValue(i, l)
             if s1 > 0:
                 self.widget.SetColSize(i, s1)
@@ -384,9 +388,6 @@ class EditGrid(ManagedBase):
 
     def get_selection_mode(self):
         return self.selection_mode
-##         if self.selection_mode == wxGrid.wxGridSelectCells:   return 0
-##         if self.selection_mode == wxGrid.wxGridSelectRows:    return 1
-##         if self.selection_mode == wxGrid.wxGridSelectColumns: return 2
 
     def set_selection_mode(self, value):
         _sel_modes = {
@@ -397,16 +398,12 @@ class EditGrid(ManagedBase):
         if value in _sel_modes:
             self.selection_mode = _sel_modes[value]
         else:
-            try: value = int(value)
-            except: pass
-            else: self.selection_mode = value
-##         if value == 0:
-##             self.selection_mode = wxGrid.wxGridSelectCells
-##         elif value == 1:
-##             self.selection_mode = wxGrid.wxGridSelectRows
-##         else:
-##             self.selection_mode = wxGrid.wxGridSelectColumns
-        # no operation on the grid.
+            try:
+                value = int(value)
+            except:
+                pass
+            else:
+                self.selection_mode = value
 
     def get_columns(self):
         return self.columns
@@ -423,8 +420,10 @@ class EditGrid(ManagedBase):
             self.widget.DeleteCols(0, _oldcolnum - _colnum)
         i = 0
         for l, s in cols:
-            try: s1 = int(s)
-            except: s1 = 0
+            try:
+                s1 = int(s)
+            except:
+                s1 = 0
             self.widget.SetColLabelValue(i, misc.wxstr(l))
             if s1 > 0:
                 self.widget.SetColSize(i, s1)
@@ -450,8 +449,8 @@ def builder(parent, sizer, pos, number=[1]):
                     common.property_panel)
     # A grid should be wx.EXPANDed and 'option' should be 1,
     # or you can't see it.
-    grid.set_option(1)  
-    grid.set_flag("wxEXPAND")
+    grid.set_option(1)
+    grid.sm_border.set_style("wxEXPAND")
     node = Tree.Node(grid)
     grid.node = node
     grid.show_widget(True)
@@ -460,7 +459,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditGrid objects from an xml file
+    factory to build EditGrid objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

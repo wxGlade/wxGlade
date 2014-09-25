@@ -35,26 +35,18 @@ class EditStaticBitmap(ManagedBase, StylesMixin):
 
         # initialise properties remaining staff
         self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
-        def set_attribute(v): self.attribute = int(v)
-        self.access_functions['attribute'] = (lambda : self.attribute,
-                                              set_attribute)
-        self.bitmap_prop = FileDialogProperty(self, 'bitmap', None, #panel,
+        self.access_functions['attribute'] = (self.get_attribute,
+                                              self.set_attribute)
+        self.bitmap_prop = FileDialogProperty(self, 'bitmap', None,
                                               style=wx.OPEN|wx.FILE_MUST_EXIST,
                                               can_disable=False, label=_("bitmap"))
-        self.properties['bitmap'] = self.bitmap_prop
-        self.properties['attribute'] = CheckBoxProperty(
-            self, 'attribute', None, _('Store as attribute'), write_always=True)
+        prop = self.properties
+        prop['bitmap'] = self.bitmap_prop
+        prop['attribute'] = CheckBoxProperty(
+            self, 'attribute', None, _('Store as attribute'),
+            write_always=True)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = (u'#section#' + _('Style'),
-                        'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
-                        'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
-                        'wxSTATIC_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
-                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
-                        'wxFULL_REPAINT_ON_RESIZE',
-                        'wxCLIP_CHILDREN')
-        self.gen_style_pos(style_labels)
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)  
+        prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
 
     def create_widget(self):
         bmp = self.load_bitmap()
@@ -85,6 +77,12 @@ class EditStaticBitmap(ManagedBase, StylesMixin):
         self.property_window.Layout()
         import math
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
+
+    def get_attribute(self):
+        return self.attribute
+
+    def set_attribute(self, value):
+        self.attribute = int(value)
 
     def get_bitmap(self):
         return self.bitmap
@@ -130,7 +128,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditStaticBitmap objects from an xml file
+    factory to build EditStaticBitmap objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

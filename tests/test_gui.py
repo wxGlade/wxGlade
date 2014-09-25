@@ -44,9 +44,6 @@ class TestGui(WXGladeBaseTest):
 
     @classmethod
     def setUpClass(cls):
-        """\
-        XXX
-        """
         WXGladeBaseTest.setUpClass()
 
         # create an simply application
@@ -354,100 +351,86 @@ class TestGui(WXGladeBaseTest):
         StyleMixin: Test converting of styles
         """
         import edit_windows
-        sm = edit_windows.StylesMixin()
+        sm = edit_windows.StylesMixin('wxHyperlinkCtrl')
 
-        # test converting attribute names to values
-        style_labels = ('wxMINIMIZE_BOX', 'wxMAXIMIZE_BOX',
-                        'wxRESIZE_BORDER')
-        sm.gen_style_pos(style_labels)
-        style_values = [1024, 512, 64]
-        self.failUnlessEqual(
-            sm._style_values,
-            style_values,
-            'StylesMixin.gen_style_pos() failed: got "%s" expect: "%s"' % (
-                sm._style_values,
-                style_values
-            )
-        )
-
-        # test converting a single style
-        style_labels = (
-            'wxDEFAULT_FRAME_STYLE',
-            'wxMINIMIZE_BOX', 'wxMAXIMIZE_BOX', 'wxRESIZE_BORDER',
-            'wxSYSTEM_MENU', 'wxCAPTION', 'wxCLOSE_BOX', 'wxCLIP_CHILDREN',
-        )
-        style_values = [541072960, 1024, 512, 64, 2048, 536870912,
-                        4096, 4194304,
-        ]
-        sm.gen_style_pos(style_labels)
-        self.failUnlessEqual(
-            sm._style_values,
-            style_values,
-            'StylesMixin.gen_style_pos() failed: got "%s" expect: "%s"' % (
-                sm._style_values,
-                style_values
-            )
-        )
-        sm.style = 2048
-        ret = sm.get_style()
-        expected = [0, 0, 0, 0, 1, 0, 0, 0]
+        # test converting of a combined attribute
+        style_names = ['wxHL_DEFAULT_STYLE', 'wxHL_ALIGN_LEFT',
+                       'wxHL_ALIGN_RIGHT', 'wxHL_ALIGN_CENTRE',
+                       'wxHL_CONTEXTMENU']
+        ret = sm.style_names[:]
+        ret.sort()
+        expected = style_names
+        expected.sort()
         self.failUnlessEqual(
             ret,
             expected,
-            'StylesMixin.StylesMixin.get_style(): got "%s" expect: "%s"' % (
+            'StylesMixin.__init__() failed: got "%s" expect: "%s"' % (
                 ret, expected)
         )
 
-        # test converting of a combined attribute
-        style_labels = ('#section#Border', 'wxALL',
-                        'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM')
-        style_values = [240, 16, 32, 64, 128]
-        sm.gen_style_pos(style_labels)
-        sm.combined_attr = 'wxALL'
+        # test setting new styles
+        sm.set_style('|'.join(style_names))
+        ret = sm.style_set
+        expected = set(['wxHL_DEFAULT_STYLE', 'wxHL_ALIGN_LEFT',
+                        'wxHL_ALIGN_RIGHT'])
         self.failUnlessEqual(
-            sm._style_values,
-            style_values,
-            'StylesMixin.gen_style_pos() failed: got "%s" expect: "%s"' % (
-                sm._style_values,
-                style_values
-            )
+            ret,
+            expected,
+            'StylesMixin.set_style(): got "%s" expect: "%s"' % (
+                ret, expected)
         )
-        sm.style = 240
-        ret = sm.get_style()
-        expected = [1, 0, 0, 0, 0]
+        sm.set_style([True, False, True, False, False])
+        ret = sm.style_set
+        expected = set(['wxHL_ALIGN_LEFT', 'wxHL_ALIGN_CENTRE'])
+        self.failUnlessEqual(
+            ret,
+            expected,
+            'StylesMixin.set_style(): got "%s" expect: "%s"' % (
+                ret, expected)
+        )
+        sm.set_style('wxHL_DEFAULT_STYLE|wxHL_CONTEXTMENU')
+        ret = sm.style_set
+        expected = set(['wxHL_DEFAULT_STYLE',])
         self.failUnlessEqual(
             ret,
             expected,
             'StylesMixin.get_style(): got "%s" expect: "%s"' % (ret, expected)
         )
 
-        # test attributes with 0 values like wxALIGN_LEFT or compatibility
-        # reasons
-        style_labels = ('wxALL', 'wxLEFT', 'wxNO_FULL_REPAINT_ON_RESIZE')
-        style_values = [240, 16, 0]
-        sm.gen_style_pos(style_labels)
+        # test generating a flag list
         ret = sm.get_style()
-        self.failUnlessEqual(
-            sm._style_values,
-            style_values,
-            'StylesMixin.gen_style_pos() failed: got "%s" expect: "%s"' % (
-                sm._style_values,
-                style_values
-            )
-        )
-        sm.style = 240
-        ret = sm.get_style()
-        expected = [1, 0, 0]
+        expected = [False, False, False, False, True]
         self.failUnlessEqual(
             ret,
             expected,
-            'StylesMixin.get_style(): got "%s" expect: "%s"' % (ret, expected)
+            'StylesMixin.get_style(): got "%s" expect: "%s"' % (
+                ret, expected)
         )
-        sm.style = None
-        sm.set_style('wxLEFT|wxNO_FULL_REPAINT_ON_RESIZE')
-        expected = 16
+
+        # returning styles as a string concatenated with '|'
+        ret = sm.get_string_style()
+        expected = 'wxHL_DEFAULT_STYLE'
         self.failUnlessEqual(
-            sm.style,
+            ret,
             expected,
-            'StylesMixin.get_style(): got "%s" expect: "%s"' % (ret, expected)
+            'StylesMixin.get_style_string(): got "%s" expect: "%s"' %
+            (ret, expected)
+        )
+
+        # test setting styles via style dictionary
+        from ordereddict import OrderedDict
+        styles = OrderedDict()
+        styles[_('Border')] = ['wxALL', 'wxLEFT']
+        styles[_('Alignment')] = ['wxEXPAND', 'wxALIGN_RIGHT']
+
+        sm = edit_windows.StylesMixin('wxHyperlinkCtrl', styles)
+        ret = sm.style_names[:]
+        ret.sort()
+        expected = ['wxALL', 'wxLEFT', 'wxEXPAND', 'wxALIGN_RIGHT']
+        expected.sort()
+        self.failUnlessEqual(
+            ret,
+            expected,
+            'StylesMixin.__init__() failed: got "%s" expect: "%s"' % (
+                ret, expected)
         )

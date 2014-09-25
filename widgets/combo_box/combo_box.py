@@ -7,32 +7,12 @@ wxComboBox objects
 """
 
 import wx
-import common
+
 import config
-import misc
 from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 from widget_properties import *
-
 from ChoicesProperty import *
-
-if wx.Platform == '__WXMSW__':
-    # why on Windows combo boxes give segfaults? Need to investigate, but
-    # for now replace them with choices
-    # this seems to be because of the style of wxPanel: if there's a
-    # wxTAB_TRAVERSAL, we have troubles -- now it should be fixed...
-    class wxComboBox2(wx.ComboBox):
-        # on windows GetBestSize considers also the drop down menu, while we
-        # don't want it to be included
-        def GetBestSize(self):
-            w, h = wx.ComboBox.GetBestSize(self)
-            n = self.GetCount()
-            return w, h/(n+1)
-
-        def GetSize(self):
-            return self.GetClientSize()
-else:
-    wxComboBox2 = wx.ComboBox
 
 
 class EditComboBox(ManagedBase, StylesMixin):
@@ -65,20 +45,8 @@ class EditComboBox(ManagedBase, StylesMixin):
         # initialise properties remaining staff
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = ('#section#' + _('Style'), 'wxCB_SIMPLE', 'wxCB_DROPDOWN',
-                        'wxCB_READONLY', 'wxCB_SORT')
-        self.gen_style_pos(style_labels)
-        self.tooltips = (_("Creates a combobox with a permanently displayed list."
-                         " Windows only."),
-                         _("Creates a combobox with a drop-down list."),
-                         _("Same as wxCB_DROPDOWN but only the strings specified "
-                         "as the combobox choices can be selected, it is "
-                         "impossible to select (even from a program) a string "
-                         "which is not in the choices list."),
-                         _("Sorts the entries in the list alphabetically."))
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels,
-                                                     tooltips=self.tooltips)
+        self.properties['style'] = CheckListProperty(
+            self, 'style', self.widget_writer)
         self.properties['choices'] = ChoicesProperty(self, 'choices', None,
                                                      [('Label',
                                                        GridProperty.STRING)],
@@ -90,7 +58,7 @@ class EditComboBox(ManagedBase, StylesMixin):
                                                     r=(0, len(choices)-1), label=_("selection"))
 
     def create_widget(self):
-        self.widget = wxComboBox2(self.parent.widget, self.id,
+        self.widget = wx.ComboBox(self.parent.widget, self.id,
                                  choices=self.choices)
         self.set_selection(self.selection)
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
@@ -161,7 +129,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditComboBox objects from an xml file
+    factory to build EditComboBox objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

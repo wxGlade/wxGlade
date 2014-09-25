@@ -22,8 +22,8 @@ class EditBitmapButton(ManagedBase, StylesMixin):
 
     events = ['EVT_BUTTON']
 
-    def __init__(self, name, parent, id, bmp_file, sizer, pos, property_window,
-                 show=True):
+    def __init__(self, name, parent, id, bmp_file, sizer, pos,
+                 property_window, show=True):
 
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer,
@@ -52,25 +52,8 @@ class EditBitmapButton(ManagedBase, StylesMixin):
                                                     self.set_disabled_bitmap)
         self.properties['disabled_bitmap'] = FileDialogProperty(
             self, 'disabled_bitmap', None, style=wx.OPEN|wx.FILE_MUST_EXIST, label=_("disabled bitmap"))
-        style_labels = ('#section#' + _('Style'), 'wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT',
-                        'wxBU_TOP', 'wxBU_BOTTOM', 'wxNO_BORDER')
-        self.gen_style_pos(style_labels)
-
-        #The tooltips tuple
-        self.tooltips=(_("If this is specified, the button will be drawn "
-                         "automatically using the label bitmap only, providing"
-                         " a 3D-look border. If this style is not specified, the "
-                         "button will be drawn without borders and using all "
-                         "provided bitmaps. WIN32 only."),
-                       _("Left-justifies the bitmap label. WIN32 only."),
-                       _("Right-justifies the bitmap label. WIN32 only."),
-                       _("Aligns the bitmap label to the top of the button."
-                         " WIN32 only."),
-                       _("Aligns the bitmap label to the bottom of the button."
-                         " WIN32 only."),
-                       _("Creates a flat button. Windows and GTK+ only."))
         self.properties['style'] = CheckListProperty(
-            self, 'style', None, style_labels,tooltips=self.tooltips)
+            self, 'style', self.widget_writer)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -115,12 +98,13 @@ class EditBitmapButton(ManagedBase, StylesMixin):
         bmp = self.load_bitmap()
         try:
             self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp,
-                                          style=self.style)
+                                          style=self.get_int_style())
         except AttributeError:
             self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
 
     def load_bitmap(self, which=None, empty=[None]):
-        if which is None: which = self.bitmap
+        if which is None:
+            which = self.bitmap
         if which and \
                 not (which.startswith('var:') or which.startswith('code:')):
             which = misc.get_relative_path(which)
@@ -135,8 +119,6 @@ class EditBitmapButton(ManagedBase, StylesMixin):
 
     def set_default(self, value):
         self.default = bool(int(value))
-##         if value and self.widget:
-##             self.widget.SetDefault()
 
 # end of class EditBitmapButton
         
@@ -161,7 +143,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditBitmapButton objects from an xml file
+    factory to build EditBitmapButton objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

@@ -31,7 +31,7 @@ class _MyBrowseButton(FileBrowseButton):
         wx.EVT_BUTTON(button, ID, self.OnBrowse)
         return button
 
-    def OnBrowse (self, event=None):
+    def OnBrowse(self, event=None):
         """ Going to browse for file... """
         current = self.GetValue()
         directory = os.path.split(current)
@@ -469,17 +469,17 @@ class EditToolBar(EditBase, PreviewMixin, StylesMixin):
     Class to handle wxToolBar objects
 
     @ivar pwidget: Parent widget
-    @type pwidget: wxToolBar or wxFrame
+    @type pwidget: wxToolBar | wxFrame
 
     @ivar tools: List of Tool objects
-    @type tools: List
+    @type tools: list[Tool]
     """
 
     def __init__(self, name, klass, parent, property_window):
 
         # Initialise parent classes
         custom_class = parent is None
-        EditBase.__init__(self, name, klass, parent, wx.NewId(),
+        EditBase.__init__(self, name, 'wxToolBar', parent, wx.NewId(),
                           property_window, custom_class=custom_class,
                           show=False)
         StylesMixin.__init__(self)
@@ -492,38 +492,32 @@ class EditToolBar(EditBase, PreviewMixin, StylesMixin):
 
         # initialise properties remaining staff
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = ('#section#' + _('Style'),
-                        'wxTB_FLAT', 'wxTB_DOCKABLE',
-                        'wxTB_3DBUTTONS', 'wxTB_TEXT', 'wxTB_NOICONS',
-                        'wxTB_NODIVIDER', 'wxTB_NOALIGN',
-                        'wxTB_HORZ_LAYOUT', 'wxTB_HORZ_TEXT')
-        self.gen_style_pos(style_labels)
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)
+        self.properties['style'] = CheckListProperty(
+            self, 'style', self.widget_writer)
         self.bitmapsize = '16, 15'
         self.access_functions['bitmapsize'] = (self.get_bitmapsize,
                                                self.set_bitmapsize)
-        self.properties['bitmapsize'] = TextProperty(self, 'bitmapsize', None,
-                                                     can_disable=True, label=_("bitmapsize"))
+        self.properties['bitmapsize'] = TextProperty(
+            self, 'bitmapsize', can_disable=True,label=_("bitmapsize"))
         self.margins = '0, 0'
         self.access_functions['margins'] = (self.get_margins, self.set_margins)
-        self.properties['margins'] = TextProperty(self, 'margins', None,
-                                                  can_disable=True, label=_("margins"))
+        self.properties['margins'] = TextProperty(
+            self, 'margins', can_disable=True, label=_("margins"))
         self.access_functions['tools'] = (self.get_tools, self.set_tools)
         self.properties['tools'] = ToolsProperty(self, 'tools', None)
         self.packing = 1
         self.access_functions['packing'] = (self.get_packing, self.set_packing)
-        self.properties['packing'] = SpinProperty(self, 'packing', None,
-                                                  r=(0, 100), can_disable=True, label=_("packing"))
+        self.properties['packing'] = SpinProperty(
+            self, 'packing', r=(0, 100), can_disable=True, label=_("packing"))
         self.separation = 5
         self.access_functions['separation'] = (self.get_separation,
                                                self.set_separation)
         self.properties['separation'] = SpinProperty(
-            self, 'separation', None, r=(0, 100), can_disable=True,
+            self, 'separation', r=(0, 100), can_disable=True,
             label=_("separation"))
 
     def create_widget(self):
-        tb_style = wx.TB_HORIZONTAL | self.style
+        tb_style = wx.TB_HORIZONTAL | self.get_int_style()
         if wx.Platform == '__WXGTK__':
             tb_style |= wx.TB_DOCKABLE | wx.TB_FLAT
         if self.parent:
@@ -558,7 +552,7 @@ class EditToolBar(EditBase, PreviewMixin, StylesMixin):
             self.set_packing(self.packing, refresh=False)
         if prop['separation'].is_active():
             self.set_separation(self.separation, refresh=False)
-        self.set_tools(self.tools) # show the menus
+        self.set_tools(self.tools)  # show the menus
 
     def create_properties(self):
         EditBase.create_properties(self)
@@ -699,9 +693,9 @@ class EditToolBar(EditBase, PreviewMixin, StylesMixin):
                 except (ValueError, IndexError):
                     kind = wx.ITEM_NORMAL
                 self.widget.AddLabelTool(wx.NewId(), misc.wxstr(tool.label),
-                                      bmp1, bmp2, kind,
-                                      misc.wxstr(tool.short_help),
-                                      misc.wxstr(tool.long_help))
+                                         bmp1, bmp2, kind,
+                                         misc.wxstr(tool.short_help),
+                                         misc.wxstr(tool.long_help))
         # this is required to refresh the toolbar properly
         self._refresh_widget()
 
@@ -860,7 +854,7 @@ def builder(parent, sizer, pos, number=[0]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditMenuBar objects from an xml file
+    factory to build EditMenuBar objects from a XML file
     """
     name = attrs.get('name')
     if parent is not None:
@@ -881,8 +875,7 @@ def initialize():
     initialization function for the module: returns a wxBitmapButton to be
     added to the main palette.
     """
-    cwx = common.widgets_from_xml
-    cwx['EditToolBar'] = xml_builder
+    common.widgets_from_xml['EditToolBar'] = xml_builder
     common.widgets['EditToolBar'] = builder
     
     return common.make_object_button('EditToolBar', 'icons/toolbar.xpm', 1)

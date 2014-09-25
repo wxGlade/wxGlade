@@ -1,7 +1,8 @@
-"""
+"""\
 wxPanel objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,10 +13,10 @@ import config
 import misc
 from tree import Tree
 from widget_properties import *
-from edit_windows import ManagedBase, TopLevelBase
+from edit_windows import ManagedBase, TopLevelBase, StylesMixin
 
 
-class PanelBase(object):
+class PanelBase(StylesMixin):
     """\
     Class PanelBase
 
@@ -24,7 +25,7 @@ class PanelBase(object):
 
     _custom_base_classes = True
 
-    def __init__(self, style=wx.TAB_TRAVERSAL):
+    def __init__(self, style='wxTAB_TRAVERSAL'):
         """\
         Class to handle wxPanel objects
         """
@@ -32,45 +33,30 @@ class PanelBase(object):
         self._logger = logging.getLogger(self.__class__.__name__)
 
         # initialise instance
-        super(PanelBase, self).__init__()
-        self.top_sizer = None # sizer to handle the layout of children
-        # ------ ALB 2005-11-19: option to disable custom class code generation
+        StylesMixin.__init__(self, 'wxPanel')
+
+        self.top_sizer = None  # sizer to handle the layout of children
         self.no_custom_class = False
         self.access_functions['no_custom_class'] = (self.get_no_custom_class,
                                                     self.set_no_custom_class)
         self.properties['no_custom_class'] = CheckBoxProperty(
             self, 'no_custom_class',
             label=_("Don't generate code for this custom class"))
-        # ------
-        self.style = style
+
+        self.set_style(style)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.style_pos  = [wx.SIMPLE_BORDER, wx.DOUBLE_BORDER, wx.SUNKEN_BORDER,
-                           wx.RAISED_BORDER, wx.STATIC_BORDER,
-                           wx.NO_BORDER, wx.NO_3D,
-                           wx.TAB_TRAVERSAL, wx.WANTS_CHARS,
-                           wx.NO_FULL_REPAINT_ON_RESIZE,
-                           wx.FULL_REPAINT_ON_RESIZE,
-                           wx.CLIP_CHILDREN]
-        style_labels = ('#section#' + _('Style'),
-                        'wxSIMPLE_BORDER', 'wxDOUBLE_BORDER',
-                        'wxSUNKEN_BORDER', 'wxRAISED_BORDER',
-                        'wxSTATIC_BORDER',
-                        'wxNO_BORDER', 'wxNO_3D', 'wxTAB_TRAVERSAL',
-                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
-                        'wxFULL_REPAINT_ON_RESIZE',
-                        'wxCLIP_CHILDREN')
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)
+        self.properties['style'] = CheckListProperty(self, 'style',
+                                                     self.widget_writer)
         self.access_functions['scrollable'] = (self.get_scrollable,
                                                self.set_scrollable)
         self.scrollable = False
         self.properties['scrollable'] = CheckBoxProperty(
-            self, 'scrollable', None, label=_("scrollable"))
+            self, 'scrollable', label=_("scrollable"))
         self.scroll_rate = (10, 10)
         self.access_functions['scroll_rate'] = (self.get_scroll_rate,
                                                 self.set_scroll_rate)
         self.properties['scroll_rate'] = TextProperty(
-            self, 'scroll_rate', None, can_disable=True, label=_("scroll_rate"))
+            self, 'scroll_rate', can_disable=True, label=_("scroll_rate"))
 
     def finish_widget_creation(self):
         super(PanelBase, self).finish_widget_creation(
@@ -86,7 +72,6 @@ class PanelBase(object):
                 _("EditPanel: Unable to disconnect the event hanlder")
                 )
         wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
-        #wx.EVT_SCROLLWIN(self.widget, self._update_markers)
 
     def _update_markers(self, event):
         def get_pos():
@@ -154,23 +139,6 @@ class PanelBase(object):
             return self.widget.GetSize()
         return wx.ScrolledWindow.GetBestSize(self.widget)
 
-    def get_style(self):
-        retval = [0] * len(self.style_pos)
-        try:
-            for i in range(len(self.style_pos)):
-                if self.style & self.style_pos[i]:
-                    retval[i] = 1
-        except AttributeError:
-            pass
-        return retval
-
-    def set_style(self, value):
-        value = self.properties['style'].prepare_value(value)
-        self.style = 0
-        for v in range(len(value)):
-            if value[v]:
-                self.style |= self.style_pos[v]
-
     def get_scrollable(self):
         return self.scrollable
 
@@ -184,7 +152,8 @@ class PanelBase(object):
             if self.klass == 'wxScrolledWindow':
                 self.klass = 'wxPanel'
                 self.klass_prop.set_value(self.klass)
-        if not self.widget: return
+        if not self.widget:
+            return
         if self.scrollable:
             self.properties['scroll_rate'].toggle_active(True)
             self.widget.SetScrollRate(*self.scroll_rate)
@@ -232,7 +201,7 @@ class PanelBase(object):
 
 class EditPanel(PanelBase, ManagedBase):
     def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True, style=wx.TAB_TRAVERSAL):
+                 show=True, style='wxTAB_TRAVERSAL'):
         """\
         Class to handle wxPanel objects
         """
@@ -241,7 +210,6 @@ class EditPanel(PanelBase, ManagedBase):
         PanelBase.__init__(self, style)
 
     def create_widget(self):
-        #self.widget = wx.Panel(self.parent.widget, self.id, style=0)
         self.widget = wx.ScrolledWindow(self.parent.widget, self.id, style=0)
         wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
@@ -298,7 +266,8 @@ class EditPanel(PanelBase, ManagedBase):
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
     def clipboard_paste(self, *args):
-        import clipboard, xml_parse
+        import clipboard
+        import xml_parse
         size = self.widget.GetSize()
         try:
             if clipboard.paste(self, None, 0):
@@ -311,11 +280,11 @@ class EditPanel(PanelBase, ManagedBase):
 
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
-    _is_toplevel = False # used to avoid to appear in the "Top Window" property
-                         # of the app
+    _is_toplevel = False  # used to avoid to appear in the "Top Window"
+                          # property of the app
     
     def __init__(self, name, parent, id, property_window, klass='wxPanel',
-                 show=True, style=wx.TAB_TRAVERSAL):
+                 show=True, style='wxTAB_TRAVERSAL'):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, has_title=False)
         PanelBase.__init__(self, style)
@@ -398,12 +367,12 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'panel_%d' % number[0]
     panel = EditPanel(name, parent, wx.NewId(), sizer, pos,
-                      common.property_panel)
+                      common.property_panel, style='')
     node = Tree.Node(panel)
     panel.node = node
 
     panel.set_option(1)
-    panel.set_flag("wxEXPAND")
+    panel.set_style("wxEXPAND")
 
     panel.show_widget(True)
 
@@ -413,7 +382,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditPanel objects from an xml file
+    factory to build EditPanel objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:
@@ -423,7 +392,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     panel = EditPanel(name, parent, wx.NewId(), sizer, pos,
-                      common.property_panel, True, style=0)
+                      common.property_panel, True, style='')
     sizer.set_item(panel.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
     node = Tree.Node(panel)
@@ -442,7 +411,7 @@ def xml_toplevel_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
     panel = EditTopLevelPanel(label, parent, wx.NewId(),
-                              common.property_panel, show=False, style=0)
+                              common.property_panel, show=False, style='')
     node = Tree.Node(panel)
     panel.node = node
     common.app_tree.add(node)

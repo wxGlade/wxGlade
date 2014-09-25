@@ -56,21 +56,8 @@ class EditTreeCtrl(ManagedBase, StylesMixin):
 
         # initialise properties remaining staff
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = ('#section#' + _('Style'), 'wxTR_HAS_BUTTONS', 'wxTR_NO_LINES',
-                        'wxTR_LINES_AT_ROOT', 'wxTR_EDIT_LABELS',
-                        'wxTR_MULTIPLE', 'wxTR_NO_BUTTONS',
-                        'wxTR_TWIST_BUTTONS', 'wxTR_FULL_ROW_HIGHLIGHT',
-                        'wxTR_HIDE_ROOT', 'wxTR_ROW_LINES',
-                        'wxTR_HAS_VARIABLE_ROW_HEIGHT','wxTR_SINGLE',
-                        'wxTR_MULTIPLE', 'wxTR_EXTENDED',
-                        'wxTR_DEFAULT_STYLE', 'wxSIMPLE_BORDER',
-                        'wxDOUBLE_BORDER', 'wxSUNKEN_BORDER',
-                        'wxRAISED_BORDER', 'wxSTATIC_BORDER', 'wxNO_BORDER',
-                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
-                        'wxFULL_REPAINT_ON_RESIZE')
-        self.gen_style_pos(style_labels)
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)
+        self.properties['style'] = CheckListProperty(
+            self, 'style', self.widget_writer)
 
     def create_widget(self):
         self.widget = wx.TreeCtrl(self.parent.widget, self.id,
@@ -123,7 +110,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Tree.Node(tree_ctrl)
     tree_ctrl.node = node
     tree_ctrl.set_option(1)
-    tree_ctrl.set_flag("wxEXPAND")
+    tree_ctrl.set_style("wxEXPAND")
     tree_ctrl.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
     sizer.set_item(tree_ctrl.pos, 1, wx.EXPAND)
@@ -131,7 +118,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory function to build EditTreeCtrl objects from an xml file
+    factory function to build EditTreeCtrl objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

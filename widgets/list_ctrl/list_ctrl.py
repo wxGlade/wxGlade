@@ -13,6 +13,7 @@ from tree import Tree
 import common
 from widget_properties import *
 
+
 class EditListCtrl(ManagedBase, StylesMixin):
     """\
     Class to handle wxListCtrl objects
@@ -44,7 +45,7 @@ class EditListCtrl(ManagedBase, StylesMixin):
     update_widget_style = False
     
     def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True, style=wx.LC_REPORT|wx.SUNKEN_BORDER):
+                 show=True, style=wx.LC_REPORT | wx.SUNKEN_BORDER):
 
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos,
@@ -56,50 +57,13 @@ class EditListCtrl(ManagedBase, StylesMixin):
 
         # initialise properties remaining staff
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = ('#section#' + _('Style'),
-                        'wxLC_LIST', 'wxLC_REPORT', 'wxLC_ICON',
-                        'wxLC_VIRTUAL', 'wxLC_SMALL_ICON',
-                        'wxLC_ALIGN_TOP', 'wxLC_ALIGN_LEFT',
-                        'wxLC_AUTOARRANGE', 'wxLC_EDIT_LABELS',
-                        'wxLC_NO_HEADER', 'wxLC_SINGLE_SEL',
-                        'wxLC_SORT_ASCENDING', 'wxLC_SORT_DESCENDING',
-                        'wxLC_HRULES', 'wxLC_VRULES', 'wxSIMPLE_BORDER',
-                        'wxDOUBLE_BORDER', 'wxSUNKEN_BORDER',
-                        'wxRAISED_BORDER', 'wxSTATIC_BORDER', 'wxNO_BORDER',
-                        'wxWANTS_CHARS', 'wxNO_FULL_REPAINT_ON_RESIZE',
-                        'wxFULL_REPAINT_ON_RESIZE')
-        self.gen_style_pos(style_labels)
-        self.style_tooltips = (_("Multicolumn list view, with optional small icons. Columns are computed automatically, i.e. you don't set columns as in wxLC_REPORT. In other words, the list wraps, unlike a wxListBox."),
-            _("Single or multicolumn report view, with optional header."),
-            _("Large icon view, with optional labels."),
-            _("The application provides items text on demand. May only be used with wxLC_REPORT."),
-            _("Small icon view, with optional labels."),
-            _("Icons align to the top. Win32 default, Win32 only."),
-            _("Icons align to the left."),
-            _("Icons arrange themselves. Win32 only."),
-            _("Labels are editable: the application will be notified when editing starts."),
-            _("No header in report mode."),
-            _("Single selection (default is multiple)."),
-            _("Sort in ascending order (must still supply a comparison callback in SortItems."),
-            _("Sort in descending order (must still supply a comparison callback in SortItems."),
-            _("Draws light horizontal rules between rows in report mode."),
-            _("Draws light vertical rules between columns in report mode"),
-            _("Displays a thin border around the window. wxBORDER is the old name for this style."),
-            _("Displays a double border. Windows and Mac only."),
-            _("Displays a sunken border."),
-            _("Displays a raised border."),
-            _("Displays a border suitable for a static control. Windows only."),
-            _("Displays no border, overriding the default border style for the window."),
-            _("Use this to indicate that the window wants to get all char/key events for all keys - even for keys like TAB or ENTER which are usually used for dialog navigation and which wouldn't be generated without this style. If you need to use this style in order to get the arrows or etc., but would still like to have normal keyboard navigation take place, you should create and send a wxNavigationKeyEvent in response to the key events for Tab and Shift-Tab."),
-            _("On Windows, this style used to disable repainting the window completely when its size is changed. Since this behaviour is now the default, the style is now obsolete and no longer has an effect."),
-            _("Use this style to force a complete redraw of the window whenever it is resized instead of redrawing just the part of the window affected by resizing. Note that this was the behaviour by default before 2.5.1 release and that if you experience redraw problems with code which previously used to work you may want to try this. Currently this style applies on GTK+ 2 and Windows only, and full repainting is always done on other platforms."))
         self.properties['style'] = CheckListProperty(
-            self, 'style', None, style_labels, tooltips=self.style_tooltips)
+            self, 'style', self.widget_writer)
 
     def create_widget(self):
         self.widget = wx.ListCtrl(self.parent.widget, self.id,
-                                 style=wx.LC_REPORT|wx.SUNKEN_BORDER)
-        # add a couple of columns just for a better appearence (for now)
+                                  style=wx.LC_REPORT | wx.SUNKEN_BORDER)
+        # add a couple of columns just for a better appearance (for now)
         self.widget.InsertColumn(0, _('List Control:'))
         self.widget.InsertColumn(1, self.name)
         wx.EVT_LIST_COL_CLICK(self.widget, self.widget.GetId(),
@@ -146,7 +110,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Tree.Node(list_ctrl)
     list_ctrl.node = node
     list_ctrl.set_option(1)
-    list_ctrl.set_flag("wxEXPAND")
+    list_ctrl.set_style("wxEXPAND")
     list_ctrl.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
     sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
@@ -154,7 +118,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory function to build EditListCtrl objects from an xml file
+    factory function to build EditListCtrl objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

@@ -8,10 +8,12 @@ Code generator functions for wxToolBar objects
 
 import common
 import config
+import wcodegen
 import os
 from tool import *
 
-class PythonCodeGenerator:
+
+class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_properties_code(self, obj):
         prop = obj.properties
         out = []
@@ -256,7 +258,7 @@ def xrc_code_generator(obj):
     return ToolBarXrcObject(obj)
 
 
-class CppCodeGenerator:
+class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
     constructor = [('wxWindow*', 'parent'), ('int', 'id'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
@@ -359,11 +361,6 @@ class CppCodeGenerator:
                 name, val = cppgen.generate_code_id(None, item.id)
                 if name.find('=') != -1:
                     ids.append(name)
-##                 if item.id:
-##                     tokens = item.id.split('=')
-##                     if len(tokens) > 1:
-##                         id = tokens[0]
-##                         ids.append(' = '.join(tokens))
         return ids
 
     def get_events(self, obj):
@@ -389,9 +386,9 @@ def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('python', klass, PythonCodeGenerator(),
+    common.register('python', klass, PythonCodeGenerator(klass),
                     'tools', ToolsHandler)
-    common.register('C++', klass, CppCodeGenerator(),
+    common.register('C++', klass, CppCodeGenerator(klass),
                     'tools', ToolsHandler)
     common.register('XRC', klass, xrc_code_generator,
                     'tools', ToolsHandler)

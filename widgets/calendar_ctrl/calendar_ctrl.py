@@ -31,8 +31,8 @@ class EditCalendarCtrl(ManagedBase, StylesMixin):
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxCalendarCtrl', parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxCalendarCtrl', parent, id, sizer,
+                             pos, property_window, show=show)
         StylesMixin.__init__(self)
 
         # initialise instance variables
@@ -44,20 +44,10 @@ class EditCalendarCtrl(ManagedBase, StylesMixin):
         # initialise properties remaining staff
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("default"))
-        style_labels = ('#section#' + _('Style'), 'wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST',
-                        'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE', 'wxCAL_NO_MONTH_CHANGE',
-                        'wxCAL_SHOW_SURROUNDING_WEEKS','wxCAL_SEQUENTIAL_MONTH_SELECTION')
-        self.gen_style_pos(style_labels)
-        self.tooltips = (_("Show Sunday as the first day in the week"),
-                         _("Show Monday as the first day in the week"),
-                         _("Highlight holidays in the calendar"),
-                         _("Disable the year changing"),
-                         _("Disable the month (and, implicitly, the year) changing"),
-                         _("Show the neighbouring weeks in the previous and next months"),
-                         _("Use alternative, more compact, style for the month and year selection controls."))
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels,tooltips=self.tooltips)
+        self.properties['default'] = CheckBoxProperty(
+            self, 'default', None, label=_("default"))
+        self.properties['style'] = CheckListProperty(
+            self, 'style', self.widget_writer)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -66,7 +56,6 @@ class EditCalendarCtrl(ManagedBase, StylesMixin):
         self.properties['default'].display(panel)
         self.properties['style'].display(panel)
         szr = wx.BoxSizer(wx.VERTICAL)
-        #szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(1)
@@ -76,8 +65,10 @@ class EditCalendarCtrl(ManagedBase, StylesMixin):
 
     def create_widget(self):
         try:
-            #TODO add all the other parameters for the CalendarCtrl especialy style=self.style and the initial date
-            self.widget = CalendarCtrl(self.parent.widget, self.id, style=self.style)
+            # TODO add all the other parameters for the CalendarCtrl
+            # especially style=self.style and the initial date
+            self.widget = CalendarCtrl(self.parent.widget, self.id,
+                                       style=self.get_int_style())
         except AttributeError:
             self.widget = CalendarCtrl(self.parent.widget, self.id)
 
@@ -108,7 +99,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditCalendarCtrl objects from an xml file
+    factory to build EditCalendarCtrl objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

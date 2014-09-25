@@ -88,23 +88,240 @@ such widget is controlled, and the position inside this sizer.
 
 widgets_from_xml = {}
 """\
-Factory functions to build objects from an xml file
+Factory functions to build objects from a XML file
 
 @type: dict
 """
-
 widget_config = {
     'generic_styles': {
+
+        # generic styles from wxSizer
         'wxALL': {
-            'desc': 'from wxSizer',
+            'desc': _('from wxSizer'),
             'combination': 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM',
             },
-        'wxDEFAULT_DIALOG_STYLE': {
-            'desc': 'from wxDialog',
-            'combination': 'wxCAPTION|wxCLOSE_BOX|wxSYSTEM_MENU',
+        'wxTOP': {
+            'desc': _('Apply the border to the top.'),
+        },
+        'wxBOTTOM': {
+            'desc': _('Apply the border to the bottom.'),
+        },
+        'wxLEFT': {
+            'desc': _('Apply the border to the left.'),
+        },
+        'wxRIGHT': {
+            'desc': _('Apply the border to the right.'),
+        },
+        'wxALIGN_LEFT': {
+            'desc': _('Align the item to the left.'),
+        },
+        'wxALIGN_RIGHT': {
+            'desc': _('Align the item to the right.'),
+        },
+        'wxALIGN_CENTER': {
+            'desc': _('Center the item (horizontally).'),
+            'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL',
+        },
+        'wxALIGN_CENTRE': {
+            'desc': _('Center the item (horizontally).'),
+            'synonym': 'wxALIGN_CENTER',
+            'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL',
+        },
+        'wxALIGN_TOP': {
+            'desc': _('Align the item to the top.'),
+        },
+        'wxALIGN_BOTTOM': {
+            'desc': _('Align the item to the bottom.'),
+        },
+        'wxALIGN_CENTER_VERTICAL': {
+            'desc': _('Centre the item vertically.'),
+        },
+        'wxALIGN_CENTRE_VERTICAL': {
+            'desc': _('Centre the item vertically.'),
+            'synonym': 'wxALIGN_CENTER_VERTICAL',
+        },
+        'wxALIGN_CENTER_HORIZONTAL': {
+            'desc': _('Centre the item horizontally.'),
+        },
+        'wxALIGN_CENTRE_HORIZONTAL': {
+            'desc': _('Centre the item horizontally.'),
+            'synonym': 'wxALIGN_CENTER_HORIZONTAL',
+        },
+        'wxEXPAND': {
+            'desc': _('The item will be expanded to fill the space '
+                      'assigned to the item.'),
+        },
+        'wxSHAPED': {
+            'desc': _('The item will be expanded as much as possible while '
+                      'also maintaining its aspect ratio.'),
+        },
+        'wxADJUST_MINSIZE': {
+            'desc': _('This style was used in wxWidgets 2.4. Since wxWidgets '
+                      '2.6 the behaviour is default. Select wxFIXED_MINSIZE '
+                      'to use the old behaviour.'),
+            'supported_by': ('wx2',)
+        },
+        'wxFIXED_MINSIZE': {
+            'desc': _('Normally wxSizers will use GetAdjustedBestSize() '
+                      'to determine what the minimal size of window items '
+                      'should be, and will use that size to calculate the '
+                      'layout. This allows layouts to adjust when an item '
+                      'changes and its best size becomes different. If you '
+                      'would rather have a window item stay the size it '
+                      'started with then use wxFIXED_MINSIZE.'),
+        },
+        'wxRESERVE_SPACE_EVEN_IF_HIDDEN': {
+            'desc': _("Normally wxSizers don't allocate space for hidden "
+                      "windows or other items. This flag overrides this "
+                      "behavior so that sufficient space is allocated for "
+                      "the window even if it isn't visible. This makes it "
+                      "possible to dynamically show and hide controls "
+                      "without resizing parent dialog, for example. "
+                      "This function is new since wxWidgets version 2.8."),
+            'supported_by': ('wx3',),
+        },
+
+        # generic styles from wxWindow
+        'wxTAB_TRAVERSAL': {
+            'desc': _('Use this to enable tab traversal for non-dialog '
+                      'windows.'),
+        },
+        'wxFULL_REPAINT_ON_RESIZE': {
+            'desc': _('Use this style to force a complete redraw of the '
+                      'window whenever it is resized instead of redrawing '
+                      'just the part of the window affected by resizing. '),
+        },
+        'wxNO_FULL_REPAINT_ON_RESIZE': {
+            'desc': _('On Windows, this style used to disable repainting '
+                      'the window completely when its size is changed. '
+                      'Since this behaviour is now the default, the style '
+                      'is now obsolete and no longer has an effect.'),
+        },
+        'wxCLIP_CHILDREN': {
+            'desc': _('Use this style to eliminate flicker caused by the '
+                      'background being repainted, then children being '
+                      'painted over them. Windows only.'),
+        },
+        'wxWANTS_CHARS': {
+            'desc': _("Use this to indicate that the window wants to get "
+                      "all char/key events for all keys - even for keys "
+                      "like TAB or ENTER which are usually used for "
+                      "dialog navigation and which wouldn't be generated "
+                      "without this style. If you need to use this style "
+                      "in order to get the arrows or etc., but would still "
+                      "like to have normal keyboard navigation take place, "
+                      "you should call Navigate in response to the key "
+                      "events for Tab and Shift-Tab."),
+        },
+
+        # Generic border styles
+        'wxBORDER_DEFAULT': {
+            'desc': _('The window class will decide the kind of border to '
+                      'show, if any.'),
+            'supported_by': ('wx3',)
+        },
+        'wxSIMPLE_BORDER': {
+            'desc': _('Displays a thin border around the window. '
+                      'wxSIMPLE_BORDER is the old name for this style.'),
+            'rename_to': 'wxBORDER_SIMPLE',
+        },
+        'wxBORDER_SIMPLE': {
+            'desc': _('Displays a thin border around the window. '
+                      'wxSIMPLE_BORDER is the old name for this style.'),
+        },
+        'wxSUNKEN_BORDER': {
+            'desc': _('Displays a sunken border. wxSUNKEN_BORDER is the '
+                      'old name for this style.'),
+            'rename_to': 'wxBORDER_SUNKEN'
+        },
+        'wxBORDER_SUNKEN': {
+            'desc': _('Displays a sunken border. wxSUNKEN_BORDER is the '
+                      'old name for this style.'),
+        },
+        'wxRAISED_BORDER': {
+            'desc': _('Displays a raised border. wxRAISED_BORDER is the '
+                      'old name for this style.'),
+            'rename_to': 'wxBORDER_RAISED',
+        },
+        'wxBORDER_RAISED': {
+            'desc': _('Displays a raised border. wxRAISED_BORDER is the '
+                      'old name for this style.'),
+        },
+        'wxSTATIC_BORDER': {
+            'desc': _('Displays a border suitable for a static control. '
+                      'wxSTATIC_BORDER is the old name for this style. '
+                      'Windows only.'),
+            'rename_to': 'wxBORDER_STATIC',
+        },
+        'wxBORDER_STATIC': {
+            'desc': _('Displays a border suitable for a static control. '
+                      'wxSTATIC_BORDER is the old name for this style. '
+                      'Windows only.'),
+            'rename_to': '',
+        },
+        'wxBORDER_THEME': {
+            'desc': _('Displays a native border suitable for a control, on '
+                      'the current platform. On Windows XP or Vista, this '
+                      'will be a themed border; on most other platforms a '
+                      'sunken border will be used. For more information for '
+                      'themed borders on Windows, please see Themed borders '
+                      'on Windows.'),
+        },
+        'wxNO_BORDER': {
+            'desc': _('Displays no border, overriding the default border '
+                      'style for the window. wxNO_BORDER is the old name '
+                      'for this style.'),
+            'rename_to': 'wxBORDER_NONE',
+        },
+        'wxBORDER_NONE': {
+            'desc': _('Displays no border, overriding the default border '
+                      'style for the window. wxNO_BORDER is the old name '
+                      'for this style.'),
+        },
+        'wxDOUBLE_BORDER': {
+            'desc': _('Displays a double border. wxDOUBLE_BORDER is the '
+                      'old name for this style. Windows and Mac only.'),
+            'rename_to': 'wxBORDER_DOUBLE',
+        },
+        'wxBORDER_DOUBLE': {
+            'desc': _('Displays a double border. wxDOUBLE_BORDER is the '
+                      'old name for this style. Windows and Mac only.'),
+            'obsolete': _('since wx3.0'),
+        },
+
+        # wxDialog styles
+        'wxNO_3D': {
+            'desc': _('Under Windows, specifies that the child '
+                      'controls should not have 3D borders unless '
+                      'specified in the control.'),
+            'obsolete': _("This style is obsolete and doesn't do anything "
+                          "any more, don't use it in any new code."),
+            'supported_by': ('wx2',),
+        },
+        'wxCAPTION': {
+            'desc': _('Puts a caption on the dialog box.'),
+        },
+        'wxCLOSE_BOX': {
+            'desc': _('Displays a close box on the frame.'),
+        },
+        'wxMAXIMIZE_BOX': {
+            'desc': _('Displays a maximize box on the dialog.'),
+        },
+        'wxMINIMIZE_BOX': {
+            'desc': _('Displays a minimize box on the dialog.'),
+        },
+        'wxRESIZE_BORDER': {
+            'desc': _('Display a thick frame around the window.'),
+        },
+        'wxSTAY_ON_TOP': {
+            'desc': _('The dialog stays on top of all other windows.'),
+        },
+        'wxSYSTEM_MENU': {
+            'desc': _('Display a system menu.'),
         },
     }
 }
+
 """\
 Dictionary to store widget generic widget details like tooltips, different
 names, ...
@@ -113,22 +330,31 @@ Example::
     config = {
         'wxSplitterWindow' = {
             'supported_by': ('wx28', 'wx3'),
-            'styles': {
+            'style_defs': {
                 'wxSP_3D': {
-                'desc': 'Draws a 3D effect border and sash',
-                'combination': 'wxSP_3DBORDER|wxSP_3DSASH',
+                    'desc': _('Draws a 3D effect border and sash'),
+                    'combination': 'wxSP_3DBORDER|wxSP_3DSASH',
             },
         },
         'wxHyperlinkCtrl': {
             'supported_by': ('wx28', 'wx3'),
         },
+        'wxDialog': {
+            'style_defs': {
+                'wxNO_3D': {
+                    'desc': _('Under Windows, specifies that the child '
+                              'controls should not have 3D borders unless '
+                              'specified in the control.'),
+                    'supported_by': ('wx2',),
+                },
+            },
+        },
         'generic_styles': {
             'wxALL': {
-                'desc': 'from wxSizer',
+                'desc': _('from wxSizer'),
                 'combination': 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM',
             },
         },
-
     }
 
 Elements:
@@ -141,15 +367,34 @@ Elements:
   - I{generic_styles} - Generic item to concentrate styles that are not
     part of a specific widget e.g. sizer styles.
 
+  - I{box_label} - Title of the widget style box
+
+  - I{style_list} - List of all styles to show within the style box
+
 Style attributes:
-  - I{desc} - Short style description
-  - I{combination} - The style is defined as a combination of different
-    other styles.
-  - I{synonym} - Alternative name
+  - I{'desc':} I{<description>} - Short style description
+
+  - I{'combination':} I{<styles joined by '|'>} - The style is defined as
+    a combination of different other styles.
+
+  - I{'synonym':} I{<alternative name>} - Short notice about an alternative
+    style name shown in style tooltip
+
+  - I{'rename_to:} I{<new style name>} - The style will be renamed into the
+    given style name
+
+  - I{'supported_by':} I{(<supported version>)}- List of versions
+    supporting this style
+
+  - I{'obsolete':} I{<text>} - This style is obsolete. A short notice will
+    shown in the style tooltip.
 
 Language specific style settings from
-L{wcodegen.BaseWidgetCodeWriter.lang_styles} will be merged with the styles
-dictionary in L{wcodegen.BaseWidgetCodeWriter.__init__()}.
+L{wcodegen.BaseWidgetWriter.lang_styles} will be merged with the styles
+dictionary in L{wcodegen.BaseWidgetWriter.__init__()}.
+
+Use gettext (C{_()}) for the attributes content of "box_label", "desc" and
+"obsolete".
 
 @type: dict
 """

@@ -101,7 +101,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditToggleButton objects from an xml file
+    factory to build EditToggleButton objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

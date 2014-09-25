@@ -1,5 +1,5 @@
 """
-Parsers used to load an app and to generate the code from an xml file.
+Parsers used to load an app and to generate the code from a XML file.
 
 NOTE: custom tag handler interface (called by XmlWidgetBuilder)::
 
@@ -123,7 +123,7 @@ class XmlParser(ContentHandler):
 
 class XmlWidgetBuilder(XmlParser):
     """\
-    parser used to build the tree of widgets from an xml file
+    parser used to build the tree of widgets from a XML file
     """
     def startElement(self, name, attrs):
         if name == 'application':
@@ -465,7 +465,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
 class XmlWidgetObject(object):
     """\
-    A class to encapsulate a widget read from an xml file: its purpose is to
+    A class to encapsulate a widget read from a XML file: its purpose is to
     store various widget attributes until the widget can be created
 
     @ivar in_sizers: If True, the widget is a sizer, opposite of L{in_windows}

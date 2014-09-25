@@ -100,5 +100,5 @@ def initialize():
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
 
-    common.register('lisp', klass, LispNotebookGenerator(),
+    common.register('lisp', klass, LispNotebookGenerator(klass),
                     'tabs', TabsCodeHandler, klass)

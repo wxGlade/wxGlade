@@ -8,12 +8,13 @@ Lisp generator functions for wxToolBar objects
 
 
 import common
+import wcodegen
 from tool import *
 
 from codegen import ToolsHandler
 
 
-class LispCodeGenerator:
+class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
     def get_properties_code(self, obj):
         prop = obj.properties
         out = []
@@ -136,5 +137,5 @@ def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('lisp', klass, LispCodeGenerator(),
+    common.register('lisp', klass, LispCodeGenerator(klass),
                     'tools', ToolsHandler)

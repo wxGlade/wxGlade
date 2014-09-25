@@ -9,10 +9,17 @@ wxSplitterWindow objects
 import wx
 
 import common
+import wcodegen
 from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase, StylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
+
+try:
+    from panel import EditPanel
+    _has_panel = True
+except ImportError:
+    _has_panel = False
 
 
 class SplitterWindowSizer(Sizer):
@@ -96,8 +103,6 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         'EVT_SPLITTER_DCLICK',
         ]
 
-    combined_attr = 'wxSP_3D'
-    
     def __init__(self, name, parent, id, style, win_1, win_2, orientation,
                  sizer, pos, property_window, show=True):
 
@@ -107,12 +112,10 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         StylesMixin.__init__(self)
 
         # initialise instance variables
+        self.set_style(style)
         self.virtual_sizer = SplitterWindowSizer(self)
-        if style is None:
-            style = wx.SP_3D
-        self.style = style
-        self.window_1 = win_1 
-        self.window_2 = win_2 
+        self.window_1 = win_1
+        self.window_2 = win_2
         self.orientation = orientation
         self.sash_pos = 0
 
@@ -120,40 +123,33 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['sash_pos'] = (self.get_sash_pos,
                                              self.set_sash_pos)
-
-        style_labels = ('#section#' + _('Style'), 'wxSP_3D', 'wxSP_3DSASH',
-                        'wxSP_3DBORDER', 'wxSP_BORDER',
-                        'wxSP_NOBORDER', 'wxSP_PERMIT_UNSPLIT',
-                        'wxSP_LIVE_UPDATE', 'wxCLIP_CHILDREN')
-        self.gen_style_pos(style_labels)
-
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)
+        prop = self.properties
+        prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
         self.access_functions['orientation'] = (self.get_orientation,
                                                 self.set_orientation)
-        self.properties['orientation'] = HiddenProperty(
+        prop['orientation'] = HiddenProperty(
             self, 'orientation', label=_("orientation"))
 
         self.access_functions['window_1'] = (self.get_win_1, lambda v: None)
         self.access_functions['window_2'] = (self.get_win_2, lambda v: None)
-        self.properties['window_1'] = HiddenProperty(self, 'window_1')
-        self.properties['window_2'] = HiddenProperty(self, 'window_2')
+        prop['window_1'] = HiddenProperty(self, 'window_1')
+        prop['window_2'] = HiddenProperty(self, 'window_2')
         self.window_1 = SizerSlot(self, self.virtual_sizer, 1)
         self.window_2 = SizerSlot(self, self.virtual_sizer, 2)
 
-        self.properties['sash_pos'] = SpinProperty(
+        prop['sash_pos'] = SpinProperty(
             self, 'sash_pos', None, r=(0, 20), can_disable=True,
             label=_("sash_pos"))
         self.no_custom_class = False
         self.access_functions['no_custom_class'] = (self.get_no_custom_class,
                                                     self.set_no_custom_class)
-        self.properties['no_custom_class'] = CheckBoxProperty(
+        prop['no_custom_class'] = CheckBoxProperty(
             self, 'no_custom_class',
             label=_("Don't generate code for this custom class"))
 
     def create_widget(self):
         self.widget = wx.SplitterWindow(self.parent.widget, self.id,
-                                        style=self.style)
+                                        style=self.get_int_style())
         self.split()
 
     def finish_widget_creation(self):
@@ -280,100 +276,86 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
 # end of class EditSplitterWindow
 
 
+editor_class = EditSplitterWindow
+editor_icon = 'icons/splitter_window.xpm'
+editor_name = 'EditSplitterWindow'
+editor_style = 'wxSPLIT_VERTICAL'
+
+dlg_title = _('wxSplitterWindow')
+box_title = _('Orientation')
+choices = 'wxSPLIT_VERTICAL|wxSPLIT_HORIZONTAL'
+tmpl_label = 'window'
+
+
 def builder(parent, sizer, pos, number=[1]):
     """\
-    factory function for EditSplitterWindow objects.
+    Factory function for EditSplitterWindow objects.
     """
-    class Dialog(wx.Dialog):
-        def __init__(self):
-            wx.Dialog.__init__(self, None, -1, 'Select orientation')
-            self.orientations = [ wx.SPLIT_VERTICAL, wx.SPLIT_HORIZONTAL ]
-            self.orientation = wx.SPLIT_VERTICAL
-            prop = RadioProperty(self, 'orientation', self,
-                                 ['wxSPLIT_VERTICAL', 'wxSPLIT_HORIZONTAL'], label=_("orientation"))
-            szr = wx.BoxSizer(wx.VERTICAL)
-            szr.Add(prop.panel, 0, wx.ALL|wx.EXPAND, 10)
-            btn = wx.Button(self, wx.ID_OK, _('OK'))
-            btn.SetDefault()
-            szr.Add(btn, 0, wx.BOTTOM|wx.ALIGN_CENTER, 10)
-            self.SetAutoLayout(True)
-            self.SetSizer(szr)
-            szr.Fit(self)
-            self.CenterOnScreen()
-            
-        def __getitem__(self, value):
-            def set_orientation(o): self.orientation = self.orientations[o]
-            return (lambda: self.orientation, set_orientation)
-    # end of inner class
+    dialog = wcodegen.WidgetStyleSelectionDialog(
+        dlg_title, box_title, choices)
 
-    dialog = Dialog()
-    dialog.ShowModal()
-    name = 'window_%d' % number[0]
-    while common.app_tree.has_name(name):
+    if not dialog.ShowModal() == wx.ID_OK:
+        return
+
+    label = '%s_%d' % (tmpl_label, number[0])
+    while common.app_tree.has_name(label):
         number[0] += 1
-        name = 'window_%d' % number[0]
-    window = EditSplitterWindow(name, parent, wx.NewId(), None, None, None,
-                                dialog.orientation,
-                                sizer, pos, common.property_panel, show=False)
-    try:
-        from panel import EditPanel
-        have_panels = True
-    except ImportError:
-        have_panels = False
-    if have_panels:
-        pane1 = EditPanel(name + '_pane_1', window, wx.NewId(),
-                            window.virtual_sizer, 1, common.property_panel)
-        pane2 = EditPanel(name + '_pane_2', window, wx.NewId(),
-                            window.virtual_sizer, 2, common.property_panel)
-        window.window_1 = pane1
-        window.window_2 = pane2
+        label = tmpl_label % number[0]
+    widget = editor_class(label, parent, wx.NewId(), None, None, None,
+                          dialog.get_selection(),
+                          sizer, pos, common.property_panel, show=False)
+    if _has_panel:
+        pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(),
+                            widget.virtual_sizer, 1, common.property_panel)
+        pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(),
+                            widget.virtual_sizer, 2, common.property_panel)
+        widget.window_1 = pane1
+        widget.window_2 = pane2
     
-    node = Tree.Node(window)
-    window.node = node
-    window.virtual_sizer.node = node
+    node = Tree.Node(widget)
+    widget.node = node
+    widget.virtual_sizer.node = node
 
-    window.set_option(1)
-    window.set_flag("wxEXPAND")
-    window.show_widget(True)
+    widget.set_option(1)
+    widget.set_style("wxEXPAND")
+    widget.show_widget(True)
 
     common.app_tree.insert(node, sizer.node, pos - 1)
 
-    if have_panels:
-        node2 = Tree.Node(window.window_1)
-        window.window_1.node = node2
-        common.app_tree.add(node2, window.node)
+    if _has_panel:
+        node2 = Tree.Node(widget.window_1)
+        widget.window_1.node = node2
+        common.app_tree.add(node2, widget.node)
 
-        node3 = Tree.Node(window.window_2)
-        window.window_2.node = node3
-        common.app_tree.add(node3, window.node)
+        node3 = Tree.Node(widget.window_2)
+        widget.window_2.node = node3
+        common.app_tree.add(node3, widget.node)
 
-    sizer.set_item(window.pos, 1, wx.EXPAND)
+    sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditSplitterWindow objects from an xml file
+    Factory to build editor objects from a XML file.
     """
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if not sizer or not sizeritem:
+    if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    window = EditSplitterWindow(name, parent, wx.NewId(), None, None, None,
-                                wx.SPLIT_VERTICAL,
-                                sizer, pos, common.property_panel, True)
-    sizer.set_item(window.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
-    node = Tree.Node(window)
-    window.node = node
-    window.virtual_sizer.node = node
+    widget = editor_class(name, parent, wx.NewId(), None, None, None,
+                          editor_style, sizer, pos, common.property_panel)
+    sizer.set_item(widget.pos, option=sizeritem.option,
+                   flag=sizeritem.flag, border=sizeritem.border)
+    node = Tree.Node(widget)
+    widget.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
         common.app_tree.insert(node, sizer.node, pos - 1)
-    return window
+    return widget
 
 
 def initialize():
@@ -381,8 +363,6 @@ def initialize():
     initialization function for the module: returns a wxBitmapButton to be
     added to the main palette.
     """
-    common.widgets['EditSplitterWindow'] = builder
-    common.widgets_from_xml['EditSplitterWindow'] = xml_builder
-    
-    return common.make_object_button('EditSplitterWindow',
-                                     'icons/splitter_window.xpm')
+    common.widgets[editor_name] = builder
+    common.widgets_from_xml[editor_name] = xml_builder
+    return common.make_object_button(editor_name, editor_icon)

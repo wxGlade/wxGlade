@@ -29,6 +29,7 @@ tree_ctrl
 grid
 custom_widget
 menubar
+statusbar
 toolbar
 spacer
 hyperlink_ctrl

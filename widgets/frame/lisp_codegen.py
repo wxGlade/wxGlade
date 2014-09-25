@@ -8,35 +8,6 @@ Code generator functions for wxFrame objects
 
 import common
 import wcodegen
-from MenuTree import *
-from codegen import StatusFieldsHandler
-
-
-class LispStatusBarCodeGenerator(wcodegen.LispWidgetCodeWriter):
-    tmpl = '(setf %(name)s (wxFrame_CreateStatusBar ' \
-           '(slot-top-window obj) %(labels_len)s %(style)s))\n'
-
-    def _prepare_tmpl_content(self, obj):
-        wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
-
-        labels, widths = obj.properties['statusbar']
-        self.tmpl_dict['labels_len'] = len(labels)
-        self.tmpl_dict['widths'] = ' '.join(map(str, widths))
-        self.tmpl_dict['widths_len'] = len(widths)
-
-        self.tmpl_props.append(
-            '(wxStatusBar_SetStatusWidths %(name)s %(widths_len)s '
-            '(vector %(widths)s))\n'
-        )
-
-        i = 0
-        for lb in labels:
-            stmt = '(wxStatusBar_SetStatusText %%(name)s %s %d)\n' % (
-                self.codegen.quote_str(lb), i)
-            self.tmpl_props.append(stmt)
-            i = +1
-
-# end of class LispStatusBarCodeGenerator
 
 
 class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
@@ -83,21 +54,18 @@ class LispMDIChildFrameCodeGenerator(LispFrameCodeGenerator):
 
 
 def initialize():
+    klass = 'wxFrame'
     cn = common.class_names
-    cn['EditFrame'] = 'wxFrame'
+    cn['EditFrame'] = klass
     cn['EditMDIChildFrame'] = 'wxMDIChildFrame'
-    cn['EditStatusBar'] = 'wxStatusBar'
     common.toplevels['EditFrame'] = 1
     common.toplevels['EditMDIChildFrame'] = 1
 
     lispgen = common.code_writers.get('lisp')
     if lispgen:
         awh = lispgen.add_widget_handler
-        awh('wxFrame', LispFrameCodeGenerator())
-        awh('wxMDIChildFrame', LispMDIChildFrameCodeGenerator())
-        awh('wxStatusBar', LispStatusBarCodeGenerator())
+        awh('wxFrame', LispFrameCodeGenerator(klass))
+        awh('wxMDIChildFrame', LispMDIChildFrameCodeGenerator(klass))
 
         aph = lispgen.add_property_handler
-        aph('fields', StatusFieldsHandler)
         aph('menubar', lispgen.DummyPropertyHandler)
-        aph('statusbar', lispgen.DummyPropertyHandler)

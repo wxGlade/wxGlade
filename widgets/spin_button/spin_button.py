@@ -43,20 +43,19 @@ class EditSpinButton(ManagedBase, StylesMixin):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
-        style_labels = ('#section#' + _('Style'),
-                        'wxSP_HORIZONTAL', 'wxSP_VERTICAL',
-                        'wxSP_ARROW_KEYS', 'wxSP_WRAP')
-        self.gen_style_pos(style_labels)
-        prop['style'] = CheckListProperty(self, 'style', None, style_labels)
-        prop['range'] = TextProperty(self, 'range', None, can_disable=True, label=_("range"))
-        prop['value'] = SpinProperty(self, 'value', None, can_disable=True, label=_("value"))
+        prop['style'] = CheckListProperty(
+            self, 'style', self.widget_writer)
+        prop['range'] = TextProperty(
+            self, 'range', None, can_disable=True, label=_("range"))
+        prop['value'] = SpinProperty(
+            self, 'value', None, can_disable=True, label=_("value"))
 
     def create_widget(self):
         try:
-            self.widget = wx.SpinButton(self.parent.widget, self.id , style=self.style)
+            self.widget = wx.SpinButton(self.parent.widget, self.id,
+                                        style=self.get_int_style())
         except AttributeError:
-            self.widget = wx.SpinButton(self.parent.widget, self.id )
-
+            self.widget = wx.SpinButton(self.parent.widget, self.id)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -76,7 +75,7 @@ class EditSpinButton(ManagedBase, StylesMixin):
 
     def get_range(self):
         # we cannot return self.range since this would become a "(0, 100)"
-        # string, and we don't want the parens
+        # string, and we don't want the parents
         return "%s, %s" % self.range
 
     def set_range(self, val):
@@ -120,7 +119,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory function to build EditSpinButton objects from an xml file
+    factory function to build EditSpinButton objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

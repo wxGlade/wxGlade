@@ -8,12 +8,14 @@ Perl generator functions for wxToolBar objects
 
 
 import common
+import wcodegen
 from tool import *
 
 from codegen import ToolsHandler
 
 
-class PerlCodeGenerator:
+class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
+
     def get_properties_code(self, obj):
         prop = obj.properties
         out = []
@@ -51,7 +53,6 @@ class PerlCodeGenerator:
         append('%s->Realize();\n' % obj_name)
 
         return out
-
 
     def get_init_code(self, obj):
         plgen = common.code_writers['perl']
@@ -138,5 +139,5 @@ def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('perl', klass, PerlCodeGenerator(),
+    common.register('perl', klass, PerlCodeGenerator(klass),
                     'tools', ToolsHandler)

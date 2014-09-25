@@ -47,14 +47,8 @@ class EditRadioButton(ManagedBase, StylesMixin):
                                                 multiline=True, label=_("label"))
         self.properties['clicked'] = CheckBoxProperty(self, 'clicked', None,
                                                       _('Clicked'))
-        style_labels = ('#section#' + _('Style'),
-                       'wxRB_GROUP', 'wxRB_SINGLE', 'wxRB_USE_CHECKBOX')
-        self.gen_style_pos(style_labels)
         self.properties['style'] = CheckListProperty(
-            self, 'style', None, style_labels,
-                    tooltips=[_('Marks the beginning of a new group of radio buttons.'),
-                    _('In some circumstances, radio buttons that are not consecutive siblings trigger a hang bug in Windows (only). If this happens, add this style to mark the button as not belonging to a group, and implement the mutually-exclusive group behaviour yourself.'),
-                    _('Use a checkbox button instead of radio button (currently supported only on PalmOS).')])
+            self, 'style', self.widget_writer)
 
     def create_widget(self):
         self.widget = wxGladeRadioButton(self.parent.widget, self.id,
@@ -120,7 +114,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditRadioButton objects from an xml file
+    factory to build EditRadioButton objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

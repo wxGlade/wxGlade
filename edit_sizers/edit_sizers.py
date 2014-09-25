@@ -1,18 +1,23 @@
 """
 Hierarchy of Sizers supported by wxGlade
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 # import general python modules
+from ordereddict import OrderedDict
 import logging
 import math
 import re
+import wx
 
 # import project modules
-import wx
+from layout_option_property import LayoutOptionProperty, \
+    LayoutPosProperty
 from widget_properties import *
+from edit_windows import StylesMixin
 from tree import Tree, WidgetTree
 import common
 import compat
@@ -22,7 +27,7 @@ import misc
 
 class BaseSizerBuilder(object):
     """\
-    Language independen base class for all sizer builders
+    Language independent base class for all sizer builders
     
     @cvar klass: Sizer class
     @type klass: String
@@ -48,8 +53,8 @@ class BaseSizerBuilder(object):
     @cvar tmpl_Fit: Template to call Fit()
     @type tmpl_Fit: String
 
-    @cvar tmpl_StaticBox: Template for staticbox name used in combination with
-                          wxStaticBoxSizer.
+    @cvar tmpl_StaticBox: Template for staticbox name used in combination
+                          with wxStaticBoxSizer.
     @type tmpl_StaticBox: String
 
     @cvar tmpl_SetSizeHints: Template to set the size hints
@@ -682,7 +687,7 @@ class InsertDialog(wx.Dialog):
 # end of class InsertDialog
 
 
-class Sizer:
+class Sizer(object):
     """\
     Base class for every Sizer handled by wxGlade
 
@@ -768,11 +773,11 @@ class SizerBase(Sizer):
         self.name = name
         self.klass = klass
         self.base = klass
-        self.pos = 0 # for sub-sizers, the position inside the parent
+        self.pos = 0  # for sub-sizers, the position inside the parent
         self.properties = {}
         self.property_window = window.property_window
         
-        self.widget = None # this is the actual wxSizer instance
+        self.widget = None  # this is the actual wxSizer instance
         
         # toplevel: if True, self is not inside another sizer, but it is the
         # responsible of the layout of self.window
@@ -794,12 +799,12 @@ class SizerBase(Sizer):
                            wx.ART_CUT), 
                           ])
 
-        self._btn = None # SizerHandleButton
+        self._btn = None  # SizerHandleButton
 
         self.notebook = None
         self._property_setup()
 
-        self.children = [] # list of widgets added to the sizer
+        self.children = []  # list of widgets added to the sizer
 
     def create_widget(self):
         """\
@@ -828,52 +833,47 @@ class SizerBase(Sizer):
         """\
         Setup of the Properties of self.
         """
-        self.flags_pos = [ wx.ALL, wx.LEFT, wx.RIGHT, wx.TOP, wx.BOTTOM,
-                           wx.EXPAND, wx.ALIGN_RIGHT, wx.ALIGN_BOTTOM,
-                           wx.ALIGN_CENTER_HORIZONTAL, wx.ALIGN_CENTER_VERTICAL,
-                           wx.SHAPED, wx.ADJUST_MINSIZE ]
+        if not self.toplevel:
+            border_styles = OrderedDict()
+            border_styles[_('Border')] = ['wxALL', 'wxLEFT', 'wxRIGHT',
+                                          'wxTOP', 'wxBOTTOM']
+            border_styles[_('Alignment')] = [
+                'wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM',
+                'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
+                'wxSHAPED', 'wxADJUST_MINSIZE', 'wxFIXED_MINSIZE']
+
+            # use 'wxDialog' as a functional dummy
+            self.sm_border = StylesMixin('wxDialog', border_styles)
 
         self.access_functions = {
-            'name' : (lambda : self.name, self.set_name),
+            'name': (lambda: self.name, self.set_name),
             'class': (lambda: self.klass, self.change),
             'attribute': (self.get_attribute, self.set_attribute),
             }
         if not self.toplevel:
-            self.access_functions['option'] = (self.get_option, self.set_option)
-            self.access_functions['flag'] = (self.get_flag, self.set_flag)
-            self.access_functions['border'] = (self.get_border, self.set_border)
+            self.access_functions['option'] = (self.get_option,
+                                               self.set_option)
+            self.access_functions['flag'] = (self.sm_border.get_style,
+                                             self.sm_border.set_style)
+            self.access_functions['border'] = (self.get_border,
+                                               self.set_border)
             self.access_functions['pos'] = (self.get_pos, self.set_pos)
 
-        self.name_prop = TextProperty(self, 'name', None, label=_('name'))
-        #self.klass_prop = TextProperty(self, 'class', None, readonly=True)
+        self.name_prop = TextProperty(self, 'name', label=_('name'))
         dialog = SizerClassDialog(self, None)
         self.klass_prop = DialogProperty(self, 'class', None, dialog, label=_('class'))
 
-        self.attr_prop = CheckBoxProperty(
-            self,
-            'attribute',
-            None,
-            _('Store as attribute'),
-            write_always=False,
-            )
+        self.attr_prop = CheckBoxProperty(self, 'attribute',
+                                          label=_('Store as attribute'))
         self.properties['attribute'] = self.attr_prop
 
         if not self.toplevel:
             prop = self.sizer_properties = {}
-
-            #prop['option'] = SpinProperty(self, 'option', None, 0, (0, 1000))
-            from layout_option_property import LayoutOptionProperty, \
-                 LayoutPosProperty
             prop['option'] = LayoutOptionProperty(self, self.sizer)
-
-            flag_labels = ['#section#' + _('Border'), 'wxALL',
-                           'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM',
-                           '#section#' + _('Alignment'), 'wxEXPAND', 'wxALIGN_RIGHT',
-                           'wxALIGN_BOTTOM', 'wxALIGN_CENTER_HORIZONTAL',
-                           'wxALIGN_CENTER_VERTICAL', 'wxSHAPED',
-                           'wxADJUST_MINSIZE' ]
-            prop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
-            prop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000), label=_('border'))
+            prop['flag'] = CheckListProperty(self, 'flag',
+                                             styles=border_styles)
+            prop['border'] = SpinProperty(self, 'border', None, 0,
+                                          (0, 1000), label=_('border'))
             prop['pos'] = LayoutPosProperty(self, self.sizer)
 
     def set_containing_sizer(self, sizer):
@@ -886,7 +886,7 @@ class SizerBase(Sizer):
     
     def set_pos(self, value):
         wx.CallAfter(self.sizer.change_item_pos, 
-                         self, min(value + 1, len(self.sizer.children) - 1))
+                     self, min(value + 1, len(self.sizer.children) - 1))
 
     def get_attribute(self):
         return self.attribute
@@ -950,8 +950,8 @@ class SizerBase(Sizer):
         pops up a menu to add or remove slots from self, or to remove self
         from the application.
         """
-        if self._btn: self._btn.popup_menu(event)
-        #self._btn.PopupMenu(self._btn._rmenu, event.GetPosition())
+        if self._btn:
+            self._btn.popup_menu(event)
 
     def set_name(self, value):
         value = "%s" % value
@@ -1305,23 +1305,6 @@ class SizerBase(Sizer):
             pass
         self.finish_set()
 
-    def set_flag(self, value):
-        """\
-        If self is not a toplevel sizer, update the layout to reflect the
-        value of the flag property
-        """
-        value = self.sizer_properties['flag'].prepare_value(value)
-        flags = 0
-        for v in range(len(value)):
-            if value[v]:
-                flags |= self.flags_pos[v]
-        self.flag = flags
-        try:
-            self.sizer.set_item(self.pos, flag=flags)
-        except AttributeError:
-            pass
-        self.finish_set()
-
     def set_border(self, value):
         """\
         If self is not a toplevel sizer, update the layout to reflect
@@ -1337,27 +1320,11 @@ class SizerBase(Sizer):
         if not hasattr(self, 'sizer'): return '1'
         return str(self.option)
 
-    def get_flag(self):
-        retval = [0] * len(self.flags_pos)
-        if not hasattr(self, 'sizer'): return retval
-        try:
-            flag = self.flag
-            for i in range(len(self.flags_pos)):
-                if flag & self.flags_pos[i]: retval[i] = 1
-            # patch to make wxALL work
-            if retval[1:5] == [1, 1, 1, 1]:
-                retval[0] = 1; retval[1:5] = [0, 0, 0, 0]
-            else:
-                retval[0] = 0
-        except AttributeError:
-            pass
-        return retval
-
     def get_int_flag(self):
-        try:
-            return self.flag
-        except AttributeError:
-            return wx.EXPAND
+        """\
+        @see: L{edit_windows.StylesMixin.get_int_style()}
+        """
+        return self.sm_border.get_int_style()
 
     def get_border(self):
         if not hasattr(self, 'sizer'):
@@ -1366,15 +1333,17 @@ class SizerBase(Sizer):
 
     def remove(self):
         # this function is here for clipboard compatibility
-        if not self._btn: return
+        if not self._btn:
+            return
         self._btn._remove()
 
     def delete(self):
         """\
-        ``Destructor''
+        Destructor
         """
         self._rmenu = None
-        if self._btn: self._btn.Destroy()
+        if self._btn:
+            self._btn.Destroy()
         if self.notebook:
 ##             for p in self.properties.itervalues():
 ##                 if p.panel: p.panel.Destroy()
@@ -1490,7 +1459,7 @@ class SizerBase(Sizer):
 
     def post_load(self):
         """\
-        Called after the loading of an app from an XML file, before showing
+        Called after the loading of an app from a XML file, before showing
         the hierarchy of widget for the first time. 
         This is used only for container widgets, to adjust their size
         appropriately.
@@ -1585,13 +1554,13 @@ class EditBoxSizer(SizerBase):
                                 self.border, self.widget.GetMinSize())
 
     def get_orient(self):
-        od = { wx.HORIZONTAL: 'wxHORIZONTAL',
-               wx.VERTICAL: 'wxVERTICAL' }
+        od = {wx.HORIZONTAL: 'wxHORIZONTAL',
+              wx.VERTICAL: 'wxVERTICAL'}
         return od.get(self.orient)
     
     def set_orient(self, value):
-        od = { 'wxHORIZONTAL': wx.HORIZONTAL,
-               'wxVERTICAL': wx.VERTICAL }
+        od = {'wxHORIZONTAL': wx.HORIZONTAL,
+              'wxVERTICAL': wx.VERTICAL}
         self.orient = od.get(value, wx.VERTICAL)
 
 # end of class EditBoxSizer
@@ -2361,7 +2330,7 @@ def builder(parent, sizer, pos, number=[1], show=True):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory function to build EditBoxSizer objects from an xml file
+    factory function to build EditBoxSizer objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:
@@ -2497,7 +2466,7 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
 
 def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory function to build EditGridSizer objects from an xml file
+    factory function to build EditGridSizer objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

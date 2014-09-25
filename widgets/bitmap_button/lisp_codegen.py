@@ -7,20 +7,10 @@ Lisp generator functions for wxBitmapButton objects
 """
 
 import common
-
-#this should be in common 
-_bmp_str_types = {
-    '.bmp' : 'wxBITMAP_TYPE_BMP',
-    '.gif' : 'wxBITMAP_TYPE_GIF',
-    '.xpm' : 'wxBITMAP_TYPE_XPM',
-    '.jpg' : 'wxBITMAP_TYPE_JPEG',
-    '.jpeg': 'wxBITMAP_TYPE_JPEG',
-    '.png' : 'wxBITMAP_TYPE_PNG',
-    '.pcx' : 'wxBITMAP_TYPE_PCX'
-    }
+import wcodegen
 
 
-class LispBitmapButtonGenerator:
+class LispBitmapButtonGenerator(wcodegen.LispWidgetCodeWriter):
     def get_code(self, obj):
         plgen = common.code_writers['lisp']
         prop = obj.properties
@@ -86,4 +76,4 @@ class LispBitmapButtonGenerator:
 def initialize():
     klass = 'wxBitmapButton'
     common.class_names['EditBitmapButton'] = klass
-    common.register('lisp', klass, LispBitmapButtonGenerator())
+    common.register('lisp', klass, LispBitmapButtonGenerator(klass))
