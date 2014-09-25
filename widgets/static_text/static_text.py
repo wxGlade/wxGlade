@@ -49,15 +49,13 @@ class EditStaticText(ManagedBase, StylesMixin):
         self.access_functions['attribute'] = (lambda : self.attribute,
                                               set_attribute)
 
-        self.properties['label'] = TextProperty(self, 'label', None,
-                                                multiline=True, label=_('label'))
-        style_labels = ('#section#' + _('Style'), 'wxALIGN_LEFT', 'wxALIGN_RIGHT',
-                        'wxALIGN_CENTRE', 'wxST_NO_AUTORESIZE')
-        self.gen_style_pos(style_labels)
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)
-        self.properties['attribute'] = CheckBoxProperty(
-            self, 'attribute', None, _('Store as attribute'), write_always=True)
+        prop = self.properties
+        prop['label'] = TextProperty(
+            self, 'label', None, multiline=True, label=_('label'))
+        prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
+        prop['attribute'] = CheckBoxProperty(
+            self, 'attribute', None, _('Store as attribute'),
+            write_always=True)
 
     def create_widget(self):
         self.widget = StaticText(self.parent.widget, self.id,
@@ -112,7 +110,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditStaticText objects from an xml file
+    factory to build EditStaticText objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

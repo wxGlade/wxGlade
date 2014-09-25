@@ -1,9 +1,10 @@
-# custom_widget.py: custom wxWindow objects
-# $Id: custom_widget.py,v 1.21 2007/08/07 12:13:43 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Custom wxWindow objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 import common, misc
@@ -11,17 +12,21 @@ from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase
 
+
 class ArgumentsProperty(GridProperty):
     def write(self, outfile, tabs):
         from xml.sax.saxutils import escape
-        if self.getter: values = self.getter()
-        else: values = self.owner[self.name][0]()
+        if self.getter:
+            values = self.getter()
+        else:
+            values = self.owner[self.name][0]()
         if values:
             write = outfile.write
             write('    ' * tabs + '<arguments>\n')
-            stab = '    ' * (tabs+1)
+            stab = '    ' * (tabs + 1)
             for value in values:
-                write('%s<argument>%s</argument>\n' % (stab, escape(value[0])))
+                write('%s<argument>%s</argument>\n' % (
+                    stab, escape(value[0])))
             write('    ' * tabs + '</arguments>\n')
 
 # end of class ArgumentsProperty
@@ -57,7 +62,7 @@ class CustomWidget(ManagedBase):
                  show=True):
         ManagedBase.__init__(self, name, klass, parent, id, sizer, pos,
                              property_window, show)
-        self.arguments = [['$parent'], ['$id']] #,['$width'],['$height']]
+        self.arguments = [['$parent'], ['$id']]  #,['$width'],['$height']]
         self.access_functions['arguments'] = (self.get_arguments,
                                               self.set_arguments)
         
@@ -65,8 +70,9 @@ class CustomWidget(ManagedBase):
         self.properties['arguments'] = ArgumentsProperty(
             self, 'arguments', None, cols, 2, label=_("arguments"))
 
-        self.custom_ctor = "" # if not empty, an arbitrary piece of code that
-                              # will be used instead of the constructor name
+        self.custom_ctor = ""  # if not empty, an arbitrary piece of code
+                               # that will be used instead of the constructor
+                               # name
         self.access_functions['custom_ctor'] = (self.get_custom_ctor,
                                                 self.set_custom_ctor)
         self.properties['custom_ctor'] = TextProperty(
@@ -74,15 +80,18 @@ class CustomWidget(ManagedBase):
 
     def set_klass(self, value):
         ManagedBase.set_klass(self, value)
-        if self.widget: self.widget.Refresh()
+        if self.widget:
+            self.widget.Refresh()
 
     def create_widget(self):
-        self.widget = wx.Window(self.parent.widget, self.id,
-                               style=wx.SUNKEN_BORDER|wx.FULL_REPAINT_ON_RESIZE)
+        self.widget = wx.Window(
+            self.parent.widget, self.id,
+            style=wx.SUNKEN_BORDER | wx.FULL_REPAINT_ON_RESIZE)
         wx.EVT_PAINT(self.widget, self.on_paint)
 
     def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
+        ManagedBase.finish_widget_creation(self,
+                                           sel_marker_parent=self.widget)
 
     def on_paint(self, event):
         dc = wx.PaintDC(self.widget)
@@ -99,7 +108,7 @@ class CustomWidget(ManagedBase):
         x = (w - tw)/2
         y = (h - th)/2
         dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
-        dc.DrawRectangle(x-1, y-1, tw+2, th+2)
+        dc.DrawRectangle(x - 1, y - 1, tw + 2, th + 2)
         dc.DrawText(text, x, y)
         dc.EndDrawing()
 
@@ -126,9 +135,9 @@ is translated to:
 Invalid entries are silently ignored""")
         def show_help(event):
             wx.MessageBox(text, _('Help on "Arguments" property'),
-                         wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
+                          wx.OK | wx.CENTRE | wx.ICON_INFORMATION)
         wx.EVT_BUTTON(help_btn, -1, show_help)
-        szr.Add(help_btn, 0, wx.BOTTOM|wx.LEFT|wx.RIGHT|wx.EXPAND, 5)
+        szr.Add(help_btn, 0, wx.BOTTOM | wx.LEFT | wx.RIGHT | wx.EXPAND, 5)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
@@ -163,13 +172,14 @@ def builder(parent, sizer, pos, number=[1]):
             title = _('Select widget class')
             wx.Dialog.__init__(self, None, -1, title)
             self.klass = 'CustomWidget'
-            if number[0]: self.klass = 'CustomWidget%s' % (number[0]-1)
+            if number[0]:
+                self.klass = 'CustomWidget%s' % (number[0] - 1)
             number[0] += 1
             klass_prop = TextProperty(self, 'class', self, label=_("class"))
             szr = wx.BoxSizer(wx.VERTICAL)
-            szr.Add(klass_prop.panel, 0, wx.ALL|wx.EXPAND, 5)
+            szr.Add(klass_prop.panel, 0, wx.ALL | wx.EXPAND, 5)
             szr.Add(wx.Button(self, wx.ID_OK, _('OK')), 0,
-                    wx.ALL|wx.ALIGN_CENTER, 5)
+                    wx.ALL | wx.ALIGN_CENTER, 5)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
@@ -179,7 +189,8 @@ def builder(parent, sizer, pos, number=[1]):
             self.CenterOnScreen()
                 
         def __getitem__(self, value):
-            def set_klass(c): self.klass = c
+            def set_klass(c):
+                self.klass = c
             return (lambda : self.klass, set_klass)
     # end of inner class
 
@@ -196,7 +207,7 @@ def builder(parent, sizer, pos, number=[1]):
     win.node = node
 
     win.set_option(1)
-    win.set_flag("wxEXPAND")
+    win.sm_border.set_style("wxEXPAND")
     win.show_widget(True)
 
     common.app_tree.insert(node, sizer.node, pos - 1)
@@ -205,7 +216,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build CustomWidget objects from an xml file
+    factory to build CustomWidget objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

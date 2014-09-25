@@ -1,15 +1,15 @@
-# menubar.py: wxMenuBar objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxMenuBar objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 import common
 import config
 import misc
-from tree import Tree
 from MenuTree import *
 from widget_properties import *
 from edit_windows import EditBase, PreviewMixin
@@ -169,11 +169,10 @@ class MenuItemDialog(wx.Dialog):
         index = self.selected_index = self.selected_index+1
         if not self.menu_items.GetItemCount():
             self._enable_fields()
-##             for s in (self.label, self.id, self.name, self.help_str,
-##                       self.check_radio, self.event_handler):
-##                 s.Enable(True)
-        if index < 0: index = self.menu_items.GetItemCount()
-        elif index > 0: indent = "    " * self.item_level(index-1)
+        if index < 0:
+            index = self.menu_items.GetItemCount()
+        elif index > 0:
+            indent = "    " * self.item_level(index-1)
         else: indent = ""
         name, label, id, check_radio = "", "item", "", "0"
         self.menu_items.InsertStringItem(index, indent + label)
@@ -196,10 +195,7 @@ class MenuItemDialog(wx.Dialog):
         index = self.selected_index+1
         if not self.menu_items.GetItemCount():
             self._enable_fields()
-##             for s in (self.label, self.id, self.name, self.help_str,
-##                       self.check_radio, self.event_handler):
-##                 s.Enable(True)
-        if index < 0: index = self.menu_items.GetItemCount() 
+        if index < 0: index = self.menu_items.GetItemCount()
         elif index > 0: label = "    " * self.item_level(index-1) + '---'
         else: label = '---'
         self.menu_items.InsertStringItem(index, label)
@@ -273,9 +269,6 @@ class MenuItemDialog(wx.Dialog):
             self.menu_items.DeleteItem(self.selected_index)
             if not self.menu_items.GetItemCount():
                 self._enable_fields(False)
-##                 for s in (self.name, self.id, self.label, \
-##                           self.help_str, self.check_radio, self.event_handler):
-##                     s.Enable(False)
 
     def add_items(self, menus):
         """\
@@ -311,10 +304,6 @@ class MenuItemDialog(wx.Dialog):
             add(tree.root, 0)
         if self.menu_items.GetItemCount():
             self._enable_fields()
-##             for s in (self.name, self.id, self.label, \
-##                       self.help_str, self.check_radio, self.event_handler):
-##                 s.Enable(True)
-            
 
     def get_menus(self):
         """\
@@ -530,7 +519,7 @@ class MenuProperty(Property):
 
 
 class EditMenuBar(EditBase, PreviewMixin):
-    __hidden_frame = None # used on GTK to reparent a menubar before deletion
+    __hidden_frame = None  # used on GTK to reparent a menubar before deletion
     
     def __init__(self, name, klass, parent, property_window):
         custom_class = parent is None
@@ -539,13 +528,10 @@ class EditMenuBar(EditBase, PreviewMixin):
                           custom_class=custom_class, show=False)
         self.base = 'wxMenuBar'
         
-        def nil(*args): return ()
-        self.menus = [] # list of MenuTree objects
-        self._mb = None # the real menubar
+        self.menus = []  # list of MenuTree objects
+        self._mb = None  # the real menubar
         self.access_functions['menus'] = (self.get_menus, self.set_menus)
         prop = self.properties['menus'] = MenuProperty(self, 'menus', None) 
-##         self.node = Tree.Node(self)
-##         common.app_tree.add(self.node, parent.node)
         PreviewMixin.__init__(self)
 
     def create_widget(self):
@@ -680,11 +666,6 @@ class EditMenuBar(EditBase, PreviewMixin):
             common.app_tree.select_item(self.node.parent)
             common.app_tree.app.show_properties()
 
-##     def show_widget(self, yes):
-##         EditBase.show_widget(self, yes)
-##         if self._frame:
-##             self._frame.Show(yes)
-
     def set_name(self, name):
         EditBase.set_name(self, name)
         if self.widget is not self._mb:
@@ -694,6 +675,7 @@ class EditMenuBar(EditBase, PreviewMixin):
         class MenuHandler:
             itemattrs = ['label', 'id', 'name', 'help_str',
                          'checkable', 'radio', 'handler']
+
             def __init__(self, owner):
                 self.owner = owner
                 self.menu_items = []
@@ -701,6 +683,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                 self.curr_item = None
                 self.curr_index = 0
                 self.menu_depth = 0
+
             def start_elem(self, name, attrs):
                 if name == 'menus': return
                 if name == 'menu':
@@ -731,8 +714,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                         # ignore unknown attributes...
                         self.curr_index = -1
                         pass
-##                         from xml_parse import XmlParsingError
-##                         raise XmlParsingError, _("invalid menu item attribute")
+
             def end_elem(self, name):
                 if name == 'item':
                     try: cm = self.curr_menu[-1]
@@ -747,6 +729,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                 elif name == 'menus':
                     self.owner.set_menus(self.owner.menus)
                     return True
+
             def char_data(self, data):
                 setattr(self.curr_item, self.itemattrs[self.curr_index], data)
                 
@@ -784,10 +767,6 @@ def builder(parent, sizer, pos, number=[0]):
                 self.SetSize((150, -1))
             self.CenterOnScreen()
 
-        def undo(self):
-            if number[0] > 0:
-                number[0] -= 1
-
         def __getitem__(self, value):
             if value == 'class':
                 def set_klass(c): self.klass = c
@@ -796,8 +775,8 @@ def builder(parent, sizer, pos, number=[0]):
 
     dialog = Dialog()
     if dialog.ShowModal() == wx.ID_CANCEL:
-        # cancel the operation
-        dialog.undo()
+        if number[0] > 0:
+            number[0] -= 1
         dialog.Destroy()
         return
     
@@ -815,7 +794,7 @@ def builder(parent, sizer, pos, number=[0]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditMenuBar objects from an xml file
+    factory to build EditMenuBar objects from a XML file
     """
     name = attrs.get('name')
     if parent is not None:

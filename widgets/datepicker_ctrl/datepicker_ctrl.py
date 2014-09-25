@@ -24,8 +24,8 @@ class EditDatePickerCtrl(ManagedBase, StylesMixin):
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxDatePickerCtrl', parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxDatePickerCtrl', parent, id,
+                             sizer, pos, property_window, show=show)
         StylesMixin.__init__(self)
 
         # initialise instance variables
@@ -35,19 +35,12 @@ class EditDatePickerCtrl(ManagedBase, StylesMixin):
             self.flag = wx.ALL
 
         # initialise properties remaining staff
-        self.access_functions['default'] = (self.get_default, self.set_default)
+        self.access_functions['default'] = (self.get_default,
+                                            self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("default"))
-        style_labels = ('#section#' + _('Style'), 'wxDP_SPIN', 'wxDP_DROPDOWN',
-                        'wxDP_DEFAULT', 'wxDP_ALLOWNONE', 'wxDP_SHOWCENTURY')
-        self.gen_style_pos(style_labels)
-        self.tooltips = (_("Creates a control without a month calendar drop down but with spin-control-like arrows to change individual date components. This style is not supported by the generic version."),
-                         _("Creates a control with a month calendar drop-down part from which the user can select a date."),
-                         _("Creates a control with the style that is best supported for the current platform (currently wxDP_SPIN under Windows and wxDP_DROPDOWN elsewhere)."),
-                         _("With this style, the control allows the user to not enter any valid date at all. Without it - the default - the control always has some valid date."),
-                         _("Forces display of the century in the default date format. Without this style the century could be displayed, or not, depending on the default date representation in the system."))
         self.properties['style'] = CheckListProperty(
-            self, 'style', None, style_labels, tooltips=self.tooltips)
+            self, 'style', self.widget_writer)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -56,7 +49,6 @@ class EditDatePickerCtrl(ManagedBase, StylesMixin):
         self.properties['default'].display(panel)
         self.properties['style'].display(panel)
         szr = wx.BoxSizer(wx.VERTICAL)
-        #szr.Add(self.properties['label'].panel, 0, wxEXPAND)
         szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(1)
@@ -66,8 +58,10 @@ class EditDatePickerCtrl(ManagedBase, StylesMixin):
 
     def create_widget(self):
         try:
-            #TODO add all the other parameters for the DatePickerCtrl intial date
-            self.widget = wx.DatePickerCtrl(self.parent.widget, self.id, style=self.style)
+            # TODO add all the other parameters for the DatePickerCtrl
+            # initial date
+            self.widget = wx.DatePickerCtrl(self.parent.widget, self.id,
+                                            style=self.get_int_style())
         except AttributeError:
             self.widget = wx.DatePickerCtrl(self.parent.widget, self.id)
 
@@ -98,7 +92,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditDatePickerCtrl objects from an xml file
+    factory to build EditDatePickerCtrl objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

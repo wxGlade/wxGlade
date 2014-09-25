@@ -15,13 +15,12 @@ import sys
 import gettext
 import optparse
 
-import common
-import config
-import log
-
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
 
+import common
+import config
+import log
 import errors
 
 

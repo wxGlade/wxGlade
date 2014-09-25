@@ -10,6 +10,7 @@ from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
 
+
 class EditWidget(ManagedBase):
     def __init__(self, name, klass, parent, id, label, sizer, pos,
                  property_window, show=True):
@@ -96,10 +97,14 @@ def add_widget_node(widget, sizer, pos, from_xml=False,
         flag |= wx.ALL
         border = config.preferences.default_border_size
 
-    if option: widget.set_option(option)
-    if flag: widget.set_int_flag(flag)
-    if border: widget.set_border(border)   
-    if not from_xml: widget.show_widget(True)
+    if option:
+        widget.set_option(option)
+    if flag:
+        widget.set_int_flag(flag)
+    if border:
+        widget.set_border(border)
+    if not from_xml:
+        widget.show_widget(True)
     sizer.set_item(widget.pos, option, flag, border)
 
     if pos is None: common.app_tree.add(node, sizer.node)

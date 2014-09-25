@@ -7,20 +7,10 @@ Perl generator functions for wxBitmapButton objects
 """
 
 import common
-
-#this should be in common 
-_bmp_str_types = {
-    '.bmp' : 'wxBITMAP_TYPE_BMP',
-    '.gif' : 'wxBITMAP_TYPE_GIF',
-    '.xpm' : 'wxBITMAP_TYPE_XPM',
-    '.jpg' : 'wxBITMAP_TYPE_JPEG',
-    '.jpeg': 'wxBITMAP_TYPE_JPEG',
-    '.png' : 'wxBITMAP_TYPE_PNG',
-    '.pcx' : 'wxBITMAP_TYPE_PCX'
-    }
+import wcodegen
 
 
-class PerlBitmapButtonGenerator:
+class PerlBitmapButtonGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_code(self, obj):
         plgen = common.code_writers['perl']
         prop = obj.properties
@@ -97,4 +87,4 @@ class PerlBitmapButtonGenerator:
 def initialize():
     klass = 'wxBitmapButton'
     common.class_names['EditBitmapButton'] = klass
-    common.register('perl', klass, PerlBitmapButtonGenerator())
+    common.register('perl', klass, PerlBitmapButtonGenerator(klass))

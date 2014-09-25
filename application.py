@@ -326,7 +326,7 @@ class Application(object):
         sizer.Add(self.encoding_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.use_gettext_prop.panel, 0, wx.EXPAND)
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        from widget_properties import _label_initial_width as _w
+        from widget_properties import label_initial_width as _w
         label = wx.StaticText(panel, -1, _("Top window"), size=(_w, -1))
         label.SetToolTip(wx.ToolTip(
             _("This widget is used as top window in the wxApp start code")
@@ -797,7 +797,7 @@ class Application(object):
                 frame = FrameClass(None, -1, '')
                 # make sure we don't get a modal dialog...
                 s = frame.GetWindowStyleFlag()
-                frame.SetWindowStyleFlag(s & ~wx.DIALOG_MODAL)
+                frame.SetWindowStyleFlag(s)
 
             def on_close(event):
                 frame.Destroy()

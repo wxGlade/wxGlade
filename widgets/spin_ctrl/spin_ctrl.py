@@ -40,15 +40,7 @@ class EditSpinCtrl(ManagedBase, StylesMixin):
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['range'] = (self.get_range, self.set_range)
-        style_labels = ('#section#' + _('Style'), 'wxSP_ARROW_KEYS', 'wxSP_WRAP',
-                        'wxTE_PROCESS_ENTER',
-                        'wxTE_PROCESS_TAB', 'wxTE_MULTILINE', 'wxTE_PASSWORD',
-                        'wxTE_READONLY', 'wxHSCROLL', 'wxTE_RICH',
-                        'wxTE_RICH2', 'wxTE_AUTO_URL', 'wxTE_NOHIDESEL',
-                        'wxTE_CENTRE', 'wxTE_RIGHT', 'wxTE_LINEWRAP',
-                        'wxTE_WORDWRAP', 'wxNO_BORDER')
-        self.gen_style_pos(style_labels)
-        prop['style'] = CheckListProperty(self, 'style', None, style_labels)
+        prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
         prop['range'] = TextProperty(self, 'range', None, can_disable=True, label=_("range"))
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True, label=_("value"))
 
@@ -120,7 +112,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory function to build EditSpinCtrl objects from an xml file
+    factory function to build EditSpinCtrl objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

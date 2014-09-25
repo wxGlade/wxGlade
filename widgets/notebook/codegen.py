@@ -204,9 +204,9 @@ def initialize():
     common.class_names['NotebookPane'] = 'wxPanel'
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
-    common.register('python', klass, PythonNotebookGenerator(),
+    common.register('python', klass, PythonNotebookGenerator(klass),
                     'tabs', TabsCodeHandler, klass)
-    common.register('C++', klass, CppNotebookGenerator(),
+    common.register('C++', klass, CppNotebookGenerator(klass),
                     'tabs', TabsCodeHandler, klass)
     common.register('XRC', klass, xrc_code_generator,
                     'tabs', TabsCodeHandler, klass)

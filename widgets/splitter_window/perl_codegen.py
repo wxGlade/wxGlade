@@ -7,9 +7,10 @@ Perl generator functions for wxSplitterWindow objects
 """
 
 import common
+import wcodegen
 
 
-class PerlSplitterWindowGenerator:
+class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'
     ]
@@ -26,7 +27,8 @@ class PerlSplitterWindowGenerator:
 
         if window.is_toplevel:
             l = []
-            if id_name: l.append(id_name)
+            if id_name:
+                l.append(id_name)
 
             klass = window.base
             if klass != window.klass:
@@ -35,15 +37,16 @@ class PerlSplitterWindowGenerator:
                 klass = klass.replace('wx', 'Wx::', 1)
 
             l.append('$self->{%s} = %s->new(%s, %s);\n' %
-                (window.name, plgen.cn(klass), parent,id))
+                (window.name, plgen.cn(klass), parent, id))
             return l, [], []
 
         style = prop.get("style")
-        if not( style and style != 'wxSP_3D' ): # default style
+        if not(style and style != 'wxSP_3D'):
             style = ''
 
         init = []
-        if id_name: init.append(id_name)
+        if id_name:
+            init.append(id_name)
 
         init.append('$self->{%s} = %s->new(%s, %s, wxDefaultPosition, '
                     'wxDefaultSize, %s);\n'
@@ -79,9 +82,7 @@ class PerlSplitterWindowGenerator:
 
         return init, props_buf, layout_buf
 
-
     def get_layout_code(self, obj):
-        plgen = common.code_writers['perl']
         props_buf = []
         prop = obj.properties
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -120,4 +121,4 @@ def initialize():
     common.class_names['SplitterPane'] = 'wxPanel'
     common.toplevels['EditSplitterWindow'] = 1
     common.toplevels['SplitterPane'] = 1
-    common.register('perl', klass, PerlSplitterWindowGenerator())
+    common.register('perl', klass, PerlSplitterWindowGenerator(klass))

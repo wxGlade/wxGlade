@@ -7,9 +7,11 @@ Base classes for windows used by wxGlade
 """
 
 # import general python modules
+from ordereddict import OrderedDict
 import logging
 import math
 import re
+import types
 import wx
 
 # import project modules
@@ -29,22 +31,35 @@ class EditBase(EventsMixin):
 
     @ivar custom_class: If true, the user can change the value of the
                         'class' property
-    @ivar name:  Name of the object
+    @type custom_class: bool
+
+    @ivar base: Name of object's wxWidget class; base and klass are mostly
+                the same, except e.g. wxDialog
+    @type base: str
+
     @ivar klass: Name of the object's class
+    @type klass: str
+
+    @ivar name:  Name of the object
+    @type name:  str
+
     @ivar property_window: Widget inside which Properties of this object are
                            displayed
+
     @ivar widget: This is the reference to the actual wxWindow widget; it is
                   created only if needed, i.e. when it should become visible
 
     @ivar access_functions: Getter and setter for each property
-    @type access_functions: Dictionary
+    @type access_functions: dict
 
     @ivar properties: Property instance for each property
-    @type properties: Dictionary
+    @type properties: dict
 
     @ivar _logger: Instance specific logger
+
     @ivar _rmenu: Popup menu
     """
+
     def __init__(self, name, klass, parent, id, property_window, show=True,
                  custom_class=True):
         """\
@@ -55,9 +70,17 @@ class EditBase(EventsMixin):
 
         @param property_window: Widget inside which Properties of this object
                                 are displayed
-        @param name:  Name of the object
+
+        @param name: Name of the object
+        @type name:  str
+
         @param klass: Name of the object's class
-        @param custom_class: If true, the user can chage the value of the
+        @type klass:  str
+
+        @param show: Show this widget
+        @type show:  bool
+
+        @param custom_class: If true, the user can change the value of the
                             'class' property
         """
         # initialise instance logger
@@ -77,8 +100,8 @@ class EditBase(EventsMixin):
         self._dont_destroy = False
 
         self.access_functions = {
-            'name': (lambda : self.name, self.set_name),
-            'class': (lambda : self.klass, self.set_klass)
+            'name': (lambda: self.name, self.set_name),
+            'class': (lambda: self.klass, self.set_klass)
             }
 
         # these two properties are special and are not listed in
@@ -98,7 +121,6 @@ class EditBase(EventsMixin):
                                       "of output. See the docs for " \
                                       "more details.")
 
-        # ALB 2007-08-31: custom base classes support
         if getattr(self, '_custom_base_classes', False):
             self.custom_base = ""
             def get_custom_base(): return self.custom_base
@@ -129,7 +151,6 @@ constructor will be used. You should probably not use this if \
             property_window.SetSize((250, 340))
             property_window.Show(True)
 
-        # ALB 2004-12-05
         EventsMixin.__init__(self)
 
         # code property
@@ -158,7 +179,7 @@ constructor will be used. You should probably not use this if \
 
     def delete(self):
         """\
-        Destructor. Deallocates the popup menu, the notebook and all the
+        Destructor. deallocates the popup menu, the notebook and all the
         properties. Why we need explicit deallocation? Well, basically because
         otherwise we get a lot of memory leaks... :)
         """
@@ -224,8 +245,10 @@ constructor will be used. You should probably not use this if \
         else:
             oldname = self.name
             self.name = value
-            if self._rmenu: self._rmenu.SetTitle(self.name)
-            try: common.app_tree.refresh_name(self.node, oldname) #, self.name)
+            if self._rmenu:
+                self._rmenu.SetTitle(self.name)
+            try:
+                common.app_tree.refresh_name(self.node, oldname)
             except AttributeError: pass
             self.property_window.SetTitle(_('Properties - <%s>') % self.name)
     set_name_pattern = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
@@ -236,8 +259,10 @@ constructor will be used. You should probably not use this if \
             self.klass_prop.set_value(self.klass)
         else:
             self.klass = value
-            try: common.app_tree.refresh_name(self.node) #, self.name)
-            except AttributeError: pass
+            try:
+                common.app_tree.refresh_name(self.node)
+            except AttributeError:
+                pass
     set_klass_pattern = re.compile('^[a-zA-Z_]+[\w:.0-9-]*$')
 
     def popup_menu(self, event):
@@ -265,7 +290,7 @@ constructor will be used. You should probably not use this if \
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
     def remove(self, *args):
-        self._dont_destroy = False # always destroy when explicitly asked
+        self._dont_destroy = False  # always destroy when explicitly asked
         common.app_tree.remove(self.node)
 
     def setup_preview_menu(self):
@@ -286,37 +311,32 @@ constructor will be used. You should probably not use this if \
         """\
         Updates property_window to display the properties of self
         """
-
-        # Begin Marcello 13 oct. 2005
-        if self.klass == 'wxPanel': # am I a wxPanel under a wxNotebook?
+        if self.klass == 'wxPanel':  # am I a wxPanel under a wxNotebook?
             if self.parent and self.parent.klass == 'wxNotebook':
-                #pdb.set_trace()
                 nb = self.parent
                 if nb.widget:
                     i = 0
-                    for tn, ep in nb.tabs: # tn=tabname, ep = editpanel
+                    for tn, ep in nb.tabs:  # tn=tabname, ep = editpanel
                         try:
                             if ep and self.name == ep.name:
                                 # If I am under this tab...
-                                nb.widget.SetSelection(i) # ...Show that tab.
+                                nb.widget.SetSelection(i)  # ...Show that tab.
                         except AttributeError:
                             pass
-                        i = i + 1
+                        i += 1
         if self.parent and self.parent.klass == 'wxPanel':
             # am I a widget under a wxPanel under a wxNotebook?
             if self.parent.parent and self.parent.parent.klass == 'wxNotebook':
-                #pdb.set_trace()
                 nb = self.parent.parent
                 if nb.widget:
                     i = 0
-                    for tn, ep in nb.tabs: # tn=tabname, ep = editpanel
+                    for tn, ep in nb.tabs:  # tn=tabname, ep = editpanel
                         try:
                             if ep and self.parent.name == ep.name:
                                 nb.widget.SetSelection(i)
                         except AttributeError:
                             pass
-                        i = i + 1
-        # End Marcello 13 oct. 2005
+                        i += 1
 
         if not self.is_visible():
             return  # don't do anything if self is hidden
@@ -324,15 +344,13 @@ constructor will be used. You should probably not use this if \
         # allows us to create only the notebooks we really need
         if self.notebook is None:
             self.create_properties()
-            # ALB 2004-12-05
             self.create_events_property()
             self.create_extracode_property()
         sizer_tmp = self.property_window.GetSizer()
-        #sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
-        #child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
         child = sizer_tmp.GetChildren()[0]
         w = child.GetWindow()
-        if w is self.notebook: return
+        if w is self.notebook:
+            return
 
         try:
             index = -1
@@ -377,10 +395,9 @@ constructor will be used. You should probably not use this if \
     def get_property_handler(self, prop_name):
         """\
         Returns a custom handler function for the property 'prop_name', used
-        when loading this object from an xml file. handler must provide
+        when loading this object from a XML file. handler must provide
         three methods: 'start_elem', 'end_elem' and 'char_data'
         """
-        # ALB 2004-12-05
         return EventsMixin.get_property_handler(self, prop_name)
 
     def clipboard_copy(self, *args):
@@ -412,12 +429,11 @@ constructor will be used. You should probably not use this if \
 
     def post_load(self):
         """\
-        Called after the loading of an app from an XML file, before showing
+        Called after the loading of an app from a XML file, before showing
         the hierarchy of widget for the first time. The default implementation
         does nothing.
         """
         pass
-
 
     def create_extracode_property(self):
         try:
@@ -443,7 +459,6 @@ constructor will be used. You should probably not use this if \
                 self.property_blocking[key].remove(item)
             if not len(self.property_blocking[key]):
                 del self.property_blocking[key]
-
 
 # end of class EditBase
 
@@ -479,9 +494,9 @@ class WindowBase(EditBase):
 
         self.access_functions['font'] = (self.get_font, self.set_font)
 
-        # properties added 2002-08-15
         self.tooltip = ''
-        self.access_functions['tooltip'] = (self.get_tooltip, self.set_tooltip)
+        self.access_functions['tooltip'] = (self.get_tooltip,
+                                            self.set_tooltip)
 
         self._original = {'background': None, 'foreground': None,
                           'font': None}        
@@ -504,10 +519,8 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         prop['foreground'] = ColorDialogProperty(self, "foreground", None, label=_("foreground"))
         prop['font'] = FontDialogProperty(self, "font", None, label=_("font"))
 
-        # properties added 2002-08-15
-        prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True,  label=_('tooltip'))
+        prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True, label=_('tooltip'))
 
-        # properties added 2003-05-15
         self.disabled_p = False
         self.access_functions['disabled'] = (self.get_disabled,
                                              self.set_disabled)
@@ -660,14 +673,16 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
                 if use_dialog_units: val = val[:-1]
                 w_1, h_1 = [int(t) for t in val.split(',')]
             else:
-                use_dialog_units = config.preferences.use_dialog_units #False
+                use_dialog_units = config.preferences.use_dialog_units  #False
             if use_dialog_units:
                 w, h = self.widget.ConvertPixelSizeToDialog(
                     self.widget.GetSize())
             else:
                 w, h = self.widget.GetSize()
-            if w_1 == -1: w = -1
-            if h_1 == -1: h = -1
+            if w_1 == -1:
+                w = -1
+            if h_1 == -1:
+                h = -1
             size = "%s, %s" % (w, h)
             if use_dialog_units: size += "d"
             self.size = size
@@ -854,7 +869,14 @@ class ManagedBase(WindowBase):
     Base class for every managed window used by the builder: extends WindowBase
     with the addition of properties relative to the layout of the window:
     option, flag, and border
+
+    @ivar sel_marker: Selection markers
+
+    @ivar self.sizer_properties: Properties relative to the sizer which
+                                 controls this window
+    @type self.sizer_properties: dict
     """
+
     def __init__(self, name, klass, parent, id, sizer, pos, property_window,
                  show=True):
         WindowBase.__init__(self, name, klass, parent, id, property_window,
@@ -862,52 +884,49 @@ class ManagedBase(WindowBase):
         # if True, the user is able to control the layout of the widget
         # inside the sizer (proportion, borders, alignment...)
         self._has_layout = not sizer.is_virtual()
+
         # selection markers
         self.sel_marker = None
+
         # dictionary of properties relative to the sizer which
         # controls this window
         self.sizer_properties = {}
+
         # attributes to keep the values of the sizer_properties
         self.option = 0
         self.flag = 0
         self.border = 0
 
+        border_styles = OrderedDict()
+        border_styles[_('Border')] = ['wxALL', 'wxLEFT', 'wxRIGHT', 'wxTOP',
+                                      'wxBOTTOM']
+        border_styles[_('Alignment')] = [
+            'wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM',
+            'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
+            'wxSHAPED', 'wxADJUST_MINSIZE', 'wxFIXED_MINSIZE']
+
+        # use 'wxDialog' as a functional dummy
+        self.sm_border = StylesMixin('wxDialog', border_styles)
+        self.sm_border.update_widget_style = True
+        self.sm_border._set_widget_style = self.set_int_flag
+
         self.sizer = sizer
         self.pos = pos
         self.access_functions['option'] = (self.get_option, self.set_option)
-        self.access_functions['flag'] = (self.get_flag, self.set_flag)
+        self.access_functions['flag'] = (self.sm_border.get_style,
+                                         self.sm_border.set_style)
         self.access_functions['border'] = (self.get_border, self.set_border)
         self.access_functions['pos'] = (self.get_pos, self.set_pos)
-        self.flags_pos = (wx.ALL,
-                          wx.LEFT, wx.RIGHT, wx.TOP, wx.BOTTOM,
-                          wx.EXPAND, wx.ALIGN_RIGHT, wx.ALIGN_BOTTOM,
-                          wx.ALIGN_CENTER_HORIZONTAL, wx.ALIGN_CENTER_VERTICAL,
-                          wx.SHAPED, wx.ADJUST_MINSIZE)
-        flag_labels = (u'#section#' + _('Border'),
-                       'wxALL',
-                       'wxLEFT', 'wxRIGHT',
-                       'wxTOP', 'wxBOTTOM',
-                       u'#section#' + _('Alignment'), 'wxEXPAND', 'wxALIGN_RIGHT',
-                       'wxALIGN_BOTTOM', 'wxALIGN_CENTER_HORIZONTAL',
-                       'wxALIGN_CENTER_VERTICAL', 'wxSHAPED',
-                       'wxADJUST_MINSIZE')
-        # ALB 2004-08-16 - see the "wxPython migration guide" for details...
-        self.flag = wx.ADJUST_MINSIZE #wxFIXED_MINSIZE
-        self.flags_pos += (wx.FIXED_MINSIZE, )
-        flag_labels += ('wxFIXED_MINSIZE', )
+
+        self.flag = wx.ADJUST_MINSIZE
         sizer.add_item(self, pos)
 
         szprop = self.sizer_properties
-        #szprop['option'] = SpinProperty(self, _("option"), None, 0, (0, 1000))
         from layout_option_property import LayoutOptionProperty, \
              LayoutPosProperty
         szprop['option'] = LayoutOptionProperty(self, sizer)
-
-        szprop['flag'] = CheckListProperty(self, 'flag', None, flag_labels)
+        szprop['flag'] = CheckListProperty(self, 'flag', styles=border_styles)
         szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000), label=_('border'))
-##         pos_p = szprop['pos'] = SpinProperty(self, 'pos', None, 0, (0, 1000))
-##         def write(*args, **kwds): pass
-##         pos_p.write = write # no need to save the position
         szprop['pos'] = LayoutPosProperty(self, sizer)
 
     def finish_widget_creation(self, sel_marker_parent=None):
@@ -922,11 +941,9 @@ class ManagedBase(WindowBase):
         # set the value of the properties
         szp = self.sizer_properties
         szp['option'].set_value(self.get_option())
-        szp['flag'].set_value(self.get_flag())
+        szp['flag'].set_value(self.sm_border.get_style())
         szp['border'].set_value(self.get_border())
-        szp['pos'].set_value(self.pos-1)
-##         if self.properties['size'].is_active():
-##             self.sizer.set_item(self.pos, size=self.widget.GetSize())
+        szp['pos'].set_value(self.pos - 1)
 
     def create_properties(self):
         WindowBase.create_properties(self)
@@ -992,17 +1009,19 @@ class ManagedBase(WindowBase):
         except AttributeError:
             self._logger.exception(_('Internal Error'))
 
-    def set_flag(self, value):
-        value = self.sizer_properties['flag'].prepare_value(value)
-        flags = 0
-        for v in range(len(value)):
-            if value[v]:
-                flags |= self.flags_pos[v]
-        self.set_int_flag(flags)
+    def set_int_flag(self, flags=None):
+        """\
+        Set the widget flag
 
-    def set_int_flag(self, flags):
+        @param flags: Widget flag
+        @type flags: int
+        """
+        assert isinstance(flags, (types.IntType, types.NoneType))
+        if isinstance(flags, types.NoneType):
+            flags = self.sm_border.get_int_style()
         self.flag = flags
-        if not self.widget: return
+        if not self.widget:
+            return
         try:
             try:
                 sp = self.properties['size']
@@ -1010,8 +1029,9 @@ class ManagedBase(WindowBase):
                 if size[-1] == 'd':
                     size = size[:-1]
                     use_dialog_units = True
-                else: use_dialog_units = False
-                w, h = [ int(v) for v in size.split(',') ]
+                else:
+                    use_dialog_units = False
+                w, h = [int(v) for v in size.split(',')]
                 if use_dialog_units:
                     w, h = wx.DLG_SZE(self.widget, (w, h))
                 size = [w, h]
@@ -1026,19 +1046,23 @@ class ManagedBase(WindowBase):
 
     def set_border(self, value):
         self.border = int(value)
-        if not self.widget: return
+        if not self.widget:
+            return
         try:
             sp = self.properties['size']
             size = sp.get_value().strip()
             if size[-1] == 'd':
                 size = size[:-1]
                 use_dialog_units = True
-            else: use_dialog_units = False
-            w, h = [ int(v) for v in size.split(',') ]
+            else:
+                use_dialog_units = False
+            w, h = [int(v) for v in size.split(',')]
             if use_dialog_units:
                 w, h = wx.DLG_SZE(self.widget, (w, h))
-            if w == -1: w = self.widget.GetSize()[0]
-            if h == -1: h = self.widget.GetSize()[1]
+            if w == -1:
+                w = self.widget.GetSize()[0]
+            if h == -1:
+                h = self.widget.GetSize()[1]
             self.sizer.set_item(self.pos, border=int(value), size=(w, h))
         except AttributeError:
             self._logger.exception(_('Internal Error'))
@@ -1046,38 +1070,28 @@ class ManagedBase(WindowBase):
     def get_option(self):
         return self.option
 
-    def get_flag(self):
-        retval = [0] * len(self.flags_pos)
-        try:
-            for i in range(len(self.flags_pos)):
-                if self.flag & self.flags_pos[i]:
-                    retval[i] = 1
-            # patch to make wxALL work
-            if retval[1:5] == [1, 1, 1, 1]:
-                retval[0] = 1; retval[1:5] = [0, 0, 0, 0]
-            else:
-                retval[0] = 0
-        except AttributeError: pass
-        return retval
-
     def get_int_flag(self):
-        return self.flag
+        return self.sm_border.get_int_style()
 
     def get_border(self):
         return self.border
 
     def delete(self):
         if self.sel_marker:
-            self.sel_marker.Destroy() # destroy the selection markers
+            self.sel_marker.Destroy()  # destroy the selection markers
         WindowBase.delete(self)
 
     def remove(self, *args):
         self.sizer.free_slot(self.pos)
         WindowBase.remove(self)
 
-    def get_pos(self): return self.pos-1
+    def get_pos(self):
+        return self.pos - 1
+
     def set_pos(self, value):
-        """setter for the 'pos' property: calls self.sizer.change_item_pos"""
+        """\
+        setter for the 'pos' property: calls self.sizer.change_item_pos
+        """
         self.sizer.change_item_pos(self, min(value + 1,
                                              len(self.sizer.children) - 1))
 
@@ -1086,7 +1100,6 @@ class ManagedBase(WindowBase):
         called by self.sizer.change_item_pos to update the item's position
         when another widget is moved
         """
-        #self._logger.exception('update pos %s, %s', self.name, value)
         self.sizer_properties['pos'].set_value(value-1)
         self.pos = value
 
@@ -1315,29 +1328,33 @@ class StylesMixin(object):
     """\
     Mixin to handle styles within widget dialogs
 
-    @ivar style: Current style of the related widget
-    @type style: Integer
+    This class needs the wxWidget class to get the proper widget writer.
+    Mostly the wxWidget class is stored in self.base. If not you've to set
+    manually using constructors 'klass' parameter. The 'klass' parameter
+    will preferred used.
 
-    @ivar _style_values: List of set style attributes, 1 if the style is set
-    @type _style_values: List of boolean values (0 or 1)
+    @ivar style_set: Set of selected styles
+    @type style_set: set[str]
 
-    @ivar _style_names: List of style names
-    @type _style_names: List of strings
+    @ivar style_names: List of style names
+    @type style_names: list[str]
+
+    @ivar widget_writer: Widget code writer
+    @type widget_writer: wcodegen.BaseWidgetWriter
+
     """
-
-    combined_attr = None
+    codegen = None
     """\
-    Combined attribute e.g. wxALL which is a combination of wxLEFT, wxRIGHT,
-    wxTOP and wxBOTTOM.
+    Code generator class
 
-    @type: List of strings
+    @see: L{codegen.BaseLangCodeWriter}
     """
 
     update_widget_style = True
     """\
     Flag to update the widget style if a style is set using L{set_style()}
 
-    @type: Boolean
+    @type: bool
     """
 
     _attr_cache = {}
@@ -1346,13 +1363,54 @@ class StylesMixin(object):
 
     @note: The attribute cache is shared between all instances of this class.
 
-    @type: Dictionary
+    @type: dict
     """
 
-    def __init__(self):
-        self._style_values = []
-        self._style_names = []
-        self.style = 0
+    def __init__(self, klass='', styles=[]):
+        """\
+        Initialise instance
+
+        @param klass: Name of the wxWidget klass
+        @type klass:  str
+
+        @param styles: Supported styles, for more details
+                       see L{widget_properties.CheckListProperty}
+        @type styles: list[str] | OrderedDict
+        """
+        assert klass or hasattr(self, 'base')
+        self.style_names = []
+        self.style_set = set()
+
+        # This class needs the wxWidget class to get the proper widget
+        # writer. Mostly the wxWidget class is stored in self.base. If
+        # not you've to set manually using constructors 'klass' parameter.
+        # The 'klass' parameter will preferred used.
+        if klass:
+            klass = klass
+        elif getattr(self, 'base', None):
+            klass = self.base
+        else:
+            raise TypeError('Can not determinate wxWidgets class')
+
+        # set code generator only once per class
+        if not self.codegen:
+            self.codegen = common.code_writers['python'].copy()
+            self.codegen.for_version = wx.VERSION[0:2]
+            StylesMixin.codegen = self.codegen
+
+        try:
+            self.widget_writer = self.codegen.obj_builders[klass]
+        except KeyError:
+            raise NotImplementedError
+
+        if styles:
+            if isinstance(styles, types.DictionaryType):
+                for box_label in styles.keys():
+                    self.style_names.extend(styles[box_label])
+            else:
+                self.style_names = styles
+        else:
+            self.style_names = self.widget_writer.style_list
 
     def get_style(self):
         """\
@@ -1360,139 +1418,137 @@ class StylesMixin(object):
         indicated if the style  at the same position in style_pos is set.
 
         Example::
-            >>> self.style
-            4096
-            >>> pprint.pprint(self._style_list)
-            ['wxSP_ARROW_KEYS',
-             'wxSP_WRAP',
-             'wxTE_PROCESS_ENTER',
-             'wxTE_PROCESS_TAB',
-             'wxTE_MULTILINE',
-             'wxTE_PASSWORD',
-             'wxTE_READONLY',
-             'wxHSCROLL',
-             'wxTE_RICH',
-             'wxTE_RICH2',
-             'wxTE_AUTO_URL',
-             'wxTE_NOHIDESEL',
-             'wxTE_CENTRE',
-             'wxTE_RIGHT',
-             'wxTE_LINEWRAP',
-             'wxTE_WORDWRAP',
-             'wxNO_BORDER']
+            >>> pprint.pprint(self.style_names)
+            ['wxHL_ALIGN_LEFT',
+             'wxHL_ALIGN_RIGHT',
+             'wxHL_ALIGN_CENTRE',
+             'wxHL_CONTEXTMENU',
+             'wxHL_DEFAULT_STYLE']
+            >>> self.style_set
+            set(['wxHL_ALIGN_LEFT'])
             >>> self.get_style()
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+            [True, False, False, False, False]
 
-        @see: L{style}
-        @see: L{_style_values}
+        @see: L{style_set}
 
         @return: List of style flags
-        @rtype: List of boolean values (0 or 1)
+        @rtype: list[bool]
         """
-        assert self._style_values
-        style_list = [0] * len(self._style_values)
+        assert self.style_names
 
-        if self.style == 0:
+        style_list = [False] * len(self.style_names)
+
+        if not self.style_set:
             return style_list
 
-        style = self.style
+        for pos in xrange(len(self.style_names)):
+            name = self.style_names[pos]
+            if name in self.style_set:
+                style_list[pos] = True
 
-        # combined attributes will be removed from style to prevent hiding
-        # the remaining attributes
-        if self.combined_attr and self.combined_attr in self._style_names:
-            pos = self._style_names.index(self.combined_attr)
-            attr = self._style_values[pos]
-            if style & attr == attr:
-                style_list[pos] = 1
-                mask = ~attr
-                style &= mask
-
-        for i in xrange(len(self._style_values)):
-            attr = self._style_values[i]
-            # styles with value of 0 are sometimes available fof
-            # compatibility reasons
-            # there is no possibility to check for such styles
-            if not attr:
-                continue
-
-            if style & attr == attr:
-                style_list[i] = 1
-                # don't remove attributes values to allow processing other
-                # attributes with same value
-                #mask = ~attr
-                #style &= mask
-
-        #assert style == 0
         return style_list
+
+    def get_string_style(self):
+        """\
+        Return the selected styles joined with '|'.
+
+        @rtype: str
+        """
+        styles = list(self.style_set)
+        styles.sort()
+        return '|'.join(styles)
+
+    def get_int_style(self):
+        """\
+        Convert styles in style_set into integer value
+
+        @return: Integer representation of the selected styles
+        @rtype: int
+
+        @see: L{wcodegen.BaseLanguageMixin.cn_f()}
+        """
+        new_style = 0
+        styles = list(self.style_set)
+        styles.sort()
+        for style_name in styles:
+            try:
+                style_name = self.widget_writer.cn_f(style_name)
+                style_value = self.wxname2attr(style_name)
+                if not isinstance(style_value, types.IntType):
+                    self._logger.warning(
+                        _('''Can't convert style "%s" to an integer. Got
+                            "%s" instead.'''), style_name, style_value
+                    )
+                    continue
+                new_style |= style_value
+            except (AttributeError, NameError):
+                pass
+        return new_style
 
     def _set_widget_style(self):
         """\
         Set a new widget style if the style has changed
 
+        @note:
+            Quote from wxWidgets documentation about changing styles
+            dynamically:
+
+            Note that alignment styles (wxTE_LEFT, wxTE_CENTRE and
+            wxTE_RIGHT) can be changed dynamically after control creation
+            on wxMSW and wxGTK. wxTE_READONLY, wxTE_PASSWORD and
+            wrapping styles can be dynamically changed under wxGTK but
+            not wxMSW. The other styles can be only set during
+            control creation.
+
         @see: L{EditBase.widget}
         """
-        if hasattr(self, 'widget'):
-            if self.widget and self.update_widget_style:
-                old_style = self.widget.GetWindowStyleFlag()
-                if old_style != self.style:
-                    self.widget.SetWindowStyleFlag(self.style)
-                    self.widget.Refresh()
+        widget = getattr(self, 'widget', None)
+        if widget and self.update_widget_style:
+            old_style = widget.GetWindowStyleFlag()
+
+            new_style = self.get_int_style()
+
+            if old_style != new_style:
+                widget.SetWindowStyleFlag(new_style)
+                widget.Refresh()
 
     def set_style(self, value):
         """\
-        Convert a list of style flags into a single value and set this style.
+        Set styles. The style value could be a string with styles
+        concatenated with '|' or a list of boolean flags to mark the styles
+        via the postion as set.
 
-        Example::
-            >>> self.set_style('wxSP_ARROW_KEYS|wxTE_AUTO_URL')
-            >>> self.style
-            4096
+        Example 1::
+            >>> self.set_style([True, False, False, False, False])
+            >>> self.style_set
+            set(['wxHL_ALIGN_LEFT'])
+
+        Example 2::
+            >>> self.set_style('wxHL_ALIGN_LEFT')
+            >>> self.style_set
+            set(['wxHL_ALIGN_LEFT'])
 
         @param value: Styles to set
-        @type value:  String
+        @type value:  str | list[bool]
 
-        @see: L{style}
-        @see: L{_style_values}
+        @see: L{style_set}
+        @see: L{style_names}
         @see: L{update_widget_style}
         @see: L{_set_widget_style}
         """
-        assert self._style_values
+        assert isinstance(value, (types.ListType, types.StringType,
+                                  types.UnicodeType))
 
-        value = self.prepare_style_value(value)
-        self.style = 0
-        for pos in xrange(len(value)):
-            if value[pos]:
-                self.style |= self._style_values[pos]
+        if isinstance(value, types.StringTypes):
+            new_styles = set(value.split('|'))
+        else:
+            new_styles = set()
+            for pos in range(len(self.style_names)):
+                if value[pos]:
+                    new_styles.add(self.style_names[pos])
+
+        self.style_set = self.widget_writer.combine_styles(new_styles)
         self._set_widget_style()
-
-    def gen_style_pos(self, style_labels):
-        """\
-        Convert a list of style labels into a list of wx style attributes.
-
-        Example::
-            >>> gen_style_pos(('#section#Style', 'wxNB_LEFT', 'wxNB_RIGHT'))
-            [64, 128]
-
-        @param style_labels: Style labels
-        @type style_labels: List of strings
-
-        @note: Combination attributes like wxDEFAULT_FRAME_STYLE should be
-               positioned at the head of the label list.
-
-        @rtype: List of wx style attributes
-        @see: L{_style_values}
-        @see: L{_style_names}
-        """
-        self._style_values = []
-        self._style_names = []
-        for style_name in style_labels:
-            if style_name.startswith('#section#'):
-                continue
-            try:
-                attr = self.wxname2attr(style_name)
-                self._style_values.append(attr)
-                self._style_names.append(style_name)
-            except (AttributeError, NameError):
-                self._style_values.append(0)
 
     def wxname2attr(self, name):
         """\
@@ -1505,9 +1561,9 @@ class StylesMixin(object):
         The values will be cached in L{_attr_cache}.
 
         Example::
-            >>> wxname2attr('wx.version')
+            >>> self.wxname2attr('wx.version')
             <function version at 0x2cc6398>
-            >>> wxname2attr('wx.VERSION')
+            >>> self.wxname2attr('wx.VERSION')
             (2, 8, 12, 1, '')
 
         @param name: Attribute name
@@ -1518,48 +1574,15 @@ class StylesMixin(object):
 
         @see: L{_attr_cache}
         """
-        pygen = common.code_writers.get("python")
-
-        assert pygen.use_new_namespace
+        assert self.codegen.use_new_namespace
         assert name.startswith('wx')
 
         if name in self._attr_cache:
             return self._attr_cache[name]
 
-        cn = pygen.without_package(pygen.cn(name))
+        cn = self.codegen.without_package(self.codegen.cn(name))
         attr = getattr(wx, cn)
         self._attr_cache[name] = attr
         return attr
-
-    def prepare_style_value(self, old_val):
-        """\
-        Convert token string into a list of boolean values.
-
-        The returned list shows the position of a token from old_val in
-        self.labels.
-
-        Example::
-            >>> self.prepare_style_value('wxALL|wxALIGN_CENTER_VERTICAL')
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
-
-        @param old_val: String of tokens separated by '|'
-        @type old_val:  String
-
-        @rtype: List of boolean values (0 or 1)
-
-        @note: This function is a copy of
-               widget_properties.CheckListProperty.prepare_style_value()
-        """
-        try:
-            old_val = old_val.split("|")
-        except AttributeError:
-            return list(old_val)
-        ret = []
-        for names in self._style_names:
-            if names in old_val:
-                ret.append(1)
-            else:
-                ret.append(0)
-        return ret
 
 # end of class StylesMixin

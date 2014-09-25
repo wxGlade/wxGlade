@@ -1101,26 +1101,38 @@ class TestCodeGen(WXGladeBaseTest):
         @see: L{wcodegen.BaseLanguageMixin.cn_f()}
         """
         details = [
-            ('wxALL', 'wxALL'),
-            ('wxALL|wxALL', 'wxALL'),
-            ('0', '0'),
-            ('wxALL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM', 'wxALL'),
-            ('wxALL|wxLEFT|wxTOP|wxBOTTOM', 'wxALL'),
-            ('wxLEFT|wxRIGHT|wxTOP|wxBOTTOM', 'wxALL'),
-            ('wxNonexistingFlag|wxALL', 'wxALL|wxNonexistingFlag'),
-            ('', '')
+            ((2, 8), 'wxALL', 'wxALL'),
+            ((2, 8), 'wxALL|wxALL', 'wxALL'),
+            ((2, 8), '0', '0'),
+            ((2, 8), 'wxALL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM', 'wxALL'),
+            ((2, 8), 'wxALL|wxLEFT|wxTOP|wxBOTTOM', 'wxALL'),
+            ((2, 8), 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM', 'wxALL'),
+            ((2, 8), 'wxNonexistingFlag|wxALL', 'wxALL|wxNonexistingFlag'),
+            ((2, 8), '', ''),
+            ((3, 0), 'wxALL', 'wxALL'),
+            ((3, 0), 'wxALL|wxALL', 'wxALL'),
+            ((3, 0), '0', '0'),
+            ((3, 0), 'wxALL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM', 'wxALL'),
+            ((3, 0), 'wxALL|wxLEFT|wxTOP|wxBOTTOM', 'wxALL'),
+            ((3, 0), 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM', 'wxALL'),
+            ((3, 0), 'wxNonexistingFlag|wxALL', 'wxALL|wxNonexistingFlag'),
+            ((3, 0), '', ''),
+            ((3, 0), 'wxALL|wxNO_3D', 'wxALL'),
         ]
         handler = common.code_writers['C++'].obj_builders['wxDialog']
-        for unformatted, formatted in details:
+        for for_version, unformatted, formatted in details:
+            common.code_writers['C++'].for_version = for_version
             ret = handler.cn_f(unformatted)
             self.failUnlessEqual(
                 formatted,
                 ret,
-                'Unexpected result got: "%s" expect: "%s"' % (
+                'Unexpected result for wx%s%s got: "%s" expect: "%s"' % (
+                    for_version[0],
+                    for_version[1],
                     ret,
                     formatted,
-                    )
                 )
+            )
 
     def test_ComplexExample(self):
         """\
@@ -1240,7 +1252,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test check if the widget is supported with the requested version
 
-        @see: L{wcodegen.BaseWidgetCodeWriter.is_supported()}
+        @see: L{wcodegen.BaseWidgetWriter.is_supported()}
         @see: L{common.widget_config}
         """
         import wcodegen

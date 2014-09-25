@@ -1,12 +1,14 @@
-# checkbox.py: wxCheckBox objects
-# $Id: checkbox.py,v 1.14 2007/03/27 07:02:03 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxCheckBox objects
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
-import common, misc
+import common
+import misc
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
@@ -100,7 +102,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditCheckBox objects from an xml file
+    factory to build EditCheckBox objects from a XML file
     """
     from xml_parse import XmlParsingError
     try: label = attrs['name']

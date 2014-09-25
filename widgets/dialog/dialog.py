@@ -8,7 +8,7 @@ wxDialog objects
 
 import wx
 import common
-import  config
+import config
 import math
 import misc
 from tree import Tree
@@ -16,56 +16,24 @@ from widget_properties import *
 from edit_windows import TopLevelBase, StylesMixin
 
 class EditDialog(TopLevelBase, StylesMixin):
+
     def __init__(self, name, parent, id, title, property_window,
                  style=wx.DEFAULT_DIALOG_STYLE, show=True, klass='wxDialog'):
 
         # Initialise parent classes
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, title=title)
+        self.base = 'wxDialog'
         StylesMixin.__init__(self)
 
         # initialise instance variables
-        self.base = 'wxDialog'
+
         self.style = style
 
         # initialise properties remaining staff
         prop = self.properties
         self.access_functions['style'] = (self.get_style, self.set_style)
-        style_labels = ('#section#' + _('Style'), 'wxDEFAULT_DIALOG_STYLE',
-                        'wxDIALOG_MODAL', 'wxCAPTION',
-                        'wxRESIZE_BORDER', 'wxSYSTEM_MENU')
-        style_labels += ('wxCLOSE_BOX', 'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX')
-        style_labels += ('wxTHICK_FRAME',
-                         'wxSTAY_ON_TOP', 'wxNO_3D', 'wxDIALOG_NO_PARENT',
-                         'wxNO_FULL_REPAINT_ON_RESIZE',
-                         'wxFULL_REPAINT_ON_RESIZE',
-                         'wxCLIP_CHILDREN')
-        self.gen_style_pos(style_labels)
-        #note that the tooltips are only for wxPython>=2.5
-        self.tooltips = (_("Equivalent to a combination of wxCAPTION, "
-                           "wxCLOSE_BOX and wxSYSTEM_MENU "
-                           "(the last one is not used under Unix)"),
-                         _("NO DESCRIPTION"),
-                         _("Puts a caption on the dialog box."),
-                         _("Display a resizeable frame around the window."),
-                         _("Display a system menu."),
-                         _("Displays a close box on the frame."),
-                         _("Displays a maximize box on the dialog."),
-                         _("Displays a minimize box on the dialog."),
-                         _("Display a thick frame around the window."),
-                         _("The dialog stays on top of all other windows."),
-                         _("Under Windows, specifies that the child controls should "
-                           "not have 3D borders unless specified in the control."),
-                         _("By default, a dialog created with a NULL parent window "
-                           "will be given the application's top level window as parent. "
-                           "Use this style to prevent this from happening and create "
-                           "an orphan dialog. "
-                           "This is not recommended for modal dialogs."),
-                         _("NO DESCRIPTION"),
-                         _("NO DESCRIPTION"),
-                         _("NO DESCRIPTION"))
-        prop['style'] = CheckListProperty(self, 'style', None, style_labels,
-                                          tooltips=self.tooltips)
+        prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
         # icon property
         self.icon = ""
         self.access_functions['icon'] = (self.get_icon, self.set_icon)
@@ -293,7 +261,7 @@ def builder(parent, sizer, pos, number=[0]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditDialog objects from an xml file
+    factory to build EditDialog objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

@@ -20,9 +20,7 @@ class EditHyperlinkCtrl(ManagedBase, StylesMixin):
     Class to handle wxHyperlinkCtrl objects
     """
 
-    events = [
-        'EVT_HYPERLINK',
-        ]
+    events = ['EVT_HYPERLINK',]
 
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
@@ -44,45 +42,23 @@ class EditHyperlinkCtrl(ManagedBase, StylesMixin):
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['url'] = (self.get_url, self.set_url)
-
         self.access_functions['attribute'] = (self.get_attribute,
                                               self.set_attribute)
 
         self.properties['label'] = TextProperty(
-            self,
-            'label',
-            None,
-            multiline=False,
-            label=_('label')
-            )
-        self.properties['label'].set_tooltip(
-            _("Label of the hyperlink")
-            )
-        self.properties['url'] = TextProperty(
-            self,
-            'url',
-            None,
-            multiline=False,
-            label=_('url')
-            )
+            self, 'label', label=_('label'))
+        self.properties['label'].set_tooltip(_("Label of the hyperlink"))
+
+        self.properties['url'] = TextProperty(self, 'url', label=_('url'))
         self.properties['url'].set_tooltip(
-            _("URL associated with the given label")
-            )
-        style_labels = (
-            '#section#' + _('Style'),
-            'wxHL_ALIGN_LEFT', 'wxHL_ALIGN_RIGHT', 'wxHL_ALIGN_CENTRE',
-            'wxHL_CONTEXTMENU', 'wxHL_DEFAULT_STYLE',
-            )
-        self.gen_style_pos(style_labels)
-        self.properties['style'] = CheckListProperty(self, 'style', None,
-                                                     style_labels)
+            _("URL associated with the given label"))
+
+        self.properties['style'] = CheckListProperty(
+            self, 'style', self.widget_writer)
+
         self.properties['attribute'] = CheckBoxProperty(
-            self,
-            'attribute',
-            None,
-            _('Store as attribute'),
-            write_always=True
-            )
+            self, 'attribute', label=_('Store as attribute'),
+            write_always=True)
 
     def create_widget(self):
         self.widget = wx.HyperlinkCtrl(
@@ -156,7 +132,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditHyperlinkCtrl objects from an xml file
+    factory to build EditHyperlinkCtrl objects from a XML file
     """
     from xml_parse import XmlParsingError
     try:

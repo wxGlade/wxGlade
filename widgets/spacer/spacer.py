@@ -1,15 +1,17 @@
-# spacer.py: spacers to use in sizers
-# $Id: spacer.py,v 1.13 2007/08/07 12:18:34 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Spacers to use in sizers
+
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 import common, misc
 from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase
+
 
 class EditSpacer(ManagedBase):
     def __init__(self, name, parent, id, width, height, sizer, pos,
@@ -74,7 +76,7 @@ class EditSpacer(ManagedBase):
         self.sizer.set_item(self.pos, size=self.__size)
 
     def set_flag(self, value):
-        ManagedBase.set_flag(self, value)
+        self.sm_border.set_style(value)
         if not (self.get_int_flag() & wx.EXPAND):
             self.sizer.set_item(self.pos, size=self.__size)
 
@@ -92,10 +94,10 @@ class EditSpacer(ManagedBase):
         dc.DrawLine(w, 0, 0, h)
         text = _('Spacer')
         tw, th = dc.GetTextExtent(text)
-        x = (w - tw)/2
-        y = (h - th)/2
+        x = (w - tw) / 2
+        y = (h - th) / 2
         dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
-        dc.DrawRectangle(x-1, y-1, tw+2, th+2)
+        dc.DrawRectangle(x - 1, y - 1, tw + 2, th + 2)
         dc.DrawText(text, x, y)
         dc.EndDrawing()
 
@@ -147,7 +149,7 @@ def builder(parent, sizer, pos):
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditSpacer objects from an xml file
+    factory to build EditSpacer objects from a XML file
     """
     from xml_parse import XmlParsingError
     if not sizer or not sizeritem:

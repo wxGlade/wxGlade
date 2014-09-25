@@ -52,7 +52,7 @@ sub new {
     $self->{list_box_empty} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
     $self->{list_box_filled} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], );
     $self->{notebook_1_wxListCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-    $self->{list_ctrl_1} = Wx::ListCtrl->new($self->{notebook_1_wxListCtrl}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxSUNKEN_BORDER);
+    $self->{list_ctrl_1} = Wx::ListCtrl->new($self->{notebook_1_wxListCtrl}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN|wxLC_REPORT);
     $self->{notebook_1_wxRadioBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{radio_box_empty1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, [], 0, wxRA_SPECIFY_ROWS);
     $self->{radio_box_filled1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_filled1"), wxDefaultPosition, wxDefaultSize, [_T("choice 1"), _T("choice 2 (pre-selected)"), _T("choice 3")], 0, wxRA_SPECIFY_ROWS);
@@ -86,7 +86,7 @@ sub new {
     $self->{label_3} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("Two labels with a"));
     $self->{label_2} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("spacer between"));
     $self->{notebook_1_wxTextCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-    $self->{text_ctrl} = Wx::TextCtrl->new($self->{notebook_1_wxTextCtrl}, wxID_ANY, _T("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_LINEWRAP|wxTE_MULTILINE|wxTE_WORDWRAP);
+    $self->{text_ctrl} = Wx::TextCtrl->new($self->{notebook_1_wxTextCtrl}, wxID_ANY, _T("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_CHARWRAP|wxTE_MULTILINE|wxTE_WORDWRAP);
     $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
     $self->{button_5} = Wx::Button->new($self, wxID_CLOSE, "");
     $self->{button_1} = Wx::Button->new($self, wxID_OK, "", wxDefaultPosition, wxDefaultSize, wxBU_TOP);

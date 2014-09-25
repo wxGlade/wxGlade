@@ -125,12 +125,12 @@ are treated in a different way, as well as the children of a sizer, which are
 sub-elements of 'sizeritem' objects: see the source code for details.
 
 
-7. Loading an app from an xml file
+7. Loading an app from a XML file
 ----------------------------------
 This is done by 'xml_parse.XmlWidgetBuilder', a subclass of
 xml.sax.handler.ContentHandler.
 Basically, the steps involved are the following:
-- when the start of an 'object' element is reached, an XmlWidgetObject instance
+- when the start of an 'object' element is reached, a XMLWidgetObject instance
   is created and pushed onto a stack of the objects created: such object in
   turn calls the appropriate ``xml builder'' function (got from the
   'common.widgets_from_xml' dict) that creates the widget: this function is

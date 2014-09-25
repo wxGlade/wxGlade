@@ -7,6 +7,7 @@ wxNotebook objects
 
 import wx
 import common
+import wcodegen
 import misc
 from tree import Tree
 from widget_properties import *
@@ -19,34 +20,6 @@ try:
     _has_panel = True
 except ImportError:
     _has_panel = False
-
-
-def _ugly_hack_for_win32_notebook_bug(notebook_widget):
-    """\
-    The name should say all. The problem is hard to explain, so let me
-    just illustrate a way to reproduce the bug:
-     1. create a frame in wxGlade, add a notebook with two pages
-     2. put a button on the first page, and a text ctrl on the second one
-     3. save the app
-     4. exit wxGlade, and comment out the body of this function
-     5. restart wxGlade and load the previous app
-     6. Try to click on the button on the first page of the notebook, and see
-        what happens...
-
-    If you don't see what I mean, please drop me an email with your version of
-    Windows, Python and wxPython, because I really want to understand what's
-    going on...
-
-    So far I've not been able to reproduce the problem on a standalone minimal
-    app, but as time permits I'll try again... if you succeed, please let me
-    know.
-    """
-    #import logging
-    #logging.debug('_ugly_hack_for_win32_notebook_bug')
-    index_ok = notebook_widget.GetSelection()
-    for i in range(notebook_widget.GetPageCount()):
-        notebook_widget.GetPage(i).Hide()
-    notebook_widget.GetPage(index_ok).Show()
 
 
 class NotebookVirtualSizer(Sizer):
@@ -187,6 +160,7 @@ class EditNotebook(ManagedBase, StylesMixin):
     """
 
     _custom_base_classes = True
+
     notebook_number = 1
     """\
     @cvar: Next free number for notebook names. The number is continuously.
@@ -229,35 +203,22 @@ class EditNotebook(ManagedBase, StylesMixin):
         StylesMixin.__init__(self)
 
         # initialise instance variables
+        self.set_style(style)
         self.virtual_sizer = NotebookVirtualSizer(self)
         self._is_removing_pages = False
 
         # initialise properties remaining staff
-        self.style = style
         self.tabs = [['tab1', None]]  # list of pages of this notebook
-        # (actually a list of
-        # 2-list label, window)
-        style_labels = ['#section#' + _('Style'),  'wxNB_LEFT', 'wxNB_RIGHT',
-                        'wxNB_BOTTOM', 'wxNB_FIXEDWIDTH', 'wxNB_MULTILINE',
-                        'wxNB_NOPAGETHEME']
-        self.gen_style_pos(style_labels)
+                                      # (actually a list of
+                                      #  2-list label, window)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['style'] = CheckListProperty(
-            self,
-            'style',
-            None,
-            style_labels
-        )
+            self, 'style', self.widget_writer)
         self.access_functions['tabs'] = (self.get_tabs, self.set_tabs)
         tab_cols = [('Tab label', GridProperty.STRING)]
         self.properties['tabs'] = NotebookPagesProperty(
-            self,
-            'tabs',
-            None,
-            tab_cols,
-            label=_("Tabs"),
-            can_remove_last=False,
-            )
+            self, 'tabs', None, tab_cols, label=_("Tabs"),
+            can_remove_last=False, )
         del tab_cols
         self.nb_sizer = None
         self._create_slots = False
@@ -274,15 +235,10 @@ class EditNotebook(ManagedBase, StylesMixin):
 
     def create_widget(self):
         self.widget = wx.Notebook(
-            self.parent.widget,
-            self.id,
-            style=self.style,
-            )
+            self.parent.widget, self.id, style=self.get_int_style())
 
     def show_widget(self, yes):
         ManagedBase.show_widget(self, yes)
-        if yes and wx.Platform in ('__WXMSW__', '__WXMAC__'):
-            wx.CallAfter(_ugly_hack_for_win32_notebook_bug, self.widget)
         if self._create_slots:
             self._create_slots = False
             for i in range(len(self.tabs)):
@@ -441,97 +397,69 @@ class EditNotebook(ManagedBase, StylesMixin):
 # end of class EditNotebook
 
 
+editor_class = EditNotebook
+editor_icon = 'icons/notebook.xpm'
+editor_name = 'EditNotebook'
+editor_style = ''
+
+dlg_title = _('wxNotebook')
+box_title = _('Orientation')
+choices = 'wx.NB_TOP|wx.NB_BOTTOM|wx.NB_LEFT|wx.NB_RIGHT'
+tmpl_label = 'notebook'
+
+
 def builder(parent, sizer, pos, number=[1]):
     """\
-    factory function for EditNotebook objects.
+    Factory function for editor objects from GUI.
     """
-    class Dialog(wx.Dialog):
-        def __init__(self):
-            wx.Dialog.__init__(
-                self,
-                None,
-                wx.ID_ANY,
-                _('Select tab placement'),
-                )
-            self.styles = [wx.NB_TOP, wx.NB_BOTTOM, wx.NB_LEFT, wx.NB_RIGHT]
-            self.style = wx.NB_TOP
-            prop = RadioProperty(
-                self,
-                'tab_placement',
-                self,
-                [_('Top'), _('Bottom'), _('Left'), _('Right')],
-                columns=2,
-                label=_('tab_placement'),
-                )
-            szr = wx.BoxSizer(wx.VERTICAL)
-            szr.Add(prop.panel, 0, wx.ALL | wx.EXPAND, 10)
-            btn = wx.Button(self, wx.ID_OK, _('OK'))
-            btn.SetDefault()
-            szr.Add(btn, 0, wx.BOTTOM | wx.ALIGN_CENTER, 10)
-            self.SetAutoLayout(True)
-            self.SetSizer(szr)
-            szr.Fit(self)
-            self.CenterOnScreen()
+    dialog = wcodegen.WidgetStyleSelectionDialog(
+        dlg_title, box_title, choices)
 
-        def __getitem__(self, value):
-            def set_style(s):
-                self.style = self.styles[s]
-            return (lambda: self.style, set_style)
-
-    # end of inner class
-
-    dialog = Dialog()
-    dialog.ShowModal()
-    window = EditNotebook(None, parent, wx.ID_ANY, dialog.style,
+    if not dialog.ShowModal() == wx.ID_OK:
+        return
+    widget = editor_class(None, parent, wx.ID_ANY, dialog.get_selection(),
                           sizer, pos, common.property_panel, show=False)
     if _has_panel:
-        pane1 = EditPanel(
-            window.next_pane_name(),
-            window,
-            wx.ID_ANY,
-            window.virtual_sizer,
-            1,
-            common.property_panel,
-            )
+        pane1 = EditPanel(widget.next_pane_name(), widget, wx.ID_ANY,
+                          widget.virtual_sizer, 1, common.property_panel)
 
-    node = Tree.Node(window)
-    window.node = node
-    window.virtual_sizer.node = node
+    node = Tree.Node(widget)
+    widget.node = node
+    widget.virtual_sizer.node = node
 
-    window.set_option(1)
-    window.set_flag("wxEXPAND")
-    window.show_widget(True)
+    widget.set_option(1)
+    widget.set_style("wxEXPAND")
+    widget.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
 
     if _has_panel:
-        window._add_tab(pane1, 1)
+        widget._add_tab(pane1, 1)
 
-    sizer.set_item(window.pos, 1, wx.EXPAND)
+    sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
-    factory to build EditNotebook objects from an xml file
+    Factory to build editor objects from a XML file
     """
+    from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if not sizer or not sizeritem:
+    if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    window = EditNotebook(name, parent, wx.ID_ANY, 0, sizer, pos,
-                          common.property_panel, True)
-    window._create_slots = True
-
-    sizer.set_item(window.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
-    node = Tree.Node(window)
-    window.node = node
+    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer,
+                          pos, common.property_panel)
+    sizer.set_item(widget.pos, option=sizeritem.option,
+                   flag=sizeritem.flag, border=sizeritem.border)
+    node = Tree.Node(widget)
+    widget.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
         common.app_tree.insert(node, sizer.node, pos - 1)
-    return window
+    return widget
 
 
 def initialize():
@@ -539,7 +467,6 @@ def initialize():
     initialization function for the module: returns a wxBitmapButton to be
     added to the main palette.
     """
-    common.widgets['EditNotebook'] = builder
-    common.widgets_from_xml['EditNotebook'] = xml_builder
-
-    return common.make_object_button('EditNotebook', 'icons/notebook.xpm')
+    common.widgets[editor_name] = builder
+    common.widgets_from_xml[editor_name] = xml_builder
+    return common.make_object_button(editor_name, editor_icon)
