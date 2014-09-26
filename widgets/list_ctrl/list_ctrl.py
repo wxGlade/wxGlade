@@ -45,7 +45,7 @@ class EditListCtrl(ManagedBase, StylesMixin):
     update_widget_style = False
     
     def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True, style=wx.LC_REPORT | wx.SUNKEN_BORDER):
+                 show=True, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
 
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos,
@@ -62,7 +62,7 @@ class EditListCtrl(ManagedBase, StylesMixin):
 
     def create_widget(self):
         self.widget = wx.ListCtrl(self.parent.widget, self.id,
-                                  style=wx.LC_REPORT | wx.SUNKEN_BORDER)
+                                  style=wx.LC_REPORT | wx.BORDER_SUNKEN)
         # add a couple of columns just for a better appearance (for now)
         self.widget.InsertColumn(0, _('List Control:'))
         self.widget.InsertColumn(1, self.name)

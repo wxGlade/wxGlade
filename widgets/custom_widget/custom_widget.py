@@ -86,7 +86,7 @@ class CustomWidget(ManagedBase):
     def create_widget(self):
         self.widget = wx.Window(
             self.parent.widget, self.id,
-            style=wx.SUNKEN_BORDER | wx.FULL_REPAINT_ON_RESIZE)
+            style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
         wx.EVT_PAINT(self.widget, self.on_paint)
 
     def finish_widget_creation(self):

@@ -43,7 +43,7 @@ class EditTreeCtrl(ManagedBase, StylesMixin):
     update_widget_style = False
     
     def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True, style=wx.TR_HAS_BUTTONS|wx.SUNKEN_BORDER):
+                 show=True, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
 
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, id, sizer, pos,
@@ -61,7 +61,7 @@ class EditTreeCtrl(ManagedBase, StylesMixin):
 
     def create_widget(self):
         self.widget = wx.TreeCtrl(self.parent.widget, self.id,
-                                 style=wx.TR_HAS_BUTTONS|wx.SUNKEN_BORDER)
+                                 style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN)
         # add a couple of items just for a better appearance
         root = self.widget.AddRoot(_(' Tree Control:'))
         self._item_with_name = self.widget.AppendItem(root, ' ' + self.name)

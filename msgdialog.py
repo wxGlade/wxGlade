@@ -21,7 +21,7 @@ class MessageDialog(wx.Dialog):
         wx.Dialog.__init__(self, *args, **kwds)
         self.msg_title = wx.StaticText(self, wx.ID_ANY, _("wxGlade message"))
         self.msg_image = wx.StaticBitmap(self, wx.ID_ANY, (wx.ArtProvider_GetBitmap(wx.ART_TIP, wx.ART_MESSAGE_BOX, (48, 48))))
-        self.msg_list = wx.ListCtrl(self, wx.ID_ANY, style=wx.LC_REPORT | wx.LC_NO_HEADER | wx.LC_SINGLE_SEL | wx.SUNKEN_BORDER)
+        self.msg_list = wx.ListCtrl(self, wx.ID_ANY, style=wx.LC_REPORT | wx.LC_NO_HEADER | wx.LC_SINGLE_SEL | wx.BORDER_SUNKEN)
         self.OK = wx.Button(self, wx.ID_OK, "")
 
         self.__set_properties()

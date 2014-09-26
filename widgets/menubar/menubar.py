@@ -26,8 +26,8 @@ class MenuItemDialog(wx.Dialog):
         self._staticbox = wx.StaticBox(self, -1, _("Menu item:"))
 
         self.owner = owner
-        self.menu_items = wx.ListCtrl(self, LIST_ID, style=wx.LC_REPORT | \
-                                     wx.LC_SINGLE_SEL|wx.SUNKEN_BORDER)
+        self.menu_items = wx.ListCtrl(self, LIST_ID, style=wx.LC_REPORT |
+                                      wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN)
         # ALB 2004-09-26: workaround to make the scroll wheel work...
         wx.EVT_MOUSEWHEEL(self.menu_items, lambda e: e.Skip())
         

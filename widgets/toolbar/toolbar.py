@@ -65,7 +65,7 @@ class ToolsDialog(wx.Dialog):
         self.owner = owner
         
         self.tool_items = wx.ListCtrl(self, LIST_ID, style=wx.LC_REPORT | \
-                                     wx.LC_SINGLE_SEL|wx.SUNKEN_BORDER,
+                                     wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN,
                                      size=(300, -1))
         self.selected_index = -1 # index of the selected element in the 
                                  # wxListCtrl 
