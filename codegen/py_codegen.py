@@ -66,14 +66,6 @@ class SourceFileContent(BaseSourceFileContent):
         r'\s*$'                                            # tailing spaces
         )
 
-    def __init__(self, name, code_writer):
-
-        # initialise new variables first
-        self.use_new_namespace = code_writer.use_new_namespace
-
-        # call inherited constructor
-        BaseSourceFileContent.__init__(self, name, code_writer)
-
     def build_untouched_content(self):
         BaseSourceFileContent.build_untouched_content(self)
         inside_block = False
@@ -175,10 +167,7 @@ class SourceFileContent(BaseSourceFileContent):
         self.content = "".join(out_lines)
 
     def is_import_line(self, line):
-        if self.use_new_namespace:
-            return line.startswith('import wx')
-        else:
-            return line.startswith('from wxPython.wx import *')
+        return line.startswith('import wx')
 
     def format_classname(self, class_name):
         """\
@@ -217,9 +206,6 @@ class WidgetHandler(BaseWidgetHandler):
 class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     """\
     Code writer class for writing Python code out of the designed GUI elements
-
-    @ivar use_new_namespace: If True use the new name space (import wx)
-    @type use_new_namespace: Boolean
 
     @see: L{BaseLangCodeWriter}
     """
@@ -335,10 +321,6 @@ if __name__ == "__main__":
     def __init__(self):
         BaseLangCodeWriter.__init__(self)
 
-    def _init_vars(self):
-        self.use_new_namespace = True
-        BaseLangCodeWriter._init_vars(self)
-
     def cn_class(self, klass):
         """\
         Return the short class name 
@@ -358,15 +340,8 @@ if __name__ == "__main__":
         BaseLangCodeWriter.initialize(self, app_attrs)
         out_path = app_attrs.get('path', config.default_path)
 
-        try:
-            self.use_new_namespace = int(app_attrs['use_new_namespace'])
-        except (KeyError, ValueError):
-            self.use_new_namespace = True
-
-        if self.use_new_namespace:
-            self.header_lines.append('import wx\n')
-        else:
-            self.header_lines.append('from wxPython.wx import *\n')
+        # XXX als Konstante??
+        self.header_lines.append('import wx\n')
 
         self._initialize_stage2(out_path)
 
@@ -507,28 +482,18 @@ if __name__ == "__main__":
         if event_handlers:
             write('\n')
 
-        if not self.use_new_namespace:
-            for win_id, event, handler in event_handlers:
-                if win_id.startswith('#'):
-                    win_id = '%s.GetId()' % win_id[1:]
-                write('%(tab)s%(event)s(self, %(win_id)s, self.%(handler)s)\n' % {
-                    'tab':     tab,
-                    'event':   event,
-                    'win_id':  win_id,
-                    'handler': handler,
-                    })
-        else:
-            for win_id, event, handler in event_handlers:
-                if win_id.startswith('#'):
-                    win_id = win_id[1:]
-                else:
-                    win_id = 'id=%s' % win_id
-                write('%(tab)sself.Bind(%(event)s, self.%(handler)s, %(win_id)s)\n' % {
-                    'tab': tab,
-                    'event': event,
-                    'handler': handler,
-                    'win_id': win_id,
-                    })
+        for win_id, event, handler in event_handlers:
+            if win_id.startswith('#'):
+                win_id = win_id[1:]
+            else:
+                win_id = 'id=%s' % win_id
+            write('%(tab)sself.Bind(%(event)s, self.%(handler)s, '
+                  '%(win_id)s)\n' % {
+                'tab': tab,
+                'event': event,
+                'handler': handler,
+                'win_id': win_id,
+                })
         
         return code_lines
 

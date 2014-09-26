@@ -50,8 +50,10 @@ class Tree(object):
                     node.widget.delete()
                 node.widget = None
             remove_rec(self)
-            try: self.parent.children.remove(self)
-            except: pass
+            try:
+                self.parent.children.remove(self)
+            except:
+                pass
                     
         def __repr__(self):
             try: return self.widget.name
@@ -122,7 +124,8 @@ class Tree(object):
                     else:
                         c.write(outfile, tabs+1)
             elif self.children is not None:
-                for c in self.children: c.write(outfile, tabs+1, class_names)
+                for c in self.children:
+                    c.write(outfile, tabs+1, class_names)
             fwrite('    ' * tabs + '</object>\n')
 
     # end of class Node
@@ -246,21 +249,17 @@ class Tree(object):
             indent_symbol = "space"
         source_ext = '.' + self.app.source_ext
         header_ext = '.' + self.app.header_ext
-        # ALB 2004-01-18
-        #use_new_namespace = str(int(self.app.get_use_new_namespace()))
-        use_new_namespace = str(int(not self.app.get_use_old_namespace()))
-        # ALB 2004-12-05
         for_version = str(self.app.for_version)
-        outfile.write('<application path=%s name=%s class=%s option=%s ' \
-                      'language=%s top_window=%s encoding=%s ' \
+        outfile.write('<application path=%s name=%s class=%s option=%s '
+                      'language=%s top_window=%s encoding=%s '
                       'use_gettext=%s overwrite=%s '
-                      'use_new_namespace=%s for_version=%s is_template=%s '\
-                      'indent_amount=%s indent_symbol=%s '\
-                      'source_extension=%s header_extension=%s>\n' \
+                      'use_new_namespace="1" for_version=%s is_template=%s '
+                      'indent_amount=%s indent_symbol=%s '
+                      'source_extension=%s header_extension=%s>\n'
                       % tuple([quoteattr(common._encode_to_xml(i)) for i in 
                                (outpath, name, klass, option, language,
                                 top_window, encoding, use_gettext,
-                                overwrite, use_new_namespace, for_version,
+                                overwrite, for_version,
                                 is_template, indent_amount, indent_symbol,
                                 source_ext, header_ext)]))
         if self.app.is_template and getattr(self.app, 'template_data', None):
@@ -268,7 +267,7 @@ class Tree(object):
         class_names = set()
         if self.root.children is not None:
             for c in self.root.children:
-                c.write(outfile, tabs+1, class_names)
+                c.write(outfile, tabs + 1, class_names)
         outfile.write('</application>\n')
         return class_names
 
@@ -289,7 +288,7 @@ class Tree(object):
         if index is None: index = node.parent.children.index(node)
         if index >= new_pos:
             node.parent.children.insert(new_pos, node)
-            del node.parent.children[index+1]
+            del node.parent.children[index + 1]
         else:
             del node.parent.children[index]
             node.parent.children.insert(new_pos+1, node)

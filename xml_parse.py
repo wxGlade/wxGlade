@@ -193,13 +193,6 @@ class XmlWidgetBuilder(XmlParser):
                 app.overwrite = False
                 app.overwrite_prop.set_value(False)
 
-            try:
-                use_new_namespace = int(attrs['use_new_namespace'])
-            except (KeyError, ValueError):
-                use_new_namespace = False
-            app.set_use_old_namespace(not use_new_namespace)
-            app.use_old_namespace_prop.set_value(not use_new_namespace)
-
             indent_symbol = attrs.get("indent_symbol")
             if indent_symbol == 'space':
                 app.indent_mode = 1

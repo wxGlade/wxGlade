@@ -266,19 +266,6 @@ class Application(object):
             )
         self.for_version_prop.set_str_value(self.for_version)
 
-        self.access_functions['use_new_namespace'] = (
-            self.get_use_old_namespace, self.set_use_old_namespace)
-        self.use_old_namespace_prop = CheckBoxProperty(
-            self, 'use_new_namespace', panel_settings,
-            _('Use old import\n"from wxPython.wx import *"'))
-        self.use_old_namespace_prop.set_tooltip(
-            _('It is generally recommended to use the new namespace. '
-              'The old one ("from wxPython.wx import *") has some '
-              'significant drawbacks like potential namespace conflicts.\n'
-              'Starting with wxPython 3.0 old style import are not '
-              'supported anymore.'
-              ))
-
         self.overwrite = config.default_overwrite
         self.access_functions['overwrite'] = \
             (self.get_overwrite, self.set_overwrite)
@@ -302,7 +289,7 @@ class Application(object):
             )
         self.outpath_prop = DialogProperty(self, "output_path", panel,
                                            dialog, label=_('Output path'))
-        # update wildcards and default extention in the dialog
+        # update wildcards and default extension in the dialog
         self._update_dialog(self.outpath_prop.dialog, 'python')
         self.outpath_prop.set_tooltip(
             _("Output file or directory")
@@ -362,15 +349,6 @@ class Application(object):
             )
         sizer_general.Add(self.indent_amount_prop.panel, 0, wx.EXPAND)
 
-        # python specific settings
-        staticbox_python = wx.StaticBox(
-            panel_settings,
-            wx.ID_ANY,
-            _("Python Settings"),
-            )
-        sizer_python = wx.StaticBoxSizer(staticbox_python, wx.VERTICAL)
-        sizer_python.Add(self.use_old_namespace_prop.panel, 0, wx.EXPAND)
-
         # C++ specific settings
         staticbox_cpp = wx.StaticBox(
             panel_settings,
@@ -384,7 +362,6 @@ class Application(object):
         # add all to one sizer
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(sizer_general, 0, wx.EXPAND | wx.ALL, 3)
-        sizer.Add(sizer_python, 0, wx.EXPAND | wx.ALL, 3)
         sizer.Add(sizer_cpp, 0, wx.EXPAND | wx.ALL, 3)
         self._add_page(_('Settings'), panel_settings, sizer)
 
@@ -411,12 +388,6 @@ class Application(object):
 
     def set_for_version(self, value):
         self.for_version = self.for_version_prop.get_str_value()
-        # disable selection of old or new style wx imports for wxPython 3.0
-        if self.for_version == "3.0":
-            self.use_old_namespace_prop.set_value(False)
-            self.use_old_namespace_prop.toggle_active(False)
-        else:
-            self.use_old_namespace_prop.toggle_active(True)
 
     def set_indent_mode(self, value):
         try:
@@ -605,8 +576,6 @@ class Application(object):
         self.set_language(self.get_language())
         self.top_window = ''
         self.top_win_prop.Clear()
-        self.set_use_old_namespace(False)
-        self.use_old_namespace_prop.set_value(False)
 
     def show_properties(self, *args):
         sizer_tmp = self.property_window.GetSizer()
@@ -659,12 +628,10 @@ class Application(object):
             # generate the code from the xml buffer
             cw = self.get_language()
             if preview and cw == 'python':  # of course cw == 'python', but...
-                old = common.code_writers[cw].use_new_namespace
-                common.code_writers[cw].use_new_namespace = True  # False
                 overwrite = self.overwrite
                 self.overwrite = True
             class_names = common.app_tree.write(out)  # write the xml onto a
-                                                     # temporary buffer
+                                                      # temporary buffer
             if not os.path.isabs(self.output_path) and self.filename:
                 out_path = os.path.join(os.path.dirname(self.filename),
                                         self.output_path)
@@ -678,7 +645,6 @@ class Application(object):
                 class_names=class_names,
                 )
             if preview and cw == 'python':
-                common.code_writers[cw].use_new_namespace = old
                 self.overwrite = overwrite
         except (errors.WxgOutputDirectoryNotExist,
                 errors.WxgOutputDirectoryNotWritable,
@@ -797,7 +763,7 @@ class Application(object):
                 frame = FrameClass(None, -1, '')
                 # make sure we don't get a modal dialog...
                 s = frame.GetWindowStyleFlag()
-                frame.SetWindowStyleFlag(s)
+                frame.SetWindowStyleFlag(s & ~wx.DIALOG_MODAL)
 
             def on_close(event):
                 frame.Destroy()
@@ -832,19 +798,6 @@ class Application(object):
         self.use_gettext = real_use_gettext
         self.overwrite = overwrite
         return frame
-
-    def get_use_old_namespace(self):
-        try:
-            return not common.code_writers['python'].use_new_namespace
-        except:
-            return False
-
-    def set_use_old_namespace(self, val):
-        try:
-            common.code_writers['python'].use_new_namespace = \
-                not bool(int(val))
-        except:
-            pass
 
     def check_codegen(self, widget=None, language=None):
         """\

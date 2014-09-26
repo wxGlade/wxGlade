@@ -1555,9 +1555,6 @@ class StylesMixin(object):
         Return the attribute specified by the name. Only wx attributes are
         supported.
 
-        Use this function only if PythonCodeWriter.use_new_namespace is
-        True.
-
         The values will be cached in L{_attr_cache}.
 
         Example::
@@ -1574,7 +1571,6 @@ class StylesMixin(object):
 
         @see: L{_attr_cache}
         """
-        assert self.codegen.use_new_namespace
         assert name.startswith('wx')
 
         if name in self._attr_cache:

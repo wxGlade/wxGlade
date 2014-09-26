@@ -14,20 +14,15 @@ class PythonCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
-    def cn(self, c):
-        if self.codegen.use_new_namespace:
-            if c[:2] == 'wx':
-                c = c[2:]
-            return 'wx.calendar.' + c
-        else:
-            return c
+    import_modules = ['import wx.calendar\n']
 
-    def _reset_vars(self):
-        wcodegen.PythonWidgetCodeWriter._reset_vars(self)
-        if self.codegen.use_new_namespace:
-            self.import_modules = ['import wx.calendar\n']
-        else:
-            self.import_modules = ['from wxPython.calendar import *\n']
+    def cn(self, c):
+        # TODO remove ugly hack for wxColour
+        if c == 'wxColour':
+            return wcodegen.PythonWidgetCodeWriter.cn(self, c)
+        if c[:2] == 'wx':
+            c = c[2:]
+        return 'wx.calendar.' + c
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
