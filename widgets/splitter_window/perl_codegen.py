@@ -16,9 +16,8 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
     ]
 
     def get_code(self, window):
-        plgen = common.code_writers['perl']
         prop = window.properties
-        id_name, id = plgen.generate_code_id(window)
+        id_name, id = self.codegen.generate_code_id(window)
 
         if not window.parent.is_toplevel:
             parent = '$self->{%s}' % window.parent.name
@@ -37,7 +36,7 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
                 klass = klass.replace('wx', 'Wx::', 1)
 
             l.append('$self->{%s} = %s->new(%s, %s);\n' %
-                (window.name, plgen.cn(klass), parent, id))
+                (window.name, self.cn(klass), parent, id))
             return l, [], []
 
         style = prop.get("style")
@@ -50,9 +49,9 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
 
         init.append('$self->{%s} = %s->new(%s, %s, wxDefaultPosition, '
                     'wxDefaultSize, %s);\n'
-                    % (window.name, plgen.cn(window.klass), parent, id, style))
+                    % (window.name, self.cn(window.klass), parent, id, style))
 
-        props_buf = plgen.generate_common_properties(window)
+        props_buf = self.codegen.generate_common_properties(window)
 
         layout_buf = []
         win_1 = prop.get('window_1')

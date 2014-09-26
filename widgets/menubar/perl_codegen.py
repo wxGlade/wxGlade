@@ -16,7 +16,6 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
         return []
         
     def get_init_code(self, obj):
-        plgen = common.code_writers['perl']
         out = []
         append = out.append
         menus = obj.properties['menubar']
@@ -26,10 +25,10 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
 
         def append_items(menu, items):
             for item in items:
-                if item.name == '---': # item is a separator
+                if item.name == '---':  # item is a separator
                     append('%s->AppendSeparator();\n' % menu)
                     continue
-                name, val = plgen.generate_code_id(None, item.id)
+                name, val = self.codegen.generate_code_id(None, item.id)
                 if not name and ( not val or val == '-1'):
                     id = 'Wx::NewId()'
                 else:
@@ -49,8 +48,8 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                     append('%s = Wx::Menu->new();\n' % name)
                     append_items(name, item.children)
                     append('%s->Append(%s, %s, %s, %s);\n' %
-                           (menu, id, plgen.quote_str(item.label),
-                            name, plgen.quote_str(item.help_str)))
+                           (menu, id, self.codegen.quote_str(item.label),
+                            name, self.codegen.quote_str(item.help_str)))
                 else:
                     item_type = 0
                     if item.checkable == '1':
@@ -58,35 +57,35 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                     elif item.radio == '1':
                         item_type = 2
                         
-                    if item.name: itemname = '$self->{%s} = ' % plgen.quote_key(item.name)
+                    if item.name: itemname = '$self->{%s} = ' % self.codegen.quote_key(item.name)
                     else: itemname = ''
                     
                     if item_type:
                         append('%s%s->Append(%s, %s, %s, %s);\n' %
-                               (itemname, menu, id, plgen.quote_str(item.label),
-                                plgen.quote_str(item.help_str), item_type))
+                               (itemname, menu, id, self.codegen.quote_str(item.label),
+                                self.codegen.quote_str(item.help_str), item_type))
                     else:
 
                         append('%s%s->Append(%s, %s, %s);\n' %
-                               (itemname, menu, id, plgen.quote_str(item.label),
-                                plgen.quote_str(item.help_str)))
+                               (itemname, menu, id, self.codegen.quote_str(item.label),
+                                self.codegen.quote_str(item.help_str)))
         #self._logger.debug('menus = %s', menus)
 
         if obj.is_toplevel:
             obj_name = '$self'
         else:
-            obj_name = '$self->{%s}' % plgen.quote_key(obj.name)
+            obj_name = '$self->{%s}' % self.codegen.quote_key(obj.name)
 
         append('my $wxglade_tmp_menu;\n') # NOTE below name =
         for m in menus:
             menu = m.root
-            if menu.name: name = '$self->{%s}' % plgen.quote_key(menu.name)
+            if menu.name: name = '$self->{%s}' % self.codegen.quote_key(menu.name)
             else: name = '$wxglade_tmp_menu'
             append('%s = Wx::Menu->new();\n' % name)
             if menu.children:
                 append_items(name, menu.children)
             append('%s->Append(%s, %s);\n' %
-                   (obj_name, name, plgen.quote_str(menu.label)))
+                   (obj_name, name, self.codegen.quote_str(menu.label)))
 
         return ids + out
 

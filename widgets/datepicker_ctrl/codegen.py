@@ -43,9 +43,11 @@ def xrc_code_generator(obj):
                 if val.count('&&') > 0:
                     while True:
                         index = val.find('&&')
-                        if index < 0: break
+                        if index < 0:
+                            break
                         val = val2[:index] + '&&' + val2[index+2:]
-                else: val = val2
+                else:
+                    val = val2
             xrcgen.DefaultXrcObject.write_property(self, name, val,
                                                    outfile, tabs)
     # end of class DatePickerCtrlXrcObject

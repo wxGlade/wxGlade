@@ -8,6 +8,7 @@ Code generator functions for CustomWidget objects
 import common
 import wcodegen
 
+
 class ArgumentsCodeHandler:
     def __init__(self):
         self.arguments = []
@@ -33,7 +34,6 @@ class ArgumentsCodeHandler:
 
 
 def _fix_arguments(arguments, parent, id, size):
-    # Dinogen, 29 oct 2003
     # adding $width e $height:
     vSize = size.split(',')
     for i in range(len(arguments)):
@@ -50,12 +50,12 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
             # if this CustomWidget refers to another class in the same wxg
             # file, use that for the preview
             return self.get_code_preview(widget)
-        pygen = common.code_writers['python']
         prop = widget.properties
-        id_name, id = pygen.generate_code_id(widget)
+        id_name, id = self.codegen.generate_code_id(widget)
         if not widget.parent.is_toplevel:
             parent = 'self.%s' % widget.parent.name
-        else: parent = 'self'
+        else:
+            parent = 'self'
         init = []
         if id_name: init.append(id_name)
         arguments = _fix_arguments(
@@ -67,14 +67,14 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
             ctor = cust_ctor
         init.append('self.%s = %s(%s)\n' % (widget.name, ctor,
                                             ", ".join(arguments)))
-        props_buf = pygen.generate_common_properties(widget)
+        props_buf = self.codegen.generate_common_properties(widget)
         return init, props_buf, []
 
     def get_code_preview(self, widget):
-        pygen = common.code_writers['python']
         if not widget.parent.is_toplevel:
             parent = 'self.%s' % widget.parent.name
-        else: parent = 'self'
+        else:
+            parent = 'self'
         init = []
         append = init.append
         append('self.%s = wx.Window(%s, -1)\n' % (widget.name, parent))
@@ -110,11 +110,12 @@ def self_%s_on_paint(event):
 
 class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
     def get_code(self, widget):
-        cppgen = common.code_writers['C++']
         prop = widget.properties
-        id_name, id = cppgen.generate_code_id(widget)
-        if id_name: ids = [ id_name ]
-        else: ids = []
+        id_name, id = self.codegen.generate_code_id(widget)
+        if id_name:
+            ids = [id_name]
+        else:
+            ids = []
         if not widget.parent.is_toplevel: parent = '%s' % widget.parent.name
         else: parent = 'this'
         arguments = _fix_arguments(
@@ -126,7 +127,7 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             ctor = cust_ctor
         init = ['%s = %s(%s);\n' % (widget.name, ctor,
                                     ", ".join(arguments)) ]
-        props_buf = cppgen.generate_common_properties(widget)
+        props_buf = self.codegen.generate_common_properties(widget)
         return init, ids, props_buf, []
 
 # end of class CppCustomWidgetGenerator

@@ -12,9 +12,8 @@ import wcodegen
 
 class PerlBitmapButtonGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_code(self, obj):
-        plgen = common.code_writers['perl']
         prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj) 
+        id_name, id = self.codegen.generate_code_id(obj)
         bmp_file = prop.get('bitmap', '')
 
         if not obj.parent.is_toplevel:
@@ -34,7 +33,7 @@ class PerlBitmapButtonGenerator(wcodegen.PerlWidgetCodeWriter):
             bmp = '(%s)' % bmp_file[5:].strip()
         else:
             bmp = 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % \
-                  plgen.quote_path(bmp_file)
+                  self.codegen.quote_path(bmp_file)
         init = []
         if id_name:
             init.append(id_name)
@@ -48,7 +47,7 @@ class PerlBitmapButtonGenerator(wcodegen.PerlWidgetCodeWriter):
         init.append('$self->{%s} = %s->new(%s, %s, %s);\n' % 
                     ( obj.name, klass, parent, id, bmp) )
 
-        props_buf = plgen.generate_common_properties(obj)
+        props_buf = self.codegen.generate_common_properties(obj)
 
         disabled_bmp = prop.get('disabled_bitmap')
         if disabled_bmp:
@@ -69,7 +68,7 @@ class PerlBitmapButtonGenerator(wcodegen.PerlWidgetCodeWriter):
                 props_buf.append(
                     '$self->{%s}->SetBitmapDisabled('
                     'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY));\n' % \
-                    (obj.name, plgen.quote_path(disabled_bmp)))
+                    (obj.name, self.codegen.quote_path(disabled_bmp)))
                 
         if not prop.has_key('size'):
             props_buf.append(

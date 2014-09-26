@@ -2,20 +2,20 @@
 Perl generator functions for wxGrid objects
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
+import wcodegen
 from codegen import ColsCodeHandler, _check_label
 
 
-class PerlCodeGenerator:
+class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
     import_modules = ['use Wx::Grid;\n']
 
     def get_code(self, obj):
-        plgen = common.code_writers['perl']
-        prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj)
+        id_name, id = self.codegen.generate_code_id(obj)
         if not obj.parent.is_toplevel:
             parent = '$self->{%s}' % obj.parent.name
         else:
@@ -36,15 +36,18 @@ class PerlCodeGenerator:
         return init, props_buf, []
 
     def get_properties_code(self, obj):
-        plgen = common.code_writers['perl']
         out = []
         name = '$self'
-        if not obj.is_toplevel: name += '->{%s}' % obj.name
+        if not obj.is_toplevel:
+            name += '->{%s}' % obj.name
         prop = obj.properties
 
-        try: create_grid = int(prop['create_grid'])
-        except (KeyError, ValueError): create_grid = False
-        if not create_grid: return []
+        try:
+            create_grid = int(prop['create_grid'])
+        except (KeyError, ValueError):
+            create_grid = False
+        if not create_grid:
+            return []
 
         columns = prop.get('columns', [['A', '-1']])
         out.append('%s->CreateGrid(%s, %s);\n' %
@@ -72,10 +75,10 @@ class PerlCodeGenerator:
             out.append('%s->EnableDragGridSize(0);\n' % name)
         if prop.get('lines_color', False):
             out.append('%s->SetGridLineColour(Wx::Colour->new(%s));\n' %
-                       (name, plgen._string_to_colour(prop['lines_color'])))
+                       (name, self.codegen._string_to_colour(prop['lines_color'])))
         if prop.get('label_bg_color', False):
             out.append('%s->SetLabelBackgroundColour(Wx::Colour->new(%s));\n' %
-                       (name, plgen._string_to_colour(prop['label_bg_color'])))
+                       (name, self.codegen._string_to_colour(prop['label_bg_color'])))
         sel_mode = prop.get('selection_mode')
         if sel_mode and sel_mode != 'wxGridSelectCells':
             out.append('%s->SetSelectionMode(%s);\n' %
@@ -85,7 +88,7 @@ class PerlCodeGenerator:
         for label, size in columns:
             if _check_label(label, i):
                 out.append('%s->SetColLabelValue(%s, %s);\n' % \
-                           (name, i, plgen.quote_str(label)))
+                           (name, i, self.codegen.quote_str(label)))
             try:
                 if int(size) > 0:
                     out.append('%s->SetColSize(%s, %s);\n' % \
@@ -93,7 +96,7 @@ class PerlCodeGenerator:
             except ValueError: pass
             i += 1
 
-        out.extend(plgen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_common_properties(obj))
         return out
 
 # end of class PerlCodeGenerator
@@ -102,5 +105,5 @@ class PerlCodeGenerator:
 def initialize():
     klass = 'wxGrid'
     common.class_names['EditGrid'] = klass
-    common.register('perl', klass, PerlCodeGenerator(),
+    common.register('perl', klass, PerlCodeGenerator(klass),
                     'columns', ColsCodeHandler)

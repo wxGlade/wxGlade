@@ -54,8 +54,7 @@ class CppSpinCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         return
 
     def get_events(self, obj):
-        cppgen = common.code_writers['C++']
-        return cppgen.get_events_with_type(obj, 'wxSpinEvent')
+        return self.codegen.get_events_with_type(obj, 'wxSpinEvent')
 
 # end of class CppSpinCtrlGenerator
 
