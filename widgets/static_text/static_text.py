@@ -7,6 +7,7 @@ wxStaticText objects
 """
 
 import wx
+import wx.lib.stattext
 import common
 import config
 import misc
@@ -14,11 +15,6 @@ from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 from widget_properties import *
 
-try:
-    import wx.lib.stattext
-    StaticText = wx.lib.stattext.GenStaticText
-except ImportError:
-    StaticText = wx.StaticText
 
 
 class EditStaticText(ManagedBase, StylesMixin):
@@ -58,8 +54,8 @@ class EditStaticText(ManagedBase, StylesMixin):
             write_always=True)
 
     def create_widget(self):
-        self.widget = StaticText(self.parent.widget, self.id,
-                                 self.label.replace('\\n', '\n'))
+        self.widget = wx.lib.stattext.GenStaticText(
+            self.parent.widget, self.id, self.label.replace('\\n', '\n'))
 
     def create_properties(self):
         ManagedBase.create_properties(self)
