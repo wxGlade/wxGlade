@@ -54,25 +54,16 @@ def _check_label(label, col):
 
 class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
-    def __get_import_modules(self):
-        if self.codegen.use_new_namespace:
-            return ['import wx.grid\n']
-        else:
-            return ['from wxPython.grid import *\n']
-        
-    import_modules = property(__get_import_modules)
+    import_modules = ['import wx.grid\n']
 
     def cn(self, c):
         #self._logger.debug('PythonStaticTextGenerator.cn with arg:', c)
         # TODO remove ugly hack for wxColour
         if c == 'wxColour':
             return wcodegen.PythonWidgetCodeWriter.cn(self, c)
-        if self.codegen.use_new_namespace:
-            if c[:2] == 'wx':
-                c = c[2:]
-            return 'wx.grid.' + c
-        else:
-            return c
+        if c[:2] == 'wx':
+            c = c[2:]
+        return 'wx.grid.' + c
 
     def get_code(self, obj):
         id_name, id = self.codegen.generate_code_id(obj)
