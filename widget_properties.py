@@ -13,6 +13,8 @@ import logging
 # property, otherwise on the properties tabs horizontal scrollbars are shown
 from xml.sax.saxutils import escape
 
+import wx
+import wx.lib.stattext
 import wx.grid
 import wx.lib.agw.supertooltip as STT
 
@@ -22,13 +24,6 @@ from misc import _reverse_dict
 from ordereddict import OrderedDict
 
 label_initial_width = 5
-
-try:
-    import wx.lib.stattext
-    wxGenStaticText = wx.lib.stattext.GenStaticText
-except ImportError:
-    wxGenStaticText = wx.StaticText
-
 _encode = common._encode_to_xml
 
 
@@ -360,8 +355,8 @@ class TextProperty(Property, _activator):
         lbl = getattr(self, 'label', None)
         if lbl is None:
             lbl = self._mangle(self.dispName)
-        label = wxGenStaticText(parent, -1, lbl,
-                                size=(label_initial_width, -1))
+        label = wx.lib.stattext.GenStaticText(
+            parent, wx.ID_ANY, lbl, size=(label_initial_width, -1))
         self.text = wx.TextCtrl(
             parent,
             self.id,
@@ -462,7 +457,8 @@ class CheckBoxProperty(Property, _activator):
         self.id = wx.NewId()
         self.cb = wx.CheckBox(parent, self.id, '')
         self.cb.SetValue(self.val)
-        label = wxGenStaticText(parent, -1, self.label)
+        label = wx.lib.stattext.GenStaticText(
+            parent, wx.ID_ANY, self.label)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(label, 5, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
         sizer.Add(self.cb, 0, wx.ALIGN_CENTER | wx.ALL, 3)
@@ -766,10 +762,10 @@ class SpinProperty(Property, _activator):
         lbl = getattr(self, 'label', None)
         if lbl is None:
             lbl = self._mangle(self.dispName)
-        label = wxGenStaticText(parent, -1, lbl,
-                                size=(label_initial_width, -1))
+        label = wx.lib.stattext.GenStaticText(
+            parent, wx.ID_ANY, lbl, size=(label_initial_width, -1))
         self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
-                               max=self.val_range[1])
+                                max=self.val_range[1])
         val = int(self.owner[self.name][0]())
         if not val:
             self.spin.SetValue(1)  # needed for GTK to display a '0'
@@ -859,11 +855,12 @@ class DialogProperty(Property, _activator):
         """
         self.id = wx.NewId()
         val = misc.wxstr(self.owner[self.name][0]())
-        label = wxGenStaticText(parent, -1, self._mangle(self.dispName),
-                                size=(label_initial_width, -1))
+        label = wx.lib.stattext.GenStaticText(
+            parent, wx.ID_ANY, self._mangle(self.dispName),
+            size=(label_initial_width, -1))
         self.text = wx.TextCtrl(parent, self.id, val, size=(1, -1))
         self.btn = wx.Button(parent, self.id + 1, " ... ",
-                            size=(label_initial_width, -1))
+                             size=(label_initial_width, -1))
         enabler = None
         if self.can_disable:
             enabler = wx.CheckBox(parent, self.id + 1, '', size=(1, -1))
