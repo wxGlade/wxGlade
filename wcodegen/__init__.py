@@ -12,6 +12,7 @@ import logging
 import types
 from dialogs import *
 
+
 class BaseCodeWriter(object):
     """\
     Base for all code writer classes.

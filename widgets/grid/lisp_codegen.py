@@ -2,26 +2,26 @@
 Lisp generator functions for wxGrid objects
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
+import wcodegen
 from codegen import ColsCodeHandler, _check_label
 
 
-class LispCodeGenerator:
-#    import_modules = ['use Wx::Grid;\n']
+class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_code(self, obj):
-        plgen = common.code_writers['lisp']
-        prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj)
+        id_name, id = self.codegen.generate_code_id(obj)
         if not obj.parent.is_toplevel:
             parent = '(slot-%s obj)' % obj.parent.name
         else:
             parent = '(slot-top-window obj)'
         init = []
-        if id_name: init.append(id_name)
+        if id_name:
+            init.append(id_name)
 
         init.append('(setf (slot-%s obj) (wxGrid_Create %s %s -1 -1 -1 -1 wxWANTS_CHARS))\n' %
                     (obj.name, parent, id))
@@ -29,7 +29,6 @@ class LispCodeGenerator:
         return init, props_buf, []
 
     def get_properties_code(self, obj):
-        plgen = common.code_writers['lisp']
         out = []
         name = obj.name
 
@@ -65,10 +64,10 @@ class LispCodeGenerator:
             out.append('(wxGrid_EnableDragGridSize (slot-%s obj) 0)\n' % name)
         if prop.get('lines_color', False):
             out.append('(wxGrid_SetGridLineColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n' %
-                       (name, plgen._string_to_colour(prop['lines_color'])))
+                       (name, self.codegen._string_to_colour(prop['lines_color'])))
         if prop.get('label_bg_color', False):
             out.append('(wxGrid_SetLabelBackgroundColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n'
-                       %(name, plgen._string_to_colour(prop['label_bg_color'])))
+                       %(name, self.codegen._string_to_colour(prop['label_bg_color'])))
 
         sel_mode = prop.get('selection_mode')
 
@@ -80,7 +79,7 @@ class LispCodeGenerator:
         for label, size in columns:
             if _check_label(label, i):
                 out.append('(wxGrid_SetColLabelValue (slot-%s obj) %s %s)\n' % \
-                           (name, i, plgen.quote_str(label)))
+                           (name, i, self.codegen.quote_str(label)))
             try:
                 if int(size) > 0:
                     out.append('(wxGrid_SetColSize (slot-%s obj) %s %s)\n' % \
@@ -88,7 +87,7 @@ class LispCodeGenerator:
             except ValueError: pass
             i += 1
 
-        out.extend(plgen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_common_properties(obj))
         return out
 
 # end of class LispCodeGenerator
@@ -97,5 +96,5 @@ class LispCodeGenerator:
 def initialize():
     klass = 'wxGrid'
     common.class_names['EditGrid'] = klass
-    common.register('lisp', klass, LispCodeGenerator(),
+    common.register('lisp', klass, LispCodeGenerator(klass),
                     'columns', ColsCodeHandler)

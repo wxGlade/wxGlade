@@ -12,9 +12,8 @@ import wcodegen
 
 class LispBitmapButtonGenerator(wcodegen.LispWidgetCodeWriter):
     def get_code(self, obj):
-        plgen = common.code_writers['lisp']
         prop = obj.properties
-        id_name, id = plgen.generate_code_id(obj) 
+        id_name, id = self.codegen.generate_code_id(obj)
         bmp_file = prop.get('bitmap', '')
 
         if not obj.parent.is_toplevel:
@@ -34,14 +33,14 @@ class LispBitmapButtonGenerator(wcodegen.LispWidgetCodeWriter):
             bmp = '(%s)' % bmp_file[5:].strip()
         else:
             bmp = '(wxBitmap_CreateLoad %s, wxBITMAP_TYPE_ANY)' % \
-                  plgen.quote_path(bmp_file)
+                  self.codegen.quote_path(bmp_file)
         init = []
         if id_name: init.append(id_name)
 
         init.append('(setf (slot-%s obj) (wxBitmapButton_Create %s %s %s -1 -1 -1 -1 0))\n' % 
                     ( obj.name, parent, id, bmp))
 
-        props_buf = plgen.generate_common_properties(obj)
+        props_buf = self.codegen.generate_common_properties(obj)
 
         disabled_bmp = prop.get('disabled_bitmap')
         if disabled_bmp:
@@ -60,7 +59,7 @@ class LispBitmapButtonGenerator(wcodegen.LispWidgetCodeWriter):
             else:
                 props_buf.append(
                     '(wxBitmapButton_SetBitmapDisabled (slot-%s obj) %s)\n'
-                    % (obj.name, plgen.quote_path(disabled_bmp)))
+                    % (obj.name, self.codegen.quote_path(disabled_bmp)))
         if not prop.has_key('size'):
             props_buf.append('(wxButton_SetDefault (slot-%s obj))\n'
                              %(obj.name))

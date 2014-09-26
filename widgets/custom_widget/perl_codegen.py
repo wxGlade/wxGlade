@@ -8,15 +8,15 @@ Perl generator functions for CustomWidget objects
 
 
 import common
+import wcodegen
 from codegen import ArgumentsCodeHandler, _fix_arguments
 
 
-class PerlCustomWidgetGenerator:
+class PerlCustomWidgetGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_code(self, widget):
         init = []
-        plgen = common.code_writers['perl']
         prop = widget.properties
-        id_name, id = plgen.generate_code_id(widget)
+        id_name, id = self.codegen.generate_code_id(widget)
 
         if not widget.parent.is_toplevel:
             parent = '$self->{%s}' % widget.parent.name
@@ -34,7 +34,7 @@ class PerlCustomWidgetGenerator:
             ctor = cust_ctor
         init.append('$self->{%s} = %s(%s);\n' %
                     (widget.name, ctor, ", ".join(arguments)))
-        props_buf = plgen.generate_common_properties(widget)
+        props_buf = self.codegen.generate_common_properties(widget)
 
         return init, props_buf, []
 
@@ -44,5 +44,5 @@ class PerlCustomWidgetGenerator:
 def initialize():
     klass = 'CustomWidget'
     common.class_names[klass] = klass
-    common.register('perl', klass, PerlCustomWidgetGenerator(),
+    common.register('perl', klass, PerlCustomWidgetGenerator(klass),
                     'arguments', ArgumentsCodeHandler, klass)

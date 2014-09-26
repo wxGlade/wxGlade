@@ -19,8 +19,10 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         out = []
         append = out.append
         
-        if obj.is_toplevel: obj_name = 'self'
-        else: obj_name = 'self.' + obj.name
+        if obj.is_toplevel:
+            obj_name = 'self'
+        else:
+            obj_name = 'self.' + obj.name
         
         bitmapsize = prop.get('bitmapsize')
         if bitmapsize:
@@ -47,48 +49,51 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         return out
 
     def get_init_code(self, obj):
-        pygen = common.code_writers['python']
-        cn = pygen.cn
         out = []
         append = out.append
         tools = obj.properties['toolbar']
         ids = []
        
-        if obj.is_toplevel: obj_name = 'self'
-        else: obj_name = 'self.' + obj.name
+        if obj.is_toplevel:
+            obj_name = 'self'
+        else:
+            obj_name = 'self.' + obj.name
 
         def _get_bitmap(bitmap):
             bmp_preview_path = os.path.join(config.icons_path, "icon.xpm")
             if not bitmap:
-                return cn('wxNullBitmap')
+                return self.cn('wxNullBitmap')
             elif bitmap.startswith('var:'):
                 if obj.preview:
-                    return "%s('%s', %s)" % (cn('wxBitmap'), bmp_preview_path,
-                                             cn('wxBITMAP_TYPE_XPM') )
+                    return "%s('%s', %s)" % (
+                        self.cn('wxBitmap'), bmp_preview_path,
+                        self.cn('wxBITMAP_TYPE_XPM') )
                 else:
-                    return (cn('wxBitmap') + '(%s,' + cn('wxBITMAP_TYPE_ANY') +
+                    return (self.cn('wxBitmap') +
+                            '(%s,' + self.cn('wxBITMAP_TYPE_ANY') +
                             ')') % (bitmap[4:].strip())
             elif bitmap.startswith('code:'):
                 if obj.preview:
-                    return "%s('%s', %s)" % (cn('wxBitmap'), bmp_preview_path,
-                                             cn('wxBITMAP_TYPE_XPM') )
+                    return "%s('%s', %s)" % (
+                        self.cn('wxBitmap'), bmp_preview_path,
+                        self.cn('wxBITMAP_TYPE_XPM'))
                 else:
-                    return '%s' % cn(bitmap[5:].strip())
+                    return '%s' % self.cn(bitmap[5:].strip())
             else:
                 if obj.preview:
                     import misc
                     bitmap = misc.get_relative_path(bitmap, True)
-                return cn('wxBitmap') + \
-                       ('(%s, ' + cn('wxBITMAP_TYPE_ANY') + ')') % \
-                       pygen.quote_path(bitmap)
+                return self.cn('wxBitmap') + \
+                       ('(%s, ' + self.cn('wxBITMAP_TYPE_ANY') + ')') % \
+                       self.codegen.quote_path(bitmap)
                 
         for tool in tools:
             if tool.id == '---': # item is a separator
                 append('%s.AddSeparator()\n' % obj_name)
             else:
-                name, val = pygen.generate_code_id(None, tool.id)
+                name, val = self.codegen.generate_code_id(None, tool.id)
                 if obj.preview or (not name and (not val or val == '-1')):
-                    id = cn('wxNewId()')
+                    id = self.cn('wxNewId()')
                 else:
                     if name: ids.append(name)
                     id = val
@@ -100,9 +105,10 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                 bmp1 = _get_bitmap(tool.bitmap1)
                 bmp2 = _get_bitmap(tool.bitmap2)
                 append('%s.AddLabelTool(%s, %s, %s, %s, %s, %s, %s)\n' %
-                       (obj_name, id, pygen.quote_str(tool.label),
-                        bmp1, bmp2, cn(kind), pygen.quote_str(tool.short_help),
-                        pygen.quote_str(tool.long_help)))
+                       (obj_name, id, self.codegen.quote_str(tool.label),
+                        bmp1, bmp2, self.cn(kind),
+                        self.codegen.quote_str(tool.short_help),
+                        self.codegen.quote_str(tool.long_help)))
         
         return ids + out
 
@@ -110,29 +116,29 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         """\
         function that generates Python code for the menubar of a wxFrame.
         """
-        pygen = common.code_writers['python']
         style = obj.properties.get('style')
         if style:
-            style = ', style=' + pygen.cn_f('wxTB_HORIZONTAL|' + style)
+            style = ', style=' + self.cn_f('wxTB_HORIZONTAL|' + style)
         else:
             style = ''
         klass = obj.klass
-        if klass == obj.base: klass = pygen.cn(klass)
-        init = [ '\n', '# Tool Bar\n', 'self.%s = %s(self, -1%s)\n' %
-                 (obj.name, klass, style),
-                 'self.SetToolBar(self.%s)\n' % obj.name ]
+        if klass == obj.base:
+            klass = self.cn(klass)
+        init = ['\n', '# Tool Bar\n', 'self.%s = %s(self, -1%s)\n' %
+                (obj.name, klass, style),
+                'self.SetToolBar(self.%s)\n' % obj.name]
         init.extend(self.get_init_code(obj))
         init.append('# Tool Bar end\n')
         return init, self.get_properties_code(obj), []
 
     def get_events(self, obj):
-        pygen = common.code_writers['python']
         out = []
 
         def do_get(tool):
             ret = []
-            name, val = pygen.generate_code_id(None, tool.id)
-            if not val: val = '-1'  # but this is wrong anyway...
+            name, val = self.codegen.generate_code_id(None, tool.id)
+            if not val:
+                val = '-1'  # but this is wrong anyway...
             if tool.handler:
                 ret.append((val, 'EVT_TOOL', tool.handler))
             return ret
@@ -274,14 +280,13 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                     style
         else:
             style = ''
-        init = [ '%s = new %s(this, -1%s);\n' % (obj.name, obj.klass, style),
-                 'SetToolBar(%s);\n' % obj.name ]
+        init = ['%s = new %s(this, -1%s);\n' % (obj.name, obj.klass, style),
+                'SetToolBar(%s);\n' % obj.name]
         init.extend(self.get_properties_code(obj))
         ids = self.get_ids_code(obj)
         return init, ids, [], []
 
     def get_properties_code(self, obj):
-        cppgen = common.code_writers['C++']
         tools = obj.properties['toolbar']
         out = []
         append = out.append
@@ -322,13 +327,13 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                 return '(%s)' % bitmap[5:].strip()
             else:
                 return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
-                       cppgen.quote_path(bitmap)
+                       self.codegen.quote_path(bitmap)
                 
         for tool in tools:
-            if tool.id == '---': # item is a separator
+            if tool.id == '---':  # item is a separator
                 append('%sAddSeparator();\n' % obj_name)
             else:
-                name, val = cppgen.generate_code_id(None, tool.id)
+                name, val = self.codegen.generate_code_id(None, tool.id)
                 if not name and (not val or val == '-1'):
                     id = 'wxNewId()'
                 else:
@@ -341,36 +346,35 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                 bmp1 = _get_bitmap(tool.bitmap1)
                 bmp2 = _get_bitmap(tool.bitmap2)
                 append('%sAddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
-                       (obj_name, id, cppgen.quote_str(tool.label),
-                        bmp1, bmp2, kind, cppgen.quote_str(tool.short_help),
-                        cppgen.quote_str(tool.long_help)))
+                       (obj_name, id, self.codegen.quote_str(tool.label),
+                        bmp1, bmp2, kind,
+                        self.codegen.quote_str(tool.short_help),
+                        self.codegen.quote_str(tool.long_help)))
 
         append('%sRealize();\n' % obj_name)
 
         return out
 
     def get_ids_code(self, obj):
-        cppgen = common.code_writers['C++']
         ids = []
         tools = obj.properties['toolbar']
         
         for item in tools:
-            if item.id == '---': # item is a separator
-                pass # do nothing
+            if item.id == '---':  # item is a separator
+                pass  # do nothing
             else:
-                name, val = cppgen.generate_code_id(None, item.id)
+                name, val = self.codegen.generate_code_id(None, item.id)
                 if name.find('=') != -1:
                     ids.append(name)
         return ids
 
     def get_events(self, obj):
-        cppgen = common.code_writers['C++']
         out = []
 
         def do_get(tool):
             ret = []
-            name, val = cppgen.generate_code_id(None, tool.id)
-            if not val: val = '-1' # but this is wrong anyway...
+            name, val = self.codegen.generate_code_id(None, tool.id)
+            if not val: val = '-1'  # but this is wrong anyway...
             if tool.handler:
                 ret.append((val, 'EVT_TOOL', tool.handler, 'wxCommandEvent'))
             return ret

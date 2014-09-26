@@ -105,9 +105,10 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         return ids + out
 
     def get_code(self, obj):
-        pygen = common.code_writers['python']
-        if obj.klass == obj.base: klass = pygen.cn(obj.klass)
-        else: klass = obj.klass
+        if obj.klass == obj.base:
+            klass = self.cn(obj.klass)
+        else:
+            klass = obj.klass
         init = [ '\n', '# Menu Bar\n', 'self.%s = %s()\n' %
                  (obj.name, klass) ]
         init.extend(self.get_init_code(obj))
@@ -116,7 +117,6 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         return init, [], []
 
     def get_events(self, obj):
-        pygen = common.code_writers['python']
         out = []
 
         def do_get(item):
@@ -124,7 +124,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
             if item.name:
                 val = '#self.%s' % item.name  # see py_codegen.py, ~480
             else:
-                val = pygen.generate_code_id(None, item.id)[1]
+                val = self.codegen.generate_code_id(None, item.id)[1]
                 if not val:
                     val = '-1'  # but this is wrong anyway...
             if item.handler:
@@ -265,7 +265,6 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
         return init, ids, [], []
 
     def get_properties_code(self, obj):
-        cppgen = common.code_writers['C++']
         menus = obj.properties['menubar']
         out = []
         append = out.append
@@ -275,7 +274,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                 if item.name == '---': # item is a separator
                     append('%s->AppendSeparator();\n' % menu)
                     continue
-                name, val = cppgen.generate_code_id(None, item.id)
+                name, val = self.codegen.generate_code_id(None, item.id)
                 if not name and val == '-1':
                     id = 'wxNewId()'
                 else:
@@ -287,8 +286,8 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                     append('wxMenu* %s = new wxMenu();\n' % name)
                     append_items(name, item.children)
                     append('%s->Append(%s, %s, %s, %s);\n' %
-                           (menu, id, cppgen.quote_str(item.label),
-                            name, cppgen.quote_str(item.help_str)))
+                           (menu, id, self.codegen.quote_str(item.label),
+                            name, self.codegen.quote_str(item.help_str)))
                 else:
                     item_type = 'wxITEM_NORMAL'
                     if item.checkable == '1':
@@ -297,12 +296,12 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                         item_type = 'wxITEM_RADIO'
                     if item_type:
                         append('%s->Append(%s, %s, %s, %s);\n' %
-                               (menu, id, cppgen.quote_str(item.label),
-                                cppgen.quote_str(item.help_str), item_type))
+                               (menu, id, self.codegen.quote_str(item.label),
+                                self.codegen.quote_str(item.help_str), item_type))
                     else:
                         append('%s->Append(%s, %s, %s);\n' %
-                               (menu, id, cppgen.quote_str(item.label),
-                                cppgen.quote_str(item.help_str)))
+                               (menu, id, self.codegen.quote_str(item.label),
+                                self.codegen.quote_str(item.help_str)))
 
         if obj.is_toplevel:
             obj_name = ''
@@ -320,20 +319,19 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
             if menu.children:
                 append_items(name, menu.children)
             append('%sAppend(%s, %s);\n' %
-                   (obj_name, name, cppgen.quote_str(menu.label)))
+                   (obj_name, name, self.codegen.quote_str(menu.label)))
 
         return out
 
     def get_ids_code(self, obj):
-        cppgen = common.code_writers['C++']
         ids = []
         menus = obj.properties['menubar']
         
         def collect_ids(items):
             for item in items:
-                if item.name == '---': # item is a separator
-                    continue # do nothing
-                name, val = cppgen.generate_code_id(None, item.id)
+                if item.name == '---':  # item is a separator
+                    continue  # do nothing
+                name, val = self.codegen.generate_code_id(None, item.id)
                 if name.find('=') != -1:
                     ids.append(name)
                 if item.children:

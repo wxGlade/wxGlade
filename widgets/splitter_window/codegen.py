@@ -12,9 +12,8 @@ import wcodegen
 
 class PythonSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_code(self, window):
-        pygen = common.code_writers['python']
         prop = window.properties
-        id_name, id = pygen.generate_code_id(window)
+        id_name, id = self.codegen.generate_code_id(window)
         if not window.parent.is_toplevel:
             parent = 'self.%s' % window.parent.name
         else:
@@ -24,12 +23,12 @@ class PythonSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
             l.append('self.%s = %s(%s, %s)\n' %
-                     (window.name, pygen.without_package(window.klass),
+                     (window.name, self.codegen.without_package(window.klass),
                       parent, id))
             return l, [], []
         style = prop.get("style")
         if style and style != 'wxSP_3D':
-            style = ", style=%s" % pygen.cn_f(style)
+            style = ", style=%s" % self.codegen.cn_f(style)
         else:
             style = ''
         init = []
@@ -38,10 +37,10 @@ class PythonSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
         klass = window.klass
         if window.preview:
             klass = 'wxSplitterWindow'
-        init.append(('self.%s = ' + pygen.cn(klass) +
+        init.append(('self.%s = ' + self.cn(klass) +
                      '(%s, %s%s)\n') % (window.name, parent, id, style))
 
-        props_buf = pygen.generate_common_properties(window)
+        props_buf = self.codegen.generate_common_properties(window)
         layout_buf = []
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
@@ -59,17 +58,18 @@ class PythonSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             def add_sub(win):
                 layout_buf.append('self.%s.SetSplitMode(%s)\n' %
-                                 (window.name, pygen.cn(orientation)))
+                                 (window.name, self.cn(orientation)))
                 layout_buf.append('self.%s.Initialize(self.%s)\n' %
                                  (window.name, win))
-            if win_1: add_sub(win_1)
-            elif win_2: add_sub(win_2)
+            if win_1:
+                add_sub(win_1)
+            elif win_2:
+                add_sub(win_2)
 
         return init, props_buf, layout_buf
 
     def get_layout_code(self, obj):
         prop = obj.properties
-        pygen = common.code_writers['python']
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -87,7 +87,7 @@ class PythonSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             def add_sub(win):
                 props_buf.append('self.SetSplitMode(%s)\n' %
-                                 pygen.cn(orientation))
+                                 self.cn(orientation))
                 props_buf.append('self.Initialize(self.%s)\n' % win)
             if win_1:
                 add_sub(win_1)
@@ -110,9 +110,8 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
         """\
         generates the C++ code for wxSplitterWindow
         """
-        cppgen = common.code_writers['C++']
         prop = window.properties
-        id_name, id = cppgen.generate_code_id(window)
+        id_name, id = self.codegen.generate_code_id(window)
         if id_name:
             ids = [id_name]
         else:
@@ -132,7 +131,7 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
         init = ['%s = new %s(%s, %s%s);\n' %
                 (window.name, window.klass, parent, id, extra) ]
 
-        props_buf = cppgen.generate_common_properties(window)
+        props_buf = self.codegen.generate_common_properties(window)
         layout_buf = []
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')

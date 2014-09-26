@@ -16,7 +16,6 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
         return []
         
     def get_init_code(self, obj):
-        plgen = common.code_writers['lisp']
         out = []
         append = out.append
         menus = obj.properties['menubar']
@@ -24,10 +23,10 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
 
         def append_items(menu, items):
             for item in items:
-                if item.name == '---': # item is a separator
+                if item.name == '---':  # item is a separator
                     append('(wxMenu_AppendSeparator %s)\n' % menu)
                     continue
-                id_name, id_number = plgen.generate_code_id(None, item.id)
+                id_name, id_number = self.codegen.generate_code_id(None, item.id)
                 if not id_name and ( not id_number or id_number == '-1'):
                     widget_id = '-1'
                 else:
@@ -44,8 +43,8 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
                     append('(let ((%s (wxMenu_Create "" 0)))\n' % id_name)
                     append_items(id_name, item.children)
                     append('(wxMenuBar_AppendSub %s %s %s %s %s))\n' %
-                           (menu, widget_id, plgen.quote_str(item.label),
-                            id_name, plgen.quote_str(item.help_str)))
+                           (menu, widget_id, self.codegen.quote_str(item.label),
+                            id_name, self.codegen.quote_str(item.help_str)))
                 else:
                     item_type = 0
                     if item.checkable == '1':
@@ -53,8 +52,8 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
                     elif item.radio == '1':
                         item_type = 2
                     append('(wxMenu_Append %s %s %s %s %s)\n' %
-                           (menu, widget_id, plgen.quote_str(item.label),
-                            plgen.quote_str(item.help_str), item_type))
+                           (menu, widget_id, self.codegen.quote_str(item.label),
+                            self.codegen.quote_str(item.help_str), item_type))
 
         for m in menus:
             menu = m.root
@@ -66,7 +65,7 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
             if menu.children:
                 append_items(name, menu.children)
             append('\t\t(wxMenuBar_Append (slot-%s obj) %s %s))\n' %
-                   (obj.name, name, plgen.quote_str(menu.label)))
+                   (obj.name, name, self.codegen.quote_str(menu.label)))
 
         return ids + out
 

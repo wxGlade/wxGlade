@@ -15,12 +15,11 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         return [], [], []
 
     def get_properties_code(self, obj):
-        pygen = common.code_writers['python']
         cn = self.cn
         out = []
         title = obj.properties.get('title')
         if title:
-            out.append('self.SetTitle(%s)\n' % pygen.quote_str(title))
+            out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(title))
         icon = obj.properties.get('icon')
         if icon:
             if icon.startswith('var:'):
@@ -43,10 +42,10 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                 out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
                 out.append(('_icon.CopyFromBitmap(' + cn('wxBitmap') +
                             '(%s, ' + cn('wxBITMAP_TYPE_ANY') + '))\n') %
-                           pygen.quote_path(icon))
+                           self.codegen.quote_path(icon))
                 out.append('self.SetIcon(_icon)\n')
 
-        out.extend(pygen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):

@@ -17,15 +17,15 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
     ]
 
     def get_code(self, window):
-        plgen = common.code_writers['perl']
         prop = window.properties
-        id_name, id = plgen.generate_code_id(window)
+        id_name, id = self.codegen.generate_code_id(window)
 
         layout_props = []
         tabs = prop.get('tabs', [])
         for label, tab_win in tabs:
             layout_props.append('$self->{%s}->AddPage($self->{%s}, %s);\n' %
-                                (window.name, tab_win, plgen.quote_str(label)))
+                                (window.name, tab_win,
+                                 self.codegen.quote_str(label)))
 
         if not window.parent.is_toplevel:
             parent = '$self->{%s}' % window.parent.name
@@ -37,23 +37,20 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
             if klass != window.klass:
                 klass = window.klass
             else:
-                klass = plgen.cn(klass)
+                klass = self.cn(klass)
 
             l = []
             if id_name:
                 l.append(id_name)
             l.append(
                 '$self->{%s} = %s->new(%s, %s);\n' % (
-                    window.name,
-                    klass,
-                    parent,
-                    id,
-                    )
+                    window.name, klass, parent, id)
                 )
             return l, [], []
         style = prop.get("style")
         if style:
-            style = ", wxDefaultPosition, wxDefaultSize, %s" % self.cn_f(style)
+            style = ", wxDefaultPosition, wxDefaultSize, %s" % \
+                    self.cn_f(style)
         else:
             style = ''
         init = []
@@ -62,18 +59,17 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
         init.append('$self->{%s} = %s->new(%s, %s%s);\n' %
                     (window.name, self.cn(window.klass), parent, id, style))
 
-        props_buf = plgen.generate_common_properties(window)
+        props_buf = self.codegen.generate_common_properties(window)
         return init, props_buf, layout_props
 
     def get_properties_code(self, obj):
         prop = obj.properties
-        plgen = common.code_writers['perl']
         props_buf = []
         tabs = prop.get('tabs', [])
         for label, window in tabs:
             props_buf.append('$self->AddPage($self->{%s}, %s);\n' %
-                             (window, plgen.quote_str(label)))
-        props_buf.extend(plgen.generate_common_properties(obj))
+                             (window, self.codegen.quote_str(label)))
+        props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf
 
 # end of class PerlNotebookGenerator

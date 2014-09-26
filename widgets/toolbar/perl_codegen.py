@@ -55,7 +55,6 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         return out
 
     def get_init_code(self, obj):
-        plgen = common.code_writers['perl']
         out = []
         append = out.append
         tools = obj.properties['toolbar']
@@ -79,13 +78,13 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
                 return '(%s)' % bitmap[5:].strip()
             else:
                 return 'Wx::Bitmap->new(%s, wxBITMAP_TYPE_ANY)' % \
-                       plgen.quote_path(bitmap)
+                       self.codegen.quote_path(bitmap)
 
         for tool in tools:
             if tool.id == '---': # item is a separator
                 append('%s->AddSeparator();\n' % obj_name)
             else:
-                name, val = plgen.generate_code_id(None, tool.id)
+                name, val = self.codegen.generate_code_id(None, tool.id)
                 if not name and (not val or val == '-1'):
                     id = 'Wx::NewId()'
                 else:
@@ -99,9 +98,10 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
                 bmp1 = _get_bitmap(tool.bitmap1)
                 bmp2 = _get_bitmap(tool.bitmap2)
                 append('%s->AddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
-                       (obj_name, id, plgen.quote_str(tool.label),
-                        bmp1, bmp2, kind, plgen.quote_str(tool.short_help),
-                        plgen.quote_str(tool.long_help)))
+                       (obj_name, id, self.codegen.quote_str(tool.label),
+                        bmp1, bmp2, kind,
+                        self.codegen.quote_str(tool.short_help),
+                        self.codegen.quote_str(tool.long_help)))
         
         return ids + out
 
