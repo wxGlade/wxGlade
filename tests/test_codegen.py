@@ -153,11 +153,8 @@ class TestCodeGen(WXGladeBaseTest):
 
     def test_HyperlinkCtrl(self):
         """\
-        Test code generation for a HyperlinkCtrl for wxWidgets 2.6 and 2.8
+        Test code generation for a HyperlinkCtrl
         """
-        # test for wxWidgets 2.6.X
-        self._test_all('HyperlinkCtrl_26')
-
         # test for wxWidgets 2.8.X
         self._test_all('HyperlinkCtrl_28')
 

@@ -55,6 +55,10 @@ def run_tests(gui_tests=False):
             except ImportError:
                 print _('Please install missing python module "wxversion".')
                 sys.exit(1)
+            except wxversion.VersionError, e:
+                print _('The requested wxPython version is not found. '
+                        'Disable GUI tests.')
+                gui_tests = False
 
     # try to import all files as modules
     for module_name in modules:
@@ -66,7 +70,6 @@ def run_tests(gui_tests=False):
         fp, path, info = imp.find_module(module_name, ['./tests'])
         try:
             module = imp.load_module(module_name, fp, path, info)
-
         finally:
             # Make sure fp is closed properly
             if fp:

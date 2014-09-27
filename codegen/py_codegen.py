@@ -339,10 +339,7 @@ if __name__ == "__main__":
         # initialise parent class
         BaseLangCodeWriter.initialize(self, app_attrs)
         out_path = app_attrs.get('path', config.default_path)
-
-        # XXX als Konstante??
         self.header_lines.append('import wx\n')
-
         self._initialize_stage2(out_path)
 
     def add_app(self, app_attrs, top_win_class):

@@ -9,7 +9,8 @@ General:
   - Improve widget import to be able to import widgets from ZIP files
   - Change configuration default to remember the position and geometry
     of the three main windows. This change effects fresh installations only.
-  - adapt GUI to run with wxPython 2.6 till 3.0
+  - adapt GUI to run with wxPython 2.8 till 3.0
+  - remove support for wxPython 2.6
   - Disable Lisp for wx 3.0
   - Unify the code generation of widget specific code
     This change causes some minor changes in the generated code.

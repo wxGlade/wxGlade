@@ -192,5 +192,5 @@ setup(
                               'res/*.*',
                               ]},
     data_files=data_files,
-    install_requires=['wxPython >=2.6'],
+    install_requires=['wxPython >=2.8'],
     )
