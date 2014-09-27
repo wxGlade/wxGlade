@@ -119,7 +119,7 @@ class Application(object):
     @type all_supported_versions: List of strings
     """
 
-    all_supported_versions = ['2.6', '2.8', '3.0']
+    all_supported_versions = ['2.8', '3.0']
 
     def __init__(self, property_window):
         self._logger = logging.getLogger(self.__class__.__name__)

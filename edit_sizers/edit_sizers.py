@@ -1013,13 +1013,13 @@ class SizerBase(Sizer):
         compat.SizerItem_SetWindow(child, self.notebook)
         w.Reparent(misc.hidden_property_panel)
 
-        # ALB moved this before Layout, it seems to be needed for wx2.6...
         self.notebook.Show()
         self.notebook.SetSize(self.property_window.GetClientSize())
 
         self.property_window.Layout()
         self.property_window.SetTitle(_('Properties - <%s>') % self.name)
-        if hasattr(self, 'node'): common.app_tree.select_item(self.node)
+        if hasattr(self, 'node'):
+            common.app_tree.select_item(self.node)
         try:
             self._btn.SetFocus()
         except AttributeError:
@@ -1226,11 +1226,10 @@ class SizerBase(Sizer):
             #self.window.widget.Layout()
             self.widget.Layout()
             evt = wx.SizeEvent(self.window.widget.GetSize(),
-                              self.window.widget.GetId())
+                               self.window.widget.GetId())
             wx.PostEvent(self.window.widget, evt)
             # don't change the size of the window
             if not misc.check_wx_version(2, 6, 0):
-                # this seems to work bad for 2.4.0 (and 2.6 too... 2005-05-01)
                 self.widget.FitInside(self.window.widget)
             return
         self.widget.SetMinSize(self.widget.CalcMin())
@@ -1238,7 +1237,7 @@ class SizerBase(Sizer):
         for c in self.children:
             try:
                 c.item.widget.Refresh()
-            except Exception:
+            except:
                 pass
         if recursive:
             if getattr(self, 'sizer', None) is not None:

@@ -370,7 +370,6 @@ constructor will be used. You should probably not use this if \
         compat.SizerItem_SetWindow(child, self.notebook)
         w.Reparent(misc.hidden_property_panel)
 
-        # ALB moved this before Layout, it seems to be needed for wx2.6...
         self.notebook.Show()
         self.notebook.SetSize(self.property_window.GetClientSize())
 
