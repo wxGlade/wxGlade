@@ -3,10 +3,12 @@ Property class for the 'option' layout property of widgets and non-toplevel
 sizers.
 
 @copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
+import wx.lib.stattext
 import widget_properties
 
 
@@ -35,8 +37,8 @@ class LayoutOptionProperty(widget_properties.Property):
         self.id = wx.NewId()
         self.val_range = (0, 1000)
         size = (widget_properties.label_initial_width, -1)
-        label = widget_properties.wxGenStaticText(parent, -1, _('Proportion'),
-                                                  size=size)
+        label = wx.lib.stattext.GenStaticText(
+            parent, wx.ID_ANY, _('Proportion'), size=size)
         self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
                                 max=self.val_range[1])
         val = int(self.owner[self.name][0]())
@@ -44,9 +46,9 @@ class LayoutOptionProperty(widget_properties.Property):
             self.spin.SetValue(1)  # needed for GTK to display a '0'
         self.spin.SetValue(val)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
+        sizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         option = 5
-        sizer.Add(self.spin, option, wx.ALL|wx.ALIGN_CENTER, 3)
+        sizer.Add(self.spin, option, wx.ALL | wx.ALIGN_CENTER, 3)
         self.panel = sizer
         self.bind_event(self.on_change_val)
 
@@ -56,8 +58,8 @@ class LayoutOptionProperty(widget_properties.Property):
         val = self.owner[self.name][0]()
         
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        label = widget_properties.wxGenStaticText(parent, -1, _('Position'),
-                                                  size=size)
+        label = wx.lib.stattext.GenStaticText(
+            parent, wx.ID_ANY, _('Position'), size=size)
         szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         self.position = wx.TextCtrl(parent, -1)
         self.position.SetValue(val[:2])
@@ -65,8 +67,8 @@ class LayoutOptionProperty(widget_properties.Property):
         sizer.Add(szr, 0, wx.EXPAND)
 
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        label = widget_properties.wxGenStaticText(parent, -1, _('Span'),
-                                                  size=size)
+        label = wx.lib.stattext.GenStaticText(
+            parent, wx.ID_ANY, _('Span'), size=size)
         szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         self.span = wx.TextCtrl(parent, -1)
         self.span.SetValue(val[2:])

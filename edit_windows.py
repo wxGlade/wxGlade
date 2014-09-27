@@ -1540,7 +1540,10 @@ class StylesMixin(object):
                                   types.UnicodeType))
 
         if isinstance(value, types.StringTypes):
-            new_styles = set(value.split('|'))
+            if value == '0':
+                new_styles = set()
+            else:
+                new_styles = set(value.split('|'))
         else:
             new_styles = set()
             for pos in range(len(self.style_names)):
