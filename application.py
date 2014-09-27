@@ -285,7 +285,7 @@ class Application(object):
             _('All files|*'),
             _("Select output file"),
             _("Select output directory"),
-            wx.SAVE | wx.OVERWRITE_PROMPT
+            wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
             )
         self.outpath_prop = DialogProperty(self, "output_path", panel,
                                            dialog, label=_('Output path'))
@@ -763,7 +763,7 @@ class Application(object):
                 frame = FrameClass(None, -1, '')
                 # make sure we don't get a modal dialog...
                 s = frame.GetWindowStyleFlag()
-                frame.SetWindowStyleFlag(s & ~wx.DIALOG_MODAL)
+                frame.SetWindowStyleFlag(s)
 
             def on_close(event):
                 frame.Destroy()
