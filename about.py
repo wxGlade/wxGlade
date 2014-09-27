@@ -96,7 +96,7 @@ class wxGladeAboutBox(wx.Dialog):
                 else:
                     import webbrowser
                     webbrowser.open(linkinfo.GetHref(), new=True)
-        html = HtmlWin(self, -1, size=(400, -1))
+        html = HtmlWin(self, -1, size=(400, 250))
         # it's recommended at least for GTK2 based wxPython
         if "gtk2" in wx.PlatformInfo:
             html.SetStandardFonts()

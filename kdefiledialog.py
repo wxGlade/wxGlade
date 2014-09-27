@@ -54,7 +54,7 @@ def kde_file_selector(message, default_path="", default_filename="",
             if not os.path.isdir(startdir):
                 startdir = os.path.dirname(startdir)
             startdir = os.path.join(startdir, default_filename)
-        if flags & wx.SAVE:
+        if flags & wx.FD_SAVE:
             kind = '--getsavefilename'
         else:
             kind = '--getopenfilename'
@@ -72,7 +72,7 @@ def kde_file_selector(message, default_path="", default_filename="",
 
         filename = os.fdopen(r).readline().strip()
         signal.signal(signal.SIGCHLD, oldhandler or signal.SIG_DFL)
-        if (flags & wx.SAVE) and (flags & wx.OVERWRITE_PROMPT) and \
+        if (flags & wx.FD_SAVE) and (flags & wx.FD_OVERWRITE_PROMPT) and \
                os.path.exists(filename):
             if wx.MessageBox(_("File '%s' already exists: do you really want "
                                "to overwrite it?") % misc.wxstr(filename),
@@ -168,7 +168,7 @@ if __name__ == '__main__':
         filename = kde_file_selector(
             'Select file to save', '', 'prova.py',
             wildcard="Python files|*.py;*.pyc|All files|*",
-            flags=wx.SAVE|wx.OVERWRITE_PROMPT)
+            flags=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
         if filename:
             wx.MessageBox('You selected file: %s' % filename,
                           style=wx.OK|wx.ICON_INFORMATION)
@@ -180,7 +180,7 @@ if __name__ == '__main__':
         filename = wx.FileSelector(
             'Select file to save', '', 'prova.py',
             wildcard=_("Python files|*.py;*.pyc|All files|*"),
-            flags=wx.SAVE|wx.OVERWRITE_PROMPT)
+            flags=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
         if filename:
             wx.MessageBox(_('You selected file: %s') % filename,
                           style=wx.OK|wx.ICON_INFORMATION)

@@ -816,13 +816,12 @@ class wxGladeFrame(wx.Frame):
         """\
         saves a wxGlade project onto an xml file chosen by the user
         """
-        # wx.SAVE & wx.OVERWRITE_PROMPT are wx2.6
         # both flags occurs several times
         fn = misc.FileSelector(_("Save project as..."),
                                wildcard="wxGlade files (*.wxg)|*.wxg|"
                                "wxGlade Template files (*.wgt) |*.wgt|"
                                "XML files (*.xml)|*.xml|All files|*",
-                               flags=wx.SAVE|wx.OVERWRITE_PROMPT,
+                               flags=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
                                default_path=self.cur_dir)
         if fn:
             # check for file extension and add default extension if missing
