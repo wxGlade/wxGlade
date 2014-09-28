@@ -241,6 +241,11 @@ class BaseLanguageMixin(object):
 
         @rtype: set
         """
+        # processing empty set()s causes later trouble with
+        # set([<filled>]) >= set()
+        if not flags:
+            return flags
+
         # combined flags: replace children by parent flag
         for style in self.style_defs:
             try:

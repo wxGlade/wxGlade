@@ -440,3 +440,31 @@ class TestGui(WXGladeBaseTest):
             'StylesMixin.__init__() failed: got "%s" expect: "%s"' % (
                 ret, expected)
         )
+
+        # check handling of empty ('', None) styles
+        for value, desc in (('', "''"), (None, 'None')):
+            sm.set_style(value)
+            ret = sm.style_set
+            expected = set()
+            self.failUnlessEqual(
+                ret,
+                expected,
+                'StylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
+                    desc, ret, expected)
+            )
+            ret = sm.get_style()
+            expected = [False, False, False, False]
+            self.failUnlessEqual(
+                ret,
+                expected,
+                'StylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
+                    desc, ret, expected)
+            )
+            ret = sm.get_int_style()
+            expected = 0
+            self.failUnlessEqual(
+                ret,
+                expected,
+                'StylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
+                    desc, ret, expected)
+            )
