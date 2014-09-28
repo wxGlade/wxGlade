@@ -39,9 +39,6 @@ class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
                 ret.append('(wxFrame_Centre (slot-top-window obj) wxBOTH)\n')
         except (KeyError, ValueError):
             pass
-        if obj.properties.get('size', '').strip() and \
-           self.codegen.for_version < (2, 8):
-            ret.append(self.codegen.generate_code_size(obj))
         return ret
 
 # end of class LispFrameCodeGenerator
