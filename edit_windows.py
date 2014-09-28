@@ -1467,6 +1467,10 @@ class StylesMixin(object):
         @see: L{wcodegen.BaseLanguageMixin.cn_f()}
         """
         new_style = 0
+
+        if not self.style_set:
+            return new_style
+
         styles = list(self.style_set)
         styles.sort()
         for style_name in styles:
@@ -1528,7 +1532,7 @@ class StylesMixin(object):
             set(['wxHL_ALIGN_LEFT'])
 
         @param value: Styles to set
-        @type value:  str | list[bool]
+        @type value:  str | list[bool] | None
 
         @see: L{style_set}
         @see: L{style_names}
@@ -1536,10 +1540,12 @@ class StylesMixin(object):
         @see: L{_set_widget_style}
         """
         assert isinstance(value, (types.ListType, types.StringType,
-                                  types.UnicodeType))
+                                  types.UnicodeType, types.NoneType))
 
-        if isinstance(value, types.StringTypes):
-            if value == '0':
+        if isinstance(value, types.NoneType):
+            new_styles = set()
+        elif isinstance(value, types.StringTypes):
+            if not value or value == '0':
                 new_styles = set()
             else:
                 new_styles = set(value.split('|'))
