@@ -896,7 +896,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                                  app_attrs['for_version'].split('.')[:2]])
         except (KeyError, ValueError):
             if common.app_tree is not None:
-                self.for_version = common.app_tree.app.for_version
+                self.for_version = \
+                tuple([int(t) for t in
+                       common.app_tree.app.for_version.split('.')])
 
     def _initialize_stage2(self, out_path):
         """\
@@ -910,8 +912,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if self.multiple_files:
             self.previous_source = None
             if not os.path.isdir(out_path):
-                raise IOError("'path' must be a directory when generating"\
-                                      " multiple output files")
+                raise IOError("'path' must be a directory when generating"
+                              " multiple output files")
             self.out_dir = out_path
         else:
             if not self._overwrite and self._file_exists(out_path):
