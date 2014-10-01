@@ -335,8 +335,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.AssignImageList(image_list)
         root_node.item = self.AddRoot(_('Application'), 0)
         self.SetPyData(root_node.item, root_node)
-        self.skip_select = 0 # necessary to avoid an infinite loop on win32, as
-                             # SelectItem fires an EVT_TREE_SEL_CHANGED event
+        self.skip_select = 0  # necessary to avoid an infinite loop on
+                              # win32, as SelectItem fires an
+                              # EVT_TREE_SEL_CHANGED event
         self.title = ' '
         self.set_title(self.title)
         
@@ -345,22 +346,22 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self._show_menu = misc.wxGladePopupMenu('widget') # popup menu to
                                                           # show toplevel
                                                           # widgets
-        SHOW_ID = wx.NewId()
-        self._show_menu.Append(SHOW_ID, _('Show'))
-        wx.EVT_TREE_SEL_CHANGED(self, id, self.on_change_selection)
-        wx.EVT_RIGHT_DOWN(self, self.popup_menu)
-        wx.EVT_LEFT_DCLICK(self, self.show_toplevel)
-        wx.EVT_MENU(self, SHOW_ID, self.show_toplevel)
+        self._show_menu.Append(wx.ID_ANY, _('Show'))
+        self.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_change_selection)
+        self.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
+        self.Bind(wx.EVT_LEFT_DCLICK, self.show_toplevel)
+        self.Bind(wx.EVT_MENU, self.show_toplevel)
         def on_key_down(event):
             evt_flags = 0
-            if event.ControlDown(): evt_flags = wx.ACCEL_CTRL
+            if event.ControlDown():
+                evt_flags = wx.ACCEL_CTRL
             evt_key = event.GetKeyCode()
             for flags, key, function in misc.accel_table:
                 if evt_flags == flags and evt_key == key:
                     wx.CallAfter(function)
                     break
             event.Skip()
-        wx.EVT_KEY_DOWN(self, on_key_down)
+        self.Bind(wx.EVT_KEY_DOWN, on_key_down)
 
     def _build_label(self, node):
         s = node.widget.name
