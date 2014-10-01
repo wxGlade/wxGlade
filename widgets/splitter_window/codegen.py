@@ -10,7 +10,7 @@ import common
 import wcodegen
 
 
-class PythonSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
+class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, window):
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
@@ -208,7 +208,8 @@ def xrc_code_generator(obj):
         def write_property(self, name, val, outfile, ntabs):
             try:
                 prop = self.props_map.get(name, name)
-                if not prop: return
+                if not prop:
+                    return
                 if prop == 'orientation':
                     val = self.orient_map[val]
                 xrcgen.DefaultXrcObject.write_property(

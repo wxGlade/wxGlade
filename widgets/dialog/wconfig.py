@@ -43,7 +43,7 @@ config = {
     },
     'box_label': _('Style'),
     'style_list': ['wxDEFAULT_DIALOG_STYLE', 'wxDIALOG_MODAL', 'wxCAPTION',
-                   'wxSYSTEM_MENU' 'wxCLOSE_BOX', 'wxRESIZE_BOX',
+                   'wxSYSTEM_MENU', 'wxCLOSE_BOX', 'wxRESIZE_BOX',
                    'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX', 'wxTHICK_FRAME',
                    'wxRESIZE_BORDER', 'wxSTAY_ON_TOP', 'wxNO_3D',
                    'wxDIALOG_NO_PARENT', 'wxNO_FULL_REPAINT_ON_RESIZE',
