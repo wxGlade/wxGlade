@@ -21,10 +21,20 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
 {
     // begin wxGlade: All_Widgets_Frame::All_Widgets_Frame
     notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
+    notebook_1_wxTreeCtrl = new wxPanel(notebook_1, wxID_ANY);
+    notebook_1_wxToggleButton = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxTextCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_Spacer = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxStaticLine = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxStaticBitmap = new wxPanel(notebook_1, wxID_ANY);
+    notebook_1_wxSplitterWindow_vertical = new wxScrolledWindow(notebook_1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    splitter_2 = new wxSplitterWindow(notebook_1_wxSplitterWindow_vertical, wxID_ANY);
+    splitter_2_pane_2 = new wxPanel(splitter_2, wxID_ANY);
+    splitter_2_pane_1 = new wxPanel(splitter_2, wxID_ANY);
+    notebook_1_wxSplitterWindow_horizontal = new wxScrolledWindow(notebook_1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    splitter_1 = new wxSplitterWindow(notebook_1_wxSplitterWindow_horizontal, wxID_ANY);
+    splitter_1_pane_2 = new wxPanel(splitter_1, wxID_ANY);
+    splitter_1_pane_1 = new wxPanel(splitter_1, wxID_ANY);
     notebook_1_wxSpinCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxSpinButton = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxSlider = new wxPanel(notebook_1, wxID_ANY);
@@ -32,14 +42,33 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     notebook_1_wxRadioBox = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxListCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxListBox = new wxPanel(notebook_1, wxID_ANY);
+    notebook_1_wxHyperlinkCtrl = new wxPanel(notebook_1, wxID_ANY);
+    notebook_1_wxGrid = new wxPanel(notebook_1, wxID_ANY);
+    notebook_1_wxGauge = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxDatePickerCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxComboBox = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxChoice = new wxPanel(notebook_1, wxID_ANY);
+    notebook_1_wxCheckBox = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxCalendarCtrl = new wxPanel(notebook_1, wxID_ANY);
+    notebook_1_wxButton = new wxPanel(notebook_1, wxID_ANY);
     sizer_8_staticbox = new wxStaticBox(notebook_1_wxRadioButton, wxID_ANY, _("My RadioButton Group"));
     notebook_1_wxBitmapButton = new wxPanel(notebook_1, wxID_ANY);
+    All_Widgets_menubar = new wxMenuBar();
+    wxMenu* wxglade_tmp_menu_1 = new wxMenu();
+    wxglade_tmp_menu_1->Append(wxID_OPEN, _("Exit"), _("Finish program"), wxITEM_NORMAL);
+    All_Widgets_menubar->Append(wxglade_tmp_menu_1, _("File"));
+    SetMenuBar(All_Widgets_menubar);
+    All_Widgets_statusbar = CreateStatusBar(1);
+    All_Widgets_toolbar = new wxToolBar(this, -1);
+    SetToolBar(All_Widgets_toolbar);
+    All_Widgets_toolbar->AddTool(wxID_OPEN, _("Open"), (wxNullBitmap), wxNullBitmap, wxITEM_NORMAL, _("Open a new file"), _("Open a new file"));
+    All_Widgets_toolbar->Realize();
     bitmap_button_1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY));
+    button_3 = new wxButton(notebook_1_wxButton, wxID_BOLD, wxEmptyString);
     calendar_ctrl_1 = new wxCalendarCtrl(notebook_1_wxCalendarCtrl, wxID_ANY);
+    checkbox_1 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("one"));
+    checkbox_2 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("two"));
+    checkbox_3 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("three"));
     const wxString *choice_empty_choices = NULL;
     choice_empty = new wxChoice(notebook_1_wxChoice, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, choice_empty_choices);
     const wxString choice_filled_choices[] = {
@@ -55,6 +84,9 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     };
     combo_box_filled = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 2, combo_box_filled_choices, wxCB_DROPDOWN);
     datepicker_ctrl_1 = new wxDatePickerCtrl(notebook_1_wxDatePickerCtrl, wxID_ANY);
+    gauge_1 = new wxGauge(notebook_1_wxGauge, wxID_ANY, 20);
+    grid_1 = new wxGrid(notebook_1_wxGrid, wxID_ANY);
+    hyperlink_1 = new wxHyperlinkCtrl(notebook_1_wxHyperlinkCtrl, wxID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"));
     const wxString *list_box_empty_choices = NULL;
     list_box_empty = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_empty_choices);
     const wxString list_box_filled_choices[] = {
@@ -84,10 +116,13 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     text_ctrl_2 = new wxTextCtrl(notebook_1_wxRadioButton, wxID_ANY, wxEmptyString);
     radio_btn_3 = new wxRadioButton(notebook_1_wxRadioButton, wxID_ANY, _("Malroy"));
     text_ctrl_3 = new wxTextCtrl(notebook_1_wxRadioButton, wxID_ANY, wxEmptyString);
-    gauge_1 = new wxGauge(notebook_1_wxSlider, wxID_ANY, 20);
-    spin_button_1 = new wxSpinButton(notebook_1_wxSpinButton, wxID_ANY);
+    slider_1 = new wxSlider(notebook_1_wxSlider, wxID_ANY, 5, 0, 10);
+    spin_button_1 = new wxSpinButton(notebook_1_wxSpinButton, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_VERTICAL);
     spin_ctrl_1 = new wxSpinCtrl(notebook_1_wxSpinCtrl, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_AUTO_URL, 0, 100);
-    notebook_1_wxSplitterWindow = new wxPanel(notebook_1, wxID_ANY);
+    label_top_pane = new wxStaticText(splitter_1_pane_1, wxID_ANY, _("top pane"));
+    label_buttom_pane = new wxStaticText(splitter_1_pane_2, wxID_ANY, _("bottom pane"));
+    label_left_pane = new wxStaticText(splitter_2_pane_1, wxID_ANY, _("left pane"));
+    label_right_pane = new wxStaticText(splitter_2_pane_2, wxID_ANY, _("right pane"));
     bitmap_code_nullbitmap = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, (wxNullBitmap));
     bitmap_file = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY));
     bitmap_nofile = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap("non-existing.bmp", wxBITMAP_TYPE_ANY));
@@ -98,6 +133,8 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     label_3 = new wxStaticText(notebook_1_Spacer, wxID_ANY, _("Two labels with a"));
     label_2 = new wxStaticText(notebook_1_Spacer, wxID_ANY, _("spacer between"));
     text_ctrl = new wxTextCtrl(notebook_1_wxTextCtrl, wxID_ANY, _("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_CHARWRAP|wxTE_MULTILINE|wxTE_WORDWRAP);
+    button_2 = new wxToggleButton(notebook_1_wxToggleButton, wxID_ANY, _("Toggle Button"));
+    tree_ctrl_1 = new wxTreeCtrl(notebook_1_wxTreeCtrl, wxID_ANY);
     static_line_1 = new wxStaticLine(this, wxID_ANY);
     button_5 = new wxButton(this, wxID_CLOSE, wxEmptyString);
     button_1 = new wxButton(this, wxID_OK, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBU_TOP);
@@ -112,13 +149,27 @@ void All_Widgets_Frame::set_properties()
 {
     // begin wxGlade: All_Widgets_Frame::set_properties
     SetTitle(_("All Widgets"));
+    SetSize(wxSize(800, 400));
+    int All_Widgets_statusbar_widths[] = { -1 };
+    All_Widgets_statusbar->SetStatusWidths(1, All_Widgets_statusbar_widths);
+
+    // statusbar fields
+    const wxString All_Widgets_statusbar_fields[] = {
+        _("All Widgets statusbar"),
+    };
+    for(int i = 0; i < All_Widgets_statusbar->GetFieldsCount(); ++i) {
+        All_Widgets_statusbar->SetStatusText(All_Widgets_statusbar_fields[i], i);
+    }
     bitmap_button_1->SetSize(bitmap_button_1->GetBestSize());
     bitmap_button_1->SetDefault();
     choice_filled->SetSelection(1);
     combo_box_filled->SetSelection(0);
+    grid_1->CreateGrid(10, 3);
     list_box_filled->SetSelection(1);
     radio_box_filled1->SetSelection(1);
     radio_box_filled2->SetSelection(1);
+    notebook_1_wxSplitterWindow_horizontal->SetScrollRate(10, 10);
+    notebook_1_wxSplitterWindow_vertical->SetScrollRate(10, 10);
     // end wxGlade
 }
 
@@ -128,30 +179,49 @@ void All_Widgets_Frame::do_layout()
     // begin wxGlade: All_Widgets_Frame::do_layout
     wxFlexGridSizer* sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
     wxFlexGridSizer* sizer_2 = new wxFlexGridSizer(1, 2, 0, 0);
+    wxBoxSizer* sizer_24 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_23 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_18 = new wxBoxSizer(wxHORIZONTAL);
     wxFlexGridSizer* grid_sizer_3 = new wxFlexGridSizer(1, 3, 0, 0);
     wxBoxSizer* sizer_9 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_10 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_11 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer_25 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_33 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer_32 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer_29 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_31 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_30 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_14 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_16 = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer* sizer_15 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_22 = new wxBoxSizer(wxHORIZONTAL);
     sizer_8_staticbox->Lower();
     wxStaticBoxSizer* sizer_8 = new wxStaticBoxSizer(sizer_8_staticbox, wxHORIZONTAL);
     wxFlexGridSizer* grid_sizer_2 = new wxFlexGridSizer(3, 2, 0, 0);
     wxGridSizer* grid_sizer_1 = new wxGridSizer(2, 2, 0, 0);
     wxBoxSizer* sizer_3 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer_20 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_19 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_15 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_17 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_6 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_5 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_21 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_12 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_28 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_13 = new wxBoxSizer(wxHORIZONTAL);
     sizer_13->Add(bitmap_button_1, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxBitmapButton->SetSizer(sizer_13);
+    sizer_28->Add(button_3, 0, wxALL, 5);
+    notebook_1_wxButton->SetSizer(sizer_28);
     sizer_12->Add(calendar_ctrl_1, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxCalendarCtrl->SetSizer(sizer_12);
+    sizer_21->Add(checkbox_1, 0, 0, 0);
+    sizer_21->Add(checkbox_2, 0, 0, 0);
+    sizer_21->Add(checkbox_3, 0, 0, 0);
+    notebook_1_wxCheckBox->SetSizer(sizer_21);
     sizer_5->Add(choice_empty, 1, wxALL, 5);
     sizer_5->Add(choice_filled, 1, wxALL, 5);
     notebook_1_wxChoice->SetSizer(sizer_5);
@@ -161,6 +231,12 @@ void All_Widgets_Frame::do_layout()
     notebook_1_wxComboBox->SetSizer(sizer_6);
     sizer_17->Add(datepicker_ctrl_1, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
     notebook_1_wxDatePickerCtrl->SetSizer(sizer_17);
+    sizer_15->Add(gauge_1, 1, wxALL, 5);
+    notebook_1_wxGauge->SetSizer(sizer_15);
+    sizer_19->Add(grid_1, 1, wxEXPAND, 0);
+    notebook_1_wxGrid->SetSizer(sizer_19);
+    sizer_20->Add(hyperlink_1, 0, wxALL, 5);
+    notebook_1_wxHyperlinkCtrl->SetSizer(sizer_20);
     sizer_4->Add(list_box_empty, 1, wxALL|wxEXPAND, 5);
     sizer_4->Add(list_box_filled, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxListBox->SetSizer(sizer_4);
@@ -179,12 +255,26 @@ void All_Widgets_Frame::do_layout()
     grid_sizer_2->Add(text_ctrl_3, 1, wxALL|wxEXPAND, 5);
     sizer_8->Add(grid_sizer_2, 1, wxEXPAND, 0);
     notebook_1_wxRadioButton->SetSizer(sizer_8);
-    sizer_15->Add(gauge_1, 1, wxALL, 5);
-    notebook_1_wxSlider->SetSizer(sizer_15);
-    sizer_16->Add(spin_button_1, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
+    sizer_22->Add(slider_1, 1, wxALL|wxEXPAND, 5);
+    notebook_1_wxSlider->SetSizer(sizer_22);
+    sizer_16->Add(spin_button_1, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     notebook_1_wxSpinButton->SetSizer(sizer_16);
     sizer_14->Add(spin_ctrl_1, 1, wxALL, 5);
     notebook_1_wxSpinCtrl->SetSizer(sizer_14);
+    sizer_30->Add(label_top_pane, 1, wxALL|wxEXPAND, 5);
+    splitter_1_pane_1->SetSizer(sizer_30);
+    sizer_31->Add(label_buttom_pane, 1, wxALL|wxEXPAND, 5);
+    splitter_1_pane_2->SetSizer(sizer_31);
+    splitter_1->SplitHorizontally(splitter_1_pane_1, splitter_1_pane_2);
+    sizer_29->Add(splitter_1, 1, wxALL|wxEXPAND, 5);
+    notebook_1_wxSplitterWindow_horizontal->SetSizer(sizer_29);
+    sizer_32->Add(label_left_pane, 1, wxALL|wxEXPAND, 5);
+    splitter_2_pane_1->SetSizer(sizer_32);
+    sizer_33->Add(label_right_pane, 1, wxALL|wxEXPAND, 5);
+    splitter_2_pane_2->SetSizer(sizer_33);
+    splitter_2->SplitVertically(splitter_2_pane_1, splitter_2_pane_2, 420);
+    sizer_25->Add(splitter_2, 1, wxALL|wxEXPAND, 5);
+    notebook_1_wxSplitterWindow_vertical->SetSizer(sizer_25);
     sizer_11->Add(bitmap_code_nullbitmap, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     sizer_11->Add(bitmap_file, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     sizer_11->Add(bitmap_nofile, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
@@ -201,11 +291,20 @@ void All_Widgets_Frame::do_layout()
     notebook_1_Spacer->SetSizer(grid_sizer_3);
     sizer_18->Add(text_ctrl, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxTextCtrl->SetSizer(sizer_18);
+    sizer_23->Add(button_2, 1, wxALL, 5);
+    notebook_1_wxToggleButton->SetSizer(sizer_23);
+    sizer_24->Add(tree_ctrl_1, 1, wxALL, 5);
+    notebook_1_wxTreeCtrl->SetSizer(sizer_24);
     notebook_1->AddPage(notebook_1_wxBitmapButton, _("wxBitmapButton"));
+    notebook_1->AddPage(notebook_1_wxButton, _("wxButton"));
     notebook_1->AddPage(notebook_1_wxCalendarCtrl, _("wxCalendarCtrl"));
+    notebook_1->AddPage(notebook_1_wxCheckBox, _("wxCheckBox"));
     notebook_1->AddPage(notebook_1_wxChoice, _("wxChoice"));
     notebook_1->AddPage(notebook_1_wxComboBox, _("wxComboBox"));
     notebook_1->AddPage(notebook_1_wxDatePickerCtrl, _("wxDatePickerCtrl"));
+    notebook_1->AddPage(notebook_1_wxGauge, _("wxGauge"));
+    notebook_1->AddPage(notebook_1_wxGrid, _("wxGrid"));
+    notebook_1->AddPage(notebook_1_wxHyperlinkCtrl, _("wxHyperlinkCtrl"));
     notebook_1->AddPage(notebook_1_wxListBox, _("wxListBox"));
     notebook_1->AddPage(notebook_1_wxListCtrl, _("wxListCtrl"));
     notebook_1->AddPage(notebook_1_wxRadioBox, _("wxRadioBox"));
@@ -213,18 +312,20 @@ void All_Widgets_Frame::do_layout()
     notebook_1->AddPage(notebook_1_wxSlider, _("wxSlider"));
     notebook_1->AddPage(notebook_1_wxSpinButton, _("wxSpinButton"));
     notebook_1->AddPage(notebook_1_wxSpinCtrl, _("wxSpinCtrl"));
-    notebook_1->AddPage(notebook_1_wxSplitterWindow, _("wxSplitterWindow"));
+    notebook_1->AddPage(notebook_1_wxSplitterWindow_horizontal, _("wxSplitterWindow (horizontally)"));
+    notebook_1->AddPage(notebook_1_wxSplitterWindow_vertical, _("wxSplitterWindow (vertically)"));
     notebook_1->AddPage(notebook_1_wxStaticBitmap, _("wxStaticBitmap"));
     notebook_1->AddPage(notebook_1_wxStaticLine, _("wxStaticLine"));
     notebook_1->AddPage(notebook_1_Spacer, _("wxStaticText (with Spacer)"));
     notebook_1->AddPage(notebook_1_wxTextCtrl, _("wxTextCtrl"));
+    notebook_1->AddPage(notebook_1_wxToggleButton, _("wxToggleButton"));
+    notebook_1->AddPage(notebook_1_wxTreeCtrl, _("wxTreeCtrl"));
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
     sizer_1->Add(static_line_1, 0, wxALL|wxEXPAND, 5);
     sizer_2->Add(button_5, 0, wxALIGN_RIGHT|wxALL, 5);
     sizer_2->Add(button_1, 0, wxALIGN_RIGHT|wxALL, 5);
     sizer_1->Add(sizer_2, 0, wxALIGN_RIGHT, 0);
     SetSizer(sizer_1);
-    sizer_1->Fit(this);
     sizer_1->SetSizeHints(this);
     sizer_1->AddGrowableRow(0);
     sizer_1->AddGrowableCol(0);
