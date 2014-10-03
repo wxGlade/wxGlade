@@ -625,6 +625,9 @@ class CheckListProperty(Property, _activator):
         """
         self._choices = []
 
+        # the value for all choices is continuously stored in self.values
+        value_pos = 0
+
         tmp_sizer = wx.BoxSizer(wx.VERTICAL)
 
         for box_label in self.styles.keys():
@@ -632,14 +635,14 @@ class CheckListProperty(Property, _activator):
                                       style=wx.FULL_REPAINT_ON_RESIZE)
             box_sizer = wx.StaticBoxSizer(static_box, wx.VERTICAL)
             labels = self.styles[box_label]
-            for pos in range(len(labels)):
-                checkbox = wx.CheckBox(parent, wx.ID_ANY, labels[pos])
-                checkbox.SetValue(self.values[pos])
+            for label_pos in range(len(labels)):
+                checkbox = wx.CheckBox(parent, wx.ID_ANY, labels[label_pos])
+                checkbox.SetValue(self.values[value_pos])
 
                 # set the tool-tips for the properties
-                if labels[pos] in self.tooltips:
-                    tip = STT.SuperToolTip(self.tooltips[labels[pos]])
-                    tip.SetHeader(labels[pos])
+                if labels[label_pos] in self.tooltips:
+                    tip = STT.SuperToolTip(self.tooltips[labels[label_pos]])
+                    tip.SetHeader(labels[label_pos])
                     tip.SetTarget(checkbox)
                     tip.SetDrawHeaderLine(True)
                     tip.ApplyStyle("Beige")
@@ -647,6 +650,8 @@ class CheckListProperty(Property, _activator):
 
                 self._choices.append(checkbox)
                 box_sizer.Add(checkbox)
+
+                value_pos += 1
 
             tmp_sizer.Add(box_sizer, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -661,14 +666,15 @@ class CheckListProperty(Property, _activator):
 
     def get_value(self):
         try:
-            return [c.GetValue() for c in self._choices]
+            value = [choice.GetValue() for choice in self._choices]
+            return value
         except AttributeError:
             return self.values
 
     def set_value(self, value):
+        self.values = self.prepare_value(value)
         if not self._choices:
             return
-        self.values = self.prepare_value(value)
         try:
             for i in range(len(self.values)):
                 self._choices[i].SetValue(self.values[i])
