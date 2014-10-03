@@ -93,6 +93,9 @@ class SplitterWindowSizer(Sizer):
 class EditSplitterWindow(ManagedBase, StylesMixin):
     """\
     Class to handle wxSplitterWindow objects
+
+    @ivar orientation: Orientation of the widget e.g. wxSPLIT_VERTICAL
+    @type orientation: str | unicode
     """
 
     _custom_base_classes = True
@@ -107,8 +110,8 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
                  sizer, pos, property_window, show=True):
 
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer,
-                             pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id,
+                             sizer, pos, property_window, show=show)
         StylesMixin.__init__(self)
 
         # initialise instance variables
@@ -137,9 +140,8 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         self.window_1 = SizerSlot(self, self.virtual_sizer, 1)
         self.window_2 = SizerSlot(self, self.virtual_sizer, 2)
 
-        prop['sash_pos'] = SpinProperty(
-            self, 'sash_pos', None, r=(0, 20), can_disable=True,
-            label=_("sash_pos"))
+        prop['sash_pos'] = SpinProperty(self, 'sash_pos', r=(0, 400),
+                                        can_disable=True, label=_("sash_pos"))
         self.no_custom_class = False
         self.access_functions['no_custom_class'] = (self.get_no_custom_class,
                                                     self.set_no_custom_class)
@@ -178,7 +180,7 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         self.properties['style'].display(panel)
         self.properties['sash_pos'].display(panel)
         sizer.Add(self.properties['no_custom_class'].panel, 0,
-                  wx.ALL|wx.EXPAND, 3)
+                  wx.ALL | wx.EXPAND, 3)
         sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['sash_pos'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
@@ -187,44 +189,51 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         self.notebook.AddPage(panel, 'Widget')
         
     def split(self):
-        if not self.widget: return
+        if not self.widget:
+            return
         if self.window_1 and self.window_2:
             self.window_1.show_widget(True)
             self.window_2.show_widget(True)
             sp = self.properties['sash_pos'].get_value()
             if not self.properties['sash_pos'].is_active():
-                if self.orientation == wx.SPLIT_VERTICAL:
+                if self.orientation == 'wxSPLIT_VERTICAL':
                     max_pos = self.widget.GetClientSize()[0]
-                else: max_pos = self.widget.GetClientSize()[1]
-                sp = max_pos/2
-            if self.orientation == wx.SPLIT_VERTICAL:
+                else:
+                    max_pos = self.widget.GetClientSize()[1]
+                sp = max_pos / 2
+            if self.orientation == 'wxSPLIT_VERTICAL':
                 self.widget.SplitVertically(self.window_1.widget,
                                             self.window_2.widget, sp)
             else:
                 self.widget.SplitHorizontally(self.window_1.widget,
                                               self.window_2.widget, sp)
-            for w in self.window_1, self.window_2:
-                if hasattr(w, 'sel_marker'): w.sel_marker.update()
+            for window in self.window_1, self.window_2:
+                if hasattr(window, 'sel_marker'):
+                    window.sel_marker.update()
 
     def get_sash_pos(self):
         return self.sash_pos
 
     def set_sash_pos(self, value):
-        try: value = int(value)
-        except ValueError: return
+        try:
+            value = int(value)
+        except ValueError:
+            return
         self.sash_pos = value
         if self.widget:
             self.widget.SetSashPosition(value)
 
     def on_size(self, event):
-        if not self.widget: return
+        if not self.widget:
+            return
         try:
-            if self.orientation == wx.SPLIT_VERTICAL:
+            if self.orientation == 'wxSPLIT_VERTICAL':
                 max_pos = self.widget.GetClientSize()[0]
-            else: max_pos = self.widget.GetClientSize()[1]
+            else:
+                max_pos = self.widget.GetClientSize()[1]
             self.properties['sash_pos'].set_range(-max_pos, max_pos)
             if not self.properties['sash_pos'].is_active():
-                self.widget.SetSashPosition(max_pos/2)
+                self.widget.SetSashPosition(max_pos / 2)
                 self.sash_pos = self.widget.GetSashPosition()
                 self.properties['sash_pos'].set_value(self.sash_pos)
         except (AttributeError, KeyError):
@@ -240,22 +249,19 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         """\
         Return the attribute name of the selected orientation.
 
-        @rtype: String
+        @rtype: str | unicode
         """
-        od = {wx.SPLIT_HORIZONTAL: 'wxSPLIT_HORIZONTAL',
-              wx.SPLIT_VERTICAL: 'wxSPLIT_VERTICAL'}
-        return od.get(self.orientation, 'wxSPLIT_VERTICAL')
+        return self.orientation
 
     def set_orientation(self, value):
         """\
         Select a orientation
 
         @param value: Attribute name e.g. 'wxSPLIT_HORIZONTAL'
-        @type value:  String
+        @type value:  str | unicode
         """
-        od = {'wxSPLIT_HORIZONTAL': wx.SPLIT_HORIZONTAL,
-              'wxSPLIT_VERTICAL': wx.SPLIT_VERTICAL}
-        self.orientation = od.get(value, wx.SPLIT_VERTICAL)
+        assert value in ['wxSPLIT_HORIZONTAL', 'wxSPLIT_VERTICAL']
+        self.orientation = value
 
     def get_win_1(self):
         if not isinstance(self.window_1, SizerSlot):
