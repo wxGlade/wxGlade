@@ -12,7 +12,7 @@ import wcodegen
 
 class PerlSliderGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(value)s, ' \
-           '%(minValue)s, %(maxvalue)s%(style)s);\n'
+           '%(minValue)s, %(maxValue)s%(style)s);\n'
     default_style = 'wxSL_HORIZONTAL'
 
     def _prepare_tmpl_content(self, obj):
