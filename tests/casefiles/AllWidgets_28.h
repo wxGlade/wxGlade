@@ -17,16 +17,21 @@
 #include "wx/intl.h"
 
 #ifndef APP_CATALOG
-#define APP_CATALOG "ComplexExampleApp"  // replace with the appropriate catalog name
+#define APP_CATALOG "AllWidgets28App"  // replace with the appropriate catalog name
 #endif
 
 
 // begin wxGlade: ::dependencies
-#include <wx/calctrl.h>
-#include <wx/notebook.h>
 #include <wx/statline.h>
-#include <wx/spinctrl.h>
+#include <wx/tglbtn.h>
 #include <wx/datectrl.h>
+#include <wx/grid.h>
+#include <wx/notebook.h>
+#include <wx/calctrl.h>
+#include <wx/treectrl.h>
+#include <wx/splitter.h>
+#include <wx/spinctrl.h>
+#include <wx/hyperlink.h>
 #include <wx/listctrl.h>
 #include <wx/spinbutt.h>
 // end wxGlade
@@ -51,10 +56,19 @@ private:
 protected:
     // begin wxGlade: All_Widgets_Frame::attributes
     wxStaticBox* sizer_8_staticbox;
+    wxMenuBar* All_Widgets_menubar;
+    wxStatusBar* All_Widgets_statusbar;
+    wxToolBar* All_Widgets_toolbar;
     wxBitmapButton* bitmap_button_1;
     wxPanel* notebook_1_wxBitmapButton;
+    wxButton* button_3;
+    wxPanel* notebook_1_wxButton;
     wxCalendarCtrl* calendar_ctrl_1;
     wxPanel* notebook_1_wxCalendarCtrl;
+    wxCheckBox* checkbox_1;
+    wxCheckBox* checkbox_2;
+    wxCheckBox* checkbox_3;
+    wxPanel* notebook_1_wxCheckBox;
     wxChoice* choice_empty;
     wxChoice* choice_filled;
     wxPanel* notebook_1_wxChoice;
@@ -63,6 +77,12 @@ protected:
     wxPanel* notebook_1_wxComboBox;
     wxDatePickerCtrl* datepicker_ctrl_1;
     wxPanel* notebook_1_wxDatePickerCtrl;
+    wxGauge* gauge_1;
+    wxPanel* notebook_1_wxGauge;
+    wxGrid* grid_1;
+    wxPanel* notebook_1_wxGrid;
+    wxHyperlinkCtrl* hyperlink_1;
+    wxPanel* notebook_1_wxHyperlinkCtrl;
     wxListBox* list_box_empty;
     wxListBox* list_box_filled;
     wxPanel* notebook_1_wxListBox;
@@ -80,13 +100,24 @@ protected:
     wxRadioButton* radio_btn_3;
     wxTextCtrl* text_ctrl_3;
     wxPanel* notebook_1_wxRadioButton;
-    wxGauge* gauge_1;
+    wxSlider* slider_1;
     wxPanel* notebook_1_wxSlider;
     wxSpinButton* spin_button_1;
     wxPanel* notebook_1_wxSpinButton;
     wxSpinCtrl* spin_ctrl_1;
     wxPanel* notebook_1_wxSpinCtrl;
-    wxPanel* notebook_1_wxSplitterWindow;
+    wxStaticText* label_top_pane;
+    wxPanel* splitter_1_pane_1;
+    wxStaticText* label_buttom_pane;
+    wxPanel* splitter_1_pane_2;
+    wxSplitterWindow* splitter_1;
+    wxScrolledWindow* notebook_1_wxSplitterWindow_horizontal;
+    wxStaticText* label_left_pane;
+    wxPanel* splitter_2_pane_1;
+    wxStaticText* label_right_pane;
+    wxPanel* splitter_2_pane_2;
+    wxSplitterWindow* splitter_2;
+    wxScrolledWindow* notebook_1_wxSplitterWindow_vertical;
     wxStaticBitmap* bitmap_code_nullbitmap;
     wxStaticBitmap* bitmap_file;
     wxStaticBitmap* bitmap_nofile;
@@ -101,6 +132,10 @@ protected:
     wxPanel* notebook_1_Spacer;
     wxTextCtrl* text_ctrl;
     wxPanel* notebook_1_wxTextCtrl;
+    wxToggleButton* button_2;
+    wxPanel* notebook_1_wxToggleButton;
+    wxTreeCtrl* tree_ctrl_1;
+    wxPanel* notebook_1_wxTreeCtrl;
     wxNotebook* notebook_1;
     wxStaticLine* static_line_1;
     wxButton* button_5;

@@ -7,6 +7,7 @@
 
 use Wx 0.15 qw[:allclasses];
 use strict;
+use Wx::Grid;
 
 # begin wxGlade: dependencies
 # end wxGlade
@@ -35,11 +36,37 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    
+
+    # Menu Bar
+
+    $self->{All_Widgets_menubar} = Wx::MenuBar->new();
+    my $wxglade_tmp_menu;
+    $wxglade_tmp_menu = Wx::Menu->new();
+    $wxglade_tmp_menu->Append(wxID_OPEN, _T("Exit"), _T("Finish program"));
+    $self->{_T("All_Widgets_menubar")}->Append($wxglade_tmp_menu, _T("File"));
+    $self->SetMenuBar($self->{All_Widgets_menubar});
+    
+# Menu Bar end
+
+    $self->{All_Widgets_statusbar} = $self->CreateStatusBar(1);
+    
+# Tool Bar
+    $self->{All_Widgets_toolbar} = Wx::ToolBar->new($self, -1, wxDefaultPosition, wxDefaultSize, );
+    $self->SetToolBar($self->{All_Widgets_toolbar});
+    $self->{All_Widgets_toolbar}->AddTool(wxID_OPEN, _T("Open"), (wxNullBitmap), wxNullBitmap, wxITEM_NORMAL, _T("Open a new file"), _T("Open a new file"));
+    # Tool Bar end
     $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
     $self->{notebook_1_wxBitmapButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{bitmap_button_1} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
+    $self->{notebook_1_wxButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{button_3} = Wx::Button->new($self->{notebook_1_wxButton}, wxID_BOLD, "");
     $self->{notebook_1_wxCalendarCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{calendar_ctrl_1} = Wx::CalendarCtrl->new($self->{notebook_1_wxCalendarCtrl}, wxID_ANY, Wx::DateTime->new);
+    $self->{notebook_1_wxCheckBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{checkbox_1} = Wx::CheckBox->new($self->{notebook_1_wxCheckBox}, wxID_ANY, _T("one"));
+    $self->{checkbox_2} = Wx::CheckBox->new($self->{notebook_1_wxCheckBox}, wxID_ANY, _T("two"));
+    $self->{checkbox_3} = Wx::CheckBox->new($self->{notebook_1_wxCheckBox}, wxID_ANY, _T("three"));
     $self->{notebook_1_wxChoice} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{choice_empty} = Wx::Choice->new($self->{notebook_1_wxChoice}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
     $self->{choice_filled} = Wx::Choice->new($self->{notebook_1_wxChoice}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], );
@@ -48,6 +75,12 @@ sub new {
     $self->{combo_box_filled} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [_T("Item 1 (pre-selected)"), _T("Item 2")], wxCB_DROPDOWN);
     $self->{notebook_1_wxDatePickerCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{datepicker_ctrl_1} = Wx::DatePickerCtrl->new($self->{notebook_1_wxDatePickerCtrl}, wxID_ANY);
+    $self->{notebook_1_wxGauge} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{gauge_1} = Wx::Gauge->new($self->{notebook_1_wxGauge}, wxID_ANY, 20);
+    $self->{notebook_1_wxGrid} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{grid_1} = Wx::Grid->new($self->{notebook_1_wxGrid}, wxID_ANY);
+    $self->{notebook_1_wxHyperlinkCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{hyperlink_1} = Wx::HyperlinkCtrl->new($self->{notebook_1_wxHyperlinkCtrl}, wxID_ANY, _T("Homepage wxGlade"), _T("http://wxglade.sf.net"));
     $self->{notebook_1_wxListBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{list_box_empty} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
     $self->{list_box_filled} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], );
@@ -67,12 +100,23 @@ sub new {
     $self->{text_ctrl_3} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
     $self->{sizer_8_staticbox} = Wx::StaticBox->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("My RadioButton Group") );
     $self->{notebook_1_wxSlider} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-    $self->{gauge_1} = Wx::Gauge->new($self->{notebook_1_wxSlider}, wxID_ANY, 20);
+    $self->{slider_1} = Wx::Slider->new($self->{notebook_1_wxSlider}, wxID_ANY, 5, 0, 10);
     $self->{notebook_1_wxSpinButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-    $self->{spin_button_1} = Wx::SpinButton->new($self->{notebook_1_wxSpinButton}, wxID_ANY,);
+    $self->{spin_button_1} = Wx::SpinButton->new($self->{notebook_1_wxSpinButton}, wxID_ANY,, wxDefaultPosition, wxDefaultSize, wxSP_VERTICAL);
     $self->{notebook_1_wxSpinCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{spin_ctrl_1} = Wx::SpinCtrl->new($self->{notebook_1_wxSpinCtrl}, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_AUTO_URL, 0, 100, 4);
-    $self->{notebook_1_wxSplitterWindow} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{notebook_1_wxSplitterWindow_horizontal} = Wx::ScrolledWindow->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    $self->{splitter_1} = Wx::SplitterWindow->new($self->{notebook_1_wxSplitterWindow_horizontal}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{splitter_1_pane_1} = Wx::Panel->new($self->{splitter_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{label_top_pane} = Wx::StaticText->new($self->{splitter_1_pane_1}, wxID_ANY, _T("top pane"));
+    $self->{splitter_1_pane_2} = Wx::Panel->new($self->{splitter_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{label_buttom_pane} = Wx::StaticText->new($self->{splitter_1_pane_2}, wxID_ANY, _T("bottom pane"));
+    $self->{notebook_1_wxSplitterWindow_vertical} = Wx::ScrolledWindow->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    $self->{splitter_2} = Wx::SplitterWindow->new($self->{notebook_1_wxSplitterWindow_vertical}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{splitter_2_pane_1} = Wx::Panel->new($self->{splitter_2}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{label_left_pane} = Wx::StaticText->new($self->{splitter_2_pane_1}, wxID_ANY, _T("left pane"));
+    $self->{splitter_2_pane_2} = Wx::Panel->new($self->{splitter_2}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{label_right_pane} = Wx::StaticText->new($self->{splitter_2_pane_2}, wxID_ANY, _T("right pane"));
     $self->{notebook_1_wxStaticBitmap} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{bitmap_code_nullbitmap} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, (wxNullBitmap));
     $self->{bitmap_file} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
@@ -87,6 +131,10 @@ sub new {
     $self->{label_2} = Wx::StaticText->new($self->{notebook_1_Spacer}, wxID_ANY, _T("spacer between"));
     $self->{notebook_1_wxTextCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{text_ctrl} = Wx::TextCtrl->new($self->{notebook_1_wxTextCtrl}, wxID_ANY, _T("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_CHARWRAP|wxTE_MULTILINE|wxTE_WORDWRAP);
+    $self->{notebook_1_wxToggleButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{button_2} = Wx::ToggleButton->new($self->{notebook_1_wxToggleButton}, wxID_ANY, _T("Toggle Button"));
+    $self->{notebook_1_wxTreeCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{tree_ctrl_1} = Wx::TreeCtrl->new($self->{notebook_1_wxTreeCtrl}, wxID_ANY);
     $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
     $self->{button_5} = Wx::Button->new($self, wxID_CLOSE, "");
     $self->{button_1} = Wx::Button->new($self, wxID_OK, "", wxDefaultPosition, wxDefaultSize, wxBU_TOP);
@@ -106,13 +154,30 @@ sub __set_properties {
     my $self = shift;
     # begin wxGlade: All_Widgets_Frame::__set_properties
     $self->SetTitle(_T("All Widgets"));
+    $self->SetSize(Wx::Size->new(800, 400));
+    $self->{All_Widgets_statusbar}->SetStatusWidths(-1);
+
+    # statusbar fields
+    my( @All_Widgets_statusbar_fields ) = (
+        _T("All Widgets statusbar"),
+    );
+
+    if( @All_Widgets_statusbar_fields ) {
+        $self->{All_Widgets_statusbar}->SetStatusText($All_Widgets_statusbar_fields[$_], $_)
+        for 0 .. $#All_Widgets_statusbar_fields ;
+    }
+    $self->{All_Widgets_toolbar}->Realize();
     $self->{bitmap_button_1}->SetSize($self->{bitmap_button_1}->GetBestSize());
     $self->{bitmap_button_1}->SetDefault();
     $self->{choice_filled}->SetSelection(1);
     $self->{combo_box_filled}->SetSelection(0);
+    $self->{grid_1}->CreateGrid(10, 3);
+    $self->{grid_1}->SetSelectionMode(wxGridSelectCells);
     $self->{list_box_filled}->SetSelection(1);
     $self->{radio_box_filled1}->SetSelection(1);
     $self->{radio_box_filled2}->SetSelection(1);
+    $self->{notebook_1_wxSplitterWindow_horizontal}->SetScrollRate(10, 10);
+    $self->{notebook_1_wxSplitterWindow_vertical}->SetScrollRate(10, 10);
     # end wxGlade
 }
 
@@ -121,30 +186,49 @@ sub __do_layout {
     # begin wxGlade: All_Widgets_Frame::__do_layout
     $self->{sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
     $self->{sizer_2} = Wx::FlexGridSizer->new(1, 2, 0, 0);
+    $self->{sizer_24} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_23} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_18} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{grid_sizer_3} = Wx::FlexGridSizer->new(1, 3, 0, 0);
     $self->{sizer_9} = Wx::BoxSizer->new(wxVERTICAL);
     $self->{sizer_10} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_11} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_25} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_33} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_32} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_29} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_31} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_30} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_14} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_16} = Wx::BoxSizer->new(wxHORIZONTAL);
-    $self->{sizer_15} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_22} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_8_staticbox}->Lower();
     $self->{sizer_8} = Wx::StaticBoxSizer->new($self->{sizer_8_staticbox}, wxHORIZONTAL);
     $self->{grid_sizer_2} = Wx::FlexGridSizer->new(3, 2, 0, 0);
     $self->{grid_sizer_1} = Wx::GridSizer->new(2, 2, 0, 0);
     $self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_4} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_20} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_19} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_15} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_17} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_6} = Wx::BoxSizer->new(wxVERTICAL);
     $self->{sizer_7} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_5} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_21} = Wx::BoxSizer->new(wxVERTICAL);
     $self->{sizer_12} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_28} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_13} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_13}->Add($self->{bitmap_button_1}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxBitmapButton}->SetSizer($self->{sizer_13});
+    $self->{sizer_28}->Add($self->{button_3}, 0, wxALL, 5);
+    $self->{notebook_1_wxButton}->SetSizer($self->{sizer_28});
     $self->{sizer_12}->Add($self->{calendar_ctrl_1}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxCalendarCtrl}->SetSizer($self->{sizer_12});
+    $self->{sizer_21}->Add($self->{checkbox_1}, 0, 0, 0);
+    $self->{sizer_21}->Add($self->{checkbox_2}, 0, 0, 0);
+    $self->{sizer_21}->Add($self->{checkbox_3}, 0, 0, 0);
+    $self->{notebook_1_wxCheckBox}->SetSizer($self->{sizer_21});
     $self->{sizer_5}->Add($self->{choice_empty}, 1, wxALL, 5);
     $self->{sizer_5}->Add($self->{choice_filled}, 1, wxALL, 5);
     $self->{notebook_1_wxChoice}->SetSizer($self->{sizer_5});
@@ -154,6 +238,12 @@ sub __do_layout {
     $self->{notebook_1_wxComboBox}->SetSizer($self->{sizer_6});
     $self->{sizer_17}->Add($self->{datepicker_ctrl_1}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
     $self->{notebook_1_wxDatePickerCtrl}->SetSizer($self->{sizer_17});
+    $self->{sizer_15}->Add($self->{gauge_1}, 1, wxALL, 5);
+    $self->{notebook_1_wxGauge}->SetSizer($self->{sizer_15});
+    $self->{sizer_19}->Add($self->{grid_1}, 1, wxEXPAND, 0);
+    $self->{notebook_1_wxGrid}->SetSizer($self->{sizer_19});
+    $self->{sizer_20}->Add($self->{hyperlink_1}, 0, wxALL, 5);
+    $self->{notebook_1_wxHyperlinkCtrl}->SetSizer($self->{sizer_20});
     $self->{sizer_4}->Add($self->{list_box_empty}, 1, wxALL|wxEXPAND, 5);
     $self->{sizer_4}->Add($self->{list_box_filled}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxListBox}->SetSizer($self->{sizer_4});
@@ -172,12 +262,26 @@ sub __do_layout {
     $self->{grid_sizer_2}->Add($self->{text_ctrl_3}, 1, wxALL|wxEXPAND, 5);
     $self->{sizer_8}->Add($self->{grid_sizer_2}, 1, wxEXPAND, 0);
     $self->{notebook_1_wxRadioButton}->SetSizer($self->{sizer_8});
-    $self->{sizer_15}->Add($self->{gauge_1}, 1, wxALL, 5);
-    $self->{notebook_1_wxSlider}->SetSizer($self->{sizer_15});
-    $self->{sizer_16}->Add($self->{spin_button_1}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
+    $self->{sizer_22}->Add($self->{slider_1}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_wxSlider}->SetSizer($self->{sizer_22});
+    $self->{sizer_16}->Add($self->{spin_button_1}, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     $self->{notebook_1_wxSpinButton}->SetSizer($self->{sizer_16});
     $self->{sizer_14}->Add($self->{spin_ctrl_1}, 1, wxALL, 5);
     $self->{notebook_1_wxSpinCtrl}->SetSizer($self->{sizer_14});
+    $self->{sizer_30}->Add($self->{label_top_pane}, 1, wxALL|wxEXPAND, 5);
+    $self->{splitter_1_pane_1}->SetSizer($self->{sizer_30});
+    $self->{sizer_31}->Add($self->{label_buttom_pane}, 1, wxALL|wxEXPAND, 5);
+    $self->{splitter_1_pane_2}->SetSizer($self->{sizer_31});
+    $self->{splitter_1}->SplitHorizontally($self->{splitter_1_pane_1}, $self->{splitter_1_pane_2}, );
+    $self->{sizer_29}->Add($self->{splitter_1}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_wxSplitterWindow_horizontal}->SetSizer($self->{sizer_29});
+    $self->{sizer_32}->Add($self->{label_left_pane}, 1, wxALL|wxEXPAND, 5);
+    $self->{splitter_2_pane_1}->SetSizer($self->{sizer_32});
+    $self->{sizer_33}->Add($self->{label_right_pane}, 1, wxALL|wxEXPAND, 5);
+    $self->{splitter_2_pane_2}->SetSizer($self->{sizer_33});
+    $self->{splitter_2}->SplitVertically($self->{splitter_2_pane_1}, $self->{splitter_2_pane_2}, 420);
+    $self->{sizer_25}->Add($self->{splitter_2}, 1, wxALL|wxEXPAND, 5);
+    $self->{notebook_1_wxSplitterWindow_vertical}->SetSizer($self->{sizer_25});
     $self->{sizer_11}->Add($self->{bitmap_code_nullbitmap}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
@@ -194,11 +298,20 @@ sub __do_layout {
     $self->{notebook_1_Spacer}->SetSizer($self->{grid_sizer_3});
     $self->{sizer_18}->Add($self->{text_ctrl}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxTextCtrl}->SetSizer($self->{sizer_18});
+    $self->{sizer_23}->Add($self->{button_2}, 1, wxALL, 5);
+    $self->{notebook_1_wxToggleButton}->SetSizer($self->{sizer_23});
+    $self->{sizer_24}->Add($self->{tree_ctrl_1}, 1, wxALL, 5);
+    $self->{notebook_1_wxTreeCtrl}->SetSizer($self->{sizer_24});
     $self->{notebook_1}->AddPage($self->{notebook_1_wxBitmapButton}, _T("wxBitmapButton"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxButton}, _T("wxButton"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxCalendarCtrl}, _T("wxCalendarCtrl"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxCheckBox}, _T("wxCheckBox"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxChoice}, _T("wxChoice"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxComboBox}, _T("wxComboBox"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxDatePickerCtrl}, _T("wxDatePickerCtrl"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxGauge}, _T("wxGauge"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxGrid}, _T("wxGrid"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxHyperlinkCtrl}, _T("wxHyperlinkCtrl"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxListBox}, _T("wxListBox"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxListCtrl}, _T("wxListCtrl"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxRadioBox}, _T("wxRadioBox"));
@@ -206,18 +319,20 @@ sub __do_layout {
     $self->{notebook_1}->AddPage($self->{notebook_1_wxSlider}, _T("wxSlider"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxSpinButton}, _T("wxSpinButton"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxSpinCtrl}, _T("wxSpinCtrl"));
-    $self->{notebook_1}->AddPage($self->{notebook_1_wxSplitterWindow}, _T("wxSplitterWindow"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxSplitterWindow_horizontal}, _T("wxSplitterWindow (horizontally)"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxSplitterWindow_vertical}, _T("wxSplitterWindow (vertically)"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxStaticBitmap}, _T("wxStaticBitmap"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxStaticLine}, _T("wxStaticLine"));
     $self->{notebook_1}->AddPage($self->{notebook_1_Spacer}, _T("wxStaticText (with Spacer)"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxTextCtrl}, _T("wxTextCtrl"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxToggleButton}, _T("wxToggleButton"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxTreeCtrl}, _T("wxTreeCtrl"));
     $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
     $self->{sizer_1}->Add($self->{static_line_1}, 0, wxALL|wxEXPAND, 5);
     $self->{sizer_2}->Add($self->{button_5}, 0, wxALIGN_RIGHT|wxALL, 5);
     $self->{sizer_2}->Add($self->{button_1}, 0, wxALIGN_RIGHT|wxALL, 5);
     $self->{sizer_1}->Add($self->{sizer_2}, 0, wxALIGN_RIGHT, 0);
     $self->SetSizer($self->{sizer_1});
-    $self->{sizer_1}->Fit($self);
     $self->{sizer_1}->SetSizeHints($self);
     $self->{sizer_1}->AddGrowableRow(0);
     $self->{sizer_1}->AddGrowableCol(0);
@@ -245,15 +360,15 @@ package main;
 
 unless(caller){
     my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-    $local->AddCatalog("ComplexExampleApp"); # replace with the appropriate catalog name
+    $local->AddCatalog("AllWidgets28App"); # replace with the appropriate catalog name
 
     local *Wx::App::OnInit = sub{1};
-    my $ComplexExampleApp = Wx::App->new();
+    my $AllWidgets28App = Wx::App->new();
     Wx::InitAllImageHandlers();
 
     my $All_Widgets = All_Widgets_Frame->new();
 
-    $ComplexExampleApp->SetTopWindow($All_Widgets);
+    $AllWidgets28App->SetTopWindow($All_Widgets);
     $All_Widgets->Show(1);
-    $ComplexExampleApp->MainLoop();
+    $AllWidgets28App->MainLoop();
 }
