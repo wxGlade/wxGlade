@@ -69,7 +69,7 @@ class CppStaticBitmapGenerator(wcodegen.CppWidgetCodeWriter):
         elif bmp_file.startswith('code:'):
             stmt = '(%s)' % bmp_file[5:].strip()
         else:
-            stmt = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
+            stmt = 'wxBitmap(wxT(%s), wxBITMAP_TYPE_ANY)' % \
                    self.codegen.quote_path(bmp_file)
 
         self.tmpl_dict['bitmap'] = stmt

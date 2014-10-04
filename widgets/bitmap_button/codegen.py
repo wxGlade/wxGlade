@@ -120,7 +120,7 @@ class CppBitmapButtonGenerator(wcodegen.CppWidgetCodeWriter):
         elif bmp_file.startswith('code:'):
             bmp = '(%s)' % bmp_file[5:].strip()
         else:
-            bmp = 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
+            bmp = 'wxBitmap(wxT(%s), wxBITMAP_TYPE_ANY)' % \
                   self.codegen.quote_path(bmp_file)
         init = ['%s = new %s(%s, %s, %s%s);\n' %
                 (obj.name, obj.klass, parent, id, bmp, extra)]
