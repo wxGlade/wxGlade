@@ -8,6 +8,7 @@ etc.)
 """
 
 import logging
+import textwrap
 
 # this is needed for wx >= 2.3.4 to clip the label showing the name of the
 # property, otherwise on the properties tabs horizontal scrollbars are shown
@@ -19,6 +20,7 @@ import wx.grid
 import wx.lib.agw.supertooltip as STT
 
 import common
+import config
 import misc
 from misc import _reverse_dict
 from ordereddict import OrderedDict
@@ -565,6 +567,19 @@ class CheckListProperty(Property, _activator):
         if parent is not None:
             self.display(parent)
 
+    def _wrap_msg(self, msg):
+        """\
+        Wrap a message to fit lines into a width of L{config.tooltip_width}.
+
+        @param msg: Message to wrap
+        @type msg:  str
+
+        @rtype: str
+        """
+        msg = msg.strip()
+        msg = '\n'.join(textwrap.wrap(msg, config.tooltip_width))
+        return msg
+
     def _create_tooltip_text(self):
         """\
         Create the texts for all tooltips based on widgets style
@@ -575,7 +590,7 @@ class CheckListProperty(Property, _activator):
             text = ''
             details = self.style_defs.get(style_name, {})
             if 'desc' in details:
-                text += '%s\n' % details['desc'].strip()
+                text += '%s\n' % self._wrap_msg(details['desc'])
             if 'combination' in details:
                 if text:
                     text += '\n'
@@ -583,7 +598,9 @@ class CheckListProperty(Property, _activator):
                 last = combi_list[-1]
                 first = ', '.join(combi_list[:-1])
                 combi_text = _('%s and %s') % (first, last)
-                text += _('This style is a combination of: %s\n') % combi_text
+                text += self._wrap_msg(
+                    _('This style is a combination of: %s\n') % combi_text
+                )
             if 'supported_by' in details:
                 if text:
                     text += '\n'
@@ -597,8 +614,10 @@ class CheckListProperty(Property, _activator):
                     first = supported_list[:-1]
                     last = supported_list[-1]
                     supported_text = _('%s and %s') % (first, last)
-                text += _('This style is only supported on %s\n') % \
-                        supported_text
+                text += self._wrap_msg(
+                    _('This style is only supported on %s\n') %
+                    supported_text
+                )
             for attr_name, msg in [
                 ('default_style', _('This style is the default\n')),
                 ('obsolete', _('This style is obsolete and should not be '
@@ -610,9 +629,9 @@ class CheckListProperty(Property, _activator):
                     if text:
                         text += '\n'
                     if '%s' in msg:
-                        text += msg % details[attr_name]
+                        text += self._wrap_msg(msg % details[attr_name])
                     else:
-                        text += msg
+                        text += self._wrap_msg(msg)
 
             tooltips[style_name] = text
 
@@ -646,7 +665,7 @@ class CheckListProperty(Property, _activator):
                     tip.SetTarget(checkbox)
                     tip.SetDrawHeaderLine(True)
                     tip.ApplyStyle("Beige")
-                    tip.SetEndDelay(2)
+                    tip.SetEndDelay(config.tooltip_time)
 
                 self._choices.append(checkbox)
                 box_sizer.Add(checkbox)

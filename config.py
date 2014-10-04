@@ -245,3 +245,17 @@ Path to wxGlade log file
 @type: String
 @note: This path will be set during initialisation
 """
+
+tooltip_time = 3
+"""\
+Number of seconds a tooltip will be shown
+
+@type: int
+"""
+
+tooltip_width = 50
+"""\
+Maximum width to split tooltips into
+
+@type: int
+"""
