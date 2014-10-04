@@ -14,7 +14,7 @@
 
 #include <wx/wx.h>
 #include <wx/image.h>
-#include "wx/intl.h"
+#include <wx/intl.h>
 
 #ifndef APP_CATALOG
 #define APP_CATALOG "myapp"  // replace with the appropriate catalog name

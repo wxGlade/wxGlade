@@ -403,7 +403,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 """
 
     tmpl_init_gettext = """\
-#include "wx/intl.h"
+#include <wx/intl.h>
 
 #ifndef APP_CATALOG
 #define APP_CATALOG "%(name)s"  // replace with the appropriate catalog name
