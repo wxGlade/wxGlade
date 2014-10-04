@@ -102,9 +102,10 @@ sub new {
     $self->{notebook_1_wxSlider} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{slider_1} = Wx::Slider->new($self->{notebook_1_wxSlider}, wxID_ANY, 5, 0, 10);
     $self->{notebook_1_wxSpinButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-    $self->{spin_button_1} = Wx::SpinButton->new($self->{notebook_1_wxSpinButton}, wxID_ANY,, wxDefaultPosition, wxDefaultSize, wxSP_VERTICAL);
+    $self->{tc_spin_button} = Wx::TextCtrl->new($self->{notebook_1_wxSpinButton}, wxID_ANY, _T("1"), wxDefaultPosition, wxDefaultSize, wxTE_RIGHT);
+    $self->{spin_button} = Wx::SpinButton->new($self->{notebook_1_wxSpinButton}, wxID_ANY,, wxDefaultPosition, wxDefaultSize, wxSP_VERTICAL);
     $self->{notebook_1_wxSpinCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
-    $self->{spin_ctrl_1} = Wx::SpinCtrl->new($self->{notebook_1_wxSpinCtrl}, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_AUTO_URL, 0, 100, 4);
+    $self->{spin_ctrl_1} = Wx::SpinCtrl->new($self->{notebook_1_wxSpinCtrl}, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_RIGHT, 0, 100, 4);
     $self->{notebook_1_wxSplitterWindow_horizontal} = Wx::ScrolledWindow->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     $self->{splitter_1} = Wx::SplitterWindow->new($self->{notebook_1_wxSplitterWindow_horizontal}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{splitter_1_pane_1} = Wx::Panel->new($self->{splitter_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
@@ -264,7 +265,8 @@ sub __do_layout {
     $self->{notebook_1_wxRadioButton}->SetSizer($self->{sizer_8});
     $self->{sizer_22}->Add($self->{slider_1}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxSlider}->SetSizer($self->{sizer_22});
-    $self->{sizer_16}->Add($self->{spin_button_1}, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    $self->{sizer_16}->Add($self->{tc_spin_button}, 1, wxALL, 5);
+    $self->{sizer_16}->Add($self->{spin_button}, 1, wxALL, 5);
     $self->{notebook_1_wxSpinButton}->SetSizer($self->{sizer_16});
     $self->{sizer_14}->Add($self->{spin_ctrl_1}, 1, wxALL, 5);
     $self->{notebook_1_wxSpinCtrl}->SetSizer($self->{sizer_14});
