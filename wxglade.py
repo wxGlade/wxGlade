@@ -280,6 +280,7 @@ def init_stage2(use_gui):
                 import wxversion
                 # Currently we use wxPython 2.8 only
                 wxversion.select('2.8')
+#                wxversion.select('3.0')
                 #wxversion.ensureMinimal('2.8')
             except ImportError:
                 logging.error(
