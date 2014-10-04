@@ -450,9 +450,18 @@
                             <orient>wxHORIZONTAL</orient>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+                                <flag>wxALL</flag>
                                 <border>5</border>
-                                <object class="wxSpinButton" name="spin_button_1">
+                                <object class="wxTextCtrl" name="tc_spin_button">
+                                    <style>wxTE_RIGHT</style>
+                                    <value>1</value>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALL</flag>
+                                <border>5</border>
+                                <object class="wxSpinButton" name="spin_button">
                                     <style>wxSP_VERTICAL</style>
                                     <min>0</min>
                                     <max> 100</max>
@@ -473,7 +482,7 @@
                                 <flag>wxALL</flag>
                                 <border>5</border>
                                 <object class="wxSpinCtrl" name="spin_ctrl_1">
-                                    <style>wxSP_ARROW_KEYS|wxTE_AUTO_URL</style>
+                                    <style>wxSP_ARROW_KEYS|wxTE_RIGHT</style>
                                     <min>0</min>
                                     <max> 100</max>
                                     <value>4</value>
