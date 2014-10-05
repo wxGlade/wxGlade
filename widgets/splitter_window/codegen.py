@@ -12,8 +12,13 @@ import wcodegen
 
 class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, window):
+        init = []
+        layout_buf = []
+        props_buf = self.codegen.generate_common_properties(window)
+
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
+
         if not window.parent.is_toplevel:
             parent = 'self.%s' % window.parent.name
         else:
@@ -31,17 +36,14 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
             style = ", style=%s" % self.codegen.cn_f(style)
         else:
             style = ''
-        init = []
         if id_name:
             init.append(id_name)
         klass = window.klass
         if window.preview:
             klass = 'wxSplitterWindow'
-        init.append(('self.%s = ' + self.cn(klass) +
-                     '(%s, %s%s)\n') % (window.name, parent, id, style))
+        init.append('self.%s = %s(%s, %s%s)\n' % (
+            window.name, self.cn(klass), parent, id, style))
 
-        props_buf = self.codegen.generate_common_properties(window)
-        layout_buf = []
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -54,17 +56,22 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
             else:
                 f_name = 'SplitHorizontally'
             layout_buf.append('self.%s.%s(self.%s, self.%s%s)\n' %
-                             (window.name, f_name, win_1, win_2, sash_pos))
+                              (window.name, f_name, win_1, win_2, sash_pos))
         else:
             def add_sub(win):
                 layout_buf.append('self.%s.SetSplitMode(%s)\n' %
-                                 (window.name, self.cn(orientation)))
+                                  (window.name, self.cn(orientation)))
                 layout_buf.append('self.%s.Initialize(self.%s)\n' %
-                                 (window.name, win))
+                                  (window.name, win))
             if win_1:
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
+
+        min_pane_size = prop.get('min_pane_size')
+        if min_pane_size:
+            props_buf.append('self.%s.SetMinimumPaneSize(%s)\n' % (
+                window.name, min_pane_size))
 
         return init, props_buf, layout_buf
 
@@ -110,8 +117,13 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
         """\
         generates the C++ code for wxSplitterWindow
         """
+        init = []
+        layout_buf = []
+        props_buf = self.codegen.generate_common_properties(window)
+
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
+
         if id_name:
             ids = [id_name]
         else:
@@ -128,11 +140,9 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
         style = prop.get("style")
         if style and style != 'wxSP_3D':
             extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        init = ['%s = new %s(%s, %s%s);\n' %
-                (window.name, window.klass, parent, id, extra) ]
+        init.append('%s = new %s(%s, %s%s);\n' % (window.name, window.klass,
+                                                  parent, id, extra))
 
-        props_buf = self.codegen.generate_common_properties(window)
-        layout_buf = []
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -156,6 +166,11 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
+
+        min_pane_size = prop.get('min_pane_size')
+        if min_pane_size:
+            props_buf.append('%s->SetMinimumPaneSize(%s);\n' % (
+                window.name, min_pane_size))
 
         return init, ids, props_buf, layout_buf
 

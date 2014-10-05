@@ -443,7 +443,7 @@
                     </object>
                     </object>
                     <object class="notebookpage">
-                    <label>wxSpinButton</label>
+                    <label>wxSpinButton (with wxTextCtrl</label>
                     <object class="wxPanel" name="notebook_1_wxSpinButton">
                         <style>wxTAB_TRAVERSAL</style>
                         <object class="wxBoxSizer">
@@ -502,6 +502,7 @@
                                 <border>5</border>
                                 <object class="wxSplitterWindow" name="splitter_1">
                                     <orientation>horizontal</orientation>
+                                    <min_pane_size>20</min_pane_size>
                                     <object class="wxPanel" name="splitter_1_pane_1">
                                         <style>wxTAB_TRAVERSAL</style>
                                         <object class="wxBoxSizer">
@@ -545,8 +546,8 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxSplitterWindow" name="splitter_2">
-                                    <sashpos>420</sashpos>
                                     <orientation>vertical</orientation>
+                                    <min_pane_size>20</min_pane_size>
                                     <object class="wxPanel" name="splitter_2_pane_1">
                                         <style>wxTAB_TRAVERSAL</style>
                                         <object class="wxBoxSizer">

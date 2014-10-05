@@ -145,7 +145,9 @@ class All_Widgets_Frame(wx.Frame):
         self.list_box_filled.SetSelection(1)
         self.radio_box_filled1.SetSelection(1)
         self.radio_box_filled2.SetSelection(1)
+        self.splitter_1.SetMinimumPaneSize(20)
         self.notebook_1_wxSplitterWindow_horizontal.SetScrollRate(10, 10)
+        self.splitter_2.SetMinimumPaneSize(20)
         self.notebook_1_wxSplitterWindow_vertical.SetScrollRate(10, 10)
         # end wxGlade
 
@@ -247,7 +249,7 @@ class All_Widgets_Frame(wx.Frame):
         self.splitter_2_pane_1.SetSizer(sizer_32)
         sizer_33.Add(self.label_right_pane, 1, wx.ALL | wx.EXPAND, 5)
         self.splitter_2_pane_2.SetSizer(sizer_33)
-        self.splitter_2.SplitVertically(self.splitter_2_pane_1, self.splitter_2_pane_2, 420)
+        self.splitter_2.SplitVertically(self.splitter_2_pane_1, self.splitter_2_pane_2)
         sizer_25.Add(self.splitter_2, 1, wx.ALL | wx.EXPAND, 5)
         self.notebook_1_wxSplitterWindow_vertical.SetSizer(sizer_25)
         sizer_11.Add(self.bitmap_code_nullbitmap, 1, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL | wx.ALL | wx.EXPAND, 5)
@@ -285,7 +287,7 @@ class All_Widgets_Frame(wx.Frame):
         self.notebook_1.AddPage(self.notebook_1_wxRadioBox, _("wxRadioBox"))
         self.notebook_1.AddPage(self.notebook_1_wxRadioButton, _("wxRadioButton"))
         self.notebook_1.AddPage(self.notebook_1_wxSlider, _("wxSlider"))
-        self.notebook_1.AddPage(self.notebook_1_wxSpinButton, _("wxSpinButton"))
+        self.notebook_1.AddPage(self.notebook_1_wxSpinButton, _("wxSpinButton (with wxTextCtrl"))
         self.notebook_1.AddPage(self.notebook_1_wxSpinCtrl, _("wxSpinCtrl"))
         self.notebook_1.AddPage(self.notebook_1_wxSplitterWindow_horizontal, _("wxSplitterWindow (horizontally)"))
         self.notebook_1.AddPage(self.notebook_1_wxSplitterWindow_vertical, _("wxSplitterWindow (vertically)"))

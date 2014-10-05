@@ -177,7 +177,9 @@ sub __set_properties {
     $self->{list_box_filled}->SetSelection(1);
     $self->{radio_box_filled1}->SetSelection(1);
     $self->{radio_box_filled2}->SetSelection(1);
+    $self->{splitter_1}->SetMinimumPaneSize(20);
     $self->{notebook_1_wxSplitterWindow_horizontal}->SetScrollRate(10, 10);
+    $self->{splitter_2}->SetMinimumPaneSize(20);
     $self->{notebook_1_wxSplitterWindow_vertical}->SetScrollRate(10, 10);
     # end wxGlade
 }
@@ -281,7 +283,7 @@ sub __do_layout {
     $self->{splitter_2_pane_1}->SetSizer($self->{sizer_32});
     $self->{sizer_33}->Add($self->{label_right_pane}, 1, wxALL|wxEXPAND, 5);
     $self->{splitter_2_pane_2}->SetSizer($self->{sizer_33});
-    $self->{splitter_2}->SplitVertically($self->{splitter_2_pane_1}, $self->{splitter_2_pane_2}, 420);
+    $self->{splitter_2}->SplitVertically($self->{splitter_2_pane_1}, $self->{splitter_2_pane_2}, );
     $self->{sizer_25}->Add($self->{splitter_2}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxSplitterWindow_vertical}->SetSizer($self->{sizer_25});
     $self->{sizer_11}->Add($self->{bitmap_code_nullbitmap}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
@@ -319,7 +321,7 @@ sub __do_layout {
     $self->{notebook_1}->AddPage($self->{notebook_1_wxRadioBox}, _T("wxRadioBox"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxRadioButton}, _T("wxRadioButton"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxSlider}, _T("wxSlider"));
-    $self->{notebook_1}->AddPage($self->{notebook_1_wxSpinButton}, _T("wxSpinButton"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_wxSpinButton}, _T("wxSpinButton (with wxTextCtrl"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxSpinCtrl}, _T("wxSpinCtrl"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxSplitterWindow_horizontal}, _T("wxSplitterWindow (horizontally)"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxSplitterWindow_vertical}, _T("wxSplitterWindow (vertically)"));
