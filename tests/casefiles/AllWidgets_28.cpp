@@ -169,7 +169,9 @@ void All_Widgets_Frame::set_properties()
     list_box_filled->SetSelection(1);
     radio_box_filled1->SetSelection(1);
     radio_box_filled2->SetSelection(1);
+    splitter_1->SetMinimumPaneSize(20);
     notebook_1_wxSplitterWindow_horizontal->SetScrollRate(10, 10);
+    splitter_2->SetMinimumPaneSize(20);
     notebook_1_wxSplitterWindow_vertical->SetScrollRate(10, 10);
     // end wxGlade
 }
@@ -274,7 +276,7 @@ void All_Widgets_Frame::do_layout()
     splitter_2_pane_1->SetSizer(sizer_32);
     sizer_33->Add(label_right_pane, 1, wxALL|wxEXPAND, 5);
     splitter_2_pane_2->SetSizer(sizer_33);
-    splitter_2->SplitVertically(splitter_2_pane_1, splitter_2_pane_2, 420);
+    splitter_2->SplitVertically(splitter_2_pane_1, splitter_2_pane_2);
     sizer_25->Add(splitter_2, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxSplitterWindow_vertical->SetSizer(sizer_25);
     sizer_11->Add(bitmap_code_nullbitmap, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
@@ -312,7 +314,7 @@ void All_Widgets_Frame::do_layout()
     notebook_1->AddPage(notebook_1_wxRadioBox, _("wxRadioBox"));
     notebook_1->AddPage(notebook_1_wxRadioButton, _("wxRadioButton"));
     notebook_1->AddPage(notebook_1_wxSlider, _("wxSlider"));
-    notebook_1->AddPage(notebook_1_wxSpinButton, _("wxSpinButton"));
+    notebook_1->AddPage(notebook_1_wxSpinButton, _("wxSpinButton (with wxTextCtrl"));
     notebook_1->AddPage(notebook_1_wxSpinCtrl, _("wxSpinCtrl"));
     notebook_1->AddPage(notebook_1_wxSplitterWindow_horizontal, _("wxSplitterWindow (horizontally)"));
     notebook_1->AddPage(notebook_1_wxSplitterWindow_vertical, _("wxSplitterWindow (vertically)"));

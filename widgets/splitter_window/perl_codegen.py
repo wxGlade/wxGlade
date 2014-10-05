@@ -16,6 +16,10 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
     ]
 
     def get_code(self, window):
+        init = []
+        layout_buf = []
+        props_buf = self.codegen.generate_common_properties(window)
+
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
 
@@ -43,7 +47,6 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
         if not(style and style != 'wxSP_3D'):
             style = ''
 
-        init = []
         if id_name:
             init.append(id_name)
 
@@ -51,9 +54,6 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
                     'wxDefaultSize, %s);\n'
                     % (window.name, self.cn(window.klass), parent, id, style))
 
-        props_buf = self.codegen.generate_common_properties(window)
-
-        layout_buf = []
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -78,6 +78,11 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
+
+        min_pane_size = prop.get('min_pane_size')
+        if min_pane_size:
+            props_buf.append('$self->{%s}->SetMinimumPaneSize(%s);\n' % (
+                window.name, min_pane_size))
 
         return init, props_buf, layout_buf
 

@@ -16,6 +16,10 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
     ]
 
     def get_code(self, window):
+        init = []
+        layout_buf = []
+        props_buf = self.codegen.generate_common_properties(window)
+
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
 
@@ -39,16 +43,12 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
         else:
             style = self.cn_f(style)
 
-        init = []
         if id_name:
             init.append(id_name)
 
         init.append('(setf (slot-%s obj) (wxSplitterWindow_Create %s %s -1 -1 -1 -1 %s))\n'
                     % (window.name, parent, id, style))
 
-        props_buf = self.codegen.generate_common_properties(window)
-
-        layout_buf = []
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
         orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
@@ -73,6 +73,12 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
+
+        min_pane_size = prop.get('min_pane_size')
+        if min_pane_size:
+            props_buf.append('wxSplitterWindow_SetMinimumPaneSize '
+                             '(slot-%s obj) %s)\n' % (window.name,
+                                                      min_pane_size))
 
         return init, props_buf, layout_buf
 

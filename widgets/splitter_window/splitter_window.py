@@ -121,8 +121,11 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         self.window_2 = win_2
         self.orientation = orientation
         self.sash_pos = 0
+        self.min_pane_size = 20
 
         # initialise properties remaining staff
+        self.access_functions['min_pane_size'] = (self.get_min_pane_size,
+                                                  self.set_min_pane_size)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['sash_pos'] = (self.get_sash_pos,
                                              self.set_sash_pos)
@@ -140,6 +143,10 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         self.window_1 = SizerSlot(self, self.virtual_sizer, 1)
         self.window_2 = SizerSlot(self, self.virtual_sizer, 2)
 
+        prop['min_pane_size'] = SpinProperty(self, 'min_pane_size',
+                                             can_disable=True, r=(10, 2000),
+                                             label=_('Minimum pane size'))
+
         prop['sash_pos'] = SpinProperty(self, 'sash_pos', r=(0, 400),
                                         can_disable=True, label=_("sash_pos"))
         self.no_custom_class = False
@@ -155,17 +162,26 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         self.split()
 
     def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
+        ManagedBase.finish_widget_creation(self,
+                                           sel_marker_parent=self.widget)
+
         sp = self.properties['sash_pos']
         if sp.is_active():
             sp.set_value(self.sash_pos)
             self.widget.SetSashPosition(self.sash_pos)
         else:
             sp.set_value(self.widget.GetSashPosition())
+
+        min_pane_size = self.properties['min_pane_size']
+        if sp.is_active():
+            min_pane_size.set_value(self.min_pane_size)
+            self.widget.SetMinimumPaneSize(self.min_pane_size)
+        else:
+            min_pane_size.set_value(self.widget.GetMinimumPaneSize())
         
         wx.EVT_SPLITTER_SASH_POS_CHANGED(self.widget, self.widget.GetId(),
                                          self.on_sash_pos_changed)
-        
+
     def on_set_focus(self, event):
         self.show_properties()
         # here we must call event.Skip() also on Win32 as this we should be
@@ -179,10 +195,12 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         self.properties['no_custom_class'].display(panel)
         self.properties['style'].display(panel)
         self.properties['sash_pos'].display(panel)
+        self.properties['min_pane_size'].display(panel)
         sizer.Add(self.properties['no_custom_class'].panel, 0,
                   wx.ALL | wx.EXPAND, 3)
         sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['sash_pos'].panel, 0, wx.EXPAND)
+        sizer.Add(self.properties['min_pane_size'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(sizer)
         sizer.Fit(panel)
@@ -222,6 +240,18 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         self.sash_pos = value
         if self.widget:
             self.widget.SetSashPosition(value)
+
+    def get_min_pane_size(self):
+        return self.min_pane_size
+
+    def set_min_pane_size(self, value):
+        try:
+            value = int(value)
+        except ValueError:
+            return
+        self.min_pane_size = value
+        if self.widget:
+            self.widget.SetMinimumPaneSize(value)
 
     def on_size(self, event):
         if not self.widget:

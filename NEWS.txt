@@ -15,6 +15,7 @@ General:
   - Unify the code generation of widget specific code
     This change causes some minor changes in the generated code.
   - Add Lisp and Perl support for wxDatePickerCtrl
+  - Add support for wxSplitterWindow.SetMinimumPaneSize()
   - ...
 
 Generated Code:
