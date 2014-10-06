@@ -7,6 +7,11 @@ etc.)
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+__all__ = ['CheckBoxProperty', 'CheckListProperty', 'ColorDialogProperty',
+           'ComboBoxProperty', 'DialogProperty', 'FileDialogProperty',
+           'FontDialogProperty', 'GridProperty', 'HiddenProperty',
+           'Property', 'RadioProperty', 'SpinProperty', 'TextProperty', ]
+
 import logging
 import textwrap
 
