@@ -34,7 +34,7 @@ label_initial_width = 5
 _encode = common._encode_to_xml
 
 
-class Property:
+class Property(object):
     """\
     A class to handle a single property of a widget.
 

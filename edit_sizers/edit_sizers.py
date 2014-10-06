@@ -511,7 +511,7 @@ class SizerHandleButton(Button):
 # end of class SizerHandleButton
 
 
-class SizerItem:
+class SizerItem(object):
     """\
     Represents a child of a sizer
     """
@@ -528,7 +528,7 @@ class SizerItem:
 
 #---------- 2002-10-07 --------------------------------------------------------
 
-class SizerClassDialog:
+class SizerClassDialog(object):
     choices = [
         ('EditBoxSizerV', 'wxBoxSizer (wxVERTICAL)'),
         ('EditBoxSizerH', 'wxBoxSizer (wxHORIZONTAL)'),

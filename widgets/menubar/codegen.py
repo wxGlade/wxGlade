@@ -141,7 +141,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
 # end of class PythonMenubarGenerator
 
 
-class MenuHandler:
+class MenuHandler(object):
     """Handler for menus and menu items of a menubar"""
     item_attrs = ('label', 'id', 'name', 'help_str', 'checkable', 'radio',
                   'handler')

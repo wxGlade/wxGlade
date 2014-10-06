@@ -1,14 +1,15 @@
-# tool.py: Tool objects
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Tool objects
+
+@copyright: 2002-2007 Alberto Griggio
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 from xml.sax.saxutils import escape
 from common import _encode_to_xml
 
-class Tool:
+
+class Tool(object):
     def __init__(self, id='', label='', type=0, short_help='',
                  long_help='', bitmap1='', bitmap2='', handler=''):
         self.id = id

@@ -128,7 +128,7 @@ class SelectionTag(wx.Window):
 # end of class SelectionTag
 
 
-class SelectionMarker:
+class SelectionMarker(object):
     """\
     Collection of the 4 SelectionTagS for each widget
     """

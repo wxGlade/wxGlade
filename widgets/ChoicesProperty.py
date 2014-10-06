@@ -1,10 +1,10 @@
-# ChoicesProperty.py: defines a Property and two handlers used by choice,
-# combo_box, radio_box, list_box
-# $Id: ChoicesProperty.py,v 1.8 2007/03/27 07:02:05 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Defines a Property and two handlers used by choice, combo_box, radio_box,
+list_box
+
+@copyright: 2002-2007 Alberto Griggio
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import widget_properties
 
@@ -30,7 +30,7 @@ class ChoicesProperty(widget_properties.GridProperty):
 # end of class ChoicesProperty
 
 
-class ChoicesHandler:
+class ChoicesHandler(object):
     def __init__(self, owner):
         self.choices = []
         self.curr_choice = []

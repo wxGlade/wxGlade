@@ -1,11 +1,11 @@
-# ChoicesCodeHandler.py: handler for the 'choices' property of various elements
-# $Id: ChoicesCodeHandler.py,v 1.8 2007/03/27 07:02:05 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Handler for the 'choices' property of various elements
 
-class ChoicesCodeHandler:
+@copyright: 2002-2007 Alberto Griggio
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+class ChoicesCodeHandler(object):
     """\
     handler for the 'choices' property of various elements
     """

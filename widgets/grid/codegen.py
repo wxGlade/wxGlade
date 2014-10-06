@@ -9,7 +9,7 @@ import common
 import wcodegen
 
 
-class ColsCodeHandler:
+class ColsCodeHandler(object):
     def __init__(self):
         self.columns = []
         self.col_name = ''

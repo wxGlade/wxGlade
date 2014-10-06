@@ -1105,7 +1105,7 @@ class ManagedBase(WindowBase):
 # end of class ManagedBase
 
 
-class PreviewMixin:
+class PreviewMixin(object):
     """\
     Mixin class used to add preview to a widget
 

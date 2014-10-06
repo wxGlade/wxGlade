@@ -34,8 +34,9 @@ class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
 
 # end of class PythonStatusBarGenerator
 
+
 # property handlers for code generation
-class StatusFieldsHandler:
+class StatusFieldsHandler(object):
     """Handler for statusbar fields"""
     def __init__(self):
         self.labels = []

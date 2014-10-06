@@ -22,7 +22,7 @@ import config
 import wcodegen
 
 
-class FontPropertyHandler:
+class FontPropertyHandler(object):
     def __init__(self):
         self.props = {'size': '', 'family': '', 'style': '', 'weight': '',
                       'underlined': '', 'face': ''}

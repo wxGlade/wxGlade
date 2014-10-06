@@ -55,7 +55,7 @@ class GridColsProperty(GridProperty):
 # end of class GridColumnsProperty
 
 
-class ColsHandler:
+class ColsHandler(object):
     def __init__(self, parent):
         self.parent = parent
         self.columns = []
