@@ -833,17 +833,16 @@ class SizerBase(Sizer):
         """\
         Setup of the Properties of self.
         """
-        if not self.toplevel:
-            border_styles = OrderedDict()
-            border_styles[_('Border')] = ['wxALL', 'wxLEFT', 'wxRIGHT',
-                                          'wxTOP', 'wxBOTTOM']
-            border_styles[_('Alignment')] = [
-                'wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM',
-                'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
-                'wxSHAPED', 'wxADJUST_MINSIZE', 'wxFIXED_MINSIZE']
+        border_styles = OrderedDict()
+        border_styles[_('Border')] = ['wxALL', 'wxLEFT', 'wxRIGHT',
+                                      'wxTOP', 'wxBOTTOM']
+        border_styles[_('Alignment')] = [
+            'wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM',
+            'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
+            'wxSHAPED', 'wxADJUST_MINSIZE', 'wxFIXED_MINSIZE']
 
-            # use 'wxDialog' as a functional dummy
-            self.sm_border = StylesMixin('wxDialog', border_styles)
+        # use 'wxDialog' as a functional dummy
+        self.sm_border = StylesMixin('wxDialog', border_styles)
 
         self.access_functions = {
             'name': (lambda: self.name, self.set_name),
