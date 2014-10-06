@@ -8,7 +8,9 @@ wxComboBox objects
 
 import wx
 
+import common
 import config
+import misc
 from edit_windows import ManagedBase, StylesMixin
 from tree import Tree
 from widget_properties import *
