@@ -48,7 +48,7 @@ If not None, this is the SizerSlot wich has the "mouse focus": this is used
 to restore the mouse cursor if the user cancelled the addition of a widget
 """
 
-encode = common._encode_from_xml
+encode = common.encode_from_xml
 
 _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
 
@@ -559,7 +559,7 @@ def get_relative_path(path, for_preview=False):
     p = common.app_tree.app.output_path
     if for_preview:
         p = getattr(common.app_tree.app, 'real_output_path', '')
-        p = common._encode_from_xml(common._encode_to_xml(p))
+        p = common.encode_from_xml(common.encode_to_xml(p))
     d = os.path.dirname(p)
     if d:
         path = os.path.join(d, path)

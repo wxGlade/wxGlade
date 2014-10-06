@@ -1,4 +1,4 @@
-"""
+"""\
 Global variables
 
 @copyright: 2002-2007 Alberto Griggio
@@ -1046,7 +1046,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     return tmp
 
 
-def _encode_from_xml(label, encoding=None):
+def encode_from_xml(label, encoding=None):
     """\
     Returns a str which is the encoded version of the unicode label
     """
@@ -1055,7 +1055,7 @@ def _encode_from_xml(label, encoding=None):
     return label.encode(encoding, 'replace')
 
 
-def _encode_to_xml(label, encoding=None):
+def encode_to_xml(label, encoding=None):
     """\
     returns a utf-8 encoded representation of label. This is equivalent to:
     str(label).decode(encoding).encode('utf-8')
@@ -1316,7 +1316,7 @@ def save_preferences():
         fh = palette.file_history
         count = fh.GetCount()
         encoding = 'utf-8'
-        filenames = [_encode_to_xml(fh.GetHistoryFile(i), encoding)
+        filenames = [encode_to_xml(fh.GetHistoryFile(i), encoding)
                      for i in
                      range(min(config.preferences.number_history, count))]
         outfile = open(config.history_file, 'w')

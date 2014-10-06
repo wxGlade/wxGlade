@@ -1639,7 +1639,7 @@ class EditStaticBoxSizer(SizerBase):
         def write(outfile, tabs):
             import widget_properties
             outfile.write('    ' * tabs + '<label>')
-            outfile.write(widget_properties.escape(widget_properties._encode(
+            outfile.write(widget_properties.escape(common.encode_to_xml(
                 self.get_label())))
             outfile.write('</label>\n')
         # we must consider also "" a valid value

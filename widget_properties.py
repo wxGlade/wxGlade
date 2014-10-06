@@ -30,9 +30,6 @@ import misc
 from misc import _reverse_dict
 from ordereddict import OrderedDict
 
-label_initial_width = 5
-_encode = common._encode_to_xml
-
 
 class Property(object):
     """\
@@ -100,7 +97,7 @@ class Property(object):
         if not misc.streq(value, ''):
             fwrite = outfile.write
             fwrite('    ' * tabs + '<%s>' % self.name)
-            fwrite(escape(_encode(value)))
+            fwrite(escape(common.encode_to_xml(value)))
             fwrite('</%s>\n' % self.name)
 
     def bind_event(self, function):
@@ -362,7 +359,7 @@ class TextProperty(Property, _activator):
         if lbl is None:
             lbl = self._mangle(self.dispName)
         label = wx.lib.stattext.GenStaticText(
-            parent, wx.ID_ANY, lbl, size=(label_initial_width, -1))
+            parent, wx.ID_ANY, lbl, size=(config.label_initial_width, -1))
         self.text = wx.TextCtrl(
             parent, wx.ID_ANY, val, style=style, size=(1, -1))
         enabler = None
@@ -490,7 +487,7 @@ class CheckBoxProperty(Property, _activator):
                 value = int(self.owner[self.name][0]())
             fwrite = outfile.write
             fwrite('    ' * tabs + '<%s>' % self.name)
-            fwrite(escape(_encode(value)))
+            fwrite(escape(common.encode_to_xml(value)))
             fwrite('</%s>\n' % self.name)
 
 # end of class CheckBoxProperty
@@ -712,7 +709,7 @@ class CheckListProperty(Property, _activator):
         if value:
             fwrite = outfile.write
             fwrite('    ' * tabs + '<%s>' % self.name)
-            fwrite(escape(_encode(value)))
+            fwrite(escape(common.encode_to_xml(value)))
             fwrite('</%s>\n' % self.name)
 
     def prepare_value(self, old_val):
@@ -783,7 +780,7 @@ class SpinProperty(Property, _activator):
         if lbl is None:
             lbl = self._mangle(self.dispName)
         label = wx.lib.stattext.GenStaticText(
-            parent, wx.ID_ANY, lbl, size=(label_initial_width, -1))
+            parent, wx.ID_ANY, lbl, size=(config.label_initial_width, -1))
         self.spin = wx.SpinCtrl(parent, wx.ID_ANY, min=self.val_range[0],
                                 max=self.val_range[1])
         val = int(self.owner[self.name][0]())
@@ -876,10 +873,10 @@ class DialogProperty(Property, _activator):
         val = misc.wxstr(self.owner[self.name][0]())
         label = wx.lib.stattext.GenStaticText(
             parent, wx.ID_ANY, self._mangle(self.dispName),
-            size=(label_initial_width, -1))
+            size=(config.label_initial_width, -1))
         self.text = wx.TextCtrl(parent, wx.ID_ANY, val, size=(1, -1))
         self.btn = wx.Button(parent, wx.ID_ANY, " ... ",
-                             size=(label_initial_width, -1))
+                             size=(config.label_initial_width, -1))
         enabler = None
         if self.can_disable:
             enabler = wx.CheckBox(parent, wx.ID_ANY, '', size=(1, -1))
@@ -1103,7 +1100,8 @@ class FontDialogProperty(DialogProperty):
     def write(self, outfile, tabs=0):
         if self.is_active():
             try:
-                props = [_encode(s) for s in eval(self.get_value().strip())]
+                props = [common.encode_to_xml(s) for s in
+                         eval(self.get_value().strip())]
             except:
                 self._logger.exception(_('Internal Error'))
                 return
@@ -1291,9 +1289,10 @@ class RadioProperty(Property, _activator):
 
     def write(self, outfile, tabs=0):
         if self.is_active():
-            outfile.write('    ' * tabs + '<%s>%s</%s>\n' %
-                          (self.name, escape(_encode(self.get_str_value())),
-                           self.name))
+            outfile.write('    ' * tabs + '<%s>%s</%s>\n' % (
+                self.name,
+                escape(common.encode_to_xml(self.get_str_value())),
+                self.name))
 
 # end of class RadioProperty
 
@@ -1627,7 +1626,7 @@ class ComboBoxProperty(Property, _activator):
             if value != 'None':
                 fwrite = outfile.write
                 fwrite('    ' * tabs + '<%s>' % self.name)
-                fwrite(escape(_encode(value)))
+                fwrite(escape(common.encode_to_xml(value)))
                 fwrite('</%s>\n' % self.name)
 
 # end of class ComboBoxProperty

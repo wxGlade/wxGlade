@@ -25,8 +25,8 @@ class GridColsProperty(GridProperty):
         value = self.get_value()  # this is a list
         for i in range(len(value)):
             val = value[i]  # this is another list
-            _label = escape(widget_properties._encode(val[0]))
-            _size  = escape(widget_properties._encode(val[1]))
+            _label = escape(common.encode_to_xml(val[0]))
+            _size  = escape(common.encode_to_xml(val[1]))
             write('%s<column size=%s>%s</column>\n' % (
                 tab_s, quoteattr(_size), _label))
         write('    ' * tabs + '</columns>\n')

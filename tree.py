@@ -256,7 +256,7 @@ class Tree(object):
                       'use_new_namespace="1" for_version=%s is_template=%s '
                       'indent_amount=%s indent_symbol=%s '
                       'source_extension=%s header_extension=%s>\n'
-                      % tuple([quoteattr(common._encode_to_xml(i)) for i in 
+                      % tuple([quoteattr(common.encode_to_xml(i)) for i in
                                (outpath, name, klass, option, language,
                                 top_window, encoding, use_gettext,
                                 overwrite, for_version,

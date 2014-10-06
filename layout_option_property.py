@@ -11,6 +11,8 @@ import wx
 import wx.lib.stattext
 import widget_properties
 
+import config
+
 
 def _is_gridbag(dummy):
     return False
@@ -36,7 +38,7 @@ class LayoutOptionProperty(widget_properties.Property):
         """
         self.id = wx.NewId()
         self.val_range = (0, 1000)
-        size = (widget_properties.label_initial_width, -1)
+        size = (config.label_initial_width, -1)
         label = wx.lib.stattext.GenStaticText(
             parent, wx.ID_ANY, _('Proportion'), size=size)
         self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
@@ -54,7 +56,7 @@ class LayoutOptionProperty(widget_properties.Property):
 
     def _display_gridbag(self, parent):
         sizer = wx.BoxSizer(wx.VERTICAL)
-        size = (widget_properties.label_initial_width, -1)
+        size = (config.label_initial_width, -1)
         val = self.owner[self.name][0]()
         
         szr = wx.BoxSizer(wx.HORIZONTAL)
