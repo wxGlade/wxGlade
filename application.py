@@ -21,7 +21,7 @@ import math
 import misc
 
 
-class FileDirDialog:
+class FileDirDialog(object):
     """\
     Custom class which displays a FileDialog or a DirDialog, according to the
     value of the L{Application.codegen_opt} of its parent (instance of

@@ -9,7 +9,7 @@ import common
 import wcodegen
 
 
-class ArgumentsCodeHandler:
+class ArgumentsCodeHandler(object):
     def __init__(self):
         self.arguments = []
         self.curr_arg = []

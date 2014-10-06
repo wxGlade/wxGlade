@@ -10,7 +10,7 @@ import common
 import wcodegen
 
 
-class TabsCodeHandler:
+class TabsCodeHandler(object):
     def __init__(self):
         self.tabs = []
         self.curr_tab_name = []

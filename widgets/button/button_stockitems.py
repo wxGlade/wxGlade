@@ -1,4 +1,4 @@
-class ButtonStockItems:
+class ButtonStockItems(object):
 
     stock_ids = {
         "ADD" :                 "Add",

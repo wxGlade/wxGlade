@@ -150,7 +150,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 # end of class PythonCodeGenerator
 
 
-class ToolsHandler:
+class ToolsHandler(object):
     """Handler for tools of a toolbar"""
     item_attrs = ('label', 'id', 'short_help', 'type', 'long_help',
                   'bitmap1', 'bitmap2', 'handler')

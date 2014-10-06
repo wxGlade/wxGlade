@@ -20,7 +20,7 @@ import misc
 import templates_ui
 
 
-class Template:
+class Template(object):
     """ \
     A class that handles the specific aspects of template files.
     """

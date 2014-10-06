@@ -127,7 +127,7 @@ class NotebookPagesProperty(GridProperty):
 # end of class NotebookPagesProperty
 
 
-class TabsHandler:
+class TabsHandler(object):
     def __init__(self, parent):
         self.parent = parent
         self.tab_names = []

@@ -32,7 +32,7 @@ class ArgumentsProperty(GridProperty):
 # end of class ArgumentsProperty
 
 
-class ArgumentsHandler:
+class ArgumentsHandler(object):
     def __init__(self, parent):
         self.parent = parent
         self.arguments = []

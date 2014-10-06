@@ -61,8 +61,7 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 # property handlers for code generation
-
-class StatusFieldsHandler:
+class StatusFieldsHandler(object):
     """Handler for statusbar fields"""
     def __init__(self):
         self.labels = []
