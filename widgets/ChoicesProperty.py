@@ -7,6 +7,8 @@ list_box
 """
 
 import widget_properties
+import common
+
 
 class ChoicesProperty(widget_properties.GridProperty):
     def write(self, outfile, tabs):
@@ -15,7 +17,7 @@ class ChoicesProperty(widget_properties.GridProperty):
         write('    ' * tabs + '<choices>\n')
         tab_s = '    ' * (tabs+1)
         for val in self.get_value():
-            v = widget_properties._encode(val[0])
+            v = common.encode_to_xml(val[0])
             try:
                 checked = int(val[1])
             except (IndexError, ValueError):

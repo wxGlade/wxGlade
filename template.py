@@ -64,11 +64,11 @@ class Template(object):
         t2 = '    ' * (tabs+1)
         fwrite(t1 + '<templatedata>\n')
         fwrite(t2 + '<author>%s</author>\n' % \
-               saxutils.escape(common._encode_to_xml(self.author)))
+               saxutils.escape(common.encode_to_xml(self.author)))
         fwrite(t2 + '<description>%s</description>\n' % \
-               saxutils.escape(common._encode_to_xml(self.description)))
+               saxutils.escape(common.encode_to_xml(self.description)))
         fwrite(t2 + '<instructions>%s</instructions>\n' % \
-               saxutils.escape(common._encode_to_xml(self.instructions)))
+               saxutils.escape(common.encode_to_xml(self.instructions)))
         fwrite(t1 + '</templatedata>\n')
         
 # end of class Template

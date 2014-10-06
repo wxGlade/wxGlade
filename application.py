@@ -313,8 +313,8 @@ class Application(object):
         sizer.Add(self.encoding_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.use_gettext_prop.panel, 0, wx.EXPAND)
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        from widget_properties import label_initial_width as _w
-        label = wx.StaticText(panel, -1, _("Top window"), size=(_w, -1))
+        label = wx.StaticText(panel, -1, _("Top window"),
+                              size=(config.label_initial_width, -1))
         label.SetToolTip(wx.ToolTip(
             _("This widget is used as top window in the wxApp start code")
             ))

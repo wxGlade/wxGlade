@@ -110,7 +110,7 @@ class NotebookPagesProperty(GridProperty):
         value = self.get_value()
         for i in range(len(value)):
             val = value[i]
-            v = escape(widget_properties._encode(val[0]))
+            v = escape(common.encode_to_xml(val[0]))
             window = None
             try:
                 t = self.owner.tabs[i]

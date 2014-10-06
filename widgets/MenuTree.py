@@ -27,8 +27,8 @@ class MenuTree(object):
             import common
             fwrite = outfile.write
             tstr = '    ' * (tabs+1)
-            label = common._encode_to_xml(self.label)
-            help_str = common._encode_to_xml(self.help_str)
+            label = common.encode_to_xml(self.label)
+            help_str = common.encode_to_xml(self.help_str)
             if not top and not self.children:
                 fwrite('%s<item>\n' % ('    ' * tabs))
                 label = escape(label)

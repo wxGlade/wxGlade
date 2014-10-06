@@ -275,7 +275,7 @@ class XmlWidgetBuilder(XmlParser):
         else:
             # end of a property or error
             # 1: set _curr_prop value
-            data = common._encode_from_xml("".join(self._curr_prop_val))
+            data = common.encode_from_xml("".join(self._curr_prop_val))
             if data:
                 try:
                     handler = self.top().prop_handlers.top()
@@ -652,7 +652,7 @@ class CodeWriter(XmlParser):
                 encoding = config.default_encoding
         # turn all the attribute values from unicode to str objects
         for attr, val in attrs_impl.items():
-            attrs[attr] = common._encode_from_xml(val, encoding)
+            attrs[attr] = common.encode_from_xml(val, encoding)
         if name == 'application':
             # get the code generation options
             self._appl_started = True
@@ -765,7 +765,7 @@ class CodeWriter(XmlParser):
                 unicode('a', encoding)
             except (KeyError, LookupError):
                 encoding = config.default_encoding
-            data = common._encode_from_xml(u"".join(self._curr_prop_val),
+            data = common.encode_from_xml(u"".join(self._curr_prop_val),
                                            encoding)
             if data:
                 handler = self.top().prop_handlers.top()

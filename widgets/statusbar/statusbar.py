@@ -52,7 +52,7 @@ class EditStatusBar(EditBase, StylesMixin):
             for label, width in self.fields:
                 fwrite('    ' * tabs + '<field width=%s>%s</field>\n' %
                        (quoteattr(width),
-                        escape(widget_properties._encode(label))))
+                        escape(common.encode_to_xml(label))))
             tabs -= 1
             fwrite('    ' * tabs + '</fields>\n')
         prop.write = write_prop

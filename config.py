@@ -246,6 +246,11 @@ Path to wxGlade log file
 @note: This path will be set during initialisation
 """
 
+label_initial_width = 5
+"""\
+Initial width of new created labels
+"""
+
 tooltip_time = 3
 """\
 Number of seconds a tooltip will be shown
