@@ -24,6 +24,7 @@ from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 import config
+import errors
 import wcodegen
 
 class SourceFileContent(BaseSourceFileContent):
@@ -345,6 +346,10 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             'top_win': self._format_name(top_win),
             }
         BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
+        
+    def check_values(self):
+        if self.for_version > (2, 8):
+            raise errors.WxgLispWx3NotSupported("%d.%d" % self.for_version)
 
     def add_object(self, top_obj, sub_obj):
         # the lisp code gen add some hard coded depedencies 

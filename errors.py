@@ -1,7 +1,7 @@
 """\
 wxGlade internal exceptions
 
-@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2012-2013 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -43,3 +43,10 @@ class WxgOutputPathIsDirectory(WxgBaseException):
     """
     msg = _('Output path "%s" can not be a directory when generating a '
             'single file')
+
+
+class WxgLispWx3NotSupported(WxgBaseException):
+    """\
+    Raised if Lisp code for wx 3.0 or newer should be generated
+    """
+    msg = _('Generating Lisp code for wxWidgets version %s is not supported.')
