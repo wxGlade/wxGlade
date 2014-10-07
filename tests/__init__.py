@@ -372,12 +372,14 @@ class WXGladeBaseTest(unittest.TestCase):
         outfile.write(content)
         self.vFiles[filename] = outfile
 
-    def _test_all(self, base):
+    def _test_all(self, base, excluded=None):
         """\
         Generate code for all languages based on the base file name
         
         @param base: Base name of the test files
         @type base: String
+        @param excluded: Languages to exclude from test
+        @type excluded:  List of strings
         """
         for lang, ext in [
             ['lisp',   '.lisp'],
@@ -386,6 +388,8 @@ class WXGladeBaseTest(unittest.TestCase):
             ['XRC',    '.xrc'],
             ['C++',    ''],
             ]:
+            if excluded and lang in excluded:
+                continue
             name_wxg = '%s.wxg' % base
             name_lang = '%s%s' % (base, ext)
             
