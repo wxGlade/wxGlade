@@ -391,21 +391,28 @@ class Application(object):
 
         if self.for_version.startswith('3.'):
             # disable selection of old or new style wx imports for wxPython 3.0
+            if self.use_old_namespace_prop.get_value():
+                wx.MessageBox(
+                    _('Using the old wxPython namespace is not supported '
+                      'anymore starting wxPython 3.0\n'
+                      'Deselect "Use old import" instead.'),
+                    _("Warning"),
+                     wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION
+                    )
             self.use_old_namespace_prop.set_value(False)
             self.use_old_namespace_prop.toggle_active(False)
 
             ## disable lisp for wx > 2.8
             if self.codewriters_prop.get_str_value() == 'lisp':
-                old_version = self.for_version
-                self.for_version_prop.set_str_value('2.8')
-                self.set_for_version('2.8')
                 wx.MessageBox(
                     _('Generating Lisp code for wxWidgets version %s is not '
                       'supported.\n'
-                      'Set version to "2.8" instead.') % old_version,
+                      'Set version to "2.8" instead.') % self.for_version,
                     _("Warning"),
                      wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION
                     )
+                self.for_version_prop.set_str_value('2.8')
+                self.set_for_version('2.8')
                 return
             self.codewriters_prop.enable_item('lisp', False)
 
@@ -690,6 +697,7 @@ class Application(object):
                 errors.WxgOutputDirectoryNotWritable,
                 errors.WxgOutputPathIsDirectory,
                 errors.WxgLispWx3NotSupported,
+                errors.WxgPythonOldNamespaceNotSupported,
                 ), inst:
             wx.MessageBox(
                 _("Error generating code:\n%s") % inst,

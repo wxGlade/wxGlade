@@ -26,6 +26,7 @@ from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 import config
+import errors
 import wcodegen
 
 
@@ -341,6 +342,10 @@ if __name__ == "__main__":
         out_path = app_attrs.get('path', config.default_path)
         self.header_lines.append('import wx\n')
         self._initialize_stage2(out_path)
+
+    def check_values(self):
+        if self.for_version > (2, 8) and not self.use_new_namespace:
+            raise errors.WxgPythonOldNamespaceNotSupported()
 
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings

@@ -152,6 +152,7 @@ def command_line_code_generation(filename, language, out_path=None):
             errors.WxgOutputDirectoryNotWritable,
             errors.WxgOutputPathIsDirectory,
             errors.WxgLispWx3NotSupported,
+            errors.WxgPythonOldNamespaceNotSupported,
             ), inst:
         logging.error(inst)
         sys.exit(1)
