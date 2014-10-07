@@ -1377,7 +1377,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test code generation for Lisp and wxWidgets 3.0 or newer.
 
-        That's not supported.
+        That's not supported anymore.
 
         @see: L{errors.WxgLispWx3NotSupported}
         """
@@ -1394,4 +1394,28 @@ class TestCodeGen(WXGladeBaseTest):
             'lisp',
             source,
             'Lisp_Preferences.lisp',
+            )
+
+    def test_WxgPythonOldNamespaceNotSupported(self):
+        """\
+        Test code generation for wxPython 3.0 (or newer) and old namespaces.
+
+        That's not supported anymore.
+
+        @see: L{errors.WxgPythonOldNamespaceNotSupported}
+        """
+        # load XML input file
+        source = self._load_file('Preferences.wxg')
+        source = self._modify_attrs(source,
+            for_version='3.0',
+            use_new_namespace='0',
+            )
+
+        # generate code and check for raising exception
+        self.failUnlessRaises(
+            errors.WxgPythonOldNamespaceNotSupported,
+            self._generate_code,
+            'python',
+            source,
+            'Python_Preferences.py',
             )
