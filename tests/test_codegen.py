@@ -13,6 +13,7 @@ from tests import WXGladeBaseTest
 
 # import project modules
 import common
+import errors
 import misc
 
 
@@ -1136,7 +1137,17 @@ class TestCodeGen(WXGladeBaseTest):
         Test code generation for a complex example
         """
         self._test_all('ComplexExample')
-        self._test_all('ComplexExample_30')
+        self._test_all('ComplexExample_30', ['lisp'])
+
+        # Lisp code has to raise an exception
+        source = self._load_file('ComplexExample_30.wxg')
+        self.failUnlessRaises(
+            errors.WxgLispWx3NotSupported,
+            self._generate_code,
+            'lisp',
+            source,
+            'ComplexExample_30.lisp',
+            )
 
     def test_quote_str(self):
         """\
@@ -1361,3 +1372,26 @@ class TestCodeGen(WXGladeBaseTest):
             id(new_gen.codegen.for_version),
             'for_version used by widget generators are not different'
         )
+
+    def test_WxgLispWx3NotSupported(self):
+        """\
+        Test code generation for Lisp and wxWidgets 3.0 or newer.
+
+        That's not supported.
+
+        @see: L{errors.WxgLispWx3NotSupported}
+        """
+        # load XML input file
+        source = self._load_file('Lisp_Preferences.wxg')
+        source = self._modify_attrs(source,
+            for_version='3.0',
+            )
+
+        # generate code and check for raising exception
+        self.failUnlessRaises(
+            errors.WxgLispWx3NotSupported,
+            self._generate_code,
+            'lisp',
+            source,
+            'Lisp_Preferences.lisp',
+            )

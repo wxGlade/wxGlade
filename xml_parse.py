@@ -223,6 +223,7 @@ class XmlWidgetBuilder(XmlParser):
                 for_version = attrs['for_version']
                 app.for_version = for_version
                 app.for_version_prop.set_str_value(for_version)
+                app.set_for_version(for_version)
             except KeyError:
                 pass
             return
