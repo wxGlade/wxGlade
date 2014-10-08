@@ -666,9 +666,13 @@ class Application(object):
                 self.overwrite = True
             class_names = common.app_tree.write(out)  # write the xml onto a
                                                       # temporary buffer
-            if not os.path.isabs(self.output_path) and self.filename:
-                out_path = os.path.join(os.path.dirname(self.filename),
-                                        self.output_path)
+
+            out_path = os.path.expanduser(
+                os.path.expanduser(self.output_path.strip()))
+
+            if not os.path.isabs(out_path) and self.filename:
+                out_path = os.path.join(
+                    os.path.dirname(self.filename), out_path)
             else:
                 out_path = None
             CodeWriter(

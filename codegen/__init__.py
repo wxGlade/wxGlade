@@ -916,6 +916,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.out_dir = app_attrs.get('path', config.default_output_path)
         else:
             self.out_dir = app_attrs.get('path', config.default_output_file)
+        self.out_dir = os.path.normpath(
+            os.path.expanduser(self.out_dir.strip()))
 
         # call initialisation of language specific settings
         self.init_lang(app_attrs)
