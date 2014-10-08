@@ -18,7 +18,7 @@ from codegen import BaseLangCodeWriter, \
                     EventsPropertyHandler, \
                     ExtraPropertiesPropertyHandler
 from ordereddict import OrderedDict
-import config
+import errors
 import wcodegen
 
 
@@ -316,23 +316,25 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
 
     def __init__(self):
         BaseLangCodeWriter.__init__(self)
-        # Inject to all classed derivated from WrcObject
+        # Inject to all classed derived from WrcObject
         XRCCodeWriter.XrcObject.tabs = self.tabs
 
-    def initialize(self, app_attrs):
-        # initialise parent class
-        BaseLangCodeWriter.initialize(self, app_attrs)
-
-        out_path = app_attrs.get('path', config.default_path)
-
+    def init_lang(self, app_attrs):
+        # for now we handle only single-file code generation
         if self.multiple_files:
-            # for now we handle only single-file code generation
-            raise IOError("XRC code cannot be split into multiple files")
-        self.output_file_name = out_path
+            raise errors.WxgXRCMultipleFilesNotSupported()
+
+        # overwrite existing sources always
+        self._overwrite = True
+
+        self.output_file_name = app_attrs['path']
         self.out_file = StringIO.StringIO()  # open(out_path, 'w')
         self.out_file.write('\n<resource version="2.3.0.1">\n')
         self.curr_tab = 1
         self.xrc_objects = OrderedDict()
+
+    def _init_file(self, out_path):
+        pass
 
     def finalize(self):
         # write the code for every toplevel object
@@ -426,7 +428,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def add_class(self, code_obj):
         """\
         Add class behaves very differently for XRC output than for other
-        lanaguages (i.e. pyhton): since custom classes are not supported in
+        languages (i.e. python): since custom classes are not supported in
         XRC, this has effect only for true toplevel widgets, i.e. frames and
         dialogs. For other kinds of widgets, this is equivalent to add_object
         """

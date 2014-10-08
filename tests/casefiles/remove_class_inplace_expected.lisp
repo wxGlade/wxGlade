@@ -48,7 +48,7 @@
         ;;; begin wxGlade: MyDialog.__init__
         (setf (slot-top-window obj) (wxDialog_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_DIALOG_STYLE))
         (setf (slot-text-ctrl-1 obj) (wxTextCtrl_Create (slot-top-window obj) wxID_ANY "" -1 -1 -1 -1 wxTE_MULTILINE))
-        (setf (slot-static-line-1 obj) (wxStaticLine_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 0))
+        (setf (slot-static-line-1 obj) (wxStaticLine_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxLI_HORIZONTAL))
         (setf (slot-button-2 obj) (wxButton_Create (slot-top-window obj) wxID_OK "" -1 -1 -1 -1 0))
         (setf (slot-button-1 obj) (wxButton_Create (slot-top-window obj) wxID_CANCEL "" -1 -1 -1 -1 0))
         ;;; end wxGlade

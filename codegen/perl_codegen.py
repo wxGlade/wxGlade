@@ -25,7 +25,6 @@ import re
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
-import config
 import wcodegen
 
 
@@ -201,7 +200,7 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
     _code_statements = {
         'backgroundcolour': "%(objname)s->SetBackgroundColour(%(value)s);\n",
         'disabled':         "%(objname)s->Enable(0);\n",
-        'extraproperties':  "%(objname)s->Set%(propname)s(%(value)s);\n",
+        'extraproperties':  "%(objname)s->Set%(propname_cap)s(%(value)s);\n",
         'focused':          "%(objname)s->SetFocus();\n",
         'foregroundcolour': "%(objname)s->SetForegroundColour(%(value)s);\n",
         'hidden':           "%(objname)s->Show(0);\n",
@@ -345,7 +344,7 @@ package main;
 
 unless(caller){
 %(tab)smy $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-%(tab)s$local->AddCatalog("%(name)s"); # replace with the appropriate catalog name
+%(tab)s$local->AddCatalog("%(textdomain)s"); # replace with the appropriate catalog name
 
 %(tab)smy $%(name)s = %(klass)s->new();
 %(tab)s$%(name)s->MainLoop();
@@ -377,7 +376,7 @@ package main;
 %(pl_import)s
 unless(caller){
 %(tab)smy $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-%(tab)s$local->AddCatalog("%(name)s"); # replace with the appropriate catalog name
+%(tab)s$local->AddCatalog("%(textdomain)s"); # replace with the appropriate catalog name
 
 %(tab)slocal *Wx::App::OnInit = sub{1};
 %(tab)smy $%(name)s = Wx::App->new();
@@ -391,19 +390,7 @@ unless(caller){
 }
 """
 
-    def initialize(self, app_attrs):
-        """\
-        Writer initialization function.
-
-        @keyword path: Output path for the generated code (a file if
-                       multi_files is False, a dir otherwise)
-        @keyword option: If True, generate a separate file for each custom
-                         class
-        """
-        # initialise parent class
-        BaseLangCodeWriter.initialize(self, app_attrs)
-        out_path = app_attrs.get('path', config.default_path)
-
+    def init_lang(self, app_attrs):
         # initial new defaults late to use the proper indent characters
         tab = self.tabs(1)
         self.new_defaults = {
@@ -420,8 +407,6 @@ unless(caller){
             'use Wx 0.15 qw[:allclasses];\n',
             'use strict;\n'
         ]
-
-        self._initialize_stage2(out_path)
 
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings

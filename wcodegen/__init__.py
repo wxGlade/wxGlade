@@ -1051,10 +1051,14 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
             self.tmpl_dict['parent'] = '(slot-top-window obj)'
 
         if not self.tmpl_dict['style']:
-            self.tmpl_dict['style'] = '0'
+            if self.default_style:
+                self.tmpl_dict['style'] = self.default_style
+            else:
+                self.tmpl_dict['style'] = '0'
 
         # Lisp stores all widgets as class attributes
-        self.tmpl_dict['name'] = '(%s obj)' % self.codegen._format_classattr(obj)
+        self.tmpl_dict['name'] = '(%s obj)' % \
+                                 self.codegen._format_classattr(obj)
 
         return
 

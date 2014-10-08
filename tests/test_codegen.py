@@ -4,7 +4,7 @@
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import copy
+import os
 import StringIO
 import re
 
@@ -15,6 +15,7 @@ from tests import WXGladeBaseTest
 import common
 import errors
 import misc
+import xrc2wxg
 
 
 class MockCodeObject(object):
@@ -41,10 +42,11 @@ class TestCodeGen(WXGladeBaseTest):
     Test code generation
     """
 
+    def setUp(self):
+        WXGladeBaseTest.setUp(self)
+        xrc2wxg._write_timestamp = False
+
     def tearDown(self):
-        """\
-        Cleanup
-        """
         WXGladeBaseTest.tearDown(self)
 
     def test_Lisp_quote_path(self):
@@ -339,7 +341,7 @@ class TestCodeGen(WXGladeBaseTest):
         source = self._load_file('PyOgg2.wxg')
         expected = self._load_file('PyOgg3.py')
 
-        # rename all occurencies of PyOgg2 to PyOgg3
+        # rename all occurrences of PyOgg2 to PyOgg3
         source = source.replace('PyOgg2', 'PyOgg3')
 
         # set option="0" for writing into a single file
@@ -395,7 +397,7 @@ class TestCodeGen(WXGladeBaseTest):
         source = self._load_file('LispOgg2.wxg')
         expected = self._load_file('LispOgg3.lisp')
 
-        # rename all occurencies of LispOgg2 to LispOgg3
+        # rename all occurrences of LispOgg2 to LispOgg3
         source = source.replace('LispOgg2', 'LispOgg3')
 
         # set option="0" for writing into a single file
@@ -448,22 +450,22 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{codegen.perl_codegen.PerlCodeWriter}
         """
-        source = self._load_file('PyOgg2.wxg')
-        expected = self._load_file('PyOgg3.py')
+        source = self._load_file('PlOgg2.wxg')
+        expected = self._load_file('PlOgg3.pl')
 
-        # rename all occurencies of PyOgg2 to PyOgg3
-        source = source.replace('PyOgg2', 'PyOgg3')
+        # rename all occurrences of PlOgg2 to PlOgg3
+        source = source.replace('PlOgg2', 'PlOgg3')
 
         # set option="0" for writing into a single file
         source = self._modify_attrs(source,
             option='0',
-            path='PyOgg3.py'
+            path='PlOgg3.pl'
             )
 
         # generate and compare code
-        self._generate_code('python', source, 'PyOgg3.py')
-        generated = self.vFiles['PyOgg3.py'].getvalue()
-        self._compare(expected, generated, 'PyOgg3.py')
+        self._generate_code('perl', source, 'PlOgg3.pl')
+        generated = self.vFiles['PlOgg3.pl'].getvalue()
+        self._compare(expected, generated, 'PlOgg3.pl')
 
     def test_CPP_Ogg1(self):
         """\
@@ -513,7 +515,7 @@ class TestCodeGen(WXGladeBaseTest):
         result_cpp = self._load_file('CPPOgg3.cpp')
         result_h   = self._load_file('CPPOgg3.h')
 
-        # rename all occurencies of CPPOgg2 to CPPOgg3
+        # rename all occurrences of CPPOgg2 to CPPOgg3
         source = source.replace('CPPOgg2', 'CPPOgg3')
 
         # set option="0" for writing into a single file
@@ -657,82 +659,111 @@ class TestCodeGen(WXGladeBaseTest):
         @see: L{codegen.py_codegen.PythonCodeWriter.add_app()}
         """
         for language, prefix, suffix in [
-            ['python', 'Py',    '.py'],
-            ['perl',   'Pl',    '.pl'],
-            ['C++',    'CPP',   '.cpp'],
-            ['lisp',   'Lisp',  '.lisp']
+            ['python', 'Py', '.py'],
+            ['perl', 'Pl', '.pl'],
+            ['C++', 'CPP', '.cpp'],
+            ['lisp', 'Lisp', '.lisp']
             ]:
-            for multiple_files in [0,  1]:
+            for multiple_files in [0, 1]:
                 for klass in ['MyStartApp', None]:
-                    # prepare code writer
-                    codewriter = common.code_writers[language]
-
-                    # path must be a directory for multiple files
-                    if multiple_files:
-                        path = './'
-                    else:
-                        path = 'myoutputfile'
-
                     for use_gettext in [0, 1]:
-                        codewriter.initialize({
-                            'indent_amount': '4',
-                            'indent_symbol': 'space',
-                            'language': language,
-                            'name': 'myapp',
-                            'option': multiple_files,
-                            'overwrite': 1,
-                            'path': path,
-                            'use_gettext': use_gettext,
-                            })
+                        for top_window in ['appframe', '']:
+                            for appname in ['myapp', '']:
 
-                        # clear output_file
-                        if codewriter.output_file:
-                            codewriter.output_file.close()
-                        codewriter.output_file = StringIO.StringIO()
+                                # run test
+                                self._test_add_app(language, prefix, suffix,
+                                                   multiple_files, klass,
+                                                   use_gettext, top_window,
+                                                   appname)
 
-                        # generate application start code
-                        codewriter.add_app({
-                            'class': klass,
-                            'top_window': 'appframe',
-                            },
-                            'MyAppFrame')
+                                # close open virtual files
+                                for name in self.vFiles.keys():
+                                    self.vFiles[name].close()
+                                    del self.vFiles[name]
 
-                        if use_gettext:
-                            fn_gettext = '_gettext'
-                        else:
-                            fn_gettext = ''
-                        if klass:
-                            simple = '_detailed'
-                        else:
-                            simple = '_simple'
+    def _test_add_app(self, language, prefix, suffix, multiple_files,
+                      klass, use_gettext, top_window, appname):
 
-                        if language == 'C++':
-                            app_filename = './main.cpp'
-                        else:
-                            app_filename = './myapp%s' % suffix
+        # prepare code writer
+        codewriter = common.code_writers[language]
 
-                        if multiple_files:
-                            generated = self.vFiles[app_filename].getvalue()
-                            multiple = '_multi'
-                        else:
-                            generated = codewriter.output_file.getvalue()
-                            multiple = '_single'
+        # path must be a directory for multiple files
+        if multiple_files:
+            path = './'
+        else:
+            path = 'myoutputfile'
 
-                        filename = '%sAddApp%s%s%s%s' % \
-                            (prefix, multiple, fn_gettext, simple, suffix)
-                        expected = self._load_file(filename)
+        codewriter.initialize({
+            'indent_amount': '4',
+            'indent_symbol': 'space',
+            'language': language,
+            'name': appname,
+            'option': multiple_files,
+            'overwrite': 1,
+            'path': path,
+            'use_gettext': use_gettext,
+        })
+        # clear output_file
+        if codewriter.output_file:
+            codewriter.output_file.close()
+        codewriter.output_file = StringIO.StringIO()
+
+        # generate application start code
+        codewriter.add_app({'class': klass,
+                            'top_window': top_window, },
+                           'MyAppFrame')
+        if use_gettext:
+            fn_gettext = '_gettext'
+        else:
+            fn_gettext = ''
+        if klass:
+            simple = '_detailed'
+        else:
+            simple = '_simple'
+        if language == 'C++':
+            app_filename = './main.cpp'
+        else:
+            app_filename = './myapp%s' % suffix
+
+        # top window and application name are mandatory
+        if top_window and appname:
+            if multiple_files:
+                generated = self.vFiles[app_filename].getvalue()
+                multiple = '_multi'
+            else:
+                generated = codewriter.output_file.getvalue()
+                multiple = '_single'
+
+            filename = '%sAddApp%s%s%s%s' % \
+                       (prefix, multiple, fn_gettext, simple, suffix)
+            expected = self._load_file(filename)
+
+            self._compare(
+                expected,
+                generated,
+                '%s (%s)' % (misc.capitalize(language), filename),
+            )
+
+        # top window is not set
+        else:
+            generated = ''
+            if multiple_files:
+                if self.vFiles:
+                    generated = self.vFiles[app_filename].getvalue()
+            else:
+                generated = codewriter.output_file.getvalue()
+
+            if generated:
+                self.fail(
+                    'Unexpected application startup code '
+                    'for %s (multi=%s, gettext=%s, '
+                    'top window=%s):\n%s' % (
+                        misc.capitalize(language),
+                        multiple_files, use_gettext,
+                        top_window, generated)
+                )
 
 
-                        self._compare(
-                            expected,
-                            generated,
-                            '%s (%s)' % (misc.capitalize(language), filename),
-                            )
-
-                        # close open virtual files
-                        for name in self.vFiles.keys():
-                            self.vFiles[name].close()
-                            del self.vFiles[name]
 
     def test_no_suitable_writer(self):
         """\
@@ -1394,28 +1425,123 @@ class TestCodeGen(WXGladeBaseTest):
             'lisp',
             source,
             'Lisp_Preferences.lisp',
-            )
+        )
 
-    def test_WxgPythonOldNamespaceNotSupported(self):
+    def test_OutputFileAndDirectory(self):
         """\
-        Test code generation for wxPython 3.0 (or newer) and old namespaces.
+        Test check for output file and directory.
 
-        That's not supported anymore.
-
-        @see: L{errors.WxgPythonOldNamespaceNotSupported}
+        @see: L{errors.WxgOutputPathIsDirectory}
+        @see: L{errors.WxgOutputDirectoryNotExist}
         """
         # load XML input file
-        source = self._load_file('Preferences.wxg')
-        source = self._modify_attrs(source,
-            for_version='3.0',
-            use_new_namespace='0',
-            )
+        source = self._load_file('Python_Preferences.wxg')
+
+        # Single output file out_path shouldn't be a directory
+        #=====================================================
 
         # generate code and check for raising exception
         self.failUnlessRaises(
-            errors.WxgPythonOldNamespaceNotSupported,
+            errors.WxgOutputPathIsDirectory,
+            self._generate_code,
+            'python',
+            source,
+            '/tmp',
+            )
+        self.failUnlessRaises(
+            errors.WxgOutputDirectoryNotExist,
+            self._generate_code,
+            'python',
+            source,
+            '/non-existing/result.py',
+            )
+        self.failUnlessRaises(
+            errors.WxgOutputDirectoryNotWritable,
+            self._generate_code,
+            'python',
+            source,
+            '/non-writable/result.py',
+            )
+
+        # Multiple output file out_path should be a writable directory
+        #=============================================================
+        source = self._modify_attrs(
+            source,
+            option=1,
+        )
+        self.failUnlessRaises(
+            errors.WxgOutputDirectoryNotExist,
+            self._generate_code,
+            'python',
+            source,
+            '/non-existing',
+            )
+        self.failUnlessRaises(
+            errors.WxgOutputDirectoryNotWritable,
+            self._generate_code,
+            'python',
+            source,
+            '/non-writable',
+            )
+
+    def test_WxgXRCMultipleFilesNotSupported(self):
+        """\
+        Test for multi file XRC projects.
+
+        @see: L{errors.WxgXRCMultipleFilesNotSupported}
+        """
+        # load XML input file
+        source = self._load_file('Python_Preferences.wxg')
+
+        # check to multiple files
+        source = self._modify_attrs(
+            source,
+            option=1,
+        )
+
+        # generate code and check for raising exception
+        self.failUnlessRaises(
+            errors.WxgXRCMultipleFilesNotSupported,
+            self._generate_code,
+            'XRC',
+            source,
+            'Preferences.xrc',
+            )
+
+    def test_WxgTemplateCodegenNotPossible(self):
+        """\
+        Test for code generation from a template
+
+        @see: L{errors.WxgTemplateCodegenNotPossible}
+        """
+        # load XML input file
+        source = self._load_file('Python_Preferences.wxg')
+
+        # check to multiple files
+        source = self._modify_attrs(
+            source,
+            is_template=1,
+        )
+
+        # generate code and check for raising exception
+        self.failUnlessRaises(
+            errors.WxgTemplateCodegenNotPossible,
             self._generate_code,
             'python',
             source,
             'Python_Preferences.py',
             )
+
+    def test_xrc2wxg(self):
+        """\
+        Test converting XRC files into WXG files
+        """
+        fullpath = os.path.join(self.caseDirectory, 'import_test.xrc')
+        obuffer = StringIO.StringIO()
+
+        xrc2wxg.convert(fullpath, obuffer)
+
+        generated = obuffer.getvalue()
+        expected = self._load_file('import_test.wxg')
+
+        self._compare(expected, generated, "wxg")

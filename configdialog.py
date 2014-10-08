@@ -3,6 +3,7 @@ Dialog for editing wxGlade preferences
 
 @see: L{config.preferences}
 @copyright: 2007 Alberto Griggio
+@copyright: 20013-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -10,6 +11,7 @@ Dialog for editing wxGlade preferences
 import os
 import wx
 
+import bugdialog
 import misc
 from configUI import wxGladePreferencesUI
 
@@ -65,12 +67,10 @@ class wxGladePreferences(wxGladePreferencesUI):
                 )
             self.log_debug_info.SetValue(self.preferences.log_debug_info)
             self._fix_spin_ctrls()
-        except Exception, e:
-            wx.MessageBox(
-                _('Error reading config file:\n%s') % e,
-                _('Error'),
-                wx.OK | wx.CENTRE | wx.ICON_ERROR
-                )
+        except Exception, inst:
+            dialog = bugdialog.BugReport()
+            dialog.SetContent(_('reading the configuration'), inst)
+            dialog.ShowModal()
 
     def _fix_spin_ctrls(self):
         """\

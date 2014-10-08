@@ -25,8 +25,6 @@ import re
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
-import config
-import errors
 import wcodegen
 
 
@@ -215,7 +213,7 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
         'backgroundcolour': "%(objname)s.SetBackgroundColour(%(value)s)\n",
         'contentnotfound':  "pass",
         'disabled':         "%(objname)s.Enable(False)\n",
-        'extraproperties':  "%(objname)s.Set%(propname)s(%(value)s)\n",
+        'extraproperties':  "%(objname)s.Set%(propname_cap)s(%(value)s)\n",
         'focused':          "%(objname)s.SetFocus()\n",
         'foregroundcolour': "%(objname)s.SetForegroundColour(%(value)s)\n",
         'hidden':           "%(objname)s.Hide()\n",
@@ -294,7 +292,7 @@ class %(klass)s(%(cn_wxApp)s):
 # end of class %(klass)s
 
 if __name__ == "__main__":
-%(tab)sgettext.install("%(name)s") # replace with the appropriate catalog name
+%(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name
 
 %(tab)s%(name)s = %(klass)s(0)
 %(tab)s%(name)s.MainLoop()"""
@@ -310,7 +308,7 @@ if __name__ == "__main__":
 
     tmpl_gettext_simple = """\
 if __name__ == "__main__":
-%(tab)sgettext.install("%(name)s") # replace with the appropriate catalog name
+%(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name
 
 %(tab)s%(name)s = %(cn_wxPySimpleApp)s(0)
 %(tab)s%(cn_wxInitAll)s()
@@ -328,24 +326,8 @@ if __name__ == "__main__":
         """
         return self.without_package(klass)
 
-    def initialize(self, app_attrs):
-        """\
-        Writer initialization function.
-
-        @keyword path: Output path for the generated code (a file if
-                       multi_files is False, a dir otherwise)
-        @keyword option: If True, generate a separate file for each custom
-                         class
-        """
-        # initialise parent class
-        BaseLangCodeWriter.initialize(self, app_attrs)
-        out_path = app_attrs.get('path', config.default_path)
+    def init_lang(self, app_attrs):
         self.header_lines.append('import wx\n')
-        self._initialize_stage2(out_path)
-
-    def check_values(self):
-        if self.for_version > (2, 8) and not self.use_new_namespace:
-            raise errors.WxgPythonOldNamespaceNotSupported()
 
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings

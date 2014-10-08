@@ -18,6 +18,7 @@ import types
 
 import common
 import config
+import errors
 import misc
 import wcodegen
 from xml_parse import XmlParsingError
@@ -81,8 +82,6 @@ class ExtraPropertiesPropertyHandler(DummyPropertyHandler):
     def start_elem(self, name, attrs):
         if name == 'property':
             name = attrs['name']
-            if name and name[0].islower():
-                name = name[0].upper() + name[1:]
             self.prop_name = name
 
     def end_elem(self, name, code_obj):
@@ -328,7 +327,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     A code writer object B{must} implement those interface and set those
     variables:
-      - L{initialize()}
+      - L{init_lang()}
+      - L{init_files()}
       - L{finalize()}
       - L{wcodegen.BaseLanguageMixin.language}
       - L{add_app()}
@@ -457,8 +457,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                              choices_handler})
     @type _property_writers: Dictionary
 
+    @ivar _textdomain: gettext textdomain (see L{_use_gettext})
+    @type _textdomain: String
+
     @ivar _use_gettext: If True, enable gettext support; will be initialised
-                        with L{config.default_use_gettext}
+                        with L{config.default_use_gettext} (see
+                        L{_textdomain})
     @type _use_gettext: Boolean
 
     @ivar _widget_extra_modules: Map of widget class names to a list of extra
@@ -815,6 +819,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.header_lines = []
         self.indent_symbol = config.default_indent_symbol
         self.indent_amount = config.default_indent_amount
+        self.is_template = 0
         self.blacklisted_widgets = {}
         self.lang_mapping = {}
         self.multiple_files = False
@@ -830,14 +835,16 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self._current_extra_code = []
         self._current_extra_modules = {}
         self._overwrite = config.default_overwrite
+        self._textdomain = 'app'
         self._use_gettext = config.default_use_gettext
         self._widget_extra_modules = {}
 
     def initialize(self, app_attrs):
         """\
-        Code generator initialization function.
-        
-        @see: L{_initialize_stage2()}
+        Initialise generic and language independent code generator settings.
+
+        @see: L{init_lang()}
+        @see: L{init_files()}
         """
         # set (most of) instance variables back to default values
         self._init_vars()
@@ -847,12 +854,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # application name
         self.app_name = app_attrs.get('name')
-        if not self.app_name:
-            self.app_name = config.default_app_name
-        self.app_filename = '%s.%s' % (
-            self.app_name,
-            self.default_extensions[0],
+        if self.app_name:
+            self.app_filename = '%s.%s' % (
+                self.app_name,
+                self.default_extensions[0],
             )
+            self._textdomain = self.app_name
 
         # file encoding
         try:
@@ -893,29 +900,58 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         try:
             self.for_version = tuple([int(t) for t in
-                                 app_attrs['for_version'].split('.')[:2]])
+                                      app_attrs['for_version'].split('.')[:2]])
         except (KeyError, ValueError):
             if common.app_tree is not None:
                 self.for_version = \
                 tuple([int(t) for t in
                        common.app_tree.app.for_version.split('.')])
 
-    def _initialize_stage2(self, out_path):
+        try:
+            self.is_template = int(app_attrs['is_template'])
+        except (KeyError, ValueError):
+            self.is_template = 0
+
+        if self.multiple_files:
+            self.out_dir = app_attrs.get('path', config.default_output_path)
+        else:
+            self.out_dir = app_attrs.get('path', config.default_output_file)
+
+        # call initialisation of language specific settings
+        self.init_lang(app_attrs)
+
+        # check the validity of the set values
+        self.check_values()
+
+        # call initialisation of the file handling
+        self.init_files(self.out_dir)
+
+    def init_lang(self, app_attrs):
         """\
-        Second stage for code generator initialization.
-        
-        @param out_path: Output path
-        @type out_path:  String
-        
-        @see: L{initialize()}
+        Initialise language specific settings.
+
+        @note: You may overwrite this function in the derivated class
+        """
+        raise NotImplementedError
+
+    def init_files(self, out_path):
+        """\
+        Initialise the file handling
+
+        @param out_path: Output path for the generated code (a file if
+                         L{self.multiple_files} is False, a dir otherwise)
+        @type out_path: String or None
+
+        @note: You may overwrite this function in the derivated class
         """
         if self.multiple_files:
             self.previous_source = None
             if not os.path.isdir(out_path):
-                raise IOError("'path' must be a directory when generating"
-                              " multiple output files")
+                raise errors.WxgOutputPathIsNotDirectory(out_path)
             self.out_dir = out_path
         else:
+            if os.path.isdir(out_path):
+                raise errors.WxgOutputPathIsDirectory(out_path)
             if not self._overwrite and self._file_exists(out_path):
                 # the file exists, we must keep all the lines not inside a
                 # wxGlade block. NOTE: this may cause troubles if out_path is
@@ -932,6 +968,33 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.output_file.write('\n')
                 self.output_file.write('<%swxGlade replace dependencies>\n' % self.nonce)
                 self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
+
+    def check_values(self):
+        """\
+        Check the validity of the set application values. Raises exceptions for
+        errors.
+
+        @see: L{errors}
+        """
+        # Check if the values of use_multiple_files and out_path agree
+        if self.multiple_files:
+            if not os.path.isdir(self.out_dir):
+                raise errors.WxgOutputDirectoryNotExist(self.out_dir)
+            if not os.access(self.out_dir, os.W_OK):
+                raise errors.WxgOutputDirectoryNotWritable(self.out_dir)
+        else:
+            if os.path.isdir(self.out_dir):
+                raise errors.WxgOutputPathIsDirectory(self.out_dir)
+            directory = os.path.dirname(self.out_dir)
+            if directory:
+                if not os.path.isdir(directory):
+                    raise errors.WxgOutputDirectoryNotExist(directory)
+                if not os.access(directory, os.W_OK):
+                    raise errors.WxgOutputDirectoryNotWritable(directory)
+
+        # It's not possible to generate code from a template directly
+        if self.is_template:
+            raise errors.WxgTemplateCodegenNotPossible
 
     def finalize(self):
         """\
@@ -1045,16 +1108,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         klass = app_attrs.get('class')
         top_win = app_attrs.get('top_window')
 
-        # do nothing if there is no top window
-        if not top_win:
+        # top window and application name are mandatory
+        if not top_win or not self.app_name:
             return
 
         # check for templates for detailed startup code
         if klass and self._use_gettext:
             if self.tmpl_gettext_detailed:
                 tmpl = self.tmpl_gettext_detailed
-            elif self.tmpl_detailed:
-                tmpl = self.tmpl_detailed
             else:
                 self.warning(
                     _("Skip generating detailed startup code "
@@ -1065,8 +1126,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         elif klass and not self._use_gettext:
             if self.tmpl_detailed:
                 tmpl = self.tmpl_detailed
-            elif self.tmpl_gettext_detailed:
-                tmpl = self.tmpl_gettext_detailed
             else:
                 self.warning(
                     _("Skip generating detailed startup code "
@@ -1078,8 +1137,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         elif not klass and self._use_gettext:
             if self.tmpl_gettext_simple:
                 tmpl = self.tmpl_gettext_simple
-            elif self.tmpl_simple:
-                tmpl = self.tmpl_simple
             else:
                 self.warning(
                     _("Skip generating simple startup code "
@@ -1089,8 +1146,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         elif not klass and not self._use_gettext:
             if self.tmpl_simple:
                 tmpl = self.tmpl_simple
-            elif self.tmpl_gettext_simple:
-                tmpl = self.tmpl_gettext_simple
             else:
                 self.warning(
                     _("Skip generating simple startup code "
@@ -1115,6 +1170,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             'name': self.app_name,
             'overwrite': self.tmpl_overwrite % {'comment_sign': self.comment_sign},
             'tab': self.tabs(1),
+            'textdomain': self._textdomain,
             'top_win_class': top_win_class,
             'top_win': top_win,
             }
@@ -1885,13 +1941,16 @@ It is available for wx versions %(supported_versions)s only.""") % {
             return []
         objname = self._get_code_name(obj)
         prop = obj.properties['extraproperties']
+
         ret = []
         for name in sorted(prop):
+            name_cap = name[0].upper() + name[1:]
             stmt = tmpl % {
-                'klass':    obj.klass,
-                'objname':  objname,
+                'klass': obj.klass,
+                'objname': objname,
                 'propname': name,
-                'value':    prop[name],
+                'propname_cap': name_cap,
+                'value': prop[name],
                 }
             ret.append(stmt)
         return ret

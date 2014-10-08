@@ -27,7 +27,6 @@ from codegen import BaseLangCodeWriter, \
 import config
 import wcodegen
 
-
 class SourceFileContent(BaseSourceFileContent):
     """\
     Keeps info about an existing file that has to be updated, to replace only
@@ -322,7 +321,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
         'disabled':         "%(objname)sEnable(0);\n",
-        'extraproperties':  "%(objname)sSet%(propname)s(%(value)s);\n",
+        'extraproperties':  "%(objname)sSet%(propname_cap)s(%(value)s);\n",
         'focused':          "%(objname)sSetFocus();\n",
         'foregroundcolour': "%(objname)sSetForegroundColour(%(value)s);\n",
         'hidden':           "%(objname)sHide();\n",
@@ -406,7 +405,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 #include <wx/intl.h>
 
 #ifndef APP_CATALOG
-#define APP_CATALOG "%(name)s"  // replace with the appropriate catalog name
+#define APP_CATALOG "%(textdomain)s"  // replace with the appropriate catalog name
 #endif
 
 """
@@ -523,21 +522,10 @@ bool MyApp::OnInit()
 
     # end of class ClassLines
 
-    def initialize(self, app_attrs):
-        """\
-        Writer initialization function.
-
-        @keyword path: Output path for the generated code (a file if multi_files is
-                       False, a dir otherwise)
-        @keyword option: If True, generate a separate file for each custom class
-        """
-        # initialise parent class
-        BaseLangCodeWriter.initialize(self, app_attrs)
-
+    def init_lang(self, app_attrs):
         self.app_filename = 'main.cpp'
 
-        out_path = app_attrs.get('path', config.default_path)
-
+        out_path = app_attrs.get('path', config.default_output_path)
         self.last_generated_id = 1000
 
         # Extensions based on Project options when set
@@ -550,9 +538,9 @@ bool MyApp::OnInit()
             ]
 
         # include i18n / gettext
-        if self._use_gettext:
+        if self._use_gettext and self._textdomain:
             self.header_lines.append(
-                self.tmpl_init_gettext % {'name': self.app_name}
+                self.tmpl_init_gettext % {'textdomain': self._textdomain}
                 )
 
         # extra lines to generate (see the 'extracode' property of top-level
@@ -560,11 +548,9 @@ bool MyApp::OnInit()
         self._current_extra_code_h = []
         self._current_extra_code_cpp = []
 
+    def init_files(self, out_path):
         if self.multiple_files:
             self.previous_source = None
-            if not os.path.isdir(out_path):
-                raise IOError("'path' must be a directory when generating"\
-                                      " multiple output files")
             self.out_dir = out_path
         else:
             name = os.path.splitext(out_path)[0]

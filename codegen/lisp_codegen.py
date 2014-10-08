@@ -23,7 +23,6 @@ import re
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
-import config
 import errors
 import wcodegen
 
@@ -183,7 +182,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
     _code_statements = {
         'backgroundcolour': "(wxWindow_SetBackgroundColour %(objname)s %(value)s)\n",
         'disabled':         "(wxWindow_IsEnabled %(objname)s0)\n",
-        'extraproperties':  "(%(klass)s_Set%(propname)s (slot-%(objname)s obj) %(value)s)\n",
+        'extraproperties':  "(%(klass)s_Set%(propname_cap)s (slot-%(objname)s obj) %(value)s)\n",
         'focused':          "(wxWindow_SetFocus %(objname)s)\n",
         'foregroundcolour': "(wxWindow_SetForegroundColour %(objname)s %(value)s)\n",
         'hidden':           "(wxWindow_Hide %(objname)s)\n",
@@ -268,8 +267,8 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 %(tab)s%(tab)s(wxWindow_Show (slot-top-window %(top_win)s))))
 ;;; end of class %(klass)s
 
-%(tab)s(setf (textdomain) "%(name)s") ;; replace with the appropriate catalog name
-%(tab)s(defun _ (msgid) (gettext msgid "%(name)s"))
+%(tab)s(setf (textdomain) "%(textdomain)s") ;; replace with the appropriate catalog name
+%(tab)s(defun _ (msgid) (gettext msgid "%(textdomain)s"))
 
 
 (unwind-protect
@@ -290,8 +289,8 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
     tmpl_gettext_simple = """\
 (defun init-func (fun data evt)
-%(tab)s(setf (textdomain) "%(name)s") ;; replace with the appropriate catalog name
-%(tab)s(defun _ (msgid) (gettext msgid "%(name)s"))
+%(tab)s(setf (textdomain) "%(textdomain)s") ;; replace with the appropriate catalog name
+%(tab)s(defun _ (msgid) (gettext msgid "%(textdomain)s"))
 
 %(tab)s(let ((%(top_win)s (make-%(top_win_class)s)))
 %(tab)s(ELJApp_SetTopWindow (slot-top-window %(top_win)s))
@@ -302,18 +301,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 %(tab)s(ffi:close-foreign-library "../miscellaneous/wxc-msw2.6.2.dll"))
 """
 
-    def initialize(self, app_attrs):
-        """\
-        Writer initialization function.
-
-        @keyword path: Output path for the generated code (a file if
-                       multi_files is False, a dir otherwise)
-        @keyword option: If True, generate a separate file for each custom
-                         class
-        """
-        # initialise parent class
-        BaseLangCodeWriter.initialize(self, app_attrs)
-        out_path = app_attrs.get('path', config.default_path)
+    def init_lang(self, app_attrs):
         self.class_lines = []
 
         self.header_lines = [
@@ -333,7 +321,10 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             '(use-package :wxEvent)':      1,
             }
 
-        self._initialize_stage2(out_path)
+    def check_values(self):
+        BaseLangCodeWriter.check_values(self)
+        if self.for_version > (2, 8):
+            raise errors.WxgLispWx3NotSupported("%d.%d" % self.for_version)
 
     def add_app(self, app_attrs, top_win_class):
         top_win = app_attrs.get('top_window')
@@ -346,10 +337,6 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             'top_win': self._format_name(top_win),
             }
         BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
-        
-    def check_values(self):
-        if self.for_version > (2, 8):
-            raise errors.WxgLispWx3NotSupported("%d.%d" % self.for_version)
 
     def add_object(self, top_obj, sub_obj):
         # the lisp code gen add some hard coded depedencies 

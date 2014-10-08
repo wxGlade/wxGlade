@@ -2,7 +2,7 @@
 """
 Setup script to create release packages
 
-@copyright: 2011-2013 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2011-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -162,7 +162,7 @@ data_files = \
      glob('install/pyinstaller/*.*')],
     ]
 
-scripts = ['wxglade']
+scripts = ['wxglade', 'wxglade.pyw']
 
 packages = find_packages(path=".", base='wxglade').keys()
 packages.append('wxglade')

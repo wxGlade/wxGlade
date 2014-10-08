@@ -119,7 +119,6 @@ class EditGrid(ManagedBase):
         self.enable_grid_resize = True
         self.lines_color = '#000000'
         self.label_bg_color = '#C0C0C0'
-        # XXX als Konstante nutzen??
         self.selection_mode = 0  # == wxGrid.wxGridSelectCells
         self.create_grid = True
         self.columns = [['A', '-1'], ['B', '-1'], ['C', '-1']]
