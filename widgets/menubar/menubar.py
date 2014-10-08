@@ -11,6 +11,7 @@ import common
 import config
 import misc
 from MenuTree import *
+from tree import Tree
 from widget_properties import *
 from edit_windows import EditBase, PreviewMixin
 

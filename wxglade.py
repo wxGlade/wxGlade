@@ -2,7 +2,8 @@
 """
 Entry point of wxGlade
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2013 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -35,6 +36,7 @@ def _fix_path(path):
         return os.path.join(os.getcwd(), path)
     return path
 
+
 def parse_command_line():
     """\
     Parse command line
@@ -43,8 +45,9 @@ def parse_command_line():
     # don't load code generators at this point!!
     languages = ['C++', 'XRC', 'lisp', 'perl', 'python']
 
-    # inject 
-    optparse.OptionParser.format_description = lambda self, formatter: self.description
+    # inject
+    optparse.OptionParser.format_description = \
+        lambda self, formatter: self.description
 
     parser = optparse.OptionParser(
         add_help_option=False,
@@ -57,7 +60,8 @@ Usage: wxglade <WXG File>             start the wxGlade GUI
 wxGlade version %s
 Copyright (C) 2007-2012 Alberto Griggio
 License MIT: The MIT License
-             <http://www.opensource.org/licenses/mit-license.php>""") % config.version
+             <http://www.opensource.org/licenses/mit-license.php>""") %
+        config.version
         )
     parser.add_option(
         '-h',
@@ -73,14 +77,16 @@ License MIT: The MIT License
         choices=languages,
         metavar="LANG",
         dest="language",
-        help=_("(required) output language, valid languages are: %s") % ", ".join(languages)
+        help=_("(required) output language, valid languages are: %s") %
+             ", ".join(languages)
         )
     parser.add_option(
         "-o",
         "--output",
         metavar="PATH",
         dest="output",
-        help=_("(optional) output file in single-file mode or output directory in multi-file mode"),
+        help=_("(optional) output file in single-file mode or output "
+               "directory in multi-file mode"),
         )
 
     (options, args) = parser.parse_args()
@@ -138,29 +144,26 @@ def command_line_code_generation(filename, language, out_path=None):
     @type out_path:  String
     """
     from xml_parse import CodeWriter
-    if not common.code_writers.has_key(language):
-        logging.error(_('No writer for language "%s" available'), language)
 
-    writer = common.code_writers[language]
     try:
+        if language not in common.code_writers:
+            raise errors.WxgMissingCodeWriter(language)
+
+        writer = common.code_writers[language]
         CodeWriter(
             writer=writer,
             input=filename,
             out_path=out_path,
             )
-    except (errors.WxgOutputDirectoryNotExist,
-            errors.WxgOutputDirectoryNotWritable,
-            errors.WxgOutputPathIsDirectory,
-            errors.WxgLispWx3NotSupported,
-            errors.WxgPythonOldNamespaceNotSupported,
-            ), inst:
+    except errors.WxgBaseException, inst:
         logging.error(inst)
         sys.exit(1)
     except Exception:
         logging.error(
-            _("An exception occurred while generating the code for the application.\n"
+            _("An exception occurred while generating the code for the "
+              "application.\n"
               "If you think this is a wxGlade bug, please report it.")
-             )
+        )
         logging.exception(_('Internal Error'))
         sys.exit(1)
     sys.exit(0)
@@ -172,7 +175,7 @@ def init_stage1():
 
     Initialisation is split because the test suite doesn't work with proper
     initialised paths.
-    
+
     Initialise locale settings too. The determined system locale will be
     stored in L{config.encoding}.
     """
@@ -186,7 +189,7 @@ def init_stage1():
         level='INFO',
         )
     atexit.register(log.deinit)
-    
+
     # initialise localization
     encoding = None
     try:
@@ -204,7 +207,7 @@ def init_stage1():
             encoding = locale.nl_langinfo(locale.CODESET)
         except AttributeError, e:
             logging.warning(
-                _('locale.nl_langinfo(locale.CODESET) failed: %s') ,
+                _('locale.nl_langinfo(locale.CODESET) failed: %s'),
                 str(e)
                 )
 
@@ -214,7 +217,7 @@ def init_stage1():
             encoding = locale.getdefaultlocale()[1]
         except ValueError:
             encoding = config.default_encoding
-            
+
     # On Mac OS X encoding may None or '' somehow
     if not encoding:
         encoding = config.default_encoding
@@ -232,7 +235,7 @@ def init_stage1():
             )
         encoding = 'ascii'
 
-    # print versions 
+    # print versions
     logging.info(
         _("Starting wxGlade version %s on Python %s"),
         config.version,
@@ -262,6 +265,7 @@ def init_stage1():
     logging.info(_('Application data directory: %s'), config.appdata_path)
     logging.info(_('Configuration file:         %s'), config.rc_file)
     logging.info(_('History file:               %s'), config.history_file)
+    logging.info(_('Log file:                   %s'), config.log_file)
 
     # adapt application search path
     sys.path = [config.wxglade_path, config.widgets_path] + sys.path
@@ -297,8 +301,10 @@ def init_stage2(use_gui):
                 )
             sys.exit(1)
 
-        # store current platform (None is default)
+        # store current version and platform
+        # ('not_set' is default)
         config.platform = wx.Platform
+        config.wx_version = wx.__version__
 
         # codewrites, widgets and sizers are loaded in class main.wxGladeFrame
     else:
@@ -320,11 +326,12 @@ def run_main():
     # initialise wxGlade (first stage)
     init_stage1()
 
-    # print versions 
-    logging.info(_("Starting wxGlade version %s on Python %s"),
+    # print versions
+    logging.info(
+        _("Starting wxGlade version %s on Python %s"),
         config.version,
         config.py_version,
-        )
+    )
 
     # initialise wxGlade (second stage)
     init_stage2(options.start_gui)

@@ -47,19 +47,3 @@ void MyDialog::do_layout()
     // end wxGlade
 }
 
-
-class MyApp: public wxApp {
-public:
-    bool OnInit();
-};
-
-IMPLEMENT_APP(MyApp)
-
-bool MyApp::OnInit()
-{
-    wxInitAllImageHandlers();
-    MyDialog* dialog_1 = new MyDialog(NULL, wxID_ANY, wxEmptyString);
-    SetTopWindow(dialog_1);
-    dialog_1->Show();
-    return true;
-}

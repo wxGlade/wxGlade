@@ -11,12 +11,11 @@ NOTE: custom tag handler interface (called by XmlWidgetBuilder)::
          def char_data(self, data):
              return False -> no further processing needed
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import logging
-import os
 import StringIO
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
@@ -24,7 +23,6 @@ from xml.sax.handler import ContentHandler
 import common
 import config
 import edit_sizers
-import errors
 
 # ALB 2005-03-10: importing the module here prevents a segfault with python 2.4
 # hmmm... need to investigate this more (it seems that import of
@@ -45,8 +43,10 @@ class XmlParsingError(SAXException):
     def __init__(self, msg):
         if self.locator:
             l = self.locator
-            msg += ' _((line: %s, column:  %s))' % (l.getLineNumber(),
-                                                 l.getColumnNumber())
+            msg += ' _((line: %s, column:  %s))' % (
+                l.getLineNumber(),
+                l.getColumnNumber(),
+                )
         SAXException.__init__(self, msg)
 
 # end of class XmlParsingError
@@ -58,13 +58,20 @@ class XmlParser(ContentHandler):
     the code
 
     @ivar _curr_prop:  Name of the current property
+
     @ivar _curr_prop_val: Value of the current property (list into which the
                           various pieces of char data collected are inserted)
+
     @ivar _objects:    Stack of 'alive' objects
+
     @ivar _sizer_item: Stack of sizer items
+
     @ivar _sizers:     Stack of sizer objects
+
     @ivar _windows:    Stack of window objects (derived by wxWindow)
+
     @ivar locator:     Document locator
+
     @ivar _logger: Instance specific logger
     """
     def __init__(self):
@@ -408,12 +415,12 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                                    # clipboard
 
     def startElement(self, name, attrs):
-        if name == 'object' and attrs.has_key('name'):
+        if name == 'object' and 'name' in attrs:
             # generate a unique name for the copy
             oldname = str(attrs['name'])
             newname = oldname
             i = 0
-            while common.app_tree.has_name(newname,node=self.parent_node ):
+            while common.app_tree.has_name(newname, node=self.parent_node):
                 if not i:
                     newname = '%s_copy' % oldname
                 else:
@@ -428,8 +435,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 try:
                     self.top_obj = self.top().obj
                 except AttributeError:
-                    self._logger.exception(_('Internal Error'))
-                    self._logger.error(
+                    self._logger.exception(
                         _('Exception caused by obj: %s'),
                         self.top_obj
                         )
@@ -447,8 +453,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     self.top_obj.show_properties()
                     common.app_tree.select_item(self.top_obj.node)
                 except AttributeError:
-                    self._logger.exception(_('Internal Error'))
-                    self._logger.error(
+                    self._logger.exception(
                         _('Exception caused by obj: %s'),
                         self.top_obj
                         )
@@ -464,7 +469,7 @@ class XmlWidgetObject(object):
 
     @ivar in_sizers: If True, the widget is a sizer, opposite of L{in_windows}
     @type in_sizers: Boolean
-    
+
     @ivar in_windows: If True, the wiget is not a sizer, pposite of
                       L{in_sizers}
     @type in_windows: Boolean
@@ -513,7 +518,7 @@ class XmlWidgetObject(object):
                 pos = None
 
             if parent and hasattr(parent, 'virtual_sizer') and \
-                parent.virtual_sizer:
+               parent.virtual_sizer:
                 sizer = parent.virtual_sizer
                 sizer.node = parent.node
                 sizeritem = Sizeritem()
@@ -548,7 +553,7 @@ class XmlWidgetObject(object):
         elif self.klass == 'sizerslot':
             sizer = self.parser._sizers.top().obj
             assert sizer is not None, \
-                   _("malformed wxg file: slots can only be inside sizers!")
+                _("malformed wxg file: slots can only be inside sizers!")
             sizer.add_slot()
             self.parser._sizer_item.push(self)
 
@@ -586,8 +591,8 @@ class XmlWidgetObject(object):
             # unknown property for this object
             # issue a warning and ignore the property
             self._logger.error(
-                _("Warning: property '%s' not supported by this object "
-                  "('%s') "),
+                _("Warning: property '%s' not supported by this "
+                  "object ('%s') "),
                 name,
                 self.obj,
                 )
@@ -600,18 +605,44 @@ class CodeWriter(XmlParser):
     Parser used to produce the source from a given XML file
 
     @ivar _toplevels: Toplevel objects, i.e. instances of a custom class
+
     @ivar app_attrs: Attributes of the app (name, class, top_window)
     @type app_attrs: Dictionary
+
+    @ivar code_writer: Language specific code writer
+    @type code_writer: L{wxglade.codegen.BaseLangCodeWriter}
+
     @ivar top_win: Class name of the top window of the app (if any)
     @type top_win: String
-    @ivar out_path: This allows to override the output path specified in the
-                    XML file
-    @ivar preview: If True, we are generating the code for the preview
+
+    @ivar out_path: Override the output path specified in the XML document
+    @type out_path: String
+
+    @ivar preview: True to generate code for the preview
     @type preview: Boolean
+
     @ivar _logger: Instance specific logger
     """
     def __init__(self, writer, input, from_string=False, out_path=None,
                  preview=False, class_names=None):
+        """\
+        @param writer: Language specific code writer; stored in
+                       L{self.code_writer}
+        @type writer:  L{wxglade.codegen.BaseLangCodeWriter}
+
+        @param input: Name of file to load or XML document as a String
+        @type input:  String
+
+        @param from_string: True if L{input} is a XML document as String
+        @type from_string:  Boolean
+
+        @param out_path: Override the output path specified in the XML
+                         document; stored in L{self.out_path}
+        @type out_path:  String or None
+
+        @param preview: True to generate code for the preview
+        @type preview:  Boolean
+        """
         self._logger = logging.getLogger(self.__class__.__name__)
         # writer: object that actually writes the code
         XmlParser.__init__(self)
@@ -639,6 +670,7 @@ class CodeWriter(XmlParser):
                     inputfile.close()
 
     def startElement(self, name, attrs_impl):
+        # check only existence of attributes not the logical correctness
         attrs = {}
         try:
             encoding = self.app_attrs['encoding']
@@ -679,25 +711,11 @@ class CodeWriter(XmlParser):
                     _("'path' attribute empty: could not generate code")
                     )
 
-            # Check if the values of use_multiple_files and out_path agree
-            if use_multiple_files:
-                if not os.path.isdir(self.out_path):
-                    raise errors.WxgOutputDirectoryNotExist(self.out_path)
-                if not os.access(self.out_path, os.W_OK):
-                    raise errors.WxgOutputDirectoryNotWritable(self.out_path)
-            else:
-                if os.path.isdir(self.out_path):
-                    raise errors.WxgOutputPathIsDirectory(self.out_path)
-                directory = os.path.dirname(self.out_path)
-                if directory:
-                    if not os.path.isdir(directory):
-                        raise errors.WxgOutputDirectoryNotExist(directory)
-                    if not os.access(directory, os.W_OK):
-                        raise errors.WxgOutputDirectoryNotWritable(directory)
-
-            # initialize the writer
+            # Initialize the writer, thereby a logical check will be performed
             self.code_writer.initialize(attrs)
+
             return
+
         if not self._appl_started:
             raise XmlParsingError(
                 _("the root of the tree must be <application>")
@@ -705,8 +723,8 @@ class CodeWriter(XmlParser):
         if name == 'object':
             # create the CodeObject which stores info about the current widget
             CodeObject(attrs, self, preview=self.preview)
-            if attrs.has_key('name') and \
-                   attrs['name'] == self.app_attrs.get('top_window', ''):
+            if 'name' in attrs and \
+               attrs['name'] == self.app_attrs.get('top_window', ''):
                 self.top_win = attrs['class']
         else:
             # handling of the various properties
@@ -803,10 +821,10 @@ class CodeObject(object):
     """\
     A class to store information needed to generate the code for a given
     object.
-    
+
     @ivar in_sizers: If True, the widget is a sizer, opposite of L{in_windows}
     @type in_sizers: Boolean
-    
+
     @ivar in_windows: If True, the wiget is not a sizer, pposite of
                       L{in_sizers}
     @type in_windows: Boolean
@@ -854,16 +872,14 @@ class CodeObject(object):
         if base is not None:  # this is a ``real'' object, not a sizeritem
             self.name = attrs['name']
             self.base = common.class_names[base]
-            can_be_toplevel = common.toplevels.has_key(base)
+            can_be_toplevel = base in common.toplevels
             if (self.parent is None or self.klass != self.base) and \
-                   can_be_toplevel:
-                #self.base != 'CustomWidget':
+               can_be_toplevel:
                 self.is_toplevel = True
-                # ALB 2005-11-19: for panel objects, if the user sets a
-                # custom class but (s)he doesn't want the code
-                # to be generated...
+                # for panel objects, if the user sets a custom class but (s)he
+                # doesn't want the code to be generated...
                 if int(attrs.get('no_custom_class', False)) and \
-                       not self.preview:
+                   not self.preview:
                     self.is_toplevel = False
                     #self._logger.debug('OK:', str(self))
                     #self.in_windows = True
@@ -871,11 +887,11 @@ class CodeObject(object):
                 else:
                     self.parser._toplevels.push(self)
             elif self.preview and not can_be_toplevel and \
-                     self.base != 'CustomWidget':
+                 self.base != 'CustomWidget':
                 # if this is a custom class, but not a toplevel one,
                 # for the preview we have to use the "real" class
                 #
-                # ALB 2007-08-04: CustomWidgets handle this in a special way
+                # CustomWidgets handle this in a special way
                 # (see widgets/custom_widget/codegen.py)
                 self.klass = self.base
 
@@ -909,10 +925,6 @@ class CodeObject(object):
         if hasattr(self, 'obj'):  # self is a sizeritem
             try:
                 if name == 'flag':
-##                     flag = 0
-##                     for f in value.split('|'):
-##                         flag |= Sizeritem.flags[f.strip()]
-##                     setattr(self.obj, name, flag)
                     self.obj.flag_s = value.strip()
                 else:
                     setattr(self.obj, name, int(value))
@@ -992,10 +1004,6 @@ class Sizeritem(object):
                          [Sizeritem.flags[t] for t in v.split("|")])
             setattr(self, name, val)
         return (None, get_flag)
-##                 lambda v: setattr(self, name,
-##                                   reduce(lambda a,b: a|b,
-##                                          [Sizeritem.flags[t] for t in
-##                                           v.split("|")])))
 
     def flag_str(self):
         """\
@@ -1031,10 +1039,10 @@ class Sizeritem(object):
                 tmp = '|'.join(tmp.keys())
             except:
                 self._logger.exception(
-                    'EXCEPTION: self.flags = %s, self.flag = %s',
-                      self.flags,
-                      repr(self.flag)
-                      )
+                    'self.flags = %s, self.flag = %s',
+                    self.flags,
+                    repr(self.flag)
+                    )
                 raise
             if tmp:
                 return tmp

@@ -5,12 +5,15 @@ Panel widget module initialization
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+
 def initialize():
     import config
     import codegen
     codegen.initialize()
     if config.use_gui:
         import panel
-        global EditTopLevelPanel; EditTopLevelPanel = panel.EditTopLevelPanel
-        global EditPanel; EditPanel = panel.EditPanel
+        global EditTopLevelPanel
+        global EditPanel
+        EditTopLevelPanel = panel.EditTopLevelPanel
+        EditPanel = panel.EditPanel
         return panel.initialize()

@@ -13,6 +13,10 @@ use Wx::Grid;
 # end wxGlade
 
 # begin wxGlade: extracode
+# extra code added using wxGlade
+use Time::localtime;
+# extra code added using wxGlade
+use Time::gmtime;
 # end wxGlade
 
 package PlOgg3_MyDialog;
@@ -32,7 +36,7 @@ sub new {
     $name   = ""                 unless defined $name;
 
     # begin wxGlade: PlOgg3_MyDialog::new
-    $style = wxCAPTION|wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxSYSTEM_MENU 
+    $style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -60,6 +64,10 @@ sub new {
     Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, \&startConverting);
 
     # end wxGlade
+
+    # manually added code
+    print 'Dialog has been created at ', localtime();
+
     return $self;
 
 }

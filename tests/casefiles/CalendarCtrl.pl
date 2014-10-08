@@ -67,18 +67,3 @@ sub __do_layout {
 
 1;
 
-1;
-
-package main;
-
-unless(caller){
-    local *Wx::App::OnInit = sub{1};
-    my $app = Wx::App->new();
-    Wx::InitAllImageHandlers();
-
-    my $dialog_1 = MyDialog->new();
-
-    $app->SetTopWindow($dialog_1);
-    $dialog_1->Show(1);
-    $app->MainLoop();
-}

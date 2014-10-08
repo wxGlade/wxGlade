@@ -58,12 +58,3 @@ class StylelessFrame(wx.Frame):
         # end wxGlade
 
 # end of class StylelessFrame
-if __name__ == "__main__":
-    gettext.install("app") # replace with the appropriate catalog name
-
-    app = wx.PySimpleApp(0)
-    wx.InitAllImageHandlers()
-    dialog = StylelessDialog(None, wx.ID_ANY, "")
-    app.SetTopWindow(dialog)
-    dialog.Show()
-    app.MainLoop()

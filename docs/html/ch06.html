@@ -1,0 +1,26 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Chapter 6. Installing and Designing own Widget Plugins</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="index.html" title="wxGlade manual"><link rel="prev" href="ch05s04.html" title="Statusbar"><link rel="next" href="ch06s02.html" title="Installing Widget Plugins locally"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 6. Installing and Designing own Widget Plugins</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch05s04.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ch06s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="idm140151664805120"></a>Chapter 6. Installing and Designing own Widget Plugins</h1></div></div></div><p>wxGlade supports a simple plugin system for widgets to load all
+    widgets at the application startup dynamically. The plugin system loads
+    all</p><p>built-in widgets like <span class="quote">“<span class="quote">Static Text</span>”</span> widget or the
+    <span class="quote">“<span class="quote">Gauge</span>”</span> widget. It also loads widgets installed by
+    users.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm140151664802784"></a>Widgets packages</h2></div></div></div><p>The wxGlade plugin system supports two different types of widget
+      packages:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p><span class="quote">“<span class="quote">directory package</span>”</span> - a single directory with
+            all necessary files inside</p></li><li class="listitem"><p><span class="quote">“<span class="quote">ZIP package</span>”</span> - a zipped version of a
+            "directory" package</p></li></ol></div><div class="example"><a name="idm140151664798464"></a><p class="title"><b>Example 6.1. Directory package</b></p><div class="example-contents"><pre class="screen">static_text          &lt;- Directory named after the widget name
+|-- __init__.py      &lt;- Mostly an empty file or a file with just a comment
+|-- codegen.py       &lt;- Python and C++ code generators
+|-- lisp_codegen.py  &lt;- Lisp code generator
+|-- perl_codegen.py  &lt;- Perl code generator
+`-- static_text.py   &lt;- wxGlade GUI code
+</pre></div></div><br class="example-break"><div class="example"><a name="idm140151664796496"></a><p class="title"><b>Example 6.2. ZIP package</b></p><div class="example-contents"><pre class="screen"># unzip -l static_text.zip 
+Archive:  static_text.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2013-12-09 10:02   static_text/
+      329  2013-12-09 10:02   static_text/__init__.py
+     3352  2013-12-09 10:02   static_text/codegen.py
+     1640  2013-12-09 10:02   static_text/lisp_codegen.py
+     1841  2013-12-09 10:02   static_text/perl_codegen.py
+     5917  2013-12-09 10:02   static_text/static_text.py
+---------                     -------
+    13079                     6 files
+</pre></div></div><br class="example-break"></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05s04.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ch06s02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Statusbar </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Installing Widget Plugins locally</td></tr></table></div></body></html>

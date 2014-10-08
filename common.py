@@ -1233,14 +1233,16 @@ def init_paths():
         config.appdata_path = os.path.expandvars(os.environ['APPDATA'])
         old_name = '%s/.wxglade' % config.appdata_path
         new_name = '%s/wxglade' % config.appdata_path
-        if os.path.isdir(old_name):
+        if os.path.isdir(new_name):
+            config.appdata_path = new_name
+        elif os.path.isdir(old_name):
             logging.info(
                 _('Rename appdata path from "%s" to "%s"'), old_name, new_name
             )
             try:
                 os.rename(old_name, new_name)
                 config.appdata_path = new_name
-            except IOError, e:
+            except (IOError, OSError), e:
                 # ignore rename errors and just write an info message
                 logging.info(_('Renaming failed: "%s"'), e)
                 logging.info(_('Using the old path "%s" instead'), old_name)

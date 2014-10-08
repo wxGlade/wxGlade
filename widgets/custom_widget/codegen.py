@@ -1,9 +1,11 @@
 """
 Code generator functions for CustomWidget objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
+
+import logging
 
 import common
 import wcodegen
@@ -153,7 +155,12 @@ def xrc_code_generator(obj):
                     try:
                         name, val = [s.strip() for s in arg.split(':', 1)]
                     except Exception:
-                        self._logger.exception(_('Internal Error'))
+                        # show malformed arguments
+                        logging.warning(
+                            'Ignore malformed argument "%s" for "%s". '
+                            'Argument format should be: name:value',
+                            arg, self.klass
+                        )
                         continue
                     self.properties[name] = val
             xrcgen.DefaultXrcObject.write(self, outfile, ntabs)

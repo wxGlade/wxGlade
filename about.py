@@ -103,7 +103,7 @@ class wxGladeAboutBox(wx.Dialog):
         bgcolor = misc.color_to_string(self.GetBackgroundColour())
         icon_path = os.path.join(config.icons_path, 'wxglade_small.png')
         html.SetPage(self.text % (bgcolor, icon_path, config.version,
-                                  config.py_version, wx.__version__))
+                                  config.py_version, config.wx_version))
         ir = html.GetInternalRepresentation()
         ir.SetIndent(0, wx.html.HTML_INDENT_ALL)
         html.SetSize((ir.GetWidth(), ir.GetHeight()))

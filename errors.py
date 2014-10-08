@@ -45,6 +45,14 @@ class WxgOutputPathIsDirectory(WxgBaseException):
             'single file')
 
 
+class WxgOutputPathIsNotDirectory(WxgBaseException):
+    """\
+    Raised if the output path is not a directory when generating multiple files
+    """
+    msg = _('Output path "%s" should be a directory when generating '
+            'multiple files')
+
+
 class WxgLispWx3NotSupported(WxgBaseException):
     """\
     Raised if Lisp code for wx 3.0 or newer should be generated
@@ -58,3 +66,24 @@ class WxgPythonOldNamespaceNotSupported(WxgBaseException):
     """
     msg = _('Using the old wxPython namespace is not supported anymore '
             'starting wxPython 3.0')
+
+
+class WxgXRCMultipleFilesNotSupported(WxgBaseException):
+    """\
+    Raised multi file XRC designs.
+    """
+    msg = _('XRC code cannot be split into multiple files')
+
+
+class WxgTemplateCodegenNotPossible(WxgBaseException):
+    """\
+    Code generation from a template is not possible
+    """
+    msg = _('Code generation from a template is not possible')
+
+
+class WxgMissingCodeWriter(WxgBaseException):
+    """\
+    Code writer for the given language is not available
+    """
+    msg = _('Code writer for "%s" is not available')
