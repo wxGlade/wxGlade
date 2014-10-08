@@ -24,12 +24,6 @@ import common
 import config
 import edit_sizers
 
-# ALB 2005-03-10: importing the module here prevents a segfault with python 2.4
-# hmmm... need to investigate this more (it seems that import of
-# xml.sax.expatreader should happen before something else... but what?)
-import xml.sax.expatreader
-
-
 if config.use_gui:
     import wx
 
