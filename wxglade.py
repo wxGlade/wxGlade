@@ -25,18 +25,6 @@ import log
 import errors
 
 
-def _fix_path(path):
-    """\
-    Returns an absolute version of path.
-
-    According to the invoking dir of wxGlade (which can be different from '.'
-    if it is invoked from a shell script).
-    """
-    if not os.path.isabs(path):
-        return os.path.join(os.getcwd(), path)
-    return path
-
-
 def parse_command_line():
     """\
     Parse command line
@@ -104,9 +92,15 @@ Report bugs to:    <wxglade-general@lists.sourceforge.net> or at
 wxGlade home page: <http://wxglade.sourceforge.net/>""")
         sys.exit()
 
-    # make absolute path
+    # Make an absolute version of path.
+    # According to the invoking dir of wxGlade (which can be different
+    # from '.' if it is invoked from a shell script).
     if len(args) == 1:
-        options.filename = _fix_path(args[0])
+        filename = args[0]
+        if not os.path.isabs(filename):
+            filename = os.path.join(os.getcwd(), filename)
+        filename = os.path.normpath(os.path.expanduser(filename))
+        options.filename = filename
     else:
         options.filename = None
 
@@ -128,6 +122,10 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""")
             sys.exit(1)
     else:
         options.start_gui = True
+
+    # check output path
+    if options.output:
+        options.output = os.path.normpath(os.path.expanduser(options.output))
 
     return options
 
