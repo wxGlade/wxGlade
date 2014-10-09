@@ -441,7 +441,7 @@ class Application(object):
     set_klass_pattern = re.compile('^[a-zA-Z]+[\w:.0-9-]*$')
 
     def get_output_path(self):
-        return os.path.expanduser(self.output_path)
+        return os.path.normpath(os.path.expanduser(self.output_path))
 
     def set_output_path(self, value):
         self.output_path = value
@@ -667,12 +667,11 @@ class Application(object):
             class_names = common.app_tree.write(out)  # write the xml onto a
                                                       # temporary buffer
 
-            out_path = os.path.expanduser(
-                os.path.expanduser(self.output_path.strip()))
-
+            out_path = os.path.expanduser(self.output_path.strip())
             if not os.path.isabs(out_path) and self.filename:
                 out_path = os.path.join(
                     os.path.dirname(self.filename), out_path)
+                out_path = os.path.normpath(out_path)
             else:
                 out_path = None
             CodeWriter(
