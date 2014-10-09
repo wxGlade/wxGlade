@@ -249,19 +249,31 @@ class wxGladeFrame(wx.Frame):
             self.file_history.AddFileToHistory(path.strip())
             
         def open_from_history(event):
-            if not self.ask_save(): return
-            infile = self.file_history.GetHistoryFile(
-                event.GetId() - wx.ID_FILE1)
-            # ALB 2004-10-15 try to restore possible autosave content...
-            if common.check_autosaved(infile) and \
-                   wx.MessageBox(_("There seems to be auto saved data for "
-                                "this file: do you want to restore it?"),
-                                _("Auto save detected"),
-                                style=wx.ICON_QUESTION|wx.YES_NO) == wx.YES:
-                common.restore_from_autosaved(infile)
+            if not self.ask_save():
+                return
+            pos = event.GetId() - wx.ID_FILE1
+            filename = self.file_history.GetHistoryFile(pos)
+            if not os.path.exists(filename):
+                wx.MessageBox(
+                    _("The file %s. doesn't exist.") % filename,
+                    _('Information'),
+                    style=wx.CENTER | wx.ICON_INFORMATION | wx.OK)
+                self.file_history.RemoveFileFromHistory(pos)
+                common.remove_autosaved(filename)
+                return
+            if common.check_autosaved(filename):
+                res = wx.MessageBox(
+                    _('There seems to be auto saved data for this file: '
+                      'do you want to restore it?'),
+                    _('Auto save detected'),
+                    style=wx.ICON_QUESTION | wx.YES_NO)
+                if res == wx.YES:
+                    common.restore_from_autosaved(filename)
+                else:
+                    common.remove_autosaved(filename)
             else:
-                common.remove_autosaved(infile)
-            self._open_app(infile)
+                common.remove_autosaved(filename)
+            self._open_app(filename)
             
         wx.EVT_MENU_RANGE(self, wx.ID_FILE1, wx.ID_FILE9, open_from_history)
         
