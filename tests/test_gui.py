@@ -10,6 +10,7 @@ from tests import WXGladeBaseTest
 # import general python modules
 import StringIO
 import sys
+import types
 import wx
 
 # import project modules
@@ -53,8 +54,8 @@ class TestGui(WXGladeBaseTest):
         cls.frame = main.wxGladeFrame()
 
         # hide all windows
-        cls.frame.Hide()
-        cls.frame.hide_all()
+        #cls.frame.Hide()
+        #cls.frame.hide_all()
 
     def setUp(self):
         # redirect stdout
@@ -79,25 +80,16 @@ class TestGui(WXGladeBaseTest):
         # initialise base class
         WXGladeBaseTest.tearDown(self)
 
-    def _FindWindowByName(self, name):
-        """\
-        Search and return a widget with the given name in the top window
-        widget tree.
-        """
-        app = wx.GetApp()
-        top = app.GetTopWindow()
-        return top.FindWindowByName(name)
-
     def _generate_code(self):
         """\
         Search button with label "Generate code" and press it
         """
-        # search wx.Button "Generate code" 
-        btn_codegen = self._FindWindowByName("BtnGenerateCode")
+        # search wx.Button "Generate code"
+        btn_codegen = wx.FindWindowByName('BtnGenerateCode')
         self.failUnless(
             btn_codegen,
             'Button with label "Generate code" not found'
-            )
+        )
         # press button to generate code
         self._press_button(btn_codegen)
 
@@ -108,7 +100,7 @@ class TestGui(WXGladeBaseTest):
         event = wx.CommandEvent(
             wx.wxEVT_COMMAND_BUTTON_CLICKED,
             button.GetId()
-            )
+        )
         button.GetEventHandler().ProcessEvent(event)
 
     def _set_lang(self, lang):
@@ -123,23 +115,44 @@ class TestGui(WXGladeBaseTest):
         event = wx.CommandEvent(
             wx.wxEVT_COMMAND_RADIOBOX_SELECTED,
             radiobox.GetId()
-            )
+        )
         radiobox.GetEventHandler().ProcessEvent(event)
+
+    def _open_wxg_file(self, content=None, filename=None):
+        """\
+        Open a wxGlade project
+
+        @param content: Content
+        @type content:  str | StringIO.StringIO
+
+        @param filename: File name
+        @type filename:  str
+        """
+        self.assertTrue(content or filename)
+
+        if filename:
+            content = StringIO.StringIO(
+                self._load_file(filename))
+        elif isinstance(content, types.StringTypes):
+            content = StringIO.StringIO(content)
+
+        self.frame._open_app(
+            infilename=content,
+            use_progress_dialog=False,
+            is_filelike=True,
+            add_to_history=False,
+            )
+        common.app_tree.ExpandAll()
+        for i in range(3):
+            wx.SafeYield()
+            self.app.ProcessPendingEvents()
 
     def test_NotebookWithoutTabs(self):
         """\
         Test loading Notebook without tabs
         """
         self._messageBox = None
-        infile = StringIO.StringIO(
-            self._load_file('Notebook_wo_tabs.wxg')
-            )
-        self.frame._open_app(
-            infilename=infile,
-            use_progress_dialog=False,
-            is_filelike=True,
-            add_to_history=False,
-            )
+        self._open_wxg_file(filename='Notebook_wo_tabs.wxg')
         err_msg = u'Error loading file None: Notebook widget' \
                   ' "notebook_1" does not have any tabs! ' \
                   '_((line: 17, column:  20))'
@@ -152,28 +165,20 @@ class TestGui(WXGladeBaseTest):
                 err_caption,
                 self._messageBox[0],
                 self._messageBox[1],
-                )
             )
+        )
 
     def test_NotebookWithTabs(self):
         """\
         Test loading Notebook with tabs
         """
         self._messageBox = None
-        infile = StringIO.StringIO(
-            self._load_file('Notebook_w_tabs.wxg')
-            )
-        self.frame._open_app(
-            infilename=infile,
-            use_progress_dialog=False,
-            is_filelike=True,
-            add_to_history=False,
-            )
+        self._open_wxg_file(filename='Notebook_w_tabs.wxg')
         self.failIf(
             self._messageBox,
             'Loading test wxg file caused an error message: %s' %
             self._messageBox
-            )
+        )
 
     def load_and_generate(self, basename):
         """\
@@ -186,14 +191,8 @@ class TestGui(WXGladeBaseTest):
         source = self._modify_attrs(
             source,
             path='',
-        )
-        infile = StringIO.StringIO(source)
-        self.frame._open_app(
-            infilename=infile,
-            use_progress_dialog=False,
-            is_filelike=True,
-            add_to_history=False,
-        )
+            )
+        self._open_wxg_file(source)
         # generate code
         self._generate_code()
         # first test should fail because no output file is given
@@ -218,7 +217,7 @@ class TestGui(WXGladeBaseTest):
             ['.py', 'python'],
             ['.xrc', 'XRC'],
             ['', 'C++'],
-        ]:
+            ]:
             filename = '%s%s' % (basename, ext)
 
             # check for language first
@@ -229,13 +228,7 @@ class TestGui(WXGladeBaseTest):
 
             # prepare and open wxg
             source = self._prepare_wxg(language, source)
-            infile = StringIO.StringIO(source)
-            self.frame._open_app(
-                infilename=infile,
-                use_progress_dialog=False,
-                is_filelike=True,
-                add_to_history=False,
-            )
+            self._open_wxg_file(source)
 
             # set "Output path", language and generate code
             common.app_tree.app.output_path = filename
@@ -295,17 +288,11 @@ class TestGui(WXGladeBaseTest):
             self.failUnless(
                 language in common.code_writers,
                 "No codewriter loaded for %s" % language
-                )
+            )
 
             # prepare and open wxg
             source = self._prepare_wxg(language, source)
-            infile = StringIO.StringIO(source)
-            self.frame._open_app(
-                infilename=infile,
-                use_progress_dialog=False,
-                is_filelike=True,
-                add_to_history=False,
-                )
+            self._open_wxg_file(source)
 
             # set "Output path", language and generate code
             common.app_tree.app.output_path = filename
@@ -322,8 +309,8 @@ class TestGui(WXGladeBaseTest):
                     success_caption,
                     self._messageBox[0],
                     self._messageBox[1],
-                    )
                 )
+            )
             self._messageBox = None
 
             if language == 'C++':
