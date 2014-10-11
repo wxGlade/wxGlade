@@ -282,8 +282,8 @@ def init_stage2(use_gui):
         if not hasattr(sys, "frozen") and 'wx' not in sys.modules:
             try:
                 import wxversion
-                wxversion.select('2.8')
-#                wxversion.ensureMinimal('2.8')
+#                wxversion.select('2.8')
+                wxversion.ensureMinimal('2.8')
             except ImportError:
                 logging.error(
                     _('Please install missing python module "wxversion".'))

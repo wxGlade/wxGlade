@@ -36,7 +36,7 @@ sub new {
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY);
-    $self->{notebook_1_pane_1} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{notebook_1_pane_1} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{use_menu_icons} = Wx::CheckBox->new($self->{notebook_1_pane_1}, wxID_ANY, _T("Use icons in menu items"));
     $self->{frame_tool_win} = Wx::CheckBox->new($self->{notebook_1_pane_1}, wxID_ANY, _T("Show properties and tree windows as small frames"));
     $self->{show_progress} = Wx::CheckBox->new($self->{notebook_1_pane_1}, wxID_ANY, _T("Show progress dialog when loading wxg files"));
@@ -47,7 +47,7 @@ sub new {
     $self->{codegen_path} = Wx::TextCtrl->new($self->{notebook_1_pane_1}, wxID_ANY, "");
     $self->{number_history} = Wx::SpinCtrl->new($self->{notebook_1_pane_1}, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, 4);
     $self->{buttons_per_row} = Wx::SpinCtrl->new($self->{notebook_1_pane_1}, wxID_ANY, "5", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100, 5);
-    $self->{notebook_1_pane_2} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{notebook_1_pane_2} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{use_dialog_units} = Wx::CheckBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Use dialog units by default for size properties"));
     $self->{wxg_backup} = Wx::CheckBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Create backup wxg files"));
     $self->{codegen_backup} = Wx::CheckBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Create backup files for generated source"));
