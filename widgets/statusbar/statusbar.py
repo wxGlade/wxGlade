@@ -19,11 +19,10 @@ class EditStatusBar(EditBase, StylesMixin):
     _hidden_frame = None
     update_widget_style = False
 
-    def __init__(self, parent, property_window):
+    def __init__(self, name, klass, parent, property_window):
         # Initialise parent classes
-        EditBase.__init__(self, parent.name + '_statusbar',
-                          'wxStatusBar', parent, id, property_window,
-                          custom_class=False, show=False)
+        EditBase.__init__(self, name, klass, parent, wx.NewId(),
+                          property_window, custom_class=False, show=False)
         StylesMixin.__init__(self)
 
         # initialise instance variables
