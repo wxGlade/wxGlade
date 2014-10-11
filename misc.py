@@ -230,10 +230,10 @@ def capitalize(string):
     XML, XRC.
 
     @param string: String to convert
-    @type string:  String (plain or unicode)
+    @type string:  str
 
     @note: Be carefully it possibly breaks i18n.
-    @rtype: String
+    @rtype: str
     """
     # Don't capitalise those terms
     if string.upper() in ['XML', 'XRC', 'URL']:
@@ -250,7 +250,7 @@ def color_to_string(color):
         >>> color_to_string(wx.Colour(255, 255, 255))
        '#ffffff'
 
-    @rtype: String
+    @rtype: str
     """
     import operator
     return '#' + reduce(operator.add, ['%02x' % bound(c, 0, 255) for c in
@@ -281,7 +281,7 @@ def format_for_version(version):
         >>> format_for_version((2, 8))
         '2.8'
 
-    @rtype: String
+    @rtype: str
     @see: L{wxglade.codegen.BaseLangCodeWriter.for_version}
     """
     return '%s.%s' % version
@@ -298,9 +298,9 @@ def format_supported_by(version):
         '2.8'
 
     @param version: Version as specified in L{common.widget_config}
-    @type version:  String
+    @type version:  str
 
-    @rtype: String
+    @rtype: str
 
     @see: L{wcodegen.BaseWidgetWriter.is_supported()}
     @see: L{common.widget_config}
@@ -438,7 +438,7 @@ def get_geometry(win):
     w, h = win.GetSize()
     if 0 <= x <= wx.SystemSettings_GetMetric(wx.SYS_SCREEN_X) and \
        0 <= y <= wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y):
-        return (x, y, w, h)
+        return x, y, w, h
     return None
 
 
@@ -483,7 +483,7 @@ def streq(s1, s2):
     contain the same text. Appropriate encoding/decoding are performed to
     make the comparison
 
-    @rtype: Boolean
+    @rtype: bool
     """
     try:
         return s1 == s2
@@ -500,7 +500,7 @@ def wxstr(s, encoding=None):
     Converts the object s to str or unicode, according to what wxPython
     expects.
 
-    @rtype: String or Unicode
+    @rtype: str
     """
     if encoding is None:
         if common.app_tree is None:

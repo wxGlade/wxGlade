@@ -23,7 +23,7 @@ def set_version():
     return L{config.version_nohgfound}.
 
     @return: The current wxGlade version number
-    @rtype: String
+    @rtype: str
     @see: L{config.version_nohgfound}
     """
     main_version = ''
@@ -600,16 +600,16 @@ def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
     mode or if submodules are imported, an empty list will be returned.
 
     @param widget_dir: Directory to search for widgets
-    @type widget_dir:  String
+    @type widget_dir:  str
 
     @param submodule: Submodule to import
-    @type submodule:  String
+    @type submodule:  str
 
     @param logger: Logger instance to use. The default logger will be used,
                    if no logging instance is given.
     @type logger:  logging.Logger
 
-    @rtype: List
+    @rtype: list
 
     @see: L{_import_module()}
     @see: L{config.use_gui} - for "GUI" or "batch" mode
@@ -743,10 +743,10 @@ def _import_module(widget_dir, module):
        <module 'static_text' from 'mywidgets/static_text.zip/static_text/__init__.pyc'>
 
     @param widget_dir: Directory to search for widgets
-    @type widget_dir:  String
+    @type widget_dir:  str
 
     @param module: Name of the module to import
-    @type module:  String
+    @type module:  str
 
     @return: Imported module or None in case of errors
     @rtype:  Module or None
@@ -813,13 +813,13 @@ def is_valid_zip(filename, module_name):
     as a check of the content.
 
     @param filename: Name of the ZIP file to check
-    @type filename:  String
+    @type filename:  str
 
     @param module_name: Name of the module to import
-    @type module_name:  String
+    @type module_name:  str
 
     @return: True, if the ZIP is a valid widget zip file
-    @rtype:  Boolean
+    @rtype:  bool
     """
     if not os.path.exists(filename):
         logging.debug(_('File %s does not exists.'), filename)
@@ -1340,7 +1340,7 @@ def load_history():
     @see: L{config.history_file}
     @see: L{config.use_file_history}
 
-    @rtype: List of strings
+    @rtype: list[str]
     """
     try:
         history = open(config.history_file)

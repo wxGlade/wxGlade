@@ -193,14 +193,14 @@ use_gui = True
 If True, wxGlade runs in "GUI" mode. If False, the program is invoked
 from the command-line in "batch" mode for generating code only.
 
-@type: Boolean
+@type: bool
 """
 
 widgets_path = 'widgets'
 """\
 Path to wxGlade "built-in" widgets
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -208,14 +208,14 @@ wxglade_path = '.'
 """\
 Program path, set in wxglade.py
 
-@type: String
+@type: str
 """
 
 _backed_up = {}
 """\
 Set of file names already backed up during this session
 
-@type: Dictionary
+@type: dict
 @see: L{common.save_file()}
 """
 
@@ -231,7 +231,7 @@ rc_file = ''
 """\
 Path to the rc / ini file to store user preferences in it
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -239,7 +239,7 @@ history_file = ''
 """\
 Path to the history file, if used
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -247,7 +247,7 @@ use_file_history = False
 """\
 Flag to use a file history
 
-@type: Boolean
+@type: bool
 """
 if use_gui:
     use_file_history = True
@@ -256,7 +256,7 @@ log_file = ''
 """\
 Path to wxGlade log file
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 

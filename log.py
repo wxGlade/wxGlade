@@ -59,14 +59,14 @@ class StringHandler(logging.handlers.MemoryHandler):
     Stores the log records as a list of strings.
 
     @ivar buffer: The message buffer itself
-    @type buffer: List of strings
+    @type buffer: list[str]
     """
 
     storeAsUnicode = True
     """\
     Stores the log records as unicode strings
 
-    @type: Boolean
+    @type: bool
     """
 
     encoding = sys.stdout.encoding or sys.getfilesystemencoding()
@@ -111,7 +111,7 @@ class StringHandler(logging.handlers.MemoryHandler):
 
         @param clean: Clean the internal message buffer
         @return:      Message buffer
-        @rtype:       List of strings
+        @rtype:       list[str]
 
         @see: L{getBufferAsString()}
         """
@@ -325,11 +325,11 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
     The file logger won't be instantiate if not file name is given.
 
     @param filename: Name of the log file
-    @type filename:  String
+    @type filename:  str
     @param encoding: Encoding of the log file
-    @type encoding:  String
+    @type encoding:  str
     @param level:    Verbosity of messages written in log file e.g. "INFO"
-    @type level:     String
+    @type level:     str
 
     @see: L{StringHandler}
     @see: L{stringLoggerInstance}
@@ -430,7 +430,7 @@ def getBufferAsList(clean=True):
 
     @param clean: Clean the internal message buffer
     @return:      Message buffer
-    @rtype:       List of strings
+    @rtype:       list[str]
 
     @see: L{StringHandler.getBufferAsList()}
     @see: L{stringLoggerInstance}

@@ -30,13 +30,13 @@ class FileDirDialog(object):
 
     @ivar default_extension: The default extension will be added to all
                              file names without extension.
-    @type default_extension: String
+    @type default_extension: str
 
     @ivar file_message: Message to show on the file dialog
-    @type file_message: String
+    @type file_message: str
 
     @ivar dir_message: Message to show on the directory dialog
-    @type dir_message: String
+    @type dir_message: str
 
     @ivar file_style: Style for the file dialog
     @ivar dir_style:  Style for the directory dialog
@@ -109,7 +109,7 @@ class Application(object):
     @ivar __saved:     If True, there are no changes to save
     @ivar codegen_opt: If != 0, generates a separate file for each class
     @ivar for_version: Version string of major dot minor version number
-    @type for_version: String
+    @type for_version: str
     @ivar klass:       Name of the automatically generated class derived from
                        wxApp
     @ivar name:        Name of the wxApp instance to generate
@@ -117,7 +117,7 @@ class Application(object):
     @ivar _logger: Instance specific logger
 
     @cvar all_supported_versions: Supported wx versions
-    @type all_supported_versions: List of strings
+    @type all_supported_versions: list[str]
     """
 
     all_supported_versions = ['2.8', '3.0']

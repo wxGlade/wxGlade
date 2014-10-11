@@ -106,7 +106,7 @@ class Tree(object):
                 for c in children:
                     tmp[c.widget.pos] = c
                 children = []
-                class SlotNode:
+                class SlotNode(object):
                     def write(self, outfile, tabs):
                         fwrite('    ' * tabs + '<object class="sizerslot" />\n')
                 for i in range(1, maxpos):

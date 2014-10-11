@@ -70,6 +70,15 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
                              '(slot-%s obj))\n' % sr)
         return props_buf
 
+    def get_layout_code(self, obj):
+        ret = ['(wxPanel_layout (slot-%s self))\n' % obj.name]
+        try:
+            if int(obj.properties['centered']):
+                ret.append('(wxPanel_Centre (slot-top-window obj) wxBOTH)\n')
+        except (KeyError, ValueError):
+            pass
+        return ret
+
 # end of class LispPanelGenerator
 
 
