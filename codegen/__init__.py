@@ -160,20 +160,20 @@ class BaseSourceFileContent(object):
     @ivar event_handlers: List of event handlers for each class
 
     @ivar name:           Name of the file
-    @type name:           String
+    @type name:           str
 
     @ivar new_classes:    New classes to add to the file (they are inserted
                           BEFORE the old ones)
 
     @ivar new_classes_inserted: Flag if the placeholder for new classes has
                                 been inserted in source file already
-    @type new_classes_inserted: Boolean
+    @type new_classes_inserted: bool
 
     @ivar code_writer: Reference to the parent code writer object
-    @type code_writer: Instance of L{BaseLangCodeWriter} or of a derived class
+    @type code_writer: BaseLangCodeWriter
     
     @ivar spaces: Indentation level for each class
-    @type spaces: String  
+    @type spaces: str
 
     @cvar rec_block_start:   Regexp to match the begin of a wxglade block
     @cvar rec_block_end:     Regexp to match the end of a wxGlade block
@@ -217,9 +217,9 @@ class BaseSourceFileContent(object):
         Format class name read from existing source file
 
         @param class_name: Class name
-        @type class_name:  String
+        @type class_name:  str
 
-        @rtype: String
+        @rtype: str
 
         @note: You may overwrite this function in the derived class
         """
@@ -229,7 +229,7 @@ class BaseSourceFileContent(object):
         """\
         True if the line is the marker for class end.
         
-        @rtype: Boolean
+        @rtype: bool
         """
         return line.strip().startswith('# end of class ')
 
@@ -239,7 +239,7 @@ class BaseSourceFileContent(object):
 
         @note: You may overwrite this function in the derived class
         
-        @rtype: Boolean
+        @rtype: bool
         """
         return False
 
@@ -249,7 +249,7 @@ class BaseSourceFileContent(object):
 
         @note: Separated for debugging purposes
 
-        @rtype: List of strings
+        @rtype: list[str]
         """
         fh = open(filename)
         lines = fh.readlines()
@@ -355,120 +355,119 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     @ivar app_encoding: Encoding of the application; will be initialised with
                         L{config.default_encoding}
-    @type app_encoding: String
+    @type app_encoding: str
 
     @ivar app_filename: File name to store the application start code within
                         multi file projects
-    @type app_filename: String
+    @type app_filename: str
 
     @ivar app_mapping: Default mapping of template variables for substituting
                        in templates (see L{lang_mapping}, L{add_app()})
-    @type app_mapping: Dictionary
+    @type app_mapping: dict
 
     @ivar lang_mapping: Language specific mapping of template variables for
                         substituting in templates (see L{app_mapping},
                         L{add_app()})
-    @type lang_mapping: Dictionary
+    @type lang_mapping: dict
 
     @ivar app_name: Application name
-    @type app_name: String
+    @type app_name: str
 
     @ivar blacklisted_widgets: Don't add those widgets to sizers because they
         are not supported for the requested wx version or there is no code
         generator available.
-    @type blacklisted_widgets: Dictionary
+    @type blacklisted_widgets: dict
 
     @ivar classes: Dictionary that maps the lines of code of a class to the
                    name of such class:
                    the lines are divided in 3 categories: '__init__',
                    '__set_properties' and '__do_layout'
-    @type classes: Dictionary
+    @type classes: dict
 
     @ivar curr_tab: Current indentation level
-    @type curr_tab: Integer
+    @type curr_tab: int
 
     @ivar for_version: wx version we are generating code for (e.g. C{(2, 8)})
     @type for_version: Tuple of major and minor version number
 
     @ivar header_lines: Lines common to all the generated files
                         (import of wxCL, ...)
-    @type header_lines: List of strings
+    @type header_lines: list[str]
 
     @ivar indent_amount: An indentation level is L{indent_symbol} *
                          L{indent_amount}; will be initialised
                          with L{config.default_indent_amount}
-    @type indent_amount: Integer
+    @type indent_amount: int
 
     @ivar indent_symbol: Character to use for indentation; will be initialised
                          with L{config.default_indent_symbol}
-    @type indent_symbol: String
+    @type indent_symbol: str
 
     @ivar multiple_files: If True, generate a file for each custom class
-    @type multiple_files: Boolean
+    @type multiple_files: bool
 
     @ivar nonce: Random number used to be sure that the replaced tags in the
                  sources are the right ones (see L{BaseSourceFileContent},
                  L{add_class} and L{create_nonce})
-    @type nonce: String
+    @type nonce: str
 
     @ivar obj_builders: "writers" for the various objects
-    @type obj_builders: Dictionary
+    @type obj_builders: dict
 
     @ivar obj_properties: "property writer" functions, used to set the
                           properties of a toplevel object
-    @type obj_properties: Dictionary
+    @type obj_properties: dict
 
     @ivar out_dir: If not None, it is the directory inside which the output
                    files are saved
-    @type out_dir: None or string
+    @type out_dir: None | str
 
     @ivar output_file: Output string buffer for the code
     @type output_file: None or StringIO
 
     @ivar output_file_name: Name of the output file
-    @type output_file_name: String
+    @type output_file_name: str
 
     @ivar previous_source: If not None, it is an instance of
                            L{BaseSourceFileContent} that keeps info about the
                            previous version of the source to generate
-    @type previous_source: None or a derived class of
-                           L{BaseSourceFileContent}
+    @type previous_source: None | BaseSourceFileContent
 
     @ivar _app_added: True after wxApp instance has been generated
-    @type _app_added: Boolean
+    @type _app_added: bool
 
     @ivar _current_extra_code: Set of lines for extra code to add to the
                                current file
-    @type _current_extra_code: List of strings
+    @type _current_extra_code: list[str]
 
     @ivar _current_extra_modules: Set of lines of extra modules to add to the
                                   current file
-    @type _current_extra_modules: List of strings
+    @type _current_extra_modules: list[str]
 
     @ivar _overwrite: If True, overwrite any previous version of the source
                       file instead of updating only the wxGlade blocks; 
                       will be initialised with L{config.default_overwrite}
-    @type _overwrite: Boolean
+    @type _overwrite: bool
 
     @ivar _property_writers: Dictionary of dictionaries of property handlers
                              specific for a widget the keys are the class
                              names of the widgets (E.g.
                              _property_writers['wxRadioBox'] = {'choices',
                              choices_handler})
-    @type _property_writers: Dictionary
+    @type _property_writers: dict
 
     @ivar _textdomain: gettext textdomain (see L{_use_gettext})
-    @type _textdomain: String
+    @type _textdomain: str
 
     @ivar _use_gettext: If True, enable gettext support; will be initialised
                         with L{config.default_use_gettext} (see
                         L{_textdomain})
-    @type _use_gettext: Boolean
+    @type _use_gettext: bool
 
     @ivar _widget_extra_modules: Map of widget class names to a list of extra
                                  modules needed for the widget (e.g.
                                  C{'wxGrid': 'from wxLisp.grid import *\\n'}).
-    @type _widget_extra_modules: Dictionary
+    @type _widget_extra_modules: dict
     """
 
     _code_statements = {}
@@ -496,7 +495,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     The function L{_get_code_statement()} handles the extensions properly and
     returns the requested template.
 
-    @type: Dictionary of strings
+    @type: dict[str]
     @see: L{_get_code_statement()}
     @see: L{_generic_code()}
     @see: L{generate_code_extraproperties()}
@@ -506,7 +505,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     List of classes to store always as class attributes
     
-    @type: List of strings
+    @type: list[str]
     @see: L{test_attribute()}
     """
 
@@ -517,21 +516,21 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     
     E.g "." for Python or "->" for Perl.
     
-    @type: String
+    @type: str
     """
 
     global_property_writers = {}
     """\
     Custom handlers for widget properties
 
-    @type: Dictionary
+    @type: dict
     """
 
     indent_level_func_body = 1
     """\
     Indentation level for bodies of class functions.
     
-    @type: Integer
+    @type: int
     """
 
     language_note = ""
@@ -539,7 +538,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     Language specific notice written into every file header
 
     @note: Please add a newline sequence to the end of the language note.
-    @type: String
+    @type: str
     @see:  L{save_file()}
     """
 
@@ -547,7 +546,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Name of the constructor. E.g. "__init__" in Python or "new" in Perl.
     
-    @type: String
+    @type: str
     """
 
     shebang = None
@@ -555,7 +554,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     Shebang line, the first line of the generated main files.
 
     @note: Please add a newline sequence to the end of the shebang.
-    @type: String
+    @type: str
     @see:  L{save_file()}
     """
 
@@ -563,7 +562,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Just a reference to the language specific instance of SourceFileContent
     
-    @type: L{BaseSourceFileContent} or a derived class
+    @type: BaseSourceFileContent
     """
 
     tmpl_encoding = None
@@ -572,7 +571,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     The file encoding will be added to the output in L{save_file()}.
 
-    @type: String
+    @type: str
     """
 
     tmpl_block_begin = '%(tab)s%(comment_sign)s begin wxGlade: ' \
@@ -583,14 +582,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     Statement to add at the end of a class function. e.g.
     'return $self;' for Perl.
     
-    @type: String
+    @type: str
     """
 
     tmpl_class_end = ''
     """\
     Statement to add at the end of a class.
     
-    @type: String
+    @type: str
     """
 
     tmpl_ctor_call_layout = ''
@@ -598,7 +597,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     Code add to the contructor to call '__do_layout()' and
     '__set_properties()'.
     
-    @type: String
+    @type: str
     """
 
     tmpl_name_do_layout = ''
@@ -607,7 +606,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     
     This name differs between the various code generators.
     
-    @type: String
+    @type: str
     @see: L{generate_code_do_layout()}
     """
 
@@ -617,7 +616,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     
     This name differs between the various code generators.
     
-    @type: String
+    @type: str
     @see:  L{generate_code_set_properties()}
     """
     
@@ -627,7 +626,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     perl.
     
     @note: This statement differs between the various code generators.
-    @type: String
+    @type: str
     """
 
     tmpl_func_do_layout = ''
@@ -636,7 +635,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     
     @note: This statement differs between the various code generators.
     
-    @type: String
+    @type: str
     @see: L{generate_code_do_layout()}
     """
 
@@ -646,7 +645,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     
     @note: This statement differs between the various code generators.
     
-    @type: String
+    @type: str
     @see: L{generate_code_event_handler()}
     """
 
@@ -656,7 +655,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     
     @note: This statement differs between the various code generators.
     
-    @type: String
+    @type: str
     @see: L{generate_code_set_properties()}
     """
 
@@ -665,7 +664,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Template of the "generated by ..." message
 
-    @type: String
+    @type: str
     @see: L{create_generated_by()}
     @see: L{save_file()}
     """
@@ -677,7 +676,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Template of the overwrite message in all standalone app files.
 
-    @type: String
+    @type: str
     @see: L{add_app()}
     """
 
@@ -685,7 +684,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Template for adding a widget to a sizer.
     
-    @type: String
+    @type: str
     @see: L{add_sizeritem()}
     """
 
@@ -693,7 +692,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Template for setting style in constructor
     
-    @type: String
+    @type: str
     @see:  L{_format_style()}
     """
 
@@ -705,7 +704,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     A standalone file will be created if a separate file for each class is
     selected.
 
-    @type: None or string
+    @type: None | str
     @see: L{add_app}
     """
 
@@ -713,7 +712,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Template for detailed application start code without gettext support
 
-    @type: None or string
+    @type: None | str
     @see: L{add_app}
     """
 
@@ -721,7 +720,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Template for detailed application start code with gettext support
 
-    @type: None or string
+    @type: None | str
     @see: L{add_app}
     """
 
@@ -729,7 +728,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Template for simplified application start code without gettext support
 
-    @type: None or string
+    @type: None | str
     @see: L{add_app}
     """
 
@@ -737,7 +736,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Template for simplified application start code with gettext support
 
-    @type: None or string
+    @type: None or str
     @see: L{add_app}
     """
 
@@ -750,7 +749,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Enable or disable printing of warning messages
 
-    @type: Boolean
+    @type: bool
     @see: L{self.warning()}
     """
 
@@ -942,7 +941,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         @param out_path: Output path for the generated code (a file if
                          L{self.multiple_files} is False, a dir otherwise)
-        @type out_path: String or None
+        @type out_path: str | None
 
         @note: You may overwrite this function in the derivated class
         """
@@ -1181,12 +1180,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if self.lang_mapping:
             self.app_mapping.update(self.lang_mapping)
 
-        code = tmpl % (self.app_mapping)
+        code = tmpl % self.app_mapping
 
         if self.multiple_files:
             filename = os.path.join(self.out_dir, self.app_filename)
             code = "%s%s" % (
-                self.tmpl_appfile % (self.app_mapping),
+                self.tmpl_appfile % self.app_mapping,
                 code,
                 )
             # write the wxApp code
@@ -1707,7 +1706,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Create I{generated by wxGlade} string without leading comment
         characters and without tailing new lines
 
-        @rtype:  String
+        @rtype:  str
         """
         generated_from = ''
         if config.preferences.write_generated_from and common.app_tree and \
@@ -1733,7 +1732,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         sources are the right ones (see SourceFileContent and add_class)
 
         @return: A random nonce
-        @rtype:  String
+        @rtype:  str
         """
         nonce = '%s%s' % (str(time.time()).replace('.', ''),
                           random.randrange(10 ** 6, 10 ** 7))
@@ -1760,7 +1759,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Returns the code fragment that sets the background colour of
         the given object.
 
-        @rtype: String
+        @rtype: str
 
         @see: L{_get_colour()}
         """
@@ -1785,15 +1784,15 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Generate constructor code for top-level object
 
         @param code_obj: Object to generate code for
-        @type code_obj:  Instance of L{CodeObject}
+        @type code_obj:  CodeObject
         
         @param is_new: Flag if a new file is creating
-        @type is_new:  Boolean
+        @type is_new:  bool
         
         @param tab: Indentation
-        @type tab:  String
+        @type tab:  str
 
-        @rtype: List of strings
+        @rtype: list[str]
         """
         return []
 
@@ -1801,7 +1800,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Returns the code fragment that disables the given object.
 
-        @rtype: String
+        @rtype: str
         """
         return self._generic_code(obj, 'disabled')
         
@@ -1816,15 +1815,15 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @param builder: Widget specific builder
 
         @param code_obj: Object to generate code for
-        @type code_obj:  Instance of L{CodeObject}
+        @type code_obj:  CodeObject
 
         @param is_new: Indicates if previous source code exists
-        @type is_new:  Boolean
+        @type is_new:  bool
 
         @param tab: Indentation of function body
-        @type tab:  String
+        @type tab:  str
 
-        @rtype: List of strings
+        @rtype: list[str]
 
         @see: L{tmpl_name_do_layout}
         @see: L{tmpl_func_do_layout}
@@ -1871,14 +1870,14 @@ It is available for wx versions %(supported_versions)s only.""") % {
         This function is used for interpreted languages only.
         
         @param code_obj: Object to generate code for
-        @type code_obj:  Instance of L{CodeObject}
+        @type code_obj:  CodeObject
 
         @param tab: Indentation of function body
-        @type tab:  String
+        @type tab:  str
 
         @param event_handlers: List of event handlers        
 
-        @rtype: List of strings
+        @rtype: list[str]
         """
         return []
 
@@ -1888,20 +1887,20 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Generate the event handler stubs
         
         @param code_obj: Object to generate code for
-        @type code_obj:  Instance of L{CodeObject}
+        @type code_obj:  CodeObject
 
         @param is_new: Indicates if previous source code exists
-        @type is_new:  Boolean
+        @type is_new:  bool
 
         @param tab: Indentation of function body
-        @type tab:  String
+        @type tab:  str
 
         @param prev_src: Previous source code
-        @type prev_src: Language specific instance of SourceFileContent
+        @type prev_src: SourceFileContent
         
         @param event_handlers: List of event handlers
         
-        @rtype: List of strings
+        @rtype: list[str]
         @see: L{tmpl_func_event_stub}
         """
         code_lines = []
@@ -1936,7 +1935,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Returns a code fragment that set extra properties for the given object
 
-        @rtype: List of strings
+        @rtype: list[str]
         """
         tmpl = self._get_code_statement('extraproperties')
         if not tmpl:
@@ -1961,7 +1960,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Returns the code fragment that get the focus to the given object.
 
-        @rtype: String
+        @rtype: str
         """
         return self._generic_code(obj, 'focused')
 
@@ -1969,7 +1968,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Returns the code fragment that sets the font of the given object.
 
-        @rtype: String
+        @rtype: str
         """
         stmt = None
 
@@ -2008,7 +2007,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Returns the code fragment that sets the foreground colour of
         the given object.
 
-        @rtype: String
+        @rtype: str
 
         @see: L{_get_colour()}
         """
@@ -2032,7 +2031,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Returns the code fragment that hides the given object.
 
-        @rtype: String
+        @rtype: str
         """
         return self._generic_code(obj, 'hidden')
 
@@ -2051,7 +2050,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @param obj: An instance of L{xml_parse.CodeObject}
         @param id:  Widget ID definition as String.
 
-        @rtype: Tuple of two strings
+        @rtype: (str, str)
         """
         raise NotImplementedError
 
@@ -2066,15 +2065,15 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @param builder: Widget specific builder
 
         @param code_obj: Object to generate code for
-        @type code_obj:  Instance of L{CodeObject}
+        @type code_obj:  CodeObject
 
         @param is_new: Indicates if previous source code exists
-        @type is_new:  Boolean
+        @type is_new:  bool
 
         @param tab: Indentation of function body
-        @type tab:  String
+        @type tab:  str
 
-        @rtype: List of strings
+        @rtype: list[str]
 
         @see: L{tmpl_name_set_properties}
         @see: L{tmpl_func_set_properties}
@@ -2104,7 +2103,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Returns the code fragment that sets the size of the given object.
 
-        @rtype: String
+        @rtype: str
         """
         raise NotImplementedError
 
@@ -2112,7 +2111,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Returns the code fragment that sets the tooltip of the given object.
 
-        @rtype: String
+        @rtype: str
         """
         return self._generic_code(obj, 'tooltip')
 
@@ -2122,7 +2121,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         (background and foreground colors, font, ...)
 
         @return: a list of strings containing the generated code
-        @rtype: List of strings
+        @rtype: list[str]
 
         @see: L{generate_code_background()}
         @see: L{generate_code_disabled()}
@@ -2171,7 +2170,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @param s: String to quote
 
         @return: A quoted / escaped version of 's'
-        @rtype:  String
+        @rtype:  str
 
         @note: Please use L{quote_path()} to quote / escape filenames or
         paths.
@@ -2225,7 +2224,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         thus making a path suitable to insert in a list source file
 
         @note: You may overwrite this function in the derivated class
-        @rtype: String
+        @rtype: str
         """  # " ALB: to avoid emacs going insane with colorization..
         s = s.replace('\\', '\\\\')
         s = s.replace('"', r'\"')
@@ -2243,13 +2242,13 @@ It is available for wx versions %(supported_versions)s only.""") % {
         L{common.save_file()} is used for storing content.
 
         @param filename:     File name
-        @type filename:      String
+        @type filename:      str
         @param content:      File content
-        @type content:       String
+        @type content:       str
         @param mainfile:     Mainfiles gets a L{shebang} and C{0755} permissions.
-        @type mainfile:      Boolean
+        @type mainfile:      bool
         @param content_only: Write only content to the file
-        @type content_only:  Boolean
+        @type content_only:  bool
 
         @see: L{common.save_file()}
         """
@@ -2329,7 +2328,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         The function returns True for sizers, if
          - the property exists and is an integer greater equal 1
 
-        @rtype: Boolean
+        @rtype: bool
         @see: L{classattr_always}
         """
         if obj.klass in self.classattr_always:
@@ -2345,7 +2344,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Return a proper formatted string for indenting lines
 
-        @rtype: String
+        @rtype: str
         """
         return self.indent_symbol * self.indent_amount * number
 
@@ -2354,7 +2353,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Show a warning message
 
         @param msg: Warning message
-        @type msg:  String
+        @type msg:  str
         """
         if self._show_warnings:
             self._logger.warning(msg)
@@ -2372,10 +2371,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
         L{BaseSourceFileContent.spaces}.
 
         @param source: Source content with tags to replace
-        @type source:  String
+        @type source:  str
 
         @return: Changed content
-        @rtype:  String
+        @rtype:  str
         """
         tags = re.findall(
             '(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % self.nonce,
@@ -2429,7 +2428,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         @note: Separated for debugging purposes
 
-        @rtype: Boolean
+        @rtype: bool
         """
         return os.path.isfile(filename)
  
@@ -2440,8 +2439,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @note: This function is for use in L{add_object()} only!
         
         @param name: Widget name
-        @type name:  String
-        @rtype: String
+        @type name:  str
+        @rtype: str
         @see: L{add_object()}
         """
         return name
@@ -2452,7 +2451,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         
         @param obj: Instance of L{xml_parse.CodeObject}
         
-        @rtype: String
+        @rtype: str
         """
         if not obj:
             return ''
@@ -2468,8 +2467,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Trailing spaces will be removed. Leading spaces e.g. indentation
         won't be added.
         
-        @type msg: String
-        @rtype: String
+        @type msg: str
+        @rtype: str
         """
         return "%s %s" % (self.comment_sign, msg.rstrip())
 
@@ -2478,9 +2477,9 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Return formatted import statement for the given class
 
         @param klass: Class name
-        @type klass:  String
+        @type klass:  str
 
-        @rtype: String
+        @rtype: str
         """
         return klass
 
@@ -2488,7 +2487,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Format a class or a widget name by replacing forbidden characters.
         
-        @rtype: String
+        @rtype: str
         """
         return name
 
@@ -2501,7 +2500,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
                 
         @see: L{tmpl_style}
         
-        @rtype: String
+        @rtype: str
         """
         return self.tmpl_style
 
@@ -2511,10 +2510,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         @param obj:       Instance of L{xml_parse.CodeObject}
         @param prop_name: Name of the property to set
-        @type prop_name:  String
+        @type prop_name:  str
 
         @return: Code statement or None
-        @rtype: String or None
+        @rtype: str | None
 
         @see: L{_code_statements}
         """
@@ -2556,10 +2555,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
         L{_code_statements}.
 
         @param prop_name: Name of the property to set
-        @type prop_name:  String
+        @type prop_name:  str
 
         @return: Code statement or None
-        @rtype: String or None
+        @rtype: str | None
 
         @see: L{_code_statements}
         """
@@ -2592,7 +2591,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Returns the language specific name of the variable e.g. C{self}
         or C{$self}.
 
-        @rtype: String
+        @rtype: str
         """
         raise NotImplementedError
 
@@ -2600,7 +2599,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """\
         Returns the language specific colour statement
         
-        @rtype: String
+        @rtype: str
         """
         # check if there is an code template for this properties
         tmpl_wxcolour = self._get_code_statement('wxcolour' )
@@ -2631,9 +2630,9 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Returns the filename to store a single class in multi file projects.
 
         @param klass: Class name
-        @type klass:  String
+        @type klass:  str
 
-        @rtype: String
+        @rtype: str
         """
         return ''
 
@@ -2642,24 +2641,24 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Generic function to generate a complete function from given parts.
 
         @param code_obj: Object to generate code for
-        @type code_obj:  Instance of L{CodeObject}
+        @type code_obj:  CodeObject
 
         @param is_new: Indicates if previous source code exists
-        @type is_new:  Boolean
+        @type is_new:  bool
 
         @param tab: Indentation of function body
-        @type tab:  String
+        @type tab:  str
         
         @param fname: Name of the function
-        @type fname:  String
+        @type fname:  str
         
         @param ftmpl: Template of the function
-        @type ftmpl:  String
+        @type ftmpl:  str
         
         @param body: Content of the function
-        @type body:  List of strings
+        @type body:  list[str]
         
-        @rtype: List of strings
+        @rtype: list[str]
         """
         code_lines = []
         write = code_lines.append
@@ -2705,10 +2704,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
         
         @param klass: Instance of L{ClassLines} to add the code in
         @param msg:   Multiline message
-        @type msg:    String
+        @type msg:    str
         
         @param sub_obj: Object to generate code for
-        @type sub_obj:  Instance of L{CodeObject}
+        @type sub_obj:  CodeObject
         
         @see: L{_format_comment()}
         """
@@ -2751,7 +2750,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             >>> self._string_to_colour('#ABCDEF')
             '171, 205, 239'
 
-        @rtype:  String
+        @rtype:  str
         """
         return '%d, %d, %d' % (
             int(s[1:3], 16),
@@ -2764,17 +2763,17 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Content embedded between C{begin wxGlade} and C{end wxGlade} sequence.
 
         @return: Embedded content
-        @rtype:  String
+        @rtype:  str
 
         @param tag: Tag is used in C{begin wxGlade} statement for
                     separate different blocks
-        @type tag:  String
+        @type tag:  str
 
         @param content: Content to enter
-        @type content:  String or List of strings
+        @type content:  str | list[str]
 
         @param newline: Add a tailing empty line
-        @type newline:  Boolean
+        @type newline:  bool
         """
         code_list = []
         code_list.append(

@@ -173,11 +173,11 @@ class WXGladeBaseTest(unittest.TestCase):
         Generate code for the given language.
 
         @param language: Language to generate code for
-        @type language:  String
+        @type language:  str
         @param document: XML document to generate code for
-        @type document:  String
+        @type document:  str
         @param filename: Name of the virtual output file
-        @type filename:  String
+        @type filename:  str
         """
         self.failUnless(
             language in common.code_writers,
@@ -200,7 +200,7 @@ class WXGladeBaseTest(unittest.TestCase):
         """\
         Check if the file is a test case file
 
-        @rtype: Boolean
+        @rtype: bool
         """
         fullpath = os.path.join(self.caseDirectory, filename)
         exists = os.path.isfile(fullpath)
@@ -215,9 +215,9 @@ class WXGladeBaseTest(unittest.TestCase):
         Load a file need by a test case.
 
         @param filename:  Name of the file to load
-        @type filename:   String
+        @type filename:   str
         @return:          File content
-        @rtype:           String
+        @rtype:           str
         """
         casename, extension = os.path.splitext(filename)
         if extension == '.wxg':
@@ -333,11 +333,11 @@ class WXGladeBaseTest(unittest.TestCase):
         Set test specific options inside a wxg (XML) file
 
         @param language: Language to generate code for
-        @type language:  String
+        @type language:  str
         @param document: XML document to generate code for
-        @type document:  String
+        @type document:  str
         @return: Modified XML document
-        @rtype:  String
+        @rtype:  str
         """
         _document = self._modify_attrs(
             document,
@@ -379,9 +379,9 @@ class WXGladeBaseTest(unittest.TestCase):
         Generate code for all languages based on the base file name
         
         @param base: Base name of the test files
-        @type base: String
+        @type base: str
         @param excluded: Languages to exclude from test
-        @type excluded:  List of strings
+        @type excluded:  list[str]
         """
         for lang, ext in [
             ['lisp',   '.lisp'],
@@ -405,12 +405,12 @@ class WXGladeBaseTest(unittest.TestCase):
         Compare two lists, tailing spaces will be removed
 
         @param text1: Expected text
-        @type text1:  String
+        @type text1:  str
         @param text2: Generated text
-        @type text2:  String
+        @type text2:  str
 
         @return: Changes formatted as unified diff
-        @rtype:  String
+        @rtype:  str
         """
         self.assertTrue(isinstance(text1, types.StringTypes))
         self.assertTrue(isinstance(text2, types.StringTypes))
@@ -435,11 +435,11 @@ class WXGladeBaseTest(unittest.TestCase):
         Generate code and compare generated and expected code
 
         @param lang:    Language to generate code for
-        @type lang:     String
+        @type lang:     str
         @param inname:  Name of the XML input file
-        @type inname:   String
+        @type inname:   str
         @param outname: Name of the output file
-        @type outname:  String
+        @type outname:  str
         """
         # load XML input file
         source = self._load_file(inname)
@@ -455,9 +455,9 @@ class WXGladeBaseTest(unittest.TestCase):
         Generate C++ code and compare generated and expected code
 
         @param inname:  Name of the XML input file
-        @type inname:   String
+        @type inname:   str
         @param outname: Name of the output file without extension
-        @type outname:  String
+        @type outname:  str
         """
         name_h = '%s.h' % outname
         name_cpp = '%s.cpp' % outname
@@ -476,14 +476,14 @@ class WXGladeBaseTest(unittest.TestCase):
 
     def _compare(self, expected, generated, filetype=None):
         """\
-        Compare expected and generated content using a diff algorithm
+        Compare two text documents using a diff algorithm
 
         @param expected:  Expected content
-        @type expected:   Multiline String
+        @type expected:   str
         @param generated: Generated content
-        @type generated:  Multiline String
+        @type generated:  str
         @param filetype:  Short description of the content
-        @type filetype:   String
+        @type filetype:   str
         """
         # compare files
         delta = self._diff(expected, generated)

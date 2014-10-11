@@ -214,9 +214,9 @@ def builder(parent, sizer, pos, number=[0]):
 
         def __getitem__(self, value):
             if value == 'class':
-                return (lambda : self.klass, self.set_klass)
+                return lambda : self.klass, self.set_klass
             else:
-                return (lambda : self.widget, self.set_widget)
+                return lambda : self.widget, self.set_widget
     # end of inner class
 
     class_dialog = Dialog()

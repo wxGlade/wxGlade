@@ -280,10 +280,10 @@ def builder(parent, sizer, pos, number=[0]):
         def __getitem__(self, value):
             if value == 'class':
                 def set_klass(c): self.klass = c
-                return (lambda : self.klass, set_klass)
+                return lambda : self.klass, set_klass
             else:
                 def set_base(b): self.base = b
-                return (lambda : self.base, set_base)
+                return lambda : self.base, set_base
     # end of inner class
 
     dialog = Dialog()

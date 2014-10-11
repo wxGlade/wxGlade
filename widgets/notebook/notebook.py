@@ -81,7 +81,7 @@ class NotebookVirtualSizer(Sizer):
         slot = SizerSlot(self.window, self, pos)
         #self._logger.debug('free: %s, %s, %s', slot, slot.pos, pos)
         slot.show_widget(True)
-        pos = pos - 1
+        pos -= 1
         label, item = self.window.tabs[pos]
         self.window.widget.RemovePage(pos)
         self.window.widget.InsertPage(pos, slot.widget, label)

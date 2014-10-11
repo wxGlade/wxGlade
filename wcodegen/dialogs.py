@@ -25,7 +25,7 @@ class WidgetStyleSelectionDialog(wx.Dialog):
         @type box_label:  str | unicode
 
         @param choices: Choices to select one
-        @type choices:  list[str]
+        @type choices:  str
         """
         wx.Dialog.__init__(self, None, -1, dlg_title)
 

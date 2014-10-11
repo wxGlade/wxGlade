@@ -302,18 +302,18 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     Code writer class for writing C++ code out of the designed GUI elements
 
     @ivar source_extension: Extension of the source file
-    @type source_extension: String
+    @type source_extension: str
 
     @ivar header_extension: Extension of the header file
-    @type header_extension: String
+    @type header_extension: str
 
     @ivar last_generated_id: Last generated Id number (wxNewId() is not
                              used yet)
-    @type last_generated_id: Integer
+    @type last_generated_id: int
 
     @cvar tmpl_init_gettext: Template for inclusion of i18n headers and
                              defining APP_CATALOG constant
-    @type tmpl_init_gettext: None or string
+    @type tmpl_init_gettext: None | str
 
     @see: L{BaseLangCodeWriter}
     """
@@ -354,7 +354,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     """\
     If not None, name (without extension) of the file to write into
 
-    @type: String
+    @type: str
     """
 
     output_header = None
@@ -1355,26 +1355,26 @@ bool MyApp::OnInit()
                                   'extra_headers', [])
                 klass.dependencies.extend(headers)
 
-    def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, \
+    def generate_code_event_handler(self, code_obj, is_new, tab, prev_src,
                                     event_handlers):
         """\
         Generate the event handler stubs
         
         @param code_obj: Object to generate code for
-        @type code_obj:  Instance of L{CodeObject}
+        @type code_obj:  CodeObject
 
         @param is_new: Indicates if previous source code exists
-        @type is_new:  Boolean
+        @type is_new:  bool
 
         @param tab: Indentation of function body
-        @type tab:  String
+        @type tab:  str
         
         @param prev_src: Previous source code
-        @type prev_src: Instance of L{SourceFileContent}
+        @type prev_src: SourceFileContent
         
         @param event_handlers: List of event handlers
         
-        @rtype: List of strings
+        @rtype: list[str]
         @see: L{tmpl_func_event_stub}
         """
         code_lines = []
@@ -1424,20 +1424,20 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         Generate code for event table declaration.
         
         @param code_obj: Object to generate code for
-        @type code_obj:  Instance of L{CodeObject}
+        @type code_obj:  CodeObject
 
         @param is_new: Indicates if previous source code exists
-        @type is_new:  Boolean
+        @type is_new:  bool
 
         @param tab: Indentation of function body
-        @type tab:  String
+        @type tab:  str
         
         @param prev_src: Previous source code
-        @type prev_src: Instance of L{SourceFileContent}
+        @type prev_src: SourceFileContent
         
         @param event_handlers: List of event handlers
         
-        @rtype: List of strings
+        @rtype: list[str]
         """
         code_lines = []
         swrite = code_lines.append
@@ -1543,10 +1543,10 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         Format the dependecies output
 
         @param dependencies: List if header files
-        @type dependencies:  List of strings
+        @type dependencies:  list[str]
 
         @return: Changed content
-        @rtype:  String
+        @rtype:  str
 
         @see: L{_tagcontent()}
         """

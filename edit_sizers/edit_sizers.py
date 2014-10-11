@@ -30,41 +30,41 @@ class BaseSizerBuilder(object):
     Language independent base class for all sizer builders
     
     @cvar klass: Sizer class
-    @type klass: String
+    @type klass: str
     
     @cvar language: Language to generate the code for
-    @type language: String
+    @type language: str
     
     @cvar init_stmt: Statements to generate the sizer from;
                      lines have to end with a newline character
-    @type init_stmt: List of strings
+    @type init_stmt: list[str]
     
     @cvar tmpl_AddGrowableRow: Template for wxFlexGridSizer to set growable
                                rows
-    @type tmpl_AddGrowableRow: String
+    @type tmpl_AddGrowableRow: str
     
     @cvar tmpl_AddGrowableCol: Template for wxFlexGridSizer to set growable
                                columns
-    @type tmpl_AddGrowableCol: String
+    @type tmpl_AddGrowableCol: str
     
     @cvar tmpl_SetSizer: Template to call SetSizer()
-    @type tmpl_SetSizer: String
+    @type tmpl_SetSizer: str
     
     @cvar tmpl_Fit: Template to call Fit()
-    @type tmpl_Fit: String
+    @type tmpl_Fit: str
 
     @cvar tmpl_StaticBox: Template for staticbox name used in combination
                           with wxStaticBoxSizer.
-    @type tmpl_StaticBox: String
+    @type tmpl_StaticBox: str
 
     @cvar tmpl_SetSizeHints: Template to set the size hints
-    @type tmpl_SetSizeHints: String
+    @type tmpl_SetSizeHints: str
     
     @ivar codegen: Language specific code generator
-    @type codegen: Instance of L{codegen.BaseLangCodeWriter}
+    @type codegen: codegen.BaseLangCodeWriter
     
     @ivar props_get_code: Properties to replace in L{init_stmt}
-    @type props_get_code: Dictionary
+    @type props_get_code: dict
     """
 
     init_stmt = []
@@ -91,7 +91,7 @@ class BaseSizerBuilder(object):
         """\
         Return the parent widget or a reference to it.
         
-        @rtype: String
+        @rtype: str
         """
         raise NotImplementedError
         
@@ -682,7 +682,7 @@ class InsertDialog(wx.Dialog):
 
     def __getitem__(self, name):
         def set_pos(v): self.pos = int(v)
-        return (lambda : self.pos, set_pos)
+        return lambda : self.pos, set_pos
 
 # end of class InsertDialog
 
@@ -1502,7 +1502,7 @@ class EditBoxSizer(SizerBase):
             'orient',
             (orient == wx.HORIZONTAL and 'wxHORIZONTAL' or 'wxVERTICAL'),
             )
-        class Dummy:
+        class Dummy(object):
             widget = None
             name = ""
         # add to self.children the SizerItem for self._btn
@@ -1593,7 +1593,9 @@ class EditStaticBoxSizer(SizerBase):
             'orient',
             (orient==wx.HORIZONTAL and 'wxHORIZONTAL' or 'wxVERTICAL'),
             )
-        class Dummy: widget = None
+        class Dummy(object):
+            widget = None
+
         # add to self.children the SizerItem for self._btn
         self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]
         for i in range(1, elements+1):
@@ -1761,7 +1763,8 @@ class GridSizerBase(SizerBase):
                 (_('Insert column...'), self.insert_col)]
         SizerBase.__init__(self, name, klass, window, toplevel, show, menu)
 
-        class Dummy: widget = None
+        class Dummy(object):
+            widget = None
         # add to self.children the SizerItem for self._btn
         self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]
         for i in range(1, self.rows*self.cols+1):
@@ -2231,8 +2234,10 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1,
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'sizer_%d' % number[0]
-    if sizer is not None: topl = 0
-    else: topl = 1
+    if sizer is not None:
+        topl = False
+    else:
+        topl = True
     if is_static:
         sz = EditStaticBoxSizer(name, parent, orientation, label, num, topl)
     else:
@@ -2416,7 +2421,7 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
             self.CentreOnParent()
 
         def __getitem__(self, name):
-            return (lambda : 0, lambda v: None)
+            return lambda : 0, lambda v: None
 
     # end of inner class
 

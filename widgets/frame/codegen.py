@@ -32,7 +32,7 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             elif icon.startswith('code:'):
                 if not obj.preview:
                     out.append('_icon = ' + cn('wxEmptyIcon') + '()\n')
-                    out.append(('_icon.CopyFromBitmap(%s)\n') %
+                    out.append('_icon.CopyFromBitmap(%s)\n' %
                                icon[5:].strip())
                     out.append('self.SetIcon(_icon)\n')
             else:

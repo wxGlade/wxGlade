@@ -62,11 +62,11 @@ class LispBitmapButtonGenerator(wcodegen.LispWidgetCodeWriter):
                     % (obj.name, self.codegen.quote_path(disabled_bmp)))
         if not prop.has_key('size'):
             props_buf.append('(wxButton_SetDefault (slot-%s obj))\n'
-                             %(obj.name))
+                             % obj.name)
 
         if prop.get('default', False):
             props_buf.append('(wxButton_SetDefault (slot-%s obj))\n'
-                             %(obj.name))
+                             % obj.name)
         return init, props_buf, []
 
 # end of class LispBitmapButtonGenerator

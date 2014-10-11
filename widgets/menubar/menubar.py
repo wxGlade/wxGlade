@@ -355,8 +355,8 @@ class MenuItemDialog(wx.Dialog):
 
     def _move_item_left(self, index):
         if index > 0:
-            if (index+1 < self.menu_items.GetItemCount() and \
-                (self.item_level(index) < self.item_level(index+1))):
+            if (index+1 < self.menu_items.GetItemCount() and
+                    (self.item_level(index) < self.item_level(index+1))):
                 return
             label = self.menu_items.GetItem(index, 0).m_text
             if misc.streq(label[:4], " " * 4):
@@ -377,7 +377,7 @@ class MenuItemDialog(wx.Dialog):
             label = self.menu_items.GetItem(index, 0).m_text
             self.menu_items.SetStringItem(index, 0, misc.wxstr(" " * 4)
                                           + label)
-            self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, \
+            self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED,
                                          wx.LIST_STATE_SELECTED)
 
     def move_item_right(self, event):
@@ -771,7 +771,7 @@ def builder(parent, sizer, pos, number=[0]):
         def __getitem__(self, value):
             if value == 'class':
                 def set_klass(c): self.klass = c
-                return (lambda : self.klass, set_klass)
+                return lambda : self.klass, set_klass
     # end of inner class
 
     dialog = Dialog()
