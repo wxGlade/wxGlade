@@ -143,6 +143,12 @@ class TestGui(WXGladeBaseTest):
             add_to_history=False,
             )
         common.app_tree.ExpandAll()
+        self._process_wx_events()
+
+    def _process_wx_events(self):
+        """\
+        Process wx events, because we don't start the main loop
+        """
         for i in range(3):
             wx.SafeYield()
             self.app.ProcessPendingEvents()
@@ -233,6 +239,7 @@ class TestGui(WXGladeBaseTest):
             # set "Output path", language and generate code
             common.app_tree.app.output_path = filename
             self._set_lang(language)
+            self._process_wx_events()
             self._generate_code()
 
             success_msg = u'Code generation completed successfully'
