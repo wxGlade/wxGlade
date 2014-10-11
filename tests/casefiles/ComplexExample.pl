@@ -51,31 +51,31 @@ sub new {
     $self->{_T("Mp3_To_Ogg_menubar")}->Append($wxglade_tmp_menu, _T("&Help"));
     $self->SetMenuBar($self->{Mp3_To_Ogg_menubar});
     
-# Menu Bar end
+    # Menu Bar end
 
     $self->{Mp3_To_Ogg_statusbar} = $self->CreateStatusBar(2);
     
-# Tool Bar
+    # Tool Bar
     $self->{Mp3_To_Ogg_toolbar} = Wx::ToolBar->new($self, -1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT);
     $self->SetToolBar($self->{Mp3_To_Ogg_toolbar});
     $self->{Mp3_To_Ogg_toolbar}->AddTool(wxID_OPEN, _T("&Open"), (wxNullBitmap), wxNullBitmap, wxITEM_NORMAL, _T("Open a file"), _T("Open a MP3 file to convert into OGG format"));
     # Tool Bar end
     $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
-    $self->{notebook_1_pane_1} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{notebook_1_pane_1} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{text_ctrl_1} = Wx::TextCtrl->new($self->{notebook_1_pane_1}, wxID_ANY, "");
     $self->{button_3} = Wx::Button->new($self->{notebook_1_pane_1}, wxID_OPEN, "");
-    $self->{notebook_1_pane_2} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{notebook_1_pane_2} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{rbx_sampling_rate} = Wx::RadioBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Sampling Rate"), wxDefaultPosition, wxDefaultSize, [_T("44 kbit"), _T("128 kbit")], 0, wxRA_SPECIFY_ROWS);
     $self->{cbx_love} = Wx::CheckBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("\N{U+2665} Love this song"));
     $self->{sizer_3_staticbox} = Wx::StaticBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Misc") );
-    $self->{notebook_1_pane_3} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{notebook_1_pane_3} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{notebook_1_pane_3}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-    $self->{notebook_1_pane_4} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{notebook_1_pane_4} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{_lbl_output_filename} = Wx::StaticText->new($self->{notebook_1_pane_4}, wxID_ANY, _T("File name:"));
     $self->{text_ctrl_3} = Wx::TextCtrl->new($self->{notebook_1_pane_4}, wxID_ANY, "");
     $self->{button_4} = Wx::Button->new($self->{notebook_1_pane_4}, wxID_OPEN, "");
     $self->{checkbox_1} = Wx::CheckBox->new($self->{notebook_1_pane_4}, wxID_ANY, _T("Overwrite existing file"));
-    $self->{notebook_1_pane_5} = Wx::Panel->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{notebook_1_pane_5} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{label_1} = Wx::StaticText->new($self->{notebook_1_pane_5}, wxID_ANY, _T("Please check the format of those lines manually:\n\nSingle line without any special characters.\n\na line break between new and line: new\nline\na tab character between new and line: new\tline\ntwo backslash characters: \\\\ \nthree backslash characters: \\\\\\ \na double quote: \"\nan escaped new line sequence: \\\\n"));
     $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
     $self->{button_5} = Wx::Button->new($self, wxID_CLOSE, "");

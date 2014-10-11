@@ -76,7 +76,7 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             obj_name = '$self->{%s}' % self.codegen.quote_key(obj.name)
 
-        append('my $wxglade_tmp_menu;\n') # NOTE below name =
+        append('my $wxglade_tmp_menu;\n')  # NOTE below name =
         for m in menus:
             menu = m.root
             if menu.name: name = '$self->{%s}' % self.codegen.quote_key(menu.name)
@@ -94,13 +94,14 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
         if klass != obj.klass:
             klass = obj.klass
         else:
-            klass = klass.replace('wx', 'Wx::', 1)
+            klass = self.cn(klass)
 
         init = ['\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' %
                 (obj.name, klass)]
         init.extend(self.get_init_code(obj))
         init.append('$self->SetMenuBar($self->{%s});\n' % obj.name)
-        init.append('\n# Menu Bar end\n\n')
+        init.append('\n')
+        init.append('# Menu Bar end\n\n')
         return init, [], []
 
     def get_events(self, obj):

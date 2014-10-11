@@ -40,7 +40,7 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
                 klass = klass.replace('wx', 'Wx::', 1)
 
             l.append('$self->{%s} = %s->new(%s, %s);\n' %
-                 (panel.name, klass, parent, id))
+                     (panel.name, klass, parent, id))
             return l, [], []
 
         init = []
@@ -57,9 +57,13 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             klass = self.codegen.cn(panel.klass)
 
-        init.append('$self->{%s} = %s->new(%s, %s, \
-wxDefaultPosition, wxDefaultSize, %s);\n'
-            % (panel.name, klass, parent, id, style))
+        if style:
+            extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
+        else:
+            extra = ''
+
+        init.append('$self->{%s} = %s->new(%s, %s%s);\n' %
+                    (panel.name, klass, parent, id, extra))
 
         props_buf = self.codegen.generate_common_properties(panel)
         if scrollable:

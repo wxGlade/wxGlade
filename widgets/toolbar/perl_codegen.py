@@ -105,29 +105,29 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         
         return ids + out
 
-
     def get_code(self, obj):
         """\
         function that generates Perl code for the toolbar of a wxFrame.
         """
+        init = []
         style = obj.properties.get('style')
         if style:
             style = 'wxTB_HORIZONTAL|' + style
+            extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
         else:
-            style = ''
+            extra = ''
 
         klass = obj.base
         if klass != obj.klass:
             klass = obj.klass
         else:
-            klass = klass.replace('wx', 'Wx::', 1)
+            klass = self.cn(klass)
 
-        init = [
-            '\n# Tool Bar\n',
-            '$self->{%s} = %s->new($self, -1, wxDefaultPosition, \
-wxDefaultSize, %s);\n' % (obj.name, klass, style),
-                 '$self->SetToolBar($self->{%s});\n' % obj.name 
-            ]
+        init.append('\n')
+        init.append('# Tool Bar\n')
+        init.append('$self->{%s} = %s->new($self, -1%s);\n' % (obj.name,
+                                                               klass, extra))
+        init.append('$self->SetToolBar($self->{%s});\n' % obj.name)
         init.extend(self.get_init_code(obj))
         init.append('# Tool Bar end\n')
         return init, self.get_properties_code(obj), []
