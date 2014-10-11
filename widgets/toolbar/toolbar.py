@@ -830,7 +830,7 @@ def builder(parent, sizer, pos, number=[0]):
         def __getitem__(self, value):
             if value == 'class':
                 def set_klass(c): self.klass = c
-                return (lambda : self.klass, set_klass)
+                return lambda : self.klass, set_klass
     # end of inner class
 
     dialog = Dialog()

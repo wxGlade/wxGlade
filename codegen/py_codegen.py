@@ -481,7 +481,7 @@ if __name__ == "__main__":
         
         return code_lines
 
-    def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, \
+    def generate_code_event_handler(self, code_obj, is_new, tab, prev_src,
                                     event_handlers):
         # Python has two indentation levels
         #  1st) for function declaration
@@ -522,8 +522,8 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             val = self.cn(val)
         # check to see if we have to make the var global or not...
         if '.' in name:
-            return ('%s = %s\n' % (name, val), name)
-        return ('global %s; %s = %s\n' % (name, name, val), name)
+            return '%s = %s\n' % (name, val), name
+        return 'global %s; %s = %s\n' % (name, name, val), name
 
     def generate_code_set_properties(self, builder, code_obj, is_new, tab):
         # Python has two indentation levels

@@ -132,7 +132,7 @@ def builder(parent, sizer, pos):
             self.CenterOnScreen()
 
         def __getitem__(self, name):
-            return (lambda : 0, lambda v: None)
+            return lambda : 0, lambda v: None
 
     # end of inner class
 

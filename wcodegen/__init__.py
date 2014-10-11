@@ -64,7 +64,7 @@ class BaseLanguageMixin(object):
     """\
     Format single flags with L{cn()} before joining flags in L{cn_f()}
 
-    @type: Boolean
+    @type: bool
     @see: L{cn_f()}
     @see: L{cn()}
     """
@@ -140,10 +140,10 @@ class BaseLanguageMixin(object):
             'wxLC_REPORT | wxSUNKEN_BORDER'
 
         @param flags: wxWidget styles joined by '|'
-        @type flags:  String
+        @type flags:  str
 
         @param styles: Style details passed by widget writer instances
-        @type styles:  Dictionary
+        @type styles:  dict
 
         @rtype: str
         @see: L{cn()}
@@ -322,7 +322,7 @@ class PerlMixin(BaseLanguageMixin):
                                schema. There is a need to handle constants
                                separately. See also L{cn} and
                                wxPerl/trunk/Constant.xs.
-    @type _perl_constant_list: List of strings
+    @type _perl_constant_list: list[str]
     """
     comment_sign = '#'
     default_extensions = ['pl', 'pm']
@@ -485,7 +485,7 @@ class BaseWidgetWriter(BaseCodeWriter):
     @type codegen: Instance of L{codegen.BaseLangCodeWriter}
 
     @ivar config: Widgets specific configuration (see L{common.widget_config})
-    @type config: Dictionary
+    @type config: dict
 
     @ivar klass: wxWidgets class name
     @type klass: str | None
@@ -575,7 +575,7 @@ class BaseWidgetWriter(BaseCodeWriter):
     """\
     Content to replace in the templates
 
-    @type: Dictionary
+    @type: dict
     @see: L{tmpl}
     @see: L{tmpl_before}
     @see: L{tmpl_props}
@@ -585,7 +585,7 @@ class BaseWidgetWriter(BaseCodeWriter):
     """\
     Flag to handle widgets with choices
 
-    @type: Boolean
+    @type: bool
     @see: L{_prepare_choice()}
     """
 
@@ -593,7 +593,7 @@ class BaseWidgetWriter(BaseCodeWriter):
     """\
     Flag to create a C{SetSelection(...)} call.
 
-    @type: Boolean
+    @type: bool
     @see: L{tmpl_selection}
     """
 
@@ -623,7 +623,7 @@ class BaseWidgetWriter(BaseCodeWriter):
     """\
     Flag to create a C{SetValue(...)} call.
 
-    @type: Boolean
+    @type: bool
     @see: L{tmpl_setvalue}
     @see: L{has_setvalue1}
     """
@@ -632,7 +632,7 @@ class BaseWidgetWriter(BaseCodeWriter):
     """\
     Flag to create a C{SetValue(1)} call.
 
-    @type: Boolean
+    @type: bool
     @see: L{tmpl_setvalue}
     @see: L{has_setvalue}
     """
@@ -651,7 +651,7 @@ class BaseWidgetWriter(BaseCodeWriter):
     Prepend wxDefaultPosition and wxDefaultSize to the widget style if the
     style will be set.
 
-    @type: Boolean
+    @type: bool
     @see: L{default_style}
     @see: L{set_default_style}
     """
@@ -661,7 +661,7 @@ class BaseWidgetWriter(BaseCodeWriter):
     Flag to to add the default style always. The default style won't added
     generally.
 
-    @type: Boolean
+    @type: bool
     @see: L{default_style}
     @see: L{prefix_style}
     """
@@ -719,9 +719,9 @@ class BaseWidgetWriter(BaseCodeWriter):
             ['line 1\\n', 'line 2\\n', 'line 3\\n', '\\n']
 
         @param stmt: Code statement
-        @type stmt:  String
+        @type stmt:  str
 
-        @rtype: List of strings
+        @rtype: list[str]
         """
         temp = ['%s\n' % line for line in stmt.split('\n')]
         return temp
@@ -746,7 +746,7 @@ class BaseWidgetWriter(BaseCodeWriter):
 
         @param obj: Instance of L{xml_parse.CodeObject}
 
-        @rtype: Dictionary
+        @rtype: dict
         @see: L{get_code()}
         """
         self.tmpl_dict['comment'] = self.codegen.comment_sign
@@ -794,7 +794,7 @@ class BaseWidgetWriter(BaseCodeWriter):
 
         @param obj: Instance of L{xml_parse.CodeObject}
 
-        @rtype: Dictionary
+        @rtype: dict
         @see: L{get_code()}
         @see: L{has_choice}
         """
@@ -886,7 +886,7 @@ class BaseWidgetWriter(BaseCodeWriter):
 
         @see: L{_prepare_tmpl_content()}
         @see: L{tmpl_props}
-        @rtype: List of strings
+        @rtype: list[str]
         """
         assert self.tmpl_props
         prop_lines = []
@@ -907,7 +907,7 @@ class BaseWidgetWriter(BaseCodeWriter):
 
         @see: L{_prepare_tmpl_content()}
         @see: L{tmpl_props}
-        @rtype: List of strings
+        @rtype: list[str]
         """
         assert self.tmpl_layout
         layout_lines = []
@@ -925,12 +925,12 @@ class BaseWidgetWriter(BaseCodeWriter):
         Check if the widget is supported for the given version
 
         @param major: Major version number
-        @type major:  Integer
+        @type major:  int
         @param minor: Minor version number
-        @type minor:  Integer
+        @type minor:  int
 
         @return: True if the widget is supported by the specified wx version
-        @rtype:  Boolean
+        @rtype:  bool
 
         @see: L{common.widget_config}
         """

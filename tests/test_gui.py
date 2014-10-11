@@ -108,7 +108,7 @@ class TestGui(WXGladeBaseTest):
         Set "Language" and simulate clicking radio button
         
         @param lang: Language to set
-        @type lang:  StringIO
+        @type lang:  str
         """
         radiobox = common.app_tree.app.codewriters_prop.options
         radiobox.SetStringSelection(lang)
@@ -185,7 +185,7 @@ class TestGui(WXGladeBaseTest):
         Load a wxGlade document and generate code for all languages.
 
         @param basename: Base name of the wxg file
-        @type basename:  String
+        @type basename:  str
         """
         source = self._load_file('%s.wxg' % basename)
         source = self._modify_attrs(

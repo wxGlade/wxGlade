@@ -71,7 +71,7 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_code(self, obj):
         init = [ '\n', ';;; Menu Bar\n', '(setf (slot-%s obj) (wxMenuBar_Create 0))\n' %
-                 (obj.name) ]
+                 obj.name]
         init.extend(self.get_init_code(obj))
         init.append('(wxFrame_SetMenuBar (slot-top-window obj) ' \
                     '(slot-%s obj))\n' % obj.name)

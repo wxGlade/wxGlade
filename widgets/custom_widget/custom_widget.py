@@ -191,7 +191,7 @@ def builder(parent, sizer, pos, number=[1]):
         def __getitem__(self, value):
             def set_klass(c):
                 self.klass = c
-            return (lambda : self.klass, set_klass)
+            return lambda : self.klass, set_klass
     # end of inner class
 
     dialog = Dialog()

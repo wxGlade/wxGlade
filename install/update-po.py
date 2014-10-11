@@ -419,15 +419,15 @@ if __name__ == "__main__":
         printUsage(e[0])
         sys.exit(1)       
     for (opt,val) in optionList:
-        if  (opt == '-h'):    
+        if opt == '-h':
             printUsage()
             sys.exit(0) 
-        elif (opt == '-e'):         option['forceEnglish'] = 1
-        elif (opt == '-m'):         option['mo'] = 1
-        elif (opt == '-p'):         option['po'] = 1
-        elif (opt == '-v'):         option['verbose'] = 1
-        elif (opt == '--domain'):   option['domain'] = val
-        elif (opt == '--moTarget'): option['moTarget'] = val
+        elif opt == '-e':         option['forceEnglish'] = 1
+        elif opt == '-m':         option['mo'] = 1
+        elif opt == '-p':         option['po'] = 1
+        elif opt == '-v':         option['verbose'] = 1
+        elif opt == '--domain':   option['domain'] = val
+        elif opt == '--moTarget': option['moTarget'] = val
     if len(pargs) == 0:
         appDirPath = os.getcwd()
         if option['verbose']:

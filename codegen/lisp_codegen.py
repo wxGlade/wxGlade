@@ -350,19 +350,19 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if not klass or not builder:
             return
 
-        if(sub_obj.name != "spacer"):
+        if sub_obj.name != "spacer":
             self.class_lines.append(sub_obj.name)
-        if (sub_obj.klass == "wxBoxSizer" or \
-            sub_obj.klass == "wxStaticBoxSizer" or \
-            sub_obj.klass == "wxGridSizer" or \
-            sub_obj.klass == "wxFlexGridSizer"):
+        if (sub_obj.klass == "wxBoxSizer" or
+                    sub_obj.klass == "wxStaticBoxSizer" or
+                    sub_obj.klass == "wxGridSizer" or
+                    sub_obj.klass == "wxFlexGridSizer"):
             self.dependencies['(use-package :wxSizer)'] = 1
         else:
-            if (sub_obj.klass != "spacer"):
+            if sub_obj.klass != "spacer":
                 key = '(use-package :%s)' % sub_obj.klass
                 self.dependencies[key] = 1
 
-        if (sub_obj.klass == "wxMenuBar"):
+        if sub_obj.klass == "wxMenuBar":
             self.dependencies['(use-package :wxMenu)'] = 1
         
         BaseLangCodeWriter.add_object(self, top_obj, sub_obj)
@@ -532,8 +532,8 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             val = self.cn(val)
         # check to see if we have to make the var global or not...
         if '.' in name:
-            return ('%s = %s\n' % (name, val), name)
-        return ('global %s; %s = %s\n' % (name, name, val), name)
+            return '%s = %s\n' % (name, val), name
+        return 'global %s; %s = %s\n' % (name, name, val), name
 
     def generate_code_size(self, obj):
         objname = self._get_code_name(obj)

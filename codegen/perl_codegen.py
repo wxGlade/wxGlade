@@ -567,7 +567,7 @@ unless(caller){
         else:
             val = self.cn(val)
         # check to see if we have to make the var global or not...
-        return ('use constant %s => %s;\n' % (name, val), name)
+        return 'use constant %s => %s;\n' % (name, val), name
 
     def generate_code_size(self, obj):
         objname = self._get_code_name(obj)
