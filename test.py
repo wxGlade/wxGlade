@@ -28,7 +28,7 @@ def run_tests(gui_tests=False):
     Create test suites and run all tests
 
     @param gui_tests: Test GUI components or test internal functionality
-    @type gui_tests:  Boolean
+    @type gui_tests:  bool
     """
     suites = []
 

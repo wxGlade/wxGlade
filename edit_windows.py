@@ -107,19 +107,19 @@ class EditBase(EventsMixin):
         # these two properties are special and are not listed in
         # 'self.properties'
         self.name_prop = TextProperty(self, 'name', None, label=_("name"))
-        self.name_prop.tooltip = _("Name of the variable for assigning " \
-                                   "the reference to the created widget " \
+        self.name_prop.tooltip = _("Name of the variable for assigning "
+                                   "the reference to the created widget "
                                    "instance.")
         self.klass_prop = TextProperty(self, 'class', None,
                                        readonly=not custom_class, label=_("class"))
         if custom_class:
-            self.klass_prop.tooltip = _("If you change the default value, " \
-                                      "it will be interpreted as the name " \
-                                      "of the subclass of the widget. " \
-                                      "How this name affects code generation "\
-                                      "depends on the kind (i.e. language) " \
-                                      "of output. See the docs for " \
-                                      "more details.")
+            self.klass_prop.tooltip = _("If you change the default value, "
+                                        "it will be interpreted as the name "
+                                        "of the subclass of the widget. "
+                                        "How this name affects code generation "
+                                        "depends on the kind (i.e. language) "
+                                        "of output. See the docs for "
+                                        "more details.")
 
         if getattr(self, '_custom_base_classes', False):
             self.custom_base = ""
@@ -1152,7 +1152,7 @@ class PreviewMixin(object):
         """\
         True if the L{preview_button} is created
 
-        @rtype: Boolean
+        @rtype: bool
         """
         return self.preview_widget is not None
 
@@ -1318,7 +1318,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if self.preview_widget is not None:
             self.preview_widget.Destroy()
             self.preview_widget = None
-        WindowBase.delete(self, *args)
+        WindowBase.delete(self)
 
 # end of class TopLevelBase
 

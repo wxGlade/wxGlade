@@ -331,7 +331,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
         else:
             self.size = 0
             self.progress = None
-        XmlWidgetBuilder.__init__(self, *args, **kwds)
+        XmlWidgetBuilder.__init__(self)
 
     def endElement(self, name):
         if self.progress:
@@ -462,11 +462,11 @@ class XmlWidgetObject(object):
     store various widget attributes until the widget can be created
 
     @ivar in_sizers: If True, the widget is a sizer, opposite of L{in_windows}
-    @type in_sizers: Boolean
+    @type in_sizers: bool
 
     @ivar in_windows: If True, the wiget is not a sizer, pposite of
                       L{in_sizers}
-    @type in_windows: Boolean
+    @type in_windows: bool
 
     @ivar prop_handlers: Is a stack of custom handler functions to set
                          properties of this object
@@ -601,19 +601,19 @@ class CodeWriter(XmlParser):
     @ivar _toplevels: Toplevel objects, i.e. instances of a custom class
 
     @ivar app_attrs: Attributes of the app (name, class, top_window)
-    @type app_attrs: Dictionary
+    @type app_attrs: dict
 
     @ivar code_writer: Language specific code writer
-    @type code_writer: L{wxglade.codegen.BaseLangCodeWriter}
+    @type code_writer: wxglade.codegen.BaseLangCodeWriter
 
     @ivar top_win: Class name of the top window of the app (if any)
-    @type top_win: String
+    @type top_win: str
 
     @ivar out_path: Override the output path specified in the XML document
-    @type out_path: String
+    @type out_path: str
 
     @ivar preview: True to generate code for the preview
-    @type preview: Boolean
+    @type preview: bool
 
     @ivar _logger: Instance specific logger
     """
@@ -622,20 +622,20 @@ class CodeWriter(XmlParser):
         """\
         @param writer: Language specific code writer; stored in
                        L{self.code_writer}
-        @type writer:  L{wxglade.codegen.BaseLangCodeWriter}
+        @type writer:  wxglade.codegen.BaseLangCodeWriter
 
         @param input: Name of file to load or XML document as a String
-        @type input:  String
+        @type input:  str
 
         @param from_string: True if L{input} is a XML document as String
-        @type from_string:  Boolean
+        @type from_string:  bool
 
         @param out_path: Override the output path specified in the XML
                          document; stored in L{self.out_path}
-        @type out_path:  String or None
+        @type out_path:  str | None
 
         @param preview: True to generate code for the preview
-        @type preview:  Boolean
+        @type preview:  bool
         """
         self._logger = logging.getLogger(self.__class__.__name__)
         # writer: object that actually writes the code
@@ -817,24 +817,24 @@ class CodeObject(object):
     object.
 
     @ivar in_sizers: If True, the widget is a sizer, opposite of L{in_windows}
-    @type in_sizers: Boolean
+    @type in_sizers: bool
 
     @ivar in_windows: If True, the wiget is not a sizer, pposite of
                       L{in_sizers}
-    @type in_windows: Boolean
+    @type in_windows: bool
 
     @ivar is_container: If True, the widget is a container (frame, dialog,
                         panel, ...)
-    @type is_container: Boolean
+    @type is_container: bool
 
     @ivar is_toplevel: If True, the object is a toplevel one: for window
                        objects, this means that they are instances of a
                        custom class, for sizers, that they are at the top
                        of the hierarchy.
-    @type is_toplevel: Boolean
+    @type is_toplevel: bool
 
     @ivar properties: Properties of the widget sizer
-    @type properties: Dictionary
+    @type properties: dict
 
     @ivar prop_handlers: Is a stack of custom handler functions to set
                          properties of this object
@@ -991,13 +991,13 @@ class Sizeritem(object):
 
     def __getitem__(self, name):
         if name != 'flag':
-            return (None, lambda v: setattr(self, name, v))
+            return None, lambda v: setattr(self, name, v)
 
         def get_flag(v):
             val = reduce(lambda a, b: a | b,
                          [Sizeritem.flags[t] for t in v.split("|")])
             setattr(self, name, val)
-        return (None, get_flag)
+        return None, get_flag
 
     def flag_str(self):
         """\

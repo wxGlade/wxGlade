@@ -40,10 +40,10 @@ class Property(object):
     @ivar owner:   The widget this property belongs to
     @ivar parent:  The widget inside which the property is displayed
     @ivar tooltip: Tooltip text
-    @type tooltip: String
+    @type tooltip: str
     @ivar _logger: Instance specific logger
     @ivar _tooltip_widgets: All widgets to set tooltips for
-    @type _tooltip_widgets: List
+    @type _tooltip_widgets: list
     """
     def __init__(self, owner, name, parent, getter=None, setter=None,
                  label=None):
@@ -123,7 +123,7 @@ class Property(object):
         Returns a mangled version of label, suitable for displaying
         the name of a property.
 
-        @type label: String
+        @type label: str
         @param label: Text to mangle
         """
         return misc.wxstr(misc.capitalize(label).replace('_', ' '))
@@ -137,7 +137,7 @@ class Property(object):
         C{text} will be stored in L{self.tooltip} if it is given.
 
         @param text: Tooltip text
-        @type text: String
+        @type text: str
         """
         # check parameter first
         if text:
@@ -204,7 +204,7 @@ class _activator:
     
     @ivar _enabler: CheckBox which provides the ability to Enable/Disable
                     the Property
-    @type _enabler: Reference to a CheckBox instance
+    @type _enabler: CheckBox
     @ivar _target:  Object to enable/disable
     @type _target:  A single widget or a list of widgets
     """
@@ -214,7 +214,7 @@ class _activator:
         @type target:   A single widget or a list of widgets
         @param enabler: CheckBox which provides the ability to Enable/Disable
                         the Property
-        @type enabler:  Reference to a CheckBox instance
+        @type enabler:  CheckBox
         """
         self._target = target
         self._enabler = enabler
@@ -530,13 +530,13 @@ class CheckListProperty(Property, _activator):
         from the styles dictionary.
 
         @param owner: The widget this property belongs to
-        @type owner:  edit_windows.EditBase
+        @type owner:  EditBase | SizerBase | PanelBase
 
         @param name: Property name
         @type name:  str
 
         @param widget_writer: Widget code writer
-        @type widget_writer: wcodegen.BaseLanguageMixin
+        @type widget_writer: wcodegen.BaseWidgetWriter
 
         @param styles: Ordered dictionary with box labels as key and a
                        list of styles to show as value
@@ -724,7 +724,7 @@ class CheckListProperty(Property, _activator):
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
 
         @param old_val: String of tokens separated by '|'
-        @type old_val:  String
+        @type old_val:  str
 
         @rtype: list[bool]
         """
@@ -1144,7 +1144,7 @@ class RadioProperty(Property, _activator):
     Properties controlled by a series of radio buttons.
 
     @ivar sort: Sort the the choices.
-    @type sort: Boolean
+    @type sort: bool
 
     @ivar capitalize: Capitalise the first character of each entry in
                       C{choices} list. Capitalising the first character is an
@@ -1152,14 +1152,14 @@ class RadioProperty(Property, _activator):
                       L{get_str_value()}, L{set_str_value()}, L{set_value()}
                       and L{get_value()}. They still handle the original
                       entries.
-    @type capitalize: Boolean
+    @type capitalize: bool
 
     @ivar choices: Choices shown in the radiobox
-    @type choices: List of strings
+    @type choices: list[str]
 
     @ivar _cap2orig: Dictionary for reverse mapping between the capitalised
                      entry and the original one.
-    @type _cap2orig: Dictionary
+    @type _cap2orig: dict
     """
     def __init__(self, owner, name, parent, choices, can_disable=False,
                  enabled=False, columns=1, label=None, tooltips=None,
@@ -1303,10 +1303,10 @@ class RadioProperty(Property, _activator):
         Enable or disable a single radiobox item.
 
         @param item: Item text
-        @type item:  String
+        @type item:  str
 
         @param flag: Enable or disable this item
-        @type flag:  Boolean
+        @type flag:  bool
         """
         if self.capitalize:
             item = misc.capitalize(item)
@@ -1321,21 +1321,21 @@ class GridProperty(Property, _activator):
     Property whose values are modified through a wxGrid table.
 
     @ivar can_add:    Add Button to add a new entry
-    @type can_add:    Boolean
+    @type can_add:    bool
     @ivar can_insert: Add Button to insert a new entry
-    @type can_insert: Boolean
+    @type can_insert: bool
     @ivar can_remove: Add Button to remove a new entry
-    @type can_remove: Boolean
+    @type can_remove: bool
     @ivar can_remove_last: Allow to remove last entry
-    @type can_remove_last: Boolean
+    @type can_remove_last: bool
     @ivar cols:       List of 2-tuples with these fields:
                        - label for the column
                        - type: GridProperty.STRING, GridProperty.INT,
                          GridProperty.FLOAT
     @ivar col_sizes:  List of column widths
-    @type col_sizes:  List of Integer
+    @type col_sizes:  list[int]
     @ivar rows:       Number of rows
-    @type rows:       Integer
+    @type rows:       int
     """
     STRING, INT, FLOAT, BOOL = 0, 1, 2, 3
     col_format = [lambda g, c: None,

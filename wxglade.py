@@ -135,11 +135,11 @@ def command_line_code_generation(filename, language, out_path=None):
     Starts a code generator without starting the GUI.
 
     @param filename: Name of wxg file to generate code from
-    @type filename:  String
+    @type filename:  str
     @param language: Code generator language
-    @type language:  String
+    @type language:  str
     @param out_path: output file / output directory
-    @type out_path:  String
+    @type out_path:  str
     """
     from xml_parse import CodeWriter
 
@@ -274,7 +274,7 @@ def init_stage2(use_gui):
     Initialise the remaining (non-path) parts of wxGlade (second stage)
 
     @param use_gui: Starting wxGlade GUI
-    @type use_gui:  Boolean
+    @type use_gui:  bool
     """
     config.use_gui = use_gui
     if use_gui:
@@ -282,7 +282,8 @@ def init_stage2(use_gui):
         if not hasattr(sys, "frozen") and 'wx' not in sys.modules:
             try:
                 import wxversion
-                wxversion.ensureMinimal('2.8')
+                wxversion.select('2.8')
+#                wxversion.ensureMinimal('2.8')
             except ImportError:
                 logging.error(
                     _('Please install missing python module "wxversion".'))

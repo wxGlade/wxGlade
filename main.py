@@ -147,7 +147,7 @@ class wxGladeFrame(wx.Frame):
     
     @ivar cur_dir: Last visited directory, used for wxFileDialog and not
                    for KDE dialogs
-    @type cur_dir: String
+    @type cur_dir: str
 
     @ivar _logger: Instance specific logger
     """
@@ -954,10 +954,10 @@ class wxGlade(wx.App):
     @ivar _msg_dialog: Message dialog to show warning as well as error
                        messages.
 
-    @type _msg_dialog: Instance of L{msgdialog.MessageDialog}
+    @type _msg_dialog: msgdialog.MessageDialog
 
     @ivar show_dialog: Show the error dialog automatically
-    @type show_dialog: Boolean
+    @type show_dialog: bool
     """
 
     _msg_dialog = None

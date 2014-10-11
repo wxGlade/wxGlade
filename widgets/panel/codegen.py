@@ -66,6 +66,15 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
             props_buf.append('self.SetScrollRate(%s)\n' % sr)
         return props_buf
 
+    def get_layout_code(self, obj):
+        ret = ['self.Layout()\n']
+        try:
+            if int(obj.properties['centered']):
+                ret.append('self.Centre()\n')
+        except (KeyError, ValueError):
+            pass
+        return ret
+
 # end of class PythonPanelGenerator
 
 
