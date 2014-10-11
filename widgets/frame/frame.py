@@ -145,7 +145,9 @@ class EditFrame(TopLevelBase, StylesMixin):
     def set_statusbar(self, value):
         if value:
             from statusbar import EditStatusBar
-            self.statusbar = EditStatusBar(self, common.property_panel)
+            self.statusbar = EditStatusBar(self.name + '_statusbar',
+                                           'wxStatusBar',
+                                           self, common.property_panel)
             if self.widget:
                 self.statusbar.show_widget(True)
                 self.statusbar.show_properties()
