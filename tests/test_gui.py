@@ -118,6 +118,16 @@ class TestGui(WXGladeBaseTest):
         )
         radiobox.GetEventHandler().ProcessEvent(event)
 
+    def _set_output_path(self, path):
+        """\
+        Set the output path
+
+        @type path: str
+        """
+        common.app_tree.app.outpath_prop.set_value(path)
+        common.app_tree.app.set_output_path(path)
+        self._process_wx_events()
+
     def _open_wxg_file(self, content=None, filename=None):
         """\
         Open a wxGlade project
@@ -237,7 +247,7 @@ class TestGui(WXGladeBaseTest):
             self._open_wxg_file(source)
 
             # set "Output path", language and generate code
-            common.app_tree.app.output_path = filename
+            self._set_output_path(filename)
             self._set_lang(language)
             self._process_wx_events()
             self._generate_code()
@@ -302,7 +312,7 @@ class TestGui(WXGladeBaseTest):
             self._open_wxg_file(source)
 
             # set "Output path", language and generate code
-            common.app_tree.app.output_path = filename
+            self._set_output_path(filename)
             self._set_lang(language)
             self._generate_code()
 
