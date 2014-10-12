@@ -220,13 +220,39 @@ class XmlWidgetBuilder(XmlParser):
                 app.header_ext = header_extension[1:]
                 app.header_ext_prop.set_value(header_extension[1:])
 
-            try:
-                for_version = attrs['for_version']
-                app.for_version = for_version
-                app.for_version_prop.set_str_value(for_version)
-                app.set_for_version(for_version)
-            except KeyError:
-                pass
+            for_version = attrs.get('for_version',
+                                    '%s.%s' % config.for_version)
+            if for_version.split('.', )[:2] < (2, 8):
+                logging.warning(
+                    _('The loaded wxGlade designs are created for wxWidgets '
+                      '"%s", but this version is not supported anymore.'),
+                    for_version,
+                )
+                logging.warning(
+                    _('The designs will be loaded and converted to '
+                      'wxWidgets "%s" partially. Please check the designs '
+                      'carefully.'),
+                    '%s.%s' % config.for_version
+                )
+                for_version = '%s.%s' % config.for_version
+            app.for_version = for_version
+            app.for_version_prop.set_str_value(for_version)
+            app.set_for_version(for_version)
+
+            use_new_namespace = attrs.get('use_new_namespace')
+            if use_new_namespace == u'0' and language == 'python':
+                logging.warning(
+                    _('The loaded wxGlade designs are created to use the '
+                      'old Python import style ("from wxPython.wx '
+                      'import *". The old import style is not supported '
+                      'anymore.')
+                )
+                logging.warning(
+                    _('The designs will be loaded and the import style will '
+                      'be converted to new style imports ("import wx"). '
+                      'Please check your design carefully.')
+                )
+
             return
         if not self._appl_started:
             raise XmlParsingError(
@@ -704,6 +730,38 @@ class CodeWriter(XmlParser):
                 raise XmlParsingError(
                     _("'path' attribute empty: could not generate code")
                     )
+
+            for_version = attrs.get('for_version',
+                                    '%s.%s' % config.for_version)
+            if for_version.split('.', )[:2] < (2, 8):
+                logging.warning(
+                    _('The loaded wxGlade designs are created for wxWidgets '
+                      '"%s", but this version is not supported anymore.'),
+                    for_version,
+                    )
+                logging.warning(
+                    _('The designs will be loaded and converted to '
+                      'wxWidgets "%s" partially. Please check the designs '
+                      'carefully.'),
+                    '%s.%s' % config.for_version
+                )
+                attrs['for_version'] = '%s.%s' % config.for_version
+
+            if attrs.get('use_new_namespace') == u'0' and \
+               attrs.get('language') == 'python':
+                logging.warning(
+                    _('The loaded wxGlade designs are created to use the '
+                      'old Python import style ("from wxPython.wx '
+                      'import *". The old import style is not supported '
+                      'anymore.')
+                )
+                logging.warning(
+                    _('The designs will be loaded and the import style will '
+                      'be converted to new style imports ("import wx"). '
+                      'Please check your design carefully.')
+                )
+                # no update necessary - the attribute will not be used
+                # anymore
 
             # Initialize the writer, thereby a logical check will be performed
             self.code_writer.initialize(attrs)

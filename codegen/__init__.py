@@ -814,7 +814,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.classes = {}
         self.curr_tab = 0
         self.dependencies = {}
-        self.for_version = (2, 8)
+        self.for_version = config.for_version
         self.header_lines = []
         self.indent_symbol = config.default_indent_symbol
         self.indent_amount = config.default_indent_amount

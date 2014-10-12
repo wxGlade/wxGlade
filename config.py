@@ -86,6 +86,13 @@ The default application L{default_encoding} is the fallback only.
 @see: L{wxglade.init_stage1()}
 """
 
+for_version = (2, 8)
+"""\
+Default version to generate code for
+
+@type: (int, int)
+"""
+
 appdata_path = ''
 """\
 Directory to wxGlades application data like file history and templates
