@@ -222,7 +222,9 @@ class XmlWidgetBuilder(XmlParser):
 
             for_version = attrs.get('for_version',
                                     '%s.%s' % config.for_version)
-            if for_version.split('.', )[:2] < (2, 8):
+            for_version_tuple = tuple([int(t) for t in
+                                       for_version.split('.')[:2]])
+            if for_version_tuple < (2, 8):
                 logging.warning(
                     _('The loaded wxGlade designs are created for wxWidgets '
                       '"%s", but this version is not supported anymore.'),
@@ -244,7 +246,7 @@ class XmlWidgetBuilder(XmlParser):
                 logging.warning(
                     _('The loaded wxGlade designs are created to use the '
                       'old Python import style ("from wxPython.wx '
-                      'import *". The old import style is not supported '
+                      'import *)". The old import style is not supported '
                       'anymore.')
                 )
                 logging.warning(
@@ -733,7 +735,9 @@ class CodeWriter(XmlParser):
 
             for_version = attrs.get('for_version',
                                     '%s.%s' % config.for_version)
-            if for_version.split('.', )[:2] < (2, 8):
+            for_version_tuple = tuple([int(t) for t in
+                                       for_version.split('.')[:2]])
+            if for_version_tuple < (2, 8):
                 logging.warning(
                     _('The loaded wxGlade designs are created for wxWidgets '
                       '"%s", but this version is not supported anymore.'),
@@ -752,7 +756,7 @@ class CodeWriter(XmlParser):
                 logging.warning(
                     _('The loaded wxGlade designs are created to use the '
                       'old Python import style ("from wxPython.wx '
-                      'import *". The old import style is not supported '
+                      'import *)". The old import style is not supported '
                       'anymore.')
                 )
                 logging.warning(
