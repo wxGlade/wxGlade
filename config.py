@@ -15,14 +15,14 @@ default_app_name = 'app'
 """\
 Default value for the application name
 
-@type: String
+@type: str
 """
 
 default_encoding = 'UTF-8'
 """\
 Default value for encoding
 
-@type: String
+@type: str
 @see: L{encoding}
 """
 
@@ -30,49 +30,49 @@ default_indent_amount = 4
 """\
 Default value for indentation
 
-@type: Integer
+@type: int
 """
 
 default_indent_symbol = ' '
 """\
 Default value for indentation symbol
 
-@type: String
+@type: str
 """
 
 default_multiple_files = 0
 """\
 Default value for writing multiple files (each class in a separate file)
 
-@type: Integer
+@type: int
 """
 
 default_overwrite = 1
 """\
 Default value for overwriting existing sources
 
-@type: Integer
+@type: int
 """
 
 default_output_file = './wxglade_out.py'
 """\
 Default output file
 
-@type: String
+@type: str
 """
 
 default_output_path = './'
 """\
 Default output path
 
-@type: String
+@type: str
 """
 
 default_use_gettext = 1
 """\
 Default value to usage of gettext
 
-@type: Integer
+@type: int
 """
 
 encoding = None
@@ -81,7 +81,7 @@ System default character encoding.
 
 The default application L{default_encoding} is the fallback only.
 
-@type: String or None
+@type: str | None
 @see: L{default_encoding}
 @see: L{wxglade.init_stage1()}
 """
@@ -90,7 +90,7 @@ appdata_path = ''
 """\
 Directory to wxGlades application data like file history and templates
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -98,14 +98,14 @@ credits_file = ''
 """\
 Path of the credits file "credits.txt"
 
-@type: String
+@type: str
 """
 
 docs_path = 'docs'
 """\
 Path to wxGlade documentation (e.g. html tutorial, license.txt, credits.txt)
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -113,7 +113,7 @@ home_path = ''
 """\
 Users home directory
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -121,7 +121,7 @@ icons_path = 'icons'
 """\
 Path to wxGlade icons
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -129,7 +129,7 @@ license_file = ''
 """\
 Path of the license file "license.txt"
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -137,7 +137,7 @@ platform = 'not_set'
 """\
 Current platform (mostly wx.Platform)
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -145,7 +145,7 @@ version = 'not_set'
 """\
 wxGlade version string
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 @see: L{common.set_version()}
 """
@@ -154,7 +154,7 @@ version_nohgfound = 'HG'
 """\
 Version number to return if no hg repo has been found
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -162,21 +162,21 @@ py_version = sys.version.split()[0]
 """\
 Python version
 
-@type: String
+@type: str
 """
 
 wx_version = 'not_set'
 """\
 wxPython version
 
-@type: String
+@type: str
 """
 
 templates_path = 'templates'
 """\
 System template path
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
@@ -184,7 +184,7 @@ tutorial_file = 'docs/html/index.html'
 """\
 Path to wxGlade tutorial (HTML)
 
-@type: String
+@type: str
 @note: This path will be set during initialisation
 """
 
