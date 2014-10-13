@@ -736,7 +736,7 @@
                             <orient>wxHORIZONTAL</orient>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALL</flag>
+                                <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxTreeCtrl" name="tree_ctrl_1">
                                 </object>

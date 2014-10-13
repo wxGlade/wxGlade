@@ -297,7 +297,7 @@ void All_Widgets_Frame::do_layout()
     notebook_1_wxTextCtrl->SetSizer(sizer_18);
     sizer_23->Add(button_2, 1, wxALL, 5);
     notebook_1_wxToggleButton->SetSizer(sizer_23);
-    sizer_24->Add(tree_ctrl_1, 1, wxALL, 5);
+    sizer_24->Add(tree_ctrl_1, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxTreeCtrl->SetSizer(sizer_24);
     notebook_1->AddPage(notebook_1_wxBitmapButton, _("wxBitmapButton"));
     notebook_1->AddPage(notebook_1_wxButton, _("wxButton"));
