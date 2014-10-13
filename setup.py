@@ -11,7 +11,6 @@ import distutils.command.sdist
 from distutils.util import convert_path
 
 import os
-from types import *
 from glob import glob
 import config
 
@@ -167,7 +166,11 @@ scripts = ['wxglade', 'wxglade.pyw']
 packages = find_packages(path=".", base='wxglade').keys()
 packages.append('wxglade')
 
-version = config.version
+# write and handle version file
+version = config.get_version(False)
+if not os.path.exists('RELEASE-VERSION'):
+    config.write_version_file(version)
+text_files.append('RELEASE-VERSION')
 
 setup(
     name='wxGlade',

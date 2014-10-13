@@ -177,7 +177,7 @@ def init_stage1():
     Initialise locale settings too. The determined system locale will be
     stored in L{config.encoding}.
     """
-    config.version = common.set_version()
+    config.version = config.get_version()
     common.init_paths()
 
     # initialise own logging extensions

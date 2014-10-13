@@ -1,13 +1,17 @@
 """
 Configuration related stuff
 
-@see: L{configdialog}
+@note: Don't place code with gettext or dependencies to other wxGlade
+       parts here!
+
+@see: L{preferencesdialog}
 @copyright: 2007 Alberto Griggio
-@copyright: 2013 Carsten Grohmann
+@copyright: 2013-2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 # import general python modules
+import os
 import sys
 
 # default configuration values
@@ -154,15 +158,7 @@ wxGlade version string
 
 @type: str
 @note: This path will be set during initialisation
-@see: L{common.set_version()}
-"""
-
-version_nohgfound = 'HG'
-"""\
-Version number to return if no hg repo has been found
-
-@type: str
-@note: This path will be set during initialisation
+@see: L{get_version()}
 """
 
 py_version = sys.version.split()[0]
@@ -285,3 +281,116 @@ Maximum width to split tooltips into
 
 @type: int
 """
+
+
+def read_version_file():
+    """\
+    Read the version information from file "RELEASE-VERSION".
+
+    @rtype: str | None
+
+    @see: L{write_version_file()}
+    @see: L{get_version()}
+    """
+    try:
+        fh = open('RELEASE-VERSION', 'r')
+        try:
+            release = fh.readlines()[0]
+            return release.strip()
+        finally:
+            fh.close()
+    except:
+        return None
+
+
+def write_version_file(release):
+    """\
+    Write the given version string into file "RELEASE-VERSION".
+
+    @param release: version string to write
+    @type release:  str
+
+    @see: L{read_version_file()}
+    @see: L{get_version()}
+    """
+    fh = open('RELEASE-VERSION', 'w')
+    fh.write("%s\n" % release)
+    fh.close()
+
+
+def get_hg_version():
+    """
+    Query the local hg repository to get the current release or return None.
+
+    @rtype: str | None
+    """
+    try:
+        from mercurial.hg import repository
+        from mercurial.ui import ui
+        from mercurial.node import short
+        from mercurial.error import RepoError
+    except:
+        return None
+
+    # try to open local hg repository
+    try:
+        repo = repository(ui(), os.path.dirname(__file__))
+    except RepoError:
+        # no mercurial repository found
+        return None
+
+    context = repo[None]
+    parents = context.parents()
+    repo_changed = context.files() + context.deleted()
+    if len(parents) == 1 and not repo_changed:
+        # release tag isn't at tip it's -2 (one below tip)
+        parents = parents[0].parents()
+        node = parents[0].node()
+        tags = repo.nodetags(node)
+        # look for the special 'rel_X.X' tag
+        for tag in tags:
+            if tag.startswith('rel_') and len(tag) > 4:
+                release = tag[4:]
+                break
+        # handle untagged release e.g. tip
+        if not release:
+            release = short(node)
+    else:
+        release = '%s' % '+'.join([short(p.node()) for p in parents])
+
+    suffix_changed = repo_changed and '+' or ''
+
+    ver = '%s%s' % (release, suffix_changed)
+    return ver
+
+
+def get_version(suffix=True):
+    """\
+    Return the release string.
+
+    The release will determinate in three steps:
+     1. read from release file (see L{read_version_file()})
+     2. Queried from local hg repo (see L{get_hg_version()})
+     3. Set to "not found"
+
+    The release string contains a suffix if wxGlade runs as standalone
+    edition.
+
+    @param suffix: Append suffix for standalone edition
+    @type suffix:  bool
+
+    @rtype: str
+
+    @see: L{read_version_file()}
+    @see: L{get_hg_version()}
+    """
+    release = read_version_file()
+    if not release:
+        release = get_hg_version()
+    if not release:
+        release = 'not found'
+
+    if suffix and hasattr(sys, 'frozen'):
+        release = '%s (standalone edition)' % release
+
+    return release

@@ -15,67 +15,6 @@ import zipfile
 import config
 
 
-def set_version():
-    """\
-    Create the version identification string
-
-    Try to query the local hg repository to build the version string or
-    return L{config.version_nohgfound}.
-
-    @return: The current wxGlade version number
-    @rtype: str
-    @see: L{config.version_nohgfound}
-    """
-    main_version = ''
-    repo_changed = []
-    try:
-        from mercurial.hg import repository
-        from mercurial.ui import ui
-        from mercurial.node import short
-        from mercurial.error import RepoError
-    except ImportError:
-        # no mercurial module available
-        main_version = config.version_nohgfound
-    except:
-        # unkown failure
-        main_version = config.version_nohgfound
-    else:
-        # try to open local hg repository
-        try:
-            repo = repository(ui(), os.path.dirname(__file__))
-        except RepoError:
-            # no mercurial repository found
-            main_version = config.version_nohgfound
-        else:
-            ctx = repo[None]
-            parents = ctx.parents()
-            repo_changed = ctx.files() + ctx.deleted()
-            if len(parents) == 1 and not repo_changed:
-                # release tag isn't at tip it's -2 (one below tip)
-                parents = parents[0].parents()
-                node = parents[0].node()
-                tags = repo.nodetags(node)
-                # look for the special 'rel_X.X' tag
-                for tag in tags:
-                    if tag.startswith('rel_') and len(tag) > 4:
-                        main_version = tag[4:]
-                        break
-                # handle untagged version e.g. tip
-                if not main_version:
-                    main_version = short(node)
-            else:
-                main_version = '%s' % \
-                    '+'.join([short(p.node()) for p in parents])
-
-    suffix_changed = repo_changed and '+' or ''
-    suffix_edition = hasattr(sys, 'frozen') \
-                     and ' (standalone edition)' \
-                     or ''
-
-    ver = "%s%s%s" % (main_version, suffix_changed, suffix_edition)
-    return ver
-
-
 widgets = {}
 """\
 Widgets dictionary: each key is the name of some EditWidget class; the mapped
