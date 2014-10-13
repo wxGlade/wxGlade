@@ -225,7 +225,7 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
     indent_symbol = '\t'
     indent_level_func_body = 1
 
-    language_note = '# To get wxPerl visit http://wxPerl.sourceforge.net/\n' \
+    language_note = '# To get wxPerl visit http://www.wxperl.it\n' \
                     '#\n'
 
     name_ctor = 'new'
