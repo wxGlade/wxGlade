@@ -2,7 +2,7 @@ Building a wxGlade installer HOWTO
 ----------------------------------
 
 Alberto Griggio  2007/04/20
-Carsten Grohmann 2011/12/19
+Carsten Grohmann 2014/10/13
 
 1. Setup PyInstaller
 --------------------
@@ -17,11 +17,14 @@ This procedure is tested using PyInstaller versions 1.5 and 1.5.1.
 
 - Open a command prompt and change into source base directory
 
-- To delete temporary Python bytecode files type
+- To delete temporary Python bytecode files type:
   del /S *.pyo
   del /S *.pyc
 
-- Type
+- To generate the version file "RELEASE-VERSION" type:
+  python.exe -c "import config; config.write_version_file(config.get_version(False))"
+
+- Type:
   python.exe <path to PyInstaller>\Build.py --noconfirm --buildpath <path to source>\wxglade\build install\pyinstaller\wxglade.spec
 
   If everything works, you should now have three new subdirectories
