@@ -38,7 +38,16 @@ class CppRadioBoxGenerator(wcodegen.CppWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['majorDimension'] = obj.properties.get('dimension', '1')
+
+        # wx raises an assertion if choices are empty and majorDim is 0
+        majorDimension = obj.properties.get('dimension', '1')
+        choices = obj.properties.get('choices', [])
+        if not choices and majorDimension == '0':
+            majorDimension = '1'
+
+        self.tmpl_dict['majorDimension'] = majorDimension
+
+
         return
 
 # end of class CppRadioBoxGenerator
