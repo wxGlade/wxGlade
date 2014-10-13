@@ -13,7 +13,7 @@ import wx
 
 import bugdialog
 import misc
-from configUI import wxGladePreferencesUI
+from preferences_ui import wxGladePreferencesUI
 
 
 class wxGladePreferences(wxGladePreferencesUI):
