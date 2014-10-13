@@ -152,6 +152,8 @@ Name: "{app}\widgets\splitter_window\*.pyc"; Type: files
 Name: "{app}\widgets\splitter_window\*.pyo"; Type: files
 Name: "{app}\widgets\static_bitmap\*.pyc"; Type: files
 Name: "{app}\widgets\static_bitmap\*.pyo"; Type: files
+Name: "{app}\widgets\statusbar\*.pyc"; Type: files
+Name: "{app}\widgets\statusbar\*.pyo"; Type: files
 Name: "{app}\widgets\static_line\*.pyc"; Type: files
 Name: "{app}\widgets\static_line\*.pyo"; Type: files
 Name: "{app}\widgets\static_text\*.pyc"; Type: files
