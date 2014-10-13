@@ -270,7 +270,7 @@ class All_Widgets_Frame(wx.Frame):
         self.notebook_1_wxTextCtrl.SetSizer(sizer_18)
         sizer_23.Add(self.button_2, 1, wx.ALL, 5)
         self.notebook_1_wxToggleButton.SetSizer(sizer_23)
-        sizer_24.Add(self.tree_ctrl_1, 1, wx.ALL, 5)
+        sizer_24.Add(self.tree_ctrl_1, 1, wx.ALL | wx.EXPAND, 5)
         self.notebook_1_wxTreeCtrl.SetSizer(sizer_24)
         self.notebook_1.AddPage(self.notebook_1_wxBitmapButton, _("wxBitmapButton"))
         self.notebook_1.AddPage(self.notebook_1_wxButton, _("wxButton"))

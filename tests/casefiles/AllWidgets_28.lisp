@@ -432,7 +432,7 @@
         (wxWindow_SetSizer (slot-notebook-1-wxTextCtrl obj) (slot-sizer-18 obj))
         (wxSizer_AddWindow (slot-sizer-23 obj) (slot-button-2 obj) 1 wxALL 5 nil)
         (wxWindow_SetSizer (slot-notebook-1-wxToggleButton obj) (slot-sizer-23 obj))
-        (wxSizer_AddWindow (slot-sizer-24 obj) (slot-tree-ctrl-1 obj) 1 wxALL 5 nil)
+        (wxSizer_AddWindow (slot-sizer-24 obj) (slot-tree-ctrl-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-notebook-1-wxTreeCtrl obj) (slot-sizer-24 obj))
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxBitmapButton obj) (_"wxBitmapButton") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxButton obj) (_"wxButton") 1 -1)
