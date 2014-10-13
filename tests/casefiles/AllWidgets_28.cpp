@@ -96,7 +96,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     list_box_filled = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, list_box_filled_choices);
     list_ctrl_1 = new wxListCtrl(notebook_1_wxListCtrl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN|wxLC_REPORT);
     const wxString *radio_box_empty1_choices = NULL;
-    radio_box_empty1 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty1_choices, 0, wxRA_SPECIFY_ROWS);
+    radio_box_empty1 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty1_choices, 1, wxRA_SPECIFY_ROWS);
     const wxString radio_box_filled1_choices[] = {
         _("choice 1"),
         _("choice 2 (pre-selected)"),
@@ -104,7 +104,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     };
     radio_box_filled1 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_filled1"), wxDefaultPosition, wxDefaultSize, 3, radio_box_filled1_choices, 0, wxRA_SPECIFY_ROWS);
     const wxString *radio_box_empty2_choices = NULL;
-    radio_box_empty2 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty2_choices, 0, wxRA_SPECIFY_COLS);
+    radio_box_empty2 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty2_choices, 1, wxRA_SPECIFY_COLS);
     const wxString radio_box_filled2_choices[] = {
         _("choice 1"),
         _("choice 2 (pre-selected)"),
