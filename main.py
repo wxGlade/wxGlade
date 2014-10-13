@@ -23,7 +23,7 @@ import bugdialog
 import clipboard
 import common
 import config
-import configdialog
+import preferencesdialog
 import log
 import misc
 import template
@@ -532,7 +532,7 @@ class wxGladeFrame(wx.Frame):
             self.user_message(_("Auto saving... done"))
         
     def edit_preferences(self, event):
-        dialog = configdialog.wxGladePreferences(config.preferences)
+        dialog = preferencesdialog.wxGladePreferences(config.preferences)
         if dialog.ShowModal() == wx.ID_OK:
             wx.MessageBox(_('Changes will take effect after wxGlade is restarted'),
                           _('Preferences saved'),
