@@ -1545,3 +1545,9 @@ class TestCodeGen(WXGladeBaseTest):
         expected = self._load_file('import_test.wxg')
 
         self._compare(expected, generated, "wxg")
+
+    def test_Statusbar_wo_labels(self):
+        """\
+        Test code generation for a wxStatusBar with fields but w/o labels
+        """
+        self._test_all('Statusbar_wo_labels')

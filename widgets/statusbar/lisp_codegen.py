@@ -20,7 +20,7 @@ class LispStatusBarCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         labels, widths = obj.properties['statusbar']
         self.tmpl_dict['labels_len'] = len(labels)
-        self.tmpl_dict['widths'] = ' '.join(map(str, widths))
+        self.tmpl_dict['widths'] = ' '.join([str(w) for w in widths])
         self.tmpl_dict['widths_len'] = len(widths)
 
         self.tmpl_props.append(
@@ -28,12 +28,12 @@ class LispStatusBarCodeGenerator(wcodegen.LispWidgetCodeWriter):
             '(vector %(widths)s))\n'
         )
 
-        i = 0
-        for lb in labels:
-            stmt = '(wxStatusBar_SetStatusText %%(name)s %s %d)\n' % (
-                self.codegen.quote_str(lb), i)
-            self.tmpl_props.append(stmt)
-            i = +1
+        # don't add statusbar fields without labels
+        if [lb for lb in labels if lb]:
+            for pos, lb in zip(range(len(labels)), labels):
+                stmt = '(wxStatusBar_SetStatusText %%(name)s %s %d)\n' % (
+                    self.codegen.quote_str(lb), pos)
+                self.tmpl_props.append(stmt)
 
 # end of class LispStatusBarCodeGenerator
 
