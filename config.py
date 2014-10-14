@@ -339,6 +339,7 @@ def get_hg_version():
         # no mercurial repository found
         return None
 
+    release = ''
     context = repo[None]
     parents = context.parents()
     repo_changed = context.files() + context.deleted()
