@@ -27,10 +27,13 @@ class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
         append('%(name)s.SetStatusWidths(%(widths)s)\n')
         append('\n')
 
-        append('%(comment)s statusbar fields\n')
-        append('%(obj_name)s_fields = [%(labels)s]\n')
-        append('for i in range(len(%(obj_name)s_fields)):\n')
-        append('%(tab)s%(name)s.SetStatusText(%(obj_name)s_fields[i], i)\n')
+        # don't add statusbar fields without labels
+        if [lb for lb in labels if lb]:
+            append('%(comment)s statusbar fields\n')
+            append('%(obj_name)s_fields = [%(labels)s]\n')
+            append('for i in range(len(%(obj_name)s_fields)):\n')
+            append('%(tab)s%(name)s.SetStatusText('
+                   '%(obj_name)s_fields[i], i)\n')
 
 # end of class PythonStatusBarGenerator
 
@@ -96,15 +99,17 @@ class CppStatusBarGenerator(wcodegen.CppWidgetCodeWriter):
                '%(name)s_widths);\n')
         append('\n')
 
-        append('%(comment)s statusbar fields\n')
-        append('const wxString %(name)s_fields[] = {\n')
-        for lb in labels:
-            append('%%(tab)s%s,\n' % self.codegen.quote_str(lb))
-        append('};\n')
+        # don't add statusbar fields without labels
+        if [lb for lb in labels if lb]:
+            append('%(comment)s statusbar fields\n')
+            append('const wxString %(name)s_fields[] = {\n')
+            for lb in labels:
+                append('%%(tab)s%s,\n' % self.codegen.quote_str(lb))
+            append('};\n')
 
-        append('for(int i = 0; i < %(name)s->GetFieldsCount(); ++i) {\n')
-        append('%(tab)s%(name)s->SetStatusText(%(name)s_fields[i], i);\n')
-        append('}\n')
+            append('for(int i = 0; i < %(name)s->GetFieldsCount(); ++i) {\n')
+            append('%(tab)s%(name)s->SetStatusText(%(name)s_fields[i], i);\n')
+            append('}\n')
 
 # end of class CppStatusBarGenerator
 
