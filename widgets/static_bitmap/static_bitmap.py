@@ -21,8 +21,8 @@ class EditStaticBitmap(ManagedBase, StylesMixin):
 
     update_widget_style = False
 
-    def __init__(self, name, parent, id, bmp_file, sizer, pos, property_window,
-                 show=True):
+    def __init__(self, name, parent, id, bmp_file, sizer, pos,
+                 property_window, show=True):
 
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer,
@@ -38,8 +38,8 @@ class EditStaticBitmap(ManagedBase, StylesMixin):
         self.access_functions['attribute'] = (self.get_attribute,
                                               self.set_attribute)
         self.bitmap_prop = FileDialogProperty(self, 'bitmap', None,
-                                              style=wx.OPEN|wx.FILE_MUST_EXIST,
-                                              can_disable=False, label=_("bitmap"))
+            style=wx.OPEN | wx.FILE_MUST_EXIST, can_disable=False,
+            label=_("bitmap"))
         prop = self.properties
         prop['bitmap'] = self.bitmap_prop
         prop['attribute'] = CheckBoxProperty(
@@ -76,7 +76,7 @@ class EditStaticBitmap(ManagedBase, StylesMixin):
         self.notebook.AddPage(panel, "Widget")
         self.property_window.Layout()
         import math
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
 
     def get_attribute(self):
         return self.attribute
@@ -99,7 +99,7 @@ class EditStaticBitmap(ManagedBase, StylesMixin):
                not (self.bitmap.startswith('var:') or
                     self.bitmap.startswith('code:')):
             path = misc.get_relative_path(self.bitmap)
-            self._logger.debug(_("Loading bitmap from: %s:"), path)
+            self._logger.debug(_("Loading bitmap from: %s"), path)
             return wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
         else:
             if empty[0] is None:
