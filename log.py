@@ -231,7 +231,8 @@ class ExceptionFormatter(logging.Formatter):
                         )
                     except:
                         # sometimes frames contains non-printable values:
-                        # e.g. TypeError: __repr__ returned non-string (type NoneType)
+                        # e.g. TypeError: __repr__ returned non-string
+                        # (type NoneType)
                         func_args = '(<unknown arguments>)'
 
                     msg = 'Stack frame at level %d' % stack_level
@@ -363,7 +364,7 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
     if filename:
         file_logger = logging.handlers.RotatingFileHandler(
             filename,
-            maxBytes=100*1024,
+            maxBytes=100 * 1024,
             encoding=encoding,
             backupCount=1,
             )
@@ -384,18 +385,18 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
     # don't filter log levels in root logger
     logger.setLevel(logging.NOTSET)
 
-    # Set log level for file logger only
+    # Set log level for root logger only
     if level:
-        if level.upper() in logging._levelNames:                      # pylint: disable=W0212
-            file_logger.setLevel(logging._levelNames[level.upper()])  # pylint: disable=W0212
+        if level.upper() in logging._levelNames:                 # pylint: disable=W0212
+            logger.setLevel(logging._levelNames[level.upper()])  # pylint: disable=W0212
         else:
             logging.warning(
                 _('Invalid log level "%s". Use "WARNING" instead.'),
                 level.upper(),
                 )
-            file_logger.setLevel(logging.WARNING)
+            logger.setLevel(logging.WARNING)
     else:
-        file_logger.setLevel(logging.NOTSET)
+        logger.setLevel(logging.NOTSET)
 
     # Install own exception handler at the end because it can raise a debug
     # messages. This debug messages triggers the creation of a default
