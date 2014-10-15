@@ -156,6 +156,7 @@ class BaseLanguageMixin(object):
             return flags
 
         # split flags to set first
+        oflags = flags
         flags = set(flags.split('|'))
 
         # check for non-supported, renamed flags and ...
@@ -177,7 +178,8 @@ class BaseLanguageMixin(object):
             for flag in flags.copy():
                 try:
                     version_specific = 'wx%s%s' % self.codegen.for_version
-                    if version_specific not in self.style_defs[flag]['supported_by']:
+                    if version_specific not in \
+                            self.style_defs[flag]['supported_by']:
                         flags.remove(flag)
                 except KeyError:
                     pass
@@ -186,6 +188,13 @@ class BaseLanguageMixin(object):
             flags = [self.cn(f) for f in flags]
 
         flags = self.tmpl_flag_join.join(sorted(flags))
+
+        if hasattr(self, 'klass'):
+            logging.debug('cn_f(%s:%s): %s',
+                          getattr(self, 'klass'), oflags, flags)
+        else:
+            logging.debug('cn_f(%s): %s', oflags, flags)
+
         return flags
 
     def _get_style_defs(self):
