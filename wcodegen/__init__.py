@@ -110,7 +110,7 @@ class BaseLanguageMixin(object):
         """
         return klass
 
-    def cn_f(self, flags, styles=None):
+    def cn_f(self, flags):
         """\
         Rearrange and format flags.
 
@@ -142,10 +142,8 @@ class BaseLanguageMixin(object):
         @param flags: wxWidget styles joined by '|'
         @type flags:  str
 
-        @param styles: Style details passed by widget writer instances
-        @type styles:  dict
-
         @rtype: str
+        
         @see: L{cn()}
         @see: L{format_flags}
         @see: L{tmpl_flag_join}
