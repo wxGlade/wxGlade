@@ -251,9 +251,11 @@ def xrc_code_generator(obj):
                           (prop_name, escape(prop), prop_name))
             style = self.code_obj.properties.get('style')
             if style:
+                style = self.cn_f(style)
                 style = style.split('|')
                 style.append('wxTB_HORIZONTAL')
-                write('    '*(tabs+1) + '<style>%s</style>\n' % \
+                style.sort()
+                write('    '*(tabs+1) + '<style>%s</style>\n' %
                       escape('|'.join(style)))
             for t in tools:
                 self.append_item(t, outfile, tabs+1)

@@ -30,7 +30,7 @@
             <widths>-2, -1</widths>
         </object>
         <object class="wxToolBar" name="Mp3_To_Ogg_toolbar">
-            <style>wxTB_TEXT|wxTB_HORIZONTAL</style>
+            <style>wxTB_HORIZONTAL|wxTB_TEXT</style>
             <object class="tool" name="wxID_OPEN">
                 <label>&amp;Open</label>
                 <tooltip>Open a file</tooltip>
@@ -62,7 +62,7 @@
                             <cols>3</cols>
                             <vgap>0</vgap>
                             <object class="sizeritem">
-                                <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+                                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
                                 <border>5</border>
                                 <object class="wxStaticText" name="_lbl_input_filename">
                                     <label>File name:</label>
@@ -70,7 +70,7 @@
                             </object>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL</flag>
+                                <flag>wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxTextCtrl" name="text_ctrl_1">
                                 </object>
@@ -155,7 +155,7 @@
                             <cols>3</cols>
                             <vgap>0</vgap>
                             <object class="sizeritem">
-                                <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+                                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
                                 <border>5</border>
                                 <object class="wxStaticText" name="_lbl_output_filename">
                                     <label>File name:</label>
@@ -226,20 +226,20 @@
                     <cols>3</cols>
                     <vgap>0</vgap>
                     <object class="sizeritem">
-                        <flag>wxALL|wxALIGN_RIGHT</flag>
+                        <flag>wxALIGN_RIGHT|wxALL</flag>
                         <border>5</border>
                         <object class="wxButton" name="wxID_CLOSE">
                         </object>
                     </object>
                     <object class="sizeritem">
-                        <flag>wxALL|wxALIGN_RIGHT</flag>
+                        <flag>wxALIGN_RIGHT|wxALL</flag>
                         <border>5</border>
                         <object class="wxButton" name="wxID_CANCEL">
                             <style>wxBU_TOP</style>
                         </object>
                     </object>
                     <object class="sizeritem">
-                        <flag>wxALL|wxALIGN_RIGHT</flag>
+                        <flag>wxALIGN_RIGHT|wxALL</flag>
                         <border>5</border>
                         <object class="wxButton" name="wxID_OK">
                             <handler event="EVT_BUTTON">startConverting</handler>
@@ -282,7 +282,7 @@
                         </object>
                     </object>
                     <object class="sizeritem">
-                        <flag>wxALL|wxALIGN_RIGHT</flag>
+                        <flag>wxALIGN_RIGHT|wxALL</flag>
                         <border>5</border>
                         <object class="wxButton" name="wxID_CLOSE">
                             <default>1</default>
