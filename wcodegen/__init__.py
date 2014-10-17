@@ -1137,3 +1137,12 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
         return
 
 # end of class PythonWidgetCodeWriter
+
+
+class XrcWidgetCodeWriter(XRCMixin, BaseWidgetWriter):
+    """\
+    Base class for all XRC widget code writer classes.
+    """
+    pass
+
+# end of class XrcWidgetCodeWriter

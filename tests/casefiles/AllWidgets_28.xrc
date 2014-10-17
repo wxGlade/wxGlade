@@ -186,7 +186,7 @@
                             <orient>wxHORIZONTAL</orient>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+                                <flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</flag>
                                 <border>5</border>
                                 <object class="wxDatePickerCtrl" name="datepicker_ctrl_1">
                                 </object>
@@ -283,7 +283,7 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxListCtrl" name="list_ctrl_1">
-                                    <style>wxLC_REPORT|wxSUNKEN_BORDER</style>
+                                    <style>wxBORDER_SUNKEN|wxLC_REPORT</style>
                                 </object>
                             </object>
                         </object>
@@ -589,7 +589,7 @@
                             <orient>wxVERTICAL</orient>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+                                <flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxStaticBitmap" name="bitmap_code_nullbitmap">
                                     <bitmap>code:wxNullBitmap</bitmap>
@@ -597,7 +597,7 @@
                             </object>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+                                <flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxStaticBitmap" name="bitmap_file">
                                     <bitmap>icon.xpm</bitmap>
@@ -605,7 +605,7 @@
                             </object>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+                                <flag>wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxStaticBitmap" name="bitmap_nofile">
                                     <bitmap>non-existing.bmp</bitmap>
@@ -706,7 +706,7 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxTextCtrl" name="text_ctrl">
-                                    <style>wxTE_MULTILINE|wxTE_LINEWRAP|wxTE_WORDWRAP</style>
+                                    <style>wxTE_CHARWRAP|wxTE_MULTILINE|wxTE_WORDWRAP</style>
                                     <value>This\nis\na\nmultiline\nwxTextCtrl</value>
                                 </object>
                             </object>
@@ -761,13 +761,13 @@
                     <cols>2</cols>
                     <vgap>0</vgap>
                     <object class="sizeritem">
-                        <flag>wxALL|wxALIGN_RIGHT</flag>
+                        <flag>wxALIGN_RIGHT|wxALL</flag>
                         <border>5</border>
                         <object class="wxButton" name="wxID_CLOSE">
                         </object>
                     </object>
                     <object class="sizeritem">
-                        <flag>wxALL|wxALIGN_RIGHT</flag>
+                        <flag>wxALIGN_RIGHT|wxALL</flag>
                         <border>5</border>
                         <object class="wxButton" name="wxID_OK">
                             <handler event="EVT_BUTTON">startConverting</handler>

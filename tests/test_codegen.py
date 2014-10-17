@@ -533,7 +533,7 @@ class TestCodeGen(WXGladeBaseTest):
 
     def test_PerlSourceFileContent_regexp(self):
         """\
-        Test some regular expessions used in L{codegen.perl_codegen.SourceFileContent}
+        Test some regular expressions used in L{codegen.perl_codegen.SourceFileContent}
         """
         import codegen.perl_codegen
         lang = 'Perl'
@@ -762,7 +762,6 @@ class TestCodeGen(WXGladeBaseTest):
                         multiple_files, use_gettext,
                         top_window, generated)
                 )
-
 
 
     def test_no_suitable_writer(self):
@@ -1163,6 +1162,7 @@ class TestCodeGen(WXGladeBaseTest):
                 )
             )
 
+
     def test_ComplexExample(self):
         """\
         Test code generation for a complex example
@@ -1551,3 +1551,13 @@ class TestCodeGen(WXGladeBaseTest):
         Test code generation for a wxStatusBar with fields but w/o labels
         """
         self._test_all('Statusbar_wo_labels')
+
+    def test_Format_flags(self):
+        """\
+        Test code cn_f() for XRC code generator
+        """
+        self._generate_and_compare(
+            'XRC',
+            'Format_flags.wxg',
+            'Format_flags.xrc'
+        )
