@@ -316,11 +316,8 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         # Inject to all classed derived from WrcObject
         if not hasattr(XrcObject, 'tabs'):
             XrcObject.tabs = self.tabs
-        if not hasattr(XrcObject, 'cn_f'):
-            XrcObject.cn_f = self.cn_f
         if not hasattr(XrcObject, '_format_comment'):
             XrcObject._format_comment = self._format_comment
-
 
     def init_lang(self, app_attrs):
         # for now we handle only single-file code generation
