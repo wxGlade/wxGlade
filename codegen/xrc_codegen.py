@@ -257,7 +257,7 @@ class NotImplementedXrcObject(XrcObject):
               self.code_obj.base
         self.warning('%s' % msg)
         outfile.write('%s%s\n' % (
-            self.tabs(ntabs) + self._format_comment(msg)))
+            self.tabs(ntabs), self._format_comment(msg)))
 
 # end of class NotImplementedXrcObject
 
