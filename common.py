@@ -328,10 +328,6 @@ Style attributes:
   - I{'obsolete':} I{<text>} - This style is obsolete. A short notice will
     shown in the style tooltip.
 
-Language specific style settings from
-L{wcodegen.BaseWidgetWriter.lang_styles} will be merged with the styles
-dictionary in L{wcodegen.BaseWidgetWriter.__init__()}.
-
 Use gettext (C{_()}) for the attributes content of "box_label", "desc" and
 "obsolete".
 

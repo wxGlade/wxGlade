@@ -239,7 +239,7 @@ sub __do_layout {
     $self->{sizer_7}->Add($self->{combo_box_filled}, 1, wxALL, 5);
     $self->{sizer_6}->Add($self->{sizer_7}, 1, wxEXPAND, 0);
     $self->{notebook_1_wxComboBox}->SetSizer($self->{sizer_6});
-    $self->{sizer_17}->Add($self->{datepicker_ctrl_1}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    $self->{sizer_17}->Add($self->{datepicker_ctrl_1}, 1, wxALIGN_CENTER|wxALL, 5);
     $self->{notebook_1_wxDatePickerCtrl}->SetSizer($self->{sizer_17});
     $self->{sizer_15}->Add($self->{gauge_1}, 1, wxALL, 5);
     $self->{notebook_1_wxGauge}->SetSizer($self->{sizer_15});
@@ -286,9 +286,9 @@ sub __do_layout {
     $self->{splitter_2}->SplitVertically($self->{splitter_2_pane_1}, $self->{splitter_2_pane_2}, );
     $self->{sizer_25}->Add($self->{splitter_2}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxSplitterWindow_vertical}->SetSizer($self->{sizer_25});
-    $self->{sizer_11}->Add($self->{bitmap_code_nullbitmap}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
-    $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
-    $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_code_nullbitmap}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxStaticBitmap}->SetSizer($self->{sizer_11});
     $self->{sizer_10}->Add($self->{static_line_2}, 1, wxALL|wxEXPAND, 5);
     $self->{sizer_10}->Add($self->{static_line_3}, 1, wxALL|wxEXPAND, 5);
