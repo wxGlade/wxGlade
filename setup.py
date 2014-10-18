@@ -142,7 +142,8 @@ the moment it can generate Python, C++, Perl, Lisp and XRC (wxWidgets'
 XML resources) code."""
 
 text_files = ['CHANGES.txt', 'credits.txt', 'epydoc.conf', 'license.txt',
-              'Makefile', 'NEWS.txt', 'README.txt', 'TODO.txt']
+              'Makefile', 'NEWS.txt', 'README.txt', 'TODO.txt',
+              'appdata.xml', 'wxGlade.desktop']
 
 data_files = \
     [
