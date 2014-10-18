@@ -1,7 +1,8 @@
 Steps to publish a new version
 ==============================
 
- 1. Update documentation e.g. CHANGES.txt, NEWS.txt and README.txt
+ 1. Update documentation e.g. CHANGES.txt, NEWS.txt, README.txt and
+    wxGlade.desktop
  2. Change the version number in wxglade-installer.iss. Please check that
     the version is equal to the version in RELEASE-VERSION
  3. Set SHOW_CONSOLE to False in install/pyinstaller/wxglade.spec

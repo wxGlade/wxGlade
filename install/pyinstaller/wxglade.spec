@@ -77,6 +77,8 @@ FILES2INCLUDE = [
     'license.txt',
     'README.txt',
     'TODO.txt',
+    'appdata.xml',
+    'wxGlade.desktop',
     'widgets\widgets.txt',
     ]
 '''\
