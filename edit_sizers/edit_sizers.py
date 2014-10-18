@@ -837,7 +837,7 @@ class SizerBase(Sizer):
         border_styles[_('Border')] = ['wxALL', 'wxLEFT', 'wxRIGHT',
                                       'wxTOP', 'wxBOTTOM']
         border_styles[_('Alignment')] = [
-            'wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM',
+            'wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM', 'wxALIGN_CENTER',
             'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
             'wxSHAPED', 'wxADJUST_MINSIZE', 'wxFIXED_MINSIZE']
 

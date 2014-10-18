@@ -232,7 +232,7 @@ void All_Widgets_Frame::do_layout()
     sizer_7->Add(combo_box_filled, 1, wxALL, 5);
     sizer_6->Add(sizer_7, 1, wxEXPAND, 0);
     notebook_1_wxComboBox->SetSizer(sizer_6);
-    sizer_17->Add(datepicker_ctrl_1, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    sizer_17->Add(datepicker_ctrl_1, 1, wxALIGN_CENTER|wxALL, 5);
     notebook_1_wxDatePickerCtrl->SetSizer(sizer_17);
     sizer_15->Add(gauge_1, 1, wxALL, 5);
     notebook_1_wxGauge->SetSizer(sizer_15);
@@ -279,9 +279,9 @@ void All_Widgets_Frame::do_layout()
     splitter_2->SplitVertically(splitter_2_pane_1, splitter_2_pane_2);
     sizer_25->Add(splitter_2, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxSplitterWindow_vertical->SetSizer(sizer_25);
-    sizer_11->Add(bitmap_code_nullbitmap, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
-    sizer_11->Add(bitmap_file, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
-    sizer_11->Add(bitmap_nofile, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_code_nullbitmap, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_file, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_nofile, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     notebook_1_wxStaticBitmap->SetSizer(sizer_11);
     sizer_10->Add(static_line_2, 1, wxALL|wxEXPAND, 5);
     sizer_10->Add(static_line_3, 1, wxALL|wxEXPAND, 5);

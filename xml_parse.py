@@ -1037,6 +1037,7 @@ class Sizeritem(object):
             'wxEXPAND': wx.EXPAND,
             'wxALIGN_RIGHT': wx.ALIGN_RIGHT,
             'wxALIGN_BOTTOM': wx.ALIGN_BOTTOM,
+            'wxALIGN_CENTER': wx.ALIGN_CENTER,
             'wxALIGN_CENTER_HORIZONTAL': wx.ALIGN_CENTER_HORIZONTAL,
             'wxALIGN_CENTER_VERTICAL': wx.ALIGN_CENTER_VERTICAL,
             'wxLEFT': wx.LEFT,
