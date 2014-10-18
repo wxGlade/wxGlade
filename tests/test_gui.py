@@ -361,69 +361,69 @@ class TestGui(WXGladeBaseTest):
         StyleMixin: Test converting of styles
         """
         import edit_windows
-        sm = edit_windows.StylesMixin('wxHyperlinkCtrl')
+        esm = edit_windows.EditStylesMixin('wxHyperlinkCtrl')
 
         # test converting of a combined attribute
         style_names = ['wxHL_DEFAULT_STYLE', 'wxHL_ALIGN_LEFT',
                        'wxHL_ALIGN_RIGHT', 'wxHL_ALIGN_CENTRE',
                        'wxHL_CONTEXTMENU']
-        ret = sm.style_names[:]
+        ret = esm.style_names[:]
         ret.sort()
         expected = style_names
         expected.sort()
         self.failUnlessEqual(
             ret,
             expected,
-            'StylesMixin.__init__() failed: got "%s" expect: "%s"' % (
+            'EditStylesMixin.__init__() failed: got "%s" expect: "%s"' % (
                 ret, expected)
         )
 
         # test setting new styles
-        sm.set_style('|'.join(style_names))
-        ret = sm.style_set
+        esm.set_style('|'.join(style_names))
+        ret = esm.style_set
         expected = set(['wxHL_DEFAULT_STYLE', 'wxHL_ALIGN_LEFT',
                         'wxHL_ALIGN_RIGHT'])
         self.failUnlessEqual(
             ret,
             expected,
-            'StylesMixin.set_style(): got "%s" expect: "%s"' % (
+            'EditStylesMixin.set_style(): got "%s" expect: "%s"' % (
                 ret, expected)
         )
-        sm.set_style([True, False, True, False, False])
-        ret = sm.style_set
+        esm.set_style([True, False, True, False, False])
+        ret = esm.style_set
         expected = set(['wxHL_ALIGN_LEFT', 'wxHL_ALIGN_CENTRE'])
         self.failUnlessEqual(
             ret,
             expected,
-            'StylesMixin.set_style(): got "%s" expect: "%s"' % (
+            'EditStylesMixin.set_style(): got "%s" expect: "%s"' % (
                 ret, expected)
         )
-        sm.set_style('wxHL_DEFAULT_STYLE|wxHL_CONTEXTMENU')
-        ret = sm.style_set
+        esm.set_style('wxHL_DEFAULT_STYLE|wxHL_CONTEXTMENU')
+        ret = esm.style_set
         expected = set(['wxHL_DEFAULT_STYLE',])
         self.failUnlessEqual(
             ret,
             expected,
-            'StylesMixin.get_style(): got "%s" expect: "%s"' % (ret, expected)
+            'EditStylesMixin.get_style(): got "%s" expect: "%s"' % (ret, expected)
         )
 
         # test generating a flag list
-        ret = sm.get_style()
+        ret = esm.get_style()
         expected = [False, False, False, False, True]
         self.failUnlessEqual(
             ret,
             expected,
-            'StylesMixin.get_style(): got "%s" expect: "%s"' % (
+            'EditStylesMixin.get_style(): got "%s" expect: "%s"' % (
                 ret, expected)
         )
 
         # returning styles as a string concatenated with '|'
-        ret = sm.get_string_style()
+        ret = esm.get_string_style()
         expected = 'wxHL_DEFAULT_STYLE'
         self.failUnlessEqual(
             ret,
             expected,
-            'StylesMixin.get_style_string(): got "%s" expect: "%s"' %
+            'EditStylesMixin.get_style_string(): got "%s" expect: "%s"' %
             (ret, expected)
         )
 
@@ -433,42 +433,42 @@ class TestGui(WXGladeBaseTest):
         styles[_('Border')] = ['wxALL', 'wxLEFT']
         styles[_('Alignment')] = ['wxEXPAND', 'wxALIGN_RIGHT']
 
-        sm = edit_windows.StylesMixin('wxHyperlinkCtrl', styles)
-        ret = sm.style_names[:]
+        esm = edit_windows.EditStylesMixin('wxHyperlinkCtrl', styles)
+        ret = esm.style_names[:]
         ret.sort()
         expected = ['wxALL', 'wxLEFT', 'wxEXPAND', 'wxALIGN_RIGHT']
         expected.sort()
         self.failUnlessEqual(
             ret,
             expected,
-            'StylesMixin.__init__() failed: got "%s" expect: "%s"' % (
+            'EditStylesMixin.__init__() failed: got "%s" expect: "%s"' % (
                 ret, expected)
         )
 
         # check handling of empty ('', None) styles
         for value, desc in (('', "''"), (None, 'None')):
-            sm.set_style(value)
-            ret = sm.style_set
+            esm.set_style(value)
+            ret = esm.style_set
             expected = set()
             self.failUnlessEqual(
                 ret,
                 expected,
-                'StylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
+                'EditStylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
                     desc, ret, expected)
             )
-            ret = sm.get_style()
+            ret = esm.get_style()
             expected = [False, False, False, False]
             self.failUnlessEqual(
                 ret,
                 expected,
-                'StylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
+                'EditStylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
                     desc, ret, expected)
             )
-            ret = sm.get_int_style()
+            ret = esm.get_int_style()
             expected = 0
             self.failUnlessEqual(
                 ret,
                 expected,
-                'StylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
+                'EditStylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
                     desc, ret, expected)
             )

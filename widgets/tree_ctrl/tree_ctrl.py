@@ -7,14 +7,14 @@ wxTreeCtrl objects
 """
 
 import wx
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 import common
 import config
 from widget_properties import *
 
 
-class EditTreeCtrl(ManagedBase, StylesMixin):
+class EditTreeCtrl(ManagedBase, EditStylesMixin):
     """\
     Class to handle wx.TreeCtrl objects
     """
@@ -48,7 +48,7 @@ class EditTreeCtrl(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, id, sizer, pos,
                              property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.style = style

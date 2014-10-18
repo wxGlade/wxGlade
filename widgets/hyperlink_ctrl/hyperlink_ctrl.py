@@ -10,12 +10,12 @@ import wx
 import common
 import config
 import misc
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 
 
-class EditHyperlinkCtrl(ManagedBase, StylesMixin):
+class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxHyperlinkCtrl objects
     """
@@ -28,7 +28,7 @@ class EditHyperlinkCtrl(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, id, sizer,
                              pos, property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.attribute = True

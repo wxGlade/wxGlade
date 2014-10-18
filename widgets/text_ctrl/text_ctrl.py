@@ -9,14 +9,14 @@ wxTextCtrl objects
 import math
 import wx
 
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 import common
 import config
 import misc
 from widget_properties import *
 
-class EditTextCtrl(ManagedBase, StylesMixin):
+class EditTextCtrl(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxTextCtrl objects
     """
@@ -34,7 +34,7 @@ class EditTextCtrl(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxTextCtrl', parent, id, sizer, pos,
                              property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.value = ""

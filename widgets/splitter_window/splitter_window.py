@@ -12,7 +12,7 @@ import common
 import wcodegen
 from tree import Tree
 from widget_properties import *
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
 
 try:
@@ -90,7 +90,7 @@ class SplitterWindowSizer(Sizer):
 # end of class SplitterWindowSizer
 
 
-class EditSplitterWindow(ManagedBase, StylesMixin):
+class EditSplitterWindow(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxSplitterWindow objects
 
@@ -112,7 +112,7 @@ class EditSplitterWindow(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id,
                              sizer, pos, property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.set_style(style)

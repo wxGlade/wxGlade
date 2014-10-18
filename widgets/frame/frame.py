@@ -13,17 +13,17 @@ import math
 import misc
 from tree import Tree
 from widget_properties import *
-from edit_windows import TopLevelBase, StylesMixin
+from edit_windows import TopLevelBase, EditStylesMixin
 
 
-class EditFrame(TopLevelBase, StylesMixin):
+class EditFrame(TopLevelBase, EditStylesMixin):
 
     def __init__(self, name, parent, id, title, property_window,
                  style=wx.DEFAULT_FRAME_STYLE, show=True, klass='wxFrame'):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, title=title)
         self.base = 'wxFrame'
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
         self.style = style
         self.statusbar = None
         self.icon = ''

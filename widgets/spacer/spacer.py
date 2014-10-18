@@ -76,7 +76,7 @@ class EditSpacer(ManagedBase):
         self.sizer.set_item(self.pos, size=self.__size)
 
     def set_flag(self, value):
-        self.sm_border.set_style(value)
+        self.esm_border.set_style(value)
         if not (self.get_int_flag() & wx.EXPAND):
             self.sizer.set_item(self.pos, size=self.__size)
 

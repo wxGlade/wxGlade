@@ -143,7 +143,7 @@ class BaseLanguageMixin(object):
         @type flags:  str
 
         @rtype: str
-        
+
         @see: L{cn()}
         @see: L{format_flags}
         @see: L{tmpl_flag_join}

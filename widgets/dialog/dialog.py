@@ -13,9 +13,9 @@ import math
 import misc
 from tree import Tree
 from widget_properties import *
-from edit_windows import TopLevelBase, StylesMixin
+from edit_windows import TopLevelBase, EditStylesMixin
 
-class EditDialog(TopLevelBase, StylesMixin):
+class EditDialog(TopLevelBase, EditStylesMixin):
 
     def __init__(self, name, parent, id, title, property_window,
                  style=wx.DEFAULT_DIALOG_STYLE, show=True, klass='wxDialog'):
@@ -24,7 +24,7 @@ class EditDialog(TopLevelBase, StylesMixin):
         TopLevelBase.__init__(self, name, klass, parent, id,
                               property_window, show=show, title=title)
         self.base = 'wxDialog'
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
 

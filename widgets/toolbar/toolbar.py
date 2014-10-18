@@ -17,7 +17,7 @@ import os
 from tree import Tree
 from tool import *
 from widget_properties import *
-from edit_windows import EditBase, PreviewMixin, StylesMixin
+from edit_windows import EditBase, PreviewMixin, EditStylesMixin
 
 
 class _MyBrowseButton(FileBrowseButton):
@@ -464,7 +464,7 @@ class ToolsProperty(Property):
 # end of class ToolsProperty
 
 
-class EditToolBar(EditBase, PreviewMixin, StylesMixin):
+class EditToolBar(EditBase, PreviewMixin, EditStylesMixin):
     """\
     Class to handle wxToolBar objects
 
@@ -482,7 +482,7 @@ class EditToolBar(EditBase, PreviewMixin, StylesMixin):
         EditBase.__init__(self, name, 'wxToolBar', parent, wx.NewId(),
                           property_window, custom_class=custom_class,
                           show=False)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
         PreviewMixin.__init__(self)
 
         # initialise instance variables
@@ -590,7 +590,7 @@ class EditToolBar(EditBase, PreviewMixin, StylesMixin):
         return self.access_functions[key]
 
     def set_style(self, value):
-        StylesMixin.set_style(self, value)
+        EditStylesMixin.set_style(self, value)
         self._refresh_widget()
 
     def get_margins(self):
