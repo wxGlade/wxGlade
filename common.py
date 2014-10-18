@@ -64,6 +64,7 @@ widget_config = {
         'wxALIGN_CENTRE': {
             'desc': _('Center the item (horizontally).'),
             'synonym': 'wxALIGN_CENTER',
+            'rename_to': 'wxALIGN_CENTER',
             'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL',
         },
         'wxALIGN_TOP': {
@@ -78,6 +79,7 @@ widget_config = {
         'wxALIGN_CENTRE_VERTICAL': {
             'desc': _('Centre the item vertically.'),
             'synonym': 'wxALIGN_CENTER_VERTICAL',
+            'rename_to': 'wxALIGN_CENTER_VERTICAL',
         },
         'wxALIGN_CENTER_HORIZONTAL': {
             'desc': _('Centre the item horizontally.'),
@@ -85,6 +87,7 @@ widget_config = {
         'wxALIGN_CENTRE_HORIZONTAL': {
             'desc': _('Centre the item horizontally.'),
             'synonym': 'wxALIGN_CENTER_HORIZONTAL',
+            'rename_to': 'wxALIGN_CENTER_HORIZONTAL',
         },
         'wxEXPAND': {
             'desc': _('The item will be expanded to fill the space '
