@@ -1,7 +1,8 @@
 """
 Miscellaneous stuff, used in many parts of wxGlade
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -200,7 +201,7 @@ class SelectionMarker(object):
 # end of class SelectionMarker
 
 
-class EncStringIO(object):
+class UnicodeStringIO(object):
     """\
     Wrapper class to store data in Unicode
     """
