@@ -1032,77 +1032,79 @@ class Sizeritem(object):
     @ivar _logger: Class specific logging instance
     """
     if config.use_gui:
-        flags = {'wxALL': wx.ALL,
-                 'wxEXPAND': wx.EXPAND, 'wxALIGN_RIGHT': wx.ALIGN_RIGHT,
-                 'wxALIGN_BOTTOM': wx.ALIGN_BOTTOM,
-                 'wxALIGN_CENTER_HORIZONTAL': wx.ALIGN_CENTER_HORIZONTAL,
-                 'wxALIGN_CENTER_VERTICAL': wx.ALIGN_CENTER_VERTICAL,
-                 'wxLEFT': wx.LEFT, 'wxRIGHT': wx.RIGHT,
-                 'wxTOP': wx.TOP,
-                 'wxBOTTOM': wx.BOTTOM,
-                 'wxSHAPED': wx.SHAPED,
-                 'wxADJUST_MINSIZE': wx.ADJUST_MINSIZE, }
-        flags['wxFIXED_MINSIZE'] = wx.FIXED_MINSIZE
+        flags = {
+            'wxALL': wx.ALL,
+            'wxEXPAND': wx.EXPAND,
+            'wxALIGN_RIGHT': wx.ALIGN_RIGHT,
+            'wxALIGN_BOTTOM': wx.ALIGN_BOTTOM,
+            'wxALIGN_CENTER_HORIZONTAL': wx.ALIGN_CENTER_HORIZONTAL,
+            'wxALIGN_CENTER_VERTICAL': wx.ALIGN_CENTER_VERTICAL,
+            'wxLEFT': wx.LEFT,
+            'wxRIGHT': wx.RIGHT,
+            'wxTOP': wx.TOP,
+            'wxBOTTOM': wx.BOTTOM,
+            'wxSHAPED': wx.SHAPED,
+            'wxADJUST_MINSIZE': wx.ADJUST_MINSIZE,
+            'wxFIXED_MINSIZE': wx.FIXED_MINSIZE,
+        }
+
+    all_border_flags = set(['wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM'])
 
     def __init__(self):
-        self.option = self.border = 0
+        self.option = 0
+        self.border = 0
         self.flag = 0
+        self.flag_set = set()
 
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
     def __getitem__(self, name):
-        if name != 'flag':
-            return None, lambda v: setattr(self, name, v)
+        def set_value(value):
+            setattr(self, name, value)
 
-        def get_flag(v):
-            val = reduce(lambda a, b: a | b,
-                         [Sizeritem.flags[t] for t in v.split("|")])
-            setattr(self, name, val)
-        return None, get_flag
+        if name != 'flag':
+            return None, set_value
+        return None, self.set_flag
+
+    def set_flag(self, value):
+        self.flag_set = set(value.split("|"))
+
+        # convert flags to integers
+        value = 0
+        for flag in self.flag_set:
+            try:
+                value += self.flags[flag]
+            except KeyError:
+                pass
+        self.flag = value
 
     def flag_str(self):
         """\
         Returns the flag attribute as a string of tokens separated by a '|'
         (used during the code generation)
         """
-
         if hasattr(self, 'flag_s'):
             return self.flag_s
+
+        try:
+            if self.all_border_flags <= self.flag_set:
+                self.flag_set -= self.all_border_flags
+                self.flag_set.add('wxALL')
+                pass
+
+            if 'wxALL' in self.flag_set:
+                self.flag_set -= self.all_border_flags
+
+            tmp = '|'.join(sorted(self.flag_set))
+        except:
+            self._logger.exception('self.flags = %s, self.flag_set = %s',
+                                   self.flags, repr(self.flag_set))
+            raise
+
+        if tmp:
+            return tmp
         else:
-            try:
-                tmp = {}
-                for k in self.flags:
-                    if self.flags[k] & self.flag:
-                        tmp[k] = 1
-                # patch to make wxALL work
-                remove_wxall = 4
-                for k in ('wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM'):
-                    if k in tmp:
-                        remove_wxall -= 1
-                if remove_wxall:
-                    try:
-                        del tmp['wxALL']
-                    except KeyError:
-                        pass
-                else:
-                    for k in ('wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM'):
-                        try:
-                            del tmp[k]
-                        except KeyError:
-                            pass
-                    tmp['wxALL'] = 1
-                tmp = '|'.join(tmp.keys())
-            except:
-                self._logger.exception(
-                    'self.flags = %s, self.flag = %s',
-                    self.flags,
-                    repr(self.flag)
-                    )
-                raise
-            if tmp:
-                return tmp
-            else:
-                return '0'
+            return '0'
 
 # end of class Sizeritem
