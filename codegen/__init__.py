@@ -489,7 +489,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         >>> _code_statements = {
         ... 'disabled':    "<code sequence for all wxWidget versions>",
         ... 'wxcolour_28': "<code sequence for wxWidgets 2.8 only>",
-        ... 'tooltip_3X':  "<code sequence for wxWidgets 3.X only>",
+        ... 'tooltip_3':  "<code sequence for wxWidgets 3.X only>",
         }
 
     The function L{_get_code_statement()} handles the extensions properly and
@@ -2563,7 +2563,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @see: L{_code_statements}
         """
 
-        prop_name_major = '%s_%dX' % (
+        prop_name_major = '%s_%d' % (
             prop_name,
             self.for_version[0],
             )

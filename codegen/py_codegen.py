@@ -220,7 +220,7 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
         'setfont':          "%(objname)s.SetFont(%(cnfont)s(%(size)s, %(family)s, "
                             "%(style)s, %(weight)s, %(underlined)s, %(face)s))\n",
         'tooltip':          "%(objname)s.SetToolTipString(%(tooltip)s)\n",
-        'tooltip_3X':       "%(objname)s.SetToolTip(wx.ToolTip(%(tooltip)s))\n",
+        'tooltip_3':        "%(objname)s.SetToolTip(wx.ToolTip(%(tooltip)s))\n",
         'wxcolour':         "wxColour(%(value)s)",
         'wxsystemcolour':   "wxSystemSettings_GetColour(%(value)s)",
         }
