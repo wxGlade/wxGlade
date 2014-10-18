@@ -11,10 +11,10 @@ import common
 import misc
 from tree import Tree
 from widget_properties import *
-from edit_windows import EditBase, StylesMixin
+from edit_windows import EditBase, EditStylesMixin
 
 
-class EditStatusBar(EditBase, StylesMixin):
+class EditStatusBar(EditBase, EditStylesMixin):
 
     _hidden_frame = None
     update_widget_style = False
@@ -23,7 +23,7 @@ class EditStatusBar(EditBase, StylesMixin):
         # Initialise parent classes
         EditBase.__init__(self, name, klass, parent, wx.NewId(),
                           property_window, custom_class=False, show=False)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.node = Tree.Node(self)

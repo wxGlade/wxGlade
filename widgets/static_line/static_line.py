@@ -9,12 +9,12 @@ wxStaticLine objects
 import wx
 import common
 import wcodegen
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 
 
-class EditStaticLine(ManagedBase, StylesMixin):
+class EditStaticLine(ManagedBase, EditStylesMixin):
 
     def __init__(self, name, parent, id, style, sizer, pos,
                  property_window, show=True):
@@ -24,7 +24,7 @@ class EditStaticLine(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer,
                              pos, property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.set_style(style)

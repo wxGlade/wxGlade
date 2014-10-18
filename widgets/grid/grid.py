@@ -449,7 +449,7 @@ def builder(parent, sizer, pos, number=[1]):
     # A grid should be wx.EXPANDed and 'option' should be 1,
     # or you can't see it.
     grid.set_option(1)
-    grid.sm_border.set_style("wxEXPAND")
+    grid.esm_border.set_style("wxEXPAND")
     node = Tree.Node(grid)
     grid.node = node
     grid.show_widget(True)

@@ -207,7 +207,7 @@ def builder(parent, sizer, pos, number=[1]):
     win.node = node
 
     win.set_option(1)
-    win.sm_border.set_style("wxEXPAND")
+    win.esm_border.set_style("wxEXPAND")
     win.show_widget(True)
 
     common.app_tree.insert(node, sizer.node, pos - 1)

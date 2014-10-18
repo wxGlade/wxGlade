@@ -17,7 +17,7 @@ import wx
 from layout_option_property import LayoutOptionProperty, \
     LayoutPosProperty
 from widget_properties import *
-from edit_windows import StylesMixin
+from edit_windows import EditStylesMixin
 from tree import Tree, WidgetTree
 import common
 import compat
@@ -842,7 +842,7 @@ class SizerBase(Sizer):
             'wxSHAPED', 'wxADJUST_MINSIZE', 'wxFIXED_MINSIZE']
 
         # use 'wxDialog' as a functional dummy
-        self.sm_border = StylesMixin('wxDialog', border_styles)
+        self.esm_border = EditStylesMixin('wxDialog', border_styles)
 
         self.access_functions = {
             'name': (lambda: self.name, self.set_name),
@@ -852,8 +852,8 @@ class SizerBase(Sizer):
         if not self.toplevel:
             self.access_functions['option'] = (self.get_option,
                                                self.set_option)
-            self.access_functions['flag'] = (self.sm_border.get_style,
-                                             self.sm_border.set_style)
+            self.access_functions['flag'] = (self.esm_border.get_style,
+                                             self.esm_border.set_style)
             self.access_functions['border'] = (self.get_border,
                                                self.set_border)
             self.access_functions['pos'] = (self.get_pos, self.set_pos)
@@ -1320,9 +1320,9 @@ class SizerBase(Sizer):
 
     def get_int_flag(self):
         """\
-        @see: L{edit_windows.StylesMixin.get_int_style()}
+        @see: L{edit_windows.EditStylesMixin.get_int_style()}
         """
-        return self.sm_border.get_int_style()
+        return self.esm_border.get_int_style()
 
     def get_border(self):
         if not hasattr(self, 'sizer'):

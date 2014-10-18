@@ -11,7 +11,7 @@ import wcodegen
 import misc
 from tree import Tree
 from widget_properties import *
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
 from xml_parse import XmlParsingError
 
@@ -154,7 +154,7 @@ class TabsHandler(object):
 # end of class TabsHandler
 
 
-class EditNotebook(ManagedBase, StylesMixin):
+class EditNotebook(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxNotebook objects
     """
@@ -200,7 +200,7 @@ class EditNotebook(ManagedBase, StylesMixin):
         # initialise parent classes
         ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer,
                              pos, property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.set_style(style)

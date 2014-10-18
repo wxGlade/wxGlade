@@ -905,15 +905,15 @@ class ManagedBase(WindowBase):
             'wxSHAPED', 'wxADJUST_MINSIZE', 'wxFIXED_MINSIZE']
 
         # use 'wxDialog' as a functional dummy
-        self.sm_border = StylesMixin('wxDialog', border_styles)
-        self.sm_border.update_widget_style = True
-        self.sm_border._set_widget_style = self.set_int_flag
+        self.esm_border = EditStylesMixin('wxDialog', border_styles)
+        self.esm_border.update_widget_style = True
+        self.esm_border._set_widget_style = self.set_int_flag
 
         self.sizer = sizer
         self.pos = pos
         self.access_functions['option'] = (self.get_option, self.set_option)
-        self.access_functions['flag'] = (self.sm_border.get_style,
-                                         self.sm_border.set_style)
+        self.access_functions['flag'] = (self.esm_border.get_style,
+                                         self.esm_border.set_style)
         self.access_functions['border'] = (self.get_border, self.set_border)
         self.access_functions['pos'] = (self.get_pos, self.set_pos)
 
@@ -940,7 +940,7 @@ class ManagedBase(WindowBase):
         # set the value of the properties
         szp = self.sizer_properties
         szp['option'].set_value(self.get_option())
-        szp['flag'].set_value(self.sm_border.get_style())
+        szp['flag'].set_value(self.esm_border.get_style())
         szp['border'].set_value(self.get_border())
         szp['pos'].set_value(self.pos - 1)
 
@@ -1017,7 +1017,7 @@ class ManagedBase(WindowBase):
         """
         assert isinstance(flags, (types.IntType, types.NoneType))
         if isinstance(flags, types.NoneType):
-            flags = self.sm_border.get_int_style()
+            flags = self.esm_border.get_int_style()
         self.flag = flags
         if not self.widget:
             return
@@ -1070,7 +1070,7 @@ class ManagedBase(WindowBase):
         return self.option
 
     def get_int_flag(self):
-        return self.sm_border.get_int_style()
+        return self.esm_border.get_int_style()
 
     def get_border(self):
         return self.border
@@ -1323,7 +1323,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 # end of class TopLevelBase
 
 
-class StylesMixin(object):
+class EditStylesMixin(object):
     """\
     Mixin to handle styles within widget dialogs
 
@@ -1395,7 +1395,7 @@ class StylesMixin(object):
         if not self.codegen:
             self.codegen = common.code_writers['python'].copy()
             self.codegen.for_version = wx.VERSION[0:2]
-            StylesMixin.codegen = self.codegen
+            EditStylesMixin.codegen = self.codegen
 
         try:
             self.widget_writer = self.codegen.obj_builders[klass]
@@ -1589,4 +1589,4 @@ class StylesMixin(object):
         self._attr_cache[name] = attr
         return attr
 
-# end of class StylesMixin
+# end of class EditStylesMixin

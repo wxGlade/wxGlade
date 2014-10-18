@@ -10,13 +10,13 @@ import wx
 import config
 import common
 import misc
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 from button_stockitems import *
 
 
-class EditButton(ManagedBase, StylesMixin):
+class EditButton(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxButton objects
     """
@@ -29,7 +29,7 @@ class EditButton(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
                              property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.label = label

@@ -11,13 +11,13 @@ import wx
 import common
 import config
 import misc
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 from ChoicesProperty import *
 
 
-class EditComboBox(ManagedBase, StylesMixin):
+class EditComboBox(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxComboBox objects
     """
@@ -32,7 +32,7 @@ class EditComboBox(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer,
                              pos, property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.choices = choices

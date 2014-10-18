@@ -10,13 +10,13 @@ import wx
 import common
 import config
 import misc
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 from misc import wxGladeRadioButton
 
 
-class EditRadioButton(ManagedBase, StylesMixin):
+class EditRadioButton(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxRadioButton objects
     """
@@ -30,7 +30,7 @@ class EditRadioButton(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxRadioButton', parent, id, sizer,
                              pos, property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.label = label

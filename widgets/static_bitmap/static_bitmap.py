@@ -9,12 +9,12 @@ wxStaticBitmap objects
 import wx
 import common
 import misc
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 
 
-class EditStaticBitmap(ManagedBase, StylesMixin):
+class EditStaticBitmap(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxStaticBitmap objects
     """
@@ -27,7 +27,7 @@ class EditStaticBitmap(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer,
                              pos, property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.attribute = True

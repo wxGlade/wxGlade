@@ -8,13 +8,13 @@ wxListCtrl objects
 
 import math
 import wx
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 import common
 from widget_properties import *
 
 
-class EditListCtrl(ManagedBase, StylesMixin):
+class EditListCtrl(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxListCtrl objects
     """
@@ -50,7 +50,7 @@ class EditListCtrl(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos,
                              property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.style = style

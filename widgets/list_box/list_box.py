@@ -9,12 +9,12 @@ wxListBox objects
 import wx
 import common
 import misc
-from edit_windows import ManagedBase, StylesMixin
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 from ChoicesProperty import *
 
-class EditListBox(ManagedBase, StylesMixin):
+class EditListBox(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxListBox objects
     """
@@ -27,7 +27,7 @@ class EditListBox(ManagedBase, StylesMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxListBox', parent, id, sizer,
                              pos, property_window, show=show)
-        StylesMixin.__init__(self)
+        EditStylesMixin.__init__(self)
 
         # initialise instance variables
         self.selection = 0

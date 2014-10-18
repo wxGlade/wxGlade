@@ -13,10 +13,10 @@ import config
 import misc
 from tree import Tree
 from widget_properties import *
-from edit_windows import ManagedBase, TopLevelBase, StylesMixin
+from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 
 
-class PanelBase(StylesMixin):
+class PanelBase(EditStylesMixin):
     """\
     Class PanelBase
 
@@ -33,7 +33,7 @@ class PanelBase(StylesMixin):
         self._logger = logging.getLogger(self.__class__.__name__)
 
         # initialise instance
-        StylesMixin.__init__(self, 'wxPanel')
+        EditStylesMixin.__init__(self, 'wxPanel')
 
         self.top_sizer = None  # sizer to handle the layout of children
         self.no_custom_class = False
