@@ -207,6 +207,7 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
         'setfont':          "%(objname)s->SetFont(Wx::Font->new(%(size)s, %(family)s, "
                             "%(style)s, %(weight)s, %(underlined)s, %(face)s));\n",
         'tooltip':          "%(objname)s->SetToolTipString(%(tooltip)s);\n",
+        'tooltip_3':        "%(objname)s->SetToolTip(%(tooltip)s);\n",
         'wxcolour':         "Wx::Colour->new(%(value)s)",
         'wxsystemcolour':   "Wx::SystemSettings::GetColour(%(value)s)",
         }
