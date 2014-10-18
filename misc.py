@@ -13,6 +13,7 @@ import StringIO
 import logging
 import os
 import re
+import types
 import wx
 
 accel_table = []
@@ -218,7 +219,37 @@ class UnicodeStringIO(object):
     def getvalue(self):
         return self.out.getvalue()
 
-# end of class EncStringIO
+# end of class UnicodeStringIO
+
+
+class AsciiStringIO(StringIO.StringIO):
+    """\
+    Wrapper class to store data in ASCII
+
+    @ivar isUnicode: True if the conversion to ASCII has failed at least
+                     one time
+    @type isUnicode: bool
+    """
+
+    def __init__(self, buf=''):
+        StringIO.StringIO.__init__(self, buf)
+        self.isUnicode = isinstance(buf, types.UnicodeType)
+
+    def write(self, s):
+        if not s:
+            return
+
+        if not isinstance(s, types.StringTypes):
+            s = str(s)
+
+        if isinstance(s, types.UnicodeType):
+            try:
+                s = s.encode('ascii')
+            except UnicodeEncodeError:
+                self.isUnicode = True
+        StringIO.StringIO.write(self, s)
+
+# end of class AsciiStringIO
 
 
 def bound(number, lower, upper):

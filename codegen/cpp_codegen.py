@@ -25,6 +25,7 @@ from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
                     BaseWidgetHandler
 import config
+import misc
 import wcodegen
 
 class SourceFileContent(BaseSourceFileContent):
@@ -555,16 +556,18 @@ bool MyApp::OnInit()
         else:
             name = os.path.splitext(out_path)[0]
             self.output_name = name
-            if not self._overwrite and self._file_exists(name + self.header_extension):
-                # the file exists, we must keep all the lines not inside a wxGlade
-                # block. NOTE: this may cause troubles if out_path is not a valid
+            if not self._overwrite and \
+               self._file_exists(name + self.header_extension):
+                # the file exists, we must keep all the lines not inside a
+                # wxGlade block.
+                # NOTE: this may cause troubles if out_path is not a valid
                 # source file, so be careful!
                 self.previous_source = SourceFileContent(name, self)
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
-                self.output_header = StringIO.StringIO()
-                self.output_file = StringIO.StringIO()
+                self.output_header = misc.AsciiStringIO()
+                self.output_file = misc.AsciiStringIO()
 
                 # isolation directives
                 oh = os.path.basename(name + self.header_extension).upper().replace(
