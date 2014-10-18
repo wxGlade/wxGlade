@@ -655,7 +655,7 @@ class Application(object):
                 self.notebook,
                 )
 
-        out = misc.EncStringIO(self.encoding)
+        out = misc.UnicodeStringIO(self.encoding)
 
         from xml_parse import CodeWriter
         try:
