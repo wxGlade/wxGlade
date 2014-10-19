@@ -141,8 +141,9 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'button_%d' % number[0]
-    button = EditButton(name, parent, wx.NewId(), misc.encode(name), sizer,
-                        pos, common.property_panel)
+    button = EditButton(name, parent, wx.NewId(),
+                        common.encode_from_xml(name), sizer, pos,
+                        common.property_panel)
     node = Tree.Node(button)
     button.node = node
     button.show_widget(True)

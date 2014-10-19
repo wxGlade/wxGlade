@@ -96,7 +96,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'label_%d' % number[0]
     static_text = EditStaticText(label, parent, wx.NewId(),
-                                 misc.encode(label), sizer, pos,
+                                 common.encode_from_xml(label), sizer, pos,
                                  common.property_panel)
     node = Tree.Node(static_text)
     static_text.node = node

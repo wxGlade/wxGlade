@@ -1,4 +1,4 @@
-"""
+"""\
 wxHyperlinkCtrl objects
 
 @copyright: 2012,2014 Carsten Grohmann
@@ -122,7 +122,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'hyperlink_%d' % number[0]
     hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(),
-                                 misc.encode(name), sizer, pos,
+                                 common.encode_from_xml(name), sizer, pos,
                                  common.property_panel)
     node = Tree.Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node
