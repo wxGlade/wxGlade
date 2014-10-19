@@ -523,7 +523,7 @@ class CheckListProperty(Property, _activator):
 
     _tooltip_cache = {}
     """\
-    XXX
+    Cache for the created tooltips. The text based on the style definition.
 
     @see: L{_create_tooltip_text}
     """
