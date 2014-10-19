@@ -689,7 +689,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                 if name == 'menus': return
                 if name == 'menu':
                     self.menu_depth += 1
-                    label = misc.encode(attrs['label'])
+                    label = common.encode_from_xml(attrs['label'])
                     if self.menu_depth == 1:
                         t = MenuTree(attrs['name'], label,
                                      attrs.get('itemid', ''),

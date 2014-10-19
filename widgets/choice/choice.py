@@ -1,12 +1,13 @@
-# choice.py: wxChoice objects
-# $Id: choice.py,v 1.18 2007/03/27 07:02:03 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxChoice objects
+
+@copyright: 2002-2007 Alberto Griggio
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
-import common, misc
+import common
+import misc
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
@@ -117,7 +118,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'choice_%d' % number[0]
     choice = EditChoice(name, parent, wx.NewId(), [],
-                        #[misc.encode('choice 1')],
+                        #[common.encode_from_xml('choice 1')],
                         sizer, pos, common.property_panel)
     node = Tree.Node(choice)
     #sizer.set_item(pos, size=choice.GetBestSize())

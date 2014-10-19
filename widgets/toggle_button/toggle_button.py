@@ -1,9 +1,9 @@
-# toggle_button.py: wxToggleButton objects
-# $Id: toggle_button.py,v 1.14 2007/03/27 07:01:51 agriggio Exp $
-#
-# Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+wxToggleButton objects
+
+@copyright: 2002-2007 Alberto Griggio
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
 import common, misc
@@ -91,8 +91,9 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'button_%d' % number[0]
-    button = EditToggleButton(label, parent, wx.NewId(), misc.encode(label),
-                              sizer, pos, common.property_panel)
+    button = EditToggleButton(label, parent, wx.NewId(),
+                              common.encode_from_xml(label), sizer, pos,
+                              common.property_panel)
     node = Tree.Node(button)
     button.node = node
     button.show_widget(True)
