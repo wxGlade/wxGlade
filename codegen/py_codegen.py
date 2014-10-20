@@ -562,6 +562,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             return '%s.%s((%s))\n' % (objname, method, size)
 
     def _quote_str(self, s):
+        # string 's' is encoded with self.app_encoding already
         try:
             dummy = unicode(s, 'ascii')
             if self._use_gettext:
@@ -572,7 +573,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             # convert byte string to unicode, escape unicode characters
             # "raw-unicode-escape" just escaped unicode characters and not
             # default escape sequences
-            s = s.decode('utf8')
+            s = s.decode(self.app_encoding)
             s = s.encode('raw-unicode-escape')
             if self._use_gettext:
                 return '_(u"%s")' % s

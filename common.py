@@ -412,7 +412,7 @@ Dictionary of objects used to generate the code in a given language.
  - add_app(app_attrs, top_win_class)
  - ...
 
-@type: dict
+@type: dict[str, BaseLangCodeWriter]
 """
 
 
