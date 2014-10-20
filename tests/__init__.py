@@ -38,6 +38,13 @@ class WXGladeBaseTest(unittest.TestCase):
     The filename is the key and the content is a StringIO instance.
     """
 
+    orig_app_encoding = {}
+    """\
+    Original values for code generator app_encoding instance variable.
+
+    @see: L{codegen.BaseLangCodeWriter.app_encoding}
+    """
+
     orig_file_exists = None
     """\
     Reference to the original L{codegen.BaseLangCodeWriter._file_exists()}
@@ -145,6 +152,8 @@ class WXGladeBaseTest(unittest.TestCase):
         for lang in common.code_writers:
             self.orig_for_version[lang] = \
                 common.code_writers[lang].for_version
+            self.orig_app_encoding[lang] = \
+                common.code_writers[lang].app_encoding
 
     def tearDown(self):
         """\
@@ -167,6 +176,8 @@ class WXGladeBaseTest(unittest.TestCase):
         for lang in common.code_writers:
             common.code_writers[lang].for_version = \
                 self.orig_for_version[lang]
+            common.code_writers[lang].app_encoding = \
+                self.orig_app_encoding[lang]
 
     def _generate_code(self, language, document, filename):
         """\
