@@ -86,6 +86,13 @@ FILES2INCLUDE = [
 path is relative to REPO_DIR
 '''
 
+OPTIONALFILES = [
+    'RELEASE-VERSION',
+    ]
+'''\
+Optional files to include if they are existing.
+'''
+
 DIRS2INCLUDE = [
     ('codegen', '*.py'),
     ('docs', '*'),
@@ -166,6 +173,11 @@ if debug:
 # expand content of DIRS2INCLUDE and add them to FILES2INCLUDE
 for dir, pattern in DIRS2INCLUDE:
     FILES2INCLUDE.extend(rescursiveFilelist(dir, pattern))
+
+# add existing optional files to FILES2INCLUDE
+for fiename in OPTIONALFILES:
+    if os.path.exists(filename):
+        FILES2INCLUDE.append(filename)
 
 # generate a list of (DATA) files for the collection process
 files2collect = [ (entry, os.path.join(REPO_DIR, entry), 'DATA') for entry in FILES2INCLUDE]
