@@ -20,20 +20,26 @@ General:
   - ...
 
 Generated Code:
- - Use SetToolTip() instead of SetToolTipString() for wxPython 3.x
+ - Use SetToolTip() instead of SetToolTipString() for wxPython 3 und wxPerl 3
  - Use configurable indents instead of hard coded tabs in wxFrame code
    for Perl
  - ...
 
 Bugs:
-  - Fix escape sequences in Unicode strings were escaped twice Perl and Python
+  - Fix escape sequences in Unicode strings were escaped twice Perl and
+    Python
   - Wrong Lisp statement in wxHyperlinkCtrl and wxFrame
   - Prevent code generation from a template file by commandline invocation
   - Fix bug in generation of valid hash keys for Perl
   - Fix various issues during transformation from XRC into wxGlade 
   - Fix wrong conditions to generate application start code (sf bug #161)
-  - Don't convert first char of a XRC extraproperty to upper case (sf bug #163)
+  - Don't convert first char of a XRC extraproperty to upper case (sf
+    bug #163)
   - ...
+
+Deprecation
+ - In place modifications for generated source files will be removed in one
+   of the next releases
 
 Documentation:
   - ...
