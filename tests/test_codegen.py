@@ -1192,7 +1192,7 @@ class TestCodeGen(WXGladeBaseTest):
         @see: L{codegen.py_codegen.PythonCodeWriter.quote_str()}
         """
         details = {}
-        details[('utf8', 'python')] = [
+        details[('UTF-8', 'python')] = [
             (None, '""'),
             ('', '""'),
 
@@ -1215,8 +1215,10 @@ class TestCodeGen(WXGladeBaseTest):
             ('euro \xe2\x82\xac and tab \\\\t', '_(u"euro \\u20ac and tab \\\\\\\\t")'),
             ('euro \xe2\x82\xac and quoted newline \\\\n', '_(u"euro \u20ac and quoted newline \\\\\\\\n")'),
             ('euro \xe2\x82\xac and quoted tab \\\\t', '_(u"euro \u20ac and quoted tab \\\\\\\\t")'),
+
+            ('rom\xc3\xa2n\xc4\x83', '_(u"rom\\u00e2n\\u0103")')
         ]
-        details[('uft8', 'perl')] = [
+        details[('UTF-8', 'perl')] = [
             (None, '""'),
             ('', '""'),
 
@@ -1255,7 +1257,7 @@ class TestCodeGen(WXGladeBaseTest):
             (r'escaped tab \\t', r'(_"escaped tab \\\\t")'),
             (r'escaped double quote \"', '(_"escaped double quote \\\"")'),
         ]
-        details[('utf8', 'C++')] = [
+        details[('UTF-8', 'C++')] = [
             (None, 'wxEmptyString'),
             ('', 'wxEmptyString'),
 
@@ -1280,9 +1282,13 @@ class TestCodeGen(WXGladeBaseTest):
             ('euro \xe2\x82\xac and quoted tab \\\\t', '_("euro \xe2\x82\xac and quoted tab \\\\\\\\t")'),
         ]
         details[('ISO-8859-1', 'python')] = [
-            ('\xc4nderung', '_(u"\xc4nderung")'),
+            ('\xc4nderung', '_(u"\u00c4nderung")'),
 
         ]
+        details[('ISO-8859-1', 'perl')] = [
+            ('\xc4nderung', '_T("\N{U+00c4}nderung")'),
+
+            ]
         for encoding, language in details:
             codegen = common.code_writers.get(language)
             codegen.app_encoding = encoding
@@ -1293,6 +1299,14 @@ class TestCodeGen(WXGladeBaseTest):
                     formatted, ret,
                     '%s: Unexpected result got: "%s" expect: "%s"' % (
                         language, ret, formatted,))
+
+                if language in ['python', 'perl']:
+                    try:
+                        dummy = formatted.encode('ascii')
+                    except UnicodeDecodeError, e:
+                        self.fail('%s: ASCII string expected for "%s"' % (
+                            language, formatted))
+
 
     def test_is_supported(self):
         """\

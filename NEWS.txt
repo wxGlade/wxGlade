@@ -35,6 +35,7 @@ Bugs:
   - Fix wrong conditions to generate application start code (sf bug #161)
   - Don't convert first char of a XRC extraproperty to upper case (sf
     bug #163)
+  - Fix incomplete Unicode escaping
   - ...
 
 Deprecation

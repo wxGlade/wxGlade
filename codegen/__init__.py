@@ -2695,6 +2695,23 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         return code_lines
 
+    def _recode_x80_xff(self, s):
+        """\
+        Re-code characters in range 0x80-0xFF (Latin-1 Supplement - also
+        called C1 Controls and Latin-1 Supplement) from \\xXX to \\u00XX
+        """
+        assert isinstance(s, types.StringType)
+
+        def repl(matchobj):
+            dec = ord(matchobj.group(0))
+            if dec > 127:
+                return '\u00%x' % dec
+            return matchobj.group(0)
+
+        s = re.sub(r'[\x80-\xFF]+', repl, s)
+
+        return s
+
     def _source_warning(self, klass, msg, sub_obj):
         """\
         Format and add a warning message to the source code.
