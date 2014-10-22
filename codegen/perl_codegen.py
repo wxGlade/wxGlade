@@ -21,6 +21,7 @@ Like all other perl parts, based on the pre-existing python generators
 import os
 import os.path
 import re
+import types
 
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
@@ -589,18 +590,44 @@ unless(caller){
             return '%s->%s(Wx::Size->new(%s));\n' % (objname, method, size)
 
     def _quote_str(self, s):
+        """\
+        Escape all unicode characters to there unicode code points in form
+        of \uxxxx. The returned string is a pure ascii string.
+
+        Normal ascii characters like \n or \t won't be escaped.
+
+        @note: wxGlade don't handles file encoding well currently. Thereby
+               we escape all unicode characters.
+
+        @note: The string 's' is encoded with L{self.app_encoding} already.
+
+        @see: L{BaseLangCodeWriter._quote_str} for additional details
+        @see: L{_recode_x80_xff()}
+        """
         s = s.replace('$', r'\$')
         s = s.replace('@', r'\@')
+
+        # convert all strings to unicode first
+        if not isinstance(s, types.UnicodeType):
+            s = s.decode(self.app_encoding)
+
+        # check if it's pure ascii
         try:
-            dummy = unicode(s, 'ascii')
-        except UnicodeDecodeError:
-            # convert byte string to unicode, escape unicode characters
-            # "raw-unicode-escape" just escaped unicode characters and not
-            # default escape sequences
-            s = s.decode('utf8')
-            s = s.encode('raw-unicode-escape')
-            # convert Python style to Perl style
-            s = re.sub(r'\\u([0-9a-f]{4})\b', r'\\N{U+\1}', s)
+            dummy = s.encode('ascii')
+            if self._use_gettext:
+                return '_T("%s")' % s
+            else:
+                return '"%s"' % s
+        except UnicodeError:
+            pass
+
+        # convert unicode strings to pure ascii
+        # use "raw-unicode-escape" just escaped unicode characters and not
+        # default escape sequences
+        s = s.encode('raw-unicode-escape')
+        s = self._recode_x80_xff(s)
+        # convert Python style to Perl style
+        s = re.sub(r'\\u([0-9a-f]{4})', r'\\N{U+\1}', s)
 
         if self._use_gettext:
             return '_T("%s")' % s

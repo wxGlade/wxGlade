@@ -21,6 +21,7 @@ import os
 import os.path
 import random
 import re
+import types
 
 from codegen import BaseLangCodeWriter, \
                     BaseSourceFileContent, \
@@ -562,23 +563,43 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             return '%s.%s((%s))\n' % (objname, method, size)
 
     def _quote_str(self, s):
-        # string 's' is encoded with self.app_encoding already
+        """\
+        Escape all unicode characters to there unicode code points in form
+        of \uxxxx. The returned string is a pure ascii string.
+
+        Normal ascii characters like \n or \t won't be escaped.
+
+        @note: wxGlade don't handles file encoding well currently. Thereby
+               we escape all unicode characters.
+
+        @note: The string 's' is encoded with L{self.app_encoding} already.
+
+        @see: L{BaseLangCodeWriter._quote_str} for additional details
+        @see: L{_recode_x80_xff()}
+        """
+        # convert all strings to unicode first
+        if not isinstance(s, types.UnicodeType):
+            s = s.decode(self.app_encoding)
+
+        # check if it's pure ascii
         try:
-            dummy = unicode(s, 'ascii')
+            dummy = s.encode('ascii')
             if self._use_gettext:
                 return '_("%s")' % s
             else:
                 return '"%s"' % s
-        except UnicodeDecodeError:
-            # convert byte string to unicode, escape unicode characters
-            # "raw-unicode-escape" just escaped unicode characters and not
-            # default escape sequences
-            s = s.decode(self.app_encoding)
-            s = s.encode('raw-unicode-escape')
-            if self._use_gettext:
-                return '_(u"%s")' % s
-            else:
-                return 'u"%s"' % s
+        except UnicodeError:
+            pass
+
+        # convert unicode strings to pure ascii
+        # use "raw-unicode-escape" just escaped unicode characters and not
+        # default escape sequences
+        s = s.encode('raw-unicode-escape')
+        s = self._recode_x80_xff(s)
+        if self._use_gettext:
+            return '_(u"%s")' % s
+        else:
+            return 'u"%s"' % s
 
     def without_package(self, class_name):
         """\
