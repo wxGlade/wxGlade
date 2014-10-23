@@ -293,7 +293,7 @@ class Application(object):
         self.outpath_prop = DialogProperty(self, "output_path", panel,
                                            dialog, label=_('Output path'))
         # update wildcards and default extension in the dialog
-        self._update_dialog(self.outpath_prop.dialog, 'python')
+        self._update_wildcards(self.outpath_prop.dialog, 'python')
         self.outpath_prop.set_tooltip(
             _("Output file or directory")
             )
@@ -477,11 +477,9 @@ class Application(object):
         else:
             self.encoding = value
 
-    def set_language(self, value):
-        language = self.codewriters_prop.get_str_value()
-
+    def set_language(self, language):
         # update wildcards and default extension in the dialog
-        self._update_dialog(self.outpath_prop.dialog, language)
+        self._update_wildcards(self.outpath_prop.dialog, language)
 
         # check that the new language supports all the widgets in the tree
         if self.language != language:
@@ -782,9 +780,6 @@ class Application(object):
                 frame.Fit()
             else:
                 frame = FrameClass(None, -1, '')
-                # make sure we don't get a modal dialog...
-                s = frame.GetWindowStyleFlag()
-                frame.SetWindowStyleFlag(s)
 
             def on_close(event):
                 frame.Destroy()
@@ -853,7 +848,7 @@ class Application(object):
                 for c in common.app_tree.root.children:
                     check_rec(c)
 
-    def _update_dialog(self, dialog, language):
+    def _update_wildcards(self, dialog, language):
         """\
         Update wildcards and default extension in the generic file and
         directory dialog (L{FileDirDialog}).
