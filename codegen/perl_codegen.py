@@ -592,9 +592,9 @@ unless(caller){
     def _quote_str(self, s):
         """\
         Escape all unicode characters to there unicode code points in form
-        of \uxxxx. The returned string is a pure ascii string.
+        of \\uxxxx. The returned string is a pure ascii string.
 
-        Normal ascii characters like \n or \t won't be escaped.
+        Normal ascii characters like \\n or \\t won't be escaped.
 
         @note: wxGlade don't handles file encoding well currently. Thereby
                we escape all unicode characters.
