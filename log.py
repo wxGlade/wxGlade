@@ -30,6 +30,7 @@ import atexit
 import StringIO
 import datetime
 import inspect
+import locale
 import logging
 import logging.handlers
 import os
@@ -184,6 +185,9 @@ class ExceptionFormatter(logging.Formatter):
         func_name = None
         index = None
         lineno = None
+        loc_langcode = None
+        loc_encoding = None
+        loc_filesystem = None
         sio = StringIO.StringIO()
         stack_level = 0
         stack_list = []
@@ -199,17 +203,22 @@ class ExceptionFormatter(logging.Formatter):
                 wx_version = getattr(config, 'wx_version', 'not found')
                 platform = getattr(config, 'platform', 'not found')
                 app_version = getattr(config, 'version', 'not found')
+                loc_langcode, loc_encoding = locale.getlocale()
+                loc_filesystem = sys.getfilesystemencoding()
 
                 sio.write('An unexpected error occurred!\n')
                 sio.write('\n')
-                sio.write('Date and time:      %s\n' % now)
-                sio.write('Python version:     %s\n' % py_version)
-                sio.write('wxPython version:   %s\n' % wx_version)
-                sio.write('wxWidgets platform: %s\n' % platform)
-                sio.write('wxGlade version:    %s\n' % app_version)
+                sio.write('Date and time:       %s\n' % now)
+                sio.write('Python version:      %s\n' % py_version)
+                sio.write('wxPython version:    %s\n' % wx_version)
+                sio.write('wxWidgets platform:  %s\n' % platform)
+                sio.write('wxGlade version:     %s\n' % app_version)
+                sio.write('Language code:       %s\n' % loc_langcode)
+                sio.write('Encoding:            %s\n' % loc_encoding)
+                sio.write('Filesystem encoding: %s\n' % loc_filesystem)
                 sio.write('\n')
-                sio.write('Exception type:    %s\n' % exc_type)
-                sio.write('Exception details: %s\n' % exc_value)
+                sio.write('Exception type:      %s\n' % exc_type)
+                sio.write('Exception details:   %s\n' % exc_value)
                 sio.write('Application stack trace:\n')
 
                 # leave the exception handler if no traceback is available
@@ -298,6 +307,9 @@ class ExceptionFormatter(logging.Formatter):
             del func_name
             del index
             del lineno
+            del loc_encoding
+            del loc_filesystem
+            del loc_langcode
             del stack_level
             del stack_list
             del var
