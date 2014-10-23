@@ -530,18 +530,12 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         # Python has two indentation levels
         #  1st) for function declaration
         #  2nd) for function body
-        self.tmpl_func_set_properties = '\n' + \
-                              self.tabs(1) + 'def __set_properties(self):\n' + \
-                              '%(content)s' + \
-                              ''        
+        self.tmpl_func_set_properties = '\n' + self.tabs(1) + \
+                                        'def __set_properties(self):\n' + \
+                                        '%(content)s' + ''
 
         return BaseLangCodeWriter.generate_code_set_properties(
-            self,
-            builder,
-            code_obj,
-            is_new,
-            tab,
-            )
+            self, builder, code_obj, is_new, tab)
 
     def generate_code_size(self, obj):
         objname = self._get_code_name(obj)
@@ -565,9 +559,9 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
     def _quote_str(self, s):
         """\
         Escape all unicode characters to there unicode code points in form
-        of \uxxxx. The returned string is a pure ascii string.
+        of \\uxxxx. The returned string is a pure ascii string.
 
-        Normal ascii characters like \n or \t won't be escaped.
+        Normal ascii characters like \\n or \\t won't be escaped.
 
         @note: wxGlade don't handles file encoding well currently. Thereby
                we escape all unicode characters.

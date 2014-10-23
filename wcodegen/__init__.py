@@ -615,7 +615,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         """\
         Default widget style in wxWidget notation.
 
-        @type: str
+        @rtype: str
         @see: L{set_default_style}
         @see: L{prefix_style}
         """
