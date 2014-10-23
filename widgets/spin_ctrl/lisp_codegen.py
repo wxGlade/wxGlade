@@ -13,7 +13,6 @@ import wcodegen
 class LispSpinCtrlGenerator(wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(value)s ' \
            '-1 -1 -1 -1 %(style)s %(minValue)s %(maxValue)s %(value)s))\n'
-    default_style = 'wxSP_ARROW_KEYS'
     set_default_style = True
 
     def _prepare_tmpl_content(self, obj):

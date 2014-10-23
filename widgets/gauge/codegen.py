@@ -12,7 +12,6 @@ import wcodegen
 
 class PythonGaugeGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(range)s%(style)s)\n'
-    default_style = 'wxGA_HORIZONTAL'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -25,7 +24,6 @@ class PythonGaugeGenerator(wcodegen.PythonWidgetCodeWriter):
 class CppGaugeGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
            '%(range)s%(style)s);\n'
-    default_style = 'wxGA_HORIZONTAL'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)

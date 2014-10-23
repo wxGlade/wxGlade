@@ -14,7 +14,6 @@ from ChoicesCodeHandler import *
 class PythonChoiceGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, ' \
            'choices=[%(choices)s]%(style)s)\n'
-    has_choice = True
 
 # end of class PythonChoiceGenerator
 
@@ -24,7 +23,6 @@ class CppChoiceGenerator(wcodegen.CppWidgetCodeWriter):
            'wxDefaultPosition, wxDefaultSize, %(choices_len)s, ' \
            '%(name)s_choices%(style)s);\n'
     prefix_style = False
-    has_choice = True
 
 # end of class CppChoiceGenerator
 

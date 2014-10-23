@@ -15,9 +15,8 @@ from ChoicesCodeHandler import *
 class PythonComboBoxGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, ' \
            'choices=[%(choices)s]%(style)s)\n'
-    default_style = 'wxCB_DROPDOWN'
+
     set_default_style = True
-    has_choice = True
 
 # end of class PythonComboBoxGenerator
 
@@ -27,8 +26,6 @@ class CppComboBoxGenerator(wcodegen.CppWidgetCodeWriter):
            'wxDefaultPosition, wxDefaultSize, %(choices_len)s, ' \
            '%(name)s_choices, %(style)s);\n'
 
-    default_style = 'wxCB_DROPDOWN'
-    has_choice = True
     prefix_style = False
     set_default_style = True
 

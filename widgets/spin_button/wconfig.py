@@ -23,6 +23,7 @@ config = {
         },
     },
     'box_label': _('Style'),
+    'default_style': 'wxSP_HORIZONTAL',
     'style_list': ['wxSP_HORIZONTAL', 'wxSP_VERTICAL', 'wxSP_ARROW_KEYS',
                    'wxSP_WRAP'],
 }

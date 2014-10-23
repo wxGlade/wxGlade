@@ -12,7 +12,6 @@ import wcodegen
 
 class PythonSpinButtonGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s %(style)s)\n'
-    default_style = 'wxSP_HORIZONTAL'
 
 # end of class PythonSpinButtonGenerator
 
@@ -20,7 +19,6 @@ class PythonSpinButtonGenerator(wcodegen.PythonWidgetCodeWriter):
 class CppSpinButtonGenerator(wcodegen.CppWidgetCodeWriter):
     extra_headers = ['<wx/spinbutt.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
-    default_style = 'wxSP_HORIZONTAL'
 
     def get_events(self, obj):
         return self.codegen.get_events_with_type(obj, 'wxSpinEvent')

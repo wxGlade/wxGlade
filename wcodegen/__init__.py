@@ -363,15 +363,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @type klass: str | None
     """
 
-    default_style = None
-    """\
-    Default widget style in wxWidget notation.
-
-    @type: str | None
-    @see: L{set_default_style}
-    @see: L{prefix_style}
-    """
-
     extra_headers = []
     """\
     List of extra header file, in the form <header.h> or "header.h" or an
@@ -442,14 +433,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @see: L{tmpl}
     @see: L{tmpl_before}
     @see: L{tmpl_props}
-    """
-
-    has_choice = False
-    """\
-    Flag to handle widgets with choices
-
-    @type: bool
-    @see: L{_prepare_choice()}
     """
 
     has_selection = False
@@ -628,15 +611,33 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         return
 
+    def _get_default_style(self):
+        """\
+        Default widget style in wxWidget notation.
+
+        @type: str
+        @see: L{set_default_style}
+        @see: L{prefix_style}
+        """
+        try:
+            name = self.config['default_style']
+        except (AttributeError, KeyError):
+            name = ''
+        return name
+
+    default_style = property(_get_default_style)
+
     def _prepare_choice(self, obj):
         """\
-        Prepare choices for widgets with choices
+        Prepare content for widgets with choices.
+
+        The content of choices will be generated automatically if the
+        template in L{self.tmpl} contains '%(choices)s' or '%(choices_len)s'
 
         @param obj: Instance of L{xml_parse.CodeObject}
 
         @rtype: dict
         @see: L{get_code()}
-        @see: L{has_choice}
         """
         choices = obj.properties.get('choices', [])
         choices = ', '.join([self.codegen.quote_str(c) for c in choices])
@@ -670,7 +671,9 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         self._prepare_tmpl_content(obj)
 
-        if self.has_choice:
+        # generate choices automatically if the template contains
+        # '%(choices)s' or '%(choices_len)s'
+        if '%(choices)s' in self.tmpl or '%(choices_len)s' in self.tmpl:
             self._prepare_choice(obj)
 
         if self.tmpl_dict['id_name']:

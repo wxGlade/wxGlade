@@ -13,7 +13,6 @@ import wcodegen
 
 class PerlListCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s%(style)s);\n'
-    default_style = 'wxLC_ICON'
 
 # end of class PerlListCtrlGenerator
 

@@ -13,7 +13,6 @@ import wcodegen
 class LispSliderGenerator(wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(value)s ' \
            '%(minValue)s %(maxValue)s -1 -1 -1 -1 %(style)s))\n'
-    default_style = 'wxSL_HORIZONTAL'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)

@@ -15,9 +15,9 @@ class PythonRadioBoxGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
            'choices=[%(choices)s], majorDimension=%(majorDimension)s' \
            '%(style)s)\n'
+
     default_style = 'wxRA_SPECIFY_COLS'
     set_default_style = True
-    has_choice = True
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -31,8 +31,8 @@ class CppRadioBoxGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
            'wxDefaultPosition, wxDefaultSize, %(choices_len)s, ' \
            '%(name)s_choices, %(majorDimension)s, %(style)s);\n'
+
     default_style = 'wxRA_SPECIFY_COLS'
-    has_choice = True
     prefix_style = False
     set_default_style = True
 

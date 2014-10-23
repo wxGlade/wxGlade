@@ -311,6 +311,8 @@ Elements:
 
   - I{box_label} - Title of the widget style box
 
+  - I{default_style} - Default style for new created widgets
+
   - I{style_list} - List of all styles to show within the style box
 
 Style attributes:

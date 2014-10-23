@@ -16,8 +16,6 @@ class PerlComboBoxGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, "", ' \
            'wxDefaultPosition, wxDefaultSize, [%(choices)s], %(style)s);\n'
 
-    default_style = 'wxCB_DROPDOWN'
-    has_choice = True
     prefix_style = False
     set_default_style = True
 

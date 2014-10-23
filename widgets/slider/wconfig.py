@@ -55,6 +55,7 @@ config = {
         },
     },
     'box_label': _('Style'),
+    'default_style': 'wxSL_HORIZONTAL',
     'style_list': ['wxSL_HORIZONTAL', 'wxSL_VERTICAL',
                    'wxSL_AUTOTICKS',
                    'wxSL_MIN_MAX_LABELS', 'wxSL_VALUE_LABEL',

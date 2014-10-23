@@ -12,7 +12,6 @@ import wcodegen
 
 class PythonTreeCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
-    default_style = 'wxTR_HAS_BUTTONS'
 
 # end of class PythonTreeCtrlGenerator
 
@@ -20,7 +19,6 @@ class PythonTreeCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 class CppTreeCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     extra_headers = ['<wx/treectrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
-    default_style = 'wxTR_HAS_BUTTONS'
 
 # end of class CppTreeCtrlGenerator
 

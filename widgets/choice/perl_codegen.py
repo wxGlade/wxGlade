@@ -15,7 +15,6 @@ from ChoicesCodeHandler import *
 class PerlChoiceGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
            'wxDefaultPosition, wxDefaultSize, [%(choices)s], %(style)s);\n'
-    has_choice = True
 
 # end of class PerlChoiceGenerator
 

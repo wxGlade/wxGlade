@@ -13,7 +13,6 @@ import wcodegen
 
 class PerlStaticLineGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s%(style)s);\n'
-    default_style = 'wxLI_HORIZONTAL'
 
 # end of class PerlStaticLineGenerator
 
