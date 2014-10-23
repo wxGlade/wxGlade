@@ -15,7 +15,6 @@ class LispGaugeGenerator(wcodegen.LispWidgetCodeWriter):
 
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
            '%(range)s -1 -1 -1 -1 %(style)s))\n'
-    default_style = 'wxGA_HORIZONTAL'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)

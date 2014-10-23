@@ -130,6 +130,7 @@ config = {
         },
     },
     'box_label': _('Style'),
+    'default_style': 'wxSP_ARROW_KEYS',
     'style_list': ['wxSP_ARROW_KEYS', 'wxSP_WRAP',
                    'wxTE_PROCESS_ENTER', 'wxTE_PROCESS_TAB',
                    'wxTE_MULTILINE', 'wxTE_PASSWORD', 'wxTE_READONLY',

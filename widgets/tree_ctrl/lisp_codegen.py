@@ -13,7 +13,6 @@ import wcodegen
 class LispTreeCtrlGenerator(wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
            '-1 -1 -1 -1 %(style)s))\n'
-    default_style = 'wxTR_HAS_BUTTONS'
 
 # end of class LispTreeCtrlGenerator
 

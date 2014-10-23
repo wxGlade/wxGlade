@@ -15,8 +15,8 @@ class PerlRadioBoxGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s, ' \
            'wxDefaultPosition, wxDefaultSize, [%(choices)s], ' \
            '%(majorDimension)s, %(style)s);\n'
+
     default_style = 'wxRA_SPECIFY_COLS'
-    has_choice = True
     prefix_style = False
     set_default_style = True
 

@@ -12,7 +12,6 @@ import wcodegen
 
 class PerlSpinButtonGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s,%(style)s);\n'
-    default_style = 'wxSP_HORIZONTAL'
 
 # end of class PerlSpinButtonGenerator
 

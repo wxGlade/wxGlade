@@ -15,7 +15,6 @@ from ChoicesCodeHandler import *
 class LispListBoxGenerator(wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s -1 -1 -1 ' \
            '-1 %(choices_len)s (vector %(choices)s) %(style)s))\n'
-    has_choice = True
 
 # end of class LispListBoxGenerator
 

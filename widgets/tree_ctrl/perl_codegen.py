@@ -12,7 +12,6 @@ import wcodegen
 
 class PerlTreeCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s%(style)s);\n'
-    default_style = 'wxTR_HAS_BUTTONS'
 
 # end of class PerlTreeCtrlGenerator
 

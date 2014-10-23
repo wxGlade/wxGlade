@@ -12,7 +12,6 @@ import wcodegen
 
 class PythonListCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
-    default_style = 'wxLC_ICON'
 
 # end of class PythonListCtrlGenerator
 
@@ -20,7 +19,6 @@ class PythonListCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 class CppListCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     extra_headers = ['<wx/listctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
-    default_style = 'wxLC_ICON'
 
     def get_events(self, obj):
         return self.codegen.get_events_with_type(obj, 'wxListEvent')

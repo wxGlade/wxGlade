@@ -13,7 +13,6 @@ import wcodegen
 class PythonSpinCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, "%(value)s", ' \
            'min=%(minValue)s, max=%(maxValue)s%(style)s)\n'
-    default_style = 'wxSP_ARROW_KEYS'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -36,7 +35,6 @@ class CppSpinCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxT("%(value)s"), ' \
            'wxDefaultPosition, wxDefaultSize, %(style)s, %(minValue)s, ' \
            '%(maxValue)s);\n'
-    default_style = 'wxSP_ARROW_KEYS'
     prefix_style = False
     set_default_style = True
 

@@ -14,7 +14,6 @@ from ChoicesCodeHandler import *
 class PythonListBoxGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, ' \
            'choices=[%(choices)s]%(style)s)\n'
-    has_choice = True
 
 # end of class PythonListBoxGenerator
 
@@ -23,7 +22,6 @@ class CppListBoxGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
            'wxDefaultPosition, wxDefaultSize, %(choices_len)s, ' \
            '%(name)s_choices%(style)s);\n'
-    has_choice = True
 
 # end of class CppListBoxGenerator
 

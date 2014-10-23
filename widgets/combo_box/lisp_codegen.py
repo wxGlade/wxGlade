@@ -16,8 +16,6 @@ class LispComboBoxGenerator(wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s "" -1 -1 -1 ' \
            '-1 %(choices_len)s (vector %(choices)s) %(style)s))\n'
 
-    default_style = 'wxCB_DROPDOWN'
-    has_choice = True
     set_default_style = True
 
 # end of class LispComboBoxGenerator

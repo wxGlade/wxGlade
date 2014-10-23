@@ -25,6 +25,7 @@ config = {
         },
     },
     'box_label': _('Style'),
+    'default_style': 'wxGA_HORIZONTAL',
     'style_list': ['wxGA_HORIZONTAL', 'wxGA_VERTICAL', 'wxGA_PROGRESSBAR',
                    'wxGA_SMOOTH'],
 }

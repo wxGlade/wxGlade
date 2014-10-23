@@ -12,7 +12,6 @@ import wcodegen
 
 class PythonStaticLineGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
-    default_style = 'wxLI_HORIZONTAL'
 
 # end of class PythonStaticLineGenerator
 
@@ -20,7 +19,6 @@ class PythonStaticLineGenerator(wcodegen.PythonWidgetCodeWriter):
 class CppStaticLineGenerator(wcodegen.CppWidgetCodeWriter):
     extra_headers = ['<wx/statline.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
-    default_style = 'wxLI_HORIZONTAL'
 
 # end of class CppStaticLineGenerator
 

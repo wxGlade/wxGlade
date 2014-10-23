@@ -14,7 +14,6 @@ class PerlSpinCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, "%(value)s", ' \
            'wxDefaultPosition, wxDefaultSize, %(style)s, %(minValue)s, ' \
            '%(maxValue)s, %(value)s);\n'
-    default_style = 'wxSP_ARROW_KEYS'
     prefix_style = False
     set_default_style = True
 

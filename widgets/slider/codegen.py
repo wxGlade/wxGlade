@@ -13,7 +13,6 @@ import wcodegen
 class PythonSliderGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(value)s, ' \
            '%(minValue)s, %(maxValue)s%(style)s)\n'
-    default_style = 'wxSL_HORIZONTAL'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -33,7 +32,6 @@ class PythonSliderGenerator(wcodegen.PythonWidgetCodeWriter):
 class CppSliderGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s, ' \
            '%(minValue)s, %(maxValue)s%(style)s);\n'
-    default_style = 'wxSL_HORIZONTAL'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)

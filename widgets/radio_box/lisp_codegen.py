@@ -15,8 +15,8 @@ class LispRadioBoxGenerator(wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(label)s ' \
            '-1 -1 -1 -1 %(choices_len)s (vector %(choices)s) ' \
            '%(majorDimension)s %(style)s))\n'
+
     default_style = 'wxRA_SPECIFY_COLS'
-    has_choice = True
     set_default_style = True
 
     def _prepare_tmpl_content(self, obj):

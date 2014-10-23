@@ -85,6 +85,7 @@ config = {
         },
     },
     'box_label': _('Style'),
+    'default_style': 'wxTR_HAS_BUTTONS',
     'style_list': ['wxTR_EDIT_LABELS', 'wxTR_NO_BUTTONS', 'wxTR_HAS_BUTTONS',
                    'wxTR_TWIST_BUTTONS', 'wxTR_NO_LINES',
                    'wxTR_FULL_ROW_HIGHLIGHT', 'wxTR_LINES_AT_ROOT',

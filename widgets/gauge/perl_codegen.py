@@ -14,7 +14,6 @@ import wcodegen
 class PerlGaugeGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
            '%(range)s%(style)s);\n'
-    default_style = 'wxGA_HORIZONTAL'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
