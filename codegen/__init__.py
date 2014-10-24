@@ -1038,7 +1038,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 )
 
             tags = re.findall(
-                '<%swxGlade event_handlers \w+>' % self.nonce,
+                r'<%swxGlade event_handlers \w+>' % self.nonce,
                 self.previous_source.content
                 )
             for tag in tags:
@@ -2378,7 +2378,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @rtype:  str
         """
         tags = re.findall(
-            '(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % self.nonce,
+            r'(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % self.nonce,
             source
             )
         for tag in tags:
