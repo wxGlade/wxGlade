@@ -10,6 +10,7 @@ import logging
 import os
 import random
 import re
+import types
 import wx
 
 from widget_properties import *
@@ -477,7 +478,22 @@ class Application(object):
         else:
             self.encoding = value
 
-    def set_language(self, language):
+    def set_language(self, value):
+        """\
+        Set code generator language and adapt corresponding settings like
+        file dialog wild cards.
+
+        @type value: str | int
+        """
+        assert isinstance(value, types.StringTypes + (types.IntType, ))
+
+        if isinstance(value, types.IntType):
+            self.codewriters_prop.set_value(value)
+            language = self.codewriters_prop.get_str_value()
+        else:
+            language = value
+            self.codewriters_prop.set_value(value)
+
         # update wildcards and default extension in the dialog
         self._update_wildcards(self.outpath_prop.dialog, language)
 
@@ -496,7 +512,7 @@ class Application(object):
                       'supported.\n'
                       'Set version to "2.8" instead.') % self.for_version,
                     _("Warning"),
-                     wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION
+                    wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION
                     )
             # RadioProperty
             self.for_version_prop.enable_item('3.0', False)
@@ -504,6 +520,11 @@ class Application(object):
             self.for_version_prop.enable_item('3.0', True)
 
     def get_language(self):
+        """\
+        Return the selected code writer language
+
+        @rtype: str
+        """
         return self.language
 
     def _get_saved(self):
