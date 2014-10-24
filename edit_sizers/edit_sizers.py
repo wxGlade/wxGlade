@@ -973,7 +973,7 @@ class SizerBase(Sizer):
             except AttributeError:
                 self._logger.exception(_('Internal Error'))
             self.property_window.SetTitle(_('Properties - <%s>') % self.name)
-    set_name_pattern = re.compile('^[a-zA-Z_]+[\w0-9]*$')
+    set_name_pattern = re.compile(r'^[a-zA-Z_]+[\w0-9]*$')
             
     def __getitem__(self, value):
         return self.access_functions[value]
@@ -993,7 +993,8 @@ class SizerBase(Sizer):
         child = sizer_tmp.GetChildren()[0]
         #w = wxPyTypeCast(child.GetWindow(), "wxWindow")
         w = child.GetWindow()
-        if w is self.notebook: return
+        if w is self.notebook:
+            return
         try:
             index = -1
             title = w.GetPageText(w.GetSelection())

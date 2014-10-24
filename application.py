@@ -431,7 +431,7 @@ class Application(object):
             self.name_prop.set_value(self.name)
         else:
             self.name = value
-    set_name_pattern = re.compile('^[a-zA-Z]+[\w0-9-]*$')
+    set_name_pattern = re.compile(r'^[a-zA-Z]+[\w0-9-]*$')
 
     def set_klass(self, value):
         value = "%s" % value
@@ -439,7 +439,7 @@ class Application(object):
             self.klass_prop.set_value(self.klass)
         else:
             self.klass = value
-    set_klass_pattern = re.compile('^[a-zA-Z]+[\w:.0-9-]*$')
+    set_klass_pattern = re.compile(r'^[a-zA-Z]+[\w:.0-9-]*$')
 
     def get_output_path(self):
         return os.path.normpath(os.path.expanduser(self.output_path))

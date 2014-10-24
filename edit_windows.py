@@ -263,7 +263,7 @@ constructor will be used. You should probably not use this if \
                 common.app_tree.refresh_name(self.node)
             except AttributeError:
                 pass
-    set_klass_pattern = re.compile('^[a-zA-Z_]+[\w:.0-9-]*$')
+    set_klass_pattern = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
 
     def popup_menu(self, event):
         if self.widget:

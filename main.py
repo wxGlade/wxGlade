@@ -887,9 +887,10 @@ class wxGladeFrame(wx.Frame):
         show the wxGlade user manual
         """
         if wx.Platform == "__WXMAC__":
-            os.system('open -a Help\ Viewer.app %s' % config.tutorial_file)
+            os.system(r'open -a Help\ Viewer.app %s' % config.tutorial_file)
         else:
-            import webbrowser, threading
+            import webbrowser
+            import threading
             # ALB 2004-08-15: why did this block the program?????
             # (at least on linux - GTK)
             def go():
@@ -899,8 +900,8 @@ class wxGladeFrame(wx.Frame):
             t.start()
 
     def show_and_raise(self):
-        self.frame2.Show()#self.GetMenuBar().IsChecked(self.PROPS_ID))
-        self.tree_frame.Show()#self.GetMenuBar().IsChecked(self.TREE_ID))
+        self.frame2.Show()  #self.GetMenuBar().IsChecked(self.PROPS_ID))
+        self.tree_frame.Show()  #self.GetMenuBar().IsChecked(self.TREE_ID))
         self.frame2.Raise()
         self.tree_frame.Raise()
         self.Raise()
@@ -915,11 +916,11 @@ class wxGladeFrame(wx.Frame):
         if not self.ask_save():
             return
         
-        infilename = misc.FileSelector(_("Import file"),
-                                   wildcard="XRC files (*.xrc)"
-                                   "|*.xrc|All files|*",
-                                   flags=wx.OPEN|wx.FILE_MUST_EXIST,
-                                   default_path=self.cur_dir)
+        infilename = misc.FileSelector(
+            _("Import file"),
+            wildcard="XRC files (*.xrc)" "|*.xrc|All files|*",
+            flags=wx.OPEN | wx.FILE_MUST_EXIST,
+            default_path=self.cur_dir)
         if infilename:
             ibuffer = StringIO.StringIO()
             try:

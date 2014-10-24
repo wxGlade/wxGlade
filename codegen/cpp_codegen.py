@@ -619,7 +619,7 @@ bool MyApp::OnInit()
             # source: this may happen if we're not generating multiple files,
             # and one of the container class names is changed
             tags = re.findall(
-                '(<%swxGlade replace ([a-zA-Z_]*\w*) (\w+)>)' % self.nonce,
+                r'(<%swxGlade replace ([a-zA-Z_]*\w*) (\w+)>)' % self.nonce,
                 header_content
                 )
             for tag in tags:
@@ -643,11 +643,11 @@ bool MyApp::OnInit()
                 )
 
             # ALB 2004-12-08
-            tags = re.findall('<%swxGlade event_handlers \w+>' % self.nonce,
+            tags = re.findall(r'<%swxGlade event_handlers \w+>' % self.nonce,
                               header_content)
             for tag in tags:
                 header_content = header_content.replace(tag, "")
-            tags = re.findall('<%swxGlade add \w+ event_handlers>' % self.nonce,
+            tags = re.findall(r'<%swxGlade add \w+ event_handlers>' % self.nonce,
                               source_content)
             for tag in tags:
                 source_content = source_content.replace(tag, "")
