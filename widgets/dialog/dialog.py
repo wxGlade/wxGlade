@@ -39,13 +39,13 @@ class EditDialog(TopLevelBase, EditStylesMixin):
         self.access_functions['icon'] = (self.get_icon, self.set_icon)
         prop['icon'] = FileDialogProperty(self, 'icon', None,
                                           style=wx.OPEN|wx.FILE_MUST_EXIST,
-                                          can_disable=True, label=_("icon"))
+                                          can_disable=True, label=_("Icon"))
         # centered property
         self.centered = False
         self.access_functions['centered'] = (self.get_centered,
                                              self.set_centered)
         prop['centered'] = CheckBoxProperty(self, 'centered', None,
-                                            label=_("centered"))
+                                            label=_("Centred"))
         # size hints property
         self.sizehints = False
         self.access_functions['sizehints'] = (self.get_sizehints,

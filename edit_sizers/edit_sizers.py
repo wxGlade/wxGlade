@@ -1002,7 +1002,7 @@ class SizerBase(Sizer):
                     index = i
                     break
         except AttributeError:
-            #self._logger.exception(_('Internel Error'))
+            #self._logger.exception(_('Internal Error'))
             index = -1
         w.Hide()
         if 0 <= index < self.notebook.GetPageCount():
@@ -1023,7 +1023,7 @@ class SizerBase(Sizer):
             self._btn.SetFocus()
         except AttributeError:
             pass
-        
+
     def fit_parent(self, *args):
         """\
         Tell the sizer to resize the window to match the sizer's minimal size
@@ -1032,7 +1032,7 @@ class SizerBase(Sizer):
             self.widget.Fit(self.window.widget)
             #self.widget.SetSizeHints(self.window.widget)
             self.window.widget.Layout()
-    
+
     def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None,
                  force_layout=True):
         """\
@@ -1047,7 +1047,7 @@ class SizerBase(Sizer):
         try:
             old_child = self.children[pos]
             if isinstance(old_child.item, SizerSlot):
-                old_child.item.delete(False)            
+                old_child.item.delete(False)
             self.children[pos] = SizerItem(item, pos, option, flag, border,
                                            size)
         except IndexError: # this shouldn't happen!
@@ -1063,7 +1063,7 @@ class SizerBase(Sizer):
 
         self._add_item_widget(item, pos, option, flag, border, size,
                               force_layout)
-        
+
     def _add_item_widget(self, item, pos, option, flag, border, size,
                          force_layout):
         if not self.widget: return # nothing more to do
@@ -1075,7 +1075,7 @@ class SizerBase(Sizer):
             # I have to set wxADJUST_MINSIZE to handle a bug that I'm not
             # able to detect (yet): if the width or height of a widget is -1,
             # the layout is messed up!
-            
+
             self.widget.Add(item.widget, option, flag, border)
 
             if size: w, h = size
@@ -1091,7 +1091,7 @@ class SizerBase(Sizer):
             w = elem.GetWindow()
             w.SetContainingSizer(None)
             w.Destroy()
-                
+
         try: # if the item was a window, set its size to a reasonable value
 ##         if elem.IsWindow():
             if size: w, h = size
@@ -1131,7 +1131,7 @@ class SizerBase(Sizer):
         item.SetSizer(notebook_sizer)
         if force_layout:
             self.layout()
-       
+
     def set_item(self, pos, option=None, flag=None, border=None, size=None,
                  force_layout=True):
         """\
@@ -1157,7 +1157,7 @@ class SizerBase(Sizer):
 
     def _set_item_widget(self, pos, option, flag, border, size, force_layout):
         if not self.widget: return
-        
+
         try:
             elem = self.widget.GetChildren()[pos]
         except IndexError:
@@ -1185,7 +1185,7 @@ class SizerBase(Sizer):
             self.widget.InsertItem(pos, newelem)
             #self.children[pos] = newelem
             self.widget.Remove(pos+1)
-            
+
         if force_layout:
             self.layout(True)
             #try: self.sizer.Layout()
@@ -1373,7 +1373,7 @@ class SizerBase(Sizer):
     def refresh(self, *args):
         # this will be self.widget.Refresh
         for c in self.children:
-            if c.item.widget: 
+            if c.item.widget:
                 try:
                     c.item.widget.Refresh()
                 except AttributeError:
@@ -1441,7 +1441,7 @@ class SizerBase(Sizer):
 
     def is_visible(self):
         return self.window.is_visible()
-            
+
     def clipboard_copy(self, *args):
         """\
         returns a copy of self to be inserted in the clipboard
@@ -1458,7 +1458,7 @@ class SizerBase(Sizer):
     def post_load(self):
         """\
         Called after the loading of an app from a XML file, before showing
-        the hierarchy of widget for the first time. 
+        the hierarchy of widget for the first time.
         This is used only for container widgets, to adjust their size
         appropriately.
         """
@@ -1510,7 +1510,7 @@ class EditBoxSizer(SizerBase):
         for i in range(1, elements+1):
             tmp = SizerSlot(self.window, self, i)
             self.children.append(SizerItem(tmp, i, 1, wx.EXPAND))
-        
+
         self.orient = orient
 
     def create_widget(self):
@@ -1555,7 +1555,7 @@ class EditBoxSizer(SizerBase):
         od = {wx.HORIZONTAL: 'wxHORIZONTAL',
               wx.VERTICAL: 'wxVERTICAL'}
         return od.get(self.orient)
-    
+
     def set_orient(self, value):
         od = {'wxHORIZONTAL': wx.HORIZONTAL,
               'wxVERTICAL': wx.VERTICAL}
@@ -1575,7 +1575,7 @@ class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
         wx.StaticBoxSizer.SetItemMinSize(self, item, w, h)
 
 # end of class wxGladeStaticBoxSizer
-    
+
 
 class EditStaticBoxSizer(SizerBase):
     """\
@@ -1670,12 +1670,12 @@ class EditStaticBoxSizer(SizerBase):
     def delete(self):
         if self.widget: self.widget.GetStaticBox().Destroy()
         SizerBase.delete(self)
-        
+
     def get_orient(self):
         od = { wx.HORIZONTAL: 'wxHORIZONTAL',
                wx.VERTICAL: 'wxVERTICAL' }
         return od.get(self.orient)
-    
+
     def set_orient(self, value):
         od = { 'wxHORIZONTAL': wx.HORIZONTAL,
                'wxVERTICAL': wx.VERTICAL }
@@ -1701,13 +1701,13 @@ class CustomSizer(wx.BoxSizer):
 
     def GetBestSize(self):
         return self._grid.GetMinSize()
-    
+
     def Add(self, *args, **kwds):
         self._grid.Add(*args, **kwds)
-        
+
     def Insert(self, pos, *args, **kwds):
         self._grid.Insert(pos-1, *args, **kwds)
-        
+
     def Remove(self, *args, **kwds):
         try:
             pos = int(args[0])-1
@@ -1724,7 +1724,7 @@ class CustomSizer(wx.BoxSizer):
             self._grid.Detach(pos)
         except TypeError:
             self._grid.Detach(pos_or_obj)
-        
+
     def SetItemMinSize(self, item, w, h): #*args, **kwds):
         try:
             w2, h2 = item.GetBestSize()
@@ -1826,10 +1826,10 @@ class GridSizerBase(SizerBase):
         self.access_functions['cols'] = (self.get_cols, self.set_cols)
         self.access_functions['hgap'] = (self.get_hgap, self.set_hgap)
         self.access_functions['vgap'] = (self.get_vgap, self.set_vgap)
-        props = { 'rows': SpinProperty(self, 'rows', None, label=_("rows")),
-                  'cols': SpinProperty(self, 'cols', None, label=_("cols")),
-                  'hgap': SpinProperty(self, 'hgap', None, label=_("hgap")),
-                  'vgap': SpinProperty(self, 'vgap', None, label=_("vgap")) }
+        props = {'rows': SpinProperty(self, 'rows', None, label=_("rows")),
+                 'cols': SpinProperty(self, 'cols', None, label=_("cols")),
+                 'hgap': SpinProperty(self, 'hgap', None, label=_("hgap")),
+                 'vgap': SpinProperty(self, 'vgap', None, label=_("vgap"))}
         props['rows'].set_tooltip(_('Numbers of sizer rows'))
         props['cols'].set_tooltip(_('Numbers of sizer columns'))
         props['vgap'].set_tooltip(

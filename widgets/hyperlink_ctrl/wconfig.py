@@ -16,7 +16,7 @@ config = {
             'desc': _('Align the text to the right.'),
         },
         'wxHL_ALIGN_CENTRE': {
-            'desc': _('Center the text (horizontally).'),
+            'desc': _('Centre the text (horizontally).'),
         },
         'wxHL_CONTEXTMENU': {
             'desc': _('Pop up a context menu when the hyperlink is '

@@ -1,5 +1,5 @@
 """\
-Pperl generator functions for wxDialog objects
+Perl generator functions for wxDialog objects
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
 @copyright: 2014 Carsten Grohmann

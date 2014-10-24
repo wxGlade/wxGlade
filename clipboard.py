@@ -16,7 +16,7 @@ _widget_data_format = wx.CustomDataFormat("wxglade_widget")
 
 class _WidgetDataObject(wx.CustomDataObject):
     """\
-    Object representig a widget in the clipboard.
+    Object representing a widget in the clipboard.
     """
     def __init__(self, *args):
         wx.CustomDataObject.__init__(self, _widget_data_format)

@@ -231,7 +231,7 @@
                                 <border>5</border>
                                 <option>0</option>
                                 <object class="wxCheckBox" name="log_debug_info" base="EditCheckBox">
-                                    <label>Log additional debug infomation</label>
+                                    <label>Log additional debug information</label>
                                     <tooltip>Write additional debug information to the log file.</tooltip>
                                 </object>
                             </object>

@@ -462,7 +462,7 @@ class MenuItemDialog(wx.Dialog):
             else: break
         if i < self.menu_items.GetItemCount():
             # _do_move_item works with selected_index, so we must assing to
-            # it the rigth value before the call
+            # it the right value before the call
             #self.selected_index = i
             self.selected_index = self._do_move_item(event, i, True)
             # fix bug 698071

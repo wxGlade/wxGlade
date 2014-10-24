@@ -56,7 +56,7 @@ class PanelBase(EditStylesMixin):
         self.access_functions['scroll_rate'] = (self.get_scroll_rate,
                                                 self.set_scroll_rate)
         self.properties['scroll_rate'] = TextProperty(
-            self, 'scroll_rate', can_disable=True, label=_("scroll_rate"))
+            self, 'scroll_rate', can_disable=True, label=_("Scroll rate"))
 
     def finish_widget_creation(self):
         super(PanelBase, self).finish_widget_creation(
@@ -66,10 +66,10 @@ class PanelBase(EditStylesMixin):
         else:
             self.widget.SetScrollRate(*self.scroll_rate)
         # this must be done here since ManagedBase.finish_widget_creation
-        # normally sets EVT_LEFT_DOWN to update_wiew
+        # normally sets EVT_LEFT_DOWN to update_view
         if not self.widget.Disconnect(-1, -1, wx.wxEVT_LEFT_DOWN):
             self._logger.warning(
-                _("EditPanel: Unable to disconnect the event hanlder")
+                _("EditPanel: Unable to disconnect the event handler")
                 )
         wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
 
@@ -95,8 +95,8 @@ class PanelBase(EditStylesMixin):
         label = self.properties['no_custom_class'].cb
         label.SetToolTip(
             wx.ToolTip(_('If this is a custom class, setting this property '
-                       'prevents wxGlade\nfrom generating the class definition'
-                       ' code')))
+                       'prevents wxGlade\nfrom generating the class '
+                       'definition code')))
         self.properties['style'].display(panel)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         self.properties['scrollable'].display(panel)

@@ -33,7 +33,7 @@ class SourceFileContent(BaseSourceFileContent):
         r';;;\s*'                               # comment sign
         r'begin\s+wxGlade:\s*'                  # "begin wxGlade:" statement and tailing spaces
         r'(?P<classname>[a-zA-Z_]+\w*)??'       # class or function name (non-greedy)
-        r'[.]?'                                 # separator between class and function / block (non-gready)
+        r'[.]?'                                 # separator between class and function / block (non-greedy)
         r'(?P<block>\w+)'                       # function / block name
         r'\s*$'                                 # tailing spaces
         )

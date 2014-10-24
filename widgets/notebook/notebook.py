@@ -177,8 +177,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     """\
     @ivar: Free number for pane names. This number is is continuously.
 
-    Each pane get an own number. It's very useful for labelung. Deleting
-    oanes won't decrease this number.
+    Each pane get an own number. It's very useful for labeling. Deleting
+    ones won't decrease this number.
 
     @see: L{self.next_pane_name()}
     @type: Integer

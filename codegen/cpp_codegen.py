@@ -1185,9 +1185,10 @@ bool MyApp::OnInit()
                 # sources, warn the user
                 if extra_code_h or extra_code_cpp:
                     self.warning(
-                        '%s (or one of its chilren) has extra code classes, '
-                        'but you are not overwriting existing sources: please '
-                        'check that the resulting code is correct!' % \
+                        '%s (or one of its children) has extra '
+                        'code classes, but you are not overwriting '
+                        'existing sources: please check that the resulting '
+                        'code is correct!' %
                         code_obj.name
                         )
 
@@ -1233,7 +1234,7 @@ bool MyApp::OnInit()
                 hwrite(line)
             hwrite('\n')
 
-            # write the module dependecies for this class
+            # write the module dependencies for this class
             #extra_headers = classes[code_obj.klass].dependencies
             extra_modules = self.classes[code_obj.klass].dependencies
             code = self._format_dependencies(extra_modules)
@@ -1543,7 +1544,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
 
     def _format_dependencies(self, dependencies):
         """\
-        Format the dependecies output
+        Format the dependencies output
 
         @param dependencies: List if header files
         @type dependencies:  list[str]

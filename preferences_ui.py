@@ -42,7 +42,7 @@ class wxGladePreferencesUI(wx.Dialog):
         self.allow_duplicate_names = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Allow duplicate widget names"))
         self.default_border = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Default border width for widgets"))
         self.default_border_size = wx.SpinCtrl(self.notebook_1_pane_2, wx.ID_ANY, "", min=0, max=20)
-        self.log_debug_info = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Log additional debug infomation"))
+        self.log_debug_info = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Log additional debug information"))
         self.autosave = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Auto save wxg files every "))
         self.autosave_delay = wx.SpinCtrl(self.notebook_1_pane_2, wx.ID_ANY, "120", min=30, max=300)
         self.write_timestamp = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Insert timestamp on generated source files"))

@@ -1,5 +1,5 @@
 """
-Classes to handle the various properties of the widgets (name, size, color,
+Classes to handle the various properties of the widgets (name, size, colour,
 etc.)
 
 @copyright: 2002-2007 Alberto Griggio
@@ -132,7 +132,7 @@ class Property(object):
         """\
         Set same tooltip text to all widgets in L{self._tooltip_widgets}.
         
-        The text is taken from the C{text} paramater or from L{self.tooltip}. 
+        The text is taken from the C{text} parameter or from L{self.tooltip}.
 
         C{text} will be stored in L{self.tooltip} if it is given.
 
@@ -985,7 +985,7 @@ class FileDialogProperty(DialogProperty):
 
     # end of class FileDialog
 
-    def __init__(self, owner, name, parent=None, wildcard=_("All Files|*"),
+    def __init__(self, owner, name, parent=None, wildcard=_("All files|*"),
                  message=_("Choose a file"), can_disable=True, style=0,
                  label=None, blocked=False, omitter=None):
         if not self.dialog[0]:

@@ -448,7 +448,7 @@ unless(caller){
                     write("use Wx::Locale gettext => '_T';\n")
 
             if self.multiple_files:
-                # write the module dependecies for this class (package)
+                # write the module dependencies for this class (package)
                 dep_list = self.classes[code_obj.klass].dependencies.keys()
                 dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list, True)

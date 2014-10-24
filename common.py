@@ -58,11 +58,11 @@ widget_config = {
             'desc': _('Align the item to the right.'),
         },
         'wxALIGN_CENTER': {
-            'desc': _('Center the item (horizontally).'),
+            'desc': _('Centre the item (horizontally).'),
             'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL',
         },
         'wxALIGN_CENTRE': {
-            'desc': _('Center the item (horizontally).'),
+            'desc': _('Centre the item (horizontally).'),
             'synonym': 'wxALIGN_CENTER',
             'rename_to': 'wxALIGN_CENTER',
             'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL',
@@ -115,7 +115,7 @@ widget_config = {
         'wxRESERVE_SPACE_EVEN_IF_HIDDEN': {
             'desc': _("Normally wxSizers don't allocate space for hidden "
                       "windows or other items. This flag overrides this "
-                      "behavior so that sufficient space is allocated for "
+                      "behaviour so that sufficient space is allocated for "
                       "the window even if it isn't visible. This makes it "
                       "possible to dynamically show and hide controls "
                       "without resizing parent dialog, for example. "
@@ -652,7 +652,7 @@ def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
 
         except (AttributeError, ImportError, NameError, SyntaxError,
                 ValueError):
-            logger.exception(_('ERROR loading "%s"'), module_name)
+            logger.exception(_('ERROR loading module "%s"'), module_name)
         except:
             logger.exception(
                 _('Unexpected error during import of widget module %s'),
@@ -871,7 +871,7 @@ def load_sizers():
             codegen_module.initialize()
         except (AttributeError, ImportError, NameError, SyntaxError,
                 ValueError):
-            logging.exception(_('ERROR loading "%s"'), module_name)
+            logging.exception(_('ERROR loading module "%s"'), module_name)
         except:
             logging.exception(
                 _('Unexpected error during import of widget module %s'),
