@@ -274,7 +274,7 @@ def capitalize(string):
 
 def color_to_string(color):
     """\
-    returns the hexadecimal string representation of the given color
+    returns the hexadecimal string representation of the given colour
 
     Example::
         >>> color_to_string(wx.Colour(255, 255, 255))

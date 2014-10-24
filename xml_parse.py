@@ -491,7 +491,7 @@ class XmlWidgetObject(object):
     @ivar in_sizers: If True, the widget is a sizer, opposite of L{in_windows}
     @type in_sizers: bool
 
-    @ivar in_windows: If True, the wiget is not a sizer, pposite of
+    @ivar in_windows: If True, the widget is not a sizer, opposite of
                       L{in_sizers}
     @type in_windows: bool
 
@@ -612,7 +612,7 @@ class XmlWidgetObject(object):
             # unknown property for this object
             # issue a warning and ignore the property
             self._logger.error(
-                _("Warning: property '%s' not supported by this "
+                _("WARNING: Property '%s' not supported by this "
                   "object ('%s') "),
                 name,
                 self.obj,
@@ -880,7 +880,7 @@ class CodeObject(object):
     @ivar in_sizers: If True, the widget is a sizer, opposite of L{in_windows}
     @type in_sizers: bool
 
-    @ivar in_windows: If True, the wiget is not a sizer, pposite of
+    @ivar in_windows: If True, the widget is not a sizer, opposite of
                       L{in_sizers}
     @type in_windows: bool
 

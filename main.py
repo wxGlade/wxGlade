@@ -255,7 +255,7 @@ class wxGladeFrame(wx.Frame):
             filename = self.file_history.GetHistoryFile(pos)
             if not os.path.exists(filename):
                 wx.MessageBox(
-                    _("The file %s. doesn't exist.") % filename,
+                    _("The file %s doesn't exist.") % filename,
                     _('Information'),
                     style=wx.CENTER | wx.ICON_INFORMATION | wx.OK)
                 self.file_history.RemoveFileFromHistory(pos)
@@ -384,7 +384,7 @@ class wxGladeFrame(wx.Frame):
             frame_style &= ~wx.MINIMIZE_BOX
             if wx.Platform != '__WXGTK__': frame_style |= wx.FRAME_TOOL_WINDOW
         
-        self.frame2 = wx.Frame(self, -1, _('Properties - <app>'),
+        self.frame2 = wx.Frame(self, -1, _('Properties - <%s>' % _('app')),
                                style=frame_style)
         self.frame2.SetBackgroundColour(wx.SystemSettings_GetColour(
             wx.SYS_COLOUR_BTNFACE))
@@ -748,7 +748,7 @@ class wxGladeFrame(wx.Frame):
 
         common.app_tree.expand()
         if common.app_tree.app.is_template:
-            self._logger.info(_("Loaded template"))
+            self._logger.info(_("Template loaded"))
             common.app_tree.app.template_data = template.Template(infilename)
             common.app_tree.app.filename = None
 
@@ -941,7 +941,7 @@ class wxGladeFrame(wx.Frame):
             self._open_app(to_edit, add_to_history=False)
             wx.MessageBox(_("To save the changes to the template, edit the "
                             "GUI as usual,\nand then click "
-                            "File->Save as Template..."), _("Information"),
+                            "File->Save As Template..."), _("Information"),
                           style=wx.OK|wx.ICON_INFORMATION)
 
 # end of class wxGladeFrame

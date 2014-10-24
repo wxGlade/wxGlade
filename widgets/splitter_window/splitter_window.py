@@ -134,7 +134,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.access_functions['orientation'] = (self.get_orientation,
                                                 self.set_orientation)
         prop['orientation'] = HiddenProperty(
-            self, 'orientation', label=_("orientation"))
+            self, 'orientation', label=_("Orientation"))
 
         self.access_functions['window_1'] = (self.get_win_1, lambda v: None)
         self.access_functions['window_2'] = (self.get_win_2, lambda v: None)
@@ -148,7 +148,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                                              label=_('Minimum pane size'))
 
         prop['sash_pos'] = SpinProperty(self, 'sash_pos', r=(0, 400),
-                                        can_disable=True, label=_("sash_pos"))
+                                        can_disable=True,
+                                        label=_("Sash position"))
         self.no_custom_class = False
         self.access_functions['no_custom_class'] = (self.get_no_custom_class,
                                                     self.set_no_custom_class)
@@ -342,9 +343,9 @@ def builder(parent, sizer, pos, number=[1]):
                           sizer, pos, common.property_panel, show=False)
     if _has_panel:
         pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(),
-                            widget.virtual_sizer, 1, common.property_panel)
+                          widget.virtual_sizer, 1, common.property_panel)
         pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(),
-                            widget.virtual_sizer, 2, common.property_panel)
+                          widget.virtual_sizer, 2, common.property_panel)
         widget.window_1 = pane1
         widget.window_2 = pane2
     

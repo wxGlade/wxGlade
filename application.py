@@ -45,7 +45,7 @@ class FileDirDialog(object):
     @ivar parent:     Parent instance of L{Application}
     @ivar prev_dir:   Previous directory
     """
-    def __init__(self, parent, wildcard=_("All Files|*"),
+    def __init__(self, parent, wildcard=_("All files|*"),
                  file_message=_("Choose a file"), dir_message=None,
                  file_style=0):
         self.prev_dir = config.preferences.codegen_path or ""
@@ -518,6 +518,7 @@ class Application(object):
             self.for_version_prop.enable_item('3.0', True)
 
         # don't change the extension in multiple files mode
+
         if self.multiple_files_prop.get_value() == 1:
             return
 

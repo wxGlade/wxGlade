@@ -931,7 +931,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """\
         Initialise language specific settings.
 
-        @note: You may overwrite this function in the derivated class
+        @note: You may overwrite this function in the derived class
         """
         raise NotImplementedError
 
@@ -943,7 +943,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                          L{self.multiple_files} is False, a dir otherwise)
         @type out_path: str | None
 
-        @note: You may overwrite this function in the derivated class
+        @note: You may overwrite this function in the derived class
         """
         if self.multiple_files:
             self.previous_source = None
@@ -1013,7 +1013,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             code = "".join(self._current_extra_modules.keys())
             self.previous_source.content = self.previous_source.content.replace(tag, code)
 
-            # module dependecies of all classes
+            # module dependencies of all classes
             tag = '<%swxGlade replace dependencies>' % self.nonce
             dep_list = self.dependencies.keys()
             dep_list.sort()
@@ -1056,7 +1056,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             content = self.output_file.getvalue().replace(
                 '<%swxGlade extra_modules>\n' % self.nonce, em)
 
-            # module dependecies of all classes
+            # module dependencies of all classes
             tag = '<%swxGlade replace dependencies>' % self.nonce
             dep_list = self.dependencies.keys()
             dep_list.sort()
@@ -1438,9 +1438,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 # sources, warn the user
                 if extra_code:
                     self.warning(
-                        '%s (or one of its chilren) has extra code classes, '
-                        'but you are not overwriting existing sources: please '
-                        'check that the resulting code is correct!' % \
+                        '%s (or one of its children) has extra '
+                        'code classes, but you are not overwriting '
+                        'existing sources: please check that the resulting '
+                        'code is correct!' %
                         code_obj.name
                         )
                 tag = '<%swxGlade replace extracode>' % self.nonce
@@ -1459,7 +1460,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             for line in self.header_lines:
                 write(line)
 
-            # write the module dependecies for this class
+            # write the module dependencies for this class
             dep_list = self.classes[code_obj.klass].dependencies.keys()
             dep_list.extend(self.dependencies.keys())
             dep_list.sort()
@@ -2118,7 +2119,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
     def generate_common_properties(self, widget):
         """\
         generates the code for various properties common to all widgets
-        (background and foreground colors, font, ...)
+        (background and foreground colours, font, ...)
 
         @return: a list of strings containing the generated code
         @rtype: list[str]
@@ -2223,7 +2224,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         Escapes all quotation marks and backslashes,
         thus making a path suitable to insert in a list source file
 
-        @note: You may overwrite this function in the derivated class
+        @note: You may overwrite this function in the derived class
         @rtype: str
         """  # " ALB: to avoid emacs going insane with colorization..
         s = s.replace('\\', '\\\\')

@@ -465,7 +465,7 @@ constructor will be used. You should probably not use this if \
 class WindowBase(EditBase):
     """\
     Extends EditBase with the addition of the common properties available to
-    almost every window: size, background and foreground colors, and font
+    almost every window: size, background and foreground colours, and font
     """
     
     def __init__(self, name, klass, parent, id, property_window, show=True):
@@ -1238,7 +1238,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
     def clipboard_paste(self, *args):
         if self.sizer is not None:
             self._logger.warning(
-                _('WARNING: sizer already set for this window')
+                _('WARNING: Sizer already set for this window')
                 )
             return
         import clipboard, xml_parse
@@ -1249,7 +1249,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
             self._logger.warning(
-                _('WARNING: only sizers can be pasted here')
+                _('WARNING: Only sizers can be pasted here')
                 )
 
     def create_properties(self):

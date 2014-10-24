@@ -38,7 +38,7 @@ class Tree(object):
                 if node.widget is not None:
                     # replace the just destroyed notebook with an empty window
                     pw = node.widget.property_window
-                    pw.SetTitle(_('Properties - <>'))
+                    pw.SetTitle(_('Properties - <%s>') % '')
                     if Tree.Node.__empty_win is None:
                         Tree.Node.__empty_win = wx.Window(pw, -1)
                     # SizerItem.SetWindow() is deprecated wxPython 2.9

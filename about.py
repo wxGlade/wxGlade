@@ -63,17 +63,21 @@ class wxGladeAboutBox(wx.Dialog):
                             dlg.ShowModal()
                             dlg.Destroy()
                         except IOError:
-                            wx.MessageBox(_("Can't find the license!\n"
-                                         "You can get a copy at \n"
-                                         "http://www.opensource.org/licenses/"
-                                         "mit-license.php"), _("Error"),
-                                         wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
+                            wx.MessageBox(
+                                _('License file "license.txt" not found!'
+                                  'You can get a copy at \n'
+                                  'http://www.opensource.org/licenses/'
+                                  'mit-license.php'),
+                                _('Error'),
+                                wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
                     else:
-                        wx.MessageBox(_("Can't find the license!\n"
-                                     "You can get a copy at \n"
-                                     "http://www.opensource.org/licenses/"
-                                     "mit-license.php"), _("Error"),
-                                     wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
+                        wx.MessageBox(
+                            _('License file "license.txt" not found!'
+                              'You can get a copy at \n'
+                              'http://www.opensource.org/licenses/'
+                              'mit-license.php'),
+                            _('Error'),
+                            wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
                 elif href == 'show_credits':
                     if config.credits_file:
                         from wx.lib.dialogs import ScrolledMessageDialog
@@ -88,11 +92,15 @@ class wxGladeAboutBox(wx.Dialog):
                             dlg.ShowModal()
                             dlg.Destroy()
                         except IOError:
-                            wx.MessageBox(_("Can't find the credits file!\n"), _("Error"),
-                                         wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
+                            wx.MessageBox(
+                                _('Credits file "credits.txt" not found!'),
+                                _('Error'),
+                                wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
                     else:
-                        wx.MessageBox(_("Can't find the credits file!\n"), _("Error"),
-                                     wx.OK|wx.CENTRE|wx.ICON_EXCLAMATION)
+                        wx.MessageBox(
+                            _('Credits file "credits.txt" not found!'),
+                            _('Error'),
+                            wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
                 else:
                     import webbrowser
                     webbrowser.open(linkinfo.GetHref(), new=True)
