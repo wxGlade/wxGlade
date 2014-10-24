@@ -164,7 +164,6 @@ class XmlWidgetBuilder(XmlParser):
                 app.codegen_prop.set_value(option)
             language = attrs.get('language')
             if language:
-                app.codewriters_prop.set_str_value(language)
                 app.set_language(language)
             top_win = attrs.get("top_window")
             if top_win:
