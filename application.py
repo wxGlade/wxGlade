@@ -213,12 +213,10 @@ class Application(object):
             _("Write all source code in one file"),
             _("Split source code in one file per class / widget"),
             ]
-        self.codegen_prop = RadioProperty(self, "code_generation", panel,
-                                          [_("Single file"),
-                                           _("Separate file for"
-                                           " each class")],
-                                          label=_("Code Generation"),
-                                          tooltips=codegen_tooltips)
+        self.multiple_files_prop = RadioProperty(
+            self, "code_generation", panel,
+            [_("Single file"), _("Separate file for each class")],
+            label=_("Code Generation"), tooltips=codegen_tooltips)
         self.indent_mode_prop = RadioProperty(self, "indent_mode",
                                               panel_settings,
                                               [_("Tabs"), _("Spaces")],
@@ -325,7 +323,7 @@ class Application(object):
         szr.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         szr.Add(self.top_win_prop, 5, wx.ALL | wx.ALIGN_CENTER, 3)
         sizer.Add(szr, 0, wx.EXPAND)
-        sizer.Add(self.codegen_prop.panel, 0, wx.ALL | wx.EXPAND, 4)
+        sizer.Add(self.multiple_files_prop.panel, 0, wx.ALL | wx.EXPAND, 4)
         sizer.Add(self.codewriters_prop.panel, 0, wx.ALL | wx.EXPAND, 4)
         sizer.Add(self.for_version_prop.panel, 0, wx.ALL | wx.EXPAND, 4)
         sizer.Add(self.overwrite_prop.panel, 0, wx.EXPAND)
@@ -619,7 +617,7 @@ class Application(object):
         self.name_prop.set_value("app")
         self.name_prop.toggle_active(False)
         self.codegen_opt = config.default_multiple_files
-        self.codegen_prop.set_value(config.default_multiple_files)
+        self.multiple_files_prop.set_value(config.default_multiple_files)
         self.indent_mode = 1
         self.indent_amount = config.default_indent_amount
         self.cpp_source_ext = 'cpp'

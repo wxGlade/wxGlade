@@ -161,7 +161,7 @@ class XmlWidgetBuilder(XmlParser):
                 except ValueError:
                     option = config.default_multiple_files
                 app.codegen_opt = option
-                app.codegen_prop.set_value(option)
+                app.multiple_files_prop.set_value(option)
             language = attrs.get('language')
             if language:
                 app.set_language(language)
