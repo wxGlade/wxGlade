@@ -517,6 +517,22 @@ class Application(object):
         else:
             self.for_version_prop.enable_item('3.0', True)
 
+        # don't change the extension in multiple files mode
+        if self.multiple_files_prop.get_value() == 1:
+            return
+
+        # update file extensions
+        base, ext = os.path.splitext(self.outpath_prop.get_value())
+
+        # is already a valid extension?
+        # ext has a leading . but default_extensions hasn't
+        if ext and \
+           ext[1:] in common.code_writers[language].default_extensions:
+                return
+        new_name = "%s.%s" % (
+            base, common.code_writers[language].default_extensions[0])
+        self.outpath_prop.set_value(new_name)
+
     def get_language(self):
         """\
         Return the selected code writer language
