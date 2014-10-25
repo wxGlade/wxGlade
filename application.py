@@ -150,7 +150,10 @@ class Application(object):
 
         self.source_ext = 'cpp'
         self.header_ext = 'h'
-        self.output_path = ""
+        if self.multiple_files:
+            self.output_path = config.default_output_path
+        else:
+            self.output_path = config.default_output_file
         self.language = 'python'  # output language
         self.is_template = False
         self.use_gettext = config.default_use_gettext
