@@ -177,7 +177,7 @@ text_files.append('RELEASE-VERSION')
 setup(
     name='wxGlade',
     version=version,
-    author='Alberto Griggio and the wxGlade developers',
+    author='Alberto Griggio, Carsten Grohmann and the wxGlade developers',
     maintainer='Carsten Grohmann',
     maintainer_email='mail@carstengrohmann.de',
     url='http://wxglade.sourceforge.net/',
