@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2014-07-30</date>
+    <date>2014-10-25</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -2527,6 +2527,326 @@ if __name__ == '__main__':
       size, but remember to click on the
       <quote><guibutton>Apply</guibutton></quote> button to consolidate
       changes.</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>wxGlade technical notes</title>
+
+    <caution>
+      <para>Last update: 2003-06-26, but only <xref
+      linkend="for.contributors.section"/>. The rest has not been updated
+      since 2002-07-22, and it's likely be very outdated in some parts.</para>
+    </caution>
+
+    <para>This is an informal overview of wxGlade internals, made through a
+    sample session of use. Each action of the hypotetical user will be
+    described from the point of view of the application, to (hopefully)
+    understand what's happening behind the scenes. </para>
+
+    <para>These notes are *absolutely* incomplete and in some cases they might
+    be outdated or not completely correct: the best reference is always the
+    source code. </para>
+
+    <section>
+      <title>Startup</title>
+
+      <para>The program starts from the function
+      <quote><function>main</function></quote> in the module
+      <quote><function>main</function></quote>: this creates an instance of
+      wxGlade (a subclass of <classname>wxApp</classname>), which in turn
+      creates a wxGladeFrame: this is the main window of the app, i.e. the one
+      with the palette of buttons. The initialization of
+      <classname>wxGladeFrame</classname> consists of three steps: </para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Creation of the three frames of the app, the palette itself,
+          the tree and the property window </para>
+        </listitem>
+
+        <listitem>
+          <para>Loading of the code generator modules. The
+          <quote><filename>codegen/</filename></quote> subdir is scanned to
+          find the available code generators: when a python module is found,
+          the app tries to load it and to access its 'writer' attribute: if
+          this is succesfully accomplished, such 'writer' object is considered
+          a valid code generator, and is inserted into the
+          'common.code_writers' dict (the key used is the 'language' attribute
+          of the writer itself)</para>
+        </listitem>
+
+        <listitem>
+          <para>Loading of the widget and sizer modules. To load the widgets,
+          the file <quote><filename>widgets/widgets.txt</filename></quote> is
+          read, and the app tries to import every widget module listed on such
+          file. For every module succesfully imported, the
+          <quote><methodname>initialize</methodname></quote> function is then
+          called: this function sets up the builder and code generator
+          functions for a particular widget (explained later), and returns a
+          <classname>wxBitmapButton</classname> instance to be added to the
+          main palette. The loading of the sizers is more or less the same,
+          except that all the sizers are in the same module,
+          <quote><function>edit_sizers</function></quote>, and the
+          initialization function (called
+          <quote><function>init_gui</function></quote>) returns a list of
+          <classname>wxBitmapButton</classname> objects </para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Adding a toplevel widget</title>
+
+      <para>When the user clicks on a button of a toplevel widget (a Frame or
+      a Dialog), the method
+      <quote><methodname>add_toplevel_object</methodname></quote> of
+      <classname>wxGladeFrame</classname> is called: this is responsible for
+      the addition of the widget to the app. This happens in this way:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>the name of the class of the widget to add is obtained: this
+          is done with the use of the <quote><code>common.refs</code></quote>
+          dictionary, which maps the ids of the buttons of the palette to the
+          class names of the widgets. </para>
+        </listitem>
+
+        <listitem>
+          <para>with the name just obtained, the appropriate factory function
+          for the widget to add is got from the
+          <quote><code>common.widgets</code></quote> dictionary. This function
+          must accept three parameters: a reference to the parent widget
+          (<code>None</code> in this case), a reference to the sizer to which
+          the widget will be added (again <code>None</code> for toplevel
+          windows) and the zero-based position inside the sizer (once again,
+          this is unused for toplevel windows)</para>
+        </listitem>
+
+        <listitem>
+          <para>the call of the factory function actually builds the widgets
+          and inserts it in the <quote><code>common.app_tree</code></quote>
+          tree with a call to its method
+          <quote><methodname>insert</methodname></quote>. The
+          <quote><filename>__init__</filename></quote> method of the widget
+          also builds all the Properties of the object and stores them in the
+          'self.properties' dict </para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Adding a toplevel sizer</title>
+
+      <para>This is similar to the addition of a toplevel widget, but the
+      action is performed in two steps:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>when the user clicks on the button in the palette, the method
+          <quote><methodname>add_object</methodname></quote> of
+          <classname>wxGladeFrame</classname> is called: this sets the global
+          variables <quote><code>common.adding_widget</code></quote> and
+          <quote><code>common.adding_sizer</code></quote> to
+          <code>True</code>, and stores the class name of the sizer to add in
+          the global <quote><code>common.widget_to_add</code></quote> (the
+          name is obtained from the <quote><code>common.refs</code></quote>
+          dictionary as described above) </para>
+        </listitem>
+
+        <listitem>
+          <para>when the user left-clicks the mouse inside the previously
+          added toplevel widget, its <quote><code>drop_sizer</code></quote>
+          method is called, which is responsible of the addition of the sizer:
+          it calls the factory function for the sizer (passing self as the
+          first argument), which will build the object and add it to the tree
+          </para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Adding a normal widget/sizer</title>
+
+      <para>This step is more or less the same as step 3: </para>
+
+      <itemizedlist>
+        <listitem>
+          <para> <quote><code>wxGladeFrame.add_object</code></quote> is called
+          in response to a button click </para>
+        </listitem>
+
+        <listitem>
+          <para>when the user ``drops'' the widget inside a slot in a sizer,
+          the method <quote><function>drop_widget</function></quote> of
+          <code>edit_sizers.SizerSlot</code> is called, which in turn calls
+          the appropriate factory function with arguments
+          <quote><code>self.parent</code></quote>,
+          <quote><code>self.sizer</code></quote> and
+          <quote><code>self.pos</code></quote> (i.e. the parent, sizer and
+          position inside the sizer of the slot that will be replaced).
+          Factory functions of non-toplevel objects call, apart from
+          <quote><code>common.app_tree.insert</code></quote> to insert the
+          object in the tree, the method
+          <quote><methodname>add_item</methodname></quote> of
+          <quote><classname>edit_sizers.SizerBase</classname></quote>, to add
+          the object to the sizer and to remove the slot. For managed
+          widgets/sizers, the <quote><methodname>__init__</methodname></quote>
+          method also builds the Properties which control the layout of the
+          object inside a sizer, and stores them in the
+          <quote><code>self.sizer_properties</code></quote> dictionary.
+          </para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Changing the value of a Property </title>
+
+      <para>When the user selects a widget the property window changes to
+      display the properties of the selected object: this is done by the
+      functions <quote><methodname>show_properties</methodname></quote> of
+      <classname>edit_windows.EditBase</classname> and
+      <classname>edit_sizers.SizerBase</classname>, which are called inside
+      two event handlers for focus and tree selection events. </para>
+
+      <para>When the value of a Property is changed, its setter function is
+      called to update the aspect/layout of the widget the Property belongs
+      to: such function is obtained from a call to the widget's
+      <quote><methodname>__getitem__</methodname></quote> method, which must
+      return a 2-tuple (getter, setter) for the Property </para>
+    </section>
+
+    <section>
+      <title>Saving the app</title>
+
+      <para>This operation is performed by the
+      <quote><code>common.app_tree</code></quote> Tree: for every Node of the
+      tree, an 'object' xml element is generated, with the following
+      attributes: name, class, base (class). Each object contains an element
+      for each Property (generated by the
+      <quote><methodname>write</methodname></quote> method of Property) and then
+      an 'object' element for all its sub-widgets and/or sizers. Properties in
+      the <quote><code>sizer_properties</code></quote> dictionary are treated
+      in a different way, as well as the children of a sizer, which are
+      sub-elements of <quote><code>sizeritem</code></quote> objects: see the
+      source code for details.</para>
+    </section>
+
+    <section>
+      <title>Loading an app from a XML file</title>
+
+      <para>This is done by
+      <quote><classname>xml_parse.XmlWidgetBuilder</classname></quote>, a
+      subclass of <classname>xml.sax.handler.ContentHandler</classname>.
+      </para>
+
+      <para>Basically, the steps involved are the following:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>when the start of an 'object' element is reached, a
+          <classname>XMLWidgetObject</classname> instance is created and
+          pushed onto a stack of the objects created: such object in turn
+          calls the appropriate ``xml builder'' function (got from the
+          <quote><code>common.widgets_from_xml</code></quote> dictionary) that
+          creates the widget: this function is similar to the factory function
+          used to build the widget during an interactive session, see the code
+          for details and differences </para>
+        </listitem>
+
+        <listitem>
+          <para>when the end of an 'object' element is reached, the object at
+          the top of the stack is removed, and its widget (see the source of
+          <classname>XmlWidgetObject</classname>) is laid out </para>
+        </listitem>
+
+        <listitem>
+          <para>when the end of a Property element is reached, the appropriate
+          setter function of the owner of the Property is called. This is the
+          default behaviour, suitable for simple properties. For more complex
+          properties, whose xml representation consists of more sub-elements,
+          each widget can define a particular handler: see for example
+          <classname>FontHandler</classname> in
+          <classname>edit_windows.WindowBase</classname> </para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Generating the source code</title>
+
+      <para>This section is the result of a cut &amp; paste of the comment at
+      the beginning of
+      <quote><filename>codegen/py_codegen.py</filename></quote>. It is *VERY*
+      incomplete. The <classname>ContentHandler</classname> subclass which
+      drives the code generation is
+      <classname>xml_parse.CodeWriter</classname>.</para>
+
+      <para>How the code is generated: every time the end of an object is
+      reached during the parsing of the xml tree, either the function
+      <quote><methodname>add_object</methodname></quote> or the function
+      <quote><methodname>add_class</methodname></quote> is called: the latter when
+      the object is a toplevel one, the former when it is not. In the last
+      case, <quote><methodname>add_object</methodname></quote> calls the
+      appropriate ``writer'' function for the specific object, found in the
+      <quote><code>obj_builders</code></quote> dictionary. Such function
+      accepts one argument, the <classname>CodeObject</classname> representing
+      the object for which the code has to be written, and returns 3 lists of
+      strings, representing the lines to add to the
+      <quote><methodname>__init__</methodname></quote>,
+      <quote><methodname>__set_properties</methodname></quote> and
+      <quote><methodname>__do_layout</methodname></quote> methods of the
+      parent object. </para>
+
+      <note>
+        <para>The lines in the
+        <quote><methodname>__init__</methodname></quote> list will be added in
+        reverse order.</para>
+      </note>
+    </section>
+
+    <section id="for.contributors.section">
+      <title>For contributors</title>
+
+      <para>You are, of course, free to make any chages/additions you want to
+      wxGlade, in whatever way you like. If you decide to contribute them
+      back, however, here are some simple (stylistic) rules to follow: note
+      that these are only general indications, if you think they don't fit
+      somewhere, feel free to ignore them. </para>
+
+      <itemizedlist>
+        <listitem>
+          <para>class names are usually CamelCase - variables, functions and
+          method names are lower_case_with_unserscores </para>
+        </listitem>
+
+        <listitem>
+          <para><quote>constants</quote> are UPPER_CASE</para>
+        </listitem>
+
+        <listitem>
+          <para> source lines are at most 79 characters long </para>
+        </listitem>
+
+        <listitem>
+          <para>class bodies are usually ended by a <quote><code># end of
+          class ClassName</code></quote> comment</para>
+        </listitem>
+
+        <listitem>
+          <para>source files use Unix EOL conventions (LF) if possible. In any
+          case, please don't mix Unix and Windows EOLs </para>
+        </listitem>
+
+        <listitem>
+          <para>put your copyright info whenever appropriate </para>
+        </listitem>
+
+        <listitem>
+          <para>that's all folks!!</para>
+        </listitem>
+      </itemizedlist>
     </section>
   </chapter>
 
