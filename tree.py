@@ -235,7 +235,7 @@ class Tree(object):
             os.path.expanduser(self.app.output_path.strip()))
         name = self.app.get_name()
         klass = self.app.get_class()
-        option = str(self.app.codegen_opt)
+        option = str(self.app.multiple_files)
         top_window = self.app.get_top_window()
         language = self.app.get_language()
         encoding = self.app.get_encoding()
