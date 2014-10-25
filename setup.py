@@ -122,13 +122,14 @@ def find_packages(path, base=""):
     return packages
 
 classifiers = """\
-Development Status :: 4 - Beta
+Development Status :: 5 - Production/Stable
 Intended Audience :: Developers
 License :: OSI Approved :: MIT License
 Natural Language :: English
 Operating System :: OS Independent (Written in an interpreted language)
-Programming Language :: Python :: 2
+Programming Language :: Python :: 2 :: Only
 Topic :: Software Development :: Code Generators
+Topic :: Software Development :: User Interfaces
 User Interface :: Textual :: Command-line
 User Interface :: Toolkits/Libraries :: wxWidgets"""
 
