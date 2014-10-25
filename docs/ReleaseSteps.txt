@@ -1,0 +1,38 @@
+Steps to publish a new version
+==============================
+
+ 1. Update documentation e.g. CHANGES.txt, NEWS.txt, README.txt and
+    wxGlade.desktop
+ 2. Change the version number in wxglade-installer.iss. Please check that
+    the version is equal to the version in RELEASE-VERSION
+ 3. Set SHOW_CONSOLE to False in install/pyinstaller/wxglade.spec
+ 3. Commit all open changes
+ 4. Merge changes from development branch WXG-BRANCH-DEV_0_6_7 into default
+    branch
+ 5. Close development branch
+    # hg update WXG-BRANCH-DEV_0_6_7
+    # hg commit --close-branch -m "Closed WXG-BRANCH-DEV_0_6_7 branch"
+    # hg update default
+ 6. Close last stable branch
+    # hg update WXG-BRANCH-VERSION_0_6_6
+    # hg commit --close-branch -m "Closed WXG-BRANCH-VERSION_0_6_6 branch"
+    # hg update default
+ 7. Create a new Mercurial tag 
+    # hg tag rel_0.6.7
+ 8. Create a branch for maintaining stable release
+    # hg branch WXG-BRANCH-VERSION_0_6_7
+    # hg commit --message "Created WXG-BRANCH-VERSION_0_6_7 branch"
+ 9. Create new development branch
+    # hg branch WXG-BRANCH-DEV_0_6_8
+    # hg commit --message "Created WXG-BRANCH-DEV_0_6_8 branch"
+10. Push changes into public repository
+11. Create all packages
+    - build windows installer (see docs/BuildingInstaller.txt)
+    - create zip and tar.gz source packages
+    # make release
+12. Update web page at wxglade.sf.net
+    - upload packages to SF
+    - update news section in htdocs/bits/news.html
+    - update HTML and PDF manual in htdocs/manual
+13. Send notification email to wxGlade mailing list
+14. Change version number in common.py and wxglade-installer.iss to HG
