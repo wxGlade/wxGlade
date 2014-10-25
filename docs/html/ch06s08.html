@@ -1,0 +1,22 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Generating the source code</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ch06.html" title="Chapter 6. wxGlade technical notes"><link rel="prev" href="ch06s07.html" title="Loading an app from a XML file"><link rel="next" href="ch06s09.html" title="For contributors"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Generating the source code</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch06s07.html">Prev</a> </td><th width="60%" align="center">Chapter 6. wxGlade technical notes</th><td width="20%" align="right"> <a accesskey="n" href="ch06s09.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm140098981491856"></a>Generating the source code</h2></div></div></div><p>This section is the result of a cut &amp; paste of the comment at
+      the beginning of
+      <span class="quote">“<span class="quote"><code class="filename">codegen/py_codegen.py</code></span>”</span>. It is *VERY*
+      incomplete. The <code class="classname">ContentHandler</code> subclass which
+      drives the code generation is
+      <code class="classname">xml_parse.CodeWriter</code>.</p><p>How the code is generated: every time the end of an object is
+      reached during the parsing of the xml tree, either the function
+      <span class="quote">“<span class="quote"><code class="methodname">add_object</code></span>”</span> or the function
+      <span class="quote">“<span class="quote"><code class="methodname">add_class</code></span>”</span> is called: the latter
+      when the object is a toplevel one, the former when it is not. In the
+      last case, <span class="quote">“<span class="quote"><code class="methodname">add_object</code></span>”</span> calls the
+      appropriate ``writer'' function for the specific object, found in the
+      <span class="quote">“<span class="quote"><code class="code">obj_builders</code></span>”</span> dictionary. Such function
+      accepts one argument, the <code class="classname">CodeObject</code> representing
+      the object for which the code has to be written, and returns 3 lists of
+      strings, representing the lines to add to the
+      <span class="quote">“<span class="quote"><code class="methodname">__init__</code></span>”</span>,
+      <span class="quote">“<span class="quote"><code class="methodname">__set_properties</code></span>”</span> and
+      <span class="quote">“<span class="quote"><code class="methodname">__do_layout</code></span>”</span> methods of the
+      parent object.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>The lines in the
+        <span class="quote">“<span class="quote"><code class="methodname">__init__</code></span>”</span> list will be added in
+        reverse order.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s07.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch06.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch06s09.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Loading an app from a XML file </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> For contributors</td></tr></table></div></body></html>

@@ -29,11 +29,11 @@
   <preface>
     <title>Preface</title>
 
-    <para>This manual describes Alberto Griggio's wxGlade program, a Python,
-    Perl, Lisp, C++ and XRC Graphical User Interface (<quote>GUI</quote>)
-    editor for Unix and Microsoft Windows. Each of the chapters in this manual
-    is designed as a tutorial for using wxGlade and a reference for widgets
-    supported until now.</para>
+    <para>This manual describes the programm wxGlade, initially written by
+    Alberto Griggio. wxGlade is a Python, Perl, Lisp, C++ and XRC Graphical
+    User Interface (<quote>GUI</quote>) editor for Unix and Microsoft Windows.
+    Each of the chapters in this manual is designed as a tutorial for using
+    wxGlade and a reference for widgets supported until now.</para>
 
     <section>
       <title>Contact</title>
@@ -51,9 +51,11 @@
     <section>
       <title>License</title>
 
-      <para>wxGlade is copyright 2002-2007 by Alberto Griggio. Use and
-      distribution of wxGlade is governed by the MIT license, located in <xref
-      linkend="appendix.a.section"/>.</para>
+      <para>wxGlade is copyright 2002-2007 by Alberto Griggio and 2011-2014 by
+      Carsten Grohmann.</para>
+
+      <para>Use and distribution of wxGlade is governed by the MIT license,
+      located in <xref linkend="appendix.a.section"/>.</para>
     </section>
   </preface>
 
@@ -128,8 +130,8 @@
 
       <para>If you are looking for a complete IDE, maybe <ulink
       url="http://boa-constructor.sourceforge.net">Boa Constructor</ulink> or
-      <ulink url="http://www.pythoncard.org">PythonCard</ulink> is the right
-      tool.</para>
+      <ulink url="http://pythoncard.sourceforge.net">PythonCard</ulink> is the
+      right tool.</para>
 
       <para>wxGlade isn't a tool to learn programming with wxWidgets. You
       can't use wxGlade if you do not have any basic understanding of
@@ -150,12 +152,12 @@
 
       <itemizedlist>
         <listitem>
-          <para>Python 2 - at least 2.3 or any later version of Python
+          <para>Python 2 - at least 2.4 or any later version of Python
           2</para>
         </listitem>
 
         <listitem>
-          <para>wxPython 2.6, 2.8 or 3.0</para>
+          <para>wxPython 2.8 or 3.0</para>
 
           <para>Sometimes the wxPython module <quote>wxversion</quote> is
           packaged separately e.g. in Debian. Please install the
@@ -163,15 +165,10 @@
         </listitem>
 
         <listitem>
-          <para>wxWidgets 2.6, 2.8 or 3.0, the wxWidgets are often bundled
-          with wxPython</para>
+          <para>wxWidgets 2.8 or 3.0, the wxWidgets are often bundled with
+          wxPython</para>
         </listitem>
       </itemizedlist>
-
-      <note>
-        <para>The support for wxWidgets 3.0 as well as wxPython 3.0 based
-        currently on the development release series 2.9 of wxPython.</para>
-      </note>
 
       <para>wxWidgets is available at <ulink
       url="http://www.wxwidgets.org">http://www.wxwidgets.org</ulink> and
@@ -493,10 +490,18 @@ loading widget modules:
 
         <mediaobject>
           <imageobject>
-            <imagedata contentwidth="80%" fileref="error_dialog.png"/>
+            <imagedata fileref="error_dialog.png"/>
           </imageobject>
         </mediaobject>
       </figure>
+    </section>
+
+    <section>
+      <title>Deprecated features</title>
+
+      <para>wxGlade can change code inside existing source files to reflect
+      changed designs. This feature is deprecated now und will be removed
+      within the next releases.</para>
     </section>
   </chapter>
 
@@ -634,23 +639,14 @@ loading widget modules:
             <term>Always overwrite existing sources</term>
 
             <listitem>
-              <para>wxGlade is able to adapt existing source files after the
-              design has changed. This feature have some limitations e.g. in
-              case of name changes and changed dependencies. Thereby it’s
+              <para>wxGlade can change code inside existing source files to
+              reflect changed designs. This feature have some limitations e.g.
+              in case of name changes and changed dependencies. Thereby it’s
               recommended to overwrite existing sources always and extend
-              derived classes with your functionality.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>Use new namespace for Python projects</term>
-
-            <listitem>
-              <para>It’s generally recommended to use the new namespace
-              (<quote><command>import wx</command></quote>) for wxPython
-              projects. The old one (<quote><command>from wxPython.wx import
-              *</command></quote>) has some significant drawbacks like
-              potential namespace conflicts.</para>
+              derived classes with your functionality.<note>
+                  <para>This feature is deprecated now und will be removed
+                  within the next releases.</para>
+                </note></para>
             </listitem>
           </varlistentry>
 
@@ -735,10 +731,6 @@ loading widget modules:
         sources</guilabel></quote>. Use derived classes to implement your
         functionality. See <xref linkend="best.practice.section"/>
         also.</para>
-
-        <para>Old namespace (<quote><command>from wxPython.wx import
-        *</command></quote>) is not supported for wxPython 3.0. See <xref
-        linkend="best.practice.section"/> also.</para>
       </section>
 
       <section>
@@ -887,6 +879,11 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
           <para>Overwriting multiple files is not recommended as well as
           overwriting of files with percent character (<quote>%</quote>)
           inside is not supported.</para>
+        </note>
+
+        <note>
+          <para>This feature is deprecated now und will be removed within the
+          next releases.</para>
         </note>
       </section>
 
@@ -1464,6 +1461,11 @@ if __name__ == '__main__':
 
                 <para><xref linkend="using.source.code.section"/> provides
                 more information</para>
+
+                <para><note>
+                    <para>This feature is deprecated now und will be removed
+                    within the next releases.</para>
+                  </note></para>
               </glossdef>
             </glossentry>
 
@@ -1517,20 +1519,6 @@ if __name__ == '__main__':
               <glossdef>
                 <para>Number of spaces or tabs used for one indentation
                 level.</para>
-              </glossdef>
-            </glossentry>
-
-            <glossentry>
-              <glossterm><quote><guilabel>Use old import "from wxPython.wx
-              import *"</guilabel></quote></glossterm>
-
-              <glossdef>
-                <para>It is generally recommended to use the new
-                namespace.</para>
-
-                <para>The old one (<emphasis><quote>from wxPython.wx import
-                *</quote></emphasis>) has some significant drawbacks like
-                potential namespace conflicts.</para>
               </glossdef>
             </glossentry>
 
@@ -2457,7 +2445,7 @@ if __name__ == '__main__':
   </chapter>
 
   <chapter>
-    <title>Menu, Toolbar and Statusbar</title>
+    <title>Menu, Statusbar and Toolbar</title>
 
     <section id="menu.intro.section">
       <title>Introduction</title>
@@ -2493,6 +2481,35 @@ if __name__ == '__main__':
       the hierarchy of the menu with
       <quote><guibutton>&lt;</guibutton></quote> and
       <quote><guibutton>&gt;</guibutton></quote> buttons.</para>
+
+      <figure>
+        <title>Menu editor</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="properties_menu_editor.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </section>
+
+    <section id="menu.statusbar.section">
+      <title>Statusbar</title>
+
+      <para>In the properties window you can edit the list of fields and their
+      size, but remember to click on the
+      <quote><guibutton>Apply</guibutton></quote> button to consolidate
+      changes.</para>
+
+      <figure>
+        <title>Statusbar properties</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="properties_window_statusbar.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
     </section>
 
     <section id="menu.toolbar.section">
@@ -2518,15 +2535,16 @@ if __name__ == '__main__':
 
       <para>Refer to <xref linkend="basic.bitmaps.section"/> for bitmap path
       specifications.</para>
-    </section>
 
-    <section id="menu.statusbar.section">
-      <title>Statusbar</title>
+      <figure>
+        <title>Toolbar editor</title>
 
-      <para>In the properties window you can edit the list of fields and their
-      size, but remember to click on the
-      <quote><guibutton>Apply</guibutton></quote> button to consolidate
-      changes.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="properties_toolbar_editor.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
     </section>
   </chapter>
 
@@ -2535,18 +2553,20 @@ if __name__ == '__main__':
 
     <caution>
       <para>Last update: 2003-06-26, but only <xref
-      linkend="for.contributors.section"/>. The rest has not been updated
-      since 2002-07-22, and it's likely be very outdated in some parts.</para>
+      linkend="for.contributors.section"/>. </para>
+
+      <para>The rest has not been updated since 2002-07-22, and it's likely be
+      very outdated in some parts.</para>
     </caution>
 
     <para>This is an informal overview of wxGlade internals, made through a
     sample session of use. Each action of the hypotetical user will be
     described from the point of view of the application, to (hopefully)
-    understand what's happening behind the scenes. </para>
+    understand what's happening behind the scenes.</para>
 
-    <para>These notes are *absolutely* incomplete and in some cases they might
-    be outdated or not completely correct: the best reference is always the
-    source code. </para>
+    <para>These notes are <emphasis>absolutely</emphasis> incomplete and in
+    some cases they might be outdated or not completely correct: the best
+    reference is always the source code.</para>
 
     <section>
       <title>Startup</title>
@@ -2557,12 +2577,12 @@ if __name__ == '__main__':
       wxGlade (a subclass of <classname>wxApp</classname>), which in turn
       creates a wxGladeFrame: this is the main window of the app, i.e. the one
       with the palette of buttons. The initialization of
-      <classname>wxGladeFrame</classname> consists of three steps: </para>
+      <classname>wxGladeFrame</classname> consists of three steps:</para>
 
       <itemizedlist>
         <listitem>
           <para>Creation of the three frames of the app, the palette itself,
-          the tree and the property window </para>
+          the tree and the property window</para>
         </listitem>
 
         <listitem>
@@ -2590,7 +2610,7 @@ if __name__ == '__main__':
           <quote><function>edit_sizers</function></quote>, and the
           initialization function (called
           <quote><function>init_gui</function></quote>) returns a list of
-          <classname>wxBitmapButton</classname> objects </para>
+          <classname>wxBitmapButton</classname> objects</para>
         </listitem>
       </itemizedlist>
     </section>
@@ -2609,7 +2629,7 @@ if __name__ == '__main__':
           <para>the name of the class of the widget to add is obtained: this
           is done with the use of the <quote><code>common.refs</code></quote>
           dictionary, which maps the ids of the buttons of the palette to the
-          class names of the widgets. </para>
+          class names of the widgets.</para>
         </listitem>
 
         <listitem>
@@ -2630,7 +2650,7 @@ if __name__ == '__main__':
           <quote><methodname>insert</methodname></quote>. The
           <quote><filename>__init__</filename></quote> method of the widget
           also builds all the Properties of the object and stores them in the
-          'self.properties' dict </para>
+          'self.properties' dict</para>
         </listitem>
       </itemizedlist>
     </section>
@@ -2651,7 +2671,7 @@ if __name__ == '__main__':
           <code>True</code>, and stores the class name of the sizer to add in
           the global <quote><code>common.widget_to_add</code></quote> (the
           name is obtained from the <quote><code>common.refs</code></quote>
-          dictionary as described above) </para>
+          dictionary as described above)</para>
         </listitem>
 
         <listitem>
@@ -2659,8 +2679,8 @@ if __name__ == '__main__':
           added toplevel widget, its <quote><code>drop_sizer</code></quote>
           method is called, which is responsible of the addition of the sizer:
           it calls the factory function for the sizer (passing self as the
-          first argument), which will build the object and add it to the tree
-          </para>
+          first argument), which will build the object and add it to the
+          tree</para>
         </listitem>
       </itemizedlist>
     </section>
@@ -2668,12 +2688,12 @@ if __name__ == '__main__':
     <section>
       <title>Adding a normal widget/sizer</title>
 
-      <para>This step is more or less the same as step 3: </para>
+      <para>This step is more or less the same as step 3:</para>
 
       <itemizedlist>
         <listitem>
-          <para> <quote><code>wxGladeFrame.add_object</code></quote> is called
-          in response to a button click </para>
+          <para><quote><code>wxGladeFrame.add_object</code></quote> is called
+          in response to a button click</para>
         </listitem>
 
         <listitem>
@@ -2694,27 +2714,26 @@ if __name__ == '__main__':
           widgets/sizers, the <quote><methodname>__init__</methodname></quote>
           method also builds the Properties which control the layout of the
           object inside a sizer, and stores them in the
-          <quote><code>self.sizer_properties</code></quote> dictionary.
-          </para>
+          <quote><code>self.sizer_properties</code></quote> dictionary.</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>Changing the value of a Property </title>
+      <title>Changing the value of a Property</title>
 
       <para>When the user selects a widget the property window changes to
       display the properties of the selected object: this is done by the
       functions <quote><methodname>show_properties</methodname></quote> of
       <classname>edit_windows.EditBase</classname> and
       <classname>edit_sizers.SizerBase</classname>, which are called inside
-      two event handlers for focus and tree selection events. </para>
+      two event handlers for focus and tree selection events.</para>
 
       <para>When the value of a Property is changed, its setter function is
       called to update the aspect/layout of the widget the Property belongs
       to: such function is obtained from a call to the widget's
       <quote><methodname>__getitem__</methodname></quote> method, which must
-      return a 2-tuple (getter, setter) for the Property </para>
+      return a 2-tuple (getter, setter) for the Property</para>
     </section>
 
     <section>
@@ -2725,12 +2744,12 @@ if __name__ == '__main__':
       tree, an 'object' xml element is generated, with the following
       attributes: name, class, base (class). Each object contains an element
       for each Property (generated by the
-      <quote><methodname>write</methodname></quote> method of Property) and then
-      an 'object' element for all its sub-widgets and/or sizers. Properties in
-      the <quote><code>sizer_properties</code></quote> dictionary are treated
-      in a different way, as well as the children of a sizer, which are
-      sub-elements of <quote><code>sizeritem</code></quote> objects: see the
-      source code for details.</para>
+      <quote><methodname>write</methodname></quote> method of Property) and
+      then an 'object' element for all its sub-widgets and/or sizers.
+      Properties in the <quote><code>sizer_properties</code></quote>
+      dictionary are treated in a different way, as well as the children of a
+      sizer, which are sub-elements of <quote><code>sizeritem</code></quote>
+      objects: see the source code for details.</para>
     </section>
 
     <section>
@@ -2738,8 +2757,8 @@ if __name__ == '__main__':
 
       <para>This is done by
       <quote><classname>xml_parse.XmlWidgetBuilder</classname></quote>, a
-      subclass of <classname>xml.sax.handler.ContentHandler</classname>.
-      </para>
+      subclass of
+      <classname>xml.sax.handler.ContentHandler</classname>.</para>
 
       <para>Basically, the steps involved are the following:</para>
 
@@ -2752,13 +2771,13 @@ if __name__ == '__main__':
           <quote><code>common.widgets_from_xml</code></quote> dictionary) that
           creates the widget: this function is similar to the factory function
           used to build the widget during an interactive session, see the code
-          for details and differences </para>
+          for details and differences</para>
         </listitem>
 
         <listitem>
           <para>when the end of an 'object' element is reached, the object at
           the top of the stack is removed, and its widget (see the source of
-          <classname>XmlWidgetObject</classname>) is laid out </para>
+          <classname>XmlWidgetObject</classname>) is laid out</para>
         </listitem>
 
         <listitem>
@@ -2768,7 +2787,7 @@ if __name__ == '__main__':
           properties, whose xml representation consists of more sub-elements,
           each widget can define a particular handler: see for example
           <classname>FontHandler</classname> in
-          <classname>edit_windows.WindowBase</classname> </para>
+          <classname>edit_windows.WindowBase</classname></para>
         </listitem>
       </itemizedlist>
     </section>
@@ -2786,9 +2805,9 @@ if __name__ == '__main__':
       <para>How the code is generated: every time the end of an object is
       reached during the parsing of the xml tree, either the function
       <quote><methodname>add_object</methodname></quote> or the function
-      <quote><methodname>add_class</methodname></quote> is called: the latter when
-      the object is a toplevel one, the former when it is not. In the last
-      case, <quote><methodname>add_object</methodname></quote> calls the
+      <quote><methodname>add_class</methodname></quote> is called: the latter
+      when the object is a toplevel one, the former when it is not. In the
+      last case, <quote><methodname>add_object</methodname></quote> calls the
       appropriate ``writer'' function for the specific object, found in the
       <quote><code>obj_builders</code></quote> dictionary. Such function
       accepts one argument, the <classname>CodeObject</classname> representing
@@ -2797,7 +2816,7 @@ if __name__ == '__main__':
       <quote><methodname>__init__</methodname></quote>,
       <quote><methodname>__set_properties</methodname></quote> and
       <quote><methodname>__do_layout</methodname></quote> methods of the
-      parent object. </para>
+      parent object.</para>
 
       <note>
         <para>The lines in the
@@ -2813,12 +2832,12 @@ if __name__ == '__main__':
       wxGlade, in whatever way you like. If you decide to contribute them
       back, however, here are some simple (stylistic) rules to follow: note
       that these are only general indications, if you think they don't fit
-      somewhere, feel free to ignore them. </para>
+      somewhere, feel free to ignore them.</para>
 
       <itemizedlist>
         <listitem>
           <para>class names are usually CamelCase - variables, functions and
-          method names are lower_case_with_unserscores </para>
+          method names are lower_case_with_unserscores</para>
         </listitem>
 
         <listitem>
@@ -2826,7 +2845,7 @@ if __name__ == '__main__':
         </listitem>
 
         <listitem>
-          <para> source lines are at most 79 characters long </para>
+          <para>source lines are at most 79 characters long</para>
         </listitem>
 
         <listitem>
@@ -2836,11 +2855,11 @@ if __name__ == '__main__':
 
         <listitem>
           <para>source files use Unix EOL conventions (LF) if possible. In any
-          case, please don't mix Unix and Windows EOLs </para>
+          case, please don't mix Unix and Windows EOLs</para>
         </listitem>
 
         <listitem>
-          <para>put your copyright info whenever appropriate </para>
+          <para>put your copyright info whenever appropriate</para>
         </listitem>
 
         <listitem>
@@ -2885,6 +2904,7 @@ if __name__ == '__main__':
         <para><screen>static_text          &lt;- Directory named after the widget name
 |-- __init__.py      &lt;- Mostly an empty file or a file with just a comment
 |-- codegen.py       &lt;- Python and C++ code generators
+|-- wconfig.py       &lt;- Widget configuration
 |-- lisp_codegen.py  &lt;- Lisp code generator
 |-- perl_codegen.py  &lt;- Perl code generator
 `-- static_text.py   &lt;- wxGlade GUI code
@@ -2901,6 +2921,7 @@ Archive:  static_text.zip
         0  2013-12-09 10:02   static_text/
       329  2013-12-09 10:02   static_text/__init__.py
      3352  2013-12-09 10:02   static_text/codegen.py
+      320  2013-12-09 10:02   static_text/wconfig.py
      1640  2013-12-09 10:02   static_text/lisp_codegen.py
      1841  2013-12-09 10:02   static_text/perl_codegen.py
      5917  2013-12-09 10:02   static_text/static_text.py
@@ -2908,6 +2929,37 @@ Archive:  static_text.zip
     13079                     6 files
 </screen></para>
       </example>
+
+      <section>
+        <title>Create ZIP package</title>
+
+        <para>Creating a ZIP package is quite simple. Just create a ZIP
+        package from widgets directory with all Python and additional files.
+        Don't include Python bytecode files because they are not
+        platfrom-independend.<programlisting># tree static_text/
+static_text/
+|-- __init__.py
+|-- codegen.py
+|-- wconfig.py
+|-- lisp_codegen.py
+|-- perl_codegen.py
+`-- static_text.py
+
+# zip -r static_text.zip static_text 
+  adding: static_text/ (stored 0%)
+  adding: static_text/__init__.py (deflated 36%)
+  adding: static_text/codegen.py (deflated 67%)
+  adding: static_text/wconfig.py (deflated 64%)
+  adding: static_text/lisp_codegen.py (deflated 54%)
+  adding: static_text/perl_codegen.py (deflated 56%)
+  adding: static_text/static_text.py (deflated 69%)
+</programlisting></para>
+
+        <para>Check the integrity of the created ZIP archive:</para>
+
+        <para><programlisting># zip -T static_text.zip 
+test of static_text.zip OK</programlisting></para>
+      </section>
     </section>
 
     <section>
@@ -3002,32 +3054,34 @@ def initialize():
       </orderedlist>
 
       <section>
-        <title>Create ZIP package</title>
+        <title>Widget Initialisation</title>
 
-        <para>Creating a ZIP package is quite simple. Just create a ZIP
-        package from widgets directory with all Python and additional files.
-        Don't include Python bytecode files because they are not
-        platfrom-independend.<programlisting># tree static_text/
-static_text/
-|-- __init__.py
-|-- codegen.py
-|-- lisp_codegen.py
-|-- perl_codegen.py
-`-- static_text.py
+        <para>XXX</para>
 
-# zip -r static_text.zip static_text 
-  adding: static_text/ (stored 0%)
-  adding: static_text/__init__.py (deflated 36%)
-  adding: static_text/codegen.py (deflated 67%)
-  adding: static_text/lisp_codegen.py (deflated 54%)
-  adding: static_text/perl_codegen.py (deflated 56%)
-  adding: static_text/static_text.py (deflated 69%)
-</programlisting></para>
+        <orderedlist>
+          <listitem>
+            <para>Loade generic and language independent widget configuration
+            from <filename>wconfig.py</filename>
+            (<function>common.load_config()</function>)</para>
+          </listitem>
 
-        <para>Check the integrity of the created ZIP archive:</para>
+          <listitem>
+            <para>Load and initialise language code writers
+            (<function>common.load_code_writers()</function>)</para>
+          </listitem>
 
-        <para><programlisting># zip -T static_text.zip 
-test of static_text.zip OK</programlisting></para>
+          <listitem>
+            <para>Load and initialise widgets
+            (<function>common.load_widgets()</function>)</para>
+          </listitem>
+
+          <listitem>
+            <para>Load and initialise sizers
+            (<function>common.load_sizers()</function> )</para>
+          </listitem>
+        </orderedlist>
+
+        <para>XXX</para>
       </section>
     </section>
   </chapter>
@@ -3203,6 +3257,8 @@ test of static_text.zip OK</programlisting></para>
     <title>wxGlade License Agreement</title>
 
     <para>Copyright (c) 2002-2007 Alberto Griggio</para>
+
+    <para>Copyright (c) 2011-2014 Carsten Grohmann</para>
 
     <para>Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files (the
