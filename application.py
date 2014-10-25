@@ -26,7 +26,7 @@ import misc
 class FileDirDialog(object):
     """\
     Custom class which displays a FileDialog or a DirDialog, according to the
-    value of the L{Application.codegen_opt} of its parent (instance of
+    value of the L{Application.multiple_files} of its parent (instance of
     L{Application}).
 
     @ivar default_extension: The default extension will be added to all
@@ -66,7 +66,7 @@ class FileDirDialog(object):
         @return: C{ID_OK} or C{ID_CANCEL}
         @see: L{get_value()}
         """
-        if self.parent.codegen_opt == 0:
+        if self.parent.multiple_files == 0:
             self.value = misc.FileSelector(
                 self.file_message,
                 self.prev_dir,
@@ -108,7 +108,7 @@ class Application(object):
 
     @ivar __filename:  Name of the output XML file
     @ivar __saved:     If True, there are no changes to save
-    @ivar codegen_opt: If != 0, generates a separate file for each class
+    @ivar multiple_files: If != 0, generates a separate file for each class
     @ivar for_version: Version string of major dot minor version number
     @type for_version: str
     @ivar klass:       Name of the automatically generated class derived from
@@ -144,7 +144,7 @@ class Application(object):
         self.__saved = True
         self.__filename = None
         self.klass = "MyApp"
-        self.codegen_opt = config.default_multiple_files
+        self.multiple_files = config.default_multiple_files
         self.indent_mode = 1
         self.indent_amount = config.default_indent_amount
 
@@ -159,9 +159,9 @@ class Application(object):
         self.access_functions = {
             'name': (lambda: self.name, self.set_name),
             'class': (lambda: self.klass, self.set_klass),
-            'code_generation': (
-                lambda: self.codegen_opt,
-                self.set_codegen_opt
+            'multiple_files': (
+                lambda: self.multiple_files,
+                self.set_multiple_files
                 ),
             'indent_mode': (lambda: self.indent_mode, self.set_indent_mode),
             'indent_amount': (
@@ -214,7 +214,7 @@ class Application(object):
             _("Split source code in one file per class / widget"),
             ]
         self.multiple_files_prop = RadioProperty(
-            self, "code_generation", panel,
+            self, "multiple_files", panel,
             [_("Single file"), _("Separate file for each class")],
             label=_("Code Generation"), tooltips=codegen_tooltips)
         self.indent_mode_prop = RadioProperty(self, "indent_mode",
@@ -380,13 +380,13 @@ class Application(object):
     def set_header_ext(self, value):
         self.header_ext = value
 
-    def set_codegen_opt(self, value):
+    def set_multiple_files(self, value):
         try:
             opt = int(value)
         except ValueError:
             pass
         else:
-            self.codegen_opt = opt
+            self.multiple_files = opt
 
     def set_for_version(self, value):
         self.for_version = self.for_version_prop.get_str_value()
@@ -633,7 +633,7 @@ class Application(object):
         self.name = "app"
         self.name_prop.set_value("app")
         self.name_prop.toggle_active(False)
-        self.codegen_opt = config.default_multiple_files
+        self.multiple_files = config.default_multiple_files
         self.multiple_files_prop.set_value(config.default_multiple_files)
         self.indent_mode = 1
         self.indent_amount = config.default_indent_amount
@@ -781,12 +781,12 @@ class Application(object):
 
         self.real_output_path = self.output_path
         self.output_path = out_name
-        real_codegen_opt = self.codegen_opt
+        real_multiple_files = self.multiple_files
         real_language = self.language
         real_use_gettext = self.use_gettext
         self.use_gettext = False
         self.language = 'python'
-        self.codegen_opt = 0
+        self.multiple_files = 0
         overwrite = self.overwrite
         self.overwrite = 0
 
@@ -842,7 +842,7 @@ class Application(object):
         widget.klass = widget_class_name
         self.output_path = self.real_output_path
         del self.real_output_path
-        self.codegen_opt = real_codegen_opt
+        self.multiple_files = real_multiple_files
         self.language = real_language
         self.use_gettext = real_use_gettext
         self.overwrite = overwrite
