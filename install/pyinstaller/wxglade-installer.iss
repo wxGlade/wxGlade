@@ -37,7 +37,7 @@ ChangesAssociations=yes
 LicenseFile="license.txt"
 SourceDir="{#DIST_DIR}"
 #ifdef EDITION_SHORT
-  OutputDir="..\dist"
+  OutputDir="..\..\dist"
   OutputBaseFilename=wxGlade-SAE-{#PRODUCT_VERSION}-setup
 #else
   OutputDir="dist"
