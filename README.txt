@@ -1,5 +1,5 @@
 wxGlade: A GUI builder for wxPython/wxWidgets
-Version: 0.6.7
+Version: 0.7.0
 License: MIT (see license.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
@@ -7,8 +7,8 @@ THIS PROGRAM COMES WITH NO WARRANTY
 
 * Requirements:
 ---------------
-Python >= 2.3
-wxPython >= 2.6
+Python >= 2.4
+wxPython >= 2.8
 
 
 * Installation:
@@ -47,4 +47,4 @@ For any kind of question, there's a mailing list at
     https://lists.sourceforge.net/lists/listinfo/wxglade-general
 
 Enjoy!
-Alberto Griggio
+Carsten Grohmann

@@ -1,3 +1,3545 @@
+2014-10-26  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Remove technical notes from INNO setup
+
+	Files (added, modified or removed):
+	* install/pyinstaller/wxglade-installer.iss
+
+	Change directory the SAE installed will placed to
+
+	Files (added, modified or removed):
+	* install/pyinstaller/wxglade-installer.iss
+
+	Remove appdata.xml and wxGlade.desktop from Windows distribution
+
+	Files (added, modified or removed):
+	* install/pyinstaller/wxglade.spec
+
+	Remove obsolete wxversion comment
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+	Update Windows installation procedure after upgrading to Pyinstaller
+	2.1
+
+	Files (added, modified or removed):
+	* docs/BuildingInstaller.txt
+	* docs/ReleaseSteps.txt
+	* install/pyinstaller/build.bat
+	* install/pyinstaller/hook-main.py
+	* install/pyinstaller/hooks/hook-main.py
+	* install/pyinstaller/wxglade-installer.iss
+	* install/pyinstaller/wxglade.spec
+
+	Update developers
+
+	Files (added, modified or removed):
+	* credits.txt
+
+	Update classification of the programming language
+
+	Files (added, modified or removed):
+	* setup.py
+
+2014-10-25  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Merge documenation
+
+	Files (added, modified or removed):
+
+	Update and extend documentation
+
+	Files (added, modified or removed):
+	* docs/html/apa.html
+	* docs/html/apb.html
+	* docs/html/apc.html
+	* docs/html/apd.html
+	* docs/html/ch01.html
+	* docs/html/ch01s02.html
+	* docs/html/ch01s03.html
+	* docs/html/ch01s04.html
+	* docs/html/ch01s05.html
+	* docs/html/ch01s06.html
+	* docs/html/ch01s07.html
+	* docs/html/ch01s08.html
+	* docs/html/ch02.html
+	* docs/html/ch02s02.html
+	* docs/html/ch02s03.html
+	* docs/html/ch02s04.html
+	* docs/html/ch02s05.html
+	* docs/html/ch02s06.html
+	* docs/html/ch02s07.html
+	* docs/html/ch02s08.html
+	* docs/html/ch03.html
+	* docs/html/ch03s02.html
+	* docs/html/ch03s03.html
+	* docs/html/ch03s04.html
+	* docs/html/ch03s05.html
+	* docs/html/ch03s06.html
+	* docs/html/ch04.html
+	* docs/html/ch04s03.html
+	* docs/html/ch05.html
+	* docs/html/ch05s02.html
+	* docs/html/ch05s03.html
+	* docs/html/ch05s04.html
+	* docs/html/ch06.html
+	* docs/html/ch06s02.html
+	* docs/html/ch06s03.html
+	* docs/html/ch06s04.html
+	* docs/html/ch06s05.html
+	* docs/html/ch06s06.html
+	* docs/html/ch06s07.html
+	* docs/html/ch06s08.html
+	* docs/html/ch06s09.html
+	* docs/html/ch07.html
+	* docs/html/ch07s02.html
+	* docs/html/ch07s03.html
+	* docs/html/index.html
+	* docs/html/label_menu.png
+	* docs/html/pr01.html
+	* docs/html/pr01s02.html
+	* docs/html/properties_menu_editor.png
+	* docs/html/properties_toolbar_editor.png
+	* docs/html/properties_window_application.png
+	* docs/html/properties_window_settings.png
+	* docs/html/properties_window_statusbar.png
+	* docs/html/sizer_menu.png
+	* docs/html/tree_window.png
+	* docs/pdf/manual.pdf
+	* docs/src/label_menu.png
+	* docs/src/manual.xml
+	* docs/src/properties_menu_editor.png
+	* docs/src/properties_toolbar_editor.png
+	* docs/src/properties_window_application.png
+	* docs/src/properties_window_settings.png
+	* docs/src/properties_window_statusbar.png
+	* docs/src/sizer_menu.png
+	* docs/src/tree_window.png
+
+	Rename codegen_opt into multiple_files for clarification
+
+	Files (added, modified or removed):
+	* tree.py
+	* xml_parse.py
+
+	Migrate technical notes into manual
+
+	Files (added, modified or removed):
+	* docs/src/manual.xml
+	* docs/tech_notes.txt
+
+	Add myself to license statements
+
+	Files (added, modified or removed):
+	* setup.py
+	* wxglade.py
+
+	Adapt software classification
+
+	Files (added, modified or removed):
+	* setup.py
+
+	Set proper output path at GUI startup
+
+	Files (added, modified or removed):
+	* application.py
+
+	Rename codegen_opt into multiple_files for clarification
+
+	Files (added, modified or removed):
+	* application.py
+
+2014-10-24  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use raw strings if strings contains backslashes
+
+	Files (added, modified or removed):
+	* application.py
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* edit_sizers/edit_sizers.py
+	* edit_windows.py
+	* main.py
+
+	Text improvements and typos
+
+	Files (added, modified or removed):
+	* about.py
+	* application.py
+	* clipboard.py
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/perl_codegen.py
+	* codegen/py_codegen.py
+	* common.py
+	* edit_sizers/edit_sizers.py
+	* edit_windows.py
+	* main.py
+	* misc.py
+	* preferences_ui.py
+	* res/preferences_ui.wxg
+	* tree.py
+	* widget_properties.py
+	* widgets/dialog/dialog.py
+	* widgets/dialog/perl_codegen.py
+	* widgets/grid/grid.py
+	* widgets/hyperlink_ctrl/wconfig.py
+	* widgets/menubar/menubar.py
+	* widgets/notebook/notebook.py
+	* widgets/panel/panel.py
+	* widgets/splitter_window/splitter_window.py
+	* xml_parse.py
+
+	Adapt file extensions to changing code generator languages in single
+	file mode
+
+	Files (added, modified or removed):
+	* application.py
+
+	Rename codegen_prop into multiple_files_prop for clarification
+
+	Files (added, modified or removed):
+	* application.py
+	* xml_parse.py
+
+	Improve setting the code generator language
+
+	Files (added, modified or removed):
+	* application.py
+	* xml_parse.py
+
+2014-10-23  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Escape linebreak and tab characters in doc strings
+
+	Files (added, modified or removed):
+	* codegen/perl_codegen.py
+	* codegen/py_codegen.py
+	* wcodegen/__init__.py
+
+	Minor code reorg
+
+	Files (added, modified or removed):
+	* application.py
+
+	Show locale settings in printed or logged exceptions
+
+	Files (added, modified or removed):
+	* log.py
+
+	Move default_style to widget config dict and recognise choices
+	automatically
+
+	Files (added, modified or removed):
+	* common.py
+	* wcodegen/__init__.py
+	* widgets/choice/codegen.py
+	* widgets/choice/lisp_codegen.py
+	* widgets/choice/perl_codegen.py
+	* widgets/combo_box/codegen.py
+	* widgets/combo_box/lisp_codegen.py
+	* widgets/combo_box/perl_codegen.py
+	* widgets/combo_box/wconfig.py
+	* widgets/gauge/codegen.py
+	* widgets/gauge/lisp_codegen.py
+	* widgets/gauge/perl_codegen.py
+	* widgets/gauge/wconfig.py
+	* widgets/list_box/codegen.py
+	* widgets/list_box/lisp_codegen.py
+	* widgets/list_box/perl_codegen.py
+	* widgets/list_ctrl/codegen.py
+	* widgets/list_ctrl/lisp_codegen.py
+	* widgets/list_ctrl/perl_codegen.py
+	* widgets/list_ctrl/wconfig.py
+	* widgets/radio_box/codegen.py
+	* widgets/radio_box/lisp_codegen.py
+	* widgets/radio_box/perl_codegen.py
+	* widgets/slider/codegen.py
+	* widgets/slider/lisp_codegen.py
+	* widgets/slider/perl_codegen.py
+	* widgets/slider/wconfig.py
+	* widgets/spin_button/codegen.py
+	* widgets/spin_button/lisp_codegen.py
+	* widgets/spin_button/perl_codegen.py
+	* widgets/spin_button/wconfig.py
+	* widgets/spin_ctrl/codegen.py
+	* widgets/spin_ctrl/lisp_codegen.py
+	* widgets/spin_ctrl/perl_codegen.py
+	* widgets/spin_ctrl/wconfig.py
+	* widgets/static_line/codegen.py
+	* widgets/static_line/lisp_codegen.py
+	* widgets/static_line/perl_codegen.py
+	* widgets/static_line/wconfig.py
+	* widgets/tree_ctrl/codegen.py
+	* widgets/tree_ctrl/lisp_codegen.py
+	* widgets/tree_ctrl/perl_codegen.py
+	* widgets/tree_ctrl/wconfig.py
+
+2014-10-22  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Fix incomplete Unicode escaping
+
+	The unicode range 0x80-0xFF (Latin-1 Supplement - also called C1
+	Controls and Latin-1 Supplement) wasn't escaped yet. Thereby the
+	returned string was not pure ascii. This commit manually converts
+	the remaining unicode characters.
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/__init__.py
+	* codegen/perl_codegen.py
+	* codegen/py_codegen.py
+	* tests/test_codegen.py
+
+	Short update to reflect already committed changes
+
+	Files (added, modified or removed):
+	* NEWS.txt
+
+	Add a deprecation notice to the in place modification feature.
+
+	wxGlade can change code inside existing source files to reflect
+	changed designs. This feature is deprecated now und will be removed
+	within the next releases.
+
+	Files (added, modified or removed):
+	* application.py
+
+2014-10-21  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Closed DEV_UNICODE branch
+
+	Files (added, modified or removed):
+
+	Include RELEASE-VERSION into files/dirs generated by PyInstaller
+
+	Files (added, modified or removed):
+	* install/pyinstaller/wxglade.spec
+
+2014-10-20  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Fix wrong decoding of strings in function to quote/escape Python
+	strings
+
+	The input parameter s is a string encoded with self.app_encoding.
+	Decoding with 'utf8' works for pure ascii strings only. Latin1
+	string with umlauts have failed.
+
+	Files (added, modified or removed):
+	* codegen/py_codegen.py
+	* common.py
+	* tests/__init__.py
+	* tests/test_codegen.py
+
+2014-10-19  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Remove alias misc.encode
+
+	Files (added, modified or removed):
+	* misc.py
+	* widgets/button/button.py
+	* widgets/choice/choice.py
+	* widgets/hyperlink_ctrl/hyperlink_ctrl.py
+	* widgets/list_box/list_box.py
+	* widgets/menubar/menubar.py
+	* widgets/radio_box/radio_box.py
+	* widgets/radio_button/radio_button.py
+	* widgets/static_text/static_text.py
+	* widgets/toggle_button/toggle_button.py
+
+	Add missing docstring
+
+	Files (added, modified or removed):
+	* widget_properties.py
+
+2014-10-18  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add desktop entry file
+
+	Files (added, modified or removed):
+	* wxGlade.desktop
+
+	Add short application description via appdata.xml file
+
+	Files (added, modified or removed):
+	* appdata.xml
+	* docs/ReleaseSteps.txt
+	* install/pyinstaller/wxglade.spec
+	* setup.py
+
+	Introduce an wrapper class for StringIO to enforce ASCII content.
+
+	Files (added, modified or removed):
+	* codegen/cpp_codegen.py
+	* misc.py
+
+	Rename StringIO wrapper misc.EncStringIO() to misc.UnicodeStringIO()
+
+	The wrapper class enforces the conversion to Unicode always.
+
+	Files (added, modified or removed):
+	* application.py
+	* misc.py
+
+	Change Perl tooltip statement for wx3 from SetToolTipString() to
+	SetToolTip()
+
+	Files (added, modified or removed):
+	* codegen/perl_codegen.py
+	* tests/casefiles/ComplexExample_30.pl
+
+	Adapt naming schema for code statements to schema used with styles
+
+	Example: 'tooltip_3X' -> 'tooltip_3'
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/py_codegen.py
+
+	Rename wxALIGN_CENTRE* to wxALIGN_CENTER* during code generation
+
+	Files (added, modified or removed):
+	* common.py
+
+	Don't inject cn_f() into XrcObject, it's used from the StylesMixin
+	now.
+
+	Files (added, modified or removed):
+	* codegen/xrc_codegen.py
+
+	Fix wrong formatted string statement
+
+	Files (added, modified or removed):
+	* codegen/xrc_codegen.py
+
+	Separate styles related code
+
+	The resulting StylesMixin can be used within the widget writer
+	structure as well as the code generator structure later. This commit
+	fixes a bug in handling combined styles too.
+
+	Files (added, modified or removed):
+	* common.py
+	* edit_sizers/edit_sizers.py
+	* edit_windows.py
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/AllWidgets_28.py
+	* tests/casefiles/AllWidgets_28.xrc
+	* tests/casefiles/Sizers_classattr.cpp
+	* tests/casefiles/Sizers_classattr.lisp
+	* tests/casefiles/Sizers_classattr.pl
+	* tests/casefiles/Sizers_classattr.py
+	* tests/casefiles/Sizers_classattr.xrc
+	* tests/casefiles/Sizers_no_classattr.cpp
+	* tests/casefiles/Sizers_no_classattr.lisp
+	* tests/casefiles/Sizers_no_classattr.pl
+	* tests/casefiles/Sizers_no_classattr.py
+	* tests/casefiles/Sizers_no_classattr.xrc
+	* tests/test_codegen.py
+	* wcodegen/__init__.py
+	* wcodegen/mixins.py
+	* xml_parse.py
+
+	Rework xml_parse.Sizeritem() to use style names instead of values
+	partially
+
+	Files (added, modified or removed):
+	* xml_parse.py
+
+	Rename StylesMixin in EditStylesMixin
+
+	Files (added, modified or removed):
+	* edit_sizers/edit_sizers.py
+	* edit_windows.py
+	* tests/test_gui.py
+	* wcodegen/__init__.py
+	* widgets/bitmap_button/bitmap_button.py
+	* widgets/button/button.py
+	* widgets/calendar_ctrl/calendar_ctrl.py
+	* widgets/combo_box/combo_box.py
+	* widgets/custom_widget/custom_widget.py
+	* widgets/datepicker_ctrl/datepicker_ctrl.py
+	* widgets/dialog/dialog.py
+	* widgets/frame/frame.py
+	* widgets/gauge/gauge.py
+	* widgets/grid/grid.py
+	* widgets/hyperlink_ctrl/hyperlink_ctrl.py
+	* widgets/list_box/list_box.py
+	* widgets/list_ctrl/list_ctrl.py
+	* widgets/notebook/notebook.py
+	* widgets/panel/panel.py
+	* widgets/radio_button/radio_button.py
+	* widgets/slider/slider.py
+	* widgets/spacer/spacer.py
+	* widgets/spin_button/spin_button.py
+	* widgets/spin_ctrl/spin_ctrl.py
+	* widgets/splitter_window/splitter_window.py
+	* widgets/static_bitmap/static_bitmap.py
+	* widgets/static_line/static_line.py
+	* widgets/static_text/static_text.py
+	* widgets/statusbar/statusbar.py
+	* widgets/text_ctrl/text_ctrl.py
+	* widgets/toolbar/toolbar.py
+	* widgets/tree_ctrl/tree_ctrl.py
+
+2014-10-17  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Remove unused parameter in cn_f()
+
+	Files (added, modified or removed):
+	* wcodegen/__init__.py
+
+	Rework formatting flags for XRC code
+
+	Files (added, modified or removed):
+	* codegen/xrc_codegen.py
+	* tests/casefiles/AllWidgets_28.xrc
+	* tests/casefiles/ComplexExample.xrc
+	* tests/casefiles/ComplexExample_30.xrc
+	* tests/casefiles/Format_flags.wxg
+	* tests/casefiles/Format_flags.xrc
+	* tests/casefiles/Sizers_classattr.xrc
+	* tests/casefiles/Sizers_no_classattr.xrc
+	* tests/test_codegen.py
+	* wcodegen/__init__.py
+	* widgets/toolbar/codegen.py
+
+2014-10-15  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Typo
+
+	Files (added, modified or removed):
+	* widgets/static_bitmap/static_bitmap.py
+
+	Add debug message for processing flags (cn_f())
+
+	Files (added, modified or removed):
+	* wcodegen/__init__.py
+
+	Fix writing debug() messages to the log file
+
+	Files (added, modified or removed):
+	* log.py
+
+2014-10-14  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Don't set wxStatusbar labels if no label have a text
+
+	Files (added, modified or removed):
+	* tests/casefiles/Statusbar_wo_labels.cpp
+	* tests/casefiles/Statusbar_wo_labels.h
+	* tests/casefiles/Statusbar_wo_labels.lisp
+	* tests/casefiles/Statusbar_wo_labels.pl
+	* tests/casefiles/Statusbar_wo_labels.py
+	* tests/casefiles/Statusbar_wo_labels.wxg
+	* tests/casefiles/Statusbar_wo_labels.xrc
+	* tests/test_codegen.py
+	* widgets/statusbar/codegen.py
+	* widgets/statusbar/lisp_codegen.py
+	* widgets/statusbar/perl_codegen.py
+
+	Minor fix for last commit
+
+	Files (added, modified or removed):
+	* config.py
+
+2014-10-13  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change internal handling of the version number and introduce
+	RELEASE-VERSION
+
+	The version number will determinate in three steps: 1. read from
+	release file 2. Queried from local hg repo 3. Set to "not found"
+
+	Files (added, modified or removed):
+	* common.py
+	* config.py
+	* docs/BuildingInstaller.txt
+	* docs/ReleaseSteps.txt
+	* setup.py
+	* wxglade.py
+
+	Add statusbar widget to Windows installer file
+
+	Files (added, modified or removed):
+	* install/pyinstaller/wxglade-installer.iss
+
+	Update wxPerl homepage URL
+
+	Files (added, modified or removed):
+	* codegen/perl_codegen.py
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/CalendarCtrl.pl
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample_30.pl
+	* tests/casefiles/FontColour.pl
+	* tests/casefiles/Gauge.pl
+	* tests/casefiles/Grid.pl
+	* tests/casefiles/HyperlinkCtrl_28.pl
+	* tests/casefiles/Perl_Preferences.pl
+	* tests/casefiles/PlAddApp_multi_detailed.pl
+	* tests/casefiles/PlAddApp_multi_gettext_detailed.pl
+	* tests/casefiles/PlAddApp_multi_gettext_simple.pl
+	* tests/casefiles/PlAddApp_multi_simple.pl
+	* tests/casefiles/PlOgg1.pl
+	* tests/casefiles/PlOgg2_MyDialog.pm
+	* tests/casefiles/PlOgg2_MyFrame.pm
+	* tests/casefiles/PlOgg2_app.pl
+	* tests/casefiles/PlOgg3.pl
+	* tests/casefiles/Sizers_classattr.pl
+	* tests/casefiles/Sizers_no_classattr.pl
+	* tests/casefiles/add_class_inplace_extended.pl
+	* tests/casefiles/add_class_inplace_orig.pl
+	* tests/casefiles/bug163.pl
+	* tests/casefiles/no_suitable_writer.pl
+	* tests/casefiles/remove_class_inplace_expected.pl
+	* tests/casefiles/remove_class_inplace_input.pl
+	* tests/casefiles/styleless-dialog.pl
+
+	Typo
+
+	Files (added, modified or removed):
+	* misc.py
+
+	Rename configdialog into preferencesdialog to have consistent naming
+	schema
+
+	Files (added, modified or removed):
+	* configUI.py
+	* configdialog.py
+	* main.py
+	* preferences_ui.py
+	* preferencesdialog.py
+	* res/preferences.wxg
+	* res/preferences_ui.wxg
+
+	Minor changes in all widgets test case
+
+	Files (added, modified or removed):
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/AllWidgets_28.py
+	* tests/casefiles/AllWidgets_28.wxg
+	* tests/casefiles/AllWidgets_28.xrc
+
+	Set majorDimension to 1 if choice is empty for C++ and wxRadiobox
+
+	wx raises an assertion if choices are empty and majorDim is 0
+	(default)
+
+	Files (added, modified or removed):
+	* tests/casefiles/AllWidgets_28.cpp
+	* widgets/radio_box/codegen.py
+
+2014-10-12  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add caching for tooltips
+
+	Files (added, modified or removed):
+	* widget_properties.py
+
+	Fix comparing version number introduced with last commit
+
+	Files (added, modified or removed):
+	* xml_parse.py
+
+	Show warning if loading projects for wx2.6 or with old python
+	imports
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* config.py
+	* xml_parse.py
+
+	Rework specified types in docstrings
+
+	Files (added, modified or removed):
+	* config.py
+
+2014-10-11  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Don't generate "wxDefaultPosition, wxDefaultSize, );" for Perl
+
+	Files (added, modified or removed):
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample.py
+	* tests/casefiles/ComplexExample_30.pl
+	* tests/casefiles/Perl_Preferences.pl
+	* tests/casefiles/PlOgg1.pl
+	* tests/casefiles/PlOgg2_MyDialog.pm
+	* tests/casefiles/PlOgg3.pl
+	* widgets/menubar/perl_codegen.py
+	* widgets/panel/perl_codegen.py
+	* widgets/splitter_window/perl_codegen.py
+	* widgets/toolbar/perl_codegen.py
+	* wxglade.py
+
+	Separate setting wxGlade output path to an own function
+
+	Files (added, modified or removed):
+	* tests/test_gui.py
+
+	Extract processing of wx events to a separate function
+
+	Files (added, modified or removed):
+	* tests/test_gui.py
+
+	Rework specified types in docstrings and minor code changes
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/perl_codegen.py
+	* codegen/py_codegen.py
+	* edit_sizers/edit_sizers.py
+	* install/update-po.py
+	* tests/__init__.py
+	* tests/test_gui.py
+	* wcodegen/__init__.py
+	* wcodegen/dialogs.py
+	* widgets/bitmap_button/lisp_codegen.py
+	* widgets/custom_widget/custom_widget.py
+	* widgets/dialog/codegen.py
+	* widgets/dialog/dialog.py
+	* widgets/frame/codegen.py
+	* widgets/frame/frame.py
+	* widgets/menubar/lisp_codegen.py
+	* widgets/menubar/menubar.py
+	* widgets/notebook/notebook.py
+	* widgets/spacer/spacer.py
+	* widgets/statusbar/statusbar.py
+	* widgets/toolbar/toolbar.py
+
+	Add missing layout code generation for wxPanel
+
+	Files (added, modified or removed):
+	* application.py
+	* common.py
+	* config.py
+	* edit_windows.py
+	* log.py
+	* main.py
+	* misc.py
+	* ordereddict.py
+	* test.py
+	* tree.py
+	* widget_properties.py
+	* widgets/panel/codegen.py
+	* widgets/panel/lisp_codegen.py
+	* widgets/panel/perl_codegen.py
+	* wxglade.py
+	* xml_parse.py
+
+	Fix different call syntax of EditStatusBar
+
+	Files (added, modified or removed):
+	* widgets/frame/frame.py
+	* widgets/statusbar/statusbar.py
+
+2014-10-10  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Adapt GUI test setup to run on 2.8 and 3.0
+
+	Files (added, modified or removed):
+	* tests/test_gui.py
+
+2014-10-09  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Show an info instead of an error if opening a non-existing last
+	visited file
+
+	Files (added, modified or removed):
+	* main.py
+
+	More path normalisation
+
+	Files (added, modified or removed):
+	* application.py
+	* tree.py
+	* wxglade.py
+
+2014-10-08  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Expand user in output files and directories
+
+	Files (added, modified or removed):
+	* application.py
+	* codegen/__init__.py
+
+	Enable wxPython3 for GUI
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+	Remove unused import xml.sax.expatreader
+
+	Files (added, modified or removed):
+	* xml_parse.py
+
+	Closed WXG-BRANCH-VERSION_0_6_8 branch
+
+	Files (added, modified or removed):
+
+	merged DEV_GUI_WX30 into default
+
+	Files (added, modified or removed):
+	* Makefile
+	* NEWS.txt
+	* about.py
+	* application.py
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/perl_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* codegen/xrc_codegen.py
+	* common.py
+	* config.py
+	* edit_sizers/sizers_codegen.py
+	* log.py
+	* main.py
+	* setup.py
+	* test.py
+	* tests/__init__.py
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/CPP_Preferences.cpp
+	* tests/casefiles/CPP_wxCalendarCtrl.cpp
+	* tests/casefiles/CPP_wxCalendarCtrl.h
+	* tests/casefiles/CPP_wxCalendarCtrl.wxg
+	* tests/casefiles/CalendarCtrl.pl
+	* tests/casefiles/ComplexExample.lisp
+	* tests/casefiles/Gauge.lisp
+	* tests/casefiles/Gauge.pl
+	* tests/casefiles/Grid.lisp
+	* tests/casefiles/Grid.pl
+	* tests/casefiles/HyperlinkCtrl_26.cpp
+	* tests/casefiles/HyperlinkCtrl_26.h
+	* tests/casefiles/HyperlinkCtrl_26.lisp
+	* tests/casefiles/HyperlinkCtrl_26.pl
+	* tests/casefiles/HyperlinkCtrl_26.py
+	* tests/casefiles/HyperlinkCtrl_26.wxg
+	* tests/casefiles/HyperlinkCtrl_26.xrc
+	* tests/casefiles/LispOgg1.lisp
+	* tests/casefiles/LispOgg2_MyDialog.lisp
+	* tests/casefiles/LispOgg2_MyFrame.lisp
+	* tests/casefiles/LispOgg3.lisp
+	* tests/casefiles/Lisp_Preferences.lisp
+	* tests/casefiles/Lisp_wxBitmapButton.lisp
+	* tests/casefiles/Perl_Preferences.pl
+	* tests/casefiles/PlOgg3.pl
+	* tests/casefiles/Preferences.wxg
+	* tests/casefiles/PyOgg1_oldnamespace.py
+	* tests/casefiles/Python_Preferences.py
+	* tests/casefiles/Sizers_classattr.lisp
+	* tests/casefiles/Sizers_no_classattr.lisp
+	* tests/casefiles/add_class_inplace_extended.lisp
+	* tests/casefiles/add_class_inplace_orig.lisp
+	* tests/casefiles/bug163.h
+	* tests/casefiles/bug163.lisp
+	* tests/casefiles/bug163.pl
+	* tests/casefiles/remove_class_inplace_expected.lisp
+	* tests/casefiles/remove_class_inplace_input.lisp
+	* tests/casefiles/styleless-dialog.cpp
+	* tests/casefiles/styleless-dialog.lisp
+	* tests/casefiles/styleless-dialog.pl
+	* tests/casefiles/styleless-dialog.py
+	* tests/test_bugs.py
+	* tests/test_codegen.py
+	* wcodegen/__init__.py
+	* widget_properties.py
+	* widgets/custom_widget/codegen.py
+	* widgets/grid/grid.py
+	* widgets/menubar/menubar.py
+	* widgets/panel/__init__.py
+	* wxglade.py
+	* xml_parse.py
+
+2014-10-07  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add option to exclude languages from
+	tests.WXGladeBaseTest._test_all()
+
+	Files (added, modified or removed):
+	* tests/__init__.py
+
+	Improve disabling old import style for wxPython 3.0
+
+	Files (added, modified or removed):
+	* application.py
+	* codegen/py_codegen.py
+	* errors.py
+	* tests/test_codegen.py
+	* wxglade.py
+
+	Disable Lisp code generation for wxWidgets 3.0
+
+	I've disabled Lisp due lack of testing possibilities for the
+	upcoming release of wxWidgets 3.0.
+
+	Files (added, modified or removed):
+	* application.py
+	* codegen/lisp_codegen.py
+	* errors.py
+	* tests/casefiles/ComplexExample_30.lisp
+	* tests/test_codegen.py
+	* wxglade.py
+	* xml_parse.py
+
+	Change "wxGlade Message" dialog to close on pressing enter
+
+	Files (added, modified or removed):
+	* msgdialog.py
+	* res/messagedialog.wxg
+
+2014-10-06  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Minor code reorganisation
+	- rename common._encode_from_xml() to encode_from_xml()
+	- rename common._encode_to_xml() to encode_to_xml()
+	- move widget_properties.label_initial_width to config module
+
+	Files (added, modified or removed):
+	* application.py
+	* common.py
+	* config.py
+	* edit_sizers/edit_sizers.py
+	* layout_option_property.py
+	* misc.py
+	* template.py
+	* tree.py
+	* widget_properties.py
+	* widgets/ChoicesProperty.py
+	* widgets/MenuTree.py
+	* widgets/grid/grid.py
+	* widgets/notebook/notebook.py
+	* widgets/statusbar/statusbar.py
+	* widgets/toolbar/tool.py
+	* xml_parse.py
+
+	Convert old-style classes in new-style classes
+
+	Files (added, modified or removed):
+	* application.py
+	* codegen/xrc_codegen.py
+	* edit_sizers/edit_sizers.py
+	* edit_windows.py
+	* misc.py
+	* template.py
+	* widget_properties.py
+	* widgets/ChoicesCodeHandler.py
+	* widgets/ChoicesProperty.py
+	* widgets/MenuTree.py
+	* widgets/button/button_stockitems.py
+	* widgets/custom_widget/codegen.py
+	* widgets/custom_widget/custom_widget.py
+	* widgets/frame/codegen.py
+	* widgets/grid/codegen.py
+	* widgets/grid/grid.py
+	* widgets/menubar/codegen.py
+	* widgets/notebook/codegen.py
+	* widgets/notebook/notebook.py
+	* widgets/statusbar/codegen.py
+	* widgets/toolbar/codegen.py
+	* widgets/toolbar/tool.py
+
+	Add list of public names to use during wildcard import
+
+	Files (added, modified or removed):
+	* widget_properties.py
+	* widgets/combo_box/combo_box.py
+
+	Change initialisation of border styles in SizerBase class
+
+	The old version caused an exception during copy / paste sizers.
+
+	Files (added, modified or removed):
+	* edit_sizers/edit_sizers.py
+
+2014-10-05  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add support for wxSplitterWindow.SetMinimumPaneSize()
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/AllWidgets_28.py
+	* tests/casefiles/AllWidgets_28.wxg
+	* tests/casefiles/AllWidgets_28.xrc
+	* widgets/splitter_window/codegen.py
+	* widgets/splitter_window/lisp_codegen.py
+	* widgets/splitter_window/perl_codegen.py
+	* widgets/splitter_window/splitter_window.py
+
+2014-10-04  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add wxTextCtrl to wxSpinButton test page
+
+	Files (added, modified or removed):
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.h
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/AllWidgets_28.py
+	* tests/casefiles/AllWidgets_28.wxg
+	* tests/casefiles/AllWidgets_28.xrc
+
+	Fix C++ compile error
+
+	The error was caused by using strings instead of wxT() for wxBitmap
+	file names. Old: wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY) New:
+	wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY)
+
+	Files (added, modified or removed):
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.h
+	* widgets/bitmap_button/codegen.py
+	* widgets/static_bitmap/codegen.py
+	* wxglade.py
+
+	Change inclusion of C++ i18n header file from "wx/intl.h" to
+	<wx/intl.h>
+
+	Files (added, modified or removed):
+	* codegen/cpp_codegen.py
+	* tests/casefiles/CPPAddApp_multi_gettext_detailed.cpp
+	* tests/casefiles/CPPAddApp_multi_gettext_simple.cpp
+	* tests/casefiles/CPPOgg1.h
+	* tests/casefiles/CPPOgg2_MyDialog.h
+	* tests/casefiles/CPPOgg2_MyFrame.h
+	* tests/casefiles/CPPOgg2_main.cpp
+	* tests/casefiles/CPPOgg3.h
+	* tests/casefiles/CPP_Preferences.h
+	* tests/casefiles/ComplexExample.h
+	* tests/casefiles/ComplexExample_30.h
+	* tests/casefiles/FontColour.h
+	* tests/casefiles/HyperlinkCtrl_28.h
+	* tests/casefiles/Sizers_classattr.h
+	* tests/casefiles/Sizers_no_classattr.h
+	* tests/casefiles/add_class_inplace_extended.h
+	* tests/casefiles/add_class_inplace_orig.h
+	* tests/casefiles/no_suitable_writer.h
+	* tests/casefiles/remove_class_inplace_expected.h
+	* tests/casefiles/remove_class_inplace_input.h
+	* tests/casefiles/styleless-dialog.h
+
+	Wrap tooltip lines automatically.
+
+	Files (added, modified or removed):
+	* config.py
+	* widget_properties.py
+
+2014-10-03  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add tests for widget without tests.
+
+	Now all widgets should be tested at least onece.
+
+	Files (added, modified or removed):
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.h
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/AllWidgets_28.py
+	* tests/casefiles/AllWidgets_28.wxg
+	* tests/casefiles/AllWidgets_28.xrc
+
+	Typo in Perl code template for wxSlider
+
+	Files (added, modified or removed):
+	* widgets/slider/perl_codegen.py
+
+	Use style names instead of style values wxSplitterWindow GUI
+	elements
+
+	Files (added, modified or removed):
+	* widgets/splitter_window/splitter_window.py
+
+	Use the right value to set checkboxes in CheckListProperty.display()
+
+	Files (added, modified or removed):
+	* widget_properties.py
+
+2014-10-01  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Changing binding events from wx.EVT*() to widget.Bind()
+
+	This change doesn't affect all occurrences. It was triggered by bug
+	fixing.
+
+	Files (added, modified or removed):
+	* tree.py
+	* widget_properties.py
+
+	Various minor bug fixes
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* widgets/dialog/wconfig.py
+	* widgets/splitter_window/codegen.py
+
+2014-09-28  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Improve handling of empty styles ('', None)
+
+	Files (added, modified or removed):
+	* edit_windows.py
+	* tests/test_gui.py
+	* wcodegen/__init__.py
+
+	Further cleanup for wx2.6
+
+	Files (added, modified or removed):
+	* widgets/frame/codegen.py
+	* widgets/frame/lisp_codegen.py
+	* widgets/frame/perl_codegen.py
+
+2014-09-27  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Remove support for wxPython 2.6
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* application.py
+	* codegen/py_codegen.py
+	* edit_sizers/edit_sizers.py
+	* edit_windows.py
+	* log.py
+	* setup.py
+	* test.py
+	* tests/casefiles/HyperlinkCtrl_26.cpp
+	* tests/casefiles/HyperlinkCtrl_26.h
+	* tests/casefiles/HyperlinkCtrl_26.lisp
+	* tests/casefiles/HyperlinkCtrl_26.pl
+	* tests/casefiles/HyperlinkCtrl_26.py
+	* tests/casefiles/HyperlinkCtrl_26.wxg
+	* tests/casefiles/HyperlinkCtrl_26.xrc
+	* tests/test_codegen.py
+	* widgets/frame/codegen.py
+
+	Replace old styles (wx .6) by new styles (wx2.8 and wx3.0)
+
+	Files (added, modified or removed):
+	* about.py
+	* application.py
+	* kdefiledialog.py
+	* main.py
+
+	Minor bug fixes introduced during code rework
+
+	Files (added, modified or removed):
+	* code_property.py
+	* edit_windows.py
+	* layout_option_property.py
+	* tests/test_gui.py
+	* widgets/statusbar/__init__.py
+
+2014-09-26  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use always wx.lib.stattext.GenStaticText
+
+	Files (added, modified or removed):
+	* widget_properties.py
+	* widgets/static_text/static_text.py
+
+	Remove support for old Python import style generally
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* application.py
+	* codegen/py_codegen.py
+	* edit_windows.py
+	* tree.py
+	* widgets/calendar_ctrl/codegen.py
+	* widgets/grid/codegen.py
+	* xml_parse.py
+
+	Rework widget writer to use code generator via class attribute
+
+	Files (added, modified or removed):
+	* wcodegen/__init__.py
+	* widgets/bitmap_button/codegen.py
+	* widgets/bitmap_button/lisp_codegen.py
+	* widgets/bitmap_button/perl_codegen.py
+	* widgets/custom_widget/codegen.py
+	* widgets/custom_widget/lisp_codegen.py
+	* widgets/custom_widget/perl_codegen.py
+	* widgets/datepicker_ctrl/codegen.py
+	* widgets/frame/codegen.py
+	* widgets/grid/codegen.py
+	* widgets/grid/lisp_codegen.py
+	* widgets/grid/perl_codegen.py
+	* widgets/menubar/codegen.py
+	* widgets/menubar/lisp_codegen.py
+	* widgets/menubar/perl_codegen.py
+	* widgets/notebook/codegen.py
+	* widgets/notebook/lisp_codegen.py
+	* widgets/notebook/perl_codegen.py
+	* widgets/spin_ctrl/codegen.py
+	* widgets/splitter_window/codegen.py
+	* widgets/splitter_window/lisp_codegen.py
+	* widgets/splitter_window/perl_codegen.py
+	* widgets/toolbar/codegen.py
+	* widgets/toolbar/lisp_codegen.py
+	* widgets/toolbar/perl_codegen.py
+
+	Replace wxSUNKEN_BORDER into wxBORDER_SUNKEN
+
+	Files (added, modified or removed):
+	* msgdialog.py
+	* widgets/custom_widget/custom_widget.py
+	* widgets/list_ctrl/list_ctrl.py
+	* widgets/menubar/menubar.py
+	* widgets/toolbar/toolbar.py
+	* widgets/tree_ctrl/tree_ctrl.py
+
+2014-09-25  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Rework style handling to use style names.
+
+	Most positions use style names instead of a combination of style
+	names and style values now. This enables wxGlade to handle old (and
+	ancient) styles like wxADJUST_MINSIZE even if underlaying wxPython
+	don't know the styles.
+
+	This change changes allow wxGlade to run on wxPython3 and generate
+	code for wxPython2.8 and reverse later after all styles and
+	attributes are adapted.
+
+	Files (added, modified or removed):
+	* application.py
+	* common.py
+	* docs/tech_notes.txt
+	* edit_sizers/edit_sizers.py
+	* edit_widget.py
+	* edit_windows.py
+	* events_mixin.py
+	* layout_option_property.py
+	* misc.py
+	* tests/__init__.py
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/AllWidgets_28.py
+	* tests/test_codegen.py
+	* tests/test_gui.py
+	* wcodegen/__init__.py
+	* wcodegen/dialogs.py
+	* widget_properties.py
+	* widgets/bitmap_button/bitmap_button.py
+	* widgets/bitmap_button/codegen.py
+	* widgets/bitmap_button/lisp_codegen.py
+	* widgets/bitmap_button/perl_codegen.py
+	* widgets/bitmap_button/wconfig.py
+	* widgets/button/button.py
+	* widgets/button/wconfig.py
+	* widgets/calendar_ctrl/calendar_ctrl.py
+	* widgets/calendar_ctrl/wconfig.py
+	* widgets/checkbox/checkbox.py
+	* widgets/checkbox/wconfig.py
+	* widgets/choice/choice.py
+	* widgets/combo_box/combo_box.py
+	* widgets/combo_box/wconfig.py
+	* widgets/custom_widget/custom_widget.py
+	* widgets/datepicker_ctrl/datepicker_ctrl.py
+	* widgets/datepicker_ctrl/wconfig.py
+	* widgets/dialog/dialog.py
+	* widgets/dialog/wconfig.py
+	* widgets/frame/codegen.py
+	* widgets/frame/frame.py
+	* widgets/frame/lisp_codegen.py
+	* widgets/frame/perl_codegen.py
+	* widgets/frame/wconfig.py
+	* widgets/gauge/gauge.py
+	* widgets/gauge/wconfig.py
+	* widgets/grid/grid.py
+	* widgets/hyperlink_ctrl/hyperlink_ctrl.py
+	* widgets/hyperlink_ctrl/wconfig.py
+	* widgets/list_box/list_box.py
+	* widgets/list_box/wconfig.py
+	* widgets/list_ctrl/list_ctrl.py
+	* widgets/list_ctrl/wconfig.py
+	* widgets/menubar/menubar.py
+	* widgets/notebook/codegen.py
+	* widgets/notebook/lisp_codegen.py
+	* widgets/notebook/notebook.py
+	* widgets/notebook/perl_codegen.py
+	* widgets/notebook/wconfig.py
+	* widgets/panel/codegen.py
+	* widgets/panel/lisp_codegen.py
+	* widgets/panel/panel.py
+	* widgets/panel/perl_codegen.py
+	* widgets/panel/wconfig.py
+	* widgets/radio_box/radio_box.py
+	* widgets/radio_button/radio_button.py
+	* widgets/radio_button/wconfig.py
+	* widgets/slider/slider.py
+	* widgets/slider/wconfig.py
+	* widgets/spacer/spacer.py
+	* widgets/spin_button/spin_button.py
+	* widgets/spin_button/wconfig.py
+	* widgets/spin_ctrl/spin_ctrl.py
+	* widgets/spin_ctrl/wconfig.py
+	* widgets/splitter_window/codegen.py
+	* widgets/splitter_window/lisp_codegen.py
+	* widgets/splitter_window/perl_codegen.py
+	* widgets/splitter_window/splitter_window.py
+	* widgets/splitter_window/wconfig.py
+	* widgets/static_bitmap/static_bitmap.py
+	* widgets/static_bitmap/wconfig.py
+	* widgets/static_line/static_line.py
+	* widgets/static_line/wconfig.py
+	* widgets/static_text/static_text.py
+	* widgets/static_text/wconfig.py
+	* widgets/statusbar/__init__.py
+	* widgets/statusbar/codegen.py
+	* widgets/statusbar/lisp_codegen.py
+	* widgets/statusbar/perl_codegen.py
+	* widgets/statusbar/statusbar.py
+	* widgets/statusbar/wconfig.py
+	* widgets/text_ctrl/text_ctrl.py
+	* widgets/text_ctrl/wconfig.py
+	* widgets/toggle_button/toggle_button.py
+	* widgets/toolbar/codegen.py
+	* widgets/toolbar/lisp_codegen.py
+	* widgets/toolbar/perl_codegen.py
+	* widgets/toolbar/toolbar.py
+	* widgets/toolbar/wconfig.py
+	* widgets/tree_ctrl/tree_ctrl.py
+	* widgets/tree_ctrl/wconfig.py
+	* widgets/widgets.txt
+	* wxglade.py
+	* xml_parse.py
+
+2014-09-14  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Minor changes to improve debugging
+
+	Files (added, modified or removed):
+	* xml_parse.py
+
+	Improve exception message generated during loading a file
+
+	Files (added, modified or removed):
+	* main.py
+
+2014-09-12  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Reorg code generation and start removal of old style python imports
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/perl_codegen.py
+	* codegen/py_codegen.py
+	* codegen/xrc_codegen.py
+	* tests/casefiles/PyOgg1_oldnamespace.py
+	* tests/test_codegen.py
+	* wcodegen/__init__.py
+
+2014-09-11  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change handling of epydoc options in Makefile
+
+	Files (added, modified or removed):
+	* Makefile
+
+2014-09-09  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Improve copying instances ...
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/xrc_codegen.py
+	* edit_sizers/edit_sizers.py
+	* tests/__init__.py
+	* tests/test_codegen.py
+	* tests/test_gui.py
+	* wcodegen/__init__.py
+	* widgets/panel/panel.py
+	* widgets/static_bitmap/static_bitmap.py
+
+2014-09-08  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Replace cStringIO by StringIO because StringIO supports Unicode
+
+	(taken from ff7561dc0004)
+
+	Files (added, modified or removed):
+	* clipboard.py
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/xrc_codegen.py
+	* log.py
+	* main.py
+	* misc.py
+	* tests/__init__.py
+	* tests/test_codegen.py
+	* tests/test_gui.py
+	* widgets/custom_widget/codegen.py
+	* xml_parse.py
+
+2014-09-05  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Split test initialisation into setUpClass() and setUp()
+
+	Files (added, modified or removed):
+	* tests/__init__.py
+	* tests/test_gui.py
+
+2014-09-03  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Fix bug in generation of valid hash keys for Perl
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/perl_codegen.py
+
+	Add BaseLangCodeWriter.copy() to create instance copies
+
+	This function should be used to rework styles update in graphical
+	editor
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* tests/test_codegen.py
+
+	Add more default values used during initialising code generators
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/perl_codegen.py
+	* codegen/py_codegen.py
+	* codegen/xrc_codegen.py
+	* config.py
+	* main.py
+
+2014-09-02  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Unite the four steps to initialise code generators
+
+	Files (added, modified or removed):
+	* common.py
+	* main.py
+	* wxglade.py
+
+2014-08-31  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Include wxglade.pyw into release packages
+
+	Files (added, modified or removed):
+	* setup.py
+
+	Change manpage XSL
+
+	Files (added, modified or removed):
+	* Makefile
+
+2014-08-28  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use python2 in Makefile too (grafted from
+	737ac2bfe7ad81b3423f0fde6b9b329d1bdf6098)
+
+	Files (added, modified or removed):
+	* Makefile
+
+	Use python2 in Makefile too
+
+	Files (added, modified or removed):
+	* Makefile
+
+	Use wxPython 2.8 - only and always
+
+	The GUI isn't wxPython 3.0 ready yet. (grafted from
+	5bbecbbca1c67bd2a2d9c48258b4bbdd7b3b5665)
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+	Use wxPython 2.8 for GUI tests too (grafted from
+	b221e052e9111a99ddb2dbb8743f5b685a3c69cb)
+
+	Files (added, modified or removed):
+	* test.py
+
+	Use python2 interpreter instead of just python (grafted from
+	081a452ad96441bbba62e494279f75d77710a1b3)
+
+	Files (added, modified or removed):
+	* wxglade
+
+	Change shebang to start Python2 always.
+
+	That's useful for systems with Python3 as default (grafted from
+	b01e80fc1fe3bb873afa1e9e7f3c1d4e95a653be)
+
+	Files (added, modified or removed):
+	* test.py
+	* wxglade.py
+	* wxglade.pyw
+	* xrc2wxg.py
+
+2014-08-26  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Rework formatting flags
+
+	Now we support:
+	 - removal of duplicate flags
+	 - removal of flags that are part of others flags
+	 - recombine flags from parts e.g. wxALL from
+	wxLEFT+wxRIGHT+wxTOP+wxBOTTOM
+	 - renameing of flags
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/py_codegen.py
+	* common.py
+	* edit_windows.py
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/AllWidgets_28.py
+	* tests/casefiles/CPPOgg1.cpp
+	* tests/casefiles/CPPOgg1.wxg
+	* tests/casefiles/CPPOgg2.wxg
+	* tests/casefiles/CPPOgg2_MyDialog.cpp
+	* tests/casefiles/CPPOgg2_MyDialog.h
+	* tests/casefiles/CPPOgg2_MyFrame.cpp
+	* tests/casefiles/CPPOgg2_MyFrame.h
+	* tests/casefiles/CPPOgg3.cpp
+	* tests/casefiles/CPP_Preferences.cpp
+	* tests/casefiles/CPP_Preferences.h
+	* tests/casefiles/CPP_Preferences.wxg
+	* tests/casefiles/CPP_wxCalendarCtrl.cpp
+	* tests/casefiles/CPP_wxCalendarCtrl.h
+	* tests/casefiles/CPP_wxCalendarCtrl.wxg
+	* tests/casefiles/ComplexExample.cpp
+	* tests/casefiles/ComplexExample.lisp
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample.py
+	* tests/casefiles/ComplexExample_30.cpp
+	* tests/casefiles/ComplexExample_30.lisp
+	* tests/casefiles/ComplexExample_30.pl
+	* tests/casefiles/ComplexExample_30.py
+	* tests/casefiles/LispOgg1.lisp
+	* tests/casefiles/LispOgg1.wxg
+	* tests/casefiles/LispOgg2.wxg
+	* tests/casefiles/LispOgg2_MyDialog.lisp
+	* tests/casefiles/LispOgg2_MyFrame.lisp
+	* tests/casefiles/LispOgg3.lisp
+	* tests/casefiles/LispOgg3.wxg
+	* tests/casefiles/Lisp_Preferences.lisp
+	* tests/casefiles/Lisp_Preferences.wxg
+	* tests/casefiles/Notebook_w_tabs.wxg
+	* tests/casefiles/Notebook_wo_tabs.wxg
+	* tests/casefiles/Perl_Preferences.pl
+	* tests/casefiles/Perl_Preferences.wxg
+	* tests/casefiles/PlOgg1.pl
+	* tests/casefiles/PlOgg1.wxg
+	* tests/casefiles/PlOgg2.wxg
+	* tests/casefiles/PlOgg2_MyDialog.pm
+	* tests/casefiles/PlOgg2_MyFrame.pm
+	* tests/casefiles/PlOgg3.pl
+	* tests/casefiles/Preferences.wxg
+	* tests/casefiles/PyOgg1.py
+	* tests/casefiles/PyOgg1.wxg
+	* tests/casefiles/PyOgg1_oldnamespace.py
+	* tests/casefiles/PyOgg2.wxg
+	* tests/casefiles/PyOgg2_MyDialog.py
+	* tests/casefiles/PyOgg2_MyFrame.py
+	* tests/casefiles/PyOgg2_app.py
+	* tests/casefiles/PyOgg3.py
+	* tests/casefiles/Python_Preferences.py
+	* tests/casefiles/Python_Preferences.wxg
+	* tests/casefiles/Sizers_classattr.cpp
+	* tests/casefiles/Sizers_classattr.lisp
+	* tests/casefiles/Sizers_classattr.pl
+	* tests/casefiles/Sizers_classattr.py
+	* tests/casefiles/Sizers_no_classattr.cpp
+	* tests/casefiles/Sizers_no_classattr.lisp
+	* tests/casefiles/Sizers_no_classattr.pl
+	* tests/casefiles/Sizers_no_classattr.py
+	* tests/casefiles/styleless-dialog.cpp
+	* tests/casefiles/styleless-dialog.py
+	* tests/test_codegen.py
+	* tests/test_gui.py
+	* wcodegen/__init__.py
+	* widgets/dialog/codegen.py
+	* widgets/dialog/wconfig.py
+	* widgets/frame/wconfig.py
+	* widgets/hyperlink_ctrl/config.py
+	* widgets/hyperlink_ctrl/wconfig.py
+	* widgets/notebook/codegen.py
+	* widgets/notebook/lisp_codegen.py
+	* widgets/notebook/notebook.py
+	* widgets/notebook/perl_codegen.py
+	* widgets/splitter_window/wconfig.py
+
+2014-08-21  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use built-in set() instead of sets module
+
+	Files (added, modified or removed):
+	* edit_windows.py
+	* tree.py
+
+	Fix wrong initialisation sequence for graphical notebook editor.
+
+	This bug has been introduced with changeset 1396:fbf87e4590e7 "Unify
+	style handling code in widgets GUI elements"
+
+	Files (added, modified or removed):
+	* widgets/notebook/notebook.py
+
+	Don't show non-printable values in exception handler
+
+	Files (added, modified or removed):
+	* log.py
+
+	Merge exception handler from default branch
+
+	Files (added, modified or removed):
+	* log.py
+
+2014-08-20  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Extend error messages in GUI unittests
+
+	Files (added, modified or removed):
+	* tests/test_gui.py
+
+2014-08-17  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Unify code writer and widget initialisation sequence
+
+	This commit changes the initialisation sequence to 0) load widget
+	configuation (already implemented in 1421:6167430196c8) 1) load and
+	initialise language code writer 2) load and initialise widget code
+	writer 3) load and initialise sizer
+
+	Earlier the steps 1), 2) and 3) was merged for Perl and Lisp but not
+	for Python, C++ and XRC.
+
+	Now the sequence is the same for all languages.
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/perl_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* codegen/xrc_codegen.py
+	* common.py
+	* docs/tech_notes.txt
+	* edit_sizers/__init__.py
+	* edit_sizers/cpp_sizers_codegen.py
+	* edit_sizers/edit_sizers.py
+	* edit_sizers/py_sizers_codegen.py
+	* edit_sizers/sizers_codegen.py
+	* edit_sizers/xrc_sizers_codegen.py
+	* tests/test_codegen.py
+	* wcodegen/__init__.py
+
+2014-08-14  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Introduce separation of widget settings in a config module
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* common.py
+	* edit_windows.py
+	* main.py
+	* misc.py
+	* tests/casefiles/HyperlinkCtrl_26.cpp
+	* tests/casefiles/HyperlinkCtrl_26.lisp
+	* tests/casefiles/HyperlinkCtrl_26.pl
+	* tests/casefiles/HyperlinkCtrl_26.py
+	* tests/test_codegen.py
+	* wcodegen/__init__.py
+	* widgets/hyperlink_ctrl/codegen.py
+	* widgets/hyperlink_ctrl/config.py
+	* widgets/hyperlink_ctrl/hyperlink_ctrl.py
+	* widgets/hyperlink_ctrl/lisp_codegen.py
+	* widgets/hyperlink_ctrl/perl_codegen.py
+	* wxglade.py
+
+2014-08-11  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add some tests for external code
+
+	Currently just one test for deep-copying of OrderedDict() is
+	implemented.
+
+	Files (added, modified or removed):
+	* tests/test_external.py
+
+2014-08-04  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Simplify registration of widget code generators
+
+	Files (added, modified or removed):
+	* common.py
+	* wcodegen/__init__.py
+	* widgets/bitmap_button/codegen.py
+	* widgets/bitmap_button/lisp_codegen.py
+	* widgets/bitmap_button/perl_codegen.py
+	* widgets/button/codegen.py
+	* widgets/button/lisp_codegen.py
+	* widgets/button/perl_codegen.py
+	* widgets/calendar_ctrl/codegen.py
+	* widgets/calendar_ctrl/perl_codegen.py
+	* widgets/checkbox/codegen.py
+	* widgets/checkbox/lisp_codegen.py
+	* widgets/checkbox/perl_codegen.py
+	* widgets/choice/codegen.py
+	* widgets/choice/lisp_codegen.py
+	* widgets/choice/perl_codegen.py
+	* widgets/combo_box/codegen.py
+	* widgets/combo_box/lisp_codegen.py
+	* widgets/combo_box/perl_codegen.py
+	* widgets/custom_widget/codegen.py
+	* widgets/custom_widget/lisp_codegen.py
+	* widgets/custom_widget/perl_codegen.py
+	* widgets/datepicker_ctrl/codegen.py
+	* widgets/datepicker_ctrl/lisp_codegen.py
+	* widgets/datepicker_ctrl/perl_codegen.py
+	* widgets/dialog/codegen.py
+	* widgets/dialog/lisp_codegen.py
+	* widgets/dialog/perl_codegen.py
+	* widgets/gauge/codegen.py
+	* widgets/gauge/lisp_codegen.py
+	* widgets/gauge/perl_codegen.py
+	* widgets/grid/codegen.py
+	* widgets/grid/lisp_codegen.py
+	* widgets/grid/perl_codegen.py
+	* widgets/hyperlink_ctrl/codegen.py
+	* widgets/hyperlink_ctrl/lisp_codegen.py
+	* widgets/hyperlink_ctrl/perl_codegen.py
+	* widgets/list_box/codegen.py
+	* widgets/list_box/lisp_codegen.py
+	* widgets/list_box/perl_codegen.py
+	* widgets/list_ctrl/codegen.py
+	* widgets/list_ctrl/lisp_codegen.py
+	* widgets/list_ctrl/perl_codegen.py
+	* widgets/menubar/codegen.py
+	* widgets/menubar/lisp_codegen.py
+	* widgets/menubar/perl_codegen.py
+	* widgets/notebook/codegen.py
+	* widgets/notebook/lisp_codegen.py
+	* widgets/notebook/perl_codegen.py
+	* widgets/panel/codegen.py
+	* widgets/panel/lisp_codegen.py
+	* widgets/panel/perl_codegen.py
+	* widgets/radio_box/codegen.py
+	* widgets/radio_box/lisp_codegen.py
+	* widgets/radio_box/perl_codegen.py
+	* widgets/radio_button/codegen.py
+	* widgets/radio_button/lisp_codegen.py
+	* widgets/radio_button/perl_codegen.py
+	* widgets/slider/codegen.py
+	* widgets/slider/lisp_codegen.py
+	* widgets/slider/perl_codegen.py
+	* widgets/spacer/codegen.py
+	* widgets/spacer/lisp_codegen.py
+	* widgets/spacer/perl_codegen.py
+	* widgets/spin_button/codegen.py
+	* widgets/spin_button/lisp_codegen.py
+	* widgets/spin_button/perl_codegen.py
+	* widgets/spin_ctrl/codegen.py
+	* widgets/spin_ctrl/lisp_codegen.py
+	* widgets/spin_ctrl/perl_codegen.py
+	* widgets/splitter_window/codegen.py
+	* widgets/splitter_window/lisp_codegen.py
+	* widgets/splitter_window/perl_codegen.py
+	* widgets/static_bitmap/codegen.py
+	* widgets/static_bitmap/lisp_codegen.py
+	* widgets/static_bitmap/perl_codegen.py
+	* widgets/static_line/codegen.py
+	* widgets/static_line/lisp_codegen.py
+	* widgets/static_line/perl_codegen.py
+	* widgets/static_text/codegen.py
+	* widgets/static_text/lisp_codegen.py
+	* widgets/static_text/perl_codegen.py
+	* widgets/text_ctrl/codegen.py
+	* widgets/text_ctrl/lisp_codegen.py
+	* widgets/text_ctrl/perl_codegen.py
+	* widgets/toggle_button/codegen.py
+	* widgets/toggle_button/lisp_codegen.py
+	* widgets/toggle_button/perl_codegen.py
+	* widgets/toolbar/codegen.py
+	* widgets/toolbar/lisp_codegen.py
+	* widgets/toolbar/perl_codegen.py
+	* widgets/tree_ctrl/codegen.py
+	* widgets/tree_ctrl/lisp_codegen.py
+	* widgets/tree_ctrl/perl_codegen.py
+
+2014-08-02  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use wxPython 2.8 for GUI tests too
+
+	Files (added, modified or removed):
+	* test.py
+
+	Use wxPython 2.8 for GUI tests too
+
+	Files (added, modified or removed):
+	* test.py
+
+	Improve exception handling while loading data from file-like object
+
+	Files (added, modified or removed):
+	* main.py
+
+2014-07-30  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Update documentation about application start code
+
+	Files (added, modified or removed):
+	* docs/html/apa.html
+	* docs/html/apb.html
+	* docs/html/apd.html
+	* docs/html/ch01.html
+	* docs/html/ch01s02.html
+	* docs/html/ch01s03.html
+	* docs/html/ch01s04.html
+	* docs/html/ch01s05.html
+	* docs/html/ch01s06.html
+	* docs/html/ch01s07.html
+	* docs/html/ch02.html
+	* docs/html/ch02s02.html
+	* docs/html/ch02s03.html
+	* docs/html/ch02s04.html
+	* docs/html/ch02s05.html
+	* docs/html/ch02s06.html
+	* docs/html/ch02s07.html
+	* docs/html/ch02s08.html
+	* docs/html/ch03.html
+	* docs/html/ch03s02.html
+	* docs/html/ch03s03.html
+	* docs/html/ch03s04.html
+	* docs/html/ch03s05.html
+	* docs/html/ch03s06.html
+	* docs/html/ch04.html
+	* docs/html/ch04s03.html
+	* docs/html/ch05.html
+	* docs/html/ch06.html
+	* docs/html/ch06s02.html
+	* docs/html/ch06s03.html
+	* docs/html/index.html
+	* docs/html/pr01.html
+	* docs/html/pr01s02.html
+	* docs/pdf/manual.pdf
+	* docs/src/manual.xml
+
+	Fix wrong conditions to generate application start code (sf bug
+	#161)
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* tests/casefiles/CPP_Preferences.cpp
+	* tests/casefiles/CPP_wxCalendarCtrl.cpp
+	* tests/casefiles/CalendarCtrl.cpp
+	* tests/casefiles/CalendarCtrl.pl
+	* tests/casefiles/CalendarCtrl.py
+	* tests/casefiles/Gauge.cpp
+	* tests/casefiles/Gauge.lisp
+	* tests/casefiles/Gauge.pl
+	* tests/casefiles/Gauge.py
+	* tests/casefiles/Grid.cpp
+	* tests/casefiles/Grid.lisp
+	* tests/casefiles/Grid.pl
+	* tests/casefiles/Grid.py
+	* tests/casefiles/Lisp_Preferences.lisp
+	* tests/casefiles/Lisp_wxBitmapButton.lisp
+	* tests/casefiles/Perl_Preferences.pl
+	* tests/casefiles/Python_Preferences.py
+	* tests/casefiles/bug163.cpp
+	* tests/casefiles/bug163.lisp
+	* tests/casefiles/bug163.pl
+	* tests/casefiles/bug163.py
+	* tests/casefiles/styleless-dialog.cpp
+	* tests/casefiles/styleless-dialog.lisp
+	* tests/casefiles/styleless-dialog.pl
+	* tests/casefiles/styleless-dialog.py
+	* tests/test_codegen.py
+
+2014-07-28  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change shebang from python to python2 in XRC example
+
+	Files (added, modified or removed):
+	* docs/src/manual.xml
+
+2014-06-23  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Don't convert first char of a XRC extraproperty to upper case (sf
+	bug #163)
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* tests/casefiles/bug163.cpp
+	* tests/casefiles/bug163.h
+	* tests/casefiles/bug163.lisp
+	* tests/casefiles/bug163.pl
+	* tests/casefiles/bug163.py
+	* tests/casefiles/bug163.wxg
+	* tests/casefiles/bug163.xrc
+	* tests/test_bugs.py
+
+	Show warning about malformed arguments in Custom Widget XRC code
+	writer
+
+	Files (added, modified or removed):
+	* widgets/custom_widget/codegen.py
+
+2014-06-22  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use "-1" instead of -1 for undefined statusbar widths during XRC
+	import
+
+	Files (added, modified or removed):
+	* tests/casefiles/import_test.wxg
+	* tests/casefiles/import_test.xrc
+	* xrc2wxg.py
+
+2014-06-21  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Fix value of enabled/disabled property during import from XRC
+
+	Files (added, modified or removed):
+	* tests/casefiles/import_test.wxg
+	* tests/casefiles/import_test.xrc
+	* xrc2wxg.py
+
+	Fix import of wxStatusbar from XRC
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* tests/casefiles/import_test.wxg
+	* tests/casefiles/import_test.xrc
+	* tests/test_codegen.py
+	* xrc2wxg.py
+
+2014-06-20  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Fix wrong menu generation after importing from XRC file
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* tests/casefiles/import_test.wxg
+	* xrc2wxg.py
+
+2014-06-18  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Fix wrong wxMenuItem property name after importing from XRC file
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* tests/casefiles/import_test.wxg
+	* tests/casefiles/import_test.xrc
+	* xrc2wxg.py
+
+	Code reorg and documentation improvements as well as a added test
+	case
+
+	Files (added, modified or removed):
+	* tests/casefiles/import_test.wxg
+	* tests/casefiles/import_test.xrc
+	* tests/test_codegen.py
+	* xrc2wxg.py
+
+2014-05-28  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Closed agriggio branch
+
+	Files (added, modified or removed):
+
+	Closed v0-1-3devel branch
+
+	Files (added, modified or removed):
+
+	Closed HEAD branch
+
+	Files (added, modified or removed):
+
+	Replace cStringIO by StringIO because StringIO supports Unicode
+
+	Files (added, modified or removed):
+	* clipboard.py
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/xrc_codegen.py
+	* log.py
+	* main.py
+	* misc.py
+	* tests/__init__.py
+	* tests/test_codegen.py
+	* tests/test_gui.py
+	* widgets/custom_widget/codegen.py
+	* xml_parse.py
+
+2014-04-23  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Created DEV_UNICODE
+
+	Files (added, modified or removed):
+
+2014-04-19  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Adjust logging code
+
+	Files (added, modified or removed):
+	* log.py
+
+2014-03-05  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use wxPython 2.8 - only and always
+
+	The GUI isn't wxPython 3.0 ready yet. (grafted from
+	5bbecbbca1c67bd2a2d9c48258b4bbdd7b3b5665)
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+2014-03-01  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add tests for the unified style handling
+
+	Files (added, modified or removed):
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.h
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/AllWidgets_28.py
+	* tests/casefiles/AllWidgets_28.wxg
+	* tests/casefiles/AllWidgets_28.xrc
+	* tests/test_gui.py
+
+	Unify style handling code in widgets GUI elements
+
+	Files (added, modified or removed):
+	* edit_sizers/edit_sizers.py
+	* edit_windows.py
+	* widget_properties.py
+	* widgets/bitmap_button/bitmap_button.py
+	* widgets/button/button.py
+	* widgets/calendar_ctrl/calendar_ctrl.py
+	* widgets/checkbox/checkbox.py
+	* widgets/choice/choice.py
+	* widgets/combo_box/combo_box.py
+	* widgets/custom_widget/custom_widget.py
+	* widgets/datepicker_ctrl/datepicker_ctrl.py
+	* widgets/dialog/dialog.py
+	* widgets/frame/frame.py
+	* widgets/gauge/gauge.py
+	* widgets/grid/grid.py
+	* widgets/hyperlink_ctrl/hyperlink_ctrl.py
+	* widgets/list_box/list_box.py
+	* widgets/list_ctrl/list_ctrl.py
+	* widgets/menubar/menubar.py
+	* widgets/notebook/notebook.py
+	* widgets/panel/panel.py
+	* widgets/radio_box/radio_box.py
+	* widgets/radio_button/radio_button.py
+	* widgets/slider/slider.py
+	* widgets/spacer/spacer.py
+	* widgets/spin_button/spin_button.py
+	* widgets/spin_ctrl/spin_ctrl.py
+	* widgets/splitter_window/splitter_window.py
+	* widgets/static_bitmap/static_bitmap.py
+	* widgets/static_line/static_line.py
+	* widgets/static_text/static_text.py
+	* widgets/text_ctrl/text_ctrl.py
+	* widgets/toggle_button/toggle_button.py
+	* widgets/toolbar/toolbar.py
+	* widgets/tree_ctrl/tree_ctrl.py
+
+	fixed indentation (cosmetic change only)
+
+	Files (added, modified or removed):
+	* common.py
+
+2014-02-25  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use wxPython 2.8 - only and always
+
+	The GUI isn't wxPython 3.0 ready yet.
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+2014-02-18  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Catch OS errors during renaming the app directory (Thanks to
+	Davorin)
+
+	Files (added, modified or removed):
+	* common.py
+
+2014-02-12  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Improve test initialisation to run tests with wxPython 2.8 currently
+
+	The initialisation order of wxPython was unexpected if if wxPython
+	2.8 and wxPython 3.0 are available.
+
+	Files (added, modified or removed):
+	* test.py
+	* tests/__init__.py
+	* tests/test_gui.py
+
+2014-02-11  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add new GUI test case
+
+	Files (added, modified or removed):
+	* tests/test_gui.py
+
+2014-02-01  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change indentation inside Perl test cases from 8 to the default of
+	4.
+
+	This change simplifies the generation of test files because the
+	default indentation is 4 always.
+
+	Files (added, modified or removed):
+	* tests/__init__.py
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/CalendarCtrl.pl
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample_30.pl
+	* tests/casefiles/FontColour.pl
+	* tests/casefiles/Gauge.pl
+	* tests/casefiles/Grid.pl
+	* tests/casefiles/HyperlinkCtrl_26.pl
+	* tests/casefiles/HyperlinkCtrl_28.pl
+	* tests/casefiles/Perl_Preferences.pl
+	* tests/casefiles/PlOgg1.pl
+	* tests/casefiles/PlOgg2_MyDialog.pm
+	* tests/casefiles/PlOgg2_MyFrame.pm
+	* tests/casefiles/PlOgg2_app.pl
+	* tests/casefiles/PlOgg3.pl
+	* tests/casefiles/Sizers_classattr.pl
+	* tests/casefiles/Sizers_no_classattr.pl
+	* tests/casefiles/add_class_inplace_extended.pl
+	* tests/casefiles/add_class_inplace_orig.pl
+	* tests/casefiles/no_suitable_writer.pl
+	* tests/casefiles/remove_class_inplace_expected.pl
+	* tests/casefiles/remove_class_inplace_input.pl
+	* tests/casefiles/styleless-dialog.pl
+
+2014-01-31  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add Lisp and Perl support for wxDatePickerCtrl
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.h
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/AllWidgets_28.py
+	* tests/casefiles/AllWidgets_28.wxg
+	* tests/casefiles/AllWidgets_28.xrc
+	* widgets/datepicker_ctrl/lisp_codegen.py
+	* widgets/datepicker_ctrl/perl_codegen.py
+
+2014-01-29  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add a section about installing and designing own widgets primarily
+
+	The section is still incomplete but it should show current changes
+	already.
+
+	Files (added, modified or removed):
+	* docs/html/apa.html
+	* docs/html/apb.html
+	* docs/html/apc.html
+	* docs/html/apd.html
+	* docs/html/ch01.html
+	* docs/html/ch01s02.html
+	* docs/html/ch01s03.html
+	* docs/html/ch01s04.html
+	* docs/html/ch01s05.html
+	* docs/html/ch01s06.html
+	* docs/html/ch01s07.html
+	* docs/html/ch02.html
+	* docs/html/ch02s02.html
+	* docs/html/ch02s03.html
+	* docs/html/ch02s04.html
+	* docs/html/ch02s05.html
+	* docs/html/ch02s06.html
+	* docs/html/ch02s07.html
+	* docs/html/ch02s08.html
+	* docs/html/ch03.html
+	* docs/html/ch03s02.html
+	* docs/html/ch03s03.html
+	* docs/html/ch03s04.html
+	* docs/html/ch03s05.html
+	* docs/html/ch03s06.html
+	* docs/html/ch04.html
+	* docs/html/ch04s02.html
+	* docs/html/ch04s03.html
+	* docs/html/ch05.html
+	* docs/html/ch05s02.html
+	* docs/html/ch05s03.html
+	* docs/html/ch05s04.html
+	* docs/html/ch06.html
+	* docs/html/ch06s02.html
+	* docs/html/ch06s03.html
+	* docs/html/error_dialog.png
+	* docs/html/index.html
+	* docs/html/pr01.html
+	* docs/html/pr01s02.html
+	* docs/pdf/manual.pdf
+	* docs/src/error_dialog.png
+	* docs/src/manual.xml
+
+2014-01-25  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Improve the internal error dialog
+
+	Files (added, modified or removed):
+	* Makefile
+	* NEWS.txt
+	* application.py
+	* bugdialog.py
+	* bugdialog_ui.py
+	* configdialog.py
+	* main.py
+	* res/bugdialog_ui.wxg
+
+2014-01-19  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Rename misc._encode to misc.encode
+
+	Files (added, modified or removed):
+	* misc.py
+	* widgets/button/button.py
+	* widgets/choice/choice.py
+	* widgets/combo_box/combo_box.py
+	* widgets/hyperlink_ctrl/hyperlink_ctrl.py
+	* widgets/list_box/list_box.py
+	* widgets/menubar/menubar.py
+	* widgets/radio_box/radio_box.py
+	* widgets/radio_button/radio_button.py
+	* widgets/static_text/static_text.py
+	* widgets/toggle_button/toggle_button.py
+
+	Add new tests
+
+	Files (added, modified or removed):
+	* tests/casefiles/AllWidgets_28.cpp
+	* tests/casefiles/AllWidgets_28.h
+	* tests/casefiles/AllWidgets_28.lisp
+	* tests/casefiles/AllWidgets_28.pl
+	* tests/casefiles/AllWidgets_28.py
+	* tests/casefiles/AllWidgets_28.wxg
+	* tests/casefiles/AllWidgets_28.xrc
+	* tests/casefiles/icon.xpm
+	* tests/test_codegen.py
+
+	Unify the code generation of widget specific code. That causes minor
+	changes in the generated code.
+
+	Parallel two wrong Lisp statement in wxHyperlinkCtrl and wxFrame has
+	been corrected.
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* tests/casefiles/CPPOgg1.cpp
+	* tests/casefiles/CPPOgg2_MyDialog.cpp
+	* tests/casefiles/CPPOgg3.cpp
+	* tests/casefiles/CPP_Preferences.cpp
+	* tests/casefiles/CalendarCtrl.pl
+	* tests/casefiles/ComplexExample.cpp
+	* tests/casefiles/ComplexExample.lisp
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample.py
+	* tests/casefiles/ComplexExample_30.cpp
+	* tests/casefiles/ComplexExample_30.lisp
+	* tests/casefiles/ComplexExample_30.pl
+	* tests/casefiles/ComplexExample_30.py
+	* tests/casefiles/FontColour.lisp
+	* tests/casefiles/Gauge.lisp
+	* tests/casefiles/Gauge.pl
+	* tests/casefiles/Grid.lisp
+	* tests/casefiles/HyperlinkCtrl_26.lisp
+	* tests/casefiles/HyperlinkCtrl_28.lisp
+	* tests/casefiles/LispOgg1.lisp
+	* tests/casefiles/LispOgg2_MyDialog.lisp
+	* tests/casefiles/LispOgg2_MyFrame.lisp
+	* tests/casefiles/LispOgg3.lisp
+	* tests/casefiles/Lisp_Preferences.lisp
+	* tests/casefiles/Lisp_wxBitmapButton.lisp
+	* tests/casefiles/Perl_Preferences.pl
+	* tests/casefiles/PlOgg1.pl
+	* tests/casefiles/PlOgg2_MyDialog.pm
+	* tests/casefiles/PlOgg2_MyFrame.pm
+	* tests/casefiles/PlOgg3.pl
+	* tests/casefiles/Sizers_classattr.cpp
+	* tests/casefiles/Sizers_classattr.lisp
+	* tests/casefiles/Sizers_classattr.pl
+	* tests/casefiles/Sizers_no_classattr.cpp
+	* tests/casefiles/Sizers_no_classattr.lisp
+	* tests/casefiles/Sizers_no_classattr.pl
+	* tests/casefiles/add_class_inplace_extended.lisp
+	* tests/casefiles/add_class_inplace_extended.pl
+	* tests/casefiles/add_class_inplace_orig.lisp
+	* tests/casefiles/add_class_inplace_orig.pl
+	* tests/casefiles/no_suitable_writer.lisp
+	* tests/casefiles/remove_class_inplace_expected.lisp
+	* tests/casefiles/remove_class_inplace_expected.pl
+	* tests/casefiles/remove_class_inplace_input.lisp
+	* tests/casefiles/remove_class_inplace_input.pl
+	* tests/casefiles/styleless-dialog.lisp
+	* wcodegen/__init__.py
+	* widgets/button/codegen.py
+	* widgets/button/lisp_codegen.py
+	* widgets/button/perl_codegen.py
+	* widgets/calendar_ctrl/codegen.py
+	* widgets/calendar_ctrl/perl_codegen.py
+	* widgets/checkbox/codegen.py
+	* widgets/checkbox/lisp_codegen.py
+	* widgets/checkbox/perl_codegen.py
+	* widgets/choice/codegen.py
+	* widgets/choice/lisp_codegen.py
+	* widgets/choice/perl_codegen.py
+	* widgets/combo_box/codegen.py
+	* widgets/combo_box/lisp_codegen.py
+	* widgets/combo_box/perl_codegen.py
+	* widgets/custom_widget/codegen.py
+	* widgets/datepicker_ctrl/codegen.py
+	* widgets/dialog/codegen.py
+	* widgets/dialog/lisp_codegen.py
+	* widgets/dialog/perl_codegen.py
+	* widgets/frame/codegen.py
+	* widgets/frame/lisp_codegen.py
+	* widgets/frame/perl_codegen.py
+	* widgets/gauge/codegen.py
+	* widgets/gauge/lisp_codegen.py
+	* widgets/gauge/perl_codegen.py
+	* widgets/grid/codegen.py
+	* widgets/hyperlink_ctrl/codegen.py
+	* widgets/hyperlink_ctrl/lisp_codegen.py
+	* widgets/hyperlink_ctrl/perl_codegen.py
+	* widgets/list_box/codegen.py
+	* widgets/list_box/lisp_codegen.py
+	* widgets/list_box/perl_codegen.py
+	* widgets/list_ctrl/codegen.py
+	* widgets/list_ctrl/lisp_codegen.py
+	* widgets/list_ctrl/perl_codegen.py
+	* widgets/menubar/codegen.py
+	* widgets/menubar/lisp_codegen.py
+	* widgets/menubar/perl_codegen.py
+	* widgets/radio_box/codegen.py
+	* widgets/radio_box/lisp_codegen.py
+	* widgets/radio_box/perl_codegen.py
+	* widgets/radio_button/codegen.py
+	* widgets/radio_button/lisp_codegen.py
+	* widgets/radio_button/perl_codegen.py
+	* widgets/slider/codegen.py
+	* widgets/slider/lisp_codegen.py
+	* widgets/slider/perl_codegen.py
+	* widgets/spacer/codegen.py
+	* widgets/spacer/lisp_codegen.py
+	* widgets/spacer/perl_codegen.py
+	* widgets/spin_button/codegen.py
+	* widgets/spin_button/lisp_codegen.py
+	* widgets/spin_button/perl_codegen.py
+	* widgets/spin_ctrl/codegen.py
+	* widgets/spin_ctrl/lisp_codegen.py
+	* widgets/spin_ctrl/perl_codegen.py
+	* widgets/static_bitmap/codegen.py
+	* widgets/static_bitmap/lisp_codegen.py
+	* widgets/static_bitmap/perl_codegen.py
+	* widgets/static_line/codegen.py
+	* widgets/static_line/lisp_codegen.py
+	* widgets/static_line/perl_codegen.py
+	* widgets/static_text/codegen.py
+	* widgets/static_text/lisp_codegen.py
+	* widgets/static_text/perl_codegen.py
+	* widgets/static_text/static_text.py
+	* widgets/text_ctrl/codegen.py
+	* widgets/text_ctrl/lisp_codegen.py
+	* widgets/text_ctrl/perl_codegen.py
+	* widgets/toggle_button/codegen.py
+	* widgets/toggle_button/lisp_codegen.py
+	* widgets/toggle_button/perl_codegen.py
+	* widgets/tree_ctrl/codegen.py
+	* widgets/tree_ctrl/lisp_codegen.py
+	* widgets/tree_ctrl/perl_codegen.py
+
+	Typo
+
+	Files (added, modified or removed):
+	* codegen/xrc_codegen.py
+
+2014-01-17  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add more constants to Perl code generator
+
+	Files (added, modified or removed):
+	* codegen/pl_codegen.py
+
+2014-01-16  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Documentation typos
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+
+2014-01-15  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change initial dimension of a wxRadioBox from 0 to 1
+
+	Files (added, modified or removed):
+	* widgets/radio_box/radio_box.py
+
+2014-01-09  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Remove gettext usage from exception handler
+
+	Files (added, modified or removed):
+	* log.py
+
+2014-01-05  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add myself to license file
+
+	Files (added, modified or removed):
+	* license.txt
+
+2014-01-01  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Fix bug in generation of valid hash keys for Perl
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/pl_codegen.py
+
+2013-12-27  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Increase robustness of exception logger
+
+	Files (added, modified or removed):
+	* log.py
+
+2013-12-25  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Remove default widget initialisation code. The widget default
+	initialisation will be performed by the widget loader now.
+
+	Files (added, modified or removed):
+	* widgets/bitmap_button/__init__.py
+	* widgets/button/__init__.py
+	* widgets/calendar_ctrl/__init__.py
+	* widgets/checkbox/__init__.py
+	* widgets/choice/__init__.py
+	* widgets/combo_box/__init__.py
+	* widgets/custom_widget/__init__.py
+	* widgets/datepicker_ctrl/__init__.py
+	* widgets/dialog/__init__.py
+	* widgets/frame/__init__.py
+	* widgets/gauge/__init__.py
+	* widgets/grid/__init__.py
+	* widgets/hyperlink_ctrl/__init__.py
+	* widgets/list_box/__init__.py
+	* widgets/list_ctrl/__init__.py
+	* widgets/notebook/__init__.py
+	* widgets/radio_box/__init__.py
+	* widgets/radio_button/__init__.py
+	* widgets/slider/__init__.py
+	* widgets/spacer/__init__.py
+	* widgets/spin_button/__init__.py
+	* widgets/spin_ctrl/__init__.py
+	* widgets/splitter_window/__init__.py
+	* widgets/static_bitmap/__init__.py
+	* widgets/static_line/__init__.py
+	* widgets/static_text/__init__.py
+	* widgets/text_ctrl/__init__.py
+	* widgets/toggle_button/__init__.py
+	* widgets/tree_ctrl/__init__.py
+
+	Typos
+
+	Files (added, modified or removed):
+	* NEWS.txt
+
+2013-12-20  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Extent exception handler by reversing the order of logged stack
+	frames and by including more general information (like version
+	numbers and platform infos).
+
+	Files (added, modified or removed):
+	* log.py
+
+	Store wx version in config.wx_version
+
+	Files (added, modified or removed):
+	* about.py
+	* config.py
+	* main.py
+	* wxglade.py
+
+	Minor source documentation update for config.use_gui
+
+	Files (added, modified or removed):
+	* config.py
+
+	Unity code to load and initialise widgets.
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* common.py
+
+2013-12-11  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Typo in docstring
+
+	Files (added, modified or removed):
+	* misc.py
+
+	Updated screenshot of preferences dialog
+
+	Files (added, modified or removed):
+	* docs/html/apa.html
+	* docs/html/apb.html
+	* docs/html/apd.html
+	* docs/html/ch01.html
+	* docs/html/ch01s02.html
+	* docs/html/ch01s03.html
+	* docs/html/ch01s04.html
+	* docs/html/ch01s05.html
+	* docs/html/ch01s06.html
+	* docs/html/ch01s07.html
+	* docs/html/ch02.html
+	* docs/html/ch02s02.html
+	* docs/html/ch02s03.html
+	* docs/html/ch02s04.html
+	* docs/html/ch02s05.html
+	* docs/html/ch02s06.html
+	* docs/html/ch02s07.html
+	* docs/html/ch02s08.html
+	* docs/html/ch03.html
+	* docs/html/ch03s02.html
+	* docs/html/ch03s03.html
+	* docs/html/ch03s04.html
+	* docs/html/ch03s05.html
+	* docs/html/ch03s06.html
+	* docs/html/ch04.html
+	* docs/html/ch04s03.html
+	* docs/html/ch05.html
+	* docs/html/index.html
+	* docs/html/pr01.html
+	* docs/html/pr01s02.html
+	* docs/html/preferences.png
+	* docs/pdf/manual.pdf
+	* docs/src/preferences.png
+
+	Improve widget import to be able to import widgets from ZIP files
+
+	The previous implementation of ZIP file imports doesn't work for
+	code generators.
+
+	The new implementation used the same code (copied) to load GUI part
+	of a widget as well as the widget code generators from a ZIP file.
+
+	Imports from ZIP files have a higher priority than traditional
+	imports. This is helpful for ad-hoc fixes.
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/__init__.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* common.py
+
+	Adapt Makefile to new pylint version
+
+	Files (added, modified or removed):
+	* Makefile
+
+2013-12-09  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	PEP8: rename variable id to widget_id
+
+	Files (added, modified or removed):
+	* common.py
+
+2013-12-06  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Show log file during application startup similar to other files
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+	Minor layout changes in preferences dialog
+
+	Files (added, modified or removed):
+	* configUI.py
+	* docs/html/apa.html
+	* docs/html/apb.html
+	* docs/html/apd.html
+	* docs/html/ch01.html
+	* docs/html/ch01s02.html
+	* docs/html/ch01s03.html
+	* docs/html/ch01s04.html
+	* docs/html/ch01s05.html
+	* docs/html/ch01s06.html
+	* docs/html/ch01s07.html
+	* docs/html/ch02.html
+	* docs/html/ch02s02.html
+	* docs/html/ch02s03.html
+	* docs/html/ch02s04.html
+	* docs/html/ch02s05.html
+	* docs/html/ch02s06.html
+	* docs/html/ch02s07.html
+	* docs/html/ch02s08.html
+	* docs/html/ch03.html
+	* docs/html/ch03s02.html
+	* docs/html/ch03s03.html
+	* docs/html/ch03s04.html
+	* docs/html/ch03s05.html
+	* docs/html/ch03s06.html
+	* docs/html/ch04.html
+	* docs/html/ch04s03.html
+	* docs/html/ch05.html
+	* docs/html/index.html
+	* docs/html/pr01.html
+	* docs/html/pr01s02.html
+	* docs/html/preferences.png
+	* docs/pdf/manual.pdf
+	* docs/src/preferences.png
+	* res/preferences.wxg
+
+	Use python2 interpreter instead of just python
+
+	Files (added, modified or removed):
+	* wxglade
+
+	Change shebang to start Python2 always.
+
+	That's useful for systems with Python3 as default
+
+	Files (added, modified or removed):
+	* test.py
+	* wxglade.py
+	* wxglade.pyw
+	* xrc2wxg.py
+
+	Fix bug introduced in 1333:9859659429ff
+
+	Files (added, modified or removed):
+	* edit_windows.py
+
+	Extend documentation HG Bitte gib eine Versions-Meldung ein. Zeilen
+	beginnend mit 'HG:' werden
+
+	Files (added, modified or removed):
+	* docs/html/apa.html
+	* docs/html/apb.html
+	* docs/html/apc.html
+	* docs/html/apd.html
+	* docs/html/ch01.html
+	* docs/html/ch01s02.html
+	* docs/html/ch01s03.html
+	* docs/html/ch01s04.html
+	* docs/html/ch01s05.html
+	* docs/html/ch01s06.html
+	* docs/html/ch01s07.html
+	* docs/html/ch01s08.html
+	* docs/html/ch02.html
+	* docs/html/ch02s02.html
+	* docs/html/ch02s03.html
+	* docs/html/ch02s04.html
+	* docs/html/ch02s05.html
+	* docs/html/ch02s06.html
+	* docs/html/ch02s07.html
+	* docs/html/ch02s08.html
+	* docs/html/ch02s09.html
+	* docs/html/ch03.html
+	* docs/html/ch03s02.html
+	* docs/html/ch03s03.html
+	* docs/html/ch03s04.html
+	* docs/html/ch03s05.html
+	* docs/html/ch03s06.html
+	* docs/html/ch03s07.html
+	* docs/html/ch04.html
+	* docs/html/ch04s02.html
+	* docs/html/ch04s03.html
+	* docs/html/ch05.html
+	* docs/html/ch05s03.html
+	* docs/html/ch05s04.html
+	* docs/html/index.html
+	* docs/html/pr01.html
+	* docs/html/pr01s02.html
+	* docs/html/pr01s03.html
+	* docs/html/preferences.png
+	* docs/pdf/manual.pdf
+	* docs/src/html.xsl
+	* docs/src/manual.xml
+	* docs/src/pdf.xsl
+	* docs/src/preferences.png
+
+2013-12-04  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Set backupCount=1 during setup of RotatingFileHandler
+
+	The default backupCount=0 doesn't delete the file during the
+	rollover. Thereby the log file grows instead of remaining at 100
+	KiB.
+
+	Files (added, modified or removed):
+	* log.py
+
+2013-12-03  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Fix bug introduced in 1333:9859659429ff
+
+	Files (added, modified or removed):
+	* edit_windows.py
+
+2013-11-26  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add more details to logged exceptions and unify exception formatting
+	code
+
+	Files (added, modified or removed):
+	* log.py
+
+2013-11-24  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Improve error handling in case if missing code writer
+
+	Files (added, modified or removed):
+	* errors.py
+	* wxglade.py
+
+	Add test case for last commit "Prevent code generation ..."
+
+	Files (added, modified or removed):
+	* tests/test_codegen.py
+
+	Prevent code generation from a template file by commandline
+	invocation
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/__init__.py
+	* errors.py
+
+	Remove obsolete "import errors"
+
+	Files (added, modified or removed):
+	* xml_parse.py
+
+	Use python2 interpreter instead of just python
+
+	Files (added, modified or removed):
+	* wxglade
+
+	Improve tests of the existance of output file and directory
+
+	Files (added, modified or removed):
+	* tests/__init__.py
+	* tests/test_codegen.py
+
+2013-11-23  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Reorg code to open file to reduce duplicate code
+
+	Files (added, modified or removed):
+	* main.py
+
+2013-11-16  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change shebang to start Python2 always.
+
+	That's useful for systems with Python3 as default
+
+	Files (added, modified or removed):
+	* test.py
+	* wxglade.py
+	* wxglade.pyw
+	* xrc2wxg.py
+
+2013-11-05  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	PEP8
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+	XRC code generator raises an own exception instead of IOError.
+
+	The code generator raises now WxgXRCMultipleFilesNotSupported
+	instead of the generic IOError exception. It's a logical mistake not
+	not an IO error.
+
+	Files (added, modified or removed):
+	* codegen/xrc_codegen.py
+	* errors.py
+	* tests/test_codegen.py
+
+	Improve checks for wxGlade specific exceptions
+
+	Files (added, modified or removed):
+	* application.py
+	* wxglade.py
+
+	Improve check for output directory
+
+	Files (added, modified or removed):
+	* application.py
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/py_codegen.py
+	* errors.py
+	* tests/__init__.py
+	* tests/test_codegen.py
+	* wxglade.py
+	* xml_parse.py
+
+2013-11-02  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Improve disabling old import style for wxPython 3.0
+
+	Files (added, modified or removed):
+	* application.py
+	* codegen/py_codegen.py
+	* errors.py
+	* tests/test_codegen.py
+	* wxglade.py
+
+2013-11-01  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Disable Lisp code generation for wxWidgets 3.0
+
+	I've disabled Lisp due lack of testing possibilities for the
+	upcoming release of wxWidgets 3.0.
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* application.py
+	* codegen/lisp_codegen.py
+	* errors.py
+	* tests/casefiles/ComplexExample_30.lisp
+	* tests/test_codegen.py
+	* wxglade.py
+	* xml_parse.py
+
+	Add RadioProperty.enable_item() to enable/disable choices within the
+	property
+
+	Files (added, modified or removed):
+	* widget_properties.py
+
+2013-10-30  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add option to exclude languages from
+	tests.WXGladeBaseTest._test_all()
+
+	Files (added, modified or removed):
+	* tests/__init__.py
+
+	Rework the initialisation of values in code generators
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* codegen/xrc_codegen.py
+
+	Pep8 changes
+
+	Files (added, modified or removed):
+	* xml_parse.py
+
+2013-10-29  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Minor update of the source code documentation
+
+	Files (added, modified or removed):
+	* xml_parse.py
+
+2013-10-27  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Minor code reorg in exception handlers
+
+	Files (added, modified or removed):
+	* log.py
+
+	Update copyright notice
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+	merged DEV_GUI_WX30 into default
+
+	Files (added, modified or removed):
+
+2013-10-16  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Move compatibility code to compat.py
+
+	Files (added, modified or removed):
+	* application.py
+	* compat.py
+	* edit_sizers/edit_sizers.py
+	* edit_windows.py
+	* tree.py
+
+2013-10-15  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use SizerItem.AssignWindow() instead of SetWindow()
+
+	SizerItem.SetWindow() is deprecated since wxPython 2.9
+
+	Files (added, modified or removed):
+	* edit_sizers/edit_sizers.py
+	* edit_windows.py
+
+	Start implementing GUI changes to support upcoming wxPython 3.0
+
+	Files (added, modified or removed):
+	* NEWS.txt
+
+	Use SizerItem.AssignWindow() instead of SetWindow() (Thanks to
+	Martin Gregory)
+
+	SizerItem.SetWindow() is deprecated since wxPython 2.9
+
+	This change is an adapt version of the patch provided by Martin.
+
+	Files (added, modified or removed):
+	* application.py
+	* tree.py
+
+2013-10-08  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Created DEV_GUI_WX30 branch
+
+	Files (added, modified or removed):
+
+2013-10-01  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Reorg in determining locale to prevent warning message on Windows
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+2013-09-30  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add installation requirement to setup.py
+
+	Files (added, modified or removed):
+	* setup.py
+
+2013-09-29  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change default to remember position and geometry of the main windows
+
+	This configuration change effects fresh installations only because
+	wxGlade writes always all configuration settings into the rc file.
+	Changed defaults will be overwritten by the values from the rc file.
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* common.py
+
+	Typo
+
+	Files (added, modified or removed):
+	* docs/src/manual.xml
+	* wxglade
+
+	Close DEV_LOGGING branch
+
+	Files (added, modified or removed):
+
+	merged DEV_LOGGING into default
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* main.py
+	* wxglade.py
+
+	Fix for a incomplete change in log.py
+
+	The cleanup for old log handlers was too late. Thereby the new
+	created handlers have been removed too.
+
+	Files (added, modified or removed):
+	* log.py
+
+	Minor code reorg triggered by a PEP8 check
+
+	Files (added, modified or removed):
+	* log.py
+
+	Minor source documentation updates
+
+	Files (added, modified or removed):
+	* config.py
+
+	Improve file logging
+
+	The log file will always created . The file is stored inside the
+	appdata directory and it's size is limited to 100kB.
+
+	Parallel a new option has added to log DEBUG information to the log
+	file. This option is off per default.
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* common.py
+	* config.py
+	* configUI.py
+	* configdialog.py
+	* log.py
+	* main.py
+	* res/preferences.wxg
+	* wxglade.py
+
+2013-09-28  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Rework internal path handling
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* common.py
+	* config.py
+	* template.py
+	* wxglade.py
+
+2013-09-27  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Move configuration settings from common to config and code back to
+	common
+
+	This change moves most of configuration variables from common.py to
+	config.py and active code from config back to common.
+
+	This change prevents some circular imports of config and common.
+
+	Files (added, modified or removed):
+	* about.py
+	* code_property.py
+	* codegen/__init__.py
+	* common.py
+	* config.py
+	* configUI.py
+	* docs/ReleaseSteps.txt
+	* edit_sizers/__init__.py
+	* edit_sizers/edit_sizers.py
+	* main.py
+	* misc.py
+	* res/preferences.wxg
+	* template.py
+	* tests/__init__.py
+	* tests/casefiles/Preferences.wxg
+	* tests/casefiles/Python_Preferences.py
+	* tree.py
+	* widgets/__init__.py
+	* widgets/bitmap_button/__init__.py
+	* widgets/bitmap_button/codegen.py
+	* widgets/button/__init__.py
+	* widgets/calendar_ctrl/__init__.py
+	* widgets/checkbox/__init__.py
+	* widgets/choice/__init__.py
+	* widgets/combo_box/__init__.py
+	* widgets/custom_widget/__init__.py
+	* widgets/datepicker_ctrl/__init__.py
+	* widgets/dialog/__init__.py
+	* widgets/dialog/dialog.py
+	* widgets/frame/__init__.py
+	* widgets/frame/frame.py
+	* widgets/gauge/__init__.py
+	* widgets/grid/__init__.py
+	* widgets/hyperlink_ctrl/__init__.py
+	* widgets/list_box/__init__.py
+	* widgets/list_ctrl/__init__.py
+	* widgets/menubar/__init__.py
+	* widgets/menubar/menubar.py
+	* widgets/notebook/__init__.py
+	* widgets/panel/__init__.py
+	* widgets/panel/panel.py
+	* widgets/radio_box/__init__.py
+	* widgets/radio_button/__init__.py
+	* widgets/slider/__init__.py
+	* widgets/spacer/__init__.py
+	* widgets/spin_button/__init__.py
+	* widgets/spin_ctrl/__init__.py
+	* widgets/splitter_window/__init__.py
+	* widgets/static_bitmap/__init__.py
+	* widgets/static_bitmap/codegen.py
+	* widgets/static_line/__init__.py
+	* widgets/static_text/__init__.py
+	* widgets/text_ctrl/__init__.py
+	* widgets/toggle_button/__init__.py
+	* widgets/toolbar/__init__.py
+	* widgets/toolbar/codegen.py
+	* widgets/toolbar/toolbar.py
+	* widgets/tree_ctrl/__init__.py
+	* widgets/tree_ctrl/tree_ctrl.py
+	* wxglade.py
+	* xml_parse.py
+
+2013-09-25  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Ignore wxGlade log file and PyCharm IDE files
+
+	Files (added, modified or removed):
+	* .hgignore
+
+2013-09-21  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use configurable indents instead of hard coded tabs in wxFrame code
+	for Perl
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample_30.pl
+	* widgets/frame/perl_codegen.py
+
+	Add BaseWidgetCodeWriter.stmt2list() convert a string into a list.
+
+	The function stmt2list() splits a multi line code statement into a
+	list of lines. The newlines will be conserved.
+
+	Files (added, modified or removed):
+	* wcodegen/__init__.py
+
+	Add directoy wcodegen to list of source directories
+
+	Files (added, modified or removed):
+	* Makefile
+
+	Write log file with utf-8 encoding
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+	Minor cosmetic changes
+
+	Files (added, modified or removed):
+	* main.py
+	* wxglade.py
+
+2013-09-04  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Created DEV_LOGGING branch
+
+	Files (added, modified or removed):
+
+2013-09-01  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change bitmap specification in complex example
+
+	Files (added, modified or removed):
+	* tests/casefiles/ComplexExample.cpp
+	* tests/casefiles/ComplexExample.lisp
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample.py
+	* tests/casefiles/ComplexExample.wxg
+	* tests/casefiles/ComplexExample.xrc
+	* tests/casefiles/ComplexExample_30.cpp
+	* tests/casefiles/ComplexExample_30.lisp
+	* tests/casefiles/ComplexExample_30.pl
+	* tests/casefiles/ComplexExample_30.py
+	* tests/casefiles/ComplexExample_30.wxg
+	* tests/casefiles/ComplexExample_30.xrc
+	* widgets/toolbar/codegen.py
+
+	Rework quoting and escaping of special character sequences
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* codegen/xrc_codegen.py
+	* docs/html/apa.html
+	* docs/html/apb.html
+	* docs/html/ch01.html
+	* docs/html/ch01s02.html
+	* docs/html/ch01s03.html
+	* docs/html/ch01s04.html
+	* docs/html/ch01s05.html
+	* docs/html/ch01s06.html
+	* docs/html/ch01s07.html
+	* docs/html/ch02.html
+	* docs/html/ch02s02.html
+	* docs/html/ch02s03.html
+	* docs/html/ch02s04.html
+	* docs/html/ch02s05.html
+	* docs/html/ch02s06.html
+	* docs/html/ch02s07.html
+	* docs/html/ch02s08.html
+	* docs/html/ch02s09.html
+	* docs/html/ch03.html
+	* docs/html/ch03s02.html
+	* docs/html/ch03s03.html
+	* docs/html/ch03s04.html
+	* docs/html/ch03s06.html
+	* docs/html/ch03s07.html
+	* docs/html/ch04.html
+	* docs/html/ch05.html
+	* docs/html/index.html
+	* docs/html/pr01.html
+	* docs/html/pr01s02.html
+	* docs/html/pr01s03.html
+	* docs/pdf/manual.pdf
+	* docs/src/manual.xml
+	* tests/casefiles/ComplexExample.cpp
+	* tests/casefiles/ComplexExample.h
+	* tests/casefiles/ComplexExample.lisp
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample.py
+	* tests/casefiles/ComplexExample.wxg
+	* tests/casefiles/ComplexExample.xrc
+	* tests/casefiles/ComplexExample_30.cpp
+	* tests/casefiles/ComplexExample_30.h
+	* tests/casefiles/ComplexExample_30.lisp
+	* tests/casefiles/ComplexExample_30.pl
+	* tests/casefiles/ComplexExample_30.py
+	* tests/casefiles/ComplexExample_30.wxg
+	* tests/casefiles/ComplexExample_30.xrc
+	* tests/test_codegen.py
+
+2013-08-27  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Simplify signature of quote_str(), use quote_path() for filenames or
+	paths
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+
+2013-08-26  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use quote_path() instead of quote_str() to quote / escape filenames
+
+	Files (added, modified or removed):
+	* tests/casefiles/ComplexExample.cpp
+	* tests/casefiles/ComplexExample_30.cpp
+	* widgets/bitmap_button/codegen.py
+	* widgets/dialog/codegen.py
+	* widgets/frame/codegen.py
+	* widgets/static_bitmap/codegen.py
+	* widgets/toolbar/codegen.py
+
+2013-08-26  Carsten Grohmann  <carstengrohmann@gmx.de>
+
+	Add creation of a development branch to release steps
+
+	Files (added, modified or removed):
+	* docs/ReleaseSteps.txt
+
+2013-08-25  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Close stable branch WXG-BRANCH-VERSION_0_6_7
+
+	Files (added, modified or removed):
+
+2013-08-24  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Fix escape sequences in Unicode strings were escaped twice Perl and
+	Python
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/__init__.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* tests/casefiles/ComplexExample.cpp
+	* tests/casefiles/ComplexExample.lisp
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample.py
+	* tests/casefiles/ComplexExample.wxg
+	* tests/casefiles/ComplexExample.xrc
+	* tests/test_codegen.py
+
+	Extent NEWS.txt
+
+	Files (added, modified or removed):
+	* NEWS.txt
+
+	Create new branch for stable version 0.6.8
+
+	Files (added, modified or removed):
+
+	Fix escape sequences in Unicode strings were escaped twice Perl and
+	Python
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/__init__.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* tests/casefiles/ComplexExample.cpp
+	* tests/casefiles/ComplexExample.lisp
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample.py
+	* tests/casefiles/ComplexExample.wxg
+	* tests/casefiles/ComplexExample.xrc
+	* tests/casefiles/ComplexExample_30.cpp
+	* tests/casefiles/ComplexExample_30.lisp
+	* tests/casefiles/ComplexExample_30.pl
+	* tests/casefiles/ComplexExample_30.py
+	* tests/casefiles/ComplexExample_30.wxg
+	* tests/casefiles/ComplexExample_30.xrc
+	* tests/test_codegen.py
+
+2013-08-21  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Source documentation update for quote_str() and _quote_str_pattern
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+
+2013-08-17  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Rename class codegen.BaseCodeWriter -> BaseLangCodeWriter
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* codegen/xrc_codegen.py
+	* edit_sizers/edit_sizers.py
+	* misc.py
+	* tests/__init__.py
+	* tests/test_codegen.py
+
+	Use Python logging facility instead of print statements
+
+	The information will be shown in three ways:
+	 - at console
+	 - in a log file
+	 - within the GUI
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* application.py
+	* clipboard.py
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+	* codegen/xrc_codegen.py
+	* common.py
+	* config.py
+	* edit_sizers/edit_sizers.py
+	* edit_widget.py
+	* edit_windows.py
+	* events_mixin.py
+	* font_dialog.py
+	* install/pyinstaller/wxglade-installer.iss
+	* install/pyinstaller/wxglade.spec
+	* install/rpm/wxglade.spec
+	* log.py
+	* main.py
+	* misc.py
+	* template.py
+	* tests/__init__.py
+	* tests/test_gui.py
+	* tree.py
+	* wcodegen/__init__.py
+	* widget_properties.py
+	* widgets/custom_widget/codegen.py
+	* widgets/grid/codegen.py
+	* widgets/menubar/codegen.py
+	* widgets/menubar/lisp_codegen.py
+	* widgets/menubar/perl_codegen.py
+	* widgets/notebook/notebook.py
+	* widgets/panel/panel.py
+	* widgets/splitter_window/splitter_window.py
+	* widgets/static_bitmap/static_bitmap.py
+	* wxglade.py
+	* xml_parse.py
+	* xrc2wxg.py
+
+2013-08-15  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Initialise localisation earlier / at application start
+
+	In old version the localisation was initialised during the graphical
+	init process only.
+
+	Now the localisation is started always during the first step of
+	application initialisation.
+
+	BTW: The old call of "locale.setlocale(locale.LC_ALL)" initialised
+	the "C" locale always and not the user specific locales. This has
+	been fixed.
+
+	Files (added, modified or removed):
+	* application.py
+	* config.py
+	* wxglade.py
+
+2013-08-14  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Improve module import of wxversion and wx as well as the error
+	messages
+
+	Files (added, modified or removed):
+	* wxglade.py
+
+2013-08-08  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Change default version for code generation from 2.6 to 2.8
+
+	The preselected version for a new project in GUI is the version of
+	the used wxPython version.
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+
+	Add missing styles for wxNotebook (Thanks to Udi Fuchs)
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* tests/casefiles/ComplexExample.cpp
+	* tests/casefiles/ComplexExample.lisp
+	* tests/casefiles/ComplexExample.pl
+	* tests/casefiles/ComplexExample.py
+	* tests/casefiles/ComplexExample.wxg
+	* tests/casefiles/ComplexExample.xrc
+	* tests/casefiles/ComplexExample_30.cpp
+	* tests/casefiles/ComplexExample_30.lisp
+	* tests/casefiles/ComplexExample_30.pl
+	* tests/casefiles/ComplexExample_30.py
+	* tests/casefiles/ComplexExample_30.wxg
+	* tests/casefiles/ComplexExample_30.xrc
+	* widgets/notebook/notebook.py
+
+2013-08-07  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Pep8
+
+	Files (added, modified or removed):
+	* widgets/notebook/__init__.py
+	* widgets/notebook/codegen.py
+	* widgets/notebook/lisp_codegen.py
+	* widgets/notebook/notebook.py
+	* widgets/notebook/perl_codegen.py
+	* widgets/radio_box/__init__.py
+	* widgets/radio_box/codegen.py
+	* widgets/radio_box/lisp_codegen.py
+	* widgets/radio_box/perl_codegen.py
+	* widgets/radio_box/radio_box.py
+
+2013-08-06  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Use SetToolTip() instead of SetToolTipString() for wxPython 3.x
+
+	Files (added, modified or removed):
+	* NEWS.txt
+	* codegen/py_codegen.py
+	* tests/casefiles/ComplexExample_30.py
+
+	Update NEWS.txt
+
+	Files (added, modified or removed):
+	* NEWS.txt
+
+	Extent handling for code statements use to set properties
+
+	Files (added, modified or removed):
+	* codegen/__init__.py
+	* codegen/cpp_codegen.py
+	* codegen/lisp_codegen.py
+	* codegen/pl_codegen.py
+	* codegen/py_codegen.py
+
+2013-08-04  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Add initial test for wxPython 3.0 using a own copy of
+	"ComplexExample"
+
+	Files (added, modified or removed):
+	* tests/casefiles/ComplexExample_30.cpp
+	* tests/casefiles/ComplexExample_30.h
+	* tests/casefiles/ComplexExample_30.lisp
+	* tests/casefiles/ComplexExample_30.pl
+	* tests/casefiles/ComplexExample_30.py
+	* tests/casefiles/ComplexExample_30.wxg
+	* tests/casefiles/ComplexExample_30.xrc
+	* tests/test_codegen.py
+
+	Update year in copyright statement
+
+	Files (added, modified or removed):
+	* tests/__init__.py
+	* tests/test_codegen.py
+	* tests/test_gui.py
+
+2013-07-13  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	Replace Albertos email in the tutorial by mailing list address
+
+	Files (added, modified or removed):
+	* docs/tutorial.html
+
+	Add deleting Python bytecode files to release documentation
+
+	Files (added, modified or removed):
+	* docs/BuildingInstaller.txt
+
+	Added tag rel_0.6.8 for changeset 80fb1637a216
+
+	Files (added, modified or removed):
+	* .hgtags
+
+	Bump version number to 0.6.8
+
+	Files (added, modified or removed):
+	* common.py
+	* install/pyinstaller/wxglade-installer.iss
+
 2013-04-07  Carsten Grohmann  <mail@carstengrohmann.de>
 
 	Improve usability of the dialog to list and open templates
