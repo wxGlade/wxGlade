@@ -127,6 +127,12 @@ Intended Audience :: Developers
 License :: OSI Approved :: MIT License
 Natural Language :: English
 Operating System :: OS Independent (Written in an interpreted language)
+Programming Language :: Python
+Programming Language :: Python :: 2
+Programming Language :: Python :: 2.4
+Programming Language :: Python :: 2.5
+Programming Language :: Python :: 2.6
+Programming Language :: Python :: 2.7
 Programming Language :: Python :: 2 :: Only
 Topic :: Software Development :: Code Generators
 Topic :: Software Development :: User Interfaces
