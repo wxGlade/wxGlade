@@ -9,66 +9,58 @@ import os
 # increase the visibility of DEBUG because file is 'executed' using execfile
 global DEBUG
 global debug
-global WARNFILE
-
-WARNFILE = os.path.join(BUILDPATH, 'warnwxglade.txt')
-"""\
-Set the correct path for the WARNFILE.
-
-PyInstaller 1.5.1 sets the wrong WARNFILE path if custom buildpaths are used
-"""
 
 REPO_DIR = os.getcwd()
-'''\
+"""\
 Main directory of the wxGlade source tree
-'''
+"""
 
 PATHEX = [os.path.join(REPO_DIR, 'install\\pyinstaller'),]
-'''\
+"""\
 Extend the search path to wxGlade base directory
-'''
+"""
 
 DEBUG = False
-'''\
+"""\
 Print additional information about integrated and analysed but removed files
-'''
+"""
 
 ONEFILE = False
-'''\
+"""\
 Build one file installer
 
 True generates a single exe file with all dependencies inside.
 False generates an exe file with all pure python inside and additional
 dlls as well as compiled python modules in a directory.
-'''
+"""
 
-SHOW_CONSOLE = False
-'''\
+SHOW_CONSOLE = True
+"""\
 Use the console executable, or the Windows subsystem executable.
-'''
+"""
 
 ICON = os.path.join(REPO_DIR, 'install\\pyinstaller\\mondrian.ico')
-'''\
+"""\
 EXE Icon
-'''
+"""
 
 BUILD_TARGET = os.path.join(REPO_DIR, 'dist')
-'''\
+"""\
 Directory to store the created single exe file.
 
 Directory is used temporarly only because the exe file will connect and
 copied to DIST_TARGET too.
-'''
+"""
 
 DIST_TARGET = os.path.join(REPO_DIR, 'bdist')
-'''\
+"""\
 Directory to store all collected files.
-'''
+"""
 
 NAME_EXE = 'wxglade.exe'
-'''\
+"""\
 Name of the created executable
-'''
+"""
 
 FILES2INCLUDE = [
     'CHANGES.txt',
@@ -81,17 +73,17 @@ FILES2INCLUDE = [
     'wxGlade.desktop',
     'widgets\widgets.txt',
     ]
-'''\
+"""\
 (DATA) files to add the collection process without processing
 path is relative to REPO_DIR
-'''
+"""
 
 OPTIONALFILES = [
     'RELEASE-VERSION',
     ]
-'''\
+"""\
 Optional files to include if they are existing.
-'''
+"""
 
 DIRS2INCLUDE = [
     ('codegen', '*.py'),
@@ -105,29 +97,31 @@ DIRS2INCLUDE = [
     ('wcodegen',  '*.py'),
     ('widgets',   '*.py'),
     ]
-'''\
+"""\
 (DATA) directories to add to the collection process without processing
 path is relative to REPO_DIR
-'''
+"""
 
 # =========== NO changes below this line ===========
 
+
 def debug(msg):
-    '''
+    """
     Show debug information
-    '''
+    """
     if DEBUG:
         print 'DEBUG: %s' % msg
 
+
 def rescursiveFilelist(rootdir, pattern='*.py'):
-    '''
+    """
     Returns a list of all files matching pattern in the directory
 
     Directories will be parsed recursively
 
     @param rootdir: Root directory to list recursively
     @param pattern: Pattern of all files to list
-    '''
+    """
     # import module late due execfile
     import fnmatch
 
@@ -137,13 +131,14 @@ def rescursiveFilelist(rootdir, pattern='*.py'):
 
     return fnmatch.filter(fl, pattern)
 
+
 def purgePath(toc, path):
-    '''
+    """
     Remove all elements below path from the toc.
 
     @param toc:  TOC to filter
     @param path: Path to drop
-    '''
+    """
     path = os.path.normpath(path)
     for entry in toc[:]:
         epath = os.path.normpath(entry[1])
@@ -153,14 +148,10 @@ def purgePath(toc, path):
 
     return toc
 
-files2analyse = [
-    os.path.join(HOMEPATH, 'support\\_mountzlib.py'),
-    os.path.join(HOMEPATH, 'support\\useUnicode.py'),
-    'wxglade.py',
-    ]
-'''\
+files2analyse = ['wxglade.py', ]
+"""\
 Scripts to run
-'''
+"""
 
 files2analyse += rescursiveFilelist('codegen')
 files2analyse += rescursiveFilelist('edit_sizers')
@@ -175,7 +166,7 @@ for dir, pattern in DIRS2INCLUDE:
     FILES2INCLUDE.extend(rescursiveFilelist(dir, pattern))
 
 # add existing optional files to FILES2INCLUDE
-for fiename in OPTIONALFILES:
+for filename in OPTIONALFILES:
     if os.path.exists(filename):
         FILES2INCLUDE.append(filename)
 

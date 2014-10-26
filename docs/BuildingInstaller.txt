@@ -2,7 +2,7 @@ Building a wxGlade installer HOWTO
 ----------------------------------
 
 Alberto Griggio  2007/04/20
-Carsten Grohmann 2014/10/13
+Carsten Grohmann 2014/10/26
 
 1. Setup PyInstaller
 --------------------
@@ -10,7 +10,7 @@ Carsten Grohmann 2014/10/13
 Install the current version of PyInstaller from http://www.pyinstaller.org.
 Follow the instruction published at PyInstallers homepage.
 
-This procedure is tested using PyInstaller versions 1.5 and 1.5.1.
+This procedure is tested using PyInstaller versions 2.1
 
 2. Generate an executable
 -------------------------
@@ -24,13 +24,22 @@ This procedure is tested using PyInstaller versions 1.5 and 1.5.1.
 - To generate the version file "RELEASE-VERSION" type:
   python.exe -c "import config; config.write_version_file(config.get_version(False))"
 
-- Type:
-  python.exe <path to PyInstaller>\Build.py --noconfirm --buildpath <path to source>\wxglade\build install\pyinstaller\wxglade.spec
+- Check if pyinstaller well configured
+  Type:
+  pyinstaller --version
 
-  If everything works, you should now have three new subdirectories
-  "build", "bdist" and "dist".
+  The result should be 2.n
 
-- Now you should have a working executable in "bdist", called "wxglade.exe".
+- Generate binary for standalone edition
+  Type:
+  install\pyinstaller\build.bat
+
+  If everything works, you should now have two new subdirectories
+  "build" and "dist".
+
+- Now you should have a working executable in "dist/bdist", called
+  "wxglade.exe".
+
   If it works, you can move on to the next step
 
 3. Generate an installer
