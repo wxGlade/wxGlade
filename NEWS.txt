@@ -1,3 +1,25 @@
+Version 0.7.1 - 2015-XX-XX:
+General:
+  - ...
+
+Generated Code:
+ - ...
+
+Bugs:
+  - ...
+
+Deprecation
+ - ...
+
+Documentation:
+  - ...
+
+API (for custom widgets):
+  - ...
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
 Version 0.7.0 - 2014-10-26:
 General: 
   - Remove support for old Python import style generally
