@@ -4,14 +4,15 @@
 
  Other Developers:
  ---------------------------------------------------------------------------
+ - none
+
+ Former Developers:
+ ---------------------------------------------------------------------------
  - Alberto Griggio <agriggio@users.sourceforge.net>
  - Marcello Semboli <dinogen@siena.linux.it>
  - Guy Rutenberg <guyrutenberg@gmail.com>
  - D.H. <crazyinsomniac@yahoo.com> (Perl code generation)
  - Georges Khaznadar <gekhajofour@netinfo.fr> (debian package maintainer)
-
- Former Developers:
- ---------------------------------------------------------------------------
  - Marco Barisione <marco.bari@vene.ws>
  - Kevin Walzer (OSX app bundle maintainer)
 
