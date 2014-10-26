@@ -1,4 +1,4 @@
-Version 0.7.0 - 2014-10-XX:
+Version 0.7.0 - 2014-10-26:
 General: 
   - Remove support for old Python import style generally
   - Add missing styles for wxNotebook (Thanks to Udi Fuchs)
@@ -17,13 +17,11 @@ General:
     This change causes some minor changes in the generated code.
   - Add Lisp and Perl support for wxDatePickerCtrl
   - Add support for wxSplitterWindow.SetMinimumPaneSize()
-  - ...
 
 Generated Code:
  - Use SetToolTip() instead of SetToolTipString() for wxPython 3 und wxPerl 3
  - Use configurable indents instead of hard coded tabs in wxFrame code
    for Perl
- - ...
 
 Bugs:
   - Fix escape sequences in Unicode strings were escaped twice Perl and
@@ -36,19 +34,17 @@ Bugs:
   - Don't convert first char of a XRC extraproperty to upper case (sf
     bug #163)
   - Fix incomplete Unicode escaping
-  - ...
 
 Deprecation
  - In place modifications for generated source files will be removed in one
    of the next releases
 
 Documentation:
-  - ...
+  - Adapt and extend the documentation
 
 API (for custom widgets):
   - Simplify signature of quote_str(), use quote_path() to quote / escape
     filenames or paths
-  - ...
 
 Note:
   - See CHANGES.txt for a full list of changes
