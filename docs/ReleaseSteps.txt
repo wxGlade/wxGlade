@@ -5,7 +5,6 @@ Steps to publish a new version
     wxGlade.desktop
  2. Change the version number in wxglade-installer.iss. Please check that
     the version is equal to the version in RELEASE-VERSION
- 3. Set SHOW_CONSOLE to False in install/pyinstaller/wxglade.spec
  3. Commit all open changes
  4. Merge changes from development branch WXG-BRANCH-DEV_0_6_7 into default
     branch

@@ -9,7 +9,7 @@
 ; EDITION_SHORT will be defined in wxglade-SAE-installer.iss only
 
 #ifdef EDITION_SHORT
-  #define DIST_DIR        "..\..\bdist"
+  #define DIST_DIR        "..\..\dist\bdist"
   #define EXECUTABLE_NAME "{app}\wxglade.exe"
   #define EDITION_LONG    " (Standalone Edition)"
 #else
@@ -21,6 +21,7 @@
 
 ; Exclude from standalone edition as well as from full edition
 #define EXCLUDE_ALWAYS "\kdefiledialog.py,\README.txt,\docs\src,\docs\man"
+
 
 [Setup]
 AppName=wxGlade
