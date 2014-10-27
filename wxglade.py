@@ -50,7 +50,7 @@ Copyright (C) 2007-2012 Alberto Griggio
 Copyright (C) 2011-2014 Carsten Grohmann
 License MIT: The MIT License
              <http://www.opensource.org/licenses/mit-license.php>""") %
-        config.version
+        config.get_version()
         )
     parser.add_option(
         '-h',
