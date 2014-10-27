@@ -8,6 +8,7 @@ Global variables
 
 import ConfigParser
 import logging
+import os
 import os.path
 import sys
 import zipfile
@@ -1229,6 +1230,11 @@ def init_paths():
     config.log_file = os.path.join(
         config.appdata_path, 'wxglade.log'
         )
+
+    # create missing application data directory, otherwise log initialisation
+    # will failed with an IOError "No such file or directory"
+    if not os.path.isdir(config.appdata_path):
+        os.makedirs(config.appdata_path, 0700)
 
 
 def init_preferences():
