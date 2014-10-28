@@ -40,10 +40,9 @@ class EditBitmapButton(ManagedBase, EditStylesMixin):
 
         # initialise properties remaining staff
         self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
-        self.properties['bitmap'] = FileDialogProperty(self, 'bitmap', None,
-                                                       style=wx.OPEN |
-                                                             wx.FILE_MUST_EXIST,
-                                                       can_disable=False, label=_("bitmap"))
+        self.properties['bitmap'] = FileDialogProperty(
+            self, 'bitmap', None, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            can_disable=False, label=_("bitmap"))
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("default"))
@@ -51,7 +50,9 @@ class EditBitmapButton(ManagedBase, EditStylesMixin):
         self.access_functions['disabled_bitmap'] = (self.get_disabled_bitmap,
                                                     self.set_disabled_bitmap)
         self.properties['disabled_bitmap'] = FileDialogProperty(
-            self, 'disabled_bitmap', None, style=wx.OPEN|wx.FILE_MUST_EXIST, label=_("disabled bitmap"))
+            self, 'disabled_bitmap', None,
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            label=_("disabled bitmap"))
         self.properties['style'] = CheckListProperty(
             self, 'style', self.widget_writer)
 

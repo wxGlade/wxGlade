@@ -38,7 +38,7 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin):
         self.access_functions['attribute'] = (self.get_attribute,
                                               self.set_attribute)
         self.bitmap_prop = FileDialogProperty(self, 'bitmap', None,
-            style=wx.OPEN | wx.FILE_MUST_EXIST, can_disable=False,
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, can_disable=False,
             label=_("bitmap"))
         prop = self.properties
         prop['bitmap'] = self.bitmap_prop
