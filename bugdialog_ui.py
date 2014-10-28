@@ -17,7 +17,7 @@ import gettext
 class UIBugDialog(wx.Dialog):
     def __init__(self, *args, **kwds):
         # begin wxGlade: UIBugDialog.__init__
-        kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
+        kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         wx.Dialog.__init__(self, *args, **kwds)
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style=wx.NB_BOTTOM)
         self.nb1_pane_summary = wx.Panel(self.notebook_1, wx.ID_ANY)

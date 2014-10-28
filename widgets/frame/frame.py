@@ -51,7 +51,7 @@ class EditFrame(TopLevelBase, EditStylesMixin):
             self, 'toolbar', label=_('Has ToolBar'))
         # icon property
         prop['icon'] = FileDialogProperty(
-            self, 'icon', style=wx.OPEN | wx.FILE_MUST_EXIST,
+            self, 'icon', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
             label=_("icon"))
         # centered property
         self.centered = False
