@@ -21,7 +21,7 @@ except AttributeError:
 class TemplateInfoDialog(wx.Dialog):
     def __init__(self, *args, **kwds):
         # begin wxGlade: TemplateInfoDialog.__init__
-        kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.THICK_FRAME
+        kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX
         wx.Dialog.__init__(self, *args, **kwds)
         self.template_name = wx.TextCtrl(self, wx.ID_ANY, "")
         self.author = wx.TextCtrl(self, wx.ID_ANY, "")

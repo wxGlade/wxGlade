@@ -37,9 +37,9 @@ class EditDialog(TopLevelBase, EditStylesMixin):
         # icon property
         self.icon = ""
         self.access_functions['icon'] = (self.get_icon, self.set_icon)
-        prop['icon'] = FileDialogProperty(self, 'icon', None,
-                                          style=wx.OPEN|wx.FILE_MUST_EXIST,
-                                          can_disable=True, label=_("Icon"))
+        prop['icon'] = FileDialogProperty(
+            self, 'icon', None, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            can_disable=True, label=_("Icon"))
         # centered property
         self.centered = False
         self.access_functions['centered'] = (self.get_centered,
