@@ -653,7 +653,7 @@ class wxGladeFrame(wx.Frame):
                                    wildcard="wxGlade files (*.wxg)|*.wxg|"
                                    "wxGlade Template files (*.wgt)|*.wgt|"
                                    "XML files (*.xml)|*.xml|All files|*",
-                                   flags=wx.OPEN|wx.FILE_MUST_EXIST,
+                                   flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
                                    default_path=self.cur_dir)
         if infile:
             if common.check_autosaved(infile) and \
@@ -919,7 +919,7 @@ class wxGladeFrame(wx.Frame):
         infilename = misc.FileSelector(
             _("Import file"),
             wildcard="XRC files (*.xrc)" "|*.xrc|All files|*",
-            flags=wx.OPEN | wx.FILE_MUST_EXIST,
+            flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
             default_path=self.cur_dir)
         if infilename:
             ibuffer = StringIO.StringIO()
