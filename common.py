@@ -6,11 +6,13 @@ Global variables
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import codecs
 import ConfigParser
 import logging
 import os
 import os.path
 import sys
+import types
 import zipfile
 
 import config
@@ -989,29 +991,36 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
 
 def encode_from_xml(label, encoding=None):
     """\
-    Returns a str which is the encoded version of the unicode label
+    Returns a str which is the encoded version of the unicode msg
     """
     if encoding is None:
         encoding = app_tree.app.encoding
     return label.encode(encoding, 'replace')
 
 
-def encode_to_xml(label, encoding=None):
+def encode_to_xml(item):
     """\
-    returns a utf-8 encoded representation of label. This is equivalent to:
-    str(label).decode(encoding).encode('utf-8')
+    Decode the item to a Unicode string. The encoding to UTF-8 will be done
+    later.
+
+    Non-string items will be converted to string automatically.
+
+    @rtype: unicode
     """
-    if encoding is None:
-        encoding = app_tree.app.encoding
-    if type(label) == type(u''):
-        return label.encode('utf-8')
-    return str(label).decode(encoding).encode('utf-8')
+    if isinstance(item, types.UnicodeType):
+        return item
+    if not isinstance(item, types.StringTypes):
+        item = str(item)
+    item = item.decode(app_tree.app.encoding)
+    return item
 
 
 def save_file(filename, content, which='wxg'):
     """\
     Save I{content} to file named I{filename} and, if user's preferences say
     so and I{filename} exists, makes a backup copy of it.
+
+    @note: The content of 'wxg' files must be Unicode always!
 
     @note: Exceptions that may occur while performing the operations are not
            handled.
@@ -1023,6 +1032,7 @@ def save_file(filename, content, which='wxg'):
     @param which:    Kind of backup: 'wxg' or 'codegen'
     """
     if which == 'wxg':
+        assert isinstance(content, types.UnicodeType)
         do_backup = config.preferences.wxg_backup
     elif which == 'codegen':
         do_backup = config.preferences.codegen_backup
@@ -1031,8 +1041,7 @@ def save_file(filename, content, which='wxg'):
             'Unknown value "%s" for parameter "which"!' % which
             )
     try:
-        if do_backup and \
-           filename not in config._backed_up and \
+        if do_backup and filename not in config._backed_up and \
            os.path.isfile(filename):
             # make a backup copy of filename
             infile = open(filename)
@@ -1045,13 +1054,20 @@ def save_file(filename, content, which='wxg'):
         savecontent = True
         if os.path.isfile(filename):
             oldfile = open(filename)
-            savecontent = (oldfile.read() != content)
+            oldcontent = oldfile.read()
+            if which == 'wxg':
+                # decode from utf-8 to unicode
+                oldcontent = oldcontent.decode('utf-8')
+            savecontent = (oldcontent != content)
             oldfile.close()
         if savecontent:
             directory = os.path.dirname(filename)
             if directory and not os.path.isdir(directory):
                 os.makedirs(directory)
             outfile = open(filename, 'w')
+            if which == 'wxg':
+                # encode from unicode to utf-8
+                content = content.encode('utf-8')
             outfile.write(content)
             outfile.close()
     finally:
@@ -1261,16 +1277,12 @@ def save_preferences():
         os.makedirs(path)
         # always save the file history
     if config.use_file_history:
-        fh = palette.file_history
-        count = fh.GetCount()
-        encoding = 'utf-8'
-        filenames = [encode_to_xml(fh.GetHistoryFile(i), encoding)
-                     for i in
-                     range(min(config.preferences.number_history, count))]
-        outfile = open(config.history_file, 'w')
-        print >> outfile, "# -*- coding: %s -*-" % encoding
-        for filename in filenames:
-            print >> outfile, filename
+        content = u'# -*- coding: utf-8 -*-\n'
+        for pos in range(min(config.preferences.number_history,
+                             palette.file_history.GetCount())):
+            content += u'%s\n' % palette.file_history.GetHistoryFile(pos)
+        outfile = codecs.open(config.history_file, 'w', encoding='utf-8')
+        outfile.write(content)
         outfile.close()
     if config.preferences.changed:
         outfile = open(config.rc_file, 'w')
@@ -1286,22 +1298,14 @@ def load_history():
     @see: L{config.history_file}
     @see: L{config.use_file_history}
 
-    @rtype: list[str]
+    @rtype: list[unicode]
     """
     try:
-        history = open(config.history_file)
-        lines = history.readlines()
-        if lines and lines[0].startswith('# -*- coding:'):
-            try:
-                encoding = 'utf-8'
-                lines = [e.decode(encoding) for e in lines[1:]]
-            except Exception:
-                logging.exception(_("Internal Error"))
-                lines = lines[1:]
-        history.close()
-        if config.use_gui:
-            import misc
-            lines = [misc.wxstr(e, 'utf-8') for e in lines]
+        infile = codecs.open(config.history_file, encoding='utf-8')
+        lines = infile.readlines()
+        if lines and lines[0].startswith(u'# -*- coding:'):
+            lines = lines[1:]
+        infile.close()
         return lines
     except IOError:
         # don't consider this an error
