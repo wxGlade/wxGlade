@@ -462,28 +462,6 @@ def _reverse_dict(src):
         ret[val] = key
     return ret
 
-
-def get_geometry(win):
-    x, y = win.GetPosition()
-    w, h = win.GetSize()
-    if 0 <= x <= wx.SystemSettings_GetMetric(wx.SYS_SCREEN_X) and \
-       0 <= y <= wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y):
-        return x, y, w, h
-    return None
-
-
-def set_geometry(win, geometry):
-    if geometry is None:
-        return
-    try:
-        if len(geometry) == 4:
-            win.SetDimensions(*[int(x) for x in geometry])
-        else:
-            win.SetPosition([int(x) for x in geometry])
-    except Exception:
-        logging.exception(_('Internal Error'))
-
-
 # snagged out of the Python cookbook
 def import_name(module_path, name):
     import imp
