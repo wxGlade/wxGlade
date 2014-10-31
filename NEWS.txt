@@ -1,15 +1,18 @@
 Version 0.7.1 - 2015-XX-XX:
 General:
+  - Open wxGlade windows in the upper left corner if wxGlade is starting
+    the first time
   - ...
 
 Generated Code:
- - ...
+  - ...
 
 Bugs:
+  - Fix Unicode error during saving wxg files
   - ...
 
 Deprecation
- - ...
+  - ...
 
 Documentation:
   - ...
@@ -41,9 +44,9 @@ General:
   - Add support for wxSplitterWindow.SetMinimumPaneSize()
 
 Generated Code:
- - Use SetToolTip() instead of SetToolTipString() for wxPython 3 und wxPerl 3
- - Use configurable indents instead of hard coded tabs in wxFrame code
-   for Perl
+  - Use SetToolTip() instead of SetToolTipString() for wxPython 3 und wxPerl 3
+  - Use configurable indents instead of hard coded tabs in wxFrame code
+    for Perl
 
 Bugs:
   - Fix escape sequences in Unicode strings were escaped twice Perl and
@@ -58,8 +61,8 @@ Bugs:
   - Fix incomplete Unicode escaping
 
 Deprecation
- - In place modifications for generated source files will be removed in one
-   of the next releases
+  - In place modifications for generated source files will be removed in one
+    of the next releases
 
 Documentation:
   - Adapt and extend the documentation
