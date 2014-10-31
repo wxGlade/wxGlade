@@ -385,11 +385,7 @@ def get_version(suffix=True):
     @see: L{read_version_file()}
     @see: L{get_hg_version()}
     """
-    release = read_version_file()
-    if not release:
-        release = get_hg_version()
-    if not release:
-        release = 'not found'
+    release = '0.7.0'
 
     if suffix and hasattr(sys, 'frozen'):
         release = '%s (standalone edition)' % release
