@@ -226,7 +226,7 @@ preferences = None
 """\
 User preferences
 
-@type: Instance of L{common.Preferences}
+@type: common.Preferences
 @see: L{common.Preferences}
 """
 
