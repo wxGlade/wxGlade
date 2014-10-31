@@ -1399,6 +1399,15 @@ class Preferences(ConfigParser.ConfigParser):
         self.changed = True
 
     def set_geometry(self, name, geometry):
+        """\
+        Save the current widget position and size
+
+        @param name: Widget name
+        @type name: str
+
+        @param geometry: Position and Size
+        @type geometry: (int, int, int, int)
+        """
         if geometry is not None:
             section = 'geometry_%s' % name
             if not self.has_section(section):
@@ -1409,14 +1418,25 @@ class Preferences(ConfigParser.ConfigParser):
             self.set(section, 'h', geometry[3])
 
     def get_geometry(self, name):
+        """\
+        Return saved widget position and size.
+
+        @param name: Widget name
+        @type name: str
+
+        @rtype: (int, int, int, int) | None
+        """
         section = 'geometry_%s' % name
-        if self.has_section(section):
-            x = self.get(section, 'x')
-            y = self.get(section, 'y')
-            w = self.get(section, 'w')
-            h = self.get(section, 'h')
-            return x, y, w, h
-        else:
+        if not self.has_section(section):
             return None
+        try:
+            x = int(self.get(section, 'x'))
+            y = int(self.get(section, 'y'))
+            w = int(self.get(section, 'w'))
+            h = int(self.get(section, 'h'))
+            return x, y, w, h
+        except:
+            pass
+        return None
 
 # end of class Preferences
