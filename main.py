@@ -14,6 +14,7 @@ import os
 import os.path
 import sys
 import time
+import types
 import wx
 from xml.sax import SAXParseException
 
@@ -181,7 +182,7 @@ class wxGladeFrame(wx.Frame):
 
         # load the available code generators
         core_buttons, local_buttons, sizer_buttons = common.init_codegen()
-        
+
         append_item = misc.append_item
         self.TREE_ID = TREE_ID = wx.NewId()
         append_item(view_menu, TREE_ID, _("Show &Tree\tF2"))
@@ -209,11 +210,11 @@ class wxGladeFrame(wx.Frame):
         GENERATE_CODE_ID = wx.NewId()
         append_item(file_menu, GENERATE_CODE_ID, _("&Generate Code\tCtrl+G"),
                     wx.ART_EXECUTABLE_FILE)
-        
+
         file_menu.AppendSeparator()
         IMPORT_ID = wx.NewId()
         append_item(file_menu, IMPORT_ID, _("&Import from XRC...\tCtrl+I"))
-        
+
         EXIT_ID = wx.NewId()
         file_menu.AppendSeparator()
         append_item(file_menu, EXIT_ID, _('E&xit\tCtrl+Q'), wx.ART_QUIT)
@@ -247,7 +248,7 @@ class wxGladeFrame(wx.Frame):
         files.reverse()
         for path in files:
             self.file_history.AddFileToHistory(path.strip())
-            
+
         def open_from_history(event):
             if not self.ask_save():
                 return
@@ -274,9 +275,9 @@ class wxGladeFrame(wx.Frame):
             else:
                 common.remove_autosaved(filename)
             self._open_app(filename)
-            
+
         wx.EVT_MENU_RANGE(self, wx.ID_FILE1, wx.ID_FILE9, open_from_history)
-        
+
         wx.EVT_MENU(self, TREE_ID, self.show_tree)
         wx.EVT_MENU(self, PROPS_ID, self.show_props_window)
         wx.EVT_MENU(self, RAISE_ID, self.raise_all)
@@ -375,7 +376,7 @@ class wxGladeFrame(wx.Frame):
                 sizer.Add(sb)
             self.SetSizer(sizer)
             sizer.Fit(self)
-        
+
         # Properties window
         frame_style = wx.DEFAULT_FRAME_STYLE
         frame_tool_win = config.preferences.frame_tool_win
@@ -383,13 +384,13 @@ class wxGladeFrame(wx.Frame):
             frame_style |= wx.FRAME_NO_TASKBAR | wx.FRAME_FLOAT_ON_PARENT
             frame_style &= ~wx.MINIMIZE_BOX
             if wx.Platform != '__WXGTK__': frame_style |= wx.FRAME_TOOL_WINDOW
-        
+
         self.frame2 = wx.Frame(self, -1, _('Properties - <%s>' % _('app')),
                                style=frame_style)
         self.frame2.SetBackgroundColour(wx.SystemSettings_GetColour(
             wx.SYS_COLOUR_BTNFACE))
         self.frame2.SetIcon(icon)
-        
+
         sizer_tmp = wx.BoxSizer(wx.VERTICAL)
         property_panel = wxGladePropertyPanel(self.frame2, -1)
 
@@ -402,7 +403,7 @@ class wxGladeFrame(wx.Frame):
         sz.Show(misc.hidden_property_panel, False)
         self.property_frame = self.frame2
         #--------------------------------------------------------
-        
+
         property_panel.SetAutoLayout(True)
         self.hidden_frame = wx.Frame(self, -1, "")
         self.hidden_frame.Hide()
@@ -420,7 +421,7 @@ class wxGladeFrame(wx.Frame):
         self.tree_frame = wx.Frame(self, -1, _('wxGlade: Tree'),
                                   style=frame_style)
         self.tree_frame.SetIcon(icon)
-        
+
         app = application.Application(common.property_panel)
         common.app_tree = WidgetTree(self.tree_frame, app)
         self.tree_frame.SetSize((300, 300))
@@ -436,45 +437,60 @@ class wxGladeFrame(wx.Frame):
         wx.EVT_CLOSE(self.tree_frame, on_tree_frame_close)
         # check to see if there are some remembered values
         prefs = config.preferences
-        if prefs.remember_geometry:
-            #self._logger.debug('initializing geometry')
-            try:
-                x, y, w, h = prefs.get_geometry('main')
-                misc.set_geometry(self, (x, y))
-            except Exception:
-                pass
-            misc.set_geometry(self.frame2, prefs.get_geometry('properties'))
-            misc.set_geometry(self.tree_frame, prefs.get_geometry('tree'))
-        else:
-            if wx.Platform == '__WXMAC__':
-                self.frame2.SetSize((345, 384)) # I've been told this is OK...
-                self.SetPosition((0, 45)) # to avoid the OS X menubar
-            else:
-                self.frame2.SetSize((max(self.GetSize()[0], 250), 350))
-                self.SetPosition((0, 0))
-            x, y = self.GetPosition()
-            h = self.GetSize()[1]
-            w = self.frame2.GetSize()[0]
-            if wx.Platform != '__WXMSW__':
-                # under X, IceWM (and Sawfish, too), GetSize seems to ignore
-                # window decorations
-                h += 60
-                w += 10
-            self.frame2.SetPosition((x, y+h))
-            self.tree_frame.SetPosition((x+w, y))
-        self.Show()
-        self.tree_frame.Show()
-        self.frame2.Show()    
 
-        #self._skip_activate = False
-##         if frame_tool_win:
-##             def on_iconize(event):
-##                 if event.Iconized():
-##                     self.hide_all()
-##                 else:
-##                     self.show_and_raise()
-##                 event.Skip()
-##             wx.EVT_ICONIZE(self, on_iconize)
+        self_geometry = None
+        property_geomentry = None
+        tree_geometry = None
+
+        if prefs.remember_geometry:
+            self_geometry = prefs.get_geometry('main')
+            if isinstance(self_geometry, types.TupleType):
+                self_geometry = wx.Rect(*self_geometry)
+
+            property_geomentry = prefs.get_geometry('tree')
+            if isinstance(property_geomentry, types.TupleType):
+                property_geomentry = wx.Rect(*property_geomentry)
+
+            tree_geometry = prefs.get_geometry('properties')
+            if isinstance(tree_geometry, types.TupleType):
+                tree_geometry = wx.Rect(*tree_geometry)
+
+        if not self_geometry:
+            self_geometry = wx.Rect()
+            self_geometry.TopLeft = wx.Display().GetClientArea().GetTopLeft()
+            self_geometry.Size = (-1, -1)
+
+        self._set_geometry(self, self_geometry)
+        self.Show()
+        self_geometry.Size = self.GetSize()
+
+        if not property_geomentry:
+            property_geomentry = wx.Rect()
+            property_geomentry.Position = self_geometry.BottomLeft
+            property_geomentry.Size = (345, 350)
+            # sometimes especially on GTK GetSize seems to ignore window
+            # decorations (bug still exists on wx3)
+            if wx.Platform != '__WXMSW__':
+                property_geomentry.Y += 40
+
+            # set size on Mac manually
+            if wx.Platform == '__WXMAC__':
+                property_geomentry.Size = (345, 384)
+
+        self._set_geometry(self.frame2, property_geomentry)
+        self.frame2.Show()
+
+        if not tree_geometry:
+            tree_geometry = wx.Rect()
+            tree_geometry.Position = self_geometry.TopRight
+            tree_geometry.Size = (250, 350)
+            # sometimes especially on GTK GetSize seems to ignore window
+            # decorations (bug still exists on wx3)
+            if wx.Platform != '__WXMSW__':
+                tree_geometry.X += 10
+
+        self._set_geometry(self.tree_frame, tree_geometry)
+        self.tree_frame.Show()
 
         if wx.Platform == '__WXMSW__':
             import about
@@ -849,11 +865,11 @@ class wxGladeFrame(wx.Frame):
             # first, let's see if we have to save the geometry...
             prefs = config.preferences
             if prefs.remember_geometry:
-                prefs.set_geometry('main', misc.get_geometry(self))
+                prefs.set_geometry('main', self._get_geometry(self))
                 prefs.set_geometry('tree',
-                                   misc.get_geometry(self.tree_frame))
+                                   self._get_geometry(self.tree_frame))
                 prefs.set_geometry('properties',
-                                   misc.get_geometry(self.frame2))
+                                   self._get_geometry(self.frame2))
                 prefs.changed = True
             common.app_tree.clear()
             if self.about_box:
@@ -944,6 +960,41 @@ class wxGladeFrame(wx.Frame):
                             "GUI as usual,\nand then click "
                             "File->Save As Template..."), _("Information"),
                           style=wx.OK|wx.ICON_INFORMATION)
+
+    def _set_geometry(self, win, geometry):
+        """\
+        Set position and/or size of widget.
+
+        @param win: Frame to set position and/or size
+        @type win: wx.Frame
+
+        @param geometry: Position and Size
+        @type geometry: (int, int, int, int)
+        """
+        assert isinstance(geometry, (wx.Point, wx.Rect))
+
+        if not geometry:
+            return
+
+        if isinstance(geometry, wx.Point):
+            win.SetPosition(geometry)
+        else:
+            win.SetDimensions(*geometry.Get())
+
+    def _get_geometry(self, widget):
+        """\
+        Return widgets position and size.
+
+        @param widget: Frame to return position and/or size
+        @type widget: wx.Frame
+
+        @rtype: wx.Rect | None
+        """
+        pos_size = widget.Rect
+        client_area = wx.Display().ClientArea
+        if client_area.Contains(pos_size.TopLeft):
+            return pos_size.Get()
+        return None
 
 # end of class wxGladeFrame
 
