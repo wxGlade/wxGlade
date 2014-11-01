@@ -694,17 +694,20 @@ class Application(object):
                 self.notebook,
                 )
 
-        out = misc.UnicodeStringIO(self.encoding)
+        # temporary buffer for XML
+        tmp_xml = misc.UnicodeStringIO('utf-8')
 
         from xml_parse import CodeWriter
         try:
             # generate the code from the xml buffer
-            cw = self.get_language()
-            if preview and cw == 'python':  # of course cw == 'python', but...
-                overwrite = self.overwrite
+            codewriter = self.get_language()
+
+            # save and overwrite some code generation settings
+            if preview and codewriter == 'python':
+                overwrite_save = self.overwrite
                 self.overwrite = True
-            class_names = common.app_tree.write(out)  # write the xml onto a
-                                                      # temporary buffer
+
+            class_names = common.app_tree.write(tmp_xml)
 
             out_path = os.path.expanduser(self.output_path.strip())
             if not os.path.isabs(out_path) and self.filename:
@@ -713,15 +716,15 @@ class Application(object):
                 out_path = os.path.normpath(out_path)
             else:
                 out_path = None
-            CodeWriter(
-                common.code_writers[cw],
-                out.getvalue(), True,
-                preview=preview,
-                out_path=out_path,
-                class_names=class_names,
-                )
-            if preview and cw == 'python':
-                self.overwrite = overwrite
+
+            CodeWriter(common.code_writers[codewriter], tmp_xml.getvalue(),
+                       True, preview=preview, out_path=out_path,
+                       class_names=class_names)
+
+            # restore saved settings
+            if preview and codewriter == 'python':
+                self.overwrite = overwrite_save
+
         except (errors.WxgBaseException, IOError, OSError), inst:
             wx.MessageBox(
                 _("Error generating code:\n%s") % inst,
