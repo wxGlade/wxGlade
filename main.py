@@ -447,11 +447,11 @@ class wxGladeFrame(wx.Frame):
             if isinstance(self_geometry, types.TupleType):
                 self_geometry = wx.Rect(*self_geometry)
 
-            property_geomentry = prefs.get_geometry('tree')
+            property_geomentry = prefs.get_geometry('properties')
             if isinstance(property_geomentry, types.TupleType):
                 property_geomentry = wx.Rect(*property_geomentry)
 
-            tree_geometry = prefs.get_geometry('properties')
+            tree_geometry = prefs.get_geometry('tree')
             if isinstance(tree_geometry, types.TupleType):
                 tree_geometry = wx.Rect(*tree_geometry)
 
