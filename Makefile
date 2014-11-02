@@ -99,6 +99,7 @@ clean:
 	@if [ -e $(APIDOC_DIR) ]; then rm -rf $(APIDOC_DIR); fi
 	@find $(BASE_DIR) -depth -type f -name "*.orig" -exec rm -f {} \;
 	@find $(BASE_DIR) -depth -type f -name "*~" -exec rm -f {} \;
+	@find $(BASE_DIR) -depth -type f -name "#~wxg.autosave*" -exec rm -f {} \;
 	@$(RM) logdict*.log
 	@$(RM) warnwxglade.txt
 	@$(RM) MANIFEST
