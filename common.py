@@ -1050,6 +1050,7 @@ def save_file(filename, content, which='wxg'):
             infile.close()
             outfile.close()
             config._backed_up[filename] = True
+
         # save content to file (but only if content has changed)
         savecontent = True
         if os.path.isfile(filename):
@@ -1060,6 +1061,7 @@ def save_file(filename, content, which='wxg'):
                 oldcontent = oldcontent.decode('utf-8')
             savecontent = (oldcontent != content)
             oldfile.close()
+
         if savecontent:
             directory = os.path.dirname(filename)
             if directory and not os.path.isdir(directory):
@@ -1134,11 +1136,20 @@ def check_autosaved(filename):
 
 
 def restore_from_autosaved(filename):
-    autosaved = get_name_for_autosave(filename)
-    # when restoring, make a backup copy (if user's preferences say so...)
-    if os.access(autosaved, os.R_OK):
+    """\
+    Copy the content of an auto-saved file to the current file. The
+    auto-saved file will still remain as a kind of backup.
+
+    @param filename: Original filename to restore to
+    @type filename:  str
+
+    @rtype: bool
+    """
+    autosave_name = get_name_for_autosave(filename)
+    if os.access(autosave_name, os.R_OK):
         try:
-            save_file(filename, open(autosaved).read(), 'wxg')
+            content = codecs.open(autosave_name, encoding='UTF-8').read()
+            save_file(filename, content, 'wxg')
         except OSError:
             logging.exception(_('Internel Error'))
             return False

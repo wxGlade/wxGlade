@@ -9,6 +9,7 @@ widgets and initializes all the stuff (tree, property_frame, etc.)
 
 # import general python modules
 import StringIO
+import codecs
 import logging
 import os
 import os.path
@@ -707,7 +708,7 @@ class wxGladeFrame(wx.Frame):
                         _('Read wxGlade project from file "%s"'), infilename
                     )
                     os.chdir(os.path.dirname(infilename))
-                    infile = open(infilename)
+                    infile = codecs.open(infilename, encoding='UTF-8')
                 else:
                     infile = infilename
                     infilename = getattr(infile, 'name', None)

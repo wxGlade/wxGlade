@@ -1,10 +1,12 @@
 """
 About box with general info
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2014 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import codecs
 import wx
 import wx.html
 import wx.lib.wxpTag
@@ -53,7 +55,8 @@ class wxGladeAboutBox(wx.Dialog):
                     if config.license_file:
                         from wx.lib.dialogs import ScrolledMessageDialog
                         try:
-                            license_file = open(config.license_file)
+                            license_file = codecs.open(
+                                config.license_file, encoding='UTF-8')
                             dlg = ScrolledMessageDialog(
                                 self,
                                 license_file.read(),
@@ -82,7 +85,8 @@ class wxGladeAboutBox(wx.Dialog):
                     if config.credits_file:
                         from wx.lib.dialogs import ScrolledMessageDialog
                         try:
-                            credits_file = open(config.credits_file)
+                            credits_file = codecs.open(
+                                config.credits_file, encoding='UTF-8')
                             dlg = ScrolledMessageDialog(
                                 self,
                                 credits_file.read(),
