@@ -1094,10 +1094,10 @@ def autosave_current():
     if app_tree.app.saved:
         return False         # do nothing in this case...
     try:
-        outfile = open(get_name_for_autosave(), 'w')
+        outfile = codecs.open(get_name_for_autosave(), 'w', 'utf-8')
         app_tree.write(outfile)
         outfile.close()
-    except Exception:
+    except:
         logging.exception(_('Internal Error'))
         return False
     return True
