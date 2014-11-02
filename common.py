@@ -1131,7 +1131,7 @@ def check_autosaved(filename):
             return os.path.exists(autosaved)
     except OSError, e:
         if e.errno != 2:
-            logging.exception(_('Internel Error'))
+            logging.exception(_('Internal Error'))
         return False
 
 
@@ -1151,7 +1151,7 @@ def restore_from_autosaved(filename):
             content = codecs.open(autosave_name, encoding='UTF-8').read()
             save_file(filename, content, 'wxg')
         except OSError:
-            logging.exception(_('Internel Error'))
+            logging.exception(_('Internal Error'))
             return False
         return True
     return False
