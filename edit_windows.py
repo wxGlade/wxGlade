@@ -360,7 +360,7 @@ constructor will be used. You should probably not use this if \
                     index = i
                     break
         except AttributeError:
-            #self._logger.exception(_('Internel Error:'))
+            #self._logger.exception(_('Internal Error:'))
             index = -1
         w.Hide()
         if 0 <= index < self.notebook.GetPageCount():
