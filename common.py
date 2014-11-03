@@ -1082,7 +1082,15 @@ def save_file(filename, content, which='wxg'):
 
 
 def get_name_for_autosave(filename=None):
-    if filename is None:
+    """\
+    Return the filename for the automatic backup.
+
+    @param filename: File to generate a backup for
+    @type filename: str | None
+
+    @rtype: str
+    """
+    if not filename:
         filename = app_tree.app.filename
     if not filename:
         path, name = config.home_path, ""
@@ -1093,10 +1101,16 @@ def get_name_for_autosave(filename=None):
 
 
 def autosave_current():
+    """\
+    Generate a automatic backup for the current and un-saved design.
+
+    @rtype: bool
+    """
     if app_tree.app.saved:
         return False         # do nothing in this case...
     try:
-        outfile = codecs.open(get_name_for_autosave(), 'w', 'utf-8')
+        autosave_name = get_name_for_autosave()
+        outfile = codecs.open(autosave_name, 'w', 'utf-8')
         app_tree.write(outfile)
         outfile.close()
     except:
@@ -1106,29 +1120,36 @@ def autosave_current():
 
 
 def remove_autosaved(filename=None):
-    autosaved = get_name_for_autosave(filename)
-    if os.path.exists(autosaved):
+    """\
+    Remove the automatic backup
+
+    @see: L{get_name_for_autosave()}
+    """
+    autosave_name = get_name_for_autosave(filename)
+    if os.path.exists(autosave_name):
         try:
-            os.unlink(autosaved)
+            os.unlink(autosave_name)
         except OSError:
             logging.exception(_('Internal Error'))
 
 
 def check_autosaved(filename):
     """\
-    Returns True iff there are some auto saved data for filename
+    Returns True if there are an automatic backup for filename
+
+    @rtype: bool
     """
     if filename is not None and filename == app_tree.app.filename:
-        # this happens when reloading, no autosave-restoring in this case...
+        # this happens when reloading, no auto-save-restoring in this case...
         return False
-    autosaved = get_name_for_autosave(filename)
+    autosave_name = get_name_for_autosave(filename)
     try:
         if filename:
             orig = os.stat(filename)
-            auto = os.stat(autosaved)
+            auto = os.stat(autosave_name)
             return orig.st_mtime < auto.st_mtime
         else:
-            return os.path.exists(autosaved)
+            return os.path.exists(autosave_name)
     except OSError, e:
         if e.errno != 2:
             logging.exception(_('Internal Error'))
