@@ -1562,7 +1562,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         xrc2wxg.convert(fullpath, obuffer)
 
-        generated = obuffer.getvalue()
+        generated = obuffer.getvalue().decode('UTF-8')
         expected = self._load_file('import_test.wxg')
 
         self._compare(expected, generated, "wxg")
