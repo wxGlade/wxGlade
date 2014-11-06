@@ -15,7 +15,7 @@ import os.path
 import sys
 import time
 
-__version__ = '0.0.4'
+__version__ = '0.0.5'
 _name = 'xrc2wxg'
 """\
 Application name
@@ -101,23 +101,28 @@ def get_text_elems(node):
     return filter(ok, node.childNodes)
 
 
-def convert(infilename, output_file):
+def convert(filename, output_file):
     """\
     Convert the given XRC file to a wxGlade file
 
-    @param infilename:  Source filename
-    @param output_file: Filename or file (-like) object
+    @note: The output content is UTF-8 encoded.
+
+    @param filename: Source filename
+    @type filename: str
+
+    @param output_file: Filename, file or file-like object
+    @type output_file:  str | StringIO
     """
     global _counter_name
     _counter_name = 1
 
-    document = xml.dom.minidom.parse(infilename)
+    document = xml.dom.minidom.parse(filename)
     fix_fake_panels(document)
     set_base_classes(document)
     fix_default_properties(document)
     fix_class_properties(document)
     fix_widgets(document)
-    fix_encoding(infilename, document)
+    fix_encoding(filename, document)
     if not hasattr(output_file, 'write'):
         output_file = open(output_file, 'w')
         write_output(document, output_file)
@@ -127,6 +132,10 @@ def convert(infilename, output_file):
 
 
 def write_output(document, output):
+    """\
+    Writes an UTF-8 encoded pretty-printed XML copy of the given document to
+    the output object.
+    """
     dom_copy = xml.dom.minidom.Document()
 
     if _write_timestamp:
@@ -139,7 +148,7 @@ def write_output(document, output):
     dom_copy.appendChild(comment)
     dom_copy.appendChild(document.documentElement)
 
-    pretty_xml = dom_copy.toprettyxml(indent='    ').encode('utf-8')
+    pretty_xml = dom_copy.toprettyxml(indent='    ', encoding='UTF-8')
     for line in pretty_xml.splitlines():
         # ignore empty lines
         if not line.strip():
@@ -671,7 +680,8 @@ def main():
     if not options:
         try:
             convert(infilename, out_filename)
-        except Exception:  # catch the exception and print a nice message
+        except:
+            # catch the exception and print a nice message
             print_exception()
     else:  # if in debug mode, let the traceback be printed
         convert(infilename, out_filename)

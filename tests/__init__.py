@@ -194,8 +194,15 @@ class WXGladeBaseTest(unittest.TestCase):
             language in common.code_writers,
             "No codewriter loaded for %s" % language
             )
+        self.failUnless(
+            isinstance(document, types.UnicodeType),
+            'Expected unicode document, got "%s"' % type(document)
+        )
       
         document = self._prepare_wxg(language, document)
+
+        # CodeWrite need UTF-8 like all XML parsers
+        document = document.encode('UTF-8')
 
         # generate code
         CodeWriter(
@@ -225,10 +232,12 @@ class WXGladeBaseTest(unittest.TestCase):
         """\
         Load a file need by a test case.
 
+        @note: wxg files will be converted to unicode.
+
         @param filename:  Name of the file to load
         @type filename:   str
         @return:          File content
-        @rtype:           str
+        @rtype:           str | unicode
         """
         casename, extension = os.path.splitext(filename)
         if extension == '.wxg':
@@ -258,6 +267,8 @@ class WXGladeBaseTest(unittest.TestCase):
 
         fh = open(file_list[0])
         content = fh.read()
+        if extension == '.wxg':
+            content = content.decode('UTF-8')
         fh.close()
 
         # replacing path entries
@@ -295,7 +306,10 @@ class WXGladeBaseTest(unittest.TestCase):
            )
 
         fh = open(file_list[0])
-        content = fh.readlines()
+        if extension == '.wxg':
+            content = [line.decode('UTF-8') for line in fh.readlines()]
+        else:
+            content = fh.readlines()
         fh.close()
 
         return content
@@ -347,6 +361,7 @@ class WXGladeBaseTest(unittest.TestCase):
         @type language:  str
         @param document: XML document to generate code for
         @type document:  str
+
         @return: Modified XML document
         @rtype:  str
         """

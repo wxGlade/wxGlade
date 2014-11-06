@@ -9,7 +9,6 @@ widgets and initializes all the stuff (tree, property_frame, etc.)
 
 # import general python modules
 import StringIO
-import codecs
 import logging
 import os
 import os.path
@@ -684,48 +683,86 @@ class wxGladeFrame(wx.Frame):
             self._open_app(infile)
             self.cur_dir = os.path.dirname(infile)
 
-    def _open_app(self, infilename, use_progress_dialog=True,
-                  is_filelike=False, add_to_history=True):
-        start = time.clock()
+    def _open_app(self, filename_or_filelike, use_progress_dialog=True,
+                  add_to_history=True):
+        """\
+        Load a new wxGlade project
 
-        common.app_tree.clear()
-        if not is_filelike:
-            common.app_tree.app.filename = infilename
-        else:
-            common.app_tree.filename = getattr(infilename, 'name', None)
-        common.property_panel.Reparent(self.hidden_frame)
-        # prevent the auto-expansion of nodes
-        common.app_tree.auto_expand = False
+        @param filename_or_filelike: Source filename or file-like object
+        @type filename_or_filelike: file | StringIO
 
-        old_dir = os.getcwd()
-        infile = None
+        @param use_progress_dialog: Show progress bar during loading WXG file
+        @type use_progress_dialog: bool
+
+        @param add_to_history: Add file to open to file history
+        @type add_to_history: bool
+
+        @return: True on Success
+        @rtype: bool
+        """
+        assert isinstance(filename_or_filelike,
+                          types.StringTypes + (StringIO.StringIO, ))
+        if isinstance(filename_or_filelike, StringIO.StringIO):
+            assert isinstance(filename_or_filelike.getvalue(), types.UnicodeType)
+
         error_msg = None
+        filename = None
+        infile = None
+        old_dir = os.getcwd()
+
+        if isinstance(filename_or_filelike, types.StringTypes):
+            common.app_tree.app.filename = filename_or_filelike
+            filename = filename_or_filelike
+        else:
+            common.app_tree.filename = None
+
+        start = time.clock()
+        common.app_tree.clear()
+        common.property_panel.Reparent(self.hidden_frame)
+
+        # disable auto-expansion of nodes
+        common.app_tree.auto_expand = False
 
         try:
             try:
-                if not is_filelike:
+                if isinstance(filename_or_filelike, StringIO.StringIO):
+                    # convert filename_or_filelike to UTF-8 and write back
+                    # as lines, because ProgressXmlWidgetBuilder uses lines
+                    # to calculate and show the position
+                    tmp = filename_or_filelike.getvalue()
+                    tmp = tmp.encode('UTF-8')
+                    infile = StringIO.StringIO()
+                    for line in tmp.split('\n'):
+                        infile.write('%s\n' % line)
+                    infile.seek(0)
                     self._logger.info(
-                        _('Read wxGlade project from file "%s"'), infilename
-                    )
-                    os.chdir(os.path.dirname(infilename))
-                    infile = codecs.open(infilename, encoding='UTF-8')
+                        _('Read wxGlade project from file-like object'))
+
                 else:
-                    infile = infilename
-                    infilename = getattr(infile, 'name', None)
                     self._logger.info(
-                        _('Read wxGlade project from file-like object')
+                        _('Read wxGlade project from file "%s"'), filename
                     )
+                    os.chdir(os.path.dirname(filename))
+                    # decoding will done automatically by SAX XML library
+                    infile = open(filename)
+
                 if use_progress_dialog and config.preferences.show_progress:
                     p = ProgressXmlWidgetBuilder(input_file=infile)
                 else:
                     p = XmlWidgetBuilder()
+
                 p.parse(infile)
-            except (IOError, OSError, SAXParseException, XmlParsingError), msg:
-                error_msg = _("Error loading file %s: %s") % \
-                    (misc.wxstr(infilename), misc.wxstr(msg))
+            except (IOError, OSError, SAXParseException,
+                    XmlParsingError), msg:
+                if filename:
+                    error_msg = _("Error loading file %s: %s") % \
+                                (misc.wxstr(filename), misc.wxstr(msg))
+                else:
+                    error_msg = _("Error loading from a file-like "
+                                  "object: %s") % misc.wxstr(msg)
             except Exception, inst:
-                if not is_filelike:
-                    fn = os.path.basename(infilename).encode('ascii',
+                if filename:
+                    fn = os.path.basename(filename).encode('ascii',
                                                              'replace')
                     msg = _('loading file "%s"') % fn
                 else:
@@ -734,7 +771,7 @@ class wxGladeFrame(wx.Frame):
                 dialog.SetContent(msg, inst)
                 dialog.ShowModal()
         finally:
-            if infile and not is_filelike:
+            if infile and filename:
                 infile.close()
 
             if error_msg:
@@ -742,17 +779,13 @@ class wxGladeFrame(wx.Frame):
                 common.property_panel.Reparent(self.frame2)
                 common.app_tree.app.saved = True
 
-                # reset the auto-expansion of nodes
+                # re-enable auto-expansion of nodes
                 common.app_tree.auto_expand = True
 
                 os.chdir(old_dir)
 
-                # Show error message box
-                wx.MessageBox(
-                    error_msg,
-                    _('Error'),
-                    wx.OK | wx.CENTRE | wx.ICON_ERROR
-                )
+                wx.MessageBox(error_msg, _('Error'),
+                              wx.OK | wx.CENTRE | wx.ICON_ERROR)
 
                 return False
 
@@ -760,13 +793,13 @@ class wxGladeFrame(wx.Frame):
         common.app_tree.root.widget.show_properties()
         common.property_panel.Reparent(self.frame2)
 
-        # reset the auto-expansion of nodes
+        # re-enable auto-expansion of nodes
         common.app_tree.auto_expand = True
 
         common.app_tree.expand()
         if common.app_tree.app.is_template:
             self._logger.info(_("Template loaded"))
-            common.app_tree.app.template_data = template.Template(infilename)
+            common.app_tree.app.template_data = template.Template(filename)
             common.app_tree.app.filename = None
 
         end = time.clock()
@@ -774,9 +807,9 @@ class wxGladeFrame(wx.Frame):
 
         common.app_tree.app.saved = True
 
-        if hasattr(self, 'file_history') and infilename is not None and \
+        if hasattr(self, 'file_history') and filename is not None and \
                 add_to_history and (not common.app_tree.app.is_template):
-            self.file_history.AddFileToHistory(misc.wxstr(infilename))
+            self.file_history.AddFileToHistory(misc.wxstr(filename))
 
         if config.preferences.autosave and self.autosave_timer is not None:
             self.autosave_timer.Start()
@@ -942,8 +975,14 @@ class wxGladeFrame(wx.Frame):
             ibuffer = StringIO.StringIO()
             try:
                 xrc2wxg.convert(infilename, ibuffer)
+
+                # Convert UTF-8 returned by xrc2wxg.convert() to Unicode
+                tmp = ibuffer.getvalue().decode('UTF-8')
+                ibuffer = StringIO.StringIO()
+                [ibuffer.write('%s\n' % line) for line in tmp.split('\n')]
                 ibuffer.seek(0)
-                self._open_app(ibuffer, is_filelike=True)
+
+                self._open_app(ibuffer)
                 common.app_tree.app.saved = False
             except Exception, inst:
                 fn = os.path.basename(infilename).encode('ascii', 'replace')
