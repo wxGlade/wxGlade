@@ -538,7 +538,7 @@ class wxGladeFrame(wx.Frame):
                               add_to_history=False):
                 common.app_tree.app.saved = False
                 common.app_tree.app.filename = None
-                self.user_message(_("Recovery from auto save complete"))
+                self.user_message(_("Auto save loaded"))
                 common.remove_autosaved()
         else:
             common.remove_autosaved()
@@ -815,9 +815,9 @@ class wxGladeFrame(wx.Frame):
             self.autosave_timer.Start()
 
         self.user_message(
-            _("Loaded %s (%.2f seconds)") %
-            (misc.wxstr(common.app_tree.app.filename), end - start)
-        )
+            _("Loaded %s in %.2f seconds") % (
+                misc.wxstr(os.path.basename(common.app_tree.app.filename)),
+                end - start))
 
         return True
 
@@ -856,7 +856,7 @@ class wxGladeFrame(wx.Frame):
             if config.preferences.autosave and \
                    self.autosave_timer is not None:
                 self.autosave_timer.Start()
-            self.user_message(_("Saved %s") % filename)
+            self.user_message(_("Saved %s") % os.path.basename(filename))
 
     def save_app_as(self, event):
         """\
