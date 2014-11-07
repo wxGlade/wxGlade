@@ -1130,14 +1130,14 @@ def main(filename=None):
     """
     logging.info(_("Using wxPython %s"), config.wx_version)
 
-    # now, silence a deprecation warning for py2.3
-    import warnings
-    warnings.filterwarnings(
-        "ignore",
-        "integer",
-        DeprecationWarning,
-        "wxPython.gdi",
-        )
+#    # now, silence a deprecation warning for py2.3
+#    import warnings
+#    warnings.filterwarnings(
+#        "ignore",
+#        "integer",
+#        DeprecationWarning,
+#        "wxPython.gdi",
+#        )
 
     app = wxGlade()
     if filename is not None:
