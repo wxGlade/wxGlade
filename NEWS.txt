@@ -2,6 +2,7 @@ Version 0.7.1 - 2015-XX-XX:
 General:
   - Open wxGlade windows in the upper left corner if wxGlade is starting
     the first time
+  - Change internal string handling to Unicode partially
   - ...
 
 Generated Code:
@@ -9,6 +10,7 @@ Generated Code:
 
 Bugs:
   - Fix Unicode error during saving wxg files
+  - Create non-existing config directory during initialisation (sf bug #164)
   - ...
 
 Deprecation
