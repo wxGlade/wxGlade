@@ -1275,14 +1275,16 @@ def init_paths():
         config.appdata_path, 'file_history.txt'
         )
 
-    config.log_file = os.path.join(
-        config.appdata_path, 'wxglade.log'
-        )
+    config.log_file = os.path.join(config.appdata_path, 'wxglade.log')
 
     # create missing application data directory, otherwise log initialisation
     # will failed with an IOError "No such file or directory"
+    # The file logger will be initialised after this function returns.
     if not os.path.isdir(config.appdata_path):
-        os.makedirs(config.appdata_path, 0700)
+        try:
+            os.makedirs(config.appdata_path, 0700)
+        except (IOError, OSError), e:
+            logging.error(_('Failed to create config directory: "%s"'), e)
 
 
 def init_preferences():
