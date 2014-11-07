@@ -374,15 +374,20 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
 
     # instantiate file handler
     if filename:
-        file_logger = logging.handlers.RotatingFileHandler(
-            filename,
-            maxBytes=100 * 1024,
-            encoding=encoding,
-            backupCount=1,
-            )
-        file_logger.setFormatter(file_formatter)
-        file_logger.setLevel(logging.NOTSET)
-        logger.addHandler(file_logger)
+        log_directory = os.path.dirname(filename)
+        if not os.path.isdir(log_directory):
+            logging.warning(_('Logging directory "%s" does not exists. Skip '
+                              'file logger initialisation!'), log_directory)
+        else:
+            file_logger = logging.handlers.RotatingFileHandler(
+                filename,
+                maxBytes=100 * 1024,
+                encoding=encoding,
+                backupCount=1,
+                )
+            file_logger.setFormatter(file_formatter)
+            file_logger.setLevel(logging.NOTSET)
+            logger.addHandler(file_logger)
 
     # instantiate string handler
     string_logger = StringHandler(storeAsUnicode=False)
