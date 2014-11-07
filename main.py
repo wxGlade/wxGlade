@@ -814,10 +814,13 @@ class wxGladeFrame(wx.Frame):
         if config.preferences.autosave and self.autosave_timer is not None:
             self.autosave_timer.Start()
 
-        self.user_message(
-            _("Loaded %s in %.2f seconds") % (
-                misc.wxstr(os.path.basename(common.app_tree.app.filename)),
-                end - start))
+        duration = end - start
+        if filename:
+            self.user_message(
+                _("Loaded %s in %.2f seconds") % (
+                    misc.wxstr(os.path.basename(filename)), duration))
+        else:
+            self.user_message(_("Loaded in %.2f seconds") % duration)
 
         return True
 
