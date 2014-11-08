@@ -767,6 +767,12 @@ class Application(object):
         return True
 
     def preview(self, widget, out_name=None):
+        """\
+        Generate and instantiate preview widget.
+
+        None will be returned in case of errors. The error details are
+        written to the application log file.
+        """
         if out_name is None:
             import warnings
             warnings.filterwarnings("ignore", "tempnam", RuntimeWarning,
@@ -799,29 +805,54 @@ class Application(object):
         frame = None
         try:
             self.generate_code(preview=True)
-            # dynamically import the generated module
-            FrameClass = misc.import_name(self.output_path, widget.klass)
-            if issubclass(FrameClass, wx.MDIChildFrame):
+            # import generated preview module dynamically
+            preview_path = os.path.dirname(self.output_path)
+            preview_module_name = os.path.basename(self.output_path)
+            preview_module_name = os.path.splitext(preview_module_name)[0]
+            preview_module = common._import_module(preview_path,
+                                                   preview_module_name)
+            if not preview_module:
+                wx.MessageBox(
+                    _('Can not import the preview module from file \n'
+                      '"%s".\n'
+                      'The details are written to the log file.\n'
+                      'If you think this is a wxGlade bug, please '
+                      'report it.') % self.output_path,
+                    _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
+                return None
+
+            preview_class = getattr(preview_module, widget.klass)
+
+            if not preview_class:
+                wx.MessageBox(
+                    _('No preview class "%s" found.\n'
+                      'The details are written to the log file.\n'
+                      'If you think this is a wxGlade bug, please '
+                      'report it.') % widget.klass,
+                    _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
+                return None
+
+            if issubclass(preview_class, wx.MDIChildFrame):
                 frame = wx.MDIParentFrame(None, -1, '')
-                child = FrameClass(frame, -1, '')
+                child = preview_class(frame, -1, '')
                 child.SetTitle('<Preview> - ' + child.GetTitle())
                 w, h = child.GetSize()
                 frame.SetClientSize((w + 20, h + 20))
-            elif not (issubclass(FrameClass, wx.Frame) or
-                      issubclass(FrameClass, wx.Dialog)):
+            elif not (issubclass(preview_class, wx.Frame) or
+                      issubclass(preview_class, wx.Dialog)):
                 # the toplevel class isn't really toplevel, add a frame...
                 frame = wx.Frame(None, -1, widget_class_name)
-                if issubclass(FrameClass, wx.MenuBar):
-                    menubar = FrameClass()
+                if issubclass(preview_class, wx.MenuBar):
+                    menubar = preview_class()
                     frame.SetMenuBar(menubar)
-                elif issubclass(FrameClass, wx.ToolBar):
-                    toolbar = FrameClass(frame, -1)
+                elif issubclass(preview_class, wx.ToolBar):
+                    toolbar = preview_class(frame, -1)
                     frame.SetToolBar(toolbar)
                 else:
-                    panel = FrameClass(frame, -1)
+                    panel = preview_class(frame, -1)
                 frame.Fit()
             else:
-                frame = FrameClass(None, -1, '')
+                frame = preview_class(None, -1, '')
 
             def on_close(event):
                 frame.Destroy()
