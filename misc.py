@@ -462,28 +462,11 @@ def _reverse_dict(src):
         ret[val] = key
     return ret
 
-# snagged out of the Python cookbook
-def import_name(module_path, name):
-    import imp
-    path, mname = os.path.split(module_path)
-    #logging.debug('path=%s, mname=%s', path, mname)
-    mname = os.path.splitext(mname)[0]
-    #logging.debug('mname: %s', mname)
-    try:
-        mfile, pathname, description = imp.find_module(mname, [path])
-        try:
-            module = imp.load_module(mname, mfile, pathname, description)
-        finally:
-            mfile.close()
-    except ImportError:
-        logging.exception(_('Internal Error'))
-        return None
-    return vars(module)[name]
-
 
 #-----------------------------------------------------------------------------
 # helper functions to work with a Unicode-enabled wxPython
 #-----------------------------------------------------------------------------
+
 
 def streq(s1, s2):
     """\
