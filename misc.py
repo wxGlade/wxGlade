@@ -511,7 +511,7 @@ def wxstr(s, encoding=None):
 
 
 def design_title(title):
-    return _('Design - <%s>') + title
+    return _('Design - <%s>') % title
 
 
 def get_xpm_bitmap(path):
