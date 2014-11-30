@@ -129,28 +129,9 @@ class StylesMixin(object):
 
         # check for non-supported, renamed flags and ...
         if self.style_defs:
-            for flag in flags.copy():
-                if flag not in self.style_defs:
-                    continue
-
-                # check for alternative names
-                try:
-                    flags.add(self.style_defs[flag]['rename_to'])
-                    flags.remove(flag)
-                except KeyError:
-                    pass
-
+            flags = self.rename_styles(flags)
             flags = self.combine_styles(flags)
-
-            # remove non-supported flags
-            for flag in flags.copy():
-                try:
-                    version_specific = 'wx%s%s' % self.codegen.for_version
-                    if version_specific not in \
-                            self.style_defs[flag]['supported_by']:
-                        flags.remove(flag)
-                except (AttributeError, KeyError):
-                    pass
+            flags = self.remove_unsupported_styles(flags)
 
         if hasattr(self, 'cn') and getattr(self, 'format_flags', True):
             flags = [self.cn(f) for f in flags]
@@ -188,12 +169,16 @@ class StylesMixin(object):
 
     def combine_styles(self, flags):
         """\
-        Combine flags and remove flags that are parts of other flags already
+        Combine flags (attribute 'combination') and remove flags that are
+        parts of other flags already.
 
         @param flags: Flags to combine and reduce
         @type flags:  set
 
+        @return: Processed flags
         @rtype: set
+
+        @see: L{common.widget_config}
         """
         # processing empty set()s causes later trouble with
         # set([<filled>]) >= set()
@@ -217,6 +202,63 @@ class StylesMixin(object):
             try:
                 flags -= self.style_defs[flag]['combination']
             except (KeyError, TypeError):
+                pass
+
+        return flags
+
+    def remove_unsupported_styles(self, flags):
+        """\
+        Check given flags for the attribute 'supported_by' and remove remove
+        the unsupported flags.
+
+        @param flags: Flags to check for removal.
+        @type flags:  set
+
+        @return: Processed flags
+        @rtype: set
+
+        @see: L{common.widget_config}
+        """
+        if not flags:
+            return flags
+
+        for flag in flags.copy():
+            try:
+                # nothing to do if 'supported_by' doesn't exists
+                supported_by = self.style_defs[flag]['supported_by']
+            except (AttributeError, KeyError):
+                continue
+
+            for_version_major = 'wx%d' % self.codegen.for_version[0]
+            for_version_detailed = 'wx%d%d' % self.codegen.for_version
+
+            if not (for_version_major in supported_by or
+                            for_version_detailed in supported_by):
+                flags.remove(flag)
+
+        return flags
+
+    def rename_styles(self, flags):
+        """\
+        Check given flags for alternative names (attribute 'rename_to') and
+        rename those flags.
+
+        @param flags: Flags to check for alternative names
+        @type flags:  set
+
+        @return: Processed flags
+        @rtype: set
+
+        @see: L{common.widget_config}
+        """
+        if not flags:
+            return flags
+
+        for flag in flags.copy():
+            try:
+                flags.add(self.style_defs[flag]['rename_to'])
+                flags.remove(flag)
+            except (AttributeError, KeyError):
                 pass
 
         return flags
