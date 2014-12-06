@@ -1061,8 +1061,14 @@ class wxGlade(wx.App):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         self.show_dialog = True
+
+        # replace the text based exception handler by a graphical exception
+        # dialog
+        sys.excepthook = self.graphical_exception_handler
+
         # needed for wx >= 2.3.4 to disable wxPyAssertionError exceptions
         self.SetAssertMode(0)
+
         wx.InitAllImageHandlers()
         common.init_preferences()
         if config.preferences.log_debug_info:
@@ -1084,6 +1090,12 @@ class wxGlade(wx.App):
         
         return True
 
+    def OnExit(self):
+        """\
+        Restore original exception handler on exit
+        """
+        sys.excepthook = sys.__excepthook__
+
     def on_idle(self, event):
         """\
         Show error messages if the GUI is idle.
@@ -1102,7 +1114,7 @@ class wxGlade(wx.App):
         @see: L{main.wxGlade.on_idle()}
         @see: L{log.getBufferAsList()}
         """
-        log_msg = log.getBufferAsString(clean=True)
+        log_msg = log.getBufferAsString()
         if not (log_msg and config.use_gui):
             return
 
@@ -1120,6 +1132,30 @@ class wxGlade(wx.App):
         self._msg_dialog.msg_list.SetColumnWidth(0, -1)
         self._msg_dialog.msg_list.Thaw()
         self._msg_dialog.ShowModal()
+
+    def graphical_exception_handler(self, exc_type, exc_value, exc_tb):
+        """\
+        Show detailed information about uncaught exceptions in a dialog.
+
+        The exception information will be cleared after that.
+
+        @param exc_type:  Type of the exception (normally a class object)
+        @param exc_value: The "value" of the exception
+        @param exc_tb:    Call stack of the exception
+
+        @see: L{bugdialog.BugReport()}
+        """
+        # disable show_error_dialog() temporary to prevent conflicts during
+        # access to the logging details
+        self.show_dialog = False
+
+        dialog = bugdialog.BugReport()
+        dialog.SetContent(ei=(exc_type, exc_value, exc_tb))
+        dialog.ShowModal()
+
+        sys.exc_clear()
+
+        self.show_dialog = True
 
 # end of class wxGlade
 
