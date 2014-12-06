@@ -26,7 +26,6 @@ in revision 81919 (27.12.2010) in the public Python repository.
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import atexit
 import StringIO
 import datetime
 import inspect
@@ -43,15 +42,7 @@ import config
 
 stringLoggerInstance = None
 """\
-Reference to the active StringHandler instance
-"""
-
-_orig_exec_handler = None
-"""\
-Contains the original exception handler
-
-@see: L{installExceptionHandler()}
-@see: L{deinstallExceptionHandler()}
+Reference to the active L{StringHandler} instance
 """
 
 
@@ -430,8 +421,6 @@ def deinit():
     @see: L{deinstallExceptionHandler()}
     """
     deinstallExceptionHandler()
-    if deinit in atexit._exithandlers:
-        atexit._exithandlers.remove(deinit)
 
 
 def setDebugLevel():
@@ -484,46 +473,29 @@ def installExceptionHandler():
     """\
     Install own exception handler
 
-    The original exception handler is saved in L{_orig_exec_handler}.
-
-    @see: L{_orig_exec_handler}
     @see: L{deinstallExceptionHandler()}
     """
-    global _orig_exec_handler
-    if _orig_exec_handler:
+    if sys.excepthook == exceptionHandler:
         logging.debug(
             _('The exception handler has been installed already.'),
             )
         return
-
-    _orig_exec_handler = sys.excepthook
     sys.excepthook = exceptionHandler
 
 
 def deinstallExceptionHandler():
     """\
-   Restore the original exception handler
+   Restore the original exception handler from C{sys.__excepthook__}.
 
-   The original exception handler has been saved in L{_orig_exec_handler}.
-
-   @see: L{_orig_exec_handler}
    @see: L{installExceptionHandler()}
     """
-    global _orig_exec_handler
-    if not _orig_exec_handler:
-        logging.debug(
-            _('The exception handler has not been installed.'
-              'Thereby it can not be deinstalled.'),
-            )
-        return
-
-    sys.excepthook = _orig_exec_handler
-    _orig_exec_handler = None
+    sys.excepthook = sys.__excepthook__
 
 
 def exceptionHandler(exc_type, exc_value, exc_tb):
     """\
-    Log detailed information about uncaught exceptions
+    Log detailed information about uncaught exceptions. The exception
+    information will be cleared after that.
 
     @param exc_type:  Type of the exception (normally a class object)
     @param exc_value: The "value" of the exception
@@ -533,6 +505,7 @@ def exceptionHandler(exc_type, exc_value, exc_tb):
         _("An unhandled exception occurred"),
         exc_info=(exc_type, exc_value, exc_tb)
     )
+    sys.exc_clear()
 
 
 def getMessage(self):
