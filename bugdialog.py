@@ -20,29 +20,52 @@ class BugReport(bugdialog_ui.UIBugDialog):
     def __init__(self):
         bugdialog_ui.UIBugDialog.__init__(self, None, -1, "")
 
-    def SetContent(self, action, exc):
+    def SetContent(self, action=None, exc=None, ei=None):
         """\
-        @param action: Short description of the action that has raised this error
-        @type action:  String
+        Prepare given exception information and show it as dialog content.
+
+        Use parameters 'action' and 'exec' or just 'ei'.
+
+        @param action: Short description of the action that has raised this
+                       error
+        @type action:  str
         @param exc: Caught exception
         @type exc:  Exception
+        @param ei: Exception information
+        @type ei: (exc_type, exc_value, exc_tb)
         """
-        exc_type = exc.__class__.__name__
-        exc_msg = str(exc)
-        if not exc_msg:
-            exc_msg = _('no summary available')
+        assert (action and exc) or ei
 
-        header = self.st_header.GetLabel() % {'action': action}
+        if exc:
+            exc_type = exc.__class__.__name__
+            exc_msg = str(exc)
+        else:
+            exc_type = ei[0]
+            exc_msg = None
+
+        if not exc_msg:
+            exc_msg = _('No summary available')
+
+        if action:
+            header = self.st_header.GetLabel() % {'action': action}
+        else:
+            header = _("An internal error occurred")
+
         summary = self.st_summary.GetLabel() % {
             'exc_type': exc_type,
-            'exc_msg': exc_msg,
-        }
+            'exc_msg': exc_msg}
 
         # deactivate the general msg dialog and reactivate it later again
         app = wx.GetApp()
         app.show_dialog = False
-        logging.exception(header)
-        details = log.getBufferAsString(clean=True)
+
+        if exc:
+            logging.exception(header)
+        else:
+            logging.error(header, exc_info=ei)
+
+        details = log.getBufferAsString()
+
         app.show_dialog = True
 
         self.st_header.SetLabel(header)
@@ -50,11 +73,13 @@ class BugReport(bugdialog_ui.UIBugDialog):
         self.tc_details.SetValue(details)
 
     def OnCopy(self, event):
+        """\
+        Copy the dialog content to the clipboard
+        """
         text = self.tc_details.GetValue()
         if not text:
             return
-        data = wx.TextDataObject()
-        data.SetText(text)
+        data = wx.TextDataObject(text)
         if wx.TheClipboard.Open():
             wx.TheClipboard.SetData(data)
             wx.TheClipboard.Close()
