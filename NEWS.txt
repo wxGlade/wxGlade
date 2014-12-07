@@ -3,6 +3,7 @@ General:
   - Open wxGlade windows in the upper left corner if wxGlade is starting
     the first time
   - Change internal string handling to Unicode partially
+  - Show logged exceptions in wxGlade bug dialog
   - ...
 
 Generated Code:
@@ -11,6 +12,7 @@ Generated Code:
 Bugs:
   - Fix Unicode error during saving wxg files
   - Create non-existing config directory during initialisation (sf bug #164)
+  - Fix incorrect handling of styles only supported by a specific wx version
   - ...
 
 Deprecation
