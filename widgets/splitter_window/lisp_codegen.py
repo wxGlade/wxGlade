@@ -16,6 +16,9 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
     ]
 
     def get_code(self, window):
+        self._reset_vars()
+        wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, window)
+
         init = []
         layout_buf = []
         props_buf = self.codegen.generate_common_properties(window)
@@ -37,17 +40,11 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
                      (window.name, parent, id))
             return l, [], []
 
-        style = prop.get("style")
-        if not(style and style != 'wxSP_3D'):
-            style = ''
-        else:
-            style = self.cn_f(style)
-
         if id_name:
             init.append(id_name)
 
         init.append('(setf (slot-%s obj) (wxSplitterWindow_Create %s %s -1 -1 -1 -1 %s))\n'
-                    % (window.name, parent, id, style))
+                    % (window.name, parent, id, self.tmpl_dict['style']))
 
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')

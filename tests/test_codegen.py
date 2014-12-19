@@ -1168,6 +1168,14 @@ class TestCodeGen(WXGladeBaseTest):
                 )
             )
 
+    def test_unsupported_flags(self):
+        """\
+        Test code generation with unsupported flags
+
+        @see: L{test_cn_f()}
+        """
+        self._test_all('no_supported_flags')
+
     def test_ComplexExample(self):
         """\
         Test code generation for a complex example
