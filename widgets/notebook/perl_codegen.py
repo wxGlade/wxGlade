@@ -17,6 +17,9 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
     ]
 
     def get_code(self, window):
+        self._reset_vars()
+        wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, window)
+
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
 
@@ -47,17 +50,12 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
                     window.name, klass, parent, id)
                 )
             return l, [], []
-        style = prop.get("style")
-        if style:
-            style = ", wxDefaultPosition, wxDefaultSize, %s" % \
-                    self.cn_f(style)
-        else:
-            style = ''
         init = []
         if id_name:
             init.append(id_name)
-        init.append('$self->{%s} = %s->new(%s, %s%s);\n' %
-                    (window.name, self.cn(window.klass), parent, id, style))
+        init.append('$self->{%s} = %s->new(%s, %s%s);\n' % (
+            window.name, self.cn(window.klass), parent, id,
+            self.tmpl_dict['style']))
 
         props_buf = self.codegen.generate_common_properties(window)
         return init, props_buf, layout_props

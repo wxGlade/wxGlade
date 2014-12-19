@@ -12,6 +12,9 @@ import wcodegen
 
 class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, window):
+        self._reset_vars()
+        wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, window)
+
         init = []
         layout_buf = []
         props_buf = self.codegen.generate_common_properties(window)
@@ -31,18 +34,13 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
                      (window.name, self.codegen.without_package(window.klass),
                       parent, id))
             return l, [], []
-        style = prop.get("style")
-        if style and style != 'wxSP_3D':
-            style = ", style=%s" % self.codegen.cn_f(style)
-        else:
-            style = ''
         if id_name:
             init.append(id_name)
         klass = window.klass
         if window.preview:
             klass = 'wxSplitterWindow'
         init.append('self.%s = %s(%s, %s%s)\n' % (
-            window.name, self.cn(klass), parent, id, style))
+            window.name, self.cn(klass), parent, id, self.tmpl_dict['style']))
 
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
@@ -117,6 +115,9 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
         """\
         generates the C++ code for wxSplitterWindow
         """
+        self._reset_vars()
+        wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, window)
+
         init = []
         layout_buf = []
         props_buf = self.codegen.generate_common_properties(window)
@@ -136,12 +137,9 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
             l = ['%s = new %s(%s, %s);\n' %
                  (window.name, window.klass, parent, id)]
             return l, ids, [], []
-        extra = ''
-        style = prop.get("style")
-        if style and style != 'wxSP_3D':
-            extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        init.append('%s = new %s(%s, %s%s);\n' % (window.name, window.klass,
-                                                  parent, id, extra))
+
+        init.append('%s = new %s(%s, %s%s);\n' % (
+            window.name, window.klass, parent, id, self.tmpl_dict['style']))
 
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')

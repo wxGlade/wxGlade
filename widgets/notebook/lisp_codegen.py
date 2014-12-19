@@ -17,6 +17,9 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
     ]
 
     def get_code(self, window):
+        self._reset_vars()
+        wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, window)
+
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
 
@@ -52,12 +55,6 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
                 )
             return l, [], []
 
-        style = prop.get("style")
-        if style:
-            style = self.cn_f(style)
-        else:
-            style = 'wxNB_TOP'
-
         init = []
         if id_name:
             init.append(id_name)
@@ -67,7 +64,7 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
                 window.name,
                 parent,
                 id,
-                style
+                self.tmpl_dict['style']
                 )
             )
 

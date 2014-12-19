@@ -16,6 +16,9 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
     ]
 
     def get_code(self, window):
+        self._reset_vars()
+        wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, window)
+
         init = []
         layout_buf = []
         props_buf = self.codegen.generate_common_properties(window)
@@ -43,20 +46,12 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
                 (window.name, self.cn(klass), parent, id))
             return l, [], []
 
-        style = prop.get("style")
-        if not(style and style != 'wxSP_3D'):
-            style = ''
-
-        if style:
-            extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        else:
-            extra = ''
-
         if id_name:
             init.append(id_name)
 
-        init.append('$self->{%s} = %s->new(%s, %s%s);\n'
-                    % (window.name, self.cn(window.klass), parent, id, extra))
+        init.append('$self->{%s} = %s->new(%s, %s%s);\n' % (
+            window.name, self.cn(window.klass), parent, id,
+            self.tmpl_dict['style']))
 
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')

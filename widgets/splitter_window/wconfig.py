@@ -45,6 +45,7 @@ config = {
 
     },
     'box_label': _('Style'),
+    'default_style': 'wxSP_3D',
     'style_list': ['wxSP_3D', 'wxSP_THIN_SASH', 'wxSP_3DSASH',
                    'wxSP_3DBORDER', 'wxSP_BORDER',
                    'wxSP_NOBORDER', 'wxSP_PERMIT_UNSPLIT',
