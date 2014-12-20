@@ -42,6 +42,9 @@ class TabsCodeHandler(object):
 
 class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, window):
+        self._reset_vars()
+        wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, window)
+
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
 
@@ -64,11 +67,6 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
                      (window.name, self.codegen.without_package(window.klass),
                       parent, id))
             return l, [], []
-        style = prop.get("style")
-        if style:
-            style = ", style=%s" % self.cn_f(style)
-        else:
-            style = ''
         klass = window.klass
         if window.preview:
             klass = 'wxNotebook'
@@ -76,7 +74,7 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         if id_name:
             init.append(id_name)
         init.append(('self.%s = ' + self.cn(klass) + '(%s, %s%s)\n') %
-                    (window.name, parent, id, style))
+                    (window.name, parent, id, self.tmpl_dict['style']))
 
         props_buf = self.codegen.generate_common_properties(window)
         return init, props_buf, layout_props
@@ -143,6 +141,9 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
         """\
         generates the C++ code for wxNotebook
         """
+        self._reset_vars()
+        wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, window)
+
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
         if id_name:
@@ -165,14 +166,8 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
             l = ['%s = new %s(%s, %s);\n' %
                  (window.name, window.klass, parent, id)]
             return l, ids, [], []
-        style = prop.get('style')
-        if style:
-            style = ', wxDefaultPosition, wxDefaultSize, %s' % self.cn_f(
-                style)
-        else:
-            style = ''
         init = ['%s = new %s(%s, %s%s);\n' %
-                (window.name, window.klass, parent, id, style)]
+                (window.name, window.klass, parent, id, self.tmpl_dict['style'])]
 
         props_buf = self.codegen.generate_common_properties(window)
 

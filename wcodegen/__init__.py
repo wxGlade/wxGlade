@@ -89,7 +89,7 @@ class BaseLanguageMixin(StylesMixin):
     Separator used to concatenate flags
 
     @type: str
-    @see: L{cn_f}
+    @see: L{cn_f()}
     """
 
     def cn(self, name):
@@ -435,6 +435,14 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @see: L{tmpl_props}
     """
 
+    tmpl_flags = '%s'
+    """\
+    Template to format the styles parameter.
+
+    @type: str
+    @see: L{_prepare_style()}
+    """
+
     has_selection = False
     """\
     Flag to create a C{SetSelection(...)} call.
@@ -563,6 +571,39 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.tmpl_props = []
         self.tmpl_dict = {}
 
+    def _prepare_style(self, style):
+        """\
+        Process and format styles.
+
+        @param style: Styles to process / format with L{cn_f()}
+        @type style:  str
+
+        @rtype: str
+        @see: L{_prepare_tmpl_content()}
+        @see: L{tmpl_flags}
+        """
+        fmt_style = self.cn_f(style)
+        fmt_default_style = self.cn_f(self.default_style)
+
+        if fmt_style and fmt_style != fmt_default_style:
+            style = self.tmpl_flags % fmt_style
+        else:
+            if self.set_default_style:
+                if style and not fmt_style:
+                    self._logger.debug(
+                        _('Unsupported attribute %s use default %s instead'),
+                        style, self.default_style)
+                style = self.tmpl_flags % fmt_default_style
+            else:
+                style = ''
+        if style and self.prefix_style:
+            style = ', %s, %s, %s' % (
+                self.cn('wxDefaultPosition'),
+                self.cn('wxDefaultSize'),
+                fmt_style,
+            )
+        return style
+
     def _prepare_tmpl_content(self, obj):
         """\
         Prepare and set template variables.
@@ -588,23 +629,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.tmpl_dict['store_as_attr'] = self.codegen.test_attribute(obj)
 
         prop = obj.properties
-        style = prop.get('style', '')
-        if style and style != self.default_style:
-            style = '%s' % self.cn_f(style)
-        else:
-            if self.set_default_style:
-                style = '%s' % self.cn_f(self.default_style)
-            else:
-                style = ''
 
-        if style and self.prefix_style:
-            style = ', %s, %s, %s' % (
-                self.cn('wxDefaultPosition'),
-                self.cn('wxDefaultSize'),
-                style,
-            )
-        self.tmpl_dict['style'] = style
-
+        self.tmpl_dict['style'] = self._prepare_style(prop.get('style', ''))
         self.tmpl_dict['label'] = self.codegen.quote_str(prop.get('label', ''))
         self.tmpl_dict['value'] = self.codegen.quote_str(prop.get('value', ''))
         self.tmpl_dict['value_unquoted'] = prop.get('value', '')
@@ -719,7 +745,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             # custom class, but it is just considered part of the layout
             return [], [], init_lines + prop_lines
         return init_lines, prop_lines, []
-
 
     def get_properties_code(self, obj):
         """\
@@ -941,6 +966,7 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
     """\
     Base class for all Python widget code writer classes.
     """
+    tmpl_flags = ', style=%s'
     tmpl_setvalue = '%(name)s.SetValue(%(value_unquoted)s)\n'
     tmpl_setdefault = '%(name)s.SetDefault()\n'
     tmpl_selection = '%(name)s.SetSelection(%(selection)s)\n'
@@ -952,16 +978,6 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
             self.tmpl_dict['parent'] = 'self.%s' % obj.parent.name
         else:
             self.tmpl_dict['parent'] = 'self'
-
-        style = obj.properties.get('style', '')
-        if style and style != self.default_style:
-            style = ', style=%s' % self.cn_f(style)
-        else:
-            if self.set_default_style:
-                style = ', style=%s' % self.cn_f(self.default_style)
-            else:
-                style = ''
-        self.tmpl_dict['style'] = style
 
         if self.tmpl_dict['store_as_attr']:
             self.tmpl_dict['name'] = self.codegen._format_classattr(obj)

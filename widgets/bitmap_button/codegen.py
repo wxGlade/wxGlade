@@ -15,18 +15,17 @@ import wcodegen
 
 class PythonBitmapButtonGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, obj):
+        self._reset_vars()
+        wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
+
         prop = obj.properties
         id_name, id = self.codegen.generate_code_id(obj)
         bmp_file = prop.get('bitmap', '')
         bmp_preview_path = os.path.join(config.icons_path, "icon.xpm")
         if not obj.parent.is_toplevel:
             parent = 'self.%s' % obj.parent.name
-        else: parent = 'self'
-        style = prop.get("style")
-        if style:
-            style = ", style=%s" % self.cn_f(style)
         else:
-            style = ''
+            parent = 'self'
         if not bmp_file:
             bmp = self.cn('wxNullBitmap')
         elif bmp_file.startswith('var:'):
@@ -42,8 +41,7 @@ class PythonBitmapButtonGenerator(wcodegen.PythonWidgetCodeWriter):
                 bmp = "%s('%s', %s)" % (self.cn('wxBitmap'), bmp_preview_path,
                                         self.cn('wxBITMAP_TYPE_XPM'))
             else:
-                bmp = '(%s)' % \
-                      bmp_file[5:].strip()
+                bmp = '(%s)' % bmp_file[5:].strip()
         else:
             if obj.preview:
                 import misc
@@ -52,11 +50,13 @@ class PythonBitmapButtonGenerator(wcodegen.PythonWidgetCodeWriter):
                    self.cn('wxBITMAP_TYPE_ANY') +
                    ')') % self.codegen.quote_path(bmp_file)
         init = []
-        if id_name: init.append(id_name)
+        if id_name:
+            init.append(id_name)
         klass = obj.klass
-        if klass == obj.base: klass = self.cn(klass)
+        if klass == obj.base:
+            klass = self.cn(klass)
         init.append('self.%s = %s(%s, %s, %s%s)\n' % 
-                    (obj.name, klass, parent, id, bmp,style))
+                    (obj.name, klass, parent, id, bmp, self.tmpl_dict['style']))
         props_buf = self.codegen.generate_common_properties(obj)
 
         disabled_bmp = prop.get('disabled_bitmap')
@@ -98,6 +98,9 @@ class CppBitmapButtonGenerator(wcodegen.CppWidgetCodeWriter):
         """\
         function that generates C++ code for wxBitmapButton objects.
         """
+        self._reset_vars()
+        wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
+
         prop = obj.properties
         id_name, id = self.codegen.generate_code_id(obj)
         if id_name: ids = [ id_name ]
@@ -107,11 +110,6 @@ class CppBitmapButtonGenerator(wcodegen.CppWidgetCodeWriter):
             parent = '%s' % obj.parent.name
         else:
             parent = 'this'
-        
-        extra = ''
-        style = prop.get("style")
-        if style:
-            extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
         
         if not bmp_file:
             bmp = 'wxNullBitmap'
@@ -123,7 +121,7 @@ class CppBitmapButtonGenerator(wcodegen.CppWidgetCodeWriter):
             bmp = 'wxBitmap(wxT(%s), wxBITMAP_TYPE_ANY)' % \
                   self.codegen.quote_path(bmp_file)
         init = ['%s = new %s(%s, %s, %s%s);\n' %
-                (obj.name, obj.klass, parent, id, bmp, extra)]
+                (obj.name, obj.klass, parent, id, bmp, self.tmpl_dict['style'])]
         props_buf = self.codegen.generate_common_properties(obj)
 
         disabled_bmp = prop.get('disabled_bitmap')
