@@ -1139,6 +1139,7 @@ class TestCodeGen(WXGladeBaseTest):
             ((2, 8), 'wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL', 'wxALIGN_CENTER|wxALL|wxEXPAND'),
             ((2, 8), 'wxNonexistingFlag|wxALL', 'wxALL|wxNonexistingFlag'),
             ((2, 8), '', ''),
+            ((2, 8), 'wxST_ELLIPSIZE_MIDDLE', ''),
             ((3, 0), 'wxALL', 'wxALL'),
             ((3, 0), 'wxALL|wxALL', 'wxALL'),
             ((3, 0), '0', '0'),
@@ -1150,8 +1151,9 @@ class TestCodeGen(WXGladeBaseTest):
             ((3, 0), 'wxNonexistingFlag|wxALL', 'wxALL|wxNonexistingFlag'),
             ((3, 0), '', ''),
             ((3, 0), 'wxALL|wxNO_3D', 'wxALL'),
+            ((3, 0), 'wxST_ELLIPSIZE_MIDDLE', 'wxST_ELLIPSIZE_MIDDLE'),
         ]
-        handler = common.code_writers['C++'].obj_builders['wxDialog']
+        handler = common.code_writers['C++'].obj_builders['wxStaticText']
         for for_version, unformatted, formatted in details:
             common.code_writers['C++'].for_version = for_version
             ret = handler.cn_f(unformatted)
@@ -1165,7 +1167,6 @@ class TestCodeGen(WXGladeBaseTest):
                     formatted,
                 )
             )
-
 
     def test_ComplexExample(self):
         """\
