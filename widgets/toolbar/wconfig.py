@@ -45,6 +45,7 @@ config = {
         },
         'wxTB_HORZ_TEXT': {
             'desc': _('Combination of wxTB_HORZ_LAYOUT and wxTB_TEXT.'),
+            'combination': 'wxTB_HORZ_LAYOUT|wxTB_TEXT',
         },
         'wxTB_NO_TOOLTIPS': {
             'desc': _("Don't show the short help tooltips for the tools "
@@ -60,6 +61,8 @@ config = {
         'wxTB_DEFAULT_STYLE': {
             'desc': _('Combination of wxTB_HORIZONTAL and wxTB_FLAT. '
                       'This style is new since wxWidgets 2.9.5.'),
+            'combination': 'wxTB_HORIZONTAL|wxTB_FLAT',
+            'supported_by': ('wx3',),
         },
         'wxTB_3DBUTTONS': {
             'desc': _('show 3D buttons (wxToolBarSimple only)'),
