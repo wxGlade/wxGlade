@@ -303,8 +303,8 @@ Example::
     }
 
 Elements:
-  - I{supported_by} - This widget is only available at the listed wx
-    versions. An empty list or a non-existing entry means the widgets is
+  - I{supported_by} - This style or widget is only available at the listed
+    wx versions. An empty list or a non-existing entry means the widgets is
     always available.
 
   - I{styles} - Dictionary with style specific settings
