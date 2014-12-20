@@ -461,14 +461,40 @@ class TestGui(WXGladeBaseTest):
             self.failUnlessEqual(
                 ret,
                 expected,
-                'EditStylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
-                    desc, ret, expected)
+                'EditStylesMixin.get_style() failed: got "%s" expect: "%s"' % (
+                    ret, expected)
             )
             ret = esm.get_int_style()
             expected = 0
             self.failUnlessEqual(
                 ret,
                 expected,
-                'EditStylesMixin.set_style(%s) failed: got "%s" expect: "%s"' % (
-                    desc, ret, expected)
+                'EditStylesMixin.get_int_style() failed: got "%s" expect: '
+                '"%s"' % (ret, expected)
             )
+
+
+        # check handling of unsupported style
+        esm = edit_windows.EditStylesMixin('wxStaticText')
+        esm.codegen.for_version = (2, 8)
+
+        # set un-supported style
+        esm.set_style('wxST_ELLIPSIZE_MIDDLE')
+
+
+        ret = esm.style_set
+        expected = set(('wxST_ELLIPSIZE_MIDDLE',))
+        self.failUnlessEqual(
+            ret,
+            expected,
+            'EditStylesMixin.set_style("wxST_ELLIPSIZE_MIDDLE") failed: got '
+            '"%s" expect: "%s"' % (ret, expected))
+
+        ret = esm.get_int_style()
+        expected = 0
+        self.failUnlessEqual(
+            ret,
+            expected,
+            'EditStylesMixin.get_int_style() failed: got "%s" expect: "%s"' % (
+                ret, expected)
+        )
