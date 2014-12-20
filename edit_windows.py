@@ -1478,6 +1478,12 @@ class EditStylesMixin(object):
         for style_name in styles:
             try:
                 style_name = self.widget_writer.cn_f(style_name)
+
+                # cn_f() returns an empty string if the given styles are not
+                # supported
+                if not style_name:
+                    continue
+
                 style_value = self.wxname2attr(style_name)
                 if not isinstance(style_value, types.IntType):
                     self._logger.warning(
