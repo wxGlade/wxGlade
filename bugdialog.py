@@ -9,6 +9,7 @@ import bugdialog_ui
 import log
 
 import logging
+import sys
 import wx
 
 
@@ -17,7 +18,15 @@ class BugReport(bugdialog_ui.UIBugDialog):
     Dialog to show details of internal errors.
     """
 
+    _disabled = False
+    """\
+    Flag to prevent dialog popups during test runs.
+
+    @type: bool
+    """
+
     def __init__(self):
+        self._disabled = getattr(sys, '_called_from_test', False)
         bugdialog_ui.UIBugDialog.__init__(self, None, -1, "")
 
     def SetContent(self, action=None, exc=None, ei_msg=None, ei=None):
@@ -36,6 +45,9 @@ class BugReport(bugdialog_ui.UIBugDialog):
         @param ei: Exception information
         @type ei: (exc_type, exc_value, exc_tb)
         """
+        if self._disabled:
+            return
+
         assert (action and exc) or (ei_msg and ei)
 
         if exc:
@@ -90,3 +102,8 @@ class BugReport(bugdialog_ui.UIBugDialog):
             wx.TheClipboard.Close()
         else:
             wx.MessageBox("Unable to open the clipboard", "Error")
+
+    def ShowModal(*args, **kwargs):
+        if getattr(sys, '_called_from_test', False):
+            return wx.ID_OK
+        super(BugReport, args).ShowModal(**kwargs)

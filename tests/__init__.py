@@ -10,6 +10,7 @@ import difflib
 import glob
 import os.path
 import re
+import sys
 import types
 import unittest
 
@@ -18,7 +19,6 @@ import codegen
 import common
 import config
 import log
-import wxglade
 from xml_parse import CodeWriter
 
 
@@ -117,6 +117,9 @@ class WXGladeBaseTest(unittest.TestCase):
             os.path.dirname(__file__),
             cls.caseDirectory,
             )
+
+        # disable bug dialogs
+        sys._called_from_test = True
 
     @classmethod
     def tearDownClass(cls):
