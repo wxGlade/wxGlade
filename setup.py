@@ -6,6 +6,18 @@ Setup script to create release packages
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+# The sdist command failed with a "TypeError: dist must be a Distribution
+# instance" exception. This is probably caused by a setuptools-monkeypatched
+# Extension/Distribution class.
+#
+# Workaround: import setuptools first if setuptools are installed
+#
+# Bug details: http://bugs.python.org/issue23102
+try:
+    import setuptools
+except ImportError:
+    pass
+
 from distutils.core import setup
 import distutils.command.sdist
 from distutils.util import convert_path
