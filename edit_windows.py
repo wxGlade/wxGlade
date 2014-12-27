@@ -1141,8 +1141,10 @@ class PreviewMixin(object):
         """
         #self._logger.debug('frame class _> %s', self.klass)
         if self.preview_widget is None:
+            # The preview widget is None in case of code generation errors
             self.preview_widget = common.app_tree.app.preview(self)
-            self.preview_button.SetLabel(_('Close Preview'))
+            if self.preview_widget:
+                self.preview_button.SetLabel(_('Close Preview'))
         else:
             # Close triggers the EVT_CLOSE that does the real work
             # (see application.py -> preview)
