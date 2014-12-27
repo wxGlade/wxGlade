@@ -681,6 +681,9 @@ def _import_module(widget_dir, module):
     If widget ZIP files are found, they will be process first and the default
     Python imports will be the second.
 
+    widget_dir will be added to the Python search path temporarily if it's
+    not path of sys.path already.
+
     Example::
         >>> _import_module('./mywidgets', 'static_text')
        <module 'static_text' from 'mywidgets/static_text.zip/static_text/__init__.pyc'>
@@ -692,15 +695,20 @@ def _import_module(widget_dir, module):
     @type module:  str
 
     @return: Imported module or None in case of errors
-    @rtype:  Module or None
+    @rtype:  Module | None
 
     @see: L{is_valid_zip()}
     """
     # split module name into module name and sub module name
     basemodule = module.split('.', 1)[0]
 
-    zip_filename = os.path.join(widget_dir, '%s.zip' % basemodule)
+    if widget_dir not in sys.path:
+        sys.path.append(widget_dir)
+        remove_widget_dir_from_syspath = True
+    else:
+        remove_widget_dir_from_syspath = False
 
+    zip_filename = os.path.join(widget_dir, '%s.zip' % basemodule)
     if os.path.exists(zip_filename):
         # check ZIP file formally
         if not is_valid_zip(zip_filename, basemodule):
@@ -748,6 +756,10 @@ def _import_module(widget_dir, module):
         # remove zip file from Python search path
         if zip_filename and zip_filename in sys.path:
             sys.path.remove(zip_filename)
+
+        # remove temporarily added widget_dir from Python search path
+        if remove_widget_dir_from_syspath and widget_dir in sys.path:
+            sys.path.remove(widget_dir)
 
 
 def is_valid_zip(filename, module_name):
