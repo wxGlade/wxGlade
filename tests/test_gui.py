@@ -133,25 +133,30 @@ class TestGui(WXGladeBaseTest):
         Open a wxGlade project
 
         @param content: Content
-        @type content:  str | StringIO.StringIO
+        @type content:  unicode | StringIO | None
 
         @param filename: File name
         @type filename:  str
         """
-        self.assertTrue(content or filename)
+        self.failUnless(content or filename)
+        self.failUnless(
+            isinstance(content, (types.UnicodeType, types.NoneType, StringIO.StringIO))
+        )
+        if isinstance(content, StringIO.StringIO):
+            self.failUnless(
+                isinstance(content.getvalue(), types.UnicodeType))
 
         if filename:
             content = StringIO.StringIO(
                 self._load_file(filename))
-        elif isinstance(content, types.StringTypes):
+        elif isinstance(content, StringIO.StringIO):
+            self.failUnless(
+                isinstance(content.getvalue(), types.UnicodeType))
+        else:
             content = StringIO.StringIO(content)
 
-        self.frame._open_app(
-            infilename=content,
-            use_progress_dialog=False,
-            is_filelike=True,
-            add_to_history=False,
-            )
+        self.frame._open_app(filename_or_filelike=content,
+                             use_progress_dialog=False, add_to_history=False)
         common.app_tree.ExpandAll()
         self._process_wx_events()
 
@@ -169,9 +174,9 @@ class TestGui(WXGladeBaseTest):
         """
         self._messageBox = None
         self._open_wxg_file(filename='Notebook_wo_tabs.wxg')
-        err_msg = u'Error loading file None: Notebook widget' \
-                  ' "notebook_1" does not have any tabs! ' \
-                  '_((line: 17, column:  20))'
+        err_msg = u'Error loading from a file-like object: Notebook ' \
+                  u'widget "notebook_1" does not have any tabs! ' \
+                  u'_((line: 17, column:  20))'
         err_caption = u'Error'
         self.failUnless(
             [err_msg, err_caption] == self._messageBox,
