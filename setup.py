@@ -1,4 +1,4 @@
-# -*- coding: Latin-1 -*-
+# -*- coding: utf-8 -*-
 """
 Setup script to create release packages
 
@@ -164,8 +164,10 @@ text_files = ['CHANGES.txt', 'credits.txt', 'epydoc.conf', 'license.txt',
               'Makefile', 'NEWS.txt', 'README.txt', 'TODO.txt',
               'appdata.xml', 'wxGlade.desktop']
 
-data_files = \
-    [
+data_files = [
+    ['share/wxglade/icons', glob('icons/*.*')],
+    ['share/wxglade/icons/gtk', glob('icons/gtk/*')],
+    ['share/wxglade/icons/msw', glob('icons/msw/*')],
     ['share/doc/wxglade', text_files],
     ['share/doc/wxglade/doc', glob('docs/*.html')],
     ['share/doc/wxglade/doc/img', glob('docs/img/*.*')],
@@ -179,7 +181,7 @@ data_files = \
     ['share/doc/wxglade/install/rpm', glob('install/rpm/*.*')],
     ['share/doc/wxglade/install/pyinstaller',
      glob('install/pyinstaller/*.*')],
-    ]
+]
 
 scripts = ['wxglade', 'wxglade.pyw']
 
@@ -209,11 +211,7 @@ setup(
     package_dir={'wxglade': '.'},
     package_data={'wxglade.widgets': ['widgets.txt'],
                   'wxglade.tests': ['casefiles/*.*'],
-                  'wxglade': ['icons/*.*',
-                              'icons/gtk/*.*',
-                              'icons/msw/*.*',
-                              'res/*.*',
-                              ]},
+                  'wxglade': ['res/*.*']},
     data_files=data_files,
     install_requires=['wxPython >=2.8'],
     )
