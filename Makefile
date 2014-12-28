@@ -26,6 +26,7 @@ BUILD_DIR         = $(BASE_DIR)/build
 BDIST_DIR         = $(BASE_DIR)/bdist
 DOC_DIR           = $(BASE_DIR)/docs
 DIST_DIR          = $(BASE_DIR)/dist
+EGG_DIR           = $(BASE_DIR)/wxGlade.egg-info
 CHECK_FILES       = $(filter-out $(BASE_DIR)/test.py, $(wildcard $(BASE_DIR)/*.py)) \
                     $(filter-out tests/%.py, $(shell find $(SOURCE_DIRS) -name "*.py"))
 EPYDOC_BIN        = epydoc
@@ -97,6 +98,7 @@ clean:
 	@if [ -e $(BDIST_DIR) ]; then rm -rf $(BDIST_DIR); fi
 	@if [ -e $(DIST_DIR) ]; then rm -rf $(DIST_DIR); fi
 	@if [ -e $(APIDOC_DIR) ]; then rm -rf $(APIDOC_DIR); fi
+	@if [ -e $(EGG_DIR) ]; then rm -rf $(EGG_DIR); fi
 	@find $(BASE_DIR) -depth -type f -name "*.orig" -exec rm -f {} \;
 	@find $(BASE_DIR) -depth -type f -name "*~" -exec rm -f {} \;
 	@$(RM) logdict*.log
