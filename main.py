@@ -3,7 +3,7 @@ Main wxGlade module: defines wxGladeFrame which contains the buttons to add
 widgets and initializes all the stuff (tree, property_frame, etc.)
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2011-2014 Carsten Grohmann
+@copyright: 2011-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -29,7 +29,6 @@ import preferencesdialog
 import log
 import misc
 import template
-from widget_properties import *
 from tree import WidgetTree
 from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, \
     XmlParsingError
