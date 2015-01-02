@@ -1,7 +1,7 @@
 """\
 Dialog to show details of internal errors.
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -29,61 +29,68 @@ class BugReport(bugdialog_ui.UIBugDialog):
         self._disabled = getattr(sys, '_called_from_test', False)
         bugdialog_ui.UIBugDialog.__init__(self, None, -1, "")
 
-    def SetContent(self, action=None, exc=None, ei_msg=None, ei=None):
+    def SetContent(self, msg, exc):
         """\
         Prepare given exception information and show it as dialog content.
 
-        Use parameters 'action' and 'exec' or 'msg' and 'ei'.
-
-        @param action: Short description of the action that has raised this
-                       error
-        @type action:  str
+        @param msg: Short description of the action that has raised this error
+        @type msg:  str
         @param exc: Caught exception
         @type exc:  Exception
-        @param ei_msg: Short description of the exception
-        @type ei_msg:  str
-        @param ei: Exception information
-        @type ei: (exc_type, exc_value, exc_tb)
+
+        @see: L{SetContentEI()}
         """
         if self._disabled:
             return
 
-        assert (action and exc) or (ei_msg and ei)
+        exc_type = exc.__class__.__name__
+        exc_msg = str(exc)
+        header = self.st_header.GetLabel() % {'action': msg}
+        log.exception_orig(header)
+        self._fill_dialog(exc_msg, exc_type, header)
 
-        if exc:
-            exc_type = exc.__class__.__name__
-            exc_msg = str(exc)
-        else:
-            exc_type = ei[0]
-            exc_msg = ei_msg
+    def SetContentEI(self, exc_type, exc_value, exc_tb, msg=None):
+        """\
+        Format given exception and add details to dialog.
+
+        @param exc_type: Exception type
+        @param exc_value: Exception value
+        @param exc_tb: Exception traceback
+
+        @param msg: Short description of the exception
+        @type msg:  str | None
+
+        @see: L{SetContent()}
+        """
+        if self._disabled:
+            return
+
+        header = _("An internal error occurred")
+        log.exception_orig(header, exc_info=(exc_type, exc_value, exc_tb))
+        self._fill_dialog(msg, exc_type, header)
+
+    def _fill_dialog(self, exc_msg, exc_type, header):
+        """\
+        Fill the bug dialog
+
+        @param exc_msg: Short exception summary
+        @type exc_msg: str | None
+        @param exc_type: Exception type
+        @type exc_type: str
+        @param header: Initial message
+        @type header: str
+
+        @see: L{SetContent()}
+        @see: L{SetContentEI()}
+        """
+        details = log.getBufferAsString()
 
         if not exc_msg:
             exc_msg = _('No summary available')
 
-        if action:
-            header = self.st_header.GetLabel() % {'action': action}
-        else:
-            header = _("An internal error occurred")
-
         summary = self.st_summary.GetLabel() % {
             'exc_type': exc_type,
             'exc_msg': exc_msg}
-
-        # acquire lock to deactivate the general msg dialog
-        # otherwise the logging calls would trigger the dialog
-        # don't wait / fail if the log is already acquired - another function
-        # calling this dialog has acquired it
-        app = wx.GetApp()
-        lock_acquire = app.lock_msgdialog.acquire(False)
-
-        if exc:
-            logging.exception(header)
-        else:
-            logging.error(header, exc_info=ei)
-        details = log.getBufferAsString()
-
-        if lock_acquire:
-            app.lock_msgdialog.release()
 
         self.st_header.SetLabel(header)
         self.st_summary.SetLabel(summary)
@@ -103,7 +110,7 @@ class BugReport(bugdialog_ui.UIBugDialog):
         else:
             wx.MessageBox("Unable to open the clipboard", "Error")
 
-    def ShowModal(*args, **kwargs):
+    def ShowModal(self, **kwargs):
         if getattr(sys, '_called_from_test', False):
             return wx.ID_OK
-        super(BugReport, args).ShowModal(**kwargs)
+        super(BugReport, self).ShowModal(**kwargs)

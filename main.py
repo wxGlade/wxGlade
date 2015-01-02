@@ -13,7 +13,6 @@ import logging
 import os
 import os.path
 import sys
-import threading
 import time
 import types
 import wx
@@ -1050,14 +1049,8 @@ class wxGlade(wx.App):
                        messages.
     @type _msg_dialog: msgdialog.MessageDialog
 
-    @ivar lock_msgdialog: Show the error dialog
-    @type lock_msgdialog: threading.Lock
-
     @ivar _exception_orig: Reference to original implementation of
                            logging.exception()
-
-    @ivar _lock_exception_run_once: Prevent running L{exception()} parallel
-    @type _lock_exception_run_once: threading.Lock
     """
 
     _msg_dialog = None
@@ -1068,9 +1061,6 @@ class wxGlade(wx.App):
 
         # replace text based exception handler by a graphical exception dialog
         sys.excepthook = self.graphical_exception_handler
-
-        self.lock_msgdialog = threading.Lock()
-        self._lock_exception_run_once = threading.Lock()
 
         # use graphical implementation to show caught exceptions
         self._exception_orig = logging.exception
@@ -1124,94 +1114,74 @@ class wxGlade(wx.App):
         @see: L{log.getBufferAsList()}
         @see: L{msgdialog.MessageDialog}
         """
-        lock_acquired = False
-        try:
-            lock_acquired = self.lock_msgdialog.acquire(False)
-            if not lock_acquired:
-                return
+        log_msg = log.getBufferAsString()
+        if not log_msg:
+            return
 
-            log_msg = log.getBufferAsString()
-            if not log_msg:
-                return
+        # initialise message dialog
+        if not self._msg_dialog:
+            import msgdialog
+            self._msg_dialog = msgdialog.MessageDialog(None, -1, "")
+            self._msg_dialog.msg_list.InsertColumn(0, "")
 
-            # initialise message dialog
-            if not self._msg_dialog:
-                import msgdialog
-                self._msg_dialog = msgdialog.MessageDialog(None, -1, "")
-                self._msg_dialog.msg_list.InsertColumn(0, "")
+        # clear dialog and show new messages
+        self._msg_dialog.msg_list.Freeze()
+        self._msg_dialog.msg_list.DeleteAllItems()
+        for line in log_msg.split('\n'):
+            self._msg_dialog.msg_list.Append([line, ])
+        self._msg_dialog.msg_list.SetColumnWidth(0, -1)
+        self._msg_dialog.msg_list.Thaw()
+        self._msg_dialog.ShowModal()
 
-                # clear dialog and show new messages
-            self._msg_dialog.msg_list.Freeze()
-            self._msg_dialog.msg_list.DeleteAllItems()
-            for line in log_msg.split('\n'):
-                self._msg_dialog.msg_list.Append([line, ])
-            self._msg_dialog.msg_list.SetColumnWidth(0, -1)
-            self._msg_dialog.msg_list.Thaw()
-            self._msg_dialog.ShowModal()
-        finally:
-            if lock_acquired:
-                self.lock_msgdialog.release()
-
-    def graphical_exception_handler(self, exc_type, exc_value, exc_tb,
-                                    msg=None):
+    def graphical_exception_handler(self, exc_type, exc_value, exc_tb):
         """\
-        Show detailed information about uncaught exceptions in a dialog.
+        Show detailed information about uncaught exceptions in
+        L{bugdialog.BugReport}.
 
-        The exception information will be cleared after that.
+        The shown exception will be logged to the log file in parallel.
+
+        The exception information will be cleared after the bug dialog has
+        closed.
 
         @param exc_type:  Type of the exception (normally a class object)
         @param exc_value: The "value" of the exception
         @param exc_tb:    Call stack of the exception
 
-        @param msg: Short description of the exception
-        @type msg:  str | None
-
         @see: L{bugdialog.BugReport()}
         """
-        lock_acquired = False
-        try:
-            # acquire lock to deactivate the general msg dialog to prevent
-            # conflicts during access to the logging details
-            #
-            # don't wait / fail if the log is already acquired - another
-            # function calling this dialog has acquired it
-            lock_acquired = self.lock_msgdialog.acquire(False)
-
-            dialog = bugdialog.BugReport()
-            dialog.SetContent(ei_msg=msg, ei=(exc_type, exc_value, exc_tb))
-            dialog.ShowModal()
-
-            sys.exc_clear()
-        finally:
-            if lock_acquired:
-                self.lock_msgdialog.release()
+        dialog = bugdialog.BugReport()
+        dialog.SetContentEI(exc_type, exc_value, exc_tb)
+        dialog.ShowModal()
+        sys.exc_clear()
 
     def exception(self, msg, *args, **kwargs):
         """\
-        Shows detailed exception logged by C{logging.exception()} in the
-        wxGlade bug dialog.
+        Graphical replacement of C{logging.exception()}.
+
+        All exception details logged with C{logging.exception()} will be shown
+        in L{bugdialog.BugReport}.
+
+        The shown exception will be logged to the log file ding.
+
+        The exception information will be cleared after the bug dialog has
+        closed.
 
         @param msg: Short description of the exception
         @type msg:  str
+
+        @see: L{bugdialog.BugReport}
         """
-        # use the original implementation of logging.exception() if this
-        # function is called twice
-        if not self._lock_exception_run_once.acquire(False):
-            self._exception_orig(msg, *args, **kwargs)
-            return
-        try:
-            # wait for a lock - this dialog shouldn't run parallel
-            self.lock_msgdialog.acquire()
-            if args:
-                try:
-                    msg = msg % args
-                except TypeError:
-                    self._exception_orig(_('Wrong format of a log message'))
-            (exc_type, exc_value, exc_tb) = sys.exc_info()
-            self.graphical_exception_handler(exc_type, exc_value, exc_tb, msg)
-        finally:
-            self.lock_msgdialog.release()
-            self._lock_exception_run_once.release()
+        if args:
+            try:
+                msg = msg % args
+            except TypeError:
+                log.exception_orig(_('Wrong format of a log message'))
+
+        dialog = bugdialog.BugReport()
+        (exc_type, exc_value, exc_tb) = sys.exc_info()
+        dialog.SetContentEI(exc_type, exc_value, exc_tb, msg)
+        dialog.ShowModal()
+        sys.exc_clear()
 
 # end of class wxGlade
 

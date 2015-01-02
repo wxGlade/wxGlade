@@ -22,7 +22,7 @@ in revision 81919 (27.12.2010) in the public Python repository.
 
 @todo: Integrate Unicode logging fix.
 
-@copyright: 2013-2014 Carsten Grohmann
+@copyright: 2013-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -43,6 +43,11 @@ import config
 stringLoggerInstance = None
 """\
 Reference to the active L{StringHandler} instance
+"""
+
+exception_orig = logging.exception
+"""\
+Reference to the original implementation of C{logging.exception}
 """
 
 
