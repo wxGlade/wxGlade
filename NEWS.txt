@@ -13,6 +13,7 @@ Bugs:
   - Fix Unicode error during saving wxg files
   - Create non-existing config directory during initialisation (sf bug #164)
   - Fix incorrect handling of styles only supported by a specific wx version
+  - Fix error during preview of classed with custom names (sf bug #165)
   - ...
 
 Deprecation
