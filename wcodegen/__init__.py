@@ -756,7 +756,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         @see: L{tmpl_props}
         @rtype: list[str]
         """
-        assert self.tmpl_props
         prop_lines = []
         self._reset_vars()
 
@@ -777,7 +776,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         @see: L{tmpl_props}
         @rtype: list[str]
         """
-        assert self.tmpl_layout
         layout_lines = []
         self._reset_vars()
 
