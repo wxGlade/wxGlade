@@ -28,3 +28,12 @@ class TestCodeGen(WXGladeBaseTest):
         That's the test case for SF bug #163.
         """
         self._test_all('bug163')
+
+    def test_bug165(self):
+        """\
+        Test bug #165 - Can't rename notebook widget class - internal error
+        on Preview
+
+        That's the test case for SF bug #165.
+        """
+        self._test_all('bug165')
