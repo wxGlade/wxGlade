@@ -172,9 +172,9 @@ class XmlWidgetBuilder(XmlParser):
                 use_gettext = int(attrs["use_gettext"])
             except (KeyError, ValueError):
                 use_gettext = config.default_use_gettext
-            if use_gettext:
-                app.use_gettext = True
-                app.use_gettext_prop.set_value(True)
+            use_gettext = bool(use_gettext)
+            app.use_gettext = use_gettext
+            app.use_gettext_prop.set_value(use_gettext)
 
             try:
                 is_template = int(attrs["is_template"])
