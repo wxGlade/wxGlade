@@ -14,6 +14,7 @@ Bugs:
   - Create non-existing config directory during initialisation (sf bug #164)
   - Fix incorrect handling of styles only supported by a specific wx version
   - Fix error during preview of classed with custom names (sf bug #165)
+  - Don't ignore disabled gettext support (Thanks to Udi Fuchs)
   - ...
 
 Deprecation
