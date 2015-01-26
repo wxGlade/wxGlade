@@ -11,9 +11,6 @@ import re
 # import test base class
 from tests import WXGladeBaseTest
 
-# import project modules
-import common
-
 
 class TestCodeGen(WXGladeBaseTest):
     """\
