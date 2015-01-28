@@ -1,5 +1,5 @@
 """
-@copyright: 2012-2014 Carsten Grohmann
+@copyright: 2012-2015 Carsten Grohmann
 
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
@@ -140,7 +140,8 @@ class WXGladeBaseTest(unittest.TestCase):
         self.orig_save_file = common.save_file
         common.save_file = self._save_file
         self.orig_load_file = codegen.BaseSourceFileContent._load_file
-        codegen.BaseSourceFileContent._load_file = self._load_lines
+        codegen.BaseSourceFileContent._load_file = self._fixture_filename(
+            codegen.BaseSourceFileContent._load_file)
         self.orig_file_exists = codegen.BaseLangCodeWriter._file_exists
         self.orig_os_access = os.access
         os.access = self._os_access
@@ -286,36 +287,30 @@ class WXGladeBaseTest(unittest.TestCase):
 
         return content
 
-    def _load_lines(self, filename):
+    def _fixture_filename(self, func):
         """\
-        Return file content as a list of lines 
+        Decorator for adapting filenames to load files from test case
+        directory.
+
+        @see: L{codegen.BaseSourceFileContent._load_file()}
         """
-        casename, extension = os.path.splitext(filename)
-        if extension == '.wxg':
-            filetype = 'input'
-        else:
-            filetype = 'result'
+        def inner(klass, filename):
+            casename, extension = os.path.splitext(filename)
 
-        file_list = glob.glob(
-            os.path.join(self.caseDirectory, "%s%s" % (casename, extension))
+            file_list = glob.glob(
+                os.path.join(self.caseDirectory, "%s%s" % (casename, extension))
             )
-        self.failIf(
-           len(file_list) == 0,
-           'No %s file for case "%s" found!' % (filetype, casename)
-           )
-        self.failIf(
-           len(file_list) > 1,
-           'More than one %s file for case "%s" found!' % (filetype, casename)
-           )
+            self.failIf(
+                len(file_list) == 0,
+                'No result file for case "%s" found!' % casename)
+            self.failIf(
+                len(file_list) > 1,
+                'More than one result file for case "%s" found!' % casename)
 
-        fh = open(file_list[0])
-        if extension == '.wxg':
-            content = [line.decode('UTF-8') for line in fh.readlines()]
-        else:
-            content = fh.readlines()
-        fh.close()
+            filename = file_list[0]
+            return func(klass, filename)
 
-        return content
+        return inner
 
     def _modify_attrs(self, content, **kwargs):
         """\
