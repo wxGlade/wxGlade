@@ -1,0 +1,8 @@
+#
+#
+# This file will be processes top-down - from specific to generic.
+#
+# Syntax:  <Filename with wildcards> <encoding>
+
+# wxg files are always UTF8 encoded
+*.wxg      utf8

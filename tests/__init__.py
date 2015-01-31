@@ -7,6 +7,7 @@
 # import general python modules
 import StringIO
 import difflib
+import fnmatch
 import glob
 import os.path
 import re
@@ -28,6 +29,21 @@ class WXGladeBaseTest(unittest.TestCase):
 
     All test cases uses an own implementation to L{common.save_file()} to
     catch the results. This behaviour is limited to single file creation.
+    """
+
+    _encodings = {}
+    """\
+    Cached file encodings from L{_get_encoding()} to accelerate the lookup.
+
+    @type: dict[str, str]
+    @see: L{_get_encoding()}
+    """
+
+    _encoding_content = []
+    """\
+    Cache content of the encoding file 'file_encodings.txt'
+
+    @type: list[str]
     """
 
     vFiles = {}
@@ -121,6 +137,14 @@ class WXGladeBaseTest(unittest.TestCase):
         # disable bug dialogs
         sys._called_from_test = True
 
+        # cache content to reduce IO
+        fe = open(os.path.join(cls.caseDirectory, 'file_encodings.txt'))
+        for line in fe.readlines():
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            cls._encoding_content.append(line)
+
     @classmethod
     def tearDownClass(cls):
         """\
@@ -182,6 +206,24 @@ class WXGladeBaseTest(unittest.TestCase):
                 self.orig_for_version[lang]
             common.code_writers[lang].app_encoding = \
                 self.orig_app_encoding[lang]
+
+    def _get_encoding(self, filename):
+        """\
+        Return file encoding based on pattern in "file_encodings.txt"
+
+        @rtype: str | None
+        @see: L{self._encodings}
+        """
+        if filename in self._encodings:
+            return self._encodings[filename]
+
+        for line in self._encoding_content:
+            pattern, encoding = line.split(' ', 1)
+            if fnmatch.fnmatch(filename, pattern):
+                self._encodings[filename] = encoding
+                return encoding
+
+        return None
 
     def _generate_code(self, language, document, filename):
         """\
@@ -271,9 +313,12 @@ class WXGladeBaseTest(unittest.TestCase):
 
         fh = open(file_list[0])
         content = fh.read()
-        if extension == '.wxg':
-            content = content.decode('UTF-8')
         fh.close()
+
+        # convert encoding back to unicode
+        encoding = self._get_encoding(filename)
+        if encoding:
+            content = content.decode(encoding)
 
         # replacing path entries
         content = content % {
@@ -418,7 +463,7 @@ class WXGladeBaseTest(unittest.TestCase):
                 continue
             name_wxg = '%s.wxg' % base
             name_lang = '%s%s' % (base, ext)
-            
+
             if lang == 'C++':
                 self._generate_and_compare_cpp(name_wxg, name_lang)
             else:
