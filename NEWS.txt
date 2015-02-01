@@ -4,6 +4,7 @@ General:
     the first time
   - Change internal string handling to Unicode partially
   - Show logged exceptions in wxGlade bug dialog
+  - Store generated source files in the selected encoding
   - ...
 
 Generated Code:
@@ -15,6 +16,7 @@ Bugs:
   - Fix incorrect handling of styles only supported by a specific wx version
   - Fix error during preview of classed with custom names (sf bug #165)
   - Don't ignore disabled gettext support (Thanks to Udi Fuchs)
+  - Unicode error during update of an existing source file (sf bug #167)
   - ...
 
 Deprecation

@@ -1,5 +1,5 @@
 """
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
@@ -34,3 +34,14 @@ class TestCodeGen(WXGladeBaseTest):
         That's the test case for SF bug #165.
         """
         self._test_all('bug165')
+
+    def test_bug167(self):
+        """\
+        Test bug #167 - ascii codec error - UnicodeDecodeError will be raised
+        if existing files will be changed (and not overwritten) and those files
+        contains non-ASCII characters.
+
+        That's the test case for SF bug #167.
+        """
+        self._test_all('bug167')
+        self._test_all('bug167_utf8')
