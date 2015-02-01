@@ -1,7 +1,7 @@
 """\
 Common code used by all code generators
 
-@copyright: 2011-2014 Carsten Grohmann
+@copyright: 2011-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -154,16 +154,24 @@ class BaseSourceFileContent(object):
     the lines inside a wxGlade block, an to keep the rest of the file as it was
 
     @ivar classes:        Classes declared in the file
+    @type classes:        dict
+
     @ivar class_name:     Name of the current processed class
+    @type class_name:     str
+
     @ivar content:        Content of the source file, if it existed
                           before this session of code generation
+    @type content:        str
+
     @ivar event_handlers: List of event handlers for each class
+    @type event_handlers: dict
 
     @ivar name:           Name of the file
     @type name:           str
 
     @ivar new_classes:    New classes to add to the file (they are inserted
                           BEFORE the old ones)
+    @type new_classes:    list
 
     @ivar new_classes_inserted: Flag if the placeholder for new classes has
                                 been inserted in source file already
@@ -247,13 +255,23 @@ class BaseSourceFileContent(object):
         """\
         Load a file and return the content
 
+        The read source file will be decoded to unicode automatically.
+
         @note: Separated for debugging purposes
 
-        @rtype: list[str]
+        @rtype: list[str] | list[Unicode]
         """
         fh = open(filename)
         lines = fh.readlines()
         fh.close()
+
+        encoding = self.code_writer.app_encoding
+        if encoding:
+            try:
+                lines = [line.decode(encoding) for line in lines]
+            except UnicodeDecodeError:
+                raise errors.WxgReadSourceFileUnicodeError(filename)
+
         return lines
 
     def __getstate__(self):
@@ -2282,8 +2300,19 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         # add original file content
         tmp += content
-        
-        # check for sub necessary directories e.g. for Perl or Python modules
+
+        # convert the file encoding from Unicode to self.app_encoding
+        if isinstance(tmp, types.UnicodeType):
+            try:
+                tmp = tmp.encode(self.app_encoding)
+            except UnicodeEncodeError, inst:
+                raise errors.WxgOutputUnicodeError(
+                    self.app_encoding,
+                    inst.object[inst.start:inst.end].encode('unicode-escape'),
+                    inst.start,
+                    inst.end)
+
+        # check for necessary sub directories e.g. for Perl or Python modules
         dirname = os.path.dirname(filename)
         if dirname and not os.path.isdir(dirname):
             try:

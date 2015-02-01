@@ -220,6 +220,8 @@ class WXGladeBaseTest(unittest.TestCase):
         for line in self._encoding_content:
             pattern, encoding = line.split(' ', 1)
             if fnmatch.fnmatch(filename, pattern):
+                if encoding.upper() == 'NONE':
+                    encoding = None
                 self._encodings[filename] = encoding
                 return encoding
 
@@ -510,13 +512,17 @@ class WXGladeBaseTest(unittest.TestCase):
         @param outname: Name of the output file
         @type outname:  str
         """
-        # load XML input file
         source = self._load_file(inname)
         expected = self._load_file(outname)
 
-        # generate code
         self._generate_code(lang, source, outname)
+
+        # convert from file encoding back to unicode
         generated = self.vFiles[outname].getvalue()
+        encoding = self._get_encoding(outname)
+        if encoding:
+            generated = generated.decode(encoding)
+
         self._compare(expected, generated)
 
     def _generate_and_compare_cpp(self, inname, outname):
@@ -531,15 +537,23 @@ class WXGladeBaseTest(unittest.TestCase):
         name_h = '%s.h' % outname
         name_cpp = '%s.cpp' % outname
 
-        # load XML input file
         source = self._load_file(inname)
         result_cpp = self._load_file(name_cpp)
         result_h = self._load_file(name_h)
 
-        # generate and compare C++ code
         self._generate_code('C++', source, outname)
+
+        # convert from file encoding back to unicode
         generated_cpp = self.vFiles[name_cpp].getvalue()
+        encoding_cpp = self._get_encoding(name_cpp)
+        if encoding_cpp:
+            generated_cpp = generated_cpp.decode(encoding_cpp)
+
         generated_h = self.vFiles[name_h].getvalue()
+        encoding_h = self._get_encoding(name_h)
+        if encoding_h:
+            generated_h = generated_h.decode(encoding_h)
+
         self._compare(result_cpp, generated_cpp, 'C++ source')
         self._compare(result_h, generated_h, 'C++ header')
 

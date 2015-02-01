@@ -1,7 +1,9 @@
 """\
 wxGlade internal exceptions
 
-@copyright: 2012-2013 Carsten Grohmann
+@note: Please update the documentation accordingly after changing this file.
+
+@copyright: 2012-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -53,6 +55,14 @@ class WxgOutputPathIsNotDirectory(WxgBaseException):
             'multiple files')
 
 
+class WxgOutputUnicodeError(WxgBaseException):
+    """\
+    Raised if the generated code can't converted to the desired encoding
+    """
+    msg = _('''Generated source code couldn't converted to encoding %s.\n'''
+            '''The source contains invalid characters "%s" from %s to %s''')
+
+
 class WxgLispWx3NotSupported(WxgBaseException):
     """\
     Raised if Lisp code for wx 3.0 or newer should be generated
@@ -87,3 +97,10 @@ class WxgMissingCodeWriter(WxgBaseException):
     Code writer for the given language is not available
     """
     msg = _('Code writer for "%s" is not available')
+
+
+class WxgReadSourceFileUnicodeError(WxgBaseException):
+    """\
+    Unicode decode error during reading an already existing source file
+    """
+    msg = _('Conversion of the source file %s to Unicode failed.')
