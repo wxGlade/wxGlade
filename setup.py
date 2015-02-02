@@ -2,116 +2,15 @@
 """
 Setup script to create release packages
 
-@copyright: 2011-2014 Carsten Grohmann
+@copyright: 2011-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-# The sdist command failed with a "TypeError: dist must be a Distribution
-# instance" exception. This is probably caused by a setuptools-monkeypatched
-# Extension/Distribution class.
-#
-# Workaround: import setuptools first if setuptools are installed
-#
-# Bug details: http://bugs.python.org/issue23102
-try:
-    import setuptools
-except ImportError:
-    pass
-
-from distutils.core import setup
-import distutils.command.sdist
-from distutils.util import convert_path
+from setuptools import setup
 
 import os
 from glob import glob
 import config
-
-
-# distutils sdisk command is broken because it doesn't copy data_files
-# Bug: http://bugs.python.org/issue2279
-def add_defaults_fixed(self):
-    """Add all the default files to self.filelist:
-      - README or README.txt
-      - setup.py
-      - test/test*.py
-      - all pure Python modules mentioned in setup script
-      - all files pointed by package_data (build_py)
-      - all files defined in data_files.
-      - all files defined as scripts.
-      - all C sources listed as part of extensions or C libraries
-        in the setup script (doesn't catch C headers!)
-    Warns if (README or README.txt) or setup.py are missing; everything
-    else is optional.
-    """
-    standards = [('README', 'README.txt'), self.distribution.script_name]
-    for fn in standards:
-        if isinstance(fn, tuple):
-            alts = fn
-            got_it = False
-            for fn in alts:
-                if os.path.exists(fn):
-                    got_it = True
-                    self.filelist.append(fn)
-                    break
-
-            if not got_it:
-                self.warn("standard file not found: should have one of " +
-                          ', '.join(alts))
-        else:
-            if os.path.exists(fn):
-                self.filelist.append(fn)
-            else:
-                self.warn("standard file '%s' not found" % fn)
-
-    optional = ['test/test*.py', 'setup.cfg']
-    for pattern in optional:
-        files = filter(os.path.isfile, glob(pattern))
-        self.filelist.extend(files)
-
-    # build_py is used to get:
-    #  - python modules
-    #  - files defined in package_data
-    build_py = self.get_finalized_command('build_py')
-
-    # getting python files
-    if self.distribution.has_pure_modules():
-        self.filelist.extend(build_py.get_source_files())
-
-    # getting package_data files
-    # (computed in build_py.data_files by build_py.finalize_options)
-    for pkg, src_dir, build_dir, filenames in build_py.data_files:
-        for filename in filenames:
-            self.filelist.append(os.path.join(src_dir, filename))
-
-    # getting distribution.data_files
-    if self.distribution.has_data_files():
-        for item in self.distribution.data_files:
-            if isinstance(item, str):  # plain file
-                item = convert_path(item)
-                if os.path.isfile(item):
-                    self.filelist.append(item)
-            else:    # a (dirname, filenames) tuple
-                dirname, filenames = item
-                for f in filenames:
-                    f = convert_path(f)
-                    if os.path.isfile(f):
-                        self.filelist.append(f)
-
-    if self.distribution.has_ext_modules():
-        build_ext = self.get_finalized_command('build_ext')
-        self.filelist.extend(build_ext.get_source_files())
-
-    if self.distribution.has_c_libraries():
-        build_clib = self.get_finalized_command('build_clib')
-        self.filelist.extend(build_clib.get_source_files())
-
-    if self.distribution.has_scripts():
-        build_scripts = self.get_finalized_command('build_scripts')
-        self.filelist.extend(build_scripts.get_source_files())
-
-
-# Replace old implementation by the new own
-distutils.command.sdist.sdist.add_defaults = add_defaults_fixed
 
 
 def is_package(path):
@@ -198,6 +97,7 @@ setup(
     name='wxGlade',
     version=version,
     author='Alberto Griggio, Carsten Grohmann and the wxGlade developers',
+    author_email='wxglade-general@lists.sourceforge.net',
     maintainer='Carsten Grohmann',
     maintainer_email='mail@carstengrohmann.de',
     url='http://wxglade.sourceforge.net/',
@@ -214,4 +114,5 @@ setup(
                   'wxglade': ['res/*.*']},
     data_files=data_files,
     install_requires=['wxPython >=2.8'],
+    setup_requires=["setuptools_hg"],
     )
