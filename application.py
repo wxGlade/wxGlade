@@ -526,7 +526,10 @@ class Application(object):
             return
 
         # update file extensions
-        base, ext = os.path.splitext(self.outpath_prop.get_value())
+        current_name = self.outpath_prop.get_value()
+        if not current_name:
+            return
+        base, ext = os.path.splitext(current_name)
 
         # is already a valid extension?
         # ext has a leading . but default_extensions hasn't
@@ -536,6 +539,7 @@ class Application(object):
         new_name = "%s.%s" % (
             base, common.code_writers[language].default_extensions[0])
         self.outpath_prop.set_value(new_name)
+        self.output_path = new_name
 
     def get_language(self):
         """\
