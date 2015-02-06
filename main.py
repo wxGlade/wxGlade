@@ -384,36 +384,36 @@ class wxGladeFrame(wx.Frame):
             frame_style &= ~wx.MINIMIZE_BOX
             if wx.Platform != '__WXGTK__': frame_style |= wx.FRAME_TOOL_WINDOW
 
-        self.frame2 = wx.Frame(self, -1, _('Properties - <%s>' % _('app')),
+        self.frame_property = wx.Frame(self, -1, _('Properties - <%s>' % _('app')),
                                style=frame_style)
-        self.frame2.SetBackgroundColour(wx.SystemSettings_GetColour(
+        self.frame_property.SetBackgroundColour(wx.SystemSettings_GetColour(
             wx.SYS_COLOUR_BTNFACE))
-        self.frame2.SetIcon(icon)
+        self.frame_property.SetIcon(icon)
 
         sizer_tmp = wx.BoxSizer(wx.VERTICAL)
-        property_panel = wxGladePropertyPanel(self.frame2, -1)
+        property_panel = wxGladePropertyPanel(self.frame_property, -1)
 
         #---- 2003-06-22 Fix for what seems to be a GTK2 bug (notebooks)
-        misc.hidden_property_panel = wx.Panel(self.frame2, -1)
+        misc.hidden_property_panel = wx.Panel(self.frame_property, -1)
         sz = wx.BoxSizer(wx.VERTICAL)
         sz.Add(property_panel, 1, wx.EXPAND)
         sz.Add(misc.hidden_property_panel, 1, wx.EXPAND)
-        self.frame2.SetSizer(sz)
+        self.frame_property.SetSizer(sz)
         sz.Show(misc.hidden_property_panel, False)
-        self.property_frame = self.frame2
+        self.property_frame = self.frame_property
         #--------------------------------------------------------
 
         property_panel.SetAutoLayout(True)
         self.hidden_frame = wx.Frame(self, -1, "")
         self.hidden_frame.Hide()
         sizer_tmp.Add(property_panel, 1, wx.EXPAND)
-        self.frame2.SetAutoLayout(True)
-        self.frame2.SetSizer(sizer_tmp)
+        self.frame_property.SetAutoLayout(True)
+        self.frame_property.SetSizer(sizer_tmp)
         sizer_tmp = wx.BoxSizer(wx.VERTICAL)
         def hide_frame2(event):
             #menu_bar.Check(PROPS_ID, False)
-            self.frame2.Hide()
-        wx.EVT_CLOSE(self.frame2, hide_frame2)
+            self.frame_property.Hide()
+        wx.EVT_CLOSE(self.frame_property, hide_frame2)
         wx.EVT_CLOSE(self, self.cleanup)
         common.property_panel = property_panel
         # Tree of widgets
@@ -476,8 +476,8 @@ class wxGladeFrame(wx.Frame):
             if wx.Platform == '__WXMAC__':
                 property_geomentry.Size = (345, 384)
 
-        self._set_geometry(self.frame2, property_geomentry)
-        self.frame2.Show()
+        self._set_geometry(self.frame_property, property_geomentry)
+        self.frame_property.Show()
 
         if not tree_geometry:
             tree_geometry = wx.Rect()
@@ -506,7 +506,7 @@ class wxGladeFrame(wx.Frame):
         self._droptarget = clipboard.FileDropTarget(self)
         self.SetDropTarget(self._droptarget)
         #self.tree_frame.SetDropTarget(self._droptarget)
-        #self.frame2.SetDropTarget(self._droptarget)
+        #self.frame_property.SetDropTarget(self._droptarget)
 
         # ALB 2004-10-15, autosave support...
         self.autosave_timer = None
@@ -521,7 +521,7 @@ class wxGladeFrame(wx.Frame):
         self.clear_sb_timer = wx.Timer(self, CLEAR_SB_TIMER_ID)
         wx.EVT_TIMER(self, CLEAR_SB_TIMER_ID, self.on_clear_sb_timer)
 
-        self.frame2.SetAcceleratorTable(self.accel_table)
+        self.frame_property.SetAcceleratorTable(self.accel_table)
         self.tree_frame.SetAcceleratorTable(self.accel_table)
 
         self.Raise()
@@ -582,13 +582,13 @@ class wxGladeFrame(wx.Frame):
         common.app_tree.SetFocus()
 
     def show_props_window(self, event):
-        self.frame2.Show()
-        self.frame2.Raise()
+        self.frame_property.Show()
+        self.frame_property.Raise()
         try:
-            c = self.frame2.GetSizer().GetChildren()
+            c = self.frame_property.GetSizer().GetChildren()
             if c: c[0].GetWindow().SetFocus()
         except (AttributeError, TypeError):
-            self.frame2.SetFocus()
+            self.frame_property.SetFocus()
 
     def raise_all(self, event):
         children = self.GetChildren()
@@ -775,7 +775,7 @@ class wxGladeFrame(wx.Frame):
 
             if error_msg:
                 common.app_tree.clear()
-                common.property_panel.Reparent(self.frame2)
+                common.property_panel.Reparent(self.frame_property)
                 common.app_tree.app.saved = True
 
                 # re-enable auto-expansion of nodes
@@ -790,7 +790,7 @@ class wxGladeFrame(wx.Frame):
 
         common.app_tree.select_item(common.app_tree.root)
         common.app_tree.root.widget.show_properties()
-        common.property_panel.Reparent(self.frame2)
+        common.property_panel.Reparent(self.frame_property)
 
         # re-enable auto-expansion of nodes
         common.app_tree.auto_expand = True
@@ -905,7 +905,7 @@ class wxGladeFrame(wx.Frame):
                 prefs.set_geometry('tree',
                                    self._get_geometry(self.tree_frame))
                 prefs.set_geometry('properties',
-                                   self._get_geometry(self.frame2))
+                                   self._get_geometry(self.frame_property))
                 prefs.changed = True
             common.app_tree.clear()
             if self.about_box:
@@ -917,7 +917,7 @@ class wxGladeFrame(wx.Frame):
                               _('Error'),
                               wx.OK|wx.CENTRE|wx.ICON_ERROR)
             #self._skip_activate = True
-            self.frame2.Destroy()
+            self.frame_property.Destroy()
             self.tree_frame.Destroy()
             self.Destroy()
             common.remove_autosaved() # ALB 2004-10-15
@@ -952,15 +952,15 @@ class wxGladeFrame(wx.Frame):
             t.start()
 
     def show_and_raise(self):
-        self.frame2.Show()  #self.GetMenuBar().IsChecked(self.PROPS_ID))
+        self.frame_property.Show()  #self.GetMenuBar().IsChecked(self.PROPS_ID))
         self.tree_frame.Show()  #self.GetMenuBar().IsChecked(self.TREE_ID))
-        self.frame2.Raise()
+        self.frame_property.Raise()
         self.tree_frame.Raise()
         self.Raise()
 
     def hide_all(self):
         self.tree_frame.Hide()
-        self.frame2.Hide()
+        self.frame_property.Hide()
 
     def import_xrc(self, event):
         import xrc2wxg
