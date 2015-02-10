@@ -1,50 +1,60 @@
 wxGlade: A GUI builder for wxPython/wxWidgets
+=============================================
+
 Version: 0.7.0
 License: MIT (see license.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
 
 
-* Requirements:
----------------
-Python >= 2.4
-wxPython >= 2.8
+Requirements
+------------
+- Python (http://www.python.org) >= 2.4
+- wxPython (http://www.wxpython.org) >= 2.8
 
 
-* Installation:
----------------
+Installation
+------------
 If you are reading this file, you already did all the necessary :-)
-To start the program, enter ``python wxglade.py'' in your shell
+To start the program, enter ``python wxglade.py`` in your shell
 
 
-* Documentation:
-----------------
-There's a short introductory tutorial in the docs/ subdirectory.  In the
-examples/ subdirectory are some sample wxGlade apps (in xml format, .wxg file
-extension).
+Documentation
+-------------
+The wxGlade documentation is available in two formats. The documentation in
+HTML format is located in ``docs/html`` and documentation in PDF format is
+stored ``docs/pdf``.
+
+There is also an short introductory tutorial in the ``docs/`` subdirectory.
 
 
-* Known Bugs/Issues:
---------------------
-- If you have PyXML installed, be sure to use at least version 0.8.1, as
-  otherwise you will not be able to generate code and load saved wxg
-  files. This seems to be a PyXML bug, see
-  http://sourceforge.net/tracker/?func=detail&atid=106473&aid=573011&group_id=6473 
+Submitting Issues
+-----------------
 
-- On Windows, selection tags may not be shown properly in some cases.
+Writing a helpful bug report is easy if you follow some hints. The items below
+should help you to integrate useful information. They are not an absolute rule
+ - it's more like a guideline.
+ - What did you? May you want to include a screenshot.
+ - What do you want to happen?
+ - What actually happened?
+ - Provide a short example to reproduce the issue.
+ - Include the internal error log file ``wxglade.log`` always.
 
-- On GTK, if your last operation before exiting is a paste from the clipboard,
-  wxGlade exits with a segfault.
+Please open a new bug in the wxGlade bug tracker on
+http://sourceforge.net/p/wxglade/bugs/.
 
-- On GTK, menubars give troubles: they produce a lot of Gtk-WARNING and 
-  Gtk-FATAL messages and may cause segfaults.
-
-- On GTK, notebooks can cause some Gtk-WARNING messages, but they seem to
-  work anyway.
+Alternatively you can send the bug report to the wxGlade mailing list
+wxglade-general@lists.sourceforge.net. Keep in mind that you need a
+subscription for sending emails to this mailing list.
 
 
-For any kind of question, there's a mailing list at 
-    https://lists.sourceforge.net/lists/listinfo/wxglade-general
+Known Bugs/Issues
+-----------------
+Check the wxGlade bug tracker on http://sourceforge.net/p/wxglade/bugs/ for
+current open bugs.
+
+For any kind of question, there's a mailing list on
+https://lists.sourceforge.net/lists/listinfo/wxglade-general.
 
 Enjoy!
 Carsten Grohmann

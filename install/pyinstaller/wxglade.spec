@@ -64,9 +64,10 @@ Name of the created executable
 
 FILES2INCLUDE = [
     'CHANGES.txt',
-    'NEWS.txt',
+    'CONTRIBUTING.txt',
     'credits.txt',
     'license.txt',
+    'NEWS.txt',
     'README.txt',
     'TODO.txt',
     'widgets\widgets.txt',
