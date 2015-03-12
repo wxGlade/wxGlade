@@ -70,14 +70,6 @@ class WxgLispWx3NotSupported(WxgBaseException):
     msg = _('Generating Lisp code for wxWidgets version %s is not supported.')
 
 
-class WxgPythonOldNamespaceNotSupported(WxgBaseException):
-    """\
-    Raised if old namespace is used with wxPython3.0
-    """
-    msg = _('Using the old wxPython namespace is not supported anymore '
-            'starting wxPython 3.0.')
-
-
 class WxgXRCMultipleFilesNotSupported(WxgBaseException):
     """\
     Raised multi file XRC designs.
