@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2014-10-25</date>
+    <date>2014-03-12</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -51,7 +51,7 @@
     <section>
       <title>License</title>
 
-      <para>wxGlade is copyright 2002-2007 by Alberto Griggio and 2011-2014 by
+      <para>wxGlade is copyright 2002-2007 by Alberto Griggio and 2011-2015 by
       Carsten Grohmann.</para>
 
       <para>Use and distribution of wxGlade is governed by the MIT license,
@@ -139,7 +139,7 @@
       basics of C++, Python, Perl or Lisp.</para>
     </section>
 
-    <section>
+    <section id="requirements.supported.platforms.section">
       <title>Requirements and Supported Platforms</title>
 
       <para>wxGlade has been tested and run on Microsoft Windows, Linux, OS
@@ -174,14 +174,31 @@
       url="http://www.wxwidgets.org">http://www.wxwidgets.org</ulink> and
       wxPython at <ulink
       url="http://www.wxpython.org">http://www.wxpython.org</ulink>.</para>
+
+      <section>
+        <title>Installation Requirements</title>
+
+        <para>Building wxGlade packages from the Mercurial repository need
+        additional software:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>setuptools</para>
+          </listitem>
+
+          <listitem>
+            <para>setuptools_hg</para>
+          </listitem>
+        </itemizedlist>
+      </section>
     </section>
 
     <section>
       <title>Installation</title>
 
-      <para>wxGlade is available in 4 different package types:</para>
+      <para>wxGlade is available in four different package types:</para>
 
-      <itemizedlist>
+      <orderedlist>
         <listitem>
           <para>the sources packages (<filename>.zip</filename> and
           <filename>.tar.gz</filename>)</para>
@@ -198,29 +215,39 @@
         </listitem>
 
         <listitem>
-          <para>development version fetched with Mercurial or downloaded the
-          current packaged development version from <ulink
-          url="https://bitbucket.org">https://bitbucket.org</ulink></para>
+          <para>current development version</para>
         </listitem>
-      </itemizedlist>
+      </orderedlist>
 
       <section>
         <title>Download</title>
 
-        <para>Source and binary packages for stable versions are available at
-        <ulink
-        url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>.</para>
+        <section>
+          <title>Official Release Packages</title>
 
-        <para>You can get the development version from <ulink
-        url="https://bitbucket.org">Bitbucket.org</ulink> at <ulink
-        url="https://bitbucket.org/agriggio/wxglade/overview">https://bitbucket.org/agriggio/wxglade/overview</ulink>
-        using anonymous <ulink
-        url="http://mercurial.selenic.com">Mercurial</ulink>
-        (<command>hg</command>) access.</para>
+          <para>All stable version are available for downloading at <ulink
+          url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>.</para>
+        </section>
+
+        <section>
+          <title>Development Versions</title>
+
+          <para>wxGlade manages source code in a <ulink
+          url="http://mercurial.selenic.com">Mercurial</ulink> repository
+          hosted on <ulink url="https://bitbucket.org">Bitbucket.org</ulink>.
+          You can fetch the whole repository from <ulink
+          url="https://bitbucket.org/agriggio/wxglade">https://bitbucket.org/agriggio/wxglade</ulink>
+          using anonymous Mercurial (<command>hg</command>) access.</para>
+
+          <para>Alternatively you can download different source tarballs from
+          <ulink
+          url="https://bitbucket.org/agriggio/wxglade/downloads">https://bitbucket.org/agriggio/wxglade/downloads</ulink>,
+          too.</para>
+        </section>
       </section>
 
       <section>
-        <title>Installing at Microsoft Windows</title>
+        <title>Installing on Microsoft Windows</title>
 
         <para>The default installer requires a local installation Python and
         wxPython. The wxWidgets are bundled with wxPython on Microsoft
@@ -237,7 +264,7 @@
       </section>
 
       <section>
-        <title>Installing at Unix/Unix-like Operating Systems</title>
+        <title>Installing on Unix/Unix-like Operating Systems</title>
 
         <para>Current Linux distributions provide wxGlade packages already.
         Use the distribution specific install mechanism to install the wxGlade
@@ -264,31 +291,49 @@
         step.</para>
 
         <section id="single.user.install.section">
-          <title>Single user installation</title>
+          <title>Single User Installation</title>
 
-          <para>Extract the downloaded package into a separate directory e.g.
-          a subdirectory below user's home directory. Change in this directory
-          and execute the <command>wxglade</command> file on Unix operating
-          systems or <command>wxglade.pyw</command> on Microsoft
-          Windows.</para>
+          <para>The <quote>Single User Installation</quote> is a simplified
+          installation without using native package like
+          <filename>.msi</filename> and <filename>.exe</filename> files on
+          Microsoft Windows or <filename>.rpm</filename>,
+          <filename>.pkg</filename> and <filename>.deb</filename> on Linux.
+          It's to provide a simple way for running wxGlade without the need of
+          installation privileges.</para>
+
+          <para>The dependencies listed at <xref
+          linkend="requirements.supported.platforms.section"/> have been
+          satisfied.</para>
+
+          <para>The source packages and the development packages have the same
+          structure. They have a top level directory and all wxGlade files are
+          under those top level directory. Extract the package into the user's
+          home directory. Take care that the directory structure of the
+          archive will be preserved. Rename the top level directory to
+          wxGlade. That's shorter and simpler to use.</para>
+
+          <para>Change into the new created directory. Execute the
+          <command>wxglade</command> file on Unix operating systems or
+          <command>wxglade.pyw</command> on Microsoft Windows to start
+          wxGlade. Feel free to create a shortcut on your desktop.</para>
 
           <para>That's all. Installations below users home directory don't
           require administrative permissions.</para>
         </section>
 
         <section>
-          <title>Multi user installation - variant 1</title>
+          <title>Multi User Installation - Variant 1</title>
 
           <para>The first variant of a multi user installation is very similar
           to <xref linkend="single.user.install.section"/> except the
           installation directory. And probably you need administrative
           permissions. You could extract the wxGlade source package e.g. into
-          <command>c:\program file\wxglade</command> on Microsoft Windows or
+          <command>c:\Program Files\wxglade</command> on Microsoft Windows or
           into <command>/opt/wxglade</command> on Unix.</para>
         </section>
 
         <section>
-          <title>Multi user installation - variant 2</title>
+          <title>Multi User Installation - Variant 2</title>
 
           <para>Extract the downloaded package into a temporary directory.
           Change in this directory and execute the Python setup script using
@@ -357,6 +402,32 @@ loading widget modules:
           </example>
         </section>
       </section>
+
+      <section>
+        <title>Troubleshooting</title>
+
+        <para>This section should help you to solve some non-application
+        issues.</para>
+
+        <glosslist>
+          <glossentry>
+            <glossterm>wxGlade has started e.g. by clicking the desktop icon
+            with mouse, but no application window opens</glossterm>
+
+            <glossdef>
+              <para>Check the log file for errors (see <xref
+              linkend="config.files.section"/>) and check that all
+              dependencies (especially wxWidgets and Python) are installed. A
+              list of dependencies is in <xref
+              linkend="requirements.supported.platforms.section"/>. </para>
+
+              <para>If you think this is an application issue, file a bug
+              report like described in <xref linkend="report.bug.section"/>,
+              please.</para>
+            </glossdef>
+          </glossentry>
+        </glosslist>
+      </section>
     </section>
 
     <section>
@@ -393,28 +464,6 @@ loading widget modules:
         </figure>
       </section>
 
-      <section id="config.files.section">
-        <title>Configuration files and Configuration directory</title>
-
-        <para>wxGlade stores user related information in <filename>a
-        </filename>own directory. The directory is named
-        <quote><filename>~/.wxglade</filename></quote> on Unix or in
-        <quote><filename>Application Data/wxglade</filename></quote> on
-        Microsoft Windows. The name of the directory
-        <quote><filename>Application Data</filename></quote> will be
-        translated to users langauge by Windows automatically.</para>
-
-        <para>The configuration file <filename>wxgladerc</filename> on Unix or
-        <filename>wxglade.ini</filename> on Microsoft Windows contains users
-        configuration. It's a text file. Be carefully if you are changing the
-        file manually. The last open files are listed in
-        <filename>file_history.txt</filename>. The subdirectors templates
-        contains wxGlade templates generated by the user itself.</para>
-
-        <para>The directory contains the log files also. The log files are
-        detailed described in <xref linkend="logging.section"/>.</para>
-      </section>
-
       <section>
         <title>Environment Variables</title>
 
@@ -428,25 +477,45 @@ loading widget modules:
         new environment.</para>
       </section>
 
-      <section id="logging.section">
-        <title>Logging</title>
+      <section id="config.files.section">
+        <title>Configuration Files</title>
+
+        <para>wxGlade stores several internal information like configuration
+        settings and log files in an own directory. The location of this
+        directory varies between different operating systems. On Unix wxGlade
+        uses <filename>~/.wxglade</filename>. On Microsoft Windows the
+        information will be stored in
+        <filename>C:/Users/username&gt;/AppData/Roaming</filename>.</para>
+
+        <note>
+          <para>Some components of the path will be translated to the users'
+          language on Microsoft Windows automatically and transparently in the
+          Windows Explorer and other graphical applications. Other
+          applications show the original names. The translation behaviour
+          depends on the API used by the application developer.</para>
+        </note>
+
+        <para>The configuration file is a simple text file and contains user
+        settings. It's named <filename>wxgladerc</filename> on Unix or
+        <filename>wxglade.ini</filename> on Microsoft Windows. Be careful with
+        manual changed.</para>
+
+        <para>The configuration directory contains also a list of recently
+        used files in <filename>file_history.txt</filename>.</para>
 
         <para>wxGlade writes always a small error log file
-        <filename>wxglade.log</filename>. The file size is limited to 100 KB.
-        wxGlade will keep at most two log files
-        <filename>wxglade.log</filename> and
+        <filename>wxglade.log</filename>. It's also stored inside this
+        directory. The file size is limited to 100 KB and wxGlade will keep at
+        most two log files <filename>wxglade.log</filename> and
         <filename>wxglade.log.1</filename>. The roll over from
         <filename>wxglade.log</filename> to <filename>wxglade.log.1</filename>
         will occur if the file size limit is reached. An already existing file
         <filename>wxglade.log.1</filename> will be deleted automatically. The
-        log file is a text file in Unicode.</para>
-
-        <para>The log file location is described in <xref
-        linkend="config.files.section"/>.</para>
+        log file is a text file and the content is UTF-8 encoded.</para>
       </section>
     </section>
 
-    <section>
+    <section id="report.bug.section">
       <title>How to Report a Bug</title>
 
       <para>Writing a helpful bug report is easy if you follow some hints. The
@@ -472,7 +541,8 @@ loading widget modules:
 
         <listitem>
           <para>Include the internal error log file <quote>wxglade.log</quote>
-          always.</para>
+          always. The location is described in <xref
+          linkend="config.files.section"/>.</para>
         </listitem>
       </itemizedlist>
 
@@ -481,9 +551,12 @@ loading widget modules:
       Report Bugs Effectively</ulink> additionally.</para>
 
       <para>Please open a new bug in the <ulink url="???">wxGlade bug
-      tracker</ulink> at Sourceforge. Alternatively you can send the bug
-      report to the wxGlade mailing list. Keep in mind that you need a
-      subscription for sending emails to this mailing list.</para>
+      tracker</ulink> at Sourceforge. You have to log-in at Sourceforge to
+      file a bug report.</para>
+
+      <para>Alternatively you can send the bug report to the wxGlade mailing
+      list. Keep in mind that you need a subscription for sending emails to
+      this mailing list.</para>
 
       <figure>
         <title>An error dialog example</title>
@@ -497,7 +570,7 @@ loading widget modules:
     </section>
 
     <section>
-      <title>Deprecated features</title>
+      <title>Deprecated Features</title>
 
       <para>wxGlade can change code inside existing source files to reflect
       changed designs. This feature is deprecated now und will be removed
@@ -509,7 +582,7 @@ loading widget modules:
     <title>Exploring wxGlade</title>
 
     <section>
-      <title>Quick example</title>
+      <title>Quick Example</title>
 
       <para>We will design a simple form.</para>
 
@@ -721,7 +794,7 @@ loading widget modules:
     </section>
 
     <section>
-      <title>Language specific peculiarities</title>
+      <title>Language Specific Peculiarities</title>
 
       <section>
         <title>Python</title>
@@ -755,7 +828,7 @@ loading widget modules:
     </section>
 
     <section>
-      <title>Command line invocation</title>
+      <title>Command Line Invocation</title>
 
       <para>You can run wxGlade without parameters to start the GUI on an
       empty application as follows:</para>
@@ -821,7 +894,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
     </section>
 
     <section id="using.source.code.section">
-      <title>Using the source code</title>
+      <title>Using the Source Code</title>
 
       <para>There are a lot of options to control the source code generation
       process. They are bundled in the
@@ -843,7 +916,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
       two ways to work with wxGlade.</para>
 
       <section id="full.control.section">
-        <title id="full.control.wxglade.section">Full control by
+        <title id="full.control.wxglade.section">Full Control by
         wxGlade</title>
 
         <para>If <quote><guilabel>Overwrite existing
@@ -862,7 +935,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
       </section>
 
       <section id="shared.control.section">
-        <title>Shared control</title>
+        <title>Shared Control</title>
 
         <para>Manual changes in the source files won't be overwritten if
         <quote><guilabel>Overwrite existing sources</guilabel></quote> isn't
@@ -888,7 +961,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
       </section>
 
       <section id="output.path.filenames.section">
-        <title>Output path and filenames</title>
+        <title>Output Path and Filenames</title>
 
         <para><quote><guilabel>Output path</guilabel></quote> specifies the
         name of the output file for <quote><guilabel>Single
@@ -903,8 +976,8 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
       </section>
 
       <section id="automatically.created.wxapp.instance.section">
-        <title>Automatically created <classname>wxApp</classname>
-        instance</title>
+        <title>Automatically Created <classname>wxApp</classname>
+        Instances</title>
 
         <para>wxGlade can create an additional code to start an instance of
         projects <quote><guilabel>Top window</guilabel></quote>.</para>
@@ -1091,7 +1164,7 @@ unless(caller){
       </section>
 
       <section>
-        <title>Compiling C++ code</title>
+        <title>Compiling C++ Code</title>
 
         <para>You can compile your wxGlade project after the generation of the
         C++ source and header files. The following examples demonstrate
@@ -1124,7 +1197,7 @@ unless(caller){
     </section>
 
     <section>
-      <title>Handling XRC files</title>
+      <title>Handling XRC Files</title>
 
       <para>wxGlade is able to save projects as XRC files and to convert XRC
       files into wxGlade projects.</para>
@@ -1172,6 +1245,158 @@ if __name__ == '__main__':
     app = MyApp()
     app.MainLoop()</programlisting>
       </example>
+    </section>
+
+    <section>
+      <title>Error Messages</title>
+
+      <para>The following list are error messages should help you to find the
+      reason and take corrective actions. Please note, the list is still
+      incomplete.</para>
+
+      <glosslist>
+        <glossentry>
+          <glossterm>Output path "&lt;path&gt;" must be an existing directory
+          when generating multiple files.</glossterm>
+
+          <glossdef>
+            <para><emphasis role="bold">Details:</emphasis> You want to create
+            multiple files for your design. wxGlade expects an output
+            directory in such case, but the given output path isn't a existing
+            directory.</para>
+
+            <para><emphasis role="bold">Corrective Action:</emphasis> Create
+            the missing directory or select an existing output
+            directory.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>Output path "&lt;path&gt;" exists but the directory is
+          not writable.</glossterm>
+
+          <glossdef>
+            <para>Corrective Action: Choose a writable output
+            directory.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>Output path "&lt;path&gt;" can not be a directory when
+          generating a single file.</glossterm>
+
+          <glossdef>
+            <para><emphasis role="bold">Details:</emphasis> You want to write
+            your design into a single file. wxGalde expects an output
+            filename, but the given output path is a directory.</para>
+
+            <para><emphasis role="bold">Corrective Action:</emphasis> Choose a
+            file instead of a directory.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>Output path "&lt;path&gt;" should be a directory when
+          generating multiple files.</glossterm>
+
+          <glossdef>
+            <para><emphasis role="bold">Details:</emphasis> You want to create
+            multiple files for your design. wxGlade expects an output
+            directory in such case, but the given output path isn't a
+            directory.</para>
+
+            <para><emphasis role="bold">Corrective Action:</emphasis> Choose a
+            output directory.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>Generated source code couldn't converted to encoding
+          &lt;encoding&gt;. The source contains invalid characters
+          "&lt;characters" from &lt;start position&gt; to &lt;end
+          position&gt;.</glossterm>
+
+          <glossdef>
+            <para><emphasis role="bold">Details:</emphasis> The current design
+            uses characters that can't converted to the encoding selected for
+            the source code file. </para>
+
+            <para><emphasis role="bold">Corrective Action:</emphasis> Choose a
+            design encoding that supports the listed characters also.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>Generating Lisp code for wxWidgets version
+          &lt;version&gt; is not supported.</glossterm>
+
+          <glossdef>
+            <para><emphasis role="bold">Details:</emphasis> There is no Lisp
+            support for the selected version of wxWidgets</para>
+
+            <para><emphasis role="bold">Corrective Action:</emphasis> Create
+            the code for an older wxWidget version.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>XRC code cannot be split into multiple files.</glossterm>
+
+          <glossdef>
+            <para><emphasis role="bold">Details:</emphasis> You want to create
+            multiple XRC files for your design. This option isn't supported by
+            wxGlade.</para>
+
+            <para><emphasis role="bold">Corrective Action:</emphasis> Select
+            the <quote><guilabel>Single file</guilabel></quote> option to
+            store the whole design in one XRC file.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>Code generation from a template is not
+          possible.</glossterm>
+
+          <glossdef>
+            <para> <emphasis role="bold">Details:</emphasis> You've selected a
+            template as input file to generate source code from. </para>
+
+            <para><emphasis role="bold">Corrective Action:</emphasis> Use a
+            design file instead of a template.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>Code writer for "&lt;language&gt;" is not
+          available.</glossterm>
+
+          <glossdef>
+            <para><emphasis role="bold">Details:</emphasis> The code
+            generators for the given language hasn't been loaded.</para>
+
+            <para><emphasis role="bold">Corrective Action:</emphasis> That's
+            probably a bug in wxGlade. Please check the log file and file a
+            bug report. See <xref linkend="report.bug.section"/> for more
+            details.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm>Conversion of the source file &lt;filename&gt; to Unicode
+          failed.</glossterm>
+
+          <glossdef>
+            <para><emphasis role="bold">Details:</emphasis> The file encoding
+            set within the design doesn't match the encoding used within the
+            source file. Thereby the source file can't be loaded. </para>
+
+            <para><emphasis role="bold">Corrective Action:</emphasis> Check
+            the encoding selected in your design and the encoding of your
+            source file. Change the design encoding to match source files
+            encoding.</para>
+          </glossdef>
+        </glossentry>
+      </glosslist>
     </section>
   </chapter>
 
@@ -1942,7 +2167,7 @@ if __name__ == '__main__':
       <para>wxGlade has only a few very small menus.</para>
 
       <section id="menu.file.section">
-        <title>The FILE menu</title>
+        <title>The FILE Menu</title>
 
         <para>In the <guimenu>FILE</guimenu> menu there are the classic
         <menuchoice>
@@ -1970,7 +2195,7 @@ if __name__ == '__main__':
       </section>
 
       <section id="menu.view.section">
-        <title>The VIEW menu</title>
+        <title>The VIEW Menu</title>
 
         <para>In the <guimenu>VIEW</guimenu> menu, you can show or hide the
         tree window and the properties window.</para>
@@ -1979,7 +2204,7 @@ if __name__ == '__main__':
       </section>
 
       <section>
-        <title>The HELP menu</title>
+        <title>The HELP Menu</title>
 
         <para>The <guimenu>HELP</guimenu> menu provides access to the wxGlade
         user manual (this documentation) as well as to the
@@ -2137,7 +2362,7 @@ if __name__ == '__main__':
     </section>
 
     <section id="basic.bitmaps.section">
-      <title>Specifying the path of bitmaps</title>
+      <title>Specifying the Path of Bitmaps</title>
 
       <para>In wxGlade some widgets need to specify a bitmap path. You can use
       any graphic format supported by wxWidgets.</para>
@@ -2553,7 +2778,7 @@ if __name__ == '__main__':
 
     <caution>
       <para>Last update: 2003-06-26, but only <xref
-      linkend="for.contributors.section"/>. </para>
+      linkend="for.contributors.section"/>.</para>
 
       <para>The rest has not been updated since 2002-07-22, and it's likely be
       very outdated in some parts.</para>
@@ -2616,7 +2841,7 @@ if __name__ == '__main__':
     </section>
 
     <section>
-      <title>Adding a toplevel widget</title>
+      <title>Adding a Toplevel Widget</title>
 
       <para>When the user clicks on a button of a toplevel widget (a Frame or
       a Dialog), the method
@@ -2656,7 +2881,7 @@ if __name__ == '__main__':
     </section>
 
     <section>
-      <title>Adding a toplevel sizer</title>
+      <title>Adding a Toplevel Sizer</title>
 
       <para>This is similar to the addition of a toplevel widget, but the
       action is performed in two steps:</para>
@@ -2686,7 +2911,7 @@ if __name__ == '__main__':
     </section>
 
     <section>
-      <title>Adding a normal widget/sizer</title>
+      <title>Adding a Normal Widget/Sizer</title>
 
       <para>This step is more or less the same as step 3:</para>
 
@@ -2720,7 +2945,7 @@ if __name__ == '__main__':
     </section>
 
     <section>
-      <title>Changing the value of a Property</title>
+      <title>Changing the Value of a Property</title>
 
       <para>When the user selects a widget the property window changes to
       display the properties of the selected object: this is done by the
@@ -2737,7 +2962,7 @@ if __name__ == '__main__':
     </section>
 
     <section>
-      <title>Saving the app</title>
+      <title>Saving the App</title>
 
       <para>This operation is performed by the
       <quote><code>common.app_tree</code></quote> Tree: for every Node of the
@@ -2753,7 +2978,7 @@ if __name__ == '__main__':
     </section>
 
     <section>
-      <title>Loading an app from a XML file</title>
+      <title>Loading an App from a XML file</title>
 
       <para>This is done by
       <quote><classname>xml_parse.XmlWidgetBuilder</classname></quote>, a
@@ -2793,7 +3018,7 @@ if __name__ == '__main__':
     </section>
 
     <section>
-      <title>Generating the source code</title>
+      <title>Generating the Cource Code</title>
 
       <para>This section is the result of a cut &amp; paste of the comment at
       the beginning of
@@ -2826,46 +3051,79 @@ if __name__ == '__main__':
     </section>
 
     <section id="for.contributors.section">
-      <title>For contributors</title>
+      <title>Contributing to wxGlade</title>
 
-      <para>You are, of course, free to make any chages/additions you want to
-      wxGlade, in whatever way you like. If you decide to contribute them
-      back, however, here are some simple (stylistic) rules to follow: note
-      that these are only general indications, if you think they don't fit
-      somewhere, feel free to ignore them.</para>
+      <para>You are, of course, free to make any changes/additions you want to
+      wxGlade, in whatever way you like.</para>
 
-      <itemizedlist>
-        <listitem>
-          <para>class names are usually CamelCase - variables, functions and
-          method names are lower_case_with_unserscores</para>
-        </listitem>
+      <para>If you decide to contribute them back, however, here are some
+      simple (stylistic) rules to follow: note that these are only general
+      indications, if you think they don't fit somewhere, feel free to ignore
+      them.</para>
 
-        <listitem>
-          <para><quote>constants</quote> are UPPER_CASE</para>
-        </listitem>
+      <section>
+        <title>Coding convensions</title>
 
-        <listitem>
-          <para>source lines are at most 79 characters long</para>
-        </listitem>
+        <para><itemizedlist>
+            <listitem>
+              <para>Class names are usually CamelCase - variables, functions
+              and method names are lower_case_with_unserscores</para>
+            </listitem>
 
-        <listitem>
-          <para>class bodies are usually ended by a <quote><code># end of
-          class ClassName</code></quote> comment</para>
-        </listitem>
+            <listitem>
+              <para>Constants are UPPER_CASE</para>
+            </listitem>
 
-        <listitem>
-          <para>source files use Unix EOL conventions (LF) if possible. In any
-          case, please don't mix Unix and Windows EOLs</para>
-        </listitem>
+            <listitem>
+              <para>Source lines are at most 79 characters long</para>
+            </listitem>
 
-        <listitem>
-          <para>put your copyright info whenever appropriate</para>
-        </listitem>
+            <listitem>
+              <para>Class bodies are usually ended by a <quote><code><code>#
+              end of class ClassName</code></code></quote> comment</para>
+            </listitem>
 
-        <listitem>
-          <para>that's all folks!!</para>
-        </listitem>
-      </itemizedlist>
+            <listitem>
+              <para>Source files use Unix EOL conventions (LF) if possible. In
+              any case, please don't mix Unix and Windows EOLs</para>
+            </listitem>
+
+            <listitem>
+              <para>Put your copyright info whenever appropriate</para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+
+      <section>
+        <title>Testing</title>
+
+        <para>Please write tests for significant changes and run the test
+        suite before commiting changes.</para>
+      </section>
+
+      <section>
+        <title>Commit Messages</title>
+
+        <para><itemizedlist>
+            <listitem>
+              <para>Use the present tense (<quote>Add feature</quote> not
+              <quote>Added feature</quote>)</para>
+            </listitem>
+
+            <listitem>
+              <para>Use the imperative mood (<quote>Move cursor to...</quote>
+              not <quote>Moves cursor to...</quote>)</para>
+            </listitem>
+
+            <listitem>
+              <para>Limit the first line to 72 characters or less</para>
+            </listitem>
+
+            <listitem>
+              <para>Reference issues and pull requests liberally</para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
     </section>
   </chapter>
 
@@ -2881,7 +3139,7 @@ if __name__ == '__main__':
     users.</para>
 
     <section>
-      <title>Widgets packages</title>
+      <title>Widgets Packages</title>
 
       <para>The wxGlade plugin system supports two different types of widget
       packages:</para>
@@ -2931,7 +3189,7 @@ Archive:  static_text.zip
       </example>
 
       <section>
-        <title>Create ZIP package</title>
+        <title>Create a ZIP Package</title>
 
         <para>Creating a ZIP package is quite simple. Just create a ZIP
         package from widgets directory with all Python and additional files.
@@ -2963,7 +3221,7 @@ test of static_text.zip OK</programlisting></para>
     </section>
 
     <section>
-      <title>Installing Widget Plugins locally</title>
+      <title>Installing Widget Plugins Locally</title>
 
       <para>The installation of local plugins is a two-step process:</para>
 
@@ -3056,7 +3314,9 @@ def initialize():
       <section>
         <title>Widget Initialisation</title>
 
-        <para>XXX</para>
+        <note>
+          <para>This section is incomplete.</para>
+        </note>
 
         <orderedlist>
           <listitem>
@@ -3080,8 +3340,6 @@ def initialize():
             (<function>common.load_sizers()</function> )</para>
           </listitem>
         </orderedlist>
-
-        <para>XXX</para>
       </section>
     </section>
   </chapter>
@@ -3090,6 +3348,17 @@ def initialize():
     <title>Abbreviations</title>
 
     <para>The following abbreviations are used in this manual: <variablelist>
+        <varlistentry>
+          <term>API</term>
+
+          <listitem>
+            <para>Application Programming Interface</para>
+
+            <para>It's a standardized implementation-independent programming
+            interface.</para>
+          </listitem>
+        </varlistentry>
+
         <varlistentry>
           <term>Escape sequence</term>
 
@@ -3171,6 +3440,17 @@ def initialize():
             <quote>UNIX</quote> operating systems as well as
             <quote>Unix-like</quote> operating systems. Linux is an Unix-like
             operating system.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>UTF-8</term>
+
+          <listitem>
+            <para>Universal Character Set Transformation Format - 8-bit</para>
+
+            <para>Character encoding with the capability to encode all
+            possible characters</para>
           </listitem>
         </varlistentry>
 
@@ -3258,7 +3538,7 @@ def initialize():
 
     <para>Copyright (c) 2002-2007 Alberto Griggio</para>
 
-    <para>Copyright (c) 2011-2014 Carsten Grohmann</para>
+    <para>Copyright (c) 2011-2015 Carsten Grohmann</para>
 
     <para>Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files (the

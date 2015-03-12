@@ -33,15 +33,16 @@ Submitting Issues
 
 Writing a helpful bug report is easy if you follow some hints. The items below
 should help you to integrate useful information. They are not an absolute rule
- - it's more like a guideline.
- - What did you? May you want to include a screenshot.
- - What do you want to happen?
- - What actually happened?
- - Provide a short example to reproduce the issue.
- - Include the internal error log file ``wxglade.log`` always.
+- it's more like a guideline.
+- What did you? May you want to include a screenshot.
+- What do you want to happen?
+- What actually happened?
+- Provide a short example to reproduce the issue.
+- Include the internal error log file ``wxglade.log`` always.
 
 Please open a new bug in the wxGlade bug tracker on
-http://sourceforge.net/p/wxglade/bugs/.
+http://sourceforge.net/p/wxglade/bugs/. You have to log-in ar Sourceforge to
+file a bug report.
 
 Alternatively you can send the bug report to the wxGlade mailing list
 wxglade-general@lists.sourceforge.net. Keep in mind that you need a

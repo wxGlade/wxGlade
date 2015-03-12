@@ -29,14 +29,14 @@ class WxgOutputDirectoryNotExist(WxgBaseException):
     Raised if output path is not an existing directory
     """
     msg = _('Output path "%s" must be an existing directory when generating'
-            ' multiple files')
+            ' multiple files.')
 
 
 class WxgOutputDirectoryNotWritable(WxgBaseException):
     """\
     Raised if the output path exists but the directory is not writable
     """
-    msg = _('Output path "%s" exists but the directory is not writable')
+    msg = _('Output path "%s" exists but the directory is not writable.')
 
 
 class WxgOutputPathIsDirectory(WxgBaseException):
@@ -44,7 +44,7 @@ class WxgOutputPathIsDirectory(WxgBaseException):
     Raised if the output path is a directory when generating a single file
     """
     msg = _('Output path "%s" can not be a directory when generating a '
-            'single file')
+            'single file.')
 
 
 class WxgOutputPathIsNotDirectory(WxgBaseException):
@@ -52,7 +52,7 @@ class WxgOutputPathIsNotDirectory(WxgBaseException):
     Raised if the output path is not a directory when generating multiple files
     """
     msg = _('Output path "%s" should be a directory when generating '
-            'multiple files')
+            'multiple files.')
 
 
 class WxgOutputUnicodeError(WxgBaseException):
@@ -60,7 +60,7 @@ class WxgOutputUnicodeError(WxgBaseException):
     Raised if the generated code can't converted to the desired encoding
     """
     msg = _('''Generated source code couldn't converted to encoding %s.\n'''
-            '''The source contains invalid characters "%s" from %s to %s''')
+            '''The source contains invalid characters "%s" from %s to %s.''')
 
 
 class WxgLispWx3NotSupported(WxgBaseException):
@@ -75,28 +75,28 @@ class WxgPythonOldNamespaceNotSupported(WxgBaseException):
     Raised if old namespace is used with wxPython3.0
     """
     msg = _('Using the old wxPython namespace is not supported anymore '
-            'starting wxPython 3.0')
+            'starting wxPython 3.0.')
 
 
 class WxgXRCMultipleFilesNotSupported(WxgBaseException):
     """\
     Raised multi file XRC designs.
     """
-    msg = _('XRC code cannot be split into multiple files')
+    msg = _('XRC code cannot be split into multiple files.')
 
 
 class WxgTemplateCodegenNotPossible(WxgBaseException):
     """\
     Code generation from a template is not possible
     """
-    msg = _('Code generation from a template is not possible')
+    msg = _('Code generation from a template is not possible.')
 
 
 class WxgMissingCodeWriter(WxgBaseException):
     """\
     Code writer for the given language is not available
     """
-    msg = _('Code writer for "%s" is not available')
+    msg = _('Code writer for "%s" is not available.')
 
 
 class WxgReadSourceFileUnicodeError(WxgBaseException):
