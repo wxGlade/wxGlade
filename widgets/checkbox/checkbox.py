@@ -2,7 +2,7 @@
 wxCheckBox objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -40,7 +40,8 @@ class EditCheckBox(ManagedBase):
             self.flag = wx.ALL
 
     def create_widget(self):
-        self.widget = wx.CheckBox(self.parent.widget, self.id, self.label)
+        label = self.label.replace('\\n', '\n')
+        self.widget = wx.CheckBox(self.parent.widget, self.id, label)
         self.widget.SetValue(self.value)
         def on_checkbox(event):
             self.set_value(self.value)
