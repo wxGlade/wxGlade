@@ -34,6 +34,7 @@ Bugs:
   - Don't convert first char of a XRC extraproperty to upper case (sf
     bug #163)
   - Fix incomplete Unicode escaping
+  - Fix Designer not displaying buttons two lines correctly (sf bug #169)
 
 Deprecation
  - In place modifications for generated source files will be removed in one

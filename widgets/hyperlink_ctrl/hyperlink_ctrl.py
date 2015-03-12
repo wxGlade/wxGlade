@@ -1,7 +1,7 @@
 """\
 wxHyperlinkCtrl objects
 
-@copyright: 2012,2014 Carsten Grohmann
+@copyright: 2012-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -61,12 +61,9 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
             write_always=True)
 
     def create_widget(self):
+        label = self.label.replace('\\n', '\n')
         self.widget = wx.HyperlinkCtrl(
-            self.parent.widget,
-            self.id,
-            self.label.replace('\\n', '\n'),
-            self.url,
-            )
+            self.parent.widget, self.id, label, self.url)
 
     def create_properties(self):
         ManagedBase.create_properties(self)

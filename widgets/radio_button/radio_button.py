@@ -2,7 +2,7 @@
 wxRadioButton objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -51,10 +51,11 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
             self, 'style', self.widget_writer)
 
     def create_widget(self):
+        label = self.label.replace('\\n', '\n')
         self.widget = wxGladeRadioButton(self.parent.widget, self.id,
-                                         self.label)
+                                         label)
         try:
-            self.widget.SetValue(self.value) # self.clicked?
+            self.widget.SetValue(self.value)
         except AttributeError:
             raise
 
@@ -76,8 +77,11 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
         szr.Fit(panel)
         self.notebook.AddPage(panel, _('Widget'))
 
-    def get_label(self): return self.label
-    def get_value(self): return self.value
+    def get_label(self):
+        return self.label
+
+    def get_value(self):
+        return self.value
 
     def set_label(self, value):
         value = misc.wxstr(value)
