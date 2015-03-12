@@ -2,7 +2,7 @@
 wxButton objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -100,11 +100,12 @@ class EditButton(ManagedBase, EditStylesMixin):
             self.label = value
 
     def create_widget(self):
+        label = self.label.replace('\\n', '\n')
         try:
-            self.widget = wx.Button(self.parent.widget, self.id, self.label,
+            self.widget = wx.Button(self.parent.widget, self.id, label,
                                     style=self.get_int_style())
         except AttributeError:
-            self.widget = wx.Button(self.parent.widget, self.id, self.label)
+            self.widget = wx.Button(self.parent.widget, self.id, label)
 
     def get_default(self):
         return self.default

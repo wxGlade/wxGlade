@@ -2,7 +2,7 @@
 wxStaticText objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -54,8 +54,9 @@ class EditStaticText(ManagedBase, EditStylesMixin):
             write_always=True)
 
     def create_widget(self):
+        label = self.label.replace('\\n', '\n')
         self.widget = wx.lib.stattext.GenStaticText(
-            self.parent.widget, self.id, self.label.replace('\\n', '\n'))
+            self.parent.widget, self.id, label)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
