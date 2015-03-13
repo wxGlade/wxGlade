@@ -419,7 +419,7 @@ loading widget modules:
               linkend="config.files.section"/>) and check that all
               dependencies (especially wxWidgets and Python) are installed. A
               list of dependencies is in <xref
-              linkend="requirements.supported.platforms.section"/>. </para>
+              linkend="requirements.supported.platforms.section"/>.</para>
 
               <para>If you think this is an application issue, file a bug
               report like described in <xref linkend="report.bug.section"/>,
@@ -1241,7 +1241,7 @@ class MyApp(wx.App):
         self.frame.Show()
         return True
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = MyApp()
     app.MainLoop()</programlisting>
       </example>
@@ -1319,7 +1319,7 @@ if __name__ == '__main__':
           <glossdef>
             <para><emphasis role="bold">Details:</emphasis> The current design
             uses characters that can't converted to the encoding selected for
-            the source code file. </para>
+            the source code file.</para>
 
             <para><emphasis role="bold">Corrective Action:</emphasis> Choose a
             design encoding that supports the listed characters also.</para>
@@ -1358,8 +1358,8 @@ if __name__ == '__main__':
           possible.</glossterm>
 
           <glossdef>
-            <para> <emphasis role="bold">Details:</emphasis> You've selected a
-            template as input file to generate source code from. </para>
+            <para><emphasis role="bold">Details:</emphasis> You've selected a
+            template as input file to generate source code from.</para>
 
             <para><emphasis role="bold">Corrective Action:</emphasis> Use a
             design file instead of a template.</para>
@@ -1388,7 +1388,7 @@ if __name__ == '__main__':
           <glossdef>
             <para><emphasis role="bold">Details:</emphasis> The file encoding
             set within the design doesn't match the encoding used within the
-            source file. Thereby the source file can't be loaded. </para>
+            source file. Thereby the source file can't be loaded.</para>
 
             <para><emphasis role="bold">Corrective Action:</emphasis> Check
             the encoding selected in your design and the encoding of your
