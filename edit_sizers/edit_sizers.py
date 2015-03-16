@@ -2,7 +2,7 @@
 Hierarchy of Sizers supported by wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -1642,7 +1642,7 @@ class EditStaticBoxSizer(SizerBase):
         def write(outfile, tabs):
             import widget_properties
             outfile.write('    ' * tabs + '<label>')
-            outfile.write(widget_properties.escape(common.encode_to_xml(
+            outfile.write(widget_properties.escape(common.encode_to_unicode(
                 self.get_label())))
             outfile.write('</label>\n')
         # we must consider also "" a valid value

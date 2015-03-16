@@ -1,9 +1,10 @@
 """
 Handles the template tags and description
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
 @author: Guy Rutenberg
 @author: Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -64,11 +65,11 @@ class Template(object):
         t2 = '    ' * (tabs+1)
         fwrite(t1 + '<templatedata>\n')
         fwrite(t2 + '<author>%s</author>\n' % \
-               saxutils.escape(common.encode_to_xml(self.author)))
+               saxutils.escape(common.encode_to_unicode(self.author)))
         fwrite(t2 + '<description>%s</description>\n' % \
-               saxutils.escape(common.encode_to_xml(self.description)))
+               saxutils.escape(common.encode_to_unicode(self.description)))
         fwrite(t2 + '<instructions>%s</instructions>\n' % \
-               saxutils.escape(common.encode_to_xml(self.instructions)))
+               saxutils.escape(common.encode_to_unicode(self.instructions)))
         fwrite(t1 + '</templatedata>\n')
         
 # end of class Template

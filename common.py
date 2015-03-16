@@ -2,7 +2,7 @@
 Global variables
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2013-2014 Carsten Grohmann
+@copyright: 2013-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -1010,7 +1010,7 @@ def encode_from_xml(label, encoding=None):
     return label.encode(encoding, 'replace')
 
 
-def encode_to_xml(item):
+def encode_to_unicode(item):
     """\
     Decode the item to a Unicode string. The encoding to UTF-8 will be done
     later.

@@ -2,7 +2,7 @@
 wxGrid objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -25,8 +25,8 @@ class GridColsProperty(GridProperty):
         value = self.get_value()  # this is a list
         for i in range(len(value)):
             val = value[i]  # this is another list
-            _label = escape(common.encode_to_xml(val[0]))
-            _size  = escape(common.encode_to_xml(val[1]))
+            _label = escape(common.encode_to_unicode(val[0]))
+            _size  = escape(common.encode_to_unicode(val[1]))
             write('%s<column size=%s>%s</column>\n' % (
                 tab_s, quoteattr(_size), _label))
         write('    ' * tabs + '</columns>\n')

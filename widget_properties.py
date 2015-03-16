@@ -3,7 +3,7 @@ Classes to handle the various properties of the widgets (name, size, colour,
 etc.)
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2012-2014 Carsten Grohmann
+@copyright: 2012-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -97,7 +97,7 @@ class Property(object):
         if not misc.streq(value, ''):
             fwrite = outfile.write
             fwrite('    ' * tabs + '<%s>' % self.name)
-            fwrite(escape(common.encode_to_xml(value)))
+            fwrite(escape(common.encode_to_unicode(value)))
             fwrite('</%s>\n' % self.name)
 
     def bind_event(self, function):
@@ -487,7 +487,7 @@ class CheckBoxProperty(Property, _activator):
                 value = int(self.owner[self.name][0]())
             fwrite = outfile.write
             fwrite('    ' * tabs + '<%s>' % self.name)
-            fwrite(escape(common.encode_to_xml(value)))
+            fwrite(escape(common.encode_to_unicode(value)))
             fwrite('</%s>\n' % self.name)
 
 # end of class CheckBoxProperty
@@ -723,7 +723,7 @@ class CheckListProperty(Property, _activator):
         if value:
             fwrite = outfile.write
             fwrite('    ' * tabs + '<%s>' % self.name)
-            fwrite(escape(common.encode_to_xml(value)))
+            fwrite(escape(common.encode_to_unicode(value)))
             fwrite('</%s>\n' % self.name)
 
     def prepare_value(self, old_val):
@@ -1114,7 +1114,7 @@ class FontDialogProperty(DialogProperty):
     def write(self, outfile, tabs=0):
         if self.is_active():
             try:
-                props = [common.encode_to_xml(s) for s in
+                props = [common.encode_to_unicode(s) for s in
                          eval(self.get_value().strip())]
             except:
                 self._logger.exception(_('Internal Error'))
@@ -1309,7 +1309,7 @@ class RadioProperty(Property, _activator):
         if self.is_active():
             outfile.write('    ' * tabs + '<%s>%s</%s>\n' % (
                 self.name,
-                escape(common.encode_to_xml(self.get_str_value())),
+                escape(common.encode_to_unicode(self.get_str_value())),
                 self.name))
 
     def enable_item(self, item, flag):
@@ -1659,7 +1659,7 @@ class ComboBoxProperty(Property, _activator):
             if value != 'None':
                 fwrite = outfile.write
                 fwrite('    ' * tabs + '<%s>' % self.name)
-                fwrite(escape(common.encode_to_xml(value)))
+                fwrite(escape(common.encode_to_unicode(value)))
                 fwrite('</%s>\n' % self.name)
 
 # end of class ComboBoxProperty
