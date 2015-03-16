@@ -1,43 +1,33 @@
 """\
 wxCheckBox widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 config = {
     'wxklass': 'wxCheckBox',
     'style_defs': {
-        'wxCAL_SUNDAY_FIRST': {
-            'desc': _('Show Sunday as the first day in the week')
+        'wxCHK_2STATE': {
+            'desc': _('Create a 2-state checkbox. This is the default.'),
         },
-        'wxCAL_MONDAY_FIRST': {
-            'desc': _('Show Monday as the first day in the week')
+        'wxCHK_3STATE': {
+            'desc': _('Create a 3-state checkbox. Not implemented in wxOS2 '
+                      'and wxGTK built against GTK+ 1.2.')
         },
-        'wxCAL_SHOW_HOLIDAYS': {
-            'desc': _('Show Monday as the first day in the week')
+        'wxCHK_ALLOW_3RD_STATE_FOR_USER': {
+            'desc': _("By default a user can't set a 3-state checkbox to the "
+                      "third state. It can only be done from code. Using "
+                      "this flags allows the user to set the checkbox to "
+                      "the third state by clicking.")
         },
-        'wxCAL_NO_YEAR_CHANGE': {
-            'desc': _('Disable the year changing')
-        },
-        'wxCAL_NO_MONTH_CHANGE': {
-            'desc': _('Disable the month (and, implicitly, the year) '
-                      'changing')
-        },
-        'wxCAL_SHOW_SURROUNDING_WEEKS': {
-            'desc': _('Show the neighbouring weeks in the previous and next '
-                      'months')
-        },
-        'wxCAL_SEQUENTIAL_MONTH_SELECTION': {
-            'desc': _('Use alternative, more compact, style for the month '
-                      'and year selection controls.')
-        },
+        'wxALIGN_RIGHT': {
+            'desc': _('Makes the text appear on the left of the checkbox.')
+        }
     },
     'box_label': _('Style'),
-    'style_list': ['wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST',
-                   'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE',
-                   'wxCAL_NO_MONTH_CHANGE', 'wxCAL_SHOW_SURROUNDING_WEEKS',
-                   'wxCAL_SEQUENTIAL_MONTH_SELECTION'],
+    'style_list': ['wxCHK_2STATE', 'wxCHK_3STATE',
+                   'wxCHK_ALLOW_3RD_STATE_FOR_USER', 'wxALIGN_RIGHT'],
 }
 
 
