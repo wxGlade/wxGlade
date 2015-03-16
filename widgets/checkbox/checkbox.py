@@ -8,12 +8,13 @@ wxCheckBox objects
 
 import wx
 import common
+import config
 import misc
-from edit_windows import ManagedBase
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 
-class EditCheckBox(ManagedBase):
+class EditCheckBox(ManagedBase, EditStylesMixin):
 
     events = ['EVT_CHECKBOX']
     
@@ -22,19 +23,24 @@ class EditCheckBox(ManagedBase):
         """\
         Class to handle wxCheckBox objects
         """
-        import config
         ManagedBase.__init__(self, name, 'wxCheckBox', parent, id, sizer,
                              pos, property_window, show=show)
-        self.label = label
-        self.value = 0 # if nonzero, che checkbox is checked
+        EditStylesMixin.__init__(self)
 
+        # initialise instance variables
+        self.label = label
+        self.value = 0  # if nonzero, che checkbox is checked
+
+        # initialise properties remaining staff
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['checked'] = (self.get_value, self.set_value)
-        self.properties['label'] = TextProperty(self, 'label', None,
-                                                multiline=True, label=_("label"))
-        self.properties['checked'] = CheckBoxProperty(self, 'checked', None,
-                                                      _('Checked'))
-        # 2003-09-04 added default_border
+        self.access_functions['style'] = (self.get_style, self.set_style)
+        self.properties['label'] = TextProperty(
+            self, 'label', multiline=True, label=_("label"))
+        self.properties['checked'] = CheckBoxProperty(
+            self, 'checked', label=_('Checked'))
+        self.properties['style'] = CheckListProperty(
+            self, 'style', self.widget_writer)
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
             self.flag = wx.ALL
@@ -52,9 +58,11 @@ class EditCheckBox(ManagedBase):
         panel = wx.Panel(self.notebook, -1)
         self.properties['label'].display(panel)
         self.properties['checked'].display(panel)
+        self.properties['style'].display(panel)
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['checked'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
