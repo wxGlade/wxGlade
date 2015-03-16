@@ -521,13 +521,6 @@ class CheckListProperty(Property, _activator):
     @type tooltips:  dict[str, str]
     """
 
-    _tooltip_cache = {}
-    """\
-    Cache for the created tooltips. The text based on the style definition.
-
-    @see: L{_create_tooltip_text}
-    """
-
     def __init__(self, owner, name, widget_writer=None, parent=None,
                  styles=None):
         """\
@@ -593,15 +586,9 @@ class CheckListProperty(Property, _activator):
         """\
         Create the texts for all tooltips based on widgets style
         configuration.
-
-        The created tooltips are cached in  L{_tooltip_cache}.
         """
         tooltips = {}
         for style_name in self.style_defs:
-            if style_name in self._tooltip_cache:
-                tooltips[style_name] = self._tooltip_cache[style_name]
-                continue
-
             text = ''
             details = self.style_defs.get(style_name, {})
             if 'desc' in details:
@@ -649,7 +636,6 @@ class CheckListProperty(Property, _activator):
                         text += self._wrap_msg(msg)
 
             tooltips[style_name] = text
-            self._tooltip_cache[style_name] = text
 
         return tooltips
 
