@@ -3,6 +3,7 @@ Defines a Property and two handlers used by choice, combo_box, radio_box,
 list_box
 
 @copyright: 2002-2007 Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -17,7 +18,7 @@ class ChoicesProperty(widget_properties.GridProperty):
         write('    ' * tabs + '<choices>\n')
         tab_s = '    ' * (tabs+1)
         for val in self.get_value():
-            v = common.encode_to_xml(val[0])
+            v = common.encode_to_unicode(val[0])
             try:
                 checked = int(val[1])
             except (IndexError, ValueError):

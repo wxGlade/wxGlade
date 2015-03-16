@@ -2,6 +2,7 @@
 A class to represent a menu on a wxMenuBar
 
 @copyright: 2002-2007 Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -27,8 +28,8 @@ class MenuTree(object):
             import common
             fwrite = outfile.write
             tstr = '    ' * (tabs+1)
-            label = common.encode_to_xml(self.label)
-            help_str = common.encode_to_xml(self.help_str)
+            label = common.encode_to_unicode(self.label)
+            help_str = common.encode_to_unicode(self.help_str)
             if not top and not self.children:
                 fwrite('%s<item>\n' % ('    ' * tabs))
                 label = escape(label)

@@ -2,7 +2,7 @@
 wxFrame and wxStatusBar objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -51,7 +51,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
             for label, width in self.fields:
                 fwrite('    ' * tabs + '<field width=%s>%s</field>\n' %
                        (quoteattr(width),
-                        escape(common.encode_to_xml(label))))
+                        escape(common.encode_to_unicode(label))))
             tabs -= 1
             fwrite('    ' * tabs + '</fields>\n')
         prop.write = write_prop

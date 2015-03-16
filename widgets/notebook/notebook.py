@@ -1,7 +1,8 @@
 """
 wxNotebook objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -110,7 +111,7 @@ class NotebookPagesProperty(GridProperty):
         value = self.get_value()
         for i in range(len(value)):
             val = value[i]
-            v = escape(common.encode_to_xml(val[0]))
+            v = escape(common.encode_to_unicode(val[0]))
             window = None
             try:
                 t = self.owner.tabs[i]

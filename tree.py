@@ -2,7 +2,7 @@
 Classes to handle and display the structure of a wxGlade app
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright_ 2014 Carsten Grohmann
+@copyright_ 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -259,7 +259,7 @@ class Tree(object):
                       u'use_new_namespace="1" for_version=%s is_template=%s '
                       u'indent_amount=%s indent_symbol=%s '
                       u'source_extension=%s header_extension=%s>\n'
-                      % tuple([quoteattr(common.encode_to_xml(i)) for i in
+                      % tuple([quoteattr(common.encode_to_unicode(i)) for i in
                                (outpath, name, klass, option, language,
                                 top_window, encoding, use_gettext,
                                 overwrite, for_version,
