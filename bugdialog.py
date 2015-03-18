@@ -66,7 +66,8 @@ class BugReport(bugdialog_ui.UIBugDialog):
             return
 
         header = _("An internal error occurred")
-        log.exception_orig(header, exc_info=(exc_type, exc_value, exc_tb))
+        # don't use exception() because it overwrites exc_info with 1
+        logging.error(header, exc_info=(exc_type, exc_value, exc_tb))
         self._fill_dialog(msg, exc_type, header)
 
     def _fill_dialog(self, exc_msg, exc_type, header):
