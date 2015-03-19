@@ -2,7 +2,7 @@
 Application class to store properties of the application being created
 
 @copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
-@copyright: 2012 Carsten Grohmann <mail@carstengrohmann.de>
+@copyright: 2012-2015 Carsten Grohmann <mail@carstengrohmann.de>
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -472,9 +472,7 @@ class Application(object):
         try:
             unicode('a', value)
         except LookupError, inst:
-            dialog = bugdialog.BugReport()
-            dialog.SetContent(_('setting encoding'), inst)
-            dialog.ShowModal()
+            bugdialog.Show(_('setting encoding'), inst)
             self.encoding_prop.set_value(self.encoding)
         else:
             self.encoding = value
@@ -736,9 +734,7 @@ class Application(object):
                 wx.OK | wx.CENTRE | wx.ICON_ERROR,
                 )
         except Exception, inst:
-            dialog = bugdialog.BugReport()
-            dialog.SetContent(_('generating code'), inst)
-            dialog.ShowModal()
+            bugdialog.Show(_('generating code'), inst)
         else:
             if not preview:
                 if config.preferences.show_completion:
@@ -876,9 +872,8 @@ class Application(object):
         except Exception, inst:
             widget.preview_widget = None
             widget.preview_button.SetLabel(_('Preview'))
-            dialog = bugdialog.BugReport()
-            dialog.SetContent(_("generating the preview"), inst)
-            dialog.ShowModal()
+            bugdialog.Show(_("generating the preview"), inst)
+
         # restore app state
         widget.klass = widget_class_name
         self.output_path = self.real_output_path

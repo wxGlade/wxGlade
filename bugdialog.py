@@ -115,3 +115,40 @@ class BugReport(bugdialog_ui.UIBugDialog):
         if getattr(sys, '_called_from_test', False):
             return wx.ID_OK
         super(BugReport, self).ShowModal(**kwargs)
+
+
+def Show(msg, exc):
+    """\
+    Wrapper for creating a L{BugReport} dialog and show the details of the
+    given exception instance.
+
+    @param msg: Short description of the action that has raised this error
+    @type msg:  str
+    @param exc: Caught exception
+    @type exc:  Exception
+
+    @see: L{ShowEI()}
+    @see: L{BugReport.SetContent()}
+    """
+    dialog = BugReport()
+    dialog.SetContent(_('setting encoding'), exc)
+    dialog.ShowModal()
+
+
+def ShowEI(exc_type, exc_value, exc_tb, msg=None):
+    """\
+    Wrapper for creating a L{BugReport} dialog and show the given exception
+    details.
+
+    @param exc_type: Exception type
+    @param exc_value: Exception value
+    @param exc_tb: Exception traceback
+    @param msg: Short description of the exception
+    @type msg:  str | None
+
+    @see: L{Show()}
+    @see: L{BugReport.SetContent()}
+    """
+    dialog = BugReport()
+    dialog.SetContentEI(exc_type, exc_value, exc_tb, msg)
+    dialog.ShowModal()
