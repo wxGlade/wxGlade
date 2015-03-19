@@ -1298,6 +1298,16 @@ def init_paths():
         except (IOError, OSError), e:
             logging.error(_('Failed to create config directory: "%s"'), e)
 
+    # normalise paths
+    for name in ['appdata_path', 'credits_file', 'docs_path',
+                 'history_file', 'home_path', 'icons_path',
+                 'license_file', 'rc_file', 'templates_path',
+                 'tutorial_file', 'widgets_path', 'wxglade_path']:
+        assert hasattr(config, name)
+        path = getattr(config, name)
+        path = os.path.normpath(path)
+        setattr(config, name, path)
+
 
 def init_preferences():
     """\
