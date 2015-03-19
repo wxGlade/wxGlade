@@ -3,7 +3,7 @@ Dialog for editing wxGlade preferences
 
 @see: L{config.preferences}
 @copyright: 2007 Alberto Griggio
-@copyright: 20013-2014 Carsten Grohmann
+@copyright: 20013-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -68,9 +68,7 @@ class wxGladePreferences(wxGladePreferencesUI):
             self.log_debug_info.SetValue(self.preferences.log_debug_info)
             self._fix_spin_ctrls()
         except Exception, inst:
-            dialog = bugdialog.BugReport()
-            dialog.SetContent(_('reading the configuration'), inst)
-            dialog.ShowModal()
+            bugdialog.Show(_('reading the configuration'), inst)
 
     def _fix_spin_ctrls(self):
         """\

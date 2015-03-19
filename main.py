@@ -766,9 +766,7 @@ class wxGladeFrame(wx.Frame):
                     msg = _('loading file "%s"') % fn
                 else:
                     msg = _('loading from a file-like object')
-                dialog = bugdialog.BugReport()
-                dialog.SetContent(msg, inst)
-                dialog.ShowModal()
+                bugdialog.Show(msg, inst)
         finally:
             if infile and filename:
                 infile.close()
@@ -849,9 +847,7 @@ class wxGladeFrame(wx.Frame):
         except Exception, inst:
             common.app_tree.app.saved = False
             fn = os.path.basename(filename).encode('ascii', 'replace')
-            dialog = bugdialog.BugReport()
-            dialog.SetContent(_('saving file "%s"') % fn, inst)
-            dialog.ShowModal()
+            bugdialog.Show(_('saving file "%s"') % fn, inst)
         else:
             common.app_tree.app.saved = True
             common.remove_autosaved()
@@ -988,9 +984,7 @@ class wxGladeFrame(wx.Frame):
                 common.app_tree.app.saved = False
             except Exception, inst:
                 fn = os.path.basename(infilename).encode('ascii', 'replace')
-                dialog = bugdialog.BugReport()
-                dialog.SetContent(_('importing file "%s"') % fn, inst)
-                dialog.ShowModal()
+                bugdialog.Show(_('importing file "%s"') % fn, inst)
 
     def manage_templates(self, event):
         to_edit = template.manage_templates()
@@ -1148,10 +1142,9 @@ class wxGlade(wx.App):
         @param exc_tb:    Call stack of the exception
 
         @see: L{bugdialog.BugReport()}
+        @see: L{bugdialog.Show()}
         """
-        dialog = bugdialog.BugReport()
-        dialog.SetContentEI(exc_type, exc_value, exc_tb)
-        dialog.ShowModal()
+        bugdialog.ShowEI(exc_type, exc_value, exc_tb)
         sys.exc_clear()
 
     def exception(self, msg, *args, **kwargs):
@@ -1170,6 +1163,7 @@ class wxGlade(wx.App):
         @type msg:  str
 
         @see: L{bugdialog.BugReport}
+        @see: L{bugdialog.ShowEI()}
         """
         if args:
             try:
@@ -1177,10 +1171,8 @@ class wxGlade(wx.App):
             except TypeError:
                 log.exception_orig(_('Wrong format of a log message'))
 
-        dialog = bugdialog.BugReport()
         (exc_type, exc_value, exc_tb) = sys.exc_info()
-        dialog.SetContentEI(exc_type, exc_value, exc_tb, msg)
-        dialog.ShowModal()
+        bugdialog.ShowEI(exc_type, exc_value, exc_tb, msg)
         sys.exc_clear()
 
 # end of class wxGlade
