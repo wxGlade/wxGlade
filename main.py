@@ -526,21 +526,21 @@ class wxGladeFrame(wx.Frame):
 
         self.Raise()
 
-        # ALB 2004-10-16
-        if common.check_autosaved(None) and \
-               wx.MessageBox(_("There seems to be auto saved data "
-                            "from last wxGlade session: "
-                            "do you want to restore it?"),
-                            _("Auto save detected"),
-                            style=wx.ICON_QUESTION|wx.YES_NO) == wx.YES:
-            if self._open_app(common.get_name_for_autosave(),
-                              add_to_history=False):
-                common.app_tree.app.saved = False
-                common.app_tree.app.filename = None
-                self.user_message(_("Auto save loaded"))
+        # disable autosave checks during unittests
+        if not getattr(sys, '_called_from_test', False):
+            if common.check_autosaved(None):
+                res = wx.MessageBox(
+                    _('There seems to be auto saved data from last wxGlade '
+                      'session: do you want to restore it?'),
+                    _('Auto save detected'),
+                    style=wx.ICON_QUESTION | wx.YES_NO)
+                if res == wx.YES:
+                    if self._open_app(common.get_name_for_autosave(),
+                                      add_to_history=False):
+                        common.app_tree.app.saved = False
+                        common.app_tree.app.filename = None
+                        self.user_message(_('Auto save loaded'))
                 common.remove_autosaved()
-        else:
-            common.remove_autosaved()
 
     def on_autosave_timer(self, event):
         if common.autosave_current():
