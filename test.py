@@ -49,9 +49,7 @@ def run_tests(gui_tests=False):
         if not hasattr(sys, "frozen") and 'wx' not in sys.modules:
             try:
                 import wxversion
-                # Currently we use wxPython 2.8 only
-                wxversion.select('2.8')
-                #wxversion.ensureMinimal('2.8')
+                wxversion.ensureMinimal('2.8')
             except ImportError:
                 print _('Please install missing python module "wxversion".')
                 sys.exit(1)
