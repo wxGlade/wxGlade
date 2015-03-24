@@ -321,11 +321,17 @@ Elements:
 Style attributes:
   - I{'desc':} I{<description>} - Short style description
 
-  - I{'combination':} I{<styles joined by '|'>} - The style is defined as
-    a combination of different other styles.
+  - I{'add':} I{<styles joined by '|'>} - The style requires additional
+    styles
 
-  - I{'synonym':} I{<alternative name>} - Short notice about an alternative
-    style name shown in style tooltip
+  - I{'combination':} I{<styles joined by '|'>} - The style is defined as
+    a combination of different other styles
+
+  - I{'delete':} I{<styles joined by '|'>} - The listed styles will be
+    removed by selecting this style
+
+  - I{'obsolete':} I{<text>} - This style is obsolete. A short notice will
+    shown in the style tooltip
 
   - I{'rename_to:} I{<new style name>} - The style will be renamed into the
     given style name
@@ -333,8 +339,8 @@ Style attributes:
   - I{'supported_by':} I{(<supported version>)}- List of versions
     supporting this style
 
-  - I{'obsolete':} I{<text>} - This style is obsolete. A short notice will
-    shown in the style tooltip.
+  - I{'synonym':} I{<alternative name>} - Short notice about an alternative
+    style name shown in style tooltip
 
 Use gettext (C{_()}) for the attributes content of "box_label", "desc" and
 "obsolete".

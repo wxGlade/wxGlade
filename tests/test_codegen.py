@@ -1128,7 +1128,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{wcodegen.BaseLanguageMixin.cn_f()}
         """
-        details = [
+        details_wxStaticText = [
             ((2, 8), 'wxALL', 'wxALL'),
             ((2, 8), 'wxALL|wxALL', 'wxALL'),
             ((2, 8), '0', '0'),
@@ -1154,7 +1154,27 @@ class TestCodeGen(WXGladeBaseTest):
             ((3, 0), 'wxST_ELLIPSIZE_MIDDLE', 'wxST_ELLIPSIZE_MIDDLE'),
         ]
         handler = common.code_writers['C++'].obj_builders['wxStaticText']
-        for for_version, unformatted, formatted in details:
+        for for_version, unformatted, formatted in details_wxStaticText:
+            common.code_writers['C++'].for_version = for_version
+            ret = handler.cn_f(unformatted)
+            self.failUnlessEqual(
+                formatted,
+                ret,
+                'Unexpected result for wx%s%s got: "%s" expect: "%s"' % (
+                    for_version[0],
+                    for_version[1],
+                    ret,
+                    formatted,
+                )
+            )
+
+        details_wxCheckBox = [
+            ((3, 0), 'wxALL', 'wxALL'),
+            ((3, 0), 'wxCHK_ALLOW_3RD_STATE_FOR_USER', 'wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER'),
+            ((3, 0), 'wxALL|wxCHK_2STATE|wxCHK_3STATE', 'wxALL|wxCHK_2STATE'),
+            ]
+        handler = common.code_writers['C++'].obj_builders['wxCheckBox']
+        for for_version, unformatted, formatted in details_wxCheckBox:
             common.code_writers['C++'].for_version = for_version
             ret = handler.cn_f(unformatted)
             self.failUnlessEqual(
