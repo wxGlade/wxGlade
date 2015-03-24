@@ -582,58 +582,130 @@ class CheckListProperty(Property, _activator):
         msg = '\n'.join(textwrap.wrap(msg, config.tooltip_width))
         return msg
 
+    def _tooltip_format_flags(self, details):
+        """\
+        Create a tooltip text for generic style flags (aka attributes).
+
+        @param details: style definitions from L{self.style_defs}
+        @type details: dict
+
+        @rtype: str
+        """
+        info = ''
+        for attr_name, msg in [
+            ('default_style', _('This style is the default\n')),
+            ('obsolete', _('This style is obsolete and should not be '
+                           'used.\nDetails: %s\n')),
+            ('rename_to', _('This style will be renamed to %s.\n')),
+            ('synonym', _('This style name is a synonym for %s.\n')),
+        ]:
+            if attr_name not in details:
+                continue
+
+            if '%s' in msg:
+                info = self._wrap_msg(msg % details[attr_name])
+            else:
+                info = self._wrap_msg(msg)
+
+        return info
+
+
+    def _tooltip_format_generic(self, details):
+        """\
+        Create a tooltip text for generic style attributes.
+
+        @param details: style definitions from L{self.style_defs}
+        @type details: dict
+
+        @rtype: str
+        """
+        info = ''
+        for attr_name, msg in [
+            ('add', _('This style adds: %s\n')),
+            ('combination', ('This style is a combination of: %s\n')),
+            ('delete', _('This style deletes: %s\n')),
+            ]:
+            if attr_name not in details:
+                continue
+
+            style_list = list(details[attr_name])
+            style_list.sort()
+            if len(style_list) == 1:
+                style_text = style_list[0]
+            else:
+                first = ', '.join(style_list[:-1])
+                last = style_list[-1]
+                style_text = _('%s and %s') % (first, last)
+
+            if '%s' in msg:
+                info += self._wrap_msg(msg % style_text)
+            else:
+                info += self._wrap_msg(msg)
+
+        return info
+
+    def _tooltip_format_supported_by(self, details):
+        """\
+        Create a tooltip text for the 'supported_by' style attribute.
+
+        @param details: style definitions from L{self.style_defs}
+        @type details: dict
+
+        @rtype: str
+        """
+        if 'supported_by' not in details:
+            return ''
+
+        style_list = \
+            [misc.format_supported_by(version) for version in
+             list(details['supported_by'])]
+        style_list.sort()
+        if len(style_list) == 1:
+            style_text = style_list[0]
+        else:
+            first = style_list[:-1]
+            last = style_list[-1]
+            style_text = _('%s and %s') % (first, last)
+        info = self._wrap_msg(
+            _('This style is only supported on %s\n') %
+            style_text
+        )
+        return info
+
     def _create_tooltip_text(self):
         """\
         Create the texts for all tooltips based on widgets style
         configuration.
+
+        @see: L{_tooltip_format_generic()}
+        @see: L{_tooltip_format_flags()}
+        @see: L{_tooltip_format_supported_by()}
         """
         tooltips = {}
         for style_name in self.style_defs:
             text = ''
             details = self.style_defs.get(style_name, {})
+
             if 'desc' in details:
                 text += '%s\n' % self._wrap_msg(details['desc'])
-            if 'combination' in details:
+
+            info = self._tooltip_format_generic(details)
+            if info:
                 if text:
                     text += '\n'
-                combi_list = list(details['combination'])
-                last = combi_list[-1]
-                first = ', '.join(combi_list[:-1])
-                combi_text = _('%s and %s') % (first, last)
-                text += self._wrap_msg(
-                    _('This style is a combination of: %s\n') % combi_text
-                )
-            if 'supported_by' in details:
+                text += info
+
+            info = self._tooltip_format_supported_by(details)
+            if info:
                 if text:
                     text += '\n'
-                supported_list = \
-                    [misc.format_supported_by(version) for version in
-                     list(details['supported_by'])]
-                supported_list.sort()
-                if len(supported_list) == 1:
-                    supported_text = supported_list[0]
-                else:
-                    first = supported_list[:-1]
-                    last = supported_list[-1]
-                    supported_text = _('%s and %s') % (first, last)
-                text += self._wrap_msg(
-                    _('This style is only supported on %s\n') %
-                    supported_text
-                )
-            for attr_name, msg in [
-                ('default_style', _('This style is the default\n')),
-                ('obsolete', _('This style is obsolete and should not be '
-                               'used.\nDetails: %s\n')),
-                ('rename_to', _('This style will be renamed to %s.\n')),
-                ('synonym', _('This style name is a synonym for %s.\n')),
-                ]:
-                if attr_name in details:
-                    if text:
-                        text += '\n'
-                    if '%s' in msg:
-                        text += self._wrap_msg(msg % details[attr_name])
-                    else:
-                        text += self._wrap_msg(msg)
+                text += info
+
+            info = self._tooltip_format_flags(details)
+            if info:
+                if text:
+                    text += '\n'
+                text += info
 
             tooltips[style_name] = text
 
@@ -1228,7 +1300,7 @@ class RadioProperty(Property, _activator):
                          lambda e: self.toggle_active(e.IsChecked()))
             self.options.SetLabel("")
         self.prepare_activator(enabler, self.options)
-        szr.Add(self.options, 1, wx.EXPAND)
+        szr.Add(self.options, 1, wx.ALL | wx.EXPAND, 5)
         self.panel = szr
         self.bind_event(self.on_change_val)
 

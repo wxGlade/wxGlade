@@ -49,15 +49,16 @@ class StylesMixin(object):
             self._cache_style_defs['generic_styles'] = copy.deepcopy(
                 common.widget_config['generic_styles'])
 
-            # convert 'combination' from string to set
+            # convert 'combination', 'delete' and 'add' from string to
+            # set
             genstyles = self._cache_style_defs['generic_styles']
             for style in genstyles.keys():
-                try:
-                    genstyles[style]['combination'] = set(
-                        genstyles[style]['combination'].split('|')
-                    )
-                except KeyError:
-                    pass
+                for attr in ['combination', 'delete', 'add',]:
+                    try:
+                        genstyles[style][attr] = \
+                            set(genstyles[style][attr].split('|'))
+                    except (AttributeError, KeyError):
+                        pass
 
         if not klass or klass not in common.widget_config or \
                         klass in self._cache_style_defs:
@@ -71,14 +72,16 @@ class StylesMixin(object):
             self._cache_style_defs[klass].update(
                 common.widget_config[klass]['style_defs'])
 
-        # convert 'combination' from string to set
+        # convert 'combination', 'delete' and 'add' from string to set
         for style in self._cache_style_defs[klass].keys():
             style_def = self._cache_style_defs[klass][style]
-            try:
-                style_def['combination'] = set(
-                    style_def['combination'].split('|'))
-            except (AttributeError, KeyError):
-                pass
+
+            for attr in ['combination', 'delete', 'add',]:
+                try:
+                    style_def[attr] = set(style_def[attr].split('|'))
+                except (AttributeError, KeyError):
+                    pass
+
 
     def cn_f(self, flags):
         """\
@@ -87,13 +90,15 @@ class StylesMixin(object):
         Steps to rearrange:
          1. Split given string using delimiter '|'
          2. Remove duplicate flags
-         3. Rename flags using the 'rename_to' entry
+         3. Delete flags using the 'delete' entry
+         4. Add additional flags using the 'add' entry
+         5. Rename flags using the 'rename_to' entry
             (see L{common.widget_config})
-         4. Combine flags using the 'combination' entry
-         5. Remove unsupported styles checking 'for_version' attribute of
+         6. Combine flags using the 'combination' entry
+         7. Remove unsupported styles checking 'for_version' attribute of
             L{self.codegen}
-         6. Format single flags with L{cn_f()} if L{format_flags} is True
-         7. Sort and recombine flags using L{tmpl_flag_join}
+         8. Format single flags with L{cn_f()} if L{format_flags} is True
+         9. Sort and recombine flags using L{tmpl_flag_join}
 
         The style details are described in L{common.widget_config}. The
         access to the details is only available in widget writer instances.
@@ -129,6 +134,8 @@ class StylesMixin(object):
 
         # check for non-supported, renamed flags and ...
         if self.style_defs:
+            flags = self.add_styles(flags)
+            flags = self.delete_styles(flags)
             flags = self.rename_styles(flags)
             flags = self.combine_styles(flags)
             flags = self.remove_unsupported_styles(flags)
@@ -166,6 +173,29 @@ class StylesMixin(object):
         return styles
 
     style_defs = property(_get_style_defs)
+
+    def add_styles(self, flags):
+        """\
+        Check given flags for the attribute 'add' and add required flags.
+
+        @param flags: Flags to check for alternative names
+        @type flags:  set
+
+        @return: Processed flags
+        @rtype: set
+
+        @see: L{common.widget_config}
+        """
+        if not flags:
+            return flags
+
+        for flag in flags.copy():
+            try:
+                flags |= self.style_defs[flag]['add']
+            except (AttributeError, KeyError):
+                pass
+
+        return flags
 
     def combine_styles(self, flags):
         """\
@@ -206,10 +236,38 @@ class StylesMixin(object):
 
         return flags
 
+    def delete_styles(self, flags):
+        """\
+        Check given flags for the attribute 'delete' and remove the excluded
+        flags.
+
+        @param flags: Flags to check for removal.
+        @type flags:  set
+
+        @return: Processed flags
+        @rtype: set
+
+        @see: L{common.widget_config}
+        """
+        if not flags:
+            return flags
+
+        flag_list = list(flags)
+        flag_list.sort()
+        for flag in flag_list:
+            try:
+                to_delete = self.style_defs[flag]['delete']
+                if to_delete <= flags and flag in flags:
+                    flags -= to_delete
+            except (AttributeError, KeyError):
+                pass
+
+        return flags
+
     def remove_unsupported_styles(self, flags):
         """\
-        Check given flags for the attribute 'supported_by' and remove remove
-        the unsupported flags.
+        Check given flags for the attribute 'supported_by' and remove the
+        unsupported flags.
 
         @param flags: Flags to check for removal.
         @type flags:  set
