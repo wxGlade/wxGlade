@@ -1,11 +1,12 @@
 """\
 Different mixins
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import copy
+import decorators
 import logging
 
 import common
@@ -15,73 +16,6 @@ class StylesMixin(object):
     """\
     Class mixin to handle formatting and re-combining styles
     """
-
-    _cache_style_defs = {}
-    """\
-    Cache for style definitions
-
-    Structure::
-        _cache_style_defs = {
-            'generic_styles': {
-                '<style>': {<details},
-            },
-            '<wx klass>': {
-                '<style>': {<details},
-            },
-        }
-
-    @type: dict[str, dict]
-    """
-
-    def init_styles(self, klass=None):
-        """\
-        Copy the style definitions from L{common.widget_config} and
-        initialise  it.
-
-        The initialised styles are stored in L{_cache_style_defs}.
-        """
-
-        # All copy operation of styles uses always a deep-copy to prevent
-        # changing original data
-
-        # merge generic specific styles
-        if not 'generic_styles' in self._cache_style_defs:
-            self._cache_style_defs['generic_styles'] = copy.deepcopy(
-                common.widget_config['generic_styles'])
-
-            # convert 'combination', 'delete' and 'add' from string to
-            # set
-            genstyles = self._cache_style_defs['generic_styles']
-            for style in genstyles.keys():
-                for attr in ['combination', 'delete', 'add',]:
-                    try:
-                        genstyles[style][attr] = \
-                            set(genstyles[style][attr].split('|'))
-                    except (AttributeError, KeyError):
-                        pass
-
-        if not klass or klass not in common.widget_config or \
-                        klass in self._cache_style_defs:
-            return
-
-        # merge widget specific settings
-        self._cache_style_defs[klass] = copy.deepcopy(
-            self._cache_style_defs['generic_styles'])
-
-        if 'style_defs' in common.widget_config[klass]:
-            self._cache_style_defs[klass].update(
-                common.widget_config[klass]['style_defs'])
-
-        # convert 'combination', 'delete' and 'add' from string to set
-        for style in self._cache_style_defs[klass].keys():
-            style_def = self._cache_style_defs[klass][style]
-
-            for attr in ['combination', 'delete', 'add',]:
-                try:
-                    style_def[attr] = set(style_def[attr].split('|'))
-                except (AttributeError, KeyError):
-                    pass
-
 
     def cn_f(self, flags):
         """\
@@ -154,23 +88,44 @@ class StylesMixin(object):
 
         return flags
 
+    @decorators.memoize
+    def _get_widget_styles_defs(self, widget_name):
+        """
+        Logic of L{_get_style_defs()} but extracted for cache decorator.
+
+        @note: The styles are copied using a deep-copy to prevent changing
+               original data accidentally.
+
+        @param widget_name: Widget name e.g. 'wxCheckBox'
+        @type widget_name: str
+
+        @return: A joined copy of the generic styles and widget specific
+                 styles.
+        @rtype: dict
+        """
+        # Use always a deep-copy to prevent changing original data
+
+        try:
+            styles = copy.deepcopy(common.widget_config['generic_styles'])
+            styles.update(common.widget_config[widget_name]['style_defs'])
+        except KeyError:
+            pass
+
+        return styles
+
     def _get_style_defs(self):
         """\
-        Return all styles related to this widget. That includes generic
+        Return all styles related to this widget. This includes generic
         styles from L{common.widget_config}.
+
+        The implementation has moved to L{_get_widget_styles_defs()} to use a
+        simple cache decorator instead of using an own cache implementation.
 
         @rtype: dict
         @see: L{common.widget_config}
+        @see: L{_get_widget_styles_defs()}
         """
-        try:
-            klass = getattr(self, 'klass', None)
-            if klass and klass in self._cache_style_defs:
-                styles = self._cache_style_defs[self.klass]
-            else:
-                styles = self._cache_style_defs['generic_styles']
-        except (AttributeError, KeyError):
-            styles = {}
-        return styles
+        return self._get_widget_styles_defs(getattr(self, 'klass', None))
 
     style_defs = property(_get_style_defs)
 
