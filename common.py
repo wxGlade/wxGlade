@@ -631,6 +631,8 @@ def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
                                   'settings')
                             )
                             continue
+                        # process widget related style attributes
+                        style_attrs_to_sets(config_dict['style_defs'])
                         widget_config[config_dict['wxklass']] = config_dict
                     else:
                         logger.debug(
@@ -676,6 +678,28 @@ def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
                     module_name,
                     )
     return buttons
+
+
+def style_attrs_to_sets(styles):
+    """\
+    Convert the style attributes combination', 'delete' and 'add' from
+    string to a set.
+
+    @param styles: Style dictionary
+    @type styles: dict
+
+    @return: Style dictionary with modified attributes
+    @rtype: dict
+    """
+    for style_name in styles.keys():
+        for attr in ['combination', 'delete', 'add',]:
+            try:
+                styles[style_name][attr] = \
+                    set(styles[style_name][attr].split('|'))
+            except (AttributeError, KeyError):
+                pass
+
+    return styles
 
 
 def _import_module(widget_dir, module):
@@ -903,6 +927,7 @@ def load_sizers():
     import edit_sizers
     return edit_sizers.init_gui()
 
+
 def init_codegen():
     """\
     Load available code generators, core and user widgets as well as sizers
@@ -920,12 +945,15 @@ def init_codegen():
     @see: L{load_widgets()}
     @see: L{load_sizers()}
     """
+    # process generic related style attributes
+    style_attrs_to_sets(widget_config['generic_styles'])
     load_config()
     load_code_writers()
     core_buttons, local_buttons = load_widgets()
     sizer_buttons = load_sizers()
 
     return core_buttons, local_buttons, sizer_buttons
+
 
 def add_object(event):
     """\

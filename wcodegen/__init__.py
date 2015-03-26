@@ -525,7 +525,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         BaseCodeWriter.__init__(self)
         self.config = {}
         self.klass = klass
-        self.init_styles(self.klass)
 
         # Copy non-style settings (Style settings will be handled in
         # StylesMixin fully)
