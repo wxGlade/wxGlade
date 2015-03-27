@@ -24,8 +24,8 @@ class StylesMixin(object):
         Steps to rearrange:
          1. Split given string using delimiter '|'
          2. Remove duplicate flags
-         3. Delete flags using the 'delete' entry
-         4. Add additional flags using the 'add' entry
+         3. Delete flags using the 'exclude' entry
+         4. Add additional flags using the 'include' entry
          5. Rename flags using the 'rename_to' entry
             (see L{common.widget_config})
          6. Combine flags using the 'combination' entry
@@ -131,7 +131,7 @@ class StylesMixin(object):
 
     def add_styles(self, flags):
         """\
-        Check given flags for the attribute 'add' and add required flags.
+        Check given flags for the attribute 'include' and add required flags.
 
         @param flags: Flags to check for alternative names
         @type flags:  set
@@ -146,7 +146,7 @@ class StylesMixin(object):
 
         for flag in flags.copy():
             try:
-                flags |= self.style_defs[flag]['add']
+                flags |= self.style_defs[flag]['include']
             except (AttributeError, KeyError):
                 pass
 
@@ -193,7 +193,7 @@ class StylesMixin(object):
 
     def delete_styles(self, flags):
         """\
-        Check given flags for the attribute 'delete' and remove the excluded
+        Check given flags for the attribute 'exclude' and remove the excluded
         flags.
 
         @param flags: Flags to check for removal.
@@ -211,7 +211,7 @@ class StylesMixin(object):
         flag_list.sort()
         for flag in flag_list:
             try:
-                to_delete = self.style_defs[flag]['delete']
+                to_delete = self.style_defs[flag]['exclude']
                 if to_delete <= flags and flag in flags:
                     flags -= to_delete
             except (AttributeError, KeyError):

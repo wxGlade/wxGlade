@@ -621,9 +621,9 @@ class CheckListProperty(Property, _activator):
         """
         info = ''
         for attr_name, msg in [
-            ('add', _('This style adds: %s\n')),
-            ('combination', ('This style is a combination of: %s\n')),
-            ('delete', _('This style deletes: %s\n')),
+            ('include', _('This style includes: %s\n')),
+            ('combination', _('This style is a combination of: %s\n')),
+            ('exclude', _('This style excludes: %s\n')),
             ]:
             if attr_name not in details:
                 continue

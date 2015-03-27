@@ -321,14 +321,14 @@ Elements:
 Style attributes:
   - I{'desc':} I{<description>} - Short style description
 
-  - I{'add':} I{<styles joined by '|'>} - The style requires additional
-    styles
-
   - I{'combination':} I{<styles joined by '|'>} - The style is defined as
     a combination of different other styles
 
-  - I{'delete':} I{<styles joined by '|'>} - The listed styles will be
+  - I{'exclude':} I{<styles joined by '|'>} - The listed styles will be
     removed by selecting this style
+
+  - I{'include':} I{<styles joined by '|'>} - The style requires additional
+    styles
 
   - I{'obsolete':} I{<text>} - This style is obsolete. A short notice will
     shown in the style tooltip
@@ -682,7 +682,7 @@ def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
 
 def style_attrs_to_sets(styles):
     """\
-    Convert the style attributes combination', 'delete' and 'add' from
+    Convert the style attributes combination', 'exclude' and 'include' from
     string to a set.
 
     @param styles: Style dictionary
@@ -692,7 +692,7 @@ def style_attrs_to_sets(styles):
     @rtype: dict
     """
     for style_name in styles.keys():
-        for attr in ['combination', 'delete', 'add',]:
+        for attr in ['combination', 'exclude', 'include',]:
             try:
                 styles[style_name][attr] = \
                     set(styles[style_name][attr].split('|'))
