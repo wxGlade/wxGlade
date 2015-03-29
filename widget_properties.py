@@ -624,6 +624,7 @@ class CheckListProperty(Property, _activator):
             ('include', _('This style includes: %s\n')),
             ('combination', _('This style is a combination of: %s\n')),
             ('exclude', _('This style excludes: %s\n')),
+            ('require', _('This styles requires: %s\n')),
             ]:
             if attr_name not in details:
                 continue
@@ -637,10 +638,7 @@ class CheckListProperty(Property, _activator):
                 last = style_list[-1]
                 style_text = _('%s and %s') % (first, last)
 
-            if '%s' in msg:
-                info += self._wrap_msg(msg % style_text)
-            else:
-                info += self._wrap_msg(msg)
+            info += self._wrap_msg(msg % style_text)
 
         return info
 
