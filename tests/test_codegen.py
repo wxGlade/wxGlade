@@ -1152,7 +1152,7 @@ class TestCodeGen(WXGladeBaseTest):
             ((3, 0), '', ''),
             ((3, 0), 'wxALL|wxNO_3D', 'wxALL'),
             ((3, 0), 'wxST_ELLIPSIZE_MIDDLE', 'wxST_ELLIPSIZE_MIDDLE'),
-        ]
+            ]
         handler = common.code_writers['C++'].obj_builders['wxStaticText']
         for for_version, unformatted, formatted in details_wxStaticText:
             common.code_writers['C++'].for_version = for_version
@@ -1169,20 +1169,21 @@ class TestCodeGen(WXGladeBaseTest):
             )
 
         details_wxCheckBox = [
-            ((3, 0), 'wxALL', 'wxALL'),
-            ((3, 0), 'wxCHK_ALLOW_3RD_STATE_FOR_USER', 'wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER'),
-            ((3, 0), 'wxALL|wxCHK_2STATE|wxCHK_3STATE', 'wxALL|wxCHK_2STATE'),
+            ('wxALL', 'wxALL'),
+            ('wxCHK_ALLOW_3RD_STATE_FOR_USER', 'wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER'),
+            ('wxALL|wxCHK_ALLOW_3RD_STATE_FOR_USER', 'wxALL|wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER'),
+            ('wxALL|wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER|wxCHK_2STATE', 'wxALL|wxCHK_2STATE'),
+            ('wxALL|wxCHK_2STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER', 'wxALL|wxCHK_2STATE'),
+            ('wxALL|wxCHK_3STATE|wxCHK_2STATE', 'wxALL|wxCHK_2STATE'),
             ]
         handler = common.code_writers['C++'].obj_builders['wxCheckBox']
-        for for_version, unformatted, formatted in details_wxCheckBox:
-            common.code_writers['C++'].for_version = for_version
+        common.code_writers['C++'].for_version = (3, 0)
+        for unformatted, formatted in details_wxCheckBox:
             ret = handler.cn_f(unformatted)
             self.failUnlessEqual(
                 formatted,
                 ret,
-                'Unexpected result for wx%s%s got: "%s" expect: "%s"' % (
-                    for_version[0],
-                    for_version[1],
+                'Unexpected result for wx30 got: "%s" expect: "%s"' % (
                     ret,
                     formatted,
                 )

@@ -22,7 +22,7 @@ config = {
                       "third state. It can only be done from code. Using "
                       "this flags allows the user to set the checkbox to "
                       "the third state by clicking."),
-            'include': 'wxCHK_3STATE',
+            'require': 'wxCHK_3STATE',
         },
         'wxALIGN_RIGHT': {
             'desc': _('Makes the text appear on the left of the checkbox.')

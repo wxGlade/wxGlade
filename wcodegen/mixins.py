@@ -1,5 +1,5 @@
 """\
-Different mixins
+Different Mixins
 
 @copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
@@ -22,17 +22,19 @@ class StylesMixin(object):
         Rearrange and format flags.
 
         Steps to rearrange:
-         1. Split given string using delimiter '|'
-         2. Remove duplicate flags
-         3. Delete flags using the 'exclude' entry
-         4. Add additional flags using the 'include' entry
-         5. Rename flags using the 'rename_to' entry
-            (see L{common.widget_config})
-         6. Combine flags using the 'combination' entry
-         7. Remove unsupported styles checking 'for_version' attribute of
-            L{self.codegen}
-         8. Format single flags with L{cn_f()} if L{format_flags} is True
-         9. Sort and recombine flags using L{tmpl_flag_join}
+         1. Split given string using delimiter '|' and remove duplicate flags
+         2. Process following style attributes, the styles are processed in
+            a alphanumeric order:
+            - Rename flags using the 'rename_to' entry
+            - Add additional flags using the 'include' entry (soft
+              requirement)
+            - Delete flags using the 'exclude' entry
+            - Remove unsupported flags using the 'supported_by' entry
+            - Add required flags using the 'require' entry (hard
+              requirement)
+         3. Combine flags using the 'combination' entry
+         4. Format single flags with L{cn()} if L{format_flags} is True
+         5. Sort and recombine flags using L{tmpl_flag_join}
 
         The style details are described in L{common.widget_config}. The
         access to the details is only available in widget writer instances.
@@ -68,11 +70,8 @@ class StylesMixin(object):
 
         # check for non-supported, renamed flags and ...
         if self.style_defs:
-            flags = self.add_styles(flags)
-            flags = self.delete_styles(flags)
-            flags = self.rename_styles(flags)
+            flags = self.process_styles(flags)
             flags = self.combine_styles(flags)
-            flags = self.remove_unsupported_styles(flags)
 
         if hasattr(self, 'cn') and getattr(self, 'format_flags', True):
             flags = [self.cn(f) for f in flags]
@@ -103,8 +102,8 @@ class StylesMixin(object):
                  styles.
         @rtype: dict
         """
+        styles = {}
         # Use always a deep-copy to prevent changing original data
-
         try:
             styles = copy.deepcopy(common.widget_config['generic_styles'])
             styles.update(common.widget_config[widget_name]['style_defs'])
@@ -129,11 +128,15 @@ class StylesMixin(object):
 
     style_defs = property(_get_style_defs)
 
-    def add_styles(self, flags):
+    def process_styles(self, flags):
         """\
-        Check given flags for the attribute 'include' and add required flags.
+        Process the style attributes 'rename_to', 'include', 'exclude',
+        'supported_by' and 'require'.
 
-        @param flags: Flags to check for alternative names
+        The documentation of L{cn_f()} contains more details of the flag
+        handling process.
+
+        @param flags: Flags to process
         @type flags:  set
 
         @return: Processed flags
@@ -141,16 +144,65 @@ class StylesMixin(object):
 
         @see: L{common.widget_config}
         """
+        assert isinstance(flags, set)
+
+        # processing empty set()s causes later trouble with
+        # set([<filled>]) >= set()
         if not flags:
             return flags
 
+
         for flag in flags.copy():
             try:
-                flags |= self.style_defs[flag]['include']
+                flags.add(self.style_defs[flag]['rename_to'])
+                flags.remove(flag)
             except (AttributeError, KeyError):
                 pass
 
+        add = set()
+        remove = set()
+        flag_list = list(flags)
+        flag_list.sort()
+
+        for required_by in flag_list:
+            if required_by in remove:
+                continue
+            try:
+                add |= self.style_defs[required_by]['include']
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                remove |= self.style_defs[required_by]['exclude']
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                supported_by = self.style_defs[required_by]['supported_by']
+                major = 'wx%d' % self.codegen.for_version[0]
+                detailed = 'wx%d%d' % self.codegen.for_version
+                if not (major in supported_by or detailed in supported_by):
+                    remove.add(required_by)
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                for required in self.style_defs[required_by]['require']:
+                    if required in remove:
+                        remove.add(required_by)
+                    else:
+                        add.add(required)
+            except (AttributeError, KeyError):
+                pass
+
+        # drop flags from add if they should be removed
+        add -= remove
+
+        flags |= add
+        flags -= remove
+
         return flags
+
 
     def combine_styles(self, flags):
         """\
@@ -187,91 +239,6 @@ class StylesMixin(object):
             try:
                 flags -= self.style_defs[flag]['combination']
             except (KeyError, TypeError):
-                pass
-
-        return flags
-
-    def delete_styles(self, flags):
-        """\
-        Check given flags for the attribute 'exclude' and remove the excluded
-        flags.
-
-        @param flags: Flags to check for removal.
-        @type flags:  set
-
-        @return: Processed flags
-        @rtype: set
-
-        @see: L{common.widget_config}
-        """
-        if not flags:
-            return flags
-
-        flag_list = list(flags)
-        flag_list.sort()
-        for flag in flag_list:
-            try:
-                to_delete = self.style_defs[flag]['exclude']
-                if to_delete <= flags and flag in flags:
-                    flags -= to_delete
-            except (AttributeError, KeyError):
-                pass
-
-        return flags
-
-    def remove_unsupported_styles(self, flags):
-        """\
-        Check given flags for the attribute 'supported_by' and remove the
-        unsupported flags.
-
-        @param flags: Flags to check for removal.
-        @type flags:  set
-
-        @return: Processed flags
-        @rtype: set
-
-        @see: L{common.widget_config}
-        """
-        if not flags:
-            return flags
-
-        for flag in flags.copy():
-            try:
-                # nothing to do if 'supported_by' doesn't exists
-                supported_by = self.style_defs[flag]['supported_by']
-            except (AttributeError, KeyError):
-                continue
-
-            for_version_major = 'wx%d' % self.codegen.for_version[0]
-            for_version_detailed = 'wx%d%d' % self.codegen.for_version
-
-            if not (for_version_major in supported_by or
-                            for_version_detailed in supported_by):
-                flags.remove(flag)
-
-        return flags
-
-    def rename_styles(self, flags):
-        """\
-        Check given flags for alternative names (attribute 'rename_to') and
-        rename those flags.
-
-        @param flags: Flags to check for alternative names
-        @type flags:  set
-
-        @return: Processed flags
-        @rtype: set
-
-        @see: L{common.widget_config}
-        """
-        if not flags:
-            return flags
-
-        for flag in flags.copy():
-            try:
-                flags.add(self.style_defs[flag]['rename_to'])
-                flags.remove(flag)
-            except (AttributeError, KeyError):
                 pass
 
         return flags

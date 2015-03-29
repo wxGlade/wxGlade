@@ -328,13 +328,19 @@ Style attributes:
     removed by selecting this style
 
   - I{'include':} I{<styles joined by '|'>} - The style requires additional
-    styles
+    styles. The listed styles are a soft requirement - these styles are
+    added even if the "requesting" style will be delete somehow or other.
 
   - I{'obsolete':} I{<text>} - This style is obsolete. A short notice will
     shown in the style tooltip
 
   - I{'rename_to:} I{<new style name>} - The style will be renamed into the
     given style name
+
+  - I{'require':} I{<styles joined by '|'>} - The style requires additional
+    styles. The listed styles are a hard requirement - these styles are
+    added only in together with the "requesting" style. If the "requesting"
+    style will be deleted, these styles will be not added.
 
   - I{'supported_by':} I{(<supported version>)}- List of versions
     supporting this style
@@ -344,6 +350,8 @@ Style attributes:
 
 Use gettext (C{_()}) for the attributes content of "box_label", "desc" and
 "obsolete".
+
+The style processing is described in L{wcodegen.mixins.StylesMixin.cn_f()}.
 
 @type: dict
 """
@@ -682,8 +690,8 @@ def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
 
 def style_attrs_to_sets(styles):
     """\
-    Convert the style attributes combination', 'exclude' and 'include' from
-    string to a set.
+    Convert the style attributes 'combination', 'exclude', 'include' and
+    'require' from string to a set.
 
     @param styles: Style dictionary
     @type styles: dict
@@ -692,7 +700,7 @@ def style_attrs_to_sets(styles):
     @rtype: dict
     """
     for style_name in styles.keys():
-        for attr in ['combination', 'exclude', 'include',]:
+        for attr in ['combination', 'exclude', 'include','require', ]:
             try:
                 styles[style_name][attr] = \
                     set(styles[style_name][attr].split('|'))
