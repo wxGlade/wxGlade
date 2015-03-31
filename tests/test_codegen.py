@@ -1,12 +1,11 @@
 """
-@copyright: 2012-2014 Carsten Grohmann
+@copyright: 2012-2015 Carsten Grohmann
 
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import os
 import StringIO
-import re
 
 # import test base class
 from tests import WXGladeBaseTest
@@ -249,7 +248,6 @@ class TestCodeGen(WXGladeBaseTest):
                 )
 
         # test for Perl
-        lang = 'Perl'
         gen_id = common.code_writers['perl'].generate_code_id
         cn = common.code_writers['perl'].cn
         for test_id, target_decl, target_value in [
@@ -318,9 +316,7 @@ class TestCodeGen(WXGladeBaseTest):
         @see: L{codegen.py_codegen.PythonCodeWriter}
         """
         source = self._load_file('PyOgg2.wxg')
-        source = self._modify_attrs(source,
-            overwrite='0',
-            )
+        source = self._modify_attrs(source, overwrite='0')
         result_app    = self._load_file('PyOgg2_app.py')
         result_dialog = self._load_file('PyOgg2_MyDialog.py')
         result_frame  = self._load_file('PyOgg2_MyFrame.py')
@@ -345,10 +341,7 @@ class TestCodeGen(WXGladeBaseTest):
         source = source.replace('PyOgg2', 'PyOgg3')
 
         # set option="0" for writing into a single file
-        source = self._modify_attrs(source,
-            option='0',
-            path='PyOgg3.py'
-            )
+        source = self._modify_attrs(source, option='0', path='PyOgg3.py')
 
         # generate and compare code
         self._generate_code('python', source, 'PyOgg3.py')
@@ -361,11 +354,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{codegen.py_codegen.LispCodeWriter}
         """
-        self._generate_and_compare(
-            'lisp',
-            'LispOgg1.wxg',
-            'LispOgg1.lisp'
-            )
+        self._generate_and_compare('lisp', 'LispOgg1.wxg', 'LispOgg1.lisp')
 
     def test_Lisp_Ogg2(self):
         """\
@@ -374,9 +363,7 @@ class TestCodeGen(WXGladeBaseTest):
         @see: L{codegen.py_codegen.LispCodeWriter}
         """
         source = self._load_file('LispOgg2.wxg')
-        source = self._modify_attrs(source,
-            overwrite='0',
-            )
+        source = self._modify_attrs(source, overwrite='0')
         result_app    = self._load_file('LispOgg2_app.lisp')
         result_dialog = self._load_file('LispOgg2_MyDialog.lisp')
         result_frame  = self._load_file('LispOgg2_MyFrame.lisp')
@@ -401,10 +388,7 @@ class TestCodeGen(WXGladeBaseTest):
         source = source.replace('LispOgg2', 'LispOgg3')
 
         # set option="0" for writing into a single file
-        source = self._modify_attrs(source,
-            option='0',
-            path='LispOgg3.lisp'
-            )
+        source = self._modify_attrs(source, option='0', path='LispOgg3.lisp')
 
         # generate and compare code
         self._generate_code('lisp', source, 'LispOgg3.lisp')
@@ -417,11 +401,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{codegen.perl_codegen.PerlCodeWriter}
         """
-        self._generate_and_compare(
-            'perl',
-            'PlOgg1.wxg',
-            'PlOgg1.pl'
-            )
+        self._generate_and_compare('perl', 'PlOgg1.wxg', 'PlOgg1.pl')
 
     def test_Perl_Ogg2(self):
         """\
@@ -430,9 +410,7 @@ class TestCodeGen(WXGladeBaseTest):
         @see: L{codegen.perl_codegen.PerlCodeWriter}
         """
         source = self._load_file('PlOgg2.wxg')
-        source = self._modify_attrs(source,
-            overwrite='0',
-            )
+        source = self._modify_attrs(source, overwrite='0')
         result_app    = self._load_file('PlOgg2_app.pl')
         result_dialog = self._load_file('PlOgg2_MyDialog.pm')
         result_frame  = self._load_file('PlOgg2_MyFrame.pm')
@@ -457,10 +435,7 @@ class TestCodeGen(WXGladeBaseTest):
         source = source.replace('PlOgg2', 'PlOgg3')
 
         # set option="0" for writing into a single file
-        source = self._modify_attrs(source,
-            option='0',
-            path='PlOgg3.pl'
-            )
+        source = self._modify_attrs(source, option='0', path='PlOgg3.pl')
 
         # generate and compare code
         self._generate_code('perl', source, 'PlOgg3.pl')
@@ -473,10 +448,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{codegen.cpp_codegen.PythonCodeWriter}
         """
-        self._generate_and_compare_cpp(
-            'CPPOgg1.wxg',
-            'CPPOgg1'
-            )
+        self._generate_and_compare_cpp('CPPOgg1.wxg', 'CPPOgg1')
 
     def test_CPP_Ogg2(self):
         """\
@@ -485,9 +457,7 @@ class TestCodeGen(WXGladeBaseTest):
         @see: L{codegen.cpp_codegen.CPPCodeWriter}
         """
         source = self._load_file('CPPOgg2.wxg')
-        source = self._modify_attrs(source,
-            overwrite='0',
-            )
+        source = self._modify_attrs(source, overwrite='0')
         result_app        = self._load_file('CPPOgg2_main.cpp')
         result_dialog_cpp = self._load_file('CPPOgg2_MyDialog.cpp')
         result_dialog_h   = self._load_file('CPPOgg2_MyDialog.h')
@@ -519,10 +489,7 @@ class TestCodeGen(WXGladeBaseTest):
         source = source.replace('CPPOgg2', 'CPPOgg3')
 
         # set option="0" for writing into a single file
-        source = self._modify_attrs(source,
-            option='0',
-            path='CPPOgg3'
-            )
+        source = self._modify_attrs(source, option='0', path='CPPOgg3')
 
         # generate and compare code
         self._generate_code('C++', source, 'CPPOgg3')
@@ -1332,8 +1299,8 @@ class TestCodeGen(WXGladeBaseTest):
 
                 if language in ['python', 'perl']:
                     try:
-                        dummy = formatted.encode('ascii')
-                    except UnicodeDecodeError, e:
+                        formatted.encode('ascii')
+                    except UnicodeDecodeError:
                         self.fail('%s: ASCII string expected for "%s"' % (
                             language, formatted))
 
@@ -1379,10 +1346,9 @@ class TestCodeGen(WXGladeBaseTest):
 
     def test_AllWidgets(self):
         """\
-        Test code generation for a complex example
+        Test code generation for all widgets
         """
         self._test_all('AllWidgets_28')
-        #self._test_all('AllWidgets_30')
 
     def test_copy_py_codegen(self):
         """\
@@ -1465,9 +1431,7 @@ class TestCodeGen(WXGladeBaseTest):
         """
         # load XML input file
         source = self._load_file('Lisp_Preferences.wxg')
-        source = self._modify_attrs(source,
-            for_version='3.0',
-            )
+        source = self._modify_attrs(source, for_version='3.0')
 
         # generate code and check for raising exception
         self.failUnlessRaises(
@@ -1516,10 +1480,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # Multiple output file out_path should be a writable directory
         #=============================================================
-        source = self._modify_attrs(
-            source,
-            option=1,
-        )
+        source = self._modify_attrs(source, option=1)
         self.failUnlessRaises(
             errors.WxgOutputDirectoryNotExist,
             self._generate_code,
@@ -1545,10 +1506,7 @@ class TestCodeGen(WXGladeBaseTest):
         source = self._load_file('Python_Preferences.wxg')
 
         # check to multiple files
-        source = self._modify_attrs(
-            source,
-            option=1,
-        )
+        source = self._modify_attrs(source, option=1)
 
         # generate code and check for raising exception
         self.failUnlessRaises(
@@ -1569,10 +1527,7 @@ class TestCodeGen(WXGladeBaseTest):
         source = self._load_file('Python_Preferences.wxg')
 
         # check to multiple files
-        source = self._modify_attrs(
-            source,
-            is_template=1,
-        )
+        source = self._modify_attrs(source, is_template=1)
 
         # generate code and check for raising exception
         self.failUnlessRaises(
