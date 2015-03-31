@@ -1227,6 +1227,9 @@ class RadioProperty(Property, _activator):
     @ivar choices: Choices shown in the radiobox
     @type choices: list[str]
 
+    @ivar options: wxRadioBox instance
+    @type options: wx.RadioBox | None
+
     @ivar _cap2orig: Dictionary for reverse mapping between the capitalised
                      entry and the original one.
     @type _cap2orig: dict
@@ -1246,6 +1249,7 @@ class RadioProperty(Property, _activator):
         self.choices = choices
         self.columns = columns
         self.panel = None
+        self.options = None
         self.label = label
         self.sort = sort
         self.tooltips = tooltips
@@ -1378,6 +1382,8 @@ class RadioProperty(Property, _activator):
         @param flag: Enable or disable this item
         @type flag:  bool
         """
+        if not self.options:
+            return
         if self.capitalize:
             item = misc.capitalize(item)
         index = self.choices.index(item)
