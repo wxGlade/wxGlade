@@ -5,6 +5,7 @@ General:
   - Change internal string handling to Unicode partially
   - Show logged exceptions in wxGlade bug dialog
   - Store generated source files in the selected encoding
+  - Add support for 3-state checkboxes
   - ...
 
 Generated Code:

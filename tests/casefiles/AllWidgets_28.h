@@ -68,6 +68,9 @@ protected:
     wxCheckBox* checkbox_1;
     wxCheckBox* checkbox_2;
     wxCheckBox* checkbox_3;
+    wxCheckBox* checkbox_4;
+    wxCheckBox* checkbox_5;
+    wxCheckBox* checkbox_6;
     wxPanel* notebook_1_wxCheckBox;
     wxChoice* choice_empty;
     wxChoice* choice_filled;

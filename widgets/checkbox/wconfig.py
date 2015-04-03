@@ -31,6 +31,13 @@ config = {
     'box_label': _('Style'),
     'style_list': ['wxCHK_2STATE', 'wxCHK_3STATE',
                    'wxCHK_ALLOW_3RD_STATE_FOR_USER', 'wxALIGN_RIGHT'],
+
+    # mapping for selected values to checkbox states (wxCheckBoxState)
+    'number2state': {
+        0: 'wxCHK_UNCHECKED',
+        1: 'wxCHK_CHECKED',
+        2: 'wxCHK_UNDETERMINED',
+    },
 }
 
 

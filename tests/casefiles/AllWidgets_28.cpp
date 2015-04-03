@@ -66,9 +66,12 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     bitmap_button_1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY));
     button_3 = new wxButton(notebook_1_wxButton, wxID_BOLD, wxEmptyString);
     calendar_ctrl_1 = new wxCalendarCtrl(notebook_1_wxCalendarCtrl, wxID_ANY);
-    checkbox_1 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("one"));
-    checkbox_2 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("two"));
-    checkbox_3 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("three"));
+    checkbox_1 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("one (unchecked)"));
+    checkbox_2 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("two (checked)"));
+    checkbox_3 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("three"), wxDefaultPosition, wxDefaultSize, wxCHK_2STATE);
+    checkbox_4 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("four (unchecked)"), wxDefaultPosition, wxDefaultSize, wxCHK_3STATE);
+    checkbox_5 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("five (checked)"), wxDefaultPosition, wxDefaultSize, wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER);
+    checkbox_6 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("six (undetermined)"), wxDefaultPosition, wxDefaultSize, wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER);
     const wxString *choice_empty_choices = NULL;
     choice_empty = new wxChoice(notebook_1_wxChoice, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, choice_empty_choices);
     const wxString choice_filled_choices[] = {
@@ -163,6 +166,10 @@ void All_Widgets_Frame::set_properties()
     }
     bitmap_button_1->SetSize(bitmap_button_1->GetBestSize());
     bitmap_button_1->SetDefault();
+    checkbox_2->SetValue(1);
+    checkbox_4->Set3StateValue(wxCHK_UNCHECKED);
+    checkbox_5->Set3StateValue(wxCHK_CHECKED);
+    checkbox_6->Set3StateValue(wxCHK_UNDETERMINED);
     choice_filled->SetSelection(1);
     combo_box_filled->SetSelection(0);
     grid_1->CreateGrid(10, 3);
@@ -211,7 +218,7 @@ void All_Widgets_Frame::do_layout()
     wxBoxSizer* sizer_6 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_5 = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer* sizer_21 = new wxBoxSizer(wxVERTICAL);
+    wxGridSizer* sizer_21 = new wxGridSizer(2, 3, 0, 0);
     wxBoxSizer* sizer_12 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_28 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_13 = new wxBoxSizer(wxHORIZONTAL);
@@ -221,9 +228,12 @@ void All_Widgets_Frame::do_layout()
     notebook_1_wxButton->SetSizer(sizer_28);
     sizer_12->Add(calendar_ctrl_1, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxCalendarCtrl->SetSizer(sizer_12);
-    sizer_21->Add(checkbox_1, 0, 0, 0);
-    sizer_21->Add(checkbox_2, 0, 0, 0);
-    sizer_21->Add(checkbox_3, 0, 0, 0);
+    sizer_21->Add(checkbox_1, 0, wxEXPAND, 0);
+    sizer_21->Add(checkbox_2, 0, wxEXPAND, 0);
+    sizer_21->Add(checkbox_3, 0, wxEXPAND, 0);
+    sizer_21->Add(checkbox_4, 0, wxEXPAND, 0);
+    sizer_21->Add(checkbox_5, 0, wxEXPAND, 0);
+    sizer_21->Add(checkbox_6, 0, wxEXPAND, 0);
     notebook_1_wxCheckBox->SetSizer(sizer_21);
     sizer_5->Add(choice_empty, 1, wxALL, 5);
     sizer_5->Add(choice_filled, 1, wxALL, 5);
