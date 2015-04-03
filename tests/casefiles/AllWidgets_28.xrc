@@ -90,21 +90,52 @@
                     <object class="notebookpage">
                     <label>wxCheckBox</label>
                     <object class="wxPanel" name="notebook_1_wxCheckBox">
-                        <object class="wxBoxSizer">
-                            <orient>wxVERTICAL</orient>
+                        <object class="wxGridSizer">
+                            <hgap>0</hgap>
+                            <rows>2</rows>
+                            <cols>3</cols>
+                            <vgap>0</vgap>
                             <object class="sizeritem">
+                                <flag>wxEXPAND</flag>
                                 <object class="wxCheckBox" name="checkbox_1">
-                                    <label>one</label>
+                                    <label>one (unchecked)</label>
                                 </object>
                             </object>
                             <object class="sizeritem">
+                                <flag>wxEXPAND</flag>
                                 <object class="wxCheckBox" name="checkbox_2">
-                                    <label>two</label>
+                                    <checked>1</checked>
+                                    <label>two (checked)</label>
                                 </object>
                             </object>
                             <object class="sizeritem">
+                                <flag>wxEXPAND</flag>
                                 <object class="wxCheckBox" name="checkbox_3">
+                                    <style>wxCHK_2STATE</style>
                                     <label>three</label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxEXPAND</flag>
+                                <object class="wxCheckBox" name="checkbox_4">
+                                    <style>wxCHK_3STATE</style>
+                                    <label>four (unchecked)</label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxEXPAND</flag>
+                                <object class="wxCheckBox" name="checkbox_5">
+                                    <style>wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER</style>
+                                    <checked>1</checked>
+                                    <label>five (checked)</label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxEXPAND</flag>
+                                <object class="wxCheckBox" name="checkbox_6">
+                                    <style>wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER</style>
+                                    <checked>2</checked>
+                                    <label>six (undetermined)</label>
                                 </object>
                             </object>
                         </object>

@@ -2,34 +2,50 @@
 Code generator functions for wxCheckBox objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import checkbox_base
 import common
 import wcodegen
 
 
-class PythonCheckBoxGenerator(wcodegen.PythonWidgetCodeWriter):
+class PythonCheckBoxGenerator(wcodegen.PythonWidgetCodeWriter,
+                              checkbox_base.CheckBoxMixin):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, ' \
            '%(label)s%(style)s)\n'
+    tmpl_set3statevalue = '%(name)s.Set3StateValue(%(value_3state)s)\n'
 
     def _prepare_tmpl_content(self, obj):
-        wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.has_setvalue1 = obj.properties.get('checked', False)
-        return
+        super(PythonCheckBoxGenerator, self)._prepare_tmpl_content(obj)
+        self._prepare_checkbox_content(obj)
+
+    def get_code(self, obj):
+        init_lines, prop_lines, layout_lines = \
+            super(PythonCheckBoxGenerator, self).get_code(obj)
+        self._get_checkbox_code(prop_lines)
+        return init_lines, prop_lines, layout_lines
 
 # end of class PythonCheckBoxGenerator
 
 
-class CppCheckBoxGenerator(wcodegen.CppWidgetCodeWriter):
+class CppCheckBoxGenerator(wcodegen.CppWidgetCodeWriter,
+                           checkbox_base.CheckBoxMixin):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
            '%(label)s%(style)s);\n'
+    tmpl_set3statevalue = '%(name)s->Set3StateValue(%(value_3state)s);\n'
 
     def _prepare_tmpl_content(self, obj):
-        wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.has_setvalue1 = obj.properties.get('checked', False)
-        return
+        super(CppCheckBoxGenerator, self)._prepare_tmpl_content(obj)
+        self._prepare_checkbox_content(obj)
+
+    def get_code(self, obj):
+        init_lines, id_lines, prop_lines, layout_lines = \
+            super(CppCheckBoxGenerator, self).get_code(obj)
+        self._get_checkbox_code(prop_lines)
+        return init_lines, id_lines, prop_lines, layout_lines
+
 
 # end of class CppCheckBoxGenerator
 
