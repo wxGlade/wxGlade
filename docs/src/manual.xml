@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2014-03-12</date>
+    <date>2014-04-03</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -541,7 +541,9 @@ loading widget modules:
 
         <listitem>
           <para>Include the internal error log file <quote>wxglade.log</quote>
-          always. The location is described in <xref
+          always. The pane <quote><guilabel>How to Report a
+          Bug</guilabel></quote> contains the full path of the error log file.
+          The file location is additionally described in <xref
           linkend="config.files.section"/>.</para>
         </listitem>
       </itemizedlist>

@@ -6,6 +6,7 @@ Dialog to show details of internal errors.
 """
 
 import bugdialog_ui
+import config
 import log
 
 import logging
@@ -96,6 +97,9 @@ class BugReport(bugdialog_ui.UIBugDialog):
         self.st_header.SetLabel(header)
         self.st_summary.SetLabel(summary)
         self.tc_details.SetValue(details)
+        howto = self.tc_howto_report.GetValue()
+        howto = howto % {'log_file': config.log_file}
+        self.tc_howto_report.SetValue(howto)
 
     def OnCopy(self, event):
         """\
