@@ -25,13 +25,13 @@ class StylesMixin(object):
          1. Split given string using delimiter '|' and remove duplicate flags
          2. Process following style attributes, the styles are processed in
             a alphanumeric order:
-            - Rename flags using the 'rename_to' entry
-            - Add additional flags using the 'include' entry (soft
-              requirement)
-            - Delete flags using the 'exclude' entry
-            - Remove unsupported flags using the 'supported_by' entry
-            - Add required flags using the 'require' entry (hard
-              requirement)
+              - Rename flags using the 'rename_to' entry
+              - Add additional flags using the 'include' entry (soft
+                requirement)
+              - Delete flags using the 'exclude' entry
+              - Remove unsupported flags using the 'supported_by' entry
+              - Add required flags using the 'require' entry (hard
+                requirement)
          3. Combine flags using the 'combination' entry
          4. Format single flags with L{cn()} if L{format_flags} is True
          5. Sort and recombine flags using L{tmpl_flag_join}
