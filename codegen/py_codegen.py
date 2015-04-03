@@ -269,7 +269,6 @@ from %(top_win_class)s import %(top_win_class)s\n\n"""
     tmpl_detailed = """\
 class %(klass)s(%(cn_wxApp)s):
 %(tab)sdef OnInit(self):
-%(tab)s%(tab)s%(cn_wxInitAll)s()
 %(tab)s%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
 %(tab)s%(tab)sself.SetTopWindow(%(top_win)s)
 %(tab)s%(tab)s%(top_win)s.Show()
@@ -284,7 +283,6 @@ if __name__ == "__main__":
     tmpl_gettext_detailed = """\
 class %(klass)s(%(cn_wxApp)s):
 %(tab)sdef OnInit(self):
-%(tab)s%(tab)s%(cn_wxInitAll)s()
 %(tab)s%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
 %(tab)s%(tab)sself.SetTopWindow(%(top_win)s)
 %(tab)s%(tab)s%(top_win)s.Show()
@@ -301,7 +299,6 @@ if __name__ == "__main__":
     tmpl_simple = """\
 if __name__ == "__main__":
 %(tab)s%(name)s = %(cn_wxPySimpleApp)s(0)
-%(tab)s%(cn_wxInitAll)s()
 %(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
 %(tab)s%(name)s.SetTopWindow(%(top_win)s)
 %(tab)s%(top_win)s.Show()
@@ -312,7 +309,6 @@ if __name__ == "__main__":
 %(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name
 
 %(tab)s%(name)s = %(cn_wxPySimpleApp)s(0)
-%(tab)s%(cn_wxInitAll)s()
 %(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
 %(tab)s%(name)s.SetTopWindow(%(top_win)s)
 %(tab)s%(top_win)s.Show()
@@ -335,7 +331,6 @@ if __name__ == "__main__":
         self.lang_mapping = {
             'cn_wxApp': self.cn('wxApp'),
             'cn_wxIDANY': self.cn('wxID_ANY'),
-            'cn_wxInitAll': self.cn('wxInitAllImageHandlers'),
             'cn_wxPySimpleApp': self.cn('wxPySimpleApp'),
             'import_gettext': '',
             }

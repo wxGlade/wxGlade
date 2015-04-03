@@ -141,7 +141,6 @@ class wxGladeAboutBox(wx.Dialog):
 
 
 if __name__ == '__main__':
-    wx.InitAllImageHandlers()
     app = wx.PySimpleApp()
     d = wxGladeAboutBox()
     app.SetTopWindow(d)

@@ -1063,7 +1063,6 @@ class wxGlade(wx.App):
         # needed for wx >= 2.3.4 to disable wxPyAssertionError exceptions
         self.SetAssertMode(0)
 
-        wx.InitAllImageHandlers()
         common.init_preferences()
         if config.preferences.log_debug_info:
             log.setDebugLevel()

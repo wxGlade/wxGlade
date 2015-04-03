@@ -12,7 +12,6 @@ from MyAppFrame import MyAppFrame
 
 class MyStartApp(wx.App):
     def OnInit(self):
-        wx.InitAllImageHandlers()
         appframe = MyAppFrame(None, wx.ID_ANY, "")
         self.SetTopWindow(appframe)
         appframe.Show()
