@@ -47,7 +47,6 @@ class MyFrame(wx.Frame):
 # end of class MyFrame
 class MyApp(wx.App):
     def OnInit(self):
-        wx.InitAllImageHandlers()
         frame_1 = MyFrame(None, wx.ID_ANY, "")
         self.SetTopWindow(frame_1)
         frame_1.Show()

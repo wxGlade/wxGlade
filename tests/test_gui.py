@@ -49,7 +49,6 @@ class TestGui(WXGladeBaseTest):
 
         # create an simply application
         cls.app = wx.PySimpleApp()
-        wx.InitAllImageHandlers()
         wx.ArtProvider.PushProvider(main.wxGladeArtProvider())
         cls.frame = main.wxGladeFrame()
 

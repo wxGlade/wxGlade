@@ -329,7 +329,6 @@ if __name__ == "__main__":
     gettext.install("AllWidgets28App") # replace with the appropriate catalog name
 
     AllWidgets28App = wx.PySimpleApp(0)
-    wx.InitAllImageHandlers()
     All_Widgets = All_Widgets_Frame(None, wx.ID_ANY, "")
     AllWidgets28App.SetTopWindow(All_Widgets)
     All_Widgets.Show()

@@ -95,7 +95,6 @@ if __name__ == "__main__":
     gettext.install("app") # replace with the appropriate catalog name
 
     app = wx.PySimpleApp(0)
-    wx.InitAllImageHandlers()
     UIBugDialog = UIBugDialog(None, wx.ID_ANY, "")
     app.SetTopWindow(UIBugDialog)
     UIBugDialog.Show()

@@ -168,7 +168,6 @@ if __name__ == "__main__":
     gettext.install("app") # replace with the appropriate catalog name
 
     app = wx.PySimpleApp(0)
-    wx.InitAllImageHandlers()
     template_info_dialog = TemplateInfoDialog(None, wx.ID_ANY, "")
     app.SetTopWindow(template_info_dialog)
     template_info_dialog.Show()

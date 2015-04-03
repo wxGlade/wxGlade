@@ -6,9 +6,11 @@ General:
   - Show logged exceptions in wxGlade bug dialog
   - Store generated source files in the selected encoding
   - Add support for 3-state checkboxes
+  - Remove obsolete calls of wx.InitAllImageHandlers()
   - ...
 
 Generated Code:
+  - Remove obsolete wx.InitAllImageHandlers() calls from Python codegen
   - ...
 
 Bugs:
