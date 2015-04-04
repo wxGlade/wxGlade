@@ -20,6 +20,7 @@ import misc
 import common
 import compat
 import config
+import decorators
 
 # event handling support
 from events_mixin import EventsMixin
@@ -1358,15 +1359,6 @@ class EditStylesMixin(object):
     @type: bool
     """
 
-    _attr_cache = {}
-    """\
-    Attribute cache for L{wxname2attr()}.
-
-    @note: The attribute cache is shared between all instances of this class.
-
-    @type: dict
-    """
-
     def __init__(self, klass='', styles=[]):
         """\
         Initialise instance
@@ -1566,12 +1558,11 @@ class EditStylesMixin(object):
         self.style_set = self.widget_writer.combine_styles(new_styles)
         self._set_widget_style()
 
+    @decorators.memoize
     def wxname2attr(self, name):
         """\
         Return the attribute specified by the name. Only wx attributes are
         supported.
-
-        The values will be cached in L{_attr_cache}.
 
         Example::
             >>> self.wxname2attr('wx.version')
@@ -1584,17 +1575,11 @@ class EditStylesMixin(object):
 
         @note: Exceptions especially NameError and AttributeError aren't
         caught.
-
-        @see: L{_attr_cache}
         """
         assert name.startswith('wx')
 
-        if name in self._attr_cache:
-            return self._attr_cache[name]
-
         cn = self.codegen.without_package(self.codegen.cn(name))
         attr = getattr(wx, cn)
-        self._attr_cache[name] = attr
         return attr
 
 # end of class EditStylesMixin
