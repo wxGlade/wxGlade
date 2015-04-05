@@ -600,6 +600,8 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             stmt = '%%(tab)s(setf (slot-top-window obj) (wxDialog_create ' \
                    'nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
             self.dependencies['(use-package :wxButton)'] = 1
+        else:
+            stmt = ''
             
         return stmt
 

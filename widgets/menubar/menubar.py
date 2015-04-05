@@ -167,14 +167,14 @@ class MenuItemDialog(wx.Dialog):
         """\
         Event handler called when the Add button is clicked
         """
-        index = self.selected_index = self.selected_index+1
+        index = self.selected_index = self.selected_index + 1
+        indent = ""
         if not self.menu_items.GetItemCount():
             self._enable_fields()
         if index < 0:
             index = self.menu_items.GetItemCount()
         elif index > 0:
             indent = "    " * self.item_level(index-1)
-        else: indent = ""
         name, label, id, check_radio = "", "item", "", "0"
         self.menu_items.InsertStringItem(index, indent + label)
         self.menu_items.SetStringItem(index, 1, id)
@@ -193,12 +193,14 @@ class MenuItemDialog(wx.Dialog):
         """\
         Event handler called when the Add Separator button is clicked
         """
-        index = self.selected_index+1
+        index = self.selected_index + 1
+        label = '---'
         if not self.menu_items.GetItemCount():
             self._enable_fields()
-        if index < 0: index = self.menu_items.GetItemCount()
-        elif index > 0: label = "    " * self.item_level(index-1) + '---'
-        else: label = '---'
+        if index < 0:
+            index = self.menu_items.GetItemCount()
+        elif index > 0:
+            label = "    " * self.item_level(index-1) + '---'
         self.menu_items.InsertStringItem(index, label)
         self.menu_items.SetStringItem(index, 1, '---')
         self.menu_items.SetStringItem(index, 2, '---')
