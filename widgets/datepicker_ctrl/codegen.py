@@ -2,7 +2,7 @@
 Code generator functions for wxDatePickerCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -29,6 +29,12 @@ class CppDatePickerCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
         self.has_setdefault = obj.properties.get('default', False)
         return
+
+    def get_events(self, obj):
+        """\
+        wxDatePickerCtrl uses wxDateEvent for event handling
+        """
+        return self.codegen.get_events_with_type(obj, 'wxDateEvent')
 
 # end of class CppDatePickerCtrlGenerator
 

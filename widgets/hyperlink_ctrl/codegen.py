@@ -1,7 +1,7 @@
 """
 Code generator functions for wxHyperlinkCtrl objects
 
-@copyright: 2012-2014 Carsten Grohmann
+@copyright: 2012-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -34,6 +34,12 @@ class CppHyperlinkCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         self.tmpl_dict['url'] = self.codegen.quote_str(obj.properties.get('url', ''))
         self.has_setvalue1 = obj.properties.get('checked', False)
         return
+
+    def get_events(self, obj):
+        """\
+        wxHyperlinkCtrl uses wxHyperlinkEvent for event handling
+        """
+        return self.codegen.get_events_with_type(obj, 'wxHyperlinkEvent')
 
 # end of class CppHyperlinkCtrlGenerator
 
