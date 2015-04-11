@@ -2,7 +2,7 @@
 wxTextCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -21,13 +21,6 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
     Class to handle wxTextCtrl objects
     """
 
-    events = [
-        'EVT_TEXT',
-        'EVT_TEXT_ENTER',
-        'EVT_TEXT_URL',
-        'EVT_TEXT_MAXLEN',
-        ]
-    
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
 

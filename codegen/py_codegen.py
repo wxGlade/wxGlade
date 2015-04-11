@@ -462,7 +462,7 @@ if __name__ == "__main__":
         if event_handlers:
             write('\n')
 
-        for win_id, event, handler in event_handlers:
+        for win_id, event, handler, unused in event_handlers:
             if win_id.startswith('#'):
                 win_id = win_id[1:]
             else:
@@ -470,7 +470,7 @@ if __name__ == "__main__":
             write('%(tab)sself.Bind(%(event)s, self.%(handler)s, '
                   '%(win_id)s)\n' % {
                 'tab': tab,
-                'event': event,
+                'event': self.cn(event),
                 'handler': handler,
                 'win_id': win_id,
                 })

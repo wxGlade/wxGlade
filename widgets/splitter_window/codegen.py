@@ -2,7 +2,7 @@
 Code generator functions for wxSplitterWindow objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -197,9 +197,6 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
             elif win_2:
                 add_sub(win_2)
         return props_buf
-
-    def get_events(self, obj):
-        return self.codegen.get_events_with_type(obj, 'wxSplitterEvent')
 
 # end of class CppSplitterWindowGenerator
 

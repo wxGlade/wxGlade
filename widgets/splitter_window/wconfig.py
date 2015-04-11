@@ -1,7 +1,7 @@
 """\
 wxSplitterWindow widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -50,4 +50,13 @@ config = {
                    'wxSP_3DBORDER', 'wxSP_BORDER',
                    'wxSP_NOBORDER', 'wxSP_PERMIT_UNSPLIT',
                    'wxSP_LIVE_UPDATE', 'wxCLIP_CHILDREN'],
-    }
+    'events': {
+        'default': {
+            'type': 'wxSplitterEvent',
+        },
+        'EVT_SPLITTER_SASH_POS_CHANGING': {},
+        'EVT_SPLITTER_SASH_POS_CHANGED': {},
+        'EVT_SPLITTER_UNSPLIT': {},
+        'EVT_SPLITTER_DCLICK': {},
+    },
+}

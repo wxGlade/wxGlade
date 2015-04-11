@@ -2,7 +2,7 @@
 Code generator functions for wxNotebook objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -182,9 +182,6 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
                              (window, self.codegen.quote_str(label)))
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf
-
-    def get_events(self, obj):
-        return self.codegen.get_events_with_type(obj, 'wxNotebookEvent')
 
 # end of class CppNotebookGenerator
 

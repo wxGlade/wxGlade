@@ -47,8 +47,6 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
     @type value: int
     """
 
-    events = ['EVT_CHECKBOX']
-
     index2state = {
         0: wx.CHK_UNCHECKED,
         1: wx.CHK_CHECKED,

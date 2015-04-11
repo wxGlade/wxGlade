@@ -104,12 +104,6 @@ class CppDialogGenerator(wcodegen.CppWidgetCodeWriter):
             pass
         return ret
 
-    def get_events(self, obj):
-        """\
-        wxDialog uses wxCloseEvent for event handling
-        """
-        return self.codegen.get_events_with_type(obj, 'wxCloseEvent')
-
 # end of class CppDialogGenerator
 
 

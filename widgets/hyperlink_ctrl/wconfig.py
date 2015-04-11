@@ -1,7 +1,7 @@
 """\
 wxHyperlinkCtrl widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -34,4 +34,9 @@ config = {
     'box_label': _('Style'),
     'style_list': ['wxHL_ALIGN_LEFT', 'wxHL_ALIGN_RIGHT', 'wxHL_ALIGN_CENTRE',
                    'wxHL_CONTEXTMENU', 'wxHL_DEFAULT_STYLE'],
+    'events': {
+        'EVT_HYPERLINK': {
+            'type': 'wxHyperlinkEvent',
+        },
+    },
 }

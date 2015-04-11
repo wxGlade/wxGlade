@@ -318,6 +318,8 @@ Elements:
 
   - I{style_list} - List of all styles to show within the style box
 
+  - I{events} - Dictionary with event specific settings
+
 Style attributes:
   - I{'desc':} I{<description>} - Short style description
 
@@ -342,11 +344,20 @@ Style attributes:
     added only in together with the "requesting" style. If the "requesting"
     style will be deleted, these styles will be not added.
 
-  - I{'supported_by':} I{(<supported version>)}- List of versions
+  - I{'supported_by':} I(<supported version>) - List of versions
     supporting this style
 
   - I{'synonym':} I{<alternative name>} - Short notice about an alternative
     style name shown in style tooltip
+
+Event attributes:
+  - I{'type':} I{<event type>} - Event type, fallback is C{wxCommandEvent}
+
+  - I{'supported_by':} I{(<supported version>)} - List of versions
+    supporting this event
+
+All event attributes are optional. If no attributes are given,
+C{wxCommandEvent} will be used as event type.
 
 Use gettext (C{_()}) for the attributes content of "box_label", "desc" and
 "obsolete".
@@ -639,9 +650,13 @@ def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
                                   'settings')
                             )
                             continue
-                        # process widget related style attributes
-                        style_attrs_to_sets(config_dict['style_defs'])
-                        widget_config[config_dict['wxklass']] = config_dict
+                        try:
+                            # process widget related style attributes
+                            style_attrs_to_sets(config_dict['style_defs'])
+                            widget_config[config_dict['wxklass']] = \
+                                config_dict
+                        except KeyError:
+                            pass
                     else:
                         logger.debug(
                             _('Missing configuration in module %s'), fqmn

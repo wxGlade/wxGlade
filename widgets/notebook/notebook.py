@@ -185,8 +185,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     @type: Integer
     """
 
-    events = ['EVT_NOTEBOOK_PAGE_CHANGED', 'EVT_NOTEBOOK_PAGE_CHANGING']
-
     update_widget_style = False
 
     def __init__(self, name, parent, id, style, sizer, pos,

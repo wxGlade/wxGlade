@@ -30,12 +30,6 @@ class CppDatePickerCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         self.has_setdefault = obj.properties.get('default', False)
         return
 
-    def get_events(self, obj):
-        """\
-        wxDatePickerCtrl uses wxDateEvent for event handling
-        """
-        return self.codegen.get_events_with_type(obj, 'wxDateEvent')
-
 # end of class CppDatePickerCtrlGenerator
 
 

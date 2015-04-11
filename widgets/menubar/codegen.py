@@ -128,7 +128,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                 if not val:
                     val = '-1'  # but this is wrong anyway...
             if item.handler:
-                ret.append((val, 'EVT_MENU', item.handler))
+                ret.append((val, 'EVT_MENU', item.handler, 'wxCommandEvent'))
             if item.children:
                 for c in item.children:
                     ret.extend(do_get(c))

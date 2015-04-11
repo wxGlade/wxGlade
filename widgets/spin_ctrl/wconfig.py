@@ -1,7 +1,7 @@
 """\
 wxSpinCtrl widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -139,4 +139,9 @@ config = {
                    'wxTE_LEFT', 'wxTE_CENTRE', 'wxTE_RIGHT', 'wxTE_DONTWRAP',
                    'wxTE_LINEWRAP', 'wxTE_CHARWRAP', 'wxTE_WORDWRAP',
                    'wxTE_BESTWRAP', 'wxTE_CAPITALIZE', 'wxNO_BORDER'],
+    'events': {
+        'EVT_SPINCTRL': {
+            'type': 'wxSpinEvent',
+        },
+    },
 }

@@ -1,7 +1,7 @@
 """\
 wxDialog widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -47,7 +47,15 @@ config = {
                    'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX', 'wxTHICK_FRAME',
                    'wxRESIZE_BORDER', 'wxSTAY_ON_TOP', 'wxNO_3D',
                    'wxDIALOG_NO_PARENT', 'wxNO_FULL_REPAINT_ON_RESIZE',
-                   'wxFULL_REPAINT_ON_RESIZE', 'wxCLIP_CHILDREN']
+                   'wxFULL_REPAINT_ON_RESIZE', 'wxCLIP_CHILDREN'],
+    'events': {
+        'default': {
+            'type': 'wxCloseEvent',
+            'supported_by': ('wx3',),
+        },
+        'EVT_CLOSE': {},
+        'EVT_INIT_DIALOG': {},
+    },
 }
 
 

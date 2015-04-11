@@ -1,7 +1,7 @@
 """\
 wxDatePickerCtrl widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -39,6 +39,11 @@ config = {
     'box_label': _('Style'),
     'style_list': ['wxDP_SPIN', 'wxDP_DROPDOWN', 'wxDP_DEFAULT',
                    'wxDP_ALLOWNONE', 'wxDP_SHOWCENTURY'],
+    'events': {
+        'EVT_DATE_CHANGED': {
+            'type': 'wxDateEvent',
+        },
+    },
 }
 
 

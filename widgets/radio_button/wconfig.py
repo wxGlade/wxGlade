@@ -1,7 +1,7 @@
 """\
 wxRadioButton widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -27,6 +27,9 @@ config = {
     },
     'box_label': _('Style'),
     'style_list': ['wxRB_GROUP', 'wxRB_SINGLE', 'wxRB_USE_CHECKBOX'],
+    'events': {
+        'EVT_RADIOBUTTON': {},
+    },
 }
 
 

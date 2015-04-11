@@ -1,7 +1,7 @@
 """\
 wxSpinButton widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -26,4 +26,12 @@ config = {
     'default_style': 'wxSP_HORIZONTAL',
     'style_list': ['wxSP_HORIZONTAL', 'wxSP_VERTICAL', 'wxSP_ARROW_KEYS',
                    'wxSP_WRAP'],
+    'events': {
+        'default': {
+            'type': 'wxSpinEvent',
+        },
+        'EVT_SPIN': {},
+        'EVT_SPIN_UP': {},
+        'EVT_SPIN_DOWN': {},
+    },
 }

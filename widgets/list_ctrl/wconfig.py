@@ -1,7 +1,7 @@
 """\
 wxListCtrl widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -84,6 +84,31 @@ config = {
                    'wxWANTS_CHARS',
                    'wxNO_FULL_REPAINT_ON_RESIZE',
                    'wxFULL_REPAINT_ON_RESIZE'],
+    'events': {
+        'default': {
+            'type': 'wxListEvent',
+        },
+        'EVT_LIST_BEGIN_DRAG': {},
+        'EVT_LIST_BEGIN_RDRAG': {},
+        'EVT_LIST_BEGIN_LABEL_EDIT': {},
+        'EVT_LIST_END_LABEL_EDIT': {},
+        'EVT_LIST_DELETE_ITEM': {},
+        'EVT_LIST_DELETE_ALL_ITEMS': {},
+        'EVT_LIST_ITEM_SELECTED': {},
+        'EVT_LIST_ITEM_DESELECTED': {},
+        'EVT_LIST_ITEM_ACTIVATED': {},
+        'EVT_LIST_ITEM_FOCUSED': {},
+        'EVT_LIST_ITEM_MIDDLE_CLICK': {},
+        'EVT_LIST_ITEM_RIGHT_CLICK': {},
+        'EVT_LIST_KEY_DOWN': {},
+        'EVT_LIST_INSERT_ITEM': {},
+        'EVT_LIST_COL_CLICK': {},
+        'EVT_LIST_COL_RIGHT_CLICK': {},
+        'EVT_LIST_COL_BEGIN_DRAG': {},
+        'EVT_LIST_COL_DRAGGING': {},
+        'EVT_LIST_COL_END_DRAG': {},
+        'EVT_LIST_CACHE_HINT': {},
+    },
 }
 
 

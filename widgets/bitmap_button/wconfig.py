@@ -1,7 +1,7 @@
 """\
 wxBitmapButton widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -34,5 +34,8 @@ config = {
     'box_label': _('Style'),
     'style_list': ['wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT', 'wxBU_TOP',
                    'wxBU_BOTTOM', 'wxNO_BORDER'],
+    'events': {
+        'EVT_BUTTON': {},
+    },
 }
 

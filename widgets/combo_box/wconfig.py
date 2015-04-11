@@ -1,7 +1,7 @@
 """\
 wxComboBox widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -36,6 +36,11 @@ config = {
     'default_style': 'wxCB_DROPDOWN',
     'style_list': ['wxCB_SIMPLE', 'wxCB_DROPDOWN', 'wxCB_READONLY',
                    'wxCB_SORT', 'wxTE_PROCESS_ENTER	'],
+    'events': {
+        'EVT_COMBOBOX': {},
+        'EVT_TEXT': {},
+        'EVT_TEXT_ENTER': {},
+    },
 }
 
 

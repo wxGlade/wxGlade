@@ -486,7 +486,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if event_handlers:
             write('\n')
 
-        for win_id, event, handler in event_handlers:
+        for win_id, event, handler, unused in event_handlers:
             if win_id.startswith('#'):
                 win_id = win_id[1:]
 
@@ -497,7 +497,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
                     'tab':     tab,
                     'tab2':    self.tabs(2),
                     'win_id':  win_id,
-                    'event':   event,
+                    'event':   self.cn(event),
                     'handler': handler,
                     }
                 ) 

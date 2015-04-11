@@ -2,7 +2,7 @@
 wxSplitterWindow objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -99,12 +99,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     """
 
     _custom_base_classes = True
-    events = [
-        'EVT_SPLITTER_SASH_POS_CHANGING',
-        'EVT_SPLITTER_SASH_POS_CHANGED',
-        'EVT_SPLITTER_UNSPLIT',
-        'EVT_SPLITTER_DCLICK',
-        ]
 
     def __init__(self, name, parent, id, style, win_1, win_2, orientation,
                  sizer, pos, property_window, show=True):

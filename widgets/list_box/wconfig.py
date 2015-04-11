@@ -1,7 +1,7 @@
 """\
 wxListBox widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -43,6 +43,10 @@ config = {
     'style_list': ['wxLB_SINGLE', 'wxLB_MULTIPLE', 'wxLB_EXTENDED',
                    'wxLB_HSCROLL', 'wxLB_ALWAYS_SB', 'wxLB_NEEDED_SB',
                    'wxLB_NO_SB', 'wxLB_SORT'],
+    'events': {
+        'EVT_LISTBOX': {},
+        'EVT_LISTBOX_DCLICK': {},
+    },
 }
 
 

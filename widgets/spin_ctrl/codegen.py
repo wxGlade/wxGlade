@@ -2,7 +2,7 @@
 Code generator functions for wxSpinCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -50,9 +50,6 @@ class CppSpinCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         self.tmpl_dict['minValue'] = minValue
         self.tmpl_dict['maxValue'] = maxValue
         return
-
-    def get_events(self, obj):
-        return self.codegen.get_events_with_type(obj, 'wxSpinEvent')
 
 # end of class CppSpinCtrlGenerator
 

@@ -2,7 +2,7 @@
 wxSlider objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -18,19 +18,6 @@ class EditSlider(ManagedBase, EditStylesMixin):
     Class to handle wxSlider objects
     """
 
-    events = [
-        'EVT_COMMAND_SCROLL',
-        'EVT_COMMAND_SCROLL_TOP',
-        'EVT_COMMAND_SCROLL_BOTTOM',
-        'EVT_COMMAND_SCROLL_LINEUP',
-        'EVT_COMMAND_SCROLL_LINEDOWN',
-        'EVT_COMMAND_SCROLL_PAGEUP',
-        'EVT_COMMAND_SCROLL_PAGEDOWN',
-        'EVT_COMMAND_SCROLL_THUMBTRACK',
-        'EVT_COMMAND_SCROLL_THUMBRELEASE',
-        'EVT_COMMAND_SCROLL_ENDSCROLL',
-        ]
-    
     def __init__(self, name, parent, id, style, sizer, pos,
                  property_window, show=True):
 
