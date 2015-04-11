@@ -15,8 +15,6 @@ from widget_properties import *
 
 class EditToggleButton(ManagedBase):
 
-    events = ['EVT_TOGGLEBUTTON']
-    
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
         """\

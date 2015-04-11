@@ -308,7 +308,7 @@ class PerlMixin(BaseLanguageMixin):
         if name[:2] == 'wx':
             return 'Wx::' + name[2:]
         elif name[:4] == 'EVT_':
-            return 'Wx::' + name
+            return 'Wx::Event::' + name
         return name
 
 # end of class PerlMixin
@@ -518,6 +518,15 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @type: bool
     @see: L{default_style}
     @see: L{prefix_style}
+    """
+
+    use_names_for_binding_events = True
+    """\
+    Use formatted names for widget ID in event binding if widget is is
+    C{-1} or C{wxID_ANY}.
+
+    @see: L{codegen.BaseLangCodeWriter._add_object_format_name()}
+    @see: L{wcodegen.BaseWidgetWriter.get_events()}
     """
 
     def __init__(self, klass=None):
@@ -745,6 +754,60 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             return [], [], init_lines + prop_lines
         return init_lines, prop_lines, []
 
+    def get_events(self, obj):
+        """\
+        Returns a list of event handlers defined for the given object.
+
+        Each list entry has following items:
+         - ID,
+         - Event
+         - Handler
+         - Event type
+
+        Example::
+            >>> self.get_events(obj)
+            [('wxID_OPEN', 'EVT_MENU', 'OnOpen', 'wxCommandEvent'),
+             ('wxID_EXIT', 'EVT_MENU', 'OnClose', 'wxCommandEvent')]
+
+        @param obj: Object to generate code for
+        @type obj:  CodeObject
+
+        @rtype: list[(str, str, str, str)]
+        """
+        ret = []
+        if 'events' not in obj.properties:
+            return ret
+
+        if 'events' not in self.config:
+            self._logger.warn(_('Object %(name)s(%(klass)s contains unknown '
+                                'events: %(events)s)'),
+                              {'name': obj.name, 'klass': obj.klass,
+                               'events': obj.properties ['events']})
+            return ret
+
+        win_id = self.codegen.generate_code_id(obj)[1]
+        if self.use_names_for_binding_events and \
+                (win_id == '-1' or win_id == self.codegen.cn('wxID_ANY')):
+            win_id = self.codegen._add_object_format_name(obj.name)
+
+        try:
+            default_event = self.config['events']['default']['type']
+        except KeyError:
+            default_event = 'wxCommandEvent'
+
+        for event, handler in obj.properties['events'].iteritems():
+            if event not in self.config['events']:
+                self._logger.warn(
+                    _('Ignore unknown event %s for %s'), (event, obj.klass)
+                )
+                continue
+            try:
+                evt_type = self.config['events'][event]['type']
+            except KeyError:
+                evt_type = default_event
+            ret.append((win_id, event, handler, evt_type))
+        return ret
+
     def get_properties_code(self, obj):
         """\
         Generates language specific code to set properties for the wxWidget
@@ -828,6 +891,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
     tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
     tmpl_setdefault = '%(name)s->SetDefault();\n'
     tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
+    use_names_for_binding_events = False
 
     def _prepare_choice(self, obj):
         choices = obj.properties.get('choices', [])

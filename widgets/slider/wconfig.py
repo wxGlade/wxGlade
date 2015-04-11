@@ -1,7 +1,7 @@
 """\
 wxSlider widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -63,6 +63,38 @@ config = {
                    'wxSL_LABELS', 'wxSL_LEFT',
                    'wxSL_RIGHT', 'wxSL_TOP', 'wxSL_BOTTOM',
                    'wxSL_SELRANGE', 'wxSL_INVERSE'],
+    'events': {
+        'EVT_COMMAND_SCROLL': {
+            'type': 'wxScrollEvent',
+        },
+        'EVT_COMMAND_SCROLL_TOP': {
+            'type': 'wxScrollEvent',
+        },
+        'EVT_COMMAND_SCROLL_BOTTOM': {
+            'type': 'wxScrollEvent',
+        },
+        'EVT_COMMAND_SCROLL_LINEUP': {
+            'type': 'wxScrollEvent',
+        },
+        'EVT_COMMAND_SCROLL_LINEDOWN': {
+            'type': 'wxScrollEvent',
+        },
+        'EVT_COMMAND_SCROLL_PAGEUP': {
+            'type': 'wxScrollEvent',
+        },
+        'EVT_COMMAND_SCROLL_PAGEDOWN': {
+            'type': 'wxScrollEvent',
+        },
+        'EVT_COMMAND_SCROLL_THUMBTRACK': {
+            'type': 'wxScrollEvent',
+        },
+        'EVT_COMMAND_SCROLL_THUMBRELEASE': {
+            'type': 'wxScrollEvent',
+        },
+        'EVT_COMMAND_SCROLL_ENDSCROLL': {
+            'type': 'wxScrollEvent',
+        },
+    },
 }
 
 

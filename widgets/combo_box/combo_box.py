@@ -2,7 +2,7 @@
 wxComboBox objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -21,8 +21,6 @@ class EditComboBox(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxComboBox objects
     """
-
-    events = ['EVT_COMBOBOX', 'EVT_TEXT', 'EVT_TEXT_ENTER']
 
     update_widget_style = False
     

@@ -1,7 +1,7 @@
 """\
 wxNotebook widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -41,6 +41,13 @@ config = {
     'style_list': ['wxNB_TOP', 'wxNB_LEFT', 'wxNB_RIGHT', 'wxNB_BOTTOM',
                    'wxNB_FIXEDWIDTH', 'wxNB_MULTILINE', 'wxNB_NOPAGETHEME',
                    'wxNB_FLAT'],
+    'events': {
+        'default': {
+            'type': 'wxNotebookEvent',
+        },
+        'EVT_NOTEBOOK_PAGE_CHANGED': {},
+        'EVT_NOTEBOOK_PAGE_CHANGING': {},
+    },
 }
 
 

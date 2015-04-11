@@ -1,7 +1,8 @@
-"""
+"""\
 Mixin class for 'events' property
 
-@copyright: 2002-2004 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2004 Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -13,6 +14,7 @@ import re
 
 from widget_properties import GridProperty
 from xml.sax.saxutils import escape, quoteattr
+import common
 
 
 class EventsProperty(GridProperty):
@@ -30,12 +32,12 @@ class EventsProperty(GridProperty):
         cols = [(_('Event'), GridProperty.STRING),
                 (_('Handler'), GridProperty.STRING)]
         GridProperty.__init__(self, owner, 'events', None, cols,
-                              len(owner.events), False, False, False, label=_('events'))
-        self._pos = {}
-        for index, name in enumerate(owner.events):
-            self._pos[name] = index
+                              len(owner.events), False, False, False,
+                              label=_('Events'))
         self.validator_re = re.compile(r'^\s*[\w-]+\s*$')
-        self.set_value([[name, ''] for name in owner.events])
+        event_list = [name for name in owner.events]
+        event_list.sort()
+        self.set_value([[name, ''] for name in event_list])
 
     def display(self, parent):
         GridProperty.display(self, parent)
@@ -63,7 +65,6 @@ class EventsProperty(GridProperty):
         if handlers:
             written = False
             write = outfile.write
-            #write('    ' * tabs + '<events>\n')
             stab = '    ' * (tabs+1)
             for event, handler in handlers:
                 if handler:
@@ -91,15 +92,15 @@ class EventsPropertyHandler(object):
     """\
     Class EventsPropertyHandler
 
-    @ivar _logger: Class specific logging instance
+    @ivar curr_handler: Content of the current XML element
+    @type curr_handler: list[str]
+
+    @ivar handlers: Dictionary of event names and event handlers
+    @type handlers: dict[str, str]
     """
 
     def __init__(self, owner):
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
-
         # initialise instance
-        #self._logger.debug('EventsPropertyHandler %s', owner.name)
         self.owner = owner
         self.handlers = {}
         self.event_name = None
@@ -118,7 +119,7 @@ class EventsPropertyHandler(object):
         elif name == 'events':
             self.owner.properties['events'].set_value_dict(self.handlers)
             self.owner.set_events_dict(self.handlers)
-            return True # to remove this handler
+            return True  # to remove this handler
 
     def char_data(self, data):
         data = data.strip()
@@ -128,32 +129,62 @@ class EventsPropertyHandler(object):
 # end of class EventsPropertyHandler
 
 
-default_events = []
-
-
 class EventsMixin(object):
+    """\
+    Class mixin to handle events
+
+    @ivar events: Events known by this widget
+    @type events: list[str]
+
+    @ivar handlers: Dictionary of event names and event handlers
+    @type handlers: dict[str, str]
+    """
+
     def __init__(self):
-        if not hasattr(self, 'events'):
-            self.events = default_events
         self.handlers = {}
+        try:
+            self.events = common.widget_config[self.klass]['events'].keys()
+            if 'default' in self.events:
+                self.events.remove('default')
+            self.events.sort()
+        except KeyError:
+            self.events = []                # no default handler
 
         if self.events:
             self.access_functions['events'] = self.get_events, self.set_events
             self.properties['events'] = EventsProperty(self)
 
     def get_events(self):
+        """\
+        Returns list of two-value tuples of event name and event handler
+
+        @rtype: list[(str, str)]
+        """
         ret = []
-        for e in self.events:
-            ret.append([e, self.handlers.get(e, '')])
+        for event_name in self.events:
+            ret.append([event_name, self.handlers.get(event_name, '')])
         return ret
 
     def set_events(self, handlers_list):
+        """\
+        Replace the existing event handlers by new handlers
+
+        @param handlers_list: List of two-value tuples of event name and
+                              event handler
+        @type handlers_list: list[(str, str)]
+        """
         self.handlers = {}
-        for event, val in handlers_list:
-            if val.strip():
-                self.handlers[event] = val
+        for event_name, event_handler in handlers_list:
+            if event_handler.strip():
+                self.handlers[event_name] = event_handler
 
     def set_events_dict(self, handlers):
+        """\
+        Replace the existing event handlers by new handlers
+
+        @param handlers: Dictionary of event names and event handlers
+        @type handlers: dict[str, str]
+        """
         self.handlers = handlers
 
     def create_events_property(self):

@@ -4,7 +4,7 @@ wxSpinButton objects
 based on wxGlade/widgets/spin_ctrl/
 
 @copyright: 2004 D.H. aka crazyinsomniac at users.sourceforge.net
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -21,8 +21,6 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
     Class to handle wxSpinButton objects
     """
 
-    events = ['EVT_SPIN', 'EVT_SPIN_UP', 'EVT_SPIN_DOWN']
-    
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
 

@@ -1044,7 +1044,7 @@ class TestCodeGen(WXGladeBaseTest):
             ('wxBLUE',         'wxBLUE'),
             ('wxALIGN_CENTER', 'wxALIGN_CENTER'),
             ('wxFrame',        'Wx::Frame'),
-            ('EVT_BUTTON',     'Wx::EVT_BUTTON'),
+            ('EVT_BUTTON',     'Wx::Event::EVT_BUTTON'),
             ]
         details['lisp'] = [
             ('wxID_OK',        'wxID_OK'),

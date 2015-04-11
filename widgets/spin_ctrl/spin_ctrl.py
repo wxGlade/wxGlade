@@ -2,7 +2,7 @@
 wxSpinCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -18,8 +18,6 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
     Class to handle wxSpinCtrl objects
     """
 
-    events = ['EVT_SPINCTRL']
-    
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
 

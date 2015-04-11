@@ -776,7 +776,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         Stores the lines of source code for a custom class
 
         @ivar dependencies:      Names of the modules this class depends on
-        @ivar event_handlers:    Lines to bind events
+        @ivar event_handlers:    Lines to bind events (see
+                                 L{wcodegen.BaseWidgetWriter.get_events()})
         @ivar extra_code:        Extra code to output before this class
         @ivar done:              If True, the code for this class has already
                                  been generated
@@ -1267,9 +1268,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # collect all event handlers
         event_handlers = self.classes[code_obj.klass].event_handlers
-        if hasattr(builder, 'get_events'):
-            for id, event, handler in builder.get_events(code_obj):
-                event_handlers.append((id, mycn(event), handler))
+        for win_id, evt, handler, evt_type in builder.get_events(code_obj):
+            event_handlers.append((win_id, mycn(evt), handler, evt_type))
 
         # try to see if there's some extra code to add to this class
         if not code_obj.preview:
@@ -1554,16 +1554,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             klass.init_lines[sub_obj] = init
 
             mycn = getattr(builder, 'cn', self.cn)
-            if hasattr(builder, 'get_events'):
-                evts = builder.get_events(sub_obj)
-                for id, event, handler in evts:
-                    klass.event_handlers.append((id, mycn(event), handler))
-            elif 'events' in sub_obj.properties:
-                id_name, id = self.generate_code_id(sub_obj)
-                if id == '-1' or id == self.cn('wxID_ANY'):
-                    id = self._add_object_format_name(sub_obj.name)
-                for event, handler in sub_obj.properties['events'].iteritems():
-                    klass.event_handlers.append((id, mycn(event), handler))
+            for win_id, evt, handler, evt_type in builder.get_events(sub_obj):
+                klass.event_handlers.append(
+                    (win_id, mycn(evt), handler, evt_type))
 
             # try to see if there's some extra code to add to this class
             if not sub_obj.preview:
@@ -1930,7 +1923,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         else:
             already_there = {}
             
-        for name, event, handler in event_handlers:
+        for win_id, event, handler, unused in event_handlers:
             # don't create handler twice
             if handler in already_there:
                 continue
@@ -1940,7 +1933,6 @@ It is available for wx versions %(supported_versions)s only.""") % {
             if self.language in ['python', 'lisp',]:
                 if not (prev_src and not is_new):
                     write('\n')
-
             write(self.tmpl_func_event_stub % {
                 'tab':     tab,
                 'klass':   self.cn_class(code_obj.klass),

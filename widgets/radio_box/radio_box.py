@@ -1,7 +1,8 @@
 """\
 wxRadioBox objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -17,8 +18,6 @@ from ChoicesProperty import *
 
 
 class EditRadioBox(ManagedBase):
-
-    events = ['EVT_RADIOBOX']
 
     def __init__(self, name, parent, id, label, choices, major_dim, style,
                  sizer, pos, property_window, show=True):

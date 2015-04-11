@@ -20,13 +20,6 @@ class CppTreeCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     extra_headers = ['<wx/treectrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
 
-    def get_events(self, obj):
-        """\
-        wxTreeCtrl uses wxTreeEvent for event handling
-        """
-        return self.codegen.get_events_with_type(obj, 'wxTreeEvent')
-
-
 # end of class CppTreeCtrlGenerator
 
 

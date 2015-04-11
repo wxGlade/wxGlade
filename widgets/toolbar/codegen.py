@@ -140,7 +140,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             if not val:
                 val = '-1'  # but this is wrong anyway...
             if tool.handler:
-                ret.append((val, 'EVT_TOOL', tool.handler))
+                ret.append((val, 'EVT_TOOL', tool.handler, 'wxCommandEvent'))
             return ret
         
         for tool in obj.properties['toolbar']:

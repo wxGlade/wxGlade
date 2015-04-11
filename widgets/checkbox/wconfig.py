@@ -38,6 +38,9 @@ config = {
         1: 'wxCHK_CHECKED',
         2: 'wxCHK_UNDETERMINED',
     },
+    'events': {
+        'EVT_CHECKBOX': {},
+    },
 }
 
 

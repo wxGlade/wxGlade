@@ -35,12 +35,6 @@ class CppHyperlinkCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         self.has_setvalue1 = obj.properties.get('checked', False)
         return
 
-    def get_events(self, obj):
-        """\
-        wxHyperlinkCtrl uses wxHyperlinkEvent for event handling
-        """
-        return self.codegen.get_events_with_type(obj, 'wxHyperlinkEvent')
-
 # end of class CppHyperlinkCtrlGenerator
 
 

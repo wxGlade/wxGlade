@@ -21,7 +21,6 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     Class to handle wxRadioButton objects
     """
 
-    events = ['EVT_RADIOBUTTON']
     update_widget_style = False
     
     def __init__(self, name, parent, id, label, sizer, pos, property_window,

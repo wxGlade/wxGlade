@@ -2,6 +2,7 @@
 Perl generator functions for wxMenuBar objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -116,7 +117,7 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                 if not val:
                     val = '-1'  # but this is wrong anyway...
             if item.handler:
-                ret.append((val, 'EVT_MENU', item.handler))
+                ret.append((val, 'EVT_MENU', item.handler, 'wxCommandEvent'))
             if item.children:
                 for c in item.children:
                     ret.extend(do_get(c))

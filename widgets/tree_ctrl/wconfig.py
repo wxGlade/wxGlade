@@ -1,7 +1,7 @@
 """\
 wxTreeCtrl widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -101,6 +101,29 @@ config = {
                    'wxWANTS_CHARS',
                    'wxNO_FULL_REPAINT_ON_RESIZE',
                    'wxFULL_REPAINT_ON_RESIZE'],
+    'events': {
+        'default': {
+            'type': 'wxTreeEvent',
+        },
+        'EVT_TREE_BEGIN_DRAG': {},
+        'EVT_TREE_BEGIN_RDRAG': {},
+        'EVT_TREE_END_DRAG': {},
+        'EVT_TREE_END_RDRAG': {},
+        'EVT_TREE_BEGIN_LABEL_EDIT': {},
+        'EVT_TREE_END_LABEL_EDIT': {},
+        'EVT_TREE_DELETE_ITEM': {},
+        'EVT_TREE_GET_INFO': {},
+        'EVT_TREE_SET_INFO': {},
+        'EVT_TREE_ITEM_ACTIVATED': {},
+        'EVT_TREE_ITEM_COLLAPSED': {},
+        'EVT_TREE_ITEM_COLLAPSING': {},
+        'EVT_TREE_ITEM_EXPANDED': {},
+        'EVT_TREE_ITEM_EXPANDING': {},
+        'EVT_TREE_SEL_CHANGED': {},
+        'EVT_TREE_SEL_CHANGING': {},
+        'EVT_TREE_KEY_DOWN': {},
+        'EVT_TREE_ITEM_GETTOOLTIP': {},
+    },
 }
 
 

@@ -1,7 +1,7 @@
 """\
 wxCalendarCtrl widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -38,6 +38,29 @@ config = {
                    'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE',
                    'wxCAL_NO_MONTH_CHANGE', 'wxCAL_SHOW_SURROUNDING_WEEKS',
                    'wxCAL_SEQUENTIAL_MONTH_SELECTION'],
+    'events': {
+        'default': {
+            'type': 'wxCalendarEvent',
+        },
+        'EVT_CALENDAR': {
+            'type': 'wxCalendarEvent',
+        },
+        'EVT_CALENDAR_SEL_CHANGED': {
+            'type': 'wxCalendarEvent',
+        },
+        'EVT_CALENDAR_DAY': {
+            'type': 'wxCalendarEvent',
+        },
+        'EVT_CALENDAR_MONTH': {
+            'type': 'wxCalendarEvent',
+        },
+        'EVT_CALENDAR_YEAR': {
+            'type': 'wxCalendarEvent',
+        },
+        'EVT_CALENDAR_WEEKDAY_CLICKED': {
+            'type': 'wxCalendarEvent',
+        },
+    },
 }
 
 

@@ -532,15 +532,13 @@ unless(caller){
         code_lines = []
         write = code_lines.append
 
-        for win_id, event, handler in event_handlers:
+        for win_id, event, handler, unused in event_handlers:
             if win_id.startswith('#'):
                 win_id = '$self->{%s}->GetId' % win_id[8:]
-            # remove leading "Wx::" for already formatted event names
-            if event.startswith('Wx::EVT'):
-                event = event[4:]
-            write('%(tab)sWx::Event::%(event)s($self, %(win_id)s, \\&%(handler)s);\n' % {
+
+            write('%(tab)s%(event)s($self, %(win_id)s, \\&%(handler)s);\n' % {
                 'tab':     tab,
-                'event':   event,
+                'event':   self.cn(event),
                 'win_id':  win_id,
                 'handler': handler,
                 })

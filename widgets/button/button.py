@@ -21,8 +21,6 @@ class EditButton(ManagedBase, EditStylesMixin):
     Class to handle wxButton objects
     """
 
-    events = ['EVT_BUTTON']
-
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
 

@@ -2,7 +2,7 @@
 wxCalendarCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -19,14 +19,6 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxCalendarCtrl objects
     """
-
-    events = [
-        'EVT_CALENDAR',
-        'EVT_CALENDAR_SEL_CHANGED',
-        'EVT_CALENDAR_DAY',
-        'EVT_CALENDAR_MONTH',
-        'EVT_CALENDAR_YEAR',
-        'EVT_CALENDAR_WEEKDAY_CLICKED']
 
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):

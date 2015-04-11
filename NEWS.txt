@@ -8,6 +8,7 @@ General:
   - Add support for 3-state checkboxes
   - Remove obsolete calls of wx.InitAllImageHandlers()
   - Catch and show early exceptions on Windows (Thanks to Tor Sjøwall)
+  - Rework handling of event types for C++
   - ...
 
 Generated Code:

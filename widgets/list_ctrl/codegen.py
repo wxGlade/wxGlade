@@ -2,7 +2,7 @@
 Code generator functions for wxListCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -19,9 +19,6 @@ class PythonListCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 class CppListCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     extra_headers = ['<wx/listctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
-
-    def get_events(self, obj):
-        return self.codegen.get_events_with_type(obj, 'wxListEvent')
 
 # end of class CppListCtrlGenerator
 

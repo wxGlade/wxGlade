@@ -20,8 +20,6 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
     Class to handle wxHyperlinkCtrl objects
     """
 
-    events = ['EVT_HYPERLINK',]
-
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
 

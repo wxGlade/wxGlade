@@ -2,7 +2,7 @@
 Code generator functions for wxSpinButton objects
 
 @copyright: 2004 D.H. aka crazyinsomniac at users.sourceforge.net
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -19,9 +19,6 @@ class PythonSpinButtonGenerator(wcodegen.PythonWidgetCodeWriter):
 class CppSpinButtonGenerator(wcodegen.CppWidgetCodeWriter):
     extra_headers = ['<wx/spinbutt.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
-
-    def get_events(self, obj):
-        return self.codegen.get_events_with_type(obj, 'wxSpinEvent')
 
 # end of class CppSpinButtonGenerator
 
