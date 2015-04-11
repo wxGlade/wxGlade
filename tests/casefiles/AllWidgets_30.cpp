@@ -9,7 +9,7 @@
 //  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp
 //
 
-#include "AllWidgets_28.h"
+#include "AllWidgets_30.h"
 
 // begin wxGlade: ::extracode
 // end wxGlade
@@ -358,14 +358,14 @@ BEGIN_EVENT_TABLE(All_Widgets_Frame, wxFrame)
 END_EVENT_TABLE();
 
 
-void All_Widgets_Frame::OnNotebookPageChanged(wxNotebookEvent &event)
+void All_Widgets_Frame::OnNotebookPageChanged(wxBookCtrlEvent &event)
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (All_Widgets_Frame::OnNotebookPageChanged) not implemented yet"));
 }
 
-void All_Widgets_Frame::OnNotebookPageChanging(wxNotebookEvent &event)
+void All_Widgets_Frame::OnNotebookPageChanging(wxBookCtrlEvent &event)
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet

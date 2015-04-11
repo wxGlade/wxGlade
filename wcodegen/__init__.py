@@ -762,7 +762,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
          - ID,
          - Event
          - Handler
-         - Event type
+         - Event prototype
 
         Example::
             >>> self.get_events(obj)
@@ -801,6 +801,17 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                     _('Ignore unknown event %s for %s'), (event, obj.klass)
                 )
                 continue
+
+            # check for specific event type
+            type_generic = 'type_wx%s' % self.codegen.for_version[0]
+            try:
+                evt_type = self.config['events'][event][type_generic]
+                ret.append((win_id, event, handler, evt_type))
+                continue
+            except KeyError:
+                pass
+
+            # check for generic event type
             try:
                 evt_type = self.config['events'][event]['type']
             except KeyError:

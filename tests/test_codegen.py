@@ -1350,6 +1350,19 @@ class TestCodeGen(WXGladeBaseTest):
         """
         self._test_all('AllWidgets_28')
 
+        # load XML input file
+        source = self._load_file('AllWidgets_28.wxg')
+        source = self._modify_attrs(source, for_version='3.0')
+
+        result_cpp = self._load_file('AllWidgets_30.cpp')
+        result_h = self._load_file('AllWidgets_30.h')
+
+        self._generate_code('C++', source, 'AllWidgets_30.cpp')
+        generated_cpp= self.vFiles['AllWidgets_30.cpp'].getvalue()
+        generated_h = self.vFiles['AllWidgets_30.h'].getvalue()
+        self._compare(result_cpp, generated_cpp, 'AllWidgets_30.cpp')
+        self._compare(result_h, generated_h, 'AllWidgets_30.h')
+
     def test_copy_py_codegen(self):
         """\
         Test creation of an independent instance of the Python code generator

@@ -146,6 +146,8 @@ sub new {
     $self->__set_properties();
     $self->__do_layout();
 
+    Wx::Event::EVT_NOTEBOOK_PAGE_CHANGED($self, $self->{notebook_1}->GetId, \&OnNotebookPageChanged);
+    Wx::Event::EVT_NOTEBOOK_PAGE_CHANGING($self, $self->{notebook_1}->GetId, \&OnNotebookPageChanging);
     Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, \&startConverting);
 
     # end wxGlade
@@ -354,6 +356,24 @@ sub __do_layout {
     $self->Centre();
     # end wxGlade
 }
+
+sub OnNotebookPageChanged {
+    my ($self, $event) = @_;
+    # wxGlade: All_Widgets_Frame::OnNotebookPageChanged <event_handler>
+    warn "Event handler (OnNotebookPageChanged) not implemented";
+    $event->Skip;
+    # end wxGlade
+}
+
+
+sub OnNotebookPageChanging {
+    my ($self, $event) = @_;
+    # wxGlade: All_Widgets_Frame::OnNotebookPageChanging <event_handler>
+    warn "Event handler (OnNotebookPageChanging) not implemented";
+    $event->Skip;
+    # end wxGlade
+}
+
 
 sub startConverting {
     my ($self, $event) = @_;
