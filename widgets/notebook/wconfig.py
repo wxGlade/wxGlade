@@ -45,8 +45,12 @@ config = {
         'default': {
             'type': 'wxNotebookEvent',
         },
-        'EVT_NOTEBOOK_PAGE_CHANGED': {},
-        'EVT_NOTEBOOK_PAGE_CHANGING': {},
+        'EVT_NOTEBOOK_PAGE_CHANGED': {
+            'type_wx3': 'wxBookCtrlEvent',
+        },
+        'EVT_NOTEBOOK_PAGE_CHANGING': {
+            'type_wx3': 'wxBookCtrlEvent',
+        },
     },
 }
 

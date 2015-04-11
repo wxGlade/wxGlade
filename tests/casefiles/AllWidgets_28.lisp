@@ -294,6 +294,10 @@
         (setf (slot-button-5 obj) (wxButton_Create (slot-top-window obj) wxID_CLOSE "" -1 -1 -1 -1 0))
         (setf (slot-button-1 obj) (wxButton_Create (slot-top-window obj) wxID_OK "" -1 -1 -1 -1 wxBU_TOP))
 
+        (wxEvtHandler_Connect (slot-top-window obj) obj.notebook-1 (expwxEVT_NOTEBOOK_PAGE_CHANGED)
+        (wxClosure_Create #'OnNotebookPageChanged obj))
+        (wxEvtHandler_Connect (slot-top-window obj) obj.notebook-1 (expwxEVT_NOTEBOOK_PAGE_CHANGING)
+        (wxClosure_Create #'OnNotebookPageChanging obj))
         (wxEvtHandler_Connect (slot-top-window obj) obj.button-1 (expwxEVT_BUTTON)
         (wxClosure_Create #'startConverting obj))
         ;;; end wxGlade
@@ -485,6 +489,16 @@
         (wxFrame_Centre (slot-top-window obj) wxBOTH)
         ;;; end wxGlade
         )
+
+(defun OnNotebookPageChanged (function data event) ;;; wxGlade: All_Widgets_Frame.<event_handler>
+        (print "Event handler 'OnNotebookPageChanged' not implemented!")
+        (when event
+                (wxEvent:wxEvent_Skip event)))
+
+(defun OnNotebookPageChanging (function data event) ;;; wxGlade: All_Widgets_Frame.<event_handler>
+        (print "Event handler 'OnNotebookPageChanging' not implemented!")
+        (when event
+                (wxEvent:wxEvent_Skip event)))
 
 (defun startConverting (function data event) ;;; wxGlade: All_Widgets_Frame.<event_handler>
         (print "Event handler 'startConverting' not implemented!")

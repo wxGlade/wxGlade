@@ -126,6 +126,8 @@ class All_Widgets_Frame(wx.Frame):
         self.__set_properties()
         self.__do_layout()
 
+        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnNotebookPageChanged, self.notebook_1)
+        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnNotebookPageChanging, self.notebook_1)
         self.Bind(wx.EVT_BUTTON, self.startConverting, self.button_1)
         # end wxGlade
 
@@ -319,6 +321,14 @@ class All_Widgets_Frame(wx.Frame):
         self.Layout()
         self.Centre()
         # end wxGlade
+
+    def OnNotebookPageChanged(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
+        print "Event handler 'OnNotebookPageChanged' not implemented!"
+        event.Skip()
+
+    def OnNotebookPageChanging(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
+        print "Event handler 'OnNotebookPageChanging' not implemented!"
+        event.Skip()
 
     def startConverting(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
         print "Event handler 'startConverting' not implemented!"

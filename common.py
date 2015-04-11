@@ -351,7 +351,14 @@ Style attributes:
     style name shown in style tooltip
 
 Event attributes:
-  - I{'type':} I{<event type>} - Event type, fallback is C{wxCommandEvent}
+  - I{'type':} I{<event prototype>} - Event prototype, fallback is
+    C{wxCommandEvent}
+
+  - I{'type_wx2':} I{<event prototype>} - Event prototype for wx 2.X, use
+    this attribute if the event exists in all supported wx versions
+
+  - I{'type_wx3':} I{<event prototype>} - Event prototype for wx 3.X, use
+    this attribute if the event exists in all supported wx versions
 
   - I{'supported_by':} I{(<supported version>)} - List of versions
     supporting this event

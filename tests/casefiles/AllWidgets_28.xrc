@@ -39,6 +39,8 @@
                 <option>1</option>
                 <flag>wxEXPAND</flag>
                 <object class="wxNotebook" name="notebook_1">
+                    <handler event="EVT_NOTEBOOK_PAGE_CHANGED">OnNotebookPageChanged</handler>
+                    <handler event="EVT_NOTEBOOK_PAGE_CHANGING">OnNotebookPageChanging</handler>
                     <style>wxNB_BOTTOM</style>
                     <usenotebooksizer>1</usenotebooksizer>
                     <object class="notebookpage">

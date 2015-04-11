@@ -9,8 +9,8 @@
 //  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp
 //
 
-#ifndef ALLWIDGETS_28_H
-#define ALLWIDGETS_28_H
+#ifndef ALLWIDGETS_30_H
+#define ALLWIDGETS_30_H
 
 #include <wx/wx.h>
 #include <wx/image.h>
@@ -149,10 +149,10 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
-    virtual void OnNotebookPageChanged(wxNotebookEvent &event); // wxGlade: <event_handler>
-    virtual void OnNotebookPageChanging(wxNotebookEvent &event); // wxGlade: <event_handler>
+    virtual void OnNotebookPageChanged(wxBookCtrlEvent &event); // wxGlade: <event_handler>
+    virtual void OnNotebookPageChanging(wxBookCtrlEvent &event); // wxGlade: <event_handler>
     virtual void startConverting(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 
-#endif // ALLWIDGETS_28_H
+#endif // ALLWIDGETS_30_H
