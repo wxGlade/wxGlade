@@ -1,6 +1,7 @@
-"""
-@copyright: 2012-2014 Carsten Grohmann
+"""\
+Graphical tests
 
+@copyright: 2012-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -200,21 +201,22 @@ class TestGui(WXGladeBaseTest):
             self._messageBox
         )
 
-    def load_and_generate(self, basename):
+    def load_and_generate(self, basename, excluded=None):
         """\
         Load a wxGlade document and generate code for all languages.
 
         @param basename: Base name of the wxg file
         @type basename:  str
+        @param excluded: Languages to exclude from test
+        @type excluded:  list[str]
         """
         source = self._load_file('%s.wxg' % basename)
-        source = self._modify_attrs(
-            source,
-            path='',
-            )
+        source = self._modify_attrs(source, path='', )
         self._open_wxg_file(source)
+
         # generate code
         self._generate_code()
+
         # first test should fail because no output file is given
         err_msg = u'You must specify an output file\n' \
                   'before generating any code'
@@ -229,8 +231,9 @@ class TestGui(WXGladeBaseTest):
                 self._messageBox[1],
             )
         )
-        self._messageBox = None
+
         # now test full code generation
+        self._messageBox = None
         for ext, language in [
             ['.lisp', 'lisp'],
             ['.pl', 'perl'],
@@ -238,6 +241,9 @@ class TestGui(WXGladeBaseTest):
             ['.xrc', 'XRC'],
             ['', 'C++'],
             ]:
+            if excluded and language in excluded:
+                continue
+
             filename = '%s%s' % (basename, ext)
 
             # check for language first
@@ -353,6 +359,12 @@ class TestGui(WXGladeBaseTest):
         Test GUI code generation using "AllWidgets_28.wxg"
         """
         self.load_and_generate('AllWidgets_28')
+
+    def test_CodeGeneration_AllWidgets_30(self):
+        """\
+        Test GUI code generation using "AllWidgets_30.wxg"
+        """
+        self.load_and_generate('AllWidgets_30', ['lisp'])
 
     def test_CodeGeneration_ComplexExample(self):
         """\

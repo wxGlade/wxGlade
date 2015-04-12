@@ -802,8 +802,17 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                 )
                 continue
 
+            major = 'wx%d' % self.codegen.for_version[0]
+            detailed = 'wx%d%d' % self.codegen.for_version
+            try:
+                supported_by = self.config['events'][event]['supported_by']
+                if not (major in supported_by or detailed in supported_by):
+                    continue
+            except (AttributeError, KeyError):
+                pass
+
             # check for specific event type
-            type_generic = 'type_wx%s' % self.codegen.for_version[0]
+            type_generic = 'type_%s' % major
             try:
                 evt_type = self.config['events'][event][type_generic]
                 ret.append((win_id, event, handler, evt_type))

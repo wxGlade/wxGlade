@@ -17,7 +17,7 @@
 #include <wx/intl.h>
 
 #ifndef APP_CATALOG
-#define APP_CATALOG "AllWidgets28App"  // replace with the appropriate catalog name
+#define APP_CATALOG "AllWidgets30App"  // replace with the appropriate catalog name
 #endif
 
 
@@ -149,6 +149,7 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
+    virtual void OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event); // wxGlade: <event_handler>
     virtual void OnNotebookPageChanged(wxBookCtrlEvent &event); // wxGlade: <event_handler>
     virtual void OnNotebookPageChanging(wxBookCtrlEvent &event); // wxGlade: <event_handler>
     virtual void startConverting(wxCommandEvent &event); // wxGlade: <event_handler>

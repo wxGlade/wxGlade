@@ -351,12 +351,20 @@ void All_Widgets_Frame::do_layout()
 
 BEGIN_EVENT_TABLE(All_Widgets_Frame, wxFrame)
     // begin wxGlade: All_Widgets_Frame::event_table
+    EVT_NAVIGATION_KEY(wxID_ANY, All_Widgets_Frame::OnBitmapButtonPanelNavigationKey)
     EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, All_Widgets_Frame::OnNotebookPageChanged)
     EVT_NOTEBOOK_PAGE_CHANGING(wxID_ANY, All_Widgets_Frame::OnNotebookPageChanging)
     EVT_BUTTON(wxID_ANY, All_Widgets_Frame::startConverting)
     // end wxGlade
 END_EVENT_TABLE();
 
+
+void All_Widgets_Frame::OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event)
+{
+    event.Skip();
+    // notify the user that he hasn't implemented the event handler yet
+    wxLogDebug(wxT("Event handler (All_Widgets_Frame::OnBitmapButtonPanelNavigationKey) not implemented yet"));
+}
 
 void All_Widgets_Frame::OnNotebookPageChanged(wxBookCtrlEvent &event)
 {
