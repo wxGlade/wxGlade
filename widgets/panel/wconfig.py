@@ -1,7 +1,7 @@
 """\
 wxPanel widget configuration
 
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -19,4 +19,10 @@ config = {
                    'wxNO_3D', 'wxTAB_TRAVERSAL', 'wxWANTS_CHARS',
                    'wxNO_FULL_REPAINT_ON_RESIZE', 'wxFULL_REPAINT_ON_RESIZE',
                    'wxCLIP_CHILDREN'],
+    'events': {
+        'EVT_NAVIGATION_KEY': {
+            'type': 'wxNavigationKeyEvent',
+            'supported_by': ('wx3',),
+        }
+    },
 }

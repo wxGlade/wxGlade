@@ -9,6 +9,7 @@ General:
   - Remove obsolete calls of wx.InitAllImageHandlers()
   - Catch and show early exceptions on Windows (Thanks to Tor Sjøwall)
   - Rework handling of event types for C++
+  - Add support for events that are only supported by a specific wx version
   - ...
 
 Generated Code:

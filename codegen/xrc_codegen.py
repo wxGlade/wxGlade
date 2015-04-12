@@ -6,7 +6,7 @@ Calls the appropriate ``writers'' of the various objects. These functions
 return an instance of XrcObject
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2012-2014 Carsten Grohmann
+@copyright: 2012-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -195,9 +195,9 @@ class DefaultXrcObject(XrcObject):
             del self.properties['id']  # id has no meaning for XRC
 
         if 'events' in self.properties:
-            for handler, event in self.properties['events'].iteritems():
+            for win_id, event, handler, event_type in self.get_events(self):
                 write(tab_str + '<handler event=%s>%s</handler>\n' %
-                      (quoteattr(handler), escape(event)))
+                      (quoteattr(event), escape(handler)))
             del self.properties['events']
 
         # 'disabled' property is actually 'enabled' for XRC
@@ -303,6 +303,8 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
 
     tmpl_encoding = '<?xml version="1.0" encoding="%s"?>\n'
     tmpl_generated_by = '<!-- %(generated_by)s -->'
+
+    use_names_for_binding_events = False
 
     # inject different XRC objects
     XrcObject = XrcObject
@@ -435,7 +437,10 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             code_obj.xrc = xrc_obj
             # add the xrc_obj to the dict of the toplevel ones
             self.xrc_objects[code_obj] = xrc_obj
-            
+
+    def generate_code_id(self, obj, id=None):
+        return '', ''
+
     def _format_comment(self, msg):
         return '<!-- %s -->' % escape(msg.rstrip())
 
