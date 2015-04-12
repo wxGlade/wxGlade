@@ -92,11 +92,9 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test code generation with preferences dialog
         """
-        for language, prefix, suffix in [
-            ['python', 'Python', '.py'],
-            ['perl', 'Perl', '.pl'],
-            ['C++', 'CPP', '.cpp'],
-            ['lisp', 'Lisp', '.lisp']]:
+        for language, prefix, ext in self.language_constants:
+            if language == 'XRC':
+                continue
             inname = '%s_Preferences.wxg' % prefix
 
             if language == 'C++':
@@ -106,7 +104,7 @@ class TestCodeGen(WXGladeBaseTest):
                     outname
                 )
             else:
-                outname = '%s_Preferences%s' % (prefix, suffix)
+                outname = '%s_Preferences%s' % (prefix, ext)
                 self._generate_and_compare(
                     language,
                     inname,
@@ -627,12 +625,9 @@ class TestCodeGen(WXGladeBaseTest):
 
         @see: L{codegen.py_codegen.PythonCodeWriter.add_app()}
         """
-        for language, prefix, suffix in [
-            ['python', 'Py', '.py'],
-            ['perl', 'Pl', '.pl'],
-            ['C++', 'CPP', '.cpp'],
-            ['lisp', 'Lisp', '.lisp']
-            ]:
+        for language, prefix, suffix in self.language_constants:
+            if language == 'XRC':
+                continue
             for multiple_files in [0, 1]:
                 for klass in ['MyStartApp', None]:
                     for use_gettext in [0, 1]:
@@ -745,21 +740,15 @@ class TestCodeGen(WXGladeBaseTest):
         
         @see: L{codegen.BaseLangCodeWriter._add_object_init()}
         """
-        for lang, ext in [
-            ('python', '.py'),
-            ('perl', '.pl'),
-            ('lisp', '.lisp'),
-            ('XRC', '.xrc'),
-            ('C++', ''),
-            ]:
-            codegen = common.code_writers.get(lang)
+        for language, dummy, ext in self.language_constants:
+            codegen = common.code_writers.get(language)
             handler = codegen.obj_builders['wxButton']
             del codegen.obj_builders['wxButton']
             
             # don' use _generate_and_compare() resp.
             # _generate_and_compare_cpp() because a failure wouldn't restore
             # the temporarily removed widget
-            if lang == 'C++':
+            if language == 'C++':
                 inname = 'no_suitable_writer.wxg'
                 outname = 'no_suitable_writer'
                 name_h = '%s.h' % outname
@@ -790,7 +779,7 @@ class TestCodeGen(WXGladeBaseTest):
                 expected = self._load_file(outname)
 
                 # generate code
-                self._generate_code(lang, source, outname)
+                self._generate_code(language, source, outname)
                 generated = self.vFiles[outname].getvalue()
                 
                 # restore deleted handler

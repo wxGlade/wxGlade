@@ -9,6 +9,7 @@ Graphical tests
 from tests import WXGladeBaseTest
 
 # import general python modules
+import os.path
 import StringIO
 import sys
 import types
@@ -234,13 +235,7 @@ class TestGui(WXGladeBaseTest):
 
         # now test full code generation
         self._messageBox = None
-        for ext, language in [
-            ['.lisp', 'lisp'],
-            ['.pl', 'perl'],
-            ['.py', 'python'],
-            ['.xrc', 'XRC'],
-            ['', 'C++'],
-            ]:
+        for language, dummy, ext in self.language_constants:
             if excluded and language in excluded:
                 continue
 
@@ -277,8 +272,8 @@ class TestGui(WXGladeBaseTest):
             self._messageBox = None
 
             if language == 'C++':
-                name_h = '%s.h' % filename
-                name_cpp = '%s.cpp' % filename
+                name_h = '%s.h' % os.path.splitext(filename)[0]
+                name_cpp = filename
                 result_cpp = self._load_file(name_cpp)
                 result_h = self._load_file(name_h)
                 generated_cpp = self.vFiles[name_cpp].getvalue()
@@ -303,13 +298,8 @@ class TestGui(WXGladeBaseTest):
         source = self._load_file('styleless-dialog.wxg')
 
         # now test full code generation
-        for filename, language in [
-            ['styleless-dialog.lisp', 'lisp'],
-            ['styleless-dialog.pl',   'perl'],
-            ['styleless-dialog.py',   'python'],
-            ['styleless-dialog.xrc',  'XRC'],
-            ['styleless-dialog',      'C++'],
-            ]:
+        for language, dummy, ext in self.language_constants:
+            filename = 'styleless-dialog%s' % ext
 
             # check for language first
             self.failUnless(
@@ -341,8 +331,8 @@ class TestGui(WXGladeBaseTest):
             self._messageBox = None
 
             if language == 'C++':
-                name_h = '%s.h' % filename
-                name_cpp = '%s.cpp' % filename
+                name_h = '%s.h' % os.path.splitext(filename)[0]
+                name_cpp = filename
                 result_cpp = self._load_file(name_cpp)
                 result_h = self._load_file(name_h)
                 generated_cpp = self.vFiles[name_cpp].getvalue()
