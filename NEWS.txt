@@ -15,6 +15,7 @@ General:
 Generated Code:
   - Remove obsolete wx.InitAllImageHandlers() calls from Python codegen
   - Add missing event types for event handling in C++
+  - Event handler in C++ aren't virtual anymore
   - ...
 
 Bugs:

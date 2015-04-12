@@ -149,9 +149,9 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
-    virtual void OnNotebookPageChanged(wxNotebookEvent &event); // wxGlade: <event_handler>
-    virtual void OnNotebookPageChanging(wxNotebookEvent &event); // wxGlade: <event_handler>
-    virtual void startConverting(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnNotebookPageChanged(wxNotebookEvent &event); // wxGlade: <event_handler>
+    void OnNotebookPageChanging(wxNotebookEvent &event); // wxGlade: <event_handler>
+    void startConverting(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 
