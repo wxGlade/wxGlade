@@ -296,6 +296,7 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxListBox" name="list_box_filled">
+                                    <style>wxLB_MULTIPLE|wxLB_SORT</style>
                                     <selection>1</selection>
                                     <content>
                                         <item>Item 1</item>

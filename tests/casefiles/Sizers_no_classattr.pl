@@ -35,11 +35,11 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->{list_box_1} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
+    $self->{list_box_1} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
     $self->{sizer_2_staticbox} = Wx::StaticBox->new($self, wxID_ANY, _T("Unassigned Permissions:") );
     $self->{button_4} = Wx::Button->new($self, wxID_ADD, "");
     $self->{button_5} = Wx::Button->new($self, wxID_REMOVE, "");
-    $self->{list_box_2} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
+    $self->{list_box_2} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
     $self->{sizer_3_staticbox} = Wx::StaticBox->new($self, wxID_ANY, _T("Assigned Permissions:") );
     $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
     $self->{button_2} = Wx::Button->new($self, wxID_OK, "");

@@ -66,7 +66,7 @@ class All_Widgets_Frame(wx.Frame):
         self.hyperlink_1 = wx.HyperlinkCtrl(self.notebook_1_wxHyperlinkCtrl, wx.ID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"))
         self.notebook_1_wxListBox = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.list_box_empty = wx.ListBox(self.notebook_1_wxListBox, wx.ID_ANY, choices=[])
-        self.list_box_filled = wx.ListBox(self.notebook_1_wxListBox, wx.ID_ANY, choices=[_("Item 1"), _("Item 2 (pre-selected)")])
+        self.list_box_filled = wx.ListBox(self.notebook_1_wxListBox, wx.ID_ANY, choices=[_("Item 1"), _("Item 2 (pre-selected)")], style=wx.LB_MULTIPLE | wx.LB_SORT)
         self.notebook_1_wxListCtrl = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.list_ctrl_1 = wx.ListCtrl(self.notebook_1_wxListCtrl, wx.ID_ANY, style=wx.BORDER_SUNKEN | wx.LC_REPORT)
         self.notebook_1_wxRadioBox = wx.Panel(self.notebook_1, wx.ID_ANY)

@@ -85,8 +85,8 @@ sub new {
     $self->{notebook_1_wxHyperlinkCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{hyperlink_1} = Wx::HyperlinkCtrl->new($self->{notebook_1_wxHyperlinkCtrl}, wxID_ANY, _T("Homepage wxGlade"), _T("http://wxglade.sf.net"));
     $self->{notebook_1_wxListBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{list_box_empty} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
-    $self->{list_box_filled} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], );
+    $self->{list_box_empty} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
+    $self->{list_box_filled} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], wxLB_MULTIPLE|wxLB_SORT);
     $self->{notebook_1_wxListCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{list_ctrl_1} = Wx::ListCtrl->new($self->{notebook_1_wxListCtrl}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN|wxLC_REPORT);
     $self->{notebook_1_wxRadioBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
