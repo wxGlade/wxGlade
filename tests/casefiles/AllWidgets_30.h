@@ -149,10 +149,10 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
-    virtual void OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event); // wxGlade: <event_handler>
-    virtual void OnNotebookPageChanged(wxBookCtrlEvent &event); // wxGlade: <event_handler>
-    virtual void OnNotebookPageChanging(wxBookCtrlEvent &event); // wxGlade: <event_handler>
-    virtual void startConverting(wxCommandEvent &event); // wxGlade: <event_handler>
+    void OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event); // wxGlade: <event_handler>
+    void OnNotebookPageChanged(wxBookCtrlEvent &event); // wxGlade: <event_handler>
+    void OnNotebookPageChanging(wxBookCtrlEvent &event); // wxGlade: <event_handler>
+    void startConverting(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 

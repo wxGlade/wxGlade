@@ -69,7 +69,7 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
-    virtual void startConverting(wxCommandEvent &event); // wxGlade: <event_handler>
+    void startConverting(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 
