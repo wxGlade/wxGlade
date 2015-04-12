@@ -26,6 +26,7 @@ Bugs:
   - Don't ignore disabled gettext support (Thanks to Udi Fuchs)
   - Unicode error during update of an existing source file (sf bug #167)
   - Fix Designer not displaying buttons two lines correctly (sf bug #169)
+  - Fix generated code for wxListBox
   - ...
 
 Deprecation

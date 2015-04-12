@@ -91,12 +91,12 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     grid_1 = new wxGrid(notebook_1_wxGrid, wxID_ANY);
     hyperlink_1 = new wxHyperlinkCtrl(notebook_1_wxHyperlinkCtrl, wxID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"));
     const wxString *list_box_empty_choices = NULL;
-    list_box_empty = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_empty_choices);
+    list_box_empty = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_empty_choices, wxLB_SINGLE);
     const wxString list_box_filled_choices[] = {
         _("Item 1"),
         _("Item 2 (pre-selected)"),
     };
-    list_box_filled = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, list_box_filled_choices);
+    list_box_filled = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, list_box_filled_choices, wxLB_MULTIPLE|wxLB_SORT);
     list_ctrl_1 = new wxListCtrl(notebook_1_wxListCtrl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN|wxLC_REPORT);
     const wxString *radio_box_empty1_choices = NULL;
     radio_box_empty1 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty1_choices, 1, wxRA_SPECIFY_ROWS);
