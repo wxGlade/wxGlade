@@ -111,6 +111,24 @@ class WXGladeBaseTest(unittest.TestCase):
     Directory with input files and result files
     """
 
+    language_constants = [
+        ('python', 'Python', '.py'),
+        ('perl', 'Perl', '.pl'),
+        ('lisp', 'Lisp', '.lisp'),
+        ('XRC', 'XRC', '.xrc'),
+        ('C++', 'CPP', '.cpp'),
+    ]
+    """\
+    Language specific constants for file names.
+
+    Each tuple contains three elements:
+     - Language
+     - File prefix
+     - File extension
+
+    @type: list[(str, str, str)]
+    """
+
     @classmethod
     def setUpClass(cls):
         """\
@@ -454,13 +472,7 @@ class WXGladeBaseTest(unittest.TestCase):
         @param excluded: Languages to exclude from test
         @type excluded:  list[str]
         """
-        for lang, ext in [
-            ['lisp',   '.lisp'],
-            ['perl',   '.pl'],
-            ['python', '.py'],
-            ['XRC',    '.xrc'],
-            ['C++',    ''],
-            ]:
+        for lang, dummy, ext in self.language_constants:
             if excluded and lang in excluded:
                 continue
             name_wxg = '%s.wxg' % base
@@ -531,9 +543,14 @@ class WXGladeBaseTest(unittest.TestCase):
 
         @param inname:  Name of the XML input file
         @type inname:   str
-        @param outname: Name of the output file without extension
+        @param outname: Name of the output file
         @type outname:  str
         """
+        # strip cpp file extension
+        base, ext = os.path.splitext(outname)
+        if ext:
+            outname = base
+
         name_h = '%s.h' % outname
         name_cpp = '%s.cpp' % outname
 
