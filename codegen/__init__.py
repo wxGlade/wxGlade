@@ -777,7 +777,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         @ivar dependencies:      Names of the modules this class depends on
         @ivar event_handlers:    Lines to bind events (see
-                                 L{wcodegen.BaseWidgetWriter.get_events()})
+                                 L{wcodegen.BaseWidgetWriter.get_event_handlers()})
         @ivar extra_code:        Extra code to output before this class
         @ivar done:              If True, the code for this class has already
                                  been generated
@@ -1268,7 +1268,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # collect all event handlers
         event_handlers = self.classes[code_obj.klass].event_handlers
-        for win_id, evt, handler, evt_type in builder.get_events(code_obj):
+        for win_id, evt, handler, evt_type in builder.get_event_handlers(code_obj):
             event_handlers.append((win_id, mycn(evt), handler, evt_type))
 
         # try to see if there's some extra code to add to this class
@@ -1523,7 +1523,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         Adds the code to build 'sub_obj' to the class body of 'top_obj'.
 
         @see: L{_add_object_init()}
-        @see: L{_add_object_format_name()}
+        @see: L{add_object_format_name()}
         """
         sub_obj.name = self._format_name(sub_obj.name)
         sub_obj.parent.name = self._format_name(sub_obj.parent.name)
@@ -1554,7 +1554,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             klass.init_lines[sub_obj] = init
 
             mycn = getattr(builder, 'cn', self.cn)
-            for win_id, evt, handler, evt_type in builder.get_events(sub_obj):
+            for win_id, evt, handler, evt_type in \
+                    builder.get_event_handlers(sub_obj):
                 klass.event_handlers.append(
                     (win_id, mycn(evt), handler, evt_type))
 
@@ -1634,8 +1635,8 @@ Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
             return None, None
 
         # check for supported versions
-        if hasattr(builder, 'is_supported'):
-            is_supported = builder.is_supported(*self.for_version)
+        if hasattr(builder, 'is_widget_supported'):
+            is_supported = builder.is_widget_supported(*self.for_version)
         else:
             is_supported = True
         if not is_supported:
@@ -2454,11 +2455,9 @@ It is available for wx versions %(supported_versions)s only.""") % {
         """
         return os.path.isfile(filename)
  
-    def _add_object_format_name(self, name):
+    def add_object_format_name(self, name):
         """\
         Format a widget name to use in L{add_object()}.        
-        
-        @note: This function is for use in L{add_object()} only!
         
         @param name: Widget name
         @type name:  str

@@ -847,7 +847,7 @@ class wxGladeFrame(wx.Frame):
         except Exception, inst:
             common.app_tree.app.saved = False
             fn = os.path.basename(filename).encode('ascii', 'replace')
-            bugdialog.Show(_('saving file "%s"') % fn, inst)
+            bugdialog.Show(_('Save File "%s"') % fn, inst)
         else:
             common.app_tree.app.saved = True
             common.remove_autosaved()
@@ -984,7 +984,7 @@ class wxGladeFrame(wx.Frame):
                 common.app_tree.app.saved = False
             except Exception, inst:
                 fn = os.path.basename(infilename).encode('ascii', 'replace')
-                bugdialog.Show(_('importing file "%s"') % fn, inst)
+                bugdialog.Show(_('Import File "%s"') % fn, inst)
 
     def manage_templates(self, event):
         to_edit = template.manage_templates()

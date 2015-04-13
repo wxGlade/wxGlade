@@ -596,7 +596,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         """
         return class_name.split('.')[-1]
 
-    def _add_object_format_name(self, name):
+    def add_object_format_name(self, name):
         return '#self.%s' % name
 
     def _format_classattr(self, obj):

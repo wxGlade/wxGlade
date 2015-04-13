@@ -131,7 +131,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         init.append('# Tool Bar end\n')
         return init, self.get_properties_code(obj), []
 
-    def get_events(self, obj):
+    def get_event_handlers(self, obj):
         out = []
 
         def do_get(tool):
@@ -370,7 +370,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                     ids.append(name)
         return ids
 
-    def get_events(self, obj):
+    def get_event_handlers(self, obj):
         out = []
 
         def do_get(tool):

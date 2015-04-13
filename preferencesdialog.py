@@ -68,7 +68,7 @@ class wxGladePreferences(wxGladePreferencesUI):
             self.log_debug_info.SetValue(self.preferences.log_debug_info)
             self._fix_spin_ctrls()
         except Exception, inst:
-            bugdialog.Show(_('reading the configuration'), inst)
+            bugdialog.Show(_('Read Configuration'), inst)
 
     def _fix_spin_ctrls(self):
         """\

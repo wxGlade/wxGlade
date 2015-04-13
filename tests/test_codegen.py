@@ -1300,34 +1300,34 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test check if the widget is supported with the requested version
 
-        @see: L{wcodegen.BaseWidgetWriter.is_supported()}
+        @see: L{wcodegen.BaseWidgetWriter.is_widget_supported()}
         @see: L{common.widget_config}
         """
         import wcodegen
-        obj = wcodegen.PythonWidgetCodeWriter('test_nonexisting')
-        obj.config = {}
+        builder = wcodegen.PythonWidgetCodeWriter('test_nonexisting')
+        builder.config = {}
 
         # no restrictions -> True
-        self.assertTrue(obj.is_supported(3, 0))
+        self.assertTrue(builder.is_widget_supported(3, 0))
 
-        obj.config['supported_by'] = ['wx31', 'wx2']
+        builder.config['supported_by'] = ['wx31', 'wx2']
 
         # wx1 is not listed -> False
-        self.assertFalse(obj.is_supported(1))
+        self.assertFalse(builder.is_widget_supported(1))
 
         # wx2 is listed -> True
-        self.assertTrue(obj.is_supported(2))
+        self.assertTrue(builder.is_widget_supported(2))
 
         # wx3 is not listed -> False
-        self.assertFalse(obj.is_supported(3))
+        self.assertFalse(builder.is_widget_supported(3))
 
         # wx31 is listed -> True
-        self.assertTrue(obj.is_supported(3, 1))
+        self.assertTrue(builder.is_widget_supported(3, 1))
 
         # wx32 is not listed -> False
-        self.assertFalse(obj.is_supported(3, 2))
+        self.assertFalse(builder.is_widget_supported(3, 2))
 
-        self.assertRaises(AssertionError, obj.is_supported, (2, 6))
+        self.assertRaises(AssertionError, builder.is_widget_supported, (2, 6))
 
     def test_StylelessDialog(self):
         """\

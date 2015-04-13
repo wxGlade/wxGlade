@@ -756,7 +756,7 @@ bool MyApp::OnInit()
 
         # collect all event handlers
         event_handlers = self.classes[code_obj.klass].event_handlers
-        for win_id, evt, handler, evt_type in builder.get_events(code_obj):
+        for win_id, evt, handler, evt_type in builder.get_event_handlers(code_obj):
             event_handlers.append((win_id, mycn(evt), handler, evt_type))
 
         # try to see if there's some extra code to add to this class
@@ -1293,7 +1293,7 @@ bool MyApp::OnInit()
             else:
                 klass.init.extend(init)
             mycn = getattr(builder, 'cn', self.cn)
-            for win_id, evt, handler, evt_type in builder.get_events(sub_obj):
+            for win_id, evt, handler, evt_type in builder.get_event_handlers(sub_obj):
                 klass.event_handlers.append(
                     (win_id, mycn(evt), handler, evt_type))
 

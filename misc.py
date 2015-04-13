@@ -332,7 +332,7 @@ def format_supported_by(version):
 
     @rtype: str
 
-    @see: L{wcodegen.BaseWidgetWriter.is_supported()}
+    @see: L{wcodegen.BaseWidgetWriter.is_widget_supported()}
     @see: L{common.widget_config}
     """
     assert isinstance(version, str)

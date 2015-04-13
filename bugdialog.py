@@ -135,7 +135,7 @@ def Show(msg, exc):
     @see: L{BugReport.SetContent()}
     """
     dialog = BugReport()
-    dialog.SetContent(_('setting encoding'), exc)
+    dialog.SetContent(msg, exc)
     dialog.ShowModal()
 
 

@@ -525,8 +525,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     Use formatted names for widget ID in event binding if widget is is
     C{-1} or C{wxID_ANY}.
 
-    @see: L{codegen.BaseLangCodeWriter._add_object_format_name()}
-    @see: L{wcodegen.BaseWidgetWriter.get_events()}
+    @see: L{codegen.BaseLangCodeWriter.add_object_format_name()}
+    @see: L{wcodegen.BaseWidgetWriter.get_event_handlers()}
     """
 
     def __init__(self, klass=None):
@@ -754,7 +754,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             return [], [], init_lines + prop_lines
         return init_lines, prop_lines, []
 
-    def get_events(self, obj):
+    def get_event_handlers(self, obj):
         """\
         Returns a list of event handlers defined for the given object.
 
@@ -765,7 +765,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
          - Event prototype
 
         Example::
-            >>> self.get_events(obj)
+            >>> self.get_event_handlerss(obj)
             [('wxID_OPEN', 'EVT_MENU', 'OnOpen', 'wxCommandEvent'),
              ('wxID_EXIT', 'EVT_MENU', 'OnClose', 'wxCommandEvent')]
 
@@ -788,7 +788,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         win_id = self.codegen.generate_code_id(obj)[1]
         if self.use_names_for_binding_events and \
                 (win_id == '-1' or win_id == self.codegen.cn('wxID_ANY')):
-            win_id = self.codegen._add_object_format_name(obj.name)
+            win_id = self.codegen.add_object_format_name(obj.name)
 
         try:
             default_event = self.config['events']['default']['type']
@@ -868,7 +868,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         return layout_lines
 
-    def is_supported(self, major, minor=None):
+    def is_widget_supported(self, major, minor=None):
         """\
         Check if the widget is supported for the given version
 

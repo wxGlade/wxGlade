@@ -472,7 +472,7 @@ class Application(object):
         try:
             unicode('a', value)
         except LookupError, inst:
-            bugdialog.Show(_('setting encoding'), inst)
+            bugdialog.Show(_('Set Encoding'), inst)
             self.encoding_prop.set_value(self.encoding)
         else:
             self.encoding = value
@@ -734,7 +734,7 @@ class Application(object):
                 wx.OK | wx.CENTRE | wx.ICON_ERROR,
                 )
         except Exception, inst:
-            bugdialog.Show(_('generating code'), inst)
+            bugdialog.Show(_('Generate Code'), inst)
         else:
             if not preview:
                 if config.preferences.show_completion:
@@ -872,7 +872,7 @@ class Application(object):
         except Exception, inst:
             widget.preview_widget = None
             widget.preview_button.SetLabel(_('Preview'))
-            bugdialog.Show(_("generating the preview"), inst)
+            bugdialog.Show(_("Generate Preview"), inst)
 
         # restore app state
         widget.klass = widget_class_name

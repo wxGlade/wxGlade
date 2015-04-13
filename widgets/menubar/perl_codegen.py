@@ -105,7 +105,7 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
         init.append('# Menu Bar end\n\n')
         return init, [], []
 
-    def get_events(self, obj):
+    def get_event_handlers(self, obj):
         out = []
 
         def do_get(item):

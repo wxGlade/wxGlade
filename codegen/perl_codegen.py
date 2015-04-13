@@ -656,7 +656,7 @@ unless(caller){
         else:
             return '"%s"' % s
 
-    def _add_object_format_name(self, name):
+    def add_object_format_name(self, name):
         return '#$self->%s' % name
 
     def _format_classattr(self, obj):
