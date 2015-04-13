@@ -30,6 +30,7 @@ config = {
         'wxSL_LABELS': {
             'desc': _('Displays minimum, maximum and value labels (same as '
                       'wxSL_VALUE_LABEL and wxSL_MIN_MAX_LABELS together).'),
+            'combination': 'wxSL_VALUE_LABEL|wxSL_MIN_MAX_LABELS',
         },
         'wxSL_LEFT': {
             'desc': _('Displays ticks on the left and forces the slider '
@@ -52,6 +53,7 @@ config = {
         'wxSL_INVERSE': {
             'desc': _('Inverses the minimum and maximum endpoints on the '
                       'slider. Not compatible with wxSL_SELRANGE.'),
+            'exclude': 'wxSL_SELRANGE',
         },
     },
     'box_label': _('Style'),
