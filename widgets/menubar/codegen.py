@@ -116,7 +116,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         init.append('# Menu Bar end\n')
         return init, [], []
 
-    def get_events(self, obj):
+    def get_event_handlers(self, obj):
         out = []
 
         def do_get(item):
@@ -343,7 +343,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
 
         return ids
 
-    def get_events(self, obj):
+    def get_event_handlers(self, obj):
         out = []
 
         def do_get(item):

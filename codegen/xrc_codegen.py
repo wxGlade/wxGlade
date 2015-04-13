@@ -195,7 +195,7 @@ class DefaultXrcObject(XrcObject):
             del self.properties['id']  # id has no meaning for XRC
 
         if 'events' in self.properties:
-            for win_id, event, handler, event_type in self.get_events(self):
+            for win_id, event, handler, event_type in self.get_event_handlers(self):
                 write(tab_str + '<handler event=%s>%s</handler>\n' %
                       (quoteattr(event), escape(handler)))
             del self.properties['events']

@@ -21,7 +21,6 @@ class GridColsProperty(GridProperty):
         write = outfile.write
         write('    ' * tabs + '<columns>\n')
         tab_s = '    ' * (tabs + 1)
-        import widget_properties
         value = self.get_value()  # this is a list
         for i in range(len(value)):
             val = value[i]  # this is another list
