@@ -136,7 +136,8 @@ sub new {
     $self->{notebook_1_wxTextCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{text_ctrl} = Wx::TextCtrl->new($self->{notebook_1_wxTextCtrl}, wxID_ANY, _T("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_CHARWRAP|wxTE_MULTILINE|wxTE_WORDWRAP);
     $self->{notebook_1_wxToggleButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{button_2} = Wx::ToggleButton->new($self->{notebook_1_wxToggleButton}, wxID_ANY, _T("Toggle Button"));
+    $self->{button_2} = Wx::ToggleButton->new($self->{notebook_1_wxToggleButton}, wxID_ANY, _T("Toggle Button 1"));
+    $self->{button_4} = Wx::ToggleButton->new($self->{notebook_1_wxToggleButton}, wxID_ANY, _T("Toggle Button 2"), wxDefaultPosition, wxDefaultSize, wxBU_BOTTOM|wxBU_EXACTFIT);
     $self->{notebook_1_wxTreeCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{tree_ctrl_1} = Wx::TreeCtrl->new($self->{notebook_1_wxTreeCtrl}, wxID_ANY);
     $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
@@ -316,6 +317,7 @@ sub __do_layout {
     $self->{sizer_18}->Add($self->{text_ctrl}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxTextCtrl}->SetSizer($self->{sizer_18});
     $self->{sizer_23}->Add($self->{button_2}, 1, wxALL, 5);
+    $self->{sizer_23}->Add($self->{button_4}, 1, wxALL, 5);
     $self->{notebook_1_wxToggleButton}->SetSizer($self->{sizer_23});
     $self->{sizer_24}->Add($self->{tree_ctrl_1}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxTreeCtrl}->SetSizer($self->{sizer_24});

@@ -757,7 +757,16 @@
                                 <flag>wxALL</flag>
                                 <border>5</border>
                                 <object class="wxToggleButton" name="button_2">
-                                    <label>Toggle Button</label>
+                                    <label>Toggle Button 1</label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALL</flag>
+                                <border>5</border>
+                                <object class="wxToggleButton" name="button_4">
+                                    <style>wxBU_BOTTOM|wxBU_EXACTFIT</style>
+                                    <label>Toggle Button 2</label>
                                 </object>
                             </object>
                         </object>

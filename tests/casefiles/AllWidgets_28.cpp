@@ -137,7 +137,8 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     label_3 = new wxStaticText(notebook_1_Spacer, wxID_ANY, _("Two labels with a"));
     label_2 = new wxStaticText(notebook_1_Spacer, wxID_ANY, _("spacer between"));
     text_ctrl = new wxTextCtrl(notebook_1_wxTextCtrl, wxID_ANY, _("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_CHARWRAP|wxTE_MULTILINE|wxTE_WORDWRAP);
-    button_2 = new wxToggleButton(notebook_1_wxToggleButton, wxID_ANY, _("Toggle Button"));
+    button_2 = new wxToggleButton(notebook_1_wxToggleButton, wxID_ANY, _("Toggle Button 1"));
+    button_4 = new wxToggleButton(notebook_1_wxToggleButton, wxID_ANY, _("Toggle Button 2"), wxDefaultPosition, wxDefaultSize, wxBU_BOTTOM|wxBU_EXACTFIT);
     tree_ctrl_1 = new wxTreeCtrl(notebook_1_wxTreeCtrl, wxID_ANY);
     static_line_1 = new wxStaticLine(this, wxID_ANY);
     button_5 = new wxButton(this, wxID_CLOSE, wxEmptyString);
@@ -306,6 +307,7 @@ void All_Widgets_Frame::do_layout()
     sizer_18->Add(text_ctrl, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxTextCtrl->SetSizer(sizer_18);
     sizer_23->Add(button_2, 1, wxALL, 5);
+    sizer_23->Add(button_4, 1, wxALL, 5);
     notebook_1_wxToggleButton->SetSizer(sizer_23);
     sizer_24->Add(tree_ctrl_1, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxTreeCtrl->SetSizer(sizer_24);
