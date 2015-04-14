@@ -7,35 +7,45 @@ wxToggleButton objects
 """
 
 import wx
-import common, misc
-from edit_windows import ManagedBase
+
+import common
+import config
+import misc
+from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 
 
-class EditToggleButton(ManagedBase):
+class EditToggleButton(ManagedBase, EditStylesMixin):
+    """\
+    Class to handle wxToggleButton objects
+    """
 
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
-        """\
-        Class to handle wxToggleButton objects
-        """
-        import config
+        # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxToggleButton', parent, id, sizer,
                              pos, property_window, show=show)
+        EditStylesMixin.__init__(self)
+
+        # initialise instance variable
         self.label = label
         self.value = 0
-
-        self.access_functions['label'] = (self.get_label, self.set_label)
-        self.access_functions['value'] = (self.get_value, self.set_value)
-        self.properties['label'] = TextProperty(self, 'label', None,
-                                                multiline=True, label=_("label"))
-        self.properties['value'] = CheckBoxProperty(self, 'value', None,
-                                                    _('Clicked'))
-        # 2003-09-04 added default_border
         if config.preferences.default_border:
             self.border = config.preferences.default_border_size
             self.flag = wx.ALL
+
+        # initialise properties and remaining staff
+        self.access_functions ['label'] = (self.get_label, self.set_label)
+        self.access_functions ['value'] = (self.get_value, self.set_value)
+        self.access_functions ['style'] = (self.get_style, self.set_style)
+        self.properties ['label'] = TextProperty(self, 'label',
+                                                 multiline=True,
+                                                 label=_("label"))
+        self.properties ['value'] = CheckBoxProperty(self, 'value',
+                                                     label=_('Clicked'))
+        self.properties ['style'] = CheckListProperty(self, 'style',
+                                                      self.widget_writer)
 
     def create_widget(self):
         label = self.label.replace('\\n', '\n')
@@ -49,8 +59,10 @@ class EditToggleButton(ManagedBase):
         szr = wx.BoxSizer(wx.VERTICAL)
         self.properties['label'].display(panel)
         self.properties['value'].display(panel)
+        self.properties['style'].display(panel)
         szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['value'].panel, 0, wx.EXPAND)
+        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)

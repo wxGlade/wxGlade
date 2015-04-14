@@ -137,6 +137,7 @@ protected:
     wxTextCtrl* text_ctrl;
     wxPanel* notebook_1_wxTextCtrl;
     wxToggleButton* button_2;
+    wxToggleButton* button_4;
     wxPanel* notebook_1_wxToggleButton;
     wxTreeCtrl* tree_ctrl_1;
     wxPanel* notebook_1_wxTreeCtrl;
