@@ -1,7 +1,7 @@
 """
 Compatibility code to run with different versions of wxPython
 
-@copyright: 2013 Carsten Grohmann
+@copyright: 2013-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

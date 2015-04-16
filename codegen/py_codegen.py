@@ -13,7 +13,7 @@ methods of the parent object.
 
 @copyright: John Dubery
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2012-2014 Carsten Grohmann
+@copyright: 2012-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

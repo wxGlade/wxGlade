@@ -2,7 +2,7 @@
 Code generator functions for wxPanel objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

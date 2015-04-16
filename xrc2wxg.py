@@ -4,7 +4,7 @@ Converts an XRC resource file (in a format wxGlade likes, i.e. all windows
 inside sizers, no widget unknown to wxGlade, ...) into a WXG file.
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014 Carsten Grohmann
+@copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
