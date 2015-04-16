@@ -1,7 +1,7 @@
 """\
 Common code used by all widget code generators
 
-@copyright: 2013-2014 Carsten Grohmann
+@copyright: 2013-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

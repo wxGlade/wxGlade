@@ -1,7 +1,7 @@
 """
 Perl code generator functions for wxHyperlinkCtrl objects
 
-@copyright: 2012-2014 Carsten Grohmann
+@copyright: 2012-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

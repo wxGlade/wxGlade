@@ -2,7 +2,7 @@
 Perl code generator functions for wxFrame objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2013-2014 Carsten Grohmann
+@copyright: 2013-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
