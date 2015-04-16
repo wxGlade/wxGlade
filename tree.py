@@ -499,7 +499,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         try:
             x, y = self.ClientToScreen(event.GetPosition())
             x, y = item.widget.ScreenToClient((x, y))
-            event.m_x, event.m_y = x, y
+            event.X, event.Y = x, y
             item.popup_menu(event)
         except AttributeError:
             self._logger.exception(_('Internal Error'))
