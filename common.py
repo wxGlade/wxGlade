@@ -1433,7 +1433,6 @@ def load_history():
 
 
 class Preferences(ConfigParser.ConfigParser):
-    _has_home = os.path.expanduser('~') != '~'
     _defaults = {
         'use_menu_icons': config.use_gui and config.platform != '__WXGTK__',
         'frame_tool_win': True,
