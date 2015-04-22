@@ -11,6 +11,7 @@ General:
   - Rework handling of event types for C++
   - Add support for events that are only supported by a specific wx version
   - Add styles to wxToggleButton
+  - Don't rewrite unchanged files
   - ...
 
 Generated Code:
