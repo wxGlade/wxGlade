@@ -55,7 +55,7 @@ class MyApp(wx.App):
         dialog_1 = MyDialog(None, wx.ID_ANY, "")
         self.SetTopWindow(dialog_1)
         dialog_1.Show()
-        return 1
+        return True
 
 # end of class MyApp
 

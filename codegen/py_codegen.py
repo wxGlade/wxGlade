@@ -272,7 +272,7 @@ class %(klass)s(%(cn_wxApp)s):
 %(tab)s%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
 %(tab)s%(tab)sself.SetTopWindow(%(top_win)s)
 %(tab)s%(tab)s%(top_win)s.Show()
-%(tab)s%(tab)sreturn 1
+%(tab)s%(tab)sreturn True
 
 # end of class %(klass)s
 
@@ -286,7 +286,7 @@ class %(klass)s(%(cn_wxApp)s):
 %(tab)s%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
 %(tab)s%(tab)sself.SetTopWindow(%(top_win)s)
 %(tab)s%(tab)s%(top_win)s.Show()
-%(tab)s%(tab)sreturn 1
+%(tab)s%(tab)sreturn True
 
 # end of class %(klass)s
 
