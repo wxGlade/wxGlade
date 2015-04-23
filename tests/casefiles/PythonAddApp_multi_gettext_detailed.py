@@ -16,7 +16,7 @@ class MyStartApp(wx.App):
         appframe = MyAppFrame(None, wx.ID_ANY, "")
         self.SetTopWindow(appframe)
         appframe.Show()
-        return 1
+        return True
 
 # end of class MyStartApp
 

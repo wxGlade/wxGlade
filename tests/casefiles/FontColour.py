@@ -50,7 +50,7 @@ class MyApp(wx.App):
         frame_1 = MyFrame(None, wx.ID_ANY, "")
         self.SetTopWindow(frame_1)
         frame_1.Show()
-        return 1
+        return True
 
 # end of class MyApp
 
