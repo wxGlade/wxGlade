@@ -12,6 +12,7 @@ NOTE: custom tag handler interface (called by XmlWidgetBuilder)::
              return False -> no further processing needed
 
 @copyright: 2002-2007 Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -119,142 +120,209 @@ class XmlParser(ContentHandler):
         except AttributeError:
             return None
 
+    def _process_app_attrs(self, attrs):
+        """\
+        Process attributes of the application tag
+
+        Check only existence of attributes not the logical correctness
+
+        @param attrs: Object attributes
+
+        @rtype: dict
+        """
+        res = {}
+
+        res['encoding'] = self._get_encoding(attrs)
+
+        for_version = attrs.get('for_version', '%s.%s' % config.for_version)
+        for_version_tuple = tuple([int(t) for t in for_version.split('.')[:2]])
+        if for_version_tuple < (2, 8):
+            logging.warning(
+                _('The loaded wxGlade designs are created for wxWidgets '
+                  '"%s", but this version is not supported anymore.'),
+                for_version,
+                )
+            logging.warning(
+                _('The designs will be loaded and converted to '
+                  'wxWidgets "%s" partially. Please check the designs '
+                  'carefully.'),
+                '%s.%s' % config.for_version
+            )
+            for_version = '%s.%s' % config.for_version
+        res['for_version'] = for_version
+
+        try:
+            is_template = int(attrs['is_template'])
+        except (KeyError, ValueError):
+            is_template = False
+        res['is_template'] = is_template
+
+        res['class'] = attrs.get('class')
+
+        try:
+            indent_amount = int(attrs['indent_amount'])
+        except (KeyError, ValueError):
+            indent_amount = config.default_indent_amount
+        res['indent_amount'] = indent_amount
+
+        res['indent_symbol'] = attrs.get('indent_symbol',
+                                         config.default_indent_symbol)
+
+        try:
+            res['language'] = attrs['language']
+        except KeyError:
+            raise XmlParsingError(_("'language' attribute missing: could "
+                                    "not generate code"))
+
+        res['name'] = attrs.get('name')
+
+        try:
+            multiple_files = bool(int(attrs['option']))
+        except (KeyError, ValueError):
+            multiple_files = config.default_multiple_files
+        res['option'] = multiple_files
+
+        try:
+            overwrite = int(attrs['overwrite'])
+        except (KeyError, ValueError):
+            overwrite = config.default_overwrite
+        res['overwrite'] = bool(overwrite)
+
+        res['path'] = attrs.get("path")
+
+        res['header_extension'] = attrs.get('header_extension')
+        res['source_extension'] = attrs.get('source_extension')
+
+        res['top_window'] = attrs.get('top_window')
+
+        try:
+            use_gettext = int(attrs["use_gettext"])
+        except (KeyError, ValueError):
+            use_gettext = config.default_use_gettext
+        res['use_gettext'] = bool(use_gettext)
+
+        if attrs.get('use_new_namespace') == u'0' and \
+                     attrs.get('language') == 'python':
+            logging.warning(
+                _('The loaded wxGlade designs are created to use the '
+                  'old Python import style ("from wxPython.wx '
+                  'import *)". The old import style is not supported '
+                  'anymore.')
+            )
+            logging.warning(
+                _('The designs will be loaded and the import style will '
+                  'be converted to new style imports ("import wx"). '
+                  'Please check your design carefully.')
+            )
+            # no update necessary - the attribute will not be used
+            # anymore
+
+        return res
+
+    def _get_encoding(self, attrs):
+        """\
+        Return the document encoding
+
+        @param attrs:  Object attributes
+
+        @rtype: str
+        """
+        encoding = attrs.get('encoding', config.default_encoding)
+        if encoding:
+            try:
+                unicode('a', encoding)
+            except LookupError:
+                self._logger.warning(
+                    _('Unknown encoding "%s", fallback to default encoding '
+                      '"%s"'), encoding, config.default_encoding
+                )
+                encoding = config.default_encoding
+        return encoding
+
 # end of class XmlParser
 
 
 class XmlWidgetBuilder(XmlParser):
     """\
-    parser used to build the tree of widgets from a XML file
+    Parser used to build the tree of widgets from a given XML file
     """
+
+    def __init__(self):
+        XmlParser.__init__(self)
+        self.top_window = ''
+
     def startElement(self, name, attrs):
         if name == 'application':
             # get properties of the app
             self._appl_started = True
+            attrs = self._process_app_attrs(attrs)
             app = common.app_tree.app
-            encoding = attrs.get("encoding")
-            if encoding:
-                try:
-                    unicode('a', encoding)
-                except LookupError:
-                    pass
-                else:
-                    app.encoding = encoding
-                    app.encoding_prop.set_value(encoding)
-            path = attrs.get("path")
+
+            encoding = attrs['encoding']
+            app.encoding = encoding
+            app.encoding_prop.set_value(encoding)
+
+            path = attrs['path']
             if path:
                 app.output_path = path
                 app.outpath_prop.set_value(path)
-            name = attrs.get("name")
-            if name:
-                app.name = name
-                app.name_prop.toggle_active(True)
-                app.name_prop.set_value(name)
-            klass = attrs.get("class")
+
+            klass = attrs['class']
             if klass:
                 app.klass = klass
                 app.klass_prop.toggle_active(True)
                 app.klass_prop.set_value(klass)
-            option = attrs.get("option")
-            if option:
-                try:
-                    option = int(option)
-                except ValueError:
-                    option = config.default_multiple_files
-                app.multiple_files = option
-                app.multiple_files_prop.set_value(option)
-            language = attrs.get('language')
-            if language:
-                app.set_language(language)
-            top_win = attrs.get("top_window")
-            if top_win:
-                self.top_window = top_win
-            try:
-                use_gettext = int(attrs["use_gettext"])
-            except (KeyError, ValueError):
-                use_gettext = config.default_use_gettext
-            use_gettext = bool(use_gettext)
-            app.use_gettext = use_gettext
-            app.use_gettext_prop.set_value(use_gettext)
 
-            try:
-                is_template = int(attrs["is_template"])
-            except (KeyError, ValueError):
-                is_template = False
-            app.is_template = is_template
+            name = attrs['name']
+            if name:
+                app.name = name
+                app.name_prop.toggle_active(True)
+                app.name_prop.set_value(name)
 
-            try:
-                overwrite = int(attrs['overwrite'])
-            except (KeyError, ValueError):
-                overwrite = config.default_overwrite
-            if overwrite:
-                app.overwrite = True
-                app.overwrite_prop.set_value(True)
-            else:
-                app.overwrite = False
-                app.overwrite_prop.set_value(False)
+            app.multiple_files = attrs['option']
+            app.multiple_files_prop.set_value(attrs['option'])
 
-            indent_symbol = attrs.get("indent_symbol")
+            app.set_language(attrs['language'])
+
+            top_window = attrs['top_window']
+            if top_window:
+                self.top_window = top_window
+
+            app.use_gettext = attrs['use_gettext']
+            app.use_gettext_prop.set_value(attrs['use_gettext'])
+
+            app.is_template = attrs['is_template']
+
+            app.overwrite = attrs['overwrite']
+            app.overwrite_prop.set_value(attrs['overwrite'])
+
+            indent_symbol = attrs['indent_symbol']
             if indent_symbol == 'space':
                 app.indent_mode = 1
             elif indent_symbol == 'tab':
                 app.indent_mode = 0
             app.indent_mode_prop.set_value(app.indent_mode)
 
-            indent = attrs.get("indent_amount")
-            if indent:
-                try:
-                    indent_amount = int(indent)
-                except (KeyError, ValueError):
-                    indent_amount = config.default_indent_amount
-                else:
-                    app.indent_amount = indent_amount
-                    app.indent_amount_prop.set_value(indent_amount)
+            indent_amount = attrs['indent_amount']
+            app.indent_amount = indent_amount
+            app.indent_amount_prop.set_value(indent_amount)
 
-            source_extension = attrs.get("source_extension")
+            source_extension = attrs['source_extension']
             if source_extension and source_extension[0] == '.':
                 app.source_ext = source_extension[1:]
                 app.source_ext_prop.set_value(source_extension[1:])
-            header_extension = attrs.get("header_extension")
+            header_extension = attrs['header_extension']
             if header_extension and header_extension[0] == '.':
                 app.header_ext = header_extension[1:]
                 app.header_ext_prop.set_value(header_extension[1:])
 
-            for_version = attrs.get('for_version',
-                                    '%s.%s' % config.for_version)
-            for_version_tuple = tuple([int(t) for t in
-                                       for_version.split('.')[:2]])
-            if for_version_tuple < (2, 8):
-                logging.warning(
-                    _('The loaded wxGlade designs are created for wxWidgets '
-                      '"%s", but this version is not supported anymore.'),
-                    for_version,
-                )
-                logging.warning(
-                    _('The designs will be loaded and converted to '
-                      'wxWidgets "%s" partially. Please check the designs '
-                      'carefully.'),
-                    '%s.%s' % config.for_version
-                )
-                for_version = '%s.%s' % config.for_version
+            for_version = attrs['for_version']
             app.for_version = for_version
             app.for_version_prop.set_str_value(for_version)
             app.set_for_version(for_version)
 
-            use_new_namespace = attrs.get('use_new_namespace')
-            if use_new_namespace == u'0' and language == 'python':
-                logging.warning(
-                    _('The loaded wxGlade designs are created to use the '
-                      'old Python import style ("from wxPython.wx '
-                      'import *)". The old import style is not supported '
-                      'anymore.')
-                )
-                logging.warning(
-                    _('The designs will be loaded and the import style will '
-                      'be converted to new style imports ("import wx"). '
-                      'Please check your design carefully.')
-                )
-
             return
+
         if not self._appl_started:
             raise XmlParsingError(
                 _("the root of the tree must be <application>")
@@ -266,11 +334,12 @@ class XmlWidgetBuilder(XmlParser):
             # handling of the various properties
             try:
                 # look for a custom handler to push on the stack
-                handler = self.top().obj.get_property_handler(name)
+                obj = self.top()
+                handler = obj.obj.get_property_handler(name)
                 if handler:
-                    self.top().prop_handlers.push(handler)
+                    obj.prop_handlers.push(handler)
                 # get the top custom handler and use it if there's one
-                handler = self.top().prop_handlers.top()
+                handler = obj.prop_handlers.top()
                 if handler:
                     handler.start_elem(name, attrs)
             except AttributeError:
@@ -286,7 +355,7 @@ class XmlWidgetBuilder(XmlParser):
                     self.top_window)
             return
         if name == 'object':
-            # remove last object from the stack
+            # remove last object from Stack
             obj = self.pop()
             if obj.klass in ('sizeritem', 'sizerslot'):
                 return
@@ -314,14 +383,16 @@ class XmlWidgetBuilder(XmlParser):
                         self.top().add_property(self._curr_prop, data)
                 except AttributeError:
                     pass
+
             # 2: call custom end_elem handler
             try:
                 # if there is a custom handler installed for this property,
                 # call its end_elem function: if this returns True, remove
-                # the handler from the Stack
-                handler = self.top().prop_handlers.top()
+                # the handler from Stack
+                obj = self.top()
+                handler = obj.prop_handlers.top()
                 if handler.end_elem(name):
-                    self.top().prop_handlers.pop()
+                    obj.prop_handlers.pop()
             except AttributeError:
                 pass
             self._curr_prop = None
@@ -331,8 +402,8 @@ class XmlWidgetBuilder(XmlParser):
         if not data or data.isspace():
             return
         if self._curr_prop is None:
-            raise XmlParsingError(_("character data can be present only "
-                                  "inside properties"))
+            raise XmlParsingError(
+                _("Character data can be present only inside properties"))
         self._curr_prop_val.append(data)
 
 # end of class XmlWidgetBuilder
@@ -633,8 +704,8 @@ class CodeWriter(XmlParser):
     @ivar code_writer: Language specific code writer
     @type code_writer: wxglade.codegen.BaseLangCodeWriter
 
-    @ivar top_win: Class name of the top window of the app (if any)
-    @type top_win: str
+    @ivar top_window: Class name of the top window of the app (if any)
+    @type top_window: str
 
     @ivar out_path: Override the output path specified in the XML document
     @type out_path: str
@@ -669,7 +740,7 @@ class CodeWriter(XmlParser):
         XmlParser.__init__(self)
         self._toplevels = Stack()
         self.app_attrs = {}
-        self.top_win = ''
+        self.top_window = ''
         self.out_path = out_path
         self.code_writer = writer
         self.preview = preview
@@ -693,36 +764,28 @@ class CodeWriter(XmlParser):
     def startElement(self, name, attrs_impl):
         # check only existence of attributes not the logical correctness
         attrs = {}
-        try:
-            encoding = self.app_attrs['encoding']
-            unicode('a', encoding)
-        except (KeyError, LookupError):
-            if name == 'application':
-                encoding = str(attrs_impl.get(
-                    'encoding',
-                    config.default_encoding
-                    ))
-            else:
-                encoding = config.default_encoding
+
         # turn all the attribute values from unicode to str objects
+        encoding = self._get_encoding(attrs_impl)
         for attr, val in attrs_impl.items():
             attrs[attr] = common.encode_from_xml(val, encoding)
+
         if name == 'application':
-            # get the code generation options
+            # get properties of the app
             self._appl_started = True
+            attrs = self._process_app_attrs(attrs)
             self.app_attrs = attrs
-            try:
-                attrs['option'] = bool(int(attrs['option']))
-                use_multiple_files = attrs['option']
-            except (KeyError, ValueError):
-                use_multiple_files = attrs['option'] = \
-                    config.default_multiple_files
+
+            attrs['for_version'] = attrs['for_version']
+            attrs['option'] = attrs['option']
+
             if self.out_path is None:
-                try:
+                out_path = attrs['path']
+                if out_path:
                     self.out_path = attrs['path']
-                except KeyError:
+                else:
                     raise XmlParsingError(_("'path' attribute missing: could "
-                                          "not generate code"))
+                                            "not generate code"))
             else:
                 attrs['path'] = self.out_path
 
@@ -731,40 +794,6 @@ class CodeWriter(XmlParser):
                 raise XmlParsingError(
                     _("'path' attribute empty: could not generate code")
                     )
-
-            for_version = attrs.get('for_version',
-                                    '%s.%s' % config.for_version)
-            for_version_tuple = tuple([int(t) for t in
-                                       for_version.split('.')[:2]])
-            if for_version_tuple < (2, 8):
-                logging.warning(
-                    _('The loaded wxGlade designs are created for wxWidgets '
-                      '"%s", but this version is not supported anymore.'),
-                    for_version,
-                    )
-                logging.warning(
-                    _('The designs will be loaded and converted to '
-                      'wxWidgets "%s" partially. Please check the designs '
-                      'carefully.'),
-                    '%s.%s' % config.for_version
-                )
-                attrs['for_version'] = '%s.%s' % config.for_version
-
-            if attrs.get('use_new_namespace') == u'0' and \
-               attrs.get('language') == 'python':
-                logging.warning(
-                    _('The loaded wxGlade designs are created to use the '
-                      'old Python import style ("from wxPython.wx '
-                      'import *)". The old import style is not supported '
-                      'anymore.')
-                )
-                logging.warning(
-                    _('The designs will be loaded and the import style will '
-                      'be converted to new style imports ("import wx"). '
-                      'Please check your design carefully.')
-                )
-                # no update necessary - the attribute will not be used
-                # anymore
 
             # Initialize the writer, thereby a logical check will be performed
             self.code_writer.initialize(attrs)
@@ -776,36 +805,37 @@ class CodeWriter(XmlParser):
                 _("the root of the tree must be <application>")
                 )
         if name == 'object':
-            # create the CodeObject which stores info about the current widget
+            # create the object and push it on the appropriate stacks
             CodeObject(attrs, self, preview=self.preview)
             if 'name' in attrs and \
                attrs['name'] == self.app_attrs.get('top_window', ''):
-                self.top_win = attrs['class']
+                self.top_window = attrs['class']
         else:
             # handling of the various properties
             try:
                 # look for a custom handler to push on the stack
-                w = self.top()
-                handler = self.code_writer.get_property_handler(name, w.base)
+                obj = self.top()
+                handler = self.code_writer.get_property_handler(name, obj.base)
                 if handler:
-                    w.prop_handlers.push(handler)
+                    obj.prop_handlers.push(handler)
                 # get the top custom handler and use it if there's one
-                handler = w.prop_handlers.top()
+                handler = obj.prop_handlers.top()
                 if handler:
                     handler.start_elem(name, attrs)
             except AttributeError:
-                self._logger.exception(_('ATTRIBUTE ERROR!!'))
+                self._logger.exception(_('Internal error'))
             self._curr_prop = name
 
     def endElement(self, name):
         if name == 'application':
             self._appl_started = False
             if self.app_attrs:
-                self.code_writer.add_app(self.app_attrs, self.top_win)
+                self.code_writer.add_app(self.app_attrs, self.top_window)
             # call the finalization function of the code writer
             self.code_writer.finalize()
             return
         if name == 'object':
+            # remove last object from Stack
             obj = self.pop()
             if obj.klass in ('sizeritem', 'sizerslot'):
                 return
@@ -842,16 +872,20 @@ class CodeWriter(XmlParser):
             data = common.encode_from_xml(u"".join(self._curr_prop_val),
                                            encoding)
             if data:
-                handler = self.top().prop_handlers.top()
-                if not handler or handler.char_data(data):
-                    # if char_data returned False,
-                    # we don't have to call add_property
-                    self.top().add_property(self._curr_prop, data)
+                try:
+                    handler = self.top().prop_handlers.top()
+                    if not handler or handler.char_data(data):
+                        # if char_data returned False,
+                        # we don't have to call add_property
+                        self.top().add_property(self._curr_prop, data)
+                except AttributeError:
+                    raise
+
             # 2: call custom end_elem handler
             try:
                 # if there is a custom handler installed for this property,
                 # call its end_elem function: if this returns True, remove
-                # the handler from the stack
+                # the handler from Stack
                 obj = self.top()
                 handler = obj.prop_handlers.top()
                 if handler.end_elem(name, obj):
@@ -865,8 +899,8 @@ class CodeWriter(XmlParser):
         if not data or data.isspace():
             return
         if self._curr_prop is None:
-            raise XmlParsingError(_("character data can only appear inside "
-                                  "properties"))
+            raise XmlParsingError(
+                _("Character data can be present only inside properties"))
         self._curr_prop_val.append(data)
 
 # end of class CodeWriter
