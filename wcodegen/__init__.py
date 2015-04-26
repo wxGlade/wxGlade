@@ -673,9 +673,14 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         @rtype: dict
         @see: L{get_code()}
         """
-        choices = obj.properties.get('choices', [])
-        choices = ', '.join([self.codegen.quote_str(c) for c in choices])
-        self.tmpl_dict['choices'] = choices
+        choices = obj.properties.get('choices')
+
+        # empty choices are not allowed
+        if not choices:
+            choices = ['<set by wxGlade>']
+
+        choices_str = ', '.join([self.codegen.quote_str(c) for c in choices])
+        self.tmpl_dict['choices'] = choices_str
         self.tmpl_dict['choices_len'] = len(choices)
 
         selection = obj.properties.get('selection', None)
@@ -914,7 +919,12 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
     use_names_for_binding_events = False
 
     def _prepare_choice(self, obj):
-        choices = obj.properties.get('choices', [])
+        choices = obj.properties.get('choices')
+
+        # empty choices are not allowed
+        if not choices:
+            choices = ['<set by wxGlade>']
+
         self.tmpl_dict['choices_len'] = len(choices)
 
         selection = obj.properties.get('selection', None)
@@ -922,20 +932,15 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
             self.tmpl_dict['selection'] = selection
             self.has_selection = True
 
-        if len(choices):
-            self.tmpl_before.append('const wxString %(name)s_choices[] = {\n')
-            for choice in choices:
-                self.tmpl_before.append(
-                    '%s%s,\n' % (
-                        self.codegen.tabs(1),
-                        self.codegen.quote_str(choice),
-                    )
-                )
-            self.tmpl_before.append('};\n')
-        else:
+        self.tmpl_before.append('const wxString %(name)s_choices[] = {\n')
+        for choice in choices:
             self.tmpl_before.append(
-                'const wxString *%(name)s_choices = NULL;\n'
+                '%s%s,\n' % (
+                    self.codegen.tabs(1),
+                    self.codegen.quote_str(choice),
+                )
             )
+        self.tmpl_before.append('};\n')
 
         return
 
@@ -981,9 +986,15 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
     tmpl_selection = '(%(klass)s_SetSelection %(name)s %(selection)s)\n'
 
     def _prepare_choice(self, obj):
-        choices = obj.properties.get('choices', [])
+        choices = obj.properties.get('choices')
+
+        # empty choices are not allowed
+        if not choices:
+            choices = ['<set by wxGlade>']
+
+        choices_str = ' '.join([self.codegen.quote_str(c) for c in choices])
+        self.tmpl_dict['choices'] = choices_str
         self.tmpl_dict['choices_len'] = len(choices)
-        self.tmpl_dict['choices'] = ' '.join([self.codegen.quote_str(c) for c in choices])
 
         selection = obj.properties.get('selection', None)
         if selection is not None and choices:

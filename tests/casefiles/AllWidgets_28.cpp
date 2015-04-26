@@ -72,15 +72,19 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     checkbox_4 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("four (unchecked)"), wxDefaultPosition, wxDefaultSize, wxCHK_3STATE);
     checkbox_5 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("five (checked)"), wxDefaultPosition, wxDefaultSize, wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER);
     checkbox_6 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("six (undetermined)"), wxDefaultPosition, wxDefaultSize, wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER);
-    const wxString *choice_empty_choices = NULL;
-    choice_empty = new wxChoice(notebook_1_wxChoice, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, choice_empty_choices);
+    const wxString choice_empty_choices[] = {
+        _("<set by wxGlade>"),
+    };
+    choice_empty = new wxChoice(notebook_1_wxChoice, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, choice_empty_choices);
     const wxString choice_filled_choices[] = {
         _("Item 1"),
         _("Item 2 (pre-selected)"),
     };
     choice_filled = new wxChoice(notebook_1_wxChoice, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, choice_filled_choices);
-    const wxString *combo_box_empty_choices = NULL;
-    combo_box_empty = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0, combo_box_empty_choices, wxCB_DROPDOWN);
+    const wxString combo_box_empty_choices[] = {
+        _("<set by wxGlade>"),
+    };
+    combo_box_empty = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 1, combo_box_empty_choices, wxCB_DROPDOWN);
     const wxString combo_box_filled_choices[] = {
         _("Item 1 (pre-selected)"),
         _("Item 2"),
@@ -90,24 +94,30 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     gauge_1 = new wxGauge(notebook_1_wxGauge, wxID_ANY, 20);
     grid_1 = new wxGrid(notebook_1_wxGrid, wxID_ANY);
     hyperlink_1 = new wxHyperlinkCtrl(notebook_1_wxHyperlinkCtrl, wxID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"));
-    const wxString *list_box_empty_choices = NULL;
-    list_box_empty = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_empty_choices, wxLB_SINGLE);
+    const wxString list_box_empty_choices[] = {
+        _("<set by wxGlade>"),
+    };
+    list_box_empty = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, list_box_empty_choices, wxLB_SINGLE);
     const wxString list_box_filled_choices[] = {
         _("Item 1"),
         _("Item 2 (pre-selected)"),
     };
     list_box_filled = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, list_box_filled_choices, wxLB_MULTIPLE|wxLB_SORT);
     list_ctrl_1 = new wxListCtrl(notebook_1_wxListCtrl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN|wxLC_REPORT);
-    const wxString *radio_box_empty1_choices = NULL;
-    radio_box_empty1 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty1_choices, 1, wxRA_SPECIFY_ROWS);
+    const wxString radio_box_empty1_choices[] = {
+        _("<set by wxGlade>"),
+    };
+    radio_box_empty1 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, 1, radio_box_empty1_choices, 1, wxRA_SPECIFY_ROWS);
     const wxString radio_box_filled1_choices[] = {
         _("choice 1"),
         _("choice 2 (pre-selected)"),
         _("choice 3"),
     };
     radio_box_filled1 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_filled1"), wxDefaultPosition, wxDefaultSize, 3, radio_box_filled1_choices, 0, wxRA_SPECIFY_ROWS);
-    const wxString *radio_box_empty2_choices = NULL;
-    radio_box_empty2 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty2_choices, 1, wxRA_SPECIFY_COLS);
+    const wxString radio_box_empty2_choices[] = {
+        _("<set by wxGlade>"),
+    };
+    radio_box_empty2 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, 1, radio_box_empty2_choices, 1, wxRA_SPECIFY_COLS);
     const wxString radio_box_filled2_choices[] = {
         _("choice 1"),
         _("choice 2 (pre-selected)"),
@@ -171,11 +181,16 @@ void All_Widgets_Frame::set_properties()
     checkbox_4->Set3StateValue(wxCHK_UNCHECKED);
     checkbox_5->Set3StateValue(wxCHK_CHECKED);
     checkbox_6->Set3StateValue(wxCHK_UNDETERMINED);
+    choice_empty->SetSelection(0);
     choice_filled->SetSelection(1);
+    combo_box_empty->SetSelection(-1);
     combo_box_filled->SetSelection(0);
     grid_1->CreateGrid(10, 3);
+    list_box_empty->SetSelection(0);
     list_box_filled->SetSelection(1);
+    radio_box_empty1->SetSelection(0);
     radio_box_filled1->SetSelection(1);
+    radio_box_empty2->SetSelection(0);
     radio_box_filled2->SetSelection(1);
     splitter_1->SetMinimumPaneSize(20);
     notebook_1_wxSplitterWindow_horizontal->SetScrollRate(10, 10);

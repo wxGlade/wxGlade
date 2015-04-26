@@ -18,6 +18,7 @@ Generated Code:
   - Remove obsolete wx.InitAllImageHandlers() calls from Python codegen
   - Add missing event types for event handling in C++
   - Event handler in C++ aren't virtual anymore
+  - Empty choices will be filled with a placeholder '<set by wxGlade>'
   - ...
 
 Bugs:
