@@ -22,12 +22,16 @@ MyDialog::MyDialog(wxWindow* parent, int id, const wxString& title, const wxPoin
     // begin wxGlade: MyDialog::MyDialog
     sizer_3_staticbox = new wxStaticBox(this, wxID_ANY, _("Assigned Permissions:"));
     sizer_2_staticbox = new wxStaticBox(this, wxID_ANY, _("Unassigned Permissions:"));
-    const wxString *list_box_1_choices = NULL;
-    list_box_1 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_1_choices, wxLB_SINGLE);
+    const wxString list_box_1_choices[] = {
+        _("<set by wxGlade>"),
+    };
+    list_box_1 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, list_box_1_choices, wxLB_SINGLE);
     button_4 = new wxButton(this, wxID_ADD, wxEmptyString);
     button_5 = new wxButton(this, wxID_REMOVE, wxEmptyString);
-    const wxString *list_box_2_choices = NULL;
-    list_box_2 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_2_choices, wxLB_SINGLE);
+    const wxString list_box_2_choices[] = {
+        _("<set by wxGlade>"),
+    };
+    list_box_2 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, list_box_2_choices, wxLB_SINGLE);
     static_line_1 = new wxStaticLine(this, wxID_ANY);
     button_2 = new wxButton(this, wxID_OK, wxEmptyString);
     button_1 = new wxButton(this, wxID_CANCEL, wxEmptyString);
@@ -42,6 +46,8 @@ void MyDialog::set_properties()
 {
     // begin wxGlade: MyDialog::set_properties
     SetTitle(_("dialog_1"));
+    list_box_1->SetSelection(0);
+    list_box_2->SetSelection(0);
     // end wxGlade
 }
 
