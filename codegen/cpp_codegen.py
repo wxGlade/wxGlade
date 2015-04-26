@@ -1423,37 +1423,44 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         @type prev_src: SourceFileContent
         
         @param event_handlers: List of event handlers
+        @type event_handlers:  list[(str, str, str)]
         
         @rtype: list[str]
         """
         code_lines = []
-        swrite = code_lines.append
+        write = code_lines.append
         
         if not event_handlers:
-            return []
+            return code_lines
             
         if prev_src and code_obj.klass in prev_src.event_table_decl:
             has_event_table = True
         else:
             has_event_table = False
+
         if is_new or not has_event_table:
-            swrite('\nBEGIN_EVENT_TABLE(%s, %s)\n' % \
+            write('\nBEGIN_EVENT_TABLE(%s, %s)\n' % \
                   (code_obj.klass, code_obj.base))
-        swrite(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
+        write(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
 
         for win_id, event, handler, evt_type in event_handlers:
-            swrite('%(tab)s%(event)s(%(win_id)s, %(klass)s::'
-                   '%(handler)s)\n' % {
-                       'tab': tab,
-                       'event': event,
-                       'win_id': win_id,
-                       'klass': code_obj.klass,
-                       'handler': handler,
-                       })
+            if 'EVT_NAVIGATION_KEY' in event:
+                tmpl = '%(tab)s%(event)s(%(klass)s::%(handler)s)\n'
+            else:
+                tmpl = '%(tab)s%(event)s(%(win_id)s, ' \
+                       '%(klass)s::%(handler)s)\n'
+            details = {
+                'tab': tab,
+                'event': event,
+                'win_id': win_id,
+                'klass': code_obj.klass,
+                'handler': handler,
+                }
+            write(tmpl % details)
 
-        swrite(tab + '// end wxGlade\n')
+        write(tab + '// end wxGlade\n')
         if is_new or not has_event_table:
-            swrite('END_EVENT_TABLE();\n\n')
+            write('END_EVENT_TABLE();\n\n')
 
         return code_lines
 

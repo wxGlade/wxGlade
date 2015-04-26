@@ -467,13 +467,19 @@ if __name__ == "__main__":
                 win_id = win_id[1:]
             else:
                 win_id = 'id=%s' % win_id
-            write('%(tab)sself.Bind(%(event)s, self.%(handler)s, '
-                  '%(win_id)s)\n' % {
+
+            if 'EVT_NAVIGATION_KEY' in event:
+                tmpl = '%(tab)sself.Bind(%(event)s, self.%(handler)s)\n'
+            else:
+                tmpl = '%(tab)sself.Bind(%(event)s, self.%(handler)s, ' \
+                       '%(win_id)s)\n'
+            details = {
                 'tab': tab,
                 'event': self.cn(event),
                 'handler': handler,
                 'win_id': win_id,
-                })
+                }
+            write(tmpl % details)
         
         return code_lines
 

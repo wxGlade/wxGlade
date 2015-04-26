@@ -127,7 +127,7 @@ class All_Widgets_Frame(wx.Frame):
         self.__set_properties()
         self.__do_layout()
 
-        self.Bind(wx.EVT_NAVIGATION_KEY, self.OnBitmapButtonPanelNavigationKey, self.notebook_1_wxBitmapButton)
+        self.Bind(wx.EVT_NAVIGATION_KEY, self.OnBitmapButtonPanelNavigationKey)
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnNotebookPageChanged, self.notebook_1)
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnNotebookPageChanging, self.notebook_1)
         self.Bind(wx.EVT_BUTTON, self.startConverting, self.button_1)

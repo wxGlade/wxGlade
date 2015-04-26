@@ -536,12 +536,18 @@ unless(caller){
             if win_id.startswith('#'):
                 win_id = '$self->{%s}->GetId' % win_id[8:]
 
-            write('%(tab)s%(event)s($self, %(win_id)s, \\&%(handler)s);\n' % {
-                'tab':     tab,
-                'event':   self.cn(event),
-                'win_id':  win_id,
+            if 'EVT_NAVIGATION_KEY' in event:
+                tmpl = '%(tab)s%(event)s($self, \\&%(handler)s);\n'
+            else:
+                tmpl = '%(tab)s%(event)s($self, %(win_id)s, ' \
+                       '\\&%(handler)s);\n'
+            details = {
+                'tab': tab,
+                'event': self.cn(event),
                 'handler': handler,
-                })
+                'win_id': win_id,
+                }
+            write(tmpl % details)
 
         if event_handlers:
             write('\n')
