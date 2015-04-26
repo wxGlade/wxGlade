@@ -425,6 +425,14 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @see: L{tmpl_dict}
     """
 
+    tmpl_concatenate_choices = ', '
+    """\
+    Template to concatenate choices
+
+    @type: str
+    @see: L{_prepare_choice()}
+    """
+
     tmpl_dict = {}
     """\
     Content to replace in the templates
@@ -670,8 +678,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         @param obj: Instance of L{xml_parse.CodeObject}
 
-        @rtype: dict
         @see: L{get_code()}
+        @see: L{tmpl_concatenate_choices}
         """
         choices = obj.properties.get('choices')
 
@@ -679,7 +687,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         if not choices:
             choices = ['<set by wxGlade>']
 
-        choices_str = ', '.join([self.codegen.quote_str(c) for c in choices])
+        choices_str = self.tmpl_concatenate_choices.join(
+            [self.codegen.quote_str(c) for c in choices])
         self.tmpl_dict['choices'] = choices_str
         self.tmpl_dict['choices_len'] = len(choices)
 
@@ -919,18 +928,14 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
     use_names_for_binding_events = False
 
     def _prepare_choice(self, obj):
-        choices = obj.properties.get('choices')
+        # generic part
+        super(CppWidgetCodeWriter, self)._prepare_choice(obj)
 
+        # C++ part - extend generic settings
+        choices = obj.properties.get('choices')
         # empty choices are not allowed
         if not choices:
             choices = ['<set by wxGlade>']
-
-        self.tmpl_dict['choices_len'] = len(choices)
-
-        selection = obj.properties.get('selection', None)
-        if selection is not None and choices:
-            self.tmpl_dict['selection'] = selection
-            self.has_selection = True
 
         self.tmpl_before.append('const wxString %(name)s_choices[] = {\n')
         for choice in choices:
@@ -981,26 +986,10 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
     """\
     Base class for all Lisp widget code writer classes.
     """
+    tmpl_concatenate_choices = ' '
     tmpl_setvalue = '(%(klass)s_SetValue %(name)s %(value_unquoted)s)\n'
     tmpl_setdefault = '(%(klass)s_SetDefault %(name)s)\n'
     tmpl_selection = '(%(klass)s_SetSelection %(name)s %(selection)s)\n'
-
-    def _prepare_choice(self, obj):
-        choices = obj.properties.get('choices')
-
-        # empty choices are not allowed
-        if not choices:
-            choices = ['<set by wxGlade>']
-
-        choices_str = ' '.join([self.codegen.quote_str(c) for c in choices])
-        self.tmpl_dict['choices'] = choices_str
-        self.tmpl_dict['choices_len'] = len(choices)
-
-        selection = obj.properties.get('selection', None)
-        if selection is not None and choices:
-            self.tmpl_dict['selection'] = selection
-            self.has_selection = True
-        return
 
     def _prepare_tmpl_content(self, obj):
         BaseWidgetWriter._prepare_tmpl_content(self, obj)
