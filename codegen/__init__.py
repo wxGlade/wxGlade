@@ -1878,17 +1878,16 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         """\
-        Generate to bind event handlers.
-        
-        This function is used for interpreted languages only.
-        
+        Generate code to bind events
+
         @param code_obj: Object to generate code for
         @type code_obj:  CodeObject
 
         @param tab: Indentation of function body
         @type tab:  str
 
-        @param event_handlers: List of event handlers        
+        @param event_handlers: List of event handlers
+        @type event_handlers:  list[(str, str, str)]
 
         @rtype: list[str]
         """
