@@ -61,7 +61,7 @@ class wxGladePreferencesUI(wx.Dialog):
     def __set_properties(self):
         # begin wxGlade: wxGladePreferencesUI.__set_properties
         self.SetTitle(_("wxGlade: preferences"))
-        _icon = wx.EmptyIcon()
+        _icon = wx.NullIcon()
         _icon.CopyFromBitmap(wx.Bitmap(_icon_path, wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.use_menu_icons.SetValue(1)

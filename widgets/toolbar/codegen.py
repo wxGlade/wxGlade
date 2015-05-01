@@ -19,10 +19,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         out = []
         append = out.append
         
-        if obj.is_toplevel:
-            obj_name = 'self'
-        else:
-            obj_name = 'self.' + obj.name
+        obj_name = self.codegen._get_code_name(obj)
         
         bitmapsize = prop.get('bitmapsize')
         if bitmapsize:
@@ -53,59 +50,29 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         append = out.append
         tools = obj.properties['toolbar']
         ids = []
-       
-        if obj.is_toplevel:
-            obj_name = 'self'
-        else:
-            obj_name = 'self.' + obj.name
 
-        def _get_bitmap(bitmap):
-            bmp_preview_path = os.path.join(config.icons_path, "icon.xpm")
-            if not bitmap:
-                return self.cn('wxNullBitmap')
-            elif bitmap.startswith('var:'):
-                if obj.preview:
-                    return "%s('%s', %s)" % (
-                        self.cn('wxBitmap'), bmp_preview_path,
-                        self.cn('wxBITMAP_TYPE_XPM') )
-                else:
-                    return (self.cn('wxBitmap') +
-                            '(%s,' + self.cn('wxBITMAP_TYPE_ANY') +
-                            ')') % (bitmap[4:].strip())
-            elif bitmap.startswith('code:'):
-                if obj.preview:
-                    return "%s('%s', %s)" % (
-                        self.cn('wxBitmap'), bmp_preview_path,
-                        self.cn('wxBITMAP_TYPE_XPM'))
-                else:
-                    return '%s' % self.cn(bitmap[5:].strip())
-            else:
-                if obj.preview:
-                    import misc
-                    bitmap = misc.get_relative_path(bitmap, True)
-                return self.cn('wxBitmap') + \
-                       ('(%s, ' + self.cn('wxBITMAP_TYPE_ANY') + ')') % \
-                       self.codegen.quote_path(bitmap)
-                
+        obj_name = self.codegen._get_code_name(obj)
+
         for tool in tools:
             if tool.id == '---': # item is a separator
                 append('%s.AddSeparator()\n' % obj_name)
             else:
                 name, val = self.codegen.generate_code_id(None, tool.id)
                 if obj.preview or (not name and (not val or val == '-1')):
-                    id = self.cn('wxNewId()')
+                    wid = self.cn('wxNewId()')
                 else:
-                    if name: ids.append(name)
-                    id = val
+                    if name:
+                        ids.append(name)
+                    wid = val
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                bmp1 = _get_bitmap(tool.bitmap1)
-                bmp2 = _get_bitmap(tool.bitmap2)
+                bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
+                bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
                 append('%s.AddLabelTool(%s, %s, %s, %s, %s, %s, %s)\n' %
-                       (obj_name, id, self.codegen.quote_str(tool.label),
+                       (obj_name, wid, self.codegen.quote_str(tool.label),
                         bmp1, bmp2, self.cn(kind),
                         self.codegen.quote_str(tool.short_help),
                         self.codegen.quote_str(tool.long_help)))
@@ -294,8 +261,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         append = out.append
         prop = obj.properties
 
-        if obj.is_toplevel: obj_name = ''
-        else: obj_name = obj.name + '->'
+        obj_name = self.codegen._get_code_name(obj)
 
         bitmapsize = obj.properties.get('bitmapsize')
         if bitmapsize:
@@ -320,35 +286,24 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         if separation:
             append('%sSetToolSeparation(%s);\n' % (obj_name, separation))
 
-        def _get_bitmap(bitmap):
-            if not bitmap:
-                return 'wxNullBitmap'
-            elif bitmap.startswith('var:'):
-                return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % bitmap[4:].strip()
-            elif bitmap.startswith('code:'):
-                return '(%s)' % bitmap[5:].strip()
-            else:
-                return 'wxBitmap(%s, wxBITMAP_TYPE_ANY)' % \
-                       self.codegen.quote_path(bitmap)
-                
         for tool in tools:
             if tool.id == '---':  # item is a separator
                 append('%sAddSeparator();\n' % obj_name)
             else:
                 name, val = self.codegen.generate_code_id(None, tool.id)
                 if not name and (not val or val == '-1'):
-                    id = 'wxNewId()'
+                    wid = 'wxNewId()'
                 else:
-                    id = val
+                    wid = val
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                bmp1 = _get_bitmap(tool.bitmap1)
-                bmp2 = _get_bitmap(tool.bitmap2)
+                bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
+                bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
                 append('%sAddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
-                       (obj_name, id, self.codegen.quote_str(tool.label),
+                       (obj_name, wid, self.codegen.quote_str(tool.label),
                         bmp1, bmp2, kind,
                         self.codegen.quote_str(tool.short_help),
                         self.codegen.quote_str(tool.long_help)))

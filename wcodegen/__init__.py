@@ -6,9 +6,12 @@ Common code used by all widget code generators
 """
 
 import common
+import config
+import misc
 
 import copy
 import logging
+import os.path
 import types
 from dialogs import *
 from mixins import StylesMixin
@@ -425,6 +428,15 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @see: L{tmpl_dict}
     """
 
+    tmpl_bitmap = ''
+    """\
+    Template to create a C{wxBitmap(...)} call.
+
+    @type: str
+    @see: L{generate_code_bitmap()}
+    @see: L{_prepare_bitmap()}
+    """
+
     tmpl_concatenate_choices = ', '
     """\
     Template to concatenate choices
@@ -669,6 +681,33 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
     default_style = property(_get_default_style)
 
+    def _prepare_bitmap(self, obj):
+        """\
+        Prepare content for widgets with bitmaps.
+
+        The wxBitmap code will be generated automatically if the template
+        in L{self.tmpl} contains '%(bitmap)s'.
+
+        @param obj: Instance of L{xml_parse.CodeObject}
+        @type obj: xml_parse.CodeObject
+
+        @see: L{generate_code_bitmap()}
+        """
+        bmp_file = obj.properties.get('bitmap', '')
+        self.tmpl_dict['bitmap'] = self.generate_code_bitmap(
+            bmp_file, obj.preview)
+
+        disabled_bmp = obj.properties.get('disabled_bitmap')
+        if disabled_bmp:
+            self.tmpl_dict['disabled_bitmap'] = self.generate_code_bitmap(
+                disabled_bmp, obj.preview)
+            self.tmpl_props.append(self.tmpl_bitmap_disabled)
+
+        if not obj.properties.has_key('size') and self.tmpl_SetBestSize:
+            self.tmpl_props.append(self.tmpl_SetBestSize)
+
+        self.has_setdefault = obj.properties.get('default', False)
+
     def _prepare_choice(self, obj):
         """\
         Prepare content for widgets with choices.
@@ -698,6 +737,50 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             self.has_selection = True
         return
 
+    def generate_code_bitmap(self, bitmap, preview=False):
+        """\
+        Returns a code fragement that generates an wxBitmap object
+
+        @param bitmap: Bitmap definition
+        @type bitmap: str
+
+        @param preview: True to generate code for the preview
+        @type preview:  bool
+
+        @rtype: str
+
+        @see: L{tmpl_bitmap}
+        """
+        assert self.tmpl_bitmap
+
+        if not bitmap:
+            return self.cn('wxNullBitmap')
+
+        if preview and (
+                    bitmap.startswith('var:') or bitmap.startswith('code:')):
+            preview_icon = os.path.join(config.icons_path, "icon.xpm")
+            return self.tmpl_bitmap % {
+                'name': self.cn('wxBitmap'),
+                'bitmap': self.codegen.quote_path(preview_icon),
+                'bitmap_type': self.cn('wxBITMAP_TYPE_XPM'), }
+
+        if bitmap.startswith('var:'):
+            return self.tmpl_bitmap % {
+                'name': self.cn('wxBitmap'),
+                'bitmap': bitmap[4:].strip(),
+                'bitmap_type': self.cn('wxBITMAP_TYPE_ANY'), }
+
+        if bitmap.startswith('code:'):
+            return '%s' % self.cn(bitmap[5:].strip())
+
+        if preview:
+            bitmap = misc.get_relative_path(bitmap, True)
+
+        return self.tmpl_bitmap % {
+            'name': self.cn('wxBitmap'),
+            'bitmap': self.codegen.quote_path(bitmap),
+            'bitmap_type': self.cn('wxBITMAP_TYPE_ANY'), }
+
     def get_code(self, obj):
         """\
         Generates language specific code for the wxWidget object from a
@@ -723,6 +806,11 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         # '%(choices)s' or '%(choices_len)s'
         if '%(choices)s' in self.tmpl or '%(choices_len)s' in self.tmpl:
             self._prepare_choice(obj)
+
+        # generate wxBitmap code automatically if the template contains
+        # '%(bitmap)s'.
+        if '%(bitmap)s' in self.tmpl:
+            self._prepare_bitmap(obj)
 
         if self.tmpl_dict['id_name']:
             init_lines.append(self.tmpl_dict['id_name'])
@@ -922,6 +1010,11 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
     Base class for all C++ widget code writer classes.
     """
     prefix_style = True
+
+    tmpl_bitmap = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
+    tmpl_bitmap_disabled = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
+    tmpl_SetBestSize = '%(name)s->SetSize(%(name)s->GetBestSize());\n'
+
     tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
     tmpl_setdefault = '%(name)s->SetDefault();\n'
     tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
@@ -986,6 +1079,12 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
     """\
     Base class for all Lisp widget code writer classes.
     """
+    tmpl_bitmap = '(%(name)s_CreateLoad %(bitmap)s %(bitmap_type)s)'
+    tmpl_bitmap_disabled = '(wxBitmapButton_SetBitmapDisabled ' \
+                           '(slot-%(name)s obj) %(disabled_bitmap)s)\n'
+    tmpl_SetBestSize = '%(name)s.wxWindow_SetSize(' \
+                       '%(name)s.wxWindow_GetBestSize())\n'
+
     tmpl_concatenate_choices = ' '
     tmpl_setvalue = '(%(klass)s_SetValue %(name)s %(value_unquoted)s)\n'
     tmpl_setdefault = '(%(klass)s_SetDefault %(name)s)\n'
@@ -1019,6 +1118,11 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
     Base class for all Perl widget code writer classes.
     """
     prefix_style = True
+
+    tmpl_bitmap = '%(name)s->new(%(bitmap)s, %(bitmap_type)s)'
+    tmpl_bitmap_disabled = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
+    tmpl_SetBestSize = '%(name)s->SetSize(%(name)s->GetBestSize());\n'
+
     tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
     tmpl_setdefault = '%(name)s->SetDefault();\n'
     tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
@@ -1047,6 +1151,10 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
     """\
     Base class for all Python widget code writer classes.
     """
+    tmpl_bitmap = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
+    tmpl_bitmap_disabled = '%(name)s.SetBitmapDisabled(%(disabled_bitmap)s)\n'
+    tmpl_SetBestSize = '%(name)s.SetSize(%(name)s.GetBestSize())\n'
+
     tmpl_flags = ', style=%s'
     tmpl_setvalue = '%(name)s.SetValue(%(value_unquoted)s)\n'
     tmpl_setdefault = '%(name)s.SetDefault()\n'
@@ -1055,7 +1163,9 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
     def _prepare_tmpl_content(self, obj):
         BaseWidgetWriter._prepare_tmpl_content(self, obj)
 
-        if not obj.parent.is_toplevel:
+        # toplevel widgets like wxFrame or wxDialog don't have a parent
+        # object
+        if obj.parent and not obj.parent.is_toplevel:
             self.tmpl_dict['parent'] = 'self.%s' % obj.parent.name
         else:
             self.tmpl_dict['parent'] = 'self'

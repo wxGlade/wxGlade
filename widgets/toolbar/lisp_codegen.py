@@ -58,22 +58,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         tools = obj.properties['toolbar']
         ids = []
 
-        obj_name = '(slot-%s obj)' % obj.name
-
-        def _get_bitmap(bitmap):
-            if not bitmap:
-                return 'wxNullBitmap'
-            elif bitmap.startswith('var:'):
-                # this is a variable holding bitmap path
-                var = bitmap[4:].strip()
-                if var[0] != "$":
-                    var = "$" + var
-                return '(wxBitmap:wxBitmap_CreateLoad %s wxBITMAP_TYPE_ANY)' % var
-            elif bitmap.startswith('code:'):
-                return '(%s)' % bitmap[5:].strip()
-            else:
-                return '(wxBitmap:wxBitmap_CreateLoad %s wxBITMAP_TYPE_ANY)' % \
-                       self.codegen.quote_str(bitmap)
+        obj_name = self.codegen._get_code_name(obj)
 
         for tool in tools:
             if tool.id == '---':  # item is a separator
@@ -81,20 +66,21 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
             else:
                 name, val = self.codegen.generate_code_id(None, tool.id)
                 if not name and (not val or val == '-1'):
-                    id = 'Wx::NewId()'
+                    wid = 'Wx::NewId()'
                 else:
-                    if name: ids.append(name)
-                    id = val
+                    if name:
+                        ids.append(name)
+                    wid = val
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                bmp1 = _get_bitmap(tool.bitmap1)
-                bmp2 = _get_bitmap(tool.bitmap2)
+                bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
+                bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
 #                append('%s->AddLabelTool(%s, %s, %s, %s, %s, %s, %s);\n' %
                 append('(wxToolBar_AddTool %s %s %s %s %s %s %s %s)\n' %
-                       (obj_name, id, self.codegen.quote_str(tool.label),
+                       (obj_name, wid, self.codegen.quote_str(tool.label),
                         bmp1, bmp2, kind,
                         self.codegen.quote_str(tool.short_help),
                         self.codegen.quote_str(tool.long_help)))

@@ -22,13 +22,11 @@ class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
         if title:
             append('(wxFrame_SetTitle (slot-top-window obj) %s)\n' %
                    self.codegen.quote_str(title))
-
         icon = obj.properties.get('icon')
         if icon:
             append(
                 ';;; generating code for setting icons is not implemented\n'
                 )
-
         out.extend(self.codegen.generate_common_properties(obj))
         return out
 

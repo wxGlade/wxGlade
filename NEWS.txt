@@ -12,6 +12,7 @@ General:
   - Add support for events that are only supported by a specific wx version
   - Add styles to wxToggleButton
   - Don't rewrite unchanged files
+  - Rework creation of wxBitmap code used by several widgets
   - ...
 
 Generated Code:

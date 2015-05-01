@@ -21,28 +21,10 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
             out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(title))
         icon = obj.properties.get('icon')
         if icon:
-            if icon.startswith('var:'):
-                if not obj.preview:
-                    out.append('_icon = ' + self.cn('wxEmptyIcon') + '()\n')
-                    out.append(('_icon.CopyFromBitmap(' + self.cn('wxBitmap') +
-                                '(%s, ' + self.cn('wxBITMAP_TYPE_ANY') + '))\n') %
-                               icon[4:].strip())
-                    out.append('self.SetIcon(_icon)\n')
-            elif icon.startswith('code:'):
-                if not obj.preview:
-                    out.append('_icon = ' + self.cn('wxEmptyIcon') + '()\n')
-                    out.append('_icon.CopyFromBitmap(%s)\n' %
-                               icon[5:].strip())
-                    out.append('self.SetIcon(_icon)\n')
-            else:
-                if obj.preview:
-                    import misc
-                    icon = misc.get_relative_path(icon, True)
-                out.append('_icon = ' + self.cn('wxEmptyIcon') + '()\n')
-                out.append(('_icon.CopyFromBitmap(' + self.cn('wxBitmap') +
-                            '(%s, ' + self.cn('wxBITMAP_TYPE_ANY') + '))\n') %
-                           self.codegen.quote_path(icon))
-                out.append('self.SetIcon(_icon)\n')
+            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
+            out.append('_icon = %s()\n' % self.cn('wxNullIcon'))
+            out.append('_icon.CopyFromBitmap(%s)\n' % stmt_icon)
+            out.append('self.SetIcon(_icon)\n')
         out.extend(self.codegen.generate_common_properties(obj))
         return out
 
@@ -79,18 +61,9 @@ class CppDialogGenerator(wcodegen.CppWidgetCodeWriter):
             out.append('SetTitle(%s);\n' % self.codegen.quote_str(title))
         icon = obj.properties.get('icon')
         if icon:
+            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
             out.append('wxIcon _icon;\n')
-            if icon.startswith('var:'):
-                out.append('_icon.CopyFromBitmap(wxBitmap(' +
-                           '%s, wxBITMAP_TYPE_ANY));\n' %
-                           icon[4:].strip())
-            elif icon.startswith('code:'):
-                out.append('_icon.CopyFromBitmap(%s);\n' %
-                           icon[5:].strip())
-            else:
-                out.append('_icon.CopyFromBitmap(wxBitmap(%s, '
-                           'wxBITMAP_TYPE_ANY));\n' %
-                           self.codegen.quote_path(icon))
+            out.append('_icon.CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('SetIcon(_icon);\n')
         out.extend(self.codegen.generate_common_properties(obj))
         return out

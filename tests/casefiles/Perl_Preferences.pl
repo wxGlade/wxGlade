@@ -79,7 +79,7 @@ sub __set_properties {
     # begin wxGlade: wxGladePreferencesUI::__set_properties
     $self->SetTitle(_T("wxGlade: preferences"));
     my $icon = &Wx::wxNullIcon();
-    $icon->CopyFromBitmap(Wx::Bitmap->new(_T("icons/icon.xpm"), wxBITMAP_TYPE_ANY));
+    $icon->CopyFromBitmap(Wx::Bitmap->new("icons/icon.xpm", wxBITMAP_TYPE_ANY));
     $self->SetIcon($icon);
     $self->{use_menu_icons}->SetValue(1);
     $self->{frame_tool_win}->SetValue(1);
