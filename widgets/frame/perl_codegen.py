@@ -24,14 +24,12 @@ class PerlFrameCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         title = obj.properties.get('title')
         if title:
             append('$self->SetTitle(%s);\n' % self.codegen.quote_str(title))
-
         icon = obj.properties.get('icon')
         if icon:
-            append('my $icon = Wx::Icon->new();\n')
-            append('$icon->CopyFromBitmap(Wx::Bitmap->new(%s, '
-                   'wxBITMAP_TYPE_ANY));\n' % self.codegen.quote_str(icon))
-            append('$self->SetIcon($icon);\n')
-
+            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
+            out.append('my $icon = &Wx::wxNullIcon();\n')
+            out.append('$icon->CopyFromBitmap(%s);\n' % stmt_icon)
+            out.append('$self->SetIcon($icon);\n')
         out.extend(self.codegen.generate_common_properties(obj))
         return out
 

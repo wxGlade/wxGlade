@@ -54,7 +54,7 @@ sub new {
     # Tool Bar
     $self->{All_Widgets_toolbar} = Wx::ToolBar->new($self, -1);
     $self->SetToolBar($self->{All_Widgets_toolbar});
-    $self->{All_Widgets_toolbar}->AddTool(wxID_OPEN, _T("Open"), (wxNullBitmap), wxNullBitmap, wxITEM_NORMAL, _T("Open a new file"), _T("Open a new file"));
+    $self->{All_Widgets_toolbar}->AddTool(wxID_OPEN, _T("Open"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, _T("Open a new file"), _T("Open a new file"));
     # Tool Bar end
     $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
     $self->{notebook_1_wxBitmapButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
@@ -122,7 +122,7 @@ sub new {
     $self->{splitter_2_pane_2} = Wx::Panel->new($self->{splitter_2}, wxID_ANY);
     $self->{label_right_pane} = Wx::StaticText->new($self->{splitter_2_pane_2}, wxID_ANY, _T("right pane"));
     $self->{notebook_1_wxStaticBitmap} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{bitmap_code_nullbitmap} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, (wxNullBitmap));
+    $self->{bitmap_code_nullbitmap} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, wxNullBitmap);
     $self->{bitmap_file} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
     $self->{bitmap_nofile} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("non-existing.bmp", wxBITMAP_TYPE_ANY));
     $self->{notebook_1_wxStaticLine} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);

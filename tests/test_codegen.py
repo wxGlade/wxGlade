@@ -1559,3 +1559,53 @@ class TestCodeGen(WXGladeBaseTest):
             'Format_flags.wxg',
             'Format_flags.xrc'
         )
+
+
+    def test_get_bitmap_code(self):
+        """\
+        Test bitmap code generation
+        """
+        details = {}
+        details['C++'] = [
+            (None, 'wxNullBitmap'),
+            ('icon.xpm', 'wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY)'),
+            ('code:SenselessStatement', 'SenselessStatement'),
+            ('code:wxEmptyBitmap(16, 16)', 'wxEmptyBitmap(16, 16)'),
+            ('var:AlreadyDefinedVariable', 'wxBitmap(AlreadyDefinedVariable, wxBITMAP_TYPE_ANY)'),
+            ]
+        details['lisp'] = [
+            (None, 'wxNullBitmap'),
+            ('icon.xpm', '(wxBitmap_CreateLoad "icon.xpm" wxBITMAP_TYPE_ANY)'),
+            ('code:SenselessStatement', 'SenselessStatement'),
+            ('code:wxEmptyBitmap(16, 16)', 'wxEmptyBitmap(16, 16)'),
+            ('var:AlreadyDefinedVariable', '(wxBitmap_CreateLoad AlreadyDefinedVariable wxBITMAP_TYPE_ANY)'),
+            ]
+        details['perl'] = [
+            (None, 'wxNullBitmap'),
+            ('icon.xpm', 'Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY)'),
+            ('code:SenselessStatement', 'SenselessStatement'),
+            ('code:wxEmptyBitmap(16, 16)', 'Wx::EmptyBitmap(16, 16)'),
+            ('var:AlreadyDefinedVariable', 'Wx::Bitmap->new(AlreadyDefinedVariable, wxBITMAP_TYPE_ANY)'),
+            ]
+        details['python'] = [
+            (None, 'wx.NullBitmap'),
+            ('icon.xpm', 'wx.Bitmap("icon.xpm", wx.BITMAP_TYPE_ANY)'),
+            ('code:SenselessStatement', 'SenselessStatement'),
+            ('code:wxEmptyBitmap(16, 16)', 'wx.EmptyBitmap(16, 16)'),
+            ('var:AlreadyDefinedVariable', 'wx.Bitmap(AlreadyDefinedVariable, wx.BITMAP_TYPE_ANY)'),
+            ]
+
+        for lang in ['C++', 'lisp', 'perl', 'python']:
+            codegen = common.code_writers.get(lang)
+            get_bitmap_code = codegen.obj_builders['wxBitmapButton'].generate_code_bitmap
+            for bitmap_file, expected in details[lang]:
+                stmt = get_bitmap_code(bitmap_file)
+                self.failUnlessEqual(
+                    expected,
+                    stmt,
+                    '%s: Unexpected result got: "%s" expect: "%s"' % (
+                        lang.capitalize(),
+                        stmt,
+                        expected,
+                    )
+                )

@@ -102,7 +102,7 @@ class All_Widgets_Frame(wx.Frame):
         self.splitter_2_pane_2 = wx.Panel(self.splitter_2, wx.ID_ANY)
         self.label_right_pane = wx.StaticText(self.splitter_2_pane_2, wx.ID_ANY, _("right pane"))
         self.notebook_1_wxStaticBitmap = wx.Panel(self.notebook_1, wx.ID_ANY)
-        self.bitmap_code_nullbitmap = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, (wx.NullBitmap))
+        self.bitmap_code_nullbitmap = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.NullBitmap)
         self.bitmap_file = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap("icon.xpm", wx.BITMAP_TYPE_ANY))
         self.bitmap_nofile = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap("non-existing.bmp", wx.BITMAP_TYPE_ANY))
         self.notebook_1_wxStaticLine = wx.Panel(self.notebook_1, wx.ID_ANY)

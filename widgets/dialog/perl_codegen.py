@@ -25,17 +25,13 @@ class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
         if title:
             out.append('$self->SetTitle(%s);\n' %
                        self.codegen.quote_str(title))
-
         icon = obj.properties.get('icon')
         if icon:
+            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
             out.append('my $icon = &Wx::wxNullIcon();\n')
-            out.append('$icon->CopyFromBitmap(Wx::Bitmap->new(%s, '
-                       'wxBITMAP_TYPE_ANY));\n' %
-                       self.codegen.quote_str(icon))
+            out.append('$icon->CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('$self->SetIcon($icon);\n')
-
         out.extend(self.codegen.generate_common_properties(obj))
-
         return out
 
     def get_layout_code(self, obj):

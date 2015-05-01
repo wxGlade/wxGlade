@@ -61,9 +61,9 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     All_Widgets_statusbar = CreateStatusBar(1);
     All_Widgets_toolbar = new wxToolBar(this, -1);
     SetToolBar(All_Widgets_toolbar);
-    All_Widgets_toolbar->AddTool(wxID_OPEN, _("Open"), (wxNullBitmap), wxNullBitmap, wxITEM_NORMAL, _("Open a new file"), _("Open a new file"));
+    All_Widgets_toolbar->AddTool(wxID_OPEN, _("Open"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, _("Open a new file"), _("Open a new file"));
     All_Widgets_toolbar->Realize();
-    bitmap_button_1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY));
+    bitmap_button_1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY));
     button_3 = new wxButton(notebook_1_wxButton, wxID_BOLD, wxEmptyString);
     calendar_ctrl_1 = new wxCalendarCtrl(notebook_1_wxCalendarCtrl, wxID_ANY);
     checkbox_1 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("one (unchecked)"));
@@ -137,9 +137,9 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     label_buttom_pane = new wxStaticText(splitter_1_pane_2, wxID_ANY, _("bottom pane"));
     label_left_pane = new wxStaticText(splitter_2_pane_1, wxID_ANY, _("left pane"));
     label_right_pane = new wxStaticText(splitter_2_pane_2, wxID_ANY, _("right pane"));
-    bitmap_code_nullbitmap = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, (wxNullBitmap));
-    bitmap_file = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY));
-    bitmap_nofile = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("non-existing.bmp"), wxBITMAP_TYPE_ANY));
+    bitmap_code_nullbitmap = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxNullBitmap);
+    bitmap_file = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY));
+    bitmap_nofile = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap("non-existing.bmp", wxBITMAP_TYPE_ANY));
     static_line_2 = new wxStaticLine(notebook_1_wxStaticLine, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
     static_line_3 = new wxStaticLine(notebook_1_wxStaticLine, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
     static_line_4 = new wxStaticLine(notebook_1_wxStaticLine, wxID_ANY);
