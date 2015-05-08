@@ -59,7 +59,10 @@ protected:
     wxMenuBar* All_Widgets_menubar;
     wxStatusBar* All_Widgets_statusbar;
     wxToolBar* All_Widgets_toolbar;
-    wxBitmapButton* bitmap_button_1;
+    wxBitmapButton* bitmap_button_icon1;
+    wxBitmapButton* bitmap_button_empty1;
+    wxBitmapButton* bitmap_button_icon2;
+    wxBitmapButton* bitmap_button_empy2;
     wxPanel* notebook_1_wxBitmapButton;
     wxButton* button_3;
     wxPanel* notebook_1_wxButton;
@@ -122,7 +125,7 @@ protected:
     wxPanel* splitter_2_pane_2;
     wxSplitterWindow* splitter_2;
     wxScrolledWindow* notebook_1_wxSplitterWindow_vertical;
-    wxStaticBitmap* bitmap_code_nullbitmap;
+    wxStaticBitmap* bitmap_code_emptybitmap;
     wxStaticBitmap* bitmap_file;
     wxStaticBitmap* bitmap_nofile;
     wxPanel* notebook_1_wxStaticBitmap;

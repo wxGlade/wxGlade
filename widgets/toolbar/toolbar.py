@@ -6,6 +6,7 @@ wxToolBar objects
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import re
 import wx
 from wx.lib.filebrowsebutton import FileBrowseButton
 
@@ -18,6 +19,7 @@ from tree import Tree
 from tool import *
 from widget_properties import *
 from edit_windows import EditBase, PreviewMixin, EditStylesMixin
+from wcodegen.mixins import BitmapMixin
 
 
 class _MyBrowseButton(FileBrowseButton):
@@ -76,7 +78,6 @@ class ToolsDialog(wx.Dialog):
         self.tool_items.InsertColumn(4, _("Short Help"))
         self.tool_items.InsertColumn(5, _("Long Help"))
         self.tool_items.InsertColumn(6, _("Type"))
-        # ALB 2004-12-05
         self.tool_items.InsertColumn(7, _("Event Handler"))
 
         self.tool_items.SetColumnWidth(0, 100)
@@ -92,9 +93,7 @@ class ToolsDialog(wx.Dialog):
         self.label = wx.TextCtrl(self, LABEL_ID)
         self.help_str = wx.TextCtrl(self, HELP_STR_ID)
         self.long_help_str = wx.TextCtrl(self, LONG_HELP_STR_ID)
-        # ALB 2004-12-05
         self.event_handler = wx.TextCtrl(self, -1)
-        import re
         self.handler_re = re.compile(r'^\s*\w*\s*$')
 
         self.bitmap1 = _MyBrowseButton(
@@ -120,6 +119,7 @@ class ToolsDialog(wx.Dialog):
         self.cancel = wx.Button(self, wx.ID_CANCEL, _("Cancel"))
 
         self.do_layout()
+
         # event handlers
         wx.EVT_BUTTON(self, ADD_ID, self.add_tool)
         wx.EVT_BUTTON(self, REMOVE_ID, self.remove_tool)
@@ -241,7 +241,7 @@ class ToolsDialog(wx.Dialog):
                       self.event_handler):
                 s.Enable(True)
         if index < 0: index = self.tool_items.GetItemCount() 
-        self.tool_items.InsertStringItem(index, '---')#label)
+        self.tool_items.InsertStringItem(index, '---')
         for i in range(1, 5):
             self.tool_items.SetStringItem(index, i, '---')
         self.tool_items.SetItemState(index, wx.LIST_STATE_SELECTED,
@@ -354,7 +354,8 @@ class ToolsDialog(wx.Dialog):
         returns the contents of self.tool_items as a list of tools that
         describes the contents of the ToolBar
         """
-        def get(i, j): return self.tool_items.GetItem(i, j).m_text
+        def get(i, j):
+            return self.tool_items.GetItem(i, j).m_text
         tools = []
         def add(index):
             label = get(index, 0)
@@ -437,8 +438,8 @@ class ToolsProperty(Property):
         edit_btn_id = wx.NewId()
         self.edit_btn = wx.Button(self.panel, edit_btn_id, _("Edit tools..."))
         sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM,
-                  4)
+        sizer.Add(self.edit_btn, 1,
+                  wx.EXPAND | wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 4)
         self.panel.SetAutoLayout(1)
         self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
@@ -464,7 +465,7 @@ class ToolsProperty(Property):
 # end of class ToolsProperty
 
 
-class EditToolBar(EditBase, PreviewMixin, EditStylesMixin):
+class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     """\
     Class to handle wxToolBar objects
 
@@ -491,30 +492,37 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin):
         self.widget = None
 
         # initialise properties remaining staff
-        self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['style'] = CheckListProperty(
+        access = self.access_functions
+        properties = self.properties
+
+        access['style'] = (self.get_style, self.set_style)
+        properties['style'] = CheckListProperty(
             self, 'style', self.widget_writer)
+
         self.bitmapsize = '16, 15'
-        self.access_functions['bitmapsize'] = (self.get_bitmapsize,
-                                               self.set_bitmapsize)
-        self.properties['bitmapsize'] = TextProperty(
-            self, 'bitmapsize', can_disable=True,label=_("bitmapsize"))
+        access['bitmapsize'] = (self.get_bitmapsize, self.set_bitmapsize)
+        properties['bitmapsize'] = TextProperty(
+            self, 'bitmapsize', can_disable=True,label=_("Bitmap size"))
+
         self.margins = '0, 0'
-        self.access_functions['margins'] = (self.get_margins, self.set_margins)
-        self.properties['margins'] = TextProperty(
-            self, 'margins', can_disable=True, label=_("margins"))
-        self.access_functions['tools'] = (self.get_tools, self.set_tools)
-        self.properties['tools'] = ToolsProperty(self, 'tools', None)
+        access['margins'] = (self.get_margins, self.set_margins)
+        properties['margins'] = TextProperty(
+            self, 'margins', can_disable=True, label=_("Margins"))
+
+        access['tools'] = (self.get_tools, self.set_tools)
+        properties['tools'] = ToolsProperty(self, 'tools', None)
+
         self.packing = 1
-        self.access_functions['packing'] = (self.get_packing, self.set_packing)
-        self.properties['packing'] = SpinProperty(
-            self, 'packing', r=(0, 100), can_disable=True, label=_("packing"))
+        access['packing'] = (self.get_packing, self.set_packing)
+        properties['packing'] = SpinProperty(
+            self, 'packing', r=(0, 100), can_disable=True,
+            label=_("Packing"))
+
         self.separation = 5
-        self.access_functions['separation'] = (self.get_separation,
-                                               self.set_separation)
-        self.properties['separation'] = SpinProperty(
+        access['separation'] = (self.get_separation, self.set_separation)
+        properties['separation'] = SpinProperty(
             self, 'separation', r=(0, 100), can_disable=True,
-            label=_("separation"))
+            label=_("Separation"))
 
     def create_widget(self):
         tb_style = wx.TB_HORIZONTAL | self.get_int_style()
@@ -667,26 +675,8 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin):
             if misc.streq(tool.id, '---'):  # the tool is a separator
                 self.widget.AddSeparator()
             else:
-                if tool.bitmap1:
-                    bmp1 = None
-                    if not (tool.bitmap1.startswith('var:') or
-                            tool.bitmap1.startswith('code:')):
-                        bmp1 = wx.Bitmap(
-                            misc.get_relative_path(misc.wxstr(tool.bitmap1)),
-                            wx.BITMAP_TYPE_ANY)
-                    if not bmp1 or not bmp1.Ok(): bmp1 = wx.EmptyBitmap(1, 1)
-                else:
-                    bmp1 = wx.NullBitmap
-                if tool.bitmap2:
-                    bmp2 = None
-                    if not (tool.bitmap2.startswith('var:') or
-                            tool.bitmap2.startswith('code:')):
-                        bmp2 = wx.Bitmap(
-                            misc.get_relative_path(misc.wxstr(tool.bitmap2)),
-                            wx.BITMAP_TYPE_ANY)
-                    if not bmp2 or not bmp2.Ok(): bmp2 = wx.EmptyBitmap(1, 1)
-                else:
-                    bmp2 = wx.NullBitmap
+                bmp1 = self.create_bitmap(tool.bitmap1)
+                bmp2 = self.create_bitmap(tool.bitmap2)
                 kinds = [wx.ITEM_NORMAL, wx.ITEM_CHECK, wx.ITEM_RADIO]
                 try:
                     kind = kinds[int(tool.type)]

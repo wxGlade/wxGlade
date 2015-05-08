@@ -25,7 +25,7 @@
                 <label>Open</label>
                 <tooltip>Open a new file</tooltip>
                 <longhelp>Open a new file</longhelp>
-                <bitmap>code:wxNullBitmap</bitmap>
+                <bitmap>empty:32,32</bitmap>
             </object>
         </object>
         <object class="wxFlexGridSizer">
@@ -47,15 +47,50 @@
                     <label>wxBitmapButton</label>
                     <object class="wxPanel" name="notebook_1_wxBitmapButton">
                         <handler event="EVT_NAVIGATION_KEY">OnBitmapButtonPanelNavigationKey</handler>
-                        <object class="wxBoxSizer">
-                            <orient>wxHORIZONTAL</orient>
+                        <object class="wxFlexGridSizer">
+                            <hgap>0</hgap>
+                            <growablerows>0,1</growablerows>
+                            <rows>2</rows>
+                            <growablecols>0,1</growablecols>
+                            <cols>2</cols>
+                            <vgap>0</vgap>
                             <object class="sizeritem">
                                 <option>1</option>
                                 <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
-                                <object class="wxBitmapButton" name="bitmap_button_1">
+                                <object class="wxBitmapButton" name="bitmap_button_icon1">
                                     <default>1</default>
                                     <bitmap>icon.xpm</bitmap>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALL|wxEXPAND</flag>
+                                <border>5</border>
+                                <object class="wxBitmapButton" name="bitmap_button_empty1">
+                                    <default>1</default>
+                                    <bitmap>empty:10,10</bitmap>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALL|wxEXPAND</flag>
+                                <border>5</border>
+                                <object class="wxBitmapButton" name="bitmap_button_icon2">
+                                    <default>1</default>
+                                    <style>wxBORDER_NONE|wxBU_BOTTOM</style>
+                                    <disabled>empty:20,20</disabled>
+                                    <bitmap>icon.xpm</bitmap>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALL|wxEXPAND</flag>
+                                <border>5</border>
+                                <object class="wxBitmapButton" name="bitmap_button_empy2">
+                                    <default>1</default>
+                                    <style>wxBORDER_NONE|wxBU_BOTTOM</style>
+                                    <bitmap>empty:20,20</bitmap>
                                 </object>
                             </object>
                         </object>
@@ -626,8 +661,8 @@
                                 <option>1</option>
                                 <flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
                                 <border>5</border>
-                                <object class="wxStaticBitmap" name="bitmap_code_nullbitmap">
-                                    <bitmap>code:wxNullBitmap</bitmap>
+                                <object class="wxStaticBitmap" name="bitmap_code_emptybitmap">
+                                    <bitmap>empty:32,32</bitmap>
                                 </object>
                             </object>
                             <object class="sizeritem">

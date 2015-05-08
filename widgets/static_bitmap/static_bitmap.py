@@ -6,15 +6,19 @@ wxStaticBitmap objects
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import math
 import wx
+
 import common
+import config
 import misc
 from edit_windows import ManagedBase, EditStylesMixin
+from wcodegen.mixins import BitmapMixin
 from tree import Tree
 from widget_properties import *
 
 
-class EditStaticBitmap(ManagedBase, EditStylesMixin):
+class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
     """\
     Class to handle wxStaticBitmap objects
     """
@@ -31,25 +35,32 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin):
 
         # initialise instance variables
         self.attribute = True
+        if config.preferences.default_border:
+            self.border = config.preferences.default_border_size
+            self.flag = wx.ALL
         self.set_bitmap(bmp_file)
 
         # initialise properties remaining staff
-        self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
-        self.access_functions['attribute'] = (self.get_attribute,
-                                              self.set_attribute)
-        self.bitmap_prop = FileDialogProperty(self, 'bitmap', None,
-            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, can_disable=False,
-            label=_("bitmap"))
-        prop = self.properties
-        prop['bitmap'] = self.bitmap_prop
-        prop['attribute'] = CheckBoxProperty(
-            self, 'attribute', None, _('Store as attribute'),
+        access = self.access_functions
+        properties = self.properties
+
+        access['bitmap'] = (self.get_bitmap, self.set_bitmap)
+        properties['bitmap'] = FileDialogProperty(
+            self, 'bitmap', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            can_disable=False, label=_("Bitmap"))
+        properties['bitmap'].set_tooltip(self.bitmap_tooltip_text)
+
+        access['attribute'] = (self.get_attribute, self.set_attribute)
+        properties['attribute'] = CheckBoxProperty(
+            self, 'attribute', label=_('Store as attribute'),
             write_always=True)
-        self.access_functions['style'] = (self.get_style, self.set_style)
-        prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
+
+        access['style'] = (self.get_style, self.set_style)
+        properties['style'] = CheckListProperty(
+            self, 'style', self.widget_writer)
 
     def create_widget(self):
-        bmp = self.load_bitmap()
+        bmp = self.create_bitmap()
         self.widget = wx.StaticBitmap(self.parent.widget, self.id, bmp)
         if wx.Platform == '__WXMSW__':
             def get_best_size():
@@ -75,7 +86,6 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin):
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, "Widget")
         self.property_window.Layout()
-        import math
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
 
     def get_attribute(self):
@@ -90,21 +100,9 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin):
     def set_bitmap(self, value):
         self.bitmap = value
         if self.widget:
-            bmp = self.load_bitmap()
+            bmp = self.create_bitmap()
             self.widget.SetBitmap(bmp)
             self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
-
-    def load_bitmap(self, empty=[None]):
-        if self.bitmap and \
-               not (self.bitmap.startswith('var:') or
-                    self.bitmap.startswith('code:')):
-            path = misc.get_relative_path(self.bitmap)
-            self._logger.debug(_("Loading bitmap from: %s"), path)
-            return wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
-        else:
-            if empty[0] is None:
-                empty[0] = wx.EmptyBitmap(1, 1)
-            return empty[0]
 
 # end of class EditStaticBitmap
         

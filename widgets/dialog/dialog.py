@@ -1,21 +1,24 @@
 """\
-wxDialog objects
+wxDialog objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import math
+import os
 import wx
+
 import common
 import config
-import math
 import misc
 from tree import Tree
 from widget_properties import *
 from edit_windows import TopLevelBase, EditStylesMixin
+from wcodegen.mixins import BitmapMixin
 
-class EditDialog(TopLevelBase, EditStylesMixin):
+class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
 
     def __init__(self, name, parent, id, title, property_window,
                  style=wx.DEFAULT_DIALOG_STYLE, show=True, klass='wxDialog'):
@@ -27,47 +30,54 @@ class EditDialog(TopLevelBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
-
         self.style = style
+        self.icon = ""
+        self.centered = False
+        self.sizehints = False
 
         # initialise properties remaining staff
-        prop = self.properties
-        self.access_functions['style'] = (self.get_style, self.set_style)
-        prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
+        properties = self.properties
+        access = self.access_functions
+
+        # style property
+        access['style'] = (self.get_style, self.set_style)
+        properties['style'] = CheckListProperty(
+            self, 'style', self.widget_writer)
+
         # icon property
-        self.icon = ""
-        self.access_functions['icon'] = (self.get_icon, self.set_icon)
-        prop['icon'] = FileDialogProperty(
-            self, 'icon', None, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-            can_disable=True, label=_("Icon"))
+        access['icon'] = (self.get_icon, self.set_icon)
+        properties['icon'] = FileDialogProperty(
+            self, 'icon', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            label=_("Icon"))
+        properties['icon'].set_tooltip(self.bitmap_tooltip_text)
+
         # centered property
-        self.centered = False
-        self.access_functions['centered'] = (self.get_centered,
-                                             self.set_centered)
-        prop['centered'] = CheckBoxProperty(self, 'centered', None,
-                                            label=_("Centred"))
+        access['centered'] = (self.get_centered, self.set_centered)
+        properties['centered'] = CheckBoxProperty(
+            self, 'centered', label=_("Centred"))
+
         # size hints property
-        self.sizehints = False
-        self.access_functions['sizehints'] = (self.get_sizehints,
-                                              self.set_sizehints)
-        prop['sizehints'] = CheckBoxProperty(self, 'sizehints', None,
-                                             label=_('Set Size Hints'))
+        access['sizehints'] = (self.get_sizehints, self.set_sizehints)
+        properties['sizehints'] = CheckBoxProperty(
+            self, 'sizehints', label=_('Set Size Hints'))
 
     def create_widget(self):
         if self.parent:
-            w = self.parent.widget
+            parent = self.parent.widget
         else:
-            w = common.palette
+            parent = common.palette
+
         # we set always a default style because this is the best one for
         # editing the dialog (for example, a dialog without a caption would
         # be hard to move, etc.)
-        default_style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER
+        default_style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+
         # change 2002-10-09: now we create a wxFrame instead of a wxDialog,
         # because the latter gives troubles I wasn't able to solve when using
         # wxPython 2.3.3.1 :-/
-        self.widget = wx.Frame(w, self.id, "", style=default_style)
-        self.widget.SetBackgroundColour(wx.SystemSettings_GetColour(
-            wx.SYS_COLOUR_BTNFACE))
+        self.widget = wx.Frame(parent, self.id, "", style=default_style)
+        self.widget.SetBackgroundColour(
+            wx.SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE))
         self.set_icon(self.icon)
 
     def finish_widget_creation(self):
@@ -100,22 +110,15 @@ class EditDialog(TopLevelBase, EditStylesMixin):
     def set_icon(self, value):
         self.icon = value.strip()
         if self.widget:
-            if self.icon and not (self.icon.startswith('var:') or
-                                  self.icon.startswith('code:')):
-                icon = misc.get_relative_path(self.icon)
-                bmp = wx.Bitmap(icon, wx.BITMAP_TYPE_ANY)
-                if not bmp.Ok():
-                    self.set_icon("")
-                else:
-                    icon = wx.EmptyIcon()
-                    icon.CopyFromBitmap(bmp)
-                    self.widget.SetIcon(icon) 
+            if self.icon:
+                bitmap = self.create_bitmap(self.icon)
             else:
-                import os
-                icon = wx.EmptyIcon()
                 xpm = os.path.join(config.icons_path, 'dialog.xpm')
-                icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
-                self.widget.SetIcon(icon)
+                bitmap = misc.get_xpm_bitmap(xpm)
+
+            icon = wx.EmptyIcon()
+            icon.CopyFromBitmap(bitmap)
+            self.widget.SetIcon(icon)
 
     def get_centered(self):
         return self.centered

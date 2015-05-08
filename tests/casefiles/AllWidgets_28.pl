@@ -54,11 +54,14 @@ sub new {
     # Tool Bar
     $self->{All_Widgets_toolbar} = Wx::ToolBar->new($self, -1);
     $self->SetToolBar($self->{All_Widgets_toolbar});
-    $self->{All_Widgets_toolbar}->AddTool(wxID_OPEN, _T("Open"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, _T("Open a new file"), _T("Open a new file"));
+    $self->{All_Widgets_toolbar}->AddTool(wxID_OPEN, _T("Open"), Wx::Bitmap->new(32, 32), wxNullBitmap, wxITEM_NORMAL, _T("Open a new file"), _T("Open a new file"));
     # Tool Bar end
     $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
     $self->{notebook_1_wxBitmapButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{bitmap_button_1} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
+    $self->{bitmap_button_icon1} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
+    $self->{bitmap_button_empty1} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new(10, 10));
+    $self->{bitmap_button_icon2} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
+    $self->{bitmap_button_empy2} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new(20, 20), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
     $self->{notebook_1_wxButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{button_3} = Wx::Button->new($self->{notebook_1_wxButton}, wxID_BOLD, "");
     $self->{notebook_1_wxCalendarCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
@@ -122,7 +125,7 @@ sub new {
     $self->{splitter_2_pane_2} = Wx::Panel->new($self->{splitter_2}, wxID_ANY);
     $self->{label_right_pane} = Wx::StaticText->new($self->{splitter_2_pane_2}, wxID_ANY, _T("right pane"));
     $self->{notebook_1_wxStaticBitmap} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{bitmap_code_nullbitmap} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, wxNullBitmap);
+    $self->{bitmap_code_emptybitmap} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new(32, 32));
     $self->{bitmap_file} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
     $self->{bitmap_nofile} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("non-existing.bmp", wxBITMAP_TYPE_ANY));
     $self->{notebook_1_wxStaticLine} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
@@ -174,8 +177,15 @@ sub __set_properties {
         for 0 .. $#All_Widgets_statusbar_fields ;
     }
     $self->{All_Widgets_toolbar}->Realize();
-    $self->{bitmap_button_1}->SetSize($self->{bitmap_button_1}->GetBestSize());
-    $self->{bitmap_button_1}->SetDefault();
+    $self->{bitmap_button_icon1}->SetSize($self->{bitmap_button_icon1}->GetBestSize());
+    $self->{bitmap_button_icon1}->SetDefault();
+    $self->{bitmap_button_empty1}->SetSize($self->{bitmap_button_empty1}->GetBestSize());
+    $self->{bitmap_button_empty1}->SetDefault();
+    $self->{bitmap_button_icon2}->SetBitmapDisabled(Wx::Bitmap->new(20, 20));
+    $self->{bitmap_button_icon2}->SetSize($self->{bitmap_button_icon2}->GetBestSize());
+    $self->{bitmap_button_icon2}->SetDefault();
+    $self->{bitmap_button_empy2}->SetSize($self->{bitmap_button_empy2}->GetBestSize());
+    $self->{bitmap_button_empy2}->SetDefault();
     $self->{checkbox_2}->SetValue(1);
     $self->{checkbox_4}->Set3StateValue(wxCHK_UNCHECKED);
     $self->{checkbox_5}->Set3StateValue(wxCHK_CHECKED);
@@ -236,9 +246,16 @@ sub __do_layout {
     $self->{sizer_21} = Wx::GridSizer->new(2, 3, 0, 0);
     $self->{sizer_12} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_28} = Wx::BoxSizer->new(wxHORIZONTAL);
-    $self->{sizer_13} = Wx::BoxSizer->new(wxHORIZONTAL);
-    $self->{sizer_13}->Add($self->{bitmap_button_1}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_13} = Wx::FlexGridSizer->new(2, 2, 0, 0);
+    $self->{sizer_13}->Add($self->{bitmap_button_icon1}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_13}->Add($self->{bitmap_button_empty1}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_13}->Add($self->{bitmap_button_icon2}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_13}->Add($self->{bitmap_button_empy2}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxBitmapButton}->SetSizer($self->{sizer_13});
+    $self->{sizer_13}->AddGrowableRow(0);
+    $self->{sizer_13}->AddGrowableRow(1);
+    $self->{sizer_13}->AddGrowableCol(0);
+    $self->{sizer_13}->AddGrowableCol(1);
     $self->{sizer_28}->Add($self->{button_3}, 0, wxALL, 5);
     $self->{notebook_1_wxButton}->SetSizer($self->{sizer_28});
     $self->{sizer_12}->Add($self->{calendar_ctrl_1}, 1, wxALL|wxEXPAND, 5);
@@ -304,7 +321,7 @@ sub __do_layout {
     $self->{splitter_2}->SplitVertically($self->{splitter_2_pane_1}, $self->{splitter_2_pane_2}, );
     $self->{sizer_25}->Add($self->{splitter_2}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxSplitterWindow_vertical}->SetSizer($self->{sizer_25});
-    $self->{sizer_11}->Add($self->{bitmap_code_nullbitmap}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_code_emptybitmap}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxStaticBitmap}->SetSizer($self->{sizer_11});

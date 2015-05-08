@@ -432,6 +432,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     """\
     Template to create a C{wxBitmap(...)} call.
 
+    @note: This template doesn't end with a newline.
+
     @type: str
     @see: L{generate_code_bitmap()}
     @see: L{_prepare_bitmap()}
@@ -453,6 +455,17 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @see: L{tmpl}
     @see: L{tmpl_before}
     @see: L{tmpl_props}
+    """
+
+    tmpl_emptybitmap = ''
+    """\
+    Template to create an empty wxBitmap
+
+    @note: This template doesn't end with a newline.
+
+    @type: str
+    @see: L{generate_code_bitmap()}
+    @see: L{_prepare_bitmap()}
     """
 
     tmpl_flags = '%s'
@@ -770,6 +783,21 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                 'bitmap': bitmap[4:].strip(),
                 'bitmap_type': self.cn('wxBITMAP_TYPE_ANY'), }
 
+        if bitmap.startswith('empty:'):
+            # keep in sync with BitmapMixin.create_bitmap()
+            width = 16
+            height = 16
+            try:
+                size = bitmap[6:]
+                width, height = [int(x.strip()) for x in size.split(',', 1)]
+            except ValueError:
+                self._logger.warn(
+                    'Malformed statement to create an empty bitmap: %s',
+                    bitmap
+                )
+            stmt = self.tmpl_emptybitmap % {'width': width, 'height': height}
+            return stmt
+
         if bitmap.startswith('code:'):
             return '%s' % self.cn(bitmap[5:].strip())
 
@@ -1012,12 +1040,15 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
     prefix_style = True
 
     tmpl_bitmap = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
-    tmpl_bitmap_disabled = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
-    tmpl_SetBestSize = '%(name)s->SetSize(%(name)s->GetBestSize());\n'
+    tmpl_bitmap_disabled = '%(name)s->SetBitmapDisabled(' \
+                           '%(disabled_bitmap)s);\n'
+    tmpl_emptybitmap = 'wxBitmap(%(width)s, %(height)s)'
 
-    tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
-    tmpl_setdefault = '%(name)s->SetDefault();\n'
     tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
+    tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
+    tmpl_SetBestSize = '%(name)s->SetSize(%(name)s->GetBestSize());\n'
+    tmpl_setdefault = '%(name)s->SetDefault();\n'
+
     use_names_for_binding_events = False
 
     def _prepare_choice(self, obj):
@@ -1082,13 +1113,14 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
     tmpl_bitmap = '(%(name)s_CreateLoad %(bitmap)s %(bitmap_type)s)'
     tmpl_bitmap_disabled = '(wxBitmapButton_SetBitmapDisabled ' \
                            '(slot-%(name)s obj) %(disabled_bitmap)s)\n'
-    tmpl_SetBestSize = '%(name)s.wxWindow_SetSize(' \
-                       '%(name)s.wxWindow_GetBestSize())\n'
+    tmpl_emptybitmap = 'wxBitmap_Create(%(width)s %(height)s)'
 
     tmpl_concatenate_choices = ' '
-    tmpl_setvalue = '(%(klass)s_SetValue %(name)s %(value_unquoted)s)\n'
-    tmpl_setdefault = '(%(klass)s_SetDefault %(name)s)\n'
     tmpl_selection = '(%(klass)s_SetSelection %(name)s %(selection)s)\n'
+    tmpl_setvalue = '(%(klass)s_SetValue %(name)s %(value_unquoted)s)\n'
+    tmpl_SetBestSize = '%(name)s.wxWindow_SetSize(' \
+                       '%(name)s.wxWindow_GetBestSize())\n'
+    tmpl_setdefault = '(%(klass)s_SetDefault %(name)s)\n'
 
     def _prepare_tmpl_content(self, obj):
         BaseWidgetWriter._prepare_tmpl_content(self, obj)
@@ -1121,11 +1153,12 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
 
     tmpl_bitmap = '%(name)s->new(%(bitmap)s, %(bitmap_type)s)'
     tmpl_bitmap_disabled = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
-    tmpl_SetBestSize = '%(name)s->SetSize(%(name)s->GetBestSize());\n'
+    tmpl_emptybitmap = 'Wx::Bitmap->new(%(width)s, %(height)s)'
 
-    tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
-    tmpl_setdefault = '%(name)s->SetDefault();\n'
     tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
+    tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
+    tmpl_SetBestSize = '%(name)s->SetSize(%(name)s->GetBestSize());\n'
+    tmpl_setdefault = '%(name)s->SetDefault();\n'
 
     def _prepare_tmpl_content(self, obj):
         BaseWidgetWriter._prepare_tmpl_content(self, obj)
@@ -1153,12 +1186,13 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
     """
     tmpl_bitmap = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
     tmpl_bitmap_disabled = '%(name)s.SetBitmapDisabled(%(disabled_bitmap)s)\n'
-    tmpl_SetBestSize = '%(name)s.SetSize(%(name)s.GetBestSize())\n'
+    tmpl_emptybitmap = 'wx.EmptyBitmap(%(width)s, %(height)s)'
 
     tmpl_flags = ', style=%s'
-    tmpl_setvalue = '%(name)s.SetValue(%(value_unquoted)s)\n'
-    tmpl_setdefault = '%(name)s.SetDefault()\n'
     tmpl_selection = '%(name)s.SetSelection(%(selection)s)\n'
+    tmpl_setvalue = '%(name)s.SetValue(%(value_unquoted)s)\n'
+    tmpl_SetBestSize = '%(name)s.SetSize(%(name)s.GetBestSize())\n'
+    tmpl_setdefault = '%(name)s.SetDefault()\n'
 
     def _prepare_tmpl_content(self, obj):
         BaseWidgetWriter._prepare_tmpl_content(self, obj)
