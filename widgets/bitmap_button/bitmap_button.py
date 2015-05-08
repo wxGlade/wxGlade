@@ -7,15 +7,17 @@ wxBitmapButton objects
 """
 
 import wx
+
 import config
 import common
 import misc
 from edit_windows import ManagedBase, EditStylesMixin
+from wcodegen.mixins import BitmapMixin
 from tree import Tree
 from widget_properties import *
 
 
-class EditBitmapButton(ManagedBase, EditStylesMixin):
+class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
     """\
     Class to handle wxBitmapButton objects
     """
@@ -27,6 +29,7 @@ class EditBitmapButton(ManagedBase, EditStylesMixin):
         ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer,
                              pos, property_window, show=show)
         EditStylesMixin.__init__(self)
+        BitmapMixin.__init__(self)
 
         # initialise instance variables
         self.default = False
@@ -37,21 +40,29 @@ class EditBitmapButton(ManagedBase, EditStylesMixin):
         self.set_bitmap(bmp_file)
 
         # initialise properties remaining staff
-        self.access_functions['bitmap'] = (self.get_bitmap, self.set_bitmap)
-        self.properties['bitmap'] = FileDialogProperty(
-            self, 'bitmap', None, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-            can_disable=False, label=_("bitmap"))
-        self.access_functions['default'] = (self.get_default, self.set_default)
-        self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("default"))
+        access = self.access_functions
+        properties = self.properties
 
-        self.access_functions['disabled_bitmap'] = (self.get_disabled_bitmap,
-                                                    self.set_disabled_bitmap)
-        self.properties['disabled_bitmap'] = FileDialogProperty(
-            self, 'disabled_bitmap', None,
+        access['bitmap'] = (self.get_bitmap, self.set_bitmap)
+        properties['bitmap'] = FileDialogProperty(
+            self, 'bitmap', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            can_disable=False, label=_("bitmap"))
+        properties['bitmap'].set_tooltip(self.bitmap_tooltip_text)
+
+        access['default'] = (self.get_default, self.set_default)
+        properties['default'] = CheckBoxProperty(
+            self, 'default', label=_("Default"))
+
+        access['disabled_bitmap'] = (self.get_disabled_bitmap,
+                                     self.set_disabled_bitmap)
+        properties['disabled_bitmap'] = FileDialogProperty(
+            self, 'disabled_bitmap',
             style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-            label=_("disabled bitmap"))
-        self.properties['style'] = CheckListProperty(
+            label=_("Disabled bitmap"))
+        properties['disabled_bitmap'].set_tooltip(self.bitmap_tooltip_text)
+
+        access['style'] = (self.get_style, self.set_style)
+        properties['style'] = CheckListProperty(
             self, 'style', self.widget_writer)
 
     def create_properties(self):
@@ -77,7 +88,7 @@ class EditBitmapButton(ManagedBase, EditStylesMixin):
     def set_bitmap(self, value):
         self.bitmap = value
         if self.widget:
-            bmp = self.load_bitmap()
+            bmp = self.create_bitmap()
             self.widget.SetBitmapLabel(bmp)
             self.widget.SetBitmapSelected(bmp)
             self.widget.SetBitmapFocus(bmp)
@@ -89,29 +100,17 @@ class EditBitmapButton(ManagedBase, EditStylesMixin):
     def set_disabled_bitmap(self, value):
         self.disabled_bitmap = value
         if self.widget:
-            bmp = self.load_bitmap(self.disabled_bitmap)
+            bmp = self.create_bitmap(self.disabled_bitmap)
             self.widget.SetBitmapDisabled(bmp)
             self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
     def create_widget(self):
-        bmp = self.load_bitmap()
+        bmp = self.create_bitmap()
         try:
             self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp,
                                           style=self.get_int_style())
         except AttributeError:
             self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
-
-    def load_bitmap(self, which=None, empty=[None]):
-        if which is None:
-            which = self.bitmap
-        if which and \
-                not (which.startswith('var:') or which.startswith('code:')):
-            which = misc.get_relative_path(which)
-            return wx.Bitmap(which, wx.BITMAP_TYPE_ANY)
-        else:
-            if empty[0] is None:
-                empty[0] = wx.EmptyBitmap(1, 1)
-            return empty[0]
 
     def get_default(self):
         return self.default

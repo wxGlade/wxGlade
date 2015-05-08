@@ -8,8 +8,10 @@ Different Mixins
 import copy
 import decorators
 import logging
+import wx
 
 import common
+import misc
 
 
 class StylesMixin(object):
@@ -244,3 +246,60 @@ class StylesMixin(object):
         return flags
 
 # end of class StylesMixin
+
+
+class BitmapMixin(object):
+    """\
+    Class mixin to create wxBitmap instances from the given statement
+    """
+
+    bitmap_tooltip_text = _(
+        'Choice a bitmap to show.\n\nYou can either select a file or you '
+        'can specify the bitmap using hand-crafted statements with the '
+        'prefixes "var:", "code:" or "empty:".\nThe wxGlade documentation '
+        'describes how to write such statements.')
+    """\
+    Detailed tooltip to show with each bitmap property.
+
+    @type: str
+    """
+
+    def create_bitmap(self, bitmap=None):
+        """\
+        Create a wxBitmap instance from the given statement.
+
+        If not statement is given, the instance variable named "bitmap" is
+        used.
+
+        @param bitmap: Bitmap definition
+        @type bitmap: str | None
+
+        @rtype: wx.Bitmap | wx.EmptyBitmap
+        """
+        if bitmap is None:
+            bitmap = getattr(self, 'bitmap', None)
+        if bitmap:
+            if bitmap.startswith('var:') or \
+               bitmap.startswith('code:'):
+                return wx.Bitmap(16, 16)
+            if bitmap.startswith('empty:'):
+                # keep in sync with BaseWidgetWriter.generate_code_bitmap()
+                width = 16
+                height = 16
+                try:
+                    size = bitmap[6:]
+                    width, height = \
+                        [int(x.strip()) for x in size.split(',', 1)]
+                except ValueError:
+                    self._logger.warn(
+                        'Malformed statement to create an empty bitmap: %s',
+                        bitmap
+                    )
+                return wx.Bitmap(width, height)
+            else:
+                bitmap = misc.get_relative_path(bitmap)
+                return wx.Bitmap(bitmap, wx.BITMAP_TYPE_ANY)
+
+        return wx.Bitmap(1, 1)
+
+# end of class BitmapMixin

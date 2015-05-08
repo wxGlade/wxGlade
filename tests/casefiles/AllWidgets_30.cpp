@@ -61,9 +61,12 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     All_Widgets_statusbar = CreateStatusBar(1);
     All_Widgets_toolbar = new wxToolBar(this, -1);
     SetToolBar(All_Widgets_toolbar);
-    All_Widgets_toolbar->AddTool(wxID_OPEN, _("Open"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, _("Open a new file"), _("Open a new file"));
+    All_Widgets_toolbar->AddTool(wxID_OPEN, _("Open"), wxBitmap(32, 32), wxNullBitmap, wxITEM_NORMAL, _("Open a new file"), _("Open a new file"));
     All_Widgets_toolbar->Realize();
-    bitmap_button_1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY));
+    bitmap_button_icon1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY));
+    bitmap_button_empty1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(10, 10));
+    bitmap_button_icon2 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
+    bitmap_button_empy2 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(20, 20), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
     button_3 = new wxButton(notebook_1_wxButton, wxID_BOLD, wxEmptyString);
     calendar_ctrl_1 = new wxCalendarCtrl(notebook_1_wxCalendarCtrl, wxID_ANY);
     checkbox_1 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("one (unchecked)"));
@@ -137,7 +140,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     label_buttom_pane = new wxStaticText(splitter_1_pane_2, wxID_ANY, _("bottom pane"));
     label_left_pane = new wxStaticText(splitter_2_pane_1, wxID_ANY, _("left pane"));
     label_right_pane = new wxStaticText(splitter_2_pane_2, wxID_ANY, _("right pane"));
-    bitmap_code_nullbitmap = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxNullBitmap);
+    bitmap_code_emptybitmap = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(32, 32));
     bitmap_file = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY));
     bitmap_nofile = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap("non-existing.bmp", wxBITMAP_TYPE_ANY));
     static_line_2 = new wxStaticLine(notebook_1_wxStaticLine, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
@@ -175,8 +178,15 @@ void All_Widgets_Frame::set_properties()
     for(int i = 0; i < All_Widgets_statusbar->GetFieldsCount(); ++i) {
         All_Widgets_statusbar->SetStatusText(All_Widgets_statusbar_fields[i], i);
     }
-    bitmap_button_1->SetSize(bitmap_button_1->GetBestSize());
-    bitmap_button_1->SetDefault();
+    bitmap_button_icon1->SetSize(bitmap_button_icon1->GetBestSize());
+    bitmap_button_icon1->SetDefault();
+    bitmap_button_empty1->SetSize(bitmap_button_empty1->GetBestSize());
+    bitmap_button_empty1->SetDefault();
+    bitmap_button_icon2->SetBitmapDisabled(wxBitmap(20, 20));
+    bitmap_button_icon2->SetSize(bitmap_button_icon2->GetBestSize());
+    bitmap_button_icon2->SetDefault();
+    bitmap_button_empy2->SetSize(bitmap_button_empy2->GetBestSize());
+    bitmap_button_empy2->SetDefault();
     checkbox_2->SetValue(1);
     checkbox_4->Set3StateValue(wxCHK_UNCHECKED);
     checkbox_5->Set3StateValue(wxCHK_CHECKED);
@@ -237,9 +247,16 @@ void All_Widgets_Frame::do_layout()
     wxGridSizer* sizer_21 = new wxGridSizer(2, 3, 0, 0);
     wxBoxSizer* sizer_12 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_28 = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer* sizer_13 = new wxBoxSizer(wxHORIZONTAL);
-    sizer_13->Add(bitmap_button_1, 1, wxALL|wxEXPAND, 5);
+    wxFlexGridSizer* sizer_13 = new wxFlexGridSizer(2, 2, 0, 0);
+    sizer_13->Add(bitmap_button_icon1, 1, wxALL|wxEXPAND, 5);
+    sizer_13->Add(bitmap_button_empty1, 1, wxALL|wxEXPAND, 5);
+    sizer_13->Add(bitmap_button_icon2, 1, wxALL|wxEXPAND, 5);
+    sizer_13->Add(bitmap_button_empy2, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxBitmapButton->SetSizer(sizer_13);
+    sizer_13->AddGrowableRow(0);
+    sizer_13->AddGrowableRow(1);
+    sizer_13->AddGrowableCol(0);
+    sizer_13->AddGrowableCol(1);
     sizer_28->Add(button_3, 0, wxALL, 5);
     notebook_1_wxButton->SetSizer(sizer_28);
     sizer_12->Add(calendar_ctrl_1, 1, wxALL|wxEXPAND, 5);
@@ -305,7 +322,7 @@ void All_Widgets_Frame::do_layout()
     splitter_2->SplitVertically(splitter_2_pane_1, splitter_2_pane_2);
     sizer_25->Add(splitter_2, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxSplitterWindow_vertical->SetSizer(sizer_25);
-    sizer_11->Add(bitmap_code_nullbitmap, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_code_emptybitmap, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     sizer_11->Add(bitmap_file, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     sizer_11->Add(bitmap_nofile, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     notebook_1_wxStaticBitmap->SetSizer(sizer_11);

@@ -20,6 +20,7 @@ Generated Code:
   - Add missing event types for event handling in C++
   - Event handler in C++ aren't virtual anymore
   - Empty choices will be filled with a placeholder '<set by wxGlade>'
+  - Add support for empty bitmaps
   - ...
 
 Bugs:

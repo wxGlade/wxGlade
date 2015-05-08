@@ -1570,28 +1570,44 @@ class TestCodeGen(WXGladeBaseTest):
             (None, 'wxNullBitmap'),
             ('icon.xpm', 'wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY)'),
             ('code:SenselessStatement', 'SenselessStatement'),
-            ('code:wxEmptyBitmap(16, 16)', 'wxEmptyBitmap(16, 16)'),
+            ('empty:10,10', 'wxBitmap(10, 10)'),
+            ('empty: 10, 10', 'wxBitmap(10, 10)'),
+            ('empty:FooBar', 'wxBitmap(16, 16)'),
+            ('empty:10', 'wxBitmap(16, 16)'),
+            ('empty:A, B', 'wxBitmap(16, 16)'),
             ('var:AlreadyDefinedVariable', 'wxBitmap(AlreadyDefinedVariable, wxBITMAP_TYPE_ANY)'),
             ]
         details['lisp'] = [
             (None, 'wxNullBitmap'),
             ('icon.xpm', '(wxBitmap_CreateLoad "icon.xpm" wxBITMAP_TYPE_ANY)'),
             ('code:SenselessStatement', 'SenselessStatement'),
-            ('code:wxEmptyBitmap(16, 16)', 'wxEmptyBitmap(16, 16)'),
+            ('empty:10,10', 'wxBitmap_Create(10 10)'),
+            ('empty: 10, 10', 'wxBitmap_Create(10 10)'),
+            ('empty:FooBar', 'wxBitmap_Create(16 16)'),
+            ('empty:10', 'wxBitmap_Create(16 16)'),
+            ('empty:A, B', 'wxBitmap_Create(16 16)'),
             ('var:AlreadyDefinedVariable', '(wxBitmap_CreateLoad AlreadyDefinedVariable wxBITMAP_TYPE_ANY)'),
             ]
         details['perl'] = [
             (None, 'wxNullBitmap'),
             ('icon.xpm', 'Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY)'),
             ('code:SenselessStatement', 'SenselessStatement'),
-            ('code:wxEmptyBitmap(16, 16)', 'Wx::EmptyBitmap(16, 16)'),
+            ('empty:10,10', 'Wx::Bitmap->new(10, 10)'),
+            ('empty: 10, 10', 'Wx::Bitmap->new(10, 10)'),
+            ('empty:FooBar', 'Wx::Bitmap->new(16, 16)'),
+            ('empty:10', 'Wx::Bitmap->new(16, 16)'),
+            ('empty:A, B', 'Wx::Bitmap->new(16, 16)'),
             ('var:AlreadyDefinedVariable', 'Wx::Bitmap->new(AlreadyDefinedVariable, wxBITMAP_TYPE_ANY)'),
             ]
         details['python'] = [
             (None, 'wx.NullBitmap'),
             ('icon.xpm', 'wx.Bitmap("icon.xpm", wx.BITMAP_TYPE_ANY)'),
             ('code:SenselessStatement', 'SenselessStatement'),
-            ('code:wxEmptyBitmap(16, 16)', 'wx.EmptyBitmap(16, 16)'),
+            ('empty:10,10', 'wx.EmptyBitmap(10, 10)'),
+            ('empty: 10, 10', 'wx.EmptyBitmap(10, 10)'),
+            ('empty:FooBar', 'wx.EmptyBitmap(16, 16)'),
+            ('empty:10', 'wx.EmptyBitmap(16, 16)'),
+            ('empty:A, B', 'wx.EmptyBitmap(16, 16)'),
             ('var:AlreadyDefinedVariable', 'wx.Bitmap(AlreadyDefinedVariable, wx.BITMAP_TYPE_ANY)'),
             ]
 

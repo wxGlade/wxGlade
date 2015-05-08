@@ -1,22 +1,25 @@
 """\
-wxFrame and wxStatusBar objects
+wxFrame objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import os
+import math
 import wx
+
 import common
 import config
-import math
 import misc
 from tree import Tree
 from widget_properties import *
 from edit_windows import TopLevelBase, EditStylesMixin
+from wcodegen.mixins import BitmapMixin
 
 
-class EditFrame(TopLevelBase, EditStylesMixin):
+class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
     def __init__(self, name, parent, id, title, property_window,
                  style=wx.DEFAULT_FRAME_STYLE, show=True, klass='wxFrame'):
@@ -24,46 +27,54 @@ class EditFrame(TopLevelBase, EditStylesMixin):
                               property_window, show=show, title=title)
         self.base = 'wxFrame'
         EditStylesMixin.__init__(self)
-        self.style = style
-        self.statusbar = None
+
+        # initialise instance variables
+        self.centered = False
         self.icon = ''
-        self.access_functions['statusbar'] = (self.get_statusbar,
-                                              self.set_statusbar)
+        self.style = style
         self.menubar = None
-        self.access_functions['menubar'] = (self.get_menubar, self.set_menubar)
+        self.sizehints = False
+        self.statusbar = None
         self.toolbar = None
-        self.access_functions['toolbar'] = (self.get_toolbar, self.set_toolbar)
 
-        self.access_functions['style'] = (self.get_style, self.set_style)
+        # initialise properties remaining staff
+        access = self.access_functions
+        properties = self.properties
 
-        self.access_functions['icon'] = (self.get_icon, self.set_icon)
-        prop = self.properties
-        prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
+        # style property
+        access['style'] = (self.get_style, self.set_style)
+        properties['style'] = CheckListProperty(self, 'style', self.widget_writer)
 
         # menubar property
-        prop['menubar'] = CheckBoxProperty(
+        access['menubar'] = (self.get_menubar, self.set_menubar)
+        properties['menubar'] = CheckBoxProperty(
             self, 'menubar', label=_('Has MenuBar'))
+
         # statusbar property
-        prop['statusbar'] = CheckBoxProperty(
+        access['statusbar'] = (self.get_statusbar, self.set_statusbar)
+        properties['statusbar'] = CheckBoxProperty(
             self, 'statusbar', label=_('Has StatusBar'))
+
         # toolbar property
-        prop['toolbar'] = CheckBoxProperty(
+        access['toolbar'] = (self.get_toolbar, self.set_toolbar)
+        properties['toolbar'] = CheckBoxProperty(
             self, 'toolbar', label=_('Has ToolBar'))
+
         # icon property
-        prop['icon'] = FileDialogProperty(
+        access['icon'] = (self.get_icon, self.set_icon)
+        properties['icon'] = FileDialogProperty(
             self, 'icon', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
             label=_("icon"))
+        properties['icon'].set_tooltip(self.bitmap_tooltip_text)
+
         # centered property
-        self.centered = False
-        self.access_functions['centered'] = (self.get_centered,
-                                             self.set_centered)
-        prop['centered'] = CheckBoxProperty(
+        access['centered'] = (self.get_centered, self.set_centered)
+        properties['centered'] = CheckBoxProperty(
             self, 'centered', label=_("centered"))
+
         # size hints property
-        self.sizehints = False
-        self.access_functions['sizehints'] = (self.get_sizehints,
-                                              self.set_sizehints)
-        prop['sizehints'] = CheckBoxProperty(
+        access['sizehints'] = (self.get_sizehints, self.set_sizehints)
+        properties['sizehints'] = CheckBoxProperty(
             self, 'sizehints', label=_('Set Size Hints'))
 
     def create_widget(self):
@@ -187,30 +198,20 @@ class EditFrame(TopLevelBase, EditStylesMixin):
         TopLevelBase.remove(self, *args)
     
     def get_icon(self):
-        # is a string that holds the filename (for example: icon.png)
-        return self.icon 
+        return self.icon
 
     def set_icon(self, value):
         self.icon = value.strip()
         if self.widget:
-            if self.icon and not (self.icon.startswith('var:') or
-                                  self.icon.startswith('code:')):
-                # setting icon
-                icon = misc.get_relative_path(self.icon)
-                bmp = wx.Bitmap(icon, wx.BITMAP_TYPE_ANY)
-                if not bmp.Ok():
-                    self.set_icon("")
-                else:
-                    icon = wx.EmptyIcon()
-                    icon.CopyFromBitmap(bmp)
-                    self.widget.SetIcon(icon) 
+            if self.icon:
+                bitmap = self.create_bitmap(self.icon)
             else:
-                # removing icon
-                icon = wx.EmptyIcon()
-                import os
                 xpm = os.path.join(config.icons_path, 'frame.xpm')
-                icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
-                self.widget.SetIcon(icon)
+                bitmap = misc.get_xpm_bitmap(xpm)
+
+            icon = wx.EmptyIcon()
+            icon.CopyFromBitmap(bitmap)
+            self.widget.SetIcon(icon)
 
     def get_centered(self):
         return self.centered
