@@ -1146,6 +1146,9 @@ bool MyApp::OnInit()
             if code_obj.base in self.obj_builders:
                 self.classes[code_obj.klass].dependencies.extend(
                     getattr(self.obj_builders[code_obj.base], 'extra_headers', []))
+                self.classes[code_obj.klass].dependencies.extend(
+                    getattr(self.obj_builders[code_obj.base], 'extra_headers_dynamic', []))
+
             if prev_src:
                 tag = '<%swxGlade insert new_classes>' % self.nonce
                 prev_src.header_content = prev_src.header_content.replace(tag, "")
@@ -1344,6 +1347,9 @@ bool MyApp::OnInit()
             if sub_obj.base in self.obj_builders:
                 headers = getattr(self.obj_builders[sub_obj.base],
                                   'extra_headers', [])
+                klass.dependencies.extend(headers)
+                headers = getattr(self.obj_builders[sub_obj.base],
+                                  'extra_headers_dynamic', [])
                 klass.dependencies.extend(headers)
 
     def generate_code_event_handler(self, code_obj, is_new, tab, prev_src,

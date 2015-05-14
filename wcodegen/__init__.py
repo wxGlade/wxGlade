@@ -369,12 +369,55 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     extra_headers = []
     """\
     List of extra header file, in the form <header.h> or "header.h" or an
-    empty list.
+    empty list. This list is static and in-depend of widget instantiation
+    parameters.
 
-    Example::
+    B{Example}::
         extra_headers = ['<wx/treectrl.h>']
 
     @type: list[str]
+
+    @see: L{extra_headers_dynamic}
+    """
+
+    extra_headers_dynamics = []
+    """\
+    List of extra header file, in the form <header.h> or "header.h" or an
+    empty list. This list is dynamic and can changed to add further
+    dependencies during the widgets are processed.
+
+    B{Example}::
+        extra_headers = ['<wx/treectrl.h>']
+
+    @type: list[str]
+
+    @see: L{extra_headers}
+    """
+
+    import_modules = []
+    """\
+    List of extra modules to import. This list is static and in-depend of
+    widget instantiation parameters.
+
+    B{Example}::
+        import_modules = ['use Wx::Grid;\n']
+
+    @type: list[str]
+
+    @see: L{import_modules_dynamic}
+    """
+
+    import_modules_dynamic = []
+    """\
+    List of extra modules to import. This list is dynamic and can changed to
+    add further dependencies during the widgets are processed.
+
+    B{Example}::
+        import_modules = ['use Wx::Grid;\n']
+
+    @type: list[str]
+
+    @see: L{import_modules}
     """
 
     supported_by = ()
@@ -602,6 +645,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         """\
         Reset instance variables back to defaults
         """
+        self.import_modules_dynamic = []
+        self.extra_headers_dynamic = []
         self.has_selection = False
         self.has_setdefault = False
         self.has_setvalue = False

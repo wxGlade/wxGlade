@@ -1597,6 +1597,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         for dep in getattr(self.obj_builders.get(sub_obj.base),
                            'import_modules', []):
             klass.dependencies[dep] = 1
+        for dep in getattr(self.obj_builders.get(sub_obj.base),
+                           'import_modules_dynamic', []):
+            klass.dependencies[dep] = 1
 
     def _add_object_init(self, top_obj, sub_obj):
         """\
