@@ -259,7 +259,8 @@ class PerlMixin(BaseLanguageMixin):
         @see: L{self._perl_constant_list}
         """
         # handles constants like event or language identifiers
-        if name.startswith('wxBITMAP_TYPE_') or \
+        if name.startswith('wxART_') or \
+           name.startswith('wxBITMAP_TYPE_') or \
            name.startswith('wxBORDER_') or \
            name.startswith('wxBRUSHSTYLE_') or \
            name.startswith('wxBU_') or \
@@ -380,7 +381,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @see: L{extra_headers_dynamic}
     """
 
-    extra_headers_dynamics = []
+    extra_headers_dynamic = []
     """\
     List of extra header file, in the form <header.h> or "header.h" or an
     empty list. This list is dynamic and can changed to add further
@@ -400,7 +401,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     widget instantiation parameters.
 
     B{Example}::
-        import_modules = ['use Wx::Grid;\n']
+        import_modules = ['use Wx::Grid;\\n']
 
     @type: list[str]
 
@@ -413,7 +414,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     add further dependencies during the widgets are processed.
 
     B{Example}::
-        import_modules = ['use Wx::Grid;\n']
+        import_modules = ['use Wx::Grid;\\n']
 
     @type: list[str]
 
@@ -471,17 +472,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @see: L{tmpl_dict}
     """
 
-    tmpl_bitmap = ''
-    """\
-    Template to create a C{wxBitmap(...)} call.
-
-    @note: This template doesn't end with a newline.
-
-    @type: str
-    @see: L{generate_code_bitmap()}
-    @see: L{_prepare_bitmap()}
-    """
-
     tmpl_concatenate_choices = ', '
     """\
     Template to concatenate choices
@@ -500,7 +490,37 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @see: L{tmpl_props}
     """
 
-    tmpl_emptybitmap = ''
+    tmpl_flags = '%s'
+    """\
+    Template to format the styles parameter.
+
+    @type: str
+    @see: L{_prepare_style()}
+    """
+
+    tmpl_inline_artprovider = ''
+    """
+    Template to inline a bitmap from wxArtProvider.
+
+    @note: This template doesn't end with a newline.
+
+    @type: str
+    @see: L{generate_code_bitmap()}
+    @see: L{_prepare_bitmap()}
+    """
+
+    tmpl_inline_bitmap = ''
+    """\
+    Template to inline a C{wxBitmap(...)} call.
+
+    @note: This template doesn't end with a newline.
+
+    @type: str
+    @see: L{generate_code_bitmap()}
+    @see: L{_prepare_bitmap()}
+    """
+
+    tmpl_inline_emptybitmap = ''
     """\
     Template to create an empty wxBitmap
 
@@ -511,12 +531,14 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @see: L{_prepare_bitmap()}
     """
 
-    tmpl_flags = '%s'
-    """\
-    Template to format the styles parameter.
+    tmpl_inline_wxSize = ''
+    """
+    Template to inline a widget size with wxSize()
+
+    @note: This template doesn't end with a newline.
 
     @type: str
-    @see: L{_prepare_style()}
+    @see: L{get_inline_stmt_wxSize()}
     """
 
     has_selection = False
@@ -629,7 +651,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         """\
         Split a code statement into a list by conserving tailing newlines
 
-        Example::
+        B{Example}::
             >>> tmpl2list('line 1\\nline 2\\nline 3\\n')
             ['line 1\\n', 'line 2\\n', 'line 3\\n', '\\n']
 
@@ -797,7 +819,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
     def generate_code_bitmap(self, bitmap, preview=False):
         """\
-        Returns a code fragement that generates an wxBitmap object
+        Returns a code fragment that generates an wxBitmap object
 
         @param bitmap: Bitmap definition
         @type bitmap: str
@@ -807,52 +829,48 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         @rtype: str
 
-        @see: L{tmpl_bitmap}
+        @see: L{tmpl_inline_bitmap}
+        @see: L{get_inline_stmt_emptybitmap()}
+        @see: L{get_inline_stmt_artprovider()}
         """
-        assert self.tmpl_bitmap
+        assert self.tmpl_inline_bitmap
 
         if not bitmap:
-            return self.cn('wxNullBitmap')
+            return self.codegen.cn('wxNullBitmap')
 
         if preview and (
                     bitmap.startswith('var:') or bitmap.startswith('code:')):
             preview_icon = os.path.join(config.icons_path, "icon.xpm")
-            return self.tmpl_bitmap % {
-                'name': self.cn('wxBitmap'),
+            return self.tmpl_inline_bitmap % {
+                'name': self.codegen.cn('wxBitmap'),
                 'bitmap': self.codegen.quote_path(preview_icon),
-                'bitmap_type': self.cn('wxBITMAP_TYPE_XPM'), }
+                'bitmap_type': self.codegen.cn('wxBITMAP_TYPE_XPM'),
+                }
 
         if bitmap.startswith('var:'):
-            return self.tmpl_bitmap % {
-                'name': self.cn('wxBitmap'),
+            return self.tmpl_inline_bitmap % {
+                'name': self.codegen.cn('wxBitmap'),
                 'bitmap': bitmap[4:].strip(),
-                'bitmap_type': self.cn('wxBITMAP_TYPE_ANY'), }
+                'bitmap_type': self.codegen.cn('wxBITMAP_TYPE_ANY'),
+                }
 
         if bitmap.startswith('empty:'):
-            # keep in sync with BitmapMixin.create_bitmap()
-            width = 16
-            height = 16
-            try:
-                size = bitmap[6:]
-                width, height = [int(x.strip()) for x in size.split(',', 1)]
-            except ValueError:
-                self._logger.warn(
-                    'Malformed statement to create an empty bitmap: %s',
-                    bitmap
-                )
-            stmt = self.tmpl_emptybitmap % {'width': width, 'height': height}
-            return stmt
+            return self.get_inline_stmt_emptybitmap(bitmap)
+
+        if bitmap.startswith('art:'):
+            return self.get_inline_stmt_artprovider(bitmap)
 
         if bitmap.startswith('code:'):
-            return '%s' % self.cn(bitmap[5:].strip())
+            return '%s' % self.codegen.cn(bitmap[5:].strip())
 
         if preview:
             bitmap = misc.get_relative_path(bitmap, True)
 
-        return self.tmpl_bitmap % {
-            'name': self.cn('wxBitmap'),
+        return self.tmpl_inline_bitmap % {
+            'name': self.codegen.cn('wxBitmap'),
             'bitmap': self.codegen.quote_path(bitmap),
-            'bitmap_type': self.cn('wxBITMAP_TYPE_ANY'), }
+            'bitmap_type': self.codegen.cn('wxBITMAP_TYPE_ANY'),
+            }
 
     def get_code(self, obj):
         """\
@@ -939,7 +957,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
          - Handler
          - Event prototype
 
-        Example::
+        B{Example}::
             >>> self.get_event_handlerss(obj)
             [('wxID_OPEN', 'EVT_MENU', 'OnOpen', 'wxCommandEvent'),
              ('wxID_EXIT', 'EVT_MENU', 'OnClose', 'wxCommandEvent')]
@@ -1043,6 +1061,112 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         return layout_lines
 
+    def get_inline_stmt_artprovider(self, bitmap):
+        """\
+        Return a inline statement of a bitmap from the given statement using
+        wxArtProvider.
+
+        B{Synax}::
+            art:<ArtID>,<ArtClient>
+            art:<ArtID>,<ArtClient>,<width>,<height>
+
+        B{Example}::
+            >>> get_inline_stmt_artprovider(
+            ... 'art:wxART_HELP,wxART_OTHER,32,32')
+            'wx.ArtProvider.GetBitmap(wx.ART_HELP, wx.ART_OTHER, (32, 32))'
+                                        # Python
+
+        @param bitmap: Bitmap definition
+        @type bitmap: str
+
+        @rtype: str
+
+        @see: L{generate_code_bitmap()}
+        """
+        # keep in sync with BitmapMixin.get_preview_obj_bitmap()
+        art_id = 'wxART_ERROR'
+        art_client = 'wxART_OTHER'
+        size = 'wxDefaultSize'
+
+        try:
+            content = bitmap[4:]
+            elements = [item.strip() for item in content.split(',')]
+            if len(elements) == 2:
+                art_id, art_client = elements
+            elif len(elements) == 4:
+                art_id, art_client, width, height = elements
+                size = self.get_inline_stmt_wxSize(width, height)
+            else:
+                raise ValueError
+
+        except ValueError:
+            self._logger.warn(
+                'Malformed statement to create a bitmap via '
+                'wxArtProvider(): %s',
+                bitmap)
+
+        stmt = self.tmpl_inline_artprovider % {
+            'art_id': self.codegen.cn(art_id),
+            'art_client': self.codegen.cn(art_client),
+            'size': self.codegen.cn(size),
+            }
+        return stmt
+
+    def get_inline_stmt_emptybitmap(self, bitmap):
+        """\
+        Return a inline statement to create an empty wxBitmap.
+
+        B{Synax}::
+            empty:<width>,<height>
+
+        B{Example}::
+            >>> get_inline_stmt_emptybitmap('empty:32,32')
+            'wx.EmptyBitmap(32, 32)'    # Python
+
+        @param bitmap: Bitmap definition
+        @type bitmap: str
+
+        @rtype: str
+
+        @see: L{generate_code_bitmap()}
+        """
+        # keep in sync with BitmapMixin.get_preview_obj_bitmap()
+        width = 16
+        height = 16
+        try:
+            size = bitmap[6:]
+            width, height = [int(item.strip()) for item in size.split(',', 1)]
+        except ValueError:
+            self._logger.warn(
+                'Malformed statement to create an empty bitmap: %s',
+                bitmap
+            )
+        stmt = self.tmpl_inline_emptybitmap % {
+            'width': width,
+            'height': height,
+            }
+        return stmt
+
+    def get_inline_stmt_wxSize(self, width, heigh):
+        """\
+        Returns a inline statement to specific the widget size with wxSize()
+
+        B{Example}::
+            >>> get_inline_stmt_wxSize(16, 16)
+            '(16, 16)'                  # Python
+
+            >>> get_inline_stmt_wxSize(16, 16)
+            'wxSize(16, 16)'            # C++
+
+
+        @rtype: str
+        """
+        stmt = self.tmpl_inline_wxSize % {
+            'width': width,
+            'height': heigh,
+            }
+        return stmt
+
     def is_widget_supported(self, major, minor=None):
         """\
         Check if the widget is supported for the given version
@@ -1084,15 +1208,18 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
     """
     prefix_style = True
 
-    tmpl_bitmap = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
+    tmpl_inline_artprovider = 'wxArtProvider::GetBitmap(%(art_id)s, ' \
+                       '%(art_client)s, %(size)s)'
+    tmpl_inline_bitmap = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
     tmpl_bitmap_disabled = '%(name)s->SetBitmapDisabled(' \
                            '%(disabled_bitmap)s);\n'
-    tmpl_emptybitmap = 'wxBitmap(%(width)s, %(height)s)'
+    tmpl_inline_emptybitmap = 'wxBitmap(%(width)s, %(height)s)'
 
     tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
     tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
     tmpl_SetBestSize = '%(name)s->SetSize(%(name)s->GetBestSize());\n'
     tmpl_setdefault = '%(name)s->SetDefault();\n'
+    tmpl_inline_wxSize = 'wxSize(%(width)s, %(height)s)'
 
     use_names_for_binding_events = False
 
@@ -1148,6 +1275,13 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
 
         return init, ids, props_buf, layout
 
+    def _prepare_bitmap(self, obj):
+        super(CppWidgetCodeWriter, self)._prepare_bitmap(obj)
+
+        bmp_file = obj.properties.get('bitmap', '')
+        if bmp_file.startswith('art:'):
+            self.extra_headers_dynamic.append('<wx/artprov.h>')
+
 # end of class CppWidgetCodeWriter
 
 
@@ -1155,10 +1289,12 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
     """\
     Base class for all Lisp widget code writer classes.
     """
-    tmpl_bitmap = '(%(name)s_CreateLoad %(bitmap)s %(bitmap_type)s)'
+    tmpl_inline_artprovider = 'wxArtProvider_GetBitmap(%(art_id)s %(art_client)s ' \
+                       '%(size)s)'
+    tmpl_inline_bitmap = '(%(name)s_CreateLoad %(bitmap)s %(bitmap_type)s)'
     tmpl_bitmap_disabled = '(wxBitmapButton_SetBitmapDisabled ' \
                            '(slot-%(name)s obj) %(disabled_bitmap)s)\n'
-    tmpl_emptybitmap = 'wxBitmap_Create(%(width)s %(height)s)'
+    tmpl_inline_emptybitmap = 'wxBitmap_Create(%(width)s %(height)s)'
 
     tmpl_concatenate_choices = ' '
     tmpl_selection = '(%(klass)s_SetSelection %(name)s %(selection)s)\n'
@@ -1166,6 +1302,8 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
     tmpl_SetBestSize = '%(name)s.wxWindow_SetSize(' \
                        '%(name)s.wxWindow_GetBestSize())\n'
     tmpl_setdefault = '(%(klass)s_SetDefault %(name)s)\n'
+    tmpl_inline_wxSize = 'wxSize_Create(%(width)s %(height)s)'
+
 
     def _prepare_tmpl_content(self, obj):
         BaseWidgetWriter._prepare_tmpl_content(self, obj)
@@ -1196,14 +1334,17 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
     """
     prefix_style = True
 
-    tmpl_bitmap = '%(name)s->new(%(bitmap)s, %(bitmap_type)s)'
+    tmpl_inline_artprovider = 'Wx::ArtProvider::GetBitmap(%(art_id)s, ' \
+                       '%(art_client)s, %(size)s)'
+    tmpl_inline_bitmap = '%(name)s->new(%(bitmap)s, %(bitmap_type)s)'
     tmpl_bitmap_disabled = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
-    tmpl_emptybitmap = 'Wx::Bitmap->new(%(width)s, %(height)s)'
+    tmpl_inline_emptybitmap = 'Wx::Bitmap->new(%(width)s, %(height)s)'
 
     tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
     tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
     tmpl_SetBestSize = '%(name)s->SetSize(%(name)s->GetBestSize());\n'
     tmpl_setdefault = '%(name)s->SetDefault();\n'
+    tmpl_inline_wxSize = 'Wx::Size->new(%(width)s, %(height)s)'
 
     def _prepare_tmpl_content(self, obj):
         BaseWidgetWriter._prepare_tmpl_content(self, obj)
@@ -1222,6 +1363,13 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
 
         return
 
+    def _prepare_bitmap(self, obj):
+        super(PerlWidgetCodeWriter, self)._prepare_bitmap(obj)
+
+        bmp_file = obj.properties.get('bitmap', '')
+        if bmp_file.startswith('art:'):
+            self.import_modules_dynamic.append('use Wx::ArtProvider qw/:artid :clientid/;\n')
+
 # end of class PerlWidgetCodeWriter
 
 
@@ -1229,15 +1377,18 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
     """\
     Base class for all Python widget code writer classes.
     """
-    tmpl_bitmap = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
+    tmpl_inline_artprovider = 'wx.ArtProvider.GetBitmap(%(art_id)s, ' \
+                       '%(art_client)s, %(size)s)'
+    tmpl_inline_bitmap = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
     tmpl_bitmap_disabled = '%(name)s.SetBitmapDisabled(%(disabled_bitmap)s)\n'
-    tmpl_emptybitmap = 'wx.EmptyBitmap(%(width)s, %(height)s)'
+    tmpl_inline_emptybitmap = 'wx.EmptyBitmap(%(width)s, %(height)s)'
 
     tmpl_flags = ', style=%s'
     tmpl_selection = '%(name)s.SetSelection(%(selection)s)\n'
     tmpl_setvalue = '%(name)s.SetValue(%(value_unquoted)s)\n'
     tmpl_SetBestSize = '%(name)s.SetSize(%(name)s.GetBestSize())\n'
     tmpl_setdefault = '%(name)s.SetDefault()\n'
+    tmpl_inline_wxSize = '(%(width)s, %(height)s)'
 
     def _prepare_tmpl_content(self, obj):
         BaseWidgetWriter._prepare_tmpl_content(self, obj)

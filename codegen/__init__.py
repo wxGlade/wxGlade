@@ -405,6 +405,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     @ivar curr_tab: Current indentation level
     @type curr_tab: int
 
+    @ivar dependencies: Module dependencies of all classes
+    @type dependencies: dict
+
     @ivar for_version: wx version we are generating code for (e.g. C{(2, 8)})
     @type for_version: Tuple of major and minor version number
 

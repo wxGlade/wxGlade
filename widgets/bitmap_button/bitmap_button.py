@@ -88,7 +88,7 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
     def set_bitmap(self, value):
         self.bitmap = value
         if self.widget:
-            bmp = self.create_bitmap()
+            bmp = self.get_preview_obj_bitmap()
             self.widget.SetBitmapLabel(bmp)
             self.widget.SetBitmapSelected(bmp)
             self.widget.SetBitmapFocus(bmp)
@@ -100,12 +100,12 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
     def set_disabled_bitmap(self, value):
         self.disabled_bitmap = value
         if self.widget:
-            bmp = self.create_bitmap(self.disabled_bitmap)
+            bmp = self.get_preview_obj_bitmap(self.disabled_bitmap)
             self.widget.SetBitmapDisabled(bmp)
             self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
     def create_widget(self):
-        bmp = self.create_bitmap()
+        bmp = self.get_preview_obj_bitmap()
         try:
             self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp,
                                           style=self.get_int_style())

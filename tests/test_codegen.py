@@ -1560,7 +1560,6 @@ class TestCodeGen(WXGladeBaseTest):
             'Format_flags.xrc'
         )
 
-
     def test_get_bitmap_code(self):
         """\
         Test bitmap code generation
@@ -1568,7 +1567,7 @@ class TestCodeGen(WXGladeBaseTest):
         details = {}
         details['C++'] = [
             (None, 'wxNullBitmap'),
-            ('icon.xpm', 'wxBitmap("icon.xpm", wxBITMAP_TYPE_ANY)'),
+            ('icon.xpm', 'wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY)'),
             ('code:SenselessStatement', 'SenselessStatement'),
             ('empty:10,10', 'wxBitmap(10, 10)'),
             ('empty: 10, 10', 'wxBitmap(10, 10)'),
@@ -1576,6 +1575,10 @@ class TestCodeGen(WXGladeBaseTest):
             ('empty:10', 'wxBitmap(16, 16)'),
             ('empty:A, B', 'wxBitmap(16, 16)'),
             ('var:AlreadyDefinedVariable', 'wxBitmap(AlreadyDefinedVariable, wxBITMAP_TYPE_ANY)'),
+            ('art:wxART_PRINT,wxART_OTHER', 'wxArtProvider::GetBitmap(wxART_PRINT, wxART_OTHER, wxDefaultSize)'),
+            ('art:wxART_PRINT,wxART_OTHER,16,16', 'wxArtProvider::GetBitmap(wxART_PRINT, wxART_OTHER, wxSize(16, 16))'),
+            ('art:ART_PRINT,ART_OTHER', 'wxArtProvider::GetBitmap(ART_PRINT, ART_OTHER, wxDefaultSize)'),
+            ('art:"gtk-cdrom",wxART_MENU', 'wxArtProvider::GetBitmap("gtk-cdrom", wxART_MENU, wxDefaultSize)'),
             ]
         details['lisp'] = [
             (None, 'wxNullBitmap'),
@@ -1587,6 +1590,10 @@ class TestCodeGen(WXGladeBaseTest):
             ('empty:10', 'wxBitmap_Create(16 16)'),
             ('empty:A, B', 'wxBitmap_Create(16 16)'),
             ('var:AlreadyDefinedVariable', '(wxBitmap_CreateLoad AlreadyDefinedVariable wxBITMAP_TYPE_ANY)'),
+            ('art:wxART_PRINT,wxART_OTHER', 'wxArtProvider_GetBitmap(wxART_PRINT wxART_OTHER wxDefaultSize)'),
+            ('art:wxART_PRINT,wxART_OTHER,16,16', 'wxArtProvider_GetBitmap(wxART_PRINT wxART_OTHER wxSize_Create(16 16))'),
+            ('art:ART_PRINT,ART_OTHER', 'wxArtProvider_GetBitmap(ART_PRINT ART_OTHER wxDefaultSize)'),
+            ('art:"gtk-cdrom",wxART_MENU', 'wxArtProvider_GetBitmap("gtk-cdrom" wxART_MENU wxDefaultSize)'),
             ]
         details['perl'] = [
             (None, 'wxNullBitmap'),
@@ -1598,6 +1605,10 @@ class TestCodeGen(WXGladeBaseTest):
             ('empty:10', 'Wx::Bitmap->new(16, 16)'),
             ('empty:A, B', 'Wx::Bitmap->new(16, 16)'),
             ('var:AlreadyDefinedVariable', 'Wx::Bitmap->new(AlreadyDefinedVariable, wxBITMAP_TYPE_ANY)'),
+            ('art:wxART_PRINT,wxART_OTHER', 'Wx::ArtProvider::GetBitmap(wxART_PRINT, wxART_OTHER, wxDefaultSize)'),
+            ('art:wxART_PRINT,wxART_OTHER,16,16', 'Wx::ArtProvider::GetBitmap(wxART_PRINT, wxART_OTHER, Wx::Size->new(16, 16))'),
+            ('art:ART_PRINT,ART_OTHER', 'Wx::ArtProvider::GetBitmap(ART_PRINT, ART_OTHER, wxDefaultSize)'),
+            ('art:"gtk-cdrom",wxART_MENU', 'Wx::ArtProvider::GetBitmap("gtk-cdrom", wxART_MENU, wxDefaultSize)'),
             ]
         details['python'] = [
             (None, 'wx.NullBitmap'),
@@ -1609,6 +1620,10 @@ class TestCodeGen(WXGladeBaseTest):
             ('empty:10', 'wx.EmptyBitmap(16, 16)'),
             ('empty:A, B', 'wx.EmptyBitmap(16, 16)'),
             ('var:AlreadyDefinedVariable', 'wx.Bitmap(AlreadyDefinedVariable, wx.BITMAP_TYPE_ANY)'),
+            ('art:wxART_PRINT,wxART_OTHER', 'wx.ArtProvider.GetBitmap(wx.ART_PRINT, wx.ART_OTHER, wx.DefaultSize)'),
+            ('art:wxART_PRINT,wxART_OTHER,16,16', 'wx.ArtProvider.GetBitmap(wx.ART_PRINT, wx.ART_OTHER, (16, 16))'),
+            ('art:ART_PRINT,ART_OTHER', 'wx.ArtProvider.GetBitmap(ART_PRINT, ART_OTHER, wx.DefaultSize)'),
+            ('art:"gtk-cdrom",wxART_MENU', 'wx.ArtProvider.GetBitmap("gtk-cdrom", wx.ART_MENU, wx.DefaultSize)'),
             ]
 
         for lang in ['C++', 'lisp', 'perl', 'python']:
