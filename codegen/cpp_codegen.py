@@ -1509,6 +1509,11 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         else:
             return '%s%s(wxSize(%s));\n' % (objname, method, size)
 
+    def quote_path(self, s):
+        path = super(CPPCodeWriter, self).quote_path(s)
+        # path starts and ends with double quotes already
+        return 'wxT(%s)' % path
+
     def _quote_str(self, s):
         if self._use_gettext:
             return '_("%s")' % s

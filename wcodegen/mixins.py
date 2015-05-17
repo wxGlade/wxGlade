@@ -256,15 +256,15 @@ class BitmapMixin(object):
     bitmap_tooltip_text = _(
         'Choice a bitmap to show.\n\nYou can either select a file or you '
         'can specify the bitmap using hand-crafted statements with the '
-        'prefixes "var:", "code:" or "empty:".\nThe wxGlade documentation '
-        'describes how to write such statements.')
+        'prefixes "art:", "code:", "empty:" or "var:".\nThe wxGlade '
+        'documentation describes how to write such statements.')
     """\
     Detailed tooltip to show with each bitmap property.
 
     @type: str
     """
 
-    def create_bitmap(self, bitmap=None):
+    def get_preview_obj_bitmap(self, bitmap=None):
         """\
         Create a wxBitmap instance from the given statement.
 
@@ -274,32 +274,102 @@ class BitmapMixin(object):
         @param bitmap: Bitmap definition
         @type bitmap: str | None
 
+        @see: L{get_preview_obj_artprovider()}
+        @see: L{get_preview_obj_emptybitmap()}
+
         @rtype: wx.Bitmap | wx.EmptyBitmap
         """
         if bitmap is None:
             bitmap = getattr(self, 'bitmap', None)
-        if bitmap:
-            if bitmap.startswith('var:') or \
-               bitmap.startswith('code:'):
-                return wx.Bitmap(16, 16)
-            if bitmap.startswith('empty:'):
-                # keep in sync with BaseWidgetWriter.generate_code_bitmap()
-                width = 16
-                height = 16
-                try:
-                    size = bitmap[6:]
-                    width, height = \
-                        [int(x.strip()) for x in size.split(',', 1)]
-                except ValueError:
-                    self._logger.warn(
-                        'Malformed statement to create an empty bitmap: %s',
-                        bitmap
-                    )
-                return wx.Bitmap(width, height)
-            else:
-                bitmap = misc.get_relative_path(bitmap)
-                return wx.Bitmap(bitmap, wx.BITMAP_TYPE_ANY)
 
-        return wx.Bitmap(1, 1)
+        if not bitmap:
+            return wx.EmptyBitmap(1, 1)
+
+        if bitmap.startswith('var:') or \
+           bitmap.startswith('code:'):
+            return wx.EmptyBitmap(16, 16)
+        elif bitmap.startswith('empty:'):
+            return self.get_preview_obj_emptybitmap(bitmap)
+        elif bitmap.startswith('art:'):
+            return self.get_preview_obj_artprovider(bitmap)
+        else:
+            bitmap = misc.get_relative_path(bitmap)
+            return wx.Bitmap(bitmap, wx.BITMAP_TYPE_ANY)
+
+    def get_preview_obj_artprovider(self, bitmap):
+        """\
+        Create a wxBitmap instance from the given statement using
+        wxArtProvider.
+
+        @note: Preview shows only wxART_* resources.
+
+        @param bitmap: Bitmap definition
+        @type bitmap: str | None
+
+        @rtype: wx.Bitmap | wx.EmptyBitmap
+
+        @see: L{wcodegen.BaseWidgetWriter.get_inline_stmt_artprovider()}
+        """
+        # keep in sync with BitmapMixin.get_inline_stmt_artprovider()
+        art_id = 'wxART_ERROR'
+        art_client = 'wxART_OTHER'
+        size = wx.DefaultSize
+
+        # art:ArtID,ArtClient
+        # art:ArtID,ArtClient,width,height
+        try:
+            content = bitmap[4:]
+            elements = [item.strip() for item in content.split(',')]
+            if len(elements) == 2:
+                art_id, art_client = elements
+            elif len(elements) == 4:
+                art_id, art_client, width, height = elements
+                size = wx.Size(int(width), int(height))
+            else:
+                raise ValueError
+
+        except (ValueError, TypeError):
+            self._logger.warn(
+                'Malformed statement to create a bitmap via '
+                'wxArtProvider(): %s',
+                bitmap
+            )
+
+        # show wx art resources only
+        if not art_id.startswith('wx'):
+            art_id = 'wxART_HELP'
+        if not art_client.startswith('wx'):
+            art_client = 'wxART_OTHER'
+
+        return wx.ArtProvider.GetBitmap(
+            self.wxname2attr(self.codegen.cn(art_id)),
+            self.wxname2attr(self.codegen.cn(art_client)),
+            size
+        )
+
+    def get_preview_obj_emptybitmap(self, bitmap):
+        """\
+        Create an empty wxBitmap instance from the given statement.
+
+        @param bitmap: Bitmap definition
+        @type bitmap: str | None
+
+        @rtype: wx.Bitmap | wx.EmptyBitmap
+
+        @see: L{wcodegen.BaseWidgetWriter.get_inline_stmt_emptybitmap()}
+        """
+        # keep in sync with BaseWidgetWriter.get_inline_stmt_emptybitmap()
+        width = 16
+        height = 16
+        try:
+            size = bitmap[6:]
+            width, height = \
+                [int(item.strip()) for item in size.split(',', 1)]
+        except ValueError:
+            self._logger.warn(
+                'Malformed statement to create an empty bitmap: %s',
+                bitmap
+            )
+        return wx.EmptyBitmap(width, height)
 
 # end of class BitmapMixin

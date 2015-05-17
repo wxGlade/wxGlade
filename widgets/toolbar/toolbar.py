@@ -675,8 +675,8 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             if misc.streq(tool.id, '---'):  # the tool is a separator
                 self.widget.AddSeparator()
             else:
-                bmp1 = self.create_bitmap(tool.bitmap1)
-                bmp2 = self.create_bitmap(tool.bitmap2)
+                bmp1 = self.get_preview_obj_bitmap(tool.bitmap1)
+                bmp2 = self.get_preview_obj_bitmap(tool.bitmap2)
                 kinds = [wx.ITEM_NORMAL, wx.ITEM_CHECK, wx.ITEM_RADIO]
                 try:
                     kind = kinds[int(tool.type)]

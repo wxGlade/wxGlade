@@ -204,7 +204,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         self.icon = value.strip()
         if self.widget:
             if self.icon:
-                bitmap = self.create_bitmap(self.icon)
+                bitmap = self.get_preview_obj_bitmap(self.icon)
             else:
                 xpm = os.path.join(config.icons_path, 'frame.xpm')
                 bitmap = misc.get_xpm_bitmap(xpm)
