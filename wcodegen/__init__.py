@@ -397,27 +397,24 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
     import_modules = []
     """\
-    List of extra modules to import. This list is static and in-depend of
-    widget instantiation parameters.
+    List of extra modules to import.
+
+    This list can be changed on demand. It'll be reset to the initial value
+    stored in L{__import_modules} within L{_reset_vars()}.
 
     B{Example}::
         import_modules = ['use Wx::Grid;\\n']
 
     @type: list[str]
-
-    @see: L{import_modules_dynamic}
+    @see: L{__import_modules}
     """
 
-    import_modules_dynamic = []
+    __import_modules = []
     """\
-    List of extra modules to import. This list is dynamic and can changed to
-    add further dependencies during the widgets are processed.
-
-    B{Example}::
-        import_modules = ['use Wx::Grid;\\n']
+    Copy of the initial state of L{import_modules}. This copy is used to
+    restore the initial state within L{_reset_vars()}.
 
     @type: list[str]
-
     @see: L{import_modules}
     """
 
@@ -633,6 +630,12 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.config = {}
         self.klass = klass
 
+        # store initial content
+        if hasattr(self, 'import_modules'):
+            self.__import_modules = self.import_modules[:]
+        else:
+            self.__import_modules = []
+
         # Copy non-style settings (Style settings will be handled in
         # StylesMixin fully)
         if klass and klass in common.widget_config:
@@ -667,7 +670,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         """\
         Reset instance variables back to defaults
         """
-        self.import_modules_dynamic = []
+        self.import_modules = self.__import_modules[:]
         self.extra_headers_dynamic = []
         self.has_selection = False
         self.has_setdefault = False
@@ -1368,7 +1371,7 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
 
         bmp_file = obj.properties.get('bitmap', '')
         if bmp_file.startswith('art:'):
-            self.import_modules_dynamic.append('use Wx::ArtProvider qw/:artid :clientid/;\n')
+            self.import_modules.append('use Wx::ArtProvider qw/:artid :clientid/;\n')
 
 # end of class PerlWidgetCodeWriter
 
