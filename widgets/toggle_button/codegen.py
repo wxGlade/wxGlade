@@ -18,7 +18,7 @@ class PythonToggleButtonGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppToggleButtonGenerator(wcodegen.CppWidgetCodeWriter):
-    extra_headers = ['<wx/tglbtn.h>']
+    import_modules = ['<wx/tglbtn.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s' \
            '%(style)s);\n'
     has_setvalue = True

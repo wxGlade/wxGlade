@@ -135,7 +135,7 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
                    ('const wxSize&', 'size', 'wxDefaultSize'),
                    ('long', 'style', '0')]
 
-    extra_headers = ['<wx/notebook.h>']
+    import_modules = ['<wx/notebook.h>']
 
     def get_code(self, window):
         """\

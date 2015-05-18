@@ -22,7 +22,7 @@ class PythonDatePickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppDatePickerCtrlGenerator(wcodegen.CppWidgetCodeWriter):
-    extra_headers = ['<wx/datectrl.h>']
+    import_modules = ['<wx/datectrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):

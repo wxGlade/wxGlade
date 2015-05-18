@@ -109,7 +109,7 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
                    ('const wxSize&', 'size', 'wxDefaultSize'),
                    ('long', 'style', 'wxSP_3D')]
 
-    extra_headers = ['<wx/splitter.h>']
+    import_modules = ['<wx/splitter.h>']
 
     def get_code(self, window):
         """\

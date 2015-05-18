@@ -17,7 +17,7 @@ class PythonSpinButtonGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppSpinButtonGenerator(wcodegen.CppWidgetCodeWriter):
-    extra_headers = ['<wx/spinbutt.h>']
+    import_modules = ['<wx/spinbutt.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
 
 # end of class CppSpinButtonGenerator
