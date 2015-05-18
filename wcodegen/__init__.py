@@ -367,34 +367,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @type klass: str | None
     """
 
-    extra_headers = []
-    """\
-    List of extra header file, in the form <header.h> or "header.h" or an
-    empty list. This list is static and in-depend of widget instantiation
-    parameters.
-
-    B{Example}::
-        extra_headers = ['<wx/treectrl.h>']
-
-    @type: list[str]
-
-    @see: L{extra_headers_dynamic}
-    """
-
-    extra_headers_dynamic = []
-    """\
-    List of extra header file, in the form <header.h> or "header.h" or an
-    empty list. This list is dynamic and can changed to add further
-    dependencies during the widgets are processed.
-
-    B{Example}::
-        extra_headers = ['<wx/treectrl.h>']
-
-    @type: list[str]
-
-    @see: L{extra_headers}
-    """
-
     import_modules = []
     """\
     List of extra modules to import.
@@ -671,7 +643,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         Reset instance variables back to defaults
         """
         self.import_modules = self.__import_modules[:]
-        self.extra_headers_dynamic = []
         self.has_selection = False
         self.has_setdefault = False
         self.has_setvalue = False
@@ -1283,7 +1254,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
 
         bmp_file = obj.properties.get('bitmap', '')
         if bmp_file.startswith('art:'):
-            self.extra_headers_dynamic.append('<wx/artprov.h>')
+            self.import_modules.append('<wx/artprov.h>')
 
 # end of class CppWidgetCodeWriter
 

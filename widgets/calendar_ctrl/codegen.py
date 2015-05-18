@@ -33,7 +33,7 @@ class PythonCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppCalendarCtrlGenerator(wcodegen.CppWidgetCodeWriter):
-    extra_headers = ['<wx/calctrl.h>']
+    import_modules = ['<wx/calctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):

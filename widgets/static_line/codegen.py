@@ -17,7 +17,7 @@ class PythonStaticLineGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppStaticLineGenerator(wcodegen.CppWidgetCodeWriter):
-    extra_headers = ['<wx/statline.h>']
+    import_modules = ['<wx/statline.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
 
 # end of class CppStaticLineGenerator

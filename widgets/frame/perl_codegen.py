@@ -46,7 +46,7 @@ class PerlFrameCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
 
 class PerlMDIChildFrameCodeGenerator(PerlFrameCodeGenerator):
-    extra_headers = ['Wx::MDI']
+    import_modules = ['Wx::MDI']
 
 # end of class PerlMDIChildFrameCodeGenerator
 

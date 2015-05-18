@@ -142,7 +142,7 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
 
 
 class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
-    extra_headers = ['<wx/mdi.h>']
+    import_modules = ['<wx/mdi.h>']
 
     constructor = [('wxMDIParentFrame*', 'parent'), ('int', 'id'),
                    ('const wxString&', 'title'),

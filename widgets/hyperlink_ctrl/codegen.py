@@ -25,7 +25,7 @@ class PythonHyperlinkCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppHyperlinkCtrlGenerator(wcodegen.CppWidgetCodeWriter):
 
-    extra_headers = ['<wx/hyperlink.h>']
+    import_modules = ['<wx/hyperlink.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
            '%(url)s%(style)s);\n'
 

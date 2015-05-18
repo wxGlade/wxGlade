@@ -17,7 +17,7 @@ class PythonListCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppListCtrlGenerator(wcodegen.CppWidgetCodeWriter):
-    extra_headers = ['<wx/listctrl.h>']
+    import_modules = ['<wx/listctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
 
 # end of class CppListCtrlGenerator

@@ -281,7 +281,7 @@ class WidgetHandler(BaseWidgetHandler):
     ``signature'' of the widget's constructor
     """
 
-    extra_headers = []
+    import_modules = []
     """\
     If not None, list of extra header file, in the form
     <header.h> or "header.h"
@@ -290,7 +290,6 @@ class WidgetHandler(BaseWidgetHandler):
     def __init__(self):
         BaseWidgetHandler.__init__(self)
         self.constructor = []
-        self.extra_headers = []
 
     def get_ids_code(self, obj):
         """\
@@ -1145,9 +1144,7 @@ bool MyApp::OnInit()
         if self.multiple_files:
             if code_obj.base in self.obj_builders:
                 self.classes[code_obj.klass].dependencies.extend(
-                    getattr(self.obj_builders[code_obj.base], 'extra_headers', []))
-                self.classes[code_obj.klass].dependencies.extend(
-                    getattr(self.obj_builders[code_obj.base], 'extra_headers_dynamic', []))
+                    getattr(self.obj_builders[code_obj.base], 'import_modules', []))
 
             if prev_src:
                 tag = '<%swxGlade insert new_classes>' % self.nonce
@@ -1226,7 +1223,6 @@ bool MyApp::OnInit()
             hwrite('\n')
 
             # write the module dependencies for this class
-            #extra_headers = classes[code_obj.klass].dependencies
             extra_modules = self.classes[code_obj.klass].dependencies
             code = self._format_dependencies(extra_modules)
             hwrite(code)
@@ -1346,10 +1342,7 @@ bool MyApp::OnInit()
         else:
             if sub_obj.base in self.obj_builders:
                 headers = getattr(self.obj_builders[sub_obj.base],
-                                  'extra_headers', [])
-                klass.dependencies.extend(headers)
-                headers = getattr(self.obj_builders[sub_obj.base],
-                                  'extra_headers_dynamic', [])
+                                  'import_modules', [])
                 klass.dependencies.extend(headers)
 
     def generate_code_event_handler(self, code_obj, is_new, tab, prev_src,

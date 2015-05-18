@@ -151,7 +151,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
-    extra_headers = ['<wx/grid.h>']
+    import_modules = ['<wx/grid.h>']
     
     def get_code(self, obj):
         """\

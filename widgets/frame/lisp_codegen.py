@@ -43,7 +43,7 @@ class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
 
 class LispMDIChildFrameCodeGenerator(LispFrameCodeGenerator):
-    extra_headers = ['Wx::MDI']
+    import_modules = ['Wx::MDI']
 
 # end of class LispMDIChildFrameCodeGenerator
 
