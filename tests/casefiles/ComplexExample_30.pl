@@ -7,7 +7,6 @@
 
 use Wx 0.15 qw[:allclasses];
 use strict;
-use Wx::Grid;
 
 # begin wxGlade: dependencies
 # end wxGlade
@@ -224,10 +223,6 @@ use base qw(Wx::Frame);
 use strict;
 
 use Wx::Locale gettext => '_T';
-# begin wxGlade: dependencies
-use Wx::Grid;
-# end wxGlade
-
 sub new {
     my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
     $parent = undef              unless defined $parent;

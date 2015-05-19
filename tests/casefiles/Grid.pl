@@ -7,7 +7,6 @@
 
 use Wx 0.15 qw[:allclasses];
 use strict;
-use Wx::Grid;
 
 # begin wxGlade: dependencies
 # end wxGlade
@@ -20,10 +19,6 @@ package MyFrame;
 use Wx qw[:everything];
 use base qw(Wx::Frame);
 use strict;
-
-# begin wxGlade: dependencies
-use Wx::Grid;
-# end wxGlade
 
 sub new {
     my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;

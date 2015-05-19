@@ -6,7 +6,6 @@
 use Wx 0.15 qw[:allclasses];
 use strict;
 # begin wxGlade: dependencies
-use Wx::Grid;
 # end wxGlade
 
 # begin wxGlade: extracode

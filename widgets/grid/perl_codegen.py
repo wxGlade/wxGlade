@@ -12,7 +12,6 @@ from codegen import ColsCodeHandler, _check_label
 
 
 class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
-    import_modules = ['use Wx::Grid;\n']
 
     def get_code(self, obj):
         id_name, id = self.codegen.generate_code_id(obj)
