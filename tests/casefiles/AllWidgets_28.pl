@@ -8,7 +8,6 @@
 use Wx 0.15 qw[:allclasses];
 use strict;
 use Wx::ArtProvider qw/:artid :clientid/;
-use Wx::Grid;
 
 # begin wxGlade: dependencies
 # end wxGlade
@@ -25,7 +24,6 @@ use strict;
 use Wx::Locale gettext => '_T';
 # begin wxGlade: dependencies
 use Wx::ArtProvider qw/:artid :clientid/;
-use Wx::Grid;
 # end wxGlade
 
 sub new {
