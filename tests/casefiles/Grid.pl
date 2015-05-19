@@ -21,6 +21,10 @@ use Wx qw[:everything];
 use base qw(Wx::Frame);
 use strict;
 
+# begin wxGlade: dependencies
+use Wx::Grid;
+# end wxGlade
+
 sub new {
     my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
     $parent = undef              unless defined $parent;

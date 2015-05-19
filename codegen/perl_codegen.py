@@ -447,12 +447,17 @@ unless(caller){
                 else:
                     write("use Wx::Locale gettext => '_T';\n")
 
-            if self.multiple_files:
-                # write the module dependencies for this class (package)
-                dep_list = self.classes[code_obj.klass].dependencies.keys()
-                dep_list.sort()
+            # The dependencies have to add to the package block too
+            # because global imports are not visible inside the package
+            # block
+            # TODO: Don't add dependencies twice with Perl
+
+            # write the module dependencies for this class (package)
+            dep_list = self.classes[code_obj.klass].dependencies.keys()
+            dep_list.sort()
+            if dep_list:
                 code = self._tagcontent('dependencies', dep_list, True)
-                write('\n')
+                write(code)
 
             write('sub new {\n')
 

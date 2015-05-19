@@ -224,6 +224,10 @@ use base qw(Wx::Frame);
 use strict;
 
 use Wx::Locale gettext => '_T';
+# begin wxGlade: dependencies
+use Wx::Grid;
+# end wxGlade
+
 sub new {
     my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
     $parent = undef              unless defined $parent;
