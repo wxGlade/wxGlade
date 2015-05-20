@@ -1,0 +1,156 @@
+"""\
+Suite to test compilation of automatically generated C++ code.
+
+@copyright: 2015 Carsten Grohmann
+
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+# import test base class
+from tests import WXGladeBaseTest
+import os
+import subprocess
+import tempfile
+
+
+class TestCompile(WXGladeBaseTest):
+    """\
+    Suite to test compilation of automatically generated C++ code.
+
+    @ivar libs28: Link flags for wx2.8 source code
+    @type libs28: str
+    @ivar libs30: Link flags for wx3.0 source code
+    @type libs30: str
+
+    @ivar cxxflags28: Compile flags for wx2.8 source code
+    @type cxxflags28: str
+    @ivar cxxflags30: Compile flags for wx3.0 source code
+    @type cxxflags30: str
+
+    @ivar _tmpfile: Temporary filename used for the generated binary
+    @type _tmpfile: str | None
+    """
+
+    def __init__(self, methodName='runTest'):
+        super(TestCompile, self).__init__(methodName)
+
+        self.libs28 = ''
+        self.cxxflags28 = ''
+        self.libs30 = ''
+        self.cxxflags30 = ''
+        self._tmpfile = None
+
+        for program in ['wx-config', 'wx-config-2.8', 'wx-config-3.0']:
+            try:
+                release = subprocess.check_output(
+                    "%s --release" % program,
+                    stderr=subprocess.STDOUT,
+                    shell=True
+                )
+                libs = subprocess.check_output(
+                    "%s --libs" % program,
+                    stderr=subprocess.STDOUT,
+                    shell=True
+                )
+                cxxflags = subprocess.check_output(
+                    "%s --cxxflags" % program,
+                    stderr=subprocess.STDOUT,
+                    shell=True
+                )
+                if release.startswith('2.8'):
+                    self.libs28 = libs.strip()
+                    self.cxxflags28 = cxxflags.strip()
+                elif release.startswith('3.0'):
+                    self.libs30 = libs.strip()
+                    self.cxxflags30 = cxxflags.strip()
+            except subprocess.CalledProcessError:
+                continue
+
+    def setUp(self):
+        super(TestCompile, self).setUp()
+        self._tmpfile = tempfile.mktemp()
+
+    def tearDown(self):
+        super(TestCompile, self).tearDown()
+        if self._tmpfile and os.path.exists(self._tmpfile):
+            os.unlink(self._tmpfile)
+            self._tmpfile = None
+
+    def _compile28(self, source):
+        """\
+        Compile the given file with wx28 settings
+
+        @param source: Sourcefile to compile
+        @type source:  str
+        """
+        if not self.libs28:
+            self.skipTest('No wx-config for wx28 found')
+
+        self._compile(source, self.libs28, self.cxxflags28)
+
+    def _compile30(self, source):
+        """\
+        Compile the given file with wx30 settings
+
+        @param source: Sourcefile to compile
+        @type source:  str
+        """
+        if not self.libs30:
+            self.skipTest('No wx-config for wx30 found')
+
+        self._compile(source, self.libs30, self.cxxflags30)
+
+    def _compile(self, source, libs, cxxflags):
+        """\
+        Compile a C++ file
+
+        @param source: Sourcefile to compile
+        @type source:  str
+        @param libs: Linker flags
+        @type libs:  str
+        @param cxxflags: C++ compiler flags
+        @type cxxflags: str
+        """
+        abs_filename = self._get_abs_filename(source)
+
+        cmd = 'g++ %s %s %s -o %s' % (
+            abs_filename, libs, cxxflags, self._tmpfile
+        )
+        try:
+            subprocess.check_call(
+                cmd,
+                stderr=subprocess.STDOUT,
+                shell=True
+            )
+        except subprocess.CalledProcessError, details:
+            self.fail(
+                '''Can't compile %s:\n%s''' % (source, details)
+            )
+        self.failUnless(
+            os.path.exists(self._tmpfile),
+            'The application binary was not created!'
+        )
+
+    def test_compile_AllWidgets_28(self):
+        self._compile28('AllWidgets_28.cpp')
+
+    def test_compile_AllWidgets_30(self):
+        self._compile30('AllWidgets_30.cpp')
+
+    def test_compile_ComplexExample(self):
+        self._compile28('ComplexExample.cpp')
+
+    def test_compile_ComplexExample_30(self):
+        self._compile30('ComplexExample_30.cpp')
+
+    def test_compile_FontColour(self):
+        self._compile28('FontColour.cpp')
+        self._compile30('FontColour.cpp')
+
+    def test_compile_CPPOgg3(self):
+        self._compile28('CPPOgg3.cpp')
+        self._compile30('CPPOgg3.cpp')
+
+    def test_compile_HyperlinkCtrl_28(self):
+        self._compile28('HyperlinkCtrl_28.cpp')
+        self._compile30('HyperlinkCtrl_28.cpp')

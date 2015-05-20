@@ -302,33 +302,9 @@ class WXGladeBaseTest(unittest.TestCase):
         @return:          File content
         @rtype:           str | unicode
         """
-        casename, extension = os.path.splitext(filename)
-        if extension == '.wxg':
-            filetype = 'input'
-        else:
-            filetype = 'result'
+        abs_filename = self._get_abs_filename(filename)
 
-        file_list = glob.glob(
-            os.path.join(self.caseDirectory, "%s%s" % (casename, extension))
-            )
-        self.failIf(
-           len(file_list) == 0,
-           'No %s file "%s" for case "%s" found!' % (
-                filetype,
-                filename,
-                casename,
-                )
-           )
-        self.failIf(
-           len(file_list) > 1,
-           'More than one %s file "%s" for case "%s" found!' % (
-                filetype,
-                filename,
-                casename,
-                )
-           )
-
-        fh = open(file_list[0])
+        fh = open(abs_filename)
         content = fh.read()
         fh.close()
 
@@ -348,6 +324,41 @@ class WXGladeBaseTest(unittest.TestCase):
             }
 
         return content
+
+    def _get_abs_filename(self, filename):
+        """\
+        Return the absolute filename of a file from a test case
+
+        @param filename:  Name of the file to load
+        @type filename:   str
+
+        @rtype: str
+        """
+        casename, extension = os.path.splitext(filename)
+        if extension == '.wxg':
+            filetype = 'input'
+        else:
+            filetype = 'result'
+        file_list = glob.glob(
+            os.path.join(self.caseDirectory, "%s%s" % (casename, extension))
+        )
+        self.failIf(
+            len(file_list) == 0,
+            'No %s file "%s" for case "%s" found!' % (
+                filetype,
+                filename,
+                casename,
+            )
+        )
+        self.failIf(
+            len(file_list) > 1,
+            'More than one %s file "%s" for case "%s" found!' % (
+                filetype,
+                filename,
+                casename,
+            )
+        )
+        return file_list[0]
 
     def _fixture_filename(self, func):
         """\
