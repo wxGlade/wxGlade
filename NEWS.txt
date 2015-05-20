@@ -32,6 +32,7 @@ Bugs:
   - Unicode error during update of an existing source file (sf bug #167)
   - Fix Designer not displaying buttons two lines correctly (sf bug #169)
   - Fix generated code for wxListBox
+  - Fix broken color selection dialog
   - ...
 
 Deprecation
