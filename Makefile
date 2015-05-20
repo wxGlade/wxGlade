@@ -79,7 +79,7 @@ help:
 	$(HELP)
 
 #+ Run all test package
-test: test-nongui test-gui
+test: test-nongui test-gui test-compile
 
 #+ Run all non-GUI test package
 test-nongui:
@@ -88,6 +88,10 @@ test-nongui:
 #+ Run all GUI test package
 test-gui:
 	@$(TEST_BIN) --gui
+
+#+ Run test to compile C++ files
+test-compile:
+	@$(TEST_BIN) --compile
 
 #+ Clean python compiler files and automatic generated documentation
 clean:
