@@ -50,7 +50,8 @@ class BugReport(bugdialog_ui.UIBugDialog):
         log.exception_orig(header)
         self._fill_dialog(exc_msg, exc_type, header)
 
-    def SetContentEI(self, exc_type, exc_value, exc_tb, msg=None):
+    def SetContentEI(self, exc_type, exc_value, exc_tb,
+                     msg=_('An internal error occurred')):
         """\
         Format given exception and add details to dialog.
 
@@ -59,17 +60,16 @@ class BugReport(bugdialog_ui.UIBugDialog):
         @param exc_tb: Exception traceback
 
         @param msg: Short description of the exception
-        @type msg:  str | None
+        @type msg:  basestring
 
         @see: L{SetContent()}
         """
         if self._disabled:
             return
 
-        header = _("An internal error occurred")
         # don't use exception() because it overwrites exc_info with 1
-        logging.error(header, exc_info=(exc_type, exc_value, exc_tb))
-        self._fill_dialog(msg, exc_type, header)
+        logging.error(msg, exc_info=(exc_type, exc_value, exc_tb))
+        self._fill_dialog(msg, exc_type, _('An internal error occurred'))
 
     def _fill_dialog(self, exc_msg, exc_type, header):
         """\
