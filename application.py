@@ -12,6 +12,7 @@ import random
 import re
 import types
 import wx
+import plugins
 
 from widget_properties import *
 import bugdialog
@@ -809,7 +810,7 @@ class Application(object):
             preview_path = os.path.dirname(self.output_path)
             preview_module_name = os.path.basename(self.output_path)
             preview_module_name = os.path.splitext(preview_module_name)[0]
-            preview_module = common._import_module(preview_path,
+            preview_module = plugins.import_module(preview_path,
                                                    preview_module_name)
             if not preview_module:
                 wx.MessageBox(

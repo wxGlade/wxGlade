@@ -14,10 +14,9 @@ import os
 import os.path
 import sys
 import types
-import zipfile
 
 import config
-
+import plugins
 
 widgets = {}
 """\
@@ -454,6 +453,33 @@ Dictionary of objects used to generate the code in a given language.
 """
 
 
+def init_codegen():
+    """\
+    Load available code generators, core and user widgets as well as sizers
+
+    If wxGlade has been started in GUI mode, the function returns three lists
+    of wxBitmapButton objects to handle them. The first contains the
+    built-in widgets and the second one the user widgets and the third list
+    contains the sizers.
+
+    @return: List of core buttons, list of local buttons and list of sizer
+             buttons
+
+    @see: L{load_config()}
+    @see: L{load_code_writers()}
+    @see: L{load_widgets()}
+    @see: L{load_sizers()}
+    """
+    # process generic related style attributes
+    plugins.style_attrs_to_sets(widget_config['generic_styles'])
+    load_config()
+    load_code_writers()
+    core_buttons, local_buttons = load_widgets()
+    sizer_buttons = load_sizers()
+
+    return core_buttons, local_buttons, sizer_buttons
+
+
 def load_code_writers():
     """\
     Fills the common.code_writers dictionary: to do so, loads the modules
@@ -482,7 +508,7 @@ def load_code_writers():
                 ValueError):
             logging.exception(
                 _('"%s" is not a valid code generator module'), module
-                )
+            )
         else:
             code_writers[writer.language] = writer
             if config.use_gui:
@@ -496,21 +522,60 @@ def load_config():
     """\
     Load widget configuration.
 
-    @see: L{load_widgets_from_dir()}
+    @see: L{plugins.load_widgets_from_dir()}
     """
     # load the "built-in" widgets
-    core_buttons = load_widgets_from_dir(
+    plugins.load_widgets_from_dir(
         config.widgets_path,
         'wconfig'
     )
 
     # load the "user" widgets
-    local_buttons = load_widgets_from_dir(
+    plugins.load_widgets_from_dir(
         config.preferences.local_widget_path,
         'wconfig'
-        )
+    )
 
     return
+
+
+def load_sizers():
+    """\
+    Load and initialise the sizer support modules.
+
+    @return: A list of BitmapButton objects to handle sizer buttons
+
+    @see: L{edit_sizers}
+    """
+    for lang in code_writers.keys():
+        module_name = 'edit_sizers.%s_sizers_codegen' % \
+                      code_writers[lang].lang_prefix
+        try:
+            sizer_module = plugins.import_module(config.wxglade_path,
+                                                 module_name)
+            if not sizer_module:
+                # error already logged
+                pass
+            elif hasattr(sizer_module, 'initialize'):
+                sizer_module.initialize()
+            else:
+                logging.warning(
+                    _('Missing function "initialize()" in imported '
+                      'module %s. Skip initialisation.'), module_name)
+
+        except (AttributeError, ImportError, NameError, SyntaxError,
+                ValueError):
+            logging.exception(
+                _('ERROR loading module "%s"'), module_name)
+        except:
+            logging.exception(
+                _('Unexpected error during import of widget module %s'),
+                module_name
+            )
+
+    # initialise sizer GUI elements
+    import edit_sizers
+    return edit_sizers.init_gui()
 
 
 def load_widgets():
@@ -533,457 +598,32 @@ def load_widgets():
     If widget ZIP files are found, they will be process first and the default
     Python imports will be the second.
 
-    @see: L{load_widgets_from_dir()}
+    @see: L{plugins.load_widgets_from_dir()}
     """
     # load the "built-in" widgets
-    core_buttons = load_widgets_from_dir(
+    core_buttons = plugins.load_widgets_from_dir(
         config.widgets_path,
     )
 
     # load the "user" widgets
-    local_buttons = load_widgets_from_dir(
+    local_buttons = plugins.load_widgets_from_dir(
         config.preferences.local_widget_path,
-        )
+    )
 
     # load (remaining) widget code generators
-    # Python, C++ and XRC are often loaded via load_widgets_from_dir() above
+    # Python, C++ and XRC are often loaded via
+    # plugins.load_widgets_from_dir() above
     for path in [config.widgets_path,
                  config.preferences.local_widget_path]:
         for lang in ['perl', 'lisp']:
             if lang not in code_writers:
                 continue
             codegen_name = '%s_codegen' % code_writers[lang].lang_prefix
-            load_widgets_from_dir(
+            plugins.load_widgets_from_dir(
                 path,
                 submodule=codegen_name,
             )
     return core_buttons, local_buttons
-
-
-def load_widgets_from_dir(widget_dir, submodule=None, logger=None):
-    """\
-    Load and initialise the all widgets listed in widgets.txt in the given
-    directory.
-
-    The names of the modules to import, are read from the file widgets.txt.
-
-    If you need to import a submodule instead, just specify the name of the
-    submodule and "<module name>.<submodule>" will be imported. This is
-    useful to import language specific code generators.
-
-    If wxGlade run in the GUI mode, the imported module returns a
-    wxBitmapButton object. A list of such objects will be returned. In batch
-    mode or if submodules are imported, an empty list will be returned.
-
-    @param widget_dir: Directory to search for widgets
-    @type widget_dir:  str
-
-    @param submodule: Submodule to import
-    @type submodule:  str
-
-    @param logger: Logger instance to use. The default logger will be used,
-                   if no logging instance is given.
-    @type logger:  logging.Logger
-
-    @rtype: list
-
-    @see: L{_import_module()}
-    @see: L{config.use_gui} - for "GUI" or "batch" mode
-    """
-    buttons = []
-
-    if not logger:
-        logger = logging.getLogger()
-
-    is_codegen = bool(submodule and 'codegen' in submodule)
-
-    # test if the "widgets.txt" file exists
-    widgets_filename = os.path.join(widget_dir, 'widgets.txt')
-    if not os.path.isfile(widgets_filename):
-        logger.debug(_('File %s not found.'), widgets_filename)
-        return []
-    try:
-        widgets_file = open(widgets_filename)
-        module_list = widgets_file.readlines()
-        widgets_file.close()
-    except (IOError, OSError), inst:
-        logger.warning(
-            _("Can't read file %s file: %s"),
-            widgets_filename,
-            inst
-        )
-        return []
-
-    # add widget directory to the sys.path
-    if widget_dir not in sys.path:
-        sys.path.append(widget_dir)
-
-    if config.use_gui and not is_codegen:
-        logger.info(_('Found widgets listing -> %s'), widgets_filename)
-        logger.info(_('Loading widget modules:'))
-    for module_name in module_list:
-        module_name = module_name.strip()
-        widget_button = None
-
-        if not module_name or module_name.startswith('#'):
-            continue
-        module_name = module_name.split('#')[0].strip()
-
-        try:
-            if submodule:
-                fqmn = "%s.%s" % (module_name, submodule)
-            else:
-                fqmn = "%s" % module_name
-
-            module = _import_module(widget_dir, fqmn)
-            if not module:
-                logger.info(_('Module %s not found.'), fqmn)
-                continue
-
-            if hasattr(module, 'initialize'):
-                # use individual initialisation
-                widget_button = module.initialize()
-            elif submodule:
-
-                # load and store generic widget details
-                if submodule == 'wconfig':
-                    if hasattr(module, 'config'):
-                        config_dict = getattr(module, 'config')
-
-                        # check mandatory attributes
-                        if 'wxklass' not in config_dict:
-                            logger.warning(
-                                _('Missing mandatory configuration item '
-                                  '"wxklass". Ignoring whole configuration '
-                                  'settings')
-                            )
-                            continue
-                        try:
-                            # process widget related style attributes
-                            style_attrs_to_sets(config_dict['style_defs'])
-                            widget_config[config_dict['wxklass']] = \
-                                config_dict
-                        except KeyError:
-                            pass
-                    else:
-                        logger.debug(
-                            _('Missing configuration in module %s'), fqmn
-                        )
-                        continue
-                elif not hasattr(module, 'initialize'):
-                    logger.warning(
-                        _('Missing function "initialize()" in imported '
-                          'module %s'),
-                        fqmn
-                    )
-                continue
-            else:
-                # use generic initialisation
-                # initialise Python code generator
-                codegen_name = '%s.codegen' % module_name
-                codegen_module = _import_module(widget_dir, codegen_name)
-                codegen_module.initialize()
-
-                # initialise GUI part
-                if config.use_gui:
-                    gui_name = '%s.%s' % (module_name, module_name)
-                    gui_module = _import_module(widget_dir, gui_name)
-                    widget_button = gui_module.initialize()
-            if config.use_gui and widget_button and not submodule:
-                buttons.append(widget_button)
-
-        except (AttributeError, ImportError, NameError, SyntaxError,
-                ValueError):
-            logger.exception(_('ERROR loading module "%s"'), module_name)
-        except:
-            logger.exception(
-                _('Unexpected error during import of widget module %s'),
-                module_name
-            )
-        else:
-            if config.use_gui and not is_codegen:
-                logger.info('\t%s', module_name)
-            else:
-                logger.debug(
-                    _('Widget %s imported'),
-                    module_name,
-                    )
-    return buttons
-
-
-def style_attrs_to_sets(styles):
-    """\
-    Convert the style attributes 'combination', 'exclude', 'include' and
-    'require' from string to a set.
-
-    @param styles: Style dictionary
-    @type styles: dict
-
-    @return: Style dictionary with modified attributes
-    @rtype: dict
-    """
-    for style_name in styles.keys():
-        for attr in ['combination', 'exclude', 'include', 'require', ]:
-            try:
-                styles[style_name][attr] = \
-                    set(styles[style_name][attr].split('|'))
-            except (AttributeError, KeyError):
-                pass
-
-    return styles
-
-
-def _import_module(widget_dir, module):
-    """\
-    Import a single module from a ZIP file or from the directory structure.
-
-    The consistency of ZIP files will be checked by calling L{is_valid_zip()}.
-
-    If widget ZIP files are found, they will be process first and the default
-    Python imports will be the second.
-
-    widget_dir will be added to the Python search path temporarily if it's
-    not path of sys.path already.
-
-    Example::
-        >>> _import_module('./mywidgets', 'static_text')
-       <module 'static_text' from 'mywidgets/static_text.zip/static_text/__init__.pyc'>
-
-    @param widget_dir: Directory to search for widgets
-    @type widget_dir:  str
-
-    @param module: Name of the module to import
-    @type module:  str
-
-    @return: Imported module or None in case of errors
-    @rtype:  Module | None
-
-    @see: L{is_valid_zip()}
-    """
-    # split module name into module name and sub module name
-    basemodule = module.split('.', 1)[0]
-
-    if widget_dir not in sys.path:
-        sys.path.append(widget_dir)
-        remove_widget_dir_from_syspath = True
-    else:
-        remove_widget_dir_from_syspath = False
-
-    zip_filename = os.path.join(widget_dir, '%s.zip' % basemodule)
-    if os.path.exists(zip_filename):
-        # check ZIP file formally
-        if not is_valid_zip(zip_filename, basemodule):
-            logging.warning(
-                _('ZIP file %s is not a valid ZIP file. Ignoring it.'),
-                zip_filename
-            )
-            zip_filename = None
-        else:
-            # add module to Python search path temporarily
-            sys.path.insert(0, zip_filename)
-    else:
-        zip_filename = None
-
-    # import module
-    try:
-        try:
-            imported_module = __import__(module, {}, {},
-                                         ['just_not_empty'])
-            return imported_module
-        except ImportError:
-            logging.info(_('Module %s not found.'), module)
-            return None
-        except (AttributeError, NameError, SyntaxError, ValueError):
-            if zip_filename:
-                logging.exception(
-                    _('Importing widget "%s" from ZIP file %s failed'),
-                    module,
-                    zip_filename
-                )
-            else:
-                logging.exception(
-                    _('Importing widget "%s" failed'),
-                    module
-                )
-            return None
-        except:
-            logging.exception(
-                _('Unexpected error during import of widget module %s'),
-                module
-            )
-            return None
-
-    finally:
-        # remove zip file from Python search path
-        if zip_filename and zip_filename in sys.path:
-            sys.path.remove(zip_filename)
-
-        # remove temporarily added widget_dir from Python search path
-        if remove_widget_dir_from_syspath and widget_dir in sys.path:
-            sys.path.remove(widget_dir)
-
-
-def is_valid_zip(filename, module_name):
-    """\
-    Check the consistency of the given ZIP files. It's a formal check as well
-    as a check of the content.
-
-    @param filename: Name of the ZIP file to check
-    @type filename:  str
-
-    @param module_name: Name of the module to import
-    @type module_name:  str
-
-    @return: True, if the ZIP is a valid widget zip file
-    @rtype:  bool
-    """
-    if not os.path.exists(filename):
-        logging.debug(_('File %s does not exists.'), filename)
-        return False
-
-    if not zipfile.is_zipfile(filename):
-        logging.warning(_('ZIP file %s is not a ZIP file.'), filename)
-        return False
-
-    zfile = None
-    try:
-        try:
-            zfile = zipfile.ZipFile(filename)
-        except zipfile.BadZipfile, inst:
-            logging.warning(
-                _('ZIP file %s is corrupt (%s). Ignoring ZIP file.'),
-                filename,
-                inst
-            )
-            return False
-        except zipfile.LargeZipFile, inst:
-            logging.warning(
-                _('ZIP file %s is bigger than 4GB (%s). Ignoring ZIP file.'),
-                filename,
-                inst
-            )
-            return False
-
-        #  check content of ZIP file
-        zfile = zipfile.ZipFile(filename)
-        content = zfile.namelist()
-        zfile.close()
-
-        # check for codegen.py[co]
-        found_file = False
-        for ext in ['.py', '.pyc', '.pyo']:
-            name = '%s/codegen%s' % (module_name, ext)
-            if name in content:
-                found_file = True
-                break
-        if not found_file:
-            logging.warning(
-                _('Missing file %s/codegen.py[co] in ZIP file %s. Ignoring '
-                  'ZIP file.'),
-                module_name,
-                filename
-            )
-            return False
-
-        # check for GUI module
-        found_file = False
-        for ext in ['.py', '.pyc', '.pyo']:
-            name = '%s/%s%s' % (module_name, module_name, ext)
-            if name in content:
-                found_file = True
-                break
-        if not found_file:
-            logging.warning(
-                _('Missing file %s/%s.py[co] in ZIP file %s. Ignoring '
-                  'ZIP file.'),
-                module_name,
-                module_name,
-                filename
-            )
-            return False
-    finally:
-        if zfile:
-            zfile.close()
-    return True
-
-
-def register(lang, klass_name, code_writer, property_name=None,
-             property_handler=None, widget_name=None):
-    """\
-    Initialise and register widget code generator instance. The property
-    handler will registered additionally.
-
-    @param lang:             Code code_writer language
-    @param klass_name:       wxWidget class name
-    @param code_writer:      Code generator class
-    @param property_name:    Property name
-    @param property_handler: Property handler
-    @param widget_name:      Widget name
-
-    @see: L{codegen.BaseLangCodeWriter.add_widget_handler()}
-    @see: L{codegen.BaseLangCodeWriter.add_property_handler()}
-    """
-    codegen = code_writers[lang]
-    if codegen:
-        codegen.add_widget_handler(klass_name, code_writer)
-        if property_name and property_handler:
-            codegen.add_property_handler(property_name, property_handler,
-                                         widget_name)
-
-
-def load_sizers():
-    """\
-    Load and initialise the sizer support modules.
-
-    @return: A list of BitmapButton objects to handle sizer buttons
-
-    @see: L{edit_sizers}
-    """
-    for lang in code_writers.keys():
-        module_name = 'edit_sizers.%s_sizers_codegen' % \
-                      code_writers[lang].lang_prefix
-        try:
-            codegen_module = _import_module(config.wxglade_path, module_name)
-            codegen_module.initialize()
-        except (AttributeError, ImportError, NameError, SyntaxError,
-                ValueError):
-            logging.exception(_('ERROR loading module "%s"'), module_name)
-        except:
-            logging.exception(
-                _('Unexpected error during import of widget module %s'),
-                module_name
-            )
-
-    # initialise sizer GUI elements
-    import edit_sizers
-    return edit_sizers.init_gui()
-
-
-def init_codegen():
-    """\
-    Load available code generators, core and user widgets as well as sizers
-
-    If wxGlade has been started in GUI mode, the function returns three lists
-    of wxBitmapButton objects to handle them. The first contains the
-    built-in widgets and the second one the user widgets and the third list
-    contains the sizers.
-
-    @return: List of core buttons, list of local buttons and list of sizer
-             buttons
-
-    @see: L{load_config()}
-    @see: L{load_code_writers()}
-    @see: L{load_widgets()}
-    @see: L{load_sizers()}
-    """
-    # process generic related style attributes
-    style_attrs_to_sets(widget_config['generic_styles'])
-    load_config()
-    load_code_writers()
-    core_buttons, local_buttons = load_widgets()
-    sizer_buttons = load_sizers()
-
-    return core_buttons, local_buttons, sizer_buttons
 
 
 def add_object(event):
@@ -1090,6 +730,30 @@ def encode_to_unicode(item):
         item = str(item)
     item = item.decode(app_tree.app.encoding)
     return item
+
+
+def register(lang, klass_name, code_writer, property_name=None,
+             property_handler=None, widget_name=None):
+    """\
+    Initialise and register widget code generator instance. The property
+    handler will registered additionally.
+
+    @param lang:             Code code_writer language
+    @param klass_name:       wxWidget class name
+    @param code_writer:      Code generator class
+    @param property_name:    Property name
+    @param property_handler: Property handler
+    @param widget_name:      Widget name
+
+    @see: L{codegen.BaseLangCodeWriter.add_widget_handler()}
+    @see: L{codegen.BaseLangCodeWriter.add_property_handler()}
+    """
+    codegen = code_writers[lang]
+    if codegen:
+        codegen.add_widget_handler(klass_name, code_writer)
+        if property_name and property_handler:
+            codegen.add_property_handler(property_name, property_handler,
+                                         widget_name)
 
 
 def _smart_checksum(content):
