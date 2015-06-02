@@ -114,18 +114,20 @@ class TestCompile(WXGladeBaseTest):
         abs_filename = self._get_abs_filename(source)
 
         cmd = 'g++ %s %s %s -o %s' % (
-            abs_filename, libs, cxxflags, self._tmpfile
-        )
+            abs_filename, libs, cxxflags, self._tmpfile)
         try:
-            subprocess.check_call(
+            subprocess.check_output(
                 cmd,
                 stderr=subprocess.STDOUT,
-                shell=True
-            )
+                shell=True)
         except subprocess.CalledProcessError, details:
             self.fail(
-                '''Can't compile %s:\n%s''' % (source, details)
-            )
+                '''\
+Can't compile %s:
+Return code: %s
+Command:     %s
+Output:
+%s''' % (source, details.returncode, cmd, details.output))
         self.failUnless(
             os.path.exists(self._tmpfile),
             'The application binary was not created!'
