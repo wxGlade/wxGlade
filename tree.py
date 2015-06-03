@@ -8,6 +8,7 @@ Classes to handle and display the structure of a wxGlade app
 
 import logging
 import os.path
+import types
 import wx
 
 from xml.sax.saxutils import quoteattr
@@ -237,16 +238,16 @@ class Tree(object):
             os.path.expanduser(self.app.output_path.strip()))
         name = self.app.get_name()
         klass = self.app.get_class()
-        option = str(self.app.multiple_files)
+        option = self._to_digit_string(self.app.multiple_files)
         top_window = self.app.get_top_window()
         language = self.app.get_language()
         encoding = self.app.get_encoding()
-        use_gettext = str(int(self.app.use_gettext))
-        is_template = str(int(self.app.is_template))
-        overwrite = str(int(self.app.overwrite))
-        indent_amount = str(int(self.app.indent_amount))
-        indent_symbol = int(self.app.indent_mode)
-        if indent_symbol == 0:
+        use_gettext = self._to_digit_string(self.app.use_gettext)
+        is_template = self._to_digit_string(self.app.is_template)
+        overwrite = self._to_digit_string(self.app.overwrite)
+        indent_amount = self._to_digit_string(self.app.indent_amount)
+        indent_symbol = self._to_digit_string(self.app.indent_mode)
+        if indent_symbol == '0':
             indent_symbol = u"tab"
         else:
             indent_symbol = u"space"
@@ -295,6 +296,33 @@ class Tree(object):
         else:
             del node.parent.children[index]
             node.parent.children.insert(new_pos+1, node)
+
+    def _to_digit_string(self, value):
+        """\
+        Convert the given value to a digit string.
+
+        @param value: Value to convert
+        @type value: str|int|bool
+
+        @rtype: str
+        """
+        if isinstance(value, types.BooleanType):
+            if value:
+                return '1'
+            else:
+                return '0'
+        elif isinstance(value, types.IntType):
+            return '%s' % value
+        elif isinstance(value, types.StringTypes):
+            if value.isdigit():
+                return value
+
+        # log failures
+        logging.warning(
+            _('Failed to convert "%s" (type: %s) to a digit string'),
+            value, type(value))
+
+        return '%s' % value
 
 # end of class Tree
 
