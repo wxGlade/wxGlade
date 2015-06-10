@@ -21,8 +21,6 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
     Class to handle wxCheckListBox objects
     """
 
-    events = ['EVT_CHECKLISTBOX']
-
     def __init__(self, name, parent, id, choices, sizer, pos, property_window,
                  show=True):
 
@@ -111,10 +109,10 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditCheckListBox objects.
     """
-    name = 'list_box_%d' % number[0]
+    name = 'check_list_box_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
-        name = 'list_box_%d' % number[0]
+        name = 'check_list_box_%d' % number[0]
     check_list_box = EditCheckListBox(name, parent, wx.NewId(),
                            #[common.encode_from_xml('choice 1')], sizer, pos,
                            [], sizer, pos,

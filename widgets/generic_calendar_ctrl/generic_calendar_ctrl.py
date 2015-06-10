@@ -21,14 +21,6 @@ class EditGenericCalendarCtrl(ManagedBase, EditStylesMixin):
     Class to handle wxGenericCalendarCtrl objects
     """
 
-    events = [
-        'EVT_CALENDAR',
-        'EVT_CALENDAR_SEL_CHANGED',
-        'EVT_CALENDAR_DAY',
-        'EVT_CALENDAR_MONTH',
-        'EVT_CALENDAR_YEAR',
-        'EVT_CALENDAR_WEEKDAY_CLICKED']
-
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
         # Initialise parent classes
@@ -86,10 +78,10 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditGenericCalendarCtrl objects.
     """
-    label = 'calendar_ctrl_%d' % number[0]
+    label = 'generic_calendar_ctrl_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
-        label = 'calendar_ctrl_%d' % number[0]
+        label = 'generic_calendar_ctrl_%d' % number[0]
     calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer,
                         pos, common.property_panel)
     node = Tree.Node(calendar_ctrl)

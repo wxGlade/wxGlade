@@ -18,22 +18,6 @@ from widget_properties import *
 
 class EditPropertyGridManager(ManagedBase, EditStylesMixin):
 
-    events = [
-        'EVT_PG_SELECTED',
-        'EVT_PG_CHANGED',
-        'EVT_PG_CHANGING',
-        'EVT_PG_HIGHLIGHTED',
-        'EVT_PG_RIGHT_CLICK',
-        'EVT_PG_DOUBLE_CLICK',
-        'EVT_PG_ITEM_COLLAPSED',
-        'EVT_PG_ITEM_EXPANDED',
-        'EVT_PG_LABEL_EDIT_BEGIN',
-        'EVT_PG_LABEL_EDIT_ENDING',
-        'EVT_PG_COL_BEGIN_DRAG',
-        'EVT_PG_COL_DRAGGING',
-        'EVT_PG_COL_END_DRAG',
-        ]
-
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
         """\
@@ -81,10 +65,10 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditPropertyGridManager objects.
     """
-    label = 'grid_%d' % number[0]
+    label = 'property_grid_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
-        label = 'grid_%d' % number[0]
+        label = 'property_grid_%d' % number[0]
     property_grid_manager = EditPropertyGridManager(label, parent, wx.NewId(), sizer, pos,
                     common.property_panel)
     # A grid should be wx.EXPANDed and 'option' should be 1,
