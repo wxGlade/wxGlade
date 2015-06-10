@@ -20,13 +20,16 @@ radio_box
 choice
 combo_box
 list_box
+check_list_box
 calendar_ctrl
+generic_calendar_ctrl
 datepicker_ctrl
 static_line
 static_bitmap
 list_ctrl
 tree_ctrl
 grid
+property_grid_manager
 custom_widget
 menubar
 statusbar
