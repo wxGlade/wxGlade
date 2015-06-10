@@ -34,7 +34,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
-    extra_headers = ['<wx/propgrid/manager.h>']
+    import_modules = ['<wx/propgrid/manager.h>']
 
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
 

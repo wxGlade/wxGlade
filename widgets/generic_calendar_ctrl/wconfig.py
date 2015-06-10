@@ -8,6 +8,7 @@ wxGenericCalendarCtrl widget configuration
 
 config = {
     'wxklass': 'wxGenericCalendarCtrl',
+    'supported_by': ('wx3',),
     'style_defs': {
         'wxCAL_SUNDAY_FIRST': {
             'desc': _('Show Sunday as the first day in the week')
@@ -39,6 +40,17 @@ config = {
                    'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE',
                    'wxCAL_NO_MONTH_CHANGE', 'wxCAL_SHOW_SURROUNDING_WEEKS',
                    'wxCAL_SEQUENTIAL_MONTH_SELECTION'],
+    'events': {
+        'default': {
+            'type': 'wxCalendarEvent',
+        },
+        'EVT_CALENDAR': {},
+        'EVT_CALENDAR_SEL_CHANGED': {},
+        'EVT_CALENDAR_DAY': {},
+        'EVT_CALENDAR_MONTH': {},
+        'EVT_CALENDAR_YEAR': {},
+        'EVT_CALENDAR_WEEKDAY_CLICKED': {},
+    },
 }
 
 

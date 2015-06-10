@@ -44,6 +44,9 @@ config = {
     'style_list': ['wxLB_SINGLE', 'wxLB_MULTIPLE', 'wxLB_EXTENDED',
                    'wxLB_HSCROLL', 'wxLB_ALWAYS_SB', 'wxLB_NEEDED_SB',
                    'wxLB_NO_SB', 'wxLB_SORT'],
+    'events': {
+        'EVT_CHECKLISTBOX': {},
+    },
 }
 
 

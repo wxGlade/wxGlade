@@ -8,6 +8,7 @@ wxCheckListBox widget configuration
 
 config = {
     'wxklass': 'wxPropertyGridManager',
+    'supported_by': ('wx3',),
     'style_defs': {
         'wxPG_AUTO_SORT': {
             'desc': _('This will cause Sort() automatically after an item is added.'),
@@ -55,6 +56,24 @@ config = {
                    'wxPG_HIDE_MARGIN', 'wxPG_STATIC_SPLITTER', 'wxPG_STATIC_LAYOUT',
                    'wxPG_LIMITED_EDITING', 'wxPG_TOOLBAR', 'wxPG_DESCRIPTION',
                    'wxPG_NO_INTERNAL_BORDER'],
+    'events': {
+        'default': {
+            'type': 'wxPropertyGridEvent',
+        },
+        'EVT_PG_SELECTED': {},
+        'EVT_PG_CHANGED': {},
+        'EVT_PG_CHANGING': {},
+        'EVT_PG_HIGHLIGHTED': {},
+        'EVT_PG_RIGHT_CLICK': {},
+        'EVT_PG_DOUBLE_CLICK': {},
+        'EVT_PG_ITEM_COLLAPSED': {},
+        'EVT_PG_ITEM_EXPANDED': {},
+        'EVT_PG_LABEL_EDIT_BEGIN': {},
+        'EVT_PG_LABEL_EDIT_ENDING': {},
+        'EVT_PG_COL_BEGIN_DRAG': {},
+        'EVT_PG_COL_DRAGGING': {},
+        'EVT_PG_COL_END_DRAG': {},
+    },
 }
 
 

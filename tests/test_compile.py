@@ -47,8 +47,12 @@ class TestCompile(WXGladeBaseTest):
                     stderr=subprocess.STDOUT,
                     shell=True
                 )
+                if release.startswith('2.8'):
+                    cmd = "%s --libs" % program
+                else:
+                    cmd = "%s --libs all" % program
                 libs = subprocess.check_output(
-                    "%s --libs" % program,
+                    cmd,
                     stderr=subprocess.STDOUT,
                     shell=True
                 )
