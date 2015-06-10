@@ -27,7 +27,9 @@
  - Jack Thomasson <wxglade@jkt.mailsnare.net>: assist with port to wx namespace
  - Roel van Os <roel.van.os@humanitech.nl>: for some patches integrated
    from his Elentirmo repository
- 
+ - Franco Bugnano <franco@bugnano.it>: Contribute CheckListBox,
+   GenericCalendarCtrl and PropertyGridManager
+
  Many thanks to:
  ---------------------------------------------------------------------------
  - Guido van Rossum and all the people at PSF for the excellent language

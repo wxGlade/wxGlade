@@ -13,6 +13,8 @@ General:
   - Add styles to wxToggleButton
   - Don't rewrite unchanged files
   - Rework creation of wxBitmap code used by several widgets
+  - New widgets CheckListBox, GenericCalendarCtrl and PropertyGridManager
+    contributed by Franco Bugnano
   - ...
 
 Generated Code:
