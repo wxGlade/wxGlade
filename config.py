@@ -214,7 +214,7 @@ Program path, set in wxglade.py
 @type: str
 """
 
-_backed_up = {}
+backed_up = {}
 """\
 Set of file names already backed up during this session
 
