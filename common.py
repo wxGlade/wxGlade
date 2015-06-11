@@ -697,8 +697,8 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         adding_sizer = False
         widget_to_add = None
         import misc
-        if misc._currently_under_mouse is not None:
-            misc._currently_under_mouse.SetCursor(wx.STANDARD_CURSOR)
+        if misc.currently_under_mouse is not None:
+            misc.currently_under_mouse.SetCursor(wx.STANDARD_CURSOR)
         event.Skip()
 
     wx.EVT_CHAR(tmp, on_char)
@@ -795,7 +795,7 @@ def save_file(filename, content, which='wxg'):
     @note: Exceptions that may occur while performing the operations are not
            handled.
 
-    @see: L{config._backed_up}
+    @see: L{config.backed_up}
 
     @param filename: Name of the file to create
     @type filename:  str
@@ -832,14 +832,14 @@ def save_file(filename, content, which='wxg'):
     if chksum_oldcontent == chksum_content:
         return
 
-    need_backup = do_backup and filename not in config._backed_up and \
+    need_backup = do_backup and filename not in config.backed_up and \
         os.path.isfile(filename)
 
     outfile = None
     try:
         if need_backup:
             os.rename(filename, filename + config.preferences.backup_suffix)
-            config._backed_up[filename] = True
+            config.backed_up[filename] = True
 
         # create necessary subdirectories on demand
         directory = os.path.dirname(filename)

@@ -260,7 +260,7 @@ class SizerSlot(object):
 
     def on_enter(self, event):
         # hack. definitely. but...
-        misc._currently_under_mouse = self.widget
+        misc.currently_under_mouse = self.widget
         if common.adding_widget and \
                 (not common.adding_sizer or not self.sizer.is_virtual()):
             self.widget.SetCursor(wx.CROSS_CURSOR)
@@ -269,10 +269,10 @@ class SizerSlot(object):
         event.Skip()
 
     def on_leave(self, event):
-        # _currently_under_mouse is used to restore the normal cursor, if the
+        # currently_under_mouse is used to restore the normal cursor, if the
         # user cancelled the addition of a widget and the cursor is over this
         # slot
-        misc._currently_under_mouse = None
+        misc.currently_under_mouse = None
         event.Skip()
         
     def on_paint(self, event):
@@ -352,8 +352,8 @@ class SizerSlot(object):
 
     def delete(self, delete_widget=True):
         if self.menu: self.menu.Destroy()
-        if misc._currently_under_mouse is self.widget:
-            misc._currently_under_mouse = None
+        if misc.currently_under_mouse is self.widget:
+            misc.currently_under_mouse = None
         if delete_widget and self.widget: self.widget.Destroy()
         if misc.focused_widget is self: misc.focused_widget = None
         common.app_tree.app.saved = False # update the status of the app

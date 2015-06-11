@@ -44,7 +44,7 @@ has been added on 2003-06-22 to fix what seems to me a (wx)GTK2 bug
 
 use_menu_icons = None
 
-_currently_under_mouse = None
+currently_under_mouse = None
 """\
 If not None, this is the SizerSlot wich has the "mouse focus": this is used
 to restore the mouse cursor if the user cancelled the addition of a widget
