@@ -2,7 +2,7 @@ Steps to publish a new version
 ==============================
 
  1. Update documentation e.g. CHANGES.txt, NEWS.txt, README.txt,
-    wxGlade.desktop, wxGlade manual e.g. error section
+    README.SF.md, wxGlade.desktop, wxGlade manual e.g. error section
  2. Change the version number in wxglade-installer.iss. Please check that
     the version is equal to the version in RELEASE-VERSION
  3. Commit all open changes
@@ -31,6 +31,7 @@ Steps to publish a new version
     # make release
 12. Update web page at wxglade.sf.net
     - upload packages to SF
+    - upload README.SF.md to SF
     - update news section in htdocs/bits/news.html
     - update HTML and PDF manual in htdocs/manual
 13. Send notification email to wxGlade mailing list
