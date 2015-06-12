@@ -42,24 +42,12 @@ config = {
         'default': {
             'type': 'wxCalendarEvent',
         },
-        'EVT_CALENDAR': {
-            'type': 'wxCalendarEvent',
-        },
-        'EVT_CALENDAR_SEL_CHANGED': {
-            'type': 'wxCalendarEvent',
-        },
-        'EVT_CALENDAR_DAY': {
-            'type': 'wxCalendarEvent',
-        },
-        'EVT_CALENDAR_MONTH': {
-            'type': 'wxCalendarEvent',
-        },
-        'EVT_CALENDAR_YEAR': {
-            'type': 'wxCalendarEvent',
-        },
-        'EVT_CALENDAR_WEEKDAY_CLICKED': {
-            'type': 'wxCalendarEvent',
-        },
+        'EVT_CALENDAR': {},
+        'EVT_CALENDAR_SEL_CHANGED': {},
+        'EVT_CALENDAR_DAY': {},
+        'EVT_CALENDAR_MONTH': {},
+        'EVT_CALENDAR_YEAR': {},
+        'EVT_CALENDAR_WEEKDAY_CLICKED': {},
     },
 }
 

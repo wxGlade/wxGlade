@@ -66,36 +66,19 @@ config = {
                    'wxSL_RIGHT', 'wxSL_TOP', 'wxSL_BOTTOM',
                    'wxSL_SELRANGE', 'wxSL_INVERSE'],
     'events': {
-        'EVT_COMMAND_SCROLL': {
+        'default': {
             'type': 'wxScrollEvent',
         },
-        'EVT_COMMAND_SCROLL_TOP': {
-            'type': 'wxScrollEvent',
-        },
-        'EVT_COMMAND_SCROLL_BOTTOM': {
-            'type': 'wxScrollEvent',
-        },
-        'EVT_COMMAND_SCROLL_LINEUP': {
-            'type': 'wxScrollEvent',
-        },
-        'EVT_COMMAND_SCROLL_LINEDOWN': {
-            'type': 'wxScrollEvent',
-        },
-        'EVT_COMMAND_SCROLL_PAGEUP': {
-            'type': 'wxScrollEvent',
-        },
-        'EVT_COMMAND_SCROLL_PAGEDOWN': {
-            'type': 'wxScrollEvent',
-        },
-        'EVT_COMMAND_SCROLL_THUMBTRACK': {
-            'type': 'wxScrollEvent',
-        },
-        'EVT_COMMAND_SCROLL_THUMBRELEASE': {
-            'type': 'wxScrollEvent',
-        },
-        'EVT_COMMAND_SCROLL_ENDSCROLL': {
-            'type': 'wxScrollEvent',
-        },
+        'EVT_COMMAND_SCROLL': {},
+        'EVT_COMMAND_SCROLL_TOP': {},
+        'EVT_COMMAND_SCROLL_BOTTOM': {},
+        'EVT_COMMAND_SCROLL_LINEUP': {},
+        'EVT_COMMAND_SCROLL_LINEDOWN': {},
+        'EVT_COMMAND_SCROLL_PAGEUP': {},
+        'EVT_COMMAND_SCROLL_PAGEDOWN': {},
+        'EVT_COMMAND_SCROLL_THUMBTRACK': {},
+        'EVT_COMMAND_SCROLL_THUMBRELEASE': {},
+        'EVT_COMMAND_SCROLL_ENDSCROLL': {},
     },
 }
 
