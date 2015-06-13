@@ -7,9 +7,7 @@ Code generator functions for wxToolBar objects
 """
 
 import common
-import config
 import wcodegen
-import os
 from tool import *
 
 
