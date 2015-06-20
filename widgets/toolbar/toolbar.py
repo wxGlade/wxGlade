@@ -445,7 +445,7 @@ class ToolsProperty(Property):
         self.panel.SetSize(sizer.GetMinSize())
         wx.EVT_BUTTON(self.panel, edit_btn_id, self.edit_tools)
 
-    def bind_event(*args):
+    def bind_event(self, function):
         pass
 
     def edit_tools(self, event):
