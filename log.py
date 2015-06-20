@@ -94,7 +94,7 @@ class StringHandler(logging.handlers.MemoryHandler):
         @see: L{self.encoding}
         """
         # return msg if is already a unicode string or None
-        if type(msg) in [types.UnicodeType, types.NoneType]:
+        if isinstance(msg, (types.UnicodeType, types.NoneType)):
             return msg
 
         # convert character string into a unicode string
@@ -526,7 +526,7 @@ def getMessage(self):
         msg = str(self.msg)
     else:
         msg = self.msg
-        if type(msg) not in (types.UnicodeType, types.StringType):
+        if not isinstance(msg, types.StringTypes):
             try:
                 msg = str(self.msg)
             except UnicodeError:

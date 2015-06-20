@@ -720,7 +720,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         while item.Ok() and index < len(path):
             widget = self.GetPyData(item).widget
             name = path[index]
-            if index == 0 and type(name) == type(()):
+            if index == 0 and isinstance(name, types.TupleType):
                 name, pos = name
             if misc.streq(widget.name, name):
                 #self._logger.debug('OK: %s', widget.name)
