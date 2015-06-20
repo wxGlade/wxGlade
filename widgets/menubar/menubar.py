@@ -502,7 +502,8 @@ class MenuProperty(Property):
         self.panel.SetSize(sizer.GetMinSize())
         wx.EVT_BUTTON(self.panel, edit_btn_id, self.edit_menus)
 
-    def bind_event(*args): pass
+    def bind_event(self, function):
+        pass
 
     def edit_menus(self, event):
         dialog = MenuItemDialog(self.panel, self.owner,
