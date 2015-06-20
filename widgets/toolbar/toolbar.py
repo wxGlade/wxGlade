@@ -19,7 +19,7 @@ from tree import Tree
 from tool import *
 from widget_properties import *
 from edit_windows import EditBase, PreviewMixin, EditStylesMixin
-from wcodegen.mixins import BitmapMixin
+from gui_mixins import BitmapMixin
 
 
 class _MyBrowseButton(FileBrowseButton):

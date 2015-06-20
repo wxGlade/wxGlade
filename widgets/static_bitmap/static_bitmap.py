@@ -13,7 +13,7 @@ import common
 import config
 import misc
 from edit_windows import ManagedBase, EditStylesMixin
-from wcodegen.mixins import BitmapMixin
+from gui_mixins import BitmapMixin
 from tree import Tree
 from widget_properties import *
 

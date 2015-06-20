@@ -14,7 +14,7 @@ import logging
 import os.path
 import types
 from dialogs import *
-from mixins import StylesMixin
+from gui_mixins import StylesMixin
 
 
 class BaseCodeWriter(object):

@@ -16,7 +16,8 @@ import misc
 from tree import Tree
 from widget_properties import *
 from edit_windows import TopLevelBase, EditStylesMixin
-from wcodegen.mixins import BitmapMixin
+from gui_mixins import BitmapMixin
+
 
 class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
 
