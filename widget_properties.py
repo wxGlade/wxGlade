@@ -555,7 +555,7 @@ class CheckListProperty(Property, _activator):
             self.styles = OrderedDict()
             self.styles[widget_writer.box_label] = widget_writer.style_list
         else:
-            self.style_defs = common.widget_config['generic_styles']
+            self.style_defs = config.widget_config['generic_styles']
             self.styles = styles
 
         for box_label in self.styles.keys():

@@ -327,13 +327,13 @@ def format_supported_by(version):
         >>> format_supported_by('wx28')
         '2.8'
 
-    @param version: Version as specified in L{common.widget_config}
+    @param version: Version as specified in L{config.widget_config}
     @type version:  str
 
     @rtype: str
 
     @see: L{wcodegen.BaseWidgetWriter.is_widget_supported()}
-    @see: L{common.widget_config}
+    @see: L{config.widget_config}
     """
     assert isinstance(version, str)
 

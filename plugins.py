@@ -133,12 +133,12 @@ def _get_modulenames_from_file(filename):
 def _process_widget_config(module):
     """\
     Process widget configuration stored in modules 'config' dictionary. The
-    processed configuration will be stored in L{common.widget_config}.
+    processed configuration will be stored in L{config.widget_config}.
 
     @param module: Already imported module
     @type module: module
 
-    @see: L{common.widget_config}
+    @see: L{config.widget_config}
 
     @rtype: bool
     """
@@ -159,7 +159,7 @@ def _process_widget_config(module):
     try:
         # process widget related style attributes
         style_attrs_to_sets(config_dict['style_defs'])
-        common.widget_config[config_dict['wxklass']] = \
+        config.widget_config[config_dict['wxklass']] = \
             config_dict
     except KeyError:
         pass
