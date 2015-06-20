@@ -35,8 +35,10 @@ class StylesMixin(object):
               - Add required flags using the 'require' entry (hard
                 requirement)
          3. Combine flags using the 'combination' entry
-         4. Format single flags with L{cn()} if L{format_flags} is True
-         5. Sort and recombine flags using L{tmpl_flag_join}
+         4. Format single flags with L{wcodegen.BaseLanguageMixin.cn()} if
+            L{wcodegen.BaseLanguageMixin.format_flags} is True
+         5. Sort and recombine flags using
+            L{wcodegen.BaseLanguageMixin.tmpl_flag_join}
 
         The style details are described in L{config.widget_config}. The
         access to the details is only available in widget writer instances.
