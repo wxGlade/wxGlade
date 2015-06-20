@@ -654,16 +654,14 @@ class CheckListProperty(Property, _activator):
         if 'supported_by' not in details:
             return ''
 
-        style_list = \
-            [misc.format_supported_by(version) for version in
-             list(details['supported_by'])]
-        style_list.sort()
-        if len(style_list) == 1:
-            style_text = style_list[0]
+        supported_by = list(details['supported_by'])
+        supported_by.sort()
+        if len(supported_by) == 1:
+            style_text = supported_by[0]
         else:
-            first = style_list[:-1]
-            last = style_list[-1]
-            style_text = _('%s and %s') % (first, last)
+            first = supported_by[:-1]
+            last = supported_by[-1]
+            style_text = _('%s and %s') % (', '.join(first), last)
         info = self._wrap_msg(
             _('This style is only supported on %s\n') %
             style_text
