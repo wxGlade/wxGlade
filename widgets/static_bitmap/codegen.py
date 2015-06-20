@@ -8,8 +8,6 @@ Code generator functions for wxStaticBitmap objects
 
 import common
 import wcodegen
-import config
-import os
 
 
 class PythonStaticBitmapGenerator(wcodegen.PythonWidgetCodeWriter):

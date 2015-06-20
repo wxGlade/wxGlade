@@ -1301,7 +1301,7 @@ class TestCodeGen(WXGladeBaseTest):
         Test check if the widget is supported with the requested version
 
         @see: L{wcodegen.BaseWidgetWriter.is_widget_supported()}
-        @see: L{common.widget_config}
+        @see: L{config.widget_config}
         """
         import wcodegen
         builder = wcodegen.PythonWidgetCodeWriter('test_nonexisting')

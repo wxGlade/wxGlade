@@ -360,7 +360,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     @ivar codegen: Language specific code generator
     @type codegen: Instance of L{codegen.BaseLangCodeWriter}
 
-    @ivar config: Widgets specific configuration (see L{common.widget_config})
+    @ivar config: Widgets specific configuration (see L{config.widget_config})
     @type config: dict
 
     @ivar klass: wxWidgets class name
@@ -610,13 +610,13 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         # Copy non-style settings (Style settings will be handled in
         # StylesMixin fully)
-        if klass and klass in common.widget_config:
+        if klass and klass in config.widget_config:
             self.klass = klass
-            for item in common.widget_config[self.klass]:
+            for item in config.widget_config[self.klass]:
                 if item == 'style_defs':
                     continue
                 self.config[item] = \
-                    copy.deepcopy(common.widget_config[self.klass][item]
+                    copy.deepcopy(config.widget_config[self.klass][item]
                     )
 
         self.codegen = common.code_writers[self.language]
@@ -1153,7 +1153,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         @return: True if the widget is supported by the specified wx version
         @rtype:  bool
 
-        @see: L{common.widget_config}
+        @see: L{config.widget_config}
         """
         assert isinstance(major, types.IntType)
         assert isinstance(minor, (types.IntType, types.NoneType))

@@ -441,7 +441,6 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     Factory to build editor objects from a XML file
     """
-    from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:

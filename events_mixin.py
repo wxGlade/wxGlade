@@ -11,6 +11,7 @@ import wx
 import wx.grid
 
 import re
+import config
 
 from widget_properties import GridProperty
 from xml.sax.saxutils import escape, quoteattr
@@ -143,7 +144,7 @@ class EventsMixin(object):
     def __init__(self):
         self.handlers = {}
         try:
-            self.events = common.widget_config[self.klass]['events'].keys()
+            self.events = config.widget_config[self.klass]['events'].keys()
             if 'default' in self.events:
                 self.events.remove('default')
             self.events.sort()

@@ -10,7 +10,6 @@ wxPropertyGridManager objects
 import wx
 from wx.propgrid import *
 import common
-import misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *

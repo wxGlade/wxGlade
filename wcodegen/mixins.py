@@ -10,7 +10,7 @@ import decorators
 import logging
 import wx
 
-import common
+import config
 import misc
 
 
@@ -38,7 +38,7 @@ class StylesMixin(object):
          4. Format single flags with L{cn()} if L{format_flags} is True
          5. Sort and recombine flags using L{tmpl_flag_join}
 
-        The style details are described in L{common.widget_config}. The
+        The style details are described in L{config.widget_config}. The
         access to the details is only available in widget writer instances.
 
         Sometime the flag is a digit as a string. The function doesn't
@@ -60,7 +60,7 @@ class StylesMixin(object):
         @see: cn()
         @see: format_flags
         @see: tmpl_flag_join
-        @see: L{common.widget_config}
+        @see: L{config.widget_config}
         """
         assert isinstance(flags, str)
         if flags.isdigit():
@@ -107,8 +107,8 @@ class StylesMixin(object):
         styles = {}
         # Use always a deep-copy to prevent changing original data
         try:
-            styles = copy.deepcopy(common.widget_config['generic_styles'])
-            styles.update(common.widget_config[widget_name]['style_defs'])
+            styles = copy.deepcopy(config.widget_config['generic_styles'])
+            styles.update(config.widget_config[widget_name]['style_defs'])
         except KeyError:
             pass
 
@@ -117,13 +117,13 @@ class StylesMixin(object):
     def _get_style_defs(self):
         """\
         Return all styles related to this widget. This includes generic
-        styles from L{common.widget_config}.
+        styles from L{config.widget_config}.
 
         The implementation has moved to L{_get_widget_styles_defs()} to use a
         simple cache decorator instead of using an own cache implementation.
 
         @rtype: dict
-        @see: L{common.widget_config}
+        @see: L{config.widget_config}
         @see: L{_get_widget_styles_defs()}
         """
         return self._get_widget_styles_defs(getattr(self, 'klass', None))
@@ -144,7 +144,7 @@ class StylesMixin(object):
         @return: Processed flags
         @rtype: set
 
-        @see: L{common.widget_config}
+        @see: L{config.widget_config}
         """
         assert isinstance(flags, set)
 
@@ -217,7 +217,7 @@ class StylesMixin(object):
         @return: Processed flags
         @rtype: set
 
-        @see: L{common.widget_config}
+        @see: L{config.widget_config}
         """
         # processing empty set()s causes later trouble with
         # set([<filled>]) >= set()

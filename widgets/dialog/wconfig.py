@@ -28,7 +28,7 @@ config = {
             'desc': 'Display a thick frame around the window.',
             'rename_to': 'wxRESIZE_BORDER',
         },
-        # wxNO_3D -> common.widget_config
+        # wxNO_3D -> config.widget_config
         'wxDIALOG_NO_PARENT': {
             'desc': _("By default, a dialog created with a NULL parent "
                       "window will be given the application's top level "
