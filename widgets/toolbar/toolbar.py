@@ -73,8 +73,8 @@ class ToolsDialog(wx.Dialog):
                                  # wxListCtrl 
         self.tool_items.InsertColumn(0, _("Label"))
         self.tool_items.InsertColumn(1, _("Id"))
-        self.tool_items.InsertColumn(2, _("Normal Bitmap"))
-        self.tool_items.InsertColumn(3, _("Second Bitmap"))
+        self.tool_items.InsertColumn(2, _("Primary Bitmap"))
+        self.tool_items.InsertColumn(3, _("Disabled Bitmap"))
         self.tool_items.InsertColumn(4, _("Short Help"))
         self.tool_items.InsertColumn(5, _("Long Help"))
         self.tool_items.InsertColumn(6, _("Type"))
@@ -97,10 +97,10 @@ class ToolsDialog(wx.Dialog):
         self.handler_re = re.compile(r'^\s*\w*\s*$')
 
         self.bitmap1 = _MyBrowseButton(
-            self, BITMAP1_ID, labelText=_('Normal Bitmap'), buttonText='...',
+            self, BITMAP1_ID, labelText=_('Primary Bitmap'), buttonText='...',
             changeCallback=self.update_tool)
         self.bitmap2 = _MyBrowseButton(
-            self, BITMAP2_ID, labelText=_('Second Bitmap'), buttonText='...',
+            self, BITMAP2_ID, labelText=_('Disabled Bitmap'), buttonText='...',
             changeCallback=self.update_tool)
         self.check_radio = wx.RadioBox(
             self, CHECK_RADIO_ID, _("Type"),
