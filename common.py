@@ -132,7 +132,7 @@ def init_codegen():
     @see: L{load_sizers()}
     """
     # process generic related style attributes
-    plugins.style_attrs_to_sets(config.widget_config['generic_styles'])
+    style_attrs_to_sets(config.widget_config['generic_styles'])
     load_config()
     load_code_writers()
     core_buttons, local_buttons = load_widgets()
@@ -920,3 +920,25 @@ class Preferences(ConfigParser.ConfigParser):
         return None
 
 # end of class Preferences
+
+
+def style_attrs_to_sets(styles):
+    """\
+    Convert the style attributes 'combination', 'exclude', 'include' and
+    'require' from string to a set.
+
+    @param styles: Style dictionary
+    @type styles: dict
+
+    @return: Style dictionary with modified attributes
+    @rtype: dict
+    """
+    for style_name in styles.keys():
+        for attr in ['combination', 'exclude', 'include', 'require', ]:
+            try:
+                styles[style_name][attr] = \
+                    set(styles[style_name][attr].split('|'))
+            except (AttributeError, KeyError):
+                pass
+
+    return styles

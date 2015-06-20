@@ -158,7 +158,7 @@ def _process_widget_config(module):
 
     try:
         # process widget related style attributes
-        style_attrs_to_sets(config_dict['style_defs'])
+        common.style_attrs_to_sets(config_dict['style_defs'])
         config.widget_config[config_dict['wxklass']] = \
             config_dict
     except KeyError:
@@ -210,28 +210,6 @@ def _init_codegen_gui(widget_dir, widget_name):
         widget_button = gui_module.initialize()
 
     return True, widget_button
-
-
-def style_attrs_to_sets(styles):
-    """\
-    Convert the style attributes 'combination', 'exclude', 'include' and
-    'require' from string to a set.
-
-    @param styles: Style dictionary
-    @type styles: dict
-
-    @return: Style dictionary with modified attributes
-    @rtype: dict
-    """
-    for style_name in styles.keys():
-        for attr in ['combination', 'exclude', 'include', 'require', ]:
-            try:
-                styles[style_name][attr] = \
-                    set(styles[style_name][attr].split('|'))
-            except (AttributeError, KeyError):
-                pass
-
-    return styles
 
 
 def import_module(widget_dir, module_name):
@@ -364,6 +342,7 @@ def is_valid_zip(filename, module_name):
               'ZIP file.'), module_name, module_name, filename)
         return False
     return True
+
 
 def _get_zipfile_filelist(filename):
     """\
