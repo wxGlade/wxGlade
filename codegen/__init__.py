@@ -2819,10 +2819,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
         code_list.append(
             '%s begin wxGlade: %s' % (self.comment_sign, tag)
             )
-        if type(content) == types.ListType:
+        if isinstance(content, types.ListType):
             for entry in content:
                 code_list.append(entry.rstrip())
-        elif type(content) in types.StringTypes:
+        elif isinstance(content, types.StringTypes):
             # don't append empty content
             _content = content.rstrip()
             if _content:

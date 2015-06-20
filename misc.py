@@ -210,7 +210,7 @@ class UnicodeStringIO(object):
         self.encoding = encoding
 
     def write(self, data):
-        if self.encoding is not None and type(data) == type(u''):
+        if self.encoding is not None and isinstance(data, types.UnicodeType):
             data = data.encode(self.encoding)
         self.out.write(data)
 
@@ -479,7 +479,7 @@ def streq(s1, s2):
     try:
         return s1 == s2
     except UnicodeError:
-        if type(s1) == type(u''):
+        if isinstance(s1, types.UnicodeType):
             s1 = s1.encode(common.app_tree.app.encoding)
         else:
             s2 = s2.encode(common.app_tree.app.encoding)
@@ -499,12 +499,12 @@ def wxstr(s, encoding=None):
         else:
             encoding = common.app_tree.app.encoding
     if wx.USE_UNICODE:
-        if type(s) != type(u''):
+        if not isinstance(s, types.UnicodeType):
             return unicode(str(s), encoding)
         else:
             return s
     else:
-        if type(s) == type(u''):
+        if isinstance(s, types.UnicodeType):
             return s.encode(encoding)
         else:
             return str(s)
