@@ -1485,7 +1485,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         return '%s = %s' % (name, val), name
 
     def generate_code_size(self, obj):
-        objname = self._get_code_name(obj)
+        objname = self.format_generic_access(obj)
         if obj.is_toplevel:
             name2 = 'this'
         else:
@@ -1513,7 +1513,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         else:
             return 'wxT("%s")' % s
 
-    def _get_code_name(self, obj):
+    def format_generic_access(self, obj):
         if obj.is_toplevel:
             return ''
         else:

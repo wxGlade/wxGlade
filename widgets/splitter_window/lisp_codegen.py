@@ -25,11 +25,7 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
 
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
-
-        if not window.parent.is_toplevel:
-            parent = '(slot-%s obj)' % window.parent.name
-        else:
-            parent = '(slot-top-window obj)'
+        parent = self.format_widget_access(window.parent)
 
         if window.is_toplevel:
             l = []

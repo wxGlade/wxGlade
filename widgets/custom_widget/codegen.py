@@ -54,10 +54,7 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
             return self.get_code_preview(widget)
         prop = widget.properties
         id_name, id = self.codegen.generate_code_id(widget)
-        if not widget.parent.is_toplevel:
-            parent = 'self.%s' % widget.parent.name
-        else:
-            parent = 'self'
+        parent = self.format_widget_access(widget.parent)
         init = []
         if id_name: init.append(id_name)
         arguments = _fix_arguments(
@@ -73,10 +70,7 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         return init, props_buf, []
 
     def get_code_preview(self, widget):
-        if not widget.parent.is_toplevel:
-            parent = 'self.%s' % widget.parent.name
-        else:
-            parent = 'self'
+        parent = self.format_widget_access(widget.parent)
         init = []
         append = init.append
         append('self.%s = wx.Window(%s, -1)\n' % (widget.name, parent))
@@ -118,8 +112,10 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             ids = [id_name]
         else:
             ids = []
-        if not widget.parent.is_toplevel: parent = '%s' % widget.parent.name
-        else: parent = 'this'
+        if not widget.parent.is_toplevel:
+            parent = '%s' % widget.parent.name
+        else:
+            parent = 'this'
         arguments = _fix_arguments(
             prop.get('arguments', []), parent, id,
             prop.get('size', '-1, -1').strip())

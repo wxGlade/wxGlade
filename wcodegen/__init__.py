@@ -622,6 +622,9 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.codegen = common.code_writers[self.language]
         self._reset_vars()
 
+    def format_widget_access(self, obj):
+        return self.codegen.format_generic_access(obj)
+
     def stmt2list(self, stmt):
         """\
         Split a code statement into a list by conserving tailing newlines
@@ -1248,6 +1251,12 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
             ids = []
 
         return init, ids, props_buf, layout
+
+    def format_widget_access(self, obj):
+        if obj.is_toplevel:
+            return 'this'
+        else:
+            return '%s' % obj.name
 
     def _prepare_bitmap(self, obj):
         super(CppWidgetCodeWriter, self)._prepare_bitmap(obj)

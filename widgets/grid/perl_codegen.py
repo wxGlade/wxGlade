@@ -15,10 +15,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
     def get_code(self, obj):
         id_name, id = self.codegen.generate_code_id(obj)
-        if not obj.parent.is_toplevel:
-            parent = '$self->{%s}' % obj.parent.name
-        else:
-            parent = '$self'
+        parent = self.format_widget_access(obj.parent)
         init = []
         if id_name:
             init.append(id_name)
@@ -36,9 +33,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         out = []
-        name = '$self'
-        if not obj.is_toplevel:
-            name += '->{%s}' % obj.name
+        name = self.format_widget_access(obj)
         prop = obj.properties
 
         try:

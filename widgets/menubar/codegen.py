@@ -87,10 +87,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                                     self.codegen.quote_str(item.help_str)))
         #self._logger.debug('menus = %s', menus)
 
-        if obj.is_toplevel:
-            obj_name = 'self'
-        else:
-            obj_name = 'self.' + obj.name
+        obj_name = self.format_widget_access(obj)
 
         for m in menus:
             menu = m.root
@@ -303,15 +300,13 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                                (menu, id, self.codegen.quote_str(item.label),
                                 self.codegen.quote_str(item.help_str)))
 
-        if obj.is_toplevel:
-            obj_name = ''
-        else:
-            obj_name = obj.name + '->'
+        obj_name = self.codegen.format_generic_access(obj)
 
         i = 1
         for m in menus:
             menu = m.root
-            if menu.name: name = menu.name
+            if menu.name:
+                name = menu.name
             else:
                 name = 'wxglade_tmp_menu_%s' % i
                 i += 1

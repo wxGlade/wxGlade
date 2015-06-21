@@ -539,7 +539,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             self, builder, code_obj, is_new, tab)
 
     def generate_code_size(self, obj):
-        objname = self._get_code_name(obj)
+        objname = self.format_generic_access(obj)
         size = obj.properties.get('size', '').strip()
         use_dialog_units = (size[-1] == 'd')
         if not obj.parent:
@@ -630,7 +630,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             )
         return filename
 
-    def _get_code_name(self, obj):
+    def format_generic_access(self, obj):
         if obj.is_toplevel:
             return 'self'
         else:
