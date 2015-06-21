@@ -360,7 +360,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
       - L{generate_code_foreground()}
       - L{generate_code_id()}
       - L{generate_code_size()}
-      - L{_get_code_name()}
+      - L{format_generic_access()}
       - L{_code_statements}
 
     A code writer object B{could} implement those interfaces and set those
@@ -1787,7 +1787,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             self.warning(msg)
             return msg
 
-        objname = self._get_code_name(obj)
+        objname = self.format_generic_access(obj)
         color = self._get_colour(obj.properties['background'])
         stmt = tmpl % {
             'objname': objname,
@@ -1954,7 +1954,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         tmpl = self._get_code_statement('extraproperties')
         if not tmpl:
             return []
-        objname = self._get_code_name(obj)
+        objname = self.format_generic_access(obj)
         prop = obj.properties['extraproperties']
 
         ret = []
@@ -1994,7 +1994,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             self.warning(msg)
             return msg
 
-        objname = self._get_code_name(obj)
+        objname = self.format_generic_access(obj)
         cnfont = self.cn('wxFont')
         font = obj.properties['font']
         family = self.cn(font['family'])
@@ -2033,7 +2033,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             self.warning(msg)
             return msg
 
-        objname = self._get_code_name(obj)
+        objname = self.format_generic_access(obj)
         color = self._get_colour(obj.properties['foreground'])
         stmt = tmpl % {
             'objname': objname,
@@ -2563,7 +2563,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         else:
             raise AssertionError("Unknown property name: %s" % prop_name)
 
-        objname = self._get_code_name(obj)
+        objname = self.format_generic_access(obj)
         stmt = tmpl % {
             'objname': objname,
             'tooltip': value,
@@ -2609,10 +2609,11 @@ It is available for wx versions %(supported_versions)s only.""") % {
             
         return self._code_statements[prop_name_use]
 
-    def _get_code_name(self, obj):
+    def format_generic_access(self, obj):
         """\
-        Returns the language specific name of the variable e.g. C{self}
-        or C{$self}.
+        Format a generic and language specific access to the given object.
+
+        For example: C{self}, C{$self} or C{$self->}.
 
         @rtype: str
         """

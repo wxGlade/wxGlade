@@ -22,10 +22,7 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
             scrollable = False
 
         id_name, id = self.codegen.generate_code_id(panel)
-        if not panel.parent.is_toplevel:
-            parent = '(slot-%s obj)' % panel.parent.name
-        else:
-            parent = '(slot-top-window obj)'
+        parent = self.format_widget_access(panel.parent)
 
         if panel.is_toplevel:
             l = []

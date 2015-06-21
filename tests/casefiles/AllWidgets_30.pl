@@ -50,7 +50,7 @@ sub new {
     my $wxglade_tmp_menu;
     $wxglade_tmp_menu = Wx::Menu->new();
     $wxglade_tmp_menu->Append(wxID_OPEN, _T("Exit"), _T("Finish program"));
-    $self->{_T("All_Widgets_menubar")}->Append($wxglade_tmp_menu, _T("File"));
+    $self->{All_Widgets_menubar}->Append($wxglade_tmp_menu, _T("File"));
     $self->SetMenuBar($self->{All_Widgets_menubar});
     
     # Menu Bar end

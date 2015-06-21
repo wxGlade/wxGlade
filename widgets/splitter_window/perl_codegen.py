@@ -25,11 +25,7 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
 
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
-
-        if not window.parent.is_toplevel:
-            parent = '$self->{%s}' % window.parent.name
-        else:
-            parent = '$self'
+        parent = self.format_widget_access(window.parent)
 
         if window.is_toplevel:
             l = []

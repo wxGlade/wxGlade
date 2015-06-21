@@ -30,10 +30,7 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
                                 (window.name, tab_win,
                                  self.codegen.quote_str(label)))
 
-        if not window.parent.is_toplevel:
-            parent = '$self->{%s}' % window.parent.name
-        else:
-            parent = '$self'
+        parent = self.format_widget_access(window.parent)
 
         if window.is_toplevel:
             klass = window.base

@@ -21,7 +21,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         out = []
         append = out.append
 
-        obj_name = self.codegen._get_code_name(obj)
+        obj_name = self.format_widget_access(obj)
         
         bitmapsize = prop.get('bitmapsize')
         if bitmapsize:
@@ -57,7 +57,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         tools = obj.properties['toolbar']
         ids = []
 
-        obj_name = self.codegen._get_code_name(obj)
+        obj_name = self.codegen.format_generic_access(obj)
 
         for tool in tools:
             if tool.id == '---': # item is a separator

@@ -536,7 +536,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return 'global %s; %s = %s\n' % (name, name, val), name
 
     def generate_code_size(self, obj):
-        objname = self._get_code_name(obj)
+        objname = self.format_generic_access(obj)
         size = obj.properties.get('size', '').strip()
         use_dialog_units = (size[-1] == 'd')
         if not obj.parent:
@@ -612,7 +612,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             )
         return filename
 
-    def _get_code_name(self, obj):
+    def format_generic_access(self, obj):
         if obj.is_toplevel:
             return '(slot-top-window obj)'
         else:

@@ -72,16 +72,15 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                                 self.codegen.quote_str(item.help_str)))
         #self._logger.debug('menus = %s', menus)
 
-        if obj.is_toplevel:
-            obj_name = '$self'
-        else:
-            obj_name = '$self->{%s}' % self.codegen.quote_key(obj.name)
+        obj_name = self.format_widget_access(obj)
 
         append('my $wxglade_tmp_menu;\n')  # NOTE below name =
         for m in menus:
             menu = m.root
-            if menu.name: name = '$self->{%s}' % self.codegen.quote_key(menu.name)
-            else: name = '$wxglade_tmp_menu'
+            if menu.name:
+                name = '$self->{%s}' % menu.name
+            else:
+                name = '$wxglade_tmp_menu'
             append('%s = Wx::Menu->new();\n' % name)
             if menu.children:
                 append_items(name, menu.children)

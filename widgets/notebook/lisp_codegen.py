@@ -36,10 +36,7 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
                     )
                 )
 
-        if not window.parent.is_toplevel:
-            parent = '(slot-%s obj)' % window.parent.name
-        else:
-            parent = '(slot-top-window obj)'
+        parent = self.format_widget_access(window.parent)
 
         if window.is_toplevel:
             l = []

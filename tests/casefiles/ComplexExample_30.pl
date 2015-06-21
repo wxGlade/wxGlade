@@ -44,10 +44,10 @@ sub new {
     $wxglade_tmp_menu = Wx::Menu->new();
     $wxglade_tmp_menu->Append(wxID_OPEN, _T("&Open"), "");
     $wxglade_tmp_menu->Append(wxID_EXIT, _T("&Quit"), "");
-    $self->{_T("Mp3_To_Ogg_menubar")}->Append($wxglade_tmp_menu, _T("&File"));
+    $self->{Mp3_To_Ogg_menubar}->Append($wxglade_tmp_menu, _T("&File"));
     $wxglade_tmp_menu = Wx::Menu->new();
     $wxglade_tmp_menu->Append(wxID_ABOUT, _T("&About"), _T("About dialog"));
-    $self->{_T("Mp3_To_Ogg_menubar")}->Append($wxglade_tmp_menu, _T("&Help"));
+    $self->{Mp3_To_Ogg_menubar}->Append($wxglade_tmp_menu, _T("&Help"));
     $self->SetMenuBar($self->{Mp3_To_Ogg_menubar});
     
     # Menu Bar end

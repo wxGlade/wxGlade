@@ -58,7 +58,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         tools = obj.properties['toolbar']
         ids = []
 
-        obj_name = self.codegen._get_code_name(obj)
+        obj_name = self.format_widget_access(obj)
 
         for tool in tools:
             if tool.id == '---':  # item is a separator
@@ -87,7 +87,6 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         
         return ids + out
 
-
     def get_code(self, obj):
         """\
         function that generates Lisp code for the toolbar of a wxFrame.
@@ -101,10 +100,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
             style += "|wxTB_HORIZONTAL"
             style = self.cn_f(style)
 
-        if not obj.parent.is_toplevel:
-            parent = '(slot-%s obj)' % obj.parent.name
-        else:
-            parent = '(slot-top-window obj)'
+        parent = self.format_widget_access(obj.parent)
 
         init = [
             '\n\t;;; Tool Bar\n',

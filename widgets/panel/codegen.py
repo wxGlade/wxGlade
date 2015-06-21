@@ -18,10 +18,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
         except:
             scrollable = False
         id_name, id = self.codegen.generate_code_id(panel)
-        if not panel.parent.is_toplevel:
-            parent = 'self.%s' % panel.parent.name
-        else:
-            parent = 'self'
+        parent = self.format_widget_access(panel.parent)
         if panel.is_toplevel:
             l = []
             if id_name: l.append(id_name)

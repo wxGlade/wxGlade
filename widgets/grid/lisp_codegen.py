@@ -15,10 +15,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_code(self, obj):
         id_name, id = self.codegen.generate_code_id(obj)
-        if not obj.parent.is_toplevel:
-            parent = '(slot-%s obj)' % obj.parent.name
-        else:
-            parent = '(slot-top-window obj)'
+        parent = self.format_widget_access(obj.parent)
         init = []
         if id_name:
             init.append(id_name)

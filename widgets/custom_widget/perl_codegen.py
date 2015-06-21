@@ -17,13 +17,8 @@ class PerlCustomWidgetGenerator(wcodegen.PerlWidgetCodeWriter):
         init = []
         prop = widget.properties
         id_name, id = self.codegen.generate_code_id(widget)
+        parent = self.format_widget_access(widget.parent)
 
-        if not widget.parent.is_toplevel:
-            parent = '$self->{%s}' % widget.parent.name
-        else:
-            parent = '$self'
-
-        
         if id_name:
             init.append(id_name)
         arguments = _fix_arguments(prop.get('arguments', []),

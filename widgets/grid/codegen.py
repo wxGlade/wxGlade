@@ -67,10 +67,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def get_code(self, obj):
         id_name, id = self.codegen.generate_code_id(obj)
-        if not obj.parent.is_toplevel:
-            parent = 'self.%s' % obj.parent.name
-        else:
-            parent = 'self'
+        parent = self.format_widget_access(obj.parent)
         init = []
         if id_name:
             init.append(id_name)
@@ -84,9 +81,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         out = []
-        name = 'self'
-        if not obj.is_toplevel:
-            name += '.%s' % obj.name
+        name = self.format_widget_access(obj)
         prop = obj.properties
 
         try:
@@ -162,10 +157,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
             ids = [id_name]
         else:
             ids = []
-        if not obj.parent.is_toplevel:
-            parent = '%s' % obj.parent.name
-        else:
-            parent = 'this'
+        parent = self.format_widget_access(obj.parent)
         init = ['%s = new %s(%s, %s);\n' % (obj.name, obj.klass, parent, id)]
         props_buf = self.get_properties_code(obj)
         return init, ids, props_buf, []
