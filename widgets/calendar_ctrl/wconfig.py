@@ -42,6 +42,7 @@ config = {
     'style_list': ['wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST',
                    'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE',
                    'wxCAL_NO_MONTH_CHANGE', 'wxCAL_SHOW_SURROUNDING_WEEKS',
+                   'wxCAL_SHOW_WEEK_NUMBERS',
                    'wxCAL_SEQUENTIAL_MONTH_SELECTION'],
     'events': {
         'default': {
