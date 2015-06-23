@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2014-04-03</date>
+    <date>2015-04-03</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -2554,6 +2554,10 @@ if __name__ == "__main__":
         <para>This produces a <classname>wxStaticText</classname>. In the
         properties window you can enter the text, set the style and tell
         wxGlade whether to store the control as an attribute.</para>
+
+        <para>XXX</para>
+
+        <para>http://wxpython-users.1045709.n5.nabble.com/wx-StaticText-problem-td2361234.html</para>
       </section>
 
       <section id="widgets.textctrl.section">
