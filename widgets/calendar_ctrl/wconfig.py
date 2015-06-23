@@ -32,6 +32,11 @@ config = {
             'desc': _('Use alternative, more compact, style for the month '
                       'and year selection controls.')
         },
+        'wxCAL_SHOW_WEEK_NUMBERS': {
+            'desc': _('Show week numbers on the left side of the calendar. '
+                      '(not in generic)'),
+            'supported_by': ('wx3',),
+        },
     },
     'box_label': _('Style'),
     'style_list': ['wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST',
@@ -48,6 +53,12 @@ config = {
         'EVT_CALENDAR_MONTH': {},
         'EVT_CALENDAR_YEAR': {},
         'EVT_CALENDAR_WEEKDAY_CLICKED': {},
+        'EVT_CALENDAR_PAGE_CHANGED': {
+            'supported_by': ('wx3',),
+        },
+        'EVT_CALENDAR_WEEK_CLICKED': {
+            'supported_by': ('wx3',),
+        },
     },
 }
 
