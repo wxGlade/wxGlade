@@ -1,8 +1,16 @@
 """
 Parsers used to load an app and to generate the code from a XML file.
 
-NOTE: custom tag handler interface (called by XmlWidgetBuilder)::
+Custom tag handler interface called by CodeWriter::
+    class CustomTagHandler:
+         def start_elem(self, name, attrs):
+             pass
+         def end_elem(self, name, obj):
+             return True -> the handler must be removed from the Stack
+         def char_data(self, data):
+             return False -> no further processing needed
 
+Custom tag handler interface called by XmlWidgetBuilder::
     class CustomTagHandler:
          def start_elem(self, name, attrs):
              pass
@@ -10,6 +18,7 @@ NOTE: custom tag handler interface (called by XmlWidgetBuilder)::
              return True -> the handler must be removed from the Stack
          def char_data(self, data):
              return False -> no further processing needed
+
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2015 Carsten Grohmann
