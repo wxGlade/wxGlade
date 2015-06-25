@@ -182,57 +182,8 @@ def init_stage1():
     common.init_paths()
 
     # initialise own logging extensions
-    log.init(
-        filename=config.log_file,
-        encoding='utf-8',
-        level='INFO',
-        )
+    log.init(filename=config.log_file, encoding='utf-8', level='INFO')
     atexit.register(log.deinit)
-
-    # initialise localization
-    encoding = None
-    try:
-        locale.setlocale(locale.LC_ALL, '')
-    except locale.Error:
-        # ignore problems by fallback to ascii
-        logging.warning(
-            _('Setting locale failed. Use "ascii" instead')
-            )
-        encoding = 'ascii'
-
-    # try to query character encoding used in the selected locale
-    if not encoding and hasattr(locale, 'nl_langinfo'):
-        try:
-            encoding = locale.nl_langinfo(locale.CODESET)
-        except AttributeError, e:
-            logging.warning(
-                _('locale.nl_langinfo(locale.CODESET) failed: %s'),
-                str(e)
-                )
-
-    # try getdefaultlocale, it used environment variables
-    if not encoding:
-        try:
-            encoding = locale.getdefaultlocale()[1]
-        except ValueError:
-            encoding = config.default_encoding
-
-    # On Mac OS X encoding may None or '' somehow
-    if not encoding:
-        encoding = config.default_encoding
-        logging.warning(
-            _('Empty encoding. Use "%s" instead'), encoding
-            )
-
-    # check if a codec for the encoding exists
-    try:
-        codecs.lookup(encoding)
-    except LookupError:
-        logging.warning(
-            _('No codec for encoding "%s" found. Use "ascii" instead'),
-            encoding
-            )
-        encoding = 'ascii'
 
     # print versions
     logging.info(
@@ -240,16 +191,6 @@ def init_stage1():
         config.version,
         config.py_version,
         )
-
-    # show current locale
-    loc_langcode, loc_encoding = locale.getlocale()
-    logging.info(_('Current locale settings are:'))
-    logging.info(_('  Language code: %s'), loc_langcode)
-    logging.info(_('  Encoding: %s'), loc_encoding)
-    logging.info(_('  Filesystem encoding: %s'), sys.getfilesystemencoding())
-
-    # store determined encoding
-    config.encoding = encoding.upper()
 
     # print used paths
     logging.info(_('Base directory:             %s'), config.wxglade_path)
@@ -268,6 +209,56 @@ def init_stage1():
 
     # adapt application search path
     sys.path = [config.wxglade_path, config.widgets_path] + sys.path
+
+
+def init_localization():
+    """
+    Initialise localization
+    """
+    encoding = None
+    try:
+        locale.setlocale(locale.LC_ALL, '')
+    except locale.Error:
+        # ignore problems by fallback to ascii
+        logging.warning(_('Setting locale failed. Use "ascii" instead'))
+        encoding = 'ascii'
+
+    # try to query character encoding used in the selected locale
+    if not encoding and hasattr(locale, 'nl_langinfo'):
+        try:
+            encoding = locale.nl_langinfo(locale.CODESET)
+        except AttributeError, e:
+            logging.warning(
+                _('locale.nl_langinfo(locale.CODESET) failed: %s'), str(e))
+
+    # try getdefaultlocale, it used environment variables
+    if not encoding:
+        try:
+            encoding = locale.getdefaultlocale()[1]
+        except ValueError:
+            encoding = config.default_encoding
+
+    # On Mac OS X encoding may None or '' somehow
+    if not encoding:
+        encoding = config.default_encoding
+        logging.warning(_('Empty encoding. Use "%s" instead'), encoding)
+
+    # check if a codec for the encoding exists
+    try:
+        codecs.lookup(encoding)
+    except LookupError:
+        logging.warning(
+            _('No codec for encoding "%s" found. Use "ascii" instead'),
+            encoding)
+        encoding = 'ascii'
+
+    # store determined encoding and show current locale
+    config.encoding = encoding.upper()
+    loc_langcode, loc_encoding = locale.getlocale()
+    logging.info(_('Current locale settings are:'))
+    logging.info(_('  Language code: %s'), loc_langcode)
+    logging.info(_('  Encoding: %s'), loc_encoding)
+    logging.info(_('  Filesystem encoding: %s'), sys.getfilesystemencoding())
 
 
 def init_stage2(use_gui):
@@ -321,6 +312,7 @@ def run_main():
 
     # initialise wxGlade (first stage and second stage)
     init_stage1()
+    init_localization()
     init_stage2(options.start_gui)
 
     if options.start_gui:

@@ -87,7 +87,7 @@ The default application L{default_encoding} is the fallback only.
 
 @type: str | None
 @see: L{default_encoding}
-@see: L{wxglade.init_stage1()}
+@see: L{wxglade.init_localization()}
 """
 
 for_version = (2, 8)

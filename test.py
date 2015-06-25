@@ -58,6 +58,7 @@ def run_tests():
     # other details
     logging.disable(999)
     wxglade.init_stage1()
+    wxglade.init_localization()
     wxglade.init_stage2(options.kind == 'gui')
 
     # select proper wxversion
