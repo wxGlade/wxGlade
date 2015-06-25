@@ -236,7 +236,7 @@ def init_stage1():
 
     # print versions
     logging.info(
-        _("Starting wxGlade version %s on Python %s"),
+        _('Starting wxGlade version "%s" on Python %s'),
         config.version,
         config.py_version,
         )
@@ -319,17 +319,8 @@ def run_main():
     # check command line parameters first
     options = parse_command_line()
 
-    # initialise wxGlade (first stage)
+    # initialise wxGlade (first stage and second stage)
     init_stage1()
-
-    # print versions
-    logging.info(
-        _("Starting wxGlade version %s on Python %s"),
-        config.version,
-        config.py_version,
-    )
-
-    # initialise wxGlade (second stage)
     init_stage2(options.start_gui)
 
     if options.start_gui:
