@@ -208,7 +208,8 @@ def init_stage1():
     logging.info(_('Log file:                   %s'), config.log_file)
 
     # adapt application search path
-    sys.path = [config.wxglade_path, config.widgets_path] + sys.path
+    sys.path.insert(0, config.wxglade_path)
+    sys.path.insert(1, config.widgets_path)
 
 
 def init_localization():
