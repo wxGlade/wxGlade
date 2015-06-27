@@ -36,6 +36,7 @@ Bugs:
     bug #163)
   - Fix incomplete Unicode escaping
   - Fix Designer not displaying buttons two lines correctly (sf bug #169)
+  - Fix broken color selection dialog
 
 Deprecation
  - In place modifications for generated source files will be removed in one
