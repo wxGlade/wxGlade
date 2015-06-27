@@ -17,6 +17,7 @@ General:
     This change causes some minor changes in the generated code.
   - Add Lisp and Perl support for wxDatePickerCtrl
   - Add support for wxSplitterWindow.SetMinimumPaneSize()
+  - Don't rewrite unchanged files
 
 Generated Code:
  - Use SetToolTip() instead of SetToolTipString() for wxPython 3 und wxPerl 3
