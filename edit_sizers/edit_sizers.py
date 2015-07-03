@@ -841,8 +841,7 @@ class SizerBase(Sizer):
             self.window.set_sizer(self)
         if not config.preferences.show_sizer_handle:
             self.widget.Show(self._btn, False)
-        if misc.focused_widget is self:
-            self.update_view(True)
+        self.update_view(misc.focused_widget == self)
 
     def _property_setup(self):
         """\
