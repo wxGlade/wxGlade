@@ -146,6 +146,7 @@ def load_code_writers():
     Fills the common.code_writers dictionary: to do so, loads the modules
     found in the 'codegen/' subdir
     """
+    logging.info('Load code generators:')
     codegen_path = os.path.join(config.wxglade_path, 'codegen')
     sys.path.insert(0, codegen_path)
     for module in os.listdir(codegen_path):
@@ -174,7 +175,7 @@ def load_code_writers():
             code_writers[writer.language] = writer
             if config.use_gui:
                 logging.info(
-                    _('loaded code generator for %s'),
+                    _('  %s generator loaded'),
                     writer.language
                 )
 
@@ -208,6 +209,7 @@ def load_sizers():
 
     @see: L{edit_sizers}
     """
+    logging.info('Load sizer generators:')
     for lang in code_writers.keys():
         module_name = 'edit_sizers.%s_sizers_codegen' % \
                       code_writers[lang].lang_prefix
@@ -223,6 +225,9 @@ def load_sizers():
                 logging.warning(
                     _('Missing function "initialize()" in imported '
                       'module %s. Skip initialisation.'), module_name)
+
+            if config.use_gui:
+                logging.info(_('  for %s'), lang)
 
         except (AttributeError, ImportError, NameError, SyntaxError,
                 ValueError):
