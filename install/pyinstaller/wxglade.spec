@@ -34,7 +34,7 @@ False generates an exe file with all pure python inside and additional
 dlls as well as compiled python modules in a directory.
 """
 
-SHOW_CONSOLE = True
+SHOW_CONSOLE = False
 """\
 Use the console executable, or the Windows subsystem executable.
 """
