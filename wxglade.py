@@ -16,6 +16,25 @@ import sys
 import gettext
 import optparse
 
+# Use a NullWriter with Unicode support (encoding attribute) to catch and
+# drop all output in PyInstaller environment (standalone Edition)
+#
+# Fix for PyInstaller bug #1324
+# https://github.com/pyinstaller/pyinstaller/issues/1324
+if hasattr(sys, 'frozen') and not hasattr(sys.stderr, 'encoding'):
+    class NullWriter(object):
+        softspace = 0
+        encoding = 'UTF-8'
+
+        def write(*args):
+            pass
+
+        def flush(*args):
+            pass
+
+    sys.stdout = NullWriter()
+    sys.stderr = NullWriter()
+
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
 
