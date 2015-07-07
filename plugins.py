@@ -46,8 +46,12 @@ def load_widgets_from_dir(widget_dir, submodule=''):
     widgets_filename = os.path.join(widget_dir, 'widgets.txt')
     module_list = _get_modulenames_from_file(widgets_filename)
 
-    if module_list and config.use_gui and not submodule.endswith('codegen'):
-        logging.info(_('Loading widget modules from %s:'), widgets_filename)
+    if module_list and config.use_gui and not submodule.endswith('_codegen'):
+        if submodule:
+            logging.info(_('Loading "%s" modules from %s:'),
+                         submodule, widgets_filename)
+        else:
+            logging.info(_('Loading widgets from %s:'), widgets_filename)
 
     for module_name in module_list:
         if submodule:
