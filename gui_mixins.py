@@ -372,6 +372,6 @@ class BitmapMixin(object):
                 'Malformed statement to create an empty bitmap: %s',
                 bitmap
             )
-        return wx.EmptyBitmap(width, height)
+        return wx.EmptyBitmap(max(1, width), max(1, height))
 
 # end of class BitmapMixin
