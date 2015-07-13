@@ -446,7 +446,10 @@ def _smart_checksum(content):
             content_list.remove(line)
             break
 
-    [chksum.update(line) for line in content_list]
+    for line in content_list:
+        if isinstance(line, types.UnicodeType):
+            line = line.encode('utf-8')
+        chksum.update(line)
 
     return chksum.hexdigest()
 
