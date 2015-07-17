@@ -15,10 +15,6 @@ __all__ = ['CheckBoxProperty', 'CheckListProperty', 'ColorDialogProperty',
 import logging
 import textwrap
 
-# this is needed for wx >= 2.3.4 to clip the label showing the name of the
-# property, otherwise on the properties tabs horizontal scrollbars are shown
-from xml.sax.saxutils import escape
-
 import wx
 import wx.lib.stattext
 import wx.grid
@@ -95,10 +91,8 @@ class Property(object):
         else:
             value = self.owner[self.name][0]()
         if not misc.streq(value, ''):
-            fwrite = outfile.write
-            fwrite('    ' * tabs + '<%s>' % self.name)
-            fwrite(escape(common.encode_to_unicode(value)))
-            fwrite('</%s>\n' % self.name)
+            stmt = common.format_xml_tag(self.name, value, tabs)
+            outfile.write(stmt)
 
     def bind_event(self, function):
         """\
@@ -485,10 +479,8 @@ class CheckBoxProperty(Property, _activator):
                 value = int(self.getter())
             else:
                 value = int(self.owner[self.name][0]())
-            fwrite = outfile.write
-            fwrite('    ' * tabs + '<%s>' % self.name)
-            fwrite(escape(common.encode_to_unicode(value)))
-            fwrite('</%s>\n' % self.name)
+            stmt = common.format_xml_tag(self.name, value, tabs)
+            outfile.write(stmt)
 
 # end of class CheckBoxProperty
 
@@ -775,10 +767,8 @@ class CheckListProperty(Property, _activator):
         value = '|'.join([self._labels[c]
                           for c in range(len(self._labels)) if val[c]])
         if value:
-            fwrite = outfile.write
-            fwrite('    ' * tabs + '<%s>' % self.name)
-            fwrite(escape(common.encode_to_unicode(value)))
-            fwrite('</%s>\n' % self.name)
+            stmt = common.format_xml_tag(self.name, value, tabs)
+            outfile.write(stmt)
 
     def prepare_value(self, old_val):
         """\
@@ -1179,17 +1169,16 @@ class FontDialogProperty(DialogProperty):
                     self.name,
                     )
                 return
-            fwrite = outfile.write
-            fwrite('    ' * tabs + '<%s>\n' % self.name)
-            tstr = '    ' * (tabs + 1)
-            fwrite('%s<size>%s</size>\n' % (tstr, escape(props[0])))
-            fwrite('%s<family>%s</family>\n' % (tstr, escape(props[1])))
-            fwrite('%s<style>%s</style>\n' % (tstr, escape(props[2])))
-            fwrite('%s<weight>%s</weight>\n' % (tstr, escape(props[3])))
-            fwrite('%s<underlined>%s</underlined>\n' % (tstr,
-                                                        escape(props[4])))
-            fwrite('%s<face>%s</face>\n' % (tstr, escape(props[5])))
-            fwrite('    ' * tabs + '</%s>\n' % self.name)
+            inner_xml = common.format_xml_tag(u'size', props[0], tabs + 1)
+            inner_xml += common.format_xml_tag(u'family', props[1], tabs + 1)
+            inner_xml += common.format_xml_tag(u'style', props[2], tabs + 1)
+            inner_xml += common.format_xml_tag(u'weight', props[3], tabs + 1)
+            inner_xml += common.format_xml_tag(
+                u'underlined', props[4], tabs + 1)
+            inner_xml += common.format_xml_tag(u'face', props[5], tabs + 1)
+            stmt = common.format_xml_tag(
+                self.name, inner_xml, tabs, is_xml=True)
+            outfile.write(stmt)
 
     def toggle_active(self, active=None, refresh=True):
         DialogProperty.toggle_active(self, active, refresh)
@@ -1365,10 +1354,9 @@ class RadioProperty(Property, _activator):
 
     def write(self, outfile, tabs=0):
         if self.is_active():
-            outfile.write('    ' * tabs + '<%s>%s</%s>\n' % (
-                self.name,
-                escape(common.encode_to_unicode(self.get_str_value())),
-                self.name))
+            stmt = common.format_xml_tag(
+                self.name, self.get_str_value(), tabs)
+            outfile.write(stmt)
 
     def enable_item(self, item, flag):
         """\
@@ -1717,9 +1705,7 @@ class ComboBoxProperty(Property, _activator):
             else:
                 value = misc.wxstr(self.owner[self.name][0]())
             if value != 'None':
-                fwrite = outfile.write
-                fwrite('    ' * tabs + '<%s>' % self.name)
-                fwrite(escape(common.encode_to_unicode(value)))
-                fwrite('</%s>\n' % self.name)
+                stmt = common.format_xml_tag(self.name, value, tabs)
+                outfile.write(stmt)
 
 # end of class ComboBoxProperty

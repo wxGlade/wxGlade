@@ -7,10 +7,13 @@ Code generator functions for wxGrid objects
 
 import common
 import wcodegen
+from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
-class ColsCodeHandler(object):
+class ColsCodeHandler(BaseCodeWriterTagHandler):
+
     def __init__(self):
+        super(ColsCodeHandler, self).__init__()
         self.columns = []
         self.col_name = ''
         self.col_size = ''
@@ -19,19 +22,16 @@ class ColsCodeHandler(object):
         if name == 'column':
             s = attrs.get('size', '')
             self.col_size = s
-            self.col_name = ''
+            self._content = []
     
     def end_elem(self, name, code_obj):
         if name == 'columns':
             code_obj.properties['columns'] = self.columns
             return True
         elif name == 'column':
-            self.columns.append([self.col_name, self.col_size])
-
+            char_data = self.get_char_data()
+            self.columns.append([char_data, self.col_size])
         return False
-
-    def char_data(self, data):
-        self.col_name = self.col_name + data
 
 # end of class ColsCodeHandler
 

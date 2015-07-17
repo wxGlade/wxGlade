@@ -8,6 +8,7 @@ Code generator functions for wxFrame objects
 
 import common
 import wcodegen
+from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
 class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -39,12 +40,15 @@ class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 # property handlers for code generation
-class StatusFieldsHandler(object):
-    """Handler for statusbar fields"""
+class StatusFieldsHandler(BaseCodeWriterTagHandler):
+    """\
+    Handler for statusbar fields
+    """
+
     def __init__(self):
+        super(StatusFieldsHandler, self).__init__()
         self.labels = []
         self.widths = []
-        self.curr_label = []
 
     def start_elem(self, name, attrs):
         if name == 'field':
@@ -54,11 +58,8 @@ class StatusFieldsHandler(object):
         if name == 'fields':
             code_obj.properties['statusbar'] = (self.labels, self.widths)
             return True
-        self.labels.append("".join(self.curr_label))
-        self.curr_label = []
-
-    def char_data(self, data):
-        self.curr_label.append(data)
+        char_data = self.get_char_data()
+        self.labels.append(char_data)
 
 # end of class StatusFieldsHandler
 

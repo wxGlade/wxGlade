@@ -4,10 +4,6 @@
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import cStringIO
-import os
-import re
-
 # import test base class
 from tests import WXGladeBaseTest
 
@@ -34,6 +30,15 @@ class TestCodeGen(WXGladeBaseTest):
         That's the test case for SF bug #165.
         """
         self._test_all('bug165')
+
+    def test_bug166(self):
+        """\
+        Test bug #166 - UnicodeDecodeError when saving project using non
+        ASCII characters in menu items
+
+        That's the test case for SF bug #166.
+        """
+        self._test_all('bug166')
 
     def test_bug167(self):
         """\

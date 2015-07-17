@@ -7,11 +7,14 @@ wxMenuBar objects
 """
 
 import wx
+import StringIO
+
 import common
 import config
 import misc
 from MenuTree import *
 from tree import Tree
+from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import *
 from edit_windows import EditBase, PreviewMixin
 
@@ -513,13 +516,80 @@ class MenuProperty(Property):
             common.app_tree.app.saved = False # update the status of the app
 
     def write(self, outfile, tabs):
-        fwrite = outfile.write
-        fwrite('    ' * tabs + '<menus>\n')
+        inner_xml = StringIO.StringIO()
         for menu in self.owner[self.name][0]():
-            menu.write(outfile, tabs+1)
-        fwrite('    ' * tabs + '</menus>\n')
+            menu.write(inner_xml, tabs + 1)
+        stmt = common.format_xml_tag(
+            u'menus', inner_xml.getvalue(), tabs, is_xml=True)
+        outfile.write(stmt)
 
 # end of class MenuProperty
+
+
+class MenuHandler(BaseXmlBuilderTagHandler):
+    itemattrs = ['label', 'id', 'name', 'help_str',
+                 'checkable', 'radio', 'handler']
+
+    def __init__(self, owner):
+        super(MenuHandler, self).__init__()
+        self.owner = owner
+        self.curr_menu = []
+        self.curr_item = None
+        self.curr_index = 0
+        self.menu_depth = 0
+
+    def start_elem(self, name, attrs):
+        if name == 'menus': return
+        if name == 'menu':
+            self.menu_depth += 1
+            label = common.encode_from_xml(attrs['label'])
+            if self.menu_depth == 1:
+                t = MenuTree(attrs['name'], label,
+                             attrs.get('itemid', ''),
+                             attrs.get('help_str', ''),
+                             handler=attrs.get('handler', ''))
+                self.curr_menu.append( (t.root,) )
+                self.owner.menus.append(t)
+                return
+            node = MenuTree.Node(label=label, name=attrs['name'],
+                                 id=attrs.get('itemid', ''),
+                                 help_str=attrs.get('help_str', ''),
+                                 handler=attrs.get('handler', ''))
+            cm = self.curr_menu[-1]
+            cm[0].children.append(node)
+            node.parent = cm[0]
+            menu = wx.Menu()
+            self.curr_menu.append( (node, menu) )
+        elif name == 'item':
+            self.curr_item = MenuTree.Node()
+        else:
+            try: self.curr_index = self.itemattrs.index(name)
+            except ValueError:
+                # ignore unknown attributes...
+                self.curr_index = -1
+                pass
+
+    def end_elem(self, name):
+        if name == 'item':
+            try: cm = self.curr_menu[-1]
+            except IndexError:
+                from xml_parse import XmlParsingError
+                raise XmlParsingError(_("menu item outside a menu"))
+            cm[0].children.append(self.curr_item)
+            self.curr_item.parent = cm[0]
+        elif name == 'menu':
+            self.menu_depth -= 1
+            self.curr_menu.pop()
+        elif name == 'menus':
+            self.owner.set_menus(self.owner.menus)
+            return True
+
+    def char_data(self, data):
+        super(MenuHandler, self).char_data(data)
+        char_data = self.get_char_data()
+        setattr(self.curr_item, self.itemattrs[self.curr_index], char_data)
+
+# end of class MenuHandler
 
 
 class EditMenuBar(EditBase, PreviewMixin):
@@ -676,67 +746,6 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.widget.SetTitle(misc.design_title(misc.wxstr(self.name)))
 
     def get_property_handler(self, name):
-        class MenuHandler:
-            itemattrs = ['label', 'id', 'name', 'help_str',
-                         'checkable', 'radio', 'handler']
-
-            def __init__(self, owner):
-                self.owner = owner
-                self.menu_items = []
-                self.curr_menu = []
-                self.curr_item = None
-                self.curr_index = 0
-                self.menu_depth = 0
-
-            def start_elem(self, name, attrs):
-                if name == 'menus': return
-                if name == 'menu':
-                    self.menu_depth += 1
-                    label = common.encode_from_xml(attrs['label'])
-                    if self.menu_depth == 1:
-                        t = MenuTree(attrs['name'], label,
-                                     attrs.get('itemid', ''),
-                                     attrs.get('help_str', ''),
-                                     handler=attrs.get('handler', ''))
-                        self.curr_menu.append( (t.root,) )
-                        self.owner.menus.append(t)
-                        return
-                    node = MenuTree.Node(label=label, name=attrs['name'],
-                                         id=attrs.get('itemid', ''),
-                                         help_str=attrs.get('help_str', ''),
-                                         handler=attrs.get('handler', ''))
-                    cm = self.curr_menu[-1]
-                    cm[0].children.append(node)
-                    node.parent = cm[0]
-                    menu = wx.Menu()
-                    self.curr_menu.append( (node, menu) )
-                elif name == 'item':
-                    self.curr_item = MenuTree.Node()
-                else:
-                    try: self.curr_index = self.itemattrs.index(name)
-                    except ValueError:
-                        # ignore unknown attributes...
-                        self.curr_index = -1
-                        pass
-
-            def end_elem(self, name):
-                if name == 'item':
-                    try: cm = self.curr_menu[-1]
-                    except IndexError:
-                        from xml_parse import XmlParsingError
-                        raise XmlParsingError(_("menu item outside a menu"))
-                    cm[0].children.append(self.curr_item)
-                    self.curr_item.parent = cm[0]
-                elif name == 'menu':
-                    self.menu_depth -= 1
-                    self.curr_menu.pop()
-                elif name == 'menus':
-                    self.owner.set_menus(self.owner.menus)
-                    return True
-
-            def char_data(self, data):
-                setattr(self.curr_item, self.itemattrs[self.curr_index], data)
-                
         if name == 'menus':
             return MenuHandler(self)
         return None

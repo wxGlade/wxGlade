@@ -2,16 +2,21 @@
 Handler for the 'choices' property of various elements
 
 @copyright: 2002-2007 Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-class ChoicesCodeHandler(object):
+from wcodegen.taghandler import BaseCodeWriterTagHandler
+
+
+class ChoicesCodeHandler(BaseCodeWriterTagHandler):
     """\
     handler for the 'choices' property of various elements
     """
+
     def __init__(self):
+        super(ChoicesCodeHandler, self).__init__()
         self.choices = []
-        self.curr_choice = []
         self.cur_checked = None
         
     def start_elem(self, name, attrs):
@@ -23,19 +28,15 @@ class ChoicesCodeHandler(object):
             
     def end_elem(self, name, code_obj):
         if name == 'choice':
-            c = "".join(self.curr_choice)
+            label = self.get_char_data()
             if self.cur_checked is None:
-                self.choices.append(c)
+                self.choices.append(label)
             else:
-                self.choices.append((c, self.cur_checked))
-            self.curr_choice = []
+                self.choices.append((label, self.cur_checked))
             self.cur_checked = None
         elif name == 'choices':
             code_obj.properties['choices'] = self.choices
             return True
-
-    def char_data(self, data):
-        self.curr_choice.append(data)
 
 # end of class ChoicesCodeHandler
 

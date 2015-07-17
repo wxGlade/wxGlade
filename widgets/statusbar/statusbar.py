@@ -10,8 +10,37 @@ import wx
 import common
 import misc
 from tree import Tree
+from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import *
 from edit_windows import EditBase, EditStylesMixin
+
+
+class FieldsHandler(BaseXmlBuilderTagHandler):
+    """\
+    Custom Property handler for statusbar fields.
+    """
+
+    def __init__(self, owner):
+        super(FieldsHandler, self).__init__()
+        self.owner = owner
+        self.width = -1
+
+    def start_elem(self, name, attrs):
+        if name == 'fields':
+            self.fields = []
+        else:  # name == 'field'
+            self._content = []
+            self.width = attrs.get('width', '-1')
+
+    def end_elem(self, name):
+        if name == 'field':
+            char_data = self.get_char_data()
+            self.fields.append([char_data, self.width])
+        else:  # name == 'fields'
+            self.owner.fields = self.fields
+            self.owner.set_fields(self.owner.fields)
+            self.owner.properties['fields'].set_value(self.owner.fields)
+            return True
 
 
 class EditStatusBar(EditBase, EditStylesMixin):
@@ -43,17 +72,14 @@ class EditStatusBar(EditBase, EditStylesMixin):
 
         # replace the default 'write' method of 'prop' with a custom one
         def write_prop(outfile, tabs):
-            from xml.sax.saxutils import escape, quoteattr
-            fwrite = outfile.write
-            fwrite('    ' * tabs + '<fields>\n')
-            tabs += 1
-            import widget_properties
+            inner_xml = u''
             for label, width in self.fields:
-                fwrite('    ' * tabs + '<field width=%s>%s</field>\n' %
-                       (quoteattr(width),
-                        escape(common.encode_to_unicode(label))))
-            tabs -= 1
-            fwrite('    ' * tabs + '</fields>\n')
+                inner_xml += common.format_xml_tag(
+                    u'field', label, tabs + 1, width=width)
+            stmt = common.format_xml_tag(
+                u'fields', inner_xml, tabs, is_xml=True)
+            outfile.write(stmt)
+
         prop.write = write_prop
 
     def create_widget(self):
@@ -130,37 +156,6 @@ class EditStatusBar(EditBase, EditStylesMixin):
         pass  # to avoid strange segfault :)
 
     def get_property_handler(self, name):
-        class FieldsHandler:
-            """\
-            custom Property handler for statusbar fields.
-            """
-            def __init__(self, owner):
-                self.owner = owner
-                self.width = -1
-                self.value = []
-
-            def start_elem(self, name, attrs):
-                if name == 'fields':
-                    self.fields = []
-                else:  # name == 'field'
-                    self.value = []
-                    self.width = attrs.get('width', '-1')
-
-            def end_elem(self, name):
-                if name == 'field':
-                    self.fields.append(["".join(self.value), self.width])
-                else:  # name == 'fields'
-                    self.owner.fields = self.fields
-                    self.owner.set_fields(self.owner.fields)
-                    self.owner.properties['fields'].set_value(
-                        self.owner.fields)
-                    return True
-
-            def char_data(self, data):
-                self.value.append(data)
-                return False  # tell there's no need to go further
-                # (i.e. to call add_property)
-
         if name == 'fields':
             return FieldsHandler(self)
         return None

@@ -13,22 +13,18 @@ import misc
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
+from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 
 class GridColsProperty(GridProperty):
     def write(self, outfile, tabs):
-        from xml.sax.saxutils import escape, quoteattr
-        write = outfile.write
-        write('    ' * tabs + '<columns>\n')
-        tab_s = '    ' * (tabs + 1)
-        value = self.get_value()  # this is a list
-        for i in range(len(value)):
-            val = value[i]  # this is another list
-            _label = escape(common.encode_to_unicode(val[0]))
-            _size  = escape(common.encode_to_unicode(val[1]))
-            write('%s<column size=%s>%s</column>\n' % (
-                tab_s, quoteattr(_size), _label))
-        write('    ' * tabs + '</columns>\n')
+        value = self.get_value()
+        inner_xml = u''
+        for label, size in value:
+            inner_xml += common.format_xml_tag(
+                u'column', label, tabs + 1, size=size)
+        stmt = common.format_xml_tag(u'columns', inner_xml, tabs, is_xml=True)
+        outfile.write(stmt)
 
     def _get_label(self, col):
         s = []
@@ -54,8 +50,10 @@ class GridColsProperty(GridProperty):
 # end of class GridColumnsProperty
 
 
-class ColsHandler(object):
+class ColsHandler(BaseXmlBuilderTagHandler):
+
     def __init__(self, parent):
+        super(ColsHandler, self).__init__()
         self.parent = parent
         self.columns = []
         self.curr_col = []
@@ -71,12 +69,9 @@ class ColsHandler(object):
             self.parent.properties['columns'].set_value(self.columns)
             return True
         elif name == 'column':
-            self.columns.append(["".join(self.curr_col), self.curr_size])
-            self.curr_col = []
+            char_data = self.get_char_data()
+            self.columns.append([char_data, self.curr_size])
         return False
-
-    def char_data(self, data):
-        self.curr_col.append(data)
 
 # end of class ColsHandler
 

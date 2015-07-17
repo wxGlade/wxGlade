@@ -21,25 +21,18 @@ import config
 import errors
 import misc
 import wcodegen
+from wcodegen.taghandler import BaseCodeWriterTagHandler
 from xml_parse import XmlParsingError
 
 
-class DummyPropertyHandler(object):
+class DummyPropertyHandler(BaseCodeWriterTagHandler):
     """Empty handler for properties that do not need code"""
 
     def __init__(self):
+        super(DummyPropertyHandler, self).__init__()
         self.handlers = {}
         self.event_name = None
         self.curr_handler = []
-
-    def start_elem(self, name, attrs):
-        pass
-
-    def end_elem(self, name, code_obj):
-        return True
-
-    def char_data(self, data):
-        pass
 
 # end of class DummyPropertyHandler
 
@@ -48,6 +41,7 @@ class EventsPropertyHandler(DummyPropertyHandler):
     """\
     Handler for event properties
     """
+    strip_char_data = True
 
     def start_elem(self, name, attrs):
         if name == 'handler':
@@ -55,55 +49,45 @@ class EventsPropertyHandler(DummyPropertyHandler):
 
     def end_elem(self, name, code_obj):
         if name == 'handler':
-            if self.event_name and self.curr_handler:
-                self.handlers[self.event_name] = ''.join(self.curr_handler)
+            if self.event_name and self._content:
+                handler = self.get_char_data()
+                self.handlers[self.event_name] = handler
             self.event_name = None
-            self.curr_handler = []
         elif name == 'events':
             code_obj.properties['events'] = self.handlers
             return True
-
-    def char_data(self, data):
-        data = data.strip()
-        if data:
-            self.curr_handler.append(data)
 
 # end of class EventsPropertyHandler
 
 
 class ExtraPropertiesPropertyHandler(DummyPropertyHandler):
 
+    strip_char_data = True
+
     def __init__(self):
-        DummyPropertyHandler.__init__(self)
+        super(ExtraPropertiesPropertyHandler, self).__init__()
         self.props = {}
-        self.curr_prop = []
         self.prop_name = None
 
     def start_elem(self, name, attrs):
         if name == 'property':
-            name = attrs['name']
-            self.prop_name = name
+            self.prop_name = attrs['name']
 
     def end_elem(self, name, code_obj):
         if name == 'property':
-            if self.prop_name and self.curr_prop:
-                self.props[self.prop_name] = ''.join(self.curr_prop)
+            if self.prop_name and self._content:
+                char_data = self.get_char_data()
+                self.props[self.prop_name] = char_data
             self.prop_name = None
-            self.curr_prop = []
         elif name == 'extraproperties':
             code_obj.properties['extraproperties'] = self.props
             return True  # to remove this handler
-
-    def char_data(self, data):
-        data = data.strip()
-        if data:
-            self.curr_prop.append(data)
 
 # end of class ExtraPropertiesPropertyHandler
 
 
 # custom property handlers
-class FontPropertyHandler(object):
+class FontPropertyHandler(BaseCodeWriterTagHandler):
     """Handler for font properties"""
 
     font_families = {'default': 'wxDEFAULT', 'decorative': 'wxDECORATIVE',
@@ -116,6 +100,7 @@ class FontPropertyHandler(object):
                     'bold': 'wxBOLD'}
 
     def __init__(self):
+        super(FontPropertyHandler, self).__init__()
         self.dicts = {'family': self.font_families, 'style': self.font_styles,
                       'weight': self.font_weights}
         self.attrs = {'size': '0', 'style': '0', 'weight': '0', 'family': '0',
@@ -136,14 +121,12 @@ class FontPropertyHandler(object):
             return True
         elif self.current is not None:
             decode = self.dicts.get(self.current)
+            char_data = self.get_char_data()
             if decode:
-                val = decode.get("".join(self.curr_data), '0')
+                val = decode.get(char_data, '0')
             else:
-                val = "".join(self.curr_data)
+                val = char_data
             self.attrs[self.current] = val
-
-    def char_data(self, data):
-        self.curr_data.append(data)
 
 # end of class FontPropertyHandler
 
@@ -2732,7 +2715,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
                 return '\u00%x' % dec
             return matchobj.group(0)
 
-        s = re.sub(r'[\x80-\xFF]+', repl, s)
+        s = re.sub(r'[\x80-\xFF]{1}', repl, s)
 
         return s
 

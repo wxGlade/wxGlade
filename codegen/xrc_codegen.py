@@ -19,12 +19,15 @@ from codegen import BaseLangCodeWriter, \
 from ordereddict import OrderedDict
 import errors
 import wcodegen
+from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
-class FontPropertyHandler(object):
+class FontPropertyHandler(BaseCodeWriterTagHandler):
+    props = {'size': '', 'family': '', 'style': '', 'weight': '',
+             'underlined': '', 'face': ''}
+
     def __init__(self):
-        self.props = {'size': '', 'family': '', 'style': '', 'weight': '',
-                      'underlined': '', 'face': ''}
+        super(FontPropertyHandler, self).__init__()
         self.current = None
 
     def start_elem(self, name, attrs):
@@ -36,7 +39,8 @@ class FontPropertyHandler(object):
             return True  # to remove this handler
 
     def char_data(self, data):
-        self.props[self.current] = str(data.strip())
+        super(FontPropertyHandler, self).char_data(data)
+        self.props[self.current] = self.get_char_data()
 
 # end of class FontHandler
 
@@ -256,8 +260,8 @@ class NotImplementedXrcObject(XrcObject):
         msg = 'code generator for %s objects not available' % \
               self.code_obj.base
         self.warning('%s' % msg)
-        outfile.write('%s%s\n' % (
-            self.tabs(ntabs), self._format_comment(msg)))
+        stmt = '%s%s\n' % (self.tabs(ntabs), self._format_comment(msg))
+        outfile.write(stmt)
 
 # end of class NotImplementedXrcObject
 

@@ -6,13 +6,13 @@ Property class for the 'code' property of toplevel widgets
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-from xml.sax.saxutils import escape, quoteattr
-
 import wx
 import wx.grid
 import wx.lib.stattext
 
+import common
 import widget_properties
+from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import GridProperty
 
 
@@ -100,18 +100,15 @@ class ExtraPropertiesProperty(GridProperty):
         else:
             props = self.owner[self.name][0]()
         if props:
-            written = False
-            write = outfile.write
-            stab = '    ' * (tabs+1)
+            inner_xml = u''
             for name, value in props:
                 if value:
-                    if not written:
-                        written = True
-                        write('    ' * tabs + '<extraproperties>\n')
-                    write('%s<property name=%s>%s</property>\n' %
-                          (stab, quoteattr(name), escape(value.strip())))
-            if written:
-                write('    ' * tabs + '</extraproperties>\n')
+                    inner_xml += common.format_xml_tag(
+                        u'property', value.strip(), tabs + 1, name=name)
+            if inner_xml:
+                stmt = common.format_xml_tag(
+                    u'extraproperties', inner_xml, tabs, is_xml=True)
+                outfile.write(stmt)
 
     def display(self, panel):
         GridProperty.display(self, panel)
@@ -153,14 +150,18 @@ For each property "prop" with value "val", wxGlade will generate a \
 # end of class ExtraPropertiesProperty
 
 
-class ExtraPropertiesPropertyHandler(object):
+class ExtraPropertiesPropertyHandler(BaseXmlBuilderTagHandler):
+    strip_char_data = True
+
     def __init__(self, owner):
+        super(ExtraPropertiesPropertyHandler, self).__init__()
         self.owner = owner
         self.props = {}
         self.prop_name = None
         self.curr_prop = []
         
     def start_elem(self, name, attrs):
+        super(ExtraPropertiesPropertyHandler, self).__init__()
         if name == 'property':
             self.prop_name = attrs['name']
 
@@ -175,11 +176,6 @@ class ExtraPropertiesPropertyHandler(object):
             val = [[k, self.props[k]] for k in sorted(self.props.keys())]
             self.owner.extraproperties = val
             return True # to remove this handler
-
-    def char_data(self, data):
-        data = data.strip()
-        if data:
-            self.curr_prop.append(data)
 
 # end of class ExtraPropertiesPropertyHandler
 

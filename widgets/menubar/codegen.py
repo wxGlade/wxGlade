@@ -1,12 +1,14 @@
 """
 Code generator functions for wxMenuBar objects
 
-@copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
+@copyright: 2002-2007 Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
+from wcodegen.taghandler import BaseCodeWriterTagHandler
 from MenuTree import *
 
 class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -138,16 +140,19 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
 # end of class PythonMenubarGenerator
 
 
-class MenuHandler(object):
-    """Handler for menus and menu items of a menubar"""
+class MenuHandler(BaseCodeWriterTagHandler):
+    """\
+    Handler for menus and menu items of a menubar
+    """
     item_attrs = ('label', 'id', 'name', 'help_str', 'checkable', 'radio',
                   'handler')
+
     def __init__(self):
+        super(MenuHandler, self).__init__()
         self.menu_depth = 0
         self.menus = []
         self.curr_menu = None
         self.curr_item = None
-        self.attr_val = []
 
     def start_elem(self, name, attrs):
         if name == 'menu':
@@ -179,11 +184,8 @@ class MenuHandler(object):
             self.menu_depth -= 1
             self.curr_menu = self.curr_menu.parent
         elif name in self.item_attrs:
-            setattr(self.curr_item, name, "".join(self.attr_val))
-            self.attr_val = []
-
-    def char_data(self, data):
-        self.attr_val.append(data)
+            char_data = self.get_char_data()
+            setattr(self.curr_item, name, char_data)
 
 # end of class MenuHandler
 

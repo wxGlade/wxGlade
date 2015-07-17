@@ -14,6 +14,7 @@ import os
 import os.path
 import sys
 import types
+from xml.sax.saxutils import escape, quoteattr
 
 import config
 import plugins
@@ -381,12 +382,18 @@ def encode_from_xml(label, encoding=None):
     return label.encode(encoding, 'replace')
 
 
-def encode_to_unicode(item):
+def encode_to_unicode(item, encoding=None):
     """\
     Decode the item to a Unicode string. The encoding to UTF-8 will be done
     later.
 
     Non-string items will be converted to string automatically.
+
+    @param item: Item to convert
+    @type item: str | Unicode
+
+    @param encoding: Encoding of the log file
+    @type encoding:  str | None
 
     @rtype: unicode
     """
@@ -394,7 +401,9 @@ def encode_to_unicode(item):
         return item
     if not isinstance(item, types.StringTypes):
         item = str(item)
-    item = item.decode(app_tree.app.encoding)
+    if encoding is None:
+        encoding = app_tree.app.encoding
+    item = item.decode(encoding)
     return item
 
 
@@ -950,3 +959,95 @@ def style_attrs_to_sets(styles):
                 pass
 
     return styles
+
+
+def format_xml_tag(tag, value, indentlevel=0, **kwargs):
+    r"""
+    Generate a valid XML tag. The content will be proper escaped and quoted.
+
+    Example::
+        >>> common.format_xml_tag(u'label', 'Exit', 1)
+        u'    <label>Exit</label\n'
+
+    @note: The returned statement has a tailing newline character
+
+    @param tag: XML tag
+    @type tag: str | Unicode
+
+    @param value: Content of the XML tag
+    @type value: str | Unicode
+
+    @param indentlevel: Indention level, Each level are four spaces
+    @type indentlevel:  int
+
+    @keyword is_xml: Content of value argument is already escaped
+                     and formatted XML
+    @type is_xml: bool
+
+    @param kwargs: XML attributes to include (see L{format_xml_attrs()} too)
+
+    @rtype: str
+
+    @see: L{format_xml_attrs()}
+    """
+    assert isinstance(tag, types.StringTypes)
+    assert isinstance(indentlevel, types.IntType)
+
+    is_xml = kwargs.get('is_xml', False)
+    if 'is_xml' in kwargs:
+        del kwargs['is_xml']
+
+    tabs = u'    ' * indentlevel
+    tag = encode_to_unicode(tag)
+
+    if not is_xml:
+        value = encode_to_unicode(value)
+        value = escape(value)
+
+    attrs = format_xml_attrs(**kwargs)
+    if attrs:
+        attrs = u' %s' % attrs
+
+    if is_xml:
+        tmpl = u'%(tabs)s<%(tag)s%(attrs)s>\n%(value)s%(tabs)s</%(tag)s>\n'
+    elif not value:
+        tmpl = u'%(tabs)s<%(tag)s%(attrs)s />\n'
+    else:
+        tmpl = u'%(tabs)s<%(tag)s%(attrs)s>%(value)s</%(tag)s>\n'
+
+    stmt = tmpl % {'attrs': attrs, 'tabs': tabs, 'tag': tag,
+                   'value': value, }
+
+    return stmt
+
+
+def format_xml_attrs(**kwargs):
+    """\
+    Format the given keyword arguments to use as XML attributes.
+    The arguments will be escaped and quoted.
+
+    The returned Unicode string doesn't contain leading and tailing spaces.
+
+    Example::
+        >>> common.format_xml_attrs(base='EditFrame', name='Frame_1')
+        u'base="EditFrame" name="Frame1"'
+
+    @param kwargs: Attributes to process
+
+    @return: Processed and joined kwargs
+    @rtype: Unicode
+    """
+    if not kwargs:
+        return u''
+
+    attr_list = []
+    for name in kwargs:
+        value = encode_to_unicode(kwargs[name])
+        value = quoteattr(value)
+        value = value.strip()
+        attr_list.append(u'%s=%s' % (name, value))
+
+    attr_list.sort()
+    res = u' '.join(attr_list)
+    res = res.strip()
+    return res
