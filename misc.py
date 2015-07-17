@@ -549,8 +549,7 @@ def get_relative_path(path, for_preview=False):
         return path
     p = common.app_tree.app.output_path
     if for_preview:
-        p = getattr(common.app_tree.app, 'real_output_path', '')
-        p = common.encode_from_xml(common.encode_to_unicode(p))
+        p = getattr(common.app_tree.app, 'real_output_path', u'')
     d = os.path.dirname(p)
     if d:
         path = os.path.join(d, path)

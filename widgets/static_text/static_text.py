@@ -92,13 +92,12 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditStaticText objects.
     """
-    label = 'label_%d' % number[0]
+    label = u'label_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
-        label = 'label_%d' % number[0]
-    static_text = EditStaticText(label, parent, wx.NewId(),
-                                 common.encode_from_xml(label), sizer, pos,
-                                 common.property_panel)
+        label = u'label_%d' % number[0]
+    static_text = EditStaticText(label, parent, wx.NewId(), label, sizer,
+                                 pos, common.property_panel)
     node = Tree.Node(static_text)
     static_text.node = node
     static_text.show_widget(True)

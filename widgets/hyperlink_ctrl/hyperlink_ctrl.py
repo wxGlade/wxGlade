@@ -112,13 +112,12 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditHyperlinkCtrl objects.
     """
-    name = 'hyperlink_%d' % number[0]
+    name = u'hyperlink_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
-        name = 'hyperlink_%d' % number[0]
-    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(),
-                                 common.encode_from_xml(name), sizer, pos,
-                                 common.property_panel)
+        name = u'hyperlink_%d' % number[0]
+    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), name,
+                                       sizer, pos, common.property_panel)
     node = Tree.Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node
     hyperlink_ctrl.show_widget(True)

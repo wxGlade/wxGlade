@@ -542,16 +542,17 @@ class MenuHandler(BaseXmlBuilderTagHandler):
         if name == 'menus': return
         if name == 'menu':
             self.menu_depth += 1
-            label = common.encode_from_xml(attrs['label'])
             if self.menu_depth == 1:
-                t = MenuTree(attrs['name'], label,
+                t = MenuTree(attrs['name'],
+                             attrs['label'],
                              attrs.get('itemid', ''),
                              attrs.get('help_str', ''),
                              handler=attrs.get('handler', ''))
                 self.curr_menu.append( (t.root,) )
                 self.owner.menus.append(t)
                 return
-            node = MenuTree.Node(label=label, name=attrs['name'],
+            node = MenuTree.Node(label=attrs['label'],
+                                 name=attrs['name'],
                                  id=attrs.get('itemid', ''),
                                  help_str=attrs.get('help_str', ''),
                                  handler=attrs.get('handler', ''))
