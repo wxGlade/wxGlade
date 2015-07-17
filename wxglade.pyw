@@ -31,7 +31,7 @@ except:
 # show caught exceptions in a windows message box
 if has_ctypes:
     (exc_type, exc_value, exc_tb) = sys.exc_info()
-    exc_traceback = '/r/n'.join(traceback.format_tb(exc_tb))
+    exc_traceback = '\r\n'.join(traceback.format_tb(exc_tb))
 
     title = 'An internal error occurred in wxGlade'
     msg = """\
