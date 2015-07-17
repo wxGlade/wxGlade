@@ -373,15 +373,6 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     return tmp
 
 
-def encode_from_xml(label, encoding=None):
-    """\
-    Returns a str which is the encoded version of the unicode msg
-    """
-    if encoding is None:
-        encoding = app_tree.app.encoding
-    return label.encode(encoding, 'replace')
-
-
 def encode_to_unicode(item, encoding=None):
     """\
     Decode the item to a Unicode string. The encoding to UTF-8 will be done

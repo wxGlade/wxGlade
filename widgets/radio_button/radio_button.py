@@ -103,12 +103,11 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditRadioButton objects.
     """
-    label = 'radio_btn_%d' % number[0]
+    label = u'radio_btn_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
-        label = 'radio_btn_%d' % number[0]
-    radio = EditRadioButton(label, parent, wx.NewId(),
-                            common.encode_from_xml(label), sizer, pos,
+        label = u'radio_btn_%d' % number[0]
+    radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos,
                             common.property_panel)
     node = Tree.Node(radio)
     radio.node = node

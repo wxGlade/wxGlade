@@ -136,12 +136,11 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditButton objects.
     """
-    name = 'button_%d' % number[0]
+    name = u'button_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
-        name = 'button_%d' % number[0]
-    button = EditButton(name, parent, wx.NewId(),
-                        common.encode_from_xml(name), sizer, pos,
+        name = u'button_%d' % number[0]
+    button = EditButton(name, parent, wx.NewId(), name, sizer, pos,
                         common.property_panel)
     node = Tree.Node(button)
     button.node = node

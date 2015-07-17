@@ -99,12 +99,11 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditToggleButton objects.
     """
-    label = 'button_%d' % number[0]
+    label = u'button_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
-        label = 'button_%d' % number[0]
-    button = EditToggleButton(label, parent, wx.NewId(),
-                              common.encode_from_xml(label), sizer, pos,
+        label = u'button_%d' % number[0]
+    button = EditToggleButton(label, parent, wx.NewId(), label, sizer, pos,
                               common.property_panel)
     node = Tree.Node(button)
     button.node = node

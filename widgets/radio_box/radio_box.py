@@ -276,14 +276,12 @@ def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditRadioBox objects.
     """
-    label = 'radio_box_%d' % number[0]
+    label = u'radio_box_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
-        label = 'radio_box_%d' % number[0]
-    radio_box = EditRadioBox(label, parent, wx.NewId(), label,
-                             [common.encode_from_xml('choice 1')],
+        label = u'radio_box_%d' % number[0]
+    radio_box = EditRadioBox(label, parent, wx.NewId(), label, [u'choice 1'],
                              1, 0, sizer, pos, common.property_panel)
-    #sizer.set_item(pos, 0, 0, size=radio_box.GetSize())
     node = Tree.Node(radio_box)
     radio_box.node = node
     radio_box.show_widget(True)

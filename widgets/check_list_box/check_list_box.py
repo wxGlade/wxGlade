@@ -114,8 +114,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'check_list_box_%d' % number[0]
     check_list_box = EditCheckListBox(name, parent, wx.NewId(),
-                           #[common.encode_from_xml('choice 1')], sizer, pos,
-                           [], sizer, pos,
+                           [u'choice 1'], sizer, pos,
                            common.property_panel)
     node = Tree.Node(check_list_box)
 ##     sizer.set_item(pos, size=check_list_box.GetBestSize())
