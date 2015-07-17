@@ -8,12 +8,14 @@ Code generator functions for wxNotebook objects
 
 import common
 import wcodegen
+from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
-class TabsCodeHandler(object):
+class TabsCodeHandler(BaseCodeWriterTagHandler):
+
     def __init__(self):
+        super(TabsCodeHandler, self).__init__()
         self.tabs = []
-        self.curr_tab_name = []
         self.tab_window = None
 
     def start_elem(self, name, attrs):
@@ -22,20 +24,17 @@ class TabsCodeHandler(object):
             if not window:
                 return
             self.tab_window = window
-            self.curr_tab_name = []
+            self._content = []
 
     def end_elem(self, name, code_obj):
         if name == 'tabs':
             code_obj.properties['tabs'] = self.tabs
             return True
         elif name == 'tab':
-            tab_name = "".join(self.curr_tab_name)
+            tab_name = self.get_char_data()
             if self.tab_window:
                 self.tabs.append((tab_name, self.tab_window))
         return False
-
-    def char_data(self, data):
-        self.curr_tab_name.append(data)
 
 # end of class TabsCodeHandler
 

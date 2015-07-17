@@ -9,13 +9,12 @@ Mixin class for 'events' property
 import logging
 import wx
 import wx.grid
-
 import re
-import config
 
-from widget_properties import GridProperty
-from xml.sax.saxutils import escape, quoteattr
 import common
+import config
+from wcodegen.taghandler import BaseXmlBuilderTagHandler
+from widget_properties import GridProperty
 
 
 class EventsProperty(GridProperty):
@@ -64,18 +63,15 @@ class EventsProperty(GridProperty):
         else:
             handlers = self.owner[self.name][0]()
         if handlers:
-            written = False
-            write = outfile.write
-            stab = '    ' * (tabs+1)
+            inner_xml = u''
             for event, handler in handlers:
                 if handler:
-                    if not written:
-                        written = True
-                        write('    ' * tabs + '<events>\n')
-                    write('%s<handler event=%s>%s</handler>\n' %
-                          (stab, quoteattr(event), escape(handler.strip())))
-            if written:
-                write('    ' * tabs + '</events>\n')
+                    inner_xml += common.format_xml_tag('handler', handler.strip(),
+                                            tabs + 1, event=event)
+            if inner_xml:
+                stmt = common.format_xml_tag(
+                    u'events', inner_xml, tabs, is_xml=True)
+                outfile.write(stmt)
 
     def on_change_val(self, event):
         val = self.get_value()
@@ -89,7 +85,7 @@ class EventsProperty(GridProperty):
 # end of class EventsProperty
 
 
-class EventsPropertyHandler(object):
+class EventsPropertyHandler(BaseXmlBuilderTagHandler):
     """\
     Class EventsPropertyHandler
 
@@ -100,32 +96,29 @@ class EventsPropertyHandler(object):
     @type handlers: dict[str, str]
     """
 
+    strip_char_data = True
+
     def __init__(self, owner):
+        super(EventsPropertyHandler, self).__init__()
         # initialise instance
         self.owner = owner
         self.handlers = {}
         self.event_name = None
-        self.curr_handler = []
-        
+
     def start_elem(self, name, attrs):
         if name == 'handler':
             self.event_name = attrs['event']
 
     def end_elem(self, name):
         if name == 'handler':
-            if self.event_name and self.curr_handler:
-                self.handlers[self.event_name] = ''.join(self.curr_handler)
+            if self.event_name and self._content:
+                char_data = self.get_char_data()
+                self.handlers[self.event_name] = char_data
             self.event_name = None
-            self.curr_handler = []
         elif name == 'events':
             self.owner.properties['events'].set_value_dict(self.handlers)
             self.owner.set_events_dict(self.handlers)
             return True  # to remove this handler
-
-    def char_data(self, data):
-        data = data.strip()
-        if data:
-            self.curr_handler.append(data)
 
 # end of class EventsPropertyHandler
 

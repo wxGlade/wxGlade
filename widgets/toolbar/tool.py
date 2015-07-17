@@ -6,8 +6,7 @@ Tool objects
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-from xml.sax.saxutils import escape
-from common import encode_to_unicode
+from common import format_xml_tag
 
 
 class Tool(object):
@@ -23,24 +22,16 @@ class Tool(object):
         self.handler = handler
 
     def write(self, outfile, tabs):
-        fwrite = outfile.write
-        fwrite("    " * tabs + '<tool>\n')
-        tab_s = "    " * (tabs+1)
-        fwrite(tab_s + '<id>%s</id>\n' % escape(encode_to_unicode(self.id)))
-        fwrite(tab_s + '<label>%s</label>\n' % \
-               escape(encode_to_unicode(self.label)))
-        fwrite(tab_s + '<type>%s</type>\n' % escape(str(self.type)))
-        fwrite(tab_s + '<short_help>%s</short_help>\n' % \
-               escape(encode_to_unicode(self.short_help)))
-        fwrite(tab_s + '<long_help>%s</long_help>\n' % \
-               escape(encode_to_unicode(self.long_help)))
-        fwrite(tab_s + '<bitmap1>%s</bitmap1>\n' % \
-               escape(encode_to_unicode(self.bitmap1)))
-        fwrite(tab_s + '<bitmap2>%s</bitmap2>\n' % \
-               escape(encode_to_unicode(self.bitmap2)))
+        inner_xml = format_xml_tag(u'id', self.id, tabs + 1)
+        inner_xml += format_xml_tag(u'label', self.label, tabs + 1)
+        inner_xml += format_xml_tag(u'type', self.type, tabs + 1)
+        inner_xml += format_xml_tag(u'short_help', self.short_help, tabs + 1)
+        inner_xml += format_xml_tag(u'long_help', self.long_help, tabs + 1)
+        inner_xml += format_xml_tag(u'bitmap1', self.bitmap1, tabs + 1)
+        inner_xml += format_xml_tag(u'bitmap2', self.bitmap2, tabs + 1)
         if self.handler:
-            fwrite(tab_s + '<handler>%s</handler>\n' % \
-                   escape(encode_to_unicode(self.handler.strip())))
-        fwrite("    " * tabs + '</tool>\n')
+            inner_xml += format_xml_tag(u'handler', self.handler, tabs + 1)
+        stmt = format_xml_tag(u'tool', inner_xml, tabs, is_xml=True)
+        outfile.write(stmt)
 
 # end of class Tool

@@ -8,6 +8,7 @@ Code generator functions for wxToolBar objects
 
 import common
 import wcodegen
+from wcodegen.taghandler import BaseCodeWriterTagHandler
 from tool import *
 
 
@@ -115,14 +116,18 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 # end of class PythonCodeGenerator
 
 
-class ToolsHandler(object):
-    """Handler for tools of a toolbar"""
+class ToolsHandler(BaseCodeWriterTagHandler):
+    """\
+    Handler for tools of a toolbar
+    """
+
     item_attrs = ('label', 'id', 'short_help', 'type', 'long_help',
                   'bitmap1', 'bitmap2', 'handler')
+
     def __init__(self):
+        super(ToolsHandler, self).__init__()
         self.tools = []
         self.curr_tool = None
-        self.attr_val = []
 
     def start_elem(self, name, attrs):
         if name == 'tool':
@@ -135,11 +140,8 @@ class ToolsHandler(object):
         if name == 'tool' and self.curr_tool:
             self.tools.append(self.curr_tool)
         elif name in self.item_attrs:
-            setattr(self.curr_tool, name, "".join(self.attr_val))
-            self.attr_val = []
-
-    def char_data(self, data):
-        self.attr_val.append(data)
+            char_data = self.get_char_data()
+            setattr(self.curr_tool, name, char_data)
 
 # end of class ToolsHandler
 

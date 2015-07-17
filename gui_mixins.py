@@ -8,6 +8,7 @@ Different Mixins
 import copy
 import decorators
 import logging
+import types
 import wx
 
 import config
@@ -64,7 +65,7 @@ class StylesMixin(object):
         @see: tmpl_flag_join
         @see: L{config.widget_config}
         """
-        assert isinstance(flags, str)
+        assert isinstance(flags, types.StringTypes)
         if flags.isdigit():
             return flags
 

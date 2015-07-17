@@ -32,8 +32,8 @@ class RadioPropertyNumericValue(RadioProperty):
         if self.is_active():
             value = self.get_value()
             if value:
-                outfile.write('    ' * tabs + '<%s>%s</%s>\n' % (
-                    self.name, value, self.name))
+                stmt = common.format_xml_tag(self.name, value, tabs)
+                outfile.write(stmt)
 
 
 class EditCheckBox(ManagedBase, EditStylesMixin):

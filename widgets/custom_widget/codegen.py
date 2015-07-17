@@ -2,6 +2,7 @@
 Code generator functions for CustomWidget objects
 
 @copyright: 2002-2007 Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -9,28 +10,23 @@ import logging
 
 import common
 import wcodegen
+from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
-class ArgumentsCodeHandler(object):
+class ArgumentsCodeHandler(BaseCodeWriterTagHandler):
+
     def __init__(self):
+        super(ArgumentsCodeHandler, self).__init__()
         self.arguments = []
-        self.curr_arg = []
-
-    def start_elem(self, name, attrs):
-        pass
 
     def end_elem(self, name, code_obj):
         if name == 'arguments':
             code_obj.properties['arguments'] = self.arguments
             return True
         elif name == 'argument':
-            tab_name = "".join(self.curr_arg)
+            tab_name = self.get_char_data()
             self.arguments.append(tab_name)
-            self.curr_arg = []
         return False
-
-    def char_data(self, data):
-        self.curr_arg.append(data)
 
 # end of class ArgumentsCodeHandler
 

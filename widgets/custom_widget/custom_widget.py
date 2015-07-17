@@ -7,39 +7,37 @@ Custom wxWindow objects
 """
 
 import wx
-import common, misc
+import common
+import misc
 from tree import Tree
+from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import *
 from edit_windows import ManagedBase
 
 
 class ArgumentsProperty(GridProperty):
     def write(self, outfile, tabs):
-        from xml.sax.saxutils import escape
         if self.getter:
             values = self.getter()
         else:
             values = self.owner[self.name][0]()
         if values:
-            write = outfile.write
-            write('    ' * tabs + '<arguments>\n')
-            stab = '    ' * (tabs + 1)
+            inner_xml = u''
             for value in values:
-                write('%s<argument>%s</argument>\n' % (
-                    stab, escape(value[0])))
-            write('    ' * tabs + '</arguments>\n')
+                inner_xml += common.format_xml_tag(u'argument', value[0], tabs + 1)
+            stmt = common.format_xml_tag(
+                u'arguments', inner_xml, tabs, is_xml=True)
+            outfile.write(stmt)
 
 # end of class ArgumentsProperty
 
 
-class ArgumentsHandler(object):
+class ArgumentsHandler(BaseXmlBuilderTagHandler):
+
     def __init__(self, parent):
+        super(ArgumentsHandler, self).__init__()
         self.parent = parent
         self.arguments = []
-        self.curr_arg = []
-
-    def start_elem(self, name, attrs):
-        pass
 
     def end_elem(self, name):
         if name == 'arguments':
@@ -47,12 +45,9 @@ class ArgumentsHandler(object):
             self.parent.properties['arguments'].set_value(self.arguments)
             return True
         elif name == 'argument':
-            self.arguments.append(["".join(self.curr_arg)])
-            self.curr_arg = []
+            char_data = self.get_char_data()
+            self.arguments.append(char_data)
         return False
-
-    def char_data(self, data):
-        self.curr_arg.append(data)
 
 # end of class ArgumentsHandler
 

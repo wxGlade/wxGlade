@@ -8,14 +8,27 @@ Classes to handle and display the structure of a wxGlade app
 
 import logging
 import os.path
+import sys
+import StringIO
+import time
 import types
 import wx
 
-from xml.sax.saxutils import quoteattr
 import misc
 import common
 import compat
 import config
+
+
+class SlotNode(object):
+    """\
+    To write a placeholder for an empty sizer slot
+    """
+
+    def write(self, outfile, tabs):
+        stmt = common.format_xml_tag(
+            u'object', '', tabs, **{'class': 'sizerslot'})
+        outfile.write(stmt)
 
 
 class Tree(object):
@@ -26,6 +39,7 @@ class Tree(object):
     """
     class Node(object):
         __empty_win = None
+
         def __init__(self, widget=None, children=None):
             self.widget = widget
             self.children = children
@@ -67,67 +81,82 @@ class Tree(object):
             import edit_sizers
             fwrite = outfile.write
             assert self.widget is not None
-            w = self.widget
-            classname = getattr(w, '_classname', w.__class__.__name__)
-            # ALB 2005-11-19: to disable custom class code generation
-            # (for panels...)
-            no_custom = ""
-            if getattr(w, 'no_custom_class', False):
-                no_custom = ' no_custom_class="1"'
-            fwrite('    ' * tabs + '<object class=%s name=%s base=%s%s>\n'
-                   % (quoteattr(w.klass), quoteattr(w.name),
-                      quoteattr(classname), no_custom))
-            
-            def write_by_omitter(widget, name, file, tabs):
-                """
-                Write to given output file:
-                - value of property
-                - values of properties that previous can block
-                - any omitter can be blocked as well
-                """
-                widget.properties[name].write(file, tabs)
-                if getattr(widget, 'get_property_blocking', None):
-                    items = widget.get_property_blocking(name)
-                    if items:
-                        for name in items:
-                            write_by_omitter(widget, name, file, tabs)
-                                            
-            for p in w.properties:
-                if not getattr(w.properties[p], '_omitter', None):
-                    write_by_omitter(w, p, outfile, tabs+1)
+            classname = getattr(self.widget, '_classname',
+                                self.widget.__class__.__name__)
+            # to disable custom class code generation (for panels...)
+            if getattr(self.widget, 'no_custom_class', False):
+                no_custom = u' no_custom_class="1"'
+            else:
+                no_custom = ""
+            outer_tabs = u'    ' * tabs
+            fwrite(u'%s<object %s %s %s%s>\n' % (
+                outer_tabs,
+                common.format_xml_attrs(**{'class': self.widget.klass}),
+                common.format_xml_attrs(name=self.widget.name),
+                common.format_xml_attrs(base=classname),
+                no_custom))
+
+            for prop in self.widget.properties:
+                if not getattr(self.widget.properties[prop], '_omitter',
+                               None):
+                    self.write_by_omitter(self.widget, prop, outfile,
+                                          tabs + 1)
 
             if class_names is not None and \
-                   w.__class__.__name__ != 'CustomWidget':
-                class_names.add(w.klass)
+                            self.widget.__class__.__name__ != 'CustomWidget':
+                class_names.add(self.widget.klass)
 
-            if isinstance(w, edit_sizers.SizerBase):
-                maxpos = len(w.children)
-                children = self.children is not None and self.children or []
-                tmp = {}
-                for c in children:
-                    tmp[c.widget.pos] = c
-                children = []
-                class SlotNode(object):
-                    def write(self, outfile, tabs):
-                        fwrite('    ' * tabs + '<object class="sizerslot" />\n')
-                for i in range(1, maxpos):
-                    children.append(tmp.get(i, SlotNode()))
-                #if self.children is not None:
-                #    for c in self.children:
-                for c in children:
-                    if hasattr(c, 'widget'):
-                        fwrite('    ' * (tabs+1) +
-                               '<object class="sizeritem">\n')
-                        sp = c.widget.sizer_properties
-                        for p in sp: sp[p].write(outfile, tabs+2)
-                        c.write(outfile, tabs+2, class_names)
-                        fwrite('    ' * (tabs+1) + '</object>\n')
+            # sort children by sizer position and add "sizerlots" for empty
+            # positions
+            if isinstance(self.widget, edit_sizers.SizerBase):
+                # number of sizer slots from parent object
+                sizer_slots = len(self.widget.children)
+
+                # children = self.children is not None and self.children or []
+                children = self.children or []
+
+                # create list of children / "sizerslots" based on sizer
+                # position
+                children_by_position = {}
+                for child in children:
+                    children_by_position[child.widget.pos] = child
+
+                # convert back to list
+                children = [children_by_position.get(pos, SlotNode())
+                            for pos in range(1, sizer_slots)]
+
+
+                for child in children:
+                    if hasattr(child, 'widget'):
+                        inner_xml = StringIO.StringIO()
+                        for prop in child.widget.sizer_properties.values():
+                            prop.write(inner_xml, tabs + 2)
+                        child.write(inner_xml, tabs + 2, class_names)
+                        stmt = common.format_xml_tag(
+                            u'object', inner_xml.getvalue(), tabs + 1,
+                            is_xml=True, **{'class': 'sizeritem'}
+                        )
+                        fwrite(stmt)
                     else:
-                        c.write(outfile, tabs+1)
+                        child.write(outfile, tabs + 1)
             elif self.children is not None:
-                for c in self.children:
-                    c.write(outfile, tabs+1, class_names)
-            fwrite('    ' * tabs + '</object>\n')
+                for child in self.children:
+                    child.write(outfile, tabs + 1, class_names)
+            fwrite(u'%s</object>\n' % outer_tabs)
+
+        def write_by_omitter(self, widget, name, file, tabs):
+            """\
+            Write to given output file:
+            - value of property
+            - values of properties that previous can block
+            - any omitter can be blocked as well
+            """
+            widget.properties[name].write(file, tabs)
+            if getattr(widget, 'get_property_blocking', None):
+                items = widget.get_property_blocking(name)
+                if items:
+                    for name in items:
+                        self.write_by_omitter(widget, name, file, tabs)
 
     # end of class Node
 
@@ -229,11 +258,10 @@ class Tree(object):
         This function writes unicode to the outfile.
         """
         if outfile is None:
-            import sys
             outfile = sys.stdout
-        from time import asctime
-        outfile.write(u'<?xml version="1.0"?>\n<!-- generated by wxGlade %s '
-                      u'on %s -->\n\n' % (config.version, asctime()))
+        outfile.write(u'<?xml version="1.0"?>\n'
+                      u'<!-- generated by wxGlade %s on %s -->\n\n' %
+                      (config.version, time.asctime()))
         outpath = os.path.normpath(
             os.path.expanduser(self.app.output_path.strip()))
         name = self.app.get_name()
@@ -254,25 +282,40 @@ class Tree(object):
         source_ext = '.' + self.app.source_ext
         header_ext = '.' + self.app.header_ext
         for_version = str(self.app.for_version)
-        outfile.write(u'<application path=%s name=%s class=%s option=%s '
-                      u'language=%s top_window=%s encoding=%s '
-                      u'use_gettext=%s overwrite=%s '
-                      u'use_new_namespace="1" for_version=%s is_template=%s '
-                      u'indent_amount=%s indent_symbol=%s '
-                      u'source_extension=%s header_extension=%s>\n'
-                      % tuple([quoteattr(common.encode_to_unicode(i)) for i in
-                               (outpath, name, klass, option, language,
-                                top_window, encoding, use_gettext,
-                                overwrite, for_version,
-                                is_template, indent_amount, indent_symbol,
-                                source_ext, header_ext)]))
+
+        attrs = {
+            'path': outpath,
+            'name': name,
+            'class': klass,
+            'option': option,
+            'language': language,
+            'top_window': top_window,
+            'encoding': encoding,
+            'use_gettext': use_gettext,
+            'overwrite': overwrite,
+            'use_new_namespace': 1,
+            'for_version': for_version,
+            'is_template': is_template,
+            'indent_amount': indent_amount,
+            'indent_symbol': indent_symbol,
+            'source_extension': source_ext,
+            'header_extension': header_ext,
+        }
+
+        inner_xml = StringIO.StringIO()
+
         if self.app.is_template and getattr(self.app, 'template_data', None):
-            self.app.template_data.write(outfile, tabs+1)
+            self.app.template_data.write(inner_xml, tabs + 1)
+
         class_names = set()
         if self.root.children is not None:
             for c in self.root.children:
-                c.write(outfile, tabs + 1, class_names)
-        outfile.write('</application>\n')
+                c.write(inner_xml, tabs + 1, class_names)
+
+        stmt = common.format_xml_tag(
+            u'application', inner_xml.getvalue(), is_xml=True, **attrs)
+        outfile.write(stmt)
+
         return class_names
 
     def change_node(self, node, widget):

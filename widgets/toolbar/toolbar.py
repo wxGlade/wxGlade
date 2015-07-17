@@ -7,6 +7,7 @@ wxToolBar objects
 """
 
 import re
+import StringIO
 import wx
 from wx.lib.filebrowsebutton import FileBrowseButton
 
@@ -20,6 +21,7 @@ from tool import *
 from widget_properties import *
 from edit_windows import EditBase, PreviewMixin, EditStylesMixin
 from gui_mixins import BitmapMixin
+from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 
 class _MyBrowseButton(FileBrowseButton):
@@ -456,13 +458,54 @@ class ToolsProperty(Property):
             common.app_tree.app.saved = False # update the status of the app
 
     def write(self, outfile, tabs):
-        fwrite = outfile.write
-        fwrite('    ' * tabs + '<tools>\n')
+        inner_xml = StringIO.StringIO()
         for tool in self.owner[self.name][0]():
-            tool.write(outfile, tabs+1)
-        fwrite('    ' * tabs + '</tools>\n')
+            tool.write(inner_xml, tabs + 1)
+        stmt = common.format_xml_tag(
+            u'tools', inner_xml.getvalue(), tabs, is_xml=True)
+        outfile.write(stmt)
 
 # end of class ToolsProperty
+
+
+class ToolsHandler(BaseXmlBuilderTagHandler):
+    itemattrs = ['label', 'id', 'short_help', 'long_help',
+                 'bitmap1', 'bitmap2', 'type', 'handler']
+
+    def __init__(self, owner):
+        super(ToolsHandler, self).__init__()
+        self.owner = owner
+        self.tools = []
+        self.curr_tool = None
+        self.curr_index = -1
+
+    def start_elem(self, name, attrs):
+        if name == 'tools':
+            return
+        if name == 'tool':
+            self.curr_tool = Tool()
+        else:
+            try:
+                self.curr_index = self.itemattrs.index(name)
+            except ValueError:
+                self.curr_index = -1
+                # just ignore the attributes we don't know
+
+    def end_elem(self, name):
+        if name == 'tool':
+            self.tools.append(self.curr_tool)
+        if name == 'tools':
+            self.owner.set_tools(self.tools)
+            return True
+
+    def char_data(self, data):
+        super(ToolsHandler, self).char_data(data)
+        if self.curr_index >= 0:
+            char_data = self.get_char_data()
+            setattr(self.curr_tool,
+                    self.itemattrs[self.curr_index], char_data)
+
+# end of class ToolsHandler
 
 
 class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
@@ -749,38 +792,6 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             self.pwidget.SetTitle(misc.design_title(misc.wxstr(self.name)))
 
     def get_property_handler(self, name):
-        class ToolsHandler:
-            itemattrs = ['label', 'id', 'short_help', 'long_help',
-                         'bitmap1', 'bitmap2', 'type', 'handler']
-            def __init__(self, owner):
-                self.owner = owner
-                self.tools = []
-                self.curr_tool = None
-                self.curr_index = -1
-            def start_elem(self, name, attrs):
-                if name == 'tools':
-                    return
-                if name == 'tool':
-                    self.curr_tool = Tool()
-                else:
-                    try:
-                        self.curr_index = self.itemattrs.index(name)
-                    except ValueError:
-                        self.curr_index = -1
-                        # just ignore the attributes we don't know
-##                         from xml_parse import XmlParsingError
-##                         raise XmlParsingError, _("invalid tool attribute")
-            def end_elem(self, name):
-                if name == 'tool':
-                    self.tools.append(self.curr_tool)
-                if name == 'tools':
-                    self.owner.set_tools(self.tools)
-                    return True
-            def char_data(self, data):
-                if self.curr_index >= 0:
-                    setattr(self.curr_tool,
-                            self.itemattrs[self.curr_index], data)
-                
         if name == 'tools':
             return ToolsHandler(self)
         return None

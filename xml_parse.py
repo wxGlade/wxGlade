@@ -1,24 +1,7 @@
 """
 Parsers used to load an app and to generate the code from a XML file.
 
-Custom tag handler interface called by CodeWriter::
-    class CustomTagHandler:
-         def start_elem(self, name, attrs):
-             pass
-         def end_elem(self, name, obj):
-             return True -> the handler must be removed from the Stack
-         def char_data(self, data):
-             return False -> no further processing needed
-
-Custom tag handler interface called by XmlWidgetBuilder::
-    class CustomTagHandler:
-         def start_elem(self, name, attrs):
-             pass
-         def end_elem(self, name):
-             return True -> the handler must be removed from the Stack
-         def char_data(self, data):
-             return False -> no further processing needed
-
+See L{wcodegen.taghandler} for custom tag handler base classes.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2015 Carsten Grohmann
@@ -382,7 +365,7 @@ class XmlWidgetBuilder(XmlParser):
         else:
             # end of a property or error
             # 1: set _curr_prop value
-            data = common.encode_from_xml("".join(self._curr_prop_val))
+            data = "".join(self._curr_prop_val)
             if data:
                 try:
                     handler = self.top().prop_handlers.top()
@@ -770,15 +753,8 @@ class CodeWriter(XmlParser):
                 if inputfile:
                     inputfile.close()
 
-    def startElement(self, name, attrs_impl):
+    def startElement(self, name, attrs):
         # check only existence of attributes not the logical correctness
-        attrs = {}
-
-        # turn all the attribute values from unicode to str objects
-        encoding = self._get_encoding(attrs_impl)
-        for attr, val in attrs_impl.items():
-            attrs[attr] = common.encode_from_xml(val, encoding)
-
         if name == 'application':
             # get properties of the app
             self._appl_started = True
@@ -873,13 +849,7 @@ class CodeWriter(XmlParser):
         else:
             # end of a property or error
             # 1: set _curr_prop value
-            try:
-                encoding = self.app_attrs['encoding']
-                unicode('a', encoding)
-            except (KeyError, LookupError):
-                encoding = config.default_encoding
-            data = common.encode_from_xml(u"".join(self._curr_prop_val),
-                                           encoding)
+            data = "".join(self._curr_prop_val)
             if data:
                 try:
                     handler = self.top().prop_handlers.top()

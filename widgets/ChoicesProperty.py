@@ -9,52 +9,54 @@ list_box
 
 import widget_properties
 import common
+from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 
 class ChoicesProperty(widget_properties.GridProperty):
     def write(self, outfile, tabs):
-        from xml.sax.saxutils import escape
-        write = outfile.write
-        write('    ' * tabs + '<choices>\n')
-        tab_s = '    ' * (tabs+1)
+        inner_xml = u''
         for val in self.get_value():
-            v = common.encode_to_unicode(val[0])
+            value = common.encode_to_unicode(val[0])
             try:
                 checked = int(val[1])
             except (IndexError, ValueError):
                 checked = None
             if checked is None:
-                write('%s<choice>%s</choice>\n' % (tab_s, escape(v)))
+                inner_xml += common.format_xml_tag(
+                    u'choice', value, tabs + 1)
             else:
-                write('%s<choice checked="%d">%s</choice>\n' % \
-                      (tab_s, checked, escape(v)))
-        write('    ' * tabs + '</choices>\n')
+                inner_xml += common.format_xml_tag(
+                    u'choice', value, tabs + 1, checked="%s" % checked)
+        stmt = common.format_xml_tag(
+            u'choices', inner_xml, tabs, is_xml=True)
+        outfile.write(stmt)
 
 # end of class ChoicesProperty
 
 
-class ChoicesHandler(object):
+class ChoicesHandler(BaseXmlBuilderTagHandler):
+
     def __init__(self, owner):
+        super(ChoicesHandler, self).__init__()
         self.choices = []
-        self.curr_choice = []
         self.cur_checked = None
         self.owner = owner
-        
+
     def start_elem(self, name, attrs):
+        super(ChoicesHandler, self).start_elem(name, attrs)
         if name == 'choice':
             try:
                 self.cur_checked = int(attrs['checked'])
             except (KeyError, ValueError):
                 self.cur_checked = None
-    
+
     def end_elem(self, name):
         if name == 'choice':
+            char_data = self.get_char_data()
             if self.cur_checked is None:
-                self.choices.append(["".join(self.curr_choice)])
+                self.choices.append([char_data])
             else:
-                self.choices.append(["".join(self.curr_choice),
-                                     self.cur_checked])
-            self.curr_choice = []
+                self.choices.append([char_data, self.cur_checked])
             self.cur_checked = None
         elif name == 'choices':
             self.owner.set_choices(self.choices)
@@ -62,9 +64,6 @@ class ChoicesHandler(object):
                 self.owner.get_choices())
             self.choices = []
             return True # remove the handler
-        
-    def char_data(self, data):
-        self.curr_choice.append(data)
 
 # end of class ChoicesHandler
 

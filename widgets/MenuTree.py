@@ -6,6 +6,9 @@ A class to represent a menu on a wxMenuBar
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+from common import format_xml_tag
+import StringIO
+
 class MenuTree(object):
     """\
     A class to represent a menu on a wxMenuBar
@@ -24,47 +27,54 @@ class MenuTree(object):
             self.parent = None
             
         def write(self, outfile, tabs, top=False):
-            from xml.sax.saxutils import escape, quoteattr
-            import common
-            fwrite = outfile.write
-            tstr = '    ' * (tabs+1)
-            label = common.encode_to_unicode(self.label)
-            help_str = common.encode_to_unicode(self.help_str)
+            inner_xml = u''
             if not top and not self.children:
-                fwrite('%s<item>\n' % ('    ' * tabs))
-                label = escape(label)
-                if label: fwrite('%s<label>%s</label>\n' % (tstr, label))
-                id = escape(self.id)
-                if id: fwrite('%s<id>%s</id>\n' % (tstr, id))
-                name = escape(self.name)
-                if name: fwrite('%s<name>%s</name>\n' % (tstr, name))
-                help_str = escape(help_str)
-                if help_str: fwrite('%s<help_str>%s</help_str>\n' % (tstr,
-                                                                     help_str))
-                try: checkable = int(self.checkable)
-                except: checkable = 0
-                if checkable:
-                    fwrite('%s<checkable>%s</checkable>\n' % (tstr, checkable))
-                try: radio = int(self.radio)
-                except: radio = 0
-                if radio:
-                    fwrite('%s<radio>%s</radio>\n' % (tstr, radio))
-                # ALB 2004-12-05
-                handler = escape(self.handler.strip())
-                if handler:
-                    fwrite('%s<handler>%s</handler>\n' % (tstr, handler))
-                fwrite('%s</item>\n' % ('    ' * tabs))
-            else:
-                name = quoteattr(self.name)
-                fwrite('    ' * tabs + '<menu name=%s ' % name)
+                if self.label:
+                    inner_xml += format_xml_tag(
+                        u'label', self.label, tabs + 1)
                 if self.id:
-                    fwrite('itemid=%s ' % quoteattr(self.id))
+                    inner_xml += format_xml_tag(u'id', self.id, tabs + 1)
+                if self.name:
+                    inner_xml += format_xml_tag(u'name', self.name, tabs + 1)
+                if self.help_str:
+                    inner_xml += format_xml_tag(
+                        u'help_str', self.help_str, tabs + 1)
+                try:
+                    checkable = int(self.checkable)
+                except ValueError:
+                    checkable = 0
+                if checkable:
+                    inner_xml += format_xml_tag(
+                        u'checkable', checkable, tabs + 1)
+
+                try:
+                    radio = int(self.radio)
+                except ValueError:
+                    radio = 0
+                if radio:
+                    inner_xml += format_xml_tag(u'radio', radio, tabs + 1)
+
                 if self.handler:
-                    fwrite('handler=%s ' % quoteattr(self.handler))
-                fwrite('label=%s>\n' % (quoteattr(label)))
-                for c in self.children: c.write(outfile, tabs+1)
-                fwrite('    ' * tabs + '</menu>\n')
-                
+                    inner_xml += format_xml_tag(
+                        u'handler', self.handler, tabs + 1)
+                stmt = format_xml_tag(
+                    u'item', inner_xml, tabs, is_xml=True)
+            else:
+                attrs = {'name': self.name}
+                if self.id:
+                    attrs[u'itemid'] = self.id
+                if self.handler:
+                    attrs[u'handler'] = self.handler
+                attrs[u'label'] = self.label
+                value = StringIO.StringIO()
+                for c in self.children:
+                    c.write(value, tabs + 1)
+                inner_xml = value.getvalue()
+                stmt = format_xml_tag(
+                    u'menu', inner_xml, tabs, is_xml=True, **attrs)
+
+            outfile.write(stmt)
+
     #end of class Node
     
     def __init__(self, name, label, id="", help_str="", handler=""):

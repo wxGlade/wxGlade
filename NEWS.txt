@@ -2,7 +2,7 @@ Version 0.7.1 - 2015-XX-XX:
 General:
   - Open wxGlade windows in the upper left corner if wxGlade is starting
     the first time
-  - Change internal string handling to Unicode partially
+  - Change internal string handling to Unicode
   - Show logged exceptions in wxGlade bug dialog
   - Store generated source files in the selected encoding
   - Add support for 3-state checkboxes
@@ -31,6 +31,8 @@ Bugs:
   - Fix incorrect handling of styles only supported by a specific wx version
   - Fix error during preview of classed with custom names (sf bug #165)
   - Don't ignore disabled gettext support (Thanks to Udi Fuchs)
+  - Fix UnicodeDecodeError when saving project using non ASCII characters in
+    menu items (sf bug #166)
   - Unicode error during update of an existing source file (sf bug #167)
   - Fix Designer not displaying buttons two lines correctly (sf bug #169)
   - Fix generated code for wxListBox

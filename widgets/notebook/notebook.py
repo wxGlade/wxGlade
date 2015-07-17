@@ -14,6 +14,7 @@ from tree import Tree
 from widget_properties import *
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
+from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from xml_parse import XmlParsingError
 
 try:
@@ -103,15 +104,10 @@ class NotebookVirtualSizer(Sizer):
 
 class NotebookPagesProperty(GridProperty):
     def write(self, outfile, tabs):
-        from xml.sax.saxutils import escape, quoteattr
-        write = outfile.write
-        write('    ' * tabs + '<tabs>\n')
-        tab_s = '    ' * (tabs + 1)
-        import widget_properties
+        inner_xml = u''
         value = self.get_value()
         for i in range(len(value)):
             val = value[i]
-            v = escape(common.encode_to_unicode(val[0]))
             window = None
             try:
                 t = self.owner.tabs[i]
@@ -120,22 +116,21 @@ class NotebookPagesProperty(GridProperty):
             except:
                 pass
             if window:
-                write('%s<tab window=%s>' % (tab_s, quoteattr(window.name)))
-                write(v)
-                write('</tab>\n')
-        write('    ' * tabs + '</tabs>\n')
+                inner_xml += common.format_xml_tag(
+                    u'tab', val[0], tabs + 1, window=window.name)
+        stmt = common.format_xml_tag(
+            u'tabs', inner_xml, tabs, is_xml=True)
+        outfile.write(stmt)
 
 # end of class NotebookPagesProperty
 
 
-class TabsHandler(object):
+class TabsHandler(BaseXmlBuilderTagHandler):
+
     def __init__(self, parent):
+        super(TabsHandler, self).__init__()
         self.parent = parent
         self.tab_names = []
-        self.curr_tab = []
-
-    def start_elem(self, name, attrs):
-        pass
 
     def end_elem(self, name):
         if name == 'tabs':
@@ -145,12 +140,9 @@ class TabsHandler(object):
                                                       self.tab_names])
             return True
         elif name == 'tab':
-            self.tab_names.append("".join(self.curr_tab))
-            self.curr_tab = []
+            char_data = self.get_char_data()
+            self.tab_names.append(char_data)
         return False
-
-    def char_data(self, data):
-        self.curr_tab.append(data)
 
 # end of class TabsHandler
 

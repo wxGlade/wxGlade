@@ -60,17 +60,13 @@ class Template(object):
                 self.instructions=''
 
     def write(self, outfile, tabs):
-        fwrite = outfile.write
-        t1 = '    ' * tabs
-        t2 = '    ' * (tabs+1)
-        fwrite(t1 + '<templatedata>\n')
-        fwrite(t2 + '<author>%s</author>\n' % \
-               saxutils.escape(common.encode_to_unicode(self.author)))
-        fwrite(t2 + '<description>%s</description>\n' % \
-               saxutils.escape(common.encode_to_unicode(self.description)))
-        fwrite(t2 + '<instructions>%s</instructions>\n' % \
-               saxutils.escape(common.encode_to_unicode(self.instructions)))
-        fwrite(t1 + '</templatedata>\n')
+        outer_tab = u'    ' * tabs
+        stmt = u'%s<templatedata>\n' % outer_tab
+        stmt += common.format_xml_tag(u'author', self.author, tabs + 1)
+        stmt += common.format_xml_tag(u'description', self.description, tabs + 1)
+        stmt += common.format_xml_tag(u'instructions', self.instructions, tabs + 1)
+        stmt += u'%s</templatedata>\n' % outer_tab
+        outfile.write(stmt)
         
 # end of class Template
 

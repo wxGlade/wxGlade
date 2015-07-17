@@ -21,9 +21,42 @@ import common
 import compat
 import config
 import decorators
+from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 # event handling support
 from events_mixin import EventsMixin
+
+
+class FontHandler(BaseXmlBuilderTagHandler):
+
+    item_attrs = {'size': 0, 'family': 1, 'style': 2, 'weight': 3,
+                  'underlined': 4, 'face': 5}
+
+    strip_char_data = True
+
+    def __init__(self, owner):
+        super(FontHandler, self).__init__()
+        self.owner = owner
+        self.props = ['' for i in range(6)]
+        self.index = 0
+
+    def start_elem(self, name, attrs):
+        self.index = self.item_attrs.get(name, 5)
+
+    def end_elem(self, name):
+        if name == 'font':
+            self.owner.properties['font'].set_value(
+                repr(self.props))
+            self.owner.properties['font'].toggle_active(True)
+            self.owner.set_font(repr(self.props))
+            return True # to remove this handler
+
+    def char_data(self, data):
+        super(FontHandler, self).char_data(data)
+        char_data = self.get_char_data()
+        self.props[self.index] = char_data
+
+# end of class FontHandler
 
 
 class EditBase(EventsMixin):
@@ -815,25 +848,6 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
 
     def get_property_handler(self, name):
         if name == 'font':
-            class FontHandler:
-                def __init__(self, owner):
-                    self.owner = owner
-                    self.props = [ '' for i in range(6) ]
-                    self.index = 0
-                def start_elem(self, name, attrs):
-                    index = { 'size': 0, 'family': 1, 'style': 2, 'weight': 3,
-                              'underlined': 4, 'face': 5 }
-                    self.index = index.get(name, 5)
-                def end_elem(self, name):
-                    if name == 'font':
-                        self.owner.properties['font'].set_value(
-                            repr(self.props))
-                        self.owner.properties['font'].toggle_active(True)
-                        self.owner.set_font(repr(self.props))
-                        return True # to remove this handler
-                def char_data(self, data):
-                    self.props[self.index] = str(data.strip())
-            # end of class FontHandler
             return FontHandler(self)
         elif name == 'extraproperties':
             import code_property
