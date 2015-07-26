@@ -114,14 +114,12 @@ else:
 
 class SelectionTag(wx.Window):
     """\
-    This is one of the small black squares that appear at the corners of the
+    This is one of the small blue squares that appear at the corners of the
     active widgets
     """
-    def __init__(self, parent, pos=None):
+    def __init__(self, parent):
         kwds = {'size': (7, 7)}
-        if pos:
-            kwds['position'] = pos
-        wx.Window.__init__(self, parent, -1, **kwds)
+        wx.Window.__init__(self, parent, wx.ID_ANY, **kwds)
         self.SetBackgroundColour(wx.BLUE)
         self.Hide()
 
