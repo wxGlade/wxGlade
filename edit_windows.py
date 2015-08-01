@@ -885,6 +885,7 @@ class ManagedBase(WindowBase):
     option, flag, and border
 
     @ivar sel_marker: Selection markers
+    @type sel_marker: SelectionMarker
 
     @ivar self.sizer_properties: Properties relative to the sizer which
                                  controls this window
