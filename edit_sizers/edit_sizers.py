@@ -217,11 +217,29 @@ class SizerSlot(object):
     """\
     A window to represent a slot in a sizer
 
+    @ivar _backgroundBuffer: Background buffer to paint during idle loop
+    @type _backgroundBuffer: wx.Bitmap
+
+    @ivar _reDrawBackground: Redraw background buffer
+    @type _reDrawBackground: bool
+
     @ivar _logger: Class specific logging instance
 
     @ivar menu: Content popup menu as a list of tuples with label and
                 function
     @type menu: list[(str, func)]
+
+    @ivar parent: Parent object
+    @type parent: EditFrame
+
+    @ivar pos: item's position in the sizer
+    @type pos: int
+
+    @ivar sizer: Sizer object
+    @type sizer: SizerBase
+
+    @ivar widget: Reference to the widget resembling the slot
+    @type widget: wx.Window
     """
 
     def __init__(self, parent, sizer, pos=0):
@@ -229,11 +247,13 @@ class SizerSlot(object):
         self._logger = logging.getLogger(self.__class__.__name__)
 
         # initialise instance
-        self.widget = None  # reference to the widget resembling the slot
+        self.widget = None
         self.sizer = sizer
         self.parent = parent
         self.pos = pos
         self.menu = None
+        self._backgroundBuffer = None
+        self._reDrawBackground = False
 
     def create_widget(self):
         style = wx.FULL_REPAINT_ON_RESIZE
@@ -241,25 +261,27 @@ class SizerSlot(object):
                                 style=style)
         self.widget.SetBackgroundColour(wx.LIGHT_GREY)
         self.widget.SetAutoLayout(True)
-        wx.EVT_PAINT(self.widget, self.on_paint)
-        wx.EVT_RIGHT_DOWN(self.widget, self.popup_menu)
-        wx.EVT_LEFT_DOWN(self.widget, self.drop_widget)
-        wx.EVT_MIDDLE_DOWN(self.widget, self.select_and_paste)
-        wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
-        wx.EVT_LEAVE_WINDOW(self.widget, self.on_leave)
+        self.widget.Bind(wx.EVT_PAINT, self.on_paint)
+        self.widget.Bind(wx.EVT_IDLE, self.on_idle)
+        self.widget.Bind(wx.EVT_SIZE, self.on_size)
+        self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.drop_widget)
+        self.widget.Bind(wx.EVT_MIDDLE_DOWN, self.select_and_paste)
+        self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
+        self.widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
+        self.widget.Bind(wx.EVT_KEY_DOWN, self.on_key_down)
 
-        def on_key_down(event):
-            evt_flags = 0
-            if event.ControlDown():
-                evt_flags = wx.ACCEL_CTRL
-            evt_key = event.GetKeyCode()
-            for flags, key, function in misc.accel_table:
-                if evt_flags == flags and evt_key == key:
-                    wx.CallAfter(function)
-                    break
-                    # event.Skip()
+        self.draw_background_buffer()
 
-        wx.EVT_KEY_DOWN(self.widget, on_key_down)
+    def on_key_down(self, event):
+        evt_flags = 0
+        if event.ControlDown():
+            evt_flags = wx.ACCEL_CTRL
+        evt_key = event.GetKeyCode()
+        for flags, key, func in misc.accel_table:
+            if evt_flags == flags and evt_key == key:
+                wx.CallAfter(func)
+                break
 
     def show_widget(self, yes):
         if yes and not self.widget:
@@ -285,38 +307,62 @@ class SizerSlot(object):
         event.Skip()
 
     def on_paint(self, event):
-        dc = wx.PaintDC(self.widget)
-        dc.BeginDrawing()
-        dc.SetBrush(wx.Brush("black", wx.FDIAGONAL_HATCH))
-        dc.SetPen(wx.BLACK_PEN)
-        w, h = self.widget.GetClientSize()
-        dc.DrawRectangle(0, 0, w, h)
-        dc.EndDrawing()
+        """\
+        Handle paint request and draw prepared image onto the window
+        """
+        dc = wx.BufferedPaintDC(self.widget, self._backgroundBuffer)
+
+    def draw_background_buffer(self):
+        """\
+        Redraw the background and store in into a the bitmap buffer
+        L{_backgroundBuffer}.
+        """
+        size = self.widget.GetClientSize()
+        self._backgroundBuffer = wx.EmptyBitmap(size.width, size.height)
+        dc = wx.BufferedDC(None, self._backgroundBuffer)
+        # fill background first
+        dc.SetBackground(wx.Brush(wx.LIGHT_GREY))
+        dc.Clear()
+        # draw hatched lines
+        if self.pos % 2:
+            dc.SetBackground(wx.Brush(wx.BLACK, wx.FDIAGONAL_HATCH))
+        else:
+            dc.SetBackground(wx.Brush(wx.BLACK, wx.BDIAGONAL_HATCH))
+        dc.Clear()
+        self._reDrawBackground = False
 
     def on_size(self, event):
-        self.widget.Refresh()
+        """\
+        Redraw background during next idle event
+        """
+        self._reDrawBackground = True
+
+    def on_idle(self, event):
+        """\
+        Prepare the background during this idle event
+        """
+        if self._reDrawBackground:
+            self.draw_background_buffer()
+            self.widget.Refresh(False)
 
     def popup_menu(self, event):
         if not self.menu:
             self.menu = wx.Menu(_('Options'))
-            REMOVE_ID, PASTE_ID = wx.NewId(), wx.NewId()
+            REMOVE_ID = wx.NewId()
+            PASTE_ID = wx.NewId()
+            PREVIEW_ID = wx.NewId()
             if not self.sizer.is_virtual():
                 # we cannot remove items from virtual sizers
                 misc.append_item(self.menu, REMOVE_ID, _('Remove\tDel'),
                                  wx.ART_DELETE)
             misc.append_item(self.menu, PASTE_ID, _('Paste\tCtrl+V'),
                              wx.ART_PASTE)
-
-            def bind(method):
-                return lambda e: wx.CallAfter(method)
-
-            wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-            wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
-
-            PREVIEW_ID = wx.NewId()
             self.menu.AppendSeparator()
             misc.append_item(self.menu, PREVIEW_ID, _('Preview'))
-            wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
+
+            wx.EVT_MENU(self.widget, REMOVE_ID, self.remove)
+            wx.EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
+            wx.EVT_MENU(self.widget, PREVIEW_ID, self.preview_parent)
 
         self.setup_preview_menu()
         self.widget.PopupMenu(self.menu, event.GetPosition())
@@ -346,13 +392,13 @@ class SizerSlot(object):
         common.widgets[common.widget_to_add](self.parent, self.sizer,
                                              self.pos)
         common.widget_to_add = None
-        common.app_tree.app.saved = False  # update the status of the app
+        common.app_tree.app.saved = False
 
     def clipboard_paste(self, *args):
         import clipboard
 
         if clipboard.paste(self.parent, self.sizer, self.pos):
-            common.app_tree.app.saved = False  # update the status of the app
+            common.app_tree.app.saved = False
             self.widget.Hide()
 
     def select_and_paste(self, *args):
@@ -375,7 +421,7 @@ class SizerSlot(object):
             self.widget = None
         if misc.focused_widget is self:
             misc.focused_widget = None
-        common.app_tree.app.saved = False  # update the status of the app
+        common.app_tree.app.saved = False
 
     def update_pos(self, value):
         """\
@@ -383,15 +429,16 @@ class SizerSlot(object):
         when another widget is moved
         """
         self.pos = value
+        self._reDrawBackground = True
 
     def setup_preview_menu(self):
         p = misc.get_toplevel_widget(self.sizer)
         if p is not None:
             item = list(self.menu.GetMenuItems())[-1]
             if p.preview_is_visible():
-                item.SetText(_('Close preview') + ' (%s)\tCtrl+P' % p.name)
+                item.SetText(_('Close preview (%s)\tCtrl+P') % p.name)
             else:
-                item.SetText(_('Preview') + ' (%s)\tCtrl+P' % p.name)
+                item.SetText(_('Preview (%s)\tCtrl+P') % p.name)
 
     def preview_parent(self):
         p = misc.get_toplevel_widget(self.sizer)
