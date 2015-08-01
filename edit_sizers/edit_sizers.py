@@ -341,6 +341,7 @@ class SizerSlot(object):
         common.adding_widget = False
         common.adding_sizer = False
         self.widget.SetCursor(wx.NullCursor)
+        self.widget.Hide()
         # call the appropriate builder
         common.widgets[common.widget_to_add](self.parent, self.sizer,
                                              self.pos)
@@ -352,7 +353,7 @@ class SizerSlot(object):
 
         if clipboard.paste(self.parent, self.sizer, self.pos):
             common.app_tree.app.saved = False  # update the status of the app
-            # self._logger.debug('%s', misc.focused_widget)
+            self.widget.Hide()
 
     def select_and_paste(self, *args):
         """\
@@ -366,10 +367,12 @@ class SizerSlot(object):
     def delete(self, delete_widget=True):
         if self.menu:
             self.menu.Destroy()
+            self.menu = None
         if misc.currently_under_mouse is self.widget:
             misc.currently_under_mouse = None
         if delete_widget and self.widget:
             self.widget.Destroy()
+            self.widget = None
         if misc.focused_widget is self:
             misc.focused_widget = None
         common.app_tree.app.saved = False  # update the status of the app
@@ -405,7 +408,6 @@ class SizerSlot(object):
 
         # re-initialise logger instance deleted from __getstate__
         self._logger = logging.getLogger(self.__class__.__name__)
-
 
 # end of class SizerSlot
 
