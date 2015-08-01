@@ -37,6 +37,7 @@ Bugs:
   - Fix Designer not displaying buttons two lines correctly (sf bug #169)
   - Fix generated code for wxListBox
   - Fix broken color selection dialog
+  - Always show new widgets in the design window
   - ...
 
 Deprecation
