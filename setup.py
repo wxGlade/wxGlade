@@ -10,6 +10,12 @@ from setuptools import setup
 
 import os
 from glob import glob
+
+# gettext support is needed by config module
+import gettext
+t = gettext.NullTranslations()
+t.install()
+
 import config
 
 
@@ -89,9 +95,9 @@ packages.append('wxglade')
 
 # write and handle version file
 version = config.get_version(False)
-if not os.path.exists('RELEASE-VERSION'):
+if not os.path.exists('version.py'):
     config.write_version_file(version)
-text_files.append('RELEASE-VERSION')
+text_files.append('version.py')
 
 setup(
     name='wxGlade',

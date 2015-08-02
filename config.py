@@ -525,20 +525,17 @@ def read_version_file():
     @see: L{write_version_file()}
     @see: L{get_version()}
     """
+
     try:
-        fh = open('RELEASE-VERSION', 'r')
-        try:
-            release = fh.readlines()[0]
-            return release.strip()
-        finally:
-            fh.close()
-    except:
+        import version
+        return version.__version__.strip()
+    except ImportError:
         return None
 
 
 def write_version_file(release):
     """\
-    Write the given version string into file "RELEASE-VERSION".
+    Write the given version string into file "version.py".
 
     @param release: version string to write
     @type release:  str
@@ -546,8 +543,15 @@ def write_version_file(release):
     @see: L{read_version_file()}
     @see: L{get_version()}
     """
-    fh = open('RELEASE-VERSION', 'w')
-    fh.write("%s\n" % release)
+    fh = open('version.py', 'w')
+    fh.write("""\
+#
+# This is an automatically generated file. Manual changes will be
+# overwritten without warning.
+#
+
+__version__ = "%s"
+""" % release)
     fh.close()
 
 

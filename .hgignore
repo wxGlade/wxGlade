@@ -33,3 +33,6 @@ wxglade.log
 
 # PyCharm IDE
 .idea
+
+# automatically generated version file
+version.py
