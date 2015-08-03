@@ -49,7 +49,7 @@ class FontHandler(BaseXmlBuilderTagHandler):
                 repr(self.props))
             self.owner.properties['font'].toggle_active(True)
             self.owner.set_font(repr(self.props))
-            return True # to remove this handler
+            return True  # to remove this handler
 
     def char_data(self, data):
         super(FontHandler, self).char_data(data)
@@ -709,7 +709,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
                 if use_dialog_units: val = val[:-1]
                 w_1, h_1 = [int(t) for t in val.split(',')]
             else:
-                use_dialog_units = config.preferences.use_dialog_units  #False
+                use_dialog_units = config.preferences.use_dialog_units  # False
             if use_dialog_units:
                 w, h = self.widget.ConvertPixelSizeToDialog(
                     self.widget.GetSize())
@@ -822,10 +822,10 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
             v = self.properties['size'].get_value().strip()
             use_dialog_units = v and v[-1] == 'd'
         else:
-            use_dialog_units = config.preferences.use_dialog_units #False
+            use_dialog_units = config.preferences.use_dialog_units  # False
         try: "" + value
         except TypeError: pass
-        else: # value is a string-like object
+        else:  # value is a string-like object
             if value and value.strip()[-1] == 'd':
                 use_dialog_units = True
                 value = value[:-1]
@@ -1198,7 +1198,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.title = title
             self.access_functions['title'] = (self.get_title, self.set_title)
             self.properties['title'] = TextProperty(self, 'title', None, label=_("title"))
-        self.sizer = None # sizer that controls the layout of the children
+        self.sizer = None  # sizer that controls the layout of the children
                           # of the window
         PreviewMixin.__init__(self)
 
@@ -1309,7 +1309,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def drop_sizer(self, event):
         if self.sizer or not common.adding_sizer:
-            self.on_set_focus(event) # default behaviour: call show_properties
+            self.on_set_focus(event)  # default behaviour: call show_properties
             return
         common.adding_widget = common.adding_sizer = False
         self.widget.SetCursor(wx.STANDARD_CURSOR)

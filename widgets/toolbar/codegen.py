@@ -53,7 +53,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         obj_name = self.format_widget_access(obj)
 
         for tool in tools:
-            if tool.id == '---': # item is a separator
+            if tool.id == '---':  # item is a separator
                 append('%s.AddSeparator()\n' % obj_name)
             else:
                 name, val = self.codegen.generate_code_id(None, tool.id)
@@ -156,7 +156,7 @@ def xrc_code_generator(obj):
     class ToolBarXrcObject(xrcgen.DefaultXrcObject):
         def append_item(self, item, outfile, tabs):
             write = outfile.write
-            if item.id == '---': # item is a separator
+            if item.id == '---':  # item is a separator
                 write('    '*tabs + '<object class="separator"/>\n')
             else:
                 if item.id:

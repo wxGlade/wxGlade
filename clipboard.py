@@ -114,10 +114,10 @@ def paste(parent, sizer, pos):
             parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos,
                                                          option, flag, border)
             parser.parse_string(xml_str)
-            return True # Widget hierarchy pasted.
+            return True  # Widget hierarchy pasted.
         finally:
             wx.EndBusyCursor()
-    return False # There's nothing to paste.
+    return False  # There's nothing to paste.
 
 
 #-----------------------------------------------------------------------------

@@ -58,7 +58,7 @@ class SourceFileContent(BaseSourceFileContent):
 
     rec_event_handler = re.compile(
         r'^\s*'                                 # leading spaces
-        r'#\s*wxGlade:\s*(?P<class>[\w:]+)::(?P<handler>\w+) <event_handler>' # wxGlade event handler
+        r'#\s*wxGlade:\s*(?P<class>[\w:]+)::(?P<handler>\w+) <event_handler>'  # wxGlade event handler
                                                                               # statement with class and
                                                                               # event handler name
         r'\s*$'                                 # tailing spaces

@@ -54,7 +54,7 @@ class MessageDialog(wx.Dialog):
 
 # end of class MessageDialog
 if __name__ == "__main__":
-    gettext.install("app") # replace with the appropriate catalog name
+    gettext.install("app")  # replace with the appropriate catalog name
 
     app = wx.PySimpleApp(0)
     msgdialog = MessageDialog(None, wx.ID_ANY, "")

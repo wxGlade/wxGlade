@@ -179,7 +179,7 @@ class ExtraPropertiesPropertyHandler(BaseXmlBuilderTagHandler):
             self.owner.properties['extraproperties'].set_value(self.props)
             val = [[k, self.props[k]] for k in sorted(self.props.keys())]
             self.owner.extraproperties = val
-            return True # to remove this handler
+            return True  # to remove this handler
 
 # end of class ExtraPropertiesPropertyHandler
 

@@ -165,7 +165,7 @@ def builder(parent, sizer, pos, number=[0]):
                 else:
                     self.klass = 'MyDialog%s' % number[0]
                 number[0] += 1
-            self.klass_prop = TextProperty(self, 'class', None) #self)
+            self.klass_prop = TextProperty(self, 'class', None)  # self)
             self.widget = 0
             szr = wx.BoxSizer(wx.VERTICAL)
             if has_panel:

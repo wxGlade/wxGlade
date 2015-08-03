@@ -63,7 +63,7 @@ class ChoicesHandler(BaseXmlBuilderTagHandler):
             self.owner.properties['choices'].set_value(
                 self.owner.get_choices())
             self.choices = []
-            return True # remove the handler
+            return True  # remove the handler
 
 # end of class ChoicesHandler
 

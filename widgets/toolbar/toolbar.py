@@ -71,7 +71,7 @@ class ToolsDialog(wx.Dialog):
         self.tool_items = wx.ListCtrl(self, LIST_ID, style=wx.LC_REPORT | \
                                      wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN,
                                      size=(300, -1))
-        self.selected_index = -1 # index of the selected element in the
+        self.selected_index = -1  # index of the selected element in the
                                  # wxListCtrl
         self.tool_items.InsertColumn(0, _("Label"))
         self.tool_items.InsertColumn(1, _("Id"))
@@ -458,7 +458,7 @@ class ToolsProperty(Property):
                              items=self.owner.get_tools())
         if dialog.ShowModal() == wx.ID_OK:
             self.owner.set_tools(dialog.get_tools())
-            common.app_tree.app.saved = False # update the status of the app
+            common.app_tree.app.saved = False  # update the status of the app
 
     def write(self, outfile, tabs):
         inner_xml = StringIO.StringIO()

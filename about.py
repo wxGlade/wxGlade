@@ -129,7 +129,7 @@ class wxGladeAboutBox(wx.Dialog):
         btn.SetDefault()
         szr2.Add(btn)
         if wx.Platform == '__WXGTK__':
-            extra_border = 5 # border around a default button
+            extra_border = 5  # border around a default button
         else: extra_border = 0
         szr.Add(szr2, 0, wx.ALL|wx.ALIGN_RIGHT, 20 + extra_border)
         self.SetAutoLayout(True)

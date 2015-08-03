@@ -60,7 +60,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         obj_name = self.codegen.format_generic_access(obj)
 
         for tool in tools:
-            if tool.id == '---': # item is a separator
+            if tool.id == '---':  # item is a separator
                 append('%s->AddSeparator();\n' % obj_name)
             else:
                 name, val = self.codegen.generate_code_id(None, tool.id)

@@ -57,7 +57,7 @@ class CustomWidget(ManagedBase):
                  show=True):
         ManagedBase.__init__(self, name, klass, parent, id, sizer, pos,
                              property_window, show)
-        self.arguments = [['$parent'], ['$id']]  #,['$width'],['$height']]
+        self.arguments = [['$parent'], ['$id']]  # ,['$width'],['$height']]
         self.access_functions['arguments'] = (self.get_arguments,
                                               self.set_arguments)
 
