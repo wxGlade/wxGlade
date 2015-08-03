@@ -36,6 +36,7 @@ class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
 
 # end of class PerlCodeGenerator
 
+
 def initialize():
     klass = 'CustomWidget'
     common.class_names[klass] = klass

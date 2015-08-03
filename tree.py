@@ -424,6 +424,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
         self.Bind(wx.EVT_LEFT_DCLICK, self.show_toplevel)
         self.Bind(wx.EVT_MENU, self.show_toplevel)
+
         def on_key_down(event):
             evt_flags = 0
             if event.ControlDown():
@@ -619,6 +620,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 wx.EndBusyCursor()
         else:
             import edit_sizers
+
             def show_rec(node):
                 node.widget.show_widget(True)
                 self.expand(node, True)
@@ -700,6 +702,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node.item = self.InsertItemBefore(
                 node.parent.item, new_pos+1, self._build_label(node), image)
         self.SetPyData(node.item, node)
+
         def append(parent, node):
             idx = WidgetTree.images.get(node.widget.__class__.__name__, -1)
             node.item = self.AppendItem(parent.item,

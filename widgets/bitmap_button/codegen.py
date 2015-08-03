@@ -26,6 +26,7 @@ class CppBitmapButtonGenerator(wcodegen.CppWidgetCodeWriter):
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
+
     class BitmapButtonXrcObject(xrcgen.DefaultXrcObject):
         def write_property(self, name, val, outfile, tabs):
             if name == 'disabled_bitmap':

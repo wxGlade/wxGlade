@@ -61,6 +61,7 @@ class XmlParser(ContentHandler):
 
     @ivar _logger: Instance specific logger
     """
+
     def __init__(self):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._objects = Stack()
@@ -405,6 +406,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
     """\
     Adds support for a progress dialog to the widget builder parser
     """
+
     def __init__(self, *args, **kwds):
         self.input_file = kwds.get('input_file')
         if self.input_file:
@@ -467,6 +469,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
       - The first widget built must be hidden and shown again at the end of
         the operation
     """
+
     def __init__(self, parent, sizer, pos, option, flag, border):
         XmlWidgetBuilder.__init__(self)
         self.parent_node = parent.node
@@ -563,6 +566,7 @@ class XmlWidgetObject(object):
 
     @ivar _logger: Class specific logging instance
     """
+
     def __init__(self, attrs, parser):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -707,6 +711,7 @@ class CodeWriter(XmlParser):
 
     @ivar _logger: Instance specific logger
     """
+
     def __init__(self, writer, input, from_string=False, out_path=None,
                  preview=False, class_names=None):
         """\
@@ -915,6 +920,7 @@ class CodeObject(object):
 
     @ivar _logger: Class specific logging instance
     """
+
     def __init__(self, attrs, parser, preview=False):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)

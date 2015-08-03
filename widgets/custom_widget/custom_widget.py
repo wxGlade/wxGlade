@@ -128,6 +128,7 @@ For instance:
 is translated to:
     <default_value>10</default_value>
 Invalid entries are silently ignored""")
+
         def show_help(event):
             wx.MessageBox(text, _('Help on "Arguments" property'),
                           wx.OK | wx.CENTRE | wx.ICON_INFORMATION)

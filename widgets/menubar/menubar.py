@@ -285,6 +285,7 @@ class MenuItemDialog(wx.Dialog):
         set_item = self.menu_items.SetStringItem
         add_item = self.menu_items.InsertStringItem
         index = [0]
+
         def add(node, level):
             i = index[0]
             add_item(i, misc.wxstr(indent * level + node.label.lstrip()))
@@ -318,6 +319,7 @@ class MenuItemDialog(wx.Dialog):
         """
         def get(i, j): return self.menu_items.GetItem(i, j).m_text
         trees = []
+
         def add(node, index):
             label = get(index, 0).lstrip()
             id = get(index, 1)
@@ -411,7 +413,9 @@ class MenuItemDialog(wx.Dialog):
         """
         #index = self.selected_index
         if index <= 0: return None
+
         def get(i, j): return self.menu_items.GetItem(i, j).m_text
+
         def getall(i): return [get(i, j) for j in range(6)]
         level = self.item_level(index)
         items_to_move = [ getall(index) ]
@@ -455,7 +459,9 @@ class MenuItemDialog(wx.Dialog):
         index = self.selected_index
         self.selected_index = -1
         if index < 0: return
+
         def get(i, j): return self.menu_items.GetItem(i, j).m_text
+
         def getall(i): return [get(i, j) for j in range(6)]
         level = self.item_level(index)
         i = index+1
@@ -487,6 +493,7 @@ class MenuProperty(Property):
     """\
     Property to edit the menus of an EditMenuBar instance.
     """
+
     def __init__(self, owner, name, parent):
         Property.__init__(self, owner, name, parent)
         self.panel = None
@@ -665,6 +672,7 @@ class EditMenuBar(EditBase, PreviewMixin):
         if not self._mb: return # nothing left to do
         for i in range(self._mb.GetMenuCount()):
             self._mb.Remove(0)
+
         def append(menu, items):
             for item in items:
                 if misc.streq(item.name, '---'): # item is a separator
@@ -726,6 +734,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                 misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
                                  wx.ART_DELETE)
                 misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
+
                 def bind(method):
                     return lambda e: wx.CallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))

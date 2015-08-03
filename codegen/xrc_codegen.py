@@ -50,6 +50,7 @@ class XrcObject(wcodegen.XrcWidgetCodeWriter):
     Class to produce the XRC code for a given widget. This is a base
     class which does nothing
     """
+
     def __init__(self, klass=None):
         wcodegen.XrcWidgetCodeWriter.__init__(self, klass)
         self.properties = {}
@@ -83,6 +84,7 @@ class SizerItemXrcObject(XrcObject):
     """\
     XrcObject to handle sizer items
     """
+
     def __init__(self, obj, option, flag, border):
         XrcObject.__init__(self)
         self.obj = obj  # the XrcObject representing the widget
@@ -112,6 +114,7 @@ class SpacerXrcObject(XrcObject):
     """\
     XrcObject to handle widgets
     """
+
     def __init__(self, size_str, option, flag, border):
         XrcObject.__init__(self)
         self.size_str = size_str
@@ -247,11 +250,13 @@ class DefaultXrcObject(XrcObject):
 
 # end of class DefaultXrcObject
 
+
 class NotImplementedXrcObject(XrcObject):
     """\
     XrcObject used when no code for the widget can be generated (for
     example, because XRC does not currently handle such widget)
     """
+
     def __init__(self, code_obj):
         XrcObject.__init__(self)
         self.code_obj = code_obj

@@ -26,6 +26,7 @@ class SplitterWindowSizer(Sizer):
     """\
     "Virtual sizer" responsible for the management of a SplitterWindow.
     """
+
     def set_item(self, pos, option=None, flag=None, border=None, size=None,
                  force_layout=True):
         """\

@@ -147,6 +147,7 @@ def builder(parent, sizer, pos):
     spacer.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
 
+
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
     factory to build EditSpacer objects from a XML file

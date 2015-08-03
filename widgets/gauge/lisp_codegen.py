@@ -23,6 +23,7 @@ class LispGaugeGenerator(wcodegen.LispWidgetCodeWriter):
 
 # end of class LispGaugeGenerator
 
+
 def initialize():
     klass = 'wxGauge'
     common.class_names['EditGauge'] = klass

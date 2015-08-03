@@ -9,6 +9,7 @@ A class to represent a menu on a wxMenuBar
 from common import format_xml_tag
 import StringIO
 
+
 class MenuTree(object):
     """\
     A class to represent a menu on a wxMenuBar

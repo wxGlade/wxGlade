@@ -5,6 +5,7 @@ Collection of different decorators used by wxGlade
 @license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+
 def memoize(func):
     """\
     Simple result cache.

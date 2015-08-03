@@ -10,6 +10,7 @@ import misc
 
 _reverse_dict = misc._reverse_dict
 
+
 class wxGladeFontDialog(wx.Dialog):
     font_families_to = { 'default': wx.DEFAULT, 'decorative': wx.DECORATIVE,
                          'roman': wx.ROMAN, 'swiss': wx.SWISS,

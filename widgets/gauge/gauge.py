@@ -12,6 +12,7 @@ from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 
+
 class EditGauge(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxGauge objects

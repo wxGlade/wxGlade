@@ -23,6 +23,7 @@ if wx.Platform == '__WXMSW__':
             w, h = wx.Choice.GetBestSize(self)
             n = self.GetCount()
             return w, h/(n+1)
+
         def GetSize(self):
             return self.GetClientSize()
 else:

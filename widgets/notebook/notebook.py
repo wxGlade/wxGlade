@@ -28,6 +28,7 @@ class NotebookVirtualSizer(Sizer):
     """\
     "Virtual sizer" responsible for the management of the pages of a Notebook.
     """
+
     def __init__(self, *args, **kwds):
         Sizer.__init__(self, *args, **kwds)
         self._itempos = 0

@@ -11,6 +11,7 @@ import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
 from MenuTree import *
 
+
 class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []

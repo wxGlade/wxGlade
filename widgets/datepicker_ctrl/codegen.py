@@ -35,6 +35,7 @@ class CppDatePickerCtrlGenerator(wcodegen.CppWidgetCodeWriter):
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
+
     class DatePickerCtrlXrcObject(xrcgen.DefaultXrcObject):
         def write_property(self, name, val, outfile, tabs):
             if name == 'label':

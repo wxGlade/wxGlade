@@ -157,7 +157,9 @@ class EditBase(EventsMixin):
 
         if getattr(self, '_custom_base_classes', False):
             self.custom_base = ""
+
             def get_custom_base(): return self.custom_base
+
             def set_custom_base(val): self.custom_base = val
             self.access_functions['custom_base'] = (get_custom_base,
                                                     set_custom_base)
@@ -313,6 +315,7 @@ constructor will be used. You should probably not use this if \
                 self._rmenu.AppendSeparator()
                 PREVIEW_ID = wx.NewId()
                 misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
+
                 def bind(method):
                     return lambda e: wx.CallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
@@ -1130,6 +1133,7 @@ class PreviewMixin(object):
 
     @ivar _logger: Class specific logging instance
     """
+
     def __init__(self):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -1236,6 +1240,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
                                  wx.ART_DELETE)
                 misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
+
                 def bind(method):
                     return lambda e: wx.CallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))

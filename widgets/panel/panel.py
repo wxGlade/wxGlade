@@ -247,6 +247,7 @@ class EditPanel(PanelBase, ManagedBase):
                                  wx.ART_COPY)
                 misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
                                  wx.ART_CUT)
+
                 def bind(method):
                     return lambda e: wx.CallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))

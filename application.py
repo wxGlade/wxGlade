@@ -46,6 +46,7 @@ class FileDirDialog(object):
     @ivar parent:     Parent instance of L{Application}
     @ivar prev_dir:   Previous directory
     """
+
     def __init__(self, parent, wildcard=_("All files|*"),
                  file_message=_("Choose a file"), dir_message=None,
                  file_style=0):

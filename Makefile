@@ -182,6 +182,7 @@ rel-binary: clean man pdf
 	@echo "Creating Unix release packages ..."
 	@$(RM) MANIFEST
 	$(PYTHON_BIN) setup.py bdist --format=zip
+
 	@$(RM) MANIFEST
 
 #+ Create Unix source release packages
@@ -189,6 +190,7 @@ rel-source: clean man pdf
 	@echo "Creating source packages ..."
 	@$(RM) MANIFEST
 	$(PYTHON_BIN) setup.py sdist --formats=gztar,zip
+
 	@$(RM) MANIFEST
 
 #+ Install wxGlade locally at $(prefix)

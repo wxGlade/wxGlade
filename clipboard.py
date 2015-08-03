@@ -18,6 +18,7 @@ class _WidgetDataObject(wx.CustomDataObject):
     """\
     Object representing a widget in the clipboard.
     """
+
     def __init__(self, *args):
         wx.CustomDataObject.__init__(self, _widget_data_format)
         if args:

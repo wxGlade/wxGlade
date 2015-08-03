@@ -41,6 +41,7 @@ class Property(object):
     @ivar _tooltip_widgets: All widgets to set tooltips for
     @type _tooltip_widgets: list
     """
+
     def __init__(self, owner, name, parent, getter=None, setter=None,
                  label=None):
         """\
@@ -153,6 +154,7 @@ class HiddenProperty(Property):
     """\
     Properties not associated to any control, i.e. not editable by the user.
     """
+
     def __init__(self, owner, name, value=None, label=None):
         try:
             getter, setter = owner[name]
@@ -202,6 +204,7 @@ class _activator:
     @ivar _target:  Object to enable/disable
     @type _target:  A single widget or a list of widgets
     """
+
     def __init__(self, target=None, enabler=None, omitter=None):
         """\
         @param target:  Object to Enable/Disable
@@ -319,6 +322,7 @@ class TextProperty(Property, _activator):
     """\
     Properties associated to a text control.
     """
+
     def __init__(self, owner, name, parent=None, can_disable=False,
                  enabled=False, readonly=False, multiline=False,
                  label=None, blocked=False, omitter=None):
@@ -427,6 +431,7 @@ class CheckBoxProperty(Property, _activator):
     """\
     Properties whose values can be changed by one checkbox.
     """
+
     def __init__(self, owner, name, parent=None, label=None,
                  write_always=False, omitter=None):
         Property.__init__(self, owner, name, parent, label=label)
@@ -804,6 +809,7 @@ class SpinProperty(Property, _activator):
     """\
     Properties associated to a spin control.
     """
+
     def __init__(self, owner, name, parent=None, can_disable=False,
                  r=None, enabled=False, immediate=False, label=None,
                  blocked=False, omitter=None):
@@ -908,6 +914,7 @@ class DialogProperty(Property, _activator):
     Property which selection is made through a dialog, which must provide a
     get_value method.
     """
+
     def __init__(self, owner, name, parent, dialog, can_disable=False,
                  enabled=False, label=None, blocked=False, omitter=None):
         Property.__init__(self, owner, name, parent, label=label)
@@ -1220,6 +1227,7 @@ class RadioProperty(Property, _activator):
                      entry and the original one.
     @type _cap2orig: dict
     """
+
     def __init__(self, owner, name, parent, choices, can_disable=False,
                  enabled=False, columns=1, label=None, tooltips=None,
                  blocked=False, omitter=None, sort=False,
@@ -1634,6 +1642,7 @@ class ComboBoxProperty(Property, _activator):
     """\
     Properties whose values can be changed with a combobox.
     """
+
     def __init__(self, owner, name, choices, parent=None, label=None,
                  can_disable=False, enabled=False, write_always=False,
                  blocked=False, omitter=None):
