@@ -36,7 +36,6 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                     if name: ids.append(name)
                     id = val
 
-
                 if item.children:
                     if item.name:
                         name = item.name

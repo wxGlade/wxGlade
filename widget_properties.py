@@ -601,7 +601,6 @@ class CheckListProperty(Property, _activator):
 
         return info
 
-
     def _tooltip_format_generic(self, details):
         """\
         Create a tooltip text for generic style attributes.

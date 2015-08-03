@@ -125,7 +125,6 @@ class Tree(object):
                 children = [children_by_position.get(pos, SlotNode())
                             for pos in range(1, sizer_slots)]
 
-
                 for child in children:
                     if hasattr(child, 'widget'):
                         inner_xml = StringIO.StringIO()

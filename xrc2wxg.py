@@ -304,7 +304,6 @@ def fix_menus(document, menubar):
     def ismenu(elem):
         return elem.getAttribute('class') == 'wxMenu'
 
-
     wxg_menus = document.createElement('menus')
 
     xrc_menus = filter(ismenu, get_child_elems(menubar))

@@ -151,7 +151,6 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     return choice
 
     
-
 def initialize():
     """\
     initialization function for the module: returns a wxBitmapButton to be

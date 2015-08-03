@@ -727,7 +727,6 @@ class TestCodeGen(WXGladeBaseTest):
                         top_window, generated)
                 )
 
-
     def test_no_suitable_writer(self):
         """\
         Test the generation of a warning if no suitable writer has been found
@@ -788,7 +787,6 @@ class TestCodeGen(WXGladeBaseTest):
                 # compare generated and expected code
                 self._compare(expected, generated)                
             
-
     def test_add_class_inplace(self):
         """\
         Test appending of a new class to an existing file without overwriting.
@@ -1294,7 +1292,6 @@ class TestCodeGen(WXGladeBaseTest):
                     except UnicodeDecodeError:
                         self.fail('%s: ASCII string expected for "%s"' % (
                             language, formatted))
-
 
     def test_is_supported(self):
         """\

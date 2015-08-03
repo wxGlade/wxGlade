@@ -479,14 +479,12 @@ class TestGui(WXGladeBaseTest):
                 '"%s"' % (ret, expected)
             )
 
-
         # check handling of unsupported style
         esm = edit_windows.EditStylesMixin('wxStaticText')
         esm.codegen.for_version = (2, 8)
 
         # set un-supported style
         esm.set_style('wxST_ELLIPSIZE_MIDDLE')
-
 
         ret = esm.style_set
         expected = set(('wxST_ELLIPSIZE_MIDDLE',))

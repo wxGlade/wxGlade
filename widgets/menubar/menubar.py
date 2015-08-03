@@ -393,7 +393,6 @@ class MenuItemDialog(wx.Dialog):
         self.menu_items.SetFocus()
         self._move_item_right(self.selected_index)
 
-
     def move_item_up(self, event):
         """\
         moves the selected menu item before the previous one at the same level
