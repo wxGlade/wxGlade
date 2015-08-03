@@ -50,7 +50,7 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
-        self.sel_marker.Reparent(self.parent.widget)        
+        self.sel_marker.Reparent(self.parent.widget)
         del self.properties['font']
 
     def create_properties(self):
@@ -64,7 +64,7 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')        
+        self.notebook.AddPage(panel, 'Widget')
 
     def __getitem__(self, key):
         if key != 'font':

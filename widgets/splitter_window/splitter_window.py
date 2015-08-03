@@ -39,7 +39,7 @@ class SplitterWindowSizer(Sizer):
             self.window.window_old = None
         if self.window.window_1 and self.window.window_2:
             self.window.split()
-    
+
     def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None,
                  force_layout=True):
         """\
@@ -54,7 +54,7 @@ class SplitterWindowSizer(Sizer):
             self.window.window_old = self.window.window_2
             self.window.window_2 = item
             self.window.properties['window_2'].set_value(item.name)
-    
+
     def free_slot(self, pos, force_layout=True):
         """\
         Replaces the element at pos with an empty slot
@@ -73,7 +73,7 @@ class SplitterWindowSizer(Sizer):
             w = self.window.window_2
         self.window.split()
         w.widget.SetFocus()
-        
+
     def get_itempos(self, attrs):
         """\
         Get position of sizer item (used in xml_parse)
@@ -84,7 +84,7 @@ class SplitterWindowSizer(Sizer):
         else:
             pos = 2
         return pos
-    
+
     def is_virtual(self):
         return True
 
@@ -174,7 +174,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             self.widget.SetMinimumPaneSize(self.min_pane_size)
         else:
             min_pane_size.set_value(self.widget.GetMinimumPaneSize())
-        
+
         wx.EVT_SPLITTER_SASH_POS_CHANGED(self.widget, self.widget.GetId(),
                                          self.on_sash_pos_changed)
 
@@ -201,7 +201,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         panel.SetSizer(sizer)
         sizer.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
-        
+
     def split(self):
         if not self.widget:
             return
@@ -343,7 +343,7 @@ def builder(parent, sizer, pos, number=[1]):
                           widget.virtual_sizer, 2, common.property_panel)
         widget.window_1 = pane1
         widget.window_2 = pane2
-    
+
     node = Tree.Node(widget)
     widget.node = node
     widget.virtual_sizer.node = node

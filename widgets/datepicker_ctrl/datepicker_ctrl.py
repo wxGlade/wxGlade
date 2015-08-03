@@ -70,7 +70,7 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
         self.default = bool(int(value))
 
 # end of class EditDatePickerCtrl
-        
+
 
 def builder(parent, sizer, pos, number=[1]):
     """\

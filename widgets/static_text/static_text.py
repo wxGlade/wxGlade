@@ -126,7 +126,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     else:
         common.app_tree.insert(node, sizer.node, pos - 1)
     return static_text
-    
+
 
 def initialize():
     """\
@@ -135,5 +135,5 @@ def initialize():
     """
     common.widgets['EditStaticText'] = builder
     common.widgets_from_xml['EditStaticText'] = xml_builder
-    
+
     return common.make_object_button('EditStaticText', 'icons/static_text.xpm')

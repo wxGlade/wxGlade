@@ -1,21 +1,21 @@
 #! /usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-# 
+#
 #   PYTHON MODULE:     MKI18N.PY
 #                      =========
-# 
+#
 #   Abstract:         Make Internationalization (i18n) files for an application.
-# 
+#
 #   Copyright Pierre Rouleau. 2003. Released to public domain.
-# 
+#
 #   Last update: Saturday, November 8, 2003. @ 15:55:18.
-# 
+#
 #   File: ROUP2003N01::C:/dev/python/mki18n.py
-# 
+#
 #   RCS $Header: //software/official/MKS/MKS_SI/TV_NT/dev/Python/rcs/mki18n.py 1.5 2003/11/05 19:40:04 PRouleau Exp $
-# 
+#
 #   Update history:
-# 
+#
 #   - File created: Saturday, June 7, 2003. by Pierre Rouleau
 #   - 10/06/03 rcs : RCS Revision 1.1  2003/06/10 10:06:12  PRouleau
 #   - 10/06/03 rcs : RCS Initial revision
@@ -27,10 +27,10 @@
 #   - 05/11/03 rcs : RCS Revision 1.4  2003/10/22 06:39:31  PRouleau
 #   - 05/11/03 P.R.: [code:fix] : included the unixpath() in this file.
 #   - 08/11/03 rcs : RCS Revision 1.5  2003/11/05 19:40:04  PRouleau
-# 
+#
 #   RCS $Log: $
-# 
-# 
+#
+#
 # -----------------------------------------------------------------------------
 """                                
 mki18n allows you to internationalize your software.  You can use it to 
@@ -77,7 +77,7 @@ You can get the gettext tools from the following sites:
 # -----------------------------------------------------------------------------
 # Module Import
 # -------------
-# 
+#
 import os
 import sys
 import wx
@@ -94,7 +94,7 @@ __version__= "$Revision: 1.5 $"
 
 def getlanguageDict():
     languageDict = {}
-    
+
     for lang in [x for x in dir(wx) if x.startswith("LANGUAGE")]:
         i = wx.Locale(wx.LANGUAGE_DEFAULT).GetLanguageInfo(getattr(wx, lang))
         if i:
@@ -137,20 +137,20 @@ def makePO(applicationDirectoryPath,  applicationDomain=None, verbose=0) :
     else:
         applicationName = applicationDomain
     currentDir = os.getcwd()
-    os.chdir(applicationDirectoryPath)                    
+    os.chdir(applicationDirectoryPath)
     if not os.path.exists('app.fil'):
         raise IOError(2,'No module file: app.fil')
 
-    # Steps:                                  
+    # Steps:
     #  Use xgettext to parse all application modules
     #  The following switches are used:
-    #  
+    #
     #   -s                          : sort output by string content (easier to use when we need to merge several .po files)
     #   --files-from=app.fil        : The list of files is taken from the file: app.fil
     #   --output=                   : specifies the name of the output file (using a .pot extension)
     cmd = 'xgettext -s --no-wrap --files-from=app.fil --output=messages.pot'
     if verbose: print cmd
-    os.system(cmd)                                                
+    os.system(cmd)
 
     languageDict = getlanguageDict()
 
@@ -208,7 +208,7 @@ def catPO(applicationDirectoryPath, listOf_extraPo, applicationDomain=None, targ
 # -----------------------------------------------------------------------------
 # m a k e M O ( )         -- Compile the Portable Object files into the Machine Object stored in the right location. --
 # ^^^^^^^^^^^^^^^
-# 
+#
 
 
 def makeMO(applicationDirectoryPath,targetDir='./locale',applicationDomain=None, verbose=0, forceEnglish=0) :
@@ -248,14 +248,14 @@ def makeMO(applicationDirectoryPath,targetDir='./locale',applicationDomain=None,
         else:
             langPOfileName = "%s_%s.po" % (applicationName , langCode)
             if os.path.exists(langPOfileName):
-                mo_targetDir = "%s/%s/LC_MESSAGES" % (targetDir,langCode) 
+                mo_targetDir = "%s/%s/LC_MESSAGES" % (targetDir,langCode)
                 if not os.path.exists(mo_targetDir):
                     mkdir(mo_targetDir)
                 cmd = 'msgfmt --output-file="%s/%s.mo" "%s_%s.po"' % (mo_targetDir,applicationName,applicationName,langCode)
                 if verbose: print cmd
                 os.system(cmd)
     os.chdir(currentDir)
-   
+
 # -----------------------------------------------------------------------------
 # p r i n t U s a g e         -- Displays how to use this script from the command line --
 # ^^^^^^^^^^^^^^^^^^^
@@ -301,7 +301,7 @@ def printUsage(errorMsg=None) :
 # -----------------------------------------------------------------------------
 # f i l e B a s e O f ( )         -- Return base name of filename --
 # ^^^^^^^^^^^^^^^^^^^^^^^
-# 
+#
 
 
 def fileBaseOf(filename,withPath=0) :
@@ -333,8 +333,8 @@ def fileBaseOf(filename,withPath=0) :
     'abcdef'
     >>> fileBaseOf(fn,1)
     'abcdef'
-    """            
-    pos = filename.rfind('.')             
+    """
+    pos = filename.rfind('.')
     if pos > 0:
         filename = filename[:pos]
     if withPath:
@@ -344,7 +344,7 @@ def fileBaseOf(filename,withPath=0) :
 # -----------------------------------------------------------------------------
 # m k d i r ( )         -- Create a directory (and possibly the entire tree) --
 # ^^^^^^^^^^^^^
-# 
+#
 
 
 def mkdir(directory) :
@@ -357,38 +357,38 @@ def mkdir(directory) :
     only supports forward slash separator, but under Windows and MacOS
     the function supports the forward slash and the OS separator (backslash
     under windows).
-    """ 
- 
+    """
+
     # translate the path separators
     directory = unixpath(directory)
     # build a list of all directory elements
     aList = filter(lambda x: len(x)>0, directory.split('/'))
-    theLen = len(aList)                     
+    theLen = len(aList)
     # if the first element is a Windows-style disk drive
     # concatenate it with the first directory
     if aList[0].endswith(':'):
         if theLen > 1:
             aList[1] = aList[0] + '/' + aList[1]
-            del aList[0]      
-            theLen -= 1         
+            del aList[0]
+            theLen -= 1
     # if the original directory starts at root,
-    # make sure the first element of the list 
+    # make sure the first element of the list
     # starts at root too
-    if directory[0] == '/':     
+    if directory[0] == '/':
         aList[0] = '/' + aList[0]
-    # Now iterate through the list, check if the 
+    # Now iterate through the list, check if the
     # directory exists and if not create it
     theDir = ''
     for i in range(theLen):
         theDir += aList[i]
         if not os.path.exists(theDir):
             os.mkdir(theDir)
-        theDir += '/'   
-       
+        theDir += '/'
+
 # -----------------------------------------------------------------------------
 # u n i x p a t h ( )         -- Return a path name that contains Unix separator. --
 # ^^^^^^^^^^^^^^^^^^^
-# 
+#
 
 
 def unixpath(thePath) :
@@ -407,11 +407,11 @@ def unixpath(thePath) :
     else:
         return thePath.replace(os.sep,'/')
 
-# ----------------------------------------------------------------------------- 
+# -----------------------------------------------------------------------------
 
 # S c r i p t   e x e c u t i o n               -- Runs when invoked from the command line --
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# 
+#
 if __name__ == "__main__":
     import getopt     # command line parsing
     argc = len(sys.argv)
@@ -420,11 +420,11 @@ if __name__ == "__main__":
         sys.exit(1)
     # If there is some arguments, parse the command line
     validOptions     = "ehmpv"
-    validLongOptions = ['domain=', 'moTarget=']             
+    validLongOptions = ['domain=', 'moTarget=']
     option = {}
     option['forceEnglish'] = 0
     option['mo'] = 0
-    option['po'] = 0        
+    option['po'] = 0
     option['verbose'] = 0
     option['domain'] = None
     option['moTarget'] = None
@@ -432,11 +432,11 @@ if __name__ == "__main__":
         optionList,pargs = getopt.getopt(sys.argv[1:],validOptions,validLongOptions)
     except getopt.GetoptError, e:
         printUsage(e[0])
-        sys.exit(1)       
+        sys.exit(1)
     for (opt,val) in optionList:
         if opt == '-h':
             printUsage()
-            sys.exit(0) 
+            sys.exit(0)
         elif opt == '-e':         option['forceEnglish'] = 1
         elif opt == '-m':         option['mo'] = 1
         elif opt == '-p':         option['po'] = 1
@@ -464,8 +464,8 @@ if __name__ == "__main__":
             printUsage(e[1] + '\n   You must write a file app.fil that contains the list of all files to parse.')
     if option['mo']:
         makeMO(appDirPath,option['moTarget'],option['domain'],option['verbose'],option['forceEnglish'])
-    sys.exit(1)            
-            
+    sys.exit(1)
+
 
 # -----------------------------------------------------------------------------
 

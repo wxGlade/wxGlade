@@ -156,8 +156,8 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
                 prop.enable_item(_('Undetermined'), False)
 
 # end of class EditCheckBox
-   
-        
+
+
 def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditCheckBox objects.

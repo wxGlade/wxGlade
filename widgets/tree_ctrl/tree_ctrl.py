@@ -20,7 +20,7 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
     """
 
     update_widget_style = False
-    
+
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
 
@@ -56,10 +56,10 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
         ManagedBase.set_name(self, name)
         if self.widget and self._item_with_name:
             self.widget.SetItemText(self._item_with_name, ' ' + self.name)
-            
+
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL) 
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         prop = self.properties
         prop['style'].display(panel)
         szr = wx.BoxSizer(wx.VERTICAL)
@@ -126,5 +126,5 @@ def initialize():
     """
     common.widgets['EditTreeCtrl'] = builder
     common.widgets_from_xml['EditTreeCtrl'] = xml_builder
-        
+
     return common.make_object_button('EditTreeCtrl', 'icons/tree_ctrl.xpm')

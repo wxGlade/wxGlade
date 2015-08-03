@@ -25,7 +25,7 @@ class Template(object):
     """ \
     A class that handles the specific aspects of template files.
     """
-    
+
     def __init__(self, filename=None):
         self.author = ''
         self.description = ''
@@ -67,7 +67,7 @@ class Template(object):
         stmt += common.format_xml_tag(u'instructions', self.instructions, tabs + 1)
         stmt += u'%s</templatedata>\n' % outer_tab
         outfile.write(stmt)
-        
+
 # end of class Template
 
 
@@ -167,7 +167,7 @@ def load_templates():
         extra = []
     return sorted(glob.glob(os.path.join(config.templates_path, "*.wgt"))) + \
            sorted(extra)
-    
+
 
 def select_template():
     """\

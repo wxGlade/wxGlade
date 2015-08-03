@@ -94,7 +94,7 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
-        return props_buf    
+        return props_buf
 
 # end of class PythonSplitterWindowGenerator
 
@@ -225,9 +225,9 @@ def xrc_code_generator(obj):
 
         def write(self, *args, **kwds):
             if 'no_custom_class' in self.properties:
-                del self.properties['no_custom_class']            
+                del self.properties['no_custom_class']
             xrcgen.DefaultXrcObject.write(self, *args, **kwds)
-            
+
     # end of class XrcCodeGenerator
 
     return XrcCodeGenerator(obj)

@@ -23,7 +23,7 @@ class ColsCodeHandler(BaseCodeWriterTagHandler):
             s = attrs.get('size', '')
             self.col_size = s
             self._content = []
-    
+
     def end_elem(self, name, code_obj):
         if name == 'columns':
             code_obj.properties['columns'] = self.columns
@@ -50,7 +50,7 @@ def _check_label(label, col):
     s.reverse()
     # then compare it with label
     return label != "".join(s)
-    
+
 
 class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
@@ -147,7 +147,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/grid.h>']
-    
+
     def get_code(self, obj):
         """\
         generates C++ code for wxGrid objects.
@@ -240,7 +240,7 @@ def xrc_code_generator(obj):
                            'enable_col_resize', 'enable_row_resize',
                            'enable_grid_resize', 'lines_color',
                            'label_bg_color', 'selection_mode'])
-        
+
         def write_property(self, name, val, outfile, tabs):
             if name not in self.unsupported:
                 xrcgen.DefaultXrcObject.write_property(self, name, val,

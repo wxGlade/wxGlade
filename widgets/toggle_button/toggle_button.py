@@ -51,7 +51,7 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
         label = self.label.replace('\\n', '\n')
         self.widget = wx.ToggleButton(self.parent.widget, self.id, label)
         self.widget.SetValue(self.value)
-        wx.EVT_TOGGLEBUTTON(self.widget, self.id, self.on_set_focus)        
+        wx.EVT_TOGGLEBUTTON(self.widget, self.id, self.on_set_focus)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -94,7 +94,7 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
 
 # end of class EditToggleButton
 
-        
+
 def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditToggleButton objects.
@@ -142,6 +142,6 @@ def initialize():
     """
     common.widgets['EditToggleButton'] = builder
     common.widgets_from_xml['EditToggleButton'] = xml_builder
-    
+
     return common.make_object_button('EditToggleButton',
                                      'icons/toggle_button.xpm')

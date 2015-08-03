@@ -15,7 +15,7 @@ from codegen import MenuHandler
 class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
-        
+
     def get_init_code(self, obj):
         out = []
         append = out.append
@@ -56,10 +56,10 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                         item_type = 1
                     elif item.radio == '1':
                         item_type = 2
-                        
+
                     if item.name: itemname = '$self->{%s} = ' % self.codegen.quote_key(item.name)
                     else: itemname = ''
-                    
+
                     if item_type:
                         append('%s%s->Append(%s, %s, %s, %s);\n' %
                                (itemname, menu, id, self.codegen.quote_str(item.label),
@@ -120,7 +120,7 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                 for c in item.children:
                     ret.extend(do_get(c))
             return ret
-        
+
         for menu in obj.properties['menubar']:
             out.extend(do_get(menu.root))
         return out

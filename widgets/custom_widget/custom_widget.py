@@ -60,7 +60,7 @@ class CustomWidget(ManagedBase):
         self.arguments = [['$parent'], ['$id']]  #,['$width'],['$height']]
         self.access_functions['arguments'] = (self.get_arguments,
                                               self.set_arguments)
-        
+
         cols = [('Arguments', GridProperty.STRING)]
         self.properties['arguments'] = ArgumentsProperty(
             self, 'arguments', None, cols, 2, label=_("arguments"))
@@ -155,9 +155,9 @@ Invalid entries are silently ignored""")
 
     def set_custom_ctor(self, value):
         self.custom_ctor = value.strip()
-       
+
 # end of class CustomWidget
-        
+
 
 def builder(parent, sizer, pos, number=[1]):
     """\
@@ -183,7 +183,7 @@ def builder(parent, sizer, pos, number=[1]):
             if self.GetSize()[0] < w:
                 self.SetSize((w, -1))
             self.CenterOnScreen()
-                
+
         def __getitem__(self, value):
             def set_klass(c):
                 self.klass = c
@@ -242,4 +242,4 @@ def initialize():
 
     return common.make_object_button('CustomWidget', 'icons/custom.xpm',
                                      tip='Add a custom widget')
-    
+

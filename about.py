@@ -147,4 +147,4 @@ if __name__ == '__main__':
     d = wxGladeAboutBox()
     app.SetTopWindow(d)
     d.ShowModal()
-    
+

@@ -624,7 +624,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     @type: str
     @see:  L{generate_code_set_properties()}
     """
-    
+
     tmpl_func_empty = ''
     """\
     Statement for an empty function e.g. "pass" for Python or "return;" for
@@ -1614,7 +1614,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             msg = _("""\
 Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
                 sub_obj.name,
-                sub_obj.klass, 
+                sub_obj.klass,
                 )
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
@@ -1636,10 +1636,10 @@ Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
 Code for instance "%(name)s" of "%(klass)s" was
 not created, because the widget is not available for wx version %(requested_version)s.
 It is available for wx versions %(supported_versions)s only.""") % {
-                    'name':  sub_obj.name, 
-                    'klass': sub_obj.klass, 
-                    'requested_version':  str(misc.format_for_version(self.for_version)), 
-                    'supported_versions': str(supported_versions), 
+                    'name':  sub_obj.name,
+                    'klass': sub_obj.klass,
+                    'requested_version':  str(misc.format_for_version(self.for_version)),
+                    'supported_versions': str(supported_versions),
                     }
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
@@ -1804,7 +1804,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @rtype: str
         """
         return self._generic_code(obj, 'disabled')
-        
+
     def generate_code_do_layout(self, builder, code_obj, is_new, tab):
         """\
         Generate code for the function C{__do_layout()}.
@@ -1861,7 +1861,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             self.tmpl_func_do_layout,
             code_lines,
             )
-        
+
         return code_lines
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
@@ -1910,7 +1910,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             already_there = prev_src.event_handlers.get(code_obj.klass, {})
         else:
             already_there = {}
-            
+
         for win_id, event, handler, unused in event_handlers:
             # don't create handler twice
             if handler in already_there:
@@ -2086,7 +2086,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             self.generate_common_properties)
         property_lines = _get_properties(code_obj)
         property_lines.extend(self.classes[code_obj.klass].props)
-        
+
         code_lines = self._generate_function(
             code_obj,
             is_new,
@@ -2095,7 +2095,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             self.tmpl_func_set_properties,
             property_lines,
             )
-        
+
         return code_lines
 
     def generate_code_size(self, obj):
@@ -2198,7 +2198,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         s = re.sub(
             r'\\?"',
             self._do_replace_doublequotes,
-            s,            
+            s,
             )
         # a single tailing backslash breaks the quotation
         s = re.sub(
@@ -2441,7 +2441,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @rtype: bool
         """
         return os.path.isfile(filename)
- 
+
     def add_object_format_name(self, name):
         """\
         Format a widget name to use in L{add_object()}.        
@@ -2584,14 +2584,14 @@ It is available for wx versions %(supported_versions)s only.""") % {
         # check if there is an code template for this prop_name
         # most specific to generic
         if prop_name_detailed in self._code_statements:
-            prop_name_use = prop_name_detailed 
+            prop_name_use = prop_name_detailed
         elif prop_name_major in self._code_statements:
             prop_name_use = prop_name_major
         elif prop_name in self._code_statements:
             prop_name_use = prop_name
         else:
             return None
-            
+
         return self._code_statements[prop_name_use]
 
     def format_generic_access(self, obj):
@@ -2738,14 +2738,14 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @see: L{_format_comment()}
         """
         code_lines = []
-        
+
         # add leading empty line
         code_lines.append('\n')
-        
+
         # add a leading "WARNING:" to the message
         if not msg.upper().startswith(_('WARNING:')):
             msg = "%s %s" % (_('WARNING:'), msg)
-        
+
         # add message text
         for line in msg.split('\n'):
             code_lines.append(

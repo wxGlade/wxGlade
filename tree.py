@@ -69,7 +69,7 @@ class Tree(object):
                 self.parent.children.remove(self)
             except:
                 pass
-                    
+
         def __repr__(self):
             try: return self.widget.name
             except AttributeError: return repr(self.widget)
@@ -203,7 +203,7 @@ class Tree(object):
         #return self.names.has_key(name)
 
     def add(self, child, parent=None):
-        if parent is None: parent = self.root 
+        if parent is None: parent = self.root
         if parent.children is None: parent.children = []
         parent.children.append(child)
         child.parent = parent
@@ -373,17 +373,17 @@ class WidgetTree(wx.TreeCtrl, Tree):
     """\
     Tree with the ability to display the hierarchy of widgets
     """
-    
-    images = {} 
+
+    images = {}
     """\
     Dictionary of icons of the widgets displayed
     """
-    
+
     _logger = None
     """\
     Class specific logging instance
     """
-    
+
     def __init__(self, parent, application):
         self._logger = logging.getLogger(self.__class__.__name__)
         id = wx.NewId()
@@ -413,7 +413,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                               # EVT_TREE_SEL_CHANGED event
         self.title = ' '
         self.set_title(self.title)
-        
+
         self.auto_expand = True # this control the automatic expansion of
                                 # nodes: it is set to False during xml loading
         self._show_menu = misc.wxGladePopupMenu('widget') # popup menu to
@@ -443,7 +443,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                node.widget.klass != 'wxScrolledWindow': # special case...
             s += ' (%s)' % node.widget.klass
         return s
-        
+
     def add(self, child, parent=None, image=None): # is image still used?
         """\
         appends child to the list of parent's children
@@ -631,7 +631,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 ##                 if isinstance(w, edit_sizers.SizerBase): return
 ##                 elif not w.properties['size'].is_active() and \
 ##                          w.sizer and w.sizer.toplevel:
-##                     w.sizer.fit_parent()                    
+##                     w.sizer.fit_parent()
             show_rec(node)
 
     def show_toplevel(self, event):
@@ -786,9 +786,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 if pos is not None:
                     misc.get_toplevel_parent(parent.widget).SetPosition(pos)
             self.select_item(node)
-        
+
     def _get_first_child(self, item):
         return self.GetFirstChild(item)
-        
+
 # end of class WidgetTree
 

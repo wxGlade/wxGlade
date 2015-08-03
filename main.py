@@ -154,7 +154,7 @@ class wxGladeFrame(wx.Frame):
 
     @ivar _logger: Instance specific logger
     """
-    
+
     def __init__(self, parent=None):
         self._logger = logging.getLogger(self.__class__.__name__)
         style = wx.SYSTEM_MENU | wx.CAPTION | wx.MINIMIZE_BOX
@@ -435,7 +435,7 @@ class wxGladeFrame(wx.Frame):
         sizer_tmp.Add(app.notebook, 1, wx.EXPAND)
         property_panel.SetSizer(sizer_tmp)
         sizer_tmp.Fit(property_panel)
-        
+
         def on_tree_frame_close(event):
             #menu_bar.Check(TREE_ID, False)
             self.tree_frame.Hide()
@@ -551,7 +551,7 @@ class wxGladeFrame(wx.Frame):
     def on_autosave_timer(self, event):
         if common.autosave_current():
             self.user_message(_("Auto saving... done"))
-        
+
     def edit_preferences(self, event):
         dialog = preferencesdialog.wxGladePreferences(config.preferences)
         if dialog.ShowModal() == wx.ID_OK:
@@ -560,7 +560,7 @@ class wxGladeFrame(wx.Frame):
                           wx.OK|wx.CENTRE|wx.ICON_INFORMATION)
             dialog.set_preferences()
         dialog.Destroy()
-        
+
     def preview(self, event):
         """\
         Generate preview of the current loaded project.
@@ -661,7 +661,7 @@ class wxGladeFrame(wx.Frame):
         path = common.app_tree.get_selected_path()
         self._open_app(common.app_tree.app.filename, add_to_history=False)
         common.app_tree.select_path(path)
-        
+
     def open_app(self, event_unused):
         """\
         loads a wxGlade project from an xml file
@@ -878,7 +878,7 @@ class wxGladeFrame(wx.Frame):
             ext = os.path.splitext(fn)[1].lower()
             if not ext:
                 fn = "%s.wxg" % fn
-                
+
             common.app_tree.app.filename = fn
             #remove the template flag so we can save the file.
             common.app_tree.app.is_template = False
@@ -970,7 +970,7 @@ class wxGladeFrame(wx.Frame):
 
         if not self.ask_save():
             return
-        
+
         infilename = misc.FileSelector(
             _("Import file"),
             wildcard="XRC files (*.xrc)" "|*.xrc|All files|*",
@@ -1087,7 +1087,7 @@ class wxGlade(wx.App):
         self.SetExitOnFrameDelete(True)
 
         wx.EVT_IDLE(self, self.OnIdle)
-        
+
         return True
 
     def OnExit(self):

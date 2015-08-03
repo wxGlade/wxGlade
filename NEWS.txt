@@ -53,7 +53,7 @@ Note:
   - See CHANGES.txt for a full list of changes
 
 Version 0.7.0 - 2014-10-26:
-General: 
+General:
   - Remove support for old Python import style generally
   - Add missing styles for wxNotebook (Thanks to Udi Fuchs)
   - Use Python logging facility instead of print statements
@@ -83,7 +83,7 @@ Bugs:
   - Wrong Lisp statement in wxHyperlinkCtrl and wxFrame
   - Prevent code generation from a template file by commandline invocation
   - Fix bug in generation of valid hash keys for Perl
-  - Fix various issues during transformation from XRC into wxGlade 
+  - Fix various issues during transformation from XRC into wxGlade
   - Fix wrong conditions to generate application start code (sf bug #161)
   - Don't convert first char of a XRC extraproperty to upper case (sf
     bug #163)
@@ -104,7 +104,7 @@ Note:
   - See CHANGES.txt for a full list of changes
 
 Version 0.6.8 - 2013-07-13:
-General: 
+General:
   - Add comfortable exception handler for more detailed bug reports
 
 Bugs:
@@ -126,13 +126,13 @@ Note:
   - See CHANGES.txt for a full list of changes
 
 Version 0.6.7 - 2013-04-07:
-General: 
+General:
   - Add a config option to suppress the code generation success message
   - Improve usability of some dialogs
 
 Bugs:
   - Remove empty line between shebang and encoding statement in Python files
-  - Regression in generated Python code for bindung events 
+  - Regression in generated Python code for bindung events
 
 Documentation:
   - no changes
@@ -144,12 +144,12 @@ Note:
   - See CHANGES.txt for a full list of changes
 
 Version 0.6.6 - 2013-03-29:
-General: 
+General:
   - Add i18n support to C++ code generator
   - Add more test cases
   - Add more tooltips to gui
   - Add new widget HyperlinkCtrl
-  - Add Perl support to CalendarCtrl 
+  - Add Perl support to CalendarCtrl
   - Add simple application start code to C++ code generator
   - Add "Store as attribute" for sizers
   - Change default widget ID from -1 to wxID_ANY and adapt codegen
@@ -158,7 +158,7 @@ General:
   - Improve error handling
   - Improve message logging
   - Internal rework of code generator parts, this causes minor changes
-    in the generated code 
+    in the generated code
   - Join code templates for application startup code in class variables
     and unify the code generation of this piece
   - Minor GUI improvements
@@ -190,7 +190,7 @@ Note:
   - See CHANGES.txt for a full list of changes
 
 Version 0.6.5 - 2012-01-08:
-General: 
+General:
   - remove support for Python 2.2
   - remove support for wxPython < 2.6
   - add a small test suite
@@ -271,7 +271,7 @@ Version 0.3.4.1 - 2004-09-04:
    and its default size...)
 
 Version 0.3.4 - 2004-09-01:
- - common.py: 
+ - common.py:
      minor UI tweak
  - edit_windows.py, config.py, configUI.py:
      added `show "handles" of sizers' option
@@ -298,7 +298,7 @@ Version 0.3.4 - 2004-09-01:
      added Drag&Drop of wxg files for opening them (thanks to Chris Liechti)
  - main.py, docs/index.html, docs/html/*:
      new manual added
- - config.py: 
+ - config.py:
      config path is now under APPDATA ok windows
  - widgets/bitmap_button/*, widgets/toolbar/*, widgets/static_bitmap/*:
      added "code:" tag
@@ -331,7 +331,7 @@ Version 0.3   - 2003-08-29:
      added subclass support to XRC output
  - application.py, tree.py, xml_parse.py, codegen/py_codegen.py,
    codegen/cpp_codegen.py:
-     added "overwrite" property to Application, to allow 
+     added "overwrite" property to Application, to allow
      re-generation of (C++ and python) code from scratch (as opposed
      to updating wxGlade blocks).
  - docs/tutorial.html:

@@ -339,9 +339,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_object(self, top_obj, sub_obj):
-        # the lisp code gen add some hard coded depedencies 
+        # the lisp code gen add some hard coded depedencies
         # TODO: Move the hard coded dependencies to the widgets resp. sizers
-        
+
         sub_obj.name = self._format_name(sub_obj.name)
         sub_obj.parent.name = self._format_name(sub_obj.parent.name)
 
@@ -364,15 +364,15 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
         if sub_obj.klass == "wxMenuBar":
             self.dependencies['(use-package :wxMenu)'] = 1
-        
+
         BaseLangCodeWriter.add_object(self, top_obj, sub_obj)
- 
+
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         if obj.in_sizers:
             self.tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
         else:
             self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
-            
+
         BaseLangCodeWriter.add_sizeritem(
             self,
             toplevel,
@@ -390,7 +390,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
         write = code_lines.append
-        
+
         builder = self.obj_builders[code_obj.base]
         mycn = getattr(builder, 'cn', self.cn)
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
@@ -421,7 +421,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
             write('\n(defmethod init ((obj %s))\n' % klass)
             write("\"Method creates the objects contained in the class.\"\n")
-            
+
         elif custom_base:
             # custom base classes set, but "overwrite existing sources" not
             # set. Issue a warning about this
@@ -435,7 +435,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         write(self.tmpl_block_begin % {
             'class_separator': self.class_separator,
             'comment_sign':    self.comment_sign,
-            'function':        self.name_ctor, 
+            'function':        self.name_ctor,
             'klass':           self.cn_class(code_obj.klass),
             'tab':             tab,
             })
@@ -500,7 +500,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
                     'event':   self.cn(event),
                     'handler': handler,
                     }
-                ) 
+                )
 
         return code_lines
 
@@ -589,7 +589,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
         if not style:
             return ''
-            
+
         style = mycn_f(style)
         style = style.strip().replace('.', '')
 
@@ -602,7 +602,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             self.dependencies['(use-package :wxButton)'] = 1
         else:
             stmt = ''
-            
+
         return stmt
 
     def _get_class_filename(self, klass):

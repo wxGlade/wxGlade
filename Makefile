@@ -3,7 +3,7 @@
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
-DESTDIR           = 
+DESTDIR           =
 
 # Makefile defaults
 SHELL             = /bin/sh

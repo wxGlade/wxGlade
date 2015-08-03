@@ -18,14 +18,14 @@ class ChoicesCodeHandler(BaseCodeWriterTagHandler):
         super(ChoicesCodeHandler, self).__init__()
         self.choices = []
         self.cur_checked = None
-        
+
     def start_elem(self, name, attrs):
         if name == 'choice':
             try:
                 self.cur_checked = int(attrs['checked'])
             except (KeyError, ValueError):
                 self.cur_checked = None
-            
+
     def end_elem(self, name, code_obj):
         if name == 'choice':
             label = self.get_char_data()

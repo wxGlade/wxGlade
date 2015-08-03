@@ -19,9 +19,9 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         prop = obj.properties
         out = []
         append = out.append
-        
+
         obj_name = '(slot-%s obj)' % obj.name
-        
+
         bitmapsize = prop.get('bitmapsize')
         if bitmapsize:
             try:
@@ -83,7 +83,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
                         bmp1, bmp2, kind,
                         self.codegen.quote_str(tool.short_help),
                         self.codegen.quote_str(tool.long_help)))
-        
+
         return ids + out
 
     def get_code(self, obj):
@@ -104,7 +104,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         init = [
             '\n\t;;; Tool Bar\n',
             '(setf (slot-%s obj) (wxToolBar_Create %s -1 -1 -1 -1 -1 %s))\n' % (obj.name, parent, style),
-                 '(wxFrame_SetToolBar (slot-top-window obj) (slot-%s obj))\n' % obj.name 
+                 '(wxFrame_SetToolBar (slot-top-window obj) (slot-%s obj))\n' % obj.name
             ]
         init.extend(self.get_init_code(obj))
         init.append(';;; Tool Bar end\n')

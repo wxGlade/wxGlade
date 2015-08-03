@@ -42,7 +42,7 @@ class EditChoice(ManagedBase):
                              pos, property_window, show=show)
         self.choices = choices
         self.selection = 0
-        
+
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
         self.properties['choices'] = ChoicesProperty(self, 'choices', None,
                                                      [('Label',
@@ -61,7 +61,7 @@ class EditChoice(ManagedBase):
         self.widget = wxChoice2(self.parent.widget, self.id,
                                choices=self.choices)
         self.set_selection(self.selection)
-        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)        
+        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -108,7 +108,7 @@ class EditChoice(ManagedBase):
 
 # end of class EditChoice
 
-        
+
 def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditChoice objects.

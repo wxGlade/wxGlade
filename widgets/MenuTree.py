@@ -26,7 +26,7 @@ class MenuTree(object):
             self.handler = handler
             self.children = []
             self.parent = None
-            
+
         def write(self, outfile, tabs, top=False):
             inner_xml = u''
             if not top and not self.children:
@@ -77,11 +77,11 @@ class MenuTree(object):
             outfile.write(stmt)
 
     #end of class Node
-    
+
     def __init__(self, name, label, id="", help_str="", handler=""):
         self.root = self.Node(label, id, name, help_str, handler=handler)
 
     def write(self, outfile, tabs):
         self.root.write(outfile, tabs, top=True)
-        
+
 #end of class MenuTree

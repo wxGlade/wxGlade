@@ -34,7 +34,7 @@ class EditSpacer(ManagedBase):
                                 style=wx.SIMPLE_BORDER)
         self.widget.GetBestSize = self.widget.GetSize
         wx.EVT_PAINT(self.widget, self.on_paint)
-        
+
     def create_properties(self):
         ManagedBase.create_properties(self)
         page = self.notebook.GetPage(1)
@@ -54,7 +54,7 @@ class EditSpacer(ManagedBase):
         common_page.Hide()
         self.notebook.RemovePage(0)
         self.notebook.SetSelection(0)
-        
+
     def get_width(self):
         return self.__size[0]
 
@@ -102,7 +102,7 @@ class EditSpacer(ManagedBase):
         dc.EndDrawing()
 
 # end of class EditSpacer
-        
+
 
 def builder(parent, sizer, pos):
     """\
@@ -112,14 +112,14 @@ def builder(parent, sizer, pos):
         def __init__(self):
             wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1,
                               _("Enter size"))
-            
+
             self.width = SpinProperty(self, 'width', self, label=_("width"))
             self.height = SpinProperty(self, 'height', self, label=_("height"))
             self.width.set_value(20)
             self.width.spin.SetFocus()
             self.width.spin.SetSelection(-1, -1)
             self.height.set_value(20)
-            
+
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(self.width.panel, 0, wx.EXPAND)
             szr.Add(self.height.panel, 0, wx.EXPAND)
@@ -175,6 +175,6 @@ def initialize():
     """
     common.widgets['EditSpacer'] = builder
     common.widgets_from_xml['EditSpacer'] = xml_builder
-        
+
     return common.make_object_button('EditSpacer', 'icons/spacer.xpm')
-    
+

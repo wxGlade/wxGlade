@@ -53,7 +53,7 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL) 
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         prop = self.properties
         prop['value'].display(panel)
         prop['style'].display(panel)
@@ -155,5 +155,5 @@ def initialize():
     """
     common.widgets['EditTextCtrl'] = builder
     common.widgets_from_xml['EditTextCtrl'] = xml_builder
-        
+
     return common.make_object_button('EditTextCtrl', 'icons/text_ctrl.xpm')

@@ -84,7 +84,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
     def finish_widget_creation(self):
         TopLevelBase.finish_widget_creation(self)
         if not self.properties['size'].is_active():
-            self.widget.SetSize((400, 300))    
+            self.widget.SetSize((400, 300))
 
     def create_properties(self):
         TopLevelBase.create_properties(self)
@@ -106,7 +106,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
         panel.SetScrollbars(5, 5, int(math.ceil(w/5.0)), int(math.ceil(h/5.0)))
 
     def get_icon(self):
-        return self.icon 
+        return self.icon
 
     def set_icon(self, value):
         self.icon = value.strip()
@@ -141,7 +141,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
 
 # end of class EditDialog
 
-        
+
 def builder(parent, sizer, pos, number=[0]):
     """\
     factory function for EditDialog objects.
@@ -151,7 +151,7 @@ def builder(parent, sizer, pos, number=[0]):
         has_panel = True
     except ImportError:
         has_panel = False
-        
+
     class Dialog(wx.Dialog):
         def __init__(self):
             if has_panel: title = 'Select widget type'
@@ -196,7 +196,7 @@ def builder(parent, sizer, pos, number=[0]):
         def set_klass(self, c):
             self.klass = c
             self.klass_modified = True
-        
+
         def set_widget(self, c):
             self.widget = int(c)
             if not self.klass_modified:
@@ -213,7 +213,7 @@ def builder(parent, sizer, pos, number=[0]):
                     if self.widget == 0:
                         self.klass = 'MyDialog' + number
                     else:
-                        self.klass = 'MyPanel' + number                    
+                        self.klass = 'MyPanel' + number
                 self.klass_prop.set_value(self.klass)
 
         def __getitem__(self, value):
@@ -289,6 +289,6 @@ def initialize():
     cwx['EditDialog'] = xml_builder
 
     common.widgets['EditDialog'] = builder
-    
+
     return common.make_object_button('EditDialog', 'icons/dialog.xpm', 1,
                                      tip='Add a Dialog/Panel')

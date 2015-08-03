@@ -71,7 +71,7 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
         self.default = bool(int(value))
 
 # end of class EditCalendarCtrl
-        
+
 
 def builder(parent, sizer, pos, number=[1]):
     """\

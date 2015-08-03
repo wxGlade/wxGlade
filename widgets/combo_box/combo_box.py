@@ -23,7 +23,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
     """
 
     update_widget_style = False
-    
+
     def __init__(self, name, parent, id, choices, sizer, pos, property_window,
                  show=True):
 
@@ -109,7 +109,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
 
 # end of class EditComboBox
 
-        
+
 def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditComboBox objects.
@@ -150,7 +150,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         common.app_tree.insert(node, sizer.node, pos - 1)
     return choice
 
-    
+
 def initialize():
     """\
     initialization function for the module: returns a wxBitmapButton to be

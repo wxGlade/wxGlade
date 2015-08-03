@@ -92,7 +92,7 @@ def self_%s_on_paint(event):
     dc.EndDrawing()    
 """ % ((widget.name,) * 3)
         for line in on_paint_code.splitlines():
-            append(line + '\n')        
+            append(line + '\n')
         append('wx.EVT_PAINT(self.%s, self_%s_on_paint)\n' %
                (widget.name, widget.name))
         return init, [], []
@@ -143,7 +143,7 @@ def xrc_code_generator(obj):
             if 'arguments' in self.properties:
                 args = self.properties['arguments']
                 del self.properties['arguments']
-                for arg in args:           
+                for arg in args:
                     try:
                         name, val = [s.strip() for s in arg.split(':', 1)]
                     except Exception:

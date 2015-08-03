@@ -119,13 +119,13 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
         self.default = bool(int(value))
 
 # end of class EditBitmapButton
-        
+
 
 def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditBitmapButton objects.
     """
-    
+
     name = 'bitmap_button_%s' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1

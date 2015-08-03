@@ -1371,10 +1371,10 @@ bool MyApp::OnInit()
         """
         code_lines = []
         swrite = code_lines.append
-        
+
         if not event_handlers:
             return []
-            
+
         tmpl_handler = """
 void %(klass)s::%(handler)s(%(evt_type)s &event)
 {
@@ -1383,7 +1383,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
 %(tab)swxLogDebug(wxT("Event handler (%(klass)s::%(handler)s) not implemented yet"));
 }
 """
-        
+
         if prev_src:
             already_there = prev_src.event_handlers.get(code_obj.klass, {})
         else:
@@ -1403,7 +1403,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         swrite('// wxGlade: add %s event handlers\n' % code_obj.klass)
         if is_new or not prev_src:
             swrite('\n')
-        
+
         return code_lines
 
     def generate_code_event_table(self, code_obj, is_new, tab, prev_src,
@@ -1430,10 +1430,10 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         """
         code_lines = []
         write = code_lines.append
-        
+
         if not event_handlers:
             return code_lines
-            
+
         if prev_src and code_obj.klass in prev_src.event_table_decl:
             has_event_table = True
         else:

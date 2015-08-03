@@ -55,7 +55,7 @@ def copy(widget):
     """
     xml_str = StringIO.StringIO()
     widget.node.write(xml_str, 0)
-    flag = widget.get_int_flag() 
+    flag = widget.get_int_flag()
     option = widget.get_option()
     border = widget.get_border()
     if wx.TheClipboard.Open():
@@ -135,7 +135,7 @@ class FileDropTarget(wx.FileDropTarget):
                 "wxGlade", wx.ICON_ERROR)
         elif filenames:
             path = filenames[0]
-            if self.parent.ask_save(): 
+            if self.parent.ask_save():
                 self.parent._open_app(path)
 
 # end of class FileDropTarget
