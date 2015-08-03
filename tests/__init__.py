@@ -261,7 +261,7 @@ class WXGladeBaseTest(unittest.TestCase):
             isinstance(document, types.UnicodeType),
             'Expected unicode document, got "%s"' % type(document)
         )
-      
+
         document = self._prepare_wxg(language, document)
 
         # CodeWrite need UTF-8 like all XML parsers
@@ -394,7 +394,7 @@ class WXGladeBaseTest(unittest.TestCase):
             # create regexp first
             pattern = r'%s=".*?"' % option
             modified = re.sub(
-                pattern, 
+                pattern,
                 '%s="%s"' % (option, kwargs[option]),
                 modified,
                 1

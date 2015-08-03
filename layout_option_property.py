@@ -58,7 +58,7 @@ class LayoutOptionProperty(widget_properties.Property):
         sizer = wx.BoxSizer(wx.VERTICAL)
         size = (config.label_initial_width, -1)
         val = self.owner[self.name][0]()
-        
+
         szr = wx.BoxSizer(wx.HORIZONTAL)
         label = wx.lib.stattext.GenStaticText(
             parent, wx.ID_ANY, _('Position'), size=size)
@@ -79,7 +79,7 @@ class LayoutOptionProperty(widget_properties.Property):
 
         self.panel = sizer
         self.bind_event(self.on_change_val)
-        
+
     def bind_event(self, function):
         if not self.is_gridbag:
             self._bind_event_spin(function)
@@ -104,7 +104,7 @@ class LayoutOptionProperty(widget_properties.Property):
             function(event)
 
         wx.EVT_KILL_FOCUS(self.position, func_2)
-        
+
         def func_3(event):
             if self.span.IsBeingDeleted():
                 return
@@ -122,7 +122,7 @@ class LayoutOptionProperty(widget_properties.Property):
                                   self.span.GetValue()])
             except AttributeError:
                 return self.val
-            
+
     def set_value(self, value):
         if not self.is_gridbag:
             self.val = int(value)

@@ -21,7 +21,7 @@ class EditWidget(ManagedBase):
         self.default = False
         ManagedBase.__init__(self, name, klass, parent, id, sizer, pos,
                              property_window, show=show)
-        
+
         # introspect subclass looking for properties
         # and widgets
         self.property_names = []
@@ -59,7 +59,7 @@ class EditWidget(ManagedBase):
                     proportion = 0
                 self.properties[name] = prop
                 self.property_proportion[name] = proportion
-        
+
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
@@ -77,15 +77,15 @@ class EditWidget(ManagedBase):
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
 # end of class EditWidget
-        
-    
+
+
 def increment_label(label, number=[1]):
     _label = '%s_%d' % (label, number[0])
     while common.app_tree.has_name(_label):
         number[0] += 1
         _label = '%s_%d' % (label, number[0])
     return _label
-        
+
 
 def add_widget_node(widget, sizer, pos, from_xml=False,
                     option=0, flag=0, border=0):

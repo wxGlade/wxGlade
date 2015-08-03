@@ -128,9 +128,9 @@ class EditButton(ManagedBase, EditStylesMixin):
         else:
             if self.properties['label'].panel is not None:
                 self.properties['label'].text.Enable(True)
-            
+
 # end of class EditButton
-        
+
 
 def builder(parent, sizer, pos, number=[1]):
     """\

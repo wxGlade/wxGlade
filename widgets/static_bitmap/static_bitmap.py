@@ -105,7 +105,7 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
             self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
 # end of class EditStaticBitmap
-        
+
 
 def builder(parent, sizer, pos, number=[1]):
     """\
@@ -155,6 +155,6 @@ def initialize():
     """
     common.widgets['EditStaticBitmap'] = builder
     common.widgets_from_xml['EditStaticBitmap'] = xml_builder
-        
+
     return common.make_object_button('EditStaticBitmap',
                                      'icons/static_bitmap.xpm')

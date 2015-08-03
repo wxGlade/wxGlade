@@ -743,7 +743,7 @@ class TestCodeGen(WXGladeBaseTest):
             codegen = common.code_writers.get(language)
             handler = codegen.obj_builders['wxButton']
             del codegen.obj_builders['wxButton']
-            
+
             # don' use _generate_and_compare() resp.
             # _generate_and_compare_cpp() because a failure wouldn't restore
             # the temporarily removed widget
@@ -762,10 +762,10 @@ class TestCodeGen(WXGladeBaseTest):
                 self._generate_code('C++', source, outname)
                 generated_cpp = self.vFiles[name_cpp].getvalue()
                 generated_h = self.vFiles[name_h].getvalue()
-                
+
                 # restore deleted handler
                 codegen.obj_builders['wxButton'] = handler
-                
+
                 # compare generated and expected code
                 self._compare(result_cpp, generated_cpp, 'C++ source')
                 self._compare(result_h, generated_h, 'C++ header')
@@ -780,13 +780,13 @@ class TestCodeGen(WXGladeBaseTest):
                 # generate code
                 self._generate_code(language, source, outname)
                 generated = self.vFiles[outname].getvalue()
-                
+
                 # restore deleted handler
                 codegen.obj_builders['wxButton'] = handler
-                
+
                 # compare generated and expected code
-                self._compare(expected, generated)                
-            
+                self._compare(expected, generated)
+
     def test_add_class_inplace(self):
         """\
         Test appending of a new class to an existing file without overwriting.
@@ -1005,7 +1005,7 @@ class TestCodeGen(WXGladeBaseTest):
         """
         # don't store sizer references
         self._test_all('Sizers_no_classattr')
-        
+
         # store sizer references
         self._test_all('Sizers_classattr')
 

@@ -109,7 +109,7 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
             elif win_2:
                 add_sub(win_2)
 
-        return props_buf    
+        return props_buf
 
 # end of class PerlSplitterWindowGenerator
 

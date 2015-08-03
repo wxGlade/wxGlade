@@ -145,7 +145,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         common.app_tree.insert(node, sizer.node, pos - 1)
     return list_box
 
-    
+
 def initialize():
     """\
     initialization function for the module: returns a wxBitmapButton to be

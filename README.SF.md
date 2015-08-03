@@ -3,10 +3,10 @@ wxGlade: A GUI builder for wxPython/wxWidgets
 
 **This version of wxGlade has a minor bug!**
 
-wxGlade need a private directory 
-*C:\\Users\\<your user name>\\AppData\\Roaming\\wxglade* to store runtime 
+wxGlade need a private directory
+*C:\\Users\\<your user name>\\AppData\\Roaming\\wxglade* to store runtime
 information as well as log files. Unfortunatally it doesn't create this
-directory itself. Please create the wxglade directory manually and restart 
+directory itself. Please create the wxglade directory manually and restart
 wxGlade after that.
 
 General
@@ -29,7 +29,7 @@ Files
     wxglade-0.7.0.zip           source code zipped
     wxGlade-0.7.0-setup.exe     Installer (Full Edition) requieres Python and
                                 wxPython locally installed
-    wxGlade-SAE-0.7.0-setup.exe Installer Standalone Edition Python and 
+    wxGlade-SAE-0.7.0-setup.exe Installer Standalone Edition Python and
                                 wxPython are bundled using PyInstaller
 
 MD5 checksums
@@ -44,7 +44,7 @@ Standalone Edition
 ------------------
 The standalone edition is available. It has two disadvantages:
 
-- it's built on Windows XP and may not work correctly on newer Windows 
+- it's built on Windows XP and may not work correctly on newer Windows
   versions
 - it's opens a command line windows always
 

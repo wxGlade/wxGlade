@@ -22,9 +22,9 @@ class wxGladeFontDialog(wx.Dialog):
     font_weights_to = {'normal': wx.NORMAL, 'light': wx.LIGHT, 'bold': wx.BOLD }
     font_weights_from = _reverse_dict(font_weights_to)
 
-    font_families_to['teletype'] = wx.TELETYPE 
+    font_families_to['teletype'] = wx.TELETYPE
     font_families_from[wx.TELETYPE] = 'teletype'
-        
+
     def __init__(self, *args, **kwds):
         self._logger = logging.getLogger(self.__class__.__name__)
         # begin wxGlade: wxGladeFontDialog.__init__
@@ -75,7 +75,7 @@ class wxGladeFontDialog(wx.Dialog):
                       self.weight.GetStringSelection().lower(),
                       self.underline.GetValue() and 1 or 0)
         self.EndModal(wx.ID_OK)
-        
+
     def get_value(self):
         return self.value
 
@@ -90,10 +90,10 @@ class wxGladeFontDialog(wx.Dialog):
                 if props[4].lower() == "true": underline = 1
                 else: underline = 0
             self.underline.SetValue(underline)
-            self.point_size.SetValue(int(props[0]))            
+            self.point_size.SetValue(int(props[0]))
         except ValueError:
             self._logger.exception(_('Internal Error'))
-    
+
     def __set_properties(self):
         # begin wxGlade: wxGladeFontDialog.__set_properties
         self.SetTitle(_("Select font attributes"))

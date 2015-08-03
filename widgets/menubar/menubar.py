@@ -34,7 +34,7 @@ class MenuItemDialog(wx.Dialog):
                                       wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN)
         # ALB 2004-09-26: workaround to make the scroll wheel work...
         wx.EVT_MOUSEWHEEL(self.menu_items, lambda e: e.Skip())
-        
+
         self.menu_items.InsertColumn(0, _("Label"))
         self.menu_items.InsertColumn(1, _("Id"))
         self.menu_items.InsertColumn(2, _("Name"))
@@ -79,7 +79,7 @@ class MenuItemDialog(wx.Dialog):
         self.cancel = wx.Button(self, wx.ID_CANCEL, _("Cancel"))
 
         self.do_layout()
-        self.selected_index = -1 # index of the selected element in the 
+        self.selected_index = -1 # index of the selected element in the
                                  # wx.ListCtrl menu_items
         # event handlers
         wx.EVT_BUTTON(self, ADD_ID, self.add_menu_item)
@@ -109,7 +109,7 @@ class MenuItemDialog(wx.Dialog):
         self.help_str.Enable(False)
         self.event_handler.Enable(False)
         self.check_radio.Enable(False)
-        
+
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer2 = wx.StaticBoxSizer(self._staticbox, wx.VERTICAL)
         self.label.SetSize((150, -1))
@@ -147,7 +147,7 @@ class MenuItemDialog(wx.Dialog):
         sizer4.Add(self.move_right, 0, wx.LEFT|wx.RIGHT, 5)
         sizer3.Add(sizer4, 0, wx.ALIGN_CENTER|wx.ALL, 5)
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        szr.Add(sizer3, 1, wx.ALL|wx.EXPAND, 5) 
+        szr.Add(sizer3, 1, wx.ALL|wx.EXPAND, 5)
         szr.Add(sizer2, 0, wx.TOP|wx.BOTTOM|wx.RIGHT, 5)
         sizer.Add(szr, 1, wx.EXPAND)
         sizer2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -214,7 +214,7 @@ class MenuItemDialog(wx.Dialog):
     def show_menu_item(self, event):
         """\
         Event handler called when a menu item in the list is selected
-        """        
+        """
         self.selected_index = index = event.GetIndex()
         if not misc.streq(self.menu_items.GetItem(index, 2).m_text, '---'):
             # skip if the selected item is a separator
@@ -233,7 +233,7 @@ class MenuItemDialog(wx.Dialog):
         """\
         Event handler called when some of the properties of the current menu
         item changes
-        """        
+        """
         set_item = self.menu_items.SetStringItem
         index = self.selected_index
         val = self.event_handler.GetValue()
@@ -257,11 +257,11 @@ class MenuItemDialog(wx.Dialog):
         """
         label = self.menu_items.GetItem(index, 0).m_text
         return (len(label) - len(label.lstrip())) / 4
-    
+
     def remove_menu_item(self, event):
         """\
         Event handler called when the Remove button is clicked
-        """        
+        """
         if self.selected_index >= 0:
             index = self.selected_index+1
             if index < self.menu_items.GetItemCount() and \
@@ -294,7 +294,7 @@ class MenuItemDialog(wx.Dialog):
             set_item(i, 3, misc.wxstr(node.help_str))
             # ALB 2004-12-05
             set_item(i, 5, misc.wxstr(node.handler))
-            
+
             item_type = 0
             try:
                 if node.checkable and int(node.checkable):
@@ -368,9 +368,9 @@ class MenuItemDialog(wx.Dialog):
             label = self.menu_items.GetItem(index, 0).m_text
             if misc.streq(label[:4], " " * 4):
                 self.menu_items.SetStringItem(index, 0, label[4:])
-                self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, 
+                self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED,
                                              wx.LIST_STATE_SELECTED)
-                
+
     def move_item_left(self, event):
         """\
         moves the selected menu item one level up in the hierarchy, i.e.
@@ -380,7 +380,7 @@ class MenuItemDialog(wx.Dialog):
         self._move_item_left(self.selected_index)
 
     def _move_item_right(self, index):
-        if index > 0 and (self.item_level(index) <= self.item_level(index-1)): 
+        if index > 0 and (self.item_level(index) <= self.item_level(index-1)):
             label = self.menu_items.GetItem(index, 0).m_text
             self.menu_items.SetStringItem(index, 0, misc.wxstr(" " * 4)
                                           + label)
@@ -449,7 +449,7 @@ class MenuItemDialog(wx.Dialog):
         ret_idx = i
         if is_down: ret_idx += len(items_to_move)
         return ret_idx
-        
+
     def move_item_down(self, event):
         """\
         moves the selected menu item after the next one at the same level
@@ -485,7 +485,7 @@ class MenuItemDialog(wx.Dialog):
     def on_apply(self, event):
         self.owner.set_menus(self.get_menus())
         common.app_tree.app.saved = False
-                                                  
+
 #end of class MenuItemDialog
 
 
@@ -601,18 +601,18 @@ class MenuHandler(BaseXmlBuilderTagHandler):
 
 class EditMenuBar(EditBase, PreviewMixin):
     __hidden_frame = None  # used on GTK to reparent a menubar before deletion
-    
+
     def __init__(self, name, klass, parent, property_window):
         custom_class = parent is None
         EditBase.__init__(self, name, klass,
                           parent, wx.NewId(), property_window,
                           custom_class=custom_class, show=False)
         self.base = 'wxMenuBar'
-        
+
         self.menus = []  # list of MenuTree objects
         self._mb = None  # the real menubar
         self.access_functions['menus'] = (self.get_menus, self.set_menus)
-        prop = self.properties['menus'] = MenuProperty(self, 'menus', None) 
+        prop = self.properties['menus'] = MenuProperty(self, 'menus', None)
         PreviewMixin.__init__(self)
 
     def create_widget(self):
@@ -660,7 +660,7 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.property_window.Layout()
         else:
             PreviewMixin.create_properties(self)
-        
+
     def __getitem__(self, key):
         return self.access_functions[key]
 
@@ -706,7 +706,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                 first = 0
             else: self._mb.Append(m, misc.wxstr(menu.root.label))
         self._mb.Refresh()
-      
+
     def remove(self, *args, **kwds):
         if self.parent is not None:
             self.parent.properties['menubar'].set_value(0)
@@ -739,7 +739,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                     return lambda e: wx.CallAfter(method)
                 wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
                 wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
-                
+
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
     def hide_widget(self, *args):
@@ -801,7 +801,7 @@ def builder(parent, sizer, pos, number=[0]):
             number[0] -= 1
         dialog.Destroy()
         return
-    
+
     name = 'menubar_%d' % (number[0] or 1)
     while common.app_tree.has_name(name):
         number[0] += 1
@@ -812,7 +812,7 @@ def builder(parent, sizer, pos, number=[0]):
     common.app_tree.add(mb.node)
     mb.show_widget(True)
     mb.show_properties()
-    
+
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     """\
@@ -840,5 +840,5 @@ def initialize():
     cwx = common.widgets_from_xml
     cwx['EditMenuBar'] = xml_builder
     common.widgets['EditMenuBar'] = builder
-    
+
     return common.make_object_button('EditMenuBar', 'icons/menubar.xpm', 1)

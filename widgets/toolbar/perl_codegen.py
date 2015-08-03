@@ -22,7 +22,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         append = out.append
 
         obj_name = self.format_widget_access(obj)
-        
+
         bitmapsize = prop.get('bitmapsize')
         if bitmapsize:
             try:
@@ -82,7 +82,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
                         bmp1, bmp2, kind,
                         self.codegen.quote_str(tool.short_help),
                         self.codegen.quote_str(tool.long_help)))
-        
+
         return ids + out
 
     def get_code(self, obj):

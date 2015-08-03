@@ -107,7 +107,7 @@ class PanelBase(EditStylesMixin):
         panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
-        
+
     def on_enter(self, event):
         if not self.top_sizer and common.adding_sizer:
             self.widget.SetCursor(wx.CROSS_CURSOR)
@@ -197,7 +197,7 @@ class PanelBase(EditStylesMixin):
         self._logger = logging.getLogger(self.__class__.__name__)
 
 # end of class PanelBase
-    
+
 
 class EditPanel(PanelBase, ManagedBase):
     def __init__(self, name, parent, id, sizer, pos, property_window,
@@ -276,14 +276,14 @@ class EditPanel(PanelBase, ManagedBase):
                 self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
             self._logger.warning(_('Only sizers can be pasted here'))
-            
+
 # end of class EditPanel
 
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
     _is_toplevel = False  # used to avoid to appear in the "Top Window"
                           # property of the app
-    
+
     def __init__(self, name, parent, id, property_window, klass='wxPanel',
                  show=True, style='wxTAB_TRAVERSAL'):
         TopLevelBase.__init__(self, name, klass, parent, id,
@@ -294,7 +294,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
 
     def create_widget(self):
         win = wx.Frame(common.palette, -1, misc.design_title(self.name),
-                       size=(400, 300)) 
+                       size=(400, 300))
         import os
         icon = wx.EmptyIcon()
         xpm = os.path.join(config.icons_path, 'panel.xpm')
@@ -355,9 +355,9 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
             self._classname = 'EditTopLevelScrolledWindow'
         else:
             self._classname = self.__class__.__name__
-            
+
 # end of class EditTopLevelPanel
-        
+
 
 def builder(parent, sizer, pos, number=[1]):
     """\
@@ -429,7 +429,7 @@ def initialize():
 
     #common.widgets['EditScrolledWindow'] = builder
     common.widgets_from_xml['EditScrolledWindow'] = xml_builder
-    
+
     common.widgets_from_xml['EditTopLevelPanel'] = xml_toplevel_builder
     common.widgets_from_xml['EditTopLevelScrolledWindow'] = \
                                                           xml_toplevel_builder
@@ -450,7 +450,7 @@ def initialize():
     WidgetTree.images['NotebookPane'] = os.path.join(
         config.icons_path,
         'panel.xpm'
-        )    
+        )
     return common.make_object_button('EditPanel', 'icons/panel.xpm',
                                      tip='Add a Panel/ScrolledWindow')
-    
+

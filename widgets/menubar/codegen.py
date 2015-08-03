@@ -15,7 +15,7 @@ from MenuTree import *
 class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
-        
+
     def get_init_code(self, obj):
         cn = self.cn
         out = []
@@ -133,7 +133,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                 for c in item.children:
                     ret.extend(do_get(c))
             return ret
-        
+
         for menu in obj.properties['menubar']:
             out.extend(do_get(menu.root))
         return out
@@ -197,7 +197,7 @@ def xrc_code_generator(obj):
     """
     from xml.sax.saxutils import escape, quoteattr
     xrcgen = common.code_writers['XRC']
-    
+
     class MenuBarXrcObject(xrcgen.DefaultXrcObject):
         def append_item(self, item, outfile, tabs):
             write = outfile.write
@@ -217,7 +217,7 @@ def xrc_code_generator(obj):
                         write('    '*tabs + '<object class="wxMenuItem" ' \
                               'name=%s>\n' % quoteattr(name))
                     else:
-                        write('    '*tabs + '<object class="wxMenuItem">\n')  
+                        write('    '*tabs + '<object class="wxMenuItem">\n')
                 if item.label:
                     # translate & into _ as accelerator marker
                     val = item.label.replace('&', '_')
@@ -239,7 +239,7 @@ def xrc_code_generator(obj):
             if item.name: return item.name.strip()
             tokens = item.id.split('=')
             if tokens: return tokens[0].strip()
-        
+
         def write(self, outfile, tabs):
             menus = self.code_obj.properties['menubar']
             write = outfile.write
@@ -250,7 +250,7 @@ def xrc_code_generator(obj):
             write('    '*tabs + '</object>\n')
 
     # end of class MenuBarXrcObject
-    
+
     return MenuBarXrcObject(obj)
 
 
@@ -279,7 +279,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                     id = 'wxNewId()'
                 else:
                     #if name: ids.append(name)
-                    id = val                
+                    id = val
                 if item.children:
                     if item.name: name = item.name
                     else: name = '%s_sub' % menu
@@ -324,7 +324,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
     def get_ids_code(self, obj):
         ids = []
         menus = obj.properties['menubar']
-        
+
         def collect_ids(items):
             for item in items:
                 if item.name == '---':  # item is a separator

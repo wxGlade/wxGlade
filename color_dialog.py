@@ -32,7 +32,7 @@ class wxGladeColorDialog(wx.Dialog):
         self.__set_properties()
         self.__do_layout()
         # end wxGlade
-        
+
         wx.EVT_RADIOBUTTON(self, self.use_sys_color.GetId(),
                            self.on_use_sys_color)
         wx.EVT_RADIOBUTTON(self, self.use_chooser.GetId(),
@@ -42,7 +42,7 @@ class wxGladeColorDialog(wx.Dialog):
         self.sys_color.Enable(True)
         self.color_chooser.Enable(False)
         self.use_chooser.SetValue(0)
-        
+
     def on_use_chooser(self, event):
         self.sys_color.Enable(False)
         self.color_chooser.Enable(True)

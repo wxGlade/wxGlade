@@ -184,7 +184,7 @@ class EventsMixin(object):
     def create_events_property(self):
         if not self.events:
             return
-        panel = wx.Panel(self.notebook, -1) 
+        panel = wx.Panel(self.notebook, -1)
         self.properties['events'].display(panel)
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.properties['events'].panel, 1, wx.ALL|wx.EXPAND, 5)

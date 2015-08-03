@@ -114,7 +114,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         except KeyError:
             sbprop = None
         prop['style'].display(panel)
-        
+
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(prop['title'].panel, 0, wx.EXPAND)
         szr.Add(prop['icon'].panel, 0, wx.EXPAND)
@@ -142,7 +142,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
                                        self, common.property_panel)
             self.menubar.node = Tree.Node(self.menubar)
             common.app_tree.add(self.menubar.node, self.node)
-            
+
             if self.widget:
                 self.menubar.show_widget(True)
                 self.menubar.show_properties()
@@ -169,7 +169,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             # this is needed at least on win32
             wx.PostEvent(self.widget, wx.SizeEvent(self.widget.GetSize(),
                                                    self.widget.GetId()))
-        
+
     def get_toolbar(self):
         return self.toolbar is not None
 
@@ -180,7 +180,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
                                        self, common.property_panel)
             self.toolbar.node = Tree.Node(self.toolbar)
             common.app_tree.add(self.toolbar.node, self.node)
-            
+
             if self.widget:
                 self.toolbar.show_widget(True)
                 self.toolbar.show_properties()
@@ -196,7 +196,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         if self.toolbar:
             self.toolbar = self.toolbar.remove(do_nothing=True)
         TopLevelBase.remove(self, *args)
-    
+
     def get_icon(self):
         return self.icon
 
@@ -241,7 +241,7 @@ class EditMDIChildFrame(EditFrame):
 
 # end of class EditMDIChildFrame
 
-        
+
 def builder(parent, sizer, pos, number=[0]):
     """\
     factory function for EditFrame objects.
@@ -273,11 +273,11 @@ def builder(parent, sizer, pos, number=[0]):
             self.SetSizer(szr)
             szr.Fit(self)
             self.CenterOnScreen()
-            
+
         def undo(self):
             if number[0] > 0:
                 number[0] -= 1
-            
+
         def __getitem__(self, value):
             if value == 'class':
                 def set_klass(c): self.klass = c
@@ -315,7 +315,7 @@ def builder(parent, sizer, pos, number=[0]):
     edit_sizers._builder(frame, None, 0)
     # now select the frame's node in the tree
     common.app_tree.select_item(node)
-    
+
     dialog.Destroy()
     if wx.Platform == '__WXMSW__':
         #frame.widget.CenterOnScreen()
@@ -348,11 +348,11 @@ def initialize():
     cwx['EditMDIChildFrame'] = _make_builder(EditMDIChildFrame)
 
     common.widgets['EditFrame'] = builder
-    
+
     from tree import WidgetTree
     import os.path
     WidgetTree.images['EditMDIChildFrame'] = os.path.join(
         config.icons_path,
         'frame.xpm'
-        )       
+        )
     return common.make_object_button('EditFrame', 'icons/frame.xpm', 1)

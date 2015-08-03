@@ -22,7 +22,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     """
 
     update_widget_style = False
-    
+
     def __init__(self, name, parent, id, label, sizer, pos, property_window,
                  show=True):
 
@@ -59,7 +59,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
             raise
 
         wx.EVT_CHECKBOX(self.widget, self.id,
-                        lambda e: self.widget.SetValue(self.value))        
+                        lambda e: self.widget.SetValue(self.value))
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -98,7 +98,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
 
 # end of class EditRadioButton
 
-        
+
 def builder(parent, sizer, pos, number=[1]):
     """\
     factory function for EditRadioButton objects.
@@ -137,7 +137,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     else:
         common.app_tree.insert(node, sizer.node, pos - 1)
     return radio
-  
+
 
 def initialize():
     """\

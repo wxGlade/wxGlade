@@ -20,7 +20,7 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
     """
 
     update_widget_style = False
-    
+
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
 
@@ -58,7 +58,7 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
 
     def create_properties(self):
         ManagedBase.create_properties(self)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL) 
+        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
         prop = self.properties
         prop['style'].display(panel)
         szr = wx.BoxSizer(wx.VERTICAL)
@@ -124,5 +124,5 @@ def initialize():
     """
     common.widgets['EditListCtrl'] = builder
     common.widgets_from_xml['EditListCtrl'] = xml_builder
-        
+
     return common.make_object_button('EditListCtrl', 'icons/list_ctrl.xpm')

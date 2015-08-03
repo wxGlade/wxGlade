@@ -337,7 +337,7 @@ constructor will be used. You should probably not use this if \
             if p.preview_is_visible():
                 item.SetText(_('Close preview') + ' (%s)\tCtrl+P' % p.name)
             else:
-                item.SetText(_('Preview') + ' (%s)\tCtrl+P' % p.name)        
+                item.SetText(_('Preview') + ' (%s)\tCtrl+P' % p.name)
 
     def preview_parent(self):
         widget = misc.get_toplevel_widget(self)
@@ -504,11 +504,11 @@ class WindowBase(EditBase):
     Extends EditBase with the addition of the common properties available to
     almost every window: size, background and foreground colours, and font
     """
-    
+
     def __init__(self, name, klass, parent, id, property_window, show=True):
         EditBase.__init__(self, name, klass, parent, id, property_window,
                           show=False)
-        # 'property' id (editable by the user) 
+        # 'property' id (editable by the user)
         self.window_id = "wxID_ANY"
 
         def set_id(value):
@@ -535,7 +535,7 @@ class WindowBase(EditBase):
                                             self.set_tooltip)
 
         self._original = {'background': None, 'foreground': None,
-                          'font': None}        
+                          'font': None}
 
         prop = self.properties
         prop['id'] = TextProperty(self, 'id', None, can_disable=True)
@@ -628,10 +628,10 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         prop['id'].display(panel)
         prop['size'].display(panel)
 
-        prop['background'].display(panel) 
+        prop['background'].display(panel)
         prop['foreground'].display(panel)
         try:
-            prop['font'].display(panel) 
+            prop['font'].display(panel)
         except KeyError:
             pass
         prop['tooltip'].display(panel)
@@ -741,7 +741,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
 
     def set_background(self, value):
         oldval = self.background
-        self.background = value        
+        self.background = value
         if not self.widget: return
         value = value.strip()
         if value in ColorDialogProperty.str_to_colors:

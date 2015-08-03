@@ -46,7 +46,7 @@ class CodeProperty(widget_properties.TextProperty):
         val = val.replace('\\n', '\n')
 
         sb = wx.StaticBox(parent, -1, "")
-        
+
         label = wx.lib.stattext.GenStaticText(
             parent, wx.ID_ANY, _('Extra code for this widget'))
         self._enabler = wx.CheckBox(parent, self.id + 1, '')
@@ -70,7 +70,7 @@ Please note that you should use this ability only if you have the \
         self._target = self.text
         szr = wx.BoxSizer(wx.HORIZONTAL)
         szr.Add(label, 1, wx.ALL|wx.EXPAND, 3)
-        szr.Add(self._enabler, 0, wx.ALL|wx.EXPAND, 3)        
+        szr.Add(self._enabler, 0, wx.ALL|wx.EXPAND, 3)
         sizer = wx.StaticBoxSizer(sb, wx.VERTICAL)
         sizer.Add(szr, 0, wx.EXPAND)
         sizer.Add(self.text, 1, wx.ALL|wx.EXPAND, 3)
@@ -163,7 +163,7 @@ class ExtraPropertiesPropertyHandler(BaseXmlBuilderTagHandler):
         self.props = {}
         self.prop_name = None
         self.curr_prop = []
-        
+
     def start_elem(self, name, attrs):
         super(ExtraPropertiesPropertyHandler, self).__init__()
         if name == 'property':

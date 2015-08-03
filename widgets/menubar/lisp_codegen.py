@@ -14,7 +14,7 @@ from codegen import MenuHandler
 class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
     def get_properties_code(self, obj):
         return []
-        
+
     def get_init_code(self, obj):
         out = []
         append = out.append

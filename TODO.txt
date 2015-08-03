@@ -59,11 +59,11 @@ Things Done:
 - "tags" on the generated code, to detect the portions of code to replace and
   those to keep as is, when updating an existing file
 
-- Investigation of the many memory leaks 
+- Investigation of the many memory leaks
 
-- speedup of the xml loading 
+- speedup of the xml loading
 
-- separation between window objects and sizer ones in the generated code 
+- separation between window objects and sizer ones in the generated code
 
 - Code generation from the command line, witout starting the GUI
 
@@ -72,7 +72,7 @@ Things Done:
 - support for C++ code generation
 
 - Possibility to change the type of a sizer after its creation
- 
+
 - Possibility to change the position of a widget inside its sizer
 
 - Edit -> Preferences... to customize some aspects of wxGlade

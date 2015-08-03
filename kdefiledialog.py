@@ -1,6 +1,6 @@
 # kdefiledialog.py: support for native KDE file and dir dialog (using kdialog)
 # $Id: kdefiledialog.py,v 1.5 2007/03/27 07:02:07 agriggio Exp $
-# 
+#
 # Copyright (c) 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 # License: MIT (see license.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
@@ -38,7 +38,7 @@ def kde_file_selector(message, default_path="", default_filename="",
         return wx.FileSelector(message, default_path, default_filename,
                                default_extension, wildcard, flags,
                                *args, **kwds)
-    
+
     r, w = os.pipe()
     handler = _SigChldHandler()
     oldhandler = signal.signal(signal.SIGCHLD, handler)
@@ -96,7 +96,7 @@ def kde_dir_selector(message="", default_path="", *args, **kwds):
     """
     if not _kdialog_ok:
         return wx.DirSelector(message, default_path, *args, **kwds)
-    
+
     r, w = os.pipe()
     handler = _SigChldHandler()
     oldhandler = signal.signal(signal.SIGCHLD, handler)
@@ -119,7 +119,7 @@ def kde_dir_selector(message="", default_path="", *args, **kwds):
         if handler.status != 0:
             os.close(r)
             return ""
-        
+
         dirname = os.fdopen(r).readline().strip()
         signal.signal(signal.SIGCHLD, oldhandler or signal.SIG_DFL)
         return dirname
@@ -131,7 +131,7 @@ def test_kde():
     """\
     Checks whether KDE (actually, kdesktop) is running.
     """
-    return os.system('dcop kdesktop > /dev/null 2>&1') == 0    
+    return os.system('dcop kdesktop > /dev/null 2>&1') == 0
 
 
 class _SigChldHandler:
@@ -187,7 +187,7 @@ if __name__ == '__main__':
         else:
             wx.MessageBox(_('No files selected!'),
                           style=wx.OK|wx.ICON_EXCLAMATION)
-            
+
     wx.EVT_BUTTON(b, -1, on_click)
     wx.EVT_BUTTON(b2, -1, on_click2)
 

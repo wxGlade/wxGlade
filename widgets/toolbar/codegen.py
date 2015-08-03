@@ -17,9 +17,9 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         prop = obj.properties
         out = []
         append = out.append
-        
+
         obj_name = self.format_widget_access(obj)
-        
+
         bitmapsize = prop.get('bitmapsize')
         if bitmapsize:
             try:
@@ -75,7 +75,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                         bmp1, bmp2, self.cn(kind),
                         self.codegen.quote_str(tool.short_help),
                         self.codegen.quote_str(tool.long_help)))
-        
+
         return ids + out
 
     def get_code(self, obj):
@@ -108,7 +108,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             if tool.handler:
                 ret.append((val, 'EVT_TOOL', tool.handler, 'wxCommandEvent'))
             return ret
-        
+
         for tool in obj.properties['toolbar']:
             out.extend(do_get(tool))
         return out
@@ -152,7 +152,7 @@ def xrc_code_generator(obj):
     """
     from xml.sax.saxutils import escape, quoteattr
     xrcgen = common.code_writers['XRC']
-    
+
     class ToolBarXrcObject(xrcgen.DefaultXrcObject):
         def append_item(self, item, outfile, tabs):
             write = outfile.write
@@ -196,7 +196,7 @@ def xrc_code_generator(obj):
                 except ValueError:
                     pass
                 write('    '*tabs + '</object>\n')
-        
+
         def write(self, outfile, tabs):
             tools = self.code_obj.properties['toolbar']
             write = outfile.write
@@ -229,7 +229,7 @@ def xrc_code_generator(obj):
             write('    '*tabs + '</object>\n')
 
     # end of class ToolBarXrcObject
-    
+
     return ToolBarXrcObject(obj)
 
 
@@ -315,7 +315,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
     def get_ids_code(self, obj):
         ids = []
         tools = obj.properties['toolbar']
-        
+
         for item in tools:
             if item.id == '---':  # item is a separator
                 pass  # do nothing

@@ -97,7 +97,7 @@ class EditGrid(ManagedBase):
         self.selection_mode = 0  # == wxGrid.wxGridSelectCells
         self.create_grid = True
         self.columns = [['A', '-1'], ['B', '-1'], ['C', '-1']]
-        
+
         ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos,
                              property_window, show=show)
         props = self.properties
@@ -247,7 +247,7 @@ class EditGrid(ManagedBase):
 
         self.set_selection_mode(self.selection_mode)
         # following two events are to permit select grid from designer frame
-        EVT_GRID_CELL_LEFT_CLICK(self.widget, self.on_set_focus)  
+        EVT_GRID_CELL_LEFT_CLICK(self.widget, self.on_set_focus)
         EVT_GRID_LABEL_LEFT_CLICK(self.widget, self.on_set_focus)
         # these are to show the popup menu on right click
         EVT_GRID_CELL_RIGHT_CLICK(self.widget, self.popup_menu)
@@ -384,7 +384,7 @@ class EditGrid(ManagedBase):
 
     def set_columns(self, cols):
         # first of all, adjust col number
-        _oldcolnum = len(self.columns) 
+        _oldcolnum = len(self.columns)
         _colnum = len(cols)
         self.columns = cols
         if not self.widget: return
@@ -403,13 +403,13 @@ class EditGrid(ManagedBase):
                 self.widget.SetColSize(i, s1)
             i += 1
         self.widget.ForceRefresh()
-            
+
     def get_property_handler(self, name):
         if name == 'columns': return ColsHandler(self)
         return ManagedBase.get_property_handler(self, name)
 
 # end of class EditGrid
-        
+
 
 def builder(parent, sizer, pos, number=[1]):
     """\

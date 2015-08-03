@@ -6,7 +6,7 @@
 # Copyright 2011-2015 Carsten Grohmann
 #
 # Shell script to start wxGlade
-# 
+#
 # The wxGlade main script is called wxglade.py. It will be searched at
 # three places:
 #  1. parallel to this script

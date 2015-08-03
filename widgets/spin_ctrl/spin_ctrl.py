@@ -12,7 +12,7 @@ from tree import Tree
 import common
 import config
 from widget_properties import *
-   
+
 
 class EditSpinCtrl(ManagedBase, EditStylesMixin):
     """\
@@ -62,7 +62,7 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')        
+        self.notebook.AddPage(panel, 'Widget')
 
     def get_range(self):
         # we cannot return self.range since this would become a "(0, 100)"
@@ -140,5 +140,5 @@ def initialize():
     """
     common.widgets['EditSpinCtrl'] = builder
     common.widgets_from_xml['EditSpinCtrl'] = xml_builder
-        
+
     return common.make_object_button('EditSpinCtrl', 'icons/spin_ctrl.xpm')

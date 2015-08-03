@@ -421,7 +421,7 @@ unless(caller){
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
         write = code_lines.append
-        
+
         builder = self.obj_builders[code_obj.base]
         mycn = getattr(builder, 'cn', self.cn)
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
@@ -486,7 +486,7 @@ unless(caller){
         write(self.tmpl_block_begin % {
             'class_separator': self.class_separator,
             'comment_sign':    self.comment_sign,
-            'function':        self.name_ctor, 
+            'function':        self.name_ctor,
             'klass':           self.cn_class(code_obj.klass),
             'tab':             tab,
             })

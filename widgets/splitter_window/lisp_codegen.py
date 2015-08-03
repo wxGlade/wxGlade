@@ -104,7 +104,7 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
             elif win_2:
                 add_sub(win_2)
 
-        return props_buf    
+        return props_buf
 
 # end of class LispSplitterWindowGenerator
 
