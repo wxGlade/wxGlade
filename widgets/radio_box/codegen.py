@@ -47,7 +47,6 @@ class CppRadioBoxGenerator(wcodegen.CppWidgetCodeWriter):
 
         self.tmpl_dict['majorDimension'] = majorDimension
 
-
         return
 
 # end of class CppRadioBoxGenerator

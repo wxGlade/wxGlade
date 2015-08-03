@@ -51,7 +51,6 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         return out
 
-
     def get_init_code(self, obj):
         out = []
         append = out.append

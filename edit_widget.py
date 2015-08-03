@@ -60,7 +60,6 @@ class EditWidget(ManagedBase):
                 self.properties[name] = prop
                 self.property_proportion[name] = proportion
         
-
     def create_properties(self):
         ManagedBase.create_properties(self)
         panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)

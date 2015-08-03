@@ -286,7 +286,6 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 %(tab)s(ffi:close-foreign-library "../miscellaneous/wxc-msw2.6.2.dll"))
 """
 
-
     tmpl_gettext_simple = """\
 (defun init-func (fun data evt)
 %(tab)s(setf (textdomain) "%(textdomain)s") ;; replace with the appropriate catalog name

@@ -33,7 +33,6 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
                     if id_name: ids.append(id_name)
                     widget_id = id_number
 
-
                 if item.children:
                     if item.name:
                         id_name = item.name

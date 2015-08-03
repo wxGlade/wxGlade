@@ -156,7 +156,6 @@ class StylesMixin(object):
         if not flags:
             return flags
 
-
         for flag in flags.copy():
             try:
                 flags.add(self.style_defs[flag]['rename_to'])
@@ -207,7 +206,6 @@ class StylesMixin(object):
         flags -= remove
 
         return flags
-
 
     def combine_styles(self, flags):
         """\

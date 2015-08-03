@@ -71,7 +71,6 @@ class Template(object):
 # end of class Template
 
 
-
 class TemplateListDialog(templates_ui.TemplateListDialog):
     """\
     Class TemplateListDialog

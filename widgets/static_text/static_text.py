@@ -16,7 +16,6 @@ from tree import Tree
 from widget_properties import *
 
 
-
 class EditStaticText(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxStaticText objects

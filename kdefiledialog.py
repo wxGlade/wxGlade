@@ -188,7 +188,6 @@ if __name__ == '__main__':
             wx.MessageBox(_('No files selected!'),
                           style=wx.OK|wx.ICON_EXCLAMATION)
             
-
     wx.EVT_BUTTON(b, -1, on_click)
     wx.EVT_BUTTON(b2, -1, on_click2)
 

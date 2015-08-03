@@ -204,7 +204,6 @@ class PerlMixin(BaseLanguageMixin):
     language = 'perl'
     lang_prefix = 'perl'
 
-
     _perl_constant_list = [
         "wxALL", "wxTOP", "wxBOTTOM", "wxLEFT", "wxRIGHT", "wxDOWN",
 
@@ -1286,7 +1285,6 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
                        '%(name)s.wxWindow_GetBestSize())\n'
     tmpl_setdefault = '(%(klass)s_SetDefault %(name)s)\n'
     tmpl_inline_wxSize = 'wxSize_Create(%(width)s %(height)s)'
-
 
     def _prepare_tmpl_content(self, obj):
         BaseWidgetWriter._prepare_tmpl_content(self, obj)
