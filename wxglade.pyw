@@ -24,13 +24,12 @@ except ImportError:
 try:
     # run the main function and exit on success
     wxglade.run_main()
-    sys.exit()
 except:
     pass
 
 # show caught exceptions in a windows message box
-if has_ctypes:
-    (exc_type, exc_value, exc_tb) = sys.exc_info()
+(exc_type, exc_value, exc_tb) = sys.exc_info()
+if has_ctypes and exc_type:
     exc_traceback = '\r\n'.join(traceback.format_tb(exc_tb))
 
     title = 'An internal error occurred in wxGlade'
@@ -48,4 +47,3 @@ This is a bug - please report it.""" % (exc_type, exc_value, exc_traceback)
     ICON_STOP = 0x10
     MessageBox = ctypes.windll.user32.MessageBoxA
     MessageBox(None, msg, title, MB_OK | ICON_STOP)
-
