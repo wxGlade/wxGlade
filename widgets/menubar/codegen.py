@@ -201,7 +201,7 @@ def xrc_code_generator(obj):
     class MenuBarXrcObject(xrcgen.DefaultXrcObject):
         def append_item(self, item, outfile, tabs):
             write = outfile.write
-            if item.name == '---': # item is a separator
+            if item.name == '---':  # item is a separator
                 write('    '*tabs + '<object class="separator"/>\n')
             else:
                 if item.children:
@@ -271,7 +271,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
 
         def append_items(menu, items):
             for item in items:
-                if item.name == '---': # item is a separator
+                if item.name == '---':  # item is a separator
                     append('%s->AppendSeparator();\n' % menu)
                     continue
                 name, val = self.codegen.generate_code_id(None, item.id)

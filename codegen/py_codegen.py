@@ -52,7 +52,7 @@ class SourceFileContent(BaseSourceFileContent):
     # module qualified names.
     rec_class_decl = re.compile(
         r'^\s*'                                       # leading spaces
-        r'class\s+([a-zA-Z_]\w*)\s*(\([\s\w.,]*\))?:' # "class <name>" statement
+        r'class\s+([a-zA-Z_]\w*)\s*(\([\s\w.,]*\))?:'  # "class <name>" statement
         r'\s*$'                                       # tailing spaces
         )
 

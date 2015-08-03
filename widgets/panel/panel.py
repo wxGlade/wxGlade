@@ -125,7 +125,7 @@ class PanelBase(EditStylesMixin):
 
     def drop_sizer(self, event):
         if self.top_sizer or not common.adding_sizer:
-            self.on_set_focus(event) # default behaviour: call show_properties
+            self.on_set_focus(event)  # default behaviour: call show_properties
             return
         self.widget.SetCursor(wx.NullCursor)
         common.widgets[common.widget_to_add](self, None, None)

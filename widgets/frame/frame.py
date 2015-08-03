@@ -231,7 +231,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
 
 class EditMDIChildFrame(EditFrame):
-    _is_toplevel = False # used to avoid to appear in the "Top Window" property
+    _is_toplevel = False  # used to avoid to appear in the "Top Window" property
                          # of the app
 
     def __init__(self, *args, **kwds):

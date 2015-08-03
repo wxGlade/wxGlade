@@ -166,7 +166,7 @@ class TemplateListDialog(wx.Dialog):
 
 # end of class TemplateListDialog
 if __name__ == "__main__":
-    gettext.install("app") # replace with the appropriate catalog name
+    gettext.install("app")  # replace with the appropriate catalog name
 
     app = wx.PySimpleApp(0)
     template_info_dialog = TemplateInfoDialog(None, wx.ID_ANY, "")

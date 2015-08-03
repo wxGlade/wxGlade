@@ -79,7 +79,7 @@ class MenuItemDialog(wx.Dialog):
         self.cancel = wx.Button(self, wx.ID_CANCEL, _("Cancel"))
 
         self.do_layout()
-        self.selected_index = -1 # index of the selected element in the
+        self.selected_index = -1  # index of the selected element in the
                                  # wx.ListCtrl menu_items
         # event handlers
         wx.EVT_BUTTON(self, ADD_ID, self.add_menu_item)
@@ -341,7 +341,7 @@ class MenuItemDialog(wx.Dialog):
         curr_item = None
         for index in range(self.menu_items.GetItemCount()):
             label = get(index, 0)
-            lvl = self.item_level(index) # get the indentation level
+            lvl = self.item_level(index)  # get the indentation level
             if not lvl:
                 t = MenuTree(get(index, 2), label, id=get(index, 1),
                              handler=get(index, 5))
@@ -519,7 +519,7 @@ class MenuProperty(Property):
                                 items=self.owner.get_menus())
         if dialog.ShowModal() == wx.ID_OK:
             self.owner.set_menus(dialog.get_menus())
-            common.app_tree.app.saved = False # update the status of the app
+            common.app_tree.app.saved = False  # update the status of the app
 
     def write(self, outfile, tabs):
         inner_xml = StringIO.StringIO()
@@ -638,7 +638,7 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.widget.SetIcon(icon)
             wx.EVT_CLOSE(self.widget, lambda e: self.hide_widget())
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
-        self.set_menus(self.menus) # show the menus
+        self.set_menus(self.menus)  # show the menus
 
     def create_properties(self):
         EditBase.create_properties(self)
@@ -669,13 +669,13 @@ class EditMenuBar(EditBase, PreviewMixin):
 
     def set_menus(self, menus):
         self.menus = menus
-        if not self._mb: return # nothing left to do
+        if not self._mb: return  # nothing left to do
         for i in range(self._mb.GetMenuCount()):
             self._mb.Remove(0)
 
         def append(menu, items):
             for item in items:
-                if misc.streq(item.name, '---'): # item is a separator
+                if misc.streq(item.name, '---'):  # item is a separator
                     menu.AppendSeparator()
                 elif item.children:
                     m = wx.Menu()
@@ -726,7 +726,7 @@ class EditMenuBar(EditBase, PreviewMixin):
 
     def popup_menu(self, event):
         if self.parent is not None:
-            return # do nothing in this case
+            return  # do nothing in this case
         if self.widget:
             if not self._rmenu:
                 REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]

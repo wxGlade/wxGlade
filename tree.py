@@ -167,8 +167,8 @@ class Tree(object):
         self.root = root
         if self.root is None: self.root = Tree.Node()
         self.current = self.root
-        self.app = app # reference to the app properties
-        self.names = {} # dictionary of names of the widgets: each entry is
+        self.app = app  # reference to the app properties
+        self.names = {}  # dictionary of names of the widgets: each entry is
                         # itself a dictionary, one for each toplevel widget...
 
     def _find_toplevel(self, node):
@@ -394,7 +394,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             style &= ~wx.TR_ROW_LINES
         wx.TreeCtrl.__init__(self, parent, id, style=style)
         root_node = Tree.Node(application)
-        self.cur_widget = None # reference to the selected widget
+        self.cur_widget = None  # reference to the selected widget
         Tree.__init__(self, root_node, application)
         image_list = wx.ImageList(21, 21)
         image_list.Add(wx.Bitmap(os.path.join(config.icons_path,
@@ -414,9 +414,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.title = ' '
         self.set_title(self.title)
 
-        self.auto_expand = True # this control the automatic expansion of
+        self.auto_expand = True  # this control the automatic expansion of
                                 # nodes: it is set to False during xml loading
-        self._show_menu = misc.wxGladePopupMenu('widget') # popup menu to
+        self._show_menu = misc.wxGladePopupMenu('widget')  # popup menu to
                                                           # show toplevel
                                                           # widgets
         self._show_menu.Append(wx.ID_ANY, _('Show'))
@@ -440,11 +440,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def _build_label(self, node):
         s = node.widget.name
         if node.widget.klass != node.widget.base and \
-               node.widget.klass != 'wxScrolledWindow': # special case...
+               node.widget.klass != 'wxScrolledWindow':  # special case...
             s += ' (%s)' % node.widget.klass
         return s
 
-    def add(self, child, parent=None, image=None): # is image still used?
+    def add(self, child, parent=None, image=None):  # is image still used?
         """\
         appends child to the list of parent's children
         """
@@ -493,7 +493,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.app.check_codegen(child.widget)
 
     def remove(self, node=None):
-        self.app.saved = False # update the status of the app
+        self.app.saved = False  # update the status of the app
         Tree.remove(self, node)
         if node is not None:
             try:
@@ -516,7 +516,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         app = self.GetPyData(self.GetRootItem())
         app.widget.show_properties()
 
-    def refresh_name(self, node, oldname=None): #, name=None):
+    def refresh_name(self, node, oldname=None):  # , name=None):
         if oldname is not None:
             try:
                 #del self.names[self.GetItemText(node.item)]
@@ -643,7 +643,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         except AttributeError:
             # if we are here, event is a CommandEvent and not a MouseEvent
             node = self.GetPyData(self.GetSelection())
-            self.expand(node) # if we are here, the widget must be shown
+            self.expand(node)  # if we are here, the widget must be shown
         else:
             node = self._find_item_by_pos(x, y, True)
         if node is not None:
@@ -679,7 +679,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         Tree.change_node(self, node, widget)
         self.SetItemImage(node.item, self.images.get(
             widget.__class__.__name__, -1))
-        self.SetItemText(node.item, self._build_label(node)) #widget.name)
+        self.SetItemText(node.item, self._build_label(node))  # widget.name)
 
     def change_node_pos(self, node, new_pos):
         if new_pos >= self.GetChildrenCount(node.parent.item, False):

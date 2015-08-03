@@ -922,7 +922,7 @@ class wxGladeFrame(wx.Frame):
             self.frame_property.Destroy()
             self.tree_frame.Destroy()
             self.Destroy()
-            common.remove_autosaved() # ALB 2004-10-15
+            common.remove_autosaved()  # ALB 2004-10-15
             wx.CallAfter(wx.GetApp().ExitMainLoop)
 
     def show_about_box(self, event):
@@ -955,8 +955,8 @@ class wxGladeFrame(wx.Frame):
             t.start()
 
     def show_and_raise(self):
-        self.frame_property.Show()  #self.GetMenuBar().IsChecked(self.PROPS_ID))
-        self.tree_frame.Show()  #self.GetMenuBar().IsChecked(self.TREE_ID))
+        self.frame_property.Show()  # self.GetMenuBar().IsChecked(self.PROPS_ID))
+        self.tree_frame.Show()  # self.GetMenuBar().IsChecked(self.TREE_ID))
         self.frame_property.Raise()
         self.tree_frame.Raise()
         self.Raise()
