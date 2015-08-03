@@ -13,6 +13,7 @@ from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
 
+
 class EditSlider(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxSlider objects

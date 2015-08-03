@@ -13,6 +13,7 @@ import common
 import config
 from widget_properties import *
    
+
 class EditSpinCtrl(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxSpinCtrl objects

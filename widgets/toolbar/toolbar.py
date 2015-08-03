@@ -331,6 +331,7 @@ class ToolsDialog(wx.Dialog):
         set_item = self.tool_items.SetStringItem
         add_item = self.tool_items.InsertStringItem
         index = [0]
+
         def add(tool):
             i = index[0]
             add_item(i, misc.wxstr(tool.label))
@@ -359,6 +360,7 @@ class ToolsDialog(wx.Dialog):
         def get(i, j):
             return self.tool_items.GetItem(i, j).m_text
         tools = []
+
         def add(index):
             label = get(index, 0)
             id = get(index, 1)
@@ -429,6 +431,7 @@ class ToolsProperty(Property):
     """\
     Property to edit the tools of an EditToolBar instance.
     """
+
     def __init__(self, owner, name, parent):
         Property.__init__(self, owner, name, parent)
         self.panel = None
@@ -772,6 +775,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
                 misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
                                  wx.ART_DELETE)
                 misc.append_item(self._rmenu, HIDE_ID, _('Hide')) 
+
                 def bind(method):
                     return lambda e: wx.CallAfter(method)
                 wx.EVT_MENU(self.pwidget, REMOVE_ID, bind(self.remove))

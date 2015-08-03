@@ -37,6 +37,7 @@ class wxGladePropertyPanel(wx.Panel):
     """\
     Panel used to display the Properties of the various widgets
     """
+
     def SetTitle(self, title):
         try: self.GetParent().SetTitle(title)
         except AttributeError: pass
@@ -54,8 +55,10 @@ class wxGladePropertyPanel(wx.Panel):
 
 TOGGLE_BOX_EVENT = wx.NewEventType()
 
+
 def EVT_TOGGLE_BOX(win, id, func):
     win.Connect(id, -1, TOGGLE_BOX_EVENT, func)
+
 
 class ToggleBoxEvent(wx.PyCommandEvent):
     def __init__(self, id, value, strval):
@@ -286,6 +289,7 @@ class wxGladeFrame(wx.Frame):
         wx.EVT_MENU(self, SAVE_ID, self.save_app)
         wx.EVT_MENU(self, SAVE_AS_ID, self.save_app_as)
         wx.EVT_MENU(self, SAVE_TEMPLATE_ID, self.save_app_as_template)
+
         def generate_code(event):
             common.app_tree.app.generate_code()
         wx.EVT_MENU(self, GENERATE_CODE_ID, generate_code)
@@ -348,6 +352,7 @@ class wxGladeFrame(wx.Frame):
             self.SetSizer(main_sizer)
             main_sizer.Fit(self)
             # events to display core/custom components
+
             def on_show_core_custom(event):
                 show_core = True
                 show_custom = False
@@ -410,6 +415,7 @@ class wxGladeFrame(wx.Frame):
         self.frame_property.SetAutoLayout(True)
         self.frame_property.SetSizer(sizer_tmp)
         sizer_tmp = wx.BoxSizer(wx.VERTICAL)
+
         def hide_frame2(event):
             #menu_bar.Check(PROPS_ID, False)
             self.frame_property.Hide()
@@ -941,6 +947,7 @@ class wxGladeFrame(wx.Frame):
             import threading
             # ALB 2004-08-15: why did this block the program?????
             # (at least on linux - GTK)
+
             def go():
                 webbrowser.open_new(config.tutorial_file)
             t = threading.Thread(target=go)

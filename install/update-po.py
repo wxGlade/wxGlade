@@ -91,6 +91,7 @@ __version__= "$Revision: 1.5 $"
 
 # -----------------------------------------------------------------------------
 
+
 def getlanguageDict():
     languageDict = {}
     
@@ -105,6 +106,8 @@ def getlanguageDict():
 # m a k e P O ( )         -- Build the Portable Object file for the application --
 # ^^^^^^^^^^^^^^^
 #
+
+
 def makePO(applicationDirectoryPath,  applicationDomain=None, verbose=0) :
     """Build the Portable Object Template file for the application.
 
@@ -166,6 +169,8 @@ def makePO(applicationDirectoryPath,  applicationDomain=None, verbose=0) :
 # c a t P O ( )         -- Concatenate one or several PO files with the application domain files. --
 # ^^^^^^^^^^^^^
 #
+
+
 def catPO(applicationDirectoryPath, listOf_extraPo, applicationDomain=None, targetDir=None, verbose=0) :
     """Concatenate one or several PO files with the application domain files.
     """
@@ -204,6 +209,8 @@ def catPO(applicationDirectoryPath, listOf_extraPo, applicationDomain=None, targ
 # m a k e M O ( )         -- Compile the Portable Object files into the Machine Object stored in the right location. --
 # ^^^^^^^^^^^^^^^
 # 
+
+
 def makeMO(applicationDirectoryPath,targetDir='./locale',applicationDomain=None, verbose=0, forceEnglish=0) :
     """Compile the Portable Object files into the Machine Object stored in the right location.
 
@@ -253,6 +260,8 @@ def makeMO(applicationDirectoryPath,targetDir='./locale',applicationDomain=None,
 # p r i n t U s a g e         -- Displays how to use this script from the command line --
 # ^^^^^^^^^^^^^^^^^^^
 #
+
+
 def printUsage(errorMsg=None) :
     """Displays how to use this script from the command line."""
     print """
@@ -293,6 +302,8 @@ def printUsage(errorMsg=None) :
 # f i l e B a s e O f ( )         -- Return base name of filename --
 # ^^^^^^^^^^^^^^^^^^^^^^^
 # 
+
+
 def fileBaseOf(filename,withPath=0) :
     """fileBaseOf(filename,withPath) ---> string
 
@@ -334,6 +345,8 @@ def fileBaseOf(filename,withPath=0) :
 # m k d i r ( )         -- Create a directory (and possibly the entire tree) --
 # ^^^^^^^^^^^^^
 # 
+
+
 def mkdir(directory) :
     """Create a directory (and possibly the entire tree).
  
@@ -376,6 +389,8 @@ def mkdir(directory) :
 # u n i x p a t h ( )         -- Return a path name that contains Unix separator. --
 # ^^^^^^^^^^^^^^^^^^^
 # 
+
+
 def unixpath(thePath) :
     r"""Return a path name that contains Unix separator.
  

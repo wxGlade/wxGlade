@@ -9,6 +9,7 @@ Test external code
 import unittest
 from copy import deepcopy
 
+
 class TestExternal(unittest.TestCase):
     """\
     Test different external code

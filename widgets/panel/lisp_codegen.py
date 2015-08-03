@@ -9,6 +9,7 @@ Lisp generator functions for wxPanel objects
 import common
 import wcodegen
 
+
 class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
     new_signature = [
         '$parent', '$id', '$pos', '$size', '$style', '$name'

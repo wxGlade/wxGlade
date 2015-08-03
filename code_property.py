@@ -19,7 +19,9 @@ from widget_properties import GridProperty
 class CodeProperty(widget_properties.TextProperty):
     def __init__(self, owner, name='extracode'):
         setattr(owner, name, "")
+
         def get(): return getattr(owner, name)
+
         def set(val): return setattr(owner, name, val)
         owner.access_functions[name] = (get, set)
         widget_properties.TextProperty.__init__(self, owner, name, None,
@@ -84,7 +86,9 @@ Please note that you should use this ability only if you have the \
 class ExtraPropertiesProperty(GridProperty):
     def __init__(self, owner):
         setattr(owner, 'extraproperties', [])
+
         def get(): return getattr(owner, 'extraproperties')
+
         def set(val): return setattr(owner, 'extraproperties', val)
         owner.access_functions['extraproperties'] = (get, set)
 

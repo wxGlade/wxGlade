@@ -232,6 +232,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
+
     class GridXrcObject(xrcgen.DefaultXrcObject):
         unsupported = set(['column', 'create_grid', 'rows_number',
                            'row_label_size', 'col_label_size',

@@ -322,6 +322,7 @@ class BaseWidgetHandler(object):
 
 # end of class BaseWidgetHandler
 
+
 class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Dictionary of objects used to generate the code in a given language.
@@ -775,6 +776,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         @ivar props:             Lines to insert in the __set_properties method
         @ivar sizers_init :      Lines related to sizer objects declarations
         """
+
         def __init__(self):
             self.child_order = []
             self.dependencies = {}

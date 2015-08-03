@@ -117,6 +117,7 @@ class SelectionTag(wx.Window):
     This is one of the small blue squares that appear at the corners of the
     active widgets
     """
+
     def __init__(self, parent):
         kwds = {'size': (7, 7)}
         wx.Window.__init__(self, parent, wx.ID_ANY, **kwds)
@@ -130,6 +131,7 @@ class SelectionMarker(object):
     """\
     Collection of the 4 SelectionTagS for each widget
     """
+
     def __init__(self, owner, parent, visible=False):
         self.visible = visible
         self.owner = owner

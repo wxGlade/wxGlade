@@ -28,6 +28,7 @@ import config
 import misc
 import wcodegen
 
+
 class SourceFileContent(BaseSourceFileContent):
     """\
     Keeps info about an existing file that has to be updated, to replace only
@@ -518,6 +519,7 @@ bool MyApp::OnInit()
         @ivar extra_code_h:    Extra header code to output
         @ivar extra_code_cpp:  Extra source code to output
         """
+
         def __init__(self):
             BaseLangCodeWriter.ClassLines.__init__(self)
             self.ids = []

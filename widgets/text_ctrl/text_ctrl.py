@@ -16,6 +16,7 @@ import config
 import misc
 from widget_properties import *
 
+
 class EditTextCtrl(ManagedBase, EditStylesMixin):
     """\
     Class to handle wxTextCtrl objects

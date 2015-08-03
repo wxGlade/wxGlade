@@ -26,6 +26,7 @@ from codegen import BaseLangCodeWriter, \
 import errors
 import wcodegen
 
+
 class SourceFileContent(BaseSourceFileContent):
 
     rec_block_start = re.compile(

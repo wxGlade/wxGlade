@@ -10,6 +10,7 @@ import wx
 from wx.lib.colourchooser import PyColourChooser
 import misc
 
+
 class wxGladeColorDialog(wx.Dialog):
     def __init__(self, colors_dict):
         wx.Dialog.__init__(self, None, -1, "")

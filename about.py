@@ -14,6 +14,7 @@ import config
 import misc
 import os.path
 
+
 class wxGladeAboutBox(wx.Dialog):
     text = '''
     <html>
@@ -48,6 +49,7 @@ class wxGladeAboutBox(wx.Dialog):
 
     def __init__(self, parent=None):
         wx.Dialog.__init__(self, parent, -1, _('About wxGlade'))
+
         class HtmlWin(wx.html.HtmlWindow):
             def OnLinkClicked(self, linkinfo):
                 href = linkinfo.GetHref()

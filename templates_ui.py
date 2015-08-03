@@ -76,6 +76,7 @@ class TemplateInfoDialog(wx.Dialog):
 
 # end of class TemplateInfoDialog
 
+
 class TemplateListDialog(wx.Dialog):
     def __init__(self, *args, **kwds):
         # begin wxGlade: TemplateListDialog.__init__

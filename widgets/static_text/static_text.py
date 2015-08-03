@@ -39,6 +39,7 @@ class EditStaticText(ManagedBase, EditStylesMixin):
         # initialise properties remaining staff
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['style'] = (self.get_style, self.set_style)
+
         def set_attribute(v):
             self.attribute = int(v)
         self.access_functions['attribute'] = (lambda : self.attribute,

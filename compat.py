@@ -7,6 +7,7 @@ Compatibility code to run with different versions of wxPython
 
 import wx
 
+
 def SizerItem_SetWindow(item, window):
     """\
     wx.SizerItem.SetWindow() is deprecated since wxPython 2.9 use
