@@ -1,8 +1,8 @@
-Building a wxGlade installer HOWTO
+Building a wxGlade Installer HOWTO
 ----------------------------------
 
 Alberto Griggio  2007/04/20
-Carsten Grohmann 2014/10/26
+Carsten Grohmann 2015/08/04
 
 1. Setup PyInstaller
 --------------------
@@ -12,23 +12,24 @@ Follow the instruction published at PyInstallers homepage.
 
 This procedure is tested using PyInstaller versions 2.1
 
+Check if pyinstaller well configured
+Type:
+pyinstaller --version
+
+The result should be 2.n
+
 2. Generate an executable
 -------------------------
 
 - Open a command prompt and change into source base directory
 
-- To delete temporary Python bytecode files type:
-  del /S *.pyo
-  del /S *.pyc
+- To generate the version file "version.py" manually with content below:
+  #
+  # This is an automatically generated file. Manual changes will be
+  # overwritten without warning.
+  #
 
-- To generate the version file "RELEASE-VERSION" type:
-  python.exe -c "import config; config.write_version_file(config.get_version(False))"
-
-- Check if pyinstaller well configured
-  Type:
-  pyinstaller --version
-
-  The result should be 2.n
+  __version__ = "<release version>"
 
 - Generate binary for standalone edition
   Type:
