@@ -1,7 +1,8 @@
 ; Inno Setup script file - Full Edition
 ;
-; License: MIT (see license.txt)
-; THIS PROGRAM COMES WITH NO WARRANTY
+; Copyright: 2007 Alberto Griggio
+; Copyright: 2011-2015 Carsten Grohmann
+; License: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 
 ; define own variables
 #define PRODUCT_VERSION "HG"

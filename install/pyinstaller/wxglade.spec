@@ -1,8 +1,12 @@
 # -*- mode: python -*-
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
 
+"""\
+Build description for PyInstaller
+
+@copyright: 2007 Alberto Griggio
+@copyright: 2011-2015 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import os
 
