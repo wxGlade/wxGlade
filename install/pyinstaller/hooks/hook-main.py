@@ -1,10 +1,10 @@
 # -*- mode: python -*-
-#
-# License: MIT (see license.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
 
 """\
 List hidden imports of wxGlade
+
+@copyright: 2011-2015 Carsten Grohmann
+@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 hiddenimports = [
