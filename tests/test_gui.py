@@ -362,6 +362,12 @@ class TestGui(WXGladeBaseTest):
         """
         self.load_and_generate('ComplexExample')
 
+    def test_CodeGeneration_CustomWidget(self):
+        """\
+        Test GUI code generation using "CustomWidget.wxg"
+        """
+        self.load_and_generate('CustomWidget')
+
     def test_StylesMixin(self):
         """\
         StyleMixin: Test converting of styles

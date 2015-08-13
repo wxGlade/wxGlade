@@ -1637,3 +1637,9 @@ class TestCodeGen(WXGladeBaseTest):
                         expected,
                     )
                 )
+
+    def test_CustomWidget(self):
+        """\
+        Test code generation for CustomWidget
+        """
+        self._test_all('CustomWidget')
