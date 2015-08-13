@@ -40,8 +40,7 @@
 (defmethod init ((obj MyFrame))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
-        use CustomWidget;
-        $self->{window-1} = CustomWidget->new(nil, wxID_ANY);
+        (setf window-1 (CustomWidget_Create nil wxID_ANY))
         ;;; end wxGlade
         )
 
