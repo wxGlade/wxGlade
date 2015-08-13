@@ -46,7 +46,7 @@ class ArgumentsHandler(BaseXmlBuilderTagHandler):
             return True
         elif name == 'argument':
             char_data = self.get_char_data()
-            self.arguments.append(char_data)
+            self.arguments.append([char_data])
         return False
 
 # end of class ArgumentsHandler

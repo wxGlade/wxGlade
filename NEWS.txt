@@ -38,6 +38,7 @@ Bugs:
   - Fix generated code for wxListBox
   - Fix broken color selection dialog
   - Always show new widgets in the design window
+  - Fix generated code for CustomWidget constructor (Thanks to Udi Fuchs)
   - ...
 
 Deprecation
