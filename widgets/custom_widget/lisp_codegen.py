@@ -13,6 +13,7 @@ from codegen import ArgumentsCodeHandler, format_ctor_arguments
 
 
 class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
+
     def get_code(self, widget):
         init = []
         prop = widget.properties
@@ -27,9 +28,9 @@ class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
             init.append(id_name)
         arguments = format_ctor_arguments(prop.get(
             'arguments', []), parent, id, prop.get('size', "-1, -1"))
-        init.append('use %s;\n' % widget.klass)  # yuck
-        init.append('$self->{%s} = %s->new(%s);\n' %
-            (widget.name, widget.klass, ", ".join(arguments)))
+        init.append(
+            '(setf %s (%s_Create %s))\n' %
+            (widget.name, widget.klass, " ".join(arguments)))
         props_buf = self.codegen.generate_common_properties(widget)
 
         return init, props_buf, []
