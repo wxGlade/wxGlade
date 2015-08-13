@@ -18,13 +18,14 @@ from edit_windows import ManagedBase
 class ArgumentsProperty(GridProperty):
     def write(self, outfile, tabs):
         if self.getter:
-            values = self.getter()
+            arguments = self.getter()
         else:
-            values = self.owner[self.name][0]()
-        if values:
+            arguments = self.owner[self.name][0]()
+        if arguments:
             inner_xml = u''
-            for value in values:
-                inner_xml += common.format_xml_tag(u'argument', value[0], tabs + 1)
+            for argument in arguments:
+                inner_xml += common.format_xml_tag(u'argument', argument[0],
+                                                   tabs + 1)
             stmt = common.format_xml_tag(
                 u'arguments', inner_xml, tabs, is_xml=True)
             outfile.write(stmt)
@@ -147,7 +148,8 @@ Invalid entries are silently ignored""")
         self.arguments = [[misc.wxstr(v) for v in val] for val in value]
 
     def get_property_handler(self, name):
-        if name == 'arguments': return ArgumentsHandler(self)
+        if name == 'arguments':
+            return ArgumentsHandler(self)
         return ManagedBase.get_property_handler(self, name)
 
     def get_custom_ctor(self):
