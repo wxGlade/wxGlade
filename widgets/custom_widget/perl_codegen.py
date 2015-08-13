@@ -9,7 +9,7 @@ Perl generator functions for CustomWidget objects
 
 import common
 import wcodegen
-from codegen import ArgumentsCodeHandler, _fix_arguments
+from codegen import ArgumentsCodeHandler, format_ctor_arguments
 
 
 class PerlCustomWidgetGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -21,12 +21,13 @@ class PerlCustomWidgetGenerator(wcodegen.PerlWidgetCodeWriter):
 
         if id_name:
             init.append(id_name)
-        arguments = _fix_arguments(prop.get('arguments', []),
-                                   parent, id, prop.get('size', "-1, -1"))
-        ctor = widget.klass + '->new'
+        arguments = format_ctor_arguments(prop.get('arguments', []), parent,
+                                          id, prop.get('size', "-1, -1"))
         cust_ctor = prop.get('custom_ctor', '').strip()
         if cust_ctor:
             ctor = cust_ctor
+        else:
+            ctor = widget.klass + '->new'
         init.append('$self->{%s} = %s(%s);\n' %
                     (widget.name, ctor, ", ".join(arguments)))
         props_buf = self.codegen.generate_common_properties(widget)

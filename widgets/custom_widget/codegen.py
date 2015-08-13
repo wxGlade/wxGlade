@@ -31,14 +31,34 @@ class ArgumentsCodeHandler(BaseCodeWriterTagHandler):
 # end of class ArgumentsCodeHandler
 
 
-def _fix_arguments(arguments, parent, id, size):
-    # adding $width e $height:
+def format_ctor_arguments(arguments, parent, id, size):
+    """\
+    Format constructor arguments
+
+    @param arguments: Constructor arguments
+    @type arguments:  list
+
+    @param parent: Parent widget
+    @type parent: str | Unicode
+
+    @param id: Widget ID e.g. wxID_ANY
+    @type id: str
+
+    @param size: Widget size 'width, height'
+    @type size: str
+
+    @rtype: list
+    """
     vSize = size.split(',')
     for i in range(len(arguments)):
-        if arguments[i] == '$parent': arguments[i] = parent
-        elif arguments[i] == '$id': arguments[i] = id
-        elif arguments[i] == '$width': arguments[i] = vSize[0]
-        elif arguments[i] == '$height': arguments[i] = vSize[1]
+        if arguments[i] == '$parent':
+            arguments[i] = parent
+        elif arguments[i] == '$id':
+            arguments[i] = id
+        elif arguments[i] == '$width':
+            arguments[i] = vSize[0]
+        elif arguments[i] == '$height':
+            arguments[i] = vSize[1]
     return arguments
 
 
@@ -53,13 +73,14 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         parent = self.format_widget_access(widget.parent)
         init = []
         if id_name: init.append(id_name)
-        arguments = _fix_arguments(
+        arguments = format_ctor_arguments(
             prop.get('arguments', []), parent, id,
             prop.get('size', '-1, -1').strip())
-        ctor = widget.klass
         cust_ctor = prop.get('custom_ctor', '').strip()
         if cust_ctor:
             ctor = cust_ctor
+        else:
+            ctor = widget.klass
         init.append('self.%s = %s(%s)\n' % (widget.name, ctor,
                                             ", ".join(arguments)))
         props_buf = self.codegen.generate_common_properties(widget)
@@ -112,13 +133,14 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             parent = '%s' % widget.parent.name
         else:
             parent = 'this'
-        arguments = _fix_arguments(
+        arguments = format_ctor_arguments(
             prop.get('arguments', []), parent, id,
             prop.get('size', '-1, -1').strip())
-        ctor = 'new ' + widget.klass
         cust_ctor = prop.get('custom_ctor', '').strip()
         if cust_ctor:
             ctor = cust_ctor
+        else:
+            ctor = 'new ' + widget.klass
         init = ['%s = %s(%s);\n' % (widget.name, ctor,
                                     ", ".join(arguments)) ]
         props_buf = self.codegen.generate_common_properties(widget)
@@ -131,8 +153,6 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class CustomXrcObject(xrcgen.DefaultXrcObject):
-        from xml.sax.saxutils import escape
-
         def write(self, outfile, ntabs):
             # first, fix the class:
             self.klass = obj.klass
