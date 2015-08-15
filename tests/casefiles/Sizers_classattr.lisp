@@ -54,11 +54,11 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyDialog.__init__
         (setf (slot-top-window obj) (wxDialog_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_DIALOG_STYLE))
-        (setf (slot-list-box-1 obj) (wxListBox_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 1 (vector (_"<set by wxGlade>")) wxLB_SINGLE))
+        (setf (slot-list-box-1 obj) (wxListBox_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 0 (vector ) wxLB_SINGLE))
         (setf (slot-sizer-2 obj) (StaticBoxSizer_Create (wxStaticBox:wxStaticBox_Create (slot-frame obj) (_"Unassigned Permissions:")) wxHORIZONTAL))
         (setf (slot-button-4 obj) (wxButton_Create (slot-top-window obj) wxID_ADD "" -1 -1 -1 -1 0))
         (setf (slot-button-5 obj) (wxButton_Create (slot-top-window obj) wxID_REMOVE "" -1 -1 -1 -1 0))
-        (setf (slot-list-box-2 obj) (wxListBox_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 1 (vector (_"<set by wxGlade>")) wxLB_SINGLE))
+        (setf (slot-list-box-2 obj) (wxListBox_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 0 (vector ) wxLB_SINGLE))
         (setf (slot-sizer-3 obj) (StaticBoxSizer_Create (wxStaticBox:wxStaticBox_Create (slot-frame obj) (_"Assigned Permissions:")) wxHORIZONTAL))
         (setf (slot-static-line-1 obj) (wxStaticLine_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxLI_HORIZONTAL))
         (setf (slot-button-2 obj) (wxButton_Create (slot-top-window obj) wxID_OK "" -1 -1 -1 -1 0))
@@ -69,8 +69,6 @@
 (defmethod set-properties ((obj MyDialog))
         ;;; begin wxGlade: MyDialog.__set_properties
         (wxWindow_SetTitle (slot-dialog-1 self) (_"dialog_1"))
-        (wxListBox_SetSelection (slot-list-box-1 obj) 0)
-        (wxListBox_SetSelection (slot-list-box-2 obj) 0)
         ;;; end wxGlade
         )
 

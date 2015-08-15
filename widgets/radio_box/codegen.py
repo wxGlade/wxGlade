@@ -8,46 +8,26 @@ Code generator functions for wxRadioBox objects
 
 import common
 import wcodegen
+import radio_box_base
 from ChoicesCodeHandler import *
 
 
-class PythonRadioBoxGenerator(wcodegen.PythonWidgetCodeWriter):
+class PythonRadioBoxGenerator(radio_box_base.RadioBoxMixin,
+                              wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
            'choices=[%(choices)s], majorDimension=%(majorDimension)s' \
            '%(style)s)\n'
 
-    default_style = 'wxRA_SPECIFY_COLS'
-    set_default_style = True
-
-    def _prepare_tmpl_content(self, obj):
-        wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['majorDimension'] = obj.properties.get('dimension', '1')
-        return
-
 # end of class PythonRadioBoxGenerator
 
 
-class CppRadioBoxGenerator(wcodegen.CppWidgetCodeWriter):
+class CppRadioBoxGenerator(radio_box_base.RadioBoxMixin,
+                           wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
            'wxDefaultPosition, wxDefaultSize, %(choices_len)s, ' \
            '%(name)s_choices, %(majorDimension)s, %(style)s);\n'
 
-    default_style = 'wxRA_SPECIFY_COLS'
     prefix_style = False
-    set_default_style = True
-
-    def _prepare_tmpl_content(self, obj):
-        wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-
-        # wx raises an assertion if choices are empty and majorDim is 0
-        majorDimension = obj.properties.get('dimension', '1')
-        choices = obj.properties.get('choices', [])
-        if not choices and majorDimension == '0':
-            majorDimension = '1'
-
-        self.tmpl_dict['majorDimension'] = majorDimension
-
-        return
 
 # end of class CppRadioBoxGenerator
 

@@ -8,21 +8,15 @@ Lisp generator functions for wxRadioBox objects
 
 import common
 import wcodegen
+import radio_box_base
 from ChoicesCodeHandler import *
 
 
-class LispRadioBoxGenerator(wcodegen.LispWidgetCodeWriter):
+class LispRadioBoxGenerator(radio_box_base.RadioBoxMixin,
+                            wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(label)s ' \
            '-1 -1 -1 -1 %(choices_len)s (vector %(choices)s) ' \
            '%(majorDimension)s %(style)s))\n'
-
-    default_style = 'wxRA_SPECIFY_COLS'
-    set_default_style = True
-
-    def _prepare_tmpl_content(self, obj):
-        wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['majorDimension'] = obj.properties.get('dimension', '1')
-        return
 
 # end of class LispRadioBoxGenerator
 
