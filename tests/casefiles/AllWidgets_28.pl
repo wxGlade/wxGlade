@@ -87,10 +87,10 @@ sub new {
     $self->{notebook_1_wxCheckListBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{check_list_box_1} = Wx::CheckListBox->new($self->{notebook_1_wxCheckListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("one"), _T("two"), _T("three"), _T("four")], );
     $self->{notebook_1_wxChoice} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{choice_empty} = Wx::Choice->new($self->{notebook_1_wxChoice}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("<set by wxGlade>")], );
+    $self->{choice_empty} = Wx::Choice->new($self->{notebook_1_wxChoice}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], );
     $self->{choice_filled} = Wx::Choice->new($self->{notebook_1_wxChoice}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], );
     $self->{notebook_1_wxComboBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{combo_box_empty} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [_T("<set by wxGlade>")], wxCB_DROPDOWN);
+    $self->{combo_box_empty} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [], wxCB_DROPDOWN);
     $self->{combo_box_filled} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [_T("Item 1 (pre-selected)"), _T("Item 2")], wxCB_DROPDOWN);
     $self->{notebook_1_wxDatePickerCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{datepicker_ctrl_1} = Wx::DatePickerCtrl->new($self->{notebook_1_wxDatePickerCtrl}, wxID_ANY);
@@ -101,7 +101,7 @@ sub new {
     $self->{notebook_1_wxHyperlinkCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{hyperlink_1} = Wx::HyperlinkCtrl->new($self->{notebook_1_wxHyperlinkCtrl}, wxID_ANY, _T("Homepage wxGlade"), _T("http://wxglade.sf.net"));
     $self->{notebook_1_wxListBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{list_box_empty} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("<set by wxGlade>")], wxLB_SINGLE);
+    $self->{list_box_empty} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
     $self->{list_box_filled} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], wxLB_MULTIPLE|wxLB_SORT);
     $self->{notebook_1_wxListCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{list_ctrl_1} = Wx::ListCtrl->new($self->{notebook_1_wxListCtrl}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN|wxLC_REPORT);
@@ -112,9 +112,9 @@ sub new {
     # It is available for wx versions 3 only.
     
     $self->{notebook_1_wxRadioBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{radio_box_empty1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, [_T("<set by wxGlade>")], 0, wxRA_SPECIFY_ROWS);
+    $self->{radio_box_empty1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, [], 1, wxRA_SPECIFY_ROWS);
     $self->{radio_box_filled1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_filled1"), wxDefaultPosition, wxDefaultSize, [_T("choice 1"), _T("choice 2 (pre-selected)"), _T("choice 3")], 0, wxRA_SPECIFY_ROWS);
-    $self->{radio_box_empty2} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, [_T("<set by wxGlade>")], 0, wxRA_SPECIFY_COLS);
+    $self->{radio_box_empty2} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, [], 1, wxRA_SPECIFY_COLS);
     $self->{radio_box_filled2} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_filled2"), wxDefaultPosition, wxDefaultSize, [_T("choice 1"), _T("choice 2 (pre-selected)")], 0, wxRA_SPECIFY_COLS);
     $self->{notebook_1_wxRadioButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{radio_btn_1} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Alice"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
@@ -215,17 +215,12 @@ sub __set_properties {
     $self->{checkbox_5}->Set3StateValue(wxCHK_CHECKED);
     $self->{checkbox_6}->Set3StateValue(wxCHK_UNDETERMINED);
     $self->{check_list_box_1}->SetSelection(2);
-    $self->{choice_empty}->SetSelection(0);
     $self->{choice_filled}->SetSelection(1);
-    $self->{combo_box_empty}->SetSelection(-1);
     $self->{combo_box_filled}->SetSelection(0);
     $self->{grid_1}->CreateGrid(10, 3);
     $self->{grid_1}->SetSelectionMode(wxGridSelectCells);
-    $self->{list_box_empty}->SetSelection(0);
     $self->{list_box_filled}->SetSelection(1);
-    $self->{radio_box_empty1}->SetSelection(0);
     $self->{radio_box_filled1}->SetSelection(1);
-    $self->{radio_box_empty2}->SetSelection(0);
     $self->{radio_box_filled2}->SetSelection(1);
     $self->{splitter_1}->SetMinimumPaneSize(20);
     $self->{notebook_1_wxSplitterWindow_horizontal}->SetScrollRate(10, 10);

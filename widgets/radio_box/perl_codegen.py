@@ -8,22 +8,17 @@ Perl generator functions for wxRadioBox objects
 
 import common
 import wcodegen
+import radio_box_base
 from ChoicesCodeHandler import *
 
 
-class PerlRadioBoxGenerator(wcodegen.PerlWidgetCodeWriter):
+class PerlRadioBoxGenerator(radio_box_base.RadioBoxMixin,
+                            wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s, ' \
            'wxDefaultPosition, wxDefaultSize, [%(choices)s], ' \
            '%(majorDimension)s, %(style)s);\n'
 
-    default_style = 'wxRA_SPECIFY_COLS'
     prefix_style = False
-    set_default_style = True
-
-    def _prepare_tmpl_content(self, obj):
-        wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['majorDimension'] = obj.properties.get('dimension', '1')
-        return
 
 # end of class PerlRadioBoxGenerator
 

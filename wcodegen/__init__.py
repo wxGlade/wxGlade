@@ -778,10 +778,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         """
         choices = obj.properties.get('choices')
 
-        # empty choices are not allowed
-        if not choices:
-            choices = ['<set by wxGlade>']
-
         choices_str = self.tmpl_concatenate_choices.join(
             [self.codegen.quote_str(c) for c in choices])
         self.tmpl_dict['choices'] = choices_str
@@ -1206,18 +1202,20 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
         # C++ part - extend generic settings
         choices = obj.properties.get('choices')
         # empty choices are not allowed
-        if not choices:
-            choices = ['<set by wxGlade>']
-
-        self.tmpl_before.append('const wxString %(name)s_choices[] = {\n')
-        for choice in choices:
+        if choices:
             self.tmpl_before.append(
-                '%s%s,\n' % (
-                    self.codegen.tabs(1),
-                    self.codegen.quote_str(choice),
+                'const wxString %(name)s_choices[] = {\n')
+            for choice in choices:
+                self.tmpl_before.append(
+                    '%s%s,\n' % (
+                        self.codegen.tabs(1),
+                        self.codegen.quote_str(choice),
+                    )
                 )
-            )
-        self.tmpl_before.append('};\n')
+            self.tmpl_before.append('};\n')
+        else:
+            self.tmpl_before.append(
+                'const wxString %(name)s_choices[] = {};\n')
 
         return
 
