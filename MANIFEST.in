@@ -1,0 +1,11 @@
+#
+# Includes and excludes just for source distribution (sdist)
+#
+# Copyright: 2015 Carsten Grohmann
+# License: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+
+include docs/man/wxglade.1
+
+exclude .hgignore
+exclude .hgtags
+exclude README.SF.md
