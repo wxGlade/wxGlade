@@ -2,7 +2,7 @@
 # This file will be processes top-down - from specific to generic.
 #
 # Copyright: 2015 Carsten Grohmann
-# License: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+# License: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 #
 # "None" is a valid "encoding", too. It disables the conversion.
 #

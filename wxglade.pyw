@@ -5,7 +5,7 @@ Entry point of wxGlade on windows
 
 @copyright: 2002-2004 Alberto Griggio
 @copyright: 2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import sys

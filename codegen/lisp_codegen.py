@@ -13,7 +13,7 @@ methods of the parent object.
 
 @copyright: 2005 Surendra K Singhi <efuzzyone@users.sourceforge.net>
 @copyright: 2012-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import os

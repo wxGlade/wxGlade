@@ -23,7 +23,7 @@ in revision 81919 (27.12.2010) in the public Python repository.
 @todo: Integrate Unicode logging fix.
 
 @copyright: 2013-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import StringIO

@@ -3,7 +3,7 @@ A class to represent a menu on a wxMenuBar
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 from common import format_xml_tag

@@ -3,7 +3,7 @@ Global functions and variables
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2013-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import codecs
@@ -686,7 +686,7 @@ def init_paths():
     else:
         config.appdata_path = os.path.join(config.home_path, '.wxglade')
 
-    # search files credits.txt and license.txt at different locations
+    # search files CREDITS.txt and LICENSE.txt at different locations
     # - <wxglade_path>/docs   for linux packages
     # - <wxglade_path>   at Windows or started from source directory
     # - <wxglade_path>/./../../../share/doc/wxglade/   for local installations
@@ -699,16 +699,16 @@ def init_paths():
         os.path.join(config.wxglade_path, '../../../../share/doc/wxglade'),
         ]:
         searchdir = os.path.normpath(searchdir)
-        credits_file = os.path.join(searchdir, 'credits.txt')
-        license_file = os.path.join(searchdir, 'license.txt')
+        credits_file = os.path.join(searchdir, 'CREDITS.txt')
+        license_file = os.path.join(searchdir, 'LICENSE.txt')
         if os.path.exists(credits_file):
             config.credits_file = credits_file
         if os.path.exists(license_file):
             config.license_file = license_file
     if not config.credits_file:
-        logging.error(_('Credits file "credits.txt" not found!'))
+        logging.error(_('Credits file "CREDITS.txt" not found!'))
     if not config.license_file:
-        logging.error(_('License file "license.txt" not found!'))
+        logging.error(_('License file "LICENSE.txt" not found!'))
 
     # complete path to rc file
     if os.name == 'nt':

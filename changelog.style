@@ -1,7 +1,7 @@
 # changelog.style - Generate ChangeLog file out of hg log messages
 #
 # Copyright (c) 2012-2015 Carsten Grohmann
-# License: MIT (see license.txt)
+# License: MIT (see LICENSE.txt)
 #
 # Usage:
 #  $ hg log --style changelog.style

@@ -7,7 +7,7 @@ Configuration related stuff
 @see: L{preferencesdialog}
 @copyright: 2007 Alberto Griggio
 @copyright: 2013-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 # import general python modules
@@ -107,14 +107,14 @@ Directory to wxGlades application data like file history and templates
 
 credits_file = ''
 """\
-Path of the credits file "credits.txt"
+Path of the credits file "CREDITS.txt"
 
 @type: str
 """
 
 docs_path = 'docs'
 """\
-Path to wxGlade documentation (e.g. html tutorial, license.txt, credits.txt)
+Path to wxGlade documentation (e.g. html tutorial, LICENSE.txt, CREDITS.txt)
 
 @type: str
 @note: This path will be set during initialisation
@@ -138,7 +138,7 @@ Path to wxGlade icons
 
 license_file = ''
 """\
-Path of the license file "license.txt"
+Path of the license file "LICENSE.txt"
 
 @type: str
 @note: This path will be set during initialisation
