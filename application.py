@@ -3,7 +3,7 @@ Application class to store properties of the application being created
 
 @copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 @copyright: 2012-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import logging

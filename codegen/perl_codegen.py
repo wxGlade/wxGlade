@@ -15,7 +15,7 @@ Like all other perl parts, based on the pre-existing python generators
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2012-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import os

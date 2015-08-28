@@ -3,7 +3,7 @@ Spacers to use in sizers
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx

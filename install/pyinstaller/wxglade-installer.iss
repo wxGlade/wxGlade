@@ -2,7 +2,7 @@
 ;
 ; Copyright: 2007 Alberto Griggio
 ; Copyright: 2011-2015 Carsten Grohmann
-; License: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+; License: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 
 ; define own variables
 #define PRODUCT_VERSION "HG"
@@ -35,7 +35,7 @@ DefaultDirName={pf}\wxGlade
 DefaultGroupName=wxGlade
 AllowNoIcons=yes
 ChangesAssociations=yes
-LicenseFile="license.txt"
+LicenseFile="LICENSE.txt"
 SourceDir="{#DIST_DIR}"
 #ifdef EDITION_SHORT
   OutputDir="..\..\dist"
@@ -74,12 +74,11 @@ Name: "{group}\wxGlade{#EDITION_LONG}"; Filename: "{#EXECUTABLE_NAME}"; IconFile
 Name: "{group}\Home page"; Filename: "{app}\wxglade.url"
 Name: "{group}\Uninstall wxGlade{#EDITION_LONG}"; Filename: "{uninstallexe}"
 Name: "{group}\Documentation\Tutorial";           Filename: "{app}\docs\tutorial.html";   WorkingDir: "{app}\docs";      Comment: "wxGlade Tutorial"
-Name: "{group}\Documentation\User Manual (HTML)"; Filename: "{app}\docs\html\index.html"; WorkingDir: "{app}\docs\html"; Comment: "wxGlade User Manual (HTML)"
 Name: "{group}\Documentation\User Manual (PDF)";  Filename: "{app}\docs\pdf\manual.pdf";  WorkingDir: "{app}\docs\pdf";  Comment: "wxGlade User Manual (PDF)"
 Name: "{group}\Documentation\TODO";    Filename: "{app}\TODO.txt";    AfterInstall: Unix2Dos('{app}\TODO.txt');
 Name: "{group}\Documentation\README";  Filename: "{app}\README.txt";  AfterInstall: Unix2Dos('{app}\README.txt');
-Name: "{group}\Documentation\License"; Filename: "{app}\license.txt"; AfterInstall: Unix2Dos('{app}\license.txt');
-Name: "{group}\Documentation\Credits"; Filename: "{app}\credits.txt"; AfterInstall: Unix2Dos('{app}\credits.txt');
+Name: "{group}\Documentation\License"; Filename: "{app}\LICENSE.txt"; AfterInstall: Unix2Dos('{app}\LICENSE.txt');
+Name: "{group}\Documentation\Credits"; Filename: "{app}\CREDITS.txt"; AfterInstall: Unix2Dos('{app}\CREDITS.txt');
 Name: "{group}\Documentation\Changes"; Filename: "{app}\CHANGES.txt"; AfterInstall: Unix2Dos('{app}\CHANGES.txt');
 Name: "{group}\Documentation\Contributing"; Filename: "{app}\CONTRIBUTING.txt"; AfterInstall: Unix2Dos('{app}\CONTRIBUTING.txt');
 Name: "{group}\Documentation\News";    Filename: "{app}\NEWS.txt";    AfterInstall: Unix2Dos('{app}\NEWS.txt');

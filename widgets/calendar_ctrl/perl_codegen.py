@@ -3,7 +3,7 @@ Perl generator functions for wxCalendarCtrl objects
 
 @copyright: 2012 Eric McKeeth
 @copyright: 2014-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common

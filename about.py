@@ -3,7 +3,7 @@ About box with general info
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import codecs
@@ -35,13 +35,13 @@ class wxGladeAboutBox(wx.Dialog):
     <table border="0" cellpadding="0" cellspacing="0">
     <tr><td width="50"></td><td>
     <!-- <font size="-1"> -->
-    <b><p>License: MIT (see <a href="show_license">license.txt</a>)</b><br>
+    <b><p>License: MIT (see <a href="show_license">LICENSE.txt</a>)</b><br>
     <!-- wxPyColourChooser code copyright (c) 2002-2004 <br>Michael Gilfix 
     (wxWindows license) -->
     <p>Home page:
     <a href="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</a>
     <p>For credits, see
-    <a href="show_credits">credits.txt</a>.<!-- </font> --></td>
+    <a href="show_credits">CREDITS.txt</a>.<!-- </font> --></td>
     </tr></table>
     </body>
     </html>
@@ -69,7 +69,7 @@ class wxGladeAboutBox(wx.Dialog):
                             dlg.Destroy()
                         except IOError:
                             wx.MessageBox(
-                                _('License file "license.txt" not found!'
+                                _('License file "LICENSE.txt" not found!'
                                   'You can get a copy at \n'
                                   'http://www.opensource.org/licenses/'
                                   'mit-license.php'),
@@ -77,7 +77,7 @@ class wxGladeAboutBox(wx.Dialog):
                                 wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
                     else:
                         wx.MessageBox(
-                            _('License file "license.txt" not found!'
+                            _('License file "LICENSE.txt" not found!'
                               'You can get a copy at \n'
                               'http://www.opensource.org/licenses/'
                               'mit-license.php'),
@@ -99,12 +99,12 @@ class wxGladeAboutBox(wx.Dialog):
                             dlg.Destroy()
                         except IOError:
                             wx.MessageBox(
-                                _('Credits file "credits.txt" not found!'),
+                                _('Credits file "CREDITS.txt" not found!'),
                                 _('Error'),
                                 wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
                     else:
                         wx.MessageBox(
-                            _('Credits file "credits.txt" not found!'),
+                            _('Credits file "CREDITS.txt" not found!'),
                             _('Error'),
                             wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
                 else:

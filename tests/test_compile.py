@@ -3,7 +3,7 @@ Suite to test compilation of automatically generated C++ code.
 
 @copyright: 2015 Carsten Grohmann
 
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 # import test base class

@@ -1,7 +1,7 @@
 # edit_widget.py: base class for EditFoo objects
 #
 # Copyright (c) 2002-2004 Richard Lawson <richard.lawson@colinx.com>
-# License: MIT (see license.txt)
+# License: MIT (see LICENSE.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 import wx

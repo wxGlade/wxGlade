@@ -2,7 +2,7 @@
 REM Simplify executing pyinstaller
 REM
 REM Copyright: 2014-2015 Carsten Grohmann
-REM License: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+REM License: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 
 echo Check requirements:
 

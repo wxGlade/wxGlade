@@ -5,7 +5,7 @@ Build description for PyInstaller
 
 @copyright: 2007 Alberto Griggio
 @copyright: 2011-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import os
@@ -69,8 +69,8 @@ Name of the created executable
 FILES2INCLUDE = [
     'CHANGES.txt',
     'CONTRIBUTING.txt',
-    'credits.txt',
-    'license.txt',
+    'CREDITS.txt',
+    'LICENSE.txt',
     'NEWS.txt',
     'README.txt',
     'TODO.txt',

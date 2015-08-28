@@ -384,8 +384,8 @@ Documentation directory:    /opt/wxglade/lib/python2.7/site-packages/wxglade/doc
 Icons directory:            /opt/wxglade/lib/python2.7/site-packages/wxglade/icons
 Build-in widgets directory: /opt/wxglade/lib/python2.7/site-packages/wxglade/widgets
 Template directory:         /opt/wxglade/lib/python2.7/site-packages/wxglade/templates
-Credits file:               /opt/wxglade/share/doc/wxglade/credits.txt
-License file:               /opt/wxglade/share/doc/wxglade/license.txt
+Credits file:               /opt/wxglade/share/doc/wxglade/CREDITS.txt
+License file:               /opt/wxglade/share/doc/wxglade/LICENSE.txt
 Tutorial file:              /opt/wxglade/lib/python2.7/site-packages/wxglade/docs/html/index.html
 Using wxPython 2.8.12.1
 loaded code generator for perl

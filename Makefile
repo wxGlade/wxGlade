@@ -1,6 +1,6 @@
 # Makefile for wxGlade
 #
-# License: MIT (see license.txt)
+# License: MIT (see LICENSE.txt)
 # THIS PROGRAM COMES WITH NO WARRANTY
 
 DESTDIR           =

@@ -3,7 +3,7 @@
 Setup script to create release packages
 
 @copyright: 2011-2015 Carsten Grohmann
-@license: MIT (see license.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 from setuptools import setup, find_packages
@@ -72,8 +72,8 @@ wxPython, that helps you create wxWidgets/wxPython user interfaces. At
 the moment it can generate Python, C++, Perl, Lisp and XRC (wxWidgets'
 XML resources) code."""
 
-text_files = ['CHANGES.txt', 'CONTRIBUTING.txt', 'credits.txt',
-              'license.txt', 'NEWS.txt', 'README.txt', 'TODO.txt', ]
+text_files = ['CHANGES.txt', 'CONTRIBUTING.txt', 'CREDITS.txt',
+              'LICENSE.txt', 'NEWS.txt', 'README.txt', 'TODO.txt', ]
 
 data_files = [
     ['share/wxglade/icons', glob('icons/*.*')],
