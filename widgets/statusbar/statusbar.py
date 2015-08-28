@@ -238,4 +238,4 @@ def initialize():
     """
     common.widgets_from_xml['EditStatusBar'] = xml_builder
     common.widgets['EditStatusBar'] = builder
-    return common.make_object_button('EditStatusBar', 'icons/statusbar.xpm')
+    return common.make_object_button('EditStatusBar', 'statusbar.xpm')

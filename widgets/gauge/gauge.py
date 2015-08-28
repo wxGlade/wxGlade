@@ -67,7 +67,7 @@ class EditGauge(ManagedBase, EditStylesMixin):
 # end of class EditGauge
 
 editor_class = EditGauge
-editor_icon = 'icons/gauge.xpm'
+editor_icon = 'gauge.xpm'
 editor_name = 'EditGauge'
 editor_style = ''
 

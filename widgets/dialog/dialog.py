@@ -290,5 +290,5 @@ def initialize():
 
     common.widgets['EditDialog'] = builder
 
-    return common.make_object_button('EditDialog', 'icons/dialog.xpm', 1,
+    return common.make_object_button('EditDialog', 'dialog.xpm', 1,
                                      tip='Add a Dialog/Panel')

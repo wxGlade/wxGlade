@@ -176,5 +176,5 @@ def initialize():
     common.widgets['EditSpacer'] = builder
     common.widgets_from_xml['EditSpacer'] = xml_builder
 
-    return common.make_object_button('EditSpacer', 'icons/spacer.xpm')
+    return common.make_object_button('EditSpacer', 'spacer.xpm')
 

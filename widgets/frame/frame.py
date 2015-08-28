@@ -355,4 +355,4 @@ def initialize():
         config.icons_path,
         'frame.xpm'
         )
-    return common.make_object_button('EditFrame', 'icons/frame.xpm', 1)
+    return common.make_object_button('EditFrame', 'frame.xpm', 1)

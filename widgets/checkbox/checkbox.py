@@ -207,4 +207,4 @@ def initialize():
     common.widgets['EditCheckBox'] = builder
     common.widgets_from_xml['EditCheckBox'] = xml_builder
 
-    return common.make_object_button('EditCheckBox', 'icons/checkbox.xpm')
+    return common.make_object_button('EditCheckBox', 'checkbox.xpm')

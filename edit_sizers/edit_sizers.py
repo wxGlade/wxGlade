@@ -2687,6 +2687,5 @@ def init_all():
         'grid_sizer.xpm'
     )
 
-    return [common.make_object_button('EditBoxSizer', 'icons/sizer.xpm'),
-            common.make_object_button('EditGridSizer',
-                                      'icons/grid_sizer.xpm')]
+    return [common.make_object_button('EditBoxSizer', 'sizer.xpm'),
+            common.make_object_button('EditGridSizer', 'grid_sizer.xpm')]

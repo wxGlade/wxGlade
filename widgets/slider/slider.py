@@ -92,7 +92,7 @@ class EditSlider(ManagedBase, EditStylesMixin):
 
 
 editor_class = EditSlider
-editor_icon = 'icons/slider.xpm'
+editor_icon = 'slider.xpm'
 editor_name = 'EditSlider'
 editor_style = ''
 

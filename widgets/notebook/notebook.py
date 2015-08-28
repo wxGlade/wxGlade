@@ -390,7 +390,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
 
 editor_class = EditNotebook
-editor_icon = 'icons/notebook.xpm'
+editor_icon = 'notebook.xpm'
 editor_name = 'EditNotebook'
 editor_style = ''
 

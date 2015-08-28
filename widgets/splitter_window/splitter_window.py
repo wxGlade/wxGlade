@@ -309,7 +309,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
 
 editor_class = EditSplitterWindow
-editor_icon = 'icons/splitter_window.xpm'
+editor_icon = 'splitter_window.xpm'
 editor_name = 'EditSplitterWindow'
 editor_style = 'wxSPLIT_VERTICAL'
 
