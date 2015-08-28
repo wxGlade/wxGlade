@@ -451,6 +451,6 @@ def initialize():
         config.icons_path,
         'panel.xpm'
         )
-    return common.make_object_button('EditPanel', 'icons/panel.xpm',
+    return common.make_object_button('EditPanel', 'panel.xpm',
                                      tip='Add a Panel/ScrolledWindow')
 

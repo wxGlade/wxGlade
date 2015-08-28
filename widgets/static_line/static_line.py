@@ -81,7 +81,7 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
 
 
 editor_class = EditStaticLine
-editor_icon = 'icons/static_line.xpm'
+editor_icon = 'static_line.xpm'
 editor_name = 'EditStaticLine'
 editor_style = ''
 

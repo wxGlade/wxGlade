@@ -322,10 +322,17 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     Function used by the various widget modules to add a button to the
     widgets toolbar.
 
+    Icons with a relative path will be loaded from config.icon_path.
+
     @param widget: (name of) the widget the button will add to the app
-    @param icon_path: path to the icon used for the button
-    @param toplevel: true if the widget is a toplevel object (frame, dialog)
-    @param tip: tool tip to display
+    @type param:   str | Unicode
+    @param icon_path: Path to the icon_path used for the button
+    @type icon_path:  str | Unicode
+    @param toplevel: True if the widget is a toplevel object (frame, dialog)
+    @type toplevel:  bool
+    @param tip: Tool tip to display
+    @type tip:  str | Unicode
+
     @return: The newly created wxBitmapButton
     """
     import wx
@@ -334,7 +341,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
 
     widget_id = wx.NewId()
     if not os.path.isabs(icon_path):
-        icon_path = os.path.join(config.wxglade_path, icon_path)
+        icon_path = os.path.join(config.icons_path, icon_path)
     if wx.Platform == '__WXGTK__':
         style = wx.NO_BORDER
     else:

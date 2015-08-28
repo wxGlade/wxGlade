@@ -159,4 +159,4 @@ def initialize():
     common.widgets['EditComboBox'] = builder
     common.widgets_from_xml['EditComboBox'] = xml_builder
 
-    return common.make_object_button('EditComboBox', 'icons/combo_box.xpm')
+    return common.make_object_button('EditComboBox', 'combo_box.xpm')

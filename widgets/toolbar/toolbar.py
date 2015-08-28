@@ -883,4 +883,4 @@ def initialize():
     common.widgets_from_xml['EditToolBar'] = xml_builder
     common.widgets['EditToolBar'] = builder
 
-    return common.make_object_button('EditToolBar', 'icons/toolbar.xpm', 1)
+    return common.make_object_button('EditToolBar', 'toolbar.xpm', 1)

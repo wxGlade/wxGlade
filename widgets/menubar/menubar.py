@@ -841,4 +841,4 @@ def initialize():
     cwx['EditMenuBar'] = xml_builder
     common.widgets['EditMenuBar'] = builder
 
-    return common.make_object_button('EditMenuBar', 'icons/menubar.xpm', 1)
+    return common.make_object_button('EditMenuBar', 'menubar.xpm', 1)

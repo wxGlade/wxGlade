@@ -136,4 +136,4 @@ def initialize():
     common.widgets['EditStaticText'] = builder
     common.widgets_from_xml['EditStaticText'] = xml_builder
 
-    return common.make_object_button('EditStaticText', 'icons/static_text.xpm')
+    return common.make_object_button('EditStaticText', 'static_text.xpm')
