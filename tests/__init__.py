@@ -318,6 +318,7 @@ class WXGladeBaseTest(unittest.TestCase):
             'wxglade_path':   config.wxglade_path,
             'docs_path':      config.docs_path,
             'icons_path':     config.icons_path,
+            'manual_file':    config.manual_file,
             'widgets_path':   config.widgets_path,
             'templates_path': config.templates_path,
             'tutorial_file':  config.tutorial_file,

@@ -229,11 +229,16 @@ class wxGladeFrame(wx.Frame):
         #wx.ART_HELP_SETTINGS)
         menu_bar.Append(file_menu, _("&File"))
         menu_bar.Append(view_menu, _("&View"))
-        TUT_ID = wx.NewId()
-        append_item(help_menu, TUT_ID, _('Contents\tF1'), wx.ART_HELP)
+
+        MANUAL_ID = wx.NewId()
+        append_item(help_menu, MANUAL_ID, _('Manual\tF1'), wx.ART_HELP)
+        TUTORIAL_ID = wx.NewId()
+        append_item(help_menu, TUTORIAL_ID, _('Tutorial'))
+        help_menu.AppendSeparator()
         ABOUT_ID = wx.ID_ABOUT
-        append_item(help_menu, ABOUT_ID, _('About...'))
+        append_item(help_menu, ABOUT_ID, _('About'))
         menu_bar.Append(help_menu, _('&Help'))
+
         parent.SetMenuBar(menu_bar)
         # Mac tweaks...
         if wx.Platform == "__WXMAC__":
@@ -294,7 +299,8 @@ class wxGladeFrame(wx.Frame):
             common.app_tree.app.generate_code()
         wx.EVT_MENU(self, GENERATE_CODE_ID, generate_code)
         wx.EVT_MENU(self, EXIT_ID, lambda e: self.Close())
-        wx.EVT_MENU(self, TUT_ID, self.show_tutorial)
+        wx.EVT_MENU(self, MANUAL_ID, self.show_manual)
+        wx.EVT_MENU(self, TUTORIAL_ID, self.show_tutorial)
         wx.EVT_MENU(self, ABOUT_ID, self.show_about_box)
         wx.EVT_MENU(self, PREFS_ID, self.edit_preferences)
         wx.EVT_MENU(self, MANAGE_TEMPLATES_ID, self.manage_templates)
@@ -311,7 +317,7 @@ class wxGladeFrame(wx.Frame):
             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT, ord('S'), SAVE_AS_ID),
             (wx.ACCEL_CTRL, ord('G'), GENERATE_CODE_ID),
             (wx.ACCEL_CTRL, ord('I'), IMPORT_ID),
-            (0, wx.WXK_F1, TUT_ID),
+            (0, wx.WXK_F1, MANUAL_ID),
             (wx.ACCEL_CTRL, ord('Q'), EXIT_ID),
             (0, wx.WXK_F5, RELOAD_ID),
             (0, wx.WXK_F2, TREE_ID),
@@ -936,12 +942,27 @@ class wxGladeFrame(wx.Frame):
             self.about_box = about.wxGladeAboutBox(None)
         self.about_box.ShowModal()
 
+    def show_manual(self, event):
+        """\
+        Show the wxGlade user manual
+        """
+        self._show_html(config.manual_file)
+
     def show_tutorial(self, event):
         """\
-        show the wxGlade user manual
+        Show the wxGlade tutorial
+        """
+        self._show_html(config.tutorial_file)
+
+    def _show_html(self, html_file):
+        """\
+        Open browser and show an HTML documentation
+
+        @param html_file: HTML file to show
+        @type html_file: str | Unicode
         """
         if wx.Platform == "__WXMAC__":
-            os.system(r'open -a Help\ Viewer.app %s' % config.tutorial_file)
+            os.system(r'open -a Help\ Viewer.app %s' % html_file)
         else:
             import webbrowser
             import threading
@@ -949,7 +970,7 @@ class wxGladeFrame(wx.Frame):
             # (at least on linux - GTK)
 
             def go():
-                webbrowser.open_new(config.tutorial_file)
+                webbrowser.open_new(html_file)
             t = threading.Thread(target=go)
             t.setDaemon(True)
             t.start()

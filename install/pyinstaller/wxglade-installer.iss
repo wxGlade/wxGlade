@@ -72,9 +72,9 @@ Filename: "{app}\wxglade.url"; Section: "InternetShortcut"; Key: "URL"; String: 
 [Icons]
 Name: "{group}\wxGlade{#EDITION_LONG}"; Filename: "{#EXECUTABLE_NAME}"; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 Name: "{group}\Home page"; Filename: "{app}\wxglade.url"
-Name: "{group}\Uninstall wxGlade{#EDITION_LONG}"; Filename: "{uninstallexe}"
-Name: "{group}\Documentation\Tutorial";           Filename: "{app}\docs\tutorial.html";   WorkingDir: "{app}\docs";      Comment: "wxGlade Tutorial"
-Name: "{group}\Documentation\User Manual (PDF)";  Filename: "{app}\docs\pdf\manual.pdf";  WorkingDir: "{app}\docs\pdf";  Comment: "wxGlade User Manual (PDF)"
+Name: "{group}\Documentation\Tutorial";            Filename: "{app}\docs\tutorial.html";   WorkingDir: "{app}\docs";       Comment: "wxGlade Tutorial"
+Name: "{group}\Documentation\User Manual (PDF)";   Filename: "{app}\docs\pdf\manual.pdf";  WorkingDir: "{app}\docs\pdf";   Comment: "wxGlade User Manual (PDF)"
+Name: "{group}\Documentation\User Manual (HTML)";  Filename: "{app}\docs\html\index.html";  WorkingDir: "{app}\docs\html"; Comment: "wxGlade User Manual (HTML)"
 Name: "{group}\Documentation\TODO";    Filename: "{app}\TODO.txt";    AfterInstall: Unix2Dos('{app}\TODO.txt');
 Name: "{group}\Documentation\README";  Filename: "{app}\README.txt";  AfterInstall: Unix2Dos('{app}\README.txt');
 Name: "{group}\Documentation\License"; Filename: "{app}\LICENSE.txt"; AfterInstall: Unix2Dos('{app}\LICENSE.txt');
@@ -82,6 +82,7 @@ Name: "{group}\Documentation\Credits"; Filename: "{app}\CREDITS.txt"; AfterInsta
 Name: "{group}\Documentation\Changes"; Filename: "{app}\CHANGES.txt"; AfterInstall: Unix2Dos('{app}\CHANGES.txt');
 Name: "{group}\Documentation\Contributing"; Filename: "{app}\CONTRIBUTING.txt"; AfterInstall: Unix2Dos('{app}\CONTRIBUTING.txt');
 Name: "{group}\Documentation\News";    Filename: "{app}\NEWS.txt";    AfterInstall: Unix2Dos('{app}\NEWS.txt');
+Name: "{group}\Uninstall wxGlade{#EDITION_LONG}";  Filename: "{uninstallexe}"
 Name: "{userdesktop}\wxGlade{#EDITION_LONG}";  Filename: "{#EXECUTABLE_NAME}"; Tasks: desktopicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\wxGlade{#EDITION_LONG}"; Filename: "{#EXECUTABLE_NAME}"; Tasks: quicklaunchicon; IconFilename: "{app}\icons\wxglade.ico"; WorkingDir: "{app}"
 

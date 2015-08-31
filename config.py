@@ -114,7 +114,7 @@ Path of the credits file "CREDITS.txt"
 
 docs_path = 'docs'
 """\
-Path to wxGlade documentation (e.g. html tutorial, LICENSE.txt, CREDITS.txt)
+Path to wxGlade documentation (e.g. html manual, LICENSE.txt, CREDITS.txt)
 
 @type: str
 @note: This path will be set during initialisation
@@ -139,6 +139,14 @@ Path to wxGlade icons
 license_file = ''
 """\
 Path of the license file "LICENSE.txt"
+
+@type: str
+@note: This path will be set during initialisation
+"""
+
+manual_file = 'docs/html/index.html'
+"""\
+Path to wxGlade HTML manual
 
 @type: str
 @note: This path will be set during initialisation
@@ -183,9 +191,9 @@ System template path
 @note: This path will be set during initialisation
 """
 
-tutorial_file = 'docs/html/index.html'
+tutorial_file = 'docs/tutorial.html'
 """\
-Path to wxGlade tutorial (HTML)
+Path to wxGlade HTML Tutorial
 
 @type: str
 @note: This path will be set during initialisation
