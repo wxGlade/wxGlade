@@ -219,6 +219,7 @@ def init_stage1():
     logging.info(_('Template directory:         %s'), config.templates_path)
     logging.info(_('Credits file:               %s'), config.credits_file)
     logging.info(_('License file:               %s'), config.license_file)
+    logging.info(_('Manual file:                %s'), config.manual_file)
     logging.info(_('Tutorial file:              %s'), config.tutorial_file)
     logging.info(_('Home directory:             %s'), config.home_path)
     logging.info(_('Application data directory: %s'), config.appdata_path)

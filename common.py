@@ -654,7 +654,9 @@ def init_paths():
     config.icons_path     = os.path.join(config.wxglade_path, 'icons')
     config.widgets_path   = os.path.join(config.wxglade_path, 'widgets')
     config.templates_path = os.path.join(config.wxglade_path, 'templates')
-    config.tutorial_file  = os.path.join(config.docs_path, 'html', 'index.html')
+    config.manual_file    = os.path.join(config.docs_path,
+                                         'html', 'index.html')
+    config.tutorial_file  = os.path.join(config.docs_path, 'tutorial.html')
 
     # set home path
     home_dir = os.path.expanduser('~')
@@ -740,8 +742,8 @@ def init_paths():
 
     # normalise paths
     for name in ['appdata_path', 'credits_file', 'docs_path',
-                 'history_file', 'home_path', 'icons_path',
-                 'license_file', 'rc_file', 'templates_path',
+                 'history_file', 'home_path', 'icons_path', 'license_file',
+                 'manual_file', 'rc_file', 'templates_path',
                  'tutorial_file', 'widgets_path', 'wxglade_path']:
         assert hasattr(config, name)
         path = getattr(config, name)
