@@ -325,7 +325,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     Icons with a relative path will be loaded from config.icon_path.
 
     @param widget: (name of) the widget the button will add to the app
-    @type param:   str | Unicode
+    @type widget:   str | Unicode
     @param icon_path: Path to the icon_path used for the button
     @type icon_path:  str | Unicode
     @param toplevel: True if the widget is a toplevel object (frame, dialog)
@@ -649,98 +649,192 @@ def init_paths():
     # set the program's paths
     config.wxglade_path = wxglade_path
 
-    # static paths
-    config.docs_path      = os.path.join(config.wxglade_path, 'docs')
-    config.icons_path     = os.path.join(config.wxglade_path, 'icons')
-    config.widgets_path   = os.path.join(config.wxglade_path, 'widgets')
-    config.templates_path = os.path.join(config.wxglade_path, 'templates')
-    config.manual_file    = os.path.join(config.docs_path,
-                                         'html', 'index.html')
-    config.tutorial_file  = os.path.join(config.docs_path, 'tutorial.html')
-
-    # set home path
-    home_dir = os.path.expanduser('~')
-    if home_dir not in ('~', '%USERPROFILE%'):
-        config.home_path = home_dir
-    elif os.name == 'nt' and home_dir == '%USERPROFILE%':
-        config.home_path = os.environ.get('USERPROFILE', config.wxglade_path)
+    share_dir = _get_share_path()
+    if _get_install_method() == 'single_directory':
+        config.docs_path = os.path.join(share_dir, 'docs')
+        config.icons_path = os.path.join(share_dir, 'icons')
+        config.templates_path = os.path.join(share_dir, 'templates')
     else:
-        config.home_path = config.wxglade_path
+        config.docs_path = os.path.join(share_dir, 'doc', 'wxglade')
+        config.icons_path = os.path.join(share_dir, 'wxglade', 'icons')
+        config.templates_path = os.path.join(share_dir, 'wxglade',
+                                             'templates')
 
-    # set path of application data
-    if 'WXGLADE_CONFIG_PATH' in os.environ:
-        config.appdata_path = os.path.expandvars(
-            os.environ['WXGLADE_CONFIG_PATH']
-            )
-    elif os.name == 'nt' and 'APPDATA' in os.environ:
-        config.appdata_path = os.path.expandvars(os.environ['APPDATA'])
-        old_name = '%s/.wxglade' % config.appdata_path
-        new_name = '%s/wxglade' % config.appdata_path
-        if os.path.isdir(new_name):
-            config.appdata_path = new_name
-        elif os.path.isdir(old_name):
-            logging.info(
-                _('Rename appdata path from "%s" to "%s"'), old_name, new_name
-            )
-            try:
-                os.rename(old_name, new_name)
-                config.appdata_path = new_name
-            except (IOError, OSError), e:
-                # ignore rename errors and just write an info message
-                logging.info(_('Renaming failed: "%s"'), e)
-                logging.info(_('Using the old path "%s" instead'), old_name)
-                config.appdata_path = old_name
-        else:
-            config.appdata_path = new_name
-    else:
-        config.appdata_path = os.path.join(config.home_path, '.wxglade')
+    _set_home_path()
+    _set_appdata_path()
+    _set_file_paths()
+    _normalise_paths()
+    _create_appdata_path()
 
-    # search files CREDITS.txt and LICENSE.txt at different locations
-    # - <wxglade_path>/docs   for linux packages
-    # - <wxglade_path>   at Windows or started from source directory
-    # - <wxglade_path>/./../../../share/doc/wxglade/   for local installations
-    # BTW: <wxglade_path> is something like /.../lib/python2.7/site-packages/wxglade
-    config.credits_file = None
-    config.license_file = None
-    for searchdir in [
-        config.wxglade_path,
-        config.docs_path,
-        os.path.join(config.wxglade_path, '../../../../share/doc/wxglade'),
-        ]:
-        searchdir = os.path.normpath(searchdir)
-        credits_file = os.path.join(searchdir, 'CREDITS.txt')
-        license_file = os.path.join(searchdir, 'LICENSE.txt')
-        if os.path.exists(credits_file):
-            config.credits_file = credits_file
-        if os.path.exists(license_file):
-            config.license_file = license_file
-    if not config.credits_file:
-        logging.error(_('Credits file "CREDITS.txt" not found!'))
-    if not config.license_file:
-        logging.error(_('License file "LICENSE.txt" not found!'))
 
-    # complete path to rc file
-    if os.name == 'nt':
-        config.rc_file = os.path.join(config.appdata_path, 'wxglade.ini')
-    else:
-        config.rc_file = os.path.join(config.appdata_path, 'wxgladerc')
+def _create_appdata_path():
+    """\
+    Create missing application data directory
 
-    config.history_file = os.path.join(
-        config.appdata_path, 'file_history.txt'
-        )
+    otherwise log initialisation will failed with an IOError
+    "No such file or directory".
 
-    config.log_file = os.path.join(config.appdata_path, 'wxglade.log')
-
-    # create missing application data directory, otherwise log initialisation
-    # will failed with an IOError "No such file or directory"
-    # The file logger will be initialised after this function returns.
+    The file logger will be initialised after this function returns.
+    """
     if not os.path.isdir(config.appdata_path):
         try:
             os.makedirs(config.appdata_path, 0700)
         except (IOError, OSError), e:
             logging.error(_('Failed to create config directory: "%s"'), e)
 
-    # normalise paths
+
+def _set_appdata_path():
+    """\
+    Set the path of the application data directory
+    """
+    if 'WXGLADE_CONFIG_PATH' in os.environ:
+        config.appdata_path = os.path.expandvars(
+            os.environ['WXGLADE_CONFIG_PATH'])
+        return
+
+    if os.name == 'nt' and 'APPDATA' in os.environ:
+        path = os.path.expandvars(os.environ['APPDATA'])
+        old_name = '%s/.wxglade' % path
+        new_name = '%s/wxglade' % path
+        if os.path.isdir(new_name):
+            path = new_name
+        elif os.path.isdir(old_name):
+            logging.info(
+                _('Rename appdata path from "%s" to "%s"'),
+                old_name, new_name)
+            try:
+                os.rename(old_name, new_name)
+                path = new_name
+            except (IOError, OSError), e:
+                # ignore rename errors and just write an info message
+                logging.info(_('Renaming failed: "%s"'), e)
+                logging.info(_('Using the old path "%s" instead'), old_name)
+                path = old_name
+        else:
+            path = new_name
+
+        config.appdata_path = path
+        return
+
+    if os.name == 'nt':
+        path = os.path.join(config.home_path, 'wxglade')
+    else:
+        path = os.path.join(config.home_path, '.wxglade')
+
+    config.appdata_path = path
+
+
+def _set_home_path():
+    """\
+    Set the path of the home directory
+    """
+    home_dir = os.path.expanduser('~')
+    if home_dir not in ('~', '%USERPROFILE%'):
+        config.home_path = home_dir
+        return
+
+    if os.name == 'nt' and home_dir == '%USERPROFILE%':
+        config.home_path = os.environ.get('USERPROFILE', config.wxglade_path)
+        return
+
+    config.home_path = config.wxglade_path
+
+    return
+
+
+def _get_install_method():
+    """\
+    Return a string indicating the installation method.
+
+    There are two different methods:
+      - C{single_directory} - just extract the source into an empty directory
+      - C{filesystem_installation} - install the software below /usr resp.
+        C:/Program Files
+
+    @rtype: str
+    """
+    # on Windows or installation in a single directory
+    if os.name == 'nt' or \
+            os.path.isdir(os.path.join(config.wxglade_path, 'icons')):
+        return 'single_directory'
+    else:
+        return 'filesystem_installation'
+
+
+def _get_share_path():
+    """\
+    Return the path of the "share" directory (architecture independent data
+    files).
+
+    That's something like "/usr/share" or "/usr/local/share" on Unix or the
+    installation directory on Windows.
+
+    @rtype: str
+    @see: L{_get_install_method()}
+    """
+
+    # all in a single directory (extract and run)
+    if _get_install_method() == 'single_directory':
+        share_dir = config.wxglade_path
+
+    # alternative installation path
+    else:
+        assert config.wxglade_path.endswith('wxglade')
+        # split path into single components to check the last four elements
+        dir_list = split_path(os.path.normpath(config.wxglade_path))
+        if len(dir_list) > 4 and dir_list[-1] == 'wxglade' and \
+            dir_list[-2] in ['site-packages', 'dist-packages'] and \
+            dir_list[-3].startswith('python') and \
+            dir_list[-4].startswith('lib'):
+            share_dir = os.path.join(*dir_list[:-4])
+            share_dir = os.path.join(share_dir, 'share')
+        else:
+            logging.error(
+                _('Unknown path structure %s'), config.wxglade_path)
+            share_dir = ''
+
+    if not share_dir:
+        logging.error(_('Share directory not found'))
+    elif not os.path.exists(share_dir):
+        logging.error(
+            _('Share directory "%s" does not exists'), share_dir)
+    elif not os.path.isdir(share_dir):
+        logging.error(
+            _('Share directory "%s" is not a directory'), share_dir)
+
+    return share_dir
+
+
+def split_path(path):
+    """\
+    Split the path into single components.
+
+    B{Example}::
+        >>> split_path('/usr/local/share')
+        ['/', 'usr', 'local', 'share']
+
+    @rtype: list[str]
+    """
+    drive, path = os.path.splitdrive(path)
+    components = []
+    while True:
+        path, tail = os.path.split(path)
+        if tail:
+            components.append(tail)
+        else:
+            if path:
+                components.append(path)
+            break
+    components.reverse()
+    if drive:
+        components.insert(0, drive)
+    return components
+
+
+def _normalise_paths():
+    """\
+    Normalise all paths stored in config module
+    """
     for name in ['appdata_path', 'credits_file', 'docs_path',
                  'history_file', 'home_path', 'icons_path', 'license_file',
                  'manual_file', 'rc_file', 'templates_path',
@@ -749,6 +843,44 @@ def init_paths():
         path = getattr(config, name)
         path = os.path.normpath(path)
         setattr(config, name, path)
+
+
+def _set_file_paths():
+    """\
+    Set the full path for all files (config.*_file except default_output_file)
+    """
+    install_method = _get_install_method()
+    if install_method == 'single_directory':
+        config.credits_file = os.path.join(config.wxglade_path, 'CREDITS.txt')
+        config.license_file = os.path.join(config.wxglade_path, 'LICENSE.txt')
+        config.manual_file = os.path.join(config.docs_path, 'html', 'index.html')
+        config.tutorial_file = os.path.join(config.docs_path, 'tutorial.html')
+    else:
+        config.credits_file = os.path.join(config.docs_path, 'CREDITS.txt')
+        config.license_file = os.path.join(config.docs_path, 'LICENSE.txt')
+        config.manual_file = os.path.join(config.docs_path,
+                                          'manual_html', 'index.html')
+        config.tutorial_file = os.path.join(config.docs_path,
+                                            'tutorial', 'tutorial.html')
+
+    if not os.path.exists(config.credits_file):
+        logging.error(_('Credits file "CREDITS.txt" not found!'))
+        config.credits_file = ''
+    if not os.path.exists(config.license_file):
+        logging.error(_('License file "LICENSE.txt" not found!'))
+        config.license_file = ''
+
+    config.widgets_path = os.path.join(config.wxglade_path, 'widgets')
+
+    # complete path to rc file
+    if os.name == 'nt':
+        config.rc_file = os.path.join(config.appdata_path, 'wxglade.ini')
+    else:
+        config.rc_file = os.path.join(config.appdata_path, 'wxgladerc')
+    config.history_file = os.path.join(
+        config.appdata_path, 'file_history.txt'
+    )
+    config.log_file = os.path.join(config.appdata_path, 'wxglade.log')
 
 
 def init_preferences():

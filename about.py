@@ -69,7 +69,7 @@ class wxGladeAboutBox(wx.Dialog):
                             dlg.Destroy()
                         except IOError:
                             wx.MessageBox(
-                                _('License file "LICENSE.txt" not found!'
+                                _('License file "LICENSE.txt" not found!\n'
                                   'You can get a copy at \n'
                                   'http://www.opensource.org/licenses/'
                                   'mit-license.php'),
@@ -77,7 +77,7 @@ class wxGladeAboutBox(wx.Dialog):
                                 wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
                     else:
                         wx.MessageBox(
-                            _('License file "LICENSE.txt" not found!'
+                            _('License file "LICENSE.txt" not found!\n'
                               'You can get a copy at \n'
                               'http://www.opensource.org/licenses/'
                               'mit-license.php'),
