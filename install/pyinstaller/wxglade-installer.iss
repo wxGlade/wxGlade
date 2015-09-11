@@ -108,6 +108,8 @@ Name: "{app}\widgets\button\*.pyc"; Type: files
 Name: "{app}\widgets\button\*.pyo"; Type: files
 Name: "{app}\widgets\calendar_ctrl\*.pyc"; Type: files
 Name: "{app}\widgets\calendar_ctrl\*.pyo"; Type: files
+Name: "{app}\widgets\check_list_box\*.pyc"; Type: files
+Name: "{app}\widgets\check_list_box\*.pyo"; Type: files
 Name: "{app}\widgets\checkbox\*.pyc"; Type: files
 Name: "{app}\widgets\checkbox\*.pyo"; Type: files
 Name: "{app}\widgets\choice\*.pyc"; Type: files
@@ -124,6 +126,8 @@ Name: "{app}\widgets\frame\*.pyc"; Type: files
 Name: "{app}\widgets\frame\*.pyo"; Type: files
 Name: "{app}\widgets\gauge\*.pyc"; Type: files
 Name: "{app}\widgets\gauge\*.pyo"; Type: files
+Name: "{app}\widgets\generic_calendar_ctrl\*.pyc"; Type: files
+Name: "{app}\widgets\generic_calendar_ctrl\*.pyo"; Type: files
 Name: "{app}\widgets\grid\*.pyc"; Type: files
 Name: "{app}\widgets\grid\*.pyo"; Type: files
 Name: "{app}\widgets\hyperlink_ctrl\*.pyc"; Type: files
@@ -138,6 +142,8 @@ Name: "{app}\widgets\notebook\*.pyc"; Type: files
 Name: "{app}\widgets\notebook\*.pyo"; Type: files
 Name: "{app}\widgets\panel\*.pyc"; Type: files
 Name: "{app}\widgets\panel\*.pyo"; Type: files
+Name: "{app}\widgets\property_grid_manager\*.pyc"; Type: files
+Name: "{app}\widgets\property_grid_manager\*.pyo"; Type: files
 Name: "{app}\widgets\radio_box\*.pyc"; Type: files
 Name: "{app}\widgets\radio_box\*.pyo"; Type: files
 Name: "{app}\widgets\radio_button\*.pyc"; Type: files
