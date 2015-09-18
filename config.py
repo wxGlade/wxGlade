@@ -522,6 +522,112 @@ widget_config = {
         },
     }
 }
+"""\
+Dictionary to store widget generic widget details like tooltips, different
+names, ...
+
+Example::
+    config = {
+        'wxSplitterWindow' = {
+            'supported_by': ('wx28', 'wx3'),
+            'style_defs': {
+                'wxSP_3D': {
+                    'desc': _('Draws a 3D effect border and sash'),
+                    'combination': 'wxSP_3DBORDER|wxSP_3DSASH',
+            },
+        },
+        'wxHyperlinkCtrl': {
+            'supported_by': ('wx28', 'wx3'),
+        },
+        'wxDialog': {
+            'style_defs': {
+                'wxNO_3D': {
+                    'desc': _('Under Windows, specifies that the child '
+                              'controls should not have 3D borders unless '
+                              'specified in the control.'),
+                    'supported_by': ('wx2',),
+                },
+            },
+        },
+        'generic_styles': {
+            'wxALL': {
+                'desc': _('from wxSizer'),
+                'combination': 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM',
+            },
+        },
+    }
+
+Elements:
+  - I{supported_by} - This widget is only available at the listed wx
+    versions. An empty list or a non-existing entry means the widgets is
+    always available.
+
+  - I{styles} - Dictionary with style specific settings
+
+  - I{generic_styles} - Generic item to concentrate styles that are not
+    part of a specific widget e.g. sizer styles.
+
+  - I{box_label} - Title of the widget style box
+
+  - I{default_style} - Default style for new created widgets
+
+  - I{style_list} - List of all styles to show within the style box
+
+  - I{events} - Dictionary with event specific settings
+
+Style attributes:
+  - I{'desc':} I{<description>} - Short style description
+
+  - I{'combination':} I{<styles joined by '|'>} - The style is defined as
+    a combination of different other styles
+
+  - I{'exclude':} I{<styles joined by '|'>} - The listed styles will be
+    removed by selecting this style
+
+  - I{'include':} I{<styles joined by '|'>} - The style requires additional
+    styles. The listed styles are a soft requirement - these styles are
+    added even if the "requesting" style will be delete somehow or other.
+
+  - I{'obsolete':} I{<text>} - This style is obsolete. A short notice will
+    shown in the style tooltip
+
+  - I{'rename_to:} I{<new style name>} - The style will be renamed into the
+    given style name
+
+  - I{'require':} I{<styles joined by '|'>} - The style requires additional
+    styles. The listed styles are a hard requirement - these styles are
+    added only in together with the "requesting" style. If the "requesting"
+    style will be deleted, these styles will be not added.
+
+  - I{'supported_by':} I(<supported version>) - List of versions
+    supporting this style
+
+  - I{'synonym':} I{<alternative name>} - Short notice about an alternative
+    style name shown in style tooltip
+
+Event attributes:
+  - I{'type':} I{<event prototype>} - Event prototype, fallback is
+    C{wxCommandEvent}
+
+  - I{'type_wx2':} I{<event prototype>} - Event prototype for wx 2.X, use
+    this attribute if the event exists in all supported wx versions
+
+  - I{'type_wx3':} I{<event prototype>} - Event prototype for wx 3.X, use
+    this attribute if the event exists in all supported wx versions
+
+  - I{'supported_by':} I{(<supported version>)} - List of versions
+    supporting this event
+
+All event attributes are optional. If no attributes are given,
+C{wxCommandEvent} will be used as event type.
+
+Use gettext (C{_()}) for the attributes content of "box_label", "desc" and
+"obsolete".
+
+The style processing is described in L{gui_mixins.StylesMixin.cn_f()}.
+
+@type: dict
+"""
 
 
 def read_version_file():
