@@ -110,10 +110,10 @@ clean:
 	@$(RM) warnwxglade.txt
 	@$(RM) MANIFEST
 
-#+ Remove all automatically generated and development files
+#+ Remove all automatically generated and Mercurial repository data
 distclean: clean
-	@echo "Remove development files ..."
-	@$(RM) .hgtags .hgignore
+	@echo "Remove Mercurial repository data (.hg*) ..."
+	@$(RM) .hgtags .hgignore version.py
 
 #+ Remove almost everything that can bee reconstructed with this Makefile
 maintainer-clean: distclean doc-clean
