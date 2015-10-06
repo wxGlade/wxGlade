@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2015-04-03</date>
+    <date>2015-10-06</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -73,7 +73,7 @@
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="wxglade.png"/>
+            <imagedata contentwidth="15cm" fileref="wxglade.png"/>
           </imageobject>
         </mediaobject>
       </figure>
@@ -206,12 +206,12 @@
 
         <listitem>
           <para>the full installer at Microsoft Windows
-          (<filename>wxGlade-VERSION-setup.exe</filename>)</para>
+          (<filename>wxGlade-&lt;VERSION&gt;-setup.exe</filename>)</para>
         </listitem>
 
         <listitem>
           <para>the installer of the Standalone Edition at Microsoft Windows
-          (<filename>wxGlade-SAE-VERSION-setup.exe</filename>)</para>
+          (<filename>wxGlade-SAE-&lt;VERSION&gt;-setup.exe</filename>)</para>
         </listitem>
 
         <listitem>
@@ -241,8 +241,7 @@
 
           <para>Alternatively you can download different source tarballs from
           <ulink
-          url="https://bitbucket.org/agriggio/wxglade/downloads">https://bitbucket.org/agriggio/wxglade/downloads</ulink>,
-          too.</para>
+          url="https://bitbucket.org/agriggio/wxglade/downloads">https://bitbucket.org/agriggio/wxglade/downloads</ulink>.</para>
         </section>
       </section>
 
@@ -273,6 +272,14 @@
         <para>You may install wxGlade from the source package if your
         distribution doesn't provide any package or the package is
         out-of-date.</para>
+
+        <para>On Unix systems wxGlade will be started using the shell script
+        <command>wxglade</command>. The script search the system for Python 2
+        and finally executes the Python interpreter to start wxGlade.</para>
+
+        <para>You can set the environment variable <envar>PYTHON_BIN</envar>,
+        if the shell script <command>wxglade</command> doesn't find Python or
+        if you want to use a non-default interpreter.</para>
       </section>
 
       <section>
@@ -291,7 +298,16 @@
         step.</para>
 
         <section id="single.user.install.section">
-          <title>Single User Installation</title>
+          <title>Single User Installation (Extract and Run)</title>
+
+          <sidebar>
+            <para>In short:</para>
+
+            <para>Just download the archive of current version as a .zip file
+            or a .tar.gz file, extract the archive into a empty directory and
+            execute <command>wxglade</command> on Unix or
+            <command>wxglade.pyw</command> on Windows to start wxGlade.</para>
+          </sidebar>
 
           <para>The <quote>Single User Installation</quote> is a simplified
           installation without using native package like
@@ -328,106 +344,93 @@
           to <xref linkend="single.user.install.section"/> except the
           installation directory. And probably you need administrative
           permissions. You could extract the wxGlade source package e.g. into
-          <command>c:\Program Files\wxglade</command> on Microsoft Windows or
-          into <command>/opt/wxglade</command> on Unix.</para>
+          <command>C:\Program Files\wxGlade</command> on Microsoft Windows or
+          into <command>/opt/wxGlade</command> on Unix. Execute the
+          <command>wxglade</command> file on Unix operating systems or
+          <command>wxglade.pyw</command> on Microsoft Windows to start
+          wxGlade.</para>
+
+          <figure>
+            <title>Starting wxGlade on Windows at C:\Program
+            Files\wxGlade</title>
+
+            <mediaobject>
+              <imageobject>
+                <imagedata contentwidth="15cm"
+                           fileref="wxglade_start_on_windows.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
         </section>
 
         <section>
           <title>Multi User Installation - Variant 2</title>
 
+          <note>
+            <para>This installation method is only supported Unix operating
+            systems.</para>
+          </note>
+
           <para>Extract the downloaded package into a temporary directory.
-          Change in this directory and execute the Python setup script using
-          <command>python setup.py</command> in a terminal window.</para>
+          Open a terminal window, change into the temporary directory and
+          install wxGlade using execute the Python setup script
+          <command>setup.py</command> as follow:</para>
+
+          <para><command>python2 setup.py installl --root &lt;DESTINATION
+          DIRECTORY&gt;</command></para>
+
+          <note>
+            <para>Parameters shown in angle brackets (e.g.,
+            <quote><parameter>&lt;parameter&gt;</parameter></quote>) are
+            required.</para>
+
+            <para>Parameters shown in square brackets (e.g.,
+            <quote><parameter>[parameter]</parameter></quote>) are optional.
+            If not given, wxGlade will use suitable defaults.</para>
+          </note>
 
           <example>
             <title>Installing wxGlade at /opt/wxglade</title>
 
-            <screen># python setup.py install --prefix /opt/wxglade
+            <screen># python2 setup.py install --root /opt/wxGlade
 running install
 running build
 running build_py
-creating build
-creating build/lib.linux-i686-2.7
-creating build/lib.linux-i686-2.7/wxglade
-creating build/lib.linux-i686-2.7/wxglade/widgets
-creating build/lib.linux-i686-2.7/wxglade/widgets/combo_box
+running build_scripts
+running install_lib
+creating /opt/wxGlade
+creating /opt/wxGlade/usr
+creating /opt/wxGlade/usr/lib
+creating /opt/wxGlade/usr/lib/python2.7
 [...]
-copying docs/html/ch04s23.html -&gt; /opt/wxglade/share/doc/wxglade/doc/html
-copying docs/html/ch04s26.html -&gt; /opt/wxglade/share/doc/wxglade/doc/html
-copying docs/html/ch05s02.html -&gt; /opt/wxglade/share/doc/wxglade/doc/html
-copying docs/html/pr01.html -&gt; /opt/wxglade/share/doc/wxglade/doc/html
-creating /opt/wxglade/share/doc/wxglade/doc/pdf
-copying docs/pdf/manual.pdf -&gt; /opt/wxglade/share/doc/wxglade/doc/pdf
-creating /opt/share/man
-creating /opt/share/man/man1
-copying docs/man/wxglade.1 -&gt; /opt/wxglade/share/man/man1
-copying docs/man/manpage.xml -&gt; /opt/wxglade/share/doc/wxglade
-copying docs/src/manual.xml -&gt; /opt/wxglade/share/doc/wxglade
-running install_egg_info
-Writing /opt/wxglade/lib/python2.7/site-packages/wxGlade-0.6.5_-py2.7.egg-info
+writing manifest file 'wxGlade.egg-info/SOURCES.txt'
+Copying wxGlade.egg-info to /opt/wxGlade/usr/lib/python2.7/site-packages/wxGlade-0.7.1rc1-py2.7.egg-info
+running install_scripts
+creating /opt/wxGlade/usr/bin
+copying build/scripts-2.7/wxglade -&gt; /opt/wxGlade/usr/bin
+changing mode of /opt/wxGlade/usr/bin/wxglade to 755
 </screen>
           </example>
 
           <para>After the installation has finished the wxGlade main script
           <command>wxglade </command>is located at <command>&lt;install
-          directory&gt;/bin</command>.</para>
+          directory&gt;/usr/bin</command>.</para>
 
-          <para>Execute the script to start wxGlade</para>
+          <para>Execute the script <command>&lt;install
+          directory&gt;/usr/bin/wxglade</command> to start wxGlade</para>
 
-          <example>
-            <title>Starting wxGlade at /opt/wxglade/bin/wxglade</title>
+          <figure>
+            <title>Starting wxGlade on Windows at
+            /opt/wxglade/bin/wxglade</title>
 
-            <screen># /opt/wxglade/bin/wxglade 
-Starting wxGlade version 0.6.5 on Python 2.7.2+
-Base directory:             /opt/wxglade/lib/python2.7/site-packages/wxglade
-Documentation directory:    /opt/wxglade/lib/python2.7/site-packages/wxglade/docs
-Icons directory:            /opt/wxglade/lib/python2.7/site-packages/wxglade/icons
-Build-in widgets directory: /opt/wxglade/lib/python2.7/site-packages/wxglade/widgets
-Template directory:         /opt/wxglade/lib/python2.7/site-packages/wxglade/templates
-Credits file:               /opt/wxglade/share/doc/wxglade/CREDITS.txt
-License file:               /opt/wxglade/share/doc/wxglade/LICENSE.txt
-Manual file:                /opt/wxglade/lib/python2.7/site-packages/wxglade/docs/html/index.html
-Tutorial file:              /opt/wxglade/lib/python2.7/site-packages/wxglade/docs/tutorial.html
-Using wxPython 2.8.12.1
-loaded code generator for perl
-loaded code generator for XRC
-loaded code generator for python
-loaded code generator for lisp
-loaded code generator for C++
-Found widgets listing -&gt; /opt/wxglade/lib/python2.7/site-packages/wxglade/widgets/widgets.txt
-loading widget modules:
-        frame
-        dialog
-[...]
-</screen>
-          </example>
+            <mediaobject>
+              <imageobject>
+                <imagedata contentwidth="15cm"
+                           fileref="wxglade_start_on_linux.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
         </section>
-      </section>
-
-      <section>
-        <title>Troubleshooting</title>
-
-        <para>This section should help you to solve some non-application
-        issues.</para>
-
-        <glosslist>
-          <glossentry>
-            <glossterm>wxGlade has started e.g. by clicking the desktop icon
-            with mouse, but no application window opens</glossterm>
-
-            <glossdef>
-              <para>Check the log file for errors (see <xref
-              linkend="config.files.section"/>) and check that all
-              dependencies (especially wxWidgets and Python) are installed. A
-              list of dependencies is in <xref
-              linkend="requirements.supported.platforms.section"/>.</para>
-
-              <para>If you think this is an application issue, file a bug
-              report like described in <xref linkend="report.bug.section"/>,
-              please.</para>
-            </glossdef>
-          </glossentry>
-        </glosslist>
       </section>
     </section>
 
@@ -459,7 +462,7 @@ loading widget modules:
 
           <mediaobject>
             <imageobject>
-              <imagedata fileref="preferences.png"/>
+              <imagedata contentwidth="15cm" fileref="preferences.png"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -516,68 +519,253 @@ loading widget modules:
       </section>
     </section>
 
-    <section id="report.bug.section">
-      <title>How to Report a Bug</title>
-
-      <para>Writing a helpful bug report is easy if you follow some hints. The
-      items below should help you to integrate useful information. They are
-      not an absolute rule - it's more like a guideline.</para>
-
-      <itemizedlist>
-        <listitem>
-          <para>What did you? May you want to include a screenshot.</para>
-        </listitem>
-
-        <listitem>
-          <para>What do you want to happen?</para>
-        </listitem>
-
-        <listitem>
-          <para>What actually happened?</para>
-        </listitem>
-
-        <listitem>
-          <para>Provide a short example to reproduce the issue.</para>
-        </listitem>
-
-        <listitem>
-          <para>Include the internal error log file <quote>wxglade.log</quote>
-          always. The pane <quote><guilabel>How to Report a
-          Bug</guilabel></quote> contains the full path of the error log file.
-          The file location is additionally described in <xref
-          linkend="config.files.section"/>.</para>
-        </listitem>
-      </itemizedlist>
-
-      <para>May you read <ulink
-      url="http://www.chiark.greenend.org.uk/~sgtatham/bugs.html">How to
-      Report Bugs Effectively</ulink> additionally.</para>
-
-      <para>Please open a new bug in the <ulink url="???">wxGlade bug
-      tracker</ulink> at Sourceforge. You have to log-in at Sourceforge to
-      file a bug report.</para>
-
-      <para>Alternatively you can send the bug report to the wxGlade mailing
-      list. Keep in mind that you need a subscription for sending emails to
-      this mailing list.</para>
-
-      <figure>
-        <title>An error dialog example</title>
-
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="error_dialog.png"/>
-          </imageobject>
-        </mediaobject>
-      </figure>
-    </section>
-
     <section>
       <title>Deprecated Features</title>
 
       <para>wxGlade can change code inside existing source files to reflect
       changed designs. This feature is deprecated now und will be removed
       within the next releases.</para>
+    </section>
+
+    <section>
+      <title>Troubleshooting and Error Handling</title>
+
+      <section>
+        <title>Troubleshooting</title>
+
+        <para>This section should help you to solve some non-application
+        issues.</para>
+
+        <para><glosslist>
+            <glossentry>
+              <glossterm>wxGlade has started e.g. by clicking the desktop icon
+              with mouse, but no application window opens</glossterm>
+
+              <glossdef>
+                <para>Check the log file for errors (see <xref
+                linkend="config.files.section"/>) and check that all
+                dependencies (especially wxWidgets and Python) are installed.
+                A list of dependencies is in <xref
+                linkend="requirements.supported.platforms.section"/>.</para>
+
+                <para>If you think this is an application issue, file a bug
+                report like described in <xref linkend="report.bug.section"/>,
+                please.</para>
+              </glossdef>
+            </glossentry>
+          </glosslist></para>
+      </section>
+
+      <section>
+        <title>Error Messages</title>
+
+        <para>The following list are error messages should help you to find
+        the reason and take corrective actions. Please note, the list is still
+        incomplete.</para>
+
+        <glosslist>
+          <glossentry>
+            <glossterm>Output path "&lt;path&gt;" must be an existing
+            directory when generating multiple files.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> You want to
+              create multiple files for your design. wxGlade expects an output
+              directory in such case, but the given output path isn't a
+              existing directory.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis> Create
+              the missing directory or select an existing output
+              directory.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Output path "&lt;path&gt;" exists but the directory is
+            not writable.</glossterm>
+
+            <glossdef>
+              <para>Corrective Action: Choose a writable output
+              directory.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Output path "&lt;path&gt;" can not be a directory when
+            generating a single file.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> You want to
+              write your design into a single file. wxGalde expects an output
+              filename, but the given output path is a directory.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis> Choose
+              a file instead of a directory.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Output path "&lt;path&gt;" should be a directory when
+            generating multiple files.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> You want to
+              create multiple files for your design. wxGlade expects an output
+              directory in such case, but the given output path isn't a
+              directory.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis> Choose
+              a output directory.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Generated source code couldn't converted to encoding
+            &lt;encoding&gt;. The source contains invalid characters
+            "&lt;characters&gt;" from &lt;start position&gt; to &lt;end
+            position&gt;.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> The current
+              design uses characters that can't converted to the encoding
+              selected for the source code file.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis> Choose
+              a design encoding that supports the listed characters
+              also.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Generating Lisp code for wxWidgets version
+            &lt;version&gt; is not supported.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> There is no Lisp
+              support for the selected version of wxWidgets</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis> Create
+              the code for an older wxWidget version.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>XRC code cannot be split into multiple
+            files.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> You want to
+              create multiple XRC files for your design. This option isn't
+              supported by wxGlade.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis> Select
+              the <quote><guilabel>Single file</guilabel></quote> option to
+              store the whole design in one XRC file.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Code generation from a template is not
+            possible.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> You've selected
+              a template as input file to generate source code from.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis> Use a
+              design file instead of a template.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Code writer for "&lt;language&gt;" is not
+            available.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> The code
+              generators for the given language hasn't been loaded.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis> That's
+              probably a bug in wxGlade. Please check the log file and file a
+              bug report. See <xref linkend="report.bug.section"/> for more
+              details.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Conversion of the source file &lt;filename&gt; to
+            Unicode failed.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> The file
+              encoding set within the design doesn't match the encoding used
+              within the source file. Thereby the source file can't be
+              loaded.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis> Check
+              the encoding selected in your design and the encoding of your
+              source file. Change the design encoding to match source files
+              encoding.</para>
+            </glossdef>
+          </glossentry>
+        </glosslist>
+      </section>
+
+      <section id="report.bug.section">
+        <title>How to Report a Bug</title>
+
+        <para>Writing a helpful bug report is easy if you follow some hints.
+        The items below should help you to integrate useful information. They
+        are not an absolute rule - it's more like a guideline.</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>What did you? May you want to include a screenshot.</para>
+          </listitem>
+
+          <listitem>
+            <para>What do you want to happen?</para>
+          </listitem>
+
+          <listitem>
+            <para>What actually happened?</para>
+          </listitem>
+
+          <listitem>
+            <para>Provide a short example to reproduce the issue.</para>
+          </listitem>
+
+          <listitem>
+            <para>Include the internal error log file
+            <quote>wxglade.log</quote> always. The pane <quote><guilabel>How
+            to Report a Bug</guilabel></quote> contains the full path of the
+            error log file. The file location is additionally described in
+            <xref linkend="config.files.section"/>.</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>May you read <ulink
+        url="http://www.chiark.greenend.org.uk/~sgtatham/bugs.html">How to
+        Report Bugs Effectively</ulink> additionally.</para>
+
+        <para>Please open a new bug in the <ulink url="???">wxGlade bug
+        tracker</ulink> at Sourceforge. You have to log-in at Sourceforge to
+        file a bug report.</para>
+
+        <para>Alternatively you can send the bug report to the wxGlade mailing
+        list. Keep in mind that you need a subscription for sending emails to
+        this mailing list.</para>
+
+        <figure>
+          <title>An error dialog example</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata contentwidth="10cm" fileref="error_dialog.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+      </section>
     </section>
   </chapter>
 
@@ -644,7 +832,7 @@ loading widget modules:
       <para>Now let's generate the code.</para>
 
       <para>Select the Application icon on the tree window and go to the
-      properties window.</para>
+      <quote><guilabel>Properties</guilabel></quote> window.</para>
 
       <para>Check Name and Class, choose a <quote><guilabel>Top
       window</guilabel></quote>, check <quote><guilabel>Single
@@ -828,6 +1016,13 @@ loading widget modules:
           </listitem>
         </itemizedlist>
       </section>
+
+      <section>
+        <title>XRC</title>
+
+        <para>The XRC code writer doesn't support all bitmap path tags
+        described in <xref linkend="bitmap.path.section"/>.</para>
+      </section>
     </section>
 
     <section>
@@ -867,13 +1062,24 @@ loading widget modules:
       case DESTINATION is a directory wxGlade will generate multiple-file
       source code.</para>
 
-      <para>This is the complete description of the command line:</para>
+      <note>
+        <para>Parameters shown in angle brackets (e.g.,
+        <quote><parameter>&lt;parameter&gt;</parameter></quote>) are
+        required.</para>
+
+        <para>Parameters shown in square brackets (e.g.,
+        <quote><parameter>[parameter]</parameter></quote>) are optional. If
+        not given, wxGlade will use suitable defaults.</para>
+      </note>
+
+      <para>Complete command line description:</para>
 
       <screen># wxglade --help
 Usage: wxglade &lt;WXG File&gt;             start the wxGlade GUI
  or:   wxglade &lt;Options&gt; &lt;WXG File&gt;   generate code from command line
  or:   wxglade --version              show programs version number and exit
  or:   wxglade -h|--help              show this help message and exit
+
 Options:
   --version             show program's version number and exit
   -h, --help            show this help message and exit
@@ -883,8 +1089,11 @@ Options:
   -o PATH, --output=PATH
                         (optional) output file in single-file mode or output
                         directory in multi-file mode
+
 Example: Generate Python code out of myapp.wxg
+
    wxglade -o temp -g python myapp.wxg
+
 Report bugs to:    &lt;wxglade-general@lists.sourceforge.net&gt; or at
                    &lt;http://sourceforge.net/projects/wxglade/&gt;
 wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
@@ -1249,158 +1458,6 @@ if __name__ == "__main__":
     app.MainLoop()</programlisting>
       </example>
     </section>
-
-    <section>
-      <title>Error Messages</title>
-
-      <para>The following list are error messages should help you to find the
-      reason and take corrective actions. Please note, the list is still
-      incomplete.</para>
-
-      <glosslist>
-        <glossentry>
-          <glossterm>Output path "&lt;path&gt;" must be an existing directory
-          when generating multiple files.</glossterm>
-
-          <glossdef>
-            <para><emphasis role="bold">Details:</emphasis> You want to create
-            multiple files for your design. wxGlade expects an output
-            directory in such case, but the given output path isn't a existing
-            directory.</para>
-
-            <para><emphasis role="bold">Corrective Action:</emphasis> Create
-            the missing directory or select an existing output
-            directory.</para>
-          </glossdef>
-        </glossentry>
-
-        <glossentry>
-          <glossterm>Output path "&lt;path&gt;" exists but the directory is
-          not writable.</glossterm>
-
-          <glossdef>
-            <para>Corrective Action: Choose a writable output
-            directory.</para>
-          </glossdef>
-        </glossentry>
-
-        <glossentry>
-          <glossterm>Output path "&lt;path&gt;" can not be a directory when
-          generating a single file.</glossterm>
-
-          <glossdef>
-            <para><emphasis role="bold">Details:</emphasis> You want to write
-            your design into a single file. wxGalde expects an output
-            filename, but the given output path is a directory.</para>
-
-            <para><emphasis role="bold">Corrective Action:</emphasis> Choose a
-            file instead of a directory.</para>
-          </glossdef>
-        </glossentry>
-
-        <glossentry>
-          <glossterm>Output path "&lt;path&gt;" should be a directory when
-          generating multiple files.</glossterm>
-
-          <glossdef>
-            <para><emphasis role="bold">Details:</emphasis> You want to create
-            multiple files for your design. wxGlade expects an output
-            directory in such case, but the given output path isn't a
-            directory.</para>
-
-            <para><emphasis role="bold">Corrective Action:</emphasis> Choose a
-            output directory.</para>
-          </glossdef>
-        </glossentry>
-
-        <glossentry>
-          <glossterm>Generated source code couldn't converted to encoding
-          &lt;encoding&gt;. The source contains invalid characters
-          "&lt;characters" from &lt;start position&gt; to &lt;end
-          position&gt;.</glossterm>
-
-          <glossdef>
-            <para><emphasis role="bold">Details:</emphasis> The current design
-            uses characters that can't converted to the encoding selected for
-            the source code file.</para>
-
-            <para><emphasis role="bold">Corrective Action:</emphasis> Choose a
-            design encoding that supports the listed characters also.</para>
-          </glossdef>
-        </glossentry>
-
-        <glossentry>
-          <glossterm>Generating Lisp code for wxWidgets version
-          &lt;version&gt; is not supported.</glossterm>
-
-          <glossdef>
-            <para><emphasis role="bold">Details:</emphasis> There is no Lisp
-            support for the selected version of wxWidgets</para>
-
-            <para><emphasis role="bold">Corrective Action:</emphasis> Create
-            the code for an older wxWidget version.</para>
-          </glossdef>
-        </glossentry>
-
-        <glossentry>
-          <glossterm>XRC code cannot be split into multiple files.</glossterm>
-
-          <glossdef>
-            <para><emphasis role="bold">Details:</emphasis> You want to create
-            multiple XRC files for your design. This option isn't supported by
-            wxGlade.</para>
-
-            <para><emphasis role="bold">Corrective Action:</emphasis> Select
-            the <quote><guilabel>Single file</guilabel></quote> option to
-            store the whole design in one XRC file.</para>
-          </glossdef>
-        </glossentry>
-
-        <glossentry>
-          <glossterm>Code generation from a template is not
-          possible.</glossterm>
-
-          <glossdef>
-            <para><emphasis role="bold">Details:</emphasis> You've selected a
-            template as input file to generate source code from.</para>
-
-            <para><emphasis role="bold">Corrective Action:</emphasis> Use a
-            design file instead of a template.</para>
-          </glossdef>
-        </glossentry>
-
-        <glossentry>
-          <glossterm>Code writer for "&lt;language&gt;" is not
-          available.</glossterm>
-
-          <glossdef>
-            <para><emphasis role="bold">Details:</emphasis> The code
-            generators for the given language hasn't been loaded.</para>
-
-            <para><emphasis role="bold">Corrective Action:</emphasis> That's
-            probably a bug in wxGlade. Please check the log file and file a
-            bug report. See <xref linkend="report.bug.section"/> for more
-            details.</para>
-          </glossdef>
-        </glossentry>
-
-        <glossentry>
-          <glossterm>Conversion of the source file &lt;filename&gt; to Unicode
-          failed.</glossterm>
-
-          <glossdef>
-            <para><emphasis role="bold">Details:</emphasis> The file encoding
-            set within the design doesn't match the encoding used within the
-            source file. Thereby the source file can't be loaded.</para>
-
-            <para><emphasis role="bold">Corrective Action:</emphasis> Check
-            the encoding selected in your design and the encoding of your
-            source file. Change the design encoding to match source files
-            encoding.</para>
-          </glossdef>
-        </glossentry>
-      </glosslist>
-    </section>
   </chapter>
 
   <chapter>
@@ -1415,7 +1472,7 @@ if __name__ == "__main__":
       <para><figure>
           <title>The Main Palette</title>
 
-          <graphic fileref="main_window.png"/>
+          <graphic contentwidth="8cm" fileref="main_window.png"/>
         </figure></para>
 
       <para>If you pass the mouse pointer over a button a tooltip shows the
@@ -1447,7 +1504,7 @@ if __name__ == "__main__":
       widgets on it as child nodes. <figure>
           <title>The Tree Window</title>
 
-          <graphic fileref="tree_window.png"/>
+          <graphic contentwidth="8cm" fileref="tree_window.png"/>
         </figure></para>
 
       <para>You can show or hide the tree window by the menu item View/Show
@@ -1462,17 +1519,18 @@ if __name__ == "__main__":
       widgets.</para>
 
       <para>A click on an icon in the tree window displays the properties of
-      the corresponding element in the properties window. A double click in a
-      frame, dialog or panel icon makes the designer window show it as it
+      the corresponding element in the
+      <quote><guilabel>Properties</guilabel></quote> window. A double click in
+      a frame, dialog or panel icon makes the designer window show it as it
       appears. Clicking with the right button of the mouse gives you a pop-up
       menu. <figure id="label_menu.fig">
           <title id="label_menu.title">The menu for a widget</title>
 
-          <graphic fileref="label_menu.png"/>
+          <graphic contentwidth="6cm" fileref="label_menu.png"/>
         </figure> <figure id="sizer_menu.fig">
           <title id="sizer_menu.title">The menu for a sizer</title>
 
-          <graphic fileref="sizer_menu.png"/>
+          <graphic contentwidth="6cm" fileref="sizer_menu.png"/>
         </figure> The pop-up menu for a widget allows you to copy, cut or
       remove the element. The pop-up menu for a sizer allows you to copy, cut
       or remove the element, or add or insert an empty slot.</para>
@@ -1493,7 +1551,7 @@ if __name__ == "__main__":
       <figure>
           <title>The Design Window</title>
 
-          <graphic fileref="design_window_empty_slot.png"/>
+          <graphic contentwidth="8cm" fileref="design_window_empty_slot.png"/>
         </figure></para>
 
       <para>By clicking with the right mouse button on a widget you can access
@@ -1506,14 +1564,14 @@ if __name__ == "__main__":
       linkend="sizer_menu.fig"/>.</para>
     </section>
 
-    <section>
+    <section id="widget_properties.section">
       <title>Properties Window</title>
 
-      <para>The properties window lets you see and edit the properties that
-      apply to the selected element. This window consists up to six different
-      tabs. All six tabs are not always present. The visibility of the single
-      tabs depends on the widget type. Most widgets have a
-      <quote><guilabel>Common</guilabel></quote> tab and a
+      <para>The <quote><guilabel>Properties</guilabel></quote> window lets you
+      see and edit the properties that apply to the selected element. This
+      window consists up to six different tabs. All six tabs are not always
+      present. The visibility of the single tabs depends on the widget type.
+      Most widgets have a <quote><guilabel>Common</guilabel></quote> tab and a
       <quote><guilabel>Code</guilabel></quote> tab. The combination of
       presented tabs depends on the widget type.</para>
 
@@ -1553,12 +1611,14 @@ if __name__ == "__main__":
       <para>Usually you get the changes in the design window in real time. In
       some cases you have to push the
       <quote><guibutton>Apply</guibutton></quote> button. For example, the
-      <classname>wxNotebook</classname> widget shows in its properties window
-      a list of child <classname>wxPanel</classname>s. You have to press the
+      <classname>wxNotebook</classname> widget shows in its
+      <quote><guilabel>Properties</guilabel></quote> window a list of child
+      <classname>wxPanel</classname>s. You have to press the
       <quote><guibutton>Apply</guibutton></quote> button to show changes you
       make when you add or remove panels.</para>
 
-      <para>You can show or hide the properties window by the menu item
+      <para>You can show or hide the
+      <quote><guilabel>Properties</guilabel></quote> window by the menu item
       <menuchoice>
           <guimenu>View</guimenu>
 
@@ -1576,7 +1636,8 @@ if __name__ == "__main__":
 
             <mediaobject>
               <imageobject>
-                <imagedata fileref="properties_window_application.png"/>
+                <imagedata contentwidth="8cm"
+                           fileref="properties_window_application.png"/>
               </imageobject>
             </mediaobject>
           </figure><glosslist>
@@ -1726,7 +1787,8 @@ if __name__ == "__main__":
 
             <mediaobject>
               <imageobject>
-                <imagedata fileref="properties_window_settings.png"/>
+                <imagedata contentwidth="8cm"
+                           fileref="properties_window_settings.png"/>
               </imageobject>
             </mediaobject>
           </figure><glosslist>
@@ -1785,7 +1847,7 @@ if __name__ == "__main__":
         <figure id="properties_window_tab_1.fig">
           <title>Common Properties</title>
 
-          <graphic fileref="properties_window_tab_1.png"/>
+          <graphic contentwidth="8cm" fileref="properties_window_tab_1.png"/>
         </figure>
 
         <para>The property name is a mangled version of the wxWidgets property
@@ -1799,7 +1861,8 @@ if __name__ == "__main__":
         <figure id="properties_window_tab_1_change.fig">
           <title>Changing Common Properties</title>
 
-          <graphic fileref="properties_window_tab_1_change.png"/>
+          <graphic contentwidth="8cm"
+                   fileref="properties_window_tab_1_change.png"/>
         </figure>
 
         <glosslist>
@@ -1825,7 +1888,8 @@ if __name__ == "__main__":
 
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="example_subclassed.png"/>
+                    <imagedata contentwidth="8cm"
+                               fileref="example_subclassed.png"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -1863,7 +1927,7 @@ if __name__ == "__main__":
               <figure id="example_baseclasses.fig">
                 <title>Common Properties with Base class(es) entry</title>
 
-                <graphic fileref="example_baseclasses.png"/>
+                <graphic contentwidth="8cm" fileref="example_baseclasses.png"/>
               </figure>
 
               <example>
@@ -1919,7 +1983,8 @@ if __name__ == "__main__":
 
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="example_variableassigment.png"/>
+                    <imagedata contentwidth="8cm"
+                               fileref="example_variableassigment.png"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -2009,7 +2074,7 @@ if __name__ == "__main__":
         </glosslist>
       </section>
 
-      <section>
+      <section id="layout_properties.section">
         <title>Layout Properties</title>
 
         <para>The second tab is related to layout properties that control
@@ -2017,8 +2082,8 @@ if __name__ == "__main__":
             id="properties_window_tab_2.fig">
             <title>Layout Properties</title>
 
-            <graphic fileref="properties_window_tab_2.png"/>
-          </figure> These properties apply to any widget. You can check or
+            <graphic contentwidth="8cm" fileref="properties_window_tab_2.png"/>
+          </figure>These properties apply to any widget. You can check or
         uncheck any option related to the placement in the sizer. Many widgets
         may have a default value of 3 in the
         <quote><guilabel>Border</guilabel></quote> property in the Preferences
@@ -2036,11 +2101,32 @@ if __name__ == "__main__":
             id="properties_window_tab_3.fig">
             <title>Widget Properties</title>
 
-            <graphic fileref="properties_window_tab_3.png"/>
-          </figure> The set of options may also be quite complex in the case
-        of widgets that have a great deal of methods and properties (such as
+            <graphic contentwidth="8cm" fileref="properties_window_tab_3.png"/>
+          </figure>The set of options may also be quite complex in the case of
+        widgets that have a great deal of methods and properties (such as
         grids and tree views). In this case, wxGlade greatly simplifies the
         process of designing forms.</para>
+      </section>
+
+      <section id="styles.section">
+        <title>Styles</title>
+
+        <para>The most of the styles as shown in the <xref
+        linkend="layout_properties.section"/> and <xref
+        linkend="widget_properties.section"/> have a tooltip with additional
+        information about the style.</para>
+
+        <para>The tooltips shows a short description as well as additional
+        information.</para>
+
+        <para><figure>
+            <title>Styles Tooltip</title>
+
+            <graphic fileref="tooltip_styles.png"/>
+          </figure></para>
+
+        <para>The style details will be used also to compute the styles in the
+        generated source code.</para>
       </section>
 
       <section>
@@ -2055,7 +2141,8 @@ if __name__ == "__main__":
 
           <mediaobject>
             <imageobject>
-              <imagedata fileref="properties_window_tab_4.png"/>
+              <imagedata contentwidth="8cm"
+                         fileref="properties_window_tab_4.png"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -2065,7 +2152,7 @@ if __name__ == "__main__":
 
           <mediaobject>
             <imageobject>
-              <imagedata fileref="example_eventhandler.png"/>
+              <imagedata contentwidth="8cm" fileref="example_eventhandler.png"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -2102,7 +2189,8 @@ if __name__ == "__main__":
 
           <mediaobject>
             <imageobject>
-              <imagedata fileref="properties_window_tab_5.png"/>
+              <imagedata contentwidth="8cm"
+                         fileref="properties_window_tab_5.png"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -2135,7 +2223,7 @@ if __name__ == "__main__":
 
           <mediaobject>
             <imageobject>
-              <imagedata fileref="example_setproperty.png"/>
+              <imagedata contentwidth="8cm" fileref="example_setproperty.png"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -2201,7 +2289,8 @@ if __name__ == "__main__":
         <title>The VIEW Menu</title>
 
         <para>In the <guimenu>VIEW</guimenu> menu, you can show or hide the
-        tree window and the properties window.</para>
+        tree window and the <quote><guilabel>Properties</guilabel></quote>
+        window.</para>
 
         <para>In this menu you access the Preferences Dialog as well.</para>
       </section>
@@ -2362,9 +2451,216 @@ if __name__ == "__main__":
 
       <para>wxGlade supports a number of widgets and helps you to edit the
       properties and visual look of each one.</para>
+
+      <informaltable>
+        <tgroup cols="4">
+          <thead>
+            <row>
+              <entry align="center">Containers</entry>
+
+              <entry align="center">Layout Widgets</entry>
+
+              <entry align="center">Common Widgets</entry>
+
+              <entry align="center">Menu bar / Status Bar / Tool bar</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry><itemizedlist>
+                  <listitem>
+                    <para>wxDialog</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxFrame</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxNotebook</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxPanel</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxScrolledWindow</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxSplitterWindow</para>
+                  </listitem>
+                </itemizedlist></entry>
+
+              <entry><itemizedlist>
+                  <listitem>
+                    <para>wxBoxSizer</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxStaticBoxSizer</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxGridSizer</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxFlexGridSizer</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>Spacer</para>
+                  </listitem>
+                </itemizedlist></entry>
+
+              <entry><itemizedlist>
+                  <listitem>
+                    <para>wxButton</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxBitmapButton</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxCalendarCtrl</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxCheckBox</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxChoice</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxComboBox</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxDatePickerCtrl</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxGauge</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxGenericCalendarCtrl</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxGrid</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxHyperlinkCtrl</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxListBox</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxListCtrl</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxPropertyGridManager</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxRadioBox</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxRadioButton</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxSlider</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxSpinButton</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxSpinCtrl</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxStaticBitmap</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxStaticLine</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxStaticText</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxTextCtrl</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxToggleButton</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxTreeCtrl</para>
+                  </listitem>
+                </itemizedlist></entry>
+
+              <entry><itemizedlist>
+                  <listitem>
+                    <para>wxMenu</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxMenuBar</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>Menu Bar Separators</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>Sub Menus</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxStatusBar</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>wxToolBar</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>Tool Bar Separators</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>Tools</para>
+                  </listitem>
+                </itemizedlist></entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+
+      <para>Missing widgets can be integrated using the <quote>Custom
+      Widget</quote>.</para>
     </section>
 
-    <section id="basic.bitmaps.section">
+    <section id="bitmap.path.section">
       <title>Specifying the Path of Bitmaps</title>
 
       <para>In wxGlade some widgets need to specify a bitmap path. You can use
@@ -2372,35 +2668,124 @@ if __name__ == "__main__":
 
       <para>The bitmap can be specified in several ways:</para>
 
-      <para>Usually you can type an absolute path in a text box or browse for
-      a bitmap with a file dialog. This will produce a
-      <classname>wxBitmap</classname> object with the typed string as bitmap
-      path (e.g. <emphasis>wxBitmap("/usr/share/icons/application.png",
-      wxBITMAP_TYPE_ANY)</emphasis>)</para>
+      <itemizedlist>
+        <listitem>
+          <para>Specify the path to the bitmap file.</para>
 
-      <para>You can enter a variable name using the <emphasis>var:</emphasis>
-      tag in the text box. This will produce a <classname>wxBitmap</classname>
-      object with the variable name as bitmap path (e.g.
-      <emphasis>var:my_bitmap_path</emphasis> produces
-      <emphasis>wxBitmap(my_bitmap_path, wxBITMAP_TYPE_ANY)</emphasis>). In
-      Perl code generation a <quote>$</quote> sign is added if you omit
-      it.</para>
+          <para>Usually you can type an absolute path in a text box or browse
+          for a bitmap with a file dialog.</para>
 
-      <para>You can enter a code chunk returning a
-      <classname>wxBitmap</classname>, by using the <emphasis>code:</emphasis>
-      tag. This inserts verbatim the code you enter in brackets and nothing
-      more (e.g.: if <classname>wxSomeWidget</classname> needs a
-      <classname>wxBitmap</classname> as an argument, the string
-      <emphasis>code:if (x == 0) get_bitmap1() else get_bitmap2();</emphasis>
-      produces <emphasis>wxSomeWidget((if (x == 0) get_bitmap1() else
-      get_bitmap2();), option1, option2)</emphasis>).</para>
+          <example>
+            <title><classname>wxBitmap</classname> object with the typed
+            string as bitmap path</title>
 
-      <para>wxGlade never declares or assigns variable or function names, so
-      after code generation, you have to provide extra code to declare your
-      variables or functions.</para>
+            <para>Input:</para>
 
-      <para>If you use <emphasis>var</emphasis>: or <emphasis>code:</emphasis>
-      tags the preview window shows an empty bitmap of fixed size.</para>
+            <para><userinput>/usr/share/icons/application.png</userinput></para>
+
+            <para>produces in C++:</para>
+
+            <programlisting>wxBitmap("/usr/share/icons/application.png", wxBITMAP_TYPE_ANY)</programlisting>
+          </example>
+        </listitem>
+
+        <listitem>
+          <para>Syntax: <emphasis>var:&lt;variable name&gt;</emphasis></para>
+
+          <para>You can enter a variable name using the
+          <emphasis>var:</emphasis> tag in the text box. In Perl code
+          generation a <quote>$</quote> sign is added if you omit it.</para>
+
+          <example>
+            <title><classname>wxBitmap</classname> object with the variable
+            name as bitmap path</title>
+
+            <para>Input:</para>
+
+            <para><userinput>var:my_bitmap_path</userinput></para>
+
+            <para>produces in C++:</para>
+
+            <programlisting>wxBitmap(my_bitmap_path, wxBITMAP_TYPE_ANY)</programlisting>
+          </example>
+        </listitem>
+
+        <listitem>
+          <para>Syntax:
+          <emphasis>empty:&lt;width&gt;,&lt;height&gt;</emphasis></para>
+
+          <para>Creates an empty bitmap of the specified size. It's
+          recommendet to use a minimal size of 1, 1.</para>
+
+          <example>
+            <title>Create an empty <classname>wxBitmap</classname> with width
+            of 32 and height of 32</title>
+
+            <para>Input:</para>
+
+            <para><userinput>empty:32,32</userinput></para>
+
+            <para>produces in Python:</para>
+
+            <programlisting>wx.EmptyBitmap(32, 32)</programlisting>
+
+            <para>produces in C++:</para>
+
+            <programlisting>wxBitmap(32, 32)</programlisting>
+          </example>
+        </listitem>
+
+        <listitem>
+          <para>Syntax:
+          <emphasis>art:&lt;ArtID&gt;,&lt;ArtClient&gt;</emphasis> or
+          <emphasis>art:&lt;ArtID&gt;,&lt;ArtClient&gt;,&lt;width&gt;,&lt;height&gt;</emphasis></para>
+
+          <para>Create a bitmap using wxArtProvider.</para>
+
+          <example>
+            <title>Create a bitmap using wxArtProvider</title>
+
+            <para>Input:</para>
+
+            <para><userinput>art:wxART_GO_UP,wxART_OTHER,32,32</userinput></para>
+
+            <para>produces in Perl:</para>
+
+            <programlisting>Wx::ArtProvider::GetBitmap(wxART_GO_UP, wxART_OTHER, Wx::Size-&gt;new(32, 32))</programlisting>
+          </example>
+        </listitem>
+
+        <listitem>
+          <para>Syntax: <emphasis>code:&lt;code chunk to return a
+          wxBitmap&gt;</emphasis></para>
+
+          <para>You can enter a code chunk returning a
+          <classname>wxBitmap</classname>, by using the
+          <emphasis>code:</emphasis> tag. This inserts verbatim the code you
+          enter in brackets and nothing more.</para>
+
+          <example>
+            <title><classname>wxSomeWidget</classname> needs a
+            <classname>wxBitmap</classname> as an argument</title>
+
+            <para>Input:</para>
+
+            <para><userinput>code:if (x == 0) get_bitmap1() else
+            get_bitmap2();</userinput></para>
+
+            <para>produces in C++:</para>
+
+            <programlisting>wxSomeWidget((if (x == 0) get_bitmap1() else get_bitmap2();), option1, option2)</programlisting>
+          </example>
+        </listitem>
+      </itemizedlist>
+
+      <para>wxGlade never declares or assigns variable or function names, you
+      have to provide extra code to declare your variables or
+      functions.</para>
+
+      <para>If you use one of the tags listed above the preview window shows
+      just a fixed size empty bitmap.</para>
     </section>
 
     <section id="widgets.wlist.section">
@@ -2422,9 +2807,9 @@ if __name__ == "__main__":
         <title>Dialog or Panel</title>
 
         <para>This prompts for a <classname>wxDialog</classname> or a
-        <classname>wxPanel</classname> in top level. In the properties window
-        you can choose the styles and, for the dialog, you can add an
-        icon.</para>
+        <classname>wxPanel</classname> in top level. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can choose
+        the styles and, for the dialog, you can add an icon.</para>
       </section>
 
       <section id="widgets.panel.section">
@@ -2432,7 +2817,8 @@ if __name__ == "__main__":
 
         <para>This allows you to add a panel to a sizer.</para>
 
-        <para>In the properties window you can choose the styles.</para>
+        <para>In the <quote><guilabel>Properties</guilabel></quote> window you
+        can choose the styles.</para>
       </section>
 
       <section id="widgets.splitter.section">
@@ -2442,8 +2828,8 @@ if __name__ == "__main__":
         associated panels as well. You can choose vertical or horizontal
         splitting.</para>
 
-        <para>In the properties window you can choose the styles and the sash
-        position.</para>
+        <para>In the <quote><guilabel>Properties</guilabel></quote> window you
+        can choose the styles and the sash position.</para>
 
         <para>Be careful not to put too large a widget in a splitter panel,
         because while it might appear normal in the design window, when you
@@ -2457,8 +2843,8 @@ if __name__ == "__main__":
         <para>This produces a <classname>wxNotebook</classname> and one panel
         for each tab.</para>
 
-        <para>In the properties window you can add and remove tabs, which
-        appear in a list.</para>
+        <para>In the <quote><guilabel>Properties</guilabel></quote> window you
+        can add and remove tabs, which appear in a list.</para>
 
         <para>Don't forget to click on the
         <quote><guibutton>Apply</guibutton></quote> button to transfer changes
@@ -2483,16 +2869,24 @@ if __name__ == "__main__":
           <para>This produces a <classname>wxBitmapButton</classname>. You can
           set the <quote>default</quote> flag on or off. You also can choose
           the bitmap for the button and, optionally, the bitmap for the
-          disabled status. Refer to <xref linkend="basic.bitmaps.section"/>
-          for bitmap path specifications.</para>
+          disabled status. Refer to <xref linkend="bitmap.path.section"/> for
+          bitmap path specifications.</para>
         </section>
 
         <section id="widgets.radio.section">
           <title>Radio Button</title>
 
           <para>This produces a <classname>wxRadioButton</classname>. In the
-          properties window you can enter the text, and the status, clicked or
-          not, and the style.</para>
+          <quote><guilabel>Properties</guilabel></quote> window you can enter
+          the text, and the status, clicked or not, and the style.</para>
+        </section>
+
+        <section>
+          <title>Spin Button</title>
+
+          <para>This produces a <classname>wxSpinButton</classname>. In the
+          <quote><guilabel>Properties</guilabel></quote> window you can enter
+          the range and the value.</para>
         </section>
 
         <section id="widgets.toggle_button.section">
@@ -2504,143 +2898,77 @@ if __name__ == "__main__":
         </section>
       </section>
 
-      <section id="widgets.gauge.section">
-        <title>Gauge</title>
+      <section>
+        <title>Calendar Control</title>
 
-        <para>This produces a <classname>wxGauge</classname>. In the
-        properties window you can enter the range and set the style.</para>
+        <para>This produces a <classname>wxCalendarCtrl</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the style.</para>
       </section>
 
       <section>
-        <title>Hyperlink Control</title>
+        <title>Check List Box</title>
 
-        <para>This produces a <classname>wxHyperlinkCtrl</classname>. In the
-        property window you can enter the label, the URL and also set the
-        style.</para>
-      </section>
-
-      <section id="widgets.radiobox.section">
-        <title>Radio Box</title>
-
-        <para>This produces a <classname>wxRadioBox</classname>. In the
-        properties window you can enter the dimension. The style determines
-        whether the dimension is the number of rows or columns.</para>
-
-        <para>You also can set which button is selected with the
-        <quote>Selection</quote> spin starting from 0. You can edit the list
-        of choices, but remember to click on the
-        <quote><guibutton>Apply</guibutton></quote> button to consolidate
-        changes.</para>
-      </section>
-
-      <section id="widgets.spinctrl.section">
-        <title>Spin Control</title>
-
-        <para>This produces a <classname>wxSpinCtrl</classname>. In the
-        properties window you can enter the value, the range and also set the
-        style.</para>
-      </section>
-
-      <section id="widgets.slider.section">
-        <title>Slider</title>
-
-        <para>This produces a <classname>wxSlider</classname>. In the
-        properties window you can enter the value, the range and also set the
-        style.</para>
-      </section>
-
-      <section id="widgets.static_text.section">
-        <title>Static Text</title>
-
-        <para>This produces a <classname>wxStaticText</classname>. In the
-        properties window you can enter the text, set the style and tell
-        wxGlade whether to store the control as an attribute.</para>
-
-        <para>XXX</para>
-
-        <para>http://wxpython-users.1045709.n5.nabble.com/wx-StaticText-problem-td2361234.html</para>
-      </section>
-
-      <section id="widgets.textctrl.section">
-        <title>Text Control</title>
-
-        <para>This produces a <classname>wxTextCtrl</classname>. In the
-        properties window you can enter the text and also set the
-        style.</para>
+        <para>This produces a <classname>wxCheckListBox</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the choices, the selection and the style.</para>
       </section>
 
       <section id="widgets.checkbox.section">
         <title>Check Box</title>
 
         <para>This produces a <classname>wxCheckBox</classname>. In the
-        properties window you can enter the text, and the status, checked or
-        not, of the button.</para>
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the text, and the status, checked or not, of the button.</para>
       </section>
 
       <section id="widgets.choice.section">
         <title>Choice</title>
 
         <para>This produces a <classname>wxChoice</classname>. In the
-        properties window you can enter the position of the selected item
-        starting from 0. You can edit the list of choices, but remember to
-        click on the <quote><guibutton>Apply</guibutton></quote> button to
-        consolidate changes.</para>
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the position of the selected item starting from 0. You can edit the
+        list of choices, but remember to click on the
+        <quote><guibutton>Apply</guibutton></quote> button to consolidate
+        changes.</para>
       </section>
 
       <section id="widgets.combo.section">
         <title>Combo Box</title>
 
         <para>This produces a <classname>wxComboBox</classname>. In the
-        properties window you can enter the position of the selected item
-        starting from 0. You can edit the list of choices, but remember to
-        click on the <quote><guibutton>Apply</guibutton></quote> button to
-        consolidate changes.</para>
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the position of the selected item starting from 0. You can edit the
+        list of choices, but remember to click on the
+        <quote><guibutton>Apply</guibutton></quote> button to consolidate
+        changes.</para>
       </section>
 
-      <section id="widgets.listbox.section">
-        <title>List Box</title>
+      <section>
+        <title>Date Picker Control</title>
 
-        <para>This produces a <classname>wxListBox</classname>. In the
-        properties window you can enter the position of the selected item
-        starting from 0. You can edit the list of choices, but remember to
-        click on the <quote><guibutton>Apply</guibutton></quote> button to
-        consolidate changes.</para>
+        <para>This produces a <classname>wxDatePickerCtrl</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the style.</para>
       </section>
 
-      <section id="widgets.staticline.section">
-        <title>Static Line</title>
+      <section id="widgets.gauge.section">
+        <title>Gauge</title>
 
-        <para>This produces a vertical or horizontal
-        <classname>wxStaticLine</classname>. In the properties window you can
-        tell wxGlade whether to store the object as an attribute of the frame
-        class.</para>
+        <para>This produces a <classname>wxGauge</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the range and set the style.</para>
       </section>
 
-      <section id="widgets.static_bitmap.section">
-        <title>Static Bitmap</title>
+      <section>
+        <title>Generic Calendar Control</title>
 
-        <para>This produces a <classname>wxStaticBitmap</classname>. You will
-        be prompted for the bitmap path. Refer to <xref
-        linkend="basic.bitmaps.section"/> for bitmap path specifications. In
-        the properties window you can set the style and you can tell wxGlade
-        whether to store the object as an attribute of the frame class.</para>
+        <para>This produces a <classname>wxGenericCalendarCtrl</classname>. In
+        the <quote><guilabel>Properties</guilabel></quote> window you can set
+        the style.</para>
       </section>
 
-      <section id="widgets.listctrl.section">
-        <title>List Control</title>
-
-        <para>This produces a <classname>wxListCtrl</classname>. In the
-        properties window you can set the style.</para>
-      </section>
-
-      <section id="widgets.treectrl.section">
-        <title>Tree Control</title>
-
-        <para>This produces a <classname>wxTreeCtrl</classname>. In the
-        properties window you can set the style.</para>
-      </section>
-
-      <section id="widgets.grid.section">
+      <section>
         <title>Grid</title>
 
         <para>This produces a <classname>wxGrid</classname>. In the properties
@@ -2652,18 +2980,208 @@ if __name__ == "__main__":
         leave it to the user code.</para>
       </section>
 
+      <section>
+        <title>Hyperlink Control</title>
+
+        <para>This produces a <classname>wxHyperlinkCtrl</classname>. In the
+        property window you can enter the label, the URL and also set the
+        style.</para>
+      </section>
+
+      <section id="widgets.listbox.section">
+        <title>List Box</title>
+
+        <para>This produces a <classname>wxListBox</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the position of the selected item starting from 0. You can edit the
+        list of choices, but remember to click on the
+        <quote><guibutton>Apply</guibutton></quote> button to consolidate
+        changes.</para>
+      </section>
+
+      <section id="widgets.listctrl.section">
+        <title>List Control</title>
+
+        <para>This produces a <classname>wxListCtrl</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can set the
+        style.</para>
+      </section>
+
+      <section>
+        <title>Property Grid Manager</title>
+
+        <para>This produces a <classname>wxPropertyGridManager</classname>. In
+        the <quote><guilabel>Properties</guilabel></quote> window you can set
+        the style.</para>
+      </section>
+
+      <section id="widgets.radiobox.section">
+        <title>Radio Box</title>
+
+        <para>This produces a <classname>wxRadioBox</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the dimension. The style determines whether the dimension is the
+        number of rows or columns.</para>
+
+        <para>You also can set which button is selected with the
+        <quote>Selection</quote> spin starting from 0. You can edit the list
+        of choices, but remember to click on the
+        <quote><guibutton>Apply</guibutton></quote> button to consolidate
+        changes.</para>
+      </section>
+
+      <section id="widgets.slider.section">
+        <title>Slider</title>
+
+        <para>This produces a <classname>wxSlider</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the value, the range and also set the style.</para>
+      </section>
+
+      <section id="widgets.spinctrl.section">
+        <title>Spin Control</title>
+
+        <para>This produces a <classname>wxSpinCtrl</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the value, the range and also set the style.</para>
+      </section>
+
+      <section>
+        <title>Static Line</title>
+
+        <para>This produces a vertical or horizontal
+        <classname>wxStaticLine</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can tell
+        wxGlade whether to store the object as an attribute of the frame
+        class.</para>
+      </section>
+
+      <section id="widgets.static_bitmap.section">
+        <title>Static Bitmap</title>
+
+        <para>This produces a <classname>wxStaticBitmap</classname>. You will
+        be prompted for the bitmap path. Refer to <xref
+        linkend="bitmap.path.section"/> for bitmap path specifications. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can set the
+        style and you can tell wxGlade whether to store the object as an
+        attribute of the frame class.</para>
+      </section>
+
+      <section id="widgets.static_text.section">
+        <title>Static Text</title>
+
+        <para>This produces a <classname>wxStaticText</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the text, set the style and tell wxGlade whether to store the control
+        as an attribute.</para>
+      </section>
+
+      <section id="widgets.textctrl.section">
+        <title>Text Control</title>
+
+        <para>This produces a <classname>wxTextCtrl</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can enter
+        the text and also set the style.</para>
+      </section>
+
+      <section id="widgets.treectrl.section">
+        <title>Tree Control</title>
+
+        <para>This produces a <classname>wxTreeCtrl</classname>. In the
+        <quote><guilabel>Properties</guilabel></quote> window you can set the
+        style.</para>
+      </section>
+
       <section id="widgets.custom.section">
         <title>Custom Widget</title>
 
-        <para>When you put a custom widget in the design window you will be
-        prompted for a class name. In the properties window you can set a
+        <para>When you put a Custom Widget in the design window you will be
+        prompted for a class name.</para>
+
+        <para>In the <quote><guilabel>Widget</guilabel></quote> tab of the
+        <quote><guilabel>Properties</guilabel></quote> window you can set a
         number of custom attributes that will appear in the constructor call.
         These attributes have different effects in C++, Lisp, Perl, Python or
-        XRC code generation. Four special attributes <varname>$id</varname>,
-        <varname>$parent</varname>, <varname>$width</varname> and
-        <varname>$height</varname> return the value you specify in the
-        <quote><guilabel>Common</guilabel></quote> tab of the custom
-        widget.</para>
+        XRC code generation.</para>
+
+        <figure>
+          <title>Widget Properties for a Custom Widget</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata contentwidth="16cm"
+                         fileref="properties_custom_widget.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+
+        <para>There are four attributes <userinput>$id</userinput>,
+        <userinput>$parent</userinput>, <userinput>$width</userinput> and
+        <userinput>$height</userinput> have a special meaning:</para>
+
+        <glosslist>
+          <glossentry>
+            <glossterm>$id</glossterm>
+
+            <glossdef>
+              <para>This attribute will be replaced by the own widget ID e.g.
+              <constant>wxID_ANY</constant>.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>$parent</glossterm>
+
+            <glossdef>
+              <para>This attribute will be replaced by a reference to the
+              parent widget.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>$width</glossterm>
+
+            <glossdef>
+              <para>This attribute will be replaced by the widget
+              width.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>$height</glossterm>
+
+            <glossdef>
+              <para>This attribute will be replaced by the widget
+              height.</para>
+            </glossdef>
+          </glossentry>
+        </glosslist>
+
+        <para>You can use the property <quote><guilabel>Custom
+        const</guilabel></quote> to specify a custom constructor like a
+        factory method.</para>
+
+        <para>wxGlade never declares or assigns variable or function names,
+        you have to provide extra code to declare your variables or
+        functions.</para>
+
+        <para>Custom Widgets will not be shown in the preview.</para>
+
+        <example>
+          <title>Generated C++ code for the custom widget shown above</title>
+
+          <programlisting language="C++">MyFrame::MyFrame(wxWindow* parent, int id, const wxString&amp; title, const wxPoint&amp; pos, const wxSize&amp; size, long style):
+    wxFrame(parent, id, title, pos, size, style)
+{
+    // begin wxGlade: MyFrame::MyFrame
+    window_1 = new wxChoicebook(this, wxID_ANY);
+
+    set_properties();
+    do_layout();
+    // end wxGlade
+}
+</programlisting>
+        </example>
       </section>
 
       <section id="widgets.spacer.section">
@@ -2697,13 +3215,13 @@ if __name__ == "__main__":
     <section id="menu.menu.section">
       <title>Menu</title>
 
-      <para>In the menu properties window click on the <quote><guibutton>Edit
-      menus...</guibutton></quote> button. A dialog will let you edit your
-      menu. Use the <quote><guibutton>Add</guibutton></quote> button to add
-      items to the menu; enter the label, an optional name and help string.
-      You can use numbers or variable names as the item id. If you use a
-      variable name, you have to provide extra code in the generated source
-      code.</para>
+      <para>In the menu <quote><guilabel>Properties</guilabel></quote> window
+      click on the <quote><guibutton>Edit menus...</guibutton></quote> button.
+      A dialog will let you edit your menu. Use the
+      <quote><guibutton>Add</guibutton></quote> button to add items to the
+      menu; enter the label, an optional name and help string. You can use
+      numbers or variable names as the item id. If you use a variable name,
+      you have to provide extra code in the generated source code.</para>
 
       <para>Choose the type of the item: Normal, Checkable or Radio.</para>
 
@@ -2719,7 +3237,8 @@ if __name__ == "__main__":
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="properties_menu_editor.png"/>
+            <imagedata contentwidth="15cm"
+                       fileref="properties_menu_editor.png"/>
           </imageobject>
         </mediaobject>
       </figure>
@@ -2728,8 +3247,8 @@ if __name__ == "__main__":
     <section id="menu.statusbar.section">
       <title>Statusbar</title>
 
-      <para>In the properties window you can edit the list of fields and their
-      size, but remember to click on the
+      <para>In the <quote><guilabel>Properties</guilabel></quote> window you
+      can edit the list of fields and their size, but remember to click on the
       <quote><guibutton>Apply</guibutton></quote> button to consolidate
       changes.</para>
 
@@ -2738,7 +3257,8 @@ if __name__ == "__main__":
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="properties_window_statusbar.png"/>
+            <imagedata contentwidth="8cm"
+                       fileref="properties_window_statusbar.png"/>
           </imageobject>
         </mediaobject>
       </figure>
@@ -2765,7 +3285,7 @@ if __name__ == "__main__":
       <para>You have to enter two bitmaps, one for normal status and the other
       for the pushed status.</para>
 
-      <para>Refer to <xref linkend="basic.bitmaps.section"/> for bitmap path
+      <para>Refer to <xref linkend="bitmap.path.section"/> for bitmap path
       specifications.</para>
 
       <figure>
@@ -2773,7 +3293,8 @@ if __name__ == "__main__":
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="properties_toolbar_editor.png"/>
+            <imagedata contentwidth="10cm"
+                       fileref="properties_toolbar_editor.png"/>
           </imageobject>
         </mediaobject>
       </figure>
