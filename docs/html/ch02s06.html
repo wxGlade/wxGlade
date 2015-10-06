@@ -1,4 +1,4 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Command Line Invocation</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ch02.html" title="Chapter 2. Exploring wxGlade"><link rel="prev" href="ch02s05.html" title="Language Specific Peculiarities"><link rel="next" href="ch02s07.html" title="Using the Source Code"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Command Line Invocation</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s05.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Exploring wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch02s07.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm140395074870560"></a>Command Line Invocation</h2></div></div></div><p>You can run wxGlade without parameters to start the GUI on an
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Command Line Invocation</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ch02.html" title="Chapter 2. Exploring wxGlade"><link rel="prev" href="ch02s05.html" title="Language Specific Peculiarities"><link rel="next" href="ch02s07.html" title="Using the Source Code"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Command Line Invocation</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s05.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Exploring wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch02s07.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm139849977653152"></a>Command Line Invocation</h2></div></div></div><p>You can run wxGlade without parameters to start the GUI on an
       empty application as follows:</p><p><span class="command"><strong>wxglade</strong></span></p><p>Run wxGlade GUI on an existing application specifying the
       <code class="filename">.wxg</code> file as follow:</p><p><span class="command"><strong>wxglade &lt;WXG File&gt;</strong></span></p><p>If you only want to generate the code without starting the GUI,
       use the <code class="option">-g</code> or <code class="option">--generate-code</code> option
@@ -10,11 +10,16 @@
       &lt;WXG File&gt;</strong></span></p><p>The DESTINATION argument can be a file or a directory. If
       DESTINATION is a file, wxGlade will generate single-file source code. In
       case DESTINATION is a directory wxGlade will generate multiple-file
-      source code.</p><p>This is the complete description of the command line:</p><pre class="screen"># wxglade --help
+      source code.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Parameters shown in angle brackets (e.g.,
+        <span class="quote">“<span class="quote"><em class="parameter"><code>&lt;parameter&gt;</code></em></span>”</span>) are
+        required.</p><p>Parameters shown in square brackets (e.g.,
+        <span class="quote">“<span class="quote"><em class="parameter"><code>[parameter]</code></em></span>”</span>) are optional. If
+        not given, wxGlade will use suitable defaults.</p></div><p>Complete command line description:</p><pre class="screen"># wxglade --help
 Usage: wxglade &lt;WXG File&gt;             start the wxGlade GUI
  or:   wxglade &lt;Options&gt; &lt;WXG File&gt;   generate code from command line
  or:   wxglade --version              show programs version number and exit
  or:   wxglade -h|--help              show this help message and exit
+
 Options:
   --version             show program's version number and exit
   -h, --help            show this help message and exit
@@ -24,8 +29,11 @@ Options:
   -o PATH, --output=PATH
                         (optional) output file in single-file mode or output
                         directory in multi-file mode
+
 Example: Generate Python code out of myapp.wxg
+
    wxglade -o temp -g python myapp.wxg
+
 Report bugs to:    &lt;wxglade-general@lists.sourceforge.net&gt; or at
                    &lt;http://sourceforge.net/projects/wxglade/&gt;
 wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
