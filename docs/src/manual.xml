@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2015-10-06</date>
+    <date>2015-10-08</date>
 
     <author>
       <firstname>Marcello</firstname>
@@ -3101,8 +3101,7 @@ if __name__ == "__main__":
         <para>In the <quote><guilabel>Widget</guilabel></quote> tab of the
         <quote><guilabel>Properties</guilabel></quote> window you can set a
         number of custom attributes that will appear in the constructor call.
-        These attributes have different effects in C++, Lisp, Perl, Python or
-        XRC code generation.</para>
+        </para>
 
         <figure>
           <title>Widget Properties for a Custom Widget</title>
@@ -3157,8 +3156,19 @@ if __name__ == "__main__":
           </glossentry>
         </glosslist>
 
+        <para>These attributes have different effects in C++, Lisp, Perl,
+        Python or XRC code generation. </para>
+
+        <para>For XRC you can use it to add custom attributes to the resource
+        object. To do so, arguments must have the following format:
+        <quote><parameter>ATTRIBUTE_NAME: ATTRIBUTE_VALUE</parameter></quote>.
+        For instance: <quote><parameter>default_value:10</parameter></quote>
+        is translated to:
+        <quote><code>&lt;default_value&gt;10&lt;/default_value&gt;</code></quote>.
+        Invalid entries are silently ignored.</para>
+
         <para>You can use the property <quote><guilabel>Custom
-        const</guilabel></quote> to specify a custom constructor like a
+        constructor</guilabel></quote> to specify a custom constructor like a
         factory method.</para>
 
         <para>wxGlade never declares or assigns variable or function names,
