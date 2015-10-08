@@ -54,6 +54,17 @@ class ArgumentsHandler(BaseXmlBuilderTagHandler):
 
 
 class CustomWidget(ManagedBase):
+    """\
+    Class to handle custom widgets
+
+    @ivar arguments: Constructor arguments
+    @type arguments: list[str]
+
+    @ivar custom_ctor: if not empty, an arbitrary piece of code that will
+                        be used instead of the constructor name
+    @type custom_ctor: Unicode
+    """
+
     def __init__(self, name, klass, parent, id, sizer, pos, property_window,
                  show=True):
         ManagedBase.__init__(self, name, klass, parent, id, sizer, pos,
@@ -66,13 +77,13 @@ class CustomWidget(ManagedBase):
         self.properties['arguments'] = ArgumentsProperty(
             self, 'arguments', None, cols, 2, label=_("arguments"))
 
-        self.custom_ctor = ""  # if not empty, an arbitrary piece of code
-                               # that will be used instead of the constructor
-                               # name
+        self.custom_ctor = ""
         self.access_functions['custom_ctor'] = (self.get_custom_ctor,
                                                 self.set_custom_ctor)
         self.properties['custom_ctor'] = TextProperty(
             self, 'custom_ctor', None, True, label=_('Custom constructor'))
+        self.properties['custom_ctor'].set_tooltip(
+            _('Specify a custom constructor like a factory method'))
 
     def set_klass(self, value):
         ManagedBase.set_klass(self, value)
@@ -118,23 +129,6 @@ class CustomWidget(ManagedBase):
         args = self.properties['arguments']
         args.display(panel)
         szr.Add(args.panel, 1, wx.ALL|wx.EXPAND, 5)
-        help_btn = wx.Button(panel, -1, _('Help on "Arguments" property'))
-        text = _("""\
-The 'Arguments' property behaves differently when generating
-XRC code wrt C++ or python: you can use it to add custom attributes
-to the resource object. To do so, arguments must have the following
-format: ATTRIBUTE_NAME: ATTRIBUTE_VALUE
-For instance:
-    default_value: 10
-is translated to:
-    <default_value>10</default_value>
-Invalid entries are silently ignored""")
-
-        def show_help(event):
-            wx.MessageBox(text, _('Help on "Arguments" property'),
-                          wx.OK | wx.CENTRE | wx.ICON_INFORMATION)
-        wx.EVT_BUTTON(help_btn, -1, show_help)
-        szr.Add(help_btn, 0, wx.BOTTOM | wx.LEFT | wx.RIGHT | wx.EXPAND, 5)
         panel.SetAutoLayout(True)
         panel.SetSizer(szr)
         szr.Fit(panel)
