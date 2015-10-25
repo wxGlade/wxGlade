@@ -18,27 +18,21 @@ t.install()
 
 import config
 
-# Hack: use own implementation to filter module file "test.py"
-def find_package_modules2(self, package, package_dir):
-    self.check_package(package, package_dir)
-    module_files = glob(os.path.join(package_dir, "*.py"))
-    modules = []
-    setup_script = os.path.abspath(self.distribution.script_name)
 
-    for f in module_files:
-        abs_f = os.path.abspath(f)
-        if package == 'wxglade' and os.path.normpath(f) == 'test.py':
-            self.debug_print("excluding %s" % f)
-        elif abs_f != setup_script:
-            module = os.path.splitext(os.path.basename(f))[0]
-            modules.append((package, module, f))
-        else:
-            self.debug_print("excluding %s" % setup_script)
+# Filter output of the original modules list to exclude the file "test.py"
+# from binary packages
+def filter_modules(self, package, package_dir):
+    modules = orig_find_package_modules(self, package, package_dir)
+    for entry in modules[:]:
+        package, module, filename = entry
+        if os.path.normpath(filename) == 'test.py':
+            modules.remove(entry)
     return modules
 
 # inject own implementation
 from distutils.command.build_py import build_py
-build_py.find_package_modules = find_package_modules2
+orig_find_package_modules = build_py.find_package_modules
+build_py.find_package_modules = filter_modules
 
 
 classifiers = """\
