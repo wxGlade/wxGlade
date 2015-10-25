@@ -37,11 +37,7 @@ SOURCE_DIRS       = codegen wcodegen edit_sizers widgets install tests
 SOURCE_FILES      = $(wildcard $(BASE_DIR)/*.py) $(shell find $(SOURCE_DIRS) -name "*.py")
 TEST_BIN          = $(BASE_DIR)/test.py
 PYLINT_BIN        = pylint2
-PYLINT_OPTS       = --additional-builtins=_ --disable=C \
-                    '--dummy-variables=_|dummy|event|empty|unused|i' \
-                    --disable=W0105,W0201,W0212,W0401,W0403,W0614 \
-                    --disable=R0201,R0901,R0902,R0903,R0904,R0912,R0913,R0914,R0915 \
-                    --reports=n
+PYLINT_OPTS       = --rcfile ./pylintrc
 PYLINT_PATH       = "$(BASE_DIR):$(BASE_DIR)/widgets:$(BASE_DIR)/codegen"
 PYTHON_BIN        = python2
 MANPAGE_XSL       = /usr/share/xml/docbook/xsl-stylesheets-1.78.1/manpages/docbook.xsl

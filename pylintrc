@@ -52,14 +52,14 @@ confidence=
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
 
-disable=invalid-name,protected-access,fixme,too-many-branches,
-        attribute-defined-outside-init,too-many-locals,
-        too-many-arguments,too-many-statements,
-        too-many-return-statements,too-few-public-methods,
-        import-error,too-many-lines,too-many-instance-attributes,
-        too-many-public-methods,duplicate-code,broad-except,
-        redefined-builtin,anomalous-backslash-in-string,
-        missing-docstring,no-member,bad-builtin
+disable=C,
+        pointless-string-statement,attribute-defined-outside-init,
+        protected-access,
+        wildcard-import,relative-import,unused-wildcard-import,
+        no-self-use,too-many-ancestors,too-many-instance-attributes,
+        too-few-public-methods,too-many-public-methods,
+        too-many-branches,too-many-arguments,too-many-locals,
+        too-many-statements
 
 
 [REPORTS]
@@ -75,7 +75,7 @@ output-format=text
 files-output=no
 
 # Tells whether to display a full report or only the messages
-reports=yes
+reports=no
 
 # Python expression which should return a note less than 10 (10 is the highest
 # note). You have access to the variables errors warning, statement which
@@ -124,11 +124,11 @@ init-import=no
 
 # A regular expression matching the name of dummy variables (i.e. expectedly
 # not used).
-dummy-variables-rgx=_$|dummy
+dummy-variables-rgx=_|dummy|event|empty|unused|i
 
 # List of additional names supposed to be defined in builtins. Remember that
 # you should avoid to define new builtins when possible.
-additional-builtins=
+additional-builtins=_
 
 # List of strings which can identify a callback function by name. A callback
 # name must start or end with one of those strings.
