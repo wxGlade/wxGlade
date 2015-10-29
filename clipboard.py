@@ -2,66 +2,90 @@
 Support for cut & paste of wxGlade widgets
 
 @copyright: 2002-2007 Alberto Griggio
+@copyright: 2015 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import cPickle
 import logging
 import StringIO
 import wx
 
 
 # Format used by wxGlade for the clipboard.
-_widget_data_format = wx.CustomDataFormat("wxglade_widget")
+widget_data_format = wx.CustomDataFormat("wxglade_widget")
 
 
-class _WidgetDataObject(wx.CustomDataObject):
+def widget2clipboard(option, flag, border, xml_unicode):
     """\
-    Object representing a widget in the clipboard.
+    Pickle all parameter to store them as a string in the clipboard.
+
+    @param option: Widget layout options
+    @type option:  str
+    @param flag: Widget flags / styles
+    @type flag:  str
+    @param border: Widget border
+    @type border:  str
+    @param xml_unicode: XML representation of this widget
+    @type xml_unicode: Unicode
+    @return: Pickled parameters
+    @rtype:  str
+
+    @see: L{clipboard2widget()}
     """
+    clipboard_data = cPickle.dumps((option, flag, border, xml_unicode))
+    return clipboard_data
 
-    def __init__(self, *args):
-        wx.CustomDataObject.__init__(self, _widget_data_format)
-        if args:
-            data = apply(self._widget2repr, args)
-            self.SetData(data)
 
-    def _widget2repr(self, *args):
-        """\
-        Convert *args into a string and returns it.
-        *args contains option, flag, border, xml_str.
-        """
-        assert len(args) == 4
-        return ":".join([str(elem) for elem in args])
+def clipboard2widget(clipboard_data):
+    """\
+    Convert widget data prepared in L{widget2clipboard()} back to single
+    values.
 
-    def GetWidgetData(self):
-        """\
-        Convert a string into option, flag, border and xml_string
-        and returns them in a list.
-        """
-        ret = self.GetData().split(":", 3)
-        assert len(ret) == 4, _("Invalid data in the clipboard")
-        # remove the dirt at the end of xml_str
-        bound = ret[3].rfind('>')+1
-        ret[3] = ret[3][:bound]
-        for i in range(3):
-            # option, flag and border are integers.
-            ret[i] = int(ret[i])
-        return ret
+    The values are option, flag, border and widget in XML representation.
+    They will be returned in a list.
+
+    @param clipboard_data: Widget data prepared in L{widget2clipboard()}
+    @type clipboard_data:  str
+
+    @rtype: list[int, int, int, str]
+
+    @see: L{widget2clipboard()}
+    """
+    option, flag, border, xml_unicode = cPickle.loads(clipboard_data)
+
+    # remove the dirt at the end of XML representation
+    bound = xml_unicode.rfind('>') + 1
+    xml_unicode = xml_unicode[:bound]
+
+    # option, flag and border are integers.
+    option = int(option)
+    flag = int(flag)
+    border = int(border)
+
+    return option, flag, border, xml_unicode
 
 
 def copy(widget):
     """\
     Copies widget and all its children to the clipboard.
+
+    @param widget: Widget to copy
+
+    @return: True on success
+    @rtype: bool
     """
-    xml_str = StringIO.StringIO()
-    widget.node.write(xml_str, 0)
-    flag = widget.get_int_flag()
-    option = widget.get_option()
-    border = widget.get_border()
     if wx.TheClipboard.Open():
         try:
-            wdo = _WidgetDataObject(option, flag, border,
-                                    xml_str.getvalue())
+            xml_unicode = StringIO.StringIO()
+            widget.node.write(xml_unicode, 0)
+            flag = str(widget.get_int_flag())
+            option = widget.get_option()
+            border = widget.get_border()
+            clipboard_data = widget2clipboard(
+                option, flag, border, xml_unicode.getvalue())
+            wdo = wx.CustomDataObject(widget_data_format)
+            wdo.SetData(clipboard_data)
             if not wx.TheClipboard.SetData(wdo):
                 logging.debug(_("Data can't be copied to clipboard."))
                 return False
@@ -77,6 +101,10 @@ def cut(widget):
     """\
     Copies widget and all its children to the clipboard and then
     removes them.
+
+    @return: True on success
+    @rtype: bool
+    @see: L{copy()}
     """
     if copy(widget):
         widget.remove()
@@ -88,14 +116,24 @@ def cut(widget):
 def paste(parent, sizer, pos):
     """\
     Copies a widget (and all its children) from the clipboard to the given
-    destination (parent, sizer and position inside the sizer)
-    returns True if there was something to paste, False otherwise.
+    destination (parent, sizer and position inside the sizer).
+
+    @param parent: Parent widget of the widget to add
+
+    @param sizer: Sizer to place widget in
+    @type sizer: edit_sizers.edit_sizers.SizerBase | None
+
+    @param pos: Position inside the sizer
+    @type pos: int
+
+    @return: True on success
+    @rtype: bool
     """
     if wx.TheClipboard.Open():
         try:
-            if wx.TheClipboard.IsSupported(_widget_data_format):
-                wdo = _WidgetDataObject()
-                if not wx.TheClipboard.GetData(wdo):
+            if wx.TheClipboard.IsSupported(widget_data_format):
+                data_object = wx.CustomDataObject(widget_data_format)
+                if not wx.TheClipboard.GetData(data_object):
                     logging.debug(_("Data can't be copied from clipboard."))
                     return False
             else:
@@ -106,24 +144,24 @@ def paste(parent, sizer, pos):
         logging.info(_("Clipboard can't be opened."))
         return False
 
-    option, flag, border, xml_str = wdo.GetWidgetData()
-    if xml_str:
+    option, flag, border, xml_unicode = clipboard2widget(
+        data_object.GetData())
+    if xml_unicode:
         import xml_parse
         try:
             wx.BeginBusyCursor()
-            parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos,
-                                                         option, flag, border)
-            parser.parse_string(xml_str)
+            # widget representation is still unicode, but parser need UTF8
+            xml_utf8 = xml_unicode.encode('utf8')
+            parser = xml_parse.ClipboardXmlWidgetBuilder(
+                parent, sizer, pos, option, flag, border)
+            parser.parse_string(xml_utf8)
             return True  # Widget hierarchy pasted.
         finally:
             wx.EndBusyCursor()
     return False  # There's nothing to paste.
 
 
-#-----------------------------------------------------------------------------
-# 2004-02-19 ALB: D&D support (thanks to Chris Liechti)
-#-----------------------------------------------------------------------------
-
+# D&D support (thanks to Chris Liechti)
 class FileDropTarget(wx.FileDropTarget):
     def __init__(self, parent):
         wx.FileDropTarget.__init__(self)
@@ -131,8 +169,10 @@ class FileDropTarget(wx.FileDropTarget):
 
     def OnDropFiles(self, x, y, filenames):
         if len(filenames) > 1:
-            wx.MessageBox(_("Please only drop one file at a time"),
-                "wxGlade", wx.ICON_ERROR)
+            wx.MessageBox(
+                _("Please only drop one file at a time"),
+                "wxGlade",
+                wx.ICON_ERROR)
         elif filenames:
             path = filenames[0]
             if self.parent.ask_save():

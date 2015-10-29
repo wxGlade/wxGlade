@@ -33,6 +33,7 @@ Bugs:
   - Fix UnicodeDecodeError when saving project using non ASCII characters in
     menu items (sf bug #166)
   - Unicode error during update of an existing source file (sf bug #167)
+  - Fix unicode error during copying widgets to the clipboard
   - Fix Designer not displaying buttons two lines correctly (sf bug #169)
   - Fix generated code for wxListBox
   - Fix broken color selection dialog
