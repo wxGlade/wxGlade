@@ -37,6 +37,8 @@ Bugs:
   - Fix Designer not displaying buttons two lines correctly (sf bug #169)
   - Fix generated code for wxListBox
   - Fix broken color selection dialog
+  - Fix a string formatting error during creating the second instances of the
+    same widget
   - Always show new widgets in the design window
   - Fix generated code for CustomWidget constructor (Thanks to Udi Fuchs)
   - ...

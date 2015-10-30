@@ -115,7 +115,7 @@ def builder(parent, sizer, pos, number=[1]):
     label = '%s_%d' % (tmpl_label, number[0])
     while common.app_tree.has_name(label):
         number[0] += 1
-        label = tmpl_label % number[0]
+        label = '%s_%d' % (tmpl_label, number[0])
     widget = editor_class(label, parent, wx.ID_ANY, dialog.get_selection(),
                           sizer, pos, common.property_panel)
     node = Tree.Node(widget)
