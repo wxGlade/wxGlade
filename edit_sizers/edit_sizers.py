@@ -648,12 +648,14 @@ class SizerClassDialog(object):
 
 def change_sizer(old, new, which_page=0, _hidden=[None]):
     """\
-    changes 'old' sizer to 'new'
-    Params:
-      - old: SizerBase instance to replace
-      - new: string selection that identifies the new instance
-      - which_page: index of the notebook page of the property window to
-                    display: this is used only by set_growable_(rows|cols)
+    Changes 'old' sizer to 'new' sizer
+
+    @param old: SizerBase instance to replace
+    @param new: string selection that identifies the new instance
+    @param which_page: index of the notebook page of the property window to
+                       display: this is used only by set_growable_(rows|cols)
+    @param _hidden: Don't use! Hack to share the reference to a hidden frame
+                    persistently between different function calls.
     """
     constructors = {
         'wxBoxSizer (wxVERTICAL)':
