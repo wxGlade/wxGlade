@@ -310,7 +310,8 @@ class SizerSlot(object):
         """\
         Handle paint request and draw prepared image onto the window
         """
-        dc = wx.BufferedPaintDC(self.widget, self._backgroundBuffer)
+        if self._backgroundBuffer:
+            wx.BufferedPaintDC(self.widget, self._backgroundBuffer)
 
     def draw_background_buffer(self):
         """\
@@ -411,14 +412,38 @@ class SizerSlot(object):
         self.clipboard_paste()
 
     def delete(self, delete_widget=True):
-        if self.menu:
-            self.menu.Destroy()
-            self.menu = None
         if misc.currently_under_mouse is self.widget:
             misc.currently_under_mouse = None
+
         if delete_widget and self.widget:
-            self.widget.Destroy()
+            self.widget.Hide()
+
+            # unbind events to prevent new created (and queued) events
+            self.widget.Bind(wx.EVT_PAINT, None)
+            self.widget.Bind(wx.EVT_IDLE, None)
+            self.widget.Bind(wx.EVT_SIZE, None)
+            self.widget.Bind(wx.EVT_RIGHT_DOWN, None)
+            self.widget.Bind(wx.EVT_LEFT_DOWN, None)
+            self.widget.Bind(wx.EVT_MIDDLE_DOWN, None)
+            self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
+            self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
+            self.widget.Bind(wx.EVT_KEY_DOWN, None)
+
+            # don't redraw background during next idle event
+            self._reDrawBackground = False
+
+            if self.menu:
+                wx.CallAfter(self.menu.Destroy)
+                self.menu = None
+
+            if self._backgroundBuffer:
+                wx.CallAfter(self._backgroundBuffer.Destroy)
+                self._backgroundBuffer = None
+
+            # destroy widget after all pending events have been processed
+            wx.CallAfter(self.widget.Destroy)
             self.widget = None
+
         if misc.focused_widget is self:
             misc.focused_widget = None
         common.app_tree.app.saved = False
