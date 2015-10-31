@@ -3100,8 +3100,8 @@ if __name__ == "__main__":
 
         <para>In the <quote><guilabel>Widget</guilabel></quote> tab of the
         <quote><guilabel>Properties</guilabel></quote> window you can set a
-        number of custom attributes that will appear in the constructor call.
-        </para>
+        number of custom attributes that will appear in the constructor
+        call.</para>
 
         <figure>
           <title>Widget Properties for a Custom Widget</title>
@@ -3157,7 +3157,7 @@ if __name__ == "__main__":
         </glosslist>
 
         <para>These attributes have different effects in C++, Lisp, Perl,
-        Python or XRC code generation. </para>
+        Python or XRC code generation.</para>
 
         <para>For XRC you can use it to add custom attributes to the resource
         object. To do so, arguments must have the following format:
@@ -3461,7 +3461,7 @@ if __name__ == "__main__":
 
         <listitem>
           <para>when the user ``drops'' the widget inside a slot in a sizer,
-          the method <quote><function>drop_widget</function></quote> of
+          the method <quote><function>on_drop_widget</function></quote> of
           <code>edit_sizers.SizerSlot</code> is called, which in turn calls
           the appropriate factory function with arguments
           <quote><code>self.parent</code></quote>,
