@@ -264,9 +264,9 @@ class SizerSlot(object):
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
         self.widget.Bind(wx.EVT_IDLE, self.on_idle)
         self.widget.Bind(wx.EVT_SIZE, self.on_size)
-        self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
-        self.widget.Bind(wx.EVT_LEFT_DOWN, self.drop_widget)
-        self.widget.Bind(wx.EVT_MIDDLE_DOWN, self.select_and_paste)
+        self.widget.Bind(wx.EVT_RIGHT_DOWN, self.on_popup_menu)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_drop_widget)
+        self.widget.Bind(wx.EVT_MIDDLE_DOWN, self.on_select_and_paste)
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
         self.widget.Bind(wx.EVT_KEY_DOWN, self.on_key_down)
@@ -345,7 +345,7 @@ class SizerSlot(object):
             self.draw_background_buffer()
             self.widget.Refresh(False)
 
-    def popup_menu(self, event):
+    def on_popup_menu(self, event):
         if not self.menu:
             self.menu = wx.Menu(_('Options'))
             REMOVE_ID = wx.NewId()
@@ -372,7 +372,7 @@ class SizerSlot(object):
             self.sizer.remove_item(self)
             self.delete()
 
-    def drop_widget(self, event):
+    def on_drop_widget(self, event):
         """\
         replaces self with a widget in self.sizer. This method is called
         to add every non-toplevel widget or sizer, and in turn calls the
@@ -401,7 +401,7 @@ class SizerSlot(object):
             common.app_tree.app.saved = False
             self.widget.Hide()
 
-    def select_and_paste(self, *args):
+    def on_select_and_paste(self, *args):
         """\
         Middle-click event handler: selects the slot and, if the clipboard is
         not empty, pastes its content here
