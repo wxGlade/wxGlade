@@ -20,6 +20,7 @@ from layout_option_property import LayoutOptionProperty, \
 from widget_properties import *
 from edit_windows import EditStylesMixin
 from tree import Tree, WidgetTree
+import clipboard
 import common
 import compat
 import config
@@ -395,9 +396,12 @@ class SizerSlot(object):
         common.widget_to_add = None
         common.app_tree.app.saved = False
 
-    def clipboard_paste(self, *args):
-        import clipboard
+    def clipboard_paste(self, event=None):
+        """\
+        Insert a widget from the clipboard to the current destination.
 
+        @see: L{clipboard.paste()}
+        """
         if clipboard.paste(self.parent, self.sizer, self.pos):
             common.app_tree.app.saved = False
             self.widget.Hide()
@@ -1555,19 +1559,20 @@ class SizerBase(Sizer):
     def is_visible(self):
         return self.window.is_visible()
 
-    def clipboard_copy(self, *args):
+    def clipboard_copy(self, event=None):
         """\
-        returns a copy of self to be inserted in the clipboard
-        """
-        # if not self.toplevel:
-        import clipboard
+        Store a widget copy into the clipboard
 
+        @see: L{clipboard.copy()}
+        """
         clipboard.copy(self)
 
-    def clipboard_cut(self, *args):
-        # if not self.toplevel:
-        import clipboard
+    def clipboard_cut(self, event=None):
+        """\
+        Store a copy of self into the clipboard and delete the widget.
 
+        @see: L{clipboard.cut()}
+        """
         clipboard.cut(self)
 
     def post_load(self):

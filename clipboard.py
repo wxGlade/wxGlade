@@ -68,7 +68,7 @@ def clipboard2widget(clipboard_data):
 
 def copy(widget):
     """\
-    Copies widget and all its children to the clipboard.
+    Store a widget copy into the clipboard
 
     @param widget: Widget to copy
 
@@ -99,8 +99,7 @@ def copy(widget):
 
 def cut(widget):
     """\
-    Copies widget and all its children to the clipboard and then
-    removes them.
+    Store a copy of self into the clipboard and delete the widget.
 
     @return: True on success
     @rtype: bool

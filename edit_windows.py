@@ -17,6 +17,7 @@ import wx
 # import project modules
 from widget_properties import *
 import misc
+import clipboard
 import common
 import compat
 import config
@@ -436,15 +437,20 @@ constructor will be used. You should probably not use this if \
         """
         return EventsMixin.get_property_handler(self, prop_name)
 
-    def clipboard_copy(self, *args):
+    def clipboard_copy(self, event=None):
         """\
-        Returns a copy of self to be inserted in the clipboard
+        Store a widget copy into the clipboard
+
+        @see: L{clipboard.copy()}
         """
-        import clipboard
         clipboard.copy(self)
 
-    def clipboard_cut(self, *args):
-        import clipboard
+    def clipboard_cut(self, event=None):
+        """\
+        Store a copy of self into the clipboard and delete the widget.
+
+        @see: L{clipboard.cut()}
+        """
         clipboard.cut(self)
 
     def is_visible(self):
@@ -1258,13 +1264,18 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.setup_preview_menu()
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
-    def clipboard_paste(self, *args):
+    def clipboard_paste(self, event=None):
+        """\
+        Insert a widget from the clipboard to the current destination.
+
+        @see: L{clipboard.paste()}
+        """
         if self.sizer is not None:
             self._logger.warning(
                 _('WARNING: Sizer already set for this window')
                 )
             return
-        import clipboard, xml_parse
+        import xml_parse
         size = self.widget.GetSize()
         try:
             if clipboard.paste(self, None, 0):
