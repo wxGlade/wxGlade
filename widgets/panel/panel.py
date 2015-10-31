@@ -8,6 +8,7 @@ wxPanel objects
 
 import logging
 import wx
+import clipboard
 import common
 import config
 import misc
@@ -266,8 +267,12 @@ class EditPanel(PanelBase, ManagedBase):
             self.setup_preview_menu()
             self.widget.PopupMenu(self._rmenu, event.GetPosition())
 
-    def clipboard_paste(self, *args):
-        import clipboard
+    def clipboard_paste(self, event=None):
+        """\
+        Insert a widget from the clipboard to the current destination.
+
+        @see: L{clipboard.paste()}
+        """
         import xml_parse
         size = self.widget.GetSize()
         try:
