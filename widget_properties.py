@@ -719,15 +719,14 @@ class CheckListProperty(Property, _activator):
             static_box = wx.StaticBox(parent, wx.ID_ANY, box_label,
                                       style=wx.FULL_REPAINT_ON_RESIZE)
             box_sizer = wx.StaticBoxSizer(static_box, wx.VERTICAL)
-            labels = self.styles[box_label]
-            for label_pos in range(len(labels)):
-                checkbox = wx.CheckBox(parent, wx.ID_ANY, labels[label_pos])
+            for style in self.styles[box_label]:
+                checkbox = wx.CheckBox(parent, wx.ID_ANY, style)
                 checkbox.SetValue(self.values[value_pos])
 
                 # set the tool-tips for the properties
-                if labels[label_pos] in self.tooltips:
-                    tip = STT.SuperToolTip(self.tooltips[labels[label_pos]])
-                    tip.SetHeader(labels[label_pos])
+                if style in self.tooltips:
+                    tip = STT.SuperToolTip(self.tooltips[style])
+                    tip.SetHeader(style)
                     tip.SetTarget(checkbox)
                     tip.SetDrawHeaderLine(True)
                     tip.ApplyStyle("Beige")
@@ -1278,12 +1277,13 @@ class RadioProperty(Property, _activator):
                                    choices=self.choices,
                                    majorDimension=self.columns,
                                    style=style)
-        #Set the tool-tips for the properties
-        if self.tooltips is not None:
-            for i in range(len(self.tooltips)):
-                if i >= len(self.choices):
+        # Set the tool-tips for the properties
+        if self.tooltips:
+            max_tooltips = len(self.choices)
+            for i, tooltip in enumerate(self.tooltips):
+                if i >= max_tooltips:
                     break
-                self.options.SetItemToolTip(i, self.tooltips[i])
+                self.options.SetItemToolTip(i, tooltip)
         try:
             self.options.SetSelection(int(self.val))
         except:
@@ -1466,9 +1466,9 @@ class GridProperty(Property, _activator):
         children.append(self.grid)
         self.grid.SetMargins(0, 0)
 
-        for i in range(len(self.cols)):
-            self.grid.SetColLabelValue(i, misc.wxstr(self.cols[i][0]))
-            GridProperty.col_format[self.cols[i][1]](self.grid, i)
+        for i, column in enumerate(self.cols):
+            self.grid.SetColLabelValue(i, misc.wxstr(column[0]))
+            GridProperty.col_format[column[1]](self.grid, i)
 
         self.cols = len(self.cols)
         self.grid.SetRowLabelSize(0)

@@ -2388,19 +2388,18 @@ class EditFlexGridSizer(GridSizerBase):
         return ','.join(map(str, self.grow_cols))
 
     def _insert_row(self, pos):
-        for i in range(len(self.grow_rows)):
-            if self.grow_rows[i] >= pos - 1:
-                self.grow_rows[i] += 1
+        for row in self.grow_rows:
+            if row >= pos - 1:
+                row += 1
         GridSizerBase._insert_row(self, pos)
         self.set_growable_rows(self.get_growable_rows())
 
     def _insert_col(self, pos):
-        for i in range(len(self.grow_cols)):
-            if self.grow_cols[i] >= pos - 1:
-                self.grow_cols[i] += 1
+        for column in self.grow_cols:
+            if column >= pos - 1:
+                column += 1
         GridSizerBase._insert_col(self, pos)
         self.set_growable_cols(self.get_growable_cols())
-
 
 # end of class EditFlexGridSizer
 
