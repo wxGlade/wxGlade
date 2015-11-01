@@ -74,9 +74,8 @@ class EventsProperty(GridProperty):
                 outfile.write(stmt)
 
     def on_change_val(self, event):
-        val = self.get_value()
-        for i in range(len(val)):
-            handler = val[i][1].strip()
+        for value in self.get_value():
+            handler = value[1].strip()
             if handler and self.validator_re.match(handler) is None:
                 self.set_value(self.val)
                 return event.Skip()

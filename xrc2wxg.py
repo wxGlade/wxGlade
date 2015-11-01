@@ -438,10 +438,9 @@ def fix_splitters(document):
     for sp in filter(issplitter, document.getElementsByTagName('object')):
         panes = filter(ispane, get_child_elems(sp))
         assert len(panes) <= 2, "Splitter window with more than 2 panes!"
-        for i in range(len(panes)):
+        for i, pane in enumerate(panes):
             e = document.createElement('window_%s' % (i + 1))
-            e.appendChild(document.createTextNode(
-                panes[i].getAttribute('name')))
+            e.appendChild(document.createTextNode(pane.getAttribute('name')))
             sp.insertBefore(e, sp.firstChild)
         for orient in filter(lambda n: n.tagName == 'orientation',
                              get_child_elems(sp)):
