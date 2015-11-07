@@ -71,8 +71,6 @@
         (notebook-1-wxButton :initform nil :accessor slot-notebook-1-wxButton)
         (sizer-12 :initform nil :accessor slot-sizer-12)
         (notebook-1-wxCalendarCtrl :initform nil :accessor slot-notebook-1-wxCalendarCtrl)
-        (sizer-27 :initform nil :accessor slot-sizer-27)
-        (notebook-1-wxGenericCalendarCtrl :initform nil :accessor slot-notebook-1-wxGenericCalendarCtrl)
         (checkbox-1 :initform nil :accessor slot-checkbox-1)
         (checkbox-2 :initform nil :accessor slot-checkbox-2)
         (checkbox-3 :initform nil :accessor slot-checkbox-3)
@@ -112,8 +110,6 @@
         (list-ctrl-1 :initform nil :accessor slot-list-ctrl-1)
         (sizer-3 :initform nil :accessor slot-sizer-3)
         (notebook-1-wxListCtrl :initform nil :accessor slot-notebook-1-wxListCtrl)
-        (sizer-34 :initform nil :accessor slot-sizer-34)
-        (notebook-1-wxPropertyGridManager :initform nil :accessor slot-notebook-1-wxPropertyGridManager)
         (radio-box-empty1 :initform nil :accessor slot-radio-box-empty1)
         (radio-box-filled1 :initform nil :accessor slot-radio-box-filled1)
         (radio-box-empty2 :initform nil :accessor slot-radio-box-empty2)
@@ -236,10 +232,6 @@
         
         ;;; WARNING: Code for instance "calendar-ctrl-1" of "wxCalendarCtrl" not generated: no suitable writer found
         
-        (setf (slot-notebook-1-wxGenericCalendarCtrl obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
-        
-        ;;; WARNING: Code for instance "generic-calendar-ctrl-1" of "wxGenericCalendarCtrl" not generated: no suitable writer found
-        
         (setf (slot-notebook-1-wxCheckBox obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (setf (slot-checkbox-1 obj) (wxCheckBox_Create (slot-notebook-1-wxCheckBox obj) wxID_ANY (_"one (unchecked)") -1 -1 -1 -1 0))
         (setf (slot-checkbox-2 obj) (wxCheckBox_Create (slot-notebook-1-wxCheckBox obj) wxID_ANY (_"two (checked)") -1 -1 -1 -1 0))
@@ -268,12 +260,6 @@
         (setf (slot-list-box-filled obj) (wxListBox_Create (slot-notebook-1-wxListBox obj) wxID_ANY -1 -1 -1 -1 2 (vector (_"Item 1") (_"Item 2 (pre-selected)")) (logior wxLB_MULTIPLE wxLB_SORT)))
         (setf (slot-notebook-1-wxListCtrl obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (setf (slot-list-ctrl-1 obj) (wxListCtrl_Create (slot-notebook-1-wxListCtrl obj) wxID_ANY -1 -1 -1 -1 (logior wxBORDER_SUNKEN wxLC_REPORT)))
-        (setf (slot-notebook-1-wxPropertyGridManager obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
-        
-        ;;; WARNING: Code for instance "property-grid-2" of "wxPropertyGridManager" was
-        ;;; not created, because the widget is not available for wx version 2.8.
-        ;;; It is available for wx versions 3 only.
-        
         (setf (slot-notebook-1-wxRadioBox obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (setf (slot-radio-box-empty1 obj) (wxRadioBox_Create (slot-notebook-1-wxRadioBox obj) wxID_ANY (_"radio_box_empty1") -1 -1 -1 -1 0 (vector ) 1 wxRA_SPECIFY_ROWS))
         (setf (slot-radio-box-filled1 obj) (wxRadioBox_Create (slot-notebook-1-wxRadioBox obj) wxID_ANY (_"radio_box_filled1") -1 -1 -1 -1 3 (vector (_"choice 1") (_"choice 2 (pre-selected)") (_"choice 3")) 0 wxRA_SPECIFY_ROWS))
@@ -407,7 +393,6 @@
         (setf (slot-sizer-22 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-grid-sizer-2 obj) (wxGridSizer_Create 3 2 0 0))
         (setf (slot-grid-sizer-1 obj) (wxGridSizer_Create 2 2 0 0))
-        (setf (slot-sizer-34 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-sizer-3 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-sizer-4 obj) (wxBoxSizer_Create wxVERTICAL))
         (setf (slot-sizer-20 obj) (wxBoxSizer_Create wxHORIZONTAL))
@@ -419,7 +404,6 @@
         (setf (slot-sizer-5 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-sizer-26 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-sizer-21 obj) (wxGridSizer_Create 2 3 0 0))
-        (setf (slot-sizer-27 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-sizer-12 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-sizer-28 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-sizer-13 obj) (wxGridSizer_Create 2 2 0 0))
@@ -435,7 +419,6 @@
         (wxSizer_AddWindow (slot-sizer-28 obj) (slot-button-3 obj) 0 wxALL 5 nil)
         (wxWindow_SetSizer (slot-notebook-1-wxButton obj) (slot-sizer-28 obj))
         (wxWindow_SetSizer (slot-notebook-1-wxCalendarCtrl obj) (slot-sizer-12 obj))
-        (wxWindow_SetSizer (slot-notebook-1-wxGenericCalendarCtrl obj) (slot-sizer-27 obj))
         (wxSizer_AddWindow (slot-sizer-21 obj) (slot-checkbox-1 obj) 0 wxEXPAND 0 nil)
         (wxSizer_AddWindow (slot-sizer-21 obj) (slot-checkbox-2 obj) 0 wxEXPAND 0 nil)
         (wxSizer_AddWindow (slot-sizer-21 obj) (slot-checkbox-3 obj) 0 wxEXPAND 0 nil)
@@ -465,7 +448,6 @@
         (wxWindow_SetSizer (slot-notebook-1-wxListBox obj) (slot-sizer-4 obj))
         (wxSizer_AddWindow (slot-sizer-3 obj) (slot-list-ctrl-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-notebook-1-wxListCtrl obj) (slot-sizer-3 obj))
-        (wxWindow_SetSizer (slot-notebook-1-wxPropertyGridManager obj) (slot-sizer-34 obj))
         (wxSizer_AddWindow (slot-grid-sizer-1 obj) (slot-radio-box-empty1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxSizer_AddWindow (slot-grid-sizer-1 obj) (slot-radio-box-filled1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxSizer_AddWindow (slot-grid-sizer-1 obj) (slot-radio-box-empty2 obj) 1 (logior wxALL wxEXPAND) 5 nil)
@@ -529,7 +511,6 @@
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxBitmapButton obj) (_"wxBitmapButton") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxButton obj) (_"wxButton") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxCalendarCtrl obj) (_"wxCalendarCtrl") 1 -1)
-        (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxGenericCalendarCtrl obj) (_"wxGenericCalendarCtrl") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxCheckBox obj) (_"wxCheckBox") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxCheckListBox obj) (_"wxCheckListBox") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxChoice obj) (_"wxChoice") 1 -1)
@@ -540,7 +521,6 @@
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxHyperlinkCtrl obj) (_"wxHyperlinkCtrl") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxListBox obj) (_"wxListBox") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxListCtrl obj) (_"wxListCtrl") 1 -1)
-        (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxPropertyGridManager obj) (_"wxPropertyGridManager") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxRadioBox obj) (_"wxRadioBox") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxRadioButton obj) (_"wxRadioButton") 1 -1)
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxSlider obj) (_"wxSlider") 1 -1)
