@@ -47,12 +47,6 @@ class All_Widgets_Frame(wx.Frame):
         self.button_3 = wx.Button(self.notebook_1_wxButton, wx.ID_BOLD, "")
         self.notebook_1_wxCalendarCtrl = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.calendar_ctrl_1 = wx.calendar.CalendarCtrl(self.notebook_1_wxCalendarCtrl, wx.ID_ANY, style=wx.calendar.CAL_MONDAY_FIRST | wx.calendar.CAL_SEQUENTIAL_MONTH_SELECTION | wx.calendar.CAL_SHOW_SURROUNDING_WEEKS)
-        self.notebook_1_wxGenericCalendarCtrl = wx.Panel(self.notebook_1, wx.ID_ANY)
-        
-        # WARNING: Code for instance "generic_calendar_ctrl_1" of "wxGenericCalendarCtrl" was
-        # not created, because the widget is not available for wx version 2.8.
-        # It is available for wx versions 3 only.
-        
         self.notebook_1_wxCheckBox = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.checkbox_1 = wx.CheckBox(self.notebook_1_wxCheckBox, wx.ID_ANY, _("one (unchecked)"))
         self.checkbox_2 = wx.CheckBox(self.notebook_1_wxCheckBox, wx.ID_ANY, _("two (checked)"))
@@ -81,12 +75,6 @@ class All_Widgets_Frame(wx.Frame):
         self.list_box_filled = wx.ListBox(self.notebook_1_wxListBox, wx.ID_ANY, choices=[_("Item 1"), _("Item 2 (pre-selected)")], style=wx.LB_MULTIPLE | wx.LB_SORT)
         self.notebook_1_wxListCtrl = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.list_ctrl_1 = wx.ListCtrl(self.notebook_1_wxListCtrl, wx.ID_ANY, style=wx.BORDER_SUNKEN | wx.LC_REPORT)
-        self.notebook_1_wxPropertyGridManager = wx.Panel(self.notebook_1, wx.ID_ANY)
-        
-        # WARNING: Code for instance "property_grid_2" of "wxPropertyGridManager" was
-        # not created, because the widget is not available for wx version 2.8.
-        # It is available for wx versions 3 only.
-        
         self.notebook_1_wxRadioBox = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.radio_box_empty1 = wx.RadioBox(self.notebook_1_wxRadioBox, wx.ID_ANY, _("radio_box_empty1"), choices=[], majorDimension=1, style=wx.RA_SPECIFY_ROWS)
         self.radio_box_filled1 = wx.RadioBox(self.notebook_1_wxRadioBox, wx.ID_ANY, _("radio_box_filled1"), choices=[_("choice 1"), _("choice 2 (pre-selected)"), _("choice 3")], majorDimension=0, style=wx.RA_SPECIFY_ROWS)
@@ -223,7 +211,6 @@ class All_Widgets_Frame(wx.Frame):
         sizer_8 = wx.StaticBoxSizer(self.sizer_8_staticbox, wx.HORIZONTAL)
         grid_sizer_2 = wx.FlexGridSizer(3, 2, 0, 0)
         grid_sizer_1 = wx.GridSizer(2, 2, 0, 0)
-        sizer_34 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_4 = wx.BoxSizer(wx.VERTICAL)
         sizer_20 = wx.BoxSizer(wx.HORIZONTAL)
@@ -235,7 +222,6 @@ class All_Widgets_Frame(wx.Frame):
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_26 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_21 = wx.GridSizer(2, 3, 0, 0)
-        sizer_27 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_12 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_28 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_13 = wx.FlexGridSizer(2, 2, 0, 0)
@@ -252,7 +238,6 @@ class All_Widgets_Frame(wx.Frame):
         self.notebook_1_wxButton.SetSizer(sizer_28)
         sizer_12.Add(self.calendar_ctrl_1, 1, wx.ALL | wx.EXPAND, 5)
         self.notebook_1_wxCalendarCtrl.SetSizer(sizer_12)
-        self.notebook_1_wxGenericCalendarCtrl.SetSizer(sizer_27)
         sizer_21.Add(self.checkbox_1, 0, wx.EXPAND, 0)
         sizer_21.Add(self.checkbox_2, 0, wx.EXPAND, 0)
         sizer_21.Add(self.checkbox_3, 0, wx.EXPAND, 0)
@@ -282,7 +267,6 @@ class All_Widgets_Frame(wx.Frame):
         self.notebook_1_wxListBox.SetSizer(sizer_4)
         sizer_3.Add(self.list_ctrl_1, 1, wx.ALL | wx.EXPAND, 5)
         self.notebook_1_wxListCtrl.SetSizer(sizer_3)
-        self.notebook_1_wxPropertyGridManager.SetSizer(sizer_34)
         grid_sizer_1.Add(self.radio_box_empty1, 1, wx.ALL | wx.EXPAND, 5)
         grid_sizer_1.Add(self.radio_box_filled1, 1, wx.ALL | wx.EXPAND, 5)
         grid_sizer_1.Add(self.radio_box_empty2, 1, wx.ALL | wx.EXPAND, 5)
@@ -346,7 +330,6 @@ class All_Widgets_Frame(wx.Frame):
         self.notebook_1.AddPage(self.notebook_1_wxBitmapButton, _("wxBitmapButton"))
         self.notebook_1.AddPage(self.notebook_1_wxButton, _("wxButton"))
         self.notebook_1.AddPage(self.notebook_1_wxCalendarCtrl, _("wxCalendarCtrl"))
-        self.notebook_1.AddPage(self.notebook_1_wxGenericCalendarCtrl, _("wxGenericCalendarCtrl"))
         self.notebook_1.AddPage(self.notebook_1_wxCheckBox, _("wxCheckBox"))
         self.notebook_1.AddPage(self.notebook_1_wxCheckListBox, _("wxCheckListBox"))
         self.notebook_1.AddPage(self.notebook_1_wxChoice, _("wxChoice"))
@@ -357,7 +340,6 @@ class All_Widgets_Frame(wx.Frame):
         self.notebook_1.AddPage(self.notebook_1_wxHyperlinkCtrl, _("wxHyperlinkCtrl"))
         self.notebook_1.AddPage(self.notebook_1_wxListBox, _("wxListBox"))
         self.notebook_1.AddPage(self.notebook_1_wxListCtrl, _("wxListCtrl"))
-        self.notebook_1.AddPage(self.notebook_1_wxPropertyGridManager, _("wxPropertyGridManager"))
         self.notebook_1.AddPage(self.notebook_1_wxRadioBox, _("wxRadioBox"))
         self.notebook_1.AddPage(self.notebook_1_wxRadioButton, _("wxRadioButton"))
         self.notebook_1.AddPage(self.notebook_1_wxSlider, _("wxSlider"))

@@ -134,22 +134,6 @@
                     </object>
                     </object>
                     <object class="notebookpage">
-                    <label>wxGenericCalendarCtrl</label>
-                    <object class="wxPanel" name="notebook_1_wxGenericCalendarCtrl">
-                        <object class="wxBoxSizer">
-                            <orient>wxHORIZONTAL</orient>
-                            <object class="sizeritem">
-                                <option>1</option>
-                                <flag>wxALL|wxEXPAND</flag>
-                                <border>5</border>
-                                <object class="wxGenericCalendarCtrl" name="generic_calendar_ctrl_1">
-                                    <style>wxCAL_MONDAY_FIRST</style>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    </object>
-                    <object class="notebookpage">
                     <label>wxCheckBox</label>
                     <object class="wxPanel" name="notebook_1_wxCheckBox">
                         <object class="wxGridSizer">
@@ -400,22 +384,6 @@
                                 <border>5</border>
                                 <object class="wxListCtrl" name="list_ctrl_1">
                                     <style>wxBORDER_SUNKEN|wxLC_REPORT</style>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    </object>
-                    <object class="notebookpage">
-                    <label>wxPropertyGridManager</label>
-                    <object class="wxPanel" name="notebook_1_wxPropertyGridManager">
-                        <object class="wxBoxSizer">
-                            <orient>wxHORIZONTAL</orient>
-                            <object class="sizeritem">
-                                <option>1</option>
-                                <flag>wxALL|wxEXPAND</flag>
-                                <border>5</border>
-                                <object class="wxPropertyGridManager" name="property_grid_2">
-                                    <style>wxPG_ALPHABETIC_MODE</style>
                                 </object>
                             </object>
                         </object>

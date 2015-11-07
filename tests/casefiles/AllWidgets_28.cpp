@@ -41,7 +41,6 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     notebook_1_wxSlider = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxRadioButton = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxRadioBox = new wxPanel(notebook_1, wxID_ANY);
-    notebook_1_wxPropertyGridManager = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxListCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxListBox = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxHyperlinkCtrl = new wxPanel(notebook_1, wxID_ANY);
@@ -52,7 +51,6 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     notebook_1_wxChoice = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxCheckListBox = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxCheckBox = new wxPanel(notebook_1, wxID_ANY);
-    notebook_1_wxGenericCalendarCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxCalendarCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxButton = new wxPanel(notebook_1, wxID_ANY);
     sizer_8_staticbox = new wxStaticBox(notebook_1_wxRadioButton, wxID_ANY, _("My RadioButton Group"));
@@ -74,11 +72,6 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     bitmap_button_art = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxArtProvider::GetBitmap(wxART_GO_UP, wxART_OTHER, wxSize(32, 32)), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
     button_3 = new wxButton(notebook_1_wxButton, wxID_BOLD, wxEmptyString);
     calendar_ctrl_1 = new wxCalendarCtrl(notebook_1_wxCalendarCtrl, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxCAL_MONDAY_FIRST|wxCAL_SEQUENTIAL_MONTH_SELECTION|wxCAL_SHOW_SURROUNDING_WEEKS);
-    
-    // WARNING: Code for instance "generic_calendar_ctrl_1" of "wxGenericCalendarCtrl" was
-    // not created, because the widget is not available for wx version 2.8.
-    // It is available for wx versions 3 only.
-    
     checkbox_1 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("one (unchecked)"));
     checkbox_2 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("two (checked)"));
     checkbox_3 = new wxCheckBox(notebook_1_wxCheckBox, wxID_ANY, _("three"), wxDefaultPosition, wxDefaultSize, wxCHK_2STATE);
@@ -118,11 +111,6 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     };
     list_box_filled = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, list_box_filled_choices, wxLB_MULTIPLE|wxLB_SORT);
     list_ctrl_1 = new wxListCtrl(notebook_1_wxListCtrl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN|wxLC_REPORT);
-    
-    // WARNING: Code for instance "property_grid_2" of "wxPropertyGridManager" was
-    // not created, because the widget is not available for wx version 2.8.
-    // It is available for wx versions 3 only.
-    
     const wxString radio_box_empty1_choices[] = {};
     radio_box_empty1 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty1_choices, 1, wxRA_SPECIFY_ROWS);
     const wxString radio_box_filled1_choices[] = {
@@ -254,7 +242,6 @@ void All_Widgets_Frame::do_layout()
     wxStaticBoxSizer* sizer_8 = new wxStaticBoxSizer(sizer_8_staticbox, wxHORIZONTAL);
     wxFlexGridSizer* grid_sizer_2 = new wxFlexGridSizer(3, 2, 0, 0);
     wxGridSizer* grid_sizer_1 = new wxGridSizer(2, 2, 0, 0);
-    wxBoxSizer* sizer_34 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_3 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_20 = new wxBoxSizer(wxHORIZONTAL);
@@ -266,7 +253,6 @@ void All_Widgets_Frame::do_layout()
     wxBoxSizer* sizer_5 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_26 = new wxBoxSizer(wxHORIZONTAL);
     wxGridSizer* sizer_21 = new wxGridSizer(2, 3, 0, 0);
-    wxBoxSizer* sizer_27 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_12 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_28 = new wxBoxSizer(wxHORIZONTAL);
     wxFlexGridSizer* sizer_13 = new wxFlexGridSizer(2, 2, 0, 0);
@@ -283,7 +269,6 @@ void All_Widgets_Frame::do_layout()
     notebook_1_wxButton->SetSizer(sizer_28);
     sizer_12->Add(calendar_ctrl_1, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxCalendarCtrl->SetSizer(sizer_12);
-    notebook_1_wxGenericCalendarCtrl->SetSizer(sizer_27);
     sizer_21->Add(checkbox_1, 0, wxEXPAND, 0);
     sizer_21->Add(checkbox_2, 0, wxEXPAND, 0);
     sizer_21->Add(checkbox_3, 0, wxEXPAND, 0);
@@ -313,7 +298,6 @@ void All_Widgets_Frame::do_layout()
     notebook_1_wxListBox->SetSizer(sizer_4);
     sizer_3->Add(list_ctrl_1, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxListCtrl->SetSizer(sizer_3);
-    notebook_1_wxPropertyGridManager->SetSizer(sizer_34);
     grid_sizer_1->Add(radio_box_empty1, 1, wxALL|wxEXPAND, 5);
     grid_sizer_1->Add(radio_box_filled1, 1, wxALL|wxEXPAND, 5);
     grid_sizer_1->Add(radio_box_empty2, 1, wxALL|wxEXPAND, 5);
@@ -377,7 +361,6 @@ void All_Widgets_Frame::do_layout()
     notebook_1->AddPage(notebook_1_wxBitmapButton, _("wxBitmapButton"));
     notebook_1->AddPage(notebook_1_wxButton, _("wxButton"));
     notebook_1->AddPage(notebook_1_wxCalendarCtrl, _("wxCalendarCtrl"));
-    notebook_1->AddPage(notebook_1_wxGenericCalendarCtrl, _("wxGenericCalendarCtrl"));
     notebook_1->AddPage(notebook_1_wxCheckBox, _("wxCheckBox"));
     notebook_1->AddPage(notebook_1_wxCheckListBox, _("wxCheckListBox"));
     notebook_1->AddPage(notebook_1_wxChoice, _("wxChoice"));
@@ -388,7 +371,6 @@ void All_Widgets_Frame::do_layout()
     notebook_1->AddPage(notebook_1_wxHyperlinkCtrl, _("wxHyperlinkCtrl"));
     notebook_1->AddPage(notebook_1_wxListBox, _("wxListBox"));
     notebook_1->AddPage(notebook_1_wxListCtrl, _("wxListCtrl"));
-    notebook_1->AddPage(notebook_1_wxPropertyGridManager, _("wxPropertyGridManager"));
     notebook_1->AddPage(notebook_1_wxRadioBox, _("wxRadioBox"));
     notebook_1->AddPage(notebook_1_wxRadioButton, _("wxRadioButton"));
     notebook_1->AddPage(notebook_1_wxSlider, _("wxSlider"));

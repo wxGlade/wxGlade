@@ -71,12 +71,6 @@ sub new {
     $self->{button_3} = Wx::Button->new($self->{notebook_1_wxButton}, wxID_BOLD, "");
     $self->{notebook_1_wxCalendarCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{calendar_ctrl_1} = Wx::CalendarCtrl->new($self->{notebook_1_wxCalendarCtrl}, wxID_ANY, Wx::DateTime->new, wxDefaultPosition, wxDefaultSize, wxCAL_MONDAY_FIRST|wxCAL_SEQUENTIAL_MONTH_SELECTION|wxCAL_SHOW_SURROUNDING_WEEKS);
-    $self->{notebook_1_wxGenericCalendarCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    
-    # WARNING: Code for instance "generic_calendar_ctrl_1" of "wxGenericCalendarCtrl" was
-    # not created, because the widget is not available for wx version 2.8.
-    # It is available for wx versions 3 only.
-    
     $self->{notebook_1_wxCheckBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{checkbox_1} = Wx::CheckBox->new($self->{notebook_1_wxCheckBox}, wxID_ANY, _T("one (unchecked)"));
     $self->{checkbox_2} = Wx::CheckBox->new($self->{notebook_1_wxCheckBox}, wxID_ANY, _T("two (checked)"));
@@ -105,12 +99,6 @@ sub new {
     $self->{list_box_filled} = Wx::ListBox->new($self->{notebook_1_wxListBox}, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Item 1"), _T("Item 2 (pre-selected)")], wxLB_MULTIPLE|wxLB_SORT);
     $self->{notebook_1_wxListCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{list_ctrl_1} = Wx::ListCtrl->new($self->{notebook_1_wxListCtrl}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN|wxLC_REPORT);
-    $self->{notebook_1_wxPropertyGridManager} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    
-    # WARNING: Code for instance "property_grid_2" of "wxPropertyGridManager" was
-    # not created, because the widget is not available for wx version 2.8.
-    # It is available for wx versions 3 only.
-    
     $self->{notebook_1_wxRadioBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{radio_box_empty1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, [], 1, wxRA_SPECIFY_ROWS);
     $self->{radio_box_filled1} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_filled1"), wxDefaultPosition, wxDefaultSize, [_T("choice 1"), _T("choice 2 (pre-selected)"), _T("choice 3")], 0, wxRA_SPECIFY_ROWS);
@@ -261,7 +249,6 @@ sub __do_layout {
     $self->{sizer_8} = Wx::StaticBoxSizer->new($self->{sizer_8_staticbox}, wxHORIZONTAL);
     $self->{grid_sizer_2} = Wx::FlexGridSizer->new(3, 2, 0, 0);
     $self->{grid_sizer_1} = Wx::GridSizer->new(2, 2, 0, 0);
-    $self->{sizer_34} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_4} = Wx::BoxSizer->new(wxVERTICAL);
     $self->{sizer_20} = Wx::BoxSizer->new(wxHORIZONTAL);
@@ -273,7 +260,6 @@ sub __do_layout {
     $self->{sizer_5} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_26} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_21} = Wx::GridSizer->new(2, 3, 0, 0);
-    $self->{sizer_27} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_12} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_28} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_13} = Wx::FlexGridSizer->new(2, 2, 0, 0);
@@ -290,7 +276,6 @@ sub __do_layout {
     $self->{notebook_1_wxButton}->SetSizer($self->{sizer_28});
     $self->{sizer_12}->Add($self->{calendar_ctrl_1}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxCalendarCtrl}->SetSizer($self->{sizer_12});
-    $self->{notebook_1_wxGenericCalendarCtrl}->SetSizer($self->{sizer_27});
     $self->{sizer_21}->Add($self->{checkbox_1}, 0, wxEXPAND, 0);
     $self->{sizer_21}->Add($self->{checkbox_2}, 0, wxEXPAND, 0);
     $self->{sizer_21}->Add($self->{checkbox_3}, 0, wxEXPAND, 0);
@@ -320,7 +305,6 @@ sub __do_layout {
     $self->{notebook_1_wxListBox}->SetSizer($self->{sizer_4});
     $self->{sizer_3}->Add($self->{list_ctrl_1}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxListCtrl}->SetSizer($self->{sizer_3});
-    $self->{notebook_1_wxPropertyGridManager}->SetSizer($self->{sizer_34});
     $self->{grid_sizer_1}->Add($self->{radio_box_empty1}, 1, wxALL|wxEXPAND, 5);
     $self->{grid_sizer_1}->Add($self->{radio_box_filled1}, 1, wxALL|wxEXPAND, 5);
     $self->{grid_sizer_1}->Add($self->{radio_box_empty2}, 1, wxALL|wxEXPAND, 5);
@@ -384,7 +368,6 @@ sub __do_layout {
     $self->{notebook_1}->AddPage($self->{notebook_1_wxBitmapButton}, _T("wxBitmapButton"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxButton}, _T("wxButton"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxCalendarCtrl}, _T("wxCalendarCtrl"));
-    $self->{notebook_1}->AddPage($self->{notebook_1_wxGenericCalendarCtrl}, _T("wxGenericCalendarCtrl"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxCheckBox}, _T("wxCheckBox"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxCheckListBox}, _T("wxCheckListBox"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxChoice}, _T("wxChoice"));
@@ -395,7 +378,6 @@ sub __do_layout {
     $self->{notebook_1}->AddPage($self->{notebook_1_wxHyperlinkCtrl}, _T("wxHyperlinkCtrl"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxListBox}, _T("wxListBox"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxListCtrl}, _T("wxListCtrl"));
-    $self->{notebook_1}->AddPage($self->{notebook_1_wxPropertyGridManager}, _T("wxPropertyGridManager"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxRadioBox}, _T("wxRadioBox"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxRadioButton}, _T("wxRadioButton"));
     $self->{notebook_1}->AddPage($self->{notebook_1_wxSlider}, _T("wxSlider"));

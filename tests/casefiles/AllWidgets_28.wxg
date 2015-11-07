@@ -66,7 +66,6 @@
                         <tab window="notebook_1_wxBitmapButton">wxBitmapButton</tab>
                         <tab window="notebook_1_wxButton">wxButton</tab>
                         <tab window="notebook_1_wxCalendarCtrl">wxCalendarCtrl</tab>
-                        <tab window="notebook_1_wxGenericCalendarCtrl">wxGenericCalendarCtrl</tab>
                         <tab window="notebook_1_wxCheckBox">wxCheckBox</tab>
                         <tab window="notebook_1_wxCheckListBox">wxCheckListBox</tab>
                         <tab window="notebook_1_wxChoice">wxChoice</tab>
@@ -77,7 +76,6 @@
                         <tab window="notebook_1_wxHyperlinkCtrl">wxHyperlinkCtrl</tab>
                         <tab window="notebook_1_wxListBox">wxListBox</tab>
                         <tab window="notebook_1_wxListCtrl">wxListCtrl</tab>
-                        <tab window="notebook_1_wxPropertyGridManager">wxPropertyGridManager</tab>
                         <tab window="notebook_1_wxRadioBox">wxRadioBox</tab>
                         <tab window="notebook_1_wxRadioButton">wxRadioButton</tab>
                         <tab window="notebook_1_wxSlider">wxSlider</tab>
@@ -172,19 +170,6 @@
                                 <option>1</option>
                                 <object class="wxCalendarCtrl" name="calendar_ctrl_1" base="EditCalendarCtrl">
                                     <style>wxCAL_MONDAY_FIRST|wxCAL_SHOW_SURROUNDING_WEEKS|wxCAL_SHOW_WEEK_NUMBERS|wxCAL_SEQUENTIAL_MONTH_SELECTION</style>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    <object class="wxPanel" name="notebook_1_wxGenericCalendarCtrl" base="EditPanel">
-                        <object class="wxBoxSizer" name="sizer_27" base="EditBoxSizer">
-                            <orient>wxHORIZONTAL</orient>
-                            <object class="sizeritem">
-                                <flag>wxALL|wxEXPAND</flag>
-                                <border>5</border>
-                                <option>1</option>
-                                <object class="wxGenericCalendarCtrl" name="generic_calendar_ctrl_1" base="EditGenericCalendarCtrl">
-                                    <style>wxCAL_MONDAY_FIRST</style>
                                 </object>
                             </object>
                         </object>
@@ -441,19 +426,6 @@
                                 <option>1</option>
                                 <object class="wxListCtrl" name="list_ctrl_1" base="EditListCtrl">
                                     <style>wxLC_REPORT|wxSUNKEN_BORDER</style>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    <object class="wxPanel" name="notebook_1_wxPropertyGridManager" base="EditPanel">
-                        <object class="wxBoxSizer" name="sizer_34" base="EditBoxSizer">
-                            <orient>wxHORIZONTAL</orient>
-                            <object class="sizeritem">
-                                <flag>wxALL|wxEXPAND</flag>
-                                <border>5</border>
-                                <option>1</option>
-                                <object class="wxPropertyGridManager" name="property_grid_2" base="EditPropertyGridManager">
-                                    <style>wxPG_ALPHABETIC_MODE</style>
                                 </object>
                             </object>
                         </object>

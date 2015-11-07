@@ -69,7 +69,6 @@ protected:
     wxPanel* notebook_1_wxButton;
     wxCalendarCtrl* calendar_ctrl_1;
     wxPanel* notebook_1_wxCalendarCtrl;
-    wxPanel* notebook_1_wxGenericCalendarCtrl;
     wxCheckBox* checkbox_1;
     wxCheckBox* checkbox_2;
     wxCheckBox* checkbox_3;
@@ -98,7 +97,6 @@ protected:
     wxPanel* notebook_1_wxListBox;
     wxListCtrl* list_ctrl_1;
     wxPanel* notebook_1_wxListCtrl;
-    wxPanel* notebook_1_wxPropertyGridManager;
     wxRadioBox* radio_box_empty1;
     wxRadioBox* radio_box_filled1;
     wxRadioBox* radio_box_empty2;
