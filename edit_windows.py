@@ -702,35 +702,63 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
 
     def on_size(self, event):
         """\
-        update the value of the 'size' property
+        Update the value of the 'size' property
         """
         try:
-            w_1, h_1 = 0, 0
-            sz = self.properties['size']
-            if sz.is_active():
-                # try to preserve the user's choice
-                try: use_dialog_units = (sz.get_value().strip()[-1] == 'd')
-                except IndexError: use_dialog_units = False
-                val = sz.get_value()
-                if use_dialog_units: val = val[:-1]
-                w_1, h_1 = [int(t) for t in val.split(',')]
+            prop_size = self.properties['size']
+
+            # try to preserve the user's choice
+            value_prop = prop_size.get_value().strip()
+            if prop_size.is_active():
+                try:
+                    use_dialog_units = value_prop and value_prop[-1] == 'd'
+
+                except IndexError:
+                    use_dialog_units = False
+
+                if use_dialog_units:
+                    value_prop = value_prop[:-1]
+
+                weidth_prop, height_prop = [int(t) for t in value_prop.split(',')]
             else:
-                use_dialog_units = config.preferences.use_dialog_units  # False
+                use_dialog_units = config.preferences.use_dialog_units
+                weidth_prop, height_prop = 0, 0
+
             if use_dialog_units:
-                w, h = self.widget.ConvertPixelSizeToDialog(
-                    self.widget.GetSize())
+                weidth_widget, height_widget = \
+                    self.widget.ConvertPixelSizeToDialog(
+                        self.widget.GetSize())
             else:
-                w, h = self.widget.GetSize()
-            if w_1 == -1:
-                w = -1
-            if h_1 == -1:
-                h = -1
-            size = "%s, %s" % (w, h)
-            if use_dialog_units: size += "d"
-            self.size = size
-            self.properties['size'].set_value(size)
+                weidth_widget, height_widget = self.widget.GetSize()
+
+            if weidth_prop == -1:
+                weidth_widget = -1
+            if height_prop == -1:
+                height_widget = -1
+
+            size_widget = "%s, %s" % (weidth_widget, height_widget)
+            if use_dialog_units:
+                size_widget += "d"
+
+            # There are an infinite loop of wxSizeEvents. All events have
+            # the same id. It looks currently like a bug in the underlaying
+            # wx libraries especially in the GTK part. The bug doesn't occur
+            # on Windows.
+            #
+            # The issue probably occur only within EditGrid.
+            #
+            # This is workaround prevents the propagation if the size hasn't
+            # changed.
+            #
+            # Related SF bug report: #170
+            if self.size == size_widget:
+                return
+
+            self.size = size_widget
+            prop_size.set_value(size_widget)
         except KeyError:
-            pass
+            logging.exception(_('Internal Error'))
+
         event.Skip()
 
     def get_tooltip(self):
@@ -1004,10 +1032,10 @@ class ManagedBase(WindowBase):
     def on_size(self, event):
         old = self.size
         WindowBase.on_size(self, event)
-        sz = self.properties['size']
-        if (sz.is_active() and (int(self.get_option()) != 0 or
+        size_prop = self.properties['size']
+        if (size_prop.is_active() and (int(self.get_option()) != 0 or
                                 self.get_int_flag() & wx.EXPAND)):
-            self.properties['size'].set_value(old)
+            size_prop.set_value(old)
             self.size = old
         self.sel_marker.update()
 
