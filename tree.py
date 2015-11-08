@@ -556,24 +556,16 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def popup_menu(self, event):
         node = self._find_item_by_pos(*event.GetPosition())
-        if not node: return
-        else:
-            self.select_item(node)
-            item = node.widget
+        if not node:
+            return
+        self.select_item(node)
+        item = node.widget
         if not item.widget or not item.is_visible():
-            #import edit_windows
-            #if isinstance(item, edit_windows.TopLevelBase):
             if node.parent is self.root:
                 self._show_menu.SetTitle(item.name)
                 self.PopupMenu(self._show_menu, event.GetPosition())
             return
-        try:
-            x, y = self.ClientToScreen(event.GetPosition())
-            x, y = item.widget.ScreenToClient((x, y))
-            event.X, event.Y = x, y
-            item.popup_menu(event)
-        except AttributeError:
-            self._logger.exception(_('Internal Error'))
+        item.popup_menu(event)
 
     def expand(self, node=None, yes=True):
         """\

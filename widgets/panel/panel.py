@@ -237,35 +237,31 @@ class EditPanel(PanelBase, ManagedBase):
         else:
             self._classname = self.__class__.__name__
 
-    def popup_menu(self, event):
-        if self.widget:
-            if not self._rmenu:
-                COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
-                self._rmenu = misc.wxGladePopupMenu(self.name)
-                misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                                 wx.ART_DELETE)
-                misc.append_item(self._rmenu, COPY_ID, _('Copy\tCtrl+C'),
-                                 wx.ART_COPY)
-                misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
-                                 wx.ART_CUT)
+    def _create_popup_menu(self):
+        COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
+        self._rmenu = misc.wxGladePopupMenu(self.name)
+        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
+                         wx.ART_DELETE)
+        misc.append_item(self._rmenu, COPY_ID, _('Copy\tCtrl+C'),
+                         wx.ART_COPY)
+        misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
+                         wx.ART_CUT)
 
-                def bind(method):
-                    return lambda e: wx.CallAfter(method)
-                wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-                wx.EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
-                wx.EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
-                # paste
-                PASTE_ID = wx.NewId()
-                misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'),
-                                 wx.ART_PASTE)
-                wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
-                PREVIEW_ID = wx.NewId()
-                self._rmenu.AppendSeparator()
-                misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
-                wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
+        def bind(method):
+            return lambda e: wx.CallAfter(method)
 
-            self.setup_preview_menu()
-            self.widget.PopupMenu(self._rmenu, event.GetPosition())
+        wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+        wx.EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
+        wx.EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
+        # paste
+        PASTE_ID = wx.NewId()
+        misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'),
+                         wx.ART_PASTE)
+        wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
+        PREVIEW_ID = wx.NewId()
+        self._rmenu.AppendSeparator()
+        misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
+        wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
 
     def clipboard_paste(self, event=None):
         """\
