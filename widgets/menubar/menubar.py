@@ -727,20 +727,20 @@ class EditMenuBar(EditBase, PreviewMixin):
     def popup_menu(self, event):
         if self.parent is not None:
             return  # do nothing in this case
-        if self.widget:
-            if not self._rmenu:
-                REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
-                self._rmenu = misc.wxGladePopupMenu(self.name)
-                misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                                 wx.ART_DELETE)
-                misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
+        super(EditMenuBar, self).popup_menu(event)
 
-                def bind(method):
-                    return lambda e: wx.CallAfter(method)
-                wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-                wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
+    def _create_popup_menu(self):
+        REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
+        self._rmenu = misc.wxGladePopupMenu(self.name)
+        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
+                         wx.ART_DELETE)
+        misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
 
-            self.widget.PopupMenu(self._rmenu, event.GetPosition())
+        def bind(method):
+            return lambda e: wx.CallAfter(method)
+
+        wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+        wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
 
     def hide_widget(self, *args):
         if self.widget and self.widget is not self._mb:

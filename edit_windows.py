@@ -303,29 +303,38 @@ constructor will be used. You should probably not use this if \
     set_klass_pattern = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
 
     def popup_menu(self, event):
-        if self.widget:
-            if not self._rmenu:
-                COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
-                self._rmenu = misc.wxGladePopupMenu(self.name)
-                misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                                 wx.ART_DELETE)
-                misc.append_item(self._rmenu, COPY_ID, _('Copy\tCtrl+C'),
-                                 wx.ART_COPY)
-                misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
-                                 wx.ART_CUT)
-                self._rmenu.AppendSeparator()
-                PREVIEW_ID = wx.NewId()
-                misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
+        if not self.widget:
+            return
+        if not self._rmenu:
+            self._create_popup_menu()
+        self.setup_preview_menu()
+        # convert relative event position to relative widget position
+        event_widget = event.GetEventObject()
+        event_pos = event.GetPosition()
+        screen_pos = event_widget.ClientToScreen(event_pos)
+        client_pos = self.widget.ScreenToClient(screen_pos)
+        self.widget.PopupMenu(self._rmenu, client_pos)
 
-                def bind(method):
-                    return lambda e: wx.CallAfter(method)
-                wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-                wx.EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
-                wx.EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
-                wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
+    def _create_popup_menu(self):
+        COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
+        self._rmenu = misc.wxGladePopupMenu(self.name)
+        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
+                         wx.ART_DELETE)
+        misc.append_item(self._rmenu, COPY_ID, _('Copy\tCtrl+C'),
+                         wx.ART_COPY)
+        misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
+                         wx.ART_CUT)
+        self._rmenu.AppendSeparator()
+        PREVIEW_ID = wx.NewId()
+        misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
 
-            self.setup_preview_menu()
-            self.widget.PopupMenu(self._rmenu, event.GetPosition())
+        def bind(method):
+            return lambda e: wx.CallAfter(method)
+
+        wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+        wx.EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
+        wx.EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
+        wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
 
     def remove(self, *args):
         self._dont_destroy = False  # always destroy when explicitly asked
@@ -1266,31 +1275,27 @@ class TopLevelBase(WindowBase, PreviewMixin):
             elif self.sizer:
                 self.sizer.fit_parent()
 
-    def popup_menu(self, event):
-        if self.widget:
-            if not self._rmenu:
-                REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
-                self._rmenu = misc.wxGladePopupMenu(self.name)
-                misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                                 wx.ART_DELETE)
-                misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
+    def _create_popup_menu(self):
+        REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
+        self._rmenu = misc.wxGladePopupMenu(self.name)
+        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
+                         wx.ART_DELETE)
+        misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
 
-                def bind(method):
-                    return lambda e: wx.CallAfter(method)
-                wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-                wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
-                # paste
-                PASTE_ID = wx.NewId()
-                misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'),
-                                 wx.ART_PASTE)
-                wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
-                PREVIEW_ID = wx.NewId()
-                self._rmenu.AppendSeparator()
-                misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
-                wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
+        def bind(method):
+            return lambda e: wx.CallAfter(method)
 
-            self.setup_preview_menu()
-            self.widget.PopupMenu(self._rmenu, event.GetPosition())
+        wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+        wx.EVT_MENU(self.widget, HIDE_ID, bind(self.hide_widget))
+        # paste
+        PASTE_ID = wx.NewId()
+        misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'),
+                         wx.ART_PASTE)
+        wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
+        PREVIEW_ID = wx.NewId()
+        self._rmenu.AppendSeparator()
+        misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
+        wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
 
     def clipboard_paste(self, event=None):
         """\

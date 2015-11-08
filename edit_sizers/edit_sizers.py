@@ -349,25 +349,32 @@ class SizerSlot(object):
 
     def on_popup_menu(self, event):
         if not self.menu:
-            self.menu = wx.Menu(_('Options'))
-            REMOVE_ID = wx.NewId()
-            PASTE_ID = wx.NewId()
-            PREVIEW_ID = wx.NewId()
-            if not self.sizer.is_virtual():
-                # we cannot remove items from virtual sizers
-                misc.append_item(self.menu, REMOVE_ID, _('Remove\tDel'),
-                                 wx.ART_DELETE)
-            misc.append_item(self.menu, PASTE_ID, _('Paste\tCtrl+V'),
-                             wx.ART_PASTE)
-            self.menu.AppendSeparator()
-            misc.append_item(self.menu, PREVIEW_ID, _('Preview'))
-
-            wx.EVT_MENU(self.widget, REMOVE_ID, self.remove)
-            wx.EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
-            wx.EVT_MENU(self.widget, PREVIEW_ID, self.preview_parent)
-
+            self._create_popup_menu()
         self.setup_preview_menu()
-        self.widget.PopupMenu(self.menu, event.GetPosition())
+        # convert relative event position to relative widget position
+        event_widget = event.GetEventObject()
+        event_pos = event.GetPosition()
+        screen_pos = event_widget.ClientToScreen(event_pos)
+        client_pos = self.widget.ScreenToClient(screen_pos)
+        self.widget.PopupMenu(self.menu, client_pos)
+
+    def _create_popup_menu(self):
+        self.menu = wx.Menu(_('Options'))
+        REMOVE_ID = wx.NewId()
+        PASTE_ID = wx.NewId()
+        PREVIEW_ID = wx.NewId()
+        if not self.sizer.is_virtual():
+            # we cannot remove items from virtual sizers
+            misc.append_item(self.menu, REMOVE_ID, _('Remove\tDel'),
+                             wx.ART_DELETE)
+        misc.append_item(self.menu, PASTE_ID, _('Paste\tCtrl+V'),
+                         wx.ART_PASTE)
+        self.menu.AppendSeparator()
+        misc.append_item(self.menu, PREVIEW_ID, _('Preview'))
+
+        wx.EVT_MENU(self.widget, REMOVE_ID, self.remove)
+        wx.EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
+        wx.EVT_MENU(self.widget, PREVIEW_ID, self.preview_parent)
 
     def remove(self, *args):
         if not self.sizer.is_virtual():
@@ -530,31 +537,39 @@ class SizerHandleButton(GenButton):
 
     def popup_menu(self, event):
         if not self._rmenu:
-            # provide popup menu for removal
-            REMOVE_ID = wx.NewId()
-            self._rmenu = misc.wxGladePopupMenu(self.sizer.name)
-
-            def bind(method):
-                return lambda e: wx.CallAfter(method)
-
-            misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                             wx.ART_DELETE)
-            wx.EVT_MENU(self, REMOVE_ID, bind(self._remove))
-            for item in self.menu:
-                id = wx.NewId()
-                bmp = None
-                if len(item) > 2:
-                    bmp = item[2]
-                misc.append_item(self._rmenu, id, item[0], bmp)
-                wx.EVT_MENU(self, id, bind(item[1]))
-            self._rmenu.AppendSeparator()
-            PREVIEW_ID = wx.NewId()
-            misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
-            wx.EVT_MENU(self, PREVIEW_ID, bind(self.preview_parent))
-            self.sizer._rmenu = self._rmenu
-            del self.menu
+            self._create_popup_menu()
         self.setup_preview_menu()
-        self.PopupMenu(self._rmenu, event.GetPosition())
+        # convert relative event position to relative widget position
+        event_widget = event.GetEventObject()
+        event_pos = event.GetPosition()
+        screen_pos = event_widget.ClientToScreen(event_pos)
+        client_pos = self.ScreenToClient(screen_pos)
+        self.PopupMenu(self._rmenu, client_pos)
+
+    def _create_popup_menu(self):
+        # provide popup menu for removal
+        REMOVE_ID = wx.NewId()
+        self._rmenu = misc.wxGladePopupMenu(self.sizer.name)
+
+        def bind(method):
+            return lambda e: wx.CallAfter(method)
+
+        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
+                         wx.ART_DELETE)
+        wx.EVT_MENU(self, REMOVE_ID, bind(self._remove))
+        for item in self.menu:
+            id = wx.NewId()
+            bmp = None
+            if len(item) > 2:
+                bmp = item[2]
+            misc.append_item(self._rmenu, id, item[0], bmp)
+            wx.EVT_MENU(self, id, bind(item[1]))
+        self._rmenu.AppendSeparator()
+        PREVIEW_ID = wx.NewId()
+        misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
+        wx.EVT_MENU(self, PREVIEW_ID, bind(self.preview_parent))
+        self.sizer._rmenu = self._rmenu
+        del self.menu
 
     def _remove(self, *args):
         # removes the sizer from his parent, if it has one
