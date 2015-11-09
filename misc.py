@@ -16,12 +16,6 @@ import re
 import types
 import wx
 
-accel_table = []
-"""\
-accelerator table to enable keyboard shortcuts for the popup menus of the
-various widgets (remove, cut, copy, paste)
-"""
-
 focused_widget = None
 """\
 If not None, this is the currently selected widget - This is different from
@@ -450,7 +444,11 @@ accel_table = [
     (wx.ACCEL_CTRL, ord('C'), _copy),
     (wx.ACCEL_CTRL, ord('X'), _cut),
     (wx.ACCEL_CTRL, ord('V'), _paste),
-    ]
+]
+"""\
+accelerator table to enable keyboard shortcuts for the popup menus of the
+various widgets (remove, cut, copy, paste)
+"""
 
 
 def _reverse_dict(src):
