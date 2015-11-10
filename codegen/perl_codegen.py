@@ -649,23 +649,11 @@ unless(caller){
         source file as a hash key. Takes care also of gettext support
         """
         if not s:
-            return '""'
-        unchanged = s
-        s = re.sub(
-            r'\\\\+',
-            self._do_replace_backslashes,
-            s
-            )
-        s = s.replace('"', r'\"')
-        s = s.replace('$', r'\$')
-        s = s.replace('@', r'\@')
-        if self._use_gettext:
-            return '_T("%s")' %s
-        # don't quote string if it's not modified and doesn't contains spaces
-        if unchanged == s and s.find(' ') < 0:
-            return s
-        else:
-            return '"%s"' % s
+            return ''
+        s = re.sub(r'\\\\+', self._do_replace_backslashes, s)
+        if '"' in s or '$' in s or '@' in s or ' ' in s:
+            self.warning(_('Invalid character in key "%s"'), s)
+        return s
 
     def add_object_format_name(self, name):
         return '#$self->%s' % name
