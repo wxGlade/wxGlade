@@ -930,7 +930,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
          - Event prototype
 
         B{Example}::
-            >>> self.get_event_handlerss(obj)
+            >>> self.get_event_handlers(obj)
             [('wxID_OPEN', 'EVT_MENU', 'OnOpen', 'wxCommandEvent'),
              ('wxID_EXIT', 'EVT_MENU', 'OnClose', 'wxCommandEvent')]
 
