@@ -42,6 +42,7 @@ Bugs:
   - Always show new widgets in the design window
   - Fix generated code for CustomWidget constructor (Thanks to Udi Fuchs)
   - Fix a infinite loop within sizing a widget (sf bug #170)
+  - Fix binding of menu event in Perl
   - ...
 
 Deprecation
