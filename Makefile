@@ -39,6 +39,9 @@ TEST_BIN          = $(BASE_DIR)/test.py
 PYLINT_BIN        = pylint2
 PYLINT_OPTS       = --rcfile ./pylintrc
 PYLINT_PATH       = "$(BASE_DIR):$(BASE_DIR)/widgets:$(BASE_DIR)/codegen"
+DIGGER_BIN        = clonedigger
+DIGGER_OUTFILE    = clonedigger.html
+DIGGER_OPTS       = --language python --output $(DIGGER_OUTFILE)
 PYTHON_BIN        = python2
 MANPAGE_XSL       = /usr/share/xml/docbook/xsl-stylesheets-1.78.1/manpages/docbook.xsl
 XP                = xsltproc --nonet
@@ -105,6 +108,7 @@ clean:
 	@$(RM) logdict*.log
 	@$(RM) warnwxglade.txt
 	@$(RM) MANIFEST
+	@$(RM) $(DIGGER_OUTFILE)
 
 #+ Remove all automatically generated and Mercurial repository data
 distclean: clean
@@ -130,6 +134,10 @@ apidoc: $(APIDOC_DIR)/index.html
 #+ Check all source files for logical errors using pylint
 pylint:
 	PYTHONPATH=$(PYLINT_PATH) $(PYLINT_BIN) $(PYLINT_OPTS) $(CHECK_FILES) || /bin/true
+
+#+ Check all source files for dublicates
+digger:
+	$(DIGGER_BIN) $(DIGGER_OPTS) $(CHECK_FILES)
 
 #+ Set proper permissions for all files and directories
 permissions:
