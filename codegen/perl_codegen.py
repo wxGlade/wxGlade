@@ -643,18 +643,6 @@ unless(caller){
         else:
             return '"%s"' % s
 
-    def quote_key(self, s):
-        """\
-        returns a possibly quoted version of 's', suitable to insert in a perl
-        source file as a hash key. Takes care also of gettext support
-        """
-        if not s:
-            return ''
-        s = re.sub(r'\\\\+', self._do_replace_backslashes, s)
-        if '"' in s or '$' in s or '@' in s or ' ' in s:
-            self.warning(_('Invalid character in key "%s"'), s)
-        return s
-
     def add_object_format_name(self, name):
         return '#$self->%s' % name
 

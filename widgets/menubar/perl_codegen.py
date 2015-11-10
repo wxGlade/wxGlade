@@ -58,8 +58,7 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                         item_type = 2
 
                     if item.name:
-                        itemname = '$self->{%s} = ' % \
-                                   self.codegen.quote_key(item.name)
+                        itemname = '$self->{%s} = ' % item.name
                     else:
                         itemname = ''
 
@@ -115,7 +114,7 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
         def do_get(item):
             ret = []
             if item.name:
-                val = '$self->{%s}->GetId' % item.name
+                val = self.codegen.add_object_format_name(item.name)
             else:
                 name, val = self.codegen.generate_code_id(None, item.id)
                 if not val:
