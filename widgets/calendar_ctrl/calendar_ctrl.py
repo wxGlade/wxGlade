@@ -102,6 +102,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer, pos,
                                      common.property_panel, show=False)
+    sizer.set_item(calendar_ctrl.pos, option=sizeritem.option,
+                   flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(calendar_ctrl)
     calendar_ctrl.node = node
     if pos is None:
