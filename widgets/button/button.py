@@ -161,6 +161,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     button = EditButton(label, parent, wx.NewId(), '', sizer, pos,
                         common.property_panel, show=False)
+    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
+                   border=sizeritem.border)
     node = Tree.Node(button)
     button.node = node
     if pos is None:

@@ -101,6 +101,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer,
                         pos, common.property_panel, show=False)
+    sizer.set_item(datepicker_ctrl.pos, option=sizeritem.option,
+                   flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(datepicker_ctrl)
     datepicker_ctrl.node = node
     if pos is None:
