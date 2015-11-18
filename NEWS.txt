@@ -43,6 +43,7 @@ Bugs:
   - Fix generated code for CustomWidget constructor (Thanks to Udi Fuchs)
   - Fix a infinite loop within sizing a widget (sf bug #170)
   - Fix binding of menu event in Perl
+  - Fix root widget loses layout attributes during copy and paste
   - ...
 
 Deprecation
