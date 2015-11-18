@@ -20,7 +20,7 @@ def widget2clipboard(option, flag, border, xml_unicode):
     """\
     Pickle all parameter to store them as a string in the clipboard.
 
-    @param option: Widget layout options
+    @param option: Widget layout proportions
     @type option:  str
     @param flag: Widget flags / styles
     @type flag:  str
@@ -42,13 +42,13 @@ def clipboard2widget(clipboard_data):
     Convert widget data prepared in L{widget2clipboard()} back to single
     values.
 
-    The values are option, flag, border and widget in XML representation.
-    They will be returned in a list.
+    The values are option (proportions), flag, border and widget in XML
+    representation. They will be returned in a list.
 
     @param clipboard_data: Widget data prepared in L{widget2clipboard()}
     @type clipboard_data:  str
 
-    @rtype: list[int, int, int, str]
+    @rtype: list[int, str, int, str]
 
     @see: L{widget2clipboard()}
     """
@@ -100,6 +100,8 @@ def cut(widget):
     """\
     Store a copy of self into the clipboard and delete the widget.
 
+    @param widget: Widget to copy and delete
+
     @return: True on success
     @rtype: bool
     @see: L{copy()}
@@ -135,6 +137,11 @@ def paste(parent, sizer, pos):
                     logging.debug(_("Data can't be copied from clipboard."))
                     return False
             else:
+                wx.MessageBox(
+                    _("The clipboard doesn't contain wxGlade widget data."),
+                    _("Information"),
+                    wx.OK | wx.CENTRE | wx.ICON_INFORMATION,
+                    )
                 return False
         finally:
             wx.TheClipboard.Close()

@@ -460,8 +460,9 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
 
 class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
     """\
-    Parser used to cut&paste widgets. The differences with XmlWidgetBuilder
-    are:
+    Parser used to cut&paste widgets.
+
+    The differences with XmlWidgetBuilder are:
       - No <application> tag in the piece of xml to parse
       - Fake parent, sizer and sizeritem objects to push on the three stacks:
         they keep info about the destination of the hierarchy of widgets (i.e.
@@ -478,25 +479,29 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             def __init__(self, **kwds):
                 self.__dict__.update(kwds)
 
-        par = XmlClipboardObject(obj=parent, parent=parent)  # fake window obj
-        if sizer is not None:
-            # fake sizer object
-            szr = XmlClipboardObject(obj=sizer, parent=parent)
+        # fake parent window object
+        fake_parent = XmlClipboardObject(obj=parent, parent=parent)
+
+        # fake sizer object
+        if sizer:
+            fake_sizer = XmlClipboardObject(obj=sizer, parent=parent)
             sizeritem = Sizeritem()
             sizeritem.option = option
             sizeritem.set_flag(flag)
             sizeritem.border = border
             sizeritem.pos = pos
             # fake sizer item
-            si = XmlClipboardObject(obj=sizeritem, parent=parent)
+            fake_sizeritem = XmlClipboardObject(obj=sizeritem, parent=parent)
+
         # push the fake objects on the stacks
-        self._objects.push(par)
-        self._windows.push(par)
-        if sizer is not None:
-            self._objects.push(szr)
-            self._sizers.push(szr)
-            self._objects.push(si)
-            self._sizer_item.push(si)
+        self._objects.push(fake_parent)
+        self._windows.push(fake_parent)
+        if sizer:
+            self._objects.push(fake_sizer)
+            self._sizers.push(fake_sizer)
+            self._objects.push(fake_sizeritem)
+            self._sizer_item.push(fake_sizeritem)
+
         self.depth_level = 0
         self._appl_started = True  # no application tag when parsing from the
                                    # clipboard
@@ -551,8 +556,10 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
 class XmlWidgetObject(object):
     """\
-    A class to encapsulate a widget read from a XML file: its purpose is to
-    store various widget attributes until the widget can be created
+    A class to encapsulate a widget read from a XML file
+
+    Its purpose is to store various widget attributes until the widget can
+    be created.
 
     @ivar in_sizers: If True, the widget is a sizer, opposite of L{in_windows}
     @type in_sizers: bool
@@ -1021,6 +1028,10 @@ class CodeObject(object):
 
 
 class Stack(object):
+    """\
+    Simple stack implementation
+    """
+
     def __init__(self):
         self._repr = []
 
@@ -1047,6 +1058,8 @@ class Stack(object):
 
 class Sizeritem(object):
     """\
+    Represents a child of a sizer.
+
     @ivar _logger: Class specific logging instance
     """
     if config.use_gui:
@@ -1087,6 +1100,14 @@ class Sizeritem(object):
         return None, self.set_flag
 
     def set_flag(self, value):
+        """\
+        Set flags
+
+        @param value: Flags concatenated with '|'
+        @type value: str
+
+        @type value: str | Unicode
+        """
         self.flag_set = set(value.split("|"))
 
         # convert flags to integers
@@ -1102,6 +1123,8 @@ class Sizeritem(object):
         """\
         Returns the flag attribute as a string of tokens separated by a '|'
         (used during the code generation)
+
+        @rtype: str
         """
         if hasattr(self, 'flag_s'):
             return self.flag_s
