@@ -60,7 +60,6 @@ def clipboard2widget(clipboard_data):
 
     # option, flag and border are integers.
     option = int(option)
-    flag = int(flag)
     border = int(border)
 
     return option, flag, border, xml_unicode
@@ -79,7 +78,7 @@ def copy(widget):
         try:
             xml_unicode = StringIO.StringIO()
             widget.node.write(xml_unicode, 0)
-            flag = str(widget.get_int_flag())
+            flag = widget.esm_border.get_string_style()
             option = widget.get_option()
             border = widget.get_border()
             clipboard_data = widget2clipboard(

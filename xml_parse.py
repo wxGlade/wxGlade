@@ -484,7 +484,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             szr = XmlClipboardObject(obj=sizer, parent=parent)
             sizeritem = Sizeritem()
             sizeritem.option = option
-            sizeritem.flag = flag
+            sizeritem.set_flag(flag)
             sizeritem.border = border
             sizeritem.pos = pos
             # fake sizer item
