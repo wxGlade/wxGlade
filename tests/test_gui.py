@@ -177,7 +177,7 @@ class TestGui(WXGladeBaseTest):
         self._open_wxg_file(filename='Notebook_wo_tabs.wxg')
         err_msg = u'Error loading from a file-like object: Notebook ' \
                   u'widget "notebook_1" does not have any tabs! ' \
-                  u'_((line: 17, column:  20))'
+                  u'(line: 17, column: 20)'
         err_caption = u'Error'
         self.failUnless(
             [err_msg, err_caption] == self._messageBox,

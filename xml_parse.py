@@ -29,11 +29,11 @@ class XmlParsingError(SAXException):
 
     def __init__(self, msg):
         if self.locator:
-            l = self.locator
-            msg += ' _((line: %s, column:  %s))' % (
-                l.getLineNumber(),
-                l.getColumnNumber(),
-                )
+            msg = _('%s (line: %s, column: %s)') % (
+                msg,
+                self.locator.getLineNumber(),
+                self.locator.getColumnNumber(),
+            )
         SAXException.__init__(self, msg)
 
 # end of class XmlParsingError
