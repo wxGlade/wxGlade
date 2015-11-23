@@ -14,6 +14,7 @@ from tests import WXGladeBaseTest
 
 # import project modules
 import common
+import config
 import errors
 import misc
 import xrc2wxg
@@ -464,12 +465,13 @@ class TestCodeGen(WXGladeBaseTest):
         result_frame_cpp  = self._load_file('CPPOgg2_MyFrame.cpp')
         result_frame_h    = self._load_file('CPPOgg2_MyFrame.h')
         self._generate_code('C++', source, './')
-        generated_app    = self.vFiles['./main.cpp'].getvalue()
+        app_filename = './%s' % config.default_cpp_app_name
+        generated_app    = self.vFiles[app_filename].getvalue()
         generated_dialog_cpp = self.vFiles['./CPPOgg2_MyDialog.cpp'].getvalue()
         generated_dialog_h   = self.vFiles['./CPPOgg2_MyDialog.h'].getvalue()
         generated_frame_cpp  = self.vFiles['./CPPOgg2_MyFrame.cpp'].getvalue()
         generated_frame_h    = self.vFiles['./CPPOgg2_MyFrame.h'].getvalue()
-        self._compare(result_app,    generated_app, 'main.cpp')
+        self._compare(result_app,    generated_app, config.default_cpp_app_name)
         self._compare(result_dialog_cpp, generated_dialog_cpp, 'CPPOgg2_MyDialog.cpp')
         self._compare(result_dialog_h,   generated_dialog_h,   'CPPOgg2_MyDialog.h')
         self._compare(result_frame_cpp,  generated_frame_cpp , 'CPPOgg2_MyFrame.cpp')
@@ -685,7 +687,7 @@ class TestCodeGen(WXGladeBaseTest):
         else:
             simple = '_simple'
         if language == 'C++':
-            app_filename = './main.cpp'
+            app_filename = './%s' % config.default_cpp_app_name
         else:
             app_filename = './myapp%s' % suffix
 

@@ -531,14 +531,16 @@ bool MyApp::OnInit()
     # end of class ClassLines
 
     def init_lang(self, app_attrs):
-        self.app_filename = 'main.cpp'
+        self.app_filename = config.default_cpp_app_name
 
         out_path = app_attrs.get('path', config.default_output_path)
         self.last_generated_id = 1000
 
         # Extensions based on Project options when set
-        self.source_extension = app_attrs.get('source_extension', '.cpp')
-        self.header_extension = app_attrs.get('header_extension', '.h')
+        self.source_extension = app_attrs.get(
+            'source_extension', config.default_source_extension)
+        self.header_extension = app_attrs.get(
+            'header_extension', config.default_header_extension)
 
         self.header_lines = [
             '#include <wx/wx.h>\n',
