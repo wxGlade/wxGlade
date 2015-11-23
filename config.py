@@ -22,12 +22,30 @@ Default value for the application name
 @type: str
 """
 
+default_cpp_app_name = 'main.cpp'
+"""\
+Default application name for C++ files
+
+@type: str
+@see: L{default_header_extension}
+@see: L{default_source_extension}
+"""
+
 default_encoding = 'UTF-8'
 """\
 Default value for encoding
 
 @type: str
 @see: L{encoding}
+"""
+
+default_header_extension = '.h'
+"""\
+Default extension of the header file
+
+@type: str
+@see: L{default_cpp_app_name}
+@see: L{default_source_extension}
 """
 
 default_indent_amount = 4
@@ -70,6 +88,15 @@ default_output_path = './'
 Default output path
 
 @type: str
+"""
+
+default_source_extension = '.cpp'
+"""\
+Default extension of the source file
+
+@type: str
+@see: L{default_cpp_app_name}
+@see: L{default_header_extension}
 """
 
 default_use_gettext = 1
