@@ -1104,8 +1104,6 @@ class Sizeritem(object):
         Set flags
 
         @param value: Flags concatenated with '|'
-        @type value: str
-
         @type value: str | Unicode
         """
         self.flag_set = set(value.split("|"))
