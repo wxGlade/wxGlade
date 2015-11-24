@@ -15,6 +15,7 @@ General:
   - Rework creation of wxBitmap code used by several widgets
   - New widgets CheckListBox, GenericCalendarCtrl and PropertyGridManager
     contributed by Franco Bugnano
+  - Use defaults for missing application attributes in wxg files
   - ...
 
 Generated Code:
