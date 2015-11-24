@@ -533,7 +533,6 @@ bool MyApp::OnInit()
     def init_lang(self, app_attrs):
         self.app_filename = config.default_cpp_app_name
 
-        out_path = app_attrs.get('path', config.default_output_path)
         self.last_generated_id = 1000
 
         # Extensions based on Project options when set
