@@ -59,7 +59,7 @@ class XmlParser(ContentHandler):
 
     @ivar locator:     Document locator
 
-    @ivar _logger: Instance specific logger
+    @ivar _logger:     Instance specific logger
     """
 
     def __init__(self):
@@ -134,7 +134,7 @@ class XmlParser(ContentHandler):
                 _('The loaded wxGlade designs are created for wxWidgets '
                   '"%s", but this version is not supported anymore.'),
                 for_version,
-                )
+            )
             logging.warning(
                 _('The designs will be loaded and converted to '
                   'wxWidgets "%s" partially. Please check the designs '
@@ -161,11 +161,14 @@ class XmlParser(ContentHandler):
         res['indent_symbol'] = attrs.get('indent_symbol',
                                          config.default_indent_symbol)
 
-        try:
+        if 'language' in attrs:
             res['language'] = attrs['language']
-        except KeyError:
-            raise XmlParsingError(_("'language' attribute missing: could "
-                                    "not generate code"))
+        elif hasattr(self, 'code_writer'):
+            res['language'] = attrs.get('language',
+                                        self.code_writer.language)
+        else:
+            raise XmlParsingError(_("'language' attribute missing: "
+                                    "could not generate code"))
 
         res['name'] = attrs.get('name')
 
@@ -181,10 +184,12 @@ class XmlParser(ContentHandler):
             overwrite = config.default_overwrite
         res['overwrite'] = bool(overwrite)
 
-        res['path'] = attrs.get("path")
+        res['path'] = attrs.get('path')
 
-        res['header_extension'] = attrs.get('header_extension')
-        res['source_extension'] = attrs.get('source_extension')
+        res['header_extension'] = attrs.get('header_extension',
+                                            config.default_header_extension)
+        res['source_extension'] = attrs.get('source_extension',
+                                            config.default_source_extension)
 
         res['top_window'] = attrs.get('top_window')
 
@@ -195,7 +200,7 @@ class XmlParser(ContentHandler):
         res['use_gettext'] = bool(use_gettext)
 
         if attrs.get('use_new_namespace') == u'0' and \
-                     attrs.get('language') == 'python':
+                        attrs.get('language') == 'python':
             logging.warning(
                 _('The loaded wxGlade designs are created to use the '
                   'old Python import style ("from wxPython.wx '
@@ -216,7 +221,7 @@ class XmlParser(ContentHandler):
         """\
         Return the document encoding
 
-        @param attrs:  Object attributes
+        @param attrs: Object attributes
 
         @rtype: str
         """

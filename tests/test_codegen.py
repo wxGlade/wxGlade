@@ -1645,3 +1645,9 @@ class TestCodeGen(WXGladeBaseTest):
         Test code generation for CustomWidget
         """
         self._test_all('CustomWidget')
+
+    def test_missing_application_attributes(self):
+        """\
+        Test code generation w/ missing <application> attributes
+        """
+        self._test_all('app_wo_attrs')
