@@ -10,6 +10,7 @@ import logging
 import wx
 import clipboard
 import common
+import compat
 import config
 import misc
 from tree import Tree
@@ -105,7 +106,7 @@ class PanelBase(EditStylesMixin):
         self.properties['scroll_rate'].display(panel)
         szr.Add(self.properties['scroll_rate'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 

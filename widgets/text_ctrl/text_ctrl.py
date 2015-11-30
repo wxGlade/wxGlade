@@ -12,6 +12,7 @@ import wx
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 import common
+import compat
 import config
 import misc
 from widget_properties import *
@@ -61,7 +62,7 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
         szr.Add(prop['value'].panel, 0, wx.EXPAND)
         szr.Add(prop['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, _('Widget'))
         panel.SetScrollbars(

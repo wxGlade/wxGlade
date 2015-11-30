@@ -10,6 +10,7 @@ import wx
 import StringIO
 
 import common
+import compat
 import config
 import misc
 from MenuTree import *
@@ -507,7 +508,7 @@ class MenuProperty(Property):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 4)
         self.panel.SetAutoLayout(1)
-        self.panel.SetSizer(sizer)
+        compat.SizerItem_SetSizer(self.panel, sizer)
         self.panel.SetSize(sizer.GetMinSize())
         wx.EVT_BUTTON(self.panel, edit_btn_id, self.edit_menus)
 
@@ -650,7 +651,7 @@ class EditMenuBar(EditBase, PreviewMixin):
             sizer.Add(self.name_prop.panel, 0, wx.EXPAND)
             sizer.Add(self.klass_prop.panel, 0, wx.EXPAND)
             page.SetAutoLayout(1)
-            page.SetSizer(sizer)
+            compat.SizerItem_SetSizer(page, sizer)
         sizer.Add(self.properties['menus'].panel, 0, wx.ALL|wx.EXPAND, 3)
         sizer.Fit(page)
         page.SetSize(self.notebook.GetClientSize())

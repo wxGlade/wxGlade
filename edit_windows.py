@@ -700,7 +700,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
 #            sizer_tmp.Add(note, 0, wx.ALL | wx.EXPAND, 3)
 
         panel.SetAutoLayout(1)
-        panel.SetSizer(sizer_tmp)
+        compat.SizerItem_SetSizer(panel, sizer_tmp)
         sizer_tmp.Layout()
         sizer_tmp.Fit(panel)
 
@@ -1024,7 +1024,7 @@ class ManagedBase(WindowBase):
         sizer_tmp.Add(szprop['border'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(szprop['flag'].panel, 0, wx.EXPAND, 5)
         panel.SetAutoLayout(True)
-        panel.SetSizer(sizer_tmp)
+        compat.SizerItem_SetSizer(panel, sizer_tmp)
         sizer_tmp.Layout()
         sizer_tmp.Fit(panel)
 
@@ -1342,7 +1342,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         self.sizer = sizer
         if self.sizer and self.sizer.widget and self.widget:
             self.widget.SetAutoLayout(True)
-            self.widget.SetSizer(self.sizer.widget)
+            compat.SizerItem_SetSizer(self.widget, self.sizer.widget)
             self.widget.Layout()
 
     def on_enter(self, event):

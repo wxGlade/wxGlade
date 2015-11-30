@@ -8,6 +8,7 @@ wxRadioBox objects
 
 import wx
 import common
+import compat
 import misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -112,7 +113,7 @@ class EditRadioBox(ManagedBase):
         szr.Add(self.properties['selection'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['choices'].panel, 1, wx.ALL | wx.EXPAND, 3)
         panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
         self.properties['choices'].set_col_sizes([-1])
@@ -167,7 +168,7 @@ class EditRadioBox(ManagedBase):
             sizer.SetItemMinSize(button, w, h)
         self.widget.SetAutoLayout(True)
         sb_sizer = wx.StaticBoxSizer(self.static_box, wx.VERTICAL)
-        self.widget.SetSizer(sb_sizer)
+        compat.SizerItem_SetSizer(self.widget, sb_sizer)
         sb_sizer.Add(sizer, 1, wx.EXPAND)
         sb_sizer.SetMinSize(sizer.GetMinSize())
         sb_sizer.Fit(self.widget)

@@ -9,6 +9,7 @@ wxSplitterWindow objects
 import wx
 
 import common
+import compat
 import wcodegen
 from tree import Tree
 from widget_properties import *
@@ -198,7 +199,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         sizer.Add(self.properties['sash_pos'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['min_pane_size'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        panel.SetSizer(sizer)
+        compat.SizerItem_SetSizer(panel, sizer)
         sizer.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 

@@ -8,6 +8,7 @@ wxHyperlinkCtrl objects
 
 import wx
 import common
+import compat
 import config
 import misc
 from edit_windows import ManagedBase, EditStylesMixin
@@ -76,7 +77,7 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['attribute'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, _('Widget'))
 

@@ -8,6 +8,7 @@ Custom wxWindow objects
 
 import wx
 import common
+import compat
 import misc
 from tree import Tree
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
@@ -130,7 +131,7 @@ class CustomWidget(ManagedBase):
         args.display(panel)
         szr.Add(args.panel, 1, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
         args.set_col_sizes([-1])

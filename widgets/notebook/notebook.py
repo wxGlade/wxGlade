@@ -8,6 +8,7 @@ wxNotebook objects
 
 import wx
 import common
+import compat
 import wcodegen
 import misc
 from tree import Tree
@@ -258,7 +259,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['tabs'].panel, 1, wx.ALL | wx.EXPAND, 3)
         panel.SetAutoLayout(True)
-        panel.SetSizer(sizer)
+        compat.SizerItem_SetSizer(panel, sizer)
         sizer.Fit(panel)
         self.notebook.AddPage(panel, _('Widget'))
         self.properties['tabs'].set_col_sizes([-1])

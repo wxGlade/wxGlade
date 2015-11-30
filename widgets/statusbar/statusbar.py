@@ -8,6 +8,7 @@ wxFrame and wxStatusBar objects
 
 import wx
 import common
+import compat
 import misc
 from tree import Tree
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
@@ -101,7 +102,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
             sizer.Add(self.name_prop.panel, 0, wx.EXPAND)
             sizer.Add(self.klass_prop.panel, 0, wx.EXPAND)
             page.SetAutoLayout(1)
-            page.SetSizer(sizer)
+            compat.SizerItem_SetSizer(page, sizer)
         sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
         sizer.Add(prop.panel, 1, wx.ALL | wx.EXPAND, 3)
         sizer.Fit(page)

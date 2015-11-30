@@ -1,11 +1,15 @@
-# edit_widget.py: base class for EditFoo objects
-#
-# Copyright (c) 2002-2004 Richard Lawson <richard.lawson@colinx.com>
-# License: MIT (see LICENSE.txt)
-# THIS PROGRAM COMES WITH NO WARRANTY
+"""\
+Base class for EditFoo objects
+
+@copyright: 2002-2004 Richard Lawson
+@copyright: 2015 Carsten Grohmann
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
 
 import wx
-import common, config
+import common
+import compat
+import config
 from edit_windows import ManagedBase
 from tree import Tree
 from widget_properties import *
@@ -69,7 +73,7 @@ class EditWidget(ManagedBase):
             szr.Add(self.properties[name].panel, self.property_proportion[name],
                     wx.EXPAND)
         panel.SetAutoLayout(1)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, 'Widget')
