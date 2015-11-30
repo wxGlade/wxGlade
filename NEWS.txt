@@ -1,4 +1,4 @@
-Version 0.7.1 RC1 - 2015-08-03:
+Version 0.7.1 RC2 - 2015-12-01:
 General:
   - Open wxGlade windows in the upper left corner if wxGlade is starting
     the first time

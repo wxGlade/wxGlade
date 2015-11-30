@@ -1,7 +1,7 @@
 wxGlade: A GUI builder for wxPython/wxWidgets
 =============================================
 
-Version: 0.7.1RC1
+Version: 0.7.1RC2
 License: MIT (see LICENSE.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
