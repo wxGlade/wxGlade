@@ -10,6 +10,7 @@ wxPropertyGridManager objects
 import wx
 from wx.propgrid import *
 import common
+import compat
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
@@ -39,7 +40,7 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
         self.properties['style'].display(panel)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         w, h = panel.GetSize()
         from math import ceil

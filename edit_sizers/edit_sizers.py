@@ -749,14 +749,14 @@ def change_sizer(old, new, which_page=0, _hidden=[None]):
         szr.sizer.children[szr.pos].item = szr
         if szr.sizer.widget:
             elem = szr.sizer.widget.GetChildren()[szr.pos]
-            elem.SetSizer(szr.widget)
+            compat.SizerItem_SetSizer(elem, szr.widget)
     common.app_tree.change_node(szr.node, szr)
     old.toplevel = False
     szr.show_properties()
     szr.notebook.SetSelection(which_page)
     for c in old.widget.GetChildren():
         if c and c.IsSizer():
-            c.SetSizer(None)
+            compat.SizerItem_SetSizer(c, None)
     old.widget.Clear()
     old.children = old.children[:1]
     old.delete()
@@ -1047,7 +1047,7 @@ class SizerBase(Sizer):
             wx.EVT_BUTTON(self.fit_btn, FIT_ID, self.fit_parent)
             sizer_tmp.Add(self.fit_btn, 0, wx.ALL | wx.EXPAND, 5)
         panel.SetAutoLayout(True)
-        panel.SetSizer(sizer_tmp)
+        compat.SizerItem_SetSizer(panel, sizer_tmp)
         sizer_tmp.Fit(panel)
 
         w, h = panel.GetClientSizeTuple()
@@ -1251,7 +1251,7 @@ class SizerBase(Sizer):
         if item.IsWindow():
             w = item.GetWindow()
             w.SetContainingSizer(None)
-        item.SetSizer(notebook_sizer)
+        compat.SizerItem_SetSizer(item, notebook_sizer)
         if force_layout:
             self.layout()
 
@@ -1401,7 +1401,7 @@ class SizerBase(Sizer):
 
         elem = self.widget.GetChildren()[old_pos]
         # always set the sizer to None because otherwise it will be Destroy'd
-        elem.SetSizer(None)
+        compat.SizerItem_SetSizer(elem, None)
         # this fake_win trick seems necessary because wxSizer::Remove(int pos)
         # doesn't seem to work with grid sizers :-\
         fake_win = wx.Window(self.window.widget, -1)
@@ -2010,7 +2010,7 @@ class GridSizerBase(SizerBase):
         sizer.Add(props['vgap'].panel, 0, wx.EXPAND)
         sizer.Add(props['hgap'].panel, 0, wx.EXPAND)
         page.SetAutoLayout(True)
-        page.SetSizer(sizer)
+        compat.SizerItem_SetSizer(page, sizer)
         sizer.Fit(page)
         self.notebook.AddPage(page, _("Grid"))
 

@@ -11,6 +11,7 @@ import math
 import wx
 
 import common
+import compat
 import config
 import misc
 from tree import Tree
@@ -126,7 +127,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             szr.Add(sbprop.panel, 0, wx.EXPAND)
         szr.Add(prop['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
         w, h = panel.GetClientSizeTuple()

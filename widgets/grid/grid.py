@@ -9,6 +9,7 @@ wxGrid objects
 import wx
 from wx.grid import *
 import common
+import compat
 import misc
 from edit_windows import ManagedBase
 from tree import Tree
@@ -205,7 +206,7 @@ class EditGrid(ManagedBase):
         szr.Add(self.properties['enable_grid_resize'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['selection_mode'].panel, 0, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(1)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, _('Widget'))

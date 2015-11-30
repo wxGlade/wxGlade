@@ -10,6 +10,7 @@ import wx
 
 import config
 import common
+import compat
 import misc
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
@@ -78,7 +79,7 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
         szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 

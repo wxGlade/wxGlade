@@ -10,6 +10,7 @@ import wx
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 import common
+import compat
 import config
 from widget_properties import *
 
@@ -65,7 +66,7 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(prop['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, _('Widget'))

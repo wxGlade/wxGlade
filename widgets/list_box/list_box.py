@@ -8,6 +8,7 @@ wxListBox objects
 
 import wx
 import common
+import compat
 import misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
@@ -64,7 +65,7 @@ class EditListBox(ManagedBase, EditStylesMixin):
         ch.SetSize((ch.GetSize()[0]-20, 200))
         szr.Add(self.properties['choices'].panel, 1, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
+        compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         w, h = panel.GetSize()
         from math import ceil
