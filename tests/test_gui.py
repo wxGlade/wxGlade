@@ -32,11 +32,13 @@ class TestGui(WXGladeBaseTest):
                the creation in L{setUp()}.
     @cvar frame: Reference to L{main.wxGladeFrame}. The object is persistent
                  after the creation in L{setUp()}.
+    @cvar nolog: wxWidgets Null logger to suppress error messages
     @ivar orig_stdout: Original fd for stdout.
     """
 
     app = None
     frame = None
+    nolog = None
     orig_stdout = None
 
     def mockMessageBox(self, message, caption, *args, **kwargs):
@@ -54,9 +56,16 @@ class TestGui(WXGladeBaseTest):
         wx.ArtProvider.PushProvider(main.wxGladeArtProvider())
         cls.frame = main.wxGladeFrame()
 
+        # suppress wx error messages
+        cls.nolog = wx.LogNull()
+
         # hide all windows
         #cls.frame.Hide()
         #cls.frame.hide_all()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.nolog = None
 
     def setUp(self):
         # redirect stdout
