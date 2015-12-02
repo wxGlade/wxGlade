@@ -715,8 +715,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         self.tools = tools
         if not self.widget:
             return  # nothing left to do
-        while self.widget.DeleteToolByPos(0):
-            pass  # clear the toolbar
+        self.widget.ClearTools()
         # now add all the tools
         for tool in self.tools:
             if misc.streq(tool.id, '---'):  # the tool is a separator
