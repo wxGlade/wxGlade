@@ -663,9 +663,7 @@ class Application(object):
         w.Hide()
 
         self.notebook.Reparent(self.property_window)
-        # SizerItem.SetWindow() is deprecated wxPython 2.9
         compat.SizerItem_SetWindow(child, self.notebook)
-        w.Reparent(misc.hidden_property_panel)
 
         self.notebook.Show(True)
         self.property_window.Layout()

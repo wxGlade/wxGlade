@@ -1,6 +1,6 @@
 """\
 Main wxGlade module: defines wxGladeFrame which contains the buttons to add
-widgets and initializes all the stuff (tree, property_frame, etc.)
+widgets and initializes all the stuff (tree, frame_property, etc.)
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2011-2015 Carsten Grohmann
@@ -401,26 +401,12 @@ class wxGladeFrame(wx.Frame):
             wx.SYS_COLOUR_BTNFACE))
         self.frame_property.SetIcon(icon)
 
-        sizer_tmp = wx.BoxSizer(wx.VERTICAL)
         property_panel = wxGladePropertyPanel(self.frame_property, -1)
-
-        #---- 2003-06-22 Fix for what seems to be a GTK2 bug (notebooks)
-        misc.hidden_property_panel = wx.Panel(self.frame_property, -1)
         sz = wx.BoxSizer(wx.VERTICAL)
         sz.Add(property_panel, 1, wx.EXPAND)
-        sz.Add(misc.hidden_property_panel, 1, wx.EXPAND)
         self.frame_property.SetSizer(sz)
-        sz.Show(misc.hidden_property_panel, False)
-        self.property_frame = self.frame_property
-        #--------------------------------------------------------
-
         property_panel.SetAutoLayout(True)
-        self.hidden_frame = wx.Frame(self, -1, "")
-        self.hidden_frame.Hide()
-        sizer_tmp.Add(property_panel, 1, wx.EXPAND)
         self.frame_property.SetAutoLayout(True)
-        self.frame_property.SetSizer(sizer_tmp)
-        sizer_tmp = wx.BoxSizer(wx.VERTICAL)
 
         def hide_frame2(event):
             #menu_bar.Check(PROPS_ID, False)
@@ -428,6 +414,7 @@ class wxGladeFrame(wx.Frame):
         wx.EVT_CLOSE(self.frame_property, hide_frame2)
         wx.EVT_CLOSE(self, self.cleanup)
         common.property_panel = property_panel
+
         # Tree of widgets
         self.tree_frame = wx.Frame(self, -1, _('wxGlade: Tree'),
                                   style=frame_style)
@@ -436,8 +423,9 @@ class wxGladeFrame(wx.Frame):
         app = application.Application(common.property_panel)
         common.app_tree = WidgetTree(self.tree_frame, app)
         self.tree_frame.SetSize((300, 300))
-
         app.notebook.Show()
+
+        sizer_tmp = wx.BoxSizer(wx.VERTICAL)
         sizer_tmp.Add(app.notebook, 1, wx.EXPAND)
         property_panel.SetSizer(sizer_tmp)
         sizer_tmp.Fit(property_panel)
@@ -729,7 +717,6 @@ class wxGladeFrame(wx.Frame):
 
         start = time.clock()
         common.app_tree.clear()
-        common.property_panel.Reparent(self.hidden_frame)
 
         # disable auto-expansion of nodes
         common.app_tree.auto_expand = False
