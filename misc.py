@@ -30,12 +30,6 @@ the currently highlighted one, ecc...)
 FileSelector = wx.FileSelector
 DirSelector = wx.DirSelector
 
-hidden_property_panel = None
-"""\
-wxPanel used to reparent the property-notebooks when they are hidden. This
-has been added on 2003-06-22 to fix what seems to me a (wx)GTK2 bug
-"""
-
 use_menu_icons = None
 
 currently_under_mouse = None

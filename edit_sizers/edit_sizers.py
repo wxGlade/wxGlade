@@ -1122,9 +1122,7 @@ class SizerBase(Sizer):
         if 0 <= index < self.notebook.GetPageCount():
             self.notebook.SetSelection(index)
         self.notebook.Reparent(self.property_window)
-        # SizerItem.SetWindow() is deprecated wxPython 2.9
         compat.SizerItem_SetWindow(child, self.notebook)
-        w.Reparent(misc.hidden_property_panel)
 
         self.notebook.Show()
         self.notebook.SetSize(self.property_window.GetClientSize())
@@ -1304,7 +1302,6 @@ class SizerBase(Sizer):
             if h == -1:
                 h = item.GetBestSize()[1]
             newelem = wx.SizerItem()
-            # SizerItem.SetWindow() is deprecated wxPython 2.9
             compat.SizerItem_SetWindow(newelem, item)
             newelem.SetFlag(elem.GetFlag())
             newelem.SetBorder(elem.GetBorder())
@@ -1405,7 +1402,6 @@ class SizerBase(Sizer):
         # this fake_win trick seems necessary because wxSizer::Remove(int pos)
         # doesn't seem to work with grid sizers :-\
         fake_win = wx.Window(self.window.widget, -1)
-        # SizerItem.SetWindow() is deprecated wxPython 2.9
         compat.SizerItem_SetWindow(elem, fake_win)
         self.widget.Remove(fake_win)
         fake_win.Destroy()

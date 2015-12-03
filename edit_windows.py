@@ -413,9 +413,7 @@ constructor will be used. You should probably not use this if \
         if 0 <= index < self.notebook.GetPageCount():
             self.notebook.SetSelection(index)
         self.notebook.Reparent(self.property_window)
-        # SizerItem.SetWindow() is deprecated wxPython 2.9
         compat.SizerItem_SetWindow(child, self.notebook)
-        w.Reparent(misc.hidden_property_panel)
 
         self.notebook.Show()
         self.notebook.SetSize(self.property_window.GetClientSize())

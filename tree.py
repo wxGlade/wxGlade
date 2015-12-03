@@ -56,7 +56,6 @@ class Tree(object):
                     pw.SetTitle(_('Properties - <%s>') % '')
                     if Tree.Node.__empty_win is None:
                         Tree.Node.__empty_win = wx.Window(pw, -1)
-                    # SizerItem.SetWindow() is deprecated wxPython 2.9
                     compat.SizerItem_SetWindow(
                         pw.GetSizer().GetChildren()[0],
                         Tree.Node.__empty_win,
