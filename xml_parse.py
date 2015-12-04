@@ -167,8 +167,7 @@ class XmlParser(ContentHandler):
             res['language'] = attrs.get('language',
                                         self.code_writer.language)
         else:
-            raise XmlParsingError(_("'language' attribute missing: "
-                                    "could not generate code"))
+            res['language'] = config.default_language
 
         res['name'] = attrs.get('name')
 

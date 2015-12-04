@@ -62,6 +62,13 @@ Default value for indentation symbol
 @type: str
 """
 
+default_language = 'python'
+"""\
+Default language of no specified
+
+@type: str
+"""
+
 default_multiple_files = 0
 """\
 Default value for writing multiple files (each class in a separate file)
