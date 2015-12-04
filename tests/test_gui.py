@@ -19,6 +19,7 @@ import wx
 import config
 import common
 import main
+import xrc2wxg
 
 
 class TestGui(WXGladeBaseTest):
@@ -50,6 +51,7 @@ class TestGui(WXGladeBaseTest):
     @classmethod
     def setUpClass(cls):
         WXGladeBaseTest.setUpClass()
+        xrc2wxg._write_timestamp = False
 
         # create an simply application
         cls.app = wx.PySimpleApp()
@@ -143,7 +145,7 @@ class TestGui(WXGladeBaseTest):
         Open a wxGlade project
 
         @param content: Content
-        @type content:  unicode | StringIO | None
+        @type content:  Unicode | StringIO | None
 
         @param filename: File name
         @type filename:  str
@@ -525,4 +527,27 @@ class TestGui(WXGladeBaseTest):
             expected,
             'EditStylesMixin.get_int_style() failed: got "%s" expect: "%s"' % (
                 ret, expected)
+        )
+
+    def test_missing_application_attributes(self):
+        """\
+        Test load wxg file w/ missing <application> attributes and generate
+        code
+        """
+        fullpath = os.path.join(self.caseDirectory, 'app_wo_attrs_gui.xrc')
+        obuffer = StringIO.StringIO()
+
+        xrc2wxg.convert(fullpath, obuffer)
+
+        generated = obuffer.getvalue().decode('UTF-8')
+        expected = self._load_file('app_wo_attrs_gui.wxg')
+
+        self._compare(expected, generated, "wxg")
+
+        self._messageBox = None
+        self._open_wxg_file(generated)
+        self.failIf(
+            self._messageBox,
+            'Loading test wxg file caused an error message: %s' %
+            self._messageBox
         )
