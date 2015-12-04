@@ -497,7 +497,7 @@ class SizerSlot(object):
 
 class SizerHandleButton(GenButton):
     """\
-    Provides a ``handle'' to activate a Sizer and to access its popup menu
+    Provides a "handle" to activate a Sizer and to access its popup menu
 
     @ivar menu: Content popup menu as a list of tuples with label and
                 function
@@ -790,7 +790,6 @@ class InsertDialog(wx.Dialog):
 
         return lambda: self.pos, set_pos
 
-
 # end of class InsertDialog
 
 
@@ -799,11 +798,12 @@ class Sizer(object):
     Base class for every Sizer handled by wxGlade
 
     @ivar _logger: Instance specific logger
+
+    @ivar window: Window this sizer is responsible for the layout of
     """
 
     def __init__(self, window):
-        self.window = window  # window this sizer is responsible
-        # for the layout of
+        self.window = window
 
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -866,13 +866,43 @@ class Sizer(object):
         # re-initialise logger instance deleted from __getstate__
         self._logger = logging.getLogger(self.__class__.__name__)
 
-
 # end of class Sizer
 
 
 class SizerBase(Sizer):
     """\
     Base class for every non-virtual Sizer handled by wxGlade
+
+    @ivar _btn: A "handle" to activate a Sizer and to access its popup men
+    @type _btn: SizerHandleButton
+
+    @ivar border: Widget border
+    @type border:  str | None
+
+    @ivar children: Widgets added to the sizer
+    @type children: list
+
+    @ivar flag: Widget flags / styles
+    @type flag:  str | None
+
+    @ivar menu: List of popup menu entries
+    @type menu: list
+
+    @ivar notebook: Properties notebook pane
+    @type notebook: wx.Notebook
+
+    @ivar option: Widget layout proportions
+    @type option:  str | None
+
+    @ivar pos: for sub-sizers, the position inside the parent
+    @type pos: int
+
+    @ivar toplevel: if True, self is not inside another sizer, but it is the
+                    responsible of the layout of self.window
+    @type toplevel: bool
+
+    @ivar widget: actual wxSizer instance
+    @type widget: wx.Sizer
     """
 
     def __init__(self, name, klass, window, toplevel=True, show=True,
@@ -883,14 +913,11 @@ class SizerBase(Sizer):
         self.name = name
         self.klass = klass
         self.base = klass
-        self.pos = 0  # for sub-sizers, the position inside the parent
+        self.pos = 0
         self.properties = {}
         self.property_window = window.property_window
+        self.widget = None
 
-        self.widget = None  # this is the actual wxSizer instance
-
-        # toplevel: if True, self is not inside another sizer, but it is the
-        # responsible of the layout of self.window
         self.toplevel = toplevel
         if not self.toplevel:
             self.option = 1
@@ -902,19 +929,15 @@ class SizerBase(Sizer):
         if self.menu is None:
             self.menu = [(_('Add slot'), self.add_slot),
                          (_('Insert slot...'), self.insert_slot)]
-        # if not self.toplevel:
-        self.menu.extend([(_('Copy\tCtrl+C'), self.clipboard_copy,
-                           wx.ART_COPY),
-                          (_('Cut\tCtrl+X'), self.clipboard_cut,
-                           wx.ART_CUT),
-                          ])
+        self.menu.extend([
+            (_('Copy\tCtrl+C'), self.clipboard_copy, wx.ART_COPY),
+            (_('Cut\tCtrl+X'), self.clipboard_cut, wx.ART_CUT),
+            ])
 
-        self._btn = None  # SizerHandleButton
-
+        self._btn = None
         self.notebook = None
         self._property_setup()
-
-        self.children = []  # list of widgets added to the sizer
+        self.children = []
 
     def create_widget(self):
         """\
@@ -1256,7 +1279,20 @@ class SizerBase(Sizer):
     def set_item(self, pos, option=None, flag=None, border=None, size=None,
                  force_layout=True):
         """\
-        Updates the layout of the item at the given pos.
+        Updates the layout of the item at the given pos
+
+        @param pos: Widget position
+        @type pos: int
+        @param option: Widget layout proportions
+        @type option:  str | None
+        @param flag: Widget flags / styles
+        @type flag:  str | None
+        @param border: Widget border
+        @type border:  str | None
+        @param size: Widget width and height
+        @type size: list[int, int] | None
+        @param force_layout: Force layout update
+        @type force_layout: bool
         """
         try:
             item = self.children[pos]
@@ -2304,8 +2340,7 @@ class EditFlexGridSizer(GridSizerBase):
 
     def create_widget(self):
         self.widget = CustomSizer(self, wx.FlexGridSizer, self.rows,
-                                  self.cols,
-                                  self.vgap, self.hgap)
+                                  self.cols, self.vgap, self.hgap)
         GridSizerBase.create_widget(self)
         for r in self.grow_rows:
             self.widget.AddGrowableRow(r)
