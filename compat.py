@@ -61,10 +61,10 @@ def SizerItem_SetSizer(item, sizer):
     @param item:  Instance of wxSizerItem
     @param sizer: Instance of wxSizer
     """
-    if hasattr(item, 'AssignSizer'):
-        item.AssignSizer(sizer)
-    else:
-        item.SetSizer(sizer)
+#    if hasattr(item, 'AssignSizer'):
+#        item.AssignSizer(sizer)
+#    else:
+    item.SetSizer(sizer)
 
 
 # Set different functions depending on the active wxPython version
