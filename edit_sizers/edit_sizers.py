@@ -1311,16 +1311,13 @@ class SizerBase(Sizer):
         if size is not None:
             item.size = size
 
-        self._set_item_widget(pos, option, flag, border, size, force_layout)
-
-    def _set_item_widget(self, pos, option, flag, border, size, force_layout):
         if not self.widget:
             return
 
         try:
             elem = self.widget.GetChildren()[pos]
-        except IndexError:
-            return  # this may happen during xml loading
+        except IndexError:  # this may happen during xml loading
+            return
 
         if option is not None:
             elem.SetProportion(option)
@@ -1329,28 +1326,18 @@ class SizerBase(Sizer):
         if border is not None:
             elem.SetBorder(border)
         if elem.IsWindow():
-            item = elem.GetWindow()
             if size is None:
                 size = elem.GetSize()
+            item = elem.GetWindow()
             w, h = size
             if w == -1:
                 w = item.GetBestSize()[0]
             if h == -1:
                 h = item.GetBestSize()[1]
-            newelem = wx.SizerItem()
-            compat.SizerItem_SetWindow(newelem, item)
-            newelem.SetFlag(elem.GetFlag())
-            newelem.SetBorder(elem.GetBorder())
-            newelem.SetProportion(elem.GetProportion())
-            newelem.SetInitSize(w, h)
-            self.widget.InsertItem(pos, newelem)
-            # self.children[pos] = newelem
-            self.widget.Remove(pos + 1)
+            self.widget.SetItemMinSize(item, w, h)
 
         if force_layout:
             self.layout(True)
-            # try: self.sizer.Layout()
-            # except AttributeError: pass
 
     def remove_item(self, elem, force_layout=True):
         """\
@@ -2202,36 +2189,6 @@ class GridSizerBase(SizerBase):
         self.properties['cols'].set_value(self.cols)
         self.layout(True)
         common.app_tree.app.saved = False
-
-    def _set_item_widget(self, pos, option, flag, border, size, force_layout):
-        if not self.widget:
-            return
-
-        try:
-            elem = self.widget.GetChildren()[pos]
-        except IndexError:
-            return  # this may happen during xml loading
-
-        if option is not None:
-            elem.SetProportion(option)
-        if flag is not None:
-            elem.SetFlag(flag)
-        if border is not None:
-            elem.SetBorder(border)
-        if elem.IsWindow():
-            if size is None:
-                size = elem.GetSize()
-            item = elem.GetWindow()
-            w, h = size
-            if w == -1:
-                w = item.GetBestSize()[0]
-            if h == -1:
-                h = item.GetBestSize()[1]
-            self.widget.SetItemMinSize(item, w, h)
-
-        if force_layout:
-            self.layout(True)
-
 
 # end of class GridSizerBase
 
