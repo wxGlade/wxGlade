@@ -167,7 +167,16 @@ class TestGui(WXGladeBaseTest):
 
         self.frame._open_app(filename_or_filelike=content,
                              use_progress_dialog=False, add_to_history=False)
-        common.app_tree.ExpandAll()
+        tree = common.app_tree
+        root = tree.GetRootItem()
+        first, cookie = tree.GetFirstChild(root)
+        if first.IsOk():
+            tree.ExpandAllChildren(first)
+            self._process_wx_events()
+            tree.SelectItem(first)
+            self._process_wx_events()
+            tree.show_toplevel(None)
+            tree.SelectItem(root)
         self._process_wx_events()
 
     def _process_wx_events(self):
