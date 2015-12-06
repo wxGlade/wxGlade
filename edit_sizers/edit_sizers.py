@@ -1348,7 +1348,8 @@ class SizerBase(Sizer):
                 c.item.pos -= 1
             del self.children[elem.pos]
         if self.widget and elem.widget:
-            self.widget.Remove(elem.widget)
+            self.widget.Detach(elem.pos)
+            elem.sizer = None
             if force_layout:
                 self.layout(True)
                 # if not self.toplevel: self.sizer.Layout()
