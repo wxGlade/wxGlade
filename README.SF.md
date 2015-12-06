@@ -3,7 +3,7 @@ wxGlade: A GUI builder for wxPython/wxWidgets
 
 General
 -------
-Version: 0.7.1 RC1 **Be carefully - this is BETA software**
+Version: 0.7.1 RC2 **Be carefully - this is BETA software**
 
 License: MIT (see LICENSE.txt)
 
@@ -16,19 +16,19 @@ Requirements
 
 Files
 -----
-    wxglade-0.7.1rc1.tar.gz        source code tarred and gzipped
-    wxglade-0.7.1rc1.zip           source code zipped
-    wxGlade-0.7.1rc1-setup.exe     Installer (Full Edition) requires Python and
+    wxglade-0.7.1rc2.tar.gz        source code tarred and gzipped
+    wxglade-0.7.1rc2.zip           source code zipped
+    wxGlade-0.7.1rc2-setup.exe     Installer (Full Edition) requires Python and
                                    wxPython locally installed
-    wxGlade-SAE-0.7.1rc1-setup.exe Installer Standalone Edition Python and
+    wxGlade-SAE-0.7.1rc2-setup.exe Installer Standalone Edition Python and
                                    wxPython are bundled using PyInstaller
 
 MD5 checksums
 -------------
-    f4edfd2fb5fcc7348d5f3c93e9e30615  dist/wxGlade-0.7.1rc1.tar.gz
-    5544acc17de441da33d0bcae6d168b3c  dist/wxGlade-0.7.1rc1.zip
-    bcf3518a7b72dd8e6d2a9e25282fcc59  wxGlade-0.7.1RC1-setup.exe
-    ec05dff70a30b40fdcd4d1f9aafa5c91  wxGlade-SAE-0.7.1RC1-setup.exe
+    676a56f9f87b52c2578f0e3e58b61f2b  wxGlade-0.7.1rc2-setup.exe
+    aee1b0205dc34641e0a6a08f77595ded  wxGlade-0.7.1rc2.tar.gz
+    69bf2d243b11b9dee60901cb1042c83f  wxGlade-0.7.1rc2.zip
+    f9872a3d29747fcfc598c2762904f4ba  wxGlade-SAE-0.7.1rc2-setup.exe
 
 
 Standalone Edition
