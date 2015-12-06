@@ -1353,7 +1353,7 @@ class SizerBase(Sizer):
                 self.layout(True)
                 # if not self.toplevel: self.sizer.Layout()
 
-    Remove = remove_item  # maybe this is needed, I have to check...
+    Remove = remove_item  # TODO: maybe this is needed, I have to check...
 
     def layout(self, recursive=True):
         # if not self.widget or not self.window.is_visible(): return
@@ -1553,12 +1553,23 @@ class SizerBase(Sizer):
             self.layout(True)
         common.app_tree.app.saved = False
 
-    def insert_slot(self, *args, **kwds):
+    def insert_slot(self, interactive=True, pos=0, force_layout=True):
         """\
-        inserts a slot into the sizer: the user will be asked for a position
-        before which to insert the SizerSlot object. This method is meaningful
-        only in an interactive session
+        Inserts a slot into the sizer
+
+        The user will be asked for a position before which to insert the
+        SizerSlot object
+
+        @param interactive: Open a dialog to ask to the position to insert
+        @type interactive: bool
+
+        @param pos: Position to insert a new slot
+        @type pos: int
+
+        @param force_layout: Force layout update
+        @type force_layout: bool
         """
+
         if not self.widget:
             return
 
@@ -1921,13 +1932,12 @@ class CustomSizer(wx.BoxSizer):
         self._grid.Layout()
         wx.BoxSizer.Layout(self)
 
-
 # end of class CustomSizer
 
 
 class GridSizerBase(SizerBase):
     """\
-    Base class for Grid sizers. Must not be instantiated.
+    Base class for Grid sizers.
     """
 
     def __init__(self, name, klass, window, rows=3, cols=3, vgap=0, hgap=0,
@@ -2087,31 +2097,40 @@ class GridSizerBase(SizerBase):
             self.widget.Fit(self.window.widget)
             self.widget.SetSizeHints(self.window.widget)
 
-    def insert_slot(self, *args, **kwds):
+    def insert_slot(self, interactive=True, pos=0, force_layout=True):
         """\
-        inserts a slot into the sizer: the user will be asked for a position
-        before which to insert the SizerSlot object
+        Inserts a slot into the sizer
+
+        The user will be asked for a position before which to insert the
+        SizerSlot object
+
+        @param interactive: Open a dialog to ask to the position to insert
+        @type interactive: bool
+
+        @param pos: Position to insert a new slot
+        @type pos: int
+
+        @param force_layout: Force layout update
+        @type force_layout: bool
         """
         if not self.widget:
             return
 
-        if kwds.get('interactive', True):
+        if interactive:
             dialog = InsertDialog(len(self.children))
             ok = dialog.ShowModal() == wx.ID_OK
             pos = dialog.pos + 1
             dialog.Destroy()
         else:
-            pos = kwds['pos']
             ok = True
         if ok:
-            tmp = SizerSlot(self.window, self, pos)
+            new_slot = SizerSlot(self.window, self, pos)
             for c in self.children[pos:]:
                 c.item.pos += 1
-            self.children.insert(pos, SizerItem(tmp, pos, 1, wx.EXPAND, 0))
-            tmp.show_widget(True)  # create the actual SizerSlot
-            self.widget.Insert(pos, tmp.widget, 1, wx.EXPAND)
-            self.widget.SetItemMinSize(tmp.widget, 20, 20)
-            force_layout = kwds.get('force_layout', True)
+            self.children.insert(pos, SizerItem(new_slot, pos, 1, wx.EXPAND, 0))
+            new_slot.show_widget(True)  # create the actual SizerSlot
+            self.widget.Insert(pos, new_slot.widget, 1, wx.EXPAND)
+            self.widget.SetItemMinSize(new_slot.widget, 20, 20)
             if force_layout:
                 self.layout(True)
             common.app_tree.app.saved = False
