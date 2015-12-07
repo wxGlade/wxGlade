@@ -223,10 +223,9 @@ class wxGladeFrame(wx.Frame):
         PREFS_ID = wx.ID_PREFERENCES
         view_menu.AppendSeparator()
         MANAGE_TEMPLATES_ID = wx.NewId()
-        append_item(view_menu, MANAGE_TEMPLATES_ID, _('Templates Manager...'))
+        append_item(view_menu, MANAGE_TEMPLATES_ID, _('Template Manager...'))
         view_menu.AppendSeparator()
         append_item(view_menu, PREFS_ID, _('Preferences...'))
-        #wx.ART_HELP_SETTINGS)
         menu_bar.Append(file_menu, _("&File"))
         menu_bar.Append(view_menu, _("&View"))
 
@@ -248,8 +247,7 @@ class wxGladeFrame(wx.Frame):
             wx.App_SetMacHelpMenuTitleName(_('&Help'))
 
         # file history support
-        self.file_history = wx.FileHistory(
-            config.preferences.number_history)
+        self.file_history = wx.FileHistory(config.preferences.number_history)
         self.file_history.UseMenu(file_menu)
         files = common.load_history()
         files.reverse()

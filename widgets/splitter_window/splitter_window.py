@@ -151,7 +151,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                                                     self.set_no_custom_class)
         prop['no_custom_class'] = CheckBoxProperty(
             self, 'no_custom_class',
-            label=_("Don't generate code for this custom class"))
+            label=_("Don't generate code for this class"))
 
     def create_widget(self):
         self.widget = wx.SplitterWindow(self.parent.widget, self.id,
