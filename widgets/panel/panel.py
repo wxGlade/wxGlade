@@ -43,7 +43,7 @@ class PanelBase(EditStylesMixin):
                                                     self.set_no_custom_class)
         self.properties['no_custom_class'] = CheckBoxProperty(
             self, 'no_custom_class',
-            label=_("Don't generate code for this custom class"))
+            label=_("Don't generate code for this class"))
 
         self.set_style(style)
         self.access_functions['style'] = (self.get_style, self.set_style)
