@@ -158,7 +158,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     label_buttom_pane = new wxStaticText(splitter_1_pane_2, wxID_ANY, _("bottom pane"));
     label_left_pane = new wxStaticText(splitter_2_pane_1, wxID_ANY, _("left pane"));
     label_right_pane = new wxStaticText(splitter_2_pane_2, wxID_ANY, _("right pane"));
-    bitmap_code_emptybitmap = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(32, 32));
+    bitmap_empty = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(32, 32));
     bitmap_file = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY));
     bitmap_nofile = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("non-existing.bmp"), wxBITMAP_TYPE_ANY));
     bitmap_art = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxArtProvider::GetBitmap(wxART_PRINT, wxART_OTHER, wxSize(32, 32)));
@@ -356,7 +356,7 @@ void All_Widgets_Frame::do_layout()
     splitter_2->SplitVertically(splitter_2_pane_1, splitter_2_pane_2);
     sizer_25->Add(splitter_2, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxSplitterWindow_vertical->SetSizer(sizer_25);
-    sizer_11->Add(bitmap_code_emptybitmap, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_empty, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     sizer_11->Add(bitmap_file, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     sizer_11->Add(bitmap_nofile, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     sizer_11->Add(bitmap_art, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);

@@ -152,7 +152,7 @@ sub new {
     $self->{splitter_2_pane_2} = Wx::Panel->new($self->{splitter_2}, wxID_ANY);
     $self->{label_right_pane} = Wx::StaticText->new($self->{splitter_2_pane_2}, wxID_ANY, _T("right pane"));
     $self->{notebook_1_wxStaticBitmap} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{bitmap_code_emptybitmap} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new(32, 32));
+    $self->{bitmap_empty} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new(32, 32));
     $self->{bitmap_file} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
     $self->{bitmap_nofile} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("non-existing.bmp", wxBITMAP_TYPE_ANY));
     $self->{bitmap_art} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::ArtProvider::GetBitmap(wxART_PRINT, wxART_OTHER, Wx::Size->new(32, 32)));
@@ -370,7 +370,7 @@ sub __do_layout {
     $self->{splitter_2}->SplitVertically($self->{splitter_2_pane_1}, $self->{splitter_2_pane_2}, );
     $self->{sizer_25}->Add($self->{splitter_2}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxSplitterWindow_vertical}->SetSizer($self->{sizer_25});
-    $self->{sizer_11}->Add($self->{bitmap_code_emptybitmap}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_empty}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     $self->{sizer_11}->Add($self->{bitmap_art}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);

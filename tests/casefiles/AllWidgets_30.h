@@ -134,7 +134,7 @@ protected:
     wxPanel* splitter_2_pane_2;
     wxSplitterWindow* splitter_2;
     wxScrolledWindow* notebook_1_wxSplitterWindow_vertical;
-    wxStaticBitmap* bitmap_code_emptybitmap;
+    wxStaticBitmap* bitmap_empty;
     wxStaticBitmap* bitmap_file;
     wxStaticBitmap* bitmap_nofile;
     wxStaticBitmap* bitmap_art;
