@@ -731,7 +731,7 @@
                                 <option>1</option>
                                 <flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
                                 <border>5</border>
-                                <object class="wxStaticBitmap" name="bitmap_code_emptybitmap">
+                                <object class="wxStaticBitmap" name="bitmap_empty">
                                     <bitmap>empty:32,32</bitmap>
                                 </object>
                             </object>
