@@ -29,7 +29,7 @@
         most of the changes but not all changes. Especially renamed classes
         and attributes need additional attention.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Overwriting multiple files is not recommended as well as
           overwriting of files with percent character (<span class="quote">“<span class="quote">%</span>”</span>)
-          inside is not supported.</p></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>This feature is deprecated now und will be removed within the
+          inside is not supported.</p></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>This feature is deprecated now and will be removed within the
           next releases.</p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="output.path.filenames.section"></a>Output Path and Filenames</h3></div></div></div><p><span class="quote">“<span class="quote"><span class="guilabel">Output path</span></span>”</span> specifies the
         name of the output file for <span class="quote">“<span class="quote"><span class="guilabel">Single
         file</span></span>”</span> projects or the output directory for
@@ -47,14 +47,14 @@
         below shows the type of application start code resulting from
         different combinations of the three properties. The
         <span class="quote">“<span class="quote"><span class="guilabel">Enable gettext support</span></span>”</span> property
-        just triggers i18n-enabled source code.</p><div class="table"><a name="idm139824378981040"></a><p class="title"><b>Table 2.1. Interaction between properties to generate different types of
+        just triggers i18n-enabled source code.</p><div class="table"><a name="idm139644307139632"></a><p class="title"><b>Table 2.1. Interaction between properties to generate different types of
           start code</b></p><div class="table-contents"><table summary="Interaction between properties to generate different types of
           start code" border="1"><colgroup><col><col><col><col></colgroup><thead><tr><th align="left"><span class="guilabel">Name</span></th><th align="left"><span class="guilabel">Class</span></th><th align="left"><span class="guilabel">Top window</span></th><th align="left"><span class="guilabel">Type of application start code
                 to generate</span></th></tr></thead><tbody><tr><td>not selected</td><td>not selected</td><td>not selected</td><td>not generated</td></tr><tr><td>selected</td><td>not selected</td><td>not selected</td><td>not generated</td></tr><tr><td>not selected</td><td>selected</td><td>not selected</td><td>not generated</td></tr><tr><td>selected</td><td>selected</td><td>not selected</td><td>not generated</td></tr><tr><td>selected</td><td>not selected</td><td>selected</td><td>simplified start code</td></tr><tr><td>not selected</td><td>selected</td><td>selected</td><td>not generated</td></tr><tr><td>selected</td><td>selected</td><td>selected</td><td>detailed start code</td></tr></tbody></table></div></div><br class="table-break"><p>The application start code of a multi-file project will be
         recreated every time the code generation is running.</p><p>In opposition the application start code of single-file projects
         will not updated if the name of the <span class="quote">“<span class="quote"><span class="guilabel">Top
         window</span></span>”</span> has changed and <span class="quote">“<span class="quote"><span class="guilabel">Overwrite
-        existing sources</span></span>”</span> is not set.</p><div class="example"><a name="idm139824378957520"></a><p class="title"><b>Example 2.2. Detailed application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package MyApp;
+        existing sources</span></span>”</span> is not set.</p><div class="example"><a name="idm139644307116112"></a><p class="title"><b>Example 2.2. Detailed application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package MyApp;
 use base qw(Wx::App);
 use strict;
 sub OnInit {
@@ -72,7 +72,7 @@ unless(caller){
         $local-&gt;AddCatalog("app"); # replace with the appropriate catalog name
         my $app = MyApp-&gt;new();
         $app-&gt;MainLoop();
-}</pre></div></div><p><br class="example-break"></p><div class="example"><a name="idm139824378954640"></a><p class="title"><b>Example 2.3. Simplified application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package main;
+}</pre></div></div><p><br class="example-break"></p><div class="example"><a name="idm139644307113232"></a><p class="title"><b>Example 2.3. Simplified application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package main;
 unless(caller){
         my $local = Wx::Locale-&gt;new("English", "en", "en"); # replace with ??
         $local-&gt;AddCatalog("PlOgg1_app"); # replace with the appropriate catalog name
@@ -83,13 +83,13 @@ unless(caller){
         $PlOgg1_app-&gt;SetTopWindow($Mp3_To_Ogg);
         $Mp3_To_Ogg-&gt;Show(1);
         $PlOgg1_app-&gt;MainLoop();
-}</pre></div></div><br class="example-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139824378951952"></a>Compiling C++ Code</h3></div></div></div><p>You can compile your wxGlade project after the generation of the
+}</pre></div></div><br class="example-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139644307110544"></a>Compiling C++ Code</h3></div></div></div><p>You can compile your wxGlade project after the generation of the
         C++ source and header files. The following examples demonstrate
-        compiling on Linux command line using <span class="command"><strong>g++</strong></span>.</p><div class="example"><a name="idm139824378950112"></a><p class="title"><b>Example 2.4. Compiling a single file C++ project on Linux</b></p><div class="example-contents"><pre class="screen"># g++ FontColour.cpp $(wx-config --libs) $(wx-config --cxxflags) -o FontColour
+        compiling on Linux command line using <span class="command"><strong>g++</strong></span>.</p><div class="example"><a name="idm139644307108704"></a><p class="title"><b>Example 2.4. Compiling a single file C++ project on Linux</b></p><div class="example-contents"><pre class="screen"># g++ FontColour.cpp $(wx-config --libs) $(wx-config --cxxflags) -o FontColour
 # ll FontColour*
 -rwxr-xr-x 1 carsten carsten 72493 Jun 15 09:22 FontColour
 -rwxr-xr-x 1 carsten carsten  1785 Mai 11 19:24 FontColour.cpp
--rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h</pre></div></div><br class="example-break"><div class="example"><a name="idm139824378948432"></a><p class="title"><b>Example 2.5. Compiling a multi file C++ project on Linux</b></p><div class="example-contents"><pre class="screen"># g++  CPPOgg2_main.cpp $(wx-config --libs) $(wx-config --cxxflags) \
+-rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h</pre></div></div><br class="example-break"><div class="example"><a name="idm139644307107024"></a><p class="title"><b>Example 2.5. Compiling a multi file C++ project on Linux</b></p><div class="example-contents"><pre class="screen"># g++  CPPOgg2_main.cpp $(wx-config --libs) $(wx-config --cxxflags) \
        -o CPPOgg2_main CPPOgg2_MyDialog.cpp CPPOgg2_MyFrame.cpp
 # ll CPPOgg2*
 -rwxr-xr-x 1 carsten carsten 108354 Jun 15 09:33 CPPOgg2_main

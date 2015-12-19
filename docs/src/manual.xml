@@ -5,31 +5,33 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2015-10-08</date>
+    <date>2015-12-19</date>
 
-    <author>
-      <firstname>Marcello</firstname>
+    <authorgroup>
+      <author>
+        <firstname>Marcello</firstname>
 
-      <surname>Semboli</surname>
-    </author>
+        <surname>Semboli</surname>
+      </author>
 
-    <author>
-      <firstname>Alberto</firstname>
+      <author>
+        <firstname>Alberto</firstname>
 
-      <surname>Griggio</surname>
-    </author>
+        <surname>Griggio</surname>
+      </author>
 
-    <author>
-      <firstname>Carsten</firstname>
+      <author>
+        <firstname>Carsten</firstname>
 
-      <surname>Grohmann</surname>
-    </author>
+        <surname>Grohmann</surname>
+      </author>
+    </authorgroup>
   </bookinfo>
 
   <preface>
     <title>Preface</title>
 
-    <para>This manual describes the programm wxGlade, initially written by
+    <para>This manual describes the program wxGlade, initially written by
     Alberto Griggio. wxGlade is a Python, Perl, Lisp, C++ and XRC Graphical
     User Interface (<quote>GUI</quote>) editor for Unix and Microsoft Windows.
     Each of the chapters in this manual is designed as a tutorial for using
@@ -184,10 +186,6 @@
         <itemizedlist>
           <listitem>
             <para>setuptools</para>
-          </listitem>
-
-          <listitem>
-            <para>setuptools_hg</para>
           </listitem>
         </itemizedlist>
       </section>
@@ -376,7 +374,7 @@
           install wxGlade using execute the Python setup script
           <command>setup.py</command> as follow:</para>
 
-          <para><command>python2 setup.py installl --root &lt;DESTINATION
+          <para><command>python2 setup.py install --root &lt;DESTINATION
           DIRECTORY&gt;</command></para>
 
           <note>
@@ -471,7 +469,7 @@ changing mode of /opt/wxGlade/usr/bin/wxglade to 755
       <section>
         <title>Environment Variables</title>
 
-        <para>wxGlade supportes only one environment variable
+        <para>wxGlade supports only one environment variable
         <quote>WXGLADE_CONFIG_PATH</quote>.</para>
 
         <para>If you want to store the whole configuration data inclusive user
@@ -502,7 +500,7 @@ changing mode of /opt/wxGlade/usr/bin/wxglade to 755
         <para>The configuration file is a simple text file and contains user
         settings. It's named <filename>wxgladerc</filename> on Unix or
         <filename>wxglade.ini</filename> on Microsoft Windows. Be careful with
-        manual changed.</para>
+        manual changes.</para>
 
         <para>The configuration directory contains also a list of recently
         used files in <filename>file_history.txt</filename>.</para>
@@ -523,8 +521,13 @@ changing mode of /opt/wxGlade/usr/bin/wxglade to 755
       <title>Deprecated Features</title>
 
       <para>wxGlade can change code inside existing source files to reflect
-      changed designs. This feature is deprecated now und will be removed
-      within the next releases.</para>
+      changed designs. This feature have some limitations e.g. in case of name
+      and dependencies changes. Thereby it's recommended to overwrite existing
+      sources always and extend derived classes with your
+      functionality.</para>
+
+      <para>This feature is deprecated now and will be removed within the next
+      releases.</para>
     </section>
 
     <section>
@@ -720,7 +723,7 @@ changing mode of /opt/wxGlade/usr/bin/wxglade to 755
 
         <itemizedlist>
           <listitem>
-            <para>What did you? May you want to include a screenshot.</para>
+            <para>What did you? May you want to include a screen shot.</para>
           </listitem>
 
           <listitem>
@@ -881,7 +884,7 @@ changing mode of /opt/wxGlade/usr/bin/wxglade to 755
 
       <para>Escape sequences like <quote><emphasis>\n</emphasis></quote> or
       <quote><emphasis>\t</emphasis></quote> will not touched by wxGlade.
-      Thereby the generated source code contains excatly the same sequence as
+      Thereby the generated source code contains exactly the same sequence as
       entered. The language interpreter or compiler will interpret and
       probably convert the sequence into control characters. For example
       <quote><emphasis>\n</emphasis></quote> will be converted into a line
@@ -905,10 +908,10 @@ changing mode of /opt/wxGlade/usr/bin/wxglade to 755
             <listitem>
               <para>wxGlade can change code inside existing source files to
               reflect changed designs. This feature have some limitations e.g.
-              in case of name changes and changed dependencies. Thereby it’s
+              in case of name changes and changed dependencies. Thereby it's
               recommended to overwrite existing sources always and extend
               derived classes with your functionality.<note>
-                  <para>This feature is deprecated now und will be removed
+                  <para>This feature is deprecated now and will be removed
                   within the next releases.</para>
                 </note></para>
             </listitem>
@@ -919,7 +922,7 @@ changing mode of /opt/wxGlade/usr/bin/wxglade to 755
 
             <listitem>
               <para>Use the C++ names for all wx identifies like classes,
-              colours or events of the wx framework. Please don’t enter
+              colours or events of the wx framework. Please don't enter
               identifiers already formatted in a language specific form.
               wxGlade is able to transform the entered original identifiers in
               language-specific terms. You can use your own style for your
@@ -977,7 +980,7 @@ changing mode of /opt/wxGlade/usr/bin/wxglade to 755
               <para>Usage of language specific codes e.g. for
               <quote><guilabel>Extra code for this widget</guilabel></quote>
               or in generic input fields complicated changing the output
-              langauge later e.g. to re-use GUI elements in another project
+              language later e.g. to re-use GUI elements in another project
               too.</para>
             </listitem>
           </varlistentry>
@@ -1167,7 +1170,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
         </note>
 
         <note>
-          <para>This feature is deprecated now und will be removed within the
+          <para>This feature is deprecated now and will be removed within the
           next releases.</para>
         </note>
       </section>
@@ -1752,7 +1755,7 @@ if __name__ == "__main__":
                 more information</para>
 
                 <para><note>
-                    <para>This feature is deprecated now und will be removed
+                    <para>This feature is deprecated now and will be removed
                     within the next releases.</para>
                   </note></para>
               </glossdef>
@@ -1883,7 +1886,7 @@ if __name__ == "__main__":
               code generation depends on the output language.</para>
 
               <figure>
-                <title>Common Properties of a subclassed widget (default
+                <title>Common Properties - A subclassed widget (default
                 behaviour)</title>
 
                 <mediaobject>
@@ -1899,8 +1902,8 @@ if __name__ == "__main__":
 
                 <para><programlisting language="python"
                 linenumbering="numbered">class MyDialog(wxDialog):
+
     def __init__(self, *args, **kwds):
-        # begin wxGlade: MyDialog.__init__
         kwds["style"] = wxDEFAULT_DIALOG_STYLE
         wxDialog.__init__(self, *args, **kwds)
 </programlisting></para>
@@ -1925,7 +1928,7 @@ if __name__ == "__main__":
               set.</para>
 
               <figure id="example_baseclasses.fig">
-                <title>Common Properties with Base class(es) entry</title>
+                <title>Common Properties - Base class(es) entry</title>
 
                 <graphic contentwidth="8cm" fileref="example_baseclasses.png"/>
               </figure>
@@ -1935,8 +1938,8 @@ if __name__ == "__main__":
                 classes</title>
 
                 <programlisting language="python" linenumbering="numbered">class MyFrame(myFrameMixin, wxFrame):
+
     def __init__(self, *args, **kwds):
-        # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         myFrameMixin.__init__(self, *args, **kwds)
         wxFrame.__init__(self)
@@ -1979,7 +1982,7 @@ if __name__ == "__main__":
               </itemizedlist>
 
               <figure>
-                <title>Common Properties with a variable assignment</title>
+                <title>Common Properties - Variable assignment</title>
 
                 <mediaobject>
                   <imageobject>
@@ -1994,6 +1997,7 @@ if __name__ == "__main__":
 
                 <para><programlisting language="python"
                 linenumbering="numbered">class MyFrame(wx.Frame):
+
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -2106,6 +2110,41 @@ if __name__ == "__main__":
         widgets that have a great deal of methods and properties (such as
         grids and tree views). In this case, wxGlade greatly simplifies the
         process of designing forms.</para>
+
+        <para><quote><guilabel>Store as attribute</guilabel></quote> stores
+        the widget as an attribute of the top-level class.</para>
+
+        <para>Select <quote><guilabel>Don't generate code for this
+        class</guilabel></quote> to prevent generating code for
+        <classname>subwidgets of wxNotebook</classname>,
+        <classname>wxPanel</classname> and
+        <classname>wxSplitterWindow</classname>.</para>
+
+        <figure>
+          <title>Widget Properties - Don't generate code for this
+          class</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata contentwidth="8cm"
+                         fileref="properties_window_tab_3_dont_generate_code.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+
+        <para>There are two use cases for this feature:</para>
+
+        <orderedlist>
+          <listitem>
+            <para>Split complex designs into smaller pieces. The correlation
+            in such a setup based on the widget name.</para>
+          </listitem>
+
+          <listitem>
+            <para>Prevent generation of stubs, if using custom base
+            classes.</para>
+          </listitem>
+        </orderedlist>
       </section>
 
       <section id="styles.section">
@@ -2120,7 +2159,7 @@ if __name__ == "__main__":
         information.</para>
 
         <para><figure>
-            <title>Styles Tooltip</title>
+            <title>Widget Properties - Styles Tooltip</title>
 
             <graphic fileref="tooltip_styles.png"/>
           </figure></para>
@@ -2148,7 +2187,7 @@ if __name__ == "__main__":
         </figure>
 
         <figure>
-          <title>Events Properties with entered event handler name</title>
+          <title>Events Properties - Event handler name added</title>
 
           <mediaobject>
             <imageobject>
@@ -2162,6 +2201,7 @@ if __name__ == "__main__":
           handler stub at line 12</title>
 
           <programlisting language="python" linenumbering="numbered">class MyFrame(wx.Frame):
+
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -2171,6 +2211,7 @@ if __name__ == "__main__":
         self.__do_layout()
         self.Bind(wx.EVT_TEXT, self.myEVTTEXT, self.text_ctrl_1)
         # end wxGlade
+
     def myEVTTEXT(self, event):  # wxGlade: MyFrame.&lt;event_handler&gt;
         print "Event handler `myEVTTEXT' not implemented!"
         event.Skip()
@@ -2178,14 +2219,14 @@ if __name__ == "__main__":
         </example>
       </section>
 
-      <section>
+      <section id="code.properties.section">
         <title>Code Properties</title>
 
         <para>The fifth and last tab is named
         <quote><guilabel>Code</guilabel></quote> and has two parts.</para>
 
         <figure>
-          <title>Properties for extra code and extra properties</title>
+          <title>Code Properties - Extra code and extra properties</title>
 
           <mediaobject>
             <imageobject>
@@ -2195,12 +2236,18 @@ if __name__ == "__main__":
           </mediaobject>
         </figure>
 
-        <para>The upper part provides the ability to add additional code for
-        that widget e.g. for importing a custom class. This
+        <para>wxGlade never declares or assigns variable nor function names
+        nor import for non-default base classes and custom widgets.</para>
+
+        <para>If you use non-default base classes, <code>var:</code> or
+        <code>code:</code> statements, you have to manually assign the
+        variables, declare used functions as well as to include resp. to
+        import of additional code need by your widget in
+        <quote><guilabel>Extra code for this widget</guilabel></quote>. This
         <quote><guilabel>Extra code</guilabel></quote> will be added to the
         context of the source file and not to the context of the class.</para>
 
-        <para>The under part simplifies setting of additional widget
+        <para>The lower part simplifies setting of additional widget
         properties. Add the property name to the
         <quote><guilabel>Property</guilabel></quote> field and not the name of
         the setter function. For instance add
@@ -2219,7 +2266,7 @@ if __name__ == "__main__":
         </note>
 
         <figure>
-          <title>Set extra property</title>
+          <title>Code Properties - Set extra property</title>
 
           <mediaobject>
             <imageobject>
@@ -2234,6 +2281,7 @@ if __name__ == "__main__":
           14</title>
 
           <programlisting language="python" linenumbering="numbered">class MyFrame(wx.Frame):
+
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -2242,6 +2290,7 @@ if __name__ == "__main__":
         self.__set_properties()
         self.__do_layout()
         # end wxGlade
+
     def __set_properties(self):
         # begin wxGlade: MyFrame.__set_properties
         self.SetTitle("frame_1")
@@ -2275,7 +2324,7 @@ if __name__ == "__main__":
             <guimenuitem>Save</guimenuitem>
           </menuchoice> items. When opening or saving a new file, the file
         dialog defaults to the directory that you put in the
-        <quote><guilabel>Initial path</guilabel></quote> textbox in the
+        <quote><guilabel>Initial path</guilabel></quote> text box in the
         Preferences dialog, usually the user home directory.</para>
 
         <para>The <menuchoice>
@@ -2467,7 +2516,7 @@ if __name__ == "__main__":
           </thead>
 
           <tbody>
-            <row>
+            <row valign="top">
               <entry><itemizedlist>
                   <listitem>
                     <para>wxDialog</para>
@@ -2685,7 +2734,7 @@ if __name__ == "__main__":
 
             <para>produces in C++:</para>
 
-            <programlisting>wxBitmap("/usr/share/icons/application.png", wxBITMAP_TYPE_ANY)</programlisting>
+            <programlisting language="C++">wxBitmap("/usr/share/icons/application.png", wxBITMAP_TYPE_ANY)</programlisting>
           </example>
         </listitem>
 
@@ -2706,7 +2755,7 @@ if __name__ == "__main__":
 
             <para>produces in C++:</para>
 
-            <programlisting>wxBitmap(my_bitmap_path, wxBITMAP_TYPE_ANY)</programlisting>
+            <programlisting language="C++">wxBitmap(my_bitmap_path, wxBITMAP_TYPE_ANY)</programlisting>
           </example>
         </listitem>
 
@@ -2715,7 +2764,7 @@ if __name__ == "__main__":
           <emphasis>empty:&lt;width&gt;,&lt;height&gt;</emphasis></para>
 
           <para>Creates an empty bitmap of the specified size. It's
-          recommendet to use a minimal size of 1, 1.</para>
+          recommended to use a minimal size of 1, 1.</para>
 
           <example>
             <title>Create an empty <classname>wxBitmap</classname> with width
@@ -2727,11 +2776,11 @@ if __name__ == "__main__":
 
             <para>produces in Python:</para>
 
-            <programlisting>wx.EmptyBitmap(32, 32)</programlisting>
+            <programlisting language="python">wx.EmptyBitmap(32, 32)</programlisting>
 
             <para>produces in C++:</para>
 
-            <programlisting>wxBitmap(32, 32)</programlisting>
+            <programlisting language="C++">wxBitmap(32, 32)</programlisting>
           </example>
         </listitem>
 
@@ -2751,7 +2800,7 @@ if __name__ == "__main__":
 
             <para>produces in Perl:</para>
 
-            <programlisting>Wx::ArtProvider::GetBitmap(wxART_GO_UP, wxART_OTHER, Wx::Size-&gt;new(32, 32))</programlisting>
+            <programlisting language="perl">Wx::ArtProvider::GetBitmap(wxART_GO_UP, wxART_OTHER, Wx::Size-&gt;new(32, 32))</programlisting>
           </example>
         </listitem>
 
@@ -2775,17 +2824,19 @@ if __name__ == "__main__":
 
             <para>produces in C++:</para>
 
-            <programlisting>wxSomeWidget((if (x == 0) get_bitmap1() else get_bitmap2();), option1, option2)</programlisting>
+            <programlisting language="C++">wxSomeWidget((if (x == 0) get_bitmap1() else get_bitmap2();), option1, option2)</programlisting>
           </example>
         </listitem>
       </itemizedlist>
 
-      <para>wxGlade never declares or assigns variable or function names, you
-      have to provide extra code to declare your variables or
-      functions.</para>
+      <para>If you use the <code>code:</code> tags like shown above the
+      preview window shows a fixed size empty bitmap instead.</para>
 
-      <para>If you use one of the tags listed above the preview window shows
-      just a fixed size empty bitmap.</para>
+      <note>
+        <para>Refer to <xref linkend="code.properties.section"/> for a
+        description of declaration and assignment of additional functions and
+        variables.</para>
+      </note>
     </section>
 
     <section id="widgets.wlist.section">
@@ -3098,89 +3149,93 @@ if __name__ == "__main__":
         <para>When you put a Custom Widget in the design window you will be
         prompted for a class name.</para>
 
-        <para>In the <quote><guilabel>Widget</guilabel></quote> tab of the
-        <quote><guilabel>Properties</guilabel></quote> window you can set a
-        number of custom attributes that will appear in the constructor
-        call.</para>
+        <para><note>
+            <para>Custom Widgets will not be shown in the design
+            preview.</para>
+          </note></para>
 
-        <figure>
-          <title>Widget Properties for a Custom Widget</title>
+        <section>
+          <title>Constructor for Custom Widgets</title>
 
-          <mediaobject>
-            <imageobject>
-              <imagedata contentwidth="16cm"
-                         fileref="properties_custom_widget.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
+          <para>In the <quote><guilabel>Widget</guilabel></quote> tab of the
+          <quote><guilabel>Properties</guilabel></quote> window you can set a
+          number of custom attributes that will appear in the constructor
+          call.</para>
 
-        <para>There are four attributes <userinput>$id</userinput>,
-        <userinput>$parent</userinput>, <userinput>$width</userinput> and
-        <userinput>$height</userinput> have a special meaning:</para>
+          <figure>
+            <title>Widget Properties for a Custom Widget</title>
 
-        <glosslist>
-          <glossentry>
-            <glossterm>$id</glossterm>
+            <mediaobject>
+              <imageobject>
+                <imagedata contentwidth="16cm"
+                           fileref="properties_custom_widget.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
 
-            <glossdef>
-              <para>This attribute will be replaced by the own widget ID e.g.
-              <constant>wxID_ANY</constant>.</para>
-            </glossdef>
-          </glossentry>
+          <para>There are four attributes <userinput>$id</userinput>,
+          <userinput>$parent</userinput>, <userinput>$width</userinput> and
+          <userinput>$height</userinput> have a special meaning:</para>
 
-          <glossentry>
-            <glossterm>$parent</glossterm>
+          <glosslist>
+            <glossentry>
+              <glossterm>$id</glossterm>
 
-            <glossdef>
-              <para>This attribute will be replaced by a reference to the
-              parent widget.</para>
-            </glossdef>
-          </glossentry>
+              <glossdef>
+                <para>This attribute will be replaced by the own widget ID
+                e.g. <constant>wxID_ANY</constant>.</para>
+              </glossdef>
+            </glossentry>
 
-          <glossentry>
-            <glossterm>$width</glossterm>
+            <glossentry>
+              <glossterm>$parent</glossterm>
 
-            <glossdef>
-              <para>This attribute will be replaced by the widget
-              width.</para>
-            </glossdef>
-          </glossentry>
+              <glossdef>
+                <para>This attribute will be replaced by a reference to the
+                parent widget.</para>
+              </glossdef>
+            </glossentry>
 
-          <glossentry>
-            <glossterm>$height</glossterm>
+            <glossentry>
+              <glossterm>$width</glossterm>
 
-            <glossdef>
-              <para>This attribute will be replaced by the widget
-              height.</para>
-            </glossdef>
-          </glossentry>
-        </glosslist>
+              <glossdef>
+                <para>This attribute will be replaced by the widget
+                width.</para>
+              </glossdef>
+            </glossentry>
 
-        <para>These attributes have different effects in C++, Lisp, Perl,
-        Python or XRC code generation.</para>
+            <glossentry>
+              <glossterm>$height</glossterm>
 
-        <para>For XRC you can use it to add custom attributes to the resource
-        object. To do so, arguments must have the following format:
-        <quote><parameter>ATTRIBUTE_NAME: ATTRIBUTE_VALUE</parameter></quote>.
-        For instance: <quote><parameter>default_value:10</parameter></quote>
-        is translated to:
-        <quote><code>&lt;default_value&gt;10&lt;/default_value&gt;</code></quote>.
-        Invalid entries are silently ignored.</para>
+              <glossdef>
+                <para>This attribute will be replaced by the widget
+                height.</para>
+              </glossdef>
+            </glossentry>
+          </glosslist>
 
-        <para>You can use the property <quote><guilabel>Custom
-        constructor</guilabel></quote> to specify a custom constructor like a
-        factory method.</para>
+          <para>These attributes have different effects in C++, Lisp, Perl,
+          Python or XRC code generation.</para>
 
-        <para>wxGlade never declares or assigns variable or function names,
-        you have to provide extra code to declare your variables or
-        functions.</para>
+          <para>For XRC you can use it to add custom attributes to the
+          resource object. To do so, arguments must have the following format:
+          <quote><parameter>ATTRIBUTE_NAME:
+          ATTRIBUTE_VALUE</parameter></quote>. For instance:
+          <quote><parameter>default_value:10</parameter></quote> is translated
+          to:
+          <quote><code>&lt;default_value&gt;10&lt;/default_value&gt;</code></quote>.
+          Invalid entries are silently ignored.</para>
 
-        <para>Custom Widgets will not be shown in the preview.</para>
+          <para>You can use the property <quote><guilabel>Custom
+          constructor</guilabel></quote> to specify a custom constructor like
+          a factory method.</para>
 
-        <example>
-          <title>Generated C++ code for the custom widget shown above</title>
+          <example>
+            <title>Generated C++ code for the custom widget shown
+            above</title>
 
-          <programlisting language="C++">MyFrame::MyFrame(wxWindow* parent, int id, const wxString&amp; title, const wxPoint&amp; pos, const wxSize&amp; size, long style):
+            <programlisting language="C++" linenumbering="numbered">MyFrame::MyFrame(wxWindow* parent, int id, const wxString&amp; title, const wxPoint&amp; pos, const wxSize&amp; size, long style):
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: MyFrame::MyFrame
@@ -3191,7 +3246,115 @@ if __name__ == "__main__":
     // end wxGlade
 }
 </programlisting>
-        </example>
+          </example>
+
+          <note>
+            <para>Refer to <xref linkend="code.properties.section"/> for a
+            description of declaration and assignment of additional functions
+            and variables.</para>
+          </note>
+        </section>
+
+        <section>
+          <title>Example: AGW SpeedMeter</title>
+
+          <para><example>
+              <title>Widget Custom Widget - AGW SpeedMeter</title>
+
+              <para><figure>
+                  <title>Widget Tree</title>
+
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata contentwidth="9cm"
+                                 fileref="custom_widget_SM_tree.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </figure><figure>
+                  <title>SpeedMeter Properties</title>
+
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata contentwidth="18cm"
+                                 fileref="custom_widget_SM_design1.png"/>
+                    </imageobject>
+                  </mediaobject>
+
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata contentwidth="9cm"
+                                 fileref="custom_widget_SM_design2.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </figure><figure>
+                  <title>Preview</title>
+
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata contentwidth="9cm"
+                                 fileref="custom_widget_SM_preview.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </figure>Generated Python code:</para>
+
+              <programlisting language="python" linenumbering="numbered">#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+#
+# generated by wxGlade 0.7.1 on Sat Dec 19 11:11:39 2015
+#
+
+import wx
+
+# begin wxGlade: dependencies
+import gettext
+# end wxGlade
+
+# begin wxGlade: extracode
+import wx.lib.agw.speedmeter as SM
+# end wxGlade
+
+
+class MyFrame(wx.Frame):
+    def __init__(self, *args, **kwds):
+        # begin wxGlade: MyFrame.__init__
+        wx.Frame.__init__(self, *args, **kwds)
+        self.speedmeter_1 = SM.SpeedMeter(self, wx.ID_ANY)
+
+        self.__set_properties()
+        self.__do_layout()
+        # end wxGlade
+
+    def __set_properties(self):
+        # begin wxGlade: MyFrame.__set_properties
+        self.SetTitle(_("frame_1"))
+        self.SetSize((300, 300))
+        self.speedmeter_1.SetSpeedValue(33)
+        # end wxGlade
+
+    def __do_layout(self):
+        # begin wxGlade: MyFrame.__do_layout
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        sizer_1.Add(self.speedmeter_1, 1, wx.ALL | wx.EXPAND, 5)
+        self.SetSizer(sizer_1)
+        self.Layout()
+        # end wxGlade
+
+# end of class MyFrame
+class MyApp(wx.App):
+    def OnInit(self):
+        frame_1 = MyFrame(None, wx.ID_ANY, "")
+        self.SetTopWindow(frame_1)
+        frame_1.Show()
+        return True
+
+# end of class MyApp
+
+if __name__ == "__main__":
+    gettext.install("app") # replace with the appropriate catalog name
+
+    app = MyApp(0)</programlisting>
+            </example></para>
+        </section>
       </section>
 
       <section id="widgets.spacer.section">
@@ -3210,16 +3373,29 @@ if __name__ == "__main__":
     <section id="menu.intro.section">
       <title>Introduction</title>
 
-      <para>wxGlade helps you to design the menu and the toolbar for your
-      application.</para>
+      <para>wxGlade helps you to design the menu, the tool bar and the status
+      bar for your application.</para>
 
-      <para>You can create the menu and toolbar as stand alone classes by
-      clicking the corresponding button in the main window.</para>
+      <para>There are two ways to integrate the three elements into a wxGlade
+      project:</para>
 
-      <para>Alternatively you can make the menu, toolbar and statusbar
-      associated with a <classname>wxFrame</classname>, by selecting the
-      related checkboxes in the <classname>wxFrame</classname> properties
-      window.</para>
+      <orderedlist>
+        <listitem>
+          <para>Create standalone widgets by clicking the corresponding button
+          in the main window.</para>
+        </listitem>
+
+        <listitem>
+          <para>Associated with a <classname>wxFrame</classname>by selecting
+          the related checkboxes in the <classname>wxFrame</classname>
+          properties window.</para>
+        </listitem>
+      </orderedlist>
+
+      <para>Associated bars will be integrated automatically to the right
+      place. On the other side standalone widgets have to integrate the
+      elements later manually in design after the source code has been
+      generated.</para>
     </section>
 
     <section id="menu.menu.section">
@@ -3277,7 +3453,7 @@ if __name__ == "__main__":
     <section id="menu.toolbar.section">
       <title>Toolbar</title>
 
-      <para>You can edit the toolbar's style and bitmap size in the properties
+      <para>You can edit the toolbar style and bitmap size in the properties
       window.</para>
 
       <para>Click on the <quote>Edit tools...</quote> button to edit the
@@ -3323,7 +3499,7 @@ if __name__ == "__main__":
     </caution>
 
     <para>This is an informal overview of wxGlade internals, made through a
-    sample session of use. Each action of the hypotetical user will be
+    sample session of use. Each action of the hypothetical user will be
     described from the point of view of the application, to (hopefully)
     understand what's happening behind the scenes.</para>
 
@@ -3350,20 +3526,20 @@ if __name__ == "__main__":
 
         <listitem>
           <para>Loading of the code generator modules. The
-          <quote><filename>codegen/</filename></quote> subdir is scanned to
-          find the available code generators: when a python module is found,
-          the app tries to load it and to access its 'writer' attribute: if
-          this is succesfully accomplished, such 'writer' object is considered
-          a valid code generator, and is inserted into the
-          'common.code_writers' dict (the key used is the 'language' attribute
-          of the writer itself)</para>
+          <quote><filename>codegen/</filename></quote> subdirectory is scanned
+          to find the available code generators: when a python module is
+          found, the app tries to load it and to access its 'writer'
+          attribute: if this is successfully accomplished, such 'writer'
+          object is considered a valid code generator, and is inserted into
+          the 'common.code_writers' dictionary (the key used is the 'language'
+          attribute of the writer itself)</para>
         </listitem>
 
         <listitem>
           <para>Loading of the widget and sizer modules. To load the widgets,
           the file <quote><filename>widgets/widgets.txt</filename></quote> is
           read, and the app tries to import every widget module listed on such
-          file. For every module succesfully imported, the
+          file. For every module successfully imported, the
           <quote><methodname>initialize</methodname></quote> function is then
           called: this function sets up the builder and code generator
           functions for a particular widget (explained later), and returns a
@@ -3379,13 +3555,14 @@ if __name__ == "__main__":
     </section>
 
     <section>
-      <title>Adding a Toplevel Widget</title>
+      <title>Adding a top-level Widget</title>
 
-      <para>When the user clicks on a button of a toplevel widget (a Frame or
+      <para>When the user clicks on a button of a top-level widget (a Frame or
       a Dialog), the method
       <quote><methodname>add_toplevel_object</methodname></quote> of
       <classname>wxGladeFrame</classname> is called: this is responsible for
-      the addition of the widget to the app. This happens in this way:</para>
+      the addition of the widget to the application. This happens in this
+      way:</para>
 
       <itemizedlist>
         <listitem>
@@ -3401,9 +3578,9 @@ if __name__ == "__main__":
           <quote><code>common.widgets</code></quote> dictionary. This function
           must accept three parameters: a reference to the parent widget
           (<code>None</code> in this case), a reference to the sizer to which
-          the widget will be added (again <code>None</code> for toplevel
+          the widget will be added (again <code>None</code> for top-level
           windows) and the zero-based position inside the sizer (once again,
-          this is unused for toplevel windows)</para>
+          this is unused for top-level windows)</para>
         </listitem>
 
         <listitem>
@@ -3413,15 +3590,15 @@ if __name__ == "__main__":
           <quote><methodname>insert</methodname></quote>. The
           <quote><filename>__init__</filename></quote> method of the widget
           also builds all the Properties of the object and stores them in the
-          'self.properties' dict</para>
+          'self.properties' dictionary</para>
         </listitem>
       </itemizedlist>
     </section>
 
     <section>
-      <title>Adding a Toplevel Sizer</title>
+      <title>Adding a top-level Sizer</title>
 
-      <para>This is similar to the addition of a toplevel widget, but the
+      <para>This is similar to the addition of a top-level widget, but the
       action is performed in two steps:</para>
 
       <itemizedlist>
@@ -3439,7 +3616,7 @@ if __name__ == "__main__":
 
         <listitem>
           <para>when the user left-clicks the mouse inside the previously
-          added toplevel widget, its <quote><code>drop_sizer</code></quote>
+          added top-level widget, its <quote><code>drop_sizer</code></quote>
           method is called, which is responsible of the addition of the sizer:
           it calls the factory function for the sizer (passing self as the
           first argument), which will build the object and add it to the
@@ -3468,7 +3645,7 @@ if __name__ == "__main__":
           <quote><code>self.sizer</code></quote> and
           <quote><code>self.pos</code></quote> (i.e. the parent, sizer and
           position inside the sizer of the slot that will be replaced).
-          Factory functions of non-toplevel objects call, apart from
+          Factory functions of non-top-level objects call, apart from
           <quote><code>common.app_tree.insert</code></quote> to insert the
           object in the tree, the method
           <quote><methodname>add_item</methodname></quote> of
@@ -3500,16 +3677,16 @@ if __name__ == "__main__":
     </section>
 
     <section>
-      <title>Saving the App</title>
+      <title>Saving the Design</title>
 
       <para>This operation is performed by the
       <quote><code>common.app_tree</code></quote> Tree: for every Node of the
-      tree, an <quote>object</quote> xml element is generated, with the following
-      attributes: name, class, base (class). Each object contains an element
-      for each Property (generated by the
+      tree, an <quote>object</quote> XML element is generated, with the
+      following attributes: name, class, base (class). Each object contains an
+      element for each Property (generated by the
       <quote><methodname>write</methodname></quote> method of Property) and
-      then an <quote>object</quote> element for all its sub-widgets and/or sizers.
-      Properties in the <quote><code>sizer_properties</code></quote>
+      then an <quote>object</quote> element for all its sub-widgets and/or
+      sizers. Properties in the <quote><code>sizer_properties</code></quote>
       dictionary are treated in a different way, as well as the children of a
       sizer, which are sub-elements of <quote><code>sizeritem</code></quote>
       objects: see the source code for details.</para>
@@ -3527,10 +3704,10 @@ if __name__ == "__main__":
 
       <itemizedlist>
         <listitem>
-          <para>when the start of an <quote>object</quote> element is reached, a
-          <classname>XMLWidgetObject</classname> instance is created and
+          <para>when the start of an <quote>object</quote> element is reached,
+          a <classname>XMLWidgetObject</classname> instance is created and
           pushed onto a stack of the objects created: such object in turn
-          calls the appropriate ``xml builder'' function (got from the
+          calls the appropriate ``XML builder'' function (got from the
           <quote><code>common.widgets_from_xml</code></quote> dictionary) that
           creates the widget: this function is similar to the factory function
           used to build the widget during an interactive session, see the code
@@ -3538,16 +3715,17 @@ if __name__ == "__main__":
         </listitem>
 
         <listitem>
-          <para>when the end of an <quote>object</quote> element is reached, the object at
-          the top of the stack is removed, and its widget (see the source of
-          <classname>XmlWidgetObject</classname>) is laid out</para>
+          <para>when the end of an <quote>object</quote> element is reached,
+          the object at the top of the stack is removed, and its widget (see
+          the source of <classname>XmlWidgetObject</classname>) is laid
+          out</para>
         </listitem>
 
         <listitem>
           <para>when the end of a Property element is reached, the appropriate
           setter function of the owner of the Property is called. This is the
           default behaviour, suitable for simple properties. For more complex
-          properties, whose xml representation consists of more sub-elements,
+          properties, whose XML representation consists of more sub-elements,
           each widget can define a particular handler: see for example
           <classname>FontHandler</classname> in
           <classname>edit_windows.WindowBase</classname></para>
@@ -3556,7 +3734,7 @@ if __name__ == "__main__":
     </section>
 
     <section>
-      <title>Generating the Cource Code</title>
+      <title>Generating the Source Code</title>
 
       <para>This section is the result of a cut &amp; paste of the comment at
       the beginning of
@@ -3566,10 +3744,10 @@ if __name__ == "__main__":
       <classname>xml_parse.CodeWriter</classname>.</para>
 
       <para>How the code is generated: every time the end of an object is
-      reached during the parsing of the xml tree, either the function
+      reached during the parsing of the XML tree, either the function
       <quote><methodname>add_object</methodname></quote> or the function
       <quote><methodname>add_class</methodname></quote> is called: the latter
-      when the object is a toplevel one, the former when it is not. In the
+      when the object is a top-level one, the former when it is not. In the
       last case, <quote><methodname>add_object</methodname></quote> calls the
       appropriate ``writer'' function for the specific object, found in the
       <quote><code>obj_builders</code></quote> dictionary. Such function
@@ -3600,7 +3778,7 @@ if __name__ == "__main__":
       them.</para>
 
       <section>
-        <title>Coding convensions</title>
+        <title>Coding conventions</title>
 
         <para><itemizedlist>
             <listitem>
@@ -3636,7 +3814,7 @@ if __name__ == "__main__":
         <title>Testing</title>
 
         <para>Please write tests for significant changes and run the test
-        suite before commiting changes.</para>
+        suite before committing changes.</para>
       </section>
 
       <section>
@@ -3722,8 +3900,7 @@ Archive:  static_text.zip
      1841  2013-12-09 10:02   static_text/perl_codegen.py
      5917  2013-12-09 10:02   static_text/static_text.py
 ---------                     -------
-    13079                     6 files
-</screen></para>
+    13079                     6 files</screen></para>
       </example>
 
       <section>
@@ -3731,8 +3908,8 @@ Archive:  static_text.zip
 
         <para>Creating a ZIP package is quite simple. Just create a ZIP
         package from widgets directory with all Python and additional files.
-        Don't include Python bytecode files because they are not
-        platfrom-independend.<programlisting># tree static_text/
+        Don't include Python bytecode files because they are not platform
+        independent.<programlisting># tree static_text/
 static_text/
 |-- __init__.py
 |-- codegen.py
@@ -3778,7 +3955,7 @@ test of static_text.zip OK</programlisting></para>
         </listitem>
       </orderedlist>
 
-      <para>The new widget will be avalable after myrun has been
+      <para>The new widget will be available after wxGlade has been
       restarted.</para>
     </section>
 
@@ -3786,7 +3963,7 @@ test of static_text.zip OK</programlisting></para>
       <title>Designing own Widget Plugins</title>
 
       <note>
-        <para>This section is under constraction! Please use this information
+        <para>This section is under construction! Please use this information
         carefully.</para>
       </note>
 
@@ -3799,6 +3976,33 @@ test of static_text.zip OK</programlisting></para>
         <listitem>
           <para>Place an empty file <filename>__init__.py</filename> in that
           directory</para>
+        </listitem>
+
+        <listitem>
+          <para>Create a file <filename>wconfig.py</filename> in the widget
+          directory and describe the styles used by this widget</para>
+
+          <programlisting language="python" linenumbering="numbered">"""\
+wxStaticLine widget configuration
+
+@copyright: &lt;Add year and your name&gt;
+@license: &lt;Choice a license&gt;
+"""
+
+config = {
+    'wxklass': 'myCtrl',
+    'style_defs': {
+        'wxMCFance': {
+            'desc': _('Use the new and fancy design.'),
+        },
+        'wxMCOldFashion': {
+            'desc': _('Use the old fashion design.'),
+        },
+    },
+    'box_label': _('Style'),
+    'default_style': 'wxMCFance',
+    'style_list': ['wxMCFance', 'wxMCOldFashion']
+}</programlisting>
         </listitem>
 
         <listitem>
@@ -3845,7 +4049,8 @@ def initialize():
           <programlisting>myctrl
 |-- __init__.py
 |-- codegen.py
-`-- myctrl.py</programlisting>
+|-- myctrl.py
+`-- wconfig.py</programlisting>
         </listitem>
       </orderedlist>
 
@@ -3858,7 +4063,7 @@ def initialize():
 
         <orderedlist>
           <listitem>
-            <para>Loade generic and language independent widget configuration
+            <para>Load generic and language independent widget configuration
             from <filename>wconfig.py</filename>
             (<function>common.load_config()</function>)</para>
           </listitem>
@@ -3928,7 +4133,7 @@ def initialize():
           <term>i18n</term>
 
           <listitem>
-            <para>Numeronyms for internationalisation support.</para>
+            <para>Numeronym for internationalisation support.</para>
 
             <para>Internationalisation means adapting software to different
             languages, regional differences, ...</para>
@@ -4054,9 +4259,9 @@ def initialize():
   <appendix>
     <title>Copyrights and Trademarks</title>
 
-    <para>wxGlade is copyright 2002-2007 by Alberto Griggio. Use and
-    distribution of wxGlade is governed by the MIT license, located in <xref
-    linkend="appendix.a.section"/>.</para>
+    <para>wxGlade is copyright 2002-2007 by Alberto Griggio and 2011-2015 by
+    Carsten Grohmann. Use and distribution of wxGlade is governed by the MIT
+    license, located in <xref linkend="appendix.a.section"/>.</para>
 
     <para>wxWidgets is copyright (C) 1998-2005 Julian Smart, Robert Roebling
     et al. See <ulink
@@ -4074,9 +4279,9 @@ def initialize():
   <appendix id="appendix.a.section">
     <title>wxGlade License Agreement</title>
 
-    <para>Copyright (c) 2002-2007 Alberto Griggio</para>
+    <para>Copyright (c) 2002-2007 Alberto Griggio.</para>
 
-    <para>Copyright (c) 2011-2015 Carsten Grohmann</para>
+    <para>Copyright (c) 2011-2015 Carsten Grohmann.</para>
 
     <para>Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files (the
@@ -4134,5 +4339,22 @@ subject to the following conditions:
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     OTHER DEALINGS IN THE SOFTWARE.</literallayout>
     </section>
+  </appendix>
+
+  <appendix>
+    <title>The wxGlade Icon</title>
+
+    <para>The wxGlade logo is a homage to Piet Mondrian a Dutch
+    painter.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="mondrian_200x200.png"/>
+      </imageobject>
+    </mediaobject>
+
+    <para>The icon looks like a typical Mondrian painting. It has the
+    characteristic solid horizontal and vertical black lines as well as areas
+    filled with the three primary colours yellow, red and blue.</para>
   </appendix>
 </book>
