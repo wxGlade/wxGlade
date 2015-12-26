@@ -1,4 +1,4 @@
-Version 0.7.1 RC2 - 2015-12-01:
+Version 0.7.1 - 2015-12-26:
 General:
   - Open wxGlade windows in the upper left corner if wxGlade is starting
     the first time
@@ -16,14 +16,12 @@ General:
   - New widgets CheckListBox, GenericCalendarCtrl and PropertyGridManager
     contributed by Franco Bugnano
   - Use defaults for missing application attributes in wxg files
-  - ...
 
 Generated Code:
   - Remove obsolete wx.InitAllImageHandlers() calls from Python codegen
   - Add missing event types for event handling in C++
   - Event handler in C++ aren't virtual anymore
   - Add support for empty bitmaps and wxArtProvider
-  - ...
 
 Bugs:
   - Fix Unicode error during saving wxg files
@@ -46,16 +44,13 @@ Bugs:
   - Fix binding of menu event in Perl
   - Fix root widget loses layout attributes during copy and paste
   - Load wxg files even if application attributes are missing
-  - ...
 
 Deprecation
-  - ...
+  - In place modifications for generated source files will be removed in one
+    of the next releases
 
 Documentation:
-  - ...
-
-API (for custom widgets):
-  - ...
+  - Adapt and extend the documentation
 
 Note:
   - See CHANGES.txt for a full list of changes
