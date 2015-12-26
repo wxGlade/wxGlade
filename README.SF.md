@@ -25,10 +25,10 @@ Files
 
 MD5 checksums
 -------------
-    <unknown>  wxGlade-0.7.1-setup.exe
-    <unknown>  wxGlade-0.7.1.tar.gz
-    <unknown>  wxGlade-0.7.1.zip
-    <unknown>  wxGlade-SAE-0.7.1rc2-setup.exe
+    c6a0040d7b231e89e1ecd6eaf03acfcd  wxGlade-0.7.1-setup.exe
+    6ecb952c9bb7bfffc730a14a58352c69  wxGlade-0.7.1.tar.gz
+    796a32c8e852b8d3c2ffd9528d97d25a  wxGlade-0.7.1.zip
+    2b77a157e07994acf051a212252c71e7  wxGlade-SAE-0.7.1-setup.exe
 
 
 Standalone Edition
