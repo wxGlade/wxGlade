@@ -110,5 +110,4 @@ setup(
                   'wxglade': ['res/*.*']},
     data_files=data_files,
     install_requires=['wxPython >=2.8'],
-    setup_requires=["setuptools_hg"],
 )
