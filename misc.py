@@ -27,9 +27,6 @@ popup menus properly (for example, to ensure that the object to remove is
 the currently highlighted one, ecc...)
 """
 
-FileSelector = wx.FileSelector
-DirSelector = wx.DirSelector
-
 use_menu_icons = None
 
 currently_under_mouse = None

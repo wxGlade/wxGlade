@@ -11,7 +11,6 @@ import wx
 import config
 import common
 import compat
-import misc
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 from tree import Tree
@@ -131,7 +130,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'bitmap_button_%s' % number[0]
-    bitmap = misc.FileSelector(_("Select the image for the button"))
+    bitmap = wx.FileSelector(_("Select the image for the button"))
     button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos,
                               common.property_panel)
     node = Tree.Node(button)
