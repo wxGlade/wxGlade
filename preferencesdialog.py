@@ -3,7 +3,7 @@ Dialog for editing wxGlade preferences
 
 @see: L{config.preferences}
 @copyright: 2007 Alberto Griggio
-@copyright: 20013-2015 Carsten Grohmann
+@copyright: 20013-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

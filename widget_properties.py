@@ -3,7 +3,7 @@ Classes to handle the various properties of the widgets (name, size, colour,
 etc.)
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2012-2015 Carsten Grohmann
+@copyright: 2012-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

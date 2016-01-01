@@ -2,7 +2,7 @@
 Dialogs to ask users during widget initialisation triggered by an graphical
 user interaction.
 
-@copyright: 2014-2015 Carsten Grohmann
+@copyright: 2014-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

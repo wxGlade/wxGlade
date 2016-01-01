@@ -53,7 +53,7 @@
     <section>
       <title>License</title>
 
-      <para>wxGlade is copyright 2002-2007 by Alberto Griggio and 2011-2015 by
+      <para>wxGlade is copyright 2002-2007 by Alberto Griggio and 2011-2016 by
       Carsten Grohmann.</para>
 
       <para>Use and distribution of wxGlade is governed by the MIT license,
@@ -4259,7 +4259,7 @@ def initialize():
   <appendix>
     <title>Copyrights and Trademarks</title>
 
-    <para>wxGlade is copyright 2002-2007 by Alberto Griggio and 2011-2015 by
+    <para>wxGlade is copyright 2002-2007 by Alberto Griggio and 2011-2016 by
     Carsten Grohmann. Use and distribution of wxGlade is governed by the MIT
     license, located in <xref linkend="appendix.a.section"/>.</para>
 
@@ -4281,7 +4281,7 @@ def initialize():
 
     <para>Copyright (c) 2002-2007 Alberto Griggio.</para>
 
-    <para>Copyright (c) 2011-2015 Carsten Grohmann.</para>
+    <para>Copyright (c) 2011-2016 Carsten Grohmann.</para>
 
     <para>Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files (the

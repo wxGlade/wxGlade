@@ -2,7 +2,7 @@
 Code generator functions for wxButton objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2013-2015 Carsten Grohmann
+@copyright: 2013-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
