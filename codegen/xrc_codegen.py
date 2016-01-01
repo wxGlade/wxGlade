@@ -6,7 +6,7 @@ Calls the appropriate ``writers'' of the various objects. These functions
 return an instance of XrcObject
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2012-2015 Carsten Grohmann
+@copyright: 2012-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

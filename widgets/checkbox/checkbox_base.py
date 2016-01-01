@@ -1,7 +1,7 @@
 """\
 Code shared between different language code generators
 
-@copyright: 2015 Carsten Grohmann
+@copyright: 2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

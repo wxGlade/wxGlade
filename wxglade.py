@@ -3,7 +3,7 @@
 Entry point of wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2013-2015 Carsten Grohmann
+@copyright: 2013-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -66,7 +66,7 @@ Usage: wxglade <WXG File>             start the wxGlade GUI
         version=_("""\
 wxGlade version %s
 Copyright (C) 2007-2012 Alberto Griggio
-Copyright (C) 2011-2015 Carsten Grohmann
+Copyright (C) 2011-2016 Carsten Grohmann
 License MIT: The MIT License
              <http://www.opensource.org/licenses/mit-license.php>""") %
         config.get_version()

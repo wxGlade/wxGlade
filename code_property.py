@@ -2,7 +2,7 @@
 Property class for the 'code' property of toplevel widgets
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2014-2015 Carsten Grohmann
+@copyright: 2014-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

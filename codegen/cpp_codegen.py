@@ -12,7 +12,7 @@ the lines to add to the '__init__', '__set_properties' and '__do_layout'
 methods of the parent object.
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2012-2015 Carsten Grohmann
+@copyright: 2012-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

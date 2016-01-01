@@ -3,7 +3,7 @@ Base classes for custom tag handlers.
 
 The custon tag handlers are called within the XML parsers in L{xml_parse}.
 
-@copyright: 2015 Carsten Grohmann
+@copyright: 2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

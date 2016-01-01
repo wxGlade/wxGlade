@@ -4,7 +4,7 @@ Parsers used to load an app and to generate the code from a XML file.
 See L{wcodegen.taghandler} for custom tag handler base classes.
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2015 Carsten Grohmann
+@copyright: 2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

@@ -1,7 +1,7 @@
 @echo off
 REM Simplify executing pyinstaller
 REM
-REM Copyright: 2014-2015 Carsten Grohmann
+REM Copyright: 2014-2016 Carsten Grohmann
 REM License: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 
 echo Check requirements:

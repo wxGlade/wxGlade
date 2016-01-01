@@ -3,7 +3,7 @@ wxGlade internal exceptions
 
 @note: Please update the documentation accordingly after changing this file.
 
-@copyright: 2012-2015 Carsten Grohmann
+@copyright: 2012-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

@@ -1,7 +1,7 @@
 """\
 Test external code
 
-@copyright: 2014-2015 Carsten Grohmann
+@copyright: 2014-2016 Carsten Grohmann
 
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """

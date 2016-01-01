@@ -1,18 +1,18 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Chapter 7. Installing and Designing own Widget Plugins</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="index.html" title="wxGlade manual"><link rel="prev" href="ch06s09.html" title="Contributing to wxGlade"><link rel="next" href="ch07s02.html" title="Installing Widget Plugins Locally"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 7. Installing and Designing own Widget Plugins</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch06s09.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ch07s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="idm139644306510832"></a>Chapter 7. Installing and Designing own Widget Plugins</h1></div></div></div><p>wxGlade supports a simple plugin system for widgets to load all
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Chapter 7. Installing and Designing own Widget Plugins</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="index.html" title="wxGlade manual"><link rel="prev" href="ch06s09.html" title="Contributing to wxGlade"><link rel="next" href="ch07s02.html" title="Installing Widget Plugins Locally"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 7. Installing and Designing own Widget Plugins</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch06s09.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ch07s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="idm139736816940976"></a>Chapter 7. Installing and Designing own Widget Plugins</h1></div></div></div><p>wxGlade supports a simple plugin system for widgets to load all
     widgets at the application startup dynamically. The plugin system loads
     all</p><p>built-in widgets like <span class="quote">“<span class="quote">Static Text</span>”</span> widget or the
     <span class="quote">“<span class="quote">Gauge</span>”</span> widget. It also loads widgets installed by
-    users.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm139644306508496"></a>Widgets Packages</h2></div></div></div><p>The wxGlade plugin system supports two different types of widget
+    users.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm139736816938640"></a>Widgets Packages</h2></div></div></div><p>The wxGlade plugin system supports two different types of widget
       packages:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p><span class="quote">“<span class="quote">directory package</span>”</span> - a single directory with
             all necessary files inside</p></li><li class="listitem"><p><span class="quote">“<span class="quote">ZIP package</span>”</span> - a zipped version of a
-            "directory" package</p></li></ol></div><div class="example"><a name="idm139644306504176"></a><p class="title"><b>Example 7.1. Directory package</b></p><div class="example-contents"><pre class="screen">static_text          &lt;- Directory named after the widget name
+            "directory" package</p></li></ol></div><div class="example"><a name="idm139736816934320"></a><p class="title"><b>Example 7.1. Directory package</b></p><div class="example-contents"><pre class="screen">static_text          &lt;- Directory named after the widget name
 |-- __init__.py      &lt;- Mostly an empty file or a file with just a comment
 |-- codegen.py       &lt;- Python and C++ code generators
 |-- wconfig.py       &lt;- Widget configuration
 |-- lisp_codegen.py  &lt;- Lisp code generator
 |-- perl_codegen.py  &lt;- Perl code generator
 `-- static_text.py   &lt;- wxGlade GUI code
-</pre></div></div><br class="example-break"><div class="example"><a name="idm139644306502208"></a><p class="title"><b>Example 7.2. ZIP package</b></p><div class="example-contents"><pre class="screen"># unzip -l static_text.zip 
+</pre></div></div><br class="example-break"><div class="example"><a name="idm139736816932352"></a><p class="title"><b>Example 7.2. ZIP package</b></p><div class="example-contents"><pre class="screen"># unzip -l static_text.zip 
 Archive:  static_text.zip
   Length      Date    Time    Name
 ---------  ---------- -----   ----
@@ -24,7 +24,7 @@ Archive:  static_text.zip
      1841  2013-12-09 10:02   static_text/perl_codegen.py
      5917  2013-12-09 10:02   static_text/static_text.py
 ---------                     -------
-    13079                     6 files</pre></div></div><br class="example-break"><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139644306500096"></a>Create a ZIP Package</h3></div></div></div><p>Creating a ZIP package is quite simple. Just create a ZIP
+    13079                     6 files</pre></div></div><br class="example-break"><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139736816930240"></a>Create a ZIP Package</h3></div></div></div><p>Creating a ZIP package is quite simple. Just create a ZIP
         package from widgets directory with all Python and additional files.
         Don't include Python bytecode files because they are not platform
         independent.</p><pre class="programlisting"># tree static_text/

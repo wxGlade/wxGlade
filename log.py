@@ -22,7 +22,7 @@ in revision 81919 (27.12.2010) in the public Python repository.
 
 @todo: Integrate Unicode logging fix.
 
-@copyright: 2013-2015 Carsten Grohmann
+@copyright: 2013-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

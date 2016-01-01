@@ -2,7 +2,7 @@
 Classes to handle and display the structure of a wxGlade app
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright_ 2014-2015 Carsten Grohmann
+@copyright_ 2014-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
