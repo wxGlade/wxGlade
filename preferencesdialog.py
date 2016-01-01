@@ -12,7 +12,6 @@ import os
 import wx
 
 import bugdialog
-import misc
 from preferences_ui import wxGladePreferencesUI
 
 
@@ -25,11 +24,6 @@ class wxGladePreferences(wxGladePreferencesUI):
 
         self.preferences = preferences
         self.set_values()
-
-        # disable CheckBox for selecting usage of KDE file dialogs
-        if wx.Platform != '__WXGTK__':
-            self.use_kde_dialogs.SetValue(False)
-            self.use_kde_dialogs.Enable(False)
 
     def set_values(self):
         try:
@@ -59,7 +53,6 @@ class wxGladePreferences(wxGladePreferencesUI):
                 self.preferences.allow_duplicate_names)
             self.autosave.SetValue(self.preferences.autosave)
             self.autosave_delay.SetValue(self.preferences.autosave_delay)
-            self.use_kde_dialogs.SetValue(self.preferences.use_kde_dialogs)
             self.show_completion.SetValue(self.preferences.show_completion)
             self.write_timestamp.SetValue(self.preferences.write_timestamp)
             self.write_generated_from.SetValue(
@@ -122,7 +115,6 @@ class wxGladePreferences(wxGladePreferencesUI):
             self.allow_duplicate_names.GetValue()
         prefs['autosave'] = self.autosave.GetValue()
         prefs['autosave_delay'] = self.autosave_delay.GetValue()
-        prefs['use_kde_dialogs'] = self.use_kde_dialogs.GetValue()
         prefs['show_completion'] = self.show_completion.GetValue()
 
         prefs['write_timestamp'] = self.write_timestamp.GetValue()
@@ -133,9 +125,9 @@ class wxGladePreferences(wxGladePreferencesUI):
         """\
         Create a file choice dialog
         """
-        pth = misc.DirSelector(_("Choose a directory:"), os.getcwd(),
-                               style=wx.DD_DEFAULT_STYLE |
-                               wx.DD_NEW_DIR_BUTTON)
+        pth = wx.DirSelector(_("Choose a directory:"), os.getcwd(),
+                             style=wx.DD_DEFAULT_STYLE |
+                             wx.DD_NEW_DIR_BUTTON)
         if pth:
             self.local_widget_path.SetValue(pth)
 

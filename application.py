@@ -69,7 +69,7 @@ class FileDirDialog(object):
         @see: L{get_value()}
         """
         if self.parent.multiple_files == 0:
-            self.value = misc.FileSelector(
+            self.value = wx.FileSelector(
                 self.file_message,
                 self.prev_dir,
                 wildcard=self.wildcard,
@@ -81,7 +81,7 @@ class FileDirDialog(object):
                 if not ext:
                     self.value = "%s%s" % (self.value, self.default_extension)
         else:
-            self.value = misc.DirSelector(
+            self.value = wx.DirSelector(
                 self.dir_message,
                 self.prev_dir,
                 style=self.dir_style

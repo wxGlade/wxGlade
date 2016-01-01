@@ -1037,7 +1037,7 @@ class FileDialogProperty(DialogProperty):
             self.value = None
 
         def ShowModal(self):
-            self.value = misc.FileSelector(
+            self.value = wx.FileSelector(
                 self.message, wildcard=self.wildcard, flags=self.style)
             if self.value:
                 return wx.ID_OK

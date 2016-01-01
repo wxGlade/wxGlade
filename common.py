@@ -963,7 +963,6 @@ class Preferences(ConfigParser.ConfigParser):
         'allow_duplicate_names': False,
         'autosave': True,
         'autosave_delay': 120,  # in seconds
-        'use_kde_dialogs': False,
         'show_completion': True,
         'write_timestamp': True,
         'write_generated_from': False,

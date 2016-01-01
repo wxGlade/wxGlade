@@ -12,7 +12,6 @@ import wx
 import common
 import compat
 import config
-import misc
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 from tree import Tree
@@ -116,7 +115,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'bitmap_%s' % number[0]
-    bitmap = misc.FileSelector("Select the image")
+    bitmap = wx.FileSelector(_("Select the image"))
     static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer,
                                      pos, common.property_panel)
     node = Tree.Node(static_bitmap)

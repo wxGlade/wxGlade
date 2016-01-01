@@ -48,8 +48,8 @@ class _MyBrowseButton(FileBrowseButton):
             directory = directory [0]
         else:
             directory = self.startDirectory
-        value = misc.FileSelector(self.dialogTitle, directory, current,
-                                  wildcard=self.fileMask, flags=self.fileMode)
+        value = wx.FileSelector(self.dialogTitle, directory, current,
+                                wildcard=self.fileMask, flags=self.fileMode)
         if value:
             self.SetValue(value)
 

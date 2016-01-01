@@ -662,7 +662,7 @@ class wxGladeFrame(wx.Frame):
         """
         if not self.ask_save():
             return
-        infile = misc.FileSelector(_("Open file"),
+        infile = wx.FileSelector(_("Open file"),
                                    wildcard="wxGlade files (*.wxg)|*.wxg|"
                                    "wxGlade Template files (*.wgt)|*.wgt|"
                                    "XML files (*.xml)|*.xml|All files|*",
@@ -858,12 +858,12 @@ class wxGladeFrame(wx.Frame):
         saves a wxGlade project onto an xml file chosen by the user
         """
         # both flags occurs several times
-        fn = misc.FileSelector(_("Save project as..."),
-                               wildcard="wxGlade files (*.wxg)|*.wxg|"
-                               "wxGlade Template files (*.wgt) |*.wgt|"
-                               "XML files (*.xml)|*.xml|All files|*",
-                               flags=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-                               default_path=self.cur_dir)
+        fn = wx.FileSelector(_("Save project as..."),
+                             wildcard="wxGlade files (*.wxg)|*.wxg|"
+                             "wxGlade Template files (*.wgt) |*.wgt|"
+                             "XML files (*.xml)|*.xml|All files|*",
+                             flags=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+                             default_path=self.cur_dir)
         if fn:
             # check for file extension and add default extension if missing
             ext = os.path.splitext(fn)[1].lower()
@@ -977,7 +977,7 @@ class wxGladeFrame(wx.Frame):
         if not self.ask_save():
             return
 
-        infilename = misc.FileSelector(
+        infilename = wx.FileSelector(
             _("Import file"),
             wildcard="XRC files (*.xrc)" "|*.xrc|All files|*",
             flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
@@ -1079,12 +1079,6 @@ class wxGlade(wx.App):
         common.init_preferences()
         if config.preferences.log_debug_info:
             log.setDebugLevel()
-
-        if wx.Platform == '__WXGTK__' and config.preferences.use_kde_dialogs:
-            import kdefiledialog
-            if kdefiledialog.test_kde():
-                misc.FileSelector = kdefiledialog.kde_file_selector
-                misc.DirSelector = kdefiledialog.kde_dir_selector
 
         wx.ArtProvider.PushProvider(wxGladeArtProvider())
 
