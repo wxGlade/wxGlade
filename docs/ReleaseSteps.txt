@@ -1,42 +1,68 @@
 Steps to publish a new version
 ==============================
 
- 1. Update documentation e.g. NEWS.txt, README.txt, README.SF.md,
-    wxGlade.desktop, wxGlade manual e.g. error section
- 2. Extend the changelog "CHANGES.txt" by adding new commit comments
-    # mv CHANGES.txt CHANGES.txt.old
-    # hg log -r "tip:1553 and not branch(WXG-BRANCH-DEV_0_6_6)" > CHANGES.txt
-    # cat CHANGES.txt.old >> CHANGES.txt
- 3. Change the version number in wxglade-installer.iss. Please check that
-    the version is equal to the version in version.py
+NAMING:
+  HG_OLD_VERSION - Mercurial version string of the OLD version e.g. 0_7_0
+  HG_NEW_VERSION - Mercurial version string of the NEW version e.g. 0_7_1
+  NEW_VERSION - Version string of the wxGlade version to release
+
+
+STEPS:
+ 1. Close last stable branch
+    # hg update <HG_OLD_VERSION>
+    # hg commit --close-branch -m "Closed
+    # WXG-BRANCH-VERSION_<HG_OLD_VERSION> branch"
+    # hg update default
+
+ 2. Update documentation 
+  * NEWS.txt
+  * README.txt
+  * README.SF.md
+  * wxGlade.desktop
+  * wxGlade manual especially the error section
+  * Add new changes to changelog file "CHANGES.txt"
+    # hg log --template=changelog > CHANGES.txt
+        
+ 3. Change the version number in wxglade-installer.iss to "<NEW_VERSION>"
+
  4. Commit all open changes
- 5. Merge changes from development branch WXG-BRANCH-DEV_0_6_7 into default
-    branch
- 6. Close development branch
-    # hg update WXG-BRANCH-DEV_0_6_7
-    # hg commit --close-branch -m "Closed WXG-BRANCH-DEV_0_6_7 branch"
-    # hg update default
- 7. Close last stable branch
-    # hg update WXG-BRANCH-VERSION_0_6_6
-    # hg commit --close-branch -m "Closed WXG-BRANCH-VERSION_0_6_6 branch"
-    # hg update default
- 8. Create a new Mercurial tag
+
+ 5. Create a new Mercurial tag
     # hg tag rel_0.6.7
- 9. Create a branch for maintaining stable release
-    # hg branch WXG-BRANCH-VERSION_0_6_7
-    # hg commit --message "Created WXG-BRANCH-VERSION_0_6_7 branch"
-10. Create new development branch
-    # hg branch WXG-BRANCH-DEV_0_6_8
-    # hg commit --message "Created WXG-BRANCH-DEV_0_6_8 branch"
-11. Push changes into public repository
-12. Create all packages
+        
+ 6. Create a branch for maintaining stable release
+    # hg branch WXG-BRANCH-VERSION_<HG_NEW_VERSION>
+    # hg commit --message "Created WXG-BRANCH-VERSION_<HG_NEW_VERSION> branch"
+        
+ 7. Create a version.py file in stable branch
+    Please ensure that the version string as the same as in
+    wxglade-installer.iss
+    # cat version.py
+        #
+        # This is an automatically generated file. Manual changes will be
+        # overwritten without warning.
+        #
+
+        __version__ = "<NEW_VERSION>"
+    # hg add version.py -m "Add version file"
+        
+ 8. Push changes into public repository
+
+ 9. Create all packages
     - build windows installer (see docs/BuildingInstaller.txt)
     - create zip and tar.gz source packages
       # make release
-13. Update web page at wxglade.sf.net
+          
+10. Update web page at wxglade.sf.net
     - upload packages to SF
     - update README.SF.md and upload to SF
     - update news section in htdocs/bits/news.html
     - update HTML and PDF manual in htdocs/manual
-14. Send notification email to wxGlade mailing list
-15. Change version number in wxglade-installer.iss to HG
+        
+11. Send notification email to wxGlade mailing list
+
+12. Switch back to default branch
+    # hg update default
+
+13. Change version number in wxglade-installer.iss back to "HG"
+
