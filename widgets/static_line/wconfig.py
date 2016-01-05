@@ -5,15 +5,16 @@ wxStaticLine widget configuration
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-# keep in sync: wxDialog, wxPanel and wxStaticBitmap
 config = {
     'wxklass': 'wxStaticLine',
     'style_defs': {
         'wxLI_HORIZONTAL': {
             'desc': _('Creates a horizontal line.'),
+            'exclude': 'wxLI_VERTICAL',
         },
         'wxLI_VERTICAL': {
             'desc': _('Creates a vertical line.'),
+            'exclude': 'wxLI_HORIZONTAL',
         },
     },
     'box_label': _('Style'),
