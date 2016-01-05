@@ -32,14 +32,14 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         self.attribute = True
 
         # initialise properties remaining staff
-        self.access_functions['style'] = (self.get_string_style,
-                                          self.set_style)
+        access = self.access_functions
+        properties = self.properties
 
-        self.access_functions['attribute'] = (self.get_attribute,
-                                              self.set_attribute)
-        self.properties['style'] = HiddenProperty(
-            self, 'style', label=_("style"))
-        self.properties['attribute'] = CheckBoxProperty(
+        access['style'] = (self.get_string_style, self.set_style)
+        access['attribute'] = (self.get_attribute, self.set_attribute)
+
+        properties['style'] = HiddenProperty(self, 'style', style)
+        properties['attribute'] = CheckBoxProperty(
             self, 'attribute', label=_('Store as attribute'),
             write_always=True)
         self.removed_p = self.properties['font']
@@ -110,7 +110,6 @@ def builder(parent, sizer, pos, number=[1]):
                           sizer, pos, common.property_panel)
     node = Tree.Node(widget)
     widget.node = node
-    widget.set_style("wxEXPAND")
     widget.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
 
