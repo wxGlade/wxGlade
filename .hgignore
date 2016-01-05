@@ -22,17 +22,12 @@ warnwxglade.txt
 MANIFEST
 docs/man/wxglade.1
 
-# Eric IDE
-.eric4project
-.ropeproject
-wxGlade.e4p
-ericapi
-
 # wxGlade log file
 wxglade.log
 
-# PyCharm IDE
+# PyCharm / IntellyJ IDEA IDE
 .idea
+.ropeproject
 
 # automatically generated version file
 version.py
