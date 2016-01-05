@@ -153,8 +153,8 @@ $(DOC_DIR)/man/wxglade.1: $(DOC_DIR)/man/manpage.xml
 #+ Create manpage from source files
 man: $(DOC_DIR)/man/wxglade.1
 
-#+ Create documentation from source files
-doc: pdf html
+#+ Create all documentation from source files
+doc: pdf html man
 
 # Create PDF documentation
 $(MANUAL_PDF): $(MANUAL_XML) $(MANUAL_PICS)
@@ -182,7 +182,7 @@ doc-clean:
 release: rel-source rel-binary
 
 #+ Create Unix binary packages
-rel-binary: clean man pdf
+rel-binary: clean doc
 	@echo "Creating Unix release packages ..."
 	@$(RM) MANIFEST
 	$(PYTHON_BIN) setup.py bdist --format=zip
@@ -190,7 +190,7 @@ rel-binary: clean man pdf
 	@$(RM) MANIFEST
 
 #+ Create Unix source release packages
-rel-source: clean man pdf
+rel-source: clean doc
 	@echo "Creating source packages ..."
 	@$(RM) MANIFEST
 	$(PYTHON_BIN) setup.py sdist --formats=gztar,zip
@@ -198,7 +198,7 @@ rel-source: clean man pdf
 	@$(RM) MANIFEST
 
 #+ Install wxGlade locally at $(prefix)
-install: man pdf setup.py
+install: doc setup.py
 	@echo "Install wxGlade locally at $(prefix) ..."
 	$(PYTHON_BIN) setup.py install --prefix $(prefix)
 	gzip -9 $(man1dir)/wxglade.1
