@@ -20,7 +20,6 @@ dist
 logdict*.log
 warnwxglade.txt
 MANIFEST
-docs/man/wxglade.1
 
 # wxGlade log file
 wxglade.log
