@@ -43,7 +43,7 @@ DIGGER_BIN        = clonedigger
 DIGGER_OUTFILE    = clonedigger.html
 DIGGER_OPTS       = --language python --output $(DIGGER_OUTFILE)
 PYTHON_BIN        = python2
-MANPAGE_XSL       = /usr/share/xml/docbook/xsl-stylesheets-1.78.1/manpages/docbook.xsl
+MANPAGE_XSL       = /usr/share/xml/docbook/xsl-stylesheets-1.79.1/manpages/docbook.xsl
 XP                = xsltproc --nonet
 
 MANUAL_HTML_DIR   = $(DOC_DIR)/html
