@@ -11,9 +11,11 @@ config = {
         'wxSL_HORIZONTAL': {
             'desc': _('Displays the slider horizontally (this is the '
                       'default).'),
+            'exclude': 'wxSL_VERTICAL',
         },
         'wxSL_VERTICAL': {
             'desc': _('Displays the slider vertically.'),
+            'exclude': 'wxSL_HORIZONTAL',
         },
         'wxSL_AUTOTICKS': {
             'desc': _('Displays tick marks. Windows only.'),
