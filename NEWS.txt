@@ -8,6 +8,7 @@ Generated Code:
 
 Bugs:
   - Fix wrong orientation of wxStaticLine widgets
+  - Fix NameError exception during inserting a sizer slot
   - ...
 
 Deprecation
