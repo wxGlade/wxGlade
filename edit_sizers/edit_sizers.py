@@ -1584,7 +1584,6 @@ class SizerBase(Sizer):
             tmp.show_widget(True)  # create the actual SizerSlot
             self.widget.Insert(pos, tmp.widget, 1, wx.EXPAND)
             self.widget.SetItemMinSize(tmp.widget, 20, 20)
-            force_layout = kwds.get('force_layout', True)
             if force_layout:
                 self.layout(True)
             common.app_tree.app.saved = False

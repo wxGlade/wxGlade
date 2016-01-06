@@ -45,6 +45,7 @@ Bugs:
   - Fix root widget loses layout attributes during copy and paste
   - Load wxg files even if application attributes are missing
   - Fix wrong orientation of wxStaticLine widgets
+  - Fix NameError exception during inserting a sizer slot
 
 Deprecation
   - In place modifications for generated source files will be removed in one
