@@ -9,6 +9,8 @@ Generated Code:
 Bugs:
   - Fix wrong orientation of wxStaticLine widgets
   - Fix NameError exception during inserting a sizer slot
+  - Fix ZeroDevisionError during adding a new column to a wxFlexGridSizer
+    with only one row
   - ...
 
 Deprecation
