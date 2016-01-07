@@ -2138,19 +2138,19 @@ class GridSizerBase(SizerBase):
     def add_row(self, *args, **kwds):
         if not self.widget:
             return
-        self._insert_row(self.widget.GetRows() + 1)
+        self._insert_row(compat.GridSizer_GetRows(self.widget) + 1)
 
     def insert_row(self, *args):
         if not self.widget:
             return
-        dialog = InsertDialog(self.widget.GetRows())
+        dialog = InsertDialog(compat.GridSizer_GetRows(self.widget))
         if dialog.ShowModal() == wx.ID_OK:
             self._insert_row(dialog.pos + 1)
         dialog.Destroy()
 
     def _insert_row(self, pos):
-        rows = self.widget.GetRows()
-        cols = self.widget.GetCols()
+        rows = compat.GridSizer_GetRows(self.widget)
+        cols = compat.GridSizer_GetCols(self.widget)
         pos = (pos - 1) * cols + 1
         if pos >= len(self.children):
             # fix the out of bounds index...
@@ -2175,19 +2175,19 @@ class GridSizerBase(SizerBase):
     def add_col(self, *args, **kwds):
         if not self.widget:
             return
-        self._insert_col(self.widget.GetCols() + 1)
+        self._insert_col(compat.GridSizer_GetCols(self.widget) + 1)
 
     def insert_col(self, *args):
         if not self.widget:
             return
-        dialog = InsertDialog(self.widget.GetCols())
+        dialog = InsertDialog(compat.GridSizer_GetCols(self.widget))
         if dialog.ShowModal() == wx.ID_OK:
             self._insert_col(dialog.pos + 1)
         dialog.Destroy()
 
     def _insert_col(self, pos):
-        rows = self.widget.GetRows()
-        cols = self.widget.GetCols()
+        rows = compat.GridSizer_GetRows(self.widget)
+        cols = compat.GridSizer_GetCols(self.widget)
         if pos >= len(self.children):
             # fix the out of bounds index...
             tot = len(self.children) - 1
