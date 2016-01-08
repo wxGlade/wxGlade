@@ -48,6 +48,8 @@ Bugs:
   - Fix NameError exception during inserting a sizer slot
   - Fix ZeroDevisionError during adding a new column to a wxFlexGridSizer
     with only one row
+  - Fix WindowsError is the backup file already exists (Thanks to Graeme
+    Glenn)
 
 Deprecation
   - In place modifications for generated source files will be removed in one
