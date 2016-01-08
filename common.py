@@ -508,13 +508,17 @@ def save_file(filename, content, which='wxg'):
     if chksum_oldcontent == chksum_content:
         return
 
+    # create the backup file only with the first save
     need_backup = do_backup and filename not in config.backed_up and \
         os.path.isfile(filename)
 
     outfile = None
     try:
         if need_backup:
-            os.rename(filename, filename + config.preferences.backup_suffix)
+            backup_name = filename + config.preferences.backup_suffix
+            if os.path.isfile(backup_name):
+                os.remove(backup_name)
+            os.rename(filename, backup_name)
             config.backed_up[filename] = True
 
         # create necessary subdirectories on demand
