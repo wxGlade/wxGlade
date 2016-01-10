@@ -13,6 +13,7 @@ Bugs:
     with only one row
   - Fix WindowsError is the backup file already exists (Thanks to Graeme
     Glenn)
+  - Fix black window bug on Windows
   - ...
 
 Deprecation
