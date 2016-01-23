@@ -54,18 +54,22 @@ class wxGladeFontDialog(wx.Dialog):
 
     def choose_specific_font(self, event):
         dialog = wx.FontDialog(self, wx.FontData())
-        if dialog.ShowModal() == wx.ID_OK:
-            font = dialog.GetFontData().GetChosenFont()
-            family = font.GetFamily()
-            for f in (wx.VARIABLE, wx.FIXED):
-                if family & f: family = family ^ f
-            self.value = "['%s', '%s', '%s', '%s', '%s', '%s']" % \
-                         (font.GetPointSize(),
-                          self.font_families_from[family],
-                          self.font_styles_from[font.GetStyle()],
-                          self.font_weights_from[font.GetWeight()],
-                          font.GetUnderlined() and 1 or 0, font.GetFaceName())
-            self.EndModal(wx.ID_OK)
+        res = dialog.ShowModal()
+        font = dialog.GetFontData().GetChosenFont()
+        dialog.Destroy()
+        if res != wx.ID_OK:
+            return
+
+        family = font.GetFamily()
+        for f in (wx.VARIABLE, wx.FIXED):
+            if family & f: family = family ^ f
+        self.value = "['%s', '%s', '%s', '%s', '%s', '%s']" % \
+                     (font.GetPointSize(),
+                      self.font_families_from[family],
+                      self.font_styles_from[font.GetStyle()],
+                      self.font_weights_from[font.GetWeight()],
+                      font.GetUnderlined() and 1 or 0, font.GetFaceName())
+        self.EndModal(wx.ID_OK)
 
     def on_ok(self, event):
         self.value = "['%s', '%s', '%s', '%s', '%s', '']" % \

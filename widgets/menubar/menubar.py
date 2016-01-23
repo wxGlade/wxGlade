@@ -521,6 +521,7 @@ class MenuProperty(Property):
         if dialog.ShowModal() == wx.ID_OK:
             self.owner.set_menus(dialog.get_menus())
             common.app_tree.app.saved = False  # update the status of the app
+        dialog.Destroy()
 
     def write(self, outfile, tabs):
         inner_xml = StringIO.StringIO()
@@ -797,10 +798,12 @@ def builder(parent, sizer, pos, number=[0]):
     # end of inner class
 
     dialog = Dialog()
-    if dialog.ShowModal() == wx.ID_CANCEL:
+    res = dialog.ShowModal()
+    klass = dialog.klass
+    dialog.Destroy()
+    if res != wx.ID_OK:
         if number[0] > 0:
             number[0] -= 1
-        dialog.Destroy()
         return
 
     name = 'menubar_%d' % (number[0] or 1)
@@ -808,7 +811,7 @@ def builder(parent, sizer, pos, number=[0]):
         number[0] += 1
         name = 'menubar_%d' % number[0]
 
-    mb = EditMenuBar(name, dialog.klass, parent, common.property_panel)
+    mb = EditMenuBar(name, klass, parent, common.property_panel)
     mb.node = Tree.Node(mb)
     common.app_tree.add(mb.node)
     mb.show_widget(True)

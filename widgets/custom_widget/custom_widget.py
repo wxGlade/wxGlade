@@ -184,17 +184,20 @@ def builder(parent, sizer, pos, number=[1]):
         def __getitem__(self, value):
             def set_klass(c):
                 self.klass = c
-            return lambda : self.klass, set_klass
+            return lambda: self.klass, set_klass
+
     # end of inner class
 
     dialog = Dialog()
     dialog.ShowModal()
+    klass = dialog.klass
+    dialog.Destroy()
 
     name = 'window_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'window_%d' % number[0]
-    win = CustomWidget(name, dialog.klass, parent, wx.NewId(), sizer, pos,
+    win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos,
                        common.property_panel)
     node = Tree.Node(win)
     win.node = node

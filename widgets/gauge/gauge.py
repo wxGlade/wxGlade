@@ -83,17 +83,19 @@ def builder(parent, sizer, pos, number=[1]):
     Factory function for editor objects from GUI.
     """
     dialog = wcodegen.WidgetStyleSelectionDialog(
-        dlg_title, box_title, choices)
-
-    if not dialog.ShowModal() == wx.ID_OK:
+            dlg_title, box_title, choices)
+    res = dialog.ShowModal()
+    style = dialog.get_selection()
+    dialog.Destroy()
+    if res != wx.ID_OK:
         return
 
     label = '%s_%d' % (tmpl_label, number[0])
     while common.app_tree.has_name(label):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
-    widget = editor_class(label, parent, wx.ID_ANY, dialog.get_selection(),
-                          sizer, pos, common.property_panel)
+    widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos,
+                          common.property_panel)
     node = Tree.Node(widget)
     widget.node = node
     widget.set_style("wxEXPAND")

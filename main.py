@@ -19,6 +19,7 @@ import wx
 from xml.sax import SAXParseException
 
 # import project modules
+import about
 import application
 import bugdialog
 import clipboard
@@ -27,6 +28,7 @@ import config
 import preferencesdialog
 import log
 import misc
+import msgdialog
 import template
 from tree import WidgetTree
 from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, \
@@ -489,14 +491,6 @@ class wxGladeFrame(wx.Frame):
         self._set_geometry(self.tree_frame, tree_geometry)
         self.tree_frame.Show()
 
-        if wx.Platform == '__WXMSW__':
-            import about
-            # I'll pay a beer to anyone who can explain to me why this prevents
-            # a segfault on Win32 when you exit without doing anything!!
-            self.about_box = about.wxGladeAboutBox(self.GetParent())
-        else:
-            self.about_box = None
-
         # last visited directory, used on GTK for wxFileDialog
         self.cur_dir = config.preferences.open_save_path
 
@@ -901,8 +895,6 @@ class wxGladeFrame(wx.Frame):
                                    self._get_geometry(self.frame_property))
                 prefs.changed = True
             common.app_tree.clear()
-            if self.about_box:
-                self.about_box.Destroy()
             try:
                 common.save_preferences()
             except Exception, e:
@@ -922,10 +914,9 @@ class wxGladeFrame(wx.Frame):
         
         @see: L{about.wxGladeAboutBox}
         """
-        if self.about_box is None:
-            import about
-            self.about_box = about.wxGladeAboutBox(None)
-        self.about_box.ShowModal()
+        about_box = about.wxGladeAboutBox()
+        about_box.ShowModal()
+        about_box.Destroy()
 
     def show_manual(self, event):
         """\
@@ -1052,15 +1043,9 @@ class wxGlade(wx.App):
     """\
     wxGlade application class
     
-    @ivar _msg_dialog: Message dialog to show warning as well as error
-                       messages.
-    @type _msg_dialog: msgdialog.MessageDialog
-
     @ivar _exception_orig: Reference to original implementation of
                            logging.exception()
     """
-
-    _msg_dialog = None
 
     def OnInit(self):
         sys.stdout = sys.__stdout__
@@ -1119,19 +1104,18 @@ class wxGlade(wx.App):
             return
 
         # initialise message dialog
-        if not self._msg_dialog:
-            import msgdialog
-            self._msg_dialog = msgdialog.MessageDialog(None, -1, "")
-            self._msg_dialog.msg_list.InsertColumn(0, "")
+        msg_dialog = msgdialog.MessageDialog(None, -1, "")
+        msg_dialog.msg_list.InsertColumn(0, "")
 
         # clear dialog and show new messages
-        self._msg_dialog.msg_list.Freeze()
-        self._msg_dialog.msg_list.DeleteAllItems()
+        msg_dialog.msg_list.Freeze()
+        msg_dialog.msg_list.DeleteAllItems()
         for line in log_msg.split('\n'):
-            self._msg_dialog.msg_list.Append([line, ])
-        self._msg_dialog.msg_list.SetColumnWidth(0, -1)
-        self._msg_dialog.msg_list.Thaw()
-        self._msg_dialog.ShowModal()
+            msg_dialog.msg_list.Append([line, ])
+        msg_dialog.msg_list.SetColumnWidth(0, -1)
+        msg_dialog.msg_list.Thaw()
+        msg_dialog.ShowModal()
+        msg_dialog.Destroy()
 
     def graphical_exception_handler(self, exc_type, exc_value, exc_tb):
         """\

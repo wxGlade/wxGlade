@@ -190,10 +190,6 @@ def builder(parent, sizer, pos, number=[0]):
             self.klass_modified = False
             self.CenterOnScreen()
 
-        def undo(self):
-            if number[0] > 0:
-                number[0] -= 1
-
         def set_klass(self, c):
             self.klass = c
             self.klass_modified = True
@@ -225,14 +221,16 @@ def builder(parent, sizer, pos, number=[0]):
     # end of inner class
 
     class_dialog = Dialog()
-    # Check if the user hit Cancel, if so then bail out
-    if class_dialog.ShowModal() == wx.ID_CANCEL:
-        # restore state
-        class_dialog.undo()
-        # clean up resources
-        class_dialog.Destroy()
+    res = class_dialog.ShowModal()
+    klass = class_dialog.klass
+    widget = class_dialog.widget
+    class_dialog.Destroy()
+    if res != wx.ID_OK:
+        if number[0] > 0:
+            number[0] -= 1
         return
-    if class_dialog.widget == 0:
+
+    if widget == 0:
         name = 'dialog'
     else:
         name = 'panel'
@@ -240,21 +238,19 @@ def builder(parent, sizer, pos, number=[0]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = '%s_%d' % (name, number[0])
-    if class_dialog.widget == 0:
+    if widget == 0:
         is_panel = False
         dialog = EditDialog(label, parent, wx.NewId(), label,
-                            common.property_panel, klass=class_dialog.klass)
+                            common.property_panel, klass=klass)
     else:
         is_panel = True
         import panel
         dialog = panel.EditTopLevelPanel(label, parent, wx.NewId(),
-                                         common.property_panel,
-                                         klass=class_dialog.klass)
+                                         common.property_panel, klass=klass)
     node = Tree.Node(dialog)
     dialog.node = node
     dialog.show_widget(True)
     common.app_tree.add(node)
-    class_dialog.Destroy()
     if wx.Platform == '__WXMSW__':
         if not is_panel:
             w = dialog.widget

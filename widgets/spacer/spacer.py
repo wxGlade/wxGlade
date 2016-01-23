@@ -137,10 +137,15 @@ def builder(parent, sizer, pos):
     # end of inner class
 
     dialog = Dialog()
-    dialog.ShowModal()
+    res = dialog.ShowModal()
+    width = dialog.width.get_value()
+    height = dialog.height.get_value()
+    dialog.Destroy()
+    if res != wx.ID_OK:
+        return
+
     name = 'spacer'
-    spacer = EditSpacer(name, parent, wx.NewId(), dialog.width.get_value(),
-                        dialog.height.get_value(), sizer, pos,
+    spacer = EditSpacer(name, parent, wx.NewId(), width, height, sizer, pos,
                         common.property_panel)
     node = Tree.Node(spacer)
     spacer.node = node

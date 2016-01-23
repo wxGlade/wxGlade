@@ -137,6 +137,7 @@ def Show(msg, exc):
     dialog = BugReport()
     dialog.SetContent(msg, exc)
     dialog.ShowModal()
+    dialog.Destroy()
 
 
 def ShowEI(exc_type, exc_value, exc_tb, msg=None):
@@ -156,3 +157,4 @@ def ShowEI(exc_type, exc_value, exc_tb, msg=None):
     dialog = BugReport()
     dialog.SetContentEI(exc_type, exc_value, exc_tb, msg)
     dialog.ShowModal()
+    dialog.Destroy()

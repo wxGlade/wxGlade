@@ -828,10 +828,6 @@ def builder(parent, sizer, pos, number=[0]):
             szr.Fit(self)
             #self.SetSize((150, -1))
 
-        def undo(self):
-            if number[0] > 0:
-                number[0] -= 1
-
         def __getitem__(self, value):
             if value == 'class':
                 def set_klass(c): self.klass = c
@@ -839,10 +835,12 @@ def builder(parent, sizer, pos, number=[0]):
     # end of inner class
 
     dialog = Dialog()
-    if dialog.ShowModal() == wx.ID_CANCEL:
-        # cancel the operation
-        dialog.undo()
-        dialog.Destroy()
+    res = dialog.ShowModal()
+    klass = dialog.klass
+    dialog.Destroy()
+    if res != wx.ID_OK:
+        if number[0] > 0:
+            number[0] -= 1
         return
 
     name = 'toolbar_%d' % (number[0] or 1)
@@ -850,7 +848,7 @@ def builder(parent, sizer, pos, number=[0]):
         number[0] += 1
         name = 'toolbar_%d' % number[0]
 
-    tb = EditToolBar(name, dialog.klass, parent, common.property_panel)
+    tb = EditToolBar(name, klass, parent, common.property_panel)
     tb.node = Tree.Node(tb)
     common.app_tree.add(tb.node)
     tb.show_widget(True)
