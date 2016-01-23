@@ -232,7 +232,7 @@ class TestGui(WXGladeBaseTest):
         @type excluded:  list[str]
         """
         source = self._load_file('%s.wxg' % basename)
-        source = self._modify_attrs(source, path='', )
+        source = self._modify_attrs(source, path='')
         self._open_wxg_file(source)
 
         # generate code
