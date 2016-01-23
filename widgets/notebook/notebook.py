@@ -406,12 +406,15 @@ def builder(parent, sizer, pos, number=[1]):
     Factory function for editor objects from GUI.
     """
     dialog = wcodegen.WidgetStyleSelectionDialog(
-        dlg_title, box_title, choices)
-
-    if not dialog.ShowModal() == wx.ID_OK:
+            dlg_title, box_title, choices)
+    res = dialog.ShowModal()
+    style = dialog.get_selection()
+    dialog.Destroy()
+    if res != wx.ID_OK:
         return
-    widget = editor_class(None, parent, wx.ID_ANY, dialog.get_selection(),
-                          sizer, pos, common.property_panel, show=False)
+
+    widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos,
+                          common.property_panel, show=False)
     if _has_panel:
         pane1 = EditPanel(widget.next_pane_name(), widget, wx.ID_ANY,
                           widget.virtual_sizer, 1, common.property_panel)

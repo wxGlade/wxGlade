@@ -195,11 +195,12 @@ def builder(parent, sizer, pos, number=[0]):
     # end of inner class
 
     dialog = Dialog()
-    if dialog.ShowModal() == wx.ID_CANCEL:
-        # cancel the operation
+    res = dialog.ShowModal()
+    klass = dialog.klass
+    dialog.Destroy()
+    if res != wx.ID_OK:
         if number[0] > 0:
             number[0] -= 1
-        dialog.Destroy()
         return
 
     name = 'statusbar_%d' % (number[0] or 1)
@@ -207,7 +208,7 @@ def builder(parent, sizer, pos, number=[0]):
         number[0] += 1
         name = 'statusbar_%d' % number[0]
 
-    widget = EditStatusBar(name, dialog.klass, parent, common.property_panel)
+    widget = EditStatusBar(name, klass, parent, common.property_panel)
     widget.node = Tree.Node(widget)
     common.app_tree.add(widget.node)
     widget.show_widget(True)

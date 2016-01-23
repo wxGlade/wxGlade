@@ -289,23 +289,25 @@ def builder(parent, sizer, pos, number=[0]):
     # end of inner class
 
     dialog = Dialog()
-    # Check if the user hit Cancel, if so then bail out
-    if dialog.ShowModal() == wx.ID_CANCEL:
-        # restore state
-        dialog.undo()
-        # clean up resources
-        dialog.Destroy()
+    res = dialog.ShowModal()
+    klass = dialog.klass
+    base = dialog.base
+    dialog.Destroy()
+    if res != wx.ID_OK:
+        if number[0] > 0:
+            number[0] -= 1
         return
+
     label = 'frame_%d' % (number[0] or 1)
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'frame_%d' % number[0]
-    if dialog.base == 0:
+    if base == 0:
         base_class = EditFrame
     else:
         base_class = EditMDIChildFrame
     frame = base_class(label, parent, wx.NewId(), label, common.property_panel,
-                       klass=dialog.klass)
+                       klass=klass)
     node = Tree.Node(frame)
     frame.node = node
     common.app_tree.add(node)
@@ -317,7 +319,6 @@ def builder(parent, sizer, pos, number=[0]):
     # now select the frame's node in the tree
     common.app_tree.select_item(node)
 
-    dialog.Destroy()
     if wx.Platform == '__WXMSW__':
         #frame.widget.CenterOnScreen()
         frame.widget.Raise()

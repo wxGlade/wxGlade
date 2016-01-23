@@ -325,17 +325,18 @@ def builder(parent, sizer, pos, number=[1]):
     Factory function for EditSplitterWindow objects.
     """
     dialog = wcodegen.WidgetStyleSelectionDialog(
-        dlg_title, box_title, choices)
-
-    if not dialog.ShowModal() == wx.ID_OK:
+            dlg_title, box_title, choices)
+    res = dialog.ShowModal()
+    style = dialog.get_selection()
+    dialog.Destroy()
+    if res != wx.ID_OK:
         return
 
     label = '%s_%d' % (tmpl_label, number[0])
     while common.app_tree.has_name(label):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
-    widget = editor_class(label, parent, wx.NewId(), None, None, None,
-                          dialog.get_selection(),
+    widget = editor_class(label, parent, wx.NewId(), None, None, None, style,
                           sizer, pos, common.property_panel, show=False)
     if _has_panel:
         pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(),

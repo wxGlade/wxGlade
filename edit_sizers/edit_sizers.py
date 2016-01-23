@@ -650,7 +650,7 @@ class SizerClassDialog(object):
     def __init__(self, owner, parent):
         self.owner = owner
         self.parent = parent
-        self.dialog = None
+        self.selection = None
 
     def ShowModal(self):
         name = self.owner.__class__.__name__
@@ -660,15 +660,17 @@ class SizerClassDialog(object):
             else:
                 name += 'V'
         choices = [b for a, b in self.choices if a != name]
-        self.dialog = wx.SingleChoiceDialog(self.parent,
-                                            _("Select sizer type"),
-                                            _("Select sizer type"), choices)
-        self.dialog.CenterOnScreen()
-        return self.dialog.ShowModal()
+        dialog = wx.SingleChoiceDialog(self.parent,
+                                       _("Select sizer type"),
+                                       _("Select sizer type"), choices)
+        dialog.CenterOnScreen()
+        res = dialog.ShowModal()
+        self.selection = dialog.GetStringSelection()
+        dialog.Destroy()
+        return res
 
     def get_value(self):
-        return self.dialog.GetStringSelection()
-
+        return self.selection
 
 # end of class SizerClassDialog
 
@@ -2599,23 +2601,23 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
             self.rows.set_tooltip(_('Numbers of sizer rows'))
             self.cols.set_tooltip(_('Numbers of sizer columns'))
             self.vgap.set_tooltip(
-                _('Vertical extra space between all children')
+                    _('Vertical extra space between all children')
             )
             self.hgap.set_tooltip(
-                _('Horizontal extra space between all children')
+                    _('Horizontal extra space between all children')
             )
             self.rows.spin.SetFocus()
             self.rows.spin.SetSelection(-1, -1)
 
             self.flex = CheckBoxProperty(
-                self,
-                'flex',
-                self,
-                _('Flexible'),
-                write_always=True,
+                    self,
+                    'flex',
+                    self,
+                    _('Flexible'),
+                    write_always=True,
             )
             self.flex.set_tooltip(
-                _('Create a wxFlexGridSizer instead of a wxGridSizer')
+                    _('Create a wxFlexGridSizer instead of a wxGridSizer')
             )
 
             self.rows.set_value(3)
@@ -2652,13 +2654,15 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
     cols = int(dialog.cols.get_value())
     vgap = int(dialog.vgap.get_value())
     hgap = int(dialog.hgap.get_value())
+    flex = dialog.flex.get_value()
+    dialog.Destroy()
 
     name = 'grid_sizer_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'grid_sizer_%d' % number[0]
     topl = True
-    if dialog.flex.get_value():
+    if flex:
         constructor = EditFlexGridSizer
     else:
         constructor = EditGridSizer
@@ -2685,8 +2689,6 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
     if sizer is not None:
         sz.sizer_properties['flag'].set_value('wxEXPAND')
         sz.sizer_properties['pos'].set_value(pos - 1)
-
-    dialog.Destroy()
 
 
 def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
