@@ -27,7 +27,7 @@ class PerlFrameCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         icon = obj.properties.get('icon')
         if icon:
             stmt_icon = self.generate_code_bitmap(icon, obj.preview)
-            out.append('my $icon = &Wx::wxNullIcon();\n')
+            out.append('my $icon = &Wx::wxNullIcon;\n')
             out.append('$icon->CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('$self->SetIcon($icon);\n')
         out.extend(self.codegen.generate_common_properties(obj))

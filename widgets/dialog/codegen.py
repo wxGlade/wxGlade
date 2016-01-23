@@ -22,7 +22,7 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
         icon = obj.properties.get('icon')
         if icon:
             stmt_icon = self.generate_code_bitmap(icon, obj.preview)
-            out.append('_icon = %s()\n' % self.cn('wxNullIcon'))
+            out.append('_icon = %s\n' % self.cn('wxNullIcon'))
             out.append('_icon.CopyFromBitmap(%s)\n' % stmt_icon)
             out.append('self.SetIcon(_icon)\n')
         out.extend(self.codegen.generate_common_properties(obj))
