@@ -14,6 +14,7 @@ Bugs:
   - Fix WindowsError is the backup file already exists (Thanks to Graeme
     Glenn)
   - Fix black window bug on Windows
+  - Fix PyDeadObjectError during closing wxGlade
   - ...
 
 Deprecation
