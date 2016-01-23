@@ -2654,21 +2654,21 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
     cols = int(dialog.cols.get_value())
     vgap = int(dialog.vgap.get_value())
     hgap = int(dialog.hgap.get_value())
-    flex = dialog.flex.get_value()
+    is_flexible = dialog.flex.get_value()
     dialog.Destroy()
 
     name = 'grid_sizer_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'grid_sizer_%d' % number[0]
-    topl = True
-    if flex:
+    is_toplevel = True
+    if is_flexible:
         constructor = EditFlexGridSizer
     else:
         constructor = EditGridSizer
     if sizer is not None:
-        topl = False
-    sz = constructor(name, parent, rows, cols, vgap, hgap, topl)
+        is_toplevel = False
+    sz = constructor(name, parent, rows, cols, vgap, hgap, is_toplevel)
     if sizer is not None:
         sizer.add_item(sz, pos, 1, wx.EXPAND)
         node = Tree.Node(sz)
