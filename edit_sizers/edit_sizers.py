@@ -453,15 +453,13 @@ class SizerSlot(object):
             self._reDrawBackground = False
 
             if self.menu:
-                wx.CallAfter(self.menu.Destroy)
+                self.menu.Destroy()
                 self.menu = None
 
             if self._backgroundBuffer:
-                wx.CallAfter(self._backgroundBuffer.Destroy)
+                self._backgroundBuffer.Destroy()
                 self._backgroundBuffer = None
 
-            # destroy widget after all pending events have been processed
-            wx.CallAfter(self.widget.Destroy)
             self.widget = None
 
         if misc.focused_widget is self:
