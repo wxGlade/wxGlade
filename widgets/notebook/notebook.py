@@ -211,7 +211,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         tab_cols = [('Tab label', GridProperty.STRING)]
         self.properties['tabs'] = NotebookPagesProperty(
             self, 'tabs', None, tab_cols, label=_("Tabs"),
-            can_remove_last=False, )
+            can_remove_last=False)
         del tab_cols
         self.nb_sizer = None
         self._create_slots = False

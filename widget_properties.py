@@ -1494,7 +1494,7 @@ class GridProperty(Property, _activator):
         self.btn_sizer.Add(self.btn, 0, extra_flag)
         if self.can_add:
             self.btn_sizer.Add(
-                self.add_btn, 0, wx.LEFT | wx.RIGHT | extra_flag, 4, )
+                self.add_btn, 0, wx.LEFT | wx.RIGHT | extra_flag, 4)
             self.add_btn.Bind(wx.EVT_BUTTON, self.add_row)
         if self.can_insert:
             self.btn_sizer.Add(
