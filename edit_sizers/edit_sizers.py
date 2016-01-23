@@ -320,26 +320,31 @@ class SizerSlot(object):
         L{_backgroundBuffer}.
         """
         size = self.widget.GetClientSize()
+
         self._backgroundBuffer = wx.EmptyBitmap(size.width, size.height)
         dc = wx.BufferedDC(None, self._backgroundBuffer)
+
         # fill background first
         dc.SetBackground(wx.Brush(wx.LIGHT_GREY))
         dc.Clear()
-        # draw hatched lines
+
         if self.pos % 2:
             brush = wx.Brush(wx.BLACK, wx.FDIAGONAL_HATCH)
         else:
             brush = wx.Brush(wx.BLACK, wx.BDIAGONAL_HATCH)
 
-        # draw hatched lines in background
-        # disabled due to wxWidget bug #17326
-        # "SetBackground() with hatched brushes cases black background on MSW"
-        # dc.SetBackground(brush)
-        # dc.Clear()
+        # don't draw hatched lines in background on MSW due to wxWidget
+        # bug #17326 "SetBackground() with hatched brushes cases black
+        # background on MSW"
+        if wx.Platform == '__WXMSW__':
+            # draw hatched lines in foreground
+            dc.SetBrush(brush)
+            dc.DrawRectangle(0, 0, size.width, size.height)
+        else:
+            # draw hatched lines in background
+            dc.SetBackground(brush)
+            dc.Clear()
 
-        # draw hatched lines in foreground
-        dc.SetBrush(brush)
-        dc.DrawRectangle(0, 0, size.width, size.height)
         self._reDrawBackground = False
 
     def on_size(self, event):
