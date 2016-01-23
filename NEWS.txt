@@ -15,6 +15,7 @@ Bugs:
     Glenn)
   - Fix black window bug on Windows
   - Fix PyDeadObjectError during closing wxGlade
+  - Fix usage of wx.NullIcon for Perl and Python
   - ...
 
 Deprecation
