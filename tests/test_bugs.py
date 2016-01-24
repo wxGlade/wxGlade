@@ -4,6 +4,8 @@
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import common
+
 # import test base class
 from tests import WXGladeBaseTest
 
@@ -50,3 +52,26 @@ class TestCodeGen(WXGladeBaseTest):
         """
         self._test_all('bug167')
         self._test_all('bug167_utf8')
+
+    def test_bug179(self):
+        """\
+        Test bug #179 - Main file is generated without custom extensions
+
+        That's the test case for SF bug #179.
+        """
+        codegen = common.code_writers['C++']
+        source = self._load_file('bug179.wxg')
+        source = self._modify_attrs(source, overwrite='0')
+        result_app        = self._load_file('Bug179_main.c++')
+        result_frame_cpp  = self._load_file('Bug179_Frame.c++')
+        result_frame_h    = self._load_file('Bug179_Frame.hpp')
+        self._generate_code('C++', source, './')
+
+        app_filename = '%s' % codegen._generate_app_filename()
+        main_cpp = './%s' % app_filename
+        generated_app    = self.vFiles[main_cpp].getvalue()
+        generated_frame_cpp  = self.vFiles['./Bug179_Frame.c++'].getvalue()
+        generated_frame_h    = self.vFiles['./Bug179_Frame.hpp'].getvalue()
+        self._compare(result_app,    generated_app, app_filename)
+        self._compare(result_frame_cpp,  generated_frame_cpp , 'Bug179_Frame.c++')
+        self._compare(result_frame_h,    generated_frame_h,    'Bug179_Frame.hpp')
