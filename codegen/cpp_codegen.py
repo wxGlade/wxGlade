@@ -404,7 +404,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     tmpl_appfile = """\
 %(overwrite)s\
 %(header_lines)s\
-#include "%(top_win_class)s.h"
+#include "%(filename_top_win_class)s"
 
 """
 
@@ -531,15 +531,14 @@ bool MyApp::OnInit()
     # end of class ClassLines
 
     def init_lang(self, app_attrs):
-        self.app_filename = config.default_cpp_app_name
-
         self.last_generated_id = 1000
 
-        # Extensions based on Project options when set
+        # Extensions and main filename based on Project options when set
         self.source_extension = app_attrs.get(
             'source_extension', config.default_source_extension)
         self.header_extension = app_attrs.get(
             'header_extension', config.default_header_extension)
+        self.app_filename = self._generate_app_filename()
 
         self.header_lines = [
             '#include <wx/wx.h>\n',
@@ -707,6 +706,12 @@ bool MyApp::OnInit()
                 source_content,
                 self._app_added
                 )
+
+    def add_app(self, app_attrs, top_win_class):
+        # add language specific mappings
+        self.lang_mapping['filename_top_win_class'] = \
+            '%s%s' % (top_win_class, self.header_extension)
+        BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):
         if self.classes.has_key(code_obj.klass) and \
@@ -1555,6 +1560,19 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
             dep_list,
             )
         return code
+
+    def _generate_app_filename(self):
+        """\
+        Return the filename of C++ main file
+
+        @rtype: str
+
+        @see: L{config.default_cpp_app_name}
+        @see: L{source_extension}
+        """
+        base = os.path.splitext(config.default_cpp_app_name)[0]
+        app_filename = '%s%s' % (base, self.source_extension)
+        return app_filename
 
 # end of class CPPCodeWriter
 
