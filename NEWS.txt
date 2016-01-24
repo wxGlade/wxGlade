@@ -52,6 +52,7 @@ Bugs:
     Glenn)
   - Fix black window bug on Windows
   - Fix PyDeadObjectError during closing wxGlade  
+  - Fix main file is generated without custom extensions (sf bug #179)
 
 Deprecation
   - In place modifications for generated source files will be removed in one
