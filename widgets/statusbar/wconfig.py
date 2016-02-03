@@ -8,10 +8,17 @@ wxStatusBar widget configuration
 config = {
     'wxklass': 'wxStatusBar',
     'style_defs': {
+        'wxST_SIZEGRIP': {
+            'desc': _('Displays a gripper at the right-hand side of the '
+                      'status bar which can be used to resize the parent '
+                      'window.'),
+            'supported_by': ('wx28',),
+        },
         'wxSTB_SIZEGRIP': {
             'desc': _('Displays a gripper at the right-hand side of the '
                       'status bar which can be used to resize the parent '
                       'window.'),
+            'supported_by': ('wx3',),
         },
         'wxSTB_SHOW_TIPS': {
             'desc': _("Displays tooltips for those panes whose status text "
@@ -51,7 +58,7 @@ config = {
         },
     },
     'box_label': _('Style'),
-    'style_list': ['wxSTB_SIZEGRIP', 'wxSTB_SHOW_TIPS',
+    'style_list': ['wxST_SIZEGRIP', 'wxSTB_SIZEGRIP', 'wxSTB_SHOW_TIPS',
                    'wxSTB_ELLIPSIZE_START', 'wxSTB_ELLIPSIZE_MIDDLE',
                    'wxSTB_ELLIPSIZE_END', 'wxSTB_DEFAULT_STYLE']
 }
