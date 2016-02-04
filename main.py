@@ -162,7 +162,7 @@ class wxGladeFrame(wx.Frame):
         style = wx.SYSTEM_MENU | wx.CAPTION | wx.MINIMIZE_BOX
         style |= wx.RESIZE_BORDER | wx.CLOSE_BOX
         wx.Frame.__init__(self, parent, -1, "wxGlade v%s" % config.version,
-                          style=style)
+                          style=style, name='MainFrame')
         self.CreateStatusBar(1)
 
         if parent is None:
@@ -396,7 +396,7 @@ class wxGladeFrame(wx.Frame):
             if wx.Platform != '__WXGTK__': frame_style |= wx.FRAME_TOOL_WINDOW
 
         self.frame_property = wx.Frame(self, -1, _('Properties - <%s>' % _('app')),
-                               style=frame_style)
+                               style=frame_style, name='PropertyFrame')
         self.frame_property.SetBackgroundColour(wx.SystemSettings_GetColour(
             wx.SYS_COLOUR_BTNFACE))
         self.frame_property.SetIcon(icon)
@@ -417,7 +417,7 @@ class wxGladeFrame(wx.Frame):
 
         # Tree of widgets
         self.tree_frame = wx.Frame(self, -1, _('wxGlade: Tree'),
-                                  style=frame_style)
+                                  style=frame_style, name='TreeFrame')
         self.tree_frame.SetIcon(icon)
 
         app = application.Application(common.property_panel)
