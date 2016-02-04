@@ -132,15 +132,17 @@ class Application(object):
         self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
-        panel = wx.ScrolledWindow(
+        panel_application = wx.ScrolledWindow(
             self.notebook,
             wx.ID_ANY,
             style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE,
+            name='ApplicationPanel',
             )
         panel_settings = wx.ScrolledWindow(
             self.notebook,
             wx.ID_ANY,
-            style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE
+            style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE,
+            name='SettingsPanel'
             )
         self.name = "app"
         self.__saved = True
@@ -181,30 +183,34 @@ class Application(object):
             'use_gettext': (lambda: self.use_gettext, self.set_use_gettext),
             'for_version': (lambda: self.for_version, self.set_for_version),
             }
-        self.name_prop = TextProperty(self, "name", panel, True)
+        self.name_prop = TextProperty(self, "name", panel_application, True)
         self.name_prop.set_tooltip(
             _('Name of the instance created from "Class"')
             )
-        self.klass_prop = TextProperty(self, "class", panel, True)
+        self.klass_prop = TextProperty(self, "class", panel_application, True)
         self.klass_prop.set_tooltip(
             _("Name of the automatically generated class derived from wxApp")
             )
 
         self.encoding = config.encoding
-        self.encoding_prop = TextProperty(self, 'encoding', panel)
+        self.encoding_prop = TextProperty(self, 'encoding', panel_application)
         self.encoding_prop.set_tooltip(
             _("Encoding of the generated source files")
             )
 
-        self.use_gettext_prop = CheckBoxProperty(self, "use_gettext", panel,
-                                                 _("Enable gettext support"))
+        self.use_gettext_prop = CheckBoxProperty(
+            self,
+            'use_gettext',
+            panel_application,
+            _("Enable gettext support"),
+            )
         self.use_gettext_prop.set_tooltip(
             _("Enable internationalisation and localisation for the "
                 "generated source files")
             )
         TOP_WIN_ID = wx.NewId()
         self.top_win_prop = wx.Choice(
-            panel,
+            panel_application,
             TOP_WIN_ID,
             choices=[],
             size=(1, -1),
@@ -219,7 +225,7 @@ class Application(object):
             _("Split source code in one file per class / widget"),
             ]
         self.multiple_files_prop = RadioProperty(
-            self, "multiple_files", panel,
+            self, "multiple_files", panel_application,
             [_("Single file"), _("Separate file for each class")],
             label=_("Code Generation"), tooltips=codegen_tooltips)
         self.indent_mode_prop = RadioProperty(self, "indent_mode",
@@ -242,7 +248,7 @@ class Application(object):
         _writers = common.code_writers.keys()
         columns = 3
 
-        self.codewriters_prop = RadioProperty(self, "language", panel,
+        self.codewriters_prop = RadioProperty(self, "language", panel_application,
                                               _writers, columns=columns,
                                               sort=True, capitalize=True)
         self.codewriters_prop.set_str_value('python')
@@ -263,7 +269,7 @@ class Application(object):
         self.for_version_prop = RadioProperty(
             self,
             "for_version",
-            panel,
+            panel_application,
             self.all_supported_versions,
             columns=3,
             label=_("wxWidgets compatibility"),
@@ -277,7 +283,7 @@ class Application(object):
         self.overwrite_prop = CheckBoxProperty(
             self,
             'overwrite',
-            panel,
+            panel_application,
             _('Overwrite existing sources'),
             )
         self.overwrite_prop.set_tooltip(
@@ -294,7 +300,7 @@ class Application(object):
             _("Select output directory"),
             wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
             )
-        self.outpath_prop = DialogProperty(self, "output_path", panel,
+        self.outpath_prop = DialogProperty(self, "output_path", panel_application,
                                            dialog, label=_('Output path'))
         # update wildcards and default extension in the dialog
         self._update_wildcards(self.outpath_prop.dialog, 'python')
@@ -304,7 +310,7 @@ class Application(object):
 
         BTN_ID = wx.NewId()
         btn = wx.Button(
-            panel,
+            panel_application,
             BTN_ID,
             _("Generate code"),
             name="BtnGenerateCode",
@@ -320,8 +326,12 @@ class Application(object):
         sizer.Add(self.encoding_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.use_gettext_prop.panel, 0, wx.EXPAND)
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        label = wx.StaticText(panel, -1, _("Top window"),
-                              size=(config.label_initial_width, -1))
+        label = wx.StaticText(
+            panel_application,
+            -1,
+            _("Top window"),
+            size=(config.label_initial_width, -1),
+            )
         label.SetToolTip(wx.ToolTip(
             _("This widget is used as top window in the wxApp start code")
             ))
@@ -336,7 +346,7 @@ class Application(object):
 
         sizer.Add(btn, 0, wx.ALL | wx.EXPAND, 5)
 
-        self._add_page(_('Application'), panel, sizer)
+        self._add_page(_('Application'), panel_application, sizer)
 
         # layout self.notebook - page "Settings"
         #=======================================
