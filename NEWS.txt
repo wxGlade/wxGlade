@@ -18,6 +18,7 @@ Bugs:
   - Fix usage of wx.NullIcon for Perl and Python
   - Fix main file is generated without custom extensions (sf bug #179)
   - Add missing wxStatusBar style wxST_SIZEGRIP
+  - Fix generated code for wxDatePickerCtrl
   - ...
 
 Deprecation
