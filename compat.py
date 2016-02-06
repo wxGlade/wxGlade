@@ -8,9 +8,10 @@ Compatibility code to run with different versions of wxPython
 import wx
 
 
-SizerItem_SetWindow = None
 GridSizer_GetRows = None
 GridSizer_GetCols = None
+SizerItem_SetWindow = None
+wxWindow_IsEnabled = None
 
 def SizerItem_AssignWindow(item, window):
     """
@@ -128,12 +129,51 @@ def GridSizer_GetCols3(sizer):
     return sizer.GetEffectiveColsCount()
 
 
+def wxWindow_IsEnabled28(item):
+    """\
+    Wrapper for wxWindow.IsEnabled()
+
+    With wx3 "wxWindow::IsEnabled() now returns false if a window parent
+    (and not necessarily the window itself) is disabled, new function
+    IsThisEnabled() with the same behaviour as old IsEnabled() was added."
+
+    For instance: a parent window can be disabled during a modal dialog is
+    shown.
+
+    @param item:  Instance of wxWindow
+    @rtype: bool
+    """
+    return item.IsEnabled()
+
+
+def wxWindow_IsThisEnabled(item):
+    """\
+    Wrapper for wxWindow.IsEnabled()
+
+    With wx3 "wxWindow::IsEnabled() now returns false if a window parent
+    (and not necessarily the window itself) is disabled, new function
+    IsThisEnabled() with the same behaviour as old IsEnabled() was added."
+
+    For instance: a parent window can be disabled during a modal dialog is
+    shown.
+
+    @param item:  Instance of wxWindow
+
+    @rtype: bool
+    """
+    return item.IsThisEnabled()
+
+
 # Set different functions depending on the active wxPython version
 if wx.VERSION[:2] >= (2, 9):
-    SizerItem_SetWindow = SizerItem_AssignWindow
     GridSizer_GetRows = GridSizer_GetRows3
     GridSizer_GetCols = GridSizer_GetCols3
+    SizerItem_SetWindow = SizerItem_AssignWindow
+    wxWindow_IsEnabled = wxWindow_IsThisEnabled
 else:
-    SizerItem_SetWindow = SizerItem_SetWindow28
     GridSizer_GetRows = GridSizer_GetRows28
     GridSizer_GetCols = GridSizer_GetCols28
+    SizerItem_SetWindow = SizerItem_SetWindow28
+    wxWindow_IsEnabled = wxWindow_IsEnabled28
+    SizerItem_SetWindow = SizerItem_SetWindow28
+    wxWindow_IsEnabled = wxWindow_IsEnabled28
