@@ -13,6 +13,8 @@ from codegen import StatusFieldsHandler
 
 class PerlStatusBarCodeGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = $self->CreateStatusBar(%(labels_len)s%(style)s);\n'
+    prefix_style = False
+    tmpl_flags = ', %s'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)

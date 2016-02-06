@@ -88,6 +88,7 @@
             <fields>
                 <field width="-1">All Widgets statusbar</field>
             </fields>
+            <style>wxST_SIZEGRIP</style>
         </object>
         <object class="wxToolBar" name="All_Widgets_toolbar" base="EditToolBar">
             <tools>

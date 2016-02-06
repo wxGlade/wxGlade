@@ -13,6 +13,7 @@ from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = self.CreateStatusBar(%(labels_len)s%(style)s)\n'
+    tmpl_flags = ', %s'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -85,6 +86,7 @@ class CppStatusBarGenerator(wcodegen.CppWidgetCodeWriter):
 
     tmpl = '%(name)s = CreateStatusBar(%(labels_len)s%(style)s);\n'
     prefix_style = False
+    tmpl_flags = ', %s'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)

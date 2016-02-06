@@ -226,7 +226,7 @@
         (wxFrame_SetMenuBar (slot-top-window obj) (slot-All-Widgets-menubar obj))
         ;;; Menu Bar end
 
-        (setf (slot-All-Widgets-statusbar obj) (wxFrame_CreateStatusBar (slot-top-window obj) 1 0))
+        (setf (slot-All-Widgets-statusbar obj) (wxFrame_CreateStatusBar (slot-top-window obj) 1 wxST_SIZEGRIP))
         
 	;;; Tool Bar
         (setf (slot-All-Widgets-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))

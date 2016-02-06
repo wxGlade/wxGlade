@@ -69,7 +69,7 @@ sub new {
     
     # Menu Bar end
 
-    $self->{All_Widgets_statusbar} = $self->CreateStatusBar(1);
+    $self->{All_Widgets_statusbar} = $self->CreateStatusBar(1, wxSTB_ELLIPSIZE_MIDDLE|wxSTB_SHOW_TIPS|wxSTB_SIZEGRIP);
     
     # Tool Bar
     $self->{All_Widgets_toolbar} = Wx::ToolBar->new($self, -1);
