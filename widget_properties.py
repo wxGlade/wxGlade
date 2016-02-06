@@ -21,6 +21,7 @@ import wx.grid
 import wx.lib.agw.supertooltip as STT
 
 import common
+import compat
 import config
 import misc
 from misc import _reverse_dict
@@ -268,9 +269,10 @@ class _activator:
             return False
         if self._target:
             try:
-                return self._target[0].IsEnabled()
+                widget = self._target[0]
             except TypeError:
-                return self._target.IsEnabled()
+                widget = self._target
+            return compat.wxWindow_IsEnabled(widget)
         return self._active
 
     def toggle_blocked(self, blocked=None):
@@ -296,7 +298,7 @@ class _activator:
         Return True for a non-enabled or blocked widget.
         """
         if self._enabler:
-            return not self._enabler.IsEnabled()
+            return not compat.wxWindow_IsEnabled(self._enabler)
         return self._blocked
 
     def prepare_activator(self, enabler=None, target=None):
@@ -394,7 +396,7 @@ class TextProperty(Property, _activator):
             if self.text.IsBeingDeleted():
                 return
 
-            if self.text.IsEnabled():
+            if compat.wxWindow_IsEnabled(self.text):
                 function(event)
             event.Skip()
         self.text.Bind(wx.EVT_KILL_FOCUS, func_2)
@@ -1315,7 +1317,7 @@ class RadioProperty(Property, _activator):
 
     def bind_event(self, function):
         def func_2(event, function=function, self=self):
-            if self.options.IsEnabled():
+            if compat.wxWindow_IsEnabled(self.options):
                 function(event)
         self.options.Bind(wx.EVT_RADIOBOX, func_2)
 
