@@ -262,7 +262,7 @@
         (setf (slot-combo-box-empty obj) (wxComboBox_Create (slot-notebook-1-wxComboBox obj) wxID_ANY "" -1 -1 -1 -1 0 (vector ) wxCB_DROPDOWN))
         (setf (slot-combo-box-filled obj) (wxComboBox_Create (slot-notebook-1-wxComboBox obj) wxID_ANY "" -1 -1 -1 -1 2 (vector (_"Item 1 (pre-selected)") (_"Item 2")) wxCB_DROPDOWN))
         (setf (slot-notebook-1-wxDatePickerCtrl obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
-        (setf (slot-datepicker-ctrl-1 obj) (wxDatePickerCtrl_Create (slot-notebook-1-wxDatePickerCtrl obj) wxID_ANY -1 -1 -1 -1 0))
+        (setf (slot-datepicker-ctrl-1 obj) (wxDatePickerCtrl_Create (slot-notebook-1-wxDatePickerCtrl obj) wxID_ANY -1 -1 -1 -1 (logior wxDP_SHOWCENTURY wxDP_SPIN)))
         (setf (slot-notebook-1-wxGauge obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (setf (slot-gauge-1 obj) (wxGauge_Create (slot-notebook-1-wxGauge obj) wxID_ANY 20 -1 -1 -1 -1 wxGA_HORIZONTAL))
         (setf (slot-notebook-1-wxGrid obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))

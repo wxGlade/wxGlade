@@ -10,7 +10,12 @@ import wcodegen
 
 
 class PerlDatePickerCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
+           'wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, ' \
+           '%(style)s);\n'
+
+    prefix_style = False
+    set_default_style = True
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)

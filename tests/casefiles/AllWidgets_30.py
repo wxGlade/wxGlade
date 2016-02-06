@@ -83,7 +83,7 @@ class All_Widgets_Frame(wx.Frame):
         self.combo_box_empty = wx.ComboBox(self.notebook_1_wxComboBox, wx.ID_ANY, choices=[], style=wx.CB_DROPDOWN)
         self.combo_box_filled = wx.ComboBox(self.notebook_1_wxComboBox, wx.ID_ANY, choices=[_("Item 1 (pre-selected)"), _("Item 2")], style=wx.CB_DROPDOWN)
         self.notebook_1_wxDatePickerCtrl = wx.Panel(self.notebook_1, wx.ID_ANY)
-        self.datepicker_ctrl_1 = wx.DatePickerCtrl(self.notebook_1_wxDatePickerCtrl, wx.ID_ANY)
+        self.datepicker_ctrl_1 = wx.DatePickerCtrl(self.notebook_1_wxDatePickerCtrl, wx.ID_ANY, style=wx.DP_SHOWCENTURY | wx.DP_SPIN)
         self.notebook_1_wxGauge = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.gauge_1 = wx.Gauge(self.notebook_1_wxGauge, wx.ID_ANY, 20)
         self.notebook_1_wxGrid = wx.Panel(self.notebook_1, wx.ID_ANY)
