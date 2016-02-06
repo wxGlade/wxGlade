@@ -389,6 +389,7 @@
                                 <border>5</border>
                                 <option>1</option>
                                 <object class="wxDatePickerCtrl" name="datepicker_ctrl_1" base="EditDatePickerCtrl">
+                                    <style>wxDP_SPIN|wxDP_SHOWCENTURY</style>
                                 </object>
                             </object>
                         </object>

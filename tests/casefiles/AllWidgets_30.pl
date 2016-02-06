@@ -105,7 +105,7 @@ sub new {
     $self->{combo_box_empty} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [], wxCB_DROPDOWN);
     $self->{combo_box_filled} = Wx::ComboBox->new($self->{notebook_1_wxComboBox}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, [_T("Item 1 (pre-selected)"), _T("Item 2")], wxCB_DROPDOWN);
     $self->{notebook_1_wxDatePickerCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{datepicker_ctrl_1} = Wx::DatePickerCtrl->new($self->{notebook_1_wxDatePickerCtrl}, wxID_ANY);
+    $self->{datepicker_ctrl_1} = Wx::DatePickerCtrl->new($self->{notebook_1_wxDatePickerCtrl}, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_SHOWCENTURY|wxDP_SPIN);
     $self->{notebook_1_wxGauge} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{gauge_1} = Wx::Gauge->new($self->{notebook_1_wxGauge}, wxID_ANY, 20);
     $self->{notebook_1_wxGrid} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);

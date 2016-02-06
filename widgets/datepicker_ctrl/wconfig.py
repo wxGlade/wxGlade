@@ -37,6 +37,7 @@ config = {
         },
     },
     'box_label': _('Style'),
+    'default_style': 'wxDP_DEFAULT|wxDP_SHOWCENTURY',
     'style_list': ['wxDP_SPIN', 'wxDP_DROPDOWN', 'wxDP_DEFAULT',
                    'wxDP_ALLOWNONE', 'wxDP_SHOWCENTURY'],
     'events': {
