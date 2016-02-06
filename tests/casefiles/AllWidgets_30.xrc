@@ -59,6 +59,7 @@
         </object>
         <object class="wxStatusBar" name="All_Widgets_statusbar">
             <fields>1</fields>
+            <style>wxSTB_ELLIPSIZE_MIDDLE|wxSTB_SHOW_TIPS|wxSTB_SIZEGRIP</style>
             <widths>-1</widths>
         </object>
         <object class="wxToolBar" name="All_Widgets_toolbar">

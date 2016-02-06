@@ -46,7 +46,7 @@ class All_Widgets_Frame(wx.Frame):
         self.All_Widgets_menubar.Append(wxglade_tmp_menu, _("&Help"))
         self.SetMenuBar(self.All_Widgets_menubar)
         # Menu Bar end
-        self.All_Widgets_statusbar = self.CreateStatusBar(1)
+        self.All_Widgets_statusbar = self.CreateStatusBar(1, wx.ST_SIZEGRIP)
         
         # Tool Bar
         self.All_Widgets_toolbar = wx.ToolBar(self, -1)

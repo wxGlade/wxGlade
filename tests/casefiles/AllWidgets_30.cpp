@@ -75,7 +75,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     wxglade_tmp_menu_3->Append(wxID_ABOUT, _("About"), _("Show the About dialog"), wxITEM_NORMAL);
     All_Widgets_menubar->Append(wxglade_tmp_menu_3, _("&Help"));
     SetMenuBar(All_Widgets_menubar);
-    All_Widgets_statusbar = CreateStatusBar(1);
+    All_Widgets_statusbar = CreateStatusBar(1, wxSTB_ELLIPSIZE_MIDDLE|wxSTB_SHOW_TIPS|wxSTB_SIZEGRIP);
     All_Widgets_toolbar = new wxToolBar(this, -1);
     SetToolBar(All_Widgets_toolbar);
     All_Widgets_toolbar->AddTool(wxID_UP, _("UpDown"), wxArtProvider::GetBitmap(wxART_GO_UP, wxART_OTHER, wxSize(32, 32)), wxArtProvider::GetBitmap(wxART_GO_DOWN, wxART_OTHER, wxSize(32, 32)), wxITEM_CHECK, _("Up or Down"), _("Up or Down"));
