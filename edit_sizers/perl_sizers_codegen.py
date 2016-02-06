@@ -22,7 +22,6 @@ class BasePerlSizerBuilder(BaseSizerBuilder):
     tmpl_Fit = '%(sizer_name)s->Fit(%(parent_widget)s);\n'
     tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(' \
                         '%(parent_widget)s);\n'
-    tmpl_StaticBox = '$self->{%s_staticbox}'
 
     def _get_wparent(self, obj):
         if not obj.parent.is_toplevel:
@@ -36,31 +35,21 @@ class BasePerlSizerBuilder(BaseSizerBuilder):
 
 class PerlBoxSizerBuilder(BasePerlSizerBuilder):
     klass = 'wxBoxSizer'
-    init_stmt = [
-        '%(sizer_name)s = %(klass)s->new(%(orient)s);\n'
-        ]
+    tmpl = '%(sizer_name)s = %(klass)s->new(%(orient)s);\n'
 
 # end of class PerlBoxSizerBuilder
 
 
 class PerlStaticBoxSizerBuilder(BasePerlSizerBuilder):
     klass = 'wxStaticBoxSizer'
-    init_stmt = [
-        '%(staticbox_name)s = %(wxStaticBox)s->new('
-            '%(parent_widget)s, wxID_ANY, %(label)s );\n',
-        '%(sizer_name)s = %(klass)s->new(%(staticbox_name)s, %(orient)s);\n',
-        '%(staticbox_name)s->Lower();\n',
-        ]
+    tmpl = '%(sizer_name)s = %(klass)s->new(Wx::StaticBox->new(%(parent_widget)s, wxID_ANY, %(label)s), %(orient)s);\n'
 
 # end of class PerlStaticBoxSizerBuilder
 
 
 class PerlGridSizerBuilder(BasePerlSizerBuilder):
     klass = 'wxGridSizer'
-    init_stmt = [
-        '%(sizer_name)s = %(klass)s->new(%(rows)s, %(cols)s, '
-            '%(vgap)s, %(hgap)s);\n'
-        ]
+    tmpl = '%(sizer_name)s = %(klass)s->new(%(rows)s, %(cols)s, %(vgap)s, %(hgap)s);\n'
 
 # end of class PerlGridSizerBuilder
 

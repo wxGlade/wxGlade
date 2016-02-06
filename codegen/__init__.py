@@ -1565,15 +1565,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                             )
 
         else:  # the object is a sizer
-            if sub_obj.base == 'wxStaticBoxSizer':
-                i = init.pop(0)
-                klass.parents_init.insert(1, i)
-
-                # Add a dependency of the current object on its parent
-                klass.deps.append((sub_obj, sub_obj.parent))
-                klass.child_order.append(sub_obj)
-                klass.init_lines[sub_obj] = [i]
-
             klass.sizers_init.extend(init)
 
         klass.props.extend(props)

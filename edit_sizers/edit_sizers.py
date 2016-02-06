@@ -37,9 +37,9 @@ class BaseSizerBuilder(object):
     @cvar language: Language to generate the code for
     @type language: str
 
-    @cvar init_stmt: Statements to generate the sizer from;
-                     lines have to end with a newline character
-    @type init_stmt: list[str]
+    @cvar tmpl: Statements to generate the sizer from, the stmt has to end
+                with a newline character
+    @type tmpl: str
 
     @cvar tmpl_AddGrowableRow: Template for wxFlexGridSizer to set growable
                                rows
@@ -55,21 +55,17 @@ class BaseSizerBuilder(object):
     @cvar tmpl_Fit: Template to call Fit()
     @type tmpl_Fit: str
 
-    @cvar tmpl_StaticBox: Template for staticbox name used in combination
-                          with wxStaticBoxSizer.
-    @type tmpl_StaticBox: str
-
     @cvar tmpl_SetSizeHints: Template to set the size hints
     @type tmpl_SetSizeHints: str
 
     @ivar codegen: Language specific code generator
     @type codegen: codegen.BaseLangCodeWriter
 
-    @ivar props_get_code: Properties to replace in L{init_stmt}
+    @ivar props_get_code: Properties to replace in L{tmpl}
     @type props_get_code: dict
     """
 
-    init_stmt = []
+    tmpl = []
 
     klass = ''
     language = None
@@ -77,7 +73,6 @@ class BaseSizerBuilder(object):
     tmpl_SetSizer = ''
     tmpl_Fit = ''
     tmpl_SetSizeHints = ''
-    tmpl_StaticBox = ''
     tmpl_AddGrowableRow = ''
     tmpl_AddGrowableCol = ''
 
@@ -100,7 +95,7 @@ class BaseSizerBuilder(object):
         """\
         Generates the language specific code for sizer specified in L{klass}
         """
-        if not self.init_stmt:
+        if not self.tmpl:
             return [], [], []
 
         init = []
@@ -115,13 +110,8 @@ class BaseSizerBuilder(object):
         self.props_get_code['sizer_name'] = \
             self.codegen._format_classattr(obj)
 
-        if self.klass == 'wxStaticBoxSizer' and self.tmpl_StaticBox:
-            self.props_get_code['staticbox_name'] = \
-                self.tmpl_StaticBox % obj.name
-
-        # generate init lines from init_stmt filled with props_get_code
-        for line in self.init_stmt:
-            init.append(line % self.props_get_code)
+        # generate init lines from tmpl filled with props_get_code
+        init.append(self.tmpl % self.props_get_code)
 
         # generate layout lines
         if obj.is_toplevel:
@@ -154,12 +144,9 @@ class BaseSizerBuilder(object):
         """
         self.props_get_code.clear()
         self.props_get_code['orient'] = self.codegen.cn(
-            obj.properties.get('orient', 'wxHORIZONTAL')
-        )
+            obj.properties.get('orient', 'wxHORIZONTAL'))
         self.props_get_code['label'] = self.codegen.quote_str(
-            obj.properties.get('label', '')
-        )
-        self.props_get_code['wxStaticBox'] = self.codegen.cn('wxStaticBox')
+            obj.properties.get('label', ''))
         return self._get_code(obj)
 
     def get_code_wxBoxSizer(self, obj):
@@ -168,8 +155,7 @@ class BaseSizerBuilder(object):
         """
         self.props_get_code.clear()
         self.props_get_code['orient'] = self.codegen.cn(
-            obj.properties.get('orient', 'wxHORIZONTAL')
-        )
+            obj.properties.get('orient', 'wxHORIZONTAL'))
         return self._get_code(obj)
 
     def get_code_wxGridSizer(self, obj):

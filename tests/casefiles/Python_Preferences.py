@@ -50,7 +50,6 @@ class wxGladePreferencesUI(wx.Dialog):
         self.backup_suffix = wx.RadioBox(self.notebook_1_pane_2, wx.ID_ANY, _("Backup options"), choices=[_("append ~ to filename"), _("append .bak to filename")], majorDimension=2, style=wx.RA_SPECIFY_COLS)
         self.local_widget_path = wx.TextCtrl(self.notebook_1_pane_2, wx.ID_ANY, "")
         self.choose_widget_path = wx.Button(self.notebook_1_pane_2, wx.ID_ANY, _("..."), style=wx.BU_EXACTFIT)
-        self.sizer_6_staticbox = wx.StaticBox(self.notebook_1_pane_2, wx.ID_ANY, _("Local widget path"))
         self.ok = wx.Button(self, wx.ID_OK, "")
         self.cancel = wx.Button(self, wx.ID_CANCEL, "")
 
@@ -89,8 +88,7 @@ class wxGladePreferencesUI(wx.Dialog):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_5 = wx.BoxSizer(wx.VERTICAL)
-        self.sizer_6_staticbox.Lower()
-        sizer_6 = wx.StaticBoxSizer(self.sizer_6_staticbox, wx.HORIZONTAL)
+        sizer_6 = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_pane_2, wx.ID_ANY, _("Local widget path")), wx.HORIZONTAL)
         sizer_7_copy = wx.BoxSizer(wx.HORIZONTAL)
         sizer_7 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_3 = wx.BoxSizer(wx.VERTICAL)

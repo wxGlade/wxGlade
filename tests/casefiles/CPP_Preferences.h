@@ -46,7 +46,6 @@ private:
 
 protected:
     // begin wxGlade: wxGladePreferencesUI::attributes
-    wxStaticBox* sizer_6_staticbox;
     wxCheckBox* use_menu_icons;
     wxCheckBox* frame_tool_win;
     wxCheckBox* show_progress;

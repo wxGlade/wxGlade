@@ -44,8 +44,6 @@ private:
 
 protected:
     // begin wxGlade: MyDialog::attributes
-    wxStaticBox* sizer_3_staticbox;
-    wxStaticBox* sizer_2_staticbox;
     wxListBox* list_box_1;
     wxButton* button_4;
     wxButton* button_5;

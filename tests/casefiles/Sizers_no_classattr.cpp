@@ -20,8 +20,6 @@ MyDialog::MyDialog(wxWindow* parent, int id, const wxString& title, const wxPoin
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: MyDialog::MyDialog
-    sizer_3_staticbox = new wxStaticBox(this, wxID_ANY, _("Assigned Permissions:"));
-    sizer_2_staticbox = new wxStaticBox(this, wxID_ANY, _("Unassigned Permissions:"));
     const wxString list_box_1_choices[] = {};
     list_box_1 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_1_choices, wxLB_SINGLE);
     button_4 = new wxButton(this, wxID_ADD, wxEmptyString);
@@ -52,11 +50,9 @@ void MyDialog::do_layout()
     wxFlexGridSizer* grid_sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxHORIZONTAL);
     wxFlexGridSizer* grid_sizer_2 = new wxFlexGridSizer(1, 3, 0, 0);
-    sizer_3_staticbox->Lower();
-    wxStaticBoxSizer* sizer_3 = new wxStaticBoxSizer(sizer_3_staticbox, wxHORIZONTAL);
+    wxStaticBoxSizer* sizer_3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Assigned Permissions:")), wxHORIZONTAL);
     wxFlexGridSizer* sizer_4 = new wxFlexGridSizer(4, 1, 0, 0);
-    sizer_2_staticbox->Lower();
-    wxStaticBoxSizer* sizer_2 = new wxStaticBoxSizer(sizer_2_staticbox, wxHORIZONTAL);
+    wxStaticBoxSizer* sizer_2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Unassigned Permissions:")), wxHORIZONTAL);
     sizer_2->Add(list_box_1, 1, wxALL|wxEXPAND, 5);
     grid_sizer_2->Add(sizer_2, 1, wxEXPAND, 0);
     sizer_4->Add(20, 20, 0, wxEXPAND, 0);

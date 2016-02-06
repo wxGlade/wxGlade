@@ -22,7 +22,6 @@ wxGladePreferencesUI::wxGladePreferencesUI(wxWindow* parent, int id, const wxStr
     // begin wxGlade: wxGladePreferencesUI::wxGladePreferencesUI
     notebook_1 = new wxNotebook(this, wxID_ANY);
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
-    sizer_6_staticbox = new wxStaticBox(notebook_1_pane_2, wxID_ANY, _("Local widget path"));
     notebook_1_pane_1 = new wxPanel(notebook_1, wxID_ANY);
     use_menu_icons = new wxCheckBox(notebook_1_pane_1, wxID_ANY, _("Use icons in menu items"));
     frame_tool_win = new wxCheckBox(notebook_1_pane_1, wxID_ANY, _("Show properties and tree windows as small frames"));
@@ -95,8 +94,7 @@ void wxGladePreferencesUI::do_layout()
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_2 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_5 = new wxBoxSizer(wxVERTICAL);
-    sizer_6_staticbox->Lower();
-    wxStaticBoxSizer* sizer_6 = new wxStaticBoxSizer(sizer_6_staticbox, wxHORIZONTAL);
+    wxStaticBoxSizer* sizer_6 = new wxStaticBoxSizer(new wxStaticBox(notebook_1_pane_2, wxID_ANY, _("Local widget path")), wxHORIZONTAL);
     wxBoxSizer* sizer_7_copy = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_3 = new wxBoxSizer(wxVERTICAL);

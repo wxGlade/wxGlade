@@ -1332,11 +1332,6 @@ bool MyApp::OnInit()
                 if self.test_attribute(sub_obj):
                     klass.sub_objs.append((sub_obj.klass, sub_obj.name))
         else:  # the object is a sizer
-            # ALB 2004-09-17: workaround (hack) for static box sizers...
-            if sub_obj.base == 'wxStaticBoxSizer':
-                klass.sub_objs.insert(0, ('wxStaticBox',
-                                          '%s_staticbox' % sub_obj.name))
-                klass.parents_init.insert(1, init.pop(0))
             if self.test_attribute(sub_obj):
                 klass.sub_objs.append((sub_obj.klass, sub_obj.name))
             klass.sizers_init.extend(init)

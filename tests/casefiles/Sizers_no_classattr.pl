@@ -36,11 +36,9 @@ sub new {
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->{list_box_1} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
-    $self->{sizer_2_staticbox} = Wx::StaticBox->new($self, wxID_ANY, _T("Unassigned Permissions:") );
     $self->{button_4} = Wx::Button->new($self, wxID_ADD, "");
     $self->{button_5} = Wx::Button->new($self, wxID_REMOVE, "");
     $self->{list_box_2} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
-    $self->{sizer_3_staticbox} = Wx::StaticBox->new($self, wxID_ANY, _T("Assigned Permissions:") );
     $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
     $self->{button_2} = Wx::Button->new($self, wxID_OK, "");
     $self->{button_1} = Wx::Button->new($self, wxID_CANCEL, "");
@@ -67,11 +65,9 @@ sub __do_layout {
     $self->{grid_sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
     $self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{grid_sizer_2} = Wx::FlexGridSizer->new(1, 3, 0, 0);
-    $self->{sizer_3_staticbox}->Lower();
-    $self->{sizer_3} = Wx::StaticBoxSizer->new($self->{sizer_3_staticbox}, wxHORIZONTAL);
+    $self->{sizer_3} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self, wxID_ANY, _T("Assigned Permissions:")), wxHORIZONTAL);
     $self->{sizer_4} = Wx::FlexGridSizer->new(4, 1, 0, 0);
-    $self->{sizer_2_staticbox}->Lower();
-    $self->{sizer_2} = Wx::StaticBoxSizer->new($self->{sizer_2_staticbox}, wxHORIZONTAL);
+    $self->{sizer_2} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self, wxID_ANY, _T("Unassigned Permissions:")), wxHORIZONTAL);
     $self->{sizer_2}->Add($self->{list_box_1}, 1, wxALL|wxEXPAND, 5);
     $self->{grid_sizer_2}->Add($self->{sizer_2}, 1, wxEXPAND, 0);
     $self->{sizer_4}->Add(20, 20, 0, wxEXPAND, 0);
