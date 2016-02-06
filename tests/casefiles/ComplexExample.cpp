@@ -25,7 +25,6 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, 
     notebook_1_pane_4 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_3 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
-    sizer_3_staticbox = new wxStaticBox(notebook_1_pane_2, wxID_ANY, _("Misc"));
     notebook_1_pane_1 = new wxPanel(notebook_1, wxID_ANY);
     Mp3_To_Ogg_menubar = new wxMenuBar();
     wxMenu* wxglade_tmp_menu_1 = new wxMenu();
@@ -101,8 +100,7 @@ void PyOgg2_MyFrame::do_layout()
     wxFlexGridSizer* _gszr_pane4 = new wxFlexGridSizer(2, 3, 0, 0);
     wxBoxSizer* _szr_pane3 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxHORIZONTAL);
-    sizer_3_staticbox->Lower();
-    wxStaticBoxSizer* sizer_3 = new wxStaticBoxSizer(sizer_3_staticbox, wxHORIZONTAL);
+    wxStaticBoxSizer* sizer_3 = new wxStaticBoxSizer(new wxStaticBox(notebook_1_pane_2, wxID_ANY, _("Misc")), wxHORIZONTAL);
     wxFlexGridSizer* _gszr_pane1 = new wxFlexGridSizer(1, 3, 0, 0);
     wxStaticText* _lbl_input_filename = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("File name:"));
     _gszr_pane1->Add(_lbl_input_filename, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);

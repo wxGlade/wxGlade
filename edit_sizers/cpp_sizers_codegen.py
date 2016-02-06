@@ -19,7 +19,6 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
     tmpl_SetSizer = '%(parent_ref)sSetSizer(%(sizer_name)s);\n'
     tmpl_Fit = '%(sizer_name)s->Fit(%(parent_widget)s);\n'
     tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
-    tmpl_StaticBox = '%s_staticbox'
 
     def _get_wparent(self, obj):
         if not obj.parent.is_toplevel:
@@ -49,32 +48,21 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
 
 class CppBoxSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxBoxSizer'
-    init_stmt = [
-        '%(klass)s* %(sizer_name)s = new %(klass)s(%(orient)s);\n',
-        ]
+    tmpl = '%(klass)s* %(sizer_name)s = new %(klass)s(%(orient)s);\n'
 
 # end of class CppBoxSizerBuilder
 
 
 class CppStaticBoxSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxStaticBoxSizer'
-    init_stmt = [
-        '%(staticbox_name)s = new wxStaticBox(%(parent_widget)s, '
-            'wxID_ANY, %(label)s);\n',
-        '%(klass)s* %(sizer_name)s = new %(klass)s(%(staticbox_name)s, '
-            '%(orient)s);\n',
-        '%(staticbox_name)s->Lower();\n'
-        ]
+    tmpl = '%(klass)s* %(sizer_name)s = new %(klass)s(new wxStaticBox(%(parent_widget)s, wxID_ANY, %(label)s), %(orient)s);\n'
 
 # end of class CppStaticBoxSizerBuilder
 
 
 class CppGridSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxGridSizer'
-    init_stmt = [
-        '%(klass)s* %(sizer_name)s = new %(klass)s(%(rows)s, %(cols)s, '
-            '%(vgap)s, %(hgap)s);\n',
-        ]
+    tmpl = '%(klass)s* %(sizer_name)s = new %(klass)s(%(rows)s, %(cols)s, %(vgap)s, %(hgap)s);\n'
 
 # end of class CppGridSizerBuilder
 

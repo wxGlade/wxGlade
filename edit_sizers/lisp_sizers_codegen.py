@@ -49,9 +49,7 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
 class LispBoxSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxBoxSizer'
 
-    init_stmt = [
-        '(setf (%(sizer_name)s obj) (wxBoxSizer_Create %(orient)s))\n'
-        ]
+    tmpl = '(setf (%(sizer_name)s obj) (wxBoxSizer_Create %(orient)s))\n'
 
     tmpl_wparent = '(slot-top-window obj)'
 
@@ -60,21 +58,14 @@ class LispBoxSizerBuilder(BaseLispSizerBuilder):
 
 class LispStaticBoxSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxStaticBoxSizer'
-    init_stmt = [
-        '(setf (%(sizer_name)s obj) (StaticBoxSizer_Create '
-            '(wxStaticBox:wxStaticBox_Create %(parent_widget)s %(label)s) '
-            '%(orient)s))\n',
-        ]
+    tmpl = '(setf (%(sizer_name)s obj) (StaticBoxSizer_Create (wxStaticBox:wxStaticBox_Create %(parent_widget)s %(label)s) %(orient)s))\n'
 
 # end of class LispStaticBoxSizerBuilder
 
 
 class LispGridSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxGridSizer'
-    init_stmt = [
-        '(setf (%(sizer_name)s obj) (wxGridSizer_Create %(rows)s '
-            '%(cols)s %(vgap)s %(hgap)s))\n',
-        ]
+    tmpl = '(setf (%(sizer_name)s obj) (wxGridSizer_Create %(rows)s %(cols)s %(vgap)s %(hgap)s))\n'
 
 # end of class LispGridSizerBuilder
 

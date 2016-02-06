@@ -131,7 +131,6 @@ sub new {
     $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
     $self->{radio_btn_3} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Malroy"));
     $self->{text_ctrl_3} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
-    $self->{sizer_8_staticbox} = Wx::StaticBox->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("My RadioButton Group") );
     $self->{notebook_1_wxSlider} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{slider_1} = Wx::Slider->new($self->{notebook_1_wxSlider}, wxID_ANY, 5, 0, 10);
     $self->{notebook_1_wxSpinButton} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
@@ -273,8 +272,7 @@ sub __do_layout {
     $self->{sizer_14} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_16} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_22} = Wx::BoxSizer->new(wxHORIZONTAL);
-    $self->{sizer_8_staticbox}->Lower();
-    $self->{sizer_8} = Wx::StaticBoxSizer->new($self->{sizer_8_staticbox}, wxHORIZONTAL);
+    $self->{sizer_8} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("My RadioButton Group")), wxHORIZONTAL);
     $self->{grid_sizer_2} = Wx::FlexGridSizer->new(3, 2, 0, 0);
     $self->{grid_sizer_1} = Wx::GridSizer->new(2, 2, 0, 0);
     $self->{sizer_34} = Wx::BoxSizer->new(wxHORIZONTAL);

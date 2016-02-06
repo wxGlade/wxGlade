@@ -4,6 +4,7 @@ General:
   - ...
 
 Generated Code:
+  - Inline wxStaticBox statement into wxStaticBoxSizer statement
   - ...
 
 Bugs:

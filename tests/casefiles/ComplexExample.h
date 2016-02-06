@@ -46,7 +46,6 @@ private:
 
 protected:
     // begin wxGlade: PyOgg2_MyFrame::attributes
-    wxStaticBox* sizer_3_staticbox;
     wxMenuBar* Mp3_To_Ogg_menubar;
     wxStatusBar* Mp3_To_Ogg_statusbar;
     wxToolBar* Mp3_To_Ogg_toolbar;

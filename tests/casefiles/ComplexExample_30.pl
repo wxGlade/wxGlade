@@ -66,7 +66,6 @@ sub new {
     $self->{notebook_1_pane_2} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{rbx_sampling_rate} = Wx::RadioBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Sampling Rate"), wxDefaultPosition, wxDefaultSize, [_T("44 kbit"), _T("128 kbit")], 0, wxRA_SPECIFY_ROWS);
     $self->{cbx_love} = Wx::CheckBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("\N{U+2665} Love this song"));
-    $self->{sizer_3_staticbox} = Wx::StaticBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Misc") );
     $self->{notebook_1_pane_3} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{notebook_1_pane_3}, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
     $self->{notebook_1_pane_4} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
@@ -131,8 +130,7 @@ sub __do_layout {
     $self->{_gszr_pane4} = Wx::FlexGridSizer->new(2, 3, 0, 0);
     $self->{_szr_pane3} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_4} = Wx::BoxSizer->new(wxHORIZONTAL);
-    $self->{sizer_3_staticbox}->Lower();
-    $self->{sizer_3} = Wx::StaticBoxSizer->new($self->{sizer_3_staticbox}, wxHORIZONTAL);
+    $self->{sizer_3} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Misc")), wxHORIZONTAL);
     $self->{_gszr_pane1} = Wx::FlexGridSizer->new(1, 3, 0, 0);
     my $_lbl_input_filename = Wx::StaticText->new($self->{notebook_1_pane_1}, wxID_ANY, _T("File name:"));
     $self->{_gszr_pane1}->Add($_lbl_input_filename, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);

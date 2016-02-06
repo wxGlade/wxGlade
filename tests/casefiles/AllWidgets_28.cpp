@@ -53,7 +53,6 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, int id, const wxString& t
     notebook_1_wxCheckBox = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxCalendarCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxButton = new wxPanel(notebook_1, wxID_ANY);
-    sizer_8_staticbox = new wxStaticBox(notebook_1_wxRadioButton, wxID_ANY, _("My RadioButton Group"));
     notebook_1_wxBitmapButton = new wxPanel(notebook_1, wxID_ANY);
     All_Widgets_menubar = new wxMenuBar();
     wxMenu* wxglade_tmp_menu_1 = new wxMenu();
@@ -255,8 +254,7 @@ void All_Widgets_Frame::do_layout()
     wxBoxSizer* sizer_14 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_16 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_22 = new wxBoxSizer(wxHORIZONTAL);
-    sizer_8_staticbox->Lower();
-    wxStaticBoxSizer* sizer_8 = new wxStaticBoxSizer(sizer_8_staticbox, wxHORIZONTAL);
+    wxStaticBoxSizer* sizer_8 = new wxStaticBoxSizer(new wxStaticBox(notebook_1_wxRadioButton, wxID_ANY, _("My RadioButton Group")), wxHORIZONTAL);
     wxFlexGridSizer* grid_sizer_2 = new wxFlexGridSizer(3, 2, 0, 0);
     wxGridSizer* grid_sizer_1 = new wxGridSizer(2, 2, 0, 0);
     wxBoxSizer* sizer_3 = new wxBoxSizer(wxHORIZONTAL);

@@ -58,7 +58,6 @@ private:
 
 protected:
     // begin wxGlade: All_Widgets_Frame::attributes
-    wxStaticBox* sizer_8_staticbox;
     wxMenuBar* All_Widgets_menubar;
     wxStatusBar* All_Widgets_statusbar;
     wxToolBar* All_Widgets_toolbar;

@@ -114,7 +114,6 @@
         (setf (slot-backup-suffix obj) (wxRadioBox_Create (slot-notebook-1-pane-2 obj) wxID_ANY (_"Backup options") -1 -1 -1 -1 2 (vector (_"append ~ to filename") (_"append .bak to filename")) 2 wxRA_SPECIFY_COLS))
         (setf (slot-local-widget-path obj) (wxTextCtrl_Create (slot-notebook-1-pane-2 obj) wxID_ANY "" -1 -1 -1 -1 0))
         (setf (slot-choose-widget-path obj) (wxButton_Create (slot-notebook-1-pane-2 obj) wxID_ANY (_"...") -1 -1 -1 -1 wxBU_EXACTFIT))
-        (setf (slot-sizer-6 obj) (StaticBoxSizer_Create (wxStaticBox:wxStaticBox_Create (slot-notebook-1-pane-2 obj) (_"Local widget path")) wxHORIZONTAL))
         (setf (slot-ok obj) (wxButton_Create (slot-top-window obj) wxID_OK "" -1 -1 -1 -1 0))
         (setf (slot-cancel obj) (wxButton_Create (slot-top-window obj) wxID_CANCEL "" -1 -1 -1 -1 0))
         ;;; end wxGlade
@@ -150,6 +149,7 @@
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
         (setf (slot-sizer-2 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-sizer-5 obj) (wxBoxSizer_Create wxVERTICAL))
+        (setf (slot-sizer-6 obj) (StaticBoxSizer_Create (wxStaticBox:wxStaticBox_Create (slot-notebook-1-pane-2 obj) (_"Local widget path")) wxHORIZONTAL))
         (setf (slot-sizer-7-copy obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-sizer-7 obj) (wxBoxSizer_Create wxHORIZONTAL))
         (setf (slot-sizer-3 obj) (wxBoxSizer_Create wxVERTICAL))

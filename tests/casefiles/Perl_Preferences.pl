@@ -61,7 +61,6 @@ sub new {
     $self->{backup_suffix} = Wx::RadioBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Backup options"), wxDefaultPosition, wxDefaultSize, [_T("append ~ to filename"), _T("append .bak to filename")], 2, wxRA_SPECIFY_COLS);
     $self->{local_widget_path} = Wx::TextCtrl->new($self->{notebook_1_pane_2}, wxID_ANY, "");
     $self->{choose_widget_path} = Wx::Button->new($self->{notebook_1_pane_2}, wxID_ANY, _T("..."), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
-    $self->{sizer_6_staticbox} = Wx::StaticBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Local widget path") );
     $self->{ok} = Wx::Button->new($self, wxID_OK, "");
     $self->{cancel} = Wx::Button->new($self, wxID_CANCEL, "");
 
@@ -108,8 +107,7 @@ sub __do_layout {
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
     $self->{sizer_2} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_5} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_6_staticbox}->Lower();
-    $self->{sizer_6} = Wx::StaticBoxSizer->new($self->{sizer_6_staticbox}, wxHORIZONTAL);
+    $self->{sizer_6} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Local widget path")), wxHORIZONTAL);
     $self->{sizer_7_copy} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_7} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_3} = Wx::BoxSizer->new(wxVERTICAL);
