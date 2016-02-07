@@ -15,7 +15,7 @@ import os.path
 import sys
 import time
 
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 _name = 'xrc2wxg'
 """\
 Application name
@@ -234,6 +234,8 @@ def fix_custom_widgets(document):
     for elem in document.getElementsByTagName('object'):
         klass = elem.getAttribute('class')
         if klass not in _widgets and klass not in _special_class_names:
+            logging.warning('Unknown widget "%s" - fallback to generic '
+                            'widget "CustomWidget"' % klass)
             elem.setAttribute('base', 'CustomWidget')
             args = document.createElement('arguments')
             for child in get_child_elems(elem):
