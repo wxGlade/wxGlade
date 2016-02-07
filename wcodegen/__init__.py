@@ -1177,6 +1177,13 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
     """\
     Base class for all C++ widget code writer classes.
+
+    @cvar constructor: List of tuples to describe the constructor parameter
+                       set, ech tuple contains type, name and optional the
+                       default value,
+                       The constructor parameters will be used for toplevel
+                       windows only.
+    @type constructor:  list[(str, str, str)] | list[(str, str)]
     """
     prefix_style = True
 
