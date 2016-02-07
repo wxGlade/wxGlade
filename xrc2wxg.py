@@ -62,13 +62,15 @@ Counter to create unique names
 """
 
 _widgets = [
-    'wxBitmapButton', 'wxBoxSizer', 'wxButton', 'wxCheckBox', 'wxChoice',
-    'wxComboBox', 'wxDialog', 'wxFlexGridSizer', 'wxFrame', 'wxGauge',
-    'wxGrid', 'wxGridSizer', 'wxListBox', 'wxListCtrl', 'wxMenuBar', 'wxMenu'
-    'wxNotebook', 'wxPanel', 'wxRadioBox', 'wxRadioButton',
-    'wxScrolledWindow', 'wxSlider', 'wxSpinCtrl', 'wxSplitterWindow',
-    'wxStaticBitmap', 'wxStaticBoxSizer', 'wxStaticLine', 'wxStaticText',
-    'wxStatusBar', 'wxTextCtrl', 'wxToggleButton', 'wxToolBar', 'wxTreeCtrl',
+    'wxBitmapButton', 'wxBoxSizer', 'wxButton', 'wxCalendarCtrl',
+    'wxCheckBox', 'wxCheckListBox', 'wxChoice', 'wxComboBox',
+    'wxDatePickerCtrl', 'wxDialog', 'wxFlexGridSizer', 'wxFrame',
+    'wxGauge', 'wxGrid', 'wxGridSizer', 'wxListBox', 'wxListCtrl',
+    'wxMenuBar', 'wxMenu', 'wxNotebook', 'wxPanel', 'wxRadioBox',
+    'wxRadioButton', 'wxScrolledWindow', 'wxSlider', 'wxSpinButton',
+    'wxSpinCtrl', 'wxSplitterWindow', 'wxStaticBitmap', 'wxStaticBoxSizer',
+    'wxStaticLine', 'wxStaticText', 'wxStatusBar', 'wxTextCtrl',
+    'wxToggleButton', 'wxToolBar', 'wxTreeCtrl',
 ]
 """\
 Supported widgets
