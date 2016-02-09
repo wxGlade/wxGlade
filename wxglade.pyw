@@ -12,36 +12,47 @@ import sys
 import traceback
 import types
 
+import gettext
+t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
+t.install("wxglade")
+
 import config
 import wxglade
 
-# ctypes has introduced with Python 2.5, but wxGlade is supported with
-# Python 2.4 too. Thereby ctypes will be used if available only.
-try:
-    import ctypes
-    has_ctypes = True
-except ImportError:
-    has_ctypes = False
+msg = u''
+"""\
+Message to show in the message box
 
-msg = ''
-title = ''
+@type: Unicode
+
+@see: L{show_error_details()}
+"""
+
+title = u''
+"""\
+Title of the message box
+
+@type:  Unicode
+
+@see: L{show_error_details()}
+"""
 
 
-def show_message_box(title, msg):
+def show_error_details():
     """\
-    Show a message box with given details
-
-    @param title: Message box title
-    @type title:  str
-    @param msg:   Message
-    @type msg:    str
+    Show a message box
     """
-    if not has_ctypes:
+
+    # ctypes has introduced with Python 2.5, but wxGlade is supported with
+    # Python 2.4 too. Thereby ctypes will be used if available only.
+    try:
+        import ctypes
+    except ImportError:
         return
 
     MB_OK = 0x0
     ICON_STOP = 0x10
-    MessageBox = ctypes.windll.user32.MessageBoxA
+    MessageBox = ctypes.windll.user32.MessageBoxW
     MessageBox(None, msg, title, MB_OK | ICON_STOP)
 
 
@@ -51,17 +62,17 @@ try:
 
 except SystemExit, details:
     code = details.code
-    title = 'Abnormal Termination of wxGlade'
+    title = u'Abnormal Termination of wxGlade'
     if isinstance(code, types.IntType) and code != 0:
-        msg = """\
+        msg = u"""\
 wxGlade is terminating abnormally with an error.
 
 Please check the wxGlade log file to get more information.
 
 The exit code is: %d
-The log file is :%s""" % (code, config.log_file)
+The log file is : %s""" % (code, config.log_file)
     elif isinstance(code, types.StringTypes):
-        msg = """\
+        msg = u"""\
 wxGlade is terminating abnormally with an error.
 
 Please read the error section in the wxGlade manual for
@@ -69,16 +80,15 @@ more details. The wxGlade log file may contain additional
 information.
 
 The error message is: %s
-The log file is :%s""" % (code, config.log_file)
+The log file is: %s""" % (code, config.log_file)
 
 except:
-    # show caught exceptions in a windows message box
-    (exc_type, exc_value, exc_tb) = sys.exc_info()
+    exc_type, exc_value, exc_tb = sys.exc_info()
     if exc_type not in [None, SystemExit]:
         exc_traceback = '\r\n'.join(traceback.format_tb(exc_tb))
 
-        title = 'Internal Error in wxGlade'
-        msg = """\
+        title = u'Internal Error in wxGlade'
+        msg = u"""\
 An internal error occurred while starting wxGlade
 
 This is a bug - please report it and attach the log file.
@@ -90,4 +100,4 @@ Error details:
 %s""" % (config.log_file, exc_type, exc_value, exc_traceback)
 
 if msg:
-    show_message_box(title, msg)
+    show_error_details()
