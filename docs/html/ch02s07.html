@@ -1,4 +1,4 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Using the Source Code</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ch02.html" title="Chapter 2. Exploring wxGlade"><link rel="prev" href="ch02s06.html" title="Command Line Invocation"><link rel="next" href="ch02s08.html" title="Handling XRC Files"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Using the Source Code</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s06.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Exploring wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch02s08.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="using.source.code.section"></a>Using the Source Code</h2></div></div></div><p>There are a lot of options to control the source code generation
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Using the Source Code</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ch02.html" title="Chapter 2. Exploring wxGlade"><link rel="prev" href="ch02s06.html" title="Command Line Invocation"><link rel="next" href="ch02s08.html" title="Handling XRC Files"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Using the Source Code</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s06.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Exploring wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="ch02s08.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="using.source.code.section"></a>Using the Source Code</h2></div></div></div><p>There are a lot of options to control the source code generation
       process. They are bundled in the
       <span class="quote">“<span class="quote"><span class="guilabel">Application</span></span>”</span> page of the
       <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window (see <a class="xref" href="ch03s04.html#properties_window_application.fig" title="Figure 3.6. Project Properties - Application settings">Figure 3.6, “Project Properties - Application settings”</a>). Let's talk about three
@@ -47,14 +47,14 @@
         below shows the type of application start code resulting from
         different combinations of the three properties. The
         <span class="quote">“<span class="quote"><span class="guilabel">Enable gettext support</span></span>”</span> property
-        just triggers i18n-enabled source code.</p><div class="table"><a name="idm139736817569776"></a><p class="title"><b>Table 2.1. Interaction between properties to generate different types of
-          start code</b></p><div class="table-contents"><table summary="Interaction between properties to generate different types of
+        just triggers i18n-enabled source code.</p><div class="table"><a name="idm140088403889136"></a><p class="title"><b>Table 2.1. Interaction between properties to generate different types of
+          start code</b></p><div class="table-contents"><table class="table" summary="Interaction between properties to generate different types of
           start code" border="1"><colgroup><col><col><col><col></colgroup><thead><tr><th align="left"><span class="guilabel">Name</span></th><th align="left"><span class="guilabel">Class</span></th><th align="left"><span class="guilabel">Top window</span></th><th align="left"><span class="guilabel">Type of application start code
                 to generate</span></th></tr></thead><tbody><tr><td>not selected</td><td>not selected</td><td>not selected</td><td>not generated</td></tr><tr><td>selected</td><td>not selected</td><td>not selected</td><td>not generated</td></tr><tr><td>not selected</td><td>selected</td><td>not selected</td><td>not generated</td></tr><tr><td>selected</td><td>selected</td><td>not selected</td><td>not generated</td></tr><tr><td>selected</td><td>not selected</td><td>selected</td><td>simplified start code</td></tr><tr><td>not selected</td><td>selected</td><td>selected</td><td>not generated</td></tr><tr><td>selected</td><td>selected</td><td>selected</td><td>detailed start code</td></tr></tbody></table></div></div><br class="table-break"><p>The application start code of a multi-file project will be
         recreated every time the code generation is running.</p><p>In opposition the application start code of single-file projects
         will not updated if the name of the <span class="quote">“<span class="quote"><span class="guilabel">Top
         window</span></span>”</span> has changed and <span class="quote">“<span class="quote"><span class="guilabel">Overwrite
-        existing sources</span></span>”</span> is not set.</p><div class="example"><a name="idm139736817546256"></a><p class="title"><b>Example 2.2. Detailed application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package MyApp;
+        existing sources</span></span>”</span> is not set.</p><div class="example"><a name="idm140088403865616"></a><p class="title"><b>Example 2.2. Detailed application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package MyApp;
 use base qw(Wx::App);
 use strict;
 sub OnInit {
@@ -72,7 +72,7 @@ unless(caller){
         $local-&gt;AddCatalog("app"); # replace with the appropriate catalog name
         my $app = MyApp-&gt;new();
         $app-&gt;MainLoop();
-}</pre></div></div><p><br class="example-break"></p><div class="example"><a name="idm139736817543376"></a><p class="title"><b>Example 2.3. Simplified application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package main;
+}</pre></div></div><p><br class="example-break"></p><div class="example"><a name="idm140088403862736"></a><p class="title"><b>Example 2.3. Simplified application start code in Perl</b></p><div class="example-contents"><pre class="programlisting">package main;
 unless(caller){
         my $local = Wx::Locale-&gt;new("English", "en", "en"); # replace with ??
         $local-&gt;AddCatalog("PlOgg1_app"); # replace with the appropriate catalog name
@@ -83,13 +83,13 @@ unless(caller){
         $PlOgg1_app-&gt;SetTopWindow($Mp3_To_Ogg);
         $Mp3_To_Ogg-&gt;Show(1);
         $PlOgg1_app-&gt;MainLoop();
-}</pre></div></div><br class="example-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139736817540688"></a>Compiling C++ Code</h3></div></div></div><p>You can compile your wxGlade project after the generation of the
+}</pre></div></div><br class="example-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140088403860048"></a>Compiling C++ Code</h3></div></div></div><p>You can compile your wxGlade project after the generation of the
         C++ source and header files. The following examples demonstrate
-        compiling on Linux command line using <span class="command"><strong>g++</strong></span>.</p><div class="example"><a name="idm139736817538848"></a><p class="title"><b>Example 2.4. Compiling a single file C++ project on Linux</b></p><div class="example-contents"><pre class="screen"># g++ FontColour.cpp $(wx-config --libs) $(wx-config --cxxflags) -o FontColour
+        compiling on Linux command line using <span class="command"><strong>g++</strong></span>.</p><div class="example"><a name="idm140088403858208"></a><p class="title"><b>Example 2.4. Compiling a single file C++ project on Linux</b></p><div class="example-contents"><pre class="screen"># g++ FontColour.cpp $(wx-config --libs) $(wx-config --cxxflags) -o FontColour
 # ll FontColour*
 -rwxr-xr-x 1 carsten carsten 72493 Jun 15 09:22 FontColour
 -rwxr-xr-x 1 carsten carsten  1785 Mai 11 19:24 FontColour.cpp
--rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h</pre></div></div><br class="example-break"><div class="example"><a name="idm139736817537168"></a><p class="title"><b>Example 2.5. Compiling a multi file C++ project on Linux</b></p><div class="example-contents"><pre class="screen"># g++  CPPOgg2_main.cpp $(wx-config --libs) $(wx-config --cxxflags) \
+-rwxr-xr-x 1 carsten carsten  1089 Jun 11 07:09 FontColour.h</pre></div></div><br class="example-break"><div class="example"><a name="idm140088403856528"></a><p class="title"><b>Example 2.5. Compiling a multi file C++ project on Linux</b></p><div class="example-contents"><pre class="screen"># g++  CPPOgg2_main.cpp $(wx-config --libs) $(wx-config --cxxflags) \
        -o CPPOgg2_main CPPOgg2_MyDialog.cpp CPPOgg2_MyFrame.cpp
 # ll CPPOgg2*
 -rwxr-xr-x 1 carsten carsten 108354 Jun 15 09:33 CPPOgg2_main

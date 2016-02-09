@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2015-12-19</date>
+    <date>2016-02-09</date>
 
     <authorgroup>
       <author>
@@ -709,6 +709,80 @@ changing mode of /opt/wxGlade/usr/bin/wxglade to 755
               the encoding selected in your design and the encoding of your
               source file. Change the design encoding to match source files
               encoding.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Please install missing Python module
+            "wxPython".</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> The Python
+              wrapper for wxWidgets couldn't be loaded.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis> Check
+              if</para>
+
+              <itemizedlist>
+                <listitem>
+                  <para>you have wxPython installed</para>
+                </listitem>
+
+                <listitem>
+                  <para>the wxPython version matches to the Python
+                  installation</para>
+                </listitem>
+
+                <listitem>
+                  <para>Python and wxPython used the same memory address width
+                  of 32-bit or 64-bit</para>
+                </listitem>
+              </itemizedlist>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Please install missing Python module
+            "wxversion".</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> The Python
+              module <quote>wxversion</quote> couldn't be loaded.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis>
+              <quote>wxversion</quote> is a Python module written in pure
+              Python. There by you can't have trouble with 32bit and 64bit
+              like with <quote>wxPython</quote>. Just install the Python
+              module <quote>wxversion</quote>. Mostly the module is part of
+              the wxPython installation.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>Too many wxg files given.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> You want to
+              start the code generation from commandline, but you have chosen
+              to many design files.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis>
+              Re-execute the command with the just design file name as last
+              argument.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>No wxg file given.</glossterm>
+
+            <glossdef>
+              <para><emphasis role="bold">Details:</emphasis> You want to
+              start the code generation from commandline, but you haven't
+              given the design file to process.</para>
+
+              <para><emphasis role="bold">Corrective Action:</emphasis>
+              Re-execute the command with the design file name as last
+              argument.</para>
             </glossdef>
           </glossentry>
         </glosslist>
@@ -4158,6 +4232,15 @@ def initialize():
         </varlistentry>
 
         <varlistentry>
+          <term>Python</term>
+
+          <listitem>
+            <para>Python is a general-purpose, high-level programming
+            language.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term>SAE</term>
 
           <listitem>
@@ -4201,8 +4284,8 @@ def initialize():
           <term>wxg</term>
 
           <listitem>
-            <para>File extension used by wxGlade to store the project in a XML
-            file.</para>
+            <para>File extension used by wxGlade to store the design / project
+            in a XML file.</para>
           </listitem>
         </varlistentry>
 
@@ -4211,6 +4294,15 @@ def initialize():
 
           <listitem>
             <para>abbreviation for <acronym>wxWidgets</acronym></para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>wxPython</term>
+
+          <listitem>
+            <para>is a wrapper for wxWidgets of the Python programming
+            language.</para>
           </listitem>
         </varlistentry>
 
