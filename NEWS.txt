@@ -1,6 +1,7 @@
 Version 0.7.2 - 2016-XX-XX:
 General:
   - Remove usage of KDE file dialog
+  - Improve reporting of early error messages on Windows
   - ...
 
 Generated Code:

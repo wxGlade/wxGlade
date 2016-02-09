@@ -69,7 +69,7 @@ def run_tests():
                 import wxversion
                 wxversion.ensureMinimal('2.8')
             except ImportError:
-                print _('Please install missing python module "wxversion".')
+                print _('Please install missing Python module "wxversion".')
                 sys.exit(1)
             except wxversion.VersionError:
                 print _('The requested wxPython version is not found. '

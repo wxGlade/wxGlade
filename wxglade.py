@@ -105,7 +105,7 @@ License MIT: The MIT License
         print _("""
 Example: Generate Python code out of myapp.wxg
 
-   wxglade -o temp -g python myapp.wxg
+   wxglade -o output.py -g python myapp.wxg
 
 Report bugs to:    <wxglade-general@lists.sourceforge.net> or at
                    <http://sourceforge.net/projects/wxglade/>
@@ -133,13 +133,15 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""")
         if len(args) == 1:
             options.start_gui = False
         elif len(args) == 0:
-            logging.error(_("No wxg file given!\n"))
+            msg = _("No wxg file given.\n")
+            logging.error(msg)
             parser.print_help()
-            sys.exit(1)
+            sys.exit(msg)
         else:
-            logging.error(_("Too many wxg files given!\n"))
+            msg = _("Too many wxg files given.\n")
+            logging.error(msg)
             parser.print_help()
-            sys.exit(1)
+            sys.exit(msg)
     else:
         options.start_gui = True
 
@@ -175,7 +177,7 @@ def command_line_code_generation(filename, language, out_path=None):
             )
     except errors.WxgBaseException, inst:
         logging.error(inst)
-        sys.exit(1)
+        sys.exit(inst)
     except Exception:
         logging.error(
             _("An exception occurred while generating the code for the "
@@ -297,16 +299,16 @@ def init_stage2(use_gui):
                 import wxversion
                 wxversion.ensureMinimal('2.8')
             except ImportError:
-                logging.error(
-                    _('Please install missing python module "wxversion".'))
-                sys.exit(1)
+                msg = _('Please install missing Python module "wxversion".')
+                logging.error(msg)
+                sys.exit(msg)
 
         try:
             import wx
         except ImportError:
-            logging.error(
-                _('Please install missing python module "wxPython".'))
-            sys.exit(1)
+            msg = _('Please install missing Python module "wxPython".')
+            logging.error(msg)
+            sys.exit(msg)
 
         try:
             import faulthandler
