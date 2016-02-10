@@ -16,7 +16,7 @@
 
 
 
-CPPOgg3_MyDialog::CPPOgg3_MyDialog(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+CPPOgg3_MyDialog::CPPOgg3_MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
 {
     // begin wxGlade: CPPOgg3_MyDialog::CPPOgg3_MyDialog
@@ -124,7 +124,7 @@ void CPPOgg3_MyDialog::startConverting(wxCommandEvent &event)
 // wxGlade: add CPPOgg3_MyDialog event handlers
 
 
-CPPOgg3_MyFrame::CPPOgg3_MyFrame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+CPPOgg3_MyFrame::CPPOgg3_MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: CPPOgg3_MyFrame::CPPOgg3_MyFrame

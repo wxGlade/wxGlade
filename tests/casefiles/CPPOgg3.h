@@ -40,7 +40,7 @@ public:
     // begin wxGlade: CPPOgg3_MyDialog::ids
     // end wxGlade
 
-    CPPOgg3_MyDialog(wxWindow* parent, int id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    CPPOgg3_MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
 private:
     // begin wxGlade: CPPOgg3_MyDialog::methods
@@ -81,7 +81,7 @@ public:
     // begin wxGlade: CPPOgg3_MyFrame::ids
     // end wxGlade
 
-    CPPOgg3_MyFrame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
+    CPPOgg3_MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
     // begin wxGlade: CPPOgg3_MyFrame::methods

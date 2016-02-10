@@ -16,7 +16,7 @@
 // end wxGlade
 
 
-Bug179_Frame::Bug179_Frame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+Bug179_Frame::Bug179_Frame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: Bug179_Frame::Bug179_Frame

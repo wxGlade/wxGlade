@@ -36,7 +36,7 @@ public:
     // begin wxGlade: wxGladePreferencesUI::ids
     // end wxGlade
 
-    wxGladePreferencesUI(wxWindow* parent, int id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    wxGladePreferencesUI(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
 private:
     // begin wxGlade: wxGladePreferencesUI::methods

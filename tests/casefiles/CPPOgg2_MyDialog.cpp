@@ -16,7 +16,7 @@
 // end wxGlade
 
 
-CPPOgg2_MyDialog::CPPOgg2_MyDialog(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+CPPOgg2_MyDialog::CPPOgg2_MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxDialog(parent, id, title, pos, size, wxCAPTION|wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxSYSTEM_MENU)
 {
     // begin wxGlade: CPPOgg2_MyDialog::CPPOgg2_MyDialog

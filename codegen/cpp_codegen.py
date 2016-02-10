@@ -790,7 +790,7 @@ bool MyApp::OnInit()
                 self._current_extra_code_cpp.append("".join(
                     self.classes[code_obj.klass].extra_code_cpp[::-1]))
 
-        default_sign = [('wxWindow*', 'parent'), ('int', 'id')]
+        default_sign = [('wxWindow*', 'parent'), ('wxWindowID', 'id')]
         sign = getattr(builder, 'constructor', default_sign)
 
         defaults = []

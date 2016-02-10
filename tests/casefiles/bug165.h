@@ -34,7 +34,7 @@ public:
     // begin wxGlade: awxNotebook::ids
     // end wxGlade
 
-    awxNotebook(wxWindow* parent, int id, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=0);
+    awxNotebook(wxWindow* parent, wxWindowID id, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=0);
 
 private:
     // begin wxGlade: awxNotebook::methods
@@ -54,7 +54,7 @@ public:
     // begin wxGlade: MyFrame::ids
     // end wxGlade
 
-    MyFrame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
+    MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
     // begin wxGlade: MyFrame::methods

@@ -16,7 +16,7 @@
 
 
 
-StylelessDialog::StylelessDialog(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+StylelessDialog::StylelessDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxDialog(parent, id, title, pos, size, style)
 {
     // begin wxGlade: StylelessDialog::StylelessDialog
@@ -43,7 +43,7 @@ void StylelessDialog::do_layout()
 }
 
 
-StylelessFrame::StylelessFrame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+StylelessFrame::StylelessFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: StylelessFrame::StylelessFrame

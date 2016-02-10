@@ -37,7 +37,7 @@ public:
     // begin wxGlade: CPPOgg2_MyFrame::ids
     // end wxGlade
 
-    CPPOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
+    CPPOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
     // begin wxGlade: CPPOgg2_MyFrame::methods

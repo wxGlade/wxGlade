@@ -15,7 +15,7 @@
 
 
 
-StockAction::StockAction(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+StockAction::StockAction(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL)
 {
     // begin wxGlade: StockAction::StockAction

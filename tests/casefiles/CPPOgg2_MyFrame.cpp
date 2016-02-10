@@ -16,7 +16,7 @@
 // end wxGlade
 
 
-CPPOgg2_MyFrame::CPPOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+CPPOgg2_MyFrame::CPPOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: CPPOgg2_MyFrame::CPPOgg2_MyFrame

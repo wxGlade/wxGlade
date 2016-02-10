@@ -16,7 +16,7 @@
 
 
 
-MyDialog::MyDialog(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: MyDialog::MyDialog
@@ -58,7 +58,7 @@ void MyDialog::do_layout()
 }
 
 
-MyDialog1::MyDialog1(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+MyDialog1::MyDialog1(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // Content of this block not found. Did you rename this class?

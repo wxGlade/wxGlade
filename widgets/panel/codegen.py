@@ -76,7 +76,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
-    constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+    constructor = [('wxWindow*', 'parent'), ('wxWindowID', 'id'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
                    ('long', 'style', '0')]

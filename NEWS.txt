@@ -6,6 +6,7 @@ General:
 
 Generated Code:
   - Inline wxStaticBox statement into wxStaticBoxSizer statement
+  - Use wxWindowID instead of int for widget identifiers in C++
   - ...
 
 Bugs:

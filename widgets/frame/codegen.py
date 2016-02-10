@@ -108,7 +108,7 @@ def xrc_statusbar_code_generator(obj):
 
 
 class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
-    constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+    constructor = [('wxWindow*', 'parent'), ('wxWindowID', 'id'),
                    ('const wxString&', 'title'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
@@ -146,7 +146,7 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
 class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
     import_modules = ['<wx/mdi.h>']
 
-    constructor = [('wxMDIParentFrame*', 'parent'), ('int', 'id'),
+    constructor = [('wxMDIParentFrame*', 'parent'), ('wxWindowID', 'id'),
                    ('const wxString&', 'title'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
