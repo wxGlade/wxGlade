@@ -196,8 +196,9 @@ def fix_default_properties(document):
                     elem.firstChild.data = u'0'
 
     document.documentElement.tagName = 'application'
-    if document.documentElement.hasAttribute('version'):
-        document.documentElement.removeAttribute('version')
+    for attribute in ['version', 'xmlns']:
+        if document.documentElement.hasAttribute(attribute):
+            document.documentElement.removeAttribute(attribute)
 
 
 def fix_class_properties(document):
