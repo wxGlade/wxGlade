@@ -33,7 +33,7 @@ public:
     // begin wxGlade: Bug179_Frame::ids
     // end wxGlade
 
-    Bug179_Frame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
+    Bug179_Frame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
     // begin wxGlade: Bug179_Frame::methods

@@ -16,7 +16,7 @@
 
 
 
-MyDialog::MyDialog(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: MyDialog::MyDialog
@@ -84,7 +84,7 @@ bool MyApp::OnInit()
 
 
 
-MyDialog1::MyDialog1(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+MyDialog1::MyDialog1(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: MyDialog1::MyDialog1

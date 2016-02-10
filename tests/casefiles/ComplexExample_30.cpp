@@ -16,7 +16,7 @@
 
 
 
-PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: PyOgg2_MyFrame::PyOgg2_MyFrame
@@ -188,7 +188,7 @@ void PyOgg2_MyFrame::startConverting(wxCommandEvent &event)
 // wxGlade: add PyOgg2_MyFrame event handlers
 
 
-MyFrameGrid::MyFrameGrid(wxWindow* parent, int id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+MyFrameGrid::MyFrameGrid(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrameGrid::MyFrameGrid

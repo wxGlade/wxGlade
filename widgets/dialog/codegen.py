@@ -41,7 +41,7 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppDialogGenerator(wcodegen.CppWidgetCodeWriter):
-    constructor = [('wxWindow*', 'parent'), ('int', 'id'),
+    constructor = [('wxWindow*', 'parent'), ('wxWindowID', 'id'),
                    ('const wxString&', 'title'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),

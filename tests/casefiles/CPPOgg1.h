@@ -37,7 +37,7 @@ public:
     // begin wxGlade: CPPOgg1_MyDialog::ids
     // end wxGlade
 
-    CPPOgg1_MyDialog(wxWindow* parent, int id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
+    CPPOgg1_MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
 private:
     // begin wxGlade: CPPOgg1_MyDialog::methods

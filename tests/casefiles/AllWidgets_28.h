@@ -46,7 +46,7 @@ public:
     // begin wxGlade: All_Widgets_Frame::ids
     // end wxGlade
 
-    All_Widgets_Frame(wxWindow* parent, int id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
+    All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
     // begin wxGlade: All_Widgets_Frame::methods
