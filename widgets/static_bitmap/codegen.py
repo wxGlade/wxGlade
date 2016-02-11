@@ -28,7 +28,7 @@ class CppStaticBitmapGenerator(wcodegen.CppWidgetCodeWriter):
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
-    class XrcCodeGenerator(xrcgen.DefaultXrcObject):
+    class StaticBitmapXrcObject(xrcgen.DefaultXrcObject):
         def write(self, *args, **kwds):
             try:
                 del self.properties['attribute']
@@ -36,7 +36,7 @@ def xrc_code_generator(obj):
                 pass
             xrcgen.DefaultXrcObject.write(self, *args, **kwds)
 
-    return XrcCodeGenerator(obj)
+    return StaticBitmapXrcObject(obj)
 
 
 def initialize():
