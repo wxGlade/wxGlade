@@ -1038,7 +1038,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         Return a inline statement of a bitmap from the given statement using
         wxArtProvider.
 
-        B{Synax}::
+        B{Syntax}::
             art:<ArtID>,<ArtClient>
             art:<ArtID>,<ArtClient>,<width>,<height>
 
@@ -1046,7 +1046,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             >>> get_inline_stmt_artprovider(
             ... 'art:wxART_HELP,wxART_OTHER,32,32')
             'wx.ArtProvider.GetBitmap(wx.ART_HELP, wx.ART_OTHER, (32, 32))'
-                                        # Python
 
         @param bitmap: Bitmap definition
         @type bitmap: str
@@ -1088,12 +1087,12 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         """\
         Return a inline statement to create an empty wxBitmap.
 
-        B{Synax}::
+        B{Syntax}::
             empty:<width>,<height>
 
         B{Example}::
             >>> get_inline_stmt_emptybitmap('empty:32,32')
-            'wx.EmptyBitmap(32, 32)'    # Python
+            'wx.EmptyBitmap(32, 32)'
 
         @param bitmap: Bitmap definition
         @type bitmap: str
