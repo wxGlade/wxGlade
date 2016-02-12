@@ -180,11 +180,15 @@ def xrc_code_generator(obj):
                     write('    '*(tabs+1) + '<longhelp>%s</longhelp>\n' % \
                           escape(item.long_help))
                 if item.bitmap1:
-                    write('    '*(tabs+1) + '<bitmap>%s</bitmap>\n' % \
-                          escape(item.bitmap1))
+                    prop = self._format_bitmap_property(
+                            'bitmap', item.bitmap1)
+                    if prop:
+                        write('%s%s' % ('    ' * (tabs + 1), prop))
                 if item.bitmap2:
-                    write('    '*(tabs+1) + '<bitmap2>%s</bitmap2>\n' % \
-                          escape(item.bitmap2))
+                    prop = self._format_bitmap_property(
+                            'bitmap2', item.bitmap2)
+                    if prop:
+                        write('%s%s' % ('    ' * (tabs + 1), prop))
                 try:
                     # again, it seems that XRC doesn't support "radio" tools
                     if int(item.type) == 1:
