@@ -17,6 +17,7 @@ from codegen import BaseLangCodeWriter, \
     EventsPropertyHandler, \
     ExtraPropertiesPropertyHandler
 from ordereddict import OrderedDict
+import common
 import errors
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
@@ -154,11 +155,47 @@ class DefaultXrcObject(XrcObject):
         self.subclass = code_obj.klass
 
     def write_property(self, name, val, outfile, ntabs):
-        if val:
-            name = escape(name)
-            line = self.tabs(ntabs) + '<%s>%s</%s>\n' % (
-                name, escape(val), name)
+        if not val:
+            return
+
+        if name in ['icon', 'bitmap']:
+            prop = self._format_bitmap_property(name, val)
+        else:
+            prop = common.format_xml_tag(name, val)
+
+        if prop:
+            line = '%s%s' % (self.tabs(ntabs), prop)
             outfile.write(line)
+
+    def _format_bitmap_property(self, name, val):
+        """\
+        Return formatted bitmap/icon XRC property.
+
+        @rtype: str | None
+        """
+        if val.startswith('art:'):
+            content = val[4:]
+            elements = [item.strip() for item in content.split(',')]
+            art_id = elements[0]
+            art_client = elements[1]
+
+            if art_client != 'wxART_OTHER':
+                prop = common.format_xml_tag(
+                    name, '', stock_id=art_id, stock_client=art_client)
+            else:
+                prop = common.format_xml_tag(name, u'', stock_id=art_id)
+
+        elif val.startswith('code:') or val.startswith('empty:') or \
+             val.startswith('var:'):
+            self._logger.warn(
+                _('XRC: Unsupported bitmap statement "%s" for %s "%s"'),
+                val, self.klass, self.name)
+            prop = None
+
+        else:
+            prop = common.format_xml_tag(name, val)
+
+        return prop
 
     def write(self, out_file, ntabs):
         write = out_file.write
