@@ -387,20 +387,27 @@ def encode_to_unicode(item, encoding=None):
 
     Non-string items will be converted to string automatically.
 
-    @param item: Item to convert
-    @type item: str | Unicode
+    If no encoding given, app_tree.app.encoding or 'UFT-8' will be used.
 
-    @param encoding: Encoding of the log file
+    @param item: Item to convert
+    @type item:  str | Unicode
+
+    @param encoding: Codec to decode
     @type encoding:  str | None
 
     @rtype: unicode
+
+    @see: L{app_tree}
     """
     if isinstance(item, types.UnicodeType):
         return item
     if not isinstance(item, types.StringTypes):
         item = str(item)
-    if encoding is None:
-        encoding = app_tree.app.encoding
+    if not encoding:
+        if app_tree:
+            encoding = app_tree.app.encoding
+        else:
+            encoding = 'UTF-8'
     item = item.decode(encoding)
     return item
 
