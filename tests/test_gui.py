@@ -9,11 +9,13 @@ Graphical tests
 from tests import WXGladeBaseTest
 
 # import general python modules
+import glob
 import os.path
 import StringIO
 import sys
 import types
 import wx
+import wx.xrc
 
 # import project modules
 import config
@@ -551,3 +553,15 @@ class TestGui(WXGladeBaseTest):
             'Loading test wxg file caused an error message: %s' %
             self._messageBox
         )
+
+    def test_load_xrc(self):
+        """\
+        Test loading XRC files
+        """
+        res = wx.xrc.EmptyXmlResource()
+        for filename in glob.glob(os.path.join(self.caseDirectory, '*.xrc')):
+            self.failUnless(
+                    res.Load(filename),
+                    'Loading XRC file %s failed' % os.path.relpath(
+                            filename, self.caseDirectory)
+            )
