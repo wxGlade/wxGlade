@@ -236,14 +236,15 @@ class EditGrid(ManagedBase):
         self.widget.SetLabelBackgroundColour(misc.string_to_color(
             self.label_bg_color))
         i = 0
-        for l, s in self.columns:
+        for label, size_str in self.columns:
             try:
-                s1 = int(s)
+                size_int = int(size_str)
             except:
-                s1 = 0
-            self.widget.SetColLabelValue(i, l)
-            if s1 > 0:
-                self.widget.SetColSize(i, s1)
+                size_int = 0
+            label = label.replace('\\n', '\n')
+            self.widget.SetColLabelValue(i, label)
+            if size_int > 0:
+                self.widget.SetColSize(i, size_int)
             i += 1
 
         self.set_selection_mode(self.selection_mode)
@@ -394,14 +395,15 @@ class EditGrid(ManagedBase):
         if _colnum < _oldcolnum:
             self.widget.DeleteCols(0, _oldcolnum - _colnum)
         i = 0
-        for l, s in cols:
+        for label, size_str in cols:
             try:
-                s1 = int(s)
+                size_int = int(size_str)
             except:
-                s1 = 0
-            self.widget.SetColLabelValue(i, misc.wxstr(l))
-            if s1 > 0:
-                self.widget.SetColSize(i, s1)
+                size_int = 0
+            label = label.replace('\\n', '\n')
+            self.widget.SetColLabelValue(i, misc.wxstr(label))
+            if size_int > 0:
+                self.widget.SetColSize(i, size_int)
             i += 1
         self.widget.ForceRefresh()
 
