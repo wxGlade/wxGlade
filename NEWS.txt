@@ -24,6 +24,7 @@ Bugs:
   - Fix wrong CreateStatusBar statement if styles are selected
   - Add missing wxStatusBar style wxST_SIZEGRIP
   - Fix generated code for wxDatePickerCtrl
+  - Add workaround for missing wxDefaultDateTime in wxPerl
   - ...
 
 Deprecation
