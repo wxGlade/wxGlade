@@ -11,7 +11,7 @@ import wcodegen
 
 class PerlDatePickerCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           'wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, ' \
+           'Wx::DateTime->new(), wxDefaultPosition, wxDefaultSize, ' \
            '%(style)s);\n'
 
     prefix_style = False
