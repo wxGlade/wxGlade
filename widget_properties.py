@@ -323,6 +323,11 @@ class _activator:
 class TextProperty(Property, _activator):
     """\
     Properties associated to a text control.
+
+    @ivar multiline: Text property has a multiline wxTextCtrl widget,
+                     True converts newline sequence to newline character
+                     (and back) for use in the text ctrl.
+    @type multiline: bool
     """
 
     def __init__(self, owner, name, parent=None, can_disable=False,
