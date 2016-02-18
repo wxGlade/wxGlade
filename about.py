@@ -140,11 +140,3 @@ class wxGladeAboutBox(wx.Dialog):
         else: self.CenterOnScreen()
 
 # end of class wxGladeAboutBox
-
-
-if __name__ == '__main__':
-    app = wx.PySimpleApp()
-    d = wxGladeAboutBox()
-    app.SetTopWindow(d)
-    d.ShowModal()
-
