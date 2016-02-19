@@ -7,11 +7,6 @@ etc.)
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-__all__ = ['CheckBoxProperty', 'CheckListProperty', 'ColorDialogProperty',
-           'ComboBoxProperty', 'DialogProperty', 'FileDialogProperty',
-           'FontDialogProperty', 'GridProperty', 'HiddenProperty',
-           'Property', 'RadioProperty', 'SpinProperty', 'TextProperty', ]
-
 import logging
 import textwrap
 
@@ -28,9 +23,19 @@ from misc import _reverse_dict
 from ordereddict import OrderedDict
 
 
+__all__ = ['CheckBoxProperty', 'CheckListProperty', 'ColorDialogProperty',
+           'ComboBoxProperty', 'DialogProperty', 'FileDialogProperty',
+           'FontDialogProperty', 'GridProperty', 'HiddenProperty',
+           'Property', 'RadioProperty', 'SpinProperty', 'TextProperty', ]
+
+
 class Property(object):
     """\
     A class to handle a single property of a widget.
+
+    @cvar escape_tab: Escape/unescape tab characters in L{_escape()} resp.
+                      L{_unescape()}.
+    @type escape_tab: bool
 
     @ivar name:    Property name
     @type name:    str
@@ -42,6 +47,8 @@ class Property(object):
     @ivar _tooltip_widgets: All widgets to set tooltips for
     @type _tooltip_widgets: list
     """
+
+    escape_tab = False
 
     def __init__(self, owner, name, parent, getter=None, setter=None,
                  label=None):
@@ -147,6 +154,42 @@ class Property(object):
         for widget in self._tooltip_widgets:
             if widget:
                 widget.SetToolTip(wx.ToolTip(self.tooltip))
+
+    def _escape(self, val):
+        """\
+        Convert newline characters to newline sequence.
+
+        The equivalent handling of tab characters will be controlled by
+        L{escape_tab}.
+
+        The direction is FROM input widget TO property.
+
+        @param val: String to convert
+        @type val: str | Unicode
+        @rtype: str | Unicode
+        """
+        val = val.replace('\n', '\\n')
+        if self.escape_tab:
+            val = val.replace('\t', '\\t')
+        return val
+
+    def _unescape(self, val):
+        """\
+        Convert newline sequences to newline characters.
+
+        The equivalent handling of tab characters will be controlled by
+        L{escape_tab}.
+
+        The direction is FROM property TO input widget.
+
+        @param val: String to convert
+        @type val: str | Unicode
+        @rtype: str | Unicode
+        """
+        val = val.replace('\\n', '\n')
+        if self.escape_tab:
+            val = val.replace('\\t', '\t')
+        return val
 
 # end of class Property
 
@@ -359,7 +402,7 @@ class TextProperty(Property, _activator):
             style |= wx.TE_MULTILINE
         val = self.get_value()
         if self.multiline:
-            val = val.replace('\\n', '\n')
+            val = self._unescape(val)
         lbl = getattr(self, 'label', None)
         if lbl is None:
             lbl = self._mangle(self.dispName)
@@ -410,7 +453,7 @@ class TextProperty(Property, _activator):
         try:
             val = self.text.GetValue()
             if self.multiline:
-                return val.replace('\n', '\\n')
+                val = self._escape(val)
             return val
         except AttributeError:
             return self.val
@@ -418,8 +461,8 @@ class TextProperty(Property, _activator):
     def set_value(self, value):
         value = misc.wxstr(value)
         if self.multiline:
-            self.val = value.replace('\n', '\\n')
-            value = value.replace('\\n', '\n')
+            self.val = self._escape(value)
+            value = self._unescape(value)
         else:
             self.val = value
         try:
