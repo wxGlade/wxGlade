@@ -1460,14 +1460,24 @@ class GridProperty(Property, _activator):
     @type can_remove: bool
     @ivar can_remove_last: Allow to remove last entry
     @type can_remove_last: bool
-    @ivar cols:       List of 2-tuples with these fields:
-                       - label for the column
-                       - type: GridProperty.STRING, GridProperty.INT,
-                         GridProperty.FLOAT
+    @ivar cols:      Number of columns
+    @type cols:      int
+    @ivar col_defs:  List of column labels and column types (
+                     L{GridProperty.STRING}, L{GridProperty.INT},
+                     L{GridProperty.FLOAT} and L{GridProperty.BOOL}).
+    @type col_defs:  list[(str, int)]
     @ivar col_sizes:  List of column widths
     @type col_sizes:  list[int]
+
     @ivar rows:       Number of rows
     @type rows:       int
+
+    @cvar STRING: Column displays string values
+    @cvar INT:    Column displays integer values.
+    @cvar FLOAT:  Column displays float values.
+    @cvar BOOL:   Column displays boolean values.
+
+    @cvar col_format: List of functions to set the column format.
     """
     STRING, INT, FLOAT, BOOL = 0, 1, 2, 3
     col_format = [lambda g, c: None,
@@ -1481,7 +1491,9 @@ class GridProperty(Property, _activator):
         Property.__init__(self, owner, name, parent, label=label)
         self.val = owner[name][0]()
         self.set_value(self.val)
-        self.rows, self.cols = rows, cols
+        self.rows = rows
+        self.col_defs = cols
+        self.cols = len(self.col_defs)
         self.can_add = can_add
         self.can_remove = can_remove
         self.can_insert = can_insert
@@ -1525,15 +1537,14 @@ class GridProperty(Property, _activator):
                                         style=wx.BU_EXACTFIT)
             children.append(self.remove_btn)
         self.grid = wx.grid.Grid(self.panel, -1)
-        self.grid.CreateGrid(self.rows, len(self.cols))
+        self.grid.CreateGrid(self.rows, self.cols)
         children.append(self.grid)
         self.grid.SetMargins(0, 0)
 
-        for i, column in enumerate(self.cols):
+        for i, column in enumerate(self.col_defs):
             self.grid.SetColLabelValue(i, misc.wxstr(column[0]))
             GridProperty.col_format[column[1]](self.grid, i)
 
-        self.cols = len(self.cols)
         self.grid.SetRowLabelSize(0)
         self.grid.SetColLabelSize(20)
         if self.col_sizes:
