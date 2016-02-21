@@ -14,7 +14,7 @@ from PyOgg2_MyDialog import PyOgg2_MyDialog
 if __name__ == "__main__":
     gettext.install("PyOgg2_app") # replace with the appropriate catalog name
 
-    PyOgg2_app = wx.PySimpleApp(0)
+    PyOgg2_app = wx.PySimpleApp()
     Mp3_To_Ogg = PyOgg2_MyDialog(None, wx.ID_ANY, "")
     PyOgg2_app.SetTopWindow(Mp3_To_Ogg)
     Mp3_To_Ogg.Show()
