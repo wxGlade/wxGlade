@@ -121,7 +121,7 @@ class PyOgg1_MyDialog(wx.Dialog):
 if __name__ == "__main__":
     gettext.install("PyOgg1_app") # replace with the appropriate catalog name
 
-    PyOgg1_app = wx.PySimpleApp(0)
+    PyOgg1_app = wx.PySimpleApp()
     Mp3_To_Ogg = PyOgg1_MyDialog(None, wx.ID_ANY, "")
     PyOgg1_app.SetTopWindow(Mp3_To_Ogg)
     Mp3_To_Ogg.Show()

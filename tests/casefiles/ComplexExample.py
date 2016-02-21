@@ -199,7 +199,7 @@ class MyFrameGrid(wx.Frame):
 if __name__ == "__main__":
     gettext.install("ComplexExampleApp") # replace with the appropriate catalog name
 
-    ComplexExampleApp = wx.PySimpleApp(0)
+    ComplexExampleApp = wx.PySimpleApp()
     Mp3_To_Ogg = PyOgg2_MyFrame(None, wx.ID_ANY, "")
     ComplexExampleApp.SetTopWindow(Mp3_To_Ogg)
     Mp3_To_Ogg.Show()

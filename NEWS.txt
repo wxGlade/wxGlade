@@ -8,6 +8,7 @@ Generated Code:
   - Inline wxStaticBox statement into wxStaticBoxSizer statement
   - Use wxWindowID instead of int for widget identifiers in C++
   - Add support for wxArtProvider to XRC code generator
+  - Don't set the default value for redirection in wx.PySimpleApp()
   - ...
 
 Bugs:
