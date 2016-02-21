@@ -1588,13 +1588,20 @@ class GridProperty(Property, _activator):
     def get_value(self):
         if not hasattr(self, 'grid'):
             return self.val
-        l = []
+
+        grid_lines = []
         for i in range(self.rows):
-            l2 = []
+            single_line = []
             for j in range(self.cols):
-                l2.append(self.grid.GetCellValue(i, j))
-            l.append(l2)
-        return l
+                value = self.grid.GetCellValue(i, j)
+                if self.col_defs[j][1] == GridProperty.STRING:
+                    unescaped = value
+                    value = self._escape(value)
+                    if unescaped != value:
+                        self.grid.SetCellValue(i, j, value)
+                single_line.append(value)
+            grid_lines.append(single_line)
+        return grid_lines
 
     def on_change_val(self, event):
         """\
@@ -1603,7 +1610,7 @@ class GridProperty(Property, _activator):
         """
         val = self.get_value()
 
-        def ok():
+        def has_changed():
             if len(self.val) != len(val):
                 return True
             for i in range(len(val)):
@@ -1611,7 +1618,8 @@ class GridProperty(Property, _activator):
                     if not misc.streq(val[i][j], self.val[i][j]):
                         return True
             return False
-        if ok():
+
+        if has_changed():
             common.app_tree.app.saved = False  # update the status of the app
             if self.setter:
                 self.setter(val)
@@ -1624,15 +1632,16 @@ class GridProperty(Property, _activator):
         self.val = [[misc.wxstr(v) for v in val] for val in values]
         if not hasattr(self, 'grid'):
             return
+
         # values is a list of lists with the values of the cells
-        size = len(values)
+        rows_new = len(values)
 
         # add or remove rows
-        if self.rows < size:
-            self.grid.AppendRows(size - self.rows)
-            self.rows = size
-        elif self.rows != size:
-            self.grid.DeleteRows(size, self.rows - size)
+        if self.rows < rows_new:
+            self.grid.AppendRows(rows_new - self.rows)
+            self.rows = rows_new
+        elif self.rows != rows_new:
+            self.grid.DeleteRows(rows_new, self.rows - rows_new)
 
         # update content
         for i in range(len(self.val)):
