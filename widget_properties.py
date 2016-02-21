@@ -33,10 +33,6 @@ class Property(object):
     """\
     A class to handle a single property of a widget.
 
-    @cvar escape_tab: Escape/unescape tab characters in L{_escape()} resp.
-                      L{_unescape()}.
-    @type escape_tab: bool
-
     @ivar name:    Property name
     @type name:    str
     @ivar owner:   The widget this property belongs to
@@ -47,8 +43,6 @@ class Property(object):
     @ivar _tooltip_widgets: All widgets to set tooltips for
     @type _tooltip_widgets: list
     """
-
-    escape_tab = False
 
     def __init__(self, owner, name, parent, getter=None, setter=None,
                  label=None):
@@ -157,10 +151,7 @@ class Property(object):
 
     def _escape(self, val):
         """\
-        Convert newline characters to newline sequence.
-
-        The equivalent handling of tab characters will be controlled by
-        L{escape_tab}.
+        Convert newline and tab characters to a character sequences.
 
         The direction is FROM input widget TO property.
 
@@ -169,16 +160,12 @@ class Property(object):
         @rtype: str | Unicode
         """
         val = val.replace('\n', '\\n')
-        if self.escape_tab:
-            val = val.replace('\t', '\\t')
+        val = val.replace('\t', '\\t')
         return val
 
     def _unescape(self, val):
         """\
-        Convert newline sequences to newline characters.
-
-        The equivalent handling of tab characters will be controlled by
-        L{escape_tab}.
+        Convert character sequences to a single newline or tab character.
 
         The direction is FROM property TO input widget.
 
@@ -187,8 +174,7 @@ class Property(object):
         @rtype: str | Unicode
         """
         val = val.replace('\\n', '\n')
-        if self.escape_tab:
-            val = val.replace('\\t', '\t')
+        val = val.replace('\\t', '\t')
         return val
 
 # end of class Property
