@@ -1135,7 +1135,6 @@ class Sizeritem(object):
             if self.all_border_flags <= self.flag_set:
                 self.flag_set -= self.all_border_flags
                 self.flag_set.add('wxALL')
-                pass
 
             if 'wxALL' in self.flag_set:
                 self.flag_set -= self.all_border_flags
