@@ -33,6 +33,7 @@ Deprecation
     of the next releases
 
 Documentation:
+  - Reorganise and update the documentation
   - ...
 
 Note:
