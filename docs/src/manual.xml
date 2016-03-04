@@ -227,7 +227,7 @@
           <title>Official Release Packages</title>
 
           <para>All stable version are available for downloading at <ulink
-          url="http://sourceforge.net/projects/wxglade">http://sourceforge.net/projects/wxglade</ulink>.</para>
+          url="https://sourceforge.net/projects/wxglade/">https://sourceforge.net/projects/wxglade/</ulink>.</para>
         </section>
 
         <section>
@@ -512,8 +512,9 @@ Example: Generate Python code out of myapp.wxg
    wxglade -o output.py -g python myapp.wxg
 
 Report bugs to:    &lt;wxglade-general@lists.sourceforge.net&gt; or at
-                   &lt;http://sourceforge.net/projects/wxglade/&gt;
-wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;      </screen>
+                   &lt;https://sourceforge.net/projects/wxglade/&gt;
+wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
+</screen>
 
       <note>
         <para>Use <command>wxglade.pyw</command> instead of

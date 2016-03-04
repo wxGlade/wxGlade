@@ -108,7 +108,7 @@ Example: Generate Python code out of myapp.wxg
    wxglade -o output.py -g python myapp.wxg
 
 Report bugs to:    <wxglade-general@lists.sourceforge.net> or at
-                   <http://sourceforge.net/projects/wxglade/>
+                   <https://sourceforge.net/projects/wxglade/>
 wxGlade home page: <http://wxglade.sourceforge.net/>""")
         sys.exit()
 

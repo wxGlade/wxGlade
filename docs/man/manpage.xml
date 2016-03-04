@@ -222,7 +222,7 @@ and docbook-xsl in your Build-Depends control field.
     <title>BUGS</title>
     <para>
       Report wxGlade bugs to &lt;wxglade-general@lists.sourceforge.net&gt; or 
-      &lt;http://sourceforge.net/projects/wxglade/&gt;
+      &lt;https://sourceforge.net/projects/wxglade/&gt;
     </para>
   </refsect1>  
   
