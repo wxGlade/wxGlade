@@ -5,7 +5,7 @@
 ; License: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 
 ; define own variables
-#define PRODUCT_VERSION "HG"
+#define PRODUCT_VERSION "0.7.2"
 
 ; EDITION_SHORT will be defined in wxglade-SAE-installer.iss only
 
