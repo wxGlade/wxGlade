@@ -733,10 +733,10 @@ def get_hg_version():
         parents = parents[0].parents()
         node = parents[0].node()
         tags = repo.nodetags(node)
-        # look for the special 'rel_X.X' tag
+        # look for the special 'rel_X_X_X' or 'rel_X_X' tag
         for tag in tags:
             if tag.startswith('rel_') and len(tag) > 4:
-                release = tag[4:]
+                release = tag[4:].replace('_', '.')
                 break
         # handle untagged release e.g. tip
         if not release:
