@@ -1354,8 +1354,6 @@ class SizerBase(Sizer):
                 self.layout(True)
                 # if not self.toplevel: self.sizer.Layout()
 
-    Remove = remove_item  # TODO: maybe this is needed, I have to check...
-
     def layout(self, recursive=True):
         # if not self.widget or not self.window.is_visible(): return
         if not self.widget:
