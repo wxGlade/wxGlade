@@ -33,10 +33,8 @@ MD5 checksums
 
 Standalone Edition
 ------------------
-The standalone edition is available. It has two disadvantages:
-
-- it's built on Windows XP and may not work correctly on newer Windows
-  versions
+The standalone edition is available. It's built on Windows XP and may not
+work correctly on newer Windows versions.
 
 Known Bugs/Issues
 -----------------
