@@ -25,18 +25,16 @@ Files
 
 MD5 checksums
 -------------
-    <unknown>  wxGlade-0.7.2-setup.exe
-    <unknown>  wxGlade-0.7.2.tar.gz
-    <unknown>  wxGlade-0.7.2.zip
-    <unknown>  wxGlade-SAE-0.7.2-setup.exe
+    b13cdf9eff9857f6f07f1bd6bf50348a  wxGlade-0.7.2-setup.exe
+    81d3270ba1c764d482b0fed00c6f9c59  wxGlade-0.7.2.tar.gz
+    69885a306f694222655fe63d3443191b  wxGlade-0.7.2.zip
+    e57843ad4d0cb6bf1fc2aab7c46aaa73  wxGlade-SAE-0.7.2-setup.exe
 
 
 Standalone Edition
 ------------------
-The standalone edition is available. It has two disadvantages:
-
-- it's built on Windows XP and may not work correctly on newer Windows
-  versions
+The standalone edition is available. It's built on Windows XP and may not
+work correctly on newer Windows versions.
 
 Known Bugs/Issues
 -----------------
