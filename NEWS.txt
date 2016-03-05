@@ -1,15 +1,13 @@
-Version 0.7.2 - 2016-XX-XX:
+Version 0.7.2 - 2016-03-05:
 General:
   - Remove usage of KDE file dialog
   - Improve reporting of early error messages on Windows
-  - ...
 
 Generated Code:
   - Inline wxStaticBox statement into wxStaticBoxSizer statement
   - Use wxWindowID instead of int for widget identifiers in C++
   - Add support for wxArtProvider to XRC code generator
   - Don't set the default value for redirection in wx.PySimpleApp()
-  - ...
 
 Bugs:
   - Fix wrong orientation of wxStaticLine widgets
@@ -26,7 +24,6 @@ Bugs:
   - Add missing wxStatusBar style wxST_SIZEGRIP
   - Fix generated code for wxDatePickerCtrl
   - Add workaround for missing wxDefaultDateTime in wxPerl
-  - ...
 
 Deprecation
   - In place modifications for generated source files will be removed in one
@@ -34,7 +31,6 @@ Deprecation
 
 Documentation:
   - Reorganise and update the documentation
-  - ...
 
 Note:
   - See CHANGES.txt for a full list of changes

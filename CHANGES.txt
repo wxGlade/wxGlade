@@ -1,8 +1,761 @@
+2016-03-03  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, docs/html/apa.html, docs/html/apb.html,
+	docs/html/apbs02.html, docs/html/apbs03.html, docs/html/apbs04.html,
+	docs/html/apc.html, docs/html/apd.html, docs/html/ape.html,
+	docs/html/ch01.html, docs/html/ch01s02.html, docs/html/ch01s03.html,
+	docs/html/ch01s04.html, docs/html/ch01s05.html,
+	docs/html/ch01s06.html, docs/html/ch01s07.html,
+	docs/html/ch01s08.html, docs/html/ch02.html, docs/html/ch02s02.html,
+	docs/html/ch02s03.html, docs/html/ch02s04.html,
+	docs/html/ch02s05.html, docs/html/ch02s06.html,
+	docs/html/ch02s07.html, docs/html/ch02s08.html, docs/html/ch03.html,
+	docs/html/ch03s02.html, docs/html/ch03s03.html,
+	docs/html/ch03s04.html, docs/html/ch03s05.html,
+	docs/html/ch03s06.html, docs/html/ch04.html, docs/html/ch04s02.html,
+	docs/html/ch04s03.html, docs/html/ch05.html, docs/html/ch05s02.html,
+	docs/html/ch05s03.html, docs/html/ch05s04.html,
+	docs/html/ch05s05.html, docs/html/ch05s06.html, docs/html/ch06.html,
+	docs/html/ch06s02.html, docs/html/ch06s03.html,
+	docs/html/ch06s04.html, docs/html/ch06s05.html,
+	docs/html/ch06s06.html, docs/html/ch06s07.html,
+	docs/html/ch06s08.html, docs/html/ch06s09.html, docs/html/ch07.html,
+	docs/html/ch07s02.html, docs/html/ch07s03.html,
+	docs/html/design_window_empty_slot.png, docs/html/index.html,
+	docs/html/pr01.html, docs/html/pr01s02.html,
+	docs/html/preferences.png, docs/pdf/manual.pdf,
+	docs/src/design_window_empty_slot.png, docs/src/manual.xml,
+	docs/src/preferences.png:
+	Reorganise and update the documentation
+	[2c030f953c91] [tip]
+
+2016-02-24  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* xml_parse.py:
+	Remove obsolete pass statement
+	[51bf01d7606c]
+
+2016-02-21  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* msgdialog.py, res/messagedialog.wxg:
+	Remove unused application startup code
+	[e79cc413602f]
+
+	* NEWS.txt, codegen/py_codegen.py, msgdialog.py,
+	tests/casefiles/AllWidgets_28.py, tests/casefiles/AllWidgets_30.py,
+	tests/casefiles/ComplexExample.py,
+	tests/casefiles/ComplexExample_30.py, tests/casefiles/PyOgg1.py,
+	tests/casefiles/PyOgg2_app.py, tests/casefiles/PyOgg3.py,
+	tests/casefiles/PythonAddApp_multi_gettext_simple.py,
+	tests/casefiles/PythonAddApp_multi_simple.py,
+	tests/casefiles/PythonAddApp_single_gettext_simple.py,
+	tests/casefiles/PythonAddApp_single_simple.py:
+	Don't set the default value for redirection in wx.PySimpleApp()
+	[e38c12b01c54]
+
+	* widget_properties.py:
+	Treat (escape/unescape) tabs always like newlines in Properties
+	[c3519118ad95]
+
+	* widget_properties.py:
+	Convert newline character to newline sequence in GridProperty
+
+	Newline characters entered via Ctrl+Enter won't be handled
+	correctly. This change converts such characters to newline
+	sequences. Thereby it will be handled correctly.
+	[d34774dc6a0d]
+
+2016-02-19  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* widget_properties.py:
+	Rework GridProperty to prevent changing the type of self.cols
+	[734fff193302]
+
+	* widget_properties.py:
+	Extract code to escape/unescape newlines / tabs into separate
+	functions
+	[c44a851bc014]
+
+2016-02-18  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* widget_properties.py:
+	Add docstring for TextProperty.multiline
+	[3a6ddcecc4c7]
+
+	* about.py:
+	Remove unused application startup code
+	[fe84f58b56d2]
+
+2016-02-17  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, tests/casefiles/AllWidgets_28.pl,
+	tests/casefiles/AllWidgets_30.pl,
+	widgets/datepicker_ctrl/perl_codegen.py:
+	Add workaround for missing wxDefaultDateTime in wxPerl
+	[72f1128ad9f8]
+
+2016-02-16  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* wxGlade.desktop:
+	Typo in desktop file
+	[e3e25d2a8e1e]
+
+	* widgets/grid/grid.py:
+	Show newlines correctly in the grid header if shown design window
+	[29794333dcce]
+
+2016-02-12  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* tests/test_gui.py:
+	Add a simple test case for loading all XRC case files
+	[ae030730a36a]
+
+	* NEWS.txt, codegen/xrc_codegen.py, tests/casefiles/AllWidgets_28.xrc,
+	tests/casefiles/AllWidgets_30.xrc,
+	tests/casefiles/ComplexExample.xrc,
+	tests/casefiles/ComplexExample_30.xrc,
+	widgets/bitmap_button/codegen.py, widgets/toolbar/codegen.py:
+	Add support for wxArtProvider to XRC code generator
+	[d9d987998ab6]
+
+	* common.py:
+	Improve encode_to_unicode() to work in cli mode too
+	[8c14a3d58e05]
+
+2016-02-11  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* wcodegen/__init__.py:
+	Typos in docstrings
+	[4ae0720df0c2]
+
+	* widgets/static_bitmap/codegen.py:
+	Rename class XrcCodeGenerator to StaticBitmapXrcObject
+	[74d0f108dd03]
+
+2016-02-10  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* tests/casefiles/import_test.xrc, xrc2wxg.py:
+	Remove attribute xmlns during converting xrc to wxg
+	[eaa6746cdf87]
+
+	* NEWS.txt, codegen/cpp_codegen.py, tests/casefiles/AllWidgets_28.cpp,
+	tests/casefiles/AllWidgets_28.h, tests/casefiles/AllWidgets_30.cpp,
+	tests/casefiles/AllWidgets_30.h, tests/casefiles/Bug179_Frame.c++,
+	tests/casefiles/Bug179_Frame.hpp, tests/casefiles/CPPOgg1.cpp,
+	tests/casefiles/CPPOgg1.h, tests/casefiles/CPPOgg2_MyDialog.cpp,
+	tests/casefiles/CPPOgg2_MyDialog.h,
+	tests/casefiles/CPPOgg2_MyFrame.cpp,
+	tests/casefiles/CPPOgg2_MyFrame.h, tests/casefiles/CPPOgg3.cpp,
+	tests/casefiles/CPPOgg3.h, tests/casefiles/CPP_Preferences.cpp,
+	tests/casefiles/CPP_Preferences.h, tests/casefiles/CalendarCtrl.cpp,
+	tests/casefiles/CalendarCtrl.h, tests/casefiles/ComplexExample.cpp,
+	tests/casefiles/ComplexExample.h,
+	tests/casefiles/ComplexExample_30.cpp,
+	tests/casefiles/ComplexExample_30.h,
+	tests/casefiles/CustomWidget.cpp, tests/casefiles/CustomWidget.h,
+	tests/casefiles/FontColour.cpp, tests/casefiles/FontColour.h,
+	tests/casefiles/Gauge.cpp, tests/casefiles/Gauge.h,
+	tests/casefiles/Grid.cpp, tests/casefiles/Grid.h,
+	tests/casefiles/HyperlinkCtrl_28.cpp,
+	tests/casefiles/HyperlinkCtrl_28.h,
+	tests/casefiles/Sizers_classattr.cpp,
+	tests/casefiles/Sizers_classattr.h,
+	tests/casefiles/Sizers_no_classattr.cpp,
+	tests/casefiles/Sizers_no_classattr.h,
+	tests/casefiles/Statusbar_wo_labels.cpp,
+	tests/casefiles/Statusbar_wo_labels.h,
+	tests/casefiles/add_class_inplace_extended.cpp,
+	tests/casefiles/add_class_inplace_extended.h,
+	tests/casefiles/add_class_inplace_orig.cpp,
+	tests/casefiles/add_class_inplace_orig.h,
+	tests/casefiles/app_wo_attrs.cpp, tests/casefiles/app_wo_attrs.h,
+	tests/casefiles/bug163.cpp, tests/casefiles/bug163.h,
+	tests/casefiles/bug165.cpp, tests/casefiles/bug165.h,
+	tests/casefiles/bug166.cpp, tests/casefiles/bug166.h,
+	tests/casefiles/bug167.cpp, tests/casefiles/bug167.h,
+	tests/casefiles/bug167_utf8.cpp, tests/casefiles/bug167_utf8.h,
+	tests/casefiles/no_suitable_writer.cpp,
+	tests/casefiles/no_suitable_writer.h,
+	tests/casefiles/no_supported_flags.cpp,
+	tests/casefiles/no_supported_flags.h,
+	tests/casefiles/remove_class_inplace_expected.cpp,
+	tests/casefiles/remove_class_inplace_expected.h,
+	tests/casefiles/remove_class_inplace_input.cpp,
+	tests/casefiles/remove_class_inplace_input.h, tests/casefiles
+	/styleless-dialog.cpp, tests/casefiles/styleless-dialog.h,
+	widgets/dialog/codegen.py, widgets/frame/codegen.py,
+	widgets/notebook/codegen.py, widgets/panel/codegen.py,
+	widgets/splitter_window/codegen.py, widgets/toolbar/codegen.py:
+	Use wxWindowID instead of int for widget identifiers in C++
+	[2ceb9bfa9998]
+
+2016-02-09  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* wxglade.pyw:
+	Use unicode strings if reporting of early error messages on Windows
+
+	The previous code produces a mixture of ASCII and Unicode strings,
+	that causes unusable error messages.
+	[fa44856f4106]
+
+	* NEWS.txt, docs/html/apa.html, docs/html/apb.html,
+	docs/html/apc.html, docs/html/apd.html, docs/html/ape.html,
+	docs/html/ch01.html, docs/html/ch01s02.html, docs/html/ch01s03.html,
+	docs/html/ch01s04.html, docs/html/ch01s05.html,
+	docs/html/ch01s06.html, docs/html/ch01s07.html,
+	docs/html/ch01s08.html, docs/html/ch02.html, docs/html/ch02s02.html,
+	docs/html/ch02s03.html, docs/html/ch02s04.html,
+	docs/html/ch02s05.html, docs/html/ch02s06.html,
+	docs/html/ch02s07.html, docs/html/ch02s08.html, docs/html/ch03.html,
+	docs/html/ch03s02.html, docs/html/ch03s03.html,
+	docs/html/ch03s04.html, docs/html/ch03s05.html,
+	docs/html/ch03s06.html, docs/html/ch04.html, docs/html/ch04s02.html,
+	docs/html/ch04s03.html, docs/html/ch05.html, docs/html/ch05s02.html,
+	docs/html/ch05s03.html, docs/html/ch05s04.html, docs/html/ch06.html,
+	docs/html/ch06s02.html, docs/html/ch06s03.html,
+	docs/html/ch06s04.html, docs/html/ch06s05.html,
+	docs/html/ch06s06.html, docs/html/ch06s07.html,
+	docs/html/ch06s08.html, docs/html/ch06s09.html, docs/html/ch07.html,
+	docs/html/ch07s02.html, docs/html/ch07s03.html,
+	docs/html/index.html, docs/html/pr01.html, docs/html/pr01s02.html,
+	docs/pdf/manual.pdf, docs/src/manual.xml, test.py, wxglade.py,
+	wxglade.pyw:
+	Improve reporting of early error messages on Windows
+	[71c4b1eadf53]
+
+2016-02-07  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* wcodegen/__init__.py:
+	Add docstring for constructor class variable
+	[a76aa5cf9831]
+
+	* xrc2wxg.py:
+	Show a warning message if an unsupported widgets is imported from
+	xrc
+	[4c5014fe1179]
+
+	* xrc2wxg.py:
+	Update list of supported widgets in xrc2wxg.py
+	[88738cd17adb]
+
+2016-02-06  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* res/templates_ui.wxg, template.py, templates_ui.py:
+	Rename internal variables in both template dialogs
+	[c4ccdf33f100]
+
+	* NEWS.txt, tests/casefiles/AllWidgets_28.cpp,
+	tests/casefiles/AllWidgets_28.lisp,
+	tests/casefiles/AllWidgets_28.pl, tests/casefiles/AllWidgets_28.py,
+	tests/casefiles/AllWidgets_28.wxg,
+	tests/casefiles/AllWidgets_28.xrc,
+	tests/casefiles/AllWidgets_30.cpp, tests/casefiles/AllWidgets_30.pl,
+	tests/casefiles/AllWidgets_30.py, tests/casefiles/AllWidgets_30.wxg,
+	tests/casefiles/AllWidgets_30.xrc, widgets/statusbar/codegen.py,
+	widgets/statusbar/perl_codegen.py:
+	Fix wrong CreateStatusBar statement if styles are selected
+	[88adbe54429d]
+
+	* NEWS.txt, codegen/__init__.py, codegen/cpp_codegen.py,
+	edit_sizers/cpp_sizers_codegen.py, edit_sizers/edit_sizers.py,
+	edit_sizers/lisp_sizers_codegen.py,
+	edit_sizers/perl_sizers_codegen.py,
+	edit_sizers/py_sizers_codegen.py, templates_ui.py,
+	tests/casefiles/AllWidgets_28.cpp, tests/casefiles/AllWidgets_28.h,
+	tests/casefiles/AllWidgets_28.lisp,
+	tests/casefiles/AllWidgets_28.pl, tests/casefiles/AllWidgets_28.py,
+	tests/casefiles/AllWidgets_30.cpp, tests/casefiles/AllWidgets_30.h,
+	tests/casefiles/AllWidgets_30.pl, tests/casefiles/AllWidgets_30.py,
+	tests/casefiles/CPP_Preferences.cpp,
+	tests/casefiles/CPP_Preferences.h,
+	tests/casefiles/ComplexExample.cpp,
+	tests/casefiles/ComplexExample.h,
+	tests/casefiles/ComplexExample.lisp,
+	tests/casefiles/ComplexExample.pl,
+	tests/casefiles/ComplexExample.py,
+	tests/casefiles/ComplexExample_30.cpp,
+	tests/casefiles/ComplexExample_30.h,
+	tests/casefiles/ComplexExample_30.pl,
+	tests/casefiles/ComplexExample_30.py,
+	tests/casefiles/Lisp_Preferences.lisp,
+	tests/casefiles/Perl_Preferences.pl,
+	tests/casefiles/Python_Preferences.py,
+	tests/casefiles/Sizers_classattr.cpp,
+	tests/casefiles/Sizers_classattr.h,
+	tests/casefiles/Sizers_classattr.lisp,
+	tests/casefiles/Sizers_classattr.pl,
+	tests/casefiles/Sizers_classattr.py,
+	tests/casefiles/Sizers_no_classattr.cpp,
+	tests/casefiles/Sizers_no_classattr.h,
+	tests/casefiles/Sizers_no_classattr.lisp,
+	tests/casefiles/Sizers_no_classattr.pl,
+	tests/casefiles/Sizers_no_classattr.py:
+	Inline wxStaticBox statement into wxStaticBoxSizer statement
+	[f4aa032018dc]
+
+	* tests/casefiles/AllWidgets_28.cpp,
+	tests/casefiles/AllWidgets_28.lisp,
+	tests/casefiles/AllWidgets_28.pl, tests/casefiles/AllWidgets_28.py,
+	tests/casefiles/AllWidgets_28.wxg,
+	tests/casefiles/AllWidgets_28.xrc,
+	tests/casefiles/AllWidgets_30.cpp, tests/casefiles/AllWidgets_30.pl,
+	tests/casefiles/AllWidgets_30.py, tests/casefiles/AllWidgets_30.wxg,
+	tests/casefiles/AllWidgets_30.xrc:
+	Remove wxDatePickerCtrl style wxDP_SPIN from all test cases
+
+	The documentation describes some limitations if using this style.
+	Thereby the style has been removed from all test cases to prevent
+	trouble. (grafted from c1dc8a460862eaa7ebccceedc339a85985077733)
+	[0c16f91484e3] <WXG-BRANCH-VERSION_0_7_1>
+
+	* tests/casefiles/AllWidgets_28.cpp,
+	tests/casefiles/AllWidgets_28.lisp,
+	tests/casefiles/AllWidgets_28.pl, tests/casefiles/AllWidgets_28.py,
+	tests/casefiles/AllWidgets_28.wxg,
+	tests/casefiles/AllWidgets_28.xrc,
+	tests/casefiles/AllWidgets_30.cpp, tests/casefiles/AllWidgets_30.pl,
+	tests/casefiles/AllWidgets_30.py, tests/casefiles/AllWidgets_30.wxg,
+	tests/casefiles/AllWidgets_30.xrc:
+	Remove wxDatePickerCtrl style wxDP_SPIN from all test cases
+
+	The documentation describes some limitations if using this style.
+	Thereby the style has been removed from all test cases to prevent
+	trouble.
+	[c1dc8a460862]
+
+	* compat.py, widget_properties.py:
+	Add compatibility code for wxSizerItem.SetSizer()
+
+	With wx3 "wxWindow::IsEnabled() now returns false if a window parent
+	(and not necessarily the window itself) is disabled, new function
+	IsThisEnabled() with the same behaviour as old IsEnabled() was
+	added."
+
+	For instance: a parent window can be disabled during a modal dialog
+	is shown. (grafted from ba825f05d240e09a2d5ccb8453d64c45880b8d57)
+	[e6cf181b62d0] <WXG-BRANCH-VERSION_0_7_1>
+
+	* NEWS.txt, tests/casefiles/AllWidgets_28.cpp,
+	tests/casefiles/AllWidgets_28.lisp,
+	tests/casefiles/AllWidgets_28.pl, tests/casefiles/AllWidgets_28.py,
+	tests/casefiles/AllWidgets_28.wxg,
+	tests/casefiles/AllWidgets_28.xrc,
+	tests/casefiles/AllWidgets_30.cpp, tests/casefiles/AllWidgets_30.pl,
+	tests/casefiles/AllWidgets_30.py, tests/casefiles/AllWidgets_30.wxg,
+	tests/casefiles/AllWidgets_30.xrc,
+	widgets/datepicker_ctrl/codegen.py,
+	widgets/datepicker_ctrl/perl_codegen.py,
+	widgets/datepicker_ctrl/wconfig.py:
+	Fix generated code for wxDatePickerCtrl (grafted from
+	7d890365d1eca12e7c15a1ac911ac4e804a5be8a)
+	[633ec62814b4] <WXG-BRANCH-VERSION_0_7_1>
+
+	* NEWS.txt, widgets/statusbar/wconfig.py:
+	Add missing wxStatusBar style wxST_SIZEGRIP (grafted from
+	7040e98b356a30f12689354bd089fcc36cd32904)
+	[771f60c5728d] <WXG-BRANCH-VERSION_0_7_1>
+
+	* compat.py, widget_properties.py:
+	Add compatibility code for wxSizerItem.SetSizer()
+
+	With wx3 "wxWindow::IsEnabled() now returns false if a window parent
+	(and not necessarily the window itself) is disabled, new function
+	IsThisEnabled() with the same behaviour as old IsEnabled() was
+	added."
+
+	For instance: a parent window can be disabled during a modal dialog
+	is shown.
+	[ba825f05d240]
+
+2016-02-05  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, tests/casefiles/AllWidgets_28.cpp,
+	tests/casefiles/AllWidgets_28.lisp,
+	tests/casefiles/AllWidgets_28.pl, tests/casefiles/AllWidgets_28.py,
+	tests/casefiles/AllWidgets_28.wxg,
+	tests/casefiles/AllWidgets_28.xrc,
+	tests/casefiles/AllWidgets_30.cpp, tests/casefiles/AllWidgets_30.pl,
+	tests/casefiles/AllWidgets_30.py, tests/casefiles/AllWidgets_30.wxg,
+	tests/casefiles/AllWidgets_30.xrc,
+	widgets/datepicker_ctrl/codegen.py,
+	widgets/datepicker_ctrl/perl_codegen.py,
+	widgets/datepicker_ctrl/wconfig.py:
+	Fix generated code for wxDatePickerCtrl
+	[7d890365d1ec]
+
+2016-02-04  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* main.py:
+	Add widget names to simplify using widget inspector
+	[7804aa6ff905]
+
+	* application.py:
+	Rename panel to panel_application variable to clarify purpose
+	[64c525b6fc3d]
+
+2016-02-03  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, widgets/statusbar/wconfig.py:
+	Add missing wxStatusBar style wxST_SIZEGRIP
+	[7040e98b356a]
+
+2016-01-24  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* tests/casefiles/AllWidgets_28.cpp,
+	tests/casefiles/AllWidgets_28.lisp,
+	tests/casefiles/AllWidgets_28.pl, tests/casefiles/AllWidgets_28.py,
+	tests/casefiles/AllWidgets_28.wxg,
+	tests/casefiles/AllWidgets_28.xrc,
+	tests/casefiles/AllWidgets_30.cpp, tests/casefiles/AllWidgets_30.pl,
+	tests/casefiles/AllWidgets_30.py, tests/casefiles/AllWidgets_30.wxg,
+	tests/casefiles/AllWidgets_30.xrc:
+	Add icons to AllWidget tests
+	[77810c100db3]
+
+	* NEWS.txt, codegen/cpp_codegen.py, tests/casefiles/Bug179_Frame.c++,
+	tests/casefiles/Bug179_Frame.hpp, tests/casefiles/Bug179_main.c++,
+	tests/casefiles/bug179.wxg, tests/test_bugs.py,
+	tests/test_codegen.py:
+	Fix main file is generated without custom extensions (sf bug #179)
+	(grafted from 3d351422d9fc6149542f241d9275d867afb5534b)
+	[1f1cce01ac62] <WXG-BRANCH-VERSION_0_7_1>
+
+	* NEWS.txt, codegen/cpp_codegen.py, tests/casefiles/Bug179_Frame.c++,
+	tests/casefiles/Bug179_Frame.hpp, tests/casefiles/Bug179_main.c++,
+	tests/casefiles/bug179.wxg, tests/test_bugs.py,
+	tests/test_codegen.py:
+	Fix main file is generated without custom extensions (sf bug #179)
+	[3d351422d9fc]
+
+2016-01-23  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, preferences_ui.py, tests/casefiles/Perl_Preferences.pl,
+	tests/casefiles/Python_Preferences.py, widgets/dialog/codegen.py,
+	widgets/dialog/perl_codegen.py, widgets/frame/codegen.py,
+	widgets/frame/perl_codegen.py:
+	Fix usage of wx.NullIcon for Perl and Python
+	[4028580ba0cc]
+
+	* NEWS.txt, edit_sizers/edit_sizers.py:
+	Fix PyDeadObjectError during closing wxGlade (grafted from
+	60fe758aa2994d64f02d62cbff57c9059cca5d58)
+	[89c22e4d3fb6] <WXG-BRANCH-VERSION_0_7_1>
+
+	* edit_sizers/edit_sizers.py:
+	Rename some variables to clarify purpose
+	[f70ef68ecc58]
+
+	* bugdialog.py, edit_sizers/edit_sizers.py, font_dialog.py, main.py,
+	widgets/custom_widget/custom_widget.py, widgets/dialog/dialog.py,
+	widgets/frame/frame.py, widgets/gauge/gauge.py,
+	widgets/menubar/menubar.py, widgets/notebook/notebook.py,
+	widgets/slider/slider.py, widgets/spacer/spacer.py,
+	widgets/splitter_window/splitter_window.py,
+	widgets/static_line/static_line.py, widgets/statusbar/statusbar.py,
+	widgets/toolbar/toolbar.py:
+	Destroy() all instances of wxDialog after usage
+	[24fb34baf3c3]
+
+	* tests/test_gui.py, widget_properties.py,
+	widgets/notebook/notebook.py:
+	Remove obsolete comma in function argument lists
+	[9cc1be9e2268]
+
+	* edit_sizers/edit_sizers.py:
+	Draw hatched lines of sizer slots only on MSW in foreground
+	[98b17716ac81]
+
+	* NEWS.txt, edit_sizers/edit_sizers.py:
+	Fix PyDeadObjectError during closing wxGlade
+	[60fe758aa299]
+
+2016-01-10  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, edit_sizers/edit_sizers.py:
+	Fix black window bug on Windows
+
+	It's not possible to draw the hatched lines to the background on MSW
+	due to a bug in wxWidgets.
+
+	It's wxWidget bug #17326 "SetBackground() with hatched brushes cases
+	black background on MSW" (grafted from
+	0a1811d9a3fe5257e60799e7fea9f3651117179a)
+	[51858439bbcb] <WXG-BRANCH-VERSION_0_7_1>
+
+	* NEWS.txt, edit_sizers/edit_sizers.py:
+	Fix black window bug on Windows
+
+	It's not possible to draw the hatched lines to the background on MSW
+	due to a bug in wxWidgets.
+
+	It's wxWidget bug #17326 "SetBackground() with hatched brushes cases
+	black background on MSW"
+	[0a1811d9a3fe]
+
+2016-01-08  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, common.py:
+	Fix WindowsError is the backup file already exists (Thanks to Graeme
+	Glenn) (grafted from 8363d1e592af423ea8e3f4b9ad90bf349e9b7851)
+	[4c20f2fa0215] <WXG-BRANCH-VERSION_0_7_1>
+
+	* NEWS.txt, common.py:
+	Fix WindowsError is the backup file already exists (Thanks to Graeme
+	Glenn)
+	[8363d1e592af]
+
+2016-01-07  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, compat.py, edit_sizers/edit_sizers.py:
+	Fix ZeroDevisionError during adding a new column to a
+	wxFlexGridSizer with only one row
+
+	The API changed with wx 2.9: wx3 wxGridSizer.GetRows() and
+	wxGridSizer.GetCols() "returns zero if the sizer is automatically
+	adjusting the number of rows depending on number of its children."
+	(grafted from fa206b3bcc3e3cf06e9671c1069373136d4142d0)
+	[012c084ba4ba] <WXG-BRANCH-VERSION_0_7_1>
+
+2016-01-06  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, edit_sizers/edit_sizers.py:
+	Fix NameError exception during inserting a sizer slot (grafted from
+	d7c6eda7a797e47993f5ca12ac76a7f875023eaf)
+	[2345ac6822a3] <WXG-BRANCH-VERSION_0_7_1>
+
+2016-01-05  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, widgets/static_line/static_line.py:
+	Fix wrong orientation of wxStaticLine widgets (grafted from
+	f9035341846ff0881fd6b3a69f8d806e924efb63)
+	[ecec97ef8332] <WXG-BRANCH-VERSION_0_7_1>
+
+	* widgets/slider/wconfig.py:
+	Extend style description of wxSlider (grafted from
+	e04101192b60dedd4571b3e1f5f13cfa67c7746c)
+	[ac72fa86bd0d] <WXG-BRANCH-VERSION_0_7_1>
+
+	* widgets/static_line/wconfig.py:
+	Extend style description of wxStaticLine (grafted from
+	7400864e82fd8f2e1d798001eab6ed7c14c25bdf)
+	[46ca917b4d50] <WXG-BRANCH-VERSION_0_7_1>
+
+2016-01-07  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, compat.py, edit_sizers/edit_sizers.py:
+	Fix ZeroDevisionError during adding a new column to a
+	wxFlexGridSizer with only one row
+
+	The API changed with wx 2.9: wx3 wxGridSizer.GetRows() and
+	wxGridSizer.GetCols() "returns zero if the sizer is automatically
+	adjusting the number of rows depending on number of its children."
+	[fa206b3bcc3e]
+
+2016-01-06  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* NEWS.txt, edit_sizers/edit_sizers.py:
+	Fix NameError exception during inserting a sizer slot
+	[d7c6eda7a797]
+
+2016-01-05  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* Makefile:
+	Create all documentation from source files in "doc" rule
+	[ea1496fe1939]
+
+	* Makefile:
+	Update path of manpage style sheet
+	[771695f0648a]
+
+	* .hgignore, docs/man/wxglade.1:
+	Adding wxglade manpage to the repository
+	[cf20c36f98d4]
+
+	* .hgignore:
+	Remove ignored files from Eric IDE
+	[4c3bc52c2c75]
+
+	* NEWS.txt, widgets/static_line/static_line.py:
+	Fix wrong orientation of wxStaticLine widgets
+	[f9035341846f]
+
+	* widgets/slider/wconfig.py:
+	Extend style description of wxSlider
+	[e04101192b60]
+
+	* widgets/static_line/wconfig.py:
+	Extend style description of wxStaticLine
+	[7400864e82fd]
+
+2016-01-01  Carsten Grohmann  <mail@carstengrohmann.de>
+
+	* LICENSE.txt, MANIFEST.in, about.py, appdata.xml, application.py,
+	bugdialog.py, clipboard.py, code_property.py, codegen/__init__.py,
+	codegen/cpp_codegen.py, codegen/lisp_codegen.py,
+	codegen/perl_codegen.py, codegen/py_codegen.py,
+	codegen/xrc_codegen.py, color_dialog.py, common.py, compat.py,
+	config.py, decorators.py, docs/html/apa.html, docs/html/apb.html,
+	docs/html/apc.html, docs/html/apd.html, docs/html/ape.html,
+	docs/html/ch01.html, docs/html/ch01s02.html, docs/html/ch01s03.html,
+	docs/html/ch01s04.html, docs/html/ch01s05.html,
+	docs/html/ch01s06.html, docs/html/ch01s07.html,
+	docs/html/ch01s08.html, docs/html/ch02.html, docs/html/ch02s02.html,
+	docs/html/ch02s03.html, docs/html/ch02s04.html,
+	docs/html/ch02s05.html, docs/html/ch02s06.html,
+	docs/html/ch02s07.html, docs/html/ch02s08.html, docs/html/ch03.html,
+	docs/html/ch03s02.html, docs/html/ch03s03.html,
+	docs/html/ch03s04.html, docs/html/ch03s05.html,
+	docs/html/ch03s06.html, docs/html/ch04.html, docs/html/ch04s02.html,
+	docs/html/ch04s03.html, docs/html/ch05.html, docs/html/ch05s02.html,
+	docs/html/ch05s03.html, docs/html/ch05s04.html, docs/html/ch06.html,
+	docs/html/ch06s02.html, docs/html/ch06s03.html,
+	docs/html/ch06s04.html, docs/html/ch06s05.html,
+	docs/html/ch06s06.html, docs/html/ch06s07.html,
+	docs/html/ch06s08.html, docs/html/ch06s09.html, docs/html/ch07.html,
+	docs/html/ch07s02.html, docs/html/ch07s03.html,
+	docs/html/index.html, docs/html/pr01.html, docs/html/pr01s02.html,
+	docs/man/manpage.xml, docs/pdf/manual.pdf, docs/src/manual.xml,
+	edit_sizers/__init__.py, edit_sizers/cpp_sizers_codegen.py,
+	edit_sizers/edit_sizers.py, edit_sizers/lisp_sizers_codegen.py,
+	edit_sizers/perl_sizers_codegen.py,
+	edit_sizers/py_sizers_codegen.py, edit_sizers/xrc_sizers_codegen.py,
+	edit_widget.py, edit_windows.py, errors.py, events_mixin.py,
+	gui_mixins.py, install/pyinstaller/build.bat,
+	install/pyinstaller/hooks/hook-main.py, install/pyinstaller/wxglade-
+	SAE-installer.iss, install/pyinstaller/wxglade-installer.iss,
+	install/pyinstaller/wxglade.spec, layout_option_property.py, log.py,
+	main.py, misc.py, plugins.py, preferencesdialog.py, setup.py,
+	template.py, test.py, tests/__init__.py,
+	tests/casefiles/file_encodings.txt, tests/test_bugs.py,
+	tests/test_codegen.py, tests/test_compile.py,
+	tests/test_external.py, tests/test_gui.py, tree.py,
+	wcodegen/__init__.py, wcodegen/dialogs.py, wcodegen/taghandler.py,
+	widget_properties.py, widgets/ChoicesCodeHandler.py,
+	widgets/ChoicesProperty.py, widgets/MenuTree.py,
+	widgets/bitmap_button/bitmap_button.py,
+	widgets/bitmap_button/codegen.py,
+	widgets/bitmap_button/lisp_codegen.py,
+	widgets/bitmap_button/perl_codegen.py,
+	widgets/bitmap_button/wconfig.py, widgets/button/button.py,
+	widgets/button/codegen.py, widgets/button/lisp_codegen.py,
+	widgets/button/perl_codegen.py, widgets/button/wconfig.py,
+	widgets/calendar_ctrl/calendar_ctrl.py,
+	widgets/calendar_ctrl/codegen.py,
+	widgets/calendar_ctrl/perl_codegen.py,
+	widgets/calendar_ctrl/wconfig.py, widgets/checkbox/checkbox.py,
+	widgets/checkbox/checkbox_base.py, widgets/checkbox/codegen.py,
+	widgets/checkbox/lisp_codegen.py, widgets/checkbox/perl_codegen.py,
+	widgets/checkbox/wconfig.py, widgets/choice/choice.py,
+	widgets/choice/codegen.py, widgets/choice/lisp_codegen.py,
+	widgets/choice/perl_codegen.py, widgets/choice/wconfig.py,
+	widgets/combo_box/codegen.py, widgets/combo_box/combo_box.py,
+	widgets/combo_box/lisp_codegen.py,
+	widgets/combo_box/perl_codegen.py, widgets/combo_box/wconfig.py,
+	widgets/custom_widget/codegen.py,
+	widgets/custom_widget/custom_widget.py,
+	widgets/custom_widget/lisp_codegen.py,
+	widgets/custom_widget/perl_codegen.py,
+	widgets/datepicker_ctrl/codegen.py,
+	widgets/datepicker_ctrl/datepicker_ctrl.py,
+	widgets/datepicker_ctrl/lisp_codegen.py,
+	widgets/datepicker_ctrl/perl_codegen.py,
+	widgets/datepicker_ctrl/wconfig.py, widgets/dialog/codegen.py,
+	widgets/dialog/dialog.py, widgets/dialog/lisp_codegen.py,
+	widgets/dialog/perl_codegen.py, widgets/dialog/wconfig.py,
+	widgets/frame/codegen.py, widgets/frame/frame.py,
+	widgets/frame/lisp_codegen.py, widgets/frame/perl_codegen.py,
+	widgets/frame/wconfig.py, widgets/gauge/codegen.py,
+	widgets/gauge/lisp_codegen.py, widgets/gauge/perl_codegen.py,
+	widgets/gauge/wconfig.py, widgets/grid/grid.py,
+	widgets/grid/lisp_codegen.py, widgets/grid/perl_codegen.py,
+	widgets/grid/wconfig.py, widgets/hyperlink_ctrl/__init__.py,
+	widgets/hyperlink_ctrl/codegen.py,
+	widgets/hyperlink_ctrl/hyperlink_ctrl.py,
+	widgets/hyperlink_ctrl/lisp_codegen.py,
+	widgets/hyperlink_ctrl/perl_codegen.py,
+	widgets/hyperlink_ctrl/wconfig.py, widgets/list_box/codegen.py,
+	widgets/list_box/lisp_codegen.py, widgets/list_box/list_box.py,
+	widgets/list_box/perl_codegen.py, widgets/list_box/wconfig.py,
+	widgets/list_ctrl/codegen.py, widgets/list_ctrl/lisp_codegen.py,
+	widgets/list_ctrl/list_ctrl.py, widgets/list_ctrl/perl_codegen.py,
+	widgets/list_ctrl/wconfig.py, widgets/menubar/codegen.py,
+	widgets/menubar/menubar.py, widgets/menubar/perl_codegen.py,
+	widgets/notebook/codegen.py, widgets/notebook/lisp_codegen.py,
+	widgets/notebook/notebook.py, widgets/notebook/perl_codegen.py,
+	widgets/notebook/wconfig.py, widgets/panel/codegen.py,
+	widgets/panel/lisp_codegen.py, widgets/panel/panel.py,
+	widgets/panel/perl_codegen.py, widgets/panel/wconfig.py,
+	widgets/radio_box/codegen.py, widgets/radio_box/lisp_codegen.py,
+	widgets/radio_box/perl_codegen.py, widgets/radio_box/radio_box.py,
+	widgets/radio_box/radio_box_base.py, widgets/radio_box/wconfig.py,
+	widgets/radio_button/codegen.py,
+	widgets/radio_button/lisp_codegen.py,
+	widgets/radio_button/perl_codegen.py,
+	widgets/radio_button/radio_button.py,
+	widgets/radio_button/wconfig.py, widgets/slider/codegen.py,
+	widgets/slider/lisp_codegen.py, widgets/slider/perl_codegen.py,
+	widgets/slider/slider.py, widgets/slider/wconfig.py,
+	widgets/spacer/codegen.py, widgets/spacer/lisp_codegen.py,
+	widgets/spacer/perl_codegen.py, widgets/spacer/spacer.py,
+	widgets/spin_button/codegen.py, widgets/spin_button/lisp_codegen.py,
+	widgets/spin_button/perl_codegen.py,
+	widgets/spin_button/spin_button.py, widgets/spin_button/wconfig.py,
+	widgets/spin_ctrl/codegen.py, widgets/spin_ctrl/lisp_codegen.py,
+	widgets/spin_ctrl/perl_codegen.py, widgets/spin_ctrl/spin_ctrl.py,
+	widgets/spin_ctrl/wconfig.py, widgets/splitter_window/codegen.py,
+	widgets/splitter_window/lisp_codegen.py,
+	widgets/splitter_window/perl_codegen.py,
+	widgets/splitter_window/splitter_window.py,
+	widgets/splitter_window/wconfig.py,
+	widgets/static_bitmap/codegen.py,
+	widgets/static_bitmap/lisp_codegen.py,
+	widgets/static_bitmap/perl_codegen.py,
+	widgets/static_bitmap/static_bitmap.py,
+	widgets/static_bitmap/wconfig.py, widgets/static_line/codegen.py,
+	widgets/static_line/lisp_codegen.py,
+	widgets/static_line/perl_codegen.py,
+	widgets/static_line/static_line.py, widgets/static_line/wconfig.py,
+	widgets/static_text/codegen.py, widgets/static_text/lisp_codegen.py,
+	widgets/static_text/perl_codegen.py,
+	widgets/static_text/static_text.py, widgets/static_text/wconfig.py,
+	widgets/statusbar/__init__.py, widgets/statusbar/codegen.py,
+	widgets/statusbar/lisp_codegen.py,
+	widgets/statusbar/perl_codegen.py, widgets/statusbar/statusbar.py,
+	widgets/statusbar/wconfig.py, widgets/text_ctrl/codegen.py,
+	widgets/text_ctrl/lisp_codegen.py,
+	widgets/text_ctrl/perl_codegen.py, widgets/text_ctrl/text_ctrl.py,
+	widgets/text_ctrl/wconfig.py, widgets/toggle_button/codegen.py,
+	widgets/toggle_button/lisp_codegen.py,
+	widgets/toggle_button/perl_codegen.py,
+	widgets/toggle_button/toggle_button.py,
+	widgets/toggle_button/wconfig.py, widgets/toolbar/codegen.py,
+	widgets/toolbar/lisp_codegen.py, widgets/toolbar/perl_codegen.py,
+	widgets/toolbar/tool.py, widgets/toolbar/toolbar.py,
+	widgets/toolbar/wconfig.py, widgets/tree_ctrl/codegen.py,
+	widgets/tree_ctrl/lisp_codegen.py,
+	widgets/tree_ctrl/perl_codegen.py, widgets/tree_ctrl/tree_ctrl.py,
+	widgets/tree_ctrl/wconfig.py, wxglade, wxglade.py, wxglade.pyw,
+	xml_parse.py, xrc2wxg.py:
+	Update copyright year
+	[fabd4a25d23e]
+
+	* NEWS.txt, application.py, common.py, kdefiledialog.py, main.py,
+	misc.py, preferences_ui.py, preferencesdialog.py,
+	res/preferences_ui.wxg, widget_properties.py,
+	widgets/bitmap_button/bitmap_button.py,
+	widgets/static_bitmap/static_bitmap.py, widgets/toolbar/toolbar.py:
+	Remove usage of KDE file dialog
+	[c5fe5ef69ff7]
+
+	* CHANGES.txt, changelog.style, docs/ReleaseSteps.txt:
+	Update release documentation
+	[c1dfe4cb14f5]
+
 2015-12-29  Carsten Grohmann  <mail@carstengrohmann.de>
 
 	* setup.py:
 	Remove obsolation setup requirement setuptools_hg
-	[8cce02f8702e] [tip]
+	[8cce02f8702e]
 
 2015-12-26  Carsten Grohmann  <mail@carstengrohmann.de>
 

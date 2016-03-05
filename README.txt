@@ -1,7 +1,7 @@
 wxGlade: A GUI builder for wxPython/wxWidgets
 =============================================
 
-Version: 0.7.1
+Version: 0.7.2
 License: MIT (see LICENSE.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
@@ -41,7 +41,7 @@ should help you to integrate useful information. They are not an absolute rule
 - Include the internal error log file ``wxglade.log`` always.
 
 Please open a new bug in the wxGlade bug tracker on
-http://sourceforge.net/p/wxglade/bugs/. You have to log-in ar Sourceforge to
+https://sourceforge.net/p/wxglade/bugs/. You have to log-in ar Sourceforge to
 file a bug report.
 
 Alternatively you can send the bug report to the wxGlade mailing list
@@ -51,7 +51,7 @@ subscription for sending emails to this mailing list.
 
 Known Bugs/Issues
 -----------------
-Check the wxGlade bug tracker on http://sourceforge.net/p/wxglade/bugs/ for
+Check the wxGlade bug tracker on https://sourceforge.net/p/wxglade/bugs/ for
 current open bugs.
 
 For any kind of question, there's a mailing list on

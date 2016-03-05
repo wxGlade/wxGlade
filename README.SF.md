@@ -3,7 +3,7 @@ wxGlade: A GUI builder for wxPython/wxWidgets
 
 General
 -------
-Version: 0.7.1
+Version: 0.7.2
 
 License: MIT (see LICENSE.txt)
 
@@ -16,19 +16,19 @@ Requirements
 
 Files
 -----
-    wxglade-0.7.1.tar.gz        source code tarred and gzipped
-    wxglade-0.7.1.zip           source code zipped
-    wxGlade-0.7.1-setup.exe     Installer (Full Edition) requires Python and
+    wxglade-0.7.2.tar.gz        source code tarred and gzipped
+    wxglade-0.7.2.zip           source code zipped
+    wxGlade-0.7.2-setup.exe     Installer (Full Edition) requires Python and
                                 wxPython locally installed
-    wxGlade-SAE-0.7.1-setup.exe Installer Standalone Edition Python and
+    wxGlade-SAE-0.7.2-setup.exe Installer Standalone Edition Python and
                                 wxPython are bundled using PyInstaller
 
 MD5 checksums
 -------------
-    <unknown>  wxGlade-0.7.1-setup.exe
-    <unknown>  wxGlade-0.7.1.tar.gz
-    <unknown>  wxGlade-0.7.1.zip
-    <unknown>  wxGlade-SAE-0.7.1rc2-setup.exe
+    <unknown>  wxGlade-0.7.2-setup.exe
+    <unknown>  wxGlade-0.7.2.tar.gz
+    <unknown>  wxGlade-0.7.2.zip
+    <unknown>  wxGlade-SAE-0.7.2-setup.exe
 
 
 Standalone Edition
@@ -40,7 +40,7 @@ The standalone edition is available. It has two disadvantages:
 
 Known Bugs/Issues
 -----------------
-Check the wxGlade bug tracker on <http://sourceforge.net/p/wxglade/bugs/> for
+Check the wxGlade bug tracker on <https://sourceforge.net/p/wxglade/bugs/> for
 current open bugs.
 
 For any kind of question, there's a mailing list on
