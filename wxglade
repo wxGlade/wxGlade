@@ -44,7 +44,6 @@ for INTERPRETER in $INTERPRETER_LIST; do
   break
 done
 
-
 if [ ! "$PYTHON_BIN" ]; then
   echo "ERROR: No interpreter for Python 2 found!"
   echo "       Please install Python 2 to run wxGlade!"
@@ -71,7 +70,7 @@ for DIR in \
    "${CURR_DIR}/../lib/python${PY_VERSION}/dist-packages/wxglade" \
    ; do
   BINARY="${DIR}/wxglade.py"
-  if [ -x "${BINARY}" ]; then
+  if [ -e "${BINARY}" ]; then
     WXG_BINARY="$BINARY"
     break
   fi
