@@ -26,8 +26,8 @@ Files
 MD5 checksums
 -------------
     b13cdf9eff9857f6f07f1bd6bf50348a  wxGlade-0.7.2-setup.exe
-    81d3270ba1c764d482b0fed00c6f9c59  wxGlade-0.7.2.tar.gz
-    69885a306f694222655fe63d3443191b  wxGlade-0.7.2.zip
+    16395cd62adba4b53da371fe59707a33  wxGlade-0.7.2.tar.gz
+    61ca7513da4913045854c1b0a62a04a3  wxGlade-0.7.2.zip
     e57843ad4d0cb6bf1fc2aab7c46aaa73  wxGlade-SAE-0.7.2-setup.exe
 
 
