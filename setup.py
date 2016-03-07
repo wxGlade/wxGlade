@@ -10,6 +10,8 @@ from setuptools import setup, find_packages
 
 import os
 from glob import glob
+import fnmatch
+import sys
 
 # gettext support is needed by config module
 import gettext
@@ -33,6 +35,23 @@ def filter_modules(self, package, package_dir):
 from distutils.command.build_py import build_py
 orig_find_package_modules = build_py.find_package_modules
 build_py.find_package_modules = filter_modules
+
+
+def recursive(path, pattern='*'):
+    """\
+    Returns a list of files found in the path matching the pattern
+
+    @param path:    Path to list matching files
+    @type path:     str
+    @param pattern: Filter pattern
+    @type pattern:  str
+    @rtype: list[str]
+    """
+    matches = []
+    for dirpath, dirnames, filenames in os.walk(path):
+        for filename in fnmatch.filter(filenames, pattern):
+            matches.append(os.path.join(dirpath, filename))
+    return matches
 
 
 classifiers = """\
@@ -90,24 +109,64 @@ version = config.get_version(False)
 if not os.path.exists('version.py'):
     config.write_version_file(version)
 
-setup(
-    name='wxGlade',
-    version=version,
-    author='Alberto Griggio, Carsten Grohmann and the wxGlade developers',
-    author_email='wxglade-general@lists.sourceforge.net',
-    maintainer='Carsten Grohmann',
-    maintainer_email='mail@carstengrohmann.de',
-    url='http://wxglade.sourceforge.net/',
-    classifiers=classifiers.split("\n"),
-    description=description,
-    long_description=long_description,
-    license='MIT License',
-    platforms=['WIN32', 'OSX', 'POSIX'],
-    scripts=['wxglade'],
-    packages=packages,
-    package_dir={'wxglade': '.'},
-    package_data={'wxglade.widgets': ['widgets.txt'],
-                  'wxglade': ['res/*.*']},
-    data_files=data_files,
-    install_requires=['wxPython >=2.8'],
-)
+if 'sdist' in sys.argv:
+
+    package_data_files = []
+    package_data_files.extend(text_files)
+    package_data_files.extend(['Makefile',
+                               'epydoc.conf',
+                               'pylintrc',
+                               'wxGlade.desktop',
+                               'wxglade.pyw',
+                               'widgets/widgets.txt',
+                               '__init__.py',
+                               'test.py'
+                               ])
+
+    # add content of listed directories to the package_data_file list
+    for data_dir in ['docs', 'install', 'icons', 'locale', 'po', 'res',
+                     'tests', 'templates']:
+        package_data_files.extend(recursive(data_dir))
+
+    setup(
+        name='wxGlade',
+        version=version,
+        author='Alberto Griggio, Carsten Grohmann and the wxGlade developers',
+        author_email='wxglade-general@lists.sourceforge.net',
+        maintainer='Carsten Grohmann',
+        maintainer_email='mail@carstengrohmann.de',
+        url='http://wxglade.sourceforge.net/',
+        classifiers=classifiers.split("\n"),
+        description=description,
+        long_description=long_description,
+        license='MIT License',
+        platforms=['WIN32', 'OSX', 'POSIX'],
+        scripts=['wxglade'],
+        packages=packages,
+        package_dir={'wxglade': '.'},
+        package_data={'wxglade': package_data_files},
+        data_files=data_files,
+        install_requires=['wxPython >=2.8'],
+    )
+else:
+    setup(
+        name='wxGlade',
+        version=version,
+        author='Alberto Griggio, Carsten Grohmann and the wxGlade developers',
+        author_email='wxglade-general@lists.sourceforge.net',
+        maintainer='Carsten Grohmann',
+        maintainer_email='mail@carstengrohmann.de',
+        url='http://wxglade.sourceforge.net/',
+        classifiers=classifiers.split("\n"),
+        description=description,
+        long_description=long_description,
+        license='MIT License',
+        platforms=['WIN32', 'OSX', 'POSIX'],
+        scripts=['wxglade'],
+        packages=packages,
+        package_dir={'wxglade': '.'},
+        package_data={'wxglade.widgets': ['widgets.txt'],
+                      'wxglade': ['res/*.*']},
+        data_files=data_files,
+        install_requires=['wxPython >=2.8'],
+    )
