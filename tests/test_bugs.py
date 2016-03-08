@@ -65,13 +65,14 @@ class TestCodeGen(WXGladeBaseTest):
         result_app        = self._load_file('Bug179_main.c++')
         result_frame_cpp  = self._load_file('Bug179_Frame.c++')
         result_frame_h    = self._load_file('Bug179_Frame.hpp')
-        self._generate_code('C++', source, './')
 
-        app_filename = '%s' % codegen._generate_app_filename()
-        main_cpp = './%s' % app_filename
+        self._generate_code('C++', source, self.curr_dir)
+
+        app_filename = codegen._generate_app_filename()
+        main_cpp = self._with_curr_dir(app_filename)
         generated_app    = self.vFiles[main_cpp].getvalue()
-        generated_frame_cpp  = self.vFiles['./Bug179_Frame.c++'].getvalue()
-        generated_frame_h    = self.vFiles['./Bug179_Frame.hpp'].getvalue()
+        generated_frame_cpp  = self.vFiles[self._with_curr_dir('Bug179_Frame.c++')].getvalue()
+        generated_frame_h    = self.vFiles[self._with_curr_dir('Bug179_Frame.hpp')].getvalue()
         self._compare(result_app,    generated_app, app_filename)
         self._compare(result_frame_cpp,  generated_frame_cpp , 'Bug179_Frame.c++')
         self._compare(result_frame_h,    generated_frame_h,    'Bug179_Frame.hpp')

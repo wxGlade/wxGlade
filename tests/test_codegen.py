@@ -321,10 +321,12 @@ class TestCodeGen(WXGladeBaseTest):
         result_app    = self._load_file('PyOgg2_app.py')
         result_dialog = self._load_file('PyOgg2_MyDialog.py')
         result_frame  = self._load_file('PyOgg2_MyFrame.py')
-        self._generate_code('python', source, './')
-        generated_app    = self.vFiles['./PyOgg2_app.py'].getvalue()
-        generated_dialog = self.vFiles['./PyOgg2_MyDialog.py'].getvalue()
-        generated_frame  = self.vFiles['./PyOgg2_MyFrame.py'].getvalue()
+
+        self._generate_code('python', source, self.curr_dir)
+
+        generated_app    = self.vFiles[self._with_curr_dir('PyOgg2_app.py')].getvalue()
+        generated_dialog = self.vFiles[self._with_curr_dir('PyOgg2_MyDialog.py')].getvalue()
+        generated_frame  = self.vFiles[self._with_curr_dir('PyOgg2_MyFrame.py')].getvalue()
         self._compare(result_app,    generated_app, 'PyOgg2_app.py')
         self._compare(result_dialog, generated_dialog, 'PyOgg2_MyDialog.py')
         self._compare(result_frame,  generated_frame , 'PyOgg2_MyFrame.py')
@@ -368,10 +370,12 @@ class TestCodeGen(WXGladeBaseTest):
         result_app    = self._load_file('LispOgg2_app.lisp')
         result_dialog = self._load_file('LispOgg2_MyDialog.lisp')
         result_frame  = self._load_file('LispOgg2_MyFrame.lisp')
-        self._generate_code('lisp', source, './')
-        generated_app    = self.vFiles['./LispOgg2_app.lisp'].getvalue()
-        generated_dialog = self.vFiles['./LispOgg2_MyDialog.lisp'].getvalue()
-        generated_frame  = self.vFiles['./LispOgg2_MyFrame.lisp'].getvalue()
+
+        self._generate_code('lisp', source, self.curr_dir)
+
+        generated_app    = self.vFiles[self._with_curr_dir('LispOgg2_app.lisp')].getvalue()
+        generated_dialog = self.vFiles[self._with_curr_dir('LispOgg2_MyDialog.lisp')].getvalue()
+        generated_frame  = self.vFiles[self._with_curr_dir('LispOgg2_MyFrame.lisp')].getvalue()
         self._compare(result_app,    generated_app, 'LispOgg2_app.lisp')
         self._compare(result_dialog, generated_dialog, 'LispOgg2_MyDialog.lisp')
         self._compare(result_frame,  generated_frame , 'LispOgg2_MyFrame.lisp')
@@ -415,10 +419,12 @@ class TestCodeGen(WXGladeBaseTest):
         result_app    = self._load_file('PlOgg2_app.pl')
         result_dialog = self._load_file('PlOgg2_MyDialog.pm')
         result_frame  = self._load_file('PlOgg2_MyFrame.pm')
-        self._generate_code('perl', source, './')
-        generated_app    = self.vFiles['./PlOgg2_app.pl'].getvalue()
-        generated_dialog = self.vFiles['./PlOgg2_MyDialog.pm'].getvalue()
-        generated_frame  = self.vFiles['./PlOgg2_MyFrame.pm'].getvalue()
+
+        self._generate_code('perl', source, self.curr_dir)
+
+        generated_app    = self.vFiles[self._with_curr_dir('PlOgg2_app.pl')].getvalue()
+        generated_dialog = self.vFiles[self._with_curr_dir('PlOgg2_MyDialog.pm')].getvalue()
+        generated_frame  = self.vFiles[self._with_curr_dir('PlOgg2_MyFrame.pm')].getvalue()
         self._compare(result_app,    generated_app, 'PlOgg2_app.pl')
         self._compare(result_dialog, generated_dialog, 'PlOgg2_MyDialog.pm')
         self._compare(result_frame,  generated_frame , 'PlOgg2_MyFrame.pm')
@@ -465,15 +471,16 @@ class TestCodeGen(WXGladeBaseTest):
         result_dialog_h   = self._load_file('CPPOgg2_MyDialog.h')
         result_frame_cpp  = self._load_file('CPPOgg2_MyFrame.cpp')
         result_frame_h    = self._load_file('CPPOgg2_MyFrame.h')
-        self._generate_code('C++', source, './')
 
-        app_filename = '%s' % codegen._generate_app_filename()
-        main_cpp = './%s' % app_filename
+        self._generate_code('C++', source, self.curr_dir)
+
+        app_filename = codegen._generate_app_filename()
+        main_cpp = self._with_curr_dir(app_filename)
         generated_app    = self.vFiles[main_cpp].getvalue()
-        generated_dialog_cpp = self.vFiles['./CPPOgg2_MyDialog.cpp'].getvalue()
-        generated_dialog_h   = self.vFiles['./CPPOgg2_MyDialog.h'].getvalue()
-        generated_frame_cpp  = self.vFiles['./CPPOgg2_MyFrame.cpp'].getvalue()
-        generated_frame_h    = self.vFiles['./CPPOgg2_MyFrame.h'].getvalue()
+        generated_dialog_cpp = self.vFiles[self._with_curr_dir('CPPOgg2_MyDialog.cpp')].getvalue()
+        generated_dialog_h   = self.vFiles[self._with_curr_dir('CPPOgg2_MyDialog.h')].getvalue()
+        generated_frame_cpp  = self.vFiles[self._with_curr_dir('CPPOgg2_MyFrame.cpp')].getvalue()
+        generated_frame_h    = self.vFiles[self._with_curr_dir('CPPOgg2_MyFrame.h')].getvalue()
         self._compare(result_app,    generated_app, app_filename)
         self._compare(result_dialog_cpp, generated_dialog_cpp, 'CPPOgg2_MyDialog.cpp')
         self._compare(result_dialog_h,   generated_dialog_h,   'CPPOgg2_MyDialog.h')
@@ -690,9 +697,9 @@ class TestCodeGen(WXGladeBaseTest):
         else:
             simple = '_simple'
         if language == 'C++':
-            app_filename = './%s' % codewriter._generate_app_filename()
+            app_filename = self._with_curr_dir(codewriter._generate_app_filename())
         else:
-            app_filename = './myapp%s' % suffix
+            app_filename = self._with_curr_dir('myapp%s' % suffix)
 
         # top window and application name are mandatory
         if top_window and appname:
@@ -1455,21 +1462,21 @@ class TestCodeGen(WXGladeBaseTest):
             self._generate_code,
             'python',
             source,
-            '/tmp',
+            os.path.normpath('/tmp'),
             )
         self.failUnlessRaises(
             errors.WxgOutputDirectoryNotExist,
             self._generate_code,
             'python',
             source,
-            '/non-existing/result.py',
+            os.path.normpath('/non-existing/result.py'),
             )
         self.failUnlessRaises(
             errors.WxgOutputDirectoryNotWritable,
             self._generate_code,
             'python',
             source,
-            '/non-writable/result.py',
+            os.path.normpath('/non-writable/result.py'),
             )
 
         # Multiple output file out_path should be a writable directory
@@ -1480,14 +1487,14 @@ class TestCodeGen(WXGladeBaseTest):
             self._generate_code,
             'python',
             source,
-            '/non-existing',
+            os.path.normpath('/non-existing'),
             )
         self.failUnlessRaises(
             errors.WxgOutputDirectoryNotWritable,
             self._generate_code,
             'python',
             source,
-            '/non-writable',
+            os.path.normpath('/non-writable'),
             )
 
     def test_WxgXRCMultipleFilesNotSupported(self):
