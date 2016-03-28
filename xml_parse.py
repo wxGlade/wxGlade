@@ -433,13 +433,14 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
         if self.progress:
             if name == 'application':
                 self.progress.Destroy()
+                self.progress = None
             else:
                 if self.locator:
                     where = self.locator.getLineNumber()
                     value = int(round(where * 20.0 / self.size))
                 else:
                     # we don't have any information, so we update the progress
-                    # bar ``randomly''
+                    # bar "randomly"
                     value = (self.step * self.i) % 20
                     self.i += 1
                 self.progress.Update(value)
@@ -451,6 +452,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
         finally:
             if self.progress:
                 self.progress.Destroy()
+                self.progress = None
 
     def parse_string(self, *args):
         try:
@@ -458,6 +460,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
         finally:
             if self.progress:
                 self.progress.Destroy()
+                self.progress = None
 
 # end of class ProgressXmlWidgetBuilder
 

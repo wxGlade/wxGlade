@@ -222,17 +222,23 @@ constructor will be used. You should probably not use this if \
         """
         # first, destroy the popup menu...
         if wx.Platform != '__WXMAC__':
-            if self._rmenu: self._rmenu.Destroy()
+            if self._rmenu:
+                self._rmenu.Destroy()
+                self._rmenu = None
         # ...then, destroy the property notebook...
         if self.notebook:
             nb_szr = self.notebook.sizer
             self.notebook.DeleteAllPages()
             self.notebook.Destroy()
-            if nb_szr is not None: nb_szr.Destroy()
+            self.notebook = None
+            if nb_szr is not None:
+                nb_szr.Destroy()
         # ...finally, destroy our widget (if needed)
         if self.widget and not self._dont_destroy:
             self.widget.Destroy()
-        if misc.focused_widget is self: misc.focused_widget = None
+            self.widget = None
+        if misc.focused_widget is self:
+            misc.focused_widget = None
 
     def create_properties(self):
         """\
@@ -1138,6 +1144,7 @@ class ManagedBase(WindowBase):
     def delete(self):
         if self.sel_marker:
             self.sel_marker.Destroy()  # destroy the selection markers
+            self.sel_marker = None
         WindowBase.delete(self)
 
     def remove(self, *args):

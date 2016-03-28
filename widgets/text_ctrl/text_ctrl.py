@@ -95,6 +95,7 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
             if old_style != new_style:
                 focused = misc.focused_widget is self
                 self.sel_marker.Destroy()
+                self.sel_marker = None
                 # hide old frame, create_widget() creates a new one
                 self.widget.Hide()
                 self.create_widget()
