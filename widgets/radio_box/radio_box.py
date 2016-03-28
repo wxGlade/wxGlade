@@ -221,9 +221,9 @@ class EditRadioBox(ManagedBase):
             b.Hide()
             b.Destroy()
         self.static_box = self.create_static_box()
-        self.buttons = [self.create_button("") for i in range(len(values))]
-        for i in range(len(values)):
-            self.buttons[i].SetLabel(values[i][0])
+        self.buttons = [self.create_button("") for pos in range(len(values))]
+        for pos, value in enumerate(values):
+            self.buttons[pos].SetLabel(value[0])
         self.do_layout()
 
     def get_selection(self):
