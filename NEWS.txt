@@ -6,6 +6,7 @@ Generated Code:
   - ...
 
 Bugs:
+  - Fix missing icons in release packages
   - ...
 
 Deprecation
