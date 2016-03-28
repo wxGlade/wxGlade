@@ -903,7 +903,9 @@ class wxGladeFrame(wx.Frame):
                               wx.OK|wx.CENTRE|wx.ICON_ERROR)
             #self._skip_activate = True
             self.frame_property.Destroy()
+            self.frame_property = None
             self.tree_frame.Destroy()
+            self.tree_frame = None
             self.Destroy()
             common.remove_autosaved()  # ALB 2004-10-15
             wx.CallAfter(wx.GetApp().ExitMainLoop)

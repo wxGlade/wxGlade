@@ -585,6 +585,7 @@ class SizerHandleButton(GenButton):
     def Destroy(self):
         if self._rmenu:
             self._rmenu.Destroy()
+            self._rmenu = None
         GenButton.Destroy(self)
         if misc.focused_widget is self:
             misc.focused_widget = None
@@ -1492,10 +1493,12 @@ class SizerBase(Sizer):
         self._rmenu = None
         if self._btn:
             self._btn.Destroy()
+            self._btn = None
         if self.notebook:
             nb_szr = self.notebook.sizer
             self.notebook.DeleteAllPages()
             self.notebook.Destroy()
+            self.notebook = None
             if nb_szr is not None:
                 nb_szr.Destroy()
         for c in self.children:
