@@ -374,3 +374,20 @@ class BitmapMixin(object):
         return wx.EmptyBitmap(max(1, width), max(1, height))
 
 # end of class BitmapMixin
+
+
+class ExecAfterMixin(object):
+    """\
+    Class mixin to execute the function away from calling context forward to
+    the event handling mechanism of wxWidgets.
+    """
+
+    @staticmethod
+    def exec_after(func):
+        """\
+        Execute the function away from calling context forward to the event
+        handling mechanism of wxWidgets.
+        """
+        return lambda e: wx.CallAfter(func)
+
+# end of class ExecAfterMixin

@@ -14,6 +14,7 @@ import compat
 import config
 import misc
 from tree import Tree
+from gui_mixins import ExecAfterMixin
 from widget_properties import *
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 
@@ -201,7 +202,7 @@ class PanelBase(EditStylesMixin):
 # end of class PanelBase
 
 
-class EditPanel(PanelBase, ManagedBase):
+class EditPanel(PanelBase, ManagedBase, ExecAfterMixin):
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True, style='wxTAB_TRAVERSAL'):
         """\
@@ -248,21 +249,19 @@ class EditPanel(PanelBase, ManagedBase):
         misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
                          wx.ART_CUT)
 
-        def bind(method):
-            return lambda e: wx.CallAfter(method)
+        wx.EVT_MENU(self.widget, REMOVE_ID, self.exec_after(self.remove))
+        wx.EVT_MENU(self.widget, COPY_ID, self.exec_after(self.clipboard_copy))
+        wx.EVT_MENU(self.widget, CUT_ID, self.exec_after(self.clipboard_cut))
 
-        wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-        wx.EVT_MENU(self.widget, COPY_ID, bind(self.clipboard_copy))
-        wx.EVT_MENU(self.widget, CUT_ID, bind(self.clipboard_cut))
-        # paste
         PASTE_ID = wx.NewId()
         misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'),
                          wx.ART_PASTE)
-        wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
+        wx.EVT_MENU(self.widget, PASTE_ID, self.exec_after(self.clipboard_paste))
+
         PREVIEW_ID = wx.NewId()
         self._rmenu.AppendSeparator()
         misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
-        wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
+        wx.EVT_MENU(self.widget, PREVIEW_ID, self.exec_after(self.preview_parent))
 
     def clipboard_paste(self, event=None):
         """\
