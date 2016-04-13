@@ -15,6 +15,7 @@ import wx
 from wx.lib.buttons import GenButton
 
 # import project modules
+from gui_mixins import ExecAfterMixin
 from layout_option_property import LayoutOptionProperty, \
     LayoutPosProperty
 from widget_properties import *
@@ -200,7 +201,7 @@ class BaseSizerBuilder(object):
 # end of class BaseSizerBuilder
 
 
-class SizerSlot(object):
+class SizerSlot(ExecAfterMixin):
     """\
     A window to represent a slot in a sizer
 
@@ -372,12 +373,9 @@ class SizerSlot(object):
         self.menu.AppendSeparator()
         misc.append_item(self.menu, PREVIEW_ID, _('Preview'))
 
-        def bind(method):
-            return lambda e: wx.CallAfter(method)
-
-        wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
-        wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
-        wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
+        wx.EVT_MENU(self.widget, REMOVE_ID, self.exec_after(self.remove))
+        wx.EVT_MENU(self.widget, PASTE_ID, self.exec_after(self.clipboard_paste))
+        wx.EVT_MENU(self.widget, PREVIEW_ID, self.exec_after(self.preview_parent))
 
     def remove(self, *args):
         if not self.sizer.is_virtual():
@@ -499,7 +497,7 @@ class SizerSlot(object):
 # end of class SizerSlot
 
 
-class SizerHandleButton(GenButton):
+class SizerHandleButton(GenButton, ExecAfterMixin):
     """\
     Provides a "handle" to activate a Sizer and to access its popup menu
 
@@ -555,12 +553,9 @@ class SizerHandleButton(GenButton):
         REMOVE_ID = wx.NewId()
         self._rmenu = misc.wxGladePopupMenu(self.sizer.name)
 
-        def bind(method):
-            return lambda e: wx.CallAfter(method)
-
         misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
                          wx.ART_DELETE)
-        wx.EVT_MENU(self, REMOVE_ID, bind(self._remove))
+        wx.EVT_MENU(self, REMOVE_ID, self.exec_after(self._remove))
         for item in self.menu:
             id = wx.NewId()
             bmp = None

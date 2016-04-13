@@ -21,7 +21,7 @@ from tree import Tree
 from tool import *
 from widget_properties import *
 from edit_windows import EditBase, PreviewMixin, EditStylesMixin
-from gui_mixins import BitmapMixin
+from gui_mixins import BitmapMixin, ExecAfterMixin
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 
@@ -512,7 +512,8 @@ class ToolsHandler(BaseXmlBuilderTagHandler):
 # end of class ToolsHandler
 
 
-class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
+class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin,
+                  ExecAfterMixin):
     """\
     Class to handle wxToolBar objects
 
@@ -777,11 +778,8 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
                          wx.ART_DELETE)
         misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
 
-        def bind(method):
-            return lambda e: wx.CallAfter(method)
-
-        wx.EVT_MENU(self.pwidget, REMOVE_ID, bind(self.remove))
-        wx.EVT_MENU(self.pwidget, HIDE_ID, bind(self.hide_widget))
+        wx.EVT_MENU(self.pwidget, REMOVE_ID, self.exec_after(self.remove))
+        wx.EVT_MENU(self.pwidget, HIDE_ID, self.exec_after(self.hide_widget))
 
     def hide_widget(self, *args):
         if self.pwidget and self.pwidget is not self.widget:
