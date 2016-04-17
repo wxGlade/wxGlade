@@ -254,7 +254,8 @@ class SizerSlot(ExecAfterMixin):
         self.widget.Bind(wx.EVT_SIZE, self.on_size)
         self.widget.Bind(wx.EVT_RIGHT_DOWN, self.on_popup_menu)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_drop_widget)
-        self.widget.Bind(wx.EVT_MIDDLE_DOWN, self.on_select_and_paste)
+        self.widget.Bind(wx.EVT_MIDDLE_DOWN,
+                         self.exec_after(self.on_select_and_paste))
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
         self.widget.Bind(wx.EVT_KEY_DOWN, self.on_key_down)
@@ -373,9 +374,12 @@ class SizerSlot(ExecAfterMixin):
         self.menu.AppendSeparator()
         misc.append_item(self.menu, PREVIEW_ID, _('Preview'))
 
-        wx.EVT_MENU(self.widget, REMOVE_ID, self.exec_after(self.remove))
-        wx.EVT_MENU(self.widget, PASTE_ID, self.exec_after(self.clipboard_paste))
-        wx.EVT_MENU(self.widget, PREVIEW_ID, self.exec_after(self.preview_parent))
+        wx.EVT_MENU(self.widget, REMOVE_ID,
+                    self.exec_after(self.remove))
+        wx.EVT_MENU(self.widget, PASTE_ID,
+                    self.exec_after(self.clipboard_paste))
+        wx.EVT_MENU(self.widget, PREVIEW_ID,
+                    self.exec_after(self.preview_parent))
 
     def remove(self, *args):
         if not self.sizer.is_virtual():
