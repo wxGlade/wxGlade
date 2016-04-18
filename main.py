@@ -393,25 +393,28 @@ class wxGladeFrame(wx.Frame):
         if frame_tool_win:
             frame_style |= wx.FRAME_NO_TASKBAR | wx.FRAME_FLOAT_ON_PARENT
             frame_style &= ~wx.MINIMIZE_BOX
-            if wx.Platform != '__WXGTK__': frame_style |= wx.FRAME_TOOL_WINDOW
+            if wx.Platform != '__WXGTK__':
+                frame_style |= wx.FRAME_TOOL_WINDOW
 
-        self.frame_property = wx.Frame(self, -1, _('Properties - <%s>' % _('app')),
-                               style=frame_style, name='PropertyFrame')
-        self.frame_property.SetBackgroundColour(wx.SystemSettings_GetColour(
+        self.property_frame = wx.Frame(self, wx.ID_ANY,
+                                       _('Properties - <%s>' % _('app')),
+                                       style=frame_style,
+                                       name='PropertyFrame')
+        self.property_frame.SetBackgroundColour(wx.SystemSettings_GetColour(
             wx.SYS_COLOUR_BTNFACE))
-        self.frame_property.SetIcon(icon)
+        self.property_frame.SetIcon(icon)
 
-        property_panel = wxGladePropertyPanel(self.frame_property, -1)
+        property_panel = wxGladePropertyPanel(self.property_frame, -1)
         sz = wx.BoxSizer(wx.VERTICAL)
         sz.Add(property_panel, 1, wx.EXPAND)
-        self.frame_property.SetSizer(sz)
+        self.property_frame.SetSizer(sz)
         property_panel.SetAutoLayout(True)
-        self.frame_property.SetAutoLayout(True)
+        self.property_frame.SetAutoLayout(True)
 
         def hide_frame2(event):
             #menu_bar.Check(PROPS_ID, False)
-            self.frame_property.Hide()
-        wx.EVT_CLOSE(self.frame_property, hide_frame2)
+            self.property_frame.Hide()
+        wx.EVT_CLOSE(self.property_frame, hide_frame2)
         wx.EVT_CLOSE(self, self.cleanup)
         common.property_panel = property_panel
 
@@ -476,8 +479,8 @@ class wxGladeFrame(wx.Frame):
             if wx.Platform == '__WXMAC__':
                 property_geomentry.Size = (345, 384)
 
-        self._set_geometry(self.frame_property, property_geomentry)
-        self.frame_property.Show()
+        self._set_geometry(self.property_frame, property_geomentry)
+        self.property_frame.Show()
 
         if not tree_geometry:
             tree_geometry = wx.Rect()
@@ -498,7 +501,7 @@ class wxGladeFrame(wx.Frame):
         self._droptarget = clipboard.FileDropTarget(self)
         self.SetDropTarget(self._droptarget)
         #self.tree_frame.SetDropTarget(self._droptarget)
-        #self.frame_property.SetDropTarget(self._droptarget)
+        #self.property_frame.SetDropTarget(self._droptarget)
 
         # ALB 2004-10-15, autosave support...
         self.autosave_timer = None
@@ -513,7 +516,7 @@ class wxGladeFrame(wx.Frame):
         self.clear_sb_timer = wx.Timer(self, CLEAR_SB_TIMER_ID)
         wx.EVT_TIMER(self, CLEAR_SB_TIMER_ID, self.on_clear_sb_timer)
 
-        self.frame_property.SetAcceleratorTable(self.accel_table)
+        self.property_frame.SetAcceleratorTable(self.accel_table)
         self.tree_frame.SetAcceleratorTable(self.accel_table)
 
         self.Raise()
@@ -574,13 +577,13 @@ class wxGladeFrame(wx.Frame):
         common.app_tree.SetFocus()
 
     def show_props_window(self, event):
-        self.frame_property.Show()
-        self.frame_property.Raise()
+        self.property_frame.Show()
+        self.property_frame.Raise()
         try:
-            c = self.frame_property.GetSizer().GetChildren()
+            c = self.property_frame.GetSizer().GetChildren()
             if c: c[0].GetWindow().SetFocus()
         except (AttributeError, TypeError):
-            self.frame_property.SetFocus()
+            self.property_frame.SetFocus()
 
     def raise_all(self, event):
         children = self.GetChildren()
@@ -764,7 +767,7 @@ class wxGladeFrame(wx.Frame):
 
             if error_msg:
                 common.app_tree.clear()
-                common.property_panel.Reparent(self.frame_property)
+                common.property_panel.Reparent(self.property_frame)
                 common.app_tree.app.saved = True
 
                 # re-enable auto-expansion of nodes
@@ -779,7 +782,7 @@ class wxGladeFrame(wx.Frame):
 
         common.app_tree.select_item(common.app_tree.root)
         common.app_tree.root.widget.show_properties()
-        common.property_panel.Reparent(self.frame_property)
+        common.property_panel.Reparent(self.property_frame)
 
         # re-enable auto-expansion of nodes
         common.app_tree.auto_expand = True
@@ -892,7 +895,7 @@ class wxGladeFrame(wx.Frame):
                 prefs.set_geometry('tree',
                                    self._get_geometry(self.tree_frame))
                 prefs.set_geometry('properties',
-                                   self._get_geometry(self.frame_property))
+                                   self._get_geometry(self.property_frame))
                 prefs.changed = True
             common.app_tree.clear()
             try:
@@ -902,8 +905,8 @@ class wxGladeFrame(wx.Frame):
                               _('Error'),
                               wx.OK|wx.CENTRE|wx.ICON_ERROR)
             #self._skip_activate = True
-            self.frame_property.Destroy()
-            self.frame_property = None
+            self.property_frame.Destroy()
+            self.property_frame = None
             self.tree_frame.Destroy()
             self.tree_frame = None
             self.Destroy()
@@ -954,15 +957,15 @@ class wxGladeFrame(wx.Frame):
             t.start()
 
     def show_and_raise(self):
-        self.frame_property.Show()  # self.GetMenuBar().IsChecked(self.PROPS_ID))
+        self.property_frame.Show()  # self.GetMenuBar().IsChecked(self.PROPS_ID))
         self.tree_frame.Show()  # self.GetMenuBar().IsChecked(self.TREE_ID))
-        self.frame_property.Raise()
+        self.property_frame.Raise()
         self.tree_frame.Raise()
         self.Raise()
 
     def hide_all(self):
         self.tree_frame.Hide()
-        self.frame_property.Hide()
+        self.property_frame.Hide()
 
     def import_xrc(self, event):
         import xrc2wxg
