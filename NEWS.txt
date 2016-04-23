@@ -25,6 +25,7 @@ Bugs:
   - Fix generated code for wxDatePickerCtrl
   - Add workaround for missing wxDefaultDateTime in wxPerl
   - Fix missing icons in release packages
+  - Fix PyDeadObject errors and crashes during cut and paste
 
 Deprecation
   - In place modifications for generated source files will be removed in one
