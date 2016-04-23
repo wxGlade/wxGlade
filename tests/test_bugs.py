@@ -75,3 +75,12 @@ class TestCodeGen(WXGladeBaseTest):
         self._compare(result_app,    generated_app, app_filename)
         self._compare(result_frame_cpp,  generated_frame_cpp , 'Bug179_Frame.c++')
         self._compare(result_frame_h,    generated_frame_h,    'Bug179_Frame.hpp')
+
+    def test_bug184(self):
+        """\
+        Test bug #184 - Perl code generation: System colour constants named
+        incorrectly.
+
+        That's the test case for SF bug #184.
+        """
+        self._test_all('bug184')
