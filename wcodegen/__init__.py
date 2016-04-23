@@ -295,6 +295,7 @@ class PerlMixin(BaseLanguageMixin):
            name.startswith('wxSPLASH_') or \
            name.startswith('wxST_') or \
            name.startswith('wxSys_') or \
+           name.startswith('wxSYS_COLOUR_') or \
            name.startswith('wxSW_') or \
            name.startswith('wxSASH_') or \
            name.startswith('wxTB_') or \
