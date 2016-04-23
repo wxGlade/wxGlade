@@ -372,9 +372,12 @@ class SizerSlot(object):
         self.menu.AppendSeparator()
         misc.append_item(self.menu, PREVIEW_ID, _('Preview'))
 
-        wx.EVT_MENU(self.widget, REMOVE_ID, self.remove)
-        wx.EVT_MENU(self.widget, PASTE_ID, self.clipboard_paste)
-        wx.EVT_MENU(self.widget, PREVIEW_ID, self.preview_parent)
+        def bind(method):
+            return lambda e: wx.CallAfter(method)
+
+        wx.EVT_MENU(self.widget, REMOVE_ID, bind(self.remove))
+        wx.EVT_MENU(self.widget, PASTE_ID, bind(self.clipboard_paste))
+        wx.EVT_MENU(self.widget, PREVIEW_ID, bind(self.preview_parent))
 
     def remove(self, *args):
         if not self.sizer.is_virtual():
@@ -409,9 +412,12 @@ class SizerSlot(object):
 
         @see: L{clipboard.paste()}
         """
+        if self.widget:
+            self.widget.Hide()
         if clipboard.paste(self.parent, self.sizer, self.pos):
             common.app_tree.app.saved = False
-            self.widget.Hide()
+        else:
+            self.widget.Show()
 
     def on_select_and_paste(self, *args):
         """\
@@ -422,11 +428,11 @@ class SizerSlot(object):
         self.widget.SetFocus()
         self.clipboard_paste()
 
-    def delete(self, delete_widget=True):
+    def delete(self):
         if misc.currently_under_mouse is self.widget:
             misc.currently_under_mouse = None
 
-        if delete_widget and self.widget:
+        if self.widget:
             self.widget.Hide()
 
             # unbind events to prevent new created (and queued) events
@@ -1182,7 +1188,7 @@ class SizerBase(Sizer):
         try:
             old_child = self.children[pos]
             if isinstance(old_child.item, SizerSlot):
-                old_child.item.delete(False)
+                old_child.item.delete()
             self.children[pos] = SizerItem(item, pos, option, flag, border,
                                            size)
         except IndexError:  # this shouldn't happen!
