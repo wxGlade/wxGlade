@@ -241,9 +241,10 @@ def init_localization():
     encoding = None
     try:
         locale.setlocale(locale.LC_ALL, '')
-    except locale.Error:
+    except locale.Error, e:
         # ignore problems by fallback to ascii
-        logging.warning(_('Setting locale failed. Use "ascii" instead'))
+        logging.warning(_('Setting locale failed: %s'), str(e))
+        logging.warning(_('Use "ascii" locale instead.'))
         encoding = 'ascii'
 
     # try to query character encoding used in the selected locale
