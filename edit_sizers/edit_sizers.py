@@ -566,11 +566,11 @@ class SizerHandleButton(GenButton, ExecAfterMixin):
             if len(item) > 2:
                 bmp = item[2]
             misc.append_item(self._rmenu, id, item[0], bmp)
-            wx.EVT_MENU(self, id, bind(item[1]))
+            wx.EVT_MENU(self, id, self.exec_after(item[1]))
         self._rmenu.AppendSeparator()
         PREVIEW_ID = wx.NewId()
         misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
-        wx.EVT_MENU(self, PREVIEW_ID, bind(self.preview_parent))
+        wx.EVT_MENU(self, PREVIEW_ID, self.exec_after(self.preview_parent))
         self.sizer._rmenu = self._rmenu
         del self.menu
 
