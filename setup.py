@@ -110,7 +110,6 @@ if not os.path.exists('version.py'):
     config.write_version_file(version)
 
 if 'sdist' in sys.argv:
-
     package_data_files = []
     package_data_files.extend(text_files)
     package_data_files.extend(['Makefile',
@@ -128,45 +127,32 @@ if 'sdist' in sys.argv:
                      'tests', 'templates']:
         package_data_files.extend(recursive(data_dir))
 
-    setup(
-        name='wxGlade',
-        version=version,
-        author='Alberto Griggio, Carsten Grohmann and the wxGlade developers',
-        author_email='wxglade-general@lists.sourceforge.net',
-        maintainer='Carsten Grohmann',
-        maintainer_email='mail@carstengrohmann.de',
-        url='http://wxglade.sourceforge.net/',
-        classifiers=classifiers.split("\n"),
-        description=description,
-        long_description=long_description,
-        license='MIT License',
-        platforms=['WIN32', 'OSX', 'POSIX'],
-        scripts=['wxglade'],
-        packages=packages,
-        package_dir={'wxglade': '.'},
-        package_data={'wxglade': package_data_files},
-        data_files=data_files,
-        install_requires=['wxPython >=2.8'],
-    )
+    package_data = {
+        'wxglade': package_data_files,
+    }
 else:
-    setup(
-        name='wxGlade',
-        version=version,
-        author='Alberto Griggio, Carsten Grohmann and the wxGlade developers',
-        author_email='wxglade-general@lists.sourceforge.net',
-        maintainer='Carsten Grohmann',
-        maintainer_email='mail@carstengrohmann.de',
-        url='http://wxglade.sourceforge.net/',
-        classifiers=classifiers.split("\n"),
-        description=description,
-        long_description=long_description,
-        license='MIT License',
-        platforms=['WIN32', 'OSX', 'POSIX'],
-        scripts=['wxglade'],
-        packages=packages,
-        package_dir={'wxglade': '.'},
-        package_data={'wxglade.widgets': ['widgets.txt'],
-                      'wxglade': ['res/*.*']},
-        data_files=data_files,
-        install_requires=['wxPython >=2.8'],
-    )
+    package_data = {
+        'wxglade.widgets': ['widgets.txt'],
+        'wxglade': ['res/*.*'],
+    }
+
+setup(
+    name='wxGlade',
+    version=version,
+    author='Alberto Griggio, Carsten Grohmann and the wxGlade developers',
+    author_email='wxglade-general@lists.sourceforge.net',
+    maintainer='Carsten Grohmann',
+    maintainer_email='mail@carstengrohmann.de',
+    url='http://wxglade.sourceforge.net/',
+    classifiers=classifiers.split("\n"),
+    description=description,
+    long_description=long_description,
+    license='MIT License',
+    platforms=['WIN32', 'OSX', 'POSIX'],
+    scripts=['wxglade'],
+    packages=packages,
+    package_dir={'wxglade': '.'},
+    data_files=data_files,
+    install_requires=['wxPython >=2.8'],
+    package_data=package_data,
+)
