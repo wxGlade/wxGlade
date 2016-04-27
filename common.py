@@ -13,6 +13,7 @@ import md5
 import os
 import os.path
 import sys
+import tempfile
 import types
 from xml.sax.saxutils import escape, quoteattr
 
@@ -739,17 +740,31 @@ def _set_home_path():
     """\
     Set the path of the home directory
     """
-    home_dir = os.path.expanduser('~')
-    if home_dir not in ('~', '%USERPROFILE%'):
-        config.home_path = home_dir
-        return
+    home_path = os.path.expanduser('~')
 
-    if os.name == 'nt' and home_dir == '%USERPROFILE%':
-        config.home_path = os.environ.get('USERPROFILE', config.wxglade_path)
-        return
+    # to prevent unexpanded "%HOMEDRIVE%%HOMEPATH%" as reported
+    # in SF Bug #185
+    home_path = os.path.expandvars(home_path)
 
-    config.home_path = config.wxglade_path
+    if home_path == '~':
+        home_path = tempfile.gettempdir()
+        logging.info(_('Expansion of the home directory shortcut "~" '
+                       'failed. Use temp directory "%s" instead'), home_path)
 
+    if not os.path.isdir(home_path):
+        tmp_dir = tempfile.gettempdir()
+        logging.info(_('The home path "%s" is not a directory. Use the '
+                       'temp directory "%s" instead.'), home_path, tmp_dir)
+        home_path = tmp_dir
+
+    if not os.access(home_path, os.W_OK):
+        logging.info(_('The home path "%s" is not writable.'), home_path)
+        tmp_dir = tempfile.gettempdir()
+        logging.info(_('The home path "%s" is not writable. Use the '
+                       'temp directory "%s" instead.'), home_path, tmp_dir)
+        home_path = tmp_dir
+
+    config.home_path = home_path
     return
 
 

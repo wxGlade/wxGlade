@@ -10,6 +10,7 @@ Bugs:
   - Fix PyDeadObject errors and crashes during cut and paste
   - System colour constants named incorrectly in Perl (sf bug #184,
     Thanks to Sue D. Nymme)
+  - Rework querying home path to prevent unexpanded variables (sf bug #185)
   - ...
 
 Deprecation
