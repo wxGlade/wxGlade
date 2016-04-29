@@ -540,6 +540,20 @@ class wxGladeFrame(wx.Frame):
     def on_autosave_timer(self, event):
         if common.autosave_current():
             self.user_message(_("Auto saving... done"))
+        else:
+            self.autosave_timer.Stop()
+            config.preferences.autosave = False
+            self._logger.info(_('Disable autosave function permanently'))
+            wx.MessageBox(
+                _('The autosave function failed. It has been disabled\n'
+                  'permanently due to this error. Use the preferences\n'
+                  'dialog to re-enable this functionality.\n'
+                  'The details have been written to the wxGlade log file\n'
+                  '\n'
+                  'The log file is: %s' % config.log_file
+                  ),
+                _('Autosave Failed'),
+                wx.OK | wx.CENTRE | wx.ICON_ERROR)
 
     def edit_preferences(self, event):
         dialog = preferencesdialog.wxGladePreferences(config.preferences)

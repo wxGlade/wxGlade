@@ -572,13 +572,16 @@ def autosave_current():
     """
     if app_tree.app.saved:
         return False         # do nothing in this case...
+
+    autosave_name = get_name_for_autosave()
     try:
-        autosave_name = get_name_for_autosave()
         outfile = codecs.open(autosave_name, 'w', 'utf-8')
         app_tree.write(outfile)
         outfile.close()
-    except:
-        logging.exception(_('Internal Error'))
+    except (IOError, OSError), details:
+        logging.warning(
+            _('Saving the autosave file "%s" failed: %s'),
+            autosave_name, details)
         return False
     return True
 
