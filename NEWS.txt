@@ -1,5 +1,6 @@
 Version 0.7.3 - 2016-XX-XX:
 General:
+  - Disable autosave functionality permanently after saving has failed
   - ...
 
 Generated Code:
