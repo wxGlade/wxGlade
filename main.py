@@ -538,9 +538,10 @@ class wxGladeFrame(wx.Frame):
                 common.remove_autosaved()
 
     def on_autosave_timer(self, event):
-        if common.autosave_current():
+        res = common.autosave_current()
+        if res == 2:
             self.user_message(_("Auto saving... done"))
-        else:
+        elif not res:
             self.autosave_timer.Stop()
             config.preferences.autosave = False
             self._logger.info(_('Disable autosave function permanently'))
