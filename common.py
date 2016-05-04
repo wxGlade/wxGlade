@@ -568,10 +568,11 @@ def autosave_current():
     """\
     Generate a automatic backup for the current and un-saved design.
 
-    @rtype: bool
+    @return: 0: error; 1: no changes to save; 2: saved
+    @rtype: int
     """
     if app_tree.app.saved:
-        return False         # do nothing in this case...
+        return 1            # do nothing in this case...
 
     autosave_name = get_name_for_autosave()
     try:
@@ -582,8 +583,8 @@ def autosave_current():
         logging.warning(
             _('Saving the autosave file "%s" failed: %s'),
             autosave_name, details)
-        return False
-    return True
+        return 0
+    return 2
 
 
 def remove_autosaved(filename=None):
