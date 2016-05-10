@@ -339,6 +339,12 @@ class PythonMixin(BaseLanguageMixin):
             return 'wx.' + name
         return name
 
+    def without_package(self, class_name):
+        """\
+        Removes the package name from the given class name
+        """
+        return class_name.split('.')[-1]
+
 # end of class PythonMixin
 
 
