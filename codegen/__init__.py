@@ -1207,14 +1207,18 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         XRC, this has effect only for true toplevel widgets, i.e. frames and
         dialogs. For other kinds of widgets, this is equivalent to add_object
         """
-        if self.classes.has_key(code_obj.klass) and \
-           self.classes[code_obj.klass].done:
+        # shortcuts
+        base = code_obj.base
+        klass = code_obj.klass
+
+        if self.classes.has_key(klass) and \
+           self.classes[klass].done:
             return  # the code has already been generated
 
         if self.multiple_files:
             # let's see if the file to generate exists, and in this case
             # create a SourceFileContent instance
-            filename = self._get_class_filename(code_obj.klass)
+            filename = self._get_class_filename(klass)
             if self._overwrite or not self._file_exists(filename):
                 prev_src = None
             else:
@@ -1226,7 +1230,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             prev_src = self.previous_source
 
         try:
-            builder = self.obj_builders[code_obj.base]
+            builder = self.obj_builders[base]
             mycn = getattr(builder, 'cn', self.cn)
             mycn_f = getattr(builder, 'cn_f', self.cn_f)
         except KeyError:
@@ -1235,9 +1239,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # the details are logged by the global exception handler
             raise
 
-        if prev_src and prev_src.classes.has_key(code_obj.klass):
+        if prev_src and prev_src.classes.has_key(klass):
             is_new = False
-            indentation = prev_src.spaces[code_obj.klass]
+            indentation = prev_src.spaces[klass]
         else:
             # this class wasn't in the previous version of the source (if any)
             is_new = True
@@ -1250,12 +1254,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         obuffer = []
         write = obuffer.append
 
-        if not self.classes.has_key(code_obj.klass):
+        if not self.classes.has_key(klass):
             # if the class body was empty, create an empty ClassLines
-            self.classes[code_obj.klass] = self.ClassLines()
+            self.classes[klass] = self.ClassLines()
 
         # collect all event handlers
-        event_handlers = self.classes[code_obj.klass].event_handlers
+        event_handlers = self.classes[klass].event_handlers
         for win_id, evt, handler, evt_type in builder.get_event_handlers(code_obj):
             event_handlers.append((win_id, mycn(evt), handler, evt_type))
 
@@ -1265,7 +1269,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                                  code_obj.properties.get('extracode', ""))
             if extra_code:
                 extra_code = re.sub(r'\\n', '\n', extra_code)
-                self.classes[code_obj.klass].extra_code.append(extra_code)
+                self.classes[klass].extra_code.append(extra_code)
                 if not is_new:
                     self.warning(
                         '%s has extra code, but you are not overwriting '
@@ -1315,7 +1319,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if prev_src and not is_new:
             # replace the lines inside the ctor wxGlade block
             # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
+            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass,
                                                  self.name_ctor)
             if prev_src.content.find(tag) < 0:
                 # no __init__ tag found, issue a warning and do nothing
@@ -1344,7 +1348,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if prev_src and not is_new:
             # replace the lines inside the __set_properties wxGlade block
             # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
+            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass,
                                                  '__set_properties')
             if prev_src.content.find(tag) < 0:
                 # no __set_properties tag found, issue a warning and do nothing
@@ -1370,7 +1374,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if prev_src and not is_new:
             # replace the lines inside the __do_layout wxGlade block
             # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, code_obj.klass,
+            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass,
                                                  '__do_layout')
             if prev_src.content.find(tag) < 0:
                 # no __do_layout tag found, issue a warning and do nothing
@@ -1393,7 +1397,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # replace code inside existing event handlers
         if prev_src and not is_new:
             tag = \
-                '<%swxGlade event_handlers %s>' % (self.nonce, code_obj.klass)
+                '<%swxGlade event_handlers %s>' % (self.nonce, klass)
             if prev_src.content.find(tag) < 0:
                 # no event_handlers tag found, issue a warning and do nothing
                 self.warning(
@@ -1409,13 +1413,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             obuffer.extend(code_lines)
 
         # the code has been generated
-        self.classes[code_obj.klass].done = True
+        self.classes[klass].done = True
 
         # write "end of class" statement
         if self.tmpl_class_end:
             write(
                 self.tmpl_class_end % {
-                    'klass':   self.cn_class(code_obj.klass),
+                    'klass': self.cn_class(klass),
                     'comment': self.comment_sign,
                     }
                 )
@@ -1432,14 +1436,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
                 # insert the module dependencies of this class
                 tag = '<%swxGlade replace dependencies>' % self.nonce
-                dep_list = self.classes[code_obj.klass].dependencies.keys()
+                dep_list = self.classes[klass].dependencies.keys()
                 dep_list.extend(self.dependencies.keys())
                 dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list)
                 prev_src.content = prev_src.content.replace(tag, code)
 
                 # insert the extra code of this class
-                extra_code = "".join(self.classes[code_obj.klass].extra_code[::-1])
+                extra_code = "".join(self.classes[klass].extra_code[::-1])
                 # if there's extra code but we are not overwriting existing
                 # sources, warn the user
                 if extra_code:
@@ -1459,7 +1463,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 return
 
             # create the new source file
-            filename = self._get_class_filename(code_obj.klass)
+            filename = self._get_class_filename(klass)
             out = StringIO.StringIO()
             write = out.write
             # write the common lines
@@ -1467,7 +1471,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 write(line)
 
             # write the module dependencies for this class
-            dep_list = self.classes[code_obj.klass].dependencies.keys()
+            dep_list = self.classes[klass].dependencies.keys()
             dep_list.extend(self.dependencies.keys())
             dep_list.sort()
             code = self._tagcontent('dependencies', dep_list, True)
@@ -1476,7 +1480,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # insert the extra code of this class
             code = self._tagcontent(
                 'extracode',
-                self.classes[code_obj.klass].extra_code[::-1],
+                self.classes[klass].extra_code[::-1],
                 True
                 )
             write(code)
@@ -1493,15 +1497,15 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 # list of the SourceFileContent instance
                 if is_new:
                     prev_src.new_classes.append("".join(obuffer))
-                elif self.classes[code_obj.klass].extra_code:
-                    self._current_extra_code.extend(self.classes[code_obj.klass].extra_code[::-1])
+                elif self.classes[klass].extra_code:
+                    self._current_extra_code.extend(self.classes[klass].extra_code[::-1])
                 return
             else:
                 # write the class body onto the single source file
-                for dep in self.classes[code_obj.klass].dependencies:
+                for dep in self.classes[klass].dependencies:
                     self._current_extra_modules[dep] = 1
-                if self.classes[code_obj.klass].extra_code:
-                    self._current_extra_code.extend(self.classes[code_obj.klass].extra_code[::-1])
+                if self.classes[klass].extra_code:
+                    self._current_extra_code.extend(self.classes[klass].extra_code[::-1])
                 write = self.output_file.write
                 for line in obuffer:
                     write(line)
