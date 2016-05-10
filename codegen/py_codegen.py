@@ -595,12 +595,6 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         else:
             return 'u"%s"' % s
 
-    def without_package(self, class_name):
-        """\
-        Removes the package name from the given class name
-        """
-        return class_name.split('.')[-1]
-
     def add_object_format_name(self, name):
         return '#self.%s' % name
 
