@@ -9,6 +9,7 @@ Generated Code:
 Bugs:
   - Fix missing icons in release packages
   - Fix PyDeadObject errors and crashes during cut and paste
+  - Fix preview failure for Perl class names with "::" (sf bug #183)
   - System colour constants named incorrectly in Perl (sf bug #184,
     Thanks to Sue D. Nymme)
   - Rework querying home path to prevent unexpanded variables (sf bug #185)

@@ -137,26 +137,44 @@ Output:
             'The application binary was not created!'
         )
 
-    def test_compile_AllWidgets_28(self):
+    def test_compile_AllWidgets(self):
+        """\
+        Test compilation of AllWidgets for wx28 and wx30
+        """
         self._compile28('AllWidgets_28.cpp')
-
-    def test_compile_AllWidgets_30(self):
         self._compile30('AllWidgets_30.cpp')
 
     def test_compile_ComplexExample(self):
+        """\
+        Test compilation of ComplexExample for wx28 and wx30
+        """
         self._compile28('ComplexExample.cpp')
-
-    def test_compile_ComplexExample_30(self):
         self._compile30('ComplexExample_30.cpp')
 
     def test_compile_FontColour(self):
+        """\
+        Test compilation of FontColour for wx28 and wx30
+        """
         self._compile28('FontColour.cpp')
         self._compile30('FontColour.cpp')
 
     def test_compile_CPPOgg3(self):
+        """\
+        Test compilation of CPPOgg3 for wx28 and wx30
+        """
         self._compile28('CPPOgg3.cpp')
         self._compile30('CPPOgg3.cpp')
 
     def test_compile_HyperlinkCtrl_28(self):
+        """\
+        Test compilation of HyperlinkCtrl for wx28 and wx30
+        """
         self._compile28('HyperlinkCtrl_28.cpp')
         self._compile30('HyperlinkCtrl_28.cpp')
+
+    def test_bug183(self):
+        """\
+        Test compilation for SF bug #183
+        """
+        self._compile28('bug183.cpp')
+        self._compile30('bug183.cpp')

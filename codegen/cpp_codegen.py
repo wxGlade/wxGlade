@@ -717,6 +717,7 @@ bool MyApp::OnInit()
         # shortcuts
         base = code_obj.base
         klass = code_obj.klass
+        fmt_klass = self.cn_class(klass)
 
         if self.classes.has_key(klass) and self.classes[klass].done:
             return  # the code has already been generated
@@ -832,10 +833,10 @@ bool MyApp::OnInit()
             # header file
             if custom_base:
                 base = ", public ".join([b.strip() for b in custom_base.split(',')])
-            hwrite('\nclass %s: public %s {\n' % (klass, base))
+            hwrite('\nclass %s: public %s {\n' % (fmt_klass, base))
             hwrite('public:\n')
             # the first thing to add it the enum of the various ids
-            hwrite(self.tabs(1) + '// begin wxGlade: %s::ids\n' % klass)
+            hwrite(self.tabs(1) + '// begin wxGlade: %s::ids\n' % fmt_klass)
             ids = self.classes[klass].ids
 
             # let's try to see if there are extra ids to add to the enum
@@ -849,17 +850,17 @@ bool MyApp::OnInit()
                 hwrite('\n' + self.tabs(1) + '};\n')
             hwrite(self.tabs(1) + '// end wxGlade\n\n')
             # constructor prototype
-            hwrite(self.tabs(1) + '%s(%s);\n' % (klass, sign_decl1))
+            hwrite(self.tabs(1) + '%s(%s);\n' % (fmt_klass, sign_decl1))
             hwrite('\nprivate:\n')
             # set_properties and do_layout prototypes
-            hwrite(self.tabs(1) + '// begin wxGlade: %s::methods\n' % klass)
+            hwrite(self.tabs(1) + '// begin wxGlade: %s::methods\n' % fmt_klass)
             hwrite(self.tabs(1) + 'void set_properties();\n')
             hwrite(self.tabs(1) + 'void do_layout();\n')
             hwrite(self.tabs(1) + '// end wxGlade\n')
             # declarations of the attributes
             hwrite('\n')
             hwrite('protected:\n')
-            hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % klass)
+            hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
             for o_type, o_name in self.classes[klass].sub_objs:
                 hwrite(self.tabs(1) + '%s* %s;\n' % (o_type, o_name))
             hwrite(self.tabs(1) + '// end wxGlade\n')
@@ -879,7 +880,7 @@ bool MyApp::OnInit()
             hwrite('}; // wxGlade: end class\n\n')
 
         elif prev_src:
-            hwrite(self.tabs(1) + '// begin wxGlade: %s::ids\n' % klass)
+            hwrite(self.tabs(1) + '// begin wxGlade: %s::ids\n' % fmt_klass)
             ids = self.classes[klass].ids
 
             # let's try to see if there are extra ids to add to the enum
@@ -903,7 +904,7 @@ bool MyApp::OnInit()
                 prev_src.header_content = prev_src.header_content.\
                                           replace(tag, "".join(header_buffer))
             header_buffer = [
-                self.tabs(1) + '// begin wxGlade: %s::methods\n' % klass,
+                self.tabs(1) + '// begin wxGlade: %s::methods\n' % fmt_klass,
                 self.tabs(1) + 'void set_properties();\n',
                 self.tabs(1) + 'void do_layout();\n',
                 self.tabs(1) + '// end wxGlade\n',
@@ -920,7 +921,7 @@ bool MyApp::OnInit()
                                           replace(tag, "".join(header_buffer))
             header_buffer = []
             hwrite = header_buffer.append
-            hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % klass)
+            hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
             for o_type, o_name in self.classes[klass].sub_objs:
                 hwrite(self.tabs(1) + '%s* %s;\n' % (o_type, o_name))
             hwrite(self.tabs(1) + '// end wxGlade\n')
@@ -980,11 +981,11 @@ bool MyApp::OnInit()
                     if rest:
                         base += ", " + rest
 
-            swrite('\n%s::%s(%s):\n%s%s\n{\n' % (klass, klass,
+            swrite('\n%s::%s(%s):\n%s%s\n{\n' % (fmt_klass, fmt_klass,
                                                  sign_decl2,
                                                  self.tabs(1),
                                                  base))
-        swrite(self.tabs(1) + '// begin wxGlade: %s::%s\n' % (klass, klass))
+        swrite(self.tabs(1) + '// begin wxGlade: %s::%s\n' % (fmt_klass, fmt_klass))
 
         tab = self.tabs(1)
         init_lines = self.classes[klass].init
@@ -1022,7 +1023,7 @@ bool MyApp::OnInit()
                 # no constructor tag found, issue a warning and do nothing
                 self.warning(
                     "wxGlade %s::%s block not found, relative code NOT "
-                    "generated" % (klass, klass)
+                    "generated" % (fmt_klass, fmt_klass)
                     )
             else:
                 prev_src.source_content = prev_src.source_content.\
@@ -1049,7 +1050,7 @@ bool MyApp::OnInit()
                 # no set_properties tag found, issue a warning and do nothing
                 self.warning(
                     "wxGlade %s::set_properties block not found, relative "
-                    "code NOT generated" % klass
+                    "code NOT generated" % fmt_klass
                     )
             else:
                 prev_src.source_content = prev_src.source_content.\
@@ -1099,7 +1100,7 @@ bool MyApp::OnInit()
                 # no constructor tag found, issue a warning and do nothing
                 self.warning(
                     "wxGlade %s::event_table block not found, relative "
-                    "code NOT generated" % klass
+                    "code NOT generated" % fmt_klass
                     )
             else:
                 prev_src.source_content = prev_src.source_content.replace(
@@ -1125,7 +1126,7 @@ bool MyApp::OnInit()
                 # no constructor tag found, issue a warning and do nothing
                 self.warning(
                     "wxGlade %s event handlers marker not found, relative "
-                    "code NOT generated" % klass
+                    "code NOT generated" % fmt_klass
                     )
             else:
                 prev_src.source_content = prev_src.source_content.replace(
@@ -1439,8 +1440,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
             has_event_table = False
 
         if is_new or not has_event_table:
-            write('\nBEGIN_EVENT_TABLE(%s, %s)\n' % \
-                  (code_obj.klass, code_obj.base))
+            write('\nBEGIN_EVENT_TABLE(%s, %s)\n' % (code_obj.klass, code_obj.base))
         write(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
 
         for win_id, event, handler, evt_type in event_handlers:
