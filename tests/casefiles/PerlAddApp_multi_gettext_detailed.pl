@@ -8,7 +8,7 @@
 # This is an automatically generated file.
 # Manual changes will be overwritten without warning!
 
-use Wx 0.15 qw[:allclasses];
+use Wx qw[:allclasses];
 use strict;
 package MyStartApp;
 

@@ -4,7 +4,7 @@
 # To get wxPerl visit http://www.wxperl.it
 #
 
-use Wx 0.15 qw[:allclasses];
+use Wx qw[:allclasses];
 use strict;
 
 # begin wxGlade: dependencies
