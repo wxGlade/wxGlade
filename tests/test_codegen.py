@@ -1165,6 +1165,63 @@ class TestCodeGen(WXGladeBaseTest):
         """
         self._test_all('no_supported_flags')
 
+    def test_cn_class(self):
+        """\
+        Test formatting of names with cn_class().
+
+        @see: L{wcodegen.BaseLanguageMixin.cn_class()}
+        @see: L{wcodegen.CppMixin.cn_class()}
+        @see: L{wcodegen.PythonMixin.cn_class()}
+        """
+        details = {}
+        details['python'] = [
+            ('wxID_OK',        'wxID_OK'),
+            ('wx.ALL',         'wx.ALL'),
+            ('wx::UI::Report', 'wx_UI_Report'),
+        ]
+        details['perl'] = [
+            ('wxID_OK',        'wxID_OK'),
+            ('wxALL',          'wxALL'),
+            ('wx::UI::Report', 'wx::UI::Report'),
+        ]
+        details['lisp'] = [
+            ('wxID_OK',        'wxID_OK'),
+            ('wxALL',          'wxALL'),
+            ('wx::UI::Report', 'wx::UI::Report'),
+        ]
+        details['C++'] = [
+            ('wxID_OK',        'wxID_OK'),
+            ('wxALL',          'wxALL'),
+            ('wx::UI::Report', 'wx_UI_Report'),
+        ]
+
+        for lang in ['python', 'perl', 'lisp', 'C++']:
+            cn_class = common.code_writers[lang].cn_class
+
+            for unformatted, formatted in details[lang]:
+                ret = cn_class(unformatted)
+                self.failUnlessEqual(
+                    formatted,
+                    ret,
+                    '%s: Unexpected result got: "%s" expect: "%s"' % (
+                        lang,
+                        ret,
+                        formatted,
+                    )
+                )
+
+                # test for prevent double formatting
+                ret = cn_class(formatted)
+                self.failUnlessEqual(
+                    formatted,
+                    ret,
+                    '%s: Unexpected result got: "%s" expect: "%s"' % (
+                        lang,
+                        ret,
+                        formatted,
+                    )
+                )
+
     def test_ComplexExample(self):
         """\
         Test code generation for a complex example

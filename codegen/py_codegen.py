@@ -317,12 +317,6 @@ if __name__ == "__main__":
     def __init__(self):
         BaseLangCodeWriter.__init__(self)
 
-    def cn_class(self, klass):
-        """\
-        Return the short class name 
-        """
-        return self.without_package(klass)
-
     def init_lang(self, app_attrs):
         self.header_lines.append('import wx\n')
 
@@ -350,6 +344,7 @@ if __name__ == "__main__":
         builder = self.obj_builders[code_obj.base]
         mycn = getattr(builder, 'cn', self.cn)
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
+        fmt_klass = self.cn_class(code_obj.klass)
 
         # custom base classes support
         custom_base = getattr(code_obj, 'custom_base',
@@ -367,7 +362,8 @@ if __name__ == "__main__":
                     ('_%d' % random.randrange(10 ** 8, 10 ** 9))
             else:
                 klass = code_obj.klass
-            write('\nclass %s(%s):\n' % (self.without_package(klass), base))
+            write('\nclass %s(%s):\n' % (
+                self.without_package(fmt_klass), base))
             write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
         elif custom_base:
             # custom base classes set, but "overwrite existing sources" not
@@ -381,10 +377,10 @@ if __name__ == "__main__":
         # __init__ begin tag
         write(self.tmpl_block_begin % {
             'class_separator': self.class_separator,
-            'comment_sign':    self.comment_sign,
-            'function':        self.name_ctor,
-            'klass':           self.cn_class(code_obj.klass),
-            'tab':             tab,
+            'comment_sign': self.comment_sign,
+            'function': self.name_ctor,
+            'klass': fmt_klass,
+            'tab': tab,
             })
 
         prop = code_obj.properties

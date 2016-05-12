@@ -97,8 +97,10 @@ class BaseLanguageMixin(StylesMixin):
 
     def cn(self, name):
         """\
-        Return the properly formatted class name.
+        Return the properly formatted name.
 
+        @type name: Unicode
+        
         @rtype: str
         @see: L{cn_f()}
         @see: L{cn_class()}
@@ -107,7 +109,9 @@ class BaseLanguageMixin(StylesMixin):
 
     def cn_class(self, klass):
         """\
-        Return the class name
+        Return the properly formatted class name
+
+        @type klass: Unicode
 
         @rtype: str
         @see: L{cn()}
@@ -154,6 +158,12 @@ class CppMixin(BaseLanguageMixin):
                           'h', 'hh', 'hpp', 'H', 'hxx', ]
     language = 'C++'
     lang_prefix = 'cpp'
+
+    def cn_class(self, klass):
+        if not klass:
+            return klass
+        klass = klass.replace('::', '_')
+        return klass
 
 # end of class CppMixin
 
@@ -338,6 +348,14 @@ class PythonMixin(BaseLanguageMixin):
         elif name.startswith('EVT_'):
             return 'wx.' + name
         return name
+
+    def cn_class(self, klass):
+        if not klass:
+            return klass
+        if not klass.startswith('wx.'):
+            klass = self.without_package(klass)
+        klass = klass.replace('::', '_')
+        return klass
 
     def without_package(self, class_name):
         """\
@@ -715,6 +733,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         klass = obj.klass
         if klass == obj.base:
             klass = self.cn(klass)
+        else:
+            klass = self.cn_class(klass)
         self.tmpl_dict['klass'] = klass
 
         self.tmpl_dict['store_as_attr'] = self.codegen.test_attribute(obj)

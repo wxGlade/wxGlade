@@ -1174,12 +1174,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.app_mapping = {
             'comment_sign': self.comment_sign,
             'header_lines': ''.join(self.header_lines),
-            'klass': klass,
+            'klass': self.cn_class(klass),
             'name': self.app_name,
             'overwrite': self.tmpl_overwrite % {'comment_sign': self.comment_sign},
             'tab': self.tabs(1),
             'textdomain': self._textdomain,
-            'top_win_class': top_win_class,
+            'top_win_class': self.cn_class(top_win_class),
             'top_win': top_win,
             }
 
@@ -1917,8 +1917,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
                 if not (prev_src and not is_new):
                     write('\n')
             write(self.tmpl_func_event_stub % {
-                'tab':     tab,
-                'klass':   self.cn_class(code_obj.klass),
+                'tab': tab,
+                'klass': self.cn_class(code_obj.klass),
                 'handler': handler,
                 })
             already_there[handler] = 1
@@ -1941,7 +1941,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         for name in sorted(prop):
             name_cap = name[0].upper() + name[1:]
             stmt = tmpl % {
-                'klass': obj.klass,
+                'klass': self.cn_class(obj.klass),
                 'objname': objname,
                 'propname': name,
                 'propname_cap': name_cap,
@@ -2670,10 +2670,10 @@ It is available for wx versions %(supported_versions)s only.""") % {
         # begin tag
         write(self.tmpl_block_begin % {
             'class_separator': self.class_separator,
-            'comment_sign':    self.comment_sign,
-            'function':        fname,
-            'klass':           self.cn_class(code_obj.klass),
-            'tab':             tab,
+            'comment_sign': self.comment_sign,
+            'function': fname,
+            'klass': self.cn_class(code_obj.klass),
+            'tab': tab,
             })
 
         if body:
@@ -2688,8 +2688,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         # embed the content into function template
         if is_new:
             stmt = ftmpl % {
-                'tab':     tab,
-                'klass':   code_obj.klass,
+                'tab': tab,
+                'klass': self.cn_class(code_obj.klass),
                 'content': ''.join(code_lines),
                 }
             code_lines = ["%s\n" % line.rstrip() for line in stmt.split('\n')]

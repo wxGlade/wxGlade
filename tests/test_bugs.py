@@ -77,6 +77,16 @@ class TestCodeGen(WXGladeBaseTest):
         self._compare(result_frame_cpp,  generated_frame_cpp , 'Bug179_Frame.c++')
         self._compare(result_frame_h,    generated_frame_h,    'Bug179_Frame.hpp')
 
+    def test_bug183(self):
+        """\
+        Test bug #183 - Preview failure for class names with Perl scope
+        separator.
+
+        That's the test case for SF bug #183.
+        """
+        self._test_all('bug183')
+        return
+
     def test_bug184(self):
         """\
         Test bug #184 - Perl code generation: System colour constants named
