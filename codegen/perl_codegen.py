@@ -406,7 +406,7 @@ unless(caller){
             }
 
         self.header_lines = [
-            'use Wx 0.15 qw[:allclasses];\n',
+            'use Wx qw[:allclasses];\n',
             'use strict;\n'
         ]
 
