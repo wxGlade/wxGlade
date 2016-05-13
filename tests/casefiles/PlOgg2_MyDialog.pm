@@ -55,7 +55,7 @@ sub new {
     $self->__set_properties();
     $self->__do_layout();
 
-    Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, \&startConverting);
+    Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, $self->can('startConverting'));
 
     # end wxGlade
     return $self;

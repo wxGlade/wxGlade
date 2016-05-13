@@ -83,10 +83,10 @@ sub new {
     $self->__set_properties();
     $self->__do_layout();
 
-    Wx::Event::EVT_MENU($self, wxID_OPEN, \&OnOpen);
-    Wx::Event::EVT_MENU($self, wxID_EXIT, \&OnClose);
-    Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAboutDialog);
-    Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, \&startConverting);
+    Wx::Event::EVT_MENU($self, wxID_OPEN, $self->can('OnOpen'));
+    Wx::Event::EVT_MENU($self, wxID_EXIT, $self->can('OnClose'));
+    Wx::Event::EVT_MENU($self, wxID_ABOUT, $self->can('OnAboutDialog'));
+    Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, $self->can('startConverting'));
 
     # end wxGlade
     return $self;

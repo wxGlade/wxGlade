@@ -542,10 +542,11 @@ unless(caller){
                 win_id = '$self->{%s}->GetId' % win_id[8:]
 
             if 'EVT_NAVIGATION_KEY' in event:
-                tmpl = '%(tab)s%(event)s($self, \\&%(handler)s);\n'
+                tmpl = '''%(tab)s%(event)s($self, ''' \
+                       '''$self->can('%(handler)s'));\n'''
             else:
-                tmpl = '%(tab)s%(event)s($self, %(win_id)s, ' \
-                       '\\&%(handler)s);\n'
+                tmpl = '''%(tab)s%(event)s($self, %(win_id)s, ''' \
+                       '''$self->can('%(handler)s'));\n'''
             details = {
                 'tab': tab,
                 'event': self.cn(event),
