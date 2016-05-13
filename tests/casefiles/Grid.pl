@@ -39,7 +39,7 @@ sub new {
     $self->__set_properties();
     $self->__do_layout();
 
-    Wx::Event::EVT_GRID_CMD_CELL_LEFT_CLICK($self, $self->{grid_1}->GetId, \&myEVT_GRID_CELL_LEFT_CLICK);
+    Wx::Event::EVT_GRID_CMD_CELL_LEFT_CLICK($self, $self->{grid_1}->GetId, $self->can('myEVT_GRID_CELL_LEFT_CLICK'));
 
     # end wxGlade
     return $self;

@@ -181,14 +181,14 @@ sub new {
     $self->__set_properties();
     $self->__do_layout();
 
-    Wx::Event::EVT_MENU($self, $self->{mn_Unix}->GetId, \&onSelectUnix);
-    Wx::Event::EVT_MENU($self, $self->{mn_Windows}->GetId, \&onSelectWindows);
-    Wx::Event::EVT_MENU($self, $self->{mn_RemoveTabs}->GetId, \&onRemoveTabs);
-    Wx::Event::EVT_MENU($self, wxID_HELP, \&onShowManual);
-    Wx::Event::EVT_NAVIGATION_KEY($self, \&OnBitmapButtonPanelNavigationKey);
-    Wx::Event::EVT_NOTEBOOK_PAGE_CHANGED($self, $self->{notebook_1}->GetId, \&OnNotebookPageChanged);
-    Wx::Event::EVT_NOTEBOOK_PAGE_CHANGING($self, $self->{notebook_1}->GetId, \&OnNotebookPageChanging);
-    Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, \&onStartConverting);
+    Wx::Event::EVT_MENU($self, $self->{mn_Unix}->GetId, $self->can('onSelectUnix'));
+    Wx::Event::EVT_MENU($self, $self->{mn_Windows}->GetId, $self->can('onSelectWindows'));
+    Wx::Event::EVT_MENU($self, $self->{mn_RemoveTabs}->GetId, $self->can('onRemoveTabs'));
+    Wx::Event::EVT_MENU($self, wxID_HELP, $self->can('onShowManual'));
+    Wx::Event::EVT_NAVIGATION_KEY($self, $self->can('OnBitmapButtonPanelNavigationKey'));
+    Wx::Event::EVT_NOTEBOOK_PAGE_CHANGED($self, $self->{notebook_1}->GetId, $self->can('OnNotebookPageChanged'));
+    Wx::Event::EVT_NOTEBOOK_PAGE_CHANGING($self, $self->{notebook_1}->GetId, $self->can('OnNotebookPageChanging'));
+    Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, $self->can('onStartConverting'));
 
     # end wxGlade
     return $self;

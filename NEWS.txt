@@ -1,10 +1,11 @@
-Version 0.7.3 - 2016-XX-XX:
+Version 0.7.3 - 2016-06-XX:
 General:
   - Disable autosave functionality permanently after saving has failed
   - ...
 
 Generated Code:
   - Remove the outdated version from the Perl "use Wx" statement
+  - Use dynamic lookups to call event handler in Perl
   - ...
 
 Bugs:
