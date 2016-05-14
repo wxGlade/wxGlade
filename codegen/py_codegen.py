@@ -363,7 +363,7 @@ if __name__ == "__main__":
             else:
                 klass = code_obj.klass
             write('\nclass %s(%s):\n' % (
-                self.without_package(fmt_klass), base))
+                self.get_class(fmt_klass), base))
             write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
         elif custom_base:
             # custom base classes set, but "overwrite existing sources" not
@@ -609,7 +609,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         return obj.name
 
     def _format_import(self, klass):
-        stmt = 'from %s import %s\n' % (klass, self.without_package(klass))
+        stmt = 'from %s import %s\n' % (klass, self.get_class(klass))
         return stmt
 
     def _get_class_filename(self, klass):

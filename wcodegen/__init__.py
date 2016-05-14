@@ -87,6 +87,13 @@ class BaseLanguageMixin(StylesMixin):
     @type: str
     """
 
+    scope_sep = ''
+    """\
+    Separator between the items of XXX
+
+    @type: str
+    """
+
     tmpl_flag_join = '|'
     """\
     Separator used to concatenate flags
@@ -117,6 +124,46 @@ class BaseLanguageMixin(StylesMixin):
         @see: L{cn()}
         """
         return klass
+
+    def get_class(self, scope):
+        """\
+        Return the last element of the given scope.
+
+        Example::
+            >>> self.get_class('ui.AboutDialog')
+            'ui.AboutDialog'
+
+        @see: L{get_scope()}
+        @see: L{scope_sep}
+        """
+        if self.scope_sep:
+            scope_list = scope.rsplit(self.scope_sep, 1)
+            if len(scope_list) == 2:
+                return scope_list[1]
+            else:
+                return scope
+        return scope
+
+    def get_scope(self, scope):
+        """\
+        Return the scope without the last element.
+
+        Example::
+            >>> self.get_scope('ui.AboutDialog')
+            'ui'
+            >>> self.get_scope('uiAboutDialog')
+            ''
+
+        @see: L{get_class()}
+        @see: L{scope_sep}
+        """
+        if self.scope_sep:
+            scope_list = scope.rsplit(self.scope_sep, 1)
+            if len(scope_list) == 2:
+                return scope_list[0]
+            else:
+                return ''
+        return ''
 
     def _get_style_list(self):
         """\
@@ -158,6 +205,7 @@ class CppMixin(BaseLanguageMixin):
                           'h', 'hh', 'hpp', 'H', 'hxx', ]
     language = 'C++'
     lang_prefix = 'cpp'
+    scope_sep = '::'
 
     def cn_class(self, klass):
         if not klass:
@@ -213,6 +261,7 @@ class PerlMixin(BaseLanguageMixin):
     default_extensions = ['pl', 'pm']
     language = 'perl'
     lang_prefix = 'perl'
+    scope_sep = '::'
 
     _perl_constant_list = [
         "wxALL", "wxTOP", "wxBOTTOM", "wxLEFT", "wxRIGHT", "wxDOWN",
@@ -337,6 +386,7 @@ class PythonMixin(BaseLanguageMixin):
     format_flags = True
     language = 'python'
     lang_prefix = 'py'
+    scope_sep = '.'
     tmpl_flag_join = ' | '
 
     def cn(self, name):
@@ -353,15 +403,9 @@ class PythonMixin(BaseLanguageMixin):
         if not klass:
             return klass
         if not klass.startswith('wx.'):
-            klass = self.without_package(klass)
+            klass = self.get_class(klass)
         klass = klass.replace('::', '_')
         return klass
-
-    def without_package(self, class_name):
-        """\
-        Removes the package name from the given class name
-        """
-        return class_name.split('.')[-1]
 
 # end of class PythonMixin
 

@@ -23,7 +23,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
             l = []
             if id_name: l.append(id_name)
             l.append('self.%s = %s(%s, %s)\n' %
-                     (panel.name, self.codegen.without_package(panel.klass),
+                     (panel.name, self.codegen.get_class(panel.klass),
                       parent, id))
             return l, [], []
         init = []

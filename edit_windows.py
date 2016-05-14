@@ -1643,7 +1643,7 @@ class EditStylesMixin(object):
         """
         assert name.startswith('wx')
 
-        cn = self.codegen.without_package(self.codegen.cn(name))
+        cn = self.codegen.get_class(self.codegen.cn(name))
         attr = getattr(wx, cn)
         return attr
 

@@ -1718,3 +1718,44 @@ class TestCodeGen(WXGladeBaseTest):
         Test code generation w/ missing <application> attributes
         """
         self._test_all('app_wo_attrs')
+
+    def test_get_scope(self):
+        """\
+        Test splitting scope (get_class() and get_scope())
+        """
+        details = {}
+        details['C++'] = [
+            ('wxALL',           '',         'wxALL'),
+            ('wx::ALL',         'wx',       'ALL'),
+            ('ui::dlgs::About', 'ui::dlgs', 'About'),
+        ]
+        details['lisp'] = [
+            ('wxALL',         '', 'wxALL'),
+            ('wx.ALL',        '', 'wx.ALL'),
+            ('ui.dlgs.About', '', 'ui.dlgs.About'),
+        ]
+        details['python'] = [
+            ('wxALL',         '',        'wxALL'),
+            ('wx.ALL',        'wx',      'ALL'),
+            ('ui.dlgs.About', 'ui.dlgs', 'About'),
+        ]
+        details['perl'] = [
+            ('wxALL',           '',         'wxALL'),
+            ('wx::ALL',         'wx',       'ALL'),
+            ('ui::dlgs::About', 'ui::dlgs', 'About'),
+        ]
+        for lang in ['C++', 'lisp', 'perl', 'python']:
+            codegen = common.code_writers.get(lang)
+            for full_name, scope, klass in details[lang]:
+                expected_scope = codegen.get_scope(full_name)
+                expected_class = codegen.get_class(full_name)
+                self.failUnlessEqual(
+                    expected_scope, scope,
+                    '%s: Unexpected scope got: "%s" expect: "%s"' % (
+                        lang, expected_scope, scope,)
+                )
+                self.failUnlessEqual(
+                    expected_class, klass,
+                    '%s: Unexpected class got: "%s" expect: "%s"' % (
+                        lang, expected_class, klass,)
+                )

@@ -60,7 +60,7 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
             l.append('self.%s = %s(%s, %s)\n' %
-                     (window.name, self.codegen.without_package(window.klass),
+                     (window.name, self.codegen.get_class(window.klass),
                       parent, id))
             return l, [], []
         klass = window.klass
