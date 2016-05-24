@@ -95,3 +95,11 @@ class TestCodeGen(WXGladeBaseTest):
         That's the test case for SF bug #184.
         """
         self._test_all('bug184')
+
+    def test_bug186(self):
+        """\
+        Test bug #186 - Fix C++ code issue with Ids assigned to variables
+
+        That's the test case for SF bug #186.
+        """
+        self._test_all('bug186')

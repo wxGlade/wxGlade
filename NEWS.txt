@@ -15,6 +15,7 @@ Bugs:
   - System colour constants named incorrectly in Perl (sf bug #184,
     Thanks to Sue D. Nymme)
   - Rework querying home path to prevent unexpanded variables (sf bug #185)
+  - Fix C++ code issue with Ids assigned to variables (sf bug #186)
   - ...
 
 Deprecation
