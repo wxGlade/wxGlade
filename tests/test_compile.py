@@ -160,3 +160,10 @@ Output:
     def test_compile_HyperlinkCtrl_28(self):
         self._compile28('HyperlinkCtrl_28.cpp')
         self._compile30('HyperlinkCtrl_28.cpp')
+
+    def test_bug186(self):
+        """\
+        Test compilation for SF bug #186
+        """
+        self._compile28('bug186.cpp')
+        self._compile30('bug186.cpp')

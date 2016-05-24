@@ -28,6 +28,7 @@ Bugs:
   - Fix PyDeadObject errors and crashes during cut and paste
   - System colour constants named incorrectly in Perl (sf bug #184,
     Thanks to Sue D. Nymme)
+  - Fix C++ code issue with Ids assigned to variables (sf bug #186)
 
 Deprecation
   - In place modifications for generated source files will be removed in one
