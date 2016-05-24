@@ -1309,6 +1309,11 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
         else:
             self.tmpl_dict['name'] = '%s* %s' % (obj.klass, obj.name)
 
+        if 'id_name' in self.tmpl_dict:
+            # An enum with the IDs has been generated in
+            # codegen.cpp_codegen.CPPCodeWriter.add_class() already
+            self.tmpl_dict['id_name'] = []
+
         return
 
     def get_code(self, obj):

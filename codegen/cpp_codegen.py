@@ -845,9 +845,9 @@ bool MyApp::OnInit()
 
             if ids:
                 hwrite(self.tabs(1) + 'enum {\n')
-                ids = (',\n' + self.tabs(2)).join(ids)
-                hwrite(self.tabs(2) + ids)
-                hwrite('\n' + self.tabs(1) + '};\n')
+                for id_name in ids:
+                    hwrite('%s%s,\n' % (self.tabs(2), id_name))
+                hwrite(self.tabs(1) + '};\n')
             hwrite(self.tabs(1) + '// end wxGlade\n\n')
             # constructor prototype
             hwrite(self.tabs(1) + '%s(%s);\n' % (fmt_klass, sign_decl1))
@@ -889,9 +889,9 @@ bool MyApp::OnInit()
 
             if ids:
                 hwrite(self.tabs(1) + 'enum {\n')
-                ids = (',\n' + self.tabs(2)).join(ids)
-                hwrite(self.tabs(2) + ids)
-                hwrite('\n' + self.tabs(1) + '};\n')
+                for id_name in ids:
+                    hwrite('%s%s,\n' % (self.tabs(2), id_name))
+                hwrite(self.tabs(1) + '};\n')
             hwrite(self.tabs(1) + '// end wxGlade\n')
             tag = '<%swxGlade replace %s ids>' % (self.nonce, klass)
             if prev_src.header_content.find(tag) < 0:
