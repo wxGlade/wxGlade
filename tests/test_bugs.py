@@ -10,9 +10,9 @@ import common
 from tests import WXGladeBaseTest
 
 
-class TestCodeGen(WXGladeBaseTest):
+class TestBugs(WXGladeBaseTest):
     """\
-    Test code generation
+    Test for different reported bugs
     """
 
     def test_bug163(self):
