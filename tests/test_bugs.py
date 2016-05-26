@@ -92,3 +92,9 @@ class TestCodeGen(WXGladeBaseTest):
         That's the test case for SF bug #186.
         """
         self._test_all('bug186')
+
+    def test_bars_wo_parent(self):
+        """\
+        Test AttributeError during code generation of toplevel menubars
+        """
+        self._test_all('bars_wo_parent')
