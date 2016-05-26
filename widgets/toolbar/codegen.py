@@ -241,7 +241,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
     constructor = [('wxWindow*', 'parent'), ('wxWindowID', 'id'),
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
-                   ('long', 'style', 'wxTB_HORIZONTAL|wxTB_NOBORDER')]
+                   ('long', 'style', 'wxTB_HORIZONTAL|wxNO_BORDER')]
 
     def get_code(self, obj):
         """\
