@@ -167,3 +167,10 @@ Output:
         """
         self._compile28('bug186.cpp')
         self._compile30('bug186.cpp')
+
+    def test_bars_wo_parent(self):
+        """\
+        Test AttributeError during code generation of toplevel menubars
+        """
+        self._compile28('bars_wo_parent.cpp')
+        self._compile30('bars_wo_parent.cpp')
