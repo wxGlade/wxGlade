@@ -11,9 +11,6 @@ import wcodegen
 
 
 class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
-    new_signature = [
-        '$parent', '$id', '$pos', '$size', '$style', '$name'
-    ]
 
     def get_code(self, panel):
         prop = panel.properties
