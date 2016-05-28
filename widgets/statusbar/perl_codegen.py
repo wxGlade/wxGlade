@@ -1,5 +1,5 @@
 """\
-Perl code generator functions for wxFrame objects
+Perl code generator functions for wxStatusBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann

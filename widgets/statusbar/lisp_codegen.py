@@ -1,5 +1,5 @@
 """\
-Code generator functions for wxFrame objects
+Code generator functions for wxStatusBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
