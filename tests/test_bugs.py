@@ -104,6 +104,13 @@ class TestBugs(WXGladeBaseTest):
         """
         self._test_all('bug186')
 
+    def test_bug188_toolbar_depencencies(self):
+        """\
+        Test bug #188 - Missing dependencies with wxToolBox widgets
+        """
+        self._test_all('bug188_included_toolbar')
+        self._test_all('bug188_standalone_toolbar')
+
     def test_bars_wo_parent(self):
         """\
         Test AttributeError during code generation of toplevel menubars

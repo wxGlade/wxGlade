@@ -8,6 +8,9 @@ Generated Code:
   - Use dynamic lookups to call event handler in Perl
   - ...
 
+Known issues:
+  - Missing dependencies with wxToolBox widgets (sf bug #188)
+
 Bugs:
   - Fix missing icons in release packages
   - Fix PyDeadObject errors and crashes during cut and paste
