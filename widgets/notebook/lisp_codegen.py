@@ -12,9 +12,6 @@ from codegen import TabsCodeHandler
 
 
 class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
-    new_signature = [
-        '$parent', '$id', '$pos', '$size', '$style', '$name'
-    ]
 
     def get_code(self, window):
         self._reset_vars()
