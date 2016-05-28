@@ -186,6 +186,17 @@ Output:
         self._compile28('bug186.cpp')
         self._compile30('bug186.cpp')
 
+    def test_bug188(self):
+        """\
+        Test compilation for SF bug #188
+        """
+        # broken jet
+        return
+        self._compile28('bug188_included_toolbar.cpp')
+        self._compile30('bug188_included_toolbar.cpp')
+        self._compile28('bug188_standalone_toolbar.cpp')
+        self._compile30('bug188_standalone_toolbar.cpp')
+
     def test_bars_wo_parent(self):
         """\
         Test AttributeError during code generation of toplevel menubars
