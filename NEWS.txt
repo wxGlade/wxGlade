@@ -10,6 +10,7 @@ Generated Code:
 
 Known issues:
   - Missing dependencies with wxToolBox widgets (sf bug #188)
+    Workaround: enter dependencies manually in th extra code field
 
 Bugs:
   - Fix missing icons in release packages
