@@ -377,13 +377,26 @@ class wxGladeFrame(wx.Frame):
             EVT_TOGGLE_BOX(self, show_core_custom.GetId(), on_show_core_custom)
         # ... otherwise (the common case), just add the palette of core buttons
         else:
-            sizer = wx.GridSizer(0, config.preferences.buttons_per_row)
+            maxlen = max(len(heading_buttons[1]) for heading_buttons in core_buttons) + 1
+            if len(sizer_buttons)+1>maxlen: maxlen = len(sizer_buttons)+1
+            #sizer = wx.GridSizer(0, config.preferences.buttons_per_row)
+            sizer = wx.FlexGridSizer(0, maxlen+1)
+            sizer.AddGrowableCol(0)
             self.SetAutoLayout(True)
             # core components
-            for b in core_buttons:
-                sizer.Add(b)
+            for heading, buttons in core_buttons:
+                if heading:
+                    sizer.Add(wx.StaticText(self, -1, "%s:"%heading), 1, wx.ALIGN_CENTER_VERTICAL)
+                else:
+                    sizer.AddSpacer(0)
+                for b in buttons:
+                    sizer.Add(b, flag=wx.ALL, border=2)
+                # fill up the rest of the line
+                for i in range(maxlen-len(buttons)):
+                    sizer.AddSpacer(0)
+            sizer.Add(wx.StaticText(self, -1, "Sizers:"))
             for sb in sizer_buttons:
-                sizer.Add(sb)
+                sizer.Add(sb, flag=wx.ALL,border=2)
             self.SetSizer(sizer)
             sizer.Fit(self)
 

@@ -1,6 +1,7 @@
 Version 0.7.3 - 2016-06-XX:
 General:
   - Disable autosave functionality permanently after saving has failed
+  - Redesign the palette window (Thanks to Dietmar Schwertberger)
   - ...
 
 Generated Code:

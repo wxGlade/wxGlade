@@ -53,49 +53,53 @@ def load_widgets_from_dir(widget_dir, submodule=''):
         else:
             logging.info(_('Loading widgets from %s:'), widgets_filename)
 
-    for module_name in module_list:
-        if submodule:
-            fqmn = "%s.%s" % (module_name, submodule)
-        else:
-            fqmn = "%s" % module_name
-
-        # step 1: import widget module
-        module = import_module(widget_dir, fqmn)
-        if not module:
-            # error already logged
-            continue
-
-        # step 2: use individual initialisation if available
-        if hasattr(module, 'initialize'):
-            button = module.initialize()
-            if config.use_gui and button:
-                buttons.append(button)
-
-        # step 3: import and initialise Python codegen as well as widget
-        #         GUI elements
-        elif not submodule:
-            result, button = _init_codegen_gui(widget_dir, module_name)
-            if not result:
+    for header, module_names in module_list:
+        buttons.append( [header,[]] )
+        for module_name in module_names:
+            #if not module_name:
+            #    buttons.append(object)
+            if submodule:
+                fqmn = "%s.%s" % (module_name, submodule)
+            else:
+                fqmn = "%s" % module_name
+    
+            # step 1: import widget module
+            module = import_module(widget_dir, fqmn)
+            if not module:
+                # error already logged
                 continue
-            if config.use_gui and button:
-                buttons.append(button)
-
-        # step 4: do special initialisation for wconfig submodules
-        elif submodule and submodule == 'wconfig':
-            _process_widget_config(module)
-            # don't log this action
-            continue
-
-        else:
-            logging.warning(
-                _('Missing function "initialize()" in imported module %s. '
-                  'Skip initialisation.'), fqmn)
-            continue
-
-        if config.use_gui and not submodule.endswith('codegen'):
-            logging.info('\t%s', module_name)
-        else:
-            logging.debug(_('Widget %s imported'), module_name)
+    
+            # step 2: use individual initialisation if available
+            if hasattr(module, 'initialize'):
+                button = module.initialize()
+                if config.use_gui and button:
+                    buttons[-1][1].append(button)
+    
+            # step 3: import and initialise Python codegen as well as widget
+            #         GUI elements
+            elif not submodule:
+                result, button = _init_codegen_gui(widget_dir, module_name)
+                if not result:
+                    continue
+                if config.use_gui and button:
+                    buttons[-1][1].append(button)
+    
+            # step 4: do special initialisation for wconfig submodules
+            elif submodule and submodule == 'wconfig':
+                _process_widget_config(module)
+                # don't log this action
+                continue
+    
+            else:
+                logging.warning(
+                    _('Missing function "initialize()" in imported module %s. '
+                      'Skip initialisation.'), fqmn)
+                continue
+    
+            if config.use_gui and not submodule.endswith('codegen'):
+                logging.info('\t%s', module_name)
+            else:
+                logging.debug(_('Widget %s imported'), module_name)
     return buttons
 
 
@@ -123,14 +127,26 @@ def _get_modulenames_from_file(filename):
 
     # remove empty lines, comment lines and tailing comments
     cleaned = []
+    cleaned.append( [None,[]] ) # no title yet
     for module_name in module_list:
-        if not module_name or module_name.startswith('#'):
+        module_name = module_name.rstrip()
+        if module_name.startswith('#'):
+            continue
+        if not module_name:
+            # new section
+            if len(cleaned[-1])>1:
+                cleaned.append( [None,[]] ) # no heading yet
+            continue
+        if module_name.startswith('"'):
+            # section heading
+            cleaned[-1][0] = module_name[1:-1]
             continue
         module_name = module_name.split('#', 1)[0].strip()
         module_name = module_name.strip()
         if module_name:
-            cleaned.append(module_name)
-
+            cleaned[-1][1].append(module_name)
+    if not cleaned[-1][1]:
+        del cleaned[-1]
     return cleaned
 
 
