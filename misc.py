@@ -106,6 +106,7 @@ class SelectionTag(wx.Window):
     def __init__(self, parent):
         kwds = {'size': (7, 7)}
         wx.Window.__init__(self, parent, wx.ID_ANY, **kwds)
+        # XXX
         self.SetBackgroundColour(wx.BLUE)
         self.Hide()
 
