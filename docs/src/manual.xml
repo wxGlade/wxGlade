@@ -237,12 +237,12 @@
           url="http://mercurial.selenic.com">Mercurial</ulink> repository
           hosted on <ulink url="https://bitbucket.org">Bitbucket.org</ulink>.
           You can fetch the whole repository from <ulink
-          url="https://bitbucket.org/agriggio/wxglade">https://bitbucket.org/agriggio/wxglade</ulink>
+          url="https://bitbucket.org/wxglade/wxglade">https://bitbucket.org/wxglade/wxglade</ulink>
           using anonymous Mercurial (<command>hg</command>) access.</para>
 
           <para>Alternatively you can download different source tarballs from
           <ulink
-          url="https://bitbucket.org/agriggio/wxglade/downloads">https://bitbucket.org/agriggio/wxglade/downloads</ulink>.</para>
+          url="https://bitbucket.org/wxglade/wxglade/downloads">https://bitbucket.org/wxglade/wxglade/downloads</ulink>.</para>
         </section>
       </section>
 
