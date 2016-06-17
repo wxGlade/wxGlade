@@ -1,5 +1,5 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Incomplete and outdated parts</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ch07.html" title="Chapter 7. wxGlade technical notes"><link rel="prev" href="ch07s02.html" title="Contributing to wxGlade"><link rel="next" href="apa.html" title="Appendix A. Glossary of Terms, Abbreviations, and Acronyms"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Incomplete and outdated parts</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch07s02.html">Prev</a> </td><th width="60%" align="center">Chapter 7. wxGlade technical notes</th><td width="20%" align="right"> <a accesskey="n" href="apa.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm140449001443216"></a>Incomplete and outdated parts</h2></div></div></div><div class="caution" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Caution</h3><p>The remaining content in this section has not been updated since
-        July 2002. It's likely be very outdated in some parts.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140449001441664"></a>Startup</h3></div></div></div><p>The program starts from the function
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Incomplete and outdated parts</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ch07.html" title="Chapter 7. wxGlade technical notes"><link rel="prev" href="ch07s02.html" title="Contributing to wxGlade"><link rel="next" href="apa.html" title="Appendix A. Glossary of Terms, Abbreviations, and Acronyms"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Incomplete and outdated parts</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch07s02.html">Prev</a> </td><th width="60%" align="center">Chapter 7. wxGlade technical notes</th><td width="20%" align="right"> <a accesskey="n" href="apa.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm140538187461728"></a>Incomplete and outdated parts</h2></div></div></div><div class="caution" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Caution</h3><p>The remaining content in this section has not been updated since
+        July 2002. It's likely be very outdated in some parts.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140538187460176"></a>Startup</h3></div></div></div><p>The program starts from the function
         <span class="quote">“<span class="quote"><code class="function">main</code></span>”</span> in the module
         <span class="quote">“<span class="quote"><code class="function">main</code></span>”</span>: this creates an instance of
         wxGlade (a subclass of <code class="classname">wxApp</code>), which in turn
@@ -28,7 +28,7 @@
             <span class="quote">“<span class="quote"><code class="function">edit_sizers</code></span>”</span>, and the
             initialization function (called
             <span class="quote">“<span class="quote"><code class="function">init_gui</code></span>”</span>) returns a list of
-            <code class="classname">wxBitmapButton</code> objects</p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140449001429328"></a>Adding a top-level Widget</h3></div></div></div><p>When the user clicks on a button of a top-level widget (a Frame
+            <code class="classname">wxBitmapButton</code> objects</p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140538187447840"></a>Adding a top-level Widget</h3></div></div></div><p>When the user clicks on a button of a top-level widget (a Frame
         or a Dialog), the method
         <span class="quote">“<span class="quote"><code class="methodname">add_toplevel_object</code></span>”</span> of
         <code class="classname">wxGladeFrame</code> is called: this is responsible for
@@ -50,7 +50,7 @@
             <span class="quote">“<span class="quote"><code class="methodname">insert</code></span>”</span>. The
             <span class="quote">“<span class="quote"><code class="filename">__init__</code></span>”</span> method of the widget
             also builds all the Properties of the object and stores them in
-            the 'self.properties' dictionary</p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140449001419584"></a>Adding a top-level Sizer</h3></div></div></div><p>This is similar to the addition of a top-level widget, but the
+            the 'self.properties' dictionary</p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140538187438096"></a>Adding a top-level Sizer</h3></div></div></div><p>This is similar to the addition of a top-level widget, but the
         action is performed in two steps:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>when the user clicks on the button in the palette, the
             method <span class="quote">“<span class="quote"><code class="methodname">add_object</code></span>”</span> of
             <code class="classname">wxGladeFrame</code> is called: this sets the
@@ -65,7 +65,7 @@
             method is called, which is responsible of the addition of the
             sizer: it calls the factory function for the sizer (passing self
             as the first argument), which will build the object and add it to
-            the tree</p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140449001411888"></a>Adding a Normal Widget/Sizer</h3></div></div></div><p>This step is more or less the same as step 3:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="quote">“<span class="quote"><code class="code">wxGladeFrame.add_object</code></span>”</span> is
+            the tree</p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140538187430400"></a>Adding a Normal Widget/Sizer</h3></div></div></div><p>This step is more or less the same as step 3:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="quote">“<span class="quote"><code class="code">wxGladeFrame.add_object</code></span>”</span> is
             called in response to a button click</p></li><li class="listitem"><p>when the user ``drops'' the widget inside a slot in a sizer,
             the method <span class="quote">“<span class="quote"><code class="function">on_drop_widget</code></span>”</span> of
             <code class="code">edit_sizers.SizerSlot</code> is called, which in turn calls
@@ -85,7 +85,7 @@
             builds the Properties which control the layout of the object
             inside a sizer, and stores them in the
             <span class="quote">“<span class="quote"><code class="code">self.sizer_properties</code></span>”</span>
-            dictionary.</p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140449001402384"></a>Changing the Value of a Property</h3></div></div></div><p>When the user selects a widget the property window changes to
+            dictionary.</p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140538187420896"></a>Changing the Value of a Property</h3></div></div></div><p>When the user selects a widget the property window changes to
         display the properties of the selected object: this is done by the
         functions <span class="quote">“<span class="quote"><code class="methodname">show_properties</code></span>”</span> of
         <code class="classname">edit_windows.EditBase</code> and
@@ -94,7 +94,7 @@
         called to update the aspect/layout of the widget the Property belongs
         to: such function is obtained from a call to the widget's
         <span class="quote">“<span class="quote"><code class="methodname">__getitem__</code></span>”</span> method, which must
-        return a 2-tuple (getter, setter) for the Property</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140449001398432"></a>Saving the Design</h3></div></div></div><p>This operation is performed by the
+        return a 2-tuple (getter, setter) for the Property</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140538187416944"></a>Saving the Design</h3></div></div></div><p>This operation is performed by the
         <span class="quote">“<span class="quote"><code class="code">common.app_tree</code></span>”</span> Tree: for every Node of
         the tree, an <span class="quote">“<span class="quote">object</span>”</span> XML element is generated, with the
         following attributes: name, class, base (class). Each object contains
@@ -105,7 +105,7 @@
         dictionary are treated in a different way, as well as the children of
         a sizer, which are sub-elements of
         <span class="quote">“<span class="quote"><code class="code">sizeritem</code></span>”</span> objects: see the source code for
-        details.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140449001394032"></a>Loading an App from a XML file</h3></div></div></div><p>This is done by
+        details.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140538187412544"></a>Loading an App from a XML file</h3></div></div></div><p>This is done by
         <span class="quote">“<span class="quote"><code class="classname">xml_parse.XmlWidgetBuilder</code></span>”</span>, a
         subclass of
         <code class="classname">xml.sax.handler.ContentHandler</code>.</p><p>Basically, the steps involved are the following:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>when the start of an <span class="quote">“<span class="quote">object</span>”</span> element is
@@ -125,7 +125,7 @@
             properties. For more complex properties, whose XML representation
             consists of more sub-elements, each widget can define a particular
             handler: see for example <code class="classname">FontHandler</code> in
-            <code class="classname">edit_windows.WindowBase</code></p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140449001385232"></a>Generating the Source Code</h3></div></div></div><p>This section is the result of a cut &amp; paste of the comment
+            <code class="classname">edit_windows.WindowBase</code></p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140538187403744"></a>Generating the Source Code</h3></div></div></div><p>This section is the result of a cut &amp; paste of the comment
         at the beginning of
         <span class="quote">“<span class="quote"><code class="filename">codegen/py_codegen.py</code></span>”</span>. It is
         *VERY* incomplete. The <code class="classname">ContentHandler</code> subclass
