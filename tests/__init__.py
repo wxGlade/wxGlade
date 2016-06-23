@@ -7,6 +7,7 @@
 # import general python modules
 import StringIO
 import difflib
+import errno
 import fnmatch
 import glob
 import os.path
@@ -155,6 +156,14 @@ class WXGladeBaseTest(unittest.TestCase):
     @see: L{_os_access()}
     """
 
+    non_accessible_files = ''
+    """\
+    Prefix of non-writable files in writable directories
+
+    @type: str
+    @see: L{_save_file()}
+    """
+
     @classmethod
     def setUpClass(cls):
         """\
@@ -197,6 +206,8 @@ class WXGladeBaseTest(unittest.TestCase):
         cls.non_accessible_directories = [
             os.path.normpath('/non-writable')
         ]
+        cls.non_accessible_files = \
+            os.path.normpath('/tmp/existing_but_no_access')
 
     @classmethod
     def tearDownClass(cls):
@@ -510,9 +521,13 @@ class WXGladeBaseTest(unittest.TestCase):
             filename,
             "No filename given",
             )
-        outfile = StringIO.StringIO()
-        outfile.write(content)
-        self.vFiles[filename] = outfile
+        if self.non_accessible_files and \
+           filename.startswith(self.non_accessible_files):
+            raise IOError(errno.EACCES, os.strerror(errno.EACCES), filename)
+        else:
+            outfile = StringIO.StringIO()
+            outfile.write(content)
+            self.vFiles[filename] = outfile
 
     def _test_all(self, base, excluded=None):
         """\

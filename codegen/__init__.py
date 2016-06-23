@@ -2300,8 +2300,9 @@ It is available for wx versions %(supported_versions)s only.""") % {
         # save the file now
         try:
             common.save_file(filename, tmp, 'codegen')
-        except IOError, e:
-            raise XmlParsingError(str(e))
+        except (errors.WxgBaseException, EnvironmentError):
+            # EnvironmentError's will be caught at a higher level
+            raise
         except:
             self._logger.exception(_('Internal Error'))
         if mainfile and sys.platform in ['linux2', 'darwin']:
