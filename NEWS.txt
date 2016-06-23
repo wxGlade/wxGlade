@@ -22,6 +22,7 @@ Bugs:
   - Fix C++ code issue with Ids assigned to variables (sf bug #186)
   - Fix typo in default type of the toolbar C++ constructor
   - Fix AttributeError during code generation of toplevel menubars
+  - Don't wrap up IOError in XmlParsingError (sf bug #189)
   - ...
 
 Deprecation
