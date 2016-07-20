@@ -1,0 +1,238 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+
+<!--
+
+Process this file with an XSLT processor: `xsltproc \
+-''-nonet /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/\
+manpages/docbook.xsl manpage.dbk'.  A manual page
+<package>.<section> will be generated.  You may view the
+manual page with: nroff -man <package>.<section> | less'.  A
+typical entry in a Makefile or Makefile.am is:
+
+DB2MAN=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/\
+manpages/docbook.xsl
+XP=xsltproc -''-nonet
+
+manpage.1: manpage.dbk
+        $(XP) $(DB2MAN) $<
+    
+The xsltproc binary is found in the xsltproc package.  The
+XSL files are in docbook-xsl.  Please remember that if you
+create the nroff version in one of the debian/rules file
+targets (such as build), you will need to include xsltproc
+and docbook-xsl in your Build-Depends control field.
+
+-->
+
+  <!ENTITY dhusername  "Georges Khaznadar">
+  <!ENTITY dhpackage   "wxglade">
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+]>
+<refentry>
+
+
+  <refentryinfo>
+    <authorgroup>
+      <author>
+        <firstname>Georges</firstname>
+        <surname>Khaznadar</surname>
+        <affiliation>
+          <address>
+            <email>georgesk@ofset.org</email>
+          </address>
+        </affiliation>
+        <contrib>
+          This manual page was originally written by &dhusername; for
+          the &debian; system (but may be used by others).  Permission is
+          granted to copy, distribute and/or modify this document under
+          the terms of the &gnu; General Public License, Version 2 any 
+          later version published by the Free Software Foundation.
+          On &debian; systems, the complete text of the &gnu; General Public
+          License can be found in /usr/share/common-licenses/GPL.
+        </contrib>
+      </author>
+      <author>
+        <firstname>Carsten</firstname>
+        <surname>Grohmann</surname>
+        <affiliation>
+          <address>
+            <email>mail@carstengrohmann.de</email>
+          </address>
+        </affiliation>
+        <contrib>
+          Current maintainer of this manpage.
+        </contrib>
+      </author>
+    </authorgroup>
+    <copyright>
+      <year>2003</year>
+      <holder>Georges Khaznadar</holder>
+      <year>2012-2016</year>
+      <holder>Carsten Grohmann</holder>
+    </copyright>
+    <date>January 07, 2012</date>
+  </refentryinfo>
+
+
+  <refmeta>
+    <refentrytitle>wxGlade</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">wxGlade</refmiscinfo>
+    <refmiscinfo class="manual">User Commands</refmiscinfo>
+    <refmiscinfo class="date">January 07, 2012</refmiscinfo>
+  </refmeta>
+
+
+  <refnamediv>
+    <refname>&dhpackage;</refname>
+    <refpurpose>python program to build user interfaces based on the wxWidgets toolset.</refpurpose>
+  </refnamediv>
+
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="opt">
+        <arg choice="plain">--help</arg>
+        <arg choice="plain">-h</arg>
+      </group>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <arg choice="opt">--version</arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <arg choice="opt">
+        <replaceable>FILENAME.wxg</replaceable>
+      </arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="req">
+        <arg choice="plain">-g <replaceable>LANG</replaceable></arg>
+        <arg choice="plain">--generate-code <replaceable>LANG</replaceable></arg>
+      </group>
+      <group choice="opt">
+        <arg choice="plain">-o <replaceable>DESTINATION</replaceable></arg>
+        <arg choice="plain">--output <replaceable>DESTINATION</replaceable></arg>
+      </group>
+      <arg choice="plain">
+        <replaceable>FILENAME.wxg</replaceable>
+      </arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  
+
+  <refsect1>
+    <title>DESCRIPTION</title>
+    <para>
+      <command>&dhpackage;</command> wxGlade is a GUI designer written in
+      Python with the popular GUI toolkit wxPython, that helps you create
+      wxWidgets/wxPython user interfaces. At the moment it can generate
+      Python, Lisp, C++ and XRC (wxWidgets' XML resources) code.
+    </para>
+  </refsect1>
+
+
+  <refsect1>
+    <title>OPTIONS</title>
+    <para>These programs follow the usual <acronym>GNU</acronym> command line syntax,
+      with long options starting with two dashes (`-').  A summary of
+      options is included below.  For a complete description, see the
+      <application>Info</application> files.</para>
+    <variablelist>
+      <varlistentry>
+        <term><option>-g</option> or
+          <option>--generate-code</option> <replaceable>LANG</replaceable>
+        </term>
+        <listitem>
+          <para>If you only want to generate the code without starting the 
+            GUI, use the -g or --generate-code option with the language as 
+            argument
+          </para>
+          <para>
+            Possible values for LANG are "python", "lisp", "XRC", "perl"
+            or "C++".
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+       <term><option>-o</option> or
+          <option>--output</option> <replaceable>DESTINATION</replaceable>
+        </term>
+        <listitem>
+          <para>
+            You can specify the destination of the generated code with -o
+            or --output option.
+          </para>
+          <para>
+            The DESTINATION argument can be a file or a directory. It is a file
+            when the FILENAME.wxg generates single-file source code. It is a
+            directory when the FILENAME.wxg generates multiple-file source
+            code.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-h</option> or
+          <option>--help</option>
+        </term>
+        <listitem>
+          <para>
+            Show the help message and exit            
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>--version</option>
+        </term>
+        <listitem>
+          <para>
+            Show programs version number and exit
+          </para>
+        </listitem>
+      </varlistentry>  
+    </variablelist>
+  </refsect1>
+
+
+  <refsect1>
+    <title>EXAMPLES</title>
+    <para>
+      Generate Python code out of <filename>myapp.wxg</filename>:
+    </para>
+    <para>
+      <command>&dhpackage;</command> -o /tmp -g python myapp.wxg
+    </para>
+    <para>
+      Open file <filename>myapp.wxg</filename> in wxGlade GUI:
+    </para>
+    <para>
+      <command>&dhpackage;</command> myapp.wxg
+    </para>
+  </refsect1>
+  
+  
+  <refsect1>
+    <title>BUGS</title>
+    <para>
+      Report wxGlade bugs to &lt;wxglade-general@lists.sourceforge.net&gt; or 
+      &lt;https://sourceforge.net/projects/wxglade/&gt;
+    </para>
+  </refsect1>  
+  
+  
+  <refsect1>
+    <title>SEE ALSO</title>
+    <para>
+      wxGlade home page &lt;http://wxgalde.sourceforge.net&gt;
+    </para>
+
+  </refsect1>
+  
+</refentry>

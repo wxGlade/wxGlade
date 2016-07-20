@@ -1,0 +1,71 @@
+Steps to publish a new version
+==============================
+
+NAMING:
+  HG_OLD_VERSION - Mercurial version string of the OLD version e.g. 0_7_0
+  HG_NEW_VERSION - Mercurial version string of the NEW version e.g. 0_7_1
+  NEW_VERSION    - Version string of the wxGlade version to release
+                   e.g. 0.7.1
+
+
+STEPS:
+ 1. Close last stable branch
+    # hg update <HG_OLD_VERSION>
+    # hg commit --close-branch -m "Closed WXG-BRANCH-VERSION_<HG_OLD_VERSION> branch"
+    # hg update default
+
+ 2. Update documentation 
+  * NEWS.txt
+  * README.txt
+  * README.SF.md
+  * wxGlade.desktop
+  * wxGlade manual especially the error section
+  * Add new changes to changelog file "CHANGES.txt"
+    # hg log --template=changelog > CHANGES.txt
+        
+ 3. Change the version number in wxglade-installer.iss to "<NEW_VERSION>"
+
+ 4. Commit all open changes
+
+ 5. Create a new Mercurial tag
+    # hg tag rel_<HG_NEW_VERSION>
+        
+ 6. Create a branch for maintaining stable release
+    # hg branch WXG-BRANCH-VERSION_<HG_NEW_VERSION>
+    # hg commit --message "Created WXG-BRANCH-VERSION_<HG_NEW_VERSION> branch"
+        
+ 7. Create a version.py file in stable branch
+
+    Please ensure that the version string as the same as in
+    wxglade-installer.iss
+
+    # cat version.py
+        #
+        # This is an automatically generated file. Manual changes will be
+        # overwritten without warning.
+        #
+
+        __version__ = "<NEW_VERSION>"
+    # hg add version.py
+    # hg commit -m "Add version file" version.py
+        
+ 8. Push changes into public repository
+
+ 9. Create all packages
+    - build windows installer (see docs/BuildingInstaller.txt)
+    - create zip and tar.gz source packages
+      # make release
+          
+10. Update web page at wxglade.sf.net
+    - upload packages to SF
+    - update README.SF.md and upload to SF
+    - update news section in htdocs/bits/news.html
+    - update HTML and PDF manual in htdocs/manual
+        
+11. Send notification email to wxGlade mailing list
+
+12. Switch back to default branch
+    # hg update default
+
+13. Change version number in wxglade-installer.iss back to "HG"
+
