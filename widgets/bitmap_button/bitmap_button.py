@@ -107,8 +107,7 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
         try:
-            self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp,
-                                          style=self.get_int_style())
+            self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp, style=self.get_int_style())
         except AttributeError:
             self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
 
@@ -122,17 +121,13 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditBitmapButton objects.
-    """
-
+    "factory function for EditBitmapButton objects"
     name = 'bitmap_button_%s' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'bitmap_button_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image for the button"))
-    button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos,
-                              common.property_panel)
+    button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos, common.property_panel)
     node = Tree.Node(button)
     button.node = node
     button.show_widget(True)
@@ -140,9 +135,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditBitmapButton objects from a XML file
-    """
+    "factory to build EditBitmapButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -150,10 +143,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos,
-                              common.property_panel, show=False)
-    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos, common.property_panel, show=False)
+    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(button)
     button.node = node
     if pos is None:

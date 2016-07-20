@@ -85,8 +85,7 @@ class StylesMixin(object):
         flags = tmpl_flag_join.join(sorted(flags))
 
         if hasattr(self, 'klass'):
-            logging.debug('cn_f(%s:%s): %s',
-                          getattr(self, 'klass'), oflags, flags)
+            logging.debug('cn_f(%s:%s): %s', getattr(self, 'klass'), oflags, flags)
         else:
             logging.debug('cn_f(%s): %s', oflags, flags)
 
@@ -250,27 +249,20 @@ class StylesMixin(object):
 
 
 class BitmapMixin(object):
-    """\
-    Class mixin to create wxBitmap instances from the given statement
-    """
+    "Class mixin to create wxBitmap instances from the given statement"
 
     bitmap_tooltip_text = _(
         'Choice a bitmap to show.\n\nYou can either select a file or you '
         'can specify the bitmap using hand-crafted statements with the '
         'prefixes "art:", "code:", "empty:" or "var:".\nThe wxGlade '
         'documentation describes how to write such statements.')
-    """\
-    Detailed tooltip to show with each bitmap property.
-
-    @type: str
-    """
+    "Detailed tooltip string to show with each bitmap property."
 
     def get_preview_obj_bitmap(self, bitmap=None):
         """\
         Create a wxBitmap instance from the given statement.
 
-        If not statement is given, the instance variable named "bitmap" is
-        used.
+        If not statement is given, the instance variable named "bitmap" is used.
 
         @param bitmap: Bitmap definition
         @type bitmap: str | None
@@ -286,8 +278,7 @@ class BitmapMixin(object):
         if not bitmap:
             return wx.EmptyBitmap(1, 1)
 
-        if bitmap.startswith('var:') or \
-           bitmap.startswith('code:'):
+        if bitmap.startswith('var:') or bitmap.startswith('code:'):
             return wx.EmptyBitmap(16, 16)
         elif bitmap.startswith('empty:'):
             return self.get_preview_obj_emptybitmap(bitmap)
@@ -330,11 +321,7 @@ class BitmapMixin(object):
                 raise ValueError
 
         except (ValueError, TypeError):
-            self._logger.warn(
-                'Malformed statement to create a bitmap via '
-                'wxArtProvider(): %s',
-                bitmap
-            )
+            self._logger.warn( 'Malformed statement to create a bitmap via wxArtProvider(): %s', bitmap )
 
         # show wx art resources only
         if not art_id.startswith('wx'):
@@ -367,10 +354,7 @@ class BitmapMixin(object):
             width, height = \
                 [int(item.strip()) for item in size.split(',', 1)]
         except ValueError:
-            self._logger.warn(
-                'Malformed statement to create an empty bitmap: %s',
-                bitmap
-            )
+            self._logger.warn( 'Malformed statement to create an empty bitmap: %s', bitmap )
         return wx.EmptyBitmap(max(1, width), max(1, height))
 
 # end of class BitmapMixin

@@ -833,17 +833,14 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         @see: L{get_code()}
         """
         bmp_first = obj.properties.get(first, '')
-        self.tmpl_dict[first] = self.generate_code_bitmap(
-            bmp_first, obj.preview)
+        self.tmpl_dict[first] = self.generate_code_bitmap(bmp_first, obj.preview)
 
         bmp_second = obj.properties.get(second, '')
         if bmp_second:
-            self.tmpl_dict[second] = self.generate_code_bitmap(
-                bmp_second, obj.preview)
+            self.tmpl_dict[second] = self.generate_code_bitmap(bmp_second, obj.preview)
             self.tmpl_props.append(self.tmpl_bitmap_disabled)
 
-        if self.tmpl_import_artprovider and \
-           (bmp_first.startswith('art:') or bmp_second.startswith('art:')):
+        if self.tmpl_import_artprovider and (bmp_first.startswith('art:') or bmp_second.startswith('art:')):
             self.import_modules.append(self.tmpl_import_artprovider)
 
         if not obj.properties.has_key('size') and self.tmpl_SetBestSize:
@@ -865,8 +862,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         """
         choices = obj.properties.get('choices')
 
-        choices_str = self.tmpl_concatenate_choices.join(
-            [self.codegen.quote_str(c) for c in choices])
+        choices_str = self.tmpl_concatenate_choices.join( [self.codegen.quote_str(c) for c in choices] )
         self.tmpl_dict['choices'] = choices_str
         self.tmpl_dict['choices_len'] = len(choices)
 

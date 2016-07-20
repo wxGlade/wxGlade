@@ -61,30 +61,22 @@ class CustomWidget(ManagedBase):
     @ivar arguments: Constructor arguments
     @type arguments: list[str]
 
-    @ivar custom_ctor: if not empty, an arbitrary piece of code that will
-                        be used instead of the constructor name
+    @ivar custom_ctor: if not empty, an arbitrary piece of code that will be used instead of the constructor name
     @type custom_ctor: Unicode
     """
 
-    def __init__(self, name, klass, parent, id, sizer, pos, property_window,
-                 show=True):
-        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos,
-                             property_window, show)
+    def __init__(self, name, klass, parent, id, sizer, pos, property_window, show=True):
+        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos, property_window, show)
         self.arguments = [['$parent'], ['$id']]  # ,['$width'],['$height']]
-        self.access_functions['arguments'] = (self.get_arguments,
-                                              self.set_arguments)
+        self.access_functions['arguments'] = (self.get_arguments, self.set_arguments)
 
         cols = [('Arguments', GridProperty.STRING)]
-        self.properties['arguments'] = ArgumentsProperty(
-            self, 'arguments', None, cols, 2, label=_("arguments"))
+        self.properties['arguments'] = ArgumentsProperty( self, 'arguments', None, cols, 2, label=_("arguments") )
 
         self.custom_ctor = ""
-        self.access_functions['custom_ctor'] = (self.get_custom_ctor,
-                                                self.set_custom_ctor)
-        self.properties['custom_ctor'] = TextProperty(
-            self, 'custom_ctor', None, True, label=_('Custom constructor'))
-        self.properties['custom_ctor'].set_tooltip(
-            _('Specify a custom constructor like a factory method'))
+        self.access_functions['custom_ctor'] = (self.get_custom_ctor, self.set_custom_ctor)
+        self.properties['custom_ctor'] = TextProperty(self, 'custom_ctor', None, True, label=_('Custom constructor'))
+        self.properties['custom_ctor'].set_tooltip(_('Specify a custom constructor like a factory method'))
 
     def set_klass(self, value):
         ManagedBase.set_klass(self, value)
@@ -98,8 +90,7 @@ class CustomWidget(ManagedBase):
         wx.EVT_PAINT(self.widget, self.on_paint)
 
     def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self,
-                                           sel_marker_parent=self.widget)
+        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
 
     def on_paint(self, event):
         dc = wx.PaintDC(self.widget)
@@ -116,8 +107,9 @@ class CustomWidget(ManagedBase):
         x = (w - tw)/2
         y = (h - th)/2
         dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
-        dc.DrawRectangle(x - 1, y - 1, tw + 2, th + 2)
+        dc.DrawRectangle(x-1, y-1, tw+2, th+2)
         dc.DrawText(text, x, y)
+
         dc.EndDrawing()
 
     def create_properties(self):
@@ -153,13 +145,10 @@ class CustomWidget(ManagedBase):
     def set_custom_ctor(self, value):
         self.custom_ctor = value.strip()
 
-# end of class CustomWidget
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for CustomWidget objects.
-    """
+    "factory function for CustomWidget objects"
     class Dialog(wx.Dialog):
         def __init__(self, number=[0]):
             title = _('Select widget class')
@@ -171,8 +160,7 @@ def builder(parent, sizer, pos, number=[1]):
             klass_prop = TextProperty(self, 'class', self, label=_("class"))
             szr = wx.BoxSizer(wx.VERTICAL)
             szr.Add(klass_prop.panel, 0, wx.ALL | wx.EXPAND, 5)
-            szr.Add(wx.Button(self, wx.ID_OK, _('OK')), 0,
-                    wx.ALL | wx.ALIGN_CENTER, 5)
+            szr.Add(wx.Button(self, wx.ID_OK, _('OK')), 0, wx.ALL | wx.ALIGN_CENTER, 5)
             self.SetAutoLayout(True)
             self.SetSizer(szr)
             szr.Fit(self)
@@ -197,8 +185,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'window_%d' % number[0]
-    win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos,
-                       common.property_panel)
+    win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos, common.property_panel)
     node = Tree.Node(win)
     win.node = node
 
@@ -206,14 +193,12 @@ def builder(parent, sizer, pos, number=[1]):
     win.esm_border.set_style("wxEXPAND")
     win.show_widget(True)
 
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(win.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build CustomWidget objects from a XML file
-    """
+    "factory to build CustomWidget objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -221,25 +206,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos,
-                       common.property_panel, True)
-    sizer.set_item(win.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos, common.property_panel, True)
+    sizer.set_item(win.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(win)
     win.node = node
     if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos - 1)
+    else: common.app_tree.insert(node, sizer.node, pos-1)
     return win
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     common.widgets['CustomWidget'] = builder
     common.widgets_from_xml['CustomWidget'] = xml_builder
 
-    return common.make_object_button('CustomWidget', 'custom.xpm',
-                                     tip='Add a custom widget')
+    return common.make_object_button('CustomWidget', 'custom.xpm', tip='Add a custom widget')
 

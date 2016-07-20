@@ -18,11 +18,7 @@ from widget_properties import GridProperty
 
 
 class EventsProperty(GridProperty):
-    """\
-    Class EventsProperty
-
-    @ivar _logger: Class specific logging instance
-    """
+    "Class EventsProperty"
 
     def __init__(self, owner):
         # initialise instance logger
@@ -31,9 +27,8 @@ class EventsProperty(GridProperty):
         # initialise instance
         cols = [(_('Event'), GridProperty.STRING),
                 (_('Handler'), GridProperty.STRING)]
-        GridProperty.__init__(self, owner, 'events', None, cols,
-                              len(owner.events), False, False, False,
-                              label=_('Events'))
+        GridProperty.__init__( self, owner, 'events', None, cols, len(owner.events), False, False, False,
+                               label=_('Events'))
         self.validator_re = re.compile(r'^\s*[\w-]+\s*$')
         event_list = [name for name in owner.events]
         event_list.sort()
@@ -66,11 +61,9 @@ class EventsProperty(GridProperty):
             inner_xml = u''
             for event, handler in handlers:
                 if handler:
-                    inner_xml += common.format_xml_tag('handler', handler.strip(),
-                                            tabs + 1, event=event)
+                    inner_xml += common.format_xml_tag('handler', handler.strip(), tabs+1, event=event)
             if inner_xml:
-                stmt = common.format_xml_tag(
-                    u'events', inner_xml, tabs, is_xml=True)
+                stmt = common.format_xml_tag(u'events', inner_xml, tabs, is_xml=True)
                 outfile.write(stmt)
 
     def on_change_val(self, event):

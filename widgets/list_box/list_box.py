@@ -35,20 +35,15 @@ class EditListBox(ManagedBase, EditStylesMixin):
 
         # initialise properties remaining staff
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
-        self.properties['choices'] = ChoicesProperty(
-            self, 'choices', None, [(_('Label'), GridProperty.STRING)],
-            len(choices), label=_('choices'))
-        self.access_functions['selection'] = (self.get_selection,
-                                              self.set_selection)
+        self.properties['choices'] = ChoicesProperty( self, 'choices', None, [(_('Label'), GridProperty.STRING)],
+                                                      len(choices), label=_('choices'))
+        self.access_functions['selection'] = (self.get_selection, self.set_selection)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['selection'] = SpinProperty(self, 'selection', None,
-                                                    r=(0, len(choices)-1), label=_('selection'))
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
+        self.properties['selection'] = SpinProperty(self, 'selection', None, r=(0, len(choices)-1),label=_('selection'))
+        self.properties['style'] = CheckListProperty( self, 'style', self.widget_writer )
 
     def create_widget(self):
-        self.widget = wx.ListBox(self.parent.widget, self.id,
-                                 choices=self.choices)
+        self.widget = wx.ListBox(self.parent.widget, self.id, choices=self.choices)
         self.set_selection(self.selection)
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
@@ -106,16 +101,12 @@ class EditListBox(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditListBox objects.
-    """
+    "factory function for EditListBox objects"
     name = 'list_box_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'list_box_%d' % number[0]
-    list_box = EditListBox(name, parent, wx.NewId(),
-                           [u'choice 1', ], sizer, pos,
-                           common.property_panel)
+    list_box = EditListBox(name, parent, wx.NewId(), [u'choice 1', ], sizer, pos, common.property_panel)
     node = Tree.Node(list_box)
 ##     sizer.set_item(pos, size=list_box.GetBestSize())
     list_box.node = node
@@ -124,9 +115,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditListBox objects from a XML file
-    """
+    "factory to build EditListBox objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -134,10 +123,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    list_box = EditListBox(name, parent, wx.NewId(), [], sizer, pos,
-                           common.property_panel)
-    sizer.set_item(list_box.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    list_box = EditListBox(name, parent, wx.NewId(), [], sizer, pos, common.property_panel)
+    sizer.set_item(list_box.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(list_box)
     list_box.node = node
     if pos is None:
@@ -148,10 +135,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditListBox'] = builder
     common.widgets_from_xml['EditListBox'] = xml_builder
 

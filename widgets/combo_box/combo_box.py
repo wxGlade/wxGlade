@@ -19,18 +19,14 @@ from ChoicesProperty import *
 
 
 class EditComboBox(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxComboBox objects
-    """
+    "Class to handle wxComboBox objects"
 
     update_widget_style = False
 
-    def __init__(self, name, parent, id, choices, sizer, pos, property_window,
-                 show=True):
+    def __init__(self, name, parent, id, choices, sizer, pos, property_window, show=True):
 
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer,
-                             pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -46,21 +42,17 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         # initialise properties remaining staff
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
-        self.properties['choices'] = ChoicesProperty(self, 'choices', None,
-                                                     [('Label',
-                                                       GridProperty.STRING)],
-                                                     len(choices), label=_("choices"))
-        self.access_functions['selection'] = (self.get_selection,
-                                              self.set_selection)
+        self.properties['style'] = CheckListProperty( self, 'style', self.widget_writer )
+        self.properties['choices'] = ChoicesProperty( self, 'choices', None,
+                                                      [('Label', GridProperty.STRING)],
+                                                      len(choices), label=_("choices"))
+        self.access_functions['selection'] = (self.get_selection, self.set_selection)
         self.choices = list(choices)
-        self.properties['selection'] = SpinProperty(self, 'selection', None,
-                                                    r=(0, len(choices)-1), label=_("selection"))
+        self.properties['selection'] = SpinProperty( self, 'selection', None, 
+                                                     r=(0, len(choices)-1), label=_("selection"))
 
     def create_widget(self):
-        self.widget = wx.ComboBox(self.parent.widget, self.id,
-                                 choices=self.choices)
+        self.widget = wx.ComboBox(self.parent.widget, self.id, choices=self.choices)
         self.set_selection(self.selection)
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
@@ -112,26 +104,21 @@ class EditComboBox(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditComboBox objects.
-    """
+    "factory function for EditComboBox objects"
     name = 'combo_box_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'combo_box_%d' % number[0]
-    choice = EditComboBox(name, parent, wx.NewId(),
-                          [], sizer, pos, common.property_panel)
+    choice = EditComboBox(name, parent, wx.NewId(), [], sizer, pos, common.property_panel)
     node = Tree.Node(choice)
 #    sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
     choice.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditComboBox objects from a XML file
-    """
+    "factory to build EditComboBox objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -139,24 +126,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    choice = EditComboBox(name, parent, wx.NewId(), [], sizer, pos,
-                          common.property_panel)
-    sizer.set_item(choice.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    choice = EditComboBox(name, parent, wx.NewId(), [], sizer, pos, common.property_panel)
+    sizer.set_item(choice.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(choice)
     choice.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return choice
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditComboBox'] = builder
     common.widgets_from_xml['EditComboBox'] = xml_builder
 

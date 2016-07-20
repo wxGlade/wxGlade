@@ -18,9 +18,7 @@ from wx.calendar import *
 
 
 class EditGenericCalendarCtrl(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxGenericCalendarCtrl objects
-    """
+    "Class to handle wxGenericCalendarCtrl objects"
 
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
@@ -76,15 +74,12 @@ class EditGenericCalendarCtrl(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditGenericCalendarCtrl objects.
-    """
+    "factory function for EditGenericCalendarCtrl objects"
     label = 'generic_calendar_ctrl_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'generic_calendar_ctrl_%d' % number[0]
-    calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer,
-                        pos, common.property_panel)
+    calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer, pos, common.property_panel)
     node = Tree.Node(calendar_ctrl)
     calendar_ctrl.node = node
     calendar_ctrl.show_widget(True)
@@ -92,9 +87,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditGenericCalendarCtrl objects from a XML file
-    """
+    "factory to build EditGenericCalendarCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -102,10 +95,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer, pos,
-                                     common.property_panel, show=False)
-    sizer.set_item(calendar_ctrl.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer, pos, common.property_panel, show=False)
+    sizer.set_item(calendar_ctrl.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(calendar_ctrl)
     calendar_ctrl.node = node
     if pos is None:
@@ -116,11 +107,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module.
-    @rtype: wxBitmapButton
-    @return: an icon to be added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditGenericCalendarCtrl'] = builder
     common.widgets_from_xml['EditGenericCalendarCtrl'] = xml_builder
 

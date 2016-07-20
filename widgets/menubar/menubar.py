@@ -23,8 +23,7 @@ from edit_windows import EditBase, PreviewMixin
 
 class MenuItemDialog(wx.Dialog):
     def __init__(self, parent, owner, items=None):
-        wx.Dialog.__init__(self, parent, -1, _("Menu editor"),
-                          style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
+        wx.Dialog.__init__(self, parent, -1, _("Menu editor"), style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
         ADD_ID, REMOVE_ID, NAME_ID, LABEL_ID, ID_ID, CHECK_RADIO_ID, LIST_ID, \
                 ADD_SEP_ID, MOVE_LEFT_ID, MOVE_RIGHT_ID, MOVE_UP_ID, \
                 MOVE_DOWN_ID, HELP_STR_ID = [wx.NewId() for i in range(13)]
@@ -62,9 +61,8 @@ class MenuItemDialog(wx.Dialog):
         self.handler_re = re.compile(r'^\s*\w*\s*$')
 
         #self.checkable = wx.CheckBox(self, CHECK_ID, "") #Checkable")
-        self.check_radio = wx.RadioBox(
-            self, CHECK_RADIO_ID, _("Type"),
-            choices=['Normal', 'Checkable', 'Radio'], majorDimension=3)
+        self.check_radio = wx.RadioBox( self, CHECK_RADIO_ID, _("Type"),
+                                        choices=['Normal', 'Checkable', 'Radio'], majorDimension=3)
 
         self.add = wx.Button(self, ADD_ID, _("Add"))
         self.remove = wx.Button(self, REMOVE_ID, _("Remove"))
@@ -81,8 +79,7 @@ class MenuItemDialog(wx.Dialog):
         self.cancel = wx.Button(self, wx.ID_CANCEL, _("Cancel"))
 
         self.do_layout()
-        self.selected_index = -1  # index of the selected element in the
-                                 # wx.ListCtrl menu_items
+        self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items
         # event handlers
         wx.EVT_BUTTON(self, ADD_ID, self.add_menu_item)
         wx.EVT_BUTTON(self, REMOVE_ID, self.remove_menu_item)
@@ -169,9 +166,7 @@ class MenuItemDialog(wx.Dialog):
             s.Enable(enable)
 
     def add_menu_item(self, event):
-        """\
-        Event handler called when the Add button is clicked
-        """
+        "Event handler called when the Add button is clicked"
         index = self.selected_index = self.selected_index + 1
         indent = ""
         if not self.menu_items.GetItemCount():
@@ -186,8 +181,7 @@ class MenuItemDialog(wx.Dialog):
         self.menu_items.SetStringItem(index, 2, name)
         self.menu_items.SetStringItem(index, 4, check_radio)
         # fix bug 698074
-        self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED,
-                                     wx.LIST_STATE_SELECTED)
+        self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
         self.name.SetValue(name)
         self.label.SetValue(label)
         self.id.SetValue(id)
@@ -195,9 +189,7 @@ class MenuItemDialog(wx.Dialog):
         self.event_handler.SetValue("")
 
     def add_separator(self, event):
-        """\
-        Event handler called when the Add Separator button is clicked
-        """
+        "Event handler called when the Add Separator button is clicked"
         index = self.selected_index + 1
         label = '---'
         if not self.menu_items.GetItemCount():
@@ -210,32 +202,24 @@ class MenuItemDialog(wx.Dialog):
         self.menu_items.SetStringItem(index, 1, '---')
         self.menu_items.SetStringItem(index, 2, '---')
         # fix bug 698074
-        self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED,
-                                     wx.LIST_STATE_SELECTED)
+        self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
     def show_menu_item(self, event):
-        """\
-        Event handler called when a menu item in the list is selected
-        """
+        "Event handler called when a menu item in the list is selected"
         self.selected_index = index = event.GetIndex()
         if not misc.streq(self.menu_items.GetItem(index, 2).m_text, '---'):
             # skip if the selected item is a separator
-            for (s, i) in ((self.label, 0), (self.id, 1), (self.name, 2),
-                           (self.help_str, 3), (self.event_handler, 5)):
+            for (s, i) in ((self.label, 0), (self.id, 1), (self.name, 2), (self.help_str, 3), (self.event_handler, 5)):
                 s.SetValue(self.menu_items.GetItem(index, i).m_text)
             self.label.SetValue(self.label.GetValue().lstrip())
             try:
-                self.check_radio.SetSelection(
-                    int(self.menu_items.GetItem(index, 4).m_text))
+                self.check_radio.SetSelection( int(self.menu_items.GetItem(index, 4).m_text))
             except:
                 self.check_radio.SetSelection(0)
         event.Skip()
 
     def update_menu_item(self, event):
-        """\
-        Event handler called when some of the properties of the current menu
-        item changes
-        """
+        "Event handler called when some of the properties of the current menu item changes"
         set_item = self.menu_items.SetStringItem
         index = self.selected_index
         val = self.event_handler.GetValue()
@@ -244,8 +228,7 @@ class MenuItemDialog(wx.Dialog):
             return
         if index < 0:
             return event.Skip()
-        set_item(index, 0, "    " * self.item_level(index) + \
-                 self.label.GetValue().lstrip())
+        set_item(index, 0, "    " * self.item_level(index) + self.label.GetValue().lstrip())
         set_item(index, 1, self.id.GetValue())
         set_item(index, 2, self.name.GetValue())
         set_item(index, 3, self.help_str.GetValue())
@@ -254,24 +237,18 @@ class MenuItemDialog(wx.Dialog):
         event.Skip()
 
     def item_level(self, index, label=None):
-        """\
-        returns the indentation level of the menu item at the given index
-        """
+        "returns the indentation level of the menu item at the given index"
         label = self.menu_items.GetItem(index, 0).m_text
         return (len(label) - len(label.lstrip())) / 4
 
     def remove_menu_item(self, event):
-        """\
-        Event handler called when the Remove button is clicked
-        """
+        "Event handler called when the Remove button is clicked"
         if self.selected_index >= 0:
             index = self.selected_index+1
-            if index < self.menu_items.GetItemCount() and \
-               (self.item_level(self.selected_index) < self.item_level(index)):
+            if index<self.menu_items.GetItemCount() and (self.item_level(self.selected_index) < self.item_level(index)):
                 self._move_item_left(index)
                 self.selected_index = index-1
-            for s in (self.name, self.id, self.label, self.help_str,
-                      self.event_handler):
+            for s in (self.name, self.id, self.label, self.help_str, self.event_handler):
                 s.SetValue("")
             self.check_radio.SetSelection(0)
             self.menu_items.DeleteItem(self.selected_index)
@@ -334,8 +311,7 @@ class MenuItemDialog(wx.Dialog):
                 item_type = 0
             checkable = item_type == 1 and misc.wxstr("1") or misc.wxstr("")
             radio = item_type == 2 and misc.wxstr("1") or misc.wxstr("")
-            n = MenuTree.Node(label, id, name, help_str, checkable, radio,
-                              handler=event_handler)
+            n = MenuTree.Node(label, id, name, help_str, checkable, radio, handler=event_handler)
             node.children.append(n)
             n.parent = node
             return n
@@ -345,8 +321,7 @@ class MenuItemDialog(wx.Dialog):
             label = get(index, 0)
             lvl = self.item_level(index)  # get the indentation level
             if not lvl:
-                t = MenuTree(get(index, 2), label, id=get(index, 1),
-                             handler=get(index, 5))
+                t = MenuTree( get(index, 2), label, id=get(index, 1), handler=get(index, 5) )
                 curr_item = t.root
                 level = 1
                 trees.append(t)
@@ -364,14 +339,12 @@ class MenuItemDialog(wx.Dialog):
 
     def _move_item_left(self, index):
         if index > 0:
-            if (index+1 < self.menu_items.GetItemCount() and
-                    (self.item_level(index) < self.item_level(index+1))):
+            if ( index+1 < self.menu_items.GetItemCount() and (self.item_level(index) < self.item_level(index+1)) ):
                 return
             label = self.menu_items.GetItem(index, 0).m_text
             if misc.streq(label[:4], " " * 4):
                 self.menu_items.SetStringItem(index, 0, label[4:])
-                self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED,
-                                             wx.LIST_STATE_SELECTED)
+                self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
     def move_item_left(self, event):
         """\
@@ -384,10 +357,8 @@ class MenuItemDialog(wx.Dialog):
     def _move_item_right(self, index):
         if index > 0 and (self.item_level(index) <= self.item_level(index-1)):
             label = self.menu_items.GetItem(index, 0).m_text
-            self.menu_items.SetStringItem(index, 0, misc.wxstr(" " * 4)
-                                          + label)
-            self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED,
-                                         wx.LIST_STATE_SELECTED)
+            self.menu_items.SetStringItem(index, 0, misc.wxstr(" "*4) + label)
+            self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
     def move_item_right(self, event):
         """\
@@ -398,10 +369,7 @@ class MenuItemDialog(wx.Dialog):
         self._move_item_right(self.selected_index)
 
     def move_item_up(self, event):
-        """\
-        moves the selected menu item before the previous one at the same level
-        in self.menu_items
-        """
+        "moves the selected menu item before the previous one at the same level in self.menu_items"
         self.menu_items.SetFocus()
         index = self._do_move_item(event, self.selected_index, False)
         if index is not None:
@@ -440,8 +408,7 @@ class MenuItemDialog(wx.Dialog):
         for j in range(len(items_to_move)-1, -1, -1):
             delete(index+j)
         items_to_move.reverse()
-        for label, id, name, help_str, check_radio, event_handler in \
-                items_to_move:
+        for label, id, name, help_str, check_radio, event_handler in items_to_move:
             i = insert(i, label)
             set(i, 1, id)
             set(i, 2, name)
@@ -453,10 +420,7 @@ class MenuItemDialog(wx.Dialog):
         return ret_idx
 
     def move_item_down(self, event):
-        """\
-        moves the selected menu item after the next one at the same level
-        in self.menu_items
-        """
+        "moves the selected menu item after the next one at the same level in self.menu_items"
         self.menu_items.SetFocus()
         index = self.selected_index
         self.selected_index = -1
@@ -492,9 +456,7 @@ class MenuItemDialog(wx.Dialog):
 
 
 class MenuProperty(Property):
-    """\
-    Property to edit the menus of an EditMenuBar instance.
-    """
+    "Property to edit the menus of an EditMenuBar instance"
 
     def __init__(self, owner, name, parent):
         Property.__init__(self, owner, name, parent)
@@ -517,8 +479,7 @@ class MenuProperty(Property):
         pass
 
     def edit_menus(self, event):
-        dialog = MenuItemDialog(self.panel, self.owner,
-                                items=self.owner.get_menus())
+        dialog = MenuItemDialog( self.panel, self.owner, items=self.owner.get_menus() )
         if dialog.ShowModal() == wx.ID_OK:
             self.owner.set_menus(dialog.get_menus())
             common.app_tree.app.saved = False  # update the status of the app
@@ -528,16 +489,14 @@ class MenuProperty(Property):
         inner_xml = StringIO.StringIO()
         for menu in self.owner[self.name][0]():
             menu.write(inner_xml, tabs + 1)
-        stmt = common.format_xml_tag(
-            u'menus', inner_xml.getvalue(), tabs, is_xml=True)
+        stmt = common.format_xml_tag( u'menus', inner_xml.getvalue(), tabs, is_xml=True )
         outfile.write(stmt)
 
 # end of class MenuProperty
 
 
 class MenuHandler(BaseXmlBuilderTagHandler):
-    itemattrs = ['label', 'id', 'name', 'help_str',
-                 'checkable', 'radio', 'handler']
+    itemattrs = ['label', 'id', 'name', 'help_str', 'checkable', 'radio', 'handler']
 
     def __init__(self, owner):
         super(MenuHandler, self).__init__()
@@ -607,9 +566,7 @@ class EditMenuBar(EditBase, PreviewMixin, ExecAfterMixin):
 
     def __init__(self, name, klass, parent, property_window):
         custom_class = parent is None
-        EditBase.__init__(self, name, klass,
-                          parent, wx.NewId(), property_window,
-                          custom_class=custom_class, show=False)
+        EditBase.__init__(self, name, klass, parent, wx.NewId(), property_window, custom_class=custom_class, show=False)
         self.base = 'wxMenuBar'
 
         self.menus = []  # list of MenuTree objects
@@ -683,8 +640,7 @@ class EditMenuBar(EditBase, PreviewMixin, ExecAfterMixin):
                 elif item.children:
                     m = wx.Menu()
                     append(m, item.children)
-                    menu.AppendMenu(wx.NewId(), misc.wxstr(item.label), m,
-                                    misc.wxstr(item.help_str))
+                    menu.AppendMenu( wx.NewId(), misc.wxstr(item.label), m, misc.wxstr(item.help_str) )
                 else:
                     check_radio = 0
                     try:
@@ -698,8 +654,7 @@ class EditMenuBar(EditBase, PreviewMixin, ExecAfterMixin):
                                 check_radio = 2
                         except:
                             check_radio = 0
-                    menu.Append(wx.NewId(), misc.wxstr(item.label),
-                                misc.wxstr(item.help_str), check_radio)
+                    menu.Append( wx.NewId(), misc.wxstr(item.label), misc.wxstr(item.help_str), check_radio )
         first = self._mb.GetMenuCount()
         for menu in self.menus:
             m = wx.Menu()
@@ -763,9 +718,7 @@ class EditMenuBar(EditBase, PreviewMixin, ExecAfterMixin):
 
 
 def builder(parent, sizer, pos, number=[0]):
-    """\
-    factory function for EditMenuBar objects.
-    """
+    "factory function for EditMenuBar objects"
     class Dialog(wx.Dialog):
         def __init__(self):
             wx.Dialog.__init__(self, None, -1, _('Select menubar class'))
@@ -817,9 +770,7 @@ def builder(parent, sizer, pos, number=[0]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditMenuBar objects from a XML file
-    """
+    "factory to build EditMenuBar objects from a XML file"
     name = attrs.get('name')
     if parent is not None:
         if name:
@@ -827,18 +778,14 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
             parent.menubar.name_prop.set_value(name)
         return parent.menubar
     else:
-        mb = EditMenuBar(name, attrs.get('class', 'wxMenuBar'), None,
-                         common.property_panel)
+        mb = EditMenuBar(name, attrs.get('class', 'wxMenuBar'), None, common.property_panel)
         mb.node = Tree.Node(mb)
         common.app_tree.add(mb.node)
         return mb
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     cwx = common.widgets_from_xml
     cwx['EditMenuBar'] = xml_builder
     common.widgets['EditMenuBar'] = builder

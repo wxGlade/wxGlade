@@ -17,14 +17,10 @@ from widget_properties import *
 
 class EditStaticLine(ManagedBase, EditStylesMixin):
 
-    def __init__(self, name, parent, id, style, sizer, pos,
-                 property_window, show=True):
-        """\
-        Class to handle wxStaticLine objects
-        """
+    def __init__(self, name, parent, id, style, sizer, pos, property_window, show=True):
+        "Class to handle wxStaticLine objects"
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer,
-                             pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -39,14 +35,11 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         access['attribute'] = (self.get_attribute, self.set_attribute)
 
         properties['style'] = HiddenProperty(self, 'style', style)
-        properties['attribute'] = CheckBoxProperty(
-            self, 'attribute', label=_('Store as attribute'),
-            write_always=True)
+        properties['attribute'] = CheckBoxProperty(self, 'attribute', label=_('Store as attribute'), write_always=True)
         self.removed_p = self.properties['font']
 
     def create_widget(self):
-        self.widget = wx.StaticLine(self.parent.widget, self.id,
-                                    style=self.get_int_style())
+        self.widget = wx.StaticLine(self.parent.widget, self.id, style=self.get_int_style())
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
     def finish_widget_creation(self):
@@ -78,7 +71,6 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
     def get_attribute(self):
         return self.attribute
 
-# end of class EditStaticLine
 
 
 editor_class = EditStaticLine
@@ -93,11 +85,8 @@ tmpl_label = 'static_line'
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for editor objects from GUI.
-    """
-    dialog = wcodegen.WidgetStyleSelectionDialog(
-            dlg_title, box_title, choices)
+    "factory function for editor objects from GUI"
+    dialog = wcodegen.WidgetStyleSelectionDialog(dlg_title, box_title, choices)
     res = dialog.ShowModal()
     style = dialog.get_selection()
     dialog.Destroy()
@@ -108,18 +97,15 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
-    widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos,
-                          common.property_panel)
+    widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos, common.property_panel)
     node = Tree.Node(widget)
     widget.node = node
     widget.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    Factory to build editor objects from a XML file
-    """
+    "Factory to build editor objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -127,24 +113,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer,
-                          pos, common.property_panel)
-    sizer.set_item(widget.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos, common.property_panel)
+    sizer.set_item(widget.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(widget)
     widget.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return widget
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets[editor_name] = builder
     common.widgets_from_xml[editor_name] = xml_builder
     return common.make_object_button(editor_name, editor_icon)

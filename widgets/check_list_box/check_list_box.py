@@ -18,16 +18,11 @@ from ChoicesProperty import *
 
 
 class EditCheckListBox(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxCheckListBox objects
-    """
-
-    def __init__(self, name, parent, id, choices, sizer, pos, property_window,
-                 show=True):
+    "Class to handle wxCheckListBox objects"
+    def __init__(self, name, parent, id, choices, sizer, pos, property_window, show=True):
 
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxCheckListBox', parent, id, sizer,
-                             pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxCheckListBox', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -37,19 +32,15 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
         # initialise properties remaining staff
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
         self.properties['choices'] = ChoicesProperty(
-            self, 'choices', None, [(_('Label'), GridProperty.STRING)],
-            len(choices), label=_('choices'))
-        self.access_functions['selection'] = (self.get_selection,
-                                              self.set_selection)
+            self, 'choices', None, [(_('Label'), GridProperty.STRING)], len(choices), label=_('choices'))
+        self.access_functions['selection'] = (self.get_selection, self.set_selection)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
                                                     r=(0, len(choices)-1), label=_('selection'))
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
+        self.properties['style'] = CheckListProperty( self, 'style', self.widget_writer)
 
     def create_widget(self):
-        self.widget = wx.CheckListBox(self.parent.widget, self.id,
-                                 choices=self.choices)
+        self.widget = wx.CheckListBox(self.parent.widget, self.id, choices=self.choices)
         self.set_selection(self.selection)
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
@@ -90,8 +81,7 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
             for c in self.choices: self.widget.Append(c)
             if not self.properties['size'].is_active():
                 self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
-            self.widget.SetSelection(
-                int(self.properties['selection'].get_value()))
+            self.widget.SetSelection( int(self.properties['selection'].get_value()) )
 
     def get_selection(self):
         return self.selection
@@ -107,16 +97,12 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditCheckListBox objects.
-    """
+    "factory function for EditCheckListBox objects"
     name = 'check_list_box_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'check_list_box_%d' % number[0]
-    check_list_box = EditCheckListBox(name, parent, wx.NewId(),
-                           [u'choice 1'], sizer, pos,
-                           common.property_panel)
+    check_list_box = EditCheckListBox(name, parent, wx.NewId(), [u'choice 1'], sizer, pos, common.property_panel)
     node = Tree.Node(check_list_box)
 ##     sizer.set_item(pos, size=check_list_box.GetBestSize())
     check_list_box.node = node
@@ -125,9 +111,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditCheckListBox objects from a XML file
-    """
+    "factory to build EditCheckListBox objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -135,10 +119,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    check_list_box = EditCheckListBox(name, parent, wx.NewId(), [], sizer, pos,
-                           common.property_panel)
-    sizer.set_item(check_list_box.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    check_list_box = EditCheckListBox(name, parent, wx.NewId(), [], sizer, pos, common.property_panel)
+    sizer.set_item(check_list_box.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(check_list_box)
     check_list_box.node = node
     if pos is None:

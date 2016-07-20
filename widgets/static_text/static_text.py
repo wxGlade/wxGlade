@@ -18,16 +18,12 @@ from widget_properties import *
 
 
 class EditStaticText(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxStaticText objects
-    """
+    "Class to handle wxStaticText objects"
 
-    def __init__(self, name, parent, id, label, sizer, pos, property_window,
-                 show=True):
+    def __init__(self, name, parent, id, label, sizer, pos, property_window, show=True):
 
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxStaticText', parent, id, sizer,
-                             pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxStaticText', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -43,21 +39,16 @@ class EditStaticText(ManagedBase, EditStylesMixin):
 
         def set_attribute(v):
             self.attribute = int(v)
-        self.access_functions['attribute'] = (lambda : self.attribute,
-                                              set_attribute)
+        self.access_functions['attribute'] = (lambda : self.attribute, set_attribute)
 
         prop = self.properties
-        prop['label'] = TextProperty(
-            self, 'label', None, multiline=True, label=_('label'))
+        prop['label'] = TextProperty(self, 'label', None, multiline=True, label=_('label'))
         prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
-        prop['attribute'] = CheckBoxProperty(
-            self, 'attribute', None, _('Store as attribute'),
-            write_always=True)
+        prop['attribute'] = CheckBoxProperty( self, 'attribute', None, _('Store as attribute'), write_always=True)
 
     def create_widget(self):
         label = self.label.replace('\\n', '\n')
-        self.widget = wx.lib.stattext.GenStaticText(
-            self.parent.widget, self.id, label)
+        self.widget = wx.lib.stattext.GenStaticText(self.parent.widget, self.id, label)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -83,22 +74,18 @@ class EditStaticText(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(value.replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos,
-                                        size=self.widget.GetBestSize())
+                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
 # end of class EditStaticText
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditStaticText objects.
-    """
+    "factory function for EditStaticText objects"
     label = u'label_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
         label = u'label_%d' % number[0]
-    static_text = EditStaticText(label, parent, wx.NewId(), label, sizer,
-                                 pos, common.property_panel)
+    static_text = EditStaticText(label, parent, wx.NewId(), label, sizer, pos, common.property_panel)
     node = Tree.Node(static_text)
     static_text.node = node
     static_text.show_widget(True)
@@ -106,9 +93,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditStaticText objects from a XML file
-    """
+    "factory to build EditStaticText objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -116,10 +101,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    static_text = EditStaticText(label, parent, wx.NewId(), "", sizer, pos,
-                                 common.property_panel)
-    sizer.set_item(static_text.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    static_text = EditStaticText(label, parent, wx.NewId(), "", sizer, pos, common.property_panel)
+    sizer.set_item(static_text.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(static_text)
     static_text.node = node
     if pos is None:
@@ -130,10 +113,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditStaticText'] = builder
     common.widgets_from_xml['EditStaticText'] = xml_builder
 

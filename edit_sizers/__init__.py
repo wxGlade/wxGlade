@@ -9,24 +9,16 @@ Sizers module initialization
 import config
 
 Sizer = None
-"""\
-Shortcut for L{edit_sizers.Sizer}
-"""
+"Shortcut for L{edit_sizers.Sizer}"
 
 SizerSlot = None
-"""\
-Shortcut for L{edit_sizers.SizerSlot}
-"""
+"Shortcut for L{edit_sizers.SizerSlot}"
 
 SizerBase = None
-"""\
-Shortcut for L{edit_sizers.SizerBase}
-"""
+"Shortcut for L{edit_sizers.SizerBase}"
 
 _builder = None
-"""\
-Shortcut for L{edit_sizers._builder}
-"""
+"Shortcut for L{edit_sizers._builder}"
 
 
 def init_gui():

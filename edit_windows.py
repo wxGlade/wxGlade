@@ -30,10 +30,7 @@ from events_mixin import EventsMixin
 
 
 class FontHandler(BaseXmlBuilderTagHandler):
-
-    item_attrs = {'size': 0, 'family': 1, 'style': 2, 'weight': 3,
-                  'underlined': 4, 'face': 5}
-
+    item_attrs = {'size': 0, 'family': 1, 'style': 2, 'weight': 3, 'underlined': 4, 'face': 5}
     strip_char_data = True
 
     def __init__(self, owner):
@@ -47,8 +44,7 @@ class FontHandler(BaseXmlBuilderTagHandler):
 
     def end_elem(self, name):
         if name == 'font':
-            self.owner.properties['font'].set_value(
-                repr(self.props))
+            self.owner.properties['font'].set_value(repr(self.props))
             self.owner.properties['font'].toggle_active(True)
             self.owner.set_font(repr(self.props))
             return True  # to remove this handler
@@ -96,8 +92,7 @@ class EditBase(EventsMixin, ExecAfterMixin):
     @ivar _rmenu: Popup menu
     """
 
-    def __init__(self, name, klass, parent, id, property_window, show=True,
-                 custom_class=True):
+    def __init__(self, name, klass, parent, id, property_window, show=True, custom_class=True):
         """\
         Dictionary of properties relative to this object; the properties that
         control the layout (i.e. the behaviour when inside a sizer) are not
@@ -135,27 +130,17 @@ class EditBase(EventsMixin, ExecAfterMixin):
 
         self._dont_destroy = False
 
-        self.access_functions = {
-            'name': (lambda: self.name, self.set_name),
-            'class': (lambda: self.klass, self.set_klass)
-            }
+        self.access_functions = { 'name': (lambda: self.name, self.set_name),
+                                  'class': (lambda: self.klass, self.set_klass) }
 
-        # these two properties are special and are not listed in
-        # 'self.properties'
+        # these two properties are special and are not listed in 'self.properties'
         self.name_prop = TextProperty(self, 'name', None, label=_("name"))
-        self.name_prop.tooltip = _("Name of the variable for assigning "
-                                   "the reference to the created widget "
-                                   "instance.")
-        self.klass_prop = TextProperty(self, 'class', None,
-                                       readonly=not custom_class, label=_("class"))
+        self.name_prop.tooltip = _("Name of the variable for assigning the reference to the created widget instance.")
+        self.klass_prop = TextProperty( self, 'class', None, readonly=not custom_class, label=_("class") )
         if custom_class:
-            self.klass_prop.tooltip = _("If you change the default value, "
-                                        "it will be interpreted as the name "
-                                        "of the subclass of the widget. "
-                                        "How this name affects code generation "
-                                        "depends on the kind (i.e. language) "
-                                        "of output. See the docs for "
-                                        "more details.")
+            self.klass_prop.tooltip = _("If you change the default value, it will be interpreted as the name "
+                                        "of the subclass of the widget. How this name affects code generation "
+                                        "depends on the kind (i.e. language) of output. See the docs for more details.")
 
         if getattr(self, '_custom_base_classes', False):
             self.custom_base = ""
@@ -163,16 +148,13 @@ class EditBase(EventsMixin, ExecAfterMixin):
             def get_custom_base(): return self.custom_base
 
             def set_custom_base(val): self.custom_base = val
-            self.access_functions['custom_base'] = (get_custom_base,
-                                                    set_custom_base)
-            p = self.properties['custom_base'] = TextProperty(
-                self, 'custom_base', can_disable=True, enabled=False)
+            self.access_functions['custom_base'] = (get_custom_base, set_custom_base)
+            p = self.properties['custom_base'] = TextProperty( self, 'custom_base', can_disable=True, enabled=False )
             p.label = _('Base class(es)')
-            p.tooltip = _("""\
-A comma-separated list of custom base classes. The first will be invoked \
-with the same parameters as this class, while for the others the default \
-constructor will be used. You should probably not use this if \
-"overwrite existing sources" is not set.""")
+            p.tooltip = _("A comma-separated list of custom base classes. The first will be invoked\n"
+                          "with the same parameters as this class, while for the others the default\n"
+                          "constructor will be used. You should probably not use this if \n"
+                          "overwrite existing sources is not set.")
 
         self.notebook = None
         self.property_window = property_window
@@ -203,24 +185,16 @@ constructor will be used. You should probably not use this if \
         if self.widget: self.widget.Show(yes)
 
     def create_widget(self):
-        """\
-        Initializes self.widget and shows it
-        """
+        "Initializes self.widget and shows it"
         raise NotImplementedError
 
     def finish_widget_creation(self, *args, **kwds):
-        """\
-        Creates the popup menu and connects some event handlers to
-        self.widgets
-        """
+        "Creates the popup menu and connects some event handlers to self.widgets"
         wx.EVT_RIGHT_DOWN(self.widget, self.popup_menu)
 
     def delete(self):
-        """\
-        Destructor. deallocates the popup menu, the notebook and all the
-        properties. Why we need explicit deallocation? Well, basically because
-        otherwise we get a lot of memory leaks... :)
-        """
+        """Destructor. deallocates the popup menu, the notebook and all the properties.
+        Why we need explicit deallocation? Well, basically because otherwise we get a lot of memory leaks... :)"""
         # first, destroy the popup menu...
         if wx.Platform != '__WXMAC__':
             if self._rmenu:
@@ -242,9 +216,7 @@ constructor will be used. You should probably not use this if \
             misc.focused_widget = None
 
     def create_properties(self):
-        """\
-        Creates the notebook with the properties of self
-        """
+        "Creates the notebook with the properties of self"
         self.notebook = wx.Notebook(self.property_window, -1)
 
         self.notebook.sizer = None
@@ -264,27 +236,18 @@ constructor will be used. You should probably not use this if \
 
     def set_name(self, value):
         value = "%s" % value
-        if not config.preferences.allow_duplicate_names and \
-               (self.widget and common.app_tree.has_name(value, self.node)):
-            wx.CallAfter(
-                wx.MessageBox, _('Name "%s" is already in use.\n'
-                'Please enter a different one.') % value, _("Error"),
-                wx.OK|wx.ICON_ERROR)
+        if not config.preferences.allow_duplicate_names and (self.widget and common.app_tree.has_name(value,self.node)):
+            wx.CallAfter( wx.MessageBox, _('Name "%s" is already in use.\nPlease enter a different one.') % value,
+                                         _("Error"), wx.OK|wx.ICON_ERROR )
             self.name_prop.set_value(self.name)
             return
         if not re.match(self.set_name_pattern, value):
             wx.CallAfter(
-                wx.MessageBox, _(
-                'The new name "%s" contains invalid characters. The\n'
-                'old name "%s" will be retain.\n'
-                '\n'
-                'Valid characters are alphanumeric characters, minus sign\n'
-                'and the underscore. Names start always with an alphabetic\n'
-                'character or an underscore.\n'
-                '\n'
-                'Please enter a different name.') % (value, self.name),
-                _("Error"),
-                wx.OK|wx.ICON_ERROR)
+                wx.MessageBox, _('The new name "%s" contains invalid characters. The\nold name "%s" will be retained.\n'
+                                 '\nValid characters are alphanumeric characters, minus sign\n'
+                                 'and the underscore. Names start always with an alphabetic\n'
+                                 'character or an underscore.\n\nPlease enter a different name.') % (value, self.name),
+                                 _("Error"), wx.OK|wx.ICON_ERROR)
             self.name_prop.set_value(self.name)
         else:
             oldname = self.name
@@ -431,21 +394,15 @@ constructor will be used. You should probably not use this if \
         self.widget.SetFocus()
 
     def on_set_focus(self, event):
-        """\
-        Event handler called when a window receives the focus: this in fact is
-        connected to a EVT_LEFT_DOWN and not to an EVT_FOCUS, but the effect
-        is the same
-        """
+        """Event handler called when a window receives the focus: this in fact is
+        connected to a EVT_LEFT_DOWN and not to an EVT_FOCUS, but the effect is the same"""
         self.show_properties()
         misc.focused_widget = self
         #if wxPlatform != '__WXMSW__': event.Skip()
 
     def get_property_handler(self, prop_name):
-        """\
-        Returns a custom handler function for the property 'prop_name', used
-        when loading this object from a XML file. handler must provide
-        three methods: 'start_elem', 'end_elem' and 'char_data'
-        """
+        """Returns a custom handler function for the property 'prop_name', used when loading this object from a XML file.
+        handler must provide three methods: 'start_elem', 'end_elem' and 'char_data'"""
         return EventsMixin.get_property_handler(self, prop_name)
 
     def clipboard_copy(self, event=None):
@@ -474,18 +431,13 @@ constructor will be used. You should probably not use this if \
         return self.widget.IsShown()
 
     def update_view(self, selected):
-        """\
-        Updates the widget's view to reflect its state, i.e. shows which
-        widget is currently selected; the default implementation does nothing.
-        """
+        """Updates the widget's view to reflect its state, i.e. shows which
+        widget is currently selected; the default implementation does nothing."""
         pass
 
     def post_load(self):
-        """\
-        Called after the loading of an app from a XML file, before showing
-        the hierarchy of widget for the first time. The default implementation
-        does nothing.
-        """
+        """Called after the loading of an app from a XML file, before showing the hierarchy of widget for the first time.
+        The default implementation does nothing."""
         pass
 
     def create_extracode_property(self):
@@ -517,14 +469,11 @@ constructor will be used. You should probably not use this if \
 
 
 class WindowBase(EditBase):
-    """\
-    Extends EditBase with the addition of the common properties available to
-    almost every window: size, background and foreground colours, and font
-    """
+    """Extends EditBase with the addition of the common properties available to
+    almost every window: size, background and foreground colours, and font"""
 
     def __init__(self, name, klass, parent, id, property_window, show=True):
-        EditBase.__init__(self, name, klass, parent, id, property_window,
-                          show=False)
+        EditBase.__init__(self, name, klass, parent, id, property_window, show=False)
         # 'property' id (editable by the user)
         self.window_id = "wxID_ANY"
 
@@ -534,30 +483,24 @@ class WindowBase(EditBase):
         self.size = '-1, -1'
         self.access_functions['size'] = (self.get_size, self.set_size)
         self.background = ''
-        self.access_functions['background'] = (self.get_background,
-                                               self.set_background)
+        self.access_functions['background'] = (self.get_background, self.set_background)
         self.foreground = ''
-        self.access_functions['foreground'] = (self.get_foreground,
-                                               self.set_foreground)
+        self.access_functions['foreground'] = (self.get_foreground, self.set_foreground)
         # this is True if the user has selected a custom font
         self._font_changed = False
-        self.font = self._build_from_font(wx.SystemSettings_GetFont(
-            wx.SYS_DEFAULT_GUI_FONT))
+        self.font = self._build_from_font(wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT))
         self.font[1] = 'default'
 
         self.access_functions['font'] = (self.get_font, self.set_font)
 
         self.tooltip = ''
-        self.access_functions['tooltip'] = (self.get_tooltip,
-                                            self.set_tooltip)
+        self.access_functions['tooltip'] = (self.get_tooltip, self.set_tooltip)
 
-        self._original = {'background': None, 'foreground': None,
-                          'font': None}
+        self._original = {'background': None, 'foreground': None, 'font': None}
 
         prop = self.properties
         prop['id'] = TextProperty(self, 'id', None, can_disable=True)
-        prop['id'].tooltip = _("""\
-The "Id" property could be 
+        prop['id'].tooltip = _("""The "Id" property could be 
 1) a constant numeric value
 2) a predefined identifier e.g. wxID_ANY
 3) a predefined variable like a class member e.g. self.myButtonID
@@ -575,8 +518,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True, label=_('tooltip'))
 
         self.disabled_p = False
-        self.access_functions['disabled'] = (self.get_disabled,
-                                             self.set_disabled)
+        self.access_functions['disabled'] = (self.get_disabled, self.set_disabled)
         prop['disabled'] = CheckBoxProperty(self, 'disabled', None, _('disabled'))
 
         self.focused_p = False
@@ -618,8 +560,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
             self.set_font(prop['font'].get_value())
         EditBase.finish_widget_creation(self)
         wx.EVT_SIZE(self.widget, self.on_size)
-        # after setting various Properties, we must Refresh widget in order to
-        # see changes
+        # after setting various Properties, we must Refresh widget in order to see changes
         self.widget.Refresh()
 
         def on_key_down(event):
@@ -712,9 +653,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def on_size(self, event):
-        """\
-        Update the value of the 'size' property
-        """
+        "Update the value of the 'size' property"
         try:
             prop_size = self.properties['size']
 
@@ -723,7 +662,6 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
             if prop_size.is_active():
                 try:
                     use_dialog_units = value_prop and value_prop[-1] == 'd'
-
                 except IndexError:
                     use_dialog_units = False
 
@@ -736,9 +674,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
                 weidth_prop, height_prop = 0, 0
 
             if use_dialog_units:
-                weidth_widget, height_widget = \
-                    self.widget.ConvertPixelSizeToDialog(
-                        self.widget.GetSize())
+                weidth_widget, height_widget = self.widget.ConvertPixelSizeToDialog( self.widget.GetSize() )
             else:
                 weidth_widget, height_widget = self.widget.GetSize()
 
@@ -790,8 +726,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         if not self.widget: return
         value = value.strip()
         if value in ColorDialogProperty.str_to_colors:
-            self.widget.SetBackgroundColour(wx.SystemSettings_GetColour(
-                ColorDialogProperty.str_to_colors[value]))
+            self.widget.SetBackgroundColour( wx.SystemSettings_GetColour(ColorDialogProperty.str_to_colors[value]) )
         else:
             try:
                 color = misc.string_to_color(value)
@@ -808,8 +743,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         if not self.widget: return
         value = value.strip()
         if value in ColorDialogProperty.str_to_colors:
-            self.widget.SetForegroundColour(wx.SystemSettings_GetColour(
-                ColorDialogProperty.str_to_colors[value]))
+            self.widget.SetForegroundColour(wx.SystemSettings_GetColour(ColorDialogProperty.str_to_colors[value]))
         else:
             try:
                 color = misc.string_to_color(value)
@@ -841,8 +775,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         weights = FontDialogProperty.font_weights_to
         try:
             value = eval(value)
-            f = wx.Font(int(value[0]), families[value[1]], styles[value[2]],
-                       weights[value[3]], int(value[4]), value[5])
+            f = wx.Font(int(value[0]), families[value[1]], styles[value[2]], weights[value[3]], int(value[4]), value[5])
         except:
             #self._logger.exception(_('Internal Error'))
             self.properties['font'].set_value(self.get_font())
@@ -940,10 +873,8 @@ class ManagedBase(WindowBase):
     @type self.sizer_properties: dict
     """
 
-    def __init__(self, name, klass, parent, id, sizer, pos, property_window,
-                 show=True):
-        WindowBase.__init__(self, name, klass, parent, id, property_window,
-                            show=show)
+    def __init__(self, name, klass, parent, id, sizer, pos, property_window, show=True):
+        WindowBase.__init__(self, name, klass, parent, id, property_window, show=show)
         # if True, the user is able to control the layout of the widget
         # inside the sizer (proportion, borders, alignment...)
         self._has_layout = not sizer.is_virtual()
@@ -961,8 +892,7 @@ class ManagedBase(WindowBase):
         self.border = 0
 
         border_styles = OrderedDict()
-        border_styles[_('Border')] = ['wxALL', 'wxLEFT', 'wxRIGHT', 'wxTOP',
-                                      'wxBOTTOM']
+        border_styles[_('Border')] = ['wxALL', 'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM']
         border_styles[_('Alignment')] = [
             'wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM', 'wxALIGN_CENTER',
             'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
@@ -976,8 +906,7 @@ class ManagedBase(WindowBase):
         self.sizer = sizer
         self.pos = pos
         self.access_functions['option'] = (self.get_option, self.set_option)
-        self.access_functions['flag'] = (self.esm_border.get_style,
-                                         self.esm_border.set_style)
+        self.access_functions['flag'] = (self.esm_border.get_style, self.esm_border.set_style)
         self.access_functions['border'] = (self.get_border, self.set_border)
         self.access_functions['pos'] = (self.get_pos, self.set_pos)
 
@@ -985,8 +914,7 @@ class ManagedBase(WindowBase):
         sizer.add_item(self, pos)
 
         szprop = self.sizer_properties
-        from layout_option_property import LayoutOptionProperty, \
-             LayoutPosProperty
+        from layout_option_property import LayoutOptionProperty, LayoutPosProperty
         szprop['option'] = LayoutOptionProperty(self, sizer)
         szprop['flag'] = CheckListProperty(self, 'flag', styles=border_styles)
         szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000), label=_('border'))
@@ -999,20 +927,18 @@ class ManagedBase(WindowBase):
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         wx.EVT_MOVE(self.widget, self.on_move)
         # re-add the item to update it
-        self.sizer.add_item(self, self.pos, self.option, self.flag,
-                            self.border, self.widget.GetSize())
+        self.sizer.add_item( self, self.pos, self.option, self.flag, self.border, self.widget.GetSize() )
         # set the value of the properties
         szp = self.sizer_properties
         szp['option'].set_value(self.get_option())
         szp['flag'].set_value(self.esm_border.get_style())
         szp['border'].set_value(self.get_border())
-        szp['pos'].set_value(self.pos - 1)
+        szp['pos'].set_value(self.pos-1)
 
     def create_properties(self):
         WindowBase.create_properties(self)
         if not self._has_layout: return
-        panel = wx.ScrolledWindow(
-            self.notebook, -1, style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
+        panel = wx.ScrolledWindow( self.notebook, -1, style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE )
 
         szprop = self.sizer_properties
         szprop['pos'].display(panel)
@@ -1044,13 +970,13 @@ class ManagedBase(WindowBase):
         old = self.size
         WindowBase.on_size(self, event)
         size_prop = self.properties['size']
-        if (size_prop.is_active() and (int(self.get_option()) != 0 or
-                                self.get_int_flag() & wx.EXPAND)):
+        if ( size_prop.is_active() and (int(self.get_option()) != 0 or self.get_int_flag() & wx.EXPAND) ):
             size_prop.set_value(old)
             self.size = old
         self.sel_marker.update()
 
     def set_option(self, value):
+        "set the proportion for resizing"
         self.option = value = int(value)
         if not self.widget: return
         try:
@@ -1100,8 +1026,7 @@ class ManagedBase(WindowBase):
                 size = [w, h]
             except ValueError:
                 size = None
-            if not (flags & wx.EXPAND) and \
-               not self.properties['size'].is_active():
+            if not (flags & wx.EXPAND) and not self.properties['size'].is_active():
                 size = list(self.widget.GetBestSize())
             self.sizer.set_item(self.pos, flag=flags, size=size)
         except AttributeError:
@@ -1153,17 +1078,11 @@ class ManagedBase(WindowBase):
         return self.pos - 1
 
     def set_pos(self, value):
-        """\
-        setter for the 'pos' property: calls self.sizer.change_item_pos
-        """
-        self.sizer.change_item_pos(self, min(value + 1,
-                                             len(self.sizer.children) - 1))
+        "setter for the 'pos' property: calls self.sizer.change_item_pos"
+        self.sizer.change_item_pos( self, min( value+1, len(self.sizer.children)-1 ) )
 
     def update_pos(self, value):
-        """\
-        called by self.sizer.change_item_pos to update the item's position
-        when another widget is moved
-        """
+        "called by self.sizer.change_item_pos to update the item's position when another widget is moved"
         self.sizer_properties['pos'].set_value(value-1)
         self.pos = value
 
@@ -1202,9 +1121,7 @@ class PreviewMixin(object):
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def preview(self, event):
-        """\
-        Create a preview of the selected widget
-        """
+        "Create a preview of the selected widget"
         #self._logger.debug('frame class _> %s', self.klass)
         if self.preview_widget is None:
             # The preview widget is None in case of code generation errors
@@ -1212,8 +1129,7 @@ class PreviewMixin(object):
             if self.preview_widget:
                 self.preview_button.SetLabel(_('Close Preview'))
         else:
-            # Close triggers the EVT_CLOSE that does the real work
-            # (see application.py -> preview)
+            # Close triggers the EVT_CLOSE that does the real work (see application.py -> preview)
             self.preview_widget.Close()
 
     def preview_is_visible(self):
@@ -1228,40 +1144,33 @@ class PreviewMixin(object):
 
 
 class TopLevelBase(WindowBase, PreviewMixin, ExecAfterMixin):
-    """\
-    Base class for every non-managed window (i.e. Frames and Dialogs).
-    """
+    "Base class for every non-managed window (i.e. Frames and Dialogs)"
     _is_toplevel = True
     _custom_base_classes = True
 
-    def __init__(self, name, klass, parent, id, property_window, show=True,
-                 has_title=True, title=None):
-        WindowBase.__init__(self, name, klass, parent, id, property_window,
-                            show=show)
+    def __init__(self, name, klass, parent, id, property_window, show=True, has_title=True, title=None):
+        WindowBase.__init__(self, name, klass, parent, id, property_window, show=show)
         self.has_title = has_title
         if self.has_title:
             if title is None: title = self.name
             self.title = title
             self.access_functions['title'] = (self.get_title, self.set_title)
             self.properties['title'] = TextProperty(self, 'title', None, label=_("title"))
-        self.sizer = None  # sizer that controls the layout of the children
-                          # of the window
+        self.sizer = None  # sizer that controls the layout of the children of the window
         PreviewMixin.__init__(self)
 
     def finish_widget_creation(self, *args, **kwds):
         WindowBase.finish_widget_creation(self)
         self.widget.SetMinSize = self.widget.SetSize
         if self.has_title:
-            self.widget.SetTitle(misc.design_title(
-                self.properties['title'].get_value()))
+            self.widget.SetTitle( misc.design_title(self.properties['title'].get_value()) )
         elif hasattr(self.widget, 'SetTitle'):
             self.widget.SetTitle(misc.design_title(self.name))
         wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
         wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
         wx.EVT_CLOSE(self.widget, self.hide_widget)
         if wx.Platform == '__WXMSW__':
-            # MSW isn't smart enough to avoid overlapping windows, so
-            # at least move it away from the 3 wxGlade frames
+            # MSW isn't smart enough to avoid overlapping windows, so at least move it away from the 3 wxGlade frames
             self.widget.Center()
         # ALB 2004-10-15
         self.widget.SetAcceleratorTable(common.palette.accel_table)
@@ -1269,8 +1178,7 @@ class TopLevelBase(WindowBase, PreviewMixin, ExecAfterMixin):
     def show_widget(self, yes):
         WindowBase.show_widget(self, yes)
         if yes and wx.Platform == '__WXMSW__':
-            # more than ugly, but effective hack to properly layout the window
-            # on Win32
+            # more than ugly, but effective hack to properly layout the window on Win32
             if self.properties['size'].is_active():
                 w, h = self.widget.GetSize()
                 self.widget.SetSize((-1, h+1))
@@ -1507,11 +1415,7 @@ class EditStylesMixin(object):
         return style_list
 
     def get_string_style(self):
-        """\
-        Return the selected styles joined with '|'.
-
-        @rtype: str
-        """
+        "Return the selected styles joined with '|'"
         styles = list(self.style_set)
         styles.sort()
         return '|'.join(styles)
@@ -1544,9 +1448,7 @@ class EditStylesMixin(object):
                 style_value = self.wxname2attr(style_name)
                 if not isinstance(style_value, types.IntType):
                     self._logger.warning(
-                        _('''Can't convert style "%s" to an integer. Got
-                            "%s" instead.'''), style_name, style_value
-                    )
+                        _('''Can't convert style "%s" to an integer. Got "%s" instead.'''), style_name, style_value)
                     continue
                 new_style |= style_value
             except (AttributeError, NameError):

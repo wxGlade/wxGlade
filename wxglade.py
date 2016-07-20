@@ -45,9 +45,7 @@ import errors
 
 
 def parse_command_line():
-    """\
-    Parse command line
-    """
+    "Parse command line"
     # list of all available languages
     # don't load code generators at this point!!
     languages = ['C++', 'XRC', 'lisp', 'perl', 'python']
@@ -179,11 +177,8 @@ def command_line_code_generation(filename, language, out_path=None):
         logging.error(inst)
         sys.exit(inst)
     except Exception:
-        logging.error(
-            _("An exception occurred while generating the code for the "
-              "application.\n"
-              "If you think this is a wxGlade bug, please report it.")
-        )
+        logging.error( _("An exception occurred while generating the code for the application.\n"
+                         "If you think this is a wxGlade bug, please report it.") )
         logging.exception(_('Internal Error'))
         sys.exit(1)
     sys.exit(0)
@@ -207,11 +202,7 @@ def init_stage1():
     atexit.register(log.deinit)
 
     # print versions
-    logging.info(
-        _('Starting wxGlade version "%s" on Python %s'),
-        config.version,
-        config.py_version,
-        )
+    logging.info( _('Starting wxGlade version "%s" on Python %s'), config.version, config.py_version )
 
     # print used paths
     logging.info(_('Base directory:             %s'), config.wxglade_path)
@@ -235,9 +226,7 @@ def init_stage1():
 
 
 def init_localization():
-    """
-    Initialise localization
-    """
+    "Initialise localization"
     encoding = None
     try:
         locale.setlocale(locale.LC_ALL, '')
@@ -271,9 +260,7 @@ def init_localization():
     try:
         codecs.lookup(encoding)
     except LookupError:
-        logging.warning(
-            _('No codec for encoding "%s" found. Use "ascii" instead'),
-            encoding)
+        logging.warning( _('No codec for encoding "%s" found. Use "ascii" instead'), encoding)
         encoding = 'ascii'
 
     # store determined encoding and show current locale
@@ -332,10 +319,7 @@ def init_stage2(use_gui):
 
 
 def run_main():
-    """\
-    This main procedure is started by calling either wxglade.py or
-    wxglade.pyw on windows.
-    """
+    "This main procedure is started by calling either wxglade.py or wxglade.pyw on windows."
     # check command line parameters first
     options = parse_command_line()
 

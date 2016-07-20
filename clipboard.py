@@ -39,8 +39,7 @@ def widget2clipboard(option, flag, border, xml_unicode):
 
 def clipboard2widget(clipboard_data):
     """\
-    Convert widget data prepared in L{widget2clipboard()} back to single
-    values.
+    Convert widget data prepared in L{widget2clipboard()} back to single values.
 
     The values are option (proportions), flag, border and widget in XML
     representation. They will be returned in a list.
@@ -157,8 +156,7 @@ def paste(parent, sizer, pos):
             wx.BeginBusyCursor()
             # widget representation is still unicode, but parser need UTF8
             xml_utf8 = xml_unicode.encode('utf8')
-            parser = xml_parse.ClipboardXmlWidgetBuilder(
-                parent, sizer, pos, option, flag, border)
+            parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos, option, flag, border)
             parser.parse_string(xml_utf8)
             return True  # Widget hierarchy pasted.
         finally:
@@ -174,13 +172,9 @@ class FileDropTarget(wx.FileDropTarget):
 
     def OnDropFiles(self, x, y, filenames):
         if len(filenames) > 1:
-            wx.MessageBox(
-                _("Please only drop one file at a time"),
-                "wxGlade",
-                wx.ICON_ERROR)
+            wx.MessageBox( _("Please only drop one file at a time"), "wxGlade", wx.ICON_ERROR )
         elif filenames:
             path = filenames[0]
             if self.parent.ask_save():
                 self.parent._open_app(path)
 
-# end of class FileDropTarget

@@ -18,16 +18,11 @@ from button_stockitems import *
 
 
 class EditButton(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxButton objects
-    """
+    "Class to handle wxButton objects"
 
-    def __init__(self, name, parent, id, label, sizer, pos, property_window,
-                 show=True):
-
+    def __init__(self, name, parent, id, label, sizer, pos, property_window, show=True):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -40,29 +35,21 @@ class EditButton(ManagedBase, EditStylesMixin):
 
         # initialise properties remaining staff
         self.access_functions['label'] = (self.get_label, self.set_label)
-        self.properties['label'] = TextProperty(self, 'label', None,
-                                                multiline=True)
-        self.access_functions['stockitem'] = (self.get_stockitem,
-                                              self.set_stockitem)
+        self.properties['label'] = TextProperty(self, 'label', None, multiline=True)
+        self.access_functions['stockitem'] = (self.get_stockitem, self.set_stockitem)
         self.access_functions['default'] = (self.get_default, self.set_default)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['default'] = CheckBoxProperty(
-            self, 'default', None, label=_("Default"))
-        self.properties['default'].tooltip = \
-            _("This sets the button to be the default "
-              "item for the panel or dialog box.")
+        self.properties['default'] = CheckBoxProperty(self, 'default', None, label=_("Default"))
+        self.properties['default'].tooltip=_("This sets the button to be the default item for the panel or dialog box.")
 
         #Get the list of items, and add a 'None'
         choices = ButtonStockItems.stock_ids.keys()
         choices.sort()
         choices[:0] = ['None']
         self.properties['stockitem'] = ComboBoxProperty(
-            self, 'stockitem', choices, can_disable=True,
-            label=_("Stock item"))
-        self.properties['stockitem'].tooltip = \
-            _("Standard IDs for button identifiers")
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
+                                                    self, 'stockitem', choices, can_disable=True, label=_("Stock item"))
+        self.properties['stockitem'].tooltip = _("Standard IDs for button identifiers")
+        self.properties['style'] = CheckListProperty(self, 'style', self.widget_writer)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -94,15 +81,13 @@ class EditButton(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(value.replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos,
-                                        size=self.widget.GetBestSize())
+                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
             self.label = value
 
     def create_widget(self):
         label = self.label.replace('\\n', '\n')
         try:
-            self.widget = wx.Button(self.parent.widget, self.id, label,
-                                    style=self.get_int_style())
+            self.widget = wx.Button(self.parent.widget, self.id, label, style=self.get_int_style())
         except AttributeError:
             self.widget = wx.Button(self.parent.widget, self.id, label)
 
@@ -134,15 +119,12 @@ class EditButton(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditButton objects.
-    """
+    "factory function for EditButton objects"
     name = u'button_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = u'button_%d' % number[0]
-    button = EditButton(name, parent, wx.NewId(), name, sizer, pos,
-                        common.property_panel)
+    button = EditButton(name, parent, wx.NewId(), name, sizer, pos, common.property_panel)
     node = Tree.Node(button)
     button.node = node
     button.show_widget(True)
@@ -150,9 +132,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditButton objects from a XML file
-    """
+    "factory to build EditButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -160,10 +140,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditButton(label, parent, wx.NewId(), '', sizer, pos,
-                        common.property_panel, show=False)
-    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    button = EditButton(label, parent, wx.NewId(), '', sizer, pos, common.property_panel, show=False)
+    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(button)
     button.node = node
     if pos is None:
