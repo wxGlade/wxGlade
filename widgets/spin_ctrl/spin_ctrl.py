@@ -16,16 +16,12 @@ from widget_properties import *
 
 
 class EditSpinCtrl(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxSpinCtrl objects
-    """
+    "Class to handle wxSpinCtrl objects"
 
-    def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True):
+    def __init__(self, name, parent, id, sizer, pos, property_window, show=True):
 
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxSpinCtrl', parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxSpinCtrl', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -45,9 +41,7 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
         prop['value'] = SpinProperty(self, 'value', None, can_disable=True, label=_("value"))
 
     def create_widget(self):
-        self.widget = wx.SpinCtrl(self.parent.widget, self.id,
-                                  min=self.range[0], max=self.range[1],
-                                  initial=self.value)
+        self.widget = wx.SpinCtrl(self.parent.widget, self.id, min=self.range[0], max=self.range[1], initial=self.value)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -95,25 +89,20 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditSpinCtrl objects.
-    """
+    "factory function for EditSpinCtrl objects"
     name = 'spin_ctrl_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'spin_ctrl_%d' % number[0]
-    text = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos,
-                        common.property_panel)
+    text = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel)
     node = Tree.Node(text)
     text.node = node
     text.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory function to build EditSpinCtrl objects from a XML file
-    """
+    "factory function to build EditSpinCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -121,24 +110,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    text = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos,
-                        common.property_panel)
-    sizer.set_item(text.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    text = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel)
+    sizer.set_item(text.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(text)
     text.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return text
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditSpinCtrl'] = builder
     common.widgets_from_xml['EditSpinCtrl'] = xml_builder
 

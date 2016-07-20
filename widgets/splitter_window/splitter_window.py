@@ -24,28 +24,19 @@ except ImportError:
 
 
 class SplitterWindowSizer(Sizer):
-    """\
-    "Virtual sizer" responsible for the management of a SplitterWindow.
-    """
+    "'Virtual sizer' responsible for the management of a SplitterWindow"
 
-    def set_item(self, pos, option=None, flag=None, border=None, size=None,
-                 force_layout=True):
-        """\
-        Updates the layout of the item at the given pos.
-        """
+    def set_item(self, pos, option=None, flag=None, border=None, size=None, force_layout=True):
+        "Updates the layout of the item at the given pos"
         #self._logger.debug('set_item()')
-        if self.window.widget and \
-                self.window.window_old and self.window.window_old.widget:
+        if self.window.widget and self.window.window_old and self.window.window_old.widget:
             self.window.widget.Unsplit(self.window.window_old.widget)
             self.window.window_old = None
         if self.window.window_1 and self.window.window_2:
             self.window.split()
 
-    def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None,
-                 force_layout=True):
-        """\
-        Adds an item to self.window.
-        """
+    def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None, force_layout=True):
+        "Adds an item to self.window"
         #self._logger.debug('add_item(): %s', item.name)
         if pos == 1:
             self.window.window_old = self.window.window_1
@@ -57,18 +48,14 @@ class SplitterWindowSizer(Sizer):
             self.window.properties['window_2'].set_value(item.name)
 
     def free_slot(self, pos, force_layout=True):
-        """\
-        Replaces the element at pos with an empty slot
-        """
+        "Replaces the element at pos with an empty slot"
         if pos == 1:
-            if self.window.widget and \
-                    self.window.window_1 and self.window.window_1.widget:
+            if self.window.widget and self.window.window_1 and self.window.window_1.widget:
                 self.window.widget.Unsplit(self.window.window_1.widget)
             self.window.window_1 = SizerSlot(self.window, self, pos)
             w = self.window.window_1
         else:
-            if self.window.widget and \
-                    self.window.window_2 and self.window.window_2.widget:
+            if self.window.widget and self.window.window_2 and self.window.window_2.widget:
                 self.window.widget.Unsplit()
             self.window.window_2 = SizerSlot(self.window, self, pos)
             w = self.window.window_2
@@ -76,9 +63,7 @@ class SplitterWindowSizer(Sizer):
         w.widget.SetFocus()
 
     def get_itempos(self, attrs):
-        """\
-        Get position of sizer item (used in xml_parse)
-        """
+        "Get position of sizer item (used in xml_parse)"
         if hasattr(self.window.properties['window_1'], 'value') and \
                 attrs['name'] == self.window.properties['window_1'].value:
             pos = 1
@@ -102,12 +87,10 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
     _custom_base_classes = True
 
-    def __init__(self, name, parent, id, style, win_1, win_2, orientation,
-                 sizer, pos, property_window, show=True):
+    def __init__(self, name, parent, id, style, win_1, win_2, orientation, sizer, pos, property_window, show=True):
 
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id,
-                             sizer, pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -120,47 +103,36 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.min_pane_size = 20
 
         # initialise properties remaining staff
-        self.access_functions['min_pane_size'] = (self.get_min_pane_size,
-                                                  self.set_min_pane_size)
+        self.access_functions['min_pane_size'] = (self.get_min_pane_size, self.set_min_pane_size)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.access_functions['sash_pos'] = (self.get_sash_pos,
-                                             self.set_sash_pos)
+        self.access_functions['sash_pos'] = (self.get_sash_pos, self.set_sash_pos)
         prop = self.properties
         prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
-        self.access_functions['orientation'] = (self.get_orientation,
-                                                self.set_orientation)
-        prop['orientation'] = HiddenProperty(
-            self, 'orientation', label=_("Orientation"))
+        self.access_functions['orientation'] = (self.get_orientation, self.set_orientation)
+        prop['orientation'] = HiddenProperty( self, 'orientation', label=_("Orientation") )
 
         self.access_functions['window_1'] = (self.get_win_1, lambda v: None)
         self.access_functions['window_2'] = (self.get_win_2, lambda v: None)
         prop['window_1'] = HiddenProperty(self, 'window_1')
         prop['window_2'] = HiddenProperty(self, 'window_2')
-        self.window_1 = SizerSlot(self, self.virtual_sizer, 1)
-        self.window_2 = SizerSlot(self, self.virtual_sizer, 2)
+        self.window_1 = SizerSlot(self, self.virtual_sizer, 1) # XXX no node?
+        self.window_2 = SizerSlot(self, self.virtual_sizer, 2) # XXX no node?
 
-        prop['min_pane_size'] = SpinProperty(self, 'min_pane_size',
-                                             can_disable=True, r=(10, 2000),
+        prop['min_pane_size'] = SpinProperty(self, 'min_pane_size', can_disable=True, r=(10, 2000),
                                              label=_('Minimum pane size'))
 
-        prop['sash_pos'] = SpinProperty(self, 'sash_pos', r=(0, 400),
-                                        can_disable=True,
-                                        label=_("Sash position"))
+        prop['sash_pos'] = SpinProperty(self, 'sash_pos', r=(0, 400), can_disable=True, label=_("Sash position"))
         self.no_custom_class = False
-        self.access_functions['no_custom_class'] = (self.get_no_custom_class,
-                                                    self.set_no_custom_class)
-        prop['no_custom_class'] = CheckBoxProperty(
-            self, 'no_custom_class',
-            label=_("Don't generate code for this class"))
+        self.access_functions['no_custom_class'] = (self.get_no_custom_class, self.set_no_custom_class)
+        prop['no_custom_class'] = CheckBoxProperty(self, 'no_custom_class',
+                                                   label=_("Don't generate code for this class"))
 
     def create_widget(self):
-        self.widget = wx.SplitterWindow(self.parent.widget, self.id,
-                                        style=self.get_int_style())
+        self.widget = wx.SplitterWindow(self.parent.widget, self.id, style=self.get_int_style())
         self.split()
 
     def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self,
-                                           sel_marker_parent=self.widget)
+        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
 
         sp = self.properties['sash_pos']
         if sp.is_active():
@@ -176,8 +148,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         else:
             min_pane_size.set_value(self.widget.GetMinimumPaneSize())
 
-        wx.EVT_SPLITTER_SASH_POS_CHANGED(self.widget, self.widget.GetId(),
-                                         self.on_sash_pos_changed)
+        wx.EVT_SPLITTER_SASH_POS_CHANGED( self.widget, self.widget.GetId(), self.on_sash_pos_changed )
 
     def on_set_focus(self, event):
         self.show_properties()
@@ -193,8 +164,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.properties['style'].display(panel)
         self.properties['sash_pos'].display(panel)
         self.properties['min_pane_size'].display(panel)
-        sizer.Add(self.properties['no_custom_class'].panel, 0,
-                  wx.ALL | wx.EXPAND, 3)
+        sizer.Add(self.properties['no_custom_class'].panel, 0, wx.ALL | wx.EXPAND, 3)
         sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['sash_pos'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['min_pane_size'].panel, 0, wx.EXPAND)
@@ -321,11 +291,8 @@ tmpl_label = 'window'
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    Factory function for EditSplitterWindow objects.
-    """
-    dialog = wcodegen.WidgetStyleSelectionDialog(
-            dlg_title, box_title, choices)
+    "Factory function for EditSplitterWindow objects"
+    dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices)
     res = dialog.ShowModal()
     style = dialog.get_selection()
     dialog.Destroy()
@@ -339,10 +306,8 @@ def builder(parent, sizer, pos, number=[1]):
     widget = editor_class(label, parent, wx.NewId(), None, None, None, style,
                           sizer, pos, common.property_panel, show=False)
     if _has_panel:
-        pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(),
-                          widget.virtual_sizer, 1, common.property_panel)
-        pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(),
-                          widget.virtual_sizer, 2, common.property_panel)
+        pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1, common.property_panel)
+        pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2, common.property_panel)
         widget.window_1 = pane1
         widget.window_2 = pane2
 
@@ -369,9 +334,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    Factory to build editor objects from a XML file.
-    """
+    "Factory to build editor objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -379,10 +342,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.NewId(), None, None, None,
-                          editor_style, sizer, pos, common.property_panel)
-    sizer.set_item(widget.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    widget = editor_class(name, parent, wx.NewId(), None, None, None, editor_style, sizer, pos, common.property_panel)
+    sizer.set_item(widget.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(widget)
     widget.node = node
     if pos is None:

@@ -15,9 +15,7 @@ import wx
 
 
 class BugReport(bugdialog_ui.UIBugDialog):
-    """\
-    Dialog to show details of internal errors.
-    """
+    "Dialog to show details of internal errors"
 
     _disabled = False
     """\
@@ -50,8 +48,7 @@ class BugReport(bugdialog_ui.UIBugDialog):
         log.exception_orig(header)
         self._fill_dialog(exc_msg, exc_type, header)
 
-    def SetContentEI(self, exc_type, exc_value, exc_tb,
-                     msg=_('An internal error occurred')):
+    def SetContentEI(self, exc_type, exc_value, exc_tb, msg=_('An internal error occurred')):
         """\
         Format given exception and add details to dialog.
 
@@ -102,9 +99,7 @@ class BugReport(bugdialog_ui.UIBugDialog):
         self.tc_howto_report.SetValue(howto)
 
     def OnCopy(self, event):
-        """\
-        Copy the dialog content to the clipboard
-        """
+        "Copy the dialog content to the clipboard"
         text = self.tc_details.GetValue()
         if not text:
             return

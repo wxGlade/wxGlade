@@ -14,24 +14,19 @@ from edit_windows import ManagedBase
 
 
 class EditSpacer(ManagedBase):
-    def __init__(self, name, parent, id, width, height, sizer, pos,
-                 property_window, show=True):
-        """\
-        Class to handle spacers for sizers
-        """
-        ManagedBase.__init__(self, name, 'spacer', parent, id, sizer,
-                             pos, property_window, show=show)
+    def __init__(self, name, parent, id, width, height, sizer, pos, property_window, show=True):
+        "Class to handle spacers for sizers"
+        ManagedBase.__init__(self, name, 'spacer', parent, id, sizer, pos, property_window, show=show)
         self.__size = [width, height]
 
         self.access_functions['width'] = (self.get_width, self.set_width)
         self.access_functions['height'] = (self.get_height, self.set_height)
 
-        self.properties['width'] = SpinProperty(self, 'width', None, label=_("width"))
-        self.properties['height'] = SpinProperty(self, 'height', None, label=_("height"))
+        self.properties['width'] = SpinProperty(self, 'width', None, label=_("width"), immediate=True)
+        self.properties['height'] = SpinProperty(self, 'height', None, label=_("height"), immediate=True)
 
     def create_widget(self):
-        self.widget = wx.Window(self.parent.widget, self.id, size=self.__size,
-                                style=wx.SIMPLE_BORDER)
+        self.widget = wx.Window(self.parent.widget, self.id, size=self.__size, style=wx.SIMPLE_BORDER)
         self.widget.GetBestSize = self.widget.GetSize
         wx.EVT_PAINT(self.widget, self.on_paint)
 
@@ -145,41 +140,32 @@ def builder(parent, sizer, pos):
         return
 
     name = 'spacer'
-    spacer = EditSpacer(name, parent, wx.NewId(), width, height, sizer, pos,
-                        common.property_panel)
+    spacer = EditSpacer(name, parent, wx.NewId(), width, height, sizer, pos, common.property_panel)
     node = Tree.Node(spacer)
     spacer.node = node
     spacer.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditSpacer objects from a XML file
-    """
+    "factory to build EditSpacer objects from a XML file"
     from xml_parse import XmlParsingError
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos,
-                        common.property_panel, True)
-    sizer.set_item(spacer.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos, common.property_panel, True)
+    sizer.set_item(spacer.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(spacer)
     spacer.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return spacer
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     common.widgets['EditSpacer'] = builder
     common.widgets_from_xml['EditSpacer'] = xml_builder
 
     return common.make_object_button('EditSpacer', 'spacer.xpm')
-

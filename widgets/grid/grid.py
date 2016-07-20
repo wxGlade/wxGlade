@@ -79,11 +79,8 @@ class ColsHandler(BaseXmlBuilderTagHandler):
 
 class EditGrid(ManagedBase):
 
-    def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True):
-        """\
-        Class to handle wxGrid objects
-        """
+    def __init__(self, name, parent, id, sizer, pos, property_window, show=True):
+        "Class to handle wxGrid objects"
         # values of properties for the grid:
         self.row_label_size = 30
         self.col_label_size = 30
@@ -104,69 +101,44 @@ class EditGrid(ManagedBase):
         props = self.properties
         af = self.access_functions
         af['create_grid'] = (self.get_create_grid, self.set_create_grid)
-        props['create_grid'] = CheckBoxProperty(
-            self, 'create_grid', write_always=True, label=_("Create grid"))
-        af['row_label_size'] = (self.get_row_label_size,
-                                self.set_row_label_size)
-        props['row_label_size'] = SpinProperty(
-            self, 'row_label_size', None, can_disable=True,
-            label=_("Row label size"), omitter='create_grid')
-        af['col_label_size'] = (self.get_col_label_size,
-                                self.set_col_label_size)
-        props['col_label_size'] = SpinProperty(
-            self, 'col_label_size', None, can_disable=True,
-            label=_("Column label size"), omitter='create_grid')
-        af['enable_editing'] = (self.get_enable_editing,
-                                self.set_enable_editing)
-        props['enable_editing'] = CheckBoxProperty(
-            self, 'enable_editing', None, write_always=True,
-            label=_("Enable editing"), omitter='create_grid')
-        af['enable_grid_lines'] = (self.get_enable_grid_lines,
-                                   self.set_enable_grid_lines)
-        props['enable_grid_lines']= CheckBoxProperty(
-            self, 'enable_grid_lines', None, write_always=True,
-            label=_("Enable grid lines"), omitter='create_grid')
+        props['create_grid'] = CheckBoxProperty( self, 'create_grid', write_always=True, label=_("Create grid") )
+        af['row_label_size'] = (self.get_row_label_size, self.set_row_label_size)
+        props['row_label_size'] = SpinProperty( self, 'row_label_size', None, can_disable=True,
+                                                label=_("Row label size"), omitter='create_grid', immediate=True)
+        af['col_label_size'] = (self.get_col_label_size, self.set_col_label_size)
+        props['col_label_size'] = SpinProperty( self, 'col_label_size', None, can_disable=True,
+                                                label=_("Column label size"), omitter='create_grid', immediate=True)
+        af['enable_editing'] = (self.get_enable_editing, self.set_enable_editing)
+        props['enable_editing'] = CheckBoxProperty( self, 'enable_editing', None, write_always=True,
+                                                    label=_("Enable editing"), omitter='create_grid' )
+        af['enable_grid_lines'] = (self.get_enable_grid_lines, self.set_enable_grid_lines)
+        props['enable_grid_lines']= CheckBoxProperty( self, 'enable_grid_lines', None, write_always=True,
+                                                      label=_("Enable grid lines"), omitter='create_grid')
         af['rows_number'] = (self.get_rows_number, self.set_rows_number)
-        props['rows_number'] = SpinProperty(
-            self, 'rows_number', None,
-            label=_("Number of rows"), omitter='create_grid')
-        af['enable_col_resize'] = (self.get_enable_col_resize,
-                                   self.set_enable_col_resize)
-        props['enable_col_resize']= CheckBoxProperty(
-            self, 'enable_col_resize', None, write_always=True,
-            label=_("Enable resizing columns"), omitter='create_grid')
-        af['enable_row_resize'] = (self.get_enable_row_resize,
-                                   self.set_enable_row_resize)
-        props['enable_row_resize'] = CheckBoxProperty(
-            self, 'enable_row_resize', None, write_always=True,
-            label=_("Enable resizing rows"), omitter='create_grid')
-        af['enable_grid_resize'] = (self.get_enable_grid_resize,
-                                    self.set_enable_grid_resize)
-        props['enable_grid_resize'] = CheckBoxProperty(
-            self, 'enable_grid_resize', None, write_always=True,
-            label=_("Enable resizing grid"), omitter='create_grid')
+        props['rows_number'] = SpinProperty(self, 'rows_number', None, label=_("Number of rows"), omitter='create_grid')
+        af['enable_col_resize'] = (self.get_enable_col_resize, self.set_enable_col_resize)
+        props['enable_col_resize']= CheckBoxProperty( self, 'enable_col_resize', None, write_always=True,
+                                                      label=_("Enable resizing columns"), omitter='create_grid')
+        af['enable_row_resize'] = (self.get_enable_row_resize, self.set_enable_row_resize)
+        props['enable_row_resize'] = CheckBoxProperty( self, 'enable_row_resize', None, write_always=True,
+                                                       label=_("Enable resizing rows"), omitter='create_grid')
+        af['enable_grid_resize'] = (self.get_enable_grid_resize, self.set_enable_grid_resize)
+        props['enable_grid_resize'] = CheckBoxProperty( self, 'enable_grid_resize', None, write_always=True,
+                                                        label=_("Enable resizing grid"), omitter='create_grid')
         af['lines_color'] = (self.get_lines_color, self.set_lines_color)
-        props['lines_color']= ColorDialogProperty(
-            self, 'lines_color', None,
-            label=_("Lines colour"), omitter='create_grid')
-        af['label_bg_color'] = (self.get_label_bg_color,
-                                self.set_label_bg_color)
-        props['label_bg_color']= ColorDialogProperty(
-            self, 'label_bg_color', None,
-            label=_("Label background colour"), omitter='create_grid')
-        af['selection_mode'] = (self.get_selection_mode,
-                                self.set_selection_mode)
-        props['selection_mode'] = RadioProperty(
-            self, 'selection_mode', None,
-            ['wxGrid.wxGridSelectCells',
-             'wxGrid.wxGridSelectRows',
-             'wxGrid.wxGridSelectColumns'],
-            label=_("Selection mode"), omitter='create_grid')
+        props['lines_color']= ColorDialogProperty( self, 'lines_color', None,
+                                                   label=_("Lines colour"), omitter='create_grid')
+        af['label_bg_color'] = (self.get_label_bg_color, self.set_label_bg_color)
+        props['label_bg_color']= ColorDialogProperty( self, 'label_bg_color', None,
+                                                      label=_("Label background colour"), omitter='create_grid')
+        af['selection_mode'] = (self.get_selection_mode, self.set_selection_mode)
+        props['selection_mode'] = RadioProperty( self, 'selection_mode', None,
+                                ['wxGrid.wxGridSelectCells', 'wxGrid.wxGridSelectRows', 'wxGrid.wxGridSelectColumns'],
+                                label=_("Selection mode"), omitter='create_grid')
         af['columns'] = (self.get_columns, self.set_columns)
-        props['columns'] = GridColsProperty(
-            self, 'columns', None,
-            [('Label', GridProperty.STRING), ('Size', GridProperty.INT)],
-            label=_("Columns"), omitter='create_grid')
+        props['columns'] = GridColsProperty( self, 'columns', None,
+                                             [('Label', GridProperty.STRING), ('Size', GridProperty.INT)],
+                                             label=_("Columns"), omitter='create_grid')
 
     def create_properties(self):
         ManagedBase.create_properties(self)

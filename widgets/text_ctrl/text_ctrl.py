@@ -19,16 +19,11 @@ from widget_properties import *
 
 
 class EditTextCtrl(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxTextCtrl objects
-    """
+    "Class to handle wxTextCtrl objects"
 
-    def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True):
-
+    def __init__(self, name, parent, id, sizer, pos, property_window, show=True):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxTextCtrl', parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxTextCtrl', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -41,16 +36,14 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
         prop = self.properties
         self.access_functions['value'] = (self.get_value, self.set_value)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        prop['value'] = TextProperty(self, 'value', None,
-                                     multiline=True, label=_("value"))
+        prop['value'] = TextProperty(self, 'value', None, multiline=True, label=_("value"))
         prop['style'] = CheckListProperty(self, 'style', self.widget_writer)
 
     def create_widget(self):
         value = self.value
         if 'wxTE_MULTILINE' in self.get_string_style():
             value = value.replace('\\n', '\n')
-        self.widget = wx.TextCtrl(self.parent.widget, self.id, value=value,
-                                  style=self.get_int_style())
+        self.widget = wx.TextCtrl(self.parent.widget, self.id, value=value, style=self.get_int_style())
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -65,8 +58,7 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
         compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, _('Widget'))
-        panel.SetScrollbars(
-            1, 5, 1, int(math.ceil(panel.GetClientSize()[1]/5.0)))
+        panel.SetScrollbars( 1, 5, 1, int(math.ceil(panel.GetClientSize()[1]/5.0)) )
 
     def get_value(self):
         return self.value
@@ -111,15 +103,12 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditTextCtrl objects.
-    """
+    "factory function for EditTextCtrl objects"
     name = 'text_ctrl_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'text_ctrl_%d' % number[0]
-    text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos,
-                        common.property_panel)
+    text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel)
     node = Tree.Node(text)
     text.node = node
     text.show_widget(True)
@@ -127,9 +116,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory function to build EditTextCtrl objects from a XML file
-    """
+    "factory function to build EditTextCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -137,24 +124,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos,
-                        common.property_panel)
-    sizer.set_item(text.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel)
+    sizer.set_item(text.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(text)
     text.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return text
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditTextCtrl'] = builder
     common.widgets_from_xml['EditTextCtrl'] = xml_builder
 

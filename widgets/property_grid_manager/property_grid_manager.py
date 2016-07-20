@@ -18,19 +18,14 @@ from widget_properties import *
 
 class EditPropertyGridManager(ManagedBase, EditStylesMixin):
 
-    def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True):
-        """\
-        Class to handle wxPropertyGridManager objects
-        """
+    def __init__(self, name, parent, id, sizer, pos, property_window, show=True):
+        "Class to handle wxPropertyGridManager objects"
 
-        ManagedBase.__init__(self, name, 'wxPropertyGridManager', parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxPropertyGridManager', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
+        self.properties['style'] = CheckListProperty(self, 'style', self.widget_writer)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -82,9 +77,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditPropertyGridManager objects from a XML file
-    """
+    "factory to build EditPropertyGridManager objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -106,10 +99,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     common.widgets['EditPropertyGridManager'] = builder
     common.widgets_from_xml['EditPropertyGridManager'] = xml_builder
 

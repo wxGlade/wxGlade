@@ -16,18 +16,14 @@ from widget_properties import *
 
 
 class EditListCtrl(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxListCtrl objects
-    """
+    "Class to handle wxListCtrl objects"
 
     update_widget_style = False
 
-    def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
+    def __init__(self, name, parent, id, sizer, pos, property_window, show=True, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
 
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -35,17 +31,14 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
 
         # initialise properties remaining staff
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
+        self.properties['style'] = CheckListProperty(self, 'style', self.widget_writer)
 
     def create_widget(self):
-        self.widget = wx.ListCtrl(self.parent.widget, self.id,
-                                  style=wx.LC_REPORT | wx.BORDER_SUNKEN)
+        self.widget = wx.ListCtrl(self.parent.widget, self.id, style=wx.LC_REPORT | wx.BORDER_SUNKEN)
         # add a couple of columns just for a better appearance (for now)
         self.widget.InsertColumn(0, _('List Control:'))
         self.widget.InsertColumn(1, self.name)
-        wx.EVT_LIST_COL_CLICK(self.widget, self.widget.GetId(),
-                              self.on_set_focus)
+        wx.EVT_LIST_COL_CLICK(self.widget, self.widget.GetId(), self.on_set_focus)
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
@@ -76,15 +69,12 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditListCtrl objects.
-    """
+    "factory function for EditListCtrl objects"
     name = 'list_ctrl_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'list_ctrl_%d' % number[0]
-    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos,
-                             common.property_panel)
+    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel)
     node = Tree.Node(list_ctrl)
     list_ctrl.node = node
     list_ctrl.set_option(1)
@@ -95,9 +85,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory function to build EditListCtrl objects from a XML file
-    """
+    "factory function to build EditListCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -105,8 +93,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos,
-                             common.property_panel, style=0)
+    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel, style=0)
     sizer.set_item(list_ctrl.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
     node = Tree.Node(list_ctrl)
@@ -119,10 +106,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     common.widgets['EditListCtrl'] = builder
     common.widgets_from_xml['EditListCtrl'] = xml_builder
 

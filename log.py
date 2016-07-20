@@ -41,14 +41,10 @@ import config
 
 
 stringLoggerInstance = None
-"""\
-Reference to the active L{StringHandler} instance
-"""
+"Reference to the active L{StringHandler} instance"
 
 exception_orig = logging.exception
-"""\
-Reference to the original implementation of C{logging.exception}
-"""
+"Reference to the original implementation of C{logging.exception}"
 
 
 class StringHandler(logging.handlers.MemoryHandler):
@@ -150,18 +146,14 @@ class StringHandler(logging.handlers.MemoryHandler):
             self.flush()
 
     def flush(self):
-        """\
-        Empty the buffer
-        """
+        "Empty the buffer"
         self.buffer = []
 
 # end of class StringHandler
 
 
 class ExceptionFormatter(logging.Formatter):
-    """\
-    Extended formatter to include more exception details automatically.
-    """
+    "Extended formatter to include more exception details automatically"
 
     def formatException(self, ei):
         """
@@ -226,14 +218,11 @@ class ExceptionFormatter(logging.Formatter):
                 stack_list.reverse()
                 stack_level = -1
 
-                for frame, filename, lineno, func_name, context, index in \
-                        stack_list:
+                for frame, filename, lineno, func_name, context, index in stack_list:
 
                     stack_level += 1
                     try:
-                        func_args = inspect.formatargvalues(
-                            *inspect.getargvalues(frame)
-                        )
+                        func_args = inspect.formatargvalues( *inspect.getargvalues(frame) )
                     except:
                         # sometimes frames contains non-printable values:
                         # e.g. TypeError: __repr__ returned non-string
@@ -271,15 +260,11 @@ class ExceptionFormatter(logging.Formatter):
                                 var_value = var_value.encode('string-escape')
                             else:
                                 try:
-                                    var_value = pprint.pformat(
-                                        frame.f_locals[var_name])
-                                    var_value = var_value.encode(
-                                        'ascii', 'replace')
+                                    var_value = pprint.pformat( frame.f_locals[var_name] )
+                                    var_value = var_value.encode( 'ascii', 'replace')
                                 except:
                                     var_value = '<unknown content>'
-                            sio.write('  -> %s (%s): %s\n' % (
-                                var_name, var_type, var_value)
-                            )
+                            sio.write('  -> %s (%s): %s\n' % ( var_name, var_type, var_value) )
                     else:
                         sio.write('  No local variables\n')
                     sio.write('\n')
@@ -345,9 +330,7 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
     @see: L{installExceptionHandler()}
     """
     default_formatter = ExceptionFormatter('%(levelname)-8s: %(message)s')
-    file_formatter = ExceptionFormatter(
-        '%(asctime)s %(name)s %(levelname)s: %(message)s'
-        )
+    file_formatter = ExceptionFormatter( '%(asctime)s %(name)s %(levelname)s: %(message)s' )
     logger = logging.getLogger()
 
     # check for installed handlers and remove them
@@ -375,12 +358,8 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
             logging.warning(_('Logging directory "%s" does not exists. Skip '
                               'file logger initialisation!'), log_directory)
         else:
-            file_logger = logging.handlers.RotatingFileHandler(
-                filename,
-                maxBytes=100 * 1024,
-                encoding=encoding,
-                backupCount=1,
-                )
+            file_logger = logging.handlers.RotatingFileHandler( filename, maxBytes=100 * 1024,
+                                                                encoding=encoding, backupCount=1 )
             file_logger.setFormatter(file_formatter)
             file_logger.setLevel(logging.NOTSET)
             logger.addHandler(file_logger)
@@ -403,10 +382,7 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
         if level.upper() in logging._levelNames:                 # pylint: disable=W0212
             logger.setLevel(logging._levelNames[level.upper()])  # pylint: disable=W0212
         else:
-            logging.warning(
-                _('Invalid log level "%s". Use "WARNING" instead.'),
-                level.upper(),
-                )
+            logging.warning( _('Invalid log level "%s". Use "WARNING" instead.'), level.upper() )
             logger.setLevel(logging.WARNING)
     else:
         logger.setLevel(logging.NOTSET)
@@ -429,9 +405,7 @@ def deinit():
 
 
 def setDebugLevel():
-    """\
-    Set the log level to DEBUG for all log handlers
-    """
+    "Set the log level to DEBUG for all log handlers"
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
@@ -506,10 +480,7 @@ def exceptionHandler(exc_type, exc_value, exc_tb):
     @param exc_value: The "value" of the exception
     @param exc_tb:    Call stack of the exception
     """
-    logging.error(
-        _("An unhandled exception occurred"),
-        exc_info=(exc_type, exc_value, exc_tb)
-    )
+    logging.error( _("An unhandled exception occurred"), exc_info=(exc_type, exc_value, exc_tb) )
     sys.exc_clear()
 
 

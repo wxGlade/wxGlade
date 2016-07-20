@@ -17,9 +17,7 @@ from edit_windows import EditBase, EditStylesMixin
 
 
 class FieldsHandler(BaseXmlBuilderTagHandler):
-    """\
-    Custom Property handler for statusbar fields.
-    """
+    "Custom Property handler for statusbar fields"
 
     def __init__(self, owner):
         super(FieldsHandler, self).__init__()
@@ -45,14 +43,12 @@ class FieldsHandler(BaseXmlBuilderTagHandler):
 
 
 class EditStatusBar(EditBase, EditStylesMixin):
-
     _hidden_frame = None
     update_widget_style = False
 
     def __init__(self, name, klass, parent, property_window):
         # Initialise parent classes
-        EditBase.__init__(self, name, klass, parent, wx.NewId(),
-                          property_window, custom_class=False, show=False)
+        EditBase.__init__( self, name, klass, parent, wx.NewId(), property_window, custom_class=False, show=False )
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -61,24 +57,20 @@ class EditStatusBar(EditBase, EditStylesMixin):
 
         # initialise properties remaining staff
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
+        self.properties['style'] = CheckListProperty( self, 'style', self.widget_writer )
 
         self.fields = [[self.name, "-1"]]   # list of 2-lists label, size
         # for the statusbar fields
         self.access_functions['fields'] = (self.get_fields, self.set_fields)
-        prop = self.properties['fields'] = GridProperty(
-            self, 'fields', None,
-            [("Text", GridProperty.STRING), ("Size", GridProperty.INT)])
+        prop = self.properties['fields'] = GridProperty( self, 'fields', None,
+                                                         [("Text", GridProperty.STRING), ("Size", GridProperty.INT)])
 
         # replace the default 'write' method of 'prop' with a custom one
         def write_prop(outfile, tabs):
             inner_xml = u''
             for label, width in self.fields:
-                inner_xml += common.format_xml_tag(
-                    u'field', label, tabs + 1, width=width)
-            stmt = common.format_xml_tag(
-                u'fields', inner_xml, tabs, is_xml=True)
+                inner_xml += common.format_xml_tag( u'field', label, tabs + 1, width=width )
+            stmt = common.format_xml_tag( u'fields', inner_xml, tabs, is_xml=True )
             outfile.write(stmt)
 
         prop.write = write_prop
@@ -165,9 +157,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[0]):
-    """\
-    factory function for EditToolBar objects.
-    """
+    "factory function for EditToolBar objects"
     class Dialog(wx.Dialog):
         def __init__(self):
             wx.Dialog.__init__(self, None, -1, _('Select toolbar class'))
@@ -216,9 +206,7 @@ def builder(parent, sizer, pos, number=[0]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditStatusBar objects from a XML file
-    """
+    "factory to build EditStatusBar objects from a XML file"
     name = attrs.get('name')
     if parent:
         if name:
@@ -226,8 +214,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
             parent.statusbar.name_prop.set_value(name)
         return parent.statusbar
     else:
-        widget = EditStatusBar(name, attrs.get('class', 'wxStatusBar'),
-                               None, common.property_panel)
+        widget = EditStatusBar(name, attrs.get('class', 'wxStatusBar'), None, common.property_panel)
         widget.node = Tree.Node(widget)
         common.app_tree.add(widget.node)
         return widget

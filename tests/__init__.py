@@ -166,9 +166,7 @@ class WXGladeBaseTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """\
-        Initialise parts of wxGlade before individual tests starts
-        """
+        "Initialise parts of wxGlade before individual tests starts"
         # set icon path back to the default default
         config.icons_path = 'icons'
 
@@ -211,16 +209,12 @@ class WXGladeBaseTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """\
-        Cleanup after all individual tests are done
-        """
+        "Cleanup after all individual tests are done"
         # de-register own logging
         log.deinit()
 
     def setUp(self):
-        """\
-        Initialise
-        """
+        "Initialise"
         # initiate empty structure to store files and there content
         self.vFiles = {}
 
@@ -248,9 +242,7 @@ class WXGladeBaseTest(unittest.TestCase):
                 common.code_writers[lang].app_encoding
 
     def tearDown(self):
-        """\
-        Cleanup
-        """
+        "Cleanup"
         # cleanup virtual files
         for filename in self.vFiles:
             self.vFiles[filename].close()
@@ -302,14 +294,8 @@ class WXGladeBaseTest(unittest.TestCase):
         @param filename: Name of the virtual output file
         @type filename:  str
         """
-        self.failUnless(
-            language in common.code_writers,
-            "No codewriter loaded for %s" % language
-            )
-        self.failUnless(
-            isinstance(document, types.UnicodeType),
-            'Expected unicode document, got "%s"' % type(document)
-        )
+        self.failUnless( language in common.code_writers, "No codewriter loaded for %s" % language )
+        self.failUnless(isinstance(document, types.UnicodeType), 'Expected unicode document, got "%s"'%type(document))
 
         document = self._prepare_wxg(language, document)
 
@@ -317,27 +303,15 @@ class WXGladeBaseTest(unittest.TestCase):
         document = document.encode('UTF-8')
 
         # generate code
-        CodeWriter(
-            writer=common.code_writers[language],
-            input=document,
-            from_string=True,
-            out_path=filename,
-            )
+        CodeWriter( writer=common.code_writers[language], input=document, from_string=True, out_path=filename )
 
         return
 
     def _file_exists(self, filename):
-        """\
-        Check if the file is a test case file
-
-        @rtype: bool
-        """
+        "Check if the file is a test case file"
         fullpath = os.path.join(self.caseDirectory, filename)
         exists = os.path.isfile(fullpath)
-        self.failIf(
-            not exists,
-            'Case file %s does not exist' % filename
-            )
+        self.failIf( not exists, 'Case file %s does not exist' % filename )
         return exists
 
     def _load_file(self, filename):
@@ -389,25 +363,11 @@ class WXGladeBaseTest(unittest.TestCase):
             filetype = 'input'
         else:
             filetype = 'result'
-        file_list = glob.glob(
-            os.path.join(self.caseDirectory, "%s%s" % (casename, extension))
-        )
-        self.failIf(
-            len(file_list) == 0,
-            'No %s file "%s" for case "%s" found!' % (
-                filetype,
-                filename,
-                casename,
-            )
-        )
-        self.failIf(
-            len(file_list) > 1,
-            'More than one %s file "%s" for case "%s" found!' % (
-                filetype,
-                filename,
-                casename,
-            )
-        )
+        file_list = glob.glob( os.path.join(self.caseDirectory, "%s%s" % (casename, extension)) )
+        self.failIf( len(file_list) == 0,
+                     'No %s file "%s" for case "%s" found!' % ( filetype, filename, casename ) )
+        self.failIf( len(file_list) > 1,
+                     'More than one %s file "%s" for case "%s" found!' % ( filetype, filename, casename ) )
         return file_list[0]
 
     def _fixture_filename(self, func):
@@ -420,15 +380,9 @@ class WXGladeBaseTest(unittest.TestCase):
         def inner(klass, filename):
             casename, extension = os.path.splitext(filename)
 
-            file_list = glob.glob(
-                os.path.join(self.caseDirectory, "%s%s" % (casename, extension))
-            )
-            self.failIf(
-                len(file_list) == 0,
-                'No result file for case "%s" found!' % casename)
-            self.failIf(
-                len(file_list) > 1,
-                'More than one result file for case "%s" found!' % casename)
+            file_list = glob.glob( os.path.join(self.caseDirectory, "%s%s" % (casename, extension)) )
+            self.failIf( len(file_list) == 0, 'No result file for case "%s" found!' % casename)
+            self.failIf( len(file_list) > 1,  'More than one result file for case "%s" found!' % casename)
 
             filename = file_list[0]
             return func(klass, filename)
@@ -436,19 +390,12 @@ class WXGladeBaseTest(unittest.TestCase):
         return inner
 
     def _modify_attrs(self, content, **kwargs):
-        """\
-        Modify general options inside a wxg (XML) file
-        """
+        "Modify general options inside a wxg (XML) file"
         modified = content
         for option in kwargs:
             # create regexp first
             pattern = r'%s=".*?"' % option
-            modified = re.sub(
-                pattern,
-                '%s="%s"' % (option, kwargs[option]),
-                modified,
-                1
-                )
+            modified = re.sub( pattern, '%s="%s"' % (option, kwargs[option]), modified, 1 )
 
         return modified
 
@@ -463,17 +410,11 @@ class WXGladeBaseTest(unittest.TestCase):
         return True
 
     def _os_makedirs(self, path, mode):
-        """\
-        Fake implementation for C{os.makedirs()} - do nothing
-        """
+        "Fake implementation for C{os.makedirs()} - do nothing"
         pass
 
     def _os_path_isdir(self, s):
-        """\
-        Fake implementation for C{os.path.isdir()}
-
-        @see: L{existing_directories}
-        """
+        "Fake implementation for C{os.path.isdir()}  @see: L{existing_directories}"
         if s in self.existing_directories:
             return True
         return False
@@ -580,13 +521,7 @@ class WXGladeBaseTest(unittest.TestCase):
                 list2.remove(line)
 
         # compare source files
-        diff_gen = difflib.unified_diff(
-            list1,
-            list2,
-            fromfile='expected source',
-            tofile='created source',
-            lineterm=''
-            )
+        diff_gen = difflib.unified_diff(list1, list2, fromfile='expected source', tofile='created source', lineterm='')
         return '\n'.join(diff_gen)
 
     def _generate_and_compare(self, lang, inname, outname):
@@ -665,27 +600,10 @@ class WXGladeBaseTest(unittest.TestCase):
         delta = self._diff(expected, generated)
 
         if filetype:
-            self.failIf(
-                delta,
-                "Generated %s file and expected result differs:\n%s" % (
-                    filetype,
-                    delta,
-                    )
-                )
+            self.failIf( delta, "Generated %s file and expected result differs:\n%s" % (filetype, delta) )
         else:
-            self.failIf(
-                delta,
-                "Generated file and expected result differs:\n%s" % delta
-                )
+            self.failIf( delta, "Generated file and expected result differs:\n%s" % delta )
 
     def _with_curr_dir(self, filename):
-        """\
-        Return the filename with prepended platform specific version of "./"
-
-        @param filename: filename
-        @type filename:  str
-        @rtype: str
-
-        @see: L{curr_dir}
-        """
+        'Return the filename with prepended platform specific version of "./"   @see: L{curr_dir}'
         return '%s%s' % (self.curr_dir, filename)

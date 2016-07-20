@@ -47,9 +47,8 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
 
                     append('%s = Wx::Menu->new();\n' % name)
                     append_items(name, item.children)
-                    append('%s->Append(%s, %s, %s, %s);\n' %
-                           (menu, id, self.codegen.quote_str(item.label),
-                            name, self.codegen.quote_str(item.help_str)))
+                    append( '%s->Append(%s, %s, %s, %s);\n' % (menu, id, self.codegen.quote_str(item.label),
+                                                               name, self.codegen.quote_str(item.help_str)) )
                 else:
                     item_type = 0
                     if item.checkable == '1':

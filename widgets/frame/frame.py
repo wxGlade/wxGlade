@@ -24,8 +24,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
     def __init__(self, name, parent, id, title, property_window,
                  style=wx.DEFAULT_FRAME_STYLE, show=True, klass='wxFrame'):
-        TopLevelBase.__init__(self, name, klass, parent, id,
-                              property_window, show=show, title=title)
+        TopLevelBase.__init__(self, name, klass, parent, id, property_window, show=show, title=title)
         self.base = 'wxFrame'
         EditStylesMixin.__init__(self)
 
@@ -48,35 +47,29 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
         # menubar property
         access['menubar'] = (self.get_menubar, self.set_menubar)
-        properties['menubar'] = CheckBoxProperty(
-            self, 'menubar', label=_('Has MenuBar'))
+        properties['menubar'] = CheckBoxProperty( self, 'menubar', label=_('Has MenuBar') )
 
         # statusbar property
         access['statusbar'] = (self.get_statusbar, self.set_statusbar)
-        properties['statusbar'] = CheckBoxProperty(
-            self, 'statusbar', label=_('Has StatusBar'))
+        properties['statusbar'] = CheckBoxProperty( self, 'statusbar', label=_('Has StatusBar') )
 
         # toolbar property
         access['toolbar'] = (self.get_toolbar, self.set_toolbar)
-        properties['toolbar'] = CheckBoxProperty(
-            self, 'toolbar', label=_('Has ToolBar'))
+        properties['toolbar'] = CheckBoxProperty( self, 'toolbar', label=_('Has ToolBar') )
 
         # icon property
         access['icon'] = (self.get_icon, self.set_icon)
-        properties['icon'] = FileDialogProperty(
-            self, 'icon', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-            label=_("icon"))
+        properties['icon'] = FileDialogProperty( self, 'icon', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+                                                 label=_("icon") )
         properties['icon'].set_tooltip(self.bitmap_tooltip_text)
 
         # centered property
         access['centered'] = (self.get_centered, self.set_centered)
-        properties['centered'] = CheckBoxProperty(
-            self, 'centered', label=_("centered"))
+        properties['centered'] = CheckBoxProperty( self, 'centered', label=_("centered") )
 
         # size hints property
         access['sizehints'] = (self.get_sizehints, self.set_sizehints)
-        properties['sizehints'] = CheckBoxProperty(
-            self, 'sizehints', label=_('Set Size Hints'))
+        properties['sizehints'] = CheckBoxProperty( self, 'sizehints', label=_('Set Size Hints') )
 
     def create_widget(self):
         if self.parent:
@@ -139,8 +132,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
     def set_menubar(self, value):
         if value:
             from menubar import EditMenuBar
-            self.menubar = EditMenuBar(self.name + '_menubar', 'wxMenuBar',
-                                       self, common.property_panel)
+            self.menubar = EditMenuBar(self.name + '_menubar', 'wxMenuBar', self, common.property_panel)
             self.menubar.node = Tree.Node(self.menubar)
             common.app_tree.add(self.menubar.node, self.node)
 
@@ -157,9 +149,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
     def set_statusbar(self, value):
         if value:
             from statusbar import EditStatusBar
-            self.statusbar = EditStatusBar(self.name + '_statusbar',
-                                           'wxStatusBar',
-                                           self, common.property_panel)
+            self.statusbar = EditStatusBar(self.name + '_statusbar', 'wxStatusBar', self, common.property_panel)
             if self.widget:
                 self.statusbar.show_widget(True)
                 self.statusbar.show_properties()
@@ -168,8 +158,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             self.show_properties(None)
         if self.widget:
             # this is needed at least on win32
-            wx.PostEvent(self.widget, wx.SizeEvent(self.widget.GetSize(),
-                                                   self.widget.GetId()))
+            wx.PostEvent( self.widget, wx.SizeEvent(self.widget.GetSize(), self.widget.GetId()) )
 
     def get_toolbar(self):
         return self.toolbar is not None
@@ -177,8 +166,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
     def set_toolbar(self, value):
         if value:
             from toolbar import EditToolBar
-            self.toolbar = EditToolBar(self.name + '_toolbar', 'wxToolBar',
-                                       self, common.property_panel)
+            self.toolbar = EditToolBar(self.name + '_toolbar', 'wxToolBar', self, common.property_panel)
             self.toolbar.node = Tree.Node(self.toolbar)
             common.app_tree.add(self.toolbar.node, self.node)
 
@@ -232,9 +220,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
 
 class EditMDIChildFrame(EditFrame):
-    _is_toplevel = False  # used to avoid to appear in the "Top Window" property
-                         # of the app
-
+    _is_toplevel = False  # used to avoid to appear in the "Top Window" property of the app
     def __init__(self, *args, **kwds):
         EditFrame.__init__(self, *args, **kwds)
         self.base = 'wxFrame'
@@ -244,9 +230,7 @@ class EditMDIChildFrame(EditFrame):
 
 
 def builder(parent, sizer, pos, number=[0]):
-    """\
-    factory function for EditFrame objects.
-    """
+    "factory function for EditFrame objects"
     class Dialog(wx.Dialog):
         def __init__(self):
             wx.Dialog.__init__(self, None, -1, _('Select frame class'))
@@ -306,8 +290,7 @@ def builder(parent, sizer, pos, number=[0]):
         base_class = EditFrame
     else:
         base_class = EditMDIChildFrame
-    frame = base_class(label, parent, wx.NewId(), label, common.property_panel,
-                       klass=klass)
+    frame = base_class(label, parent, wx.NewId(), label, common.property_panel, klass=klass)
     node = Tree.Node(frame)
     frame.node = node
     common.app_tree.add(node)
@@ -331,8 +314,7 @@ def _make_builder(base_class):
             label = attrs['name']
         except KeyError:
             raise XmlParsingError(_("'name' attribute missing"))
-        frame = base_class(label, parent, wx.NewId(), "",
-                           common.property_panel, show=False, style=0)
+        frame = base_class(label, parent, wx.NewId(), "", common.property_panel, show=False, style=0)
         node = Tree.Node(frame)
         frame.node = node
         common.app_tree.add(node)
@@ -353,8 +335,5 @@ def initialize():
 
     from tree import WidgetTree
     import os.path
-    WidgetTree.images['EditMDIChildFrame'] = os.path.join(
-        config.icons_path,
-        'frame.xpm'
-        )
+    WidgetTree.images['EditMDIChildFrame'] = os.path.join( config.icons_path, 'frame.xpm' )
     return common.make_object_button('EditFrame', 'frame.xpm', 1)
