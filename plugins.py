@@ -48,8 +48,7 @@ def load_widgets_from_dir(widget_dir, submodule=''):
 
     if module_list and config.use_gui and not submodule.endswith('_codegen'):
         if submodule:
-            logging.info(_('Loading "%s" modules from %s:'),
-                         submodule, widgets_filename)
+            logging.info(_('Loading "%s" modules from %s:'), submodule, widgets_filename)
         else:
             logging.info(_('Loading widgets from %s:'), widgets_filename)
 
@@ -91,9 +90,7 @@ def load_widgets_from_dir(widget_dir, submodule=''):
                 continue
     
             else:
-                logging.warning(
-                    _('Missing function "initialize()" in imported module %s. '
-                      'Skip initialisation.'), fqmn)
+                logging.warning(_('Missing function "initialize()" in imported module %s. Skip initialisation.'), fqmn)
                 continue
     
             if config.use_gui and not submodule.endswith('codegen'):
@@ -172,8 +169,7 @@ def _process_widget_config(module):
     # check mandatory attributes
     if 'wxklass' not in config_dict:
         logging.warning(
-            _('Missing mandatory configuration item "wxklass" in %s. '
-              'Ignoring whole configuration settings.'), name)
+            _('Missing mandatory configuration item "wxklass" in %s. Ignoring whole configuration settings.'), name)
         return False
 
     try:
@@ -209,9 +205,7 @@ def _init_codegen_gui(widget_dir, widget_name):
         # error already logged
         return False, None
     if not hasattr(codegen_module, 'initialize'):
-        logging.warning(
-            _('Missing function "initialize()" in imported '
-              'module %s. Skip initialisation.'), codegen_name)
+        logging.warning(_('Missing function "initialize()" in imported  module %s. Skip initialisation.'), codegen_name)
         return False, None
     codegen_module.initialize()
 
@@ -223,9 +217,7 @@ def _init_codegen_gui(widget_dir, widget_name):
             # error already logged
             return False, None
         if not hasattr(gui_module, 'initialize'):
-            logging.warning(
-                _('Missing function "initialize()" in imported '
-                  'module %s. Skip initialisation.'), gui_name)
+            logging.warning(_('Missing function "initialize()" in imported module %s. Skip initialisation.'), gui_name)
             return False, None
         widget_button = gui_module.initialize()
 
@@ -269,9 +261,7 @@ def import_module(widget_dir, module_name):
     if os.path.exists(zip_filename):
         # check ZIP file formally
         if not is_valid_zip(zip_filename, basemodule):
-            logging.warning(
-                _('ZIP file %s is not a valid ZIP file. Ignoring it.'),
-                zip_filename)
+            logging.warning( _('ZIP file %s is not a valid ZIP file. Ignoring it.'), zip_filename )
             zip_filename = None
         else:
             # add module temporarily to search path
@@ -282,25 +272,20 @@ def import_module(widget_dir, module_name):
     # import module
     try:
         try:
-            imported_module = __import__(module_name, {}, {},
-                                         ['just_not_empty'])
+            imported_module = __import__(module_name, {}, {}, ['just_not_empty'])
             return imported_module
         except ImportError:
             logging.info(_('Module %s not found.'), module_name)
             return None
         except (AttributeError, NameError, SyntaxError, ValueError):
             if zip_filename:
-                logging.exception(
-                    _('Importing widget "%s" from ZIP file %s failed'),
-                    module_name, zip_filename)
+                logging.exception( _('Importing widget "%s" from ZIP file %s failed'), module_name, zip_filename )
             else:
-                logging.exception(
-                    _('Importing widget "%s" failed'), module_name)
+                logging.exception( _('Importing widget "%s" failed'), module_name )
             return None
         except:
-            logging.exception(
-                _('Unexpected error during import of widget module %s'),
-                module_name)
+            if 'WINGDB_ACTIVE' in os.environ: raise
+            logging.exception( _('Unexpected error during import of widget module %s'), module_name )
             return None
 
     finally:
@@ -344,9 +329,7 @@ def is_valid_zip(filename, module_name):
             found_file = True
             break
     if not found_file:
-        logging.warning(
-            _('Missing file %s/codegen.py[co] in ZIP file %s. Ignoring '
-              'ZIP file.'), module_name, filename)
+        logging.warning(_('Missing file %s/codegen.py[co] in ZIP file %s. Ignoring ZIP file.'), module_name, filename)
         return False
 
     # check for GUI module
@@ -358,8 +341,7 @@ def is_valid_zip(filename, module_name):
             break
     if not found_file:
         logging.warning(
-            _('Missing file %s/%s.py[co] in ZIP file %s. Ignoring '
-              'ZIP file.'), module_name, module_name, filename)
+                _('Missing file %s/%s.py[co] in ZIP file %s. Ignoring ZIP file.'), module_name, module_name, filename)
         return False
     return True
 

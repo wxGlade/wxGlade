@@ -17,16 +17,10 @@ from widget_properties import *
 
 
 class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxHyperlinkCtrl objects
-    """
-
-    def __init__(self, name, parent, id, label, sizer, pos, property_window,
-                 show=True):
-
+    "Class to handle wxHyperlinkCtrl objects"
+    def __init__(self, name, parent, id, label, sizer, pos, property_window, show=True):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, id, sizer,
-                             pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -41,28 +35,21 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.access_functions['url'] = (self.get_url, self.set_url)
-        self.access_functions['attribute'] = (self.get_attribute,
-                                              self.set_attribute)
+        self.access_functions['attribute'] = (self.get_attribute, self.set_attribute)
 
-        self.properties['label'] = TextProperty(
-            self, 'label', label=_('label'))
+        self.properties['label'] = TextProperty(self, 'label', label=_('label'))
         self.properties['label'].set_tooltip(_("Label of the hyperlink"))
 
         self.properties['url'] = TextProperty(self, 'url', label=_('url'))
-        self.properties['url'].set_tooltip(
-            _("URL associated with the given label"))
+        self.properties['url'].set_tooltip(_("URL associated with the given label"))
 
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
+        self.properties['style'] = CheckListProperty(self, 'style', self.widget_writer)
 
-        self.properties['attribute'] = CheckBoxProperty(
-            self, 'attribute', label=_('Store as attribute'),
-            write_always=True)
+        self.properties['attribute'] = CheckBoxProperty(self, 'attribute', label=_('Store as attribute'), write_always=True)
 
     def create_widget(self):
         label = self.label.replace('\\n', '\n')
-        self.widget = wx.HyperlinkCtrl(
-            self.parent.widget, self.id, label, self.url)
+        self.widget = wx.HyperlinkCtrl(self.parent.widget, self.id, label, self.url)
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -117,8 +104,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = u'hyperlink_%d' % number[0]
-    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), name,
-                                       sizer, pos, common.property_panel)
+    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), name, sizer, pos, common.property_panel)
     node = Tree.Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node
     hyperlink_ctrl.show_widget(True)
@@ -126,9 +112,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditHyperlinkCtrl objects from a XML file
-    """
+    "factory to build EditHyperlinkCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -136,11 +120,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(),
-                                 "", sizer, pos,
-                                 common.property_panel)
-    sizer.set_item(hyperlink_ctrl.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), "", sizer, pos, common.property_panel)
+    sizer.set_item(hyperlink_ctrl.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node
     if pos is None:
@@ -151,10 +132,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditHyperlinkCtrl'] = builder
     common.widgets_from_xml['EditHyperlinkCtrl'] = xml_builder
 

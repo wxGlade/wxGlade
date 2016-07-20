@@ -33,24 +33,17 @@ else:
 
 class EditChoice(ManagedBase):
 
-    def __init__(self, name, parent, id, choices, sizer, pos, property_window,
-                 show=True):
-        """\
-        Class to handle wxChoice objects
-        """
+    def __init__(self, name, parent, id, choices, sizer, pos, property_window, show=True):
+        "Class to handle wxChoice objects"
         import config
-        ManagedBase.__init__(self, name, 'wxChoice', parent, id, sizer,
-                             pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxChoice', parent, id, sizer, pos, property_window, show=show)
         self.choices = choices
         self.selection = 0
 
         self.access_functions['choices'] = (self.get_choices, self.set_choices)
-        self.properties['choices'] = ChoicesProperty(self, 'choices', None,
-                                                     [('Label',
-                                                       GridProperty.STRING)],
+        self.properties['choices'] = ChoicesProperty(self, 'choices', None, [('Label',GridProperty.STRING)],
                                                      len(choices),label=_('choices'))
-        self.access_functions['selection'] = (self.get_selection,
-                                              self.set_selection)
+        self.access_functions['selection'] = (self.get_selection, self.set_selection)
         self.properties['selection'] = SpinProperty(self, 'selection', None,
                                                     r=(0, len(choices)-1), label=_('selection'))
         # 2003-09-04 added default_border
@@ -59,8 +52,7 @@ class EditChoice(ManagedBase):
             self.flag = wx.ALL
 
     def create_widget(self):
-        self.widget = wxChoice2(self.parent.widget, self.id,
-                               choices=self.choices)
+        self.widget = wxChoice2(self.parent.widget, self.id, choices=self.choices)
         self.set_selection(self.selection)
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
@@ -90,8 +82,7 @@ class EditChoice(ManagedBase):
                 self.widget.Append(c)
             if not self.properties['size'].is_active():
                 self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
-            self.widget.SetSelection(
-                int(self.properties['selection'].get_value()))
+            self.widget.SetSelection( int(self.properties['selection'].get_value()) )
 
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
@@ -111,15 +102,12 @@ class EditChoice(ManagedBase):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditChoice objects.
-    """
+    "factory function for EditChoice objects"
     name = 'choice_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'choice_%d' % number[0]
-    choice = EditChoice(name, parent, wx.NewId(), [u'choice 1'],
-                        sizer, pos, common.property_panel)
+    choice = EditChoice(name, parent, wx.NewId(), [u'choice 1'], sizer, pos, common.property_panel)
     node = Tree.Node(choice)
     #sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
@@ -128,9 +116,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditChoice objects from a XML file
-    """
+    "factory to build EditChoice objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -138,10 +124,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    choice = EditChoice(name, parent, wx.NewId(), [], sizer, pos,
-                        common.property_panel)
-    sizer.set_item(choice.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    choice = EditChoice(name, parent, wx.NewId(), [], sizer, pos, common.property_panel)
+    sizer.set_item(choice.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(choice)
     choice.node = node
     if pos is None:
@@ -152,10 +136,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditChoice'] = builder
     common.widgets_from_xml['EditChoice'] = xml_builder
 

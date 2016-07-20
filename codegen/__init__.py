@@ -855,16 +855,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # set (most of) instance variables back to default values
         self._init_vars()
 
-        self.multiple_files = app_attrs.get('option',
-                                            config.default_multiple_files)
+        self.multiple_files = app_attrs.get('option', config.default_multiple_files)
 
         # application name
         self.app_name = app_attrs.get('name')
         if self.app_name:
-            self.app_filename = '%s.%s' % (
-                self.app_name,
-                self.default_extensions[0],
-            )
+            self.app_filename = '%s.%s' % ( self.app_name, self.default_extensions[0] )
             self._textdomain = self.app_name
 
         # file encoding
@@ -905,13 +901,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self._overwrite = config.default_overwrite
 
         try:
-            self.for_version = tuple([int(t) for t in
-                                      app_attrs['for_version'].split('.')[:2]])
+            self.for_version = tuple([int(t) for t in app_attrs['for_version'].split('.')[:2]])
         except (KeyError, ValueError):
             if common.app_tree is not None:
-                self.for_version = \
-                tuple([int(t) for t in
-                       common.app_tree.app.for_version.split('.')])
+                self.for_version = tuple([int(t) for t in common.app_tree.app.for_version.split('.')])
 
         try:
             self.is_template = int(app_attrs['is_template'])
@@ -1005,9 +998,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             raise errors.WxgTemplateCodegenNotPossible
 
     def finalize(self):
-        """\
-        Code generator finalization function.
-        """
+        "Code generator finalization function"
         if self.previous_source:
             # insert all the new custom classes inside the old file
             tag = '<%swxGlade insert new_classes>' % self.nonce
@@ -1025,43 +1016,28 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             dep_list = self.dependencies.keys()
             dep_list.sort()
             code = self._tagcontent('dependencies', dep_list)
-            self.previous_source.content = \
-                self.previous_source.content.replace(tag, code)
+            self.previous_source.content = self.previous_source.content.replace(tag, code)
 
             # extra code (see the 'extracode' property of top-level widgets)
             tag = '<%swxGlade replace extracode>' % self.nonce
-            code = self._tagcontent(
-                'extracode',
-                self._current_extra_code
-                )
-            self.previous_source.content = \
-                self.previous_source.content.replace(tag, code)
+            code = self._tagcontent( 'extracode', self._current_extra_code )
+            self.previous_source.content = self.previous_source.content.replace(tag, code)
 
             # now remove all the remaining <123415wxGlade ...> tags from the
             # source: this may happen if we're not generating multiple files,
             # and one of the container class names is changed
-            self.previous_source.content = self._content_notfound(
-                self.previous_source.content
-                )
+            self.previous_source.content = self._content_notfound( self.previous_source.content )
 
-            tags = re.findall(
-                r'<%swxGlade event_handlers \w+>' % self.nonce,
-                self.previous_source.content
-                )
+            tags = re.findall( r'<%swxGlade event_handlers \w+>' % self.nonce, self.previous_source.content )
             for tag in tags:
                 self.previous_source.content = self.previous_source.content.replace(tag, "")
 
             # write the new file contents to disk
-            self.save_file(
-                self.previous_source.name,
-                self.previous_source.content,
-                content_only=True
-                )
+            self.save_file( self.previous_source.name, self.previous_source.content, content_only=True )
 
         elif not self.multiple_files:
             em = "".join(self._current_extra_modules.keys())
-            content = self.output_file.getvalue().replace(
-                '<%swxGlade extra_modules>\n' % self.nonce, em)
+            content = self.output_file.getvalue().replace( '<%swxGlade extra_modules>\n' % self.nonce, em )
 
             # module dependencies of all classes
             tag = '<%swxGlade replace dependencies>' % self.nonce
@@ -1125,20 +1101,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             if self.tmpl_gettext_detailed:
                 tmpl = self.tmpl_gettext_detailed
             else:
-                self.warning(
-                    _("Skip generating detailed startup code "
-                      "because no suitable template found.")
-                    )
+                self.warning( _("Skip generating detailed startup code because no suitable template found.") )
                 return
 
         elif klass and not self._use_gettext:
             if self.tmpl_detailed:
                 tmpl = self.tmpl_detailed
             else:
-                self.warning(
-                    _("Skip generating detailed startup code "
-                      "because no suitable template found.")
-                    )
+                self.warning( _("Skip generating detailed startup code because no suitable template found.") )
                 return
 
         # check for templates for simple startup code
@@ -1146,42 +1116,27 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             if self.tmpl_gettext_simple:
                 tmpl = self.tmpl_gettext_simple
             else:
-                self.warning(
-                    _("Skip generating simple startup code "
-                      "because no suitable template found.")
-                    )
+                self.warning( _("Skip generating simple startup code because no suitable template found.") )
                 return
         elif not klass and not self._use_gettext:
             if self.tmpl_simple:
                 tmpl = self.tmpl_simple
             else:
-                self.warning(
-                    _("Skip generating simple startup code "
-                      "because no suitable template found.")
-                    )
+                self.warning( _("Skip generating simple startup code because no suitable template found.") )
                 return
         else:
-            self.warning(
-                _('No application code template for klass "%(klass)s" '
-                  'and gettext "%(gettext)s" found!' % {
-                        'klass':   klass,
-                        'gettext': self._use_gettext,
-                        }
-                  ))
+            self.warning( _('No application code template for klass "%(klass)s" and gettext "%(gettext)s" found!' % {
+                         'klass':   klass, 'gettext': self._use_gettext } ))
             return
 
         # map to substitute template variables
-        self.app_mapping = {
-            'comment_sign': self.comment_sign,
-            'header_lines': ''.join(self.header_lines),
-            'klass': self.cn_class(klass),
-            'name': self.app_name,
-            'overwrite': self.tmpl_overwrite % {'comment_sign': self.comment_sign},
-            'tab': self.tabs(1),
-            'textdomain': self._textdomain,
-            'top_win_class': self.cn_class(top_win_class),
-            'top_win': top_win,
-            }
+        self.app_mapping = {'comment_sign': self.comment_sign,
+                            'header_lines': ''.join(self.header_lines),
+                            'klass': self.cn_class(klass), 'name': self.app_name,
+                            'overwrite': self.tmpl_overwrite % {'comment_sign': self.comment_sign},
+                            'tab': self.tabs(1),
+                            'textdomain': self._textdomain,
+                            'top_win_class': self.cn_class(top_win_class), 'top_win': top_win }
 
         # extend default mapping with language specific mapping
         if self.lang_mapping:
@@ -1191,10 +1146,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         if self.multiple_files:
             filename = os.path.join(self.out_dir, self.app_filename)
-            code = "%s%s" % (
-                self.tmpl_appfile % self.app_mapping,
-                code,
-                )
+            code = "%s%s" % ( self.tmpl_appfile % self.app_mapping, code )
             # write the wxApp code
             self.save_file(filename, code, True)
         else:
@@ -1265,17 +1217,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # try to see if there's some extra code to add to this class
         if not code_obj.preview:
-            extra_code = getattr(builder, 'extracode',
-                                 code_obj.properties.get('extracode', ""))
+            extra_code = getattr(builder, 'extracode', code_obj.properties.get('extracode', ""))
             if extra_code:
                 extra_code = re.sub(r'\\n', '\n', extra_code)
                 self.classes[klass].extra_code.append(extra_code)
                 if not is_new:
-                    self.warning(
-                        '%s has extra code, but you are not overwriting '
-                        'existing sources: please check that the resulting '
-                        'code is correct!' % code_obj.name
-                        )
+                    self.warning( '%s has extra code, but you are not overwriting '
+                                  'existing sources: please check that the resulting '
+                                  'code is correct!' % code_obj.name )
 
             # Don't add extra_code to self._current_extra_code here, that is
             # handled later.  Otherwise we'll emit duplicate extra code for
@@ -1292,26 +1241,18 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             for l in builder.get_init_code(code_obj):
                 write(tab + l)
 
-        write(self.tmpl_ctor_call_layout % {
-            'tab': tab,
-            })
+        write( self.tmpl_ctor_call_layout % {'tab':tab} )
 
         # generate code for binding events
-        code_lines = self.generate_code_event_bind(
-            code_obj,
-            tab,
-            event_handlers,
-            )
+        code_lines = self.generate_code_event_bind( code_obj, tab, event_handlers )
         obuffer.extend(code_lines)
 
         # end tag
-        write('%s%s end wxGlade\n' % (tab, self.comment_sign))
+        write( '%s%s end wxGlade\n' % (tab, self.comment_sign) )
 
         # write class function end statement
         if self.tmpl_cfunc_end and is_new:
-            write(self.tmpl_cfunc_end % {
-                'tab': tab,
-                })
+            write( self.tmpl_cfunc_end%{'tab':tab} )
 
         # end of ctor generation
 
@@ -1319,96 +1260,61 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if prev_src and not is_new:
             # replace the lines inside the ctor wxGlade block
             # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass,
-                                                 self.name_ctor)
+            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, self.name_ctor)
             if prev_src.content.find(tag) < 0:
                 # no __init__ tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade %(ctor)s block not found for %(name)s, %(ctor)s code "
-                    "NOT generated" % {
-                        'name': code_obj.name,
-                        'ctor': self.name_ctor,
-                        }
-                    )
+                self.warning( "wxGlade %(ctor)s block not found for %(name)s, %(ctor)s code "
+                              "NOT generated" % { 'name': code_obj.name, 'ctor': self.name_ctor } )
             else:
                 prev_src.content = prev_src.content.replace(tag, "".join(obuffer))
             obuffer = []
             write = obuffer.append
 
         # generate code for __set_properties()
-        code_lines = self.generate_code_set_properties(
-            builder,
-            code_obj,
-            is_new,
-            tab
-            )
+        code_lines = self.generate_code_set_properties( builder, code_obj, is_new, tab )
         obuffer.extend(code_lines)
 
         # replace code inside existing __set_properties() function
         if prev_src and not is_new:
             # replace the lines inside the __set_properties wxGlade block
             # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass,
-                                                 '__set_properties')
+            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__set_properties')
             if prev_src.content.find(tag) < 0:
                 # no __set_properties tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade __set_properties block not found for %s, "
-                    "__set_properties code NOT generated" % code_obj.name
-                    )
+                self.warning( "wxGlade __set_properties block not found for %s, "
+                              "__set_properties code NOT generated" % code_obj.name )
             else:
                 prev_src.content = prev_src.content.replace(tag, "".join(obuffer))
             obuffer = []
             write = obuffer.append
 
         # generate code for __do_layout()
-        code_lines = self.generate_code_do_layout(
-            builder,
-            code_obj,
-            is_new,
-            tab
-            )
+        code_lines = self.generate_code_do_layout( builder, code_obj, is_new, tab )
         obuffer.extend(code_lines)
 
         # replace code inside existing __do_layout() function
         if prev_src and not is_new:
             # replace the lines inside the __do_layout wxGlade block
             # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass,
-                                                 '__do_layout')
+            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__do_layout')
             if prev_src.content.find(tag) < 0:
                 # no __do_layout tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade __do_layout block not found for %s, __do_layout "
-                    "code NOT generated" % code_obj.name
-                    )
+                self.warning("wxGlade __do_layout block not found for %s, __do_layout code NOT generated"%code_obj.name)
             else:
                 prev_src.content = prev_src.content.replace(tag, "".join(obuffer))
 
         # generate code for event handler stubs
-        code_lines = self.generate_code_event_handler(
-            code_obj,
-            is_new,
-            tab,
-            prev_src,
-            event_handlers,
-            )
+        code_lines = self.generate_code_event_handler( code_obj, is_new, tab, prev_src, event_handlers )
 
         # replace code inside existing event handlers
         if prev_src and not is_new:
-            tag = \
-                '<%swxGlade event_handlers %s>' % (self.nonce, klass)
+            tag = '<%swxGlade event_handlers %s>' % (self.nonce, klass)
             if prev_src.content.find(tag) < 0:
                 # no event_handlers tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade event_handlers block not found for %s, "
-                    "event_handlers code NOT generated" % code_obj.name
-                    )
+                self.warning( "wxGlade event_handlers block not found for %s, "
+                              "event_handlers code NOT generated" % code_obj.name )
             else:
-                prev_src.content = prev_src.content.replace(
-                    tag,
-                    "".join(code_lines),
-                    )
+                prev_src.content = prev_src.content.replace( tag, "".join(code_lines) )
         else:
             obuffer.extend(code_lines)
 
@@ -1417,12 +1323,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # write "end of class" statement
         if self.tmpl_class_end:
-            write(
-                self.tmpl_class_end % {
-                    'klass': self.cn_class(klass),
-                    'comment': self.comment_sign,
-                    }
-                )
+            write( self.tmpl_class_end % { 'klass': self.cn_class(klass), 'comment': self.comment_sign } )
 
         if self.multiple_files:
             if prev_src:
@@ -1447,13 +1348,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 # if there's extra code but we are not overwriting existing
                 # sources, warn the user
                 if extra_code:
-                    self.warning(
-                        '%s (or one of its children) has extra '
-                        'code classes, but you are not overwriting '
-                        'existing sources: please check that the resulting '
-                        'code is correct!' %
-                        code_obj.name
-                        )
+                    self.warning( '%s (or one of its children) has extra code classes, but you are not overwriting '
+                                  'existing sources: please check that the resulting code is correct!' % code_obj.name )
                 tag = '<%swxGlade replace extracode>' % self.nonce
                 code = self._tagcontent('extracode', extra_code)
                 prev_src.content = prev_src.content.replace(tag, code)
@@ -1546,39 +1442,30 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             klass.init_lines[sub_obj] = init
 
             mycn = getattr(builder, 'cn', self.cn)
-            for win_id, evt, handler, evt_type in \
-                    builder.get_event_handlers(sub_obj):
-                klass.event_handlers.append(
-                    (win_id, mycn(evt), handler, evt_type))
+            for win_id, evt, handler, evt_type in builder.get_event_handlers(sub_obj):
+                klass.event_handlers.append( (win_id, mycn(evt), handler, evt_type) )
 
             # try to see if there's some extra code to add to this class
             if not sub_obj.preview:
-                extra_code = getattr(builder, 'extracode',
-                                     sub_obj.properties.get('extracode', ""))
+                extra_code = getattr(builder, 'extracode', sub_obj.properties.get('extracode', ""))
                 if extra_code:
                     extra_code = re.sub(r'\\n', '\n', extra_code)
                     klass.extra_code.append(extra_code)
                     # if we are not overwriting existing source, warn the user
                     # about the presence of extra code
                     if not self.multiple_files and self.previous_source:
-                        self.warning(
-                            '%s has extra code, but you are not '
-                            'overwriting existing sources: please check '
-                            'that the resulting code is correct!' % \
-                            sub_obj.name
-                            )
+                        self.warning( '%s has extra code, but you are not overwriting existing sources: please check '
+                                      'that the resulting code is correct!' % sub_obj.name )
 
         else:  # the object is a sizer
             klass.sizers_init.extend(init)
 
         klass.props.extend(props)
         klass.layout.extend(layout)
-        if self.multiple_files and \
-               (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
+        if self.multiple_files and (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
             key = self._format_import(sub_obj.klass)
             klass.dependencies[key] = 1
-        for dep in getattr(self.obj_builders.get(sub_obj.base),
-                           'import_modules', []):
+        for dep in getattr(self.obj_builders.get(sub_obj.base), 'import_modules', []):
             klass.dependencies[dep] = 1
 
     def _add_object_init(self, top_obj, sub_obj):
@@ -1606,11 +1493,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             builder = self.obj_builders[sub_obj.base]
         except KeyError:
             # no code generator found: write a comment about it
-            msg = _("""\
-Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
-                sub_obj.name,
-                sub_obj.klass,
-                )
+            msg = _('Code for instance "%s" of "%s" not generated: no 22222suitable writer found') % (
+                                                                                           sub_obj.name, sub_obj.klass )
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
             # ignore widget later too
@@ -1623,19 +1507,13 @@ Code for instance "%s" of "%s" not generated: no suitable writer found""") % (
         else:
             is_supported = True
         if not is_supported:
-            supported_versions = ', '.join(
-                [misc.format_supported_by(version) for version in
-                 builder.config['supported_by']]
-                )
-            msg = _("""\
-Code for instance "%(name)s" of "%(klass)s" was
-not created, because the widget is not available for wx version %(requested_version)s.
-It is available for wx versions %(supported_versions)s only.""") % {
-                    'name':  sub_obj.name,
-                    'klass': sub_obj.klass,
-                    'requested_version':  str(misc.format_for_version(self.for_version)),
-                    'supported_versions': str(supported_versions),
-                    }
+            supported_versions = [misc.format_supported_by(version) for version in builder.config['supported_by']]
+            msg = _('Code for instance "%(name)s" of "%(klass)s" was\n'
+                    'not created, because the widget is not available for wx version %(requested_version)s.\n'
+                    'It is available for wx versions %(supported_versions)s only.') % {
+                        'name':  sub_obj.name, 'klass': sub_obj.klass,
+                        'requested_version':  str(misc.format_for_version(self.for_version)),
+                        'supported_versions': ', '.join(supported_versions) }
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
             # ignore widget later too
@@ -1684,13 +1562,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         # check if sizer has to store as a class attribute
         sizer_name = self._format_classattr(sizer)
 
-        stmt = self.tmpl_sizeritem % (
-            sizer_name,
-            obj_name,
-            option,
-            self.cn_f(flag),
-            border,
-            )
+        stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, option, self.cn_f(flag), border )
 
         klass.layout.append(stmt)
 
@@ -1705,21 +1577,13 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @rtype:  str
         """
         generated_from = ''
-        if config.preferences.write_generated_from and common.app_tree and \
-               common.app_tree.app.filename:
+        if config.preferences.write_generated_from and common.app_tree and common.app_tree.app.filename:
             generated_from = ' from "%s"' % common.app_tree.app.filename
 
         if config.preferences.write_timestamp:
-            msg = 'generated by wxGlade %s on %s%s' % (
-                config.version,
-                time.asctime(),
-                generated_from,
-                )
+            msg = 'generated by wxGlade %s on %s%s' % ( config.version, time.asctime(), generated_from )
         else:
-            msg = 'generated by wxGlade %s%s' % (
-                config.version,
-                generated_from,
-                )
+            msg = 'generated by wxGlade %s%s' % ( config.version, generated_from )
         return msg
 
     def create_nonce(self):
@@ -1730,8 +1594,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @return: A random nonce
         @rtype:  str
         """
-        nonce = '%s%s' % (str(time.time()).replace('.', ''),
-                          random.randrange(10 ** 6, 10 ** 7))
+        nonce = '%s%s' % ( str(time.time()).replace('.', ''), random.randrange(10 ** 6, 10 ** 7) )
         return nonce
 
     def get_property_handler(self, property_name, widget_name):
@@ -1762,17 +1625,13 @@ It is available for wx versions %(supported_versions)s only.""") % {
         # check if there is an code template for this property
         tmpl = self._get_code_statement('backgroundcolour')
         if not tmpl:
-            msg = " %s WARNING: no code template for property '%s' " \
-                  "registered!\n" % (self.comment_sign, 'backgroundcolour')
+            msg = "%s WARNING: no code template for property '%s' registered!\n"%(self.comment_sign, 'backgroundcolour')
             self.warning(msg)
             return msg
 
         objname = self.format_generic_access(obj)
         color = self._get_colour(obj.properties['background'])
-        stmt = tmpl % {
-            'objname': objname,
-            'value':   color,
-            }
+        stmt = tmpl % { 'objname':objname, 'value':color }
         return stmt
 
     def generate_code_ctor(self, code_obj, is_new, tab):
@@ -1848,14 +1707,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
             for l in extra_layout_lines:
                 write(l)
 
-        code_lines = self._generate_function(
-            code_obj,
-            is_new,
-            tab,
-            self.tmpl_name_do_layout,
-            self.tmpl_func_do_layout,
-            code_lines,
-            )
+        code_lines = self._generate_function( code_obj, is_new, tab, self.tmpl_name_do_layout, 
+                                              self.tmpl_func_do_layout, code_lines )
 
         return code_lines
 
@@ -1916,11 +1769,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             if self.language in ['python', 'lisp',]:
                 if not (prev_src and not is_new):
                     write('\n')
-            write(self.tmpl_func_event_stub % {
-                'tab': tab,
-                'klass': self.cn_class(code_obj.klass),
-                'handler': handler,
-                })
+            write(self.tmpl_func_event_stub % {'tab': tab, 'klass': self.cn_class(code_obj.klass), 'handler': handler })
             already_there[handler] = 1
 
         return code_lines
@@ -1940,13 +1789,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         ret = []
         for name in sorted(prop):
             name_cap = name[0].upper() + name[1:]
-            stmt = tmpl % {
-                'klass': self.cn_class(obj.klass),
-                'objname': objname,
-                'propname': name,
-                'propname_cap': name_cap,
-                'value': prop[name],
-                }
+            stmt = tmpl % { 'klass': self.cn_class(obj.klass), 'objname': objname, 'propname': name,
+                            'propname_cap': name_cap, 'value': prop[name] }
             ret.append(stmt)
         return ret
 
@@ -1969,8 +1813,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         # check if there is an code template for this property
         tmpl = self._get_code_statement('setfont' )
         if not tmpl:
-            msg = " %s WARNING: no code template for property '%s' " \
-                  "registered!\n" % (self.comment_sign, 'setfont')
+            msg = " %s WARNING: no code template for property '%s' registered!\n" % (self.comment_sign, 'setfont')
             self.warning(msg)
             return msg
 
@@ -1984,16 +1827,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         underlined = font['underlined']
         weight = self.cn(font['weight'])
 
-        stmt = tmpl % {
-            'objname':    objname,
-            'cnfont':     cnfont,
-            'face':       face,
-            'family':     family,
-            'size':       size,
-            'style':      style,
-            'underlined': underlined,
-            'weight':     weight,
-            }
+        stmt = tmpl % { 'objname':objname, 'cnfont':cnfont, 'face':face,
+                        'family':family, 'size':size, 'style':style, 'underlined': underlined, 'weight':weight }
         return stmt
 
     def generate_code_foreground(self, obj):
@@ -2008,17 +1843,13 @@ It is available for wx versions %(supported_versions)s only.""") % {
         # check if there is an code template for this property
         tmpl = self._get_code_statement('foregroundcolour' )
         if not tmpl:
-            msg = " %s WARNING: no code template for property '%s' " \
-                  "registered!\n" % (self.comment_sign, 'foregroundcolour')
+            msg =" %s WARNING: no code template for property '%s' registered!\n"%(self.comment_sign, 'foregroundcolour')
             self.warning(msg)
             return msg
 
         objname = self.format_generic_access(obj)
         color = self._get_colour(obj.properties['foreground'])
-        stmt = tmpl % {
-            'objname': objname,
-            'value':   color,
-            }
+        stmt = tmpl % { 'objname':objname, 'value':color }
         return stmt
 
     def generate_code_hidden(self, obj):
@@ -2072,24 +1903,16 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @see: L{tmpl_name_set_properties}
         @see: L{tmpl_func_set_properties}
         @see: L{tmpl_func_empty}
-        @see: L{_generate_function()}        
+        @see: L{_generate_function()}
         """
         # check if there are property lines to add
-        _get_properties = getattr(
-            builder,
-            'get_properties_code',
-            self.generate_common_properties)
+        _get_properties = getattr( builder, 'get_properties_code', self.generate_common_properties )
         property_lines = _get_properties(code_obj)
         property_lines.extend(self.classes[code_obj.klass].props)
 
-        code_lines = self._generate_function(
-            code_obj,
-            is_new,
-            tab,
-            self.tmpl_name_set_properties,
-            self.tmpl_func_set_properties,
-            property_lines,
-            )
+        code_lines = self._generate_function( code_obj, is_new, tab,
+                                              self.tmpl_name_set_properties, self.tmpl_func_set_properties,
+                                              property_lines )
 
         return code_lines
 
@@ -2183,24 +2006,12 @@ It is available for wx versions %(supported_versions)s only.""") % {
             return self.tmpl_empty_string
 
         # find and escape backslashes
-        s = re.sub(
-            r'\\\\+',
-            self._do_replace_backslashes,
-            s
-            )
+        s = re.sub( r'\\\\+', self._do_replace_backslashes, s )
         # the string will be embedded within double quotes, thereby double
         # quotes inside have to escape
-        s = re.sub(
-            r'\\?"',
-            self._do_replace_doublequotes,
-            s,
-            )
+        s = re.sub( r'\\?"', self._do_replace_doublequotes, s )
         # a single tailing backslash breaks the quotation
-        s = re.sub(
-            r'(?<!\\)\\$',
-            r'\\',
-            s
-            )
+        s = re.sub( r'(?<!\\)\\$', r'\\', s)
 
         return self._quote_str(s)
 
@@ -2261,10 +2072,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
             # add created by notice
             if self.tmpl_generated_by:
-                tmp += self.tmpl_generated_by % {
-                    'comment_sign': self.comment_sign,
-                    'generated_by': self.create_generated_by(),
-                    }
+                tmp += self.tmpl_generated_by % {'comment_sign': self.comment_sign,
+                                                 'generated_by': self.create_generated_by() }
 
             # add language specific note
             if self.language_note:
@@ -2293,9 +2102,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             try:
                 os.makedirs(dirname)
             except:
-                self._logger.exception(
-                    _('Can not create output directory "%s"'), dirname
-                    )
+                self._logger.exception( _('Can not create output directory "%s"'), dirname )
 
         # save the file now
         try:
@@ -2310,11 +2117,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
                 os.chmod(filename, 0755)
             except OSError, e:
                 # this isn't necessarily a bad error
-                self.warning(
-                    _('Changing permission of main file "%s" failed: %s') % (
-                        filename, str(e)
-                        )
-                    )
+                self.warning( _('Changing permission of main file "%s" failed: %s') % ( filename, str(e) ) )
 
     def test_attribute(self, obj):
         """\
@@ -2381,28 +2184,20 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @return: Changed content
         @rtype:  str
         """
-        tags = re.findall(
-            r'(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % self.nonce,
-            source
-            )
+        tags = re.findall( r'(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % self.nonce, source )
         for tag in tags:
             # re.findall() returned a list of tuples (caused by grouping)
             # first element in tuple:  the whole match
             # second element in tuple: the class / block name
             indent = self.previous_source.spaces.get(tag[1], "")
-            comment = '%(indent)s%(comment_sign)s Content of this block not found. ' \
-                      'Did you rename this class?\n'
+            comment = '%(indent)s%(comment_sign)s Content of this block not found. Did you rename this class?\n'
             tmpl = self._get_code_statement('contentnotfound' )
             if tmpl:
                 comment += '%(indent)s%(command)s\n'
                 command = tmpl
             else:
                 command = ""
-            comment = comment % {
-                'command':      command,
-                'comment_sign': self.comment_sign,
-                'indent':       indent,
-                }
+            comment = comment % {'command':command, 'comment_sign':self.comment_sign, 'indent':indent }
             source = source.replace(tag[0], comment)
         return source
 
@@ -2526,8 +2321,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         # check if there is an code template for this prop_name
         tmpl = self._get_code_statement(prop_name)
         if not tmpl:
-            msg = " %s WARNING: no code template for property '%s' " \
-                  "registered!\n" % (self.comment_sign, prop_name)
+            msg = " %s WARNING: no code template for property '%s' registered!\n" % (self.comment_sign, prop_name)
             self.warning(msg)
             return msg
 
@@ -2544,10 +2338,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
             raise AssertionError("Unknown property name: %s" % prop_name)
 
         objname = self.format_generic_access(obj)
-        stmt = tmpl % {
-            'objname': objname,
-            'tooltip': value,
-            }
+        stmt = tmpl % { 'objname': objname, 'tooltip': value }
         return stmt
 
     def _get_code_statement(self, prop_name):
@@ -2566,15 +2357,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @see: L{_code_statements}
         """
 
-        prop_name_major = '%s_%d' % (
-            prop_name,
-            self.for_version[0],
-            )
-        prop_name_detailed = '%s_%d%d' % (
-            prop_name,
-            self.for_version[0],
-            self.for_version[1],
-            )
+        prop_name_major = '%s_%d' % ( prop_name, self.for_version[0] )
+        prop_name_detailed = '%s_%d%d' % ( prop_name, self.for_version[0], self.for_version[1] )
 
         # check if there is an code template for this prop_name
         # most specific to generic
@@ -2608,14 +2392,12 @@ It is available for wx versions %(supported_versions)s only.""") % {
         # check if there is an code template for this properties
         tmpl_wxcolour = self._get_code_statement('wxcolour' )
         if not tmpl_wxcolour:
-            msg = " %s WARNING: no code template for property '%s' " \
-                  "registered!\n" % (self.comment_sign, 'wxcolour')
+            msg = " %s WARNING: no code template for property '%s' registered!\n" % (self.comment_sign, 'wxcolour')
             self.warning(msg)
             return msg
         tmpl_wxsystemcolour = self._get_code_statement('wxsystemcolour' )
         if not tmpl_wxsystemcolour:
-            msg = " %s WARNING: no code template for property '%s' " \
-                  "registered!\n" % (self.comment_sign, 'wxsystemcolour')
+            msg = " %s WARNING: no code template for property '%s' registered!\n"%(self.comment_sign, 'wxsystemcolour')
             self.warning(msg)
             return msg
         try:
@@ -2624,9 +2406,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         except (IndexError, ValueError):  # the color is from system settings
             value = self.cn(colourvalue)
             tmpl = self.cn(tmpl_wxsystemcolour)
-        stmt = tmpl % {
-            'value': value,
-            }
+        stmt = tmpl % {'value': value}
         return stmt
 
     def _get_class_filename(self, klass):
@@ -2668,13 +2448,8 @@ It is available for wx versions %(supported_versions)s only.""") % {
         write = code_lines.append
 
         # begin tag
-        write(self.tmpl_block_begin % {
-            'class_separator': self.class_separator,
-            'comment_sign': self.comment_sign,
-            'function': fname,
-            'klass': self.cn_class(code_obj.klass),
-            'tab': tab,
-            })
+        write( self.tmpl_block_begin % { 'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
+                                         'function': fname, 'klass': self.cn_class(code_obj.klass), 'tab': tab} )
 
         if body:
             for l in body:
@@ -2687,11 +2462,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         # embed the content into function template
         if is_new:
-            stmt = ftmpl % {
-                'tab': tab,
-                'klass': self.cn_class(code_obj.klass),
-                'content': ''.join(code_lines),
-                }
+            stmt = ftmpl % {'tab': tab, 'klass': self.cn_class(code_obj.klass), 'content': ''.join(code_lines) }
             code_lines = ["%s\n" % line.rstrip() for line in stmt.split('\n')]
 
             # remove newline at last line
@@ -2743,9 +2514,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
         # add message text
         for line in msg.split('\n'):
-            code_lines.append(
-                "%s\n" % self._format_comment(line.rstrip())
-                )
+            code_lines.append( "%s\n" % self._format_comment(line.rstrip()) )
 
         # add tailing empty line
         code_lines.append('\n')
@@ -2797,9 +2566,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
         @type newline:  bool
         """
         code_list = []
-        code_list.append(
-            '%s begin wxGlade: %s' % (self.comment_sign, tag)
-            )
+        code_list.append( '%s begin wxGlade: %s' % (self.comment_sign, tag) )
         if isinstance(content, types.ListType):
             for entry in content:
                 code_list.append(entry.rstrip())
@@ -2810,9 +2577,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
                 code_list.append(_content)
         else:
             raise AssertionError('Unknown content type: %s' % type(content))
-        code_list.append(
-            '%s end wxGlade' % self.comment_sign
-            )
+        code_list.append( '%s end wxGlade' % self.comment_sign )
         # newline for "end wxGlade" line
         code_list.append('')
         if newline:
@@ -2832,11 +2597,9 @@ It is available for wx versions %(supported_versions)s only.""") % {
 
     def __getstate__(self):
         """\
-        Return the state of this instance except the L{_logger} and the
-        L{classes} attributes.
+        Return the state of this instance except the L{_logger} and the L{classes} attributes.
 
-        Both attributes caused copy errors due to file locking resp. weak
-        references in XML SAX module.
+        Both attributes caused copy errors due to file locking resp. weak references in XML SAX module.
 
         @rtype: dict
         """

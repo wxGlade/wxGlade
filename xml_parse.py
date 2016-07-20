@@ -22,18 +22,13 @@ if config.use_gui:
 
 
 class XmlParsingError(SAXException):
-    """\
-    Custom exception to report problems during parsing
-    """
+    "Custom exception to report problems during parsing"
     locator = None
 
     def __init__(self, msg):
         if self.locator:
-            msg = _('%s (line: %s, column: %s)') % (
-                msg,
-                self.locator.getLineNumber(),
-                self.locator.getColumnNumber(),
-            )
+            msg = _('%s (line: %s, column: %s)') % ( msg, self.locator.getLineNumber(),
+                                                     self.locator.getColumnNumber() )
         SAXException.__init__(self, msg)
 
 # end of class XmlParsingError
@@ -130,17 +125,12 @@ class XmlParser(ContentHandler):
         for_version = attrs.get('for_version', '%s.%s' % config.for_version)
         for_version_tuple = tuple([int(t) for t in for_version.split('.')[:2]])
         if for_version_tuple < (2, 8):
-            logging.warning(
-                _('The loaded wxGlade designs are created for wxWidgets '
-                  '"%s", but this version is not supported anymore.'),
-                for_version,
-            )
-            logging.warning(
-                _('The designs will be loaded and converted to '
-                  'wxWidgets "%s" partially. Please check the designs '
-                  'carefully.'),
-                '%s.%s' % config.for_version
-            )
+            logging.warning( _('The loaded wxGlade designs are created for wxWidgets "%s", '
+                               'but this version is not supported anymore.'),
+                             for_version )
+            logging.warning( _('The designs will be loaded and converted to wxWidgets "%s" partially. '
+                               'Please check the designs carefully.'),
+                            '%s.%s' % config.for_version )
             for_version = '%s.%s' % config.for_version
         res['for_version'] = for_version
 
@@ -158,14 +148,12 @@ class XmlParser(ContentHandler):
             indent_amount = config.default_indent_amount
         res['indent_amount'] = indent_amount
 
-        res['indent_symbol'] = attrs.get('indent_symbol',
-                                         config.default_indent_symbol)
+        res['indent_symbol'] = attrs.get('indent_symbol', config.default_indent_symbol)
 
         if 'language' in attrs:
             res['language'] = attrs['language']
         elif hasattr(self, 'code_writer'):
-            res['language'] = attrs.get('language',
-                                        self.code_writer.language)
+            res['language'] = attrs.get('language', self.code_writer.language)
         else:
             res['language'] = config.default_language
 
@@ -185,10 +173,8 @@ class XmlParser(ContentHandler):
 
         res['path'] = attrs.get('path')
 
-        res['header_extension'] = attrs.get('header_extension',
-                                            config.default_header_extension)
-        res['source_extension'] = attrs.get('source_extension',
-                                            config.default_source_extension)
+        res['header_extension'] = attrs.get('header_extension', config.default_header_extension)
+        res['source_extension'] = attrs.get('source_extension', config.default_source_extension)
 
         res['top_window'] = attrs.get('top_window')
 
@@ -198,8 +184,7 @@ class XmlParser(ContentHandler):
             use_gettext = config.default_use_gettext
         res['use_gettext'] = bool(use_gettext)
 
-        if attrs.get('use_new_namespace') == u'0' and \
-                        attrs.get('language') == 'python':
+        if attrs.get('use_new_namespace') == u'0' and attrs.get('language') == 'python':
             logging.warning(
                 _('The loaded wxGlade designs are created to use the '
                   'old Python import style ("from wxPython.wx '
@@ -229,10 +214,8 @@ class XmlParser(ContentHandler):
             try:
                 unicode('a', encoding)
             except LookupError:
-                self._logger.warning(
-                    _('Unknown encoding "%s", fallback to default encoding '
-                      '"%s"'), encoding, config.default_encoding
-                )
+                self._logger.warning( _('Unknown encoding "%s", fallback to default encoding "%s"'),
+                                      encoding, config.default_encoding)
                 encoding = config.default_encoding
         return encoding
 
@@ -240,9 +223,7 @@ class XmlParser(ContentHandler):
 
 
 class XmlWidgetBuilder(XmlParser):
-    """\
-    Parser used to build the tree of widgets from a given XML file
-    """
+    "Parser used to build the tree of widgets from a given XML file"
 
     def __init__(self):
         XmlParser.__init__(self)
@@ -321,9 +302,7 @@ class XmlWidgetBuilder(XmlParser):
             return
 
         if not self._appl_started:
-            raise XmlParsingError(
-                _("the root of the tree must be <application>")
-                )
+            raise XmlParsingError(_("the root of the tree must be <application>"))
         if name == 'object':
             # create the object and push it on the appropriate stacks
             XmlWidgetObject(attrs, self)
@@ -348,8 +327,7 @@ class XmlWidgetBuilder(XmlParser):
             self._appl_started = False
             if hasattr(self, 'top_window'):
                 common.app_tree.app.top_window = self.top_window
-                common.app_tree.app.top_win_prop.SetStringSelection(
-                    self.top_window)
+                common.app_tree.app.top_win_prop.SetStringSelection(self.top_window)
             return
         if name == 'object':
             # remove last object from Stack
@@ -407,9 +385,7 @@ class XmlWidgetBuilder(XmlParser):
 
 
 class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
-    """\
-    Adds support for a progress dialog to the widget builder parser
-    """
+    "Adds support for a progress dialog to the widget builder parser"
 
     def __init__(self, *args, **kwds):
         self.input_file = kwds.get('input_file')
@@ -417,11 +393,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
             del kwds['input_file']
             self.size = len(self.input_file.readlines())
             self.input_file.seek(0)
-            self.progress = wx.ProgressDialog(
-                _("Loading..."),
-                _("Please wait while loading the app"),
-                20
-                )
+            self.progress = wx.ProgressDialog( _("Loading..."), _("Please wait while loading the app"), 20 )
             self.step = 4
             self.i = 1
         else:
@@ -534,10 +506,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 try:
                     self.top_obj = self.top().obj
                 except AttributeError:
-                    self._logger.exception(
-                        _('Exception caused by obj: %s'),
-                        self.top_obj
-                        )
+                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
             self.depth_level += 1
 
     def endElement(self, name):
@@ -552,10 +521,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     self.top_obj.show_properties()
                     common.app_tree.select_item(self.top_obj.node)
                 except AttributeError:
-                    self._logger.exception(
-                        _('Exception caused by obj: %s'),
-                        self.top_obj
-                        )
+                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
         XmlWidgetBuilder.endElement(self, name)
 
 # end of class ClipboardXmlWidgetBuilder
@@ -592,8 +558,7 @@ class XmlWidgetObject(object):
             base = attrs.get('base', None)
             self.klass = attrs['class']
         except KeyError:
-            raise XmlParsingError(_("'object' items must have a 'class' "
-                                  "attribute"))
+            raise XmlParsingError(_("'object' items must have a 'class' attribute"))
 
         if base is not None:
             # if base is not None, the object is a widget (or sizer), and
@@ -619,8 +584,7 @@ class XmlWidgetObject(object):
             else:
                 pos = None
 
-            if parent and hasattr(parent, 'virtual_sizer') and \
-               parent.virtual_sizer:
+            if parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
                 sizer = parent.virtual_sizer
                 sizer.node = parent.node
                 sizeritem = Sizeritem()
@@ -630,8 +594,7 @@ class XmlWidgetObject(object):
             # build the widget
             if pos is not None:
                 pos = int(pos)
-            self.obj = common.widgets_from_xml[base](attrs, parent, sizer,
-                                                     sizeritem, pos)
+            self.obj = common.widgets_from_xml[base](attrs, parent, sizer, sizeritem, pos)
             try:
                 #self.obj.klass = self.klass
                 self.obj.set_klass(self.klass)
@@ -654,8 +617,7 @@ class XmlWidgetObject(object):
 
         elif self.klass == 'sizerslot':
             sizer = self.parser._sizers.top().obj
-            assert sizer is not None, \
-                _("malformed wxg file: slots can only be inside sizers!")
+            assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
             sizer.add_slot()
             self.parser._sizer_item.push(self)
 
@@ -692,12 +654,7 @@ class XmlWidgetObject(object):
         except KeyError:
             # unknown property for this object
             # issue a warning and ignore the property
-            self._logger.error(
-                _("WARNING: Property '%s' not supported by this "
-                  "object ('%s') "),
-                name,
-                self.obj,
-                )
+            self._logger.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
 
 #end of class XmlWidgetObject
 
@@ -726,8 +683,7 @@ class CodeWriter(XmlParser):
     @ivar _logger: Instance specific logger
     """
 
-    def __init__(self, writer, input, from_string=False, out_path=None,
-                 preview=False, class_names=None):
+    def __init__(self, writer, input, from_string=False, out_path=None, preview=False, class_names=None):
         """\
         @param writer: Language specific code writer; stored in
                        L{self.code_writer}
@@ -788,16 +744,13 @@ class CodeWriter(XmlParser):
                 if out_path:
                     self.out_path = attrs['path']
                 else:
-                    raise XmlParsingError(_("'path' attribute missing: could "
-                                            "not generate code"))
+                    raise XmlParsingError(_("'path' attribute missing: could not generate code"))
             else:
                 attrs['path'] = self.out_path
 
             # Prevent empty output path
             if not self.out_path:
-                raise XmlParsingError(
-                    _("'path' attribute empty: could not generate code")
-                    )
+                raise XmlParsingError( _("'path' attribute empty: could not generate code") )
 
             # Initialize the writer, thereby a logical check will be performed
             self.code_writer.initialize(attrs)
@@ -811,8 +764,7 @@ class CodeWriter(XmlParser):
         if name == 'object':
             # create the object and push it on the appropriate stacks
             CodeObject(attrs, self, preview=self.preview)
-            if 'name' in attrs and \
-               attrs['name'] == self.app_attrs.get('top_window', ''):
+            if 'name' in attrs and attrs['name'] == self.app_attrs.get('top_window', ''):
                 self.top_window = attrs['class']
         else:
             # handling of the various properties
@@ -861,10 +813,7 @@ class CodeWriter(XmlParser):
                     szr = self._sizers.top()
                     if not szr:
                         return
-                    self.code_writer.add_sizeritem(topl, szr, obj,
-                                                   si.obj.option,
-                                                   si.obj.flag_str(),
-                                                   si.obj.border)
+                    self.code_writer.add_sizeritem(topl, szr, obj, si.obj.option, si.obj.flag_str(), si.obj.border)
         else:
             # end of a property or error
             # 1: set _curr_prop value
@@ -897,8 +846,7 @@ class CodeWriter(XmlParser):
         if not data or data.isspace():
             return
         if self._curr_prop is None:
-            raise XmlParsingError(
-                _("Character data can be present only inside properties"))
+            raise XmlParsingError(_("Character data can be present only inside properties"))
         self._curr_prop_val.append(data)
 
 # end of class CodeWriter
@@ -950,8 +898,7 @@ class CodeObject(object):
             base = attrs.get('base', None)
             self.klass = attrs['class']
         except KeyError:
-            raise XmlParsingError(_("'object' items must have a 'class' "
-                                  "attribute"))
+            raise XmlParsingError(_("'object' items must have a 'class' attribute"))
         self.parser._objects.push(self)
         self.parent = self.parser._windows.top()
         if self.parent is not None:
@@ -961,21 +908,18 @@ class CodeObject(object):
             self.name = attrs['name']
             self.base = common.class_names[base]
             can_be_toplevel = base in common.toplevels
-            if (self.parent is None or self.klass != self.base) and \
-               can_be_toplevel:
+            if (self.parent is None or self.klass != self.base) and can_be_toplevel:
                 self.is_toplevel = True
                 # for panel objects, if the user sets a custom class but (s)he
                 # doesn't want the code to be generated...
-                if int(attrs.get('no_custom_class', False)) and \
-                   not self.preview:
+                if int(attrs.get('no_custom_class', False)) and not self.preview:
                     self.is_toplevel = False
                     #self._logger.debug('OK:', str(self))
                     #self.in_windows = True
                     #self.parser._windows.push(self)
                 else:
                     self.parser._toplevels.push(self)
-            elif self.preview and not can_be_toplevel and \
-                 self.base != 'CustomWidget':
+            elif self.preview and not can_be_toplevel and self.base != 'CustomWidget':
                 # if this is a custom class, but not a toplevel one,
                 # for the preview we have to use the "real" class
                 #
@@ -1006,8 +950,7 @@ class CodeObject(object):
             self.parser._sizer_item.push(self)
 
     def __str__(self):
-        return "<xml_code_object: %s, %s, %s>" % (self.name, self.base,
-                                                  self.klass)
+        return "<xml_code_object: %s, %s, %s>" % (self.name, self.base, self.klass)
 
     def add_property(self, name, value):
         if hasattr(self, 'obj'):  # self is a sizeritem
@@ -1017,8 +960,7 @@ class CodeObject(object):
                 else:
                     setattr(self.obj, name, int(value))
             except:
-                raise XmlParsingError(_("property '%s' not supported by "
-                                        "'%s' objects") % (name, self.klass))
+                raise XmlParsingError(_("property '%s' not supported by '%s' objects") % (name, self.klass))
         self.properties[name] = value
 
     def pop(self):
@@ -1035,9 +977,7 @@ class CodeObject(object):
 
 
 class Stack(object):
-    """\
-    Simple stack implementation
-    """
+    "Simple stack implementation"
 
     def __init__(self):
         self._repr = []
@@ -1144,8 +1084,7 @@ class Sizeritem(object):
 
             tmp = '|'.join(sorted(self.flag_set))
         except:
-            self._logger.exception('self.flags = %s, self.flag_set = %s',
-                                   self.flags, repr(self.flag_set))
+            self._logger.exception('self.flags = %s, self.flag_set = %s', self.flags, repr(self.flag_set))
             raise
 
         if tmp:

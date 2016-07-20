@@ -90,9 +90,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditDatePickerCtrl objects from a XML file
-    """
+    "factory to build EditDatePickerCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -114,11 +112,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module.
-    @rtype: wxBitmapButton
-    @return: an icon to be added to the main palette. 
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditDatePickerCtrl'] = builder
     common.widgets_from_xml['EditDatePickerCtrl'] = xml_builder
 

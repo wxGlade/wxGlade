@@ -31,45 +31,25 @@ such widget is controlled, and the position inside this sizer.
 """
 
 widgets_from_xml = {}
-"""\
-Factory functions to build objects from a XML file
-
-@type: dict
-"""
+"Factory functions to build objects from a XML file"
 
 property_panel = None
-"""\
-property_panel wxPanel: container inside which Properties of the current
-focused widget are displayed
-"""
+"property_panel wxPanel: container inside which Properties of the current focused widget are displayed"
 
 app_tree = None
-"""\
-app_tree Tree: represents the widget hierarchy of the application; the
-root is the application itself
-"""
+"app_tree Tree: represents the widget hierarchy of the application; the root is the application itself"
 
 adding_widget = False
-"""\
-If True, the user is adding a widget to some sizer
-"""
+"If True, the user is adding a widget to some sizer"
 
 adding_sizer = False
-"""\
-Needed to add toplevel sizers
-"""
+"Needed to add toplevel sizers"
 
 widget_to_add = None
-"""\
-Reference to the widget that is being added: this is a key in the
-'widgets' dictionary
-"""
+"Reference to the widget that is being added: this is a key in the 'widgets' dictionary"
 
 palette = None
-"""\
-Reference to the main window (the one which contains the various buttons to
-add the different widgets)
-"""
+"Reference to the main window (the one which contains the various buttons to add the different widgets)"
 
 refs = {}
 """\
@@ -81,20 +61,10 @@ when a dropping of a widget occurs, knowing only the id of the event
 """
 
 class_names = {}
-"""\
-Dictionary which maps the name of the classes used by wxGlade to the
-correspondent classes of wxWindows
-
-@type: dict
-"""
+"Dictionary which maps the name of the classes used by wxGlade to the correspondent classes of wxWindows"
 
 toplevels = {}
-"""\
-Names of the Edit* classes that can be toplevels, i.e. widgets for which to
-generate a class declaration in the code
-
-@type: dict
-"""
+"Names of the Edit* classes that can be toplevels, i.e. widgets for which to generate a class declaration in the code"
 
 code_writers = {}
 """\
@@ -168,18 +138,12 @@ def load_code_writers():
         # import file and initiate code writer
         try:
             writer = __import__(name).writer
-        except (AttributeError, ImportError, NameError, SyntaxError,
-                ValueError):
-            logging.exception(
-                _('"%s" is not a valid code generator module'), module
-            )
+        except (AttributeError, ImportError, NameError, SyntaxError, ValueError):
+            logging.exception( _('"%s" is not a valid code generator module'), module )
         else:
             code_writers[writer.language] = writer
             if config.use_gui:
-                logging.info(
-                    _('  %s generator loaded'),
-                    writer.language
-                )
+                logging.info( _('  %s generator loaded'), writer.language )
 
 
 def load_config():
@@ -189,16 +153,10 @@ def load_config():
     @see: L{plugins.load_widgets_from_dir()}
     """
     # load the "built-in" widgets
-    plugins.load_widgets_from_dir(
-        config.widgets_path,
-        'wconfig'
-    )
+    plugins.load_widgets_from_dir( config.widgets_path, 'wconfig' )
 
     # load the "user" widgets
-    plugins.load_widgets_from_dir(
-        config.preferences.local_widget_path,
-        'wconfig'
-    )
+    plugins.load_widgets_from_dir( config.preferences.local_widget_path, 'wconfig' )
 
     return
 
@@ -213,11 +171,9 @@ def load_sizers():
     """
     logging.info('Load sizer generators:')
     for lang in code_writers.keys():
-        module_name = 'edit_sizers.%s_sizers_codegen' % \
-                      code_writers[lang].lang_prefix
+        module_name = 'edit_sizers.%s_sizers_codegen' % code_writers[lang].lang_prefix
         try:
-            sizer_module = plugins.import_module(config.wxglade_path,
-                                                 module_name)
+            sizer_module = plugins.import_module(config.wxglade_path, module_name)
             if not sizer_module:
                 # error already logged
                 pass
@@ -225,21 +181,15 @@ def load_sizers():
                 sizer_module.initialize()
             else:
                 logging.warning(
-                    _('Missing function "initialize()" in imported '
-                      'module %s. Skip initialisation.'), module_name)
+                    _('Missing function "initialize()" in imported module %s. Skip initialisation.'), module_name)
 
             if config.use_gui:
                 logging.info(_('  for %s'), lang)
 
-        except (AttributeError, ImportError, NameError, SyntaxError,
-                ValueError):
-            logging.exception(
-                _('ERROR loading module "%s"'), module_name)
+        except (AttributeError, ImportError, NameError, SyntaxError, ValueError):
+            logging.exception( _('ERROR loading module "%s"'), module_name )
         except:
-            logging.exception(
-                _('Unexpected error during import of widget module %s'),
-                module_name
-            )
+            logging.exception( _('Unexpected error during import of widget module %s'), module_name )
 
     # initialise sizer GUI elements
     import edit_sizers
@@ -281,37 +231,32 @@ def load_widgets():
     # load (remaining) widget code generators
     # Python, C++ and XRC are often loaded via
     # plugins.load_widgets_from_dir() above
-    for path in [config.widgets_path,
-                 config.preferences.local_widget_path]:
+    for path in [config.widgets_path, config.preferences.local_widget_path]:
         for lang in ['perl', 'lisp']:
             if lang not in code_writers:
                 continue
             codegen_name = '%s_codegen' % code_writers[lang].lang_prefix
-            plugins.load_widgets_from_dir(
-                path,
-                submodule=codegen_name,
-            )
+            plugins.load_widgets_from_dir( path, submodule=codegen_name )
     return core_buttons, local_buttons
 
 
 def add_object(event):
-    """\
-    Adds a widget or a sizer to the current app.
-    """
+    "Adds a widget or a sizer to the current app"
     global adding_widget, adding_sizer, widget_to_add
     adding_widget = True
     adding_sizer = False
     tmp = event.GetId()
     widget_to_add = refs[tmp]
+
+    msg = "Adding %s; click on free (hatched) sizer slot to place it"
+    palette.user_message( msg%widget_to_add.lstrip("Edit") )
     # TODO: find a better way
     if widget_to_add.find('Sizer') != -1:
         adding_sizer = True
 
 
 def add_toplevel_object(event):
-    """\
-    Adds a toplevel widget (Frame or Dialog) to the current app.
-    """
+    "Adds a toplevel widget (Frame or Dialog) to the current app"
     widgets[refs[event.GetId()]](None, None, 0)
     app_tree.app.saved = False
 
@@ -433,8 +378,7 @@ def register(lang, klass_name, code_writer, property_name=None,
     if codegen:
         codegen.add_widget_handler(klass_name, code_writer)
         if property_name and property_handler:
-            codegen.add_property_handler(property_name, property_handler,
-                                         widget_name)
+            codegen.add_property_handler(property_name, property_handler, widget_name)
 
 
 def _smart_checksum(content):
@@ -494,9 +438,7 @@ def save_file(filename, content, which='wxg'):
     elif which == 'codegen':
         do_backup = config.preferences.codegen_backup
     else:
-        raise NotImplementedError(
-            'Unknown value "%s" for parameter "which"!' % which
-        )
+        raise NotImplementedError( 'Unknown value "%s" for parameter "which"!' % which )
 
     # read existing file to check content
     chksum_oldcontent = None
@@ -517,8 +459,7 @@ def save_file(filename, content, which='wxg'):
         return
 
     # create the backup file only with the first save
-    need_backup = do_backup and filename not in config.backed_up and \
-        os.path.isfile(filename)
+    need_backup = do_backup and filename not in config.backed_up and os.path.isfile(filename)
 
     outfile = None
     try:
@@ -565,12 +506,7 @@ def get_name_for_autosave(filename=None):
 
 
 def autosave_current():
-    """\
-    Generate a automatic backup for the current and un-saved design.
-
-    @return: 0: error; 1: no changes to save; 2: saved
-    @rtype: int
-    """
+    "Save automatic backup copy for the current and un-saved design; returns 0: error; 1: no changes to save; 2: saved"
     if app_tree.app.saved:
         return 1            # do nothing in this case...
 
@@ -588,11 +524,7 @@ def autosave_current():
 
 
 def remove_autosaved(filename=None):
-    """\
-    Remove the automatic backup
-
-    @see: L{get_name_for_autosave()}
-    """
+    "Remove the automatic backup;  @see: L{get_name_for_autosave()}"
     autosave_name = get_name_for_autosave(filename)
     if os.path.exists(autosave_name):
         try:
@@ -602,11 +534,7 @@ def remove_autosaved(filename=None):
 
 
 def check_autosaved(filename):
-    """\
-    Returns True if there are an automatic backup for filename
-
-    @rtype: bool
-    """
+    "Returns True if there are an automatic backup for filename"
     if filename is not None and filename == app_tree.app.filename:
         # this happens when reloading, no auto-save-restoring in this case...
         return False
@@ -647,11 +575,7 @@ def restore_from_autosaved(filename):
 
 
 def init_paths():
-    """\
-    Set all wxGlade related paths.
-
-    The paths will be stored in L{config}.
-    """
+    "Set all wxGlade related paths; the paths will be stored in L{config}."
     # use directory of the exe in case of frozen packages e.g.
     # PyInstaller or py2exe
     if hasattr(sys, 'frozen'):
@@ -667,14 +591,13 @@ def init_paths():
 
     share_dir = _get_share_path()
     if _get_install_method() == 'single_directory':
-        config.docs_path = os.path.join(share_dir, 'docs')
-        config.icons_path = os.path.join(share_dir, 'icons')
+        config.docs_path      = os.path.join(share_dir, 'docs')
+        config.icons_path     = os.path.join(share_dir, 'icons')
         config.templates_path = os.path.join(share_dir, 'templates')
     else:
-        config.docs_path = os.path.join(share_dir, 'doc', 'wxglade')
-        config.icons_path = os.path.join(share_dir, 'wxglade', 'icons')
-        config.templates_path = os.path.join(share_dir, 'wxglade',
-                                             'templates')
+        config.docs_path      = os.path.join(share_dir, 'doc', 'wxglade')
+        config.icons_path     = os.path.join(share_dir, 'wxglade', 'icons')
+        config.templates_path = os.path.join(share_dir, 'wxglade', 'templates')
 
     _set_home_path()
     _set_appdata_path()
@@ -700,9 +623,7 @@ def _create_appdata_path():
 
 
 def _set_appdata_path():
-    """\
-    Set the path of the application data directory
-    """
+    "Set the path of the application data directory"
     if 'WXGLADE_CONFIG_PATH' in os.environ:
         config.appdata_path = os.path.expandvars(
             os.environ['WXGLADE_CONFIG_PATH'])
@@ -715,9 +636,7 @@ def _set_appdata_path():
         if os.path.isdir(new_name):
             path = new_name
         elif os.path.isdir(old_name):
-            logging.info(
-                _('Rename appdata path from "%s" to "%s"'),
-                old_name, new_name)
+            logging.info( _('Rename appdata path from "%s" to "%s"'), old_name, new_name)
             try:
                 os.rename(old_name, new_name)
                 path = new_name
@@ -741,9 +660,7 @@ def _set_appdata_path():
 
 
 def _set_home_path():
-    """\
-    Set the path of the home directory
-    """
+    "Set the path of the home directory"
     home_path = os.path.expanduser('~')
 
     # to prevent unexpanded "%HOMEDRIVE%%HOMEPATH%" as reported
@@ -819,18 +736,15 @@ def _get_share_path():
             share_dir = os.path.join(*dir_list[:-4])
             share_dir = os.path.join(share_dir, 'share')
         else:
-            logging.error(
-                _('Unknown path structure %s'), config.wxglade_path)
+            logging.error(_('Unknown path structure %s'), config.wxglade_path)
             share_dir = ''
 
     if not share_dir:
         logging.error(_('Share directory not found'))
     elif not os.path.exists(share_dir):
-        logging.error(
-            _('Share directory "%s" does not exists'), share_dir)
+        logging.error(_('Share directory "%s" does not exists'), share_dir)
     elif not os.path.isdir(share_dir):
-        logging.error(
-            _('Share directory "%s" is not a directory'), share_dir)
+        logging.error(_('Share directory "%s" is not a directory'), share_dir)
 
     return share_dir
 
@@ -862,9 +776,7 @@ def split_path(path):
 
 
 def _normalise_paths():
-    """\
-    Normalise all paths stored in config module
-    """
+    "Normalise all paths stored in config module"
     for name in ['appdata_path', 'credits_file', 'docs_path',
                  'history_file', 'home_path', 'icons_path', 'license_file',
                  'manual_file', 'rc_file', 'templates_path',
@@ -876,22 +788,18 @@ def _normalise_paths():
 
 
 def _set_file_paths():
-    """\
-    Set the full path for all files (config.*_file except default_output_file)
-    """
+    "Set the full path for all files (config.*_file except default_output_file)"
     install_method = _get_install_method()
     if install_method == 'single_directory':
-        config.credits_file = os.path.join(config.wxglade_path, 'CREDITS.txt')
-        config.license_file = os.path.join(config.wxglade_path, 'LICENSE.txt')
-        config.manual_file = os.path.join(config.docs_path, 'html', 'index.html')
+        config.credits_file  = os.path.join(config.wxglade_path, 'CREDITS.txt')
+        config.license_file  = os.path.join(config.wxglade_path, 'LICENSE.txt')
+        config.manual_file   = os.path.join(config.docs_path, 'html', 'index.html')
         config.tutorial_file = os.path.join(config.docs_path, 'tutorial.html')
     else:
-        config.credits_file = os.path.join(config.docs_path, 'CREDITS.txt')
-        config.license_file = os.path.join(config.docs_path, 'LICENSE.txt')
-        config.manual_file = os.path.join(config.docs_path,
-                                          'manual_html', 'index.html')
-        config.tutorial_file = os.path.join(config.docs_path,
-                                            'tutorial', 'tutorial.html')
+        config.credits_file  = os.path.join(config.docs_path, 'CREDITS.txt')
+        config.license_file  = os.path.join(config.docs_path, 'LICENSE.txt')
+        config.manual_file   = os.path.join(config.docs_path, 'manual_html', 'index.html')
+        config.tutorial_file = os.path.join(config.docs_path, 'tutorial', 'tutorial.html')
 
     if not os.path.exists(config.credits_file):
         logging.error(_('Credits file "CREDITS.txt" not found!'))
@@ -907,16 +815,12 @@ def _set_file_paths():
         config.rc_file = os.path.join(config.appdata_path, 'wxglade.ini')
     else:
         config.rc_file = os.path.join(config.appdata_path, 'wxgladerc')
-    config.history_file = os.path.join(
-        config.appdata_path, 'file_history.txt'
-    )
+    config.history_file = os.path.join(config.appdata_path, 'file_history.txt')
     config.log_file = os.path.join(config.appdata_path, 'wxglade.log')
 
 
 def init_preferences():
-    """\
-    Load / initialise preferences
-    """
+    "Load / initialise preferences"
     if config.preferences is None:
         config.preferences = Preferences()
         config.preferences.read(config.rc_file)
@@ -1007,9 +911,7 @@ class Preferences(ConfigParser.ConfigParser):
             self._defaults['open_save_path'] = config.home_path
             self._defaults['codegen_path'] = config.home_path
         if config.appdata_path and not self._defaults['local_widget_path']:
-            self._defaults['local_widget_path'] = os.path.join(
-                config.appdata_path, 'widgets'
-                )
+            self._defaults['local_widget_path'] = os.path.join( config.appdata_path, 'widgets' )
         self.def_vals = defaults
         if self.def_vals is None:
             self.def_vals = Preferences._defaults
@@ -1057,15 +959,7 @@ class Preferences(ConfigParser.ConfigParser):
         self.changed = True
 
     def set_geometry(self, name, geometry):
-        """\
-        Save the current widget position and size
-
-        @param name: Widget name
-        @type name: str
-
-        @param geometry: Position and Size
-        @type geometry: (int, int, int, int)
-        """
+        "Save the current widget position and size"
         if geometry is not None:
             section = 'geometry_%s' % name
             if not self.has_section(section):
@@ -1076,14 +970,7 @@ class Preferences(ConfigParser.ConfigParser):
             self.set(section, 'h', geometry[3])
 
     def get_geometry(self, name):
-        """\
-        Return saved widget position and size.
-
-        @param name: Widget name
-        @type name: str
-
-        @rtype: (int, int, int, int) | None
-        """
+        "Return saved widget position and size (x,y,width,height)"
         section = 'geometry_%s' % name
         if not self.has_section(section):
             return None
@@ -1102,8 +989,7 @@ class Preferences(ConfigParser.ConfigParser):
 
 def style_attrs_to_sets(styles):
     """\
-    Convert the style attributes 'combination', 'exclude', 'include' and
-    'require' from string to a set.
+    Convert the style attributes 'combination', 'exclude', 'include' and 'require' from string to a set.
 
     @param styles: Style dictionary
     @type styles: dict
@@ -1114,8 +1000,7 @@ def style_attrs_to_sets(styles):
     for style_name in styles.keys():
         for attr in ['combination', 'exclude', 'include', 'require', ]:
             try:
-                styles[style_name][attr] = \
-                    set(styles[style_name][attr].split('|'))
+                styles[style_name][attr] = set(styles[style_name][attr].split('|'))
             except (AttributeError, KeyError):
                 pass
 

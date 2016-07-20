@@ -20,18 +20,11 @@ from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 
 
 class PanelBase(EditStylesMixin):
-    """\
-    Class PanelBase
-
-    @ivar _logger: Class specific logging instance
-    """
-
+    "Class PanelBase"
     _custom_base_classes = True
 
     def __init__(self, style='wxTAB_TRAVERSAL'):
-        """\
-        Class to handle wxPanel objects
-        """
+        "Class to handle wxPanel objects"
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
@@ -40,26 +33,19 @@ class PanelBase(EditStylesMixin):
 
         self.top_sizer = None  # sizer to handle the layout of children
         self.no_custom_class = False
-        self.access_functions['no_custom_class'] = (self.get_no_custom_class,
-                                                    self.set_no_custom_class)
-        self.properties['no_custom_class'] = CheckBoxProperty(
-            self, 'no_custom_class',
-            label=_("Don't generate code for this class"))
+        self.access_functions['no_custom_class'] = (self.get_no_custom_class, self.set_no_custom_class)
+        self.properties['no_custom_class'] = CheckBoxProperty( self, 'no_custom_class',
+                                                               label=_("Don't generate code for this class"))
 
         self.set_style(style)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['style'] = CheckListProperty(self, 'style',
-                                                     self.widget_writer)
-        self.access_functions['scrollable'] = (self.get_scrollable,
-                                               self.set_scrollable)
+        self.properties['style'] = CheckListProperty(self, 'style', self.widget_writer)
+        self.access_functions['scrollable'] = (self.get_scrollable, self.set_scrollable)
         self.scrollable = False
-        self.properties['scrollable'] = CheckBoxProperty(
-            self, 'scrollable', label=_("scrollable"))
+        self.properties['scrollable'] = CheckBoxProperty( self, 'scrollable', label=_("scrollable") )
         self.scroll_rate = (10, 10)
-        self.access_functions['scroll_rate'] = (self.get_scroll_rate,
-                                                self.set_scroll_rate)
-        self.properties['scroll_rate'] = TextProperty(
-            self, 'scroll_rate', can_disable=True, label=_("Scroll rate"))
+        self.access_functions['scroll_rate'] = (self.get_scroll_rate, self.set_scroll_rate)
+        self.properties['scroll_rate'] = TextProperty( self, 'scroll_rate', can_disable=True, label=_("Scroll rate"))
 
     def finish_widget_creation(self):
         super(PanelBase, self).finish_widget_creation(
@@ -71,9 +57,7 @@ class PanelBase(EditStylesMixin):
         # this must be done here since ManagedBase.finish_widget_creation
         # normally sets EVT_LEFT_DOWN to update_view
         if not self.widget.Disconnect(-1, -1, wx.wxEVT_LEFT_DOWN):
-            self._logger.warning(
-                _("EditPanel: Unable to disconnect the event handler")
-                )
+            self._logger.warning( _("EditPanel: Unable to disconnect the event handler") )
         wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
 
     def _update_markers(self, event):
@@ -96,10 +80,8 @@ class PanelBase(EditStylesMixin):
         self.properties['no_custom_class'].display(panel)
         szr.Add(self.properties['no_custom_class'].panel, 0, wx.EXPAND)
         label = self.properties['no_custom_class'].cb
-        label.SetToolTip(
-            wx.ToolTip(_('If this is a custom class, setting this property '
-                       'prevents wxGlade\nfrom generating the class '
-                       'definition code')))
+        label.SetToolTip( wx.ToolTip(_('If this is a custom class, setting this property prevents wxGlade\n'
+                                       'from generating the class definition code')) )
         self.properties['style'].display(panel)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         self.properties['scrollable'].display(panel)
@@ -203,13 +185,9 @@ class PanelBase(EditStylesMixin):
 
 
 class EditPanel(PanelBase, ManagedBase, ExecAfterMixin):
-    def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True, style='wxTAB_TRAVERSAL'):
-        """\
-        Class to handle wxPanel objects
-        """
-        ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer,
-                             pos, property_window, show=show)
+    "Class to handle wxPanel objects"
+    def __init__(self, name, parent, id, sizer, pos, property_window, show=True, style='wxTAB_TRAVERSAL'):
+        ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer, pos, property_window, show=show)
         PanelBase.__init__(self, style)
 
     def create_widget(self):
@@ -233,7 +211,7 @@ class EditPanel(PanelBase, ManagedBase, ExecAfterMixin):
         super(EditPanel, self).set_scrollable(value)
         if self.scrollable:
             # 2003-06-26 ALB: change the "class name", to allow code generation
-            # for a wxScrolledWindow (see Tree.Node.write and
+            # for a wxScrolledWindow (see Node.write and
             # common.class_names usage in xml_parse.py)
             self._classname = 'EditScrolledWindow'
         else:
@@ -282,20 +260,16 @@ class EditPanel(PanelBase, ManagedBase, ExecAfterMixin):
 
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
-    _is_toplevel = False  # used to avoid to appear in the "Top Window"
-                          # property of the app
+    _is_toplevel = False  # used to avoid to appear in the "Top Window" property of the app
 
-    def __init__(self, name, parent, id, property_window, klass='wxPanel',
-                 show=True, style='wxTAB_TRAVERSAL'):
-        TopLevelBase.__init__(self, name, klass, parent, id,
-                              property_window, show=show, has_title=False)
+    def __init__(self, name, parent, id, property_window, klass='wxPanel', show=True, style='wxTAB_TRAVERSAL'):
+        TopLevelBase.__init__(self, name, klass, parent, id, property_window, show=show, has_title=False)
         PanelBase.__init__(self, style)
         self.base = 'wxPanel'
         self.skip_on_size = False
 
     def create_widget(self):
-        win = wx.Frame(common.palette, -1, misc.design_title(self.name),
-                       size=(400, 300))
+        win = wx.Frame( common.palette, -1, misc.design_title(self.name), size=(400, 300) )
         import os
         icon = wx.EmptyIcon()
         xpm = os.path.join(config.icons_path, 'panel.xpm')
@@ -314,8 +288,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         oldval = self.get_size()
         super(EditTopLevelPanel, self).show_widget(yes)
         if self.widget:
-            if yes and not self.properties['size'].is_active() \
-                   and self.top_sizer:
+            if yes and not self.properties['size'].is_active() and self.top_sizer:
                 self.top_sizer.fit_parent()
             self.widget.GetParent().Show(yes)
         self.set_size(oldval)
@@ -361,9 +334,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditPanel objects.
-    """
+    "factory function for EditPanel objects"
     name = 'panel_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
@@ -383,9 +354,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditPanel objects from a XML file
-    """
+    "factory to build EditPanel objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -393,10 +362,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    panel = EditPanel(name, parent, wx.NewId(), sizer, pos,
-                      common.property_panel, True, style='')
-    sizer.set_item(panel.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    panel = EditPanel(name, parent, wx.NewId(), sizer, pos, common.property_panel, True, style='')
+    sizer.set_item(panel.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(panel)
     panel.node = node
     if pos is None:
@@ -412,8 +379,7 @@ def xml_toplevel_builder(attrs, parent, sizer, sizeritem, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    panel = EditTopLevelPanel(label, parent, wx.NewId(),
-                              common.property_panel, show=False, style='')
+    panel = EditTopLevelPanel( label, parent, wx.NewId(), common.property_panel, show=False, style='' )
     node = Tree.Node(panel)
     panel.node = node
     common.app_tree.add(node)
@@ -432,8 +398,7 @@ def initialize():
     common.widgets_from_xml['EditScrolledWindow'] = xml_builder
 
     common.widgets_from_xml['EditTopLevelPanel'] = xml_toplevel_builder
-    common.widgets_from_xml['EditTopLevelScrolledWindow'] = \
-                                                          xml_toplevel_builder
+    common.widgets_from_xml['EditTopLevelScrolledWindow'] = xml_toplevel_builder
     from tree import WidgetTree
     import os.path
     icon = os.path.join(config.icons_path, 'panel.xpm')
@@ -443,15 +408,8 @@ def initialize():
 
     # these are for backwards compatibility (may be removed someday...)
     common.widgets_from_xml['SplitterPane'] = xml_builder
-    WidgetTree.images['SplitterPane'] = os.path.join(
-        config.icons_path,
-        'panel.xpm'
-        )
+    WidgetTree.images['SplitterPane'] = os.path.join( config.icons_path, 'panel.xpm' )
     common.widgets_from_xml['NotebookPane'] = xml_builder
-    WidgetTree.images['NotebookPane'] = os.path.join(
-        config.icons_path,
-        'panel.xpm'
-        )
-    return common.make_object_button('EditPanel', 'panel.xpm',
-                                     tip='Add a Panel/ScrolledWindow')
+    WidgetTree.images['NotebookPane'] = os.path.join( config.icons_path, 'panel.xpm' )
+    return common.make_object_button('EditPanel', 'panel.xpm', tip='Add a Panel/ScrolledWindow')
 

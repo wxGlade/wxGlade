@@ -43,8 +43,7 @@ class CppSpinCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         prop = obj.properties
         self.tmpl_dict['value'] = prop.get('value', '')
         try:
-            minValue, maxValue = [s.strip() for s in
-                                  prop.get('range', '0, 100').split(',')]
+            minValue, maxValue = [s.strip() for s in prop.get('range', '0, 100').split(',')]
         except:
             minValue, maxValue = '0', '100'
         self.tmpl_dict['minValue'] = minValue
@@ -69,8 +68,7 @@ def xrc_code_generator(obj):
                     outfile.write(tab_s + '<min>%s</min>\n' % minValue)
                     outfile.write(tab_s + '<max>%s</max>\n' % maxValue)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                       outfile, tabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
 
     # end of class SpinCtrlXrcObject
 

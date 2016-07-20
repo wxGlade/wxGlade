@@ -18,15 +18,11 @@ from widget_properties import *
 
 
 class EditToggleButton(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxToggleButton objects
-    """
+    "Class to handle wxToggleButton objects"
 
-    def __init__(self, name, parent, id, label, sizer, pos, property_window,
-                 show=True):
+    def __init__(self, name, parent, id, label, sizer, pos, property_window, show=True):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxToggleButton', parent, id, sizer,
-                             pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxToggleButton', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variable
@@ -40,13 +36,9 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
         self.access_functions ['label'] = (self.get_label, self.set_label)
         self.access_functions ['value'] = (self.get_value, self.set_value)
         self.access_functions ['style'] = (self.get_style, self.set_style)
-        self.properties ['label'] = TextProperty(self, 'label',
-                                                 multiline=True,
-                                                 label=_("label"))
-        self.properties ['value'] = CheckBoxProperty(self, 'value',
-                                                     label=_('Clicked'))
-        self.properties ['style'] = CheckListProperty(self, 'style',
-                                                      self.widget_writer)
+        self.properties ['label'] = TextProperty(self, 'label', multiline=True, label=_("label"))
+        self.properties ['value'] = CheckBoxProperty(self, 'value', label=_('Clicked'))
+        self.properties ['style'] = CheckListProperty(self, 'style', self.widget_writer)
 
     def create_widget(self):
         label = self.label.replace('\\n', '\n')
@@ -79,8 +71,7 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(value.replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos,
-                                        size=self.widget.GetBestSize())
+                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def get_value(self):
         return self.value
@@ -93,13 +84,10 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
             self.value = value
             if self.widget: self.widget.SetValue(value)
 
-# end of class EditToggleButton
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditToggleButton objects.
-    """
+    "factory function for EditToggleButton objects"
     label = u'button_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
@@ -113,9 +101,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditToggleButton objects from a XML file
-    """
+    "factory to build EditToggleButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -123,10 +109,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditToggleButton(label, parent, wx.NewId(), '',
-                              sizer, pos, common.property_panel)
-    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    button = EditToggleButton(label, parent, wx.NewId(), '', sizer, pos, common.property_panel)
+    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(button)
     button.node = node
     if pos is None:
@@ -137,10 +121,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditToggleButton'] = builder
     common.widgets_from_xml['EditToggleButton'] = xml_builder
 

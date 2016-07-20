@@ -261,9 +261,7 @@ def builder(parent, sizer, pos, number=[0]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditDialog objects from a XML file
-    """
+    "factory to build EditDialog objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -278,10 +276,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     cwx = common.widgets_from_xml
     cwx['EditDialog'] = xml_builder
 

@@ -16,15 +16,11 @@ from widget_properties import *
 
 
 class EditWidget(ManagedBase):
-    def __init__(self, name, klass, parent, id, label, sizer, pos,
-                 property_window, show=True):
-        """\
-        Class to handle wxFoo objects
-        """
+    def __init__(self, name, klass, parent, id, label, sizer, pos, property_window, show=True):
+        "Class to handle wxFoo objects"
         self.label = label
         self.default = False
-        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos, property_window, show=show)
 
         # introspect subclass looking for properties
         # and widgets
@@ -70,8 +66,7 @@ class EditWidget(ManagedBase):
         szr = wx.BoxSizer(wx.VERTICAL)
         for name in self.property_names:
             self.properties[name].display(panel)
-            szr.Add(self.properties[name].panel, self.property_proportion[name],
-                    wx.EXPAND)
+            szr.Add( self.properties[name].panel, self.property_proportion[name], wx.EXPAND )
         panel.SetAutoLayout(1)
         compat.SizerItem_SetSizer(panel, szr)
         szr.Fit(panel)

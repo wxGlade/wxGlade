@@ -53,15 +53,10 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
         1: wx.CHK_CHECKED,
         2: wx.CHK_UNDETERMINED,
         }
-    """\
-    Convert the position of "checked" RadioProperty to wxCheckBoxState
-    """
+    'Convert the position of "checked" RadioProperty to wxCheckBoxState'
 
-    def __init__(self, name, parent, id, label, sizer, pos, property_window,
-                 show=True):
-        """\
-        Class to handle wxCheckBox objects
-        """
+    def __init__(self, name, parent, id, label, sizer, pos, property_window, show=True):
+        "Class to handle wxCheckBox objects"
         ManagedBase.__init__(self, name, 'wxCheckBox', parent, id, sizer,
                              pos, property_window, show=show)
         EditStylesMixin.__init__(self)
@@ -89,9 +84,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
             self.flag = wx.ALL
 
     def _activate_elements(self):
-        """\
-        Activate / deactivate widget elements by re-setting styles and value
-        """
+        "Activate / deactivate widget elements by re-setting styles and value"
         self.set_style(self.get_style())
         self.set_value(self.value)
 
@@ -130,8 +123,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(value.replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos,
-                                        size=self.widget.GetBestSize())
+                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def get_value(self):
         return self.value
@@ -160,15 +152,12 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditCheckBox objects.
-    """
+    "factory function for EditCheckBox objects"
     label = 'checkbox_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'checkbox_%d' % number[0]
-    checkbox = EditCheckBox(label, parent, wx.NewId(), label, sizer, pos,
-                            common.property_panel)
+    checkbox = EditCheckBox(label, parent, wx.NewId(), label, sizer, pos, common.property_panel)
     node = Tree.Node(checkbox)
     checkbox.node = node
     checkbox.show_widget(True)
@@ -176,9 +165,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditCheckBox objects from a XML file
-    """
+    "factory to build EditCheckBox objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -186,11 +173,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    checkbox = EditCheckBox(
-        label, parent, wx.NewId(), "", sizer, pos,
-        common.property_panel, show=False)
-    sizer.set_item(checkbox.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    checkbox = EditCheckBox( label, parent, wx.NewId(), "", sizer, pos, common.property_panel, show=False)
+    sizer.set_item(checkbox.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(checkbox)
     checkbox.node = node
     if pos is None:
@@ -201,10 +185,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     common.widgets['EditCheckBox'] = builder
     common.widgets_from_xml['EditCheckBox'] = xml_builder
 

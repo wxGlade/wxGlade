@@ -18,18 +18,12 @@ from misc import wxGladeRadioButton
 
 
 class EditRadioButton(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxRadioButton objects
-    """
-
+    "Class to handle wxRadioButton objects"
     update_widget_style = False
 
-    def __init__(self, name, parent, id, label, sizer, pos, property_window,
-                 show=True):
-
+    def __init__(self, name, parent, id, label, sizer, pos, property_window, show=True):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxRadioButton', parent, id, sizer,
-                             pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxRadioButton', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -43,24 +37,19 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
         self.access_functions['label'] = (self.get_label, self.set_label)
         self.access_functions['clicked'] = (self.get_value, self.set_value)
         self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['label'] = TextProperty(self, 'label', None,
-                                                multiline=True, label=_("label"))
-        self.properties['clicked'] = CheckBoxProperty(self, 'clicked', None,
-                                                      _('Clicked'))
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
+        self.properties['label'] = TextProperty(self, 'label', None, multiline=True, label=_("label"))
+        self.properties['clicked'] = CheckBoxProperty(self, 'clicked', None, _('Clicked'))
+        self.properties['style'] = CheckListProperty( self, 'style', self.widget_writer)
 
     def create_widget(self):
         label = self.label.replace('\\n', '\n')
-        self.widget = wxGladeRadioButton(self.parent.widget, self.id,
-                                         label)
+        self.widget = wxGladeRadioButton(self.parent.widget, self.id, label)
         try:
             self.widget.SetValue(self.value)
         except AttributeError:
             raise
 
-        wx.EVT_CHECKBOX(self.widget, self.id,
-                        lambda e: self.widget.SetValue(self.value))
+        wx.EVT_CHECKBOX(self.widget, self.id, lambda e: self.widget.SetValue(self.value))
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -90,8 +79,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(value.replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos,
-                                        size=self.widget.GetBestSize())
+                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def set_value(self, value):
         self.value = int(value)
@@ -101,15 +89,12 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditRadioButton objects.
-    """
+    "factory function for EditRadioButton objects"
     label = u'radio_btn_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
         label = u'radio_btn_%d' % number[0]
-    radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos,
-                            common.property_panel)
+    radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos, common.property_panel)
     node = Tree.Node(radio)
     radio.node = node
     radio.show_widget(True)
@@ -117,9 +102,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditRadioButton objects from a XML file
-    """
+    "factory to build EditRadioButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -127,24 +110,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    radio = EditRadioButton(label, parent, wx.NewId(), "",
-                            sizer, pos, common.property_panel)
-    sizer.set_item(radio.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    radio = EditRadioButton(label, parent, wx.NewId(), "", sizer, pos, common.property_panel)
+    sizer.set_item(radio.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(radio)
     radio.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return radio
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     common.widgets['EditRadioButton'] = builder
     common.widgets_from_xml['EditRadioButton'] = xml_builder
 

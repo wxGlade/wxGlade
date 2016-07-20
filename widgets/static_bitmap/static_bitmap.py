@@ -19,18 +19,12 @@ from widget_properties import *
 
 
 class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
-    """\
-    Class to handle wxStaticBitmap objects
-    """
-
+    "Class to handle wxStaticBitmap objects"
     update_widget_style = False
 
-    def __init__(self, name, parent, id, bmp_file, sizer, pos,
-                 property_window, show=True):
-
+    def __init__(self, name, parent, id, bmp_file, sizer, pos, property_window, show=True):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer,
-                             pos, property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer, pos, property_window, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
@@ -45,19 +39,14 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
         properties = self.properties
 
         access['bitmap'] = (self.get_bitmap, self.set_bitmap)
-        properties['bitmap'] = FileDialogProperty(
-            self, 'bitmap', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-            can_disable=False, label=_("Bitmap"))
+        properties['bitmap'] = FileDialogProperty(self, 'bitmap', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, can_disable=False, label=_("Bitmap"))
         properties['bitmap'].set_tooltip(self.bitmap_tooltip_text)
 
         access['attribute'] = (self.get_attribute, self.set_attribute)
-        properties['attribute'] = CheckBoxProperty(
-            self, 'attribute', label=_('Store as attribute'),
-            write_always=True)
+        properties['attribute'] = CheckBoxProperty(self, 'attribute', label=_('Store as attribute'), write_always=True)
 
         access['style'] = (self.get_style, self.set_style)
-        properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
+        properties['style'] = CheckListProperty(self, 'style', self.widget_writer)
 
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
@@ -104,30 +93,24 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
             self.widget.SetBitmap(bmp)
             self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
-# end of class EditStaticBitmap
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditStaticBitmap objects.
-    """
+    "factory function for EditStaticBitmap objects"
     name = 'bitmap_%s' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'bitmap_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image"))
-    static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer,
-                                     pos, common.property_panel)
+    static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer, pos, common.property_panel)
     node = Tree.Node(static_bitmap)
     static_bitmap.node = node
     static_bitmap.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditStaticBitmap objects from a XML file
-    """
+    "factory to build EditStaticBitmap objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -135,24 +118,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    bitmap = EditStaticBitmap(label, parent, wx.NewId(), '', sizer, pos,
-                              common.property_panel)
-    sizer.set_item(bitmap.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    bitmap = EditStaticBitmap(label, parent, wx.NewId(), '', sizer, pos, common.property_panel)
+    sizer.set_item(bitmap.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
     node = Tree.Node(bitmap)
     bitmap.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return bitmap
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     common.widgets['EditStaticBitmap'] = builder
     common.widgets_from_xml['EditStaticBitmap'] = xml_builder
 

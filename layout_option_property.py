@@ -32,18 +32,13 @@ class LayoutOptionProperty(widget_properties.Property):
             self._display_spin(parent)
 
     def _display_spin(self, parent):
-        """\
-        Actually builds the spin control to set the value of the property
-        interactively
-        """
+        "Actually builds the spin control to set the value of the property interactively"
         self.id = wx.NewId()
         self.val_range = (0, 1000)
         size = (config.label_initial_width, -1)
-        label = wx.lib.stattext.GenStaticText(
-            parent, wx.ID_ANY, _('Proportion'), size=size)
-        self.spin = wx.SpinCtrl(parent, self.id, min=self.val_range[0],
-                                max=self.val_range[1])
-        val = int(self.owner[self.name][0]())
+        label = wx.lib.stattext.GenStaticText( parent, wx.ID_ANY, _('Proportion'), size=size )
+        self.spin = wx.SpinCtrl( parent, self.id, min=self.val_range[0], max=self.val_range[1] )
+        val = int( self.owner[self.name][0]() )
         if not val:
             self.spin.SetValue(1)  # needed for GTK to display a '0'
         self.spin.SetValue(val)
@@ -60,8 +55,7 @@ class LayoutOptionProperty(widget_properties.Property):
         val = self.owner[self.name][0]()
 
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        label = wx.lib.stattext.GenStaticText(
-            parent, wx.ID_ANY, _('Position'), size=size)
+        label = wx.lib.stattext.GenStaticText( parent, wx.ID_ANY, _('Position'), size=size )
         szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         self.position = wx.TextCtrl(parent, -1)
         self.position.SetValue(val[:2])
@@ -69,8 +63,7 @@ class LayoutOptionProperty(widget_properties.Property):
         sizer.Add(szr, 0, wx.EXPAND)
 
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        label = wx.lib.stattext.GenStaticText(
-            parent, wx.ID_ANY, _('Span'), size=size)
+        label = wx.lib.stattext.GenStaticText( parent, wx.ID_ANY, _('Span'), size=size )
         szr.Add(label, 2, wx.ALL|wx.ALIGN_CENTER, 3)
         self.span = wx.TextCtrl(parent, -1)
         self.span.SetValue(val[2:])
@@ -118,8 +111,7 @@ class LayoutOptionProperty(widget_properties.Property):
             except AttributeError: return self.val
         else:
             try:
-                return ", ".join([self.position.GetValue(),
-                                  self.span.GetValue()])
+                return ", ".join( [ self.position.GetValue(), self.span.GetValue() ] )
             except AttributeError:
                 return self.val
 
@@ -155,8 +147,7 @@ class LayoutOptionProperty(widget_properties.Property):
 class LayoutPosProperty(widget_properties.SpinProperty):
     def __init__(self, owner, sizer, parent=None):
         self.is_gridbag = _is_gridbag(sizer)
-        widget_properties.SpinProperty.__init__(
-            self, owner, 'pos', parent, 0, (0, 1000))
+        widget_properties.SpinProperty.__init__( self, owner, 'pos', parent, 0, (0, 1000) )
         self.label = _('Position')
 
     def set_sizer(self, sizer):

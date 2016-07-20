@@ -69,23 +69,15 @@ class FileDirDialog(object):
         @see: L{get_value()}
         """
         if self.parent.multiple_files == 0:
-            self.value = wx.FileSelector(
-                self.file_message,
-                self.prev_dir,
-                wildcard=self.wildcard,
-                flags=self.file_style
-                )
+            self.value = wx.FileSelector( self.file_message, self.prev_dir, wildcard=self.wildcard,
+                                          flags=self.file_style )
             # check for file extension and add default extension if missing
             if self.value and self.default_extension:
                 ext = os.path.splitext(self.value)[1].lower()
                 if not ext:
                     self.value = "%s%s" % (self.value, self.default_extension)
         else:
-            self.value = wx.DirSelector(
-                self.dir_message,
-                self.prev_dir,
-                style=self.dir_style
-                )
+            self.value = wx.DirSelector( self.dir_message, self.prev_dir, style=self.dir_style )
         if self.value:
             self.prev_dir = self.value
             if not os.path.isdir(self.prev_dir):
@@ -132,18 +124,10 @@ class Application(object):
         self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
-        panel_application = wx.ScrolledWindow(
-            self.notebook,
-            wx.ID_ANY,
-            style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE,
-            name='ApplicationPanel',
-            )
-        panel_settings = wx.ScrolledWindow(
-            self.notebook,
-            wx.ID_ANY,
-            style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE,
-            name='SettingsPanel'
-            )
+        panel_application = wx.ScrolledWindow( self.notebook, wx.ID_ANY,
+                                         style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE, name='ApplicationPanel' )
+        panel_settings = wx.ScrolledWindow( self.notebook, wx.ID_ANY,
+                                            style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE, name='SettingsPanel' )
         self.name = "app"
         self.__saved = True
         self.__filename = None
@@ -166,15 +150,9 @@ class Application(object):
         self.access_functions = {
             'name': (lambda: self.name, self.set_name),
             'class': (lambda: self.klass, self.set_klass),
-            'multiple_files': (
-                lambda: self.multiple_files,
-                self.set_multiple_files
-                ),
+            'multiple_files': (lambda: self.multiple_files, self.set_multiple_files),
             'indent_mode': (lambda: self.indent_mode, self.set_indent_mode),
-            'indent_amount': (
-                lambda: self.indent_amount,
-                self.set_indent_amount
-                ),
+            'indent_amount': (lambda: self.indent_amount, self.set_indent_amount),
             'source_ext': (lambda: self.source_ext, self.set_source_ext),
             'header_ext': (lambda: self.header_ext, self.set_header_ext),
             'output_path': (self.get_output_path, self.set_output_path),
@@ -184,137 +162,71 @@ class Application(object):
             'for_version': (lambda: self.for_version, self.set_for_version),
             }
         self.name_prop = TextProperty(self, "name", panel_application, True)
-        self.name_prop.set_tooltip(
-            _('Name of the instance created from "Class"')
-            )
+        self.name_prop.set_tooltip(_('Name of the instance created from "Class"'))
         self.klass_prop = TextProperty(self, "class", panel_application, True)
-        self.klass_prop.set_tooltip(
-            _("Name of the automatically generated class derived from wxApp")
-            )
+        self.klass_prop.set_tooltip(_("Name of the automatically generated class derived from wxApp"))
 
         self.encoding = config.encoding
         self.encoding_prop = TextProperty(self, 'encoding', panel_application)
-        self.encoding_prop.set_tooltip(
-            _("Encoding of the generated source files")
-            )
+        self.encoding_prop.set_tooltip(_("Encoding of the generated source files"))
 
-        self.use_gettext_prop = CheckBoxProperty(
-            self,
-            'use_gettext',
-            panel_application,
-            _("Enable gettext support"),
-            )
+        self.use_gettext_prop = CheckBoxProperty(self, 'use_gettext', panel_application, _("Enable gettext support"))
         self.use_gettext_prop.set_tooltip(
-            _("Enable internationalisation and localisation for the "
-                "generated source files")
-            )
+            _("Enable internationalisation and localisation for the generated source files") )
         TOP_WIN_ID = wx.NewId()
-        self.top_win_prop = wx.Choice(
-            panel_application,
-            TOP_WIN_ID,
-            choices=[],
-            size=(1, -1),
-            )
-        self.top_win_prop.SetToolTip(wx.ToolTip(
-            _("This widget is used as top window in the wxApp start code")
-            ))
+        self.top_win_prop = wx.Choice( panel_application, TOP_WIN_ID, choices=[], size=(1, -1) )
+        self.top_win_prop.SetToolTip( wx.ToolTip(_("This widget is used as top window in the wxApp start code") ))
         self.top_window = ''  # name of the top window of the generated app
 
-        codegen_tooltips = [
-            _("Write all source code in one file"),
-            _("Split source code in one file per class / widget"),
-            ]
-        self.multiple_files_prop = RadioProperty(
-            self, "multiple_files", panel_application,
-            [_("Single file"), _("Separate file for each class")],
-            label=_("Code Generation"), tooltips=codegen_tooltips)
-        self.indent_mode_prop = RadioProperty(self, "indent_mode",
-                                              panel_settings,
-                                              [_("Tabs"), _("Spaces")],
-                                              columns=2,
-                                              label=_("Indentation mode"))
-        self.indent_amount_prop = SpinProperty(self, 'indent_amount',
-                                               panel_settings, r=(1, 100))
-        self.indent_amount_prop.set_tooltip(
-            _('Number of spaces or tabs used for one indentation level.')
-            )
-        self.source_ext_prop = TextProperty(self, 'source_ext',
-                                            panel_settings)
+        codegen_tooltips = [ _("Write all source code in one file"),
+                             _("Split source code in one file per class / widget") ]
+        self.multiple_files_prop = RadioProperty( self, "multiple_files", panel_application,
+                                                  [_("Single file"), _("Separate file for each class")],
+                                                  label=_("Code Generation"), tooltips=codegen_tooltips)
+        self.indent_mode_prop = RadioProperty(self, "indent_mode", panel_settings, [_("Tabs"), _("Spaces")],
+                                              columns=2, label=_("Indentation mode"))
+        self.indent_amount_prop = SpinProperty(self, 'indent_amount', panel_settings, r=(1, 100))
+        self.indent_amount_prop.set_tooltip(_('Number of spaces or tabs used for one indentation level.'))
+        self.source_ext_prop = TextProperty(self, 'source_ext', panel_settings)
         self.source_ext_prop.set_tooltip(_('Extension of the source file'))
-        self.header_ext_prop = TextProperty(self, 'header_ext',
-                                            panel_settings)
+        self.header_ext_prop = TextProperty(self, 'header_ext', panel_settings)
         self.header_ext_prop.set_tooltip(_('Extension of the header file'))
 
         _writers = common.code_writers.keys()
         columns = 3
 
-        self.codewriters_prop = RadioProperty(self, "language", panel_application,
-                                              _writers, columns=columns,
+        self.codewriters_prop = RadioProperty(self, "language", panel_application, _writers, columns=columns,
                                               sort=True, capitalize=True)
         self.codewriters_prop.set_str_value('python')
 
         for_version_tooltips = []
         for version in self.all_supported_versions:
             if version == '3.0':
-                for_version_tooltips.append(
-                    _('Generate source files for wxWidgets version %s\n'
-                    'Starting with wxPython 3.0 old style import are not '
-                    'supported anymore.'
-                    ) % version
-                    )
+                for_version_tooltips.append( _('Generate source files for wxWidgets version %s\n'
+                                               'Starting with wxPython 3.0 old style import are not supported anymore.'
+                                              ) % version )
             else:
-                for_version_tooltips.append(
-                    _("Generate source files for wxWidgets version %s") % version
-                    )
-        self.for_version_prop = RadioProperty(
-            self,
-            "for_version",
-            panel_application,
-            self.all_supported_versions,
-            columns=3,
-            label=_("wxWidgets compatibility"),
-            tooltips=for_version_tooltips,
-            )
+                for_version_tooltips.append( _("Generate source files for wxWidgets version %s") % version )
+        self.for_version_prop = RadioProperty( self, "for_version", panel_application, self.all_supported_versions,
+                                          columns=3, label=_("wxWidgets compatibility"), tooltips=for_version_tooltips )
         self.for_version_prop.set_str_value(self.for_version)
 
         self.overwrite = config.default_overwrite
-        self.access_functions['overwrite'] = \
-            (self.get_overwrite, self.set_overwrite)
-        self.overwrite_prop = CheckBoxProperty(
-            self,
-            'overwrite',
-            panel_application,
-            _('Overwrite existing sources'),
-            )
+        self.access_functions['overwrite'] = (self.get_overwrite, self.set_overwrite)
+        self.overwrite_prop = CheckBoxProperty( self, 'overwrite', panel_application, _('Overwrite existing sources') )
         self.overwrite_prop.set_tooltip(
-            _("Overwrite existing source files or modify the code sequences "
-              "generated by wxGlade in place.\n"
-              "Modifying code in place is deprecated. "
-              "Please adapt your application.")
-            )
+            _("Overwrite existing source files or modify the code sequences generated by wxGlade in place.\n"
+              "Modifying code in place is deprecated. Please adapt your application.") )
 
-        dialog = FileDirDialog(
-            self,
-            _('All files|*'),
-            _("Select output file"),
-            _("Select output directory"),
-            wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
-            )
-        self.outpath_prop = DialogProperty(self, "output_path", panel_application,
-                                           dialog, label=_('Output path'))
+        dialog = FileDirDialog( self, _('All files|*'), _("Select output file"), _("Select output directory"),
+                                wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT )
+        self.outpath_prop = DialogProperty(self, "output_path", panel_application, dialog, label=_('Output path'))
         # update wildcards and default extension in the dialog
         self._update_wildcards(self.outpath_prop.dialog, 'python')
-        self.outpath_prop.set_tooltip(
-            _("Output file or directory")
-            )
+        self.outpath_prop.set_tooltip(_("Output file or directory"))
 
         BTN_ID = wx.NewId()
-        btn = wx.Button(
-            panel_application,
-            BTN_ID,
-            _("Generate code"),
-            name="BtnGenerateCode",
-            )
+        btn = wx.Button( panel_application, BTN_ID, _("Generate code"), name="BtnGenerateCode" )
         btn.SetToolTip(wx.ToolTip(_("Start generating source files")))
 
         # layout of self.notebook - page "Application"
@@ -326,15 +238,8 @@ class Application(object):
         sizer.Add(self.encoding_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.use_gettext_prop.panel, 0, wx.EXPAND)
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        label = wx.StaticText(
-            panel_application,
-            -1,
-            _("Top window"),
-            size=(config.label_initial_width, -1),
-            )
-        label.SetToolTip(wx.ToolTip(
-            _("This widget is used as top window in the wxApp start code")
-            ))
+        label = wx.StaticText( panel_application, -1, _("Top window"), size=(config.label_initial_width, -1) )
+        label.SetToolTip(wx.ToolTip(_("This widget is used as top window in the wxApp start code")))
         szr.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         szr.Add(self.top_win_prop, 5, wx.ALL | wx.ALIGN_CENTER, 3)
         sizer.Add(szr, 0, wx.EXPAND)
@@ -352,26 +257,13 @@ class Application(object):
         #=======================================
 
         # general settings
-        staticbox_general = wx.StaticBox(
-            panel_settings,
-            wx.ID_ANY,
-            _("General Settings"),
-            )
+        staticbox_general = wx.StaticBox(panel_settings, wx.ID_ANY, _("General Settings"))
         sizer_general = wx.StaticBoxSizer(staticbox_general, wx.VERTICAL)
-        sizer_general.Add(
-            self.indent_mode_prop.panel,
-            0,
-            wx.ALL | wx.EXPAND,
-            4,
-            )
+        sizer_general.Add(self.indent_mode_prop.panel, 0, wx.ALL | wx.EXPAND, 4)
         sizer_general.Add(self.indent_amount_prop.panel, 0, wx.EXPAND)
 
         # C++ specific settings
-        staticbox_cpp = wx.StaticBox(
-            panel_settings,
-            wx.ID_ANY,
-            _("C++ Settings"),
-            )
+        staticbox_cpp = wx.StaticBox( panel_settings, wx.ID_ANY, _("C++ Settings") )
         sizer_cpp = wx.StaticBoxSizer(staticbox_cpp, wx.VERTICAL)
         sizer_cpp.Add(self.source_ext_prop.panel, 0, wx.EXPAND)
         sizer_cpp.Add(self.header_ext_prop.panel, 0, wx.EXPAND)
@@ -409,13 +301,9 @@ class Application(object):
         if self.for_version.startswith('3.'):
             ## disable lisp for wx > 2.8
             if self.codewriters_prop.get_str_value() == 'lisp':
-                wx.MessageBox(
-                    _('Generating Lisp code for wxWidgets version %s is not '
-                      'supported.\n'
-                      'Set version to "2.8" instead.') % self.for_version,
-                    _("Warning"),
-                     wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION
-                    )
+                wx.MessageBox( _('Generating Lisp code for wxWidgets version %s is not supported.\n'
+                                 'Set version to "2.8" instead.') % self.for_version,
+                               _("Warning"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
                 self.for_version_prop.set_str_value('2.8')
                 self.set_for_version('2.8')
                 return
@@ -466,9 +354,7 @@ class Application(object):
         self.use_gettext = bool(int(value))
 
     def _add_page(self, label, page, sizer):
-        """\
-        Add a page to properties notebook (L{self.notebook})
-        """
+        "Add a page to properties notebook (L{self.notebook})"
         page.SetAutoLayout(True)
         page.SetSizer(sizer)
         sizer.Layout()
@@ -518,20 +404,15 @@ class Application(object):
             if self.for_version_prop.get_str_value() == '3.0':
                 self.for_version_prop.set_str_value('2.8')
                 self.set_for_version('2.8')
-                wx.MessageBox(
-                    _('Generating Lisp code for wxWidgets version %s is not '
-                      'supported.\n'
-                      'Set version to "2.8" instead.') % self.for_version,
-                    _("Warning"),
-                    wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION
-                    )
+                wx.MessageBox( _('Generating Lisp code for wxWidgets version %s is not supported.\n'
+                                 'Set version to "2.8" instead.') % self.for_version,
+                               _("Warning"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
             # RadioProperty
             self.for_version_prop.enable_item('3.0', False)
         else:
             self.for_version_prop.enable_item('3.0', True)
 
         # don't change the extension in multiple files mode
-
         if self.multiple_files_prop.get_value() == 1:
             return
 
@@ -543,11 +424,9 @@ class Application(object):
 
         # is already a valid extension?
         # ext has a leading . but default_extensions hasn't
-        if ext and \
-           ext[1:] in common.code_writers[language].default_extensions:
-                return
-        new_name = "%s.%s" % (
-            base, common.code_writers[language].default_extensions[0])
+        if ext and ext[1:] in common.code_writers[language].default_extensions:
+            return
+        new_name = "%s.%s" % (base, common.code_writers[language].default_extensions[0])
         self.outpath_prop.set_value(new_name)
         self.output_path = new_name
 
@@ -611,10 +490,7 @@ class Application(object):
         index = self.top_win_prop.FindString("%s" % name)
         if index != -1:
             if wx.Platform == '__WXGTK__':
-                choices = [
-                    self.top_win_prop.GetString(i) for i in
-                    range(self.top_win_prop.GetCount()) if i != index
-                    ]
+                choices = [self.top_win_prop.GetString(i) for i in range(self.top_win_prop.GetCount()) if i!=index]
                 self.top_win_prop.Clear()
                 for c in choices:
                     self.top_win_prop.Append(c)
@@ -628,10 +504,7 @@ class Application(object):
                 self.top_window = newname
             if wx.Platform == '__WXGTK__':
                 sel_index = self.top_win_prop.GetSelection()
-                choices = [
-                    self.top_win_prop.GetString(i) for i in
-                    range(self.top_win_prop.GetCount())
-                    ]
+                choices = [ self.top_win_prop.GetString(i) for i in range(self.top_win_prop.GetCount()) ]
                 choices[index] = newname
                 self.top_win_prop.Clear()
                 for c in choices:
@@ -641,9 +514,7 @@ class Application(object):
                 self.top_win_prop.SetString(index, newname)
 
     def reset(self):
-        """\
-        resets the default values of the attributes of the app
-        """
+        "resets the default values of the attributes of the app"""
         self.klass = "MyApp"
         self.klass_prop.set_value("MyApp")
         self.klass_prop.toggle_active(False)
@@ -689,22 +560,12 @@ class Application(object):
     def generate_code(self, *args, **kwds):
         preview = kwds.get('preview', False)
         if not self.output_path:
-            return wx.MessageBox(
-                _("You must specify an output file\n"
-                    "before generating any code"),
-                _("Error"),
-                wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION,
-                self.notebook,
-                )
-        if not preview and (
-                (self.name_prop.is_active() or self.klass_prop.is_active())
-                and self.top_win_prop.GetSelection() < 0):
-            return wx.MessageBox(
-                _("Please select a top window for the application"),
-                _("Error"),
-                wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION,
-                self.notebook,
-                )
+            return wx.MessageBox( _("You must specify an output file\nbefore generating any code"),
+                                  _("Error"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, self.notebook )
+        if not preview and ( (self.name_prop.is_active() or self.klass_prop.is_active())
+                              and self.top_win_prop.GetSelection() < 0 ):
+            return wx.MessageBox( _("Please select a top window for the application"), _("Error"),
+                                  wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, self.notebook )
 
         # temporary buffer for XML
         tmp_xml = misc.UnicodeStringIO('utf-8')
@@ -723,15 +584,13 @@ class Application(object):
 
             out_path = os.path.expanduser(self.output_path.strip())
             if not os.path.isabs(out_path) and self.filename:
-                out_path = os.path.join(
-                    os.path.dirname(self.filename), out_path)
+                out_path = os.path.join(os.path.dirname(self.filename), out_path)
                 out_path = os.path.normpath(out_path)
             else:
                 out_path = None
 
-            CodeWriter(common.code_writers[codewriter], tmp_xml.getvalue(),
-                       True, preview=preview, out_path=out_path,
-                       class_names=class_names)
+            CodeWriter( common.code_writers[codewriter], tmp_xml.getvalue(), True,
+                        preview=preview, out_path=out_path, class_names=class_names )
 
             # restore saved settings
             if preview and codewriter == 'python':
@@ -749,11 +608,8 @@ class Application(object):
             if not preview:
                 if config.preferences.show_completion:
                     # Show informational dialog
-                    wx.MessageBox(
-                        _("Code generation completed successfully"),
-                        _("Information"),
-                        wx.OK | wx.CENTRE | wx.ICON_INFORMATION,
-                        )
+                    wx.MessageBox( _("Code generation completed successfully"),
+                                   _("Information"), wx.OK | wx.CENTRE | wx.ICON_INFORMATION )
                 else:
                     # Show message in application status bar
                     app = wx.GetApp()
@@ -777,12 +633,8 @@ class Application(object):
         return True
 
     def preview(self, widget, out_name=None):
-        """\
-        Generate and instantiate preview widget.
-
-        None will be returned in case of errors. The error details are
-        written to the application log file.
-        """
+        """Generate and instantiate preview widget.
+        None will be returned in case of errors. The error details are written to the application log file."""
         if out_name is None:
             import warnings
             warnings.filterwarnings("ignore", "tempnam", RuntimeWarning,
@@ -798,8 +650,7 @@ class Application(object):
         # ALB 2003-11-08: always randomize the class name: this is to make
         # preview work even when there are multiple classes with the same name
         # (which makes sense for XRC output...)
-        widget.klass = '_%d_%s' % \
-                       (random.randrange(10 ** 8, 10 ** 9), widget.klass)
+        widget.klass = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), widget.klass)
 
         self.real_output_path = self.output_path
         self.output_path = out_name
@@ -819,27 +670,20 @@ class Application(object):
             preview_path = os.path.dirname(self.output_path)
             preview_module_name = os.path.basename(self.output_path)
             preview_module_name = os.path.splitext(preview_module_name)[0]
-            preview_module = plugins.import_module(preview_path,
-                                                   preview_module_name)
+            preview_module = plugins.import_module(preview_path, preview_module_name)
             if not preview_module:
-                wx.MessageBox(
-                    _('Can not import the preview module from file \n'
-                      '"%s".\n'
-                      'The details are written to the log file.\n'
-                      'If you think this is a wxGlade bug, please '
-                      'report it.') % self.output_path,
-                    _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
+                wx.MessageBox( _('Can not import the preview module from file \n"%s".\n'
+                                 'The details are written to the log file.\nIf you think this is a wxGlade bug, please '
+                                 'report it.') % self.output_path,
+                               _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
                 return None
 
             preview_class = getattr(preview_module, widget.klass)
 
             if not preview_class:
-                wx.MessageBox(
-                    _('No preview class "%s" found.\n'
-                      'The details are written to the log file.\n'
-                      'If you think this is a wxGlade bug, please '
-                      'report it.') % widget.klass,
-                    _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
+                wx.MessageBox( _('No preview class "%s" found.\nThe details are written to the log file.\n'
+                                 'If you think this is a wxGlade bug, please report it.') % widget.klass,
+                               _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
                 return None
 
             if issubclass(preview_class, wx.MDIChildFrame):
@@ -848,8 +692,7 @@ class Application(object):
                 child.SetTitle('<Preview> - ' + child.GetTitle())
                 w, h = child.GetSize()
                 frame.SetClientSize((w + 20, h + 20))
-            elif not (issubclass(preview_class, wx.Frame) or
-                      issubclass(preview_class, wx.Dialog)):
+            elif not issubclass(preview_class, (wx.Frame,wx.Dialog)):
                 # the toplevel class isn't really toplevel, add a frame...
                 frame = wx.Frame(None, -1, widget_class_name)
                 if issubclass(preview_class, wx.MenuBar):
@@ -909,15 +752,10 @@ class Application(object):
             else:
                 # xrc is special...
                 xrcgen = common.code_writers['XRC']
-                ok = xrcgen.obj_builders.get(cname, None) is not \
-                    xrcgen.NotImplementedXrcObject
+                ok = xrcgen.obj_builders.get(cname, None) is not xrcgen.NotImplementedXrcObject
             if not ok:
-                self._logger.warn(
-                    _('No %s code generator for %s (of type %s) available'),
-                    misc.capitalize(language),
-                    widget.name,
-                    cname,
-                    )
+                self._logger.warn( _('No %s code generator for %s (of type %s) available'),
+                                   misc.capitalize(language), widget.name, cname )
         else:
             # in this case, we check all the widgets in the tree
             def check_rec(node):
@@ -938,9 +776,7 @@ class Application(object):
         ext = getattr(common.code_writers[language], 'default_extensions', [])
         wildcards = []
         for e in ext:
-            wildcards.append(
-                _('%s files (*.%s)|*.%s') % (misc.capitalize(language), e, e)
-                )
+            wildcards.append( _('%s files (*.%s)|*.%s') % (misc.capitalize(language), e, e) )
         wildcards.append(_('All files|*'))
         dialog.wildcard = '|'.join(wildcards)
 
