@@ -120,7 +120,7 @@ def _get_modulenames_from_file(filename):
         widgets_file = open(filename)
         module_list = widgets_file.readlines()
         widgets_file.close()
-    except (IOError, OSError), details:
+    except EnvironmentError, details:
         logging.warning(
             _("Can't read file %s file: %s"), filename, details)
         return []
