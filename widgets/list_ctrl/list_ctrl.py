@@ -9,7 +9,7 @@ wxListCtrl objects
 import math
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
+from tree import Tree, Node
 import common
 import compat
 from widget_properties import *
@@ -75,7 +75,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'list_ctrl_%d' % number[0]
     list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel)
-    node = Tree.Node(list_ctrl)
+    node = Node(list_ctrl)
     list_ctrl.node = node
     list_ctrl.set_option(1)
     list_ctrl.set_style("wxEXPAND")
@@ -96,7 +96,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel, style=0)
     sizer.set_item(list_ctrl.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
-    node = Tree.Node(list_ctrl)
+    node = Node(list_ctrl)
     list_ctrl.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

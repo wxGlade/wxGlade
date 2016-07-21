@@ -12,12 +12,13 @@ import compat
 import config
 import misc
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 
 
 class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxHyperlinkCtrl objects"
+
     def __init__(self, name, parent, id, label, sizer, pos, property_window, show=True):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, id, sizer, pos, property_window, show=show)
@@ -104,7 +105,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = u'hyperlink_%d' % number[0]
     hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), name, sizer, pos, common.property_panel)
-    node = Tree.Node(hyperlink_ctrl)
+    node = Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node
     hyperlink_ctrl.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
@@ -121,7 +122,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), "", sizer, pos, common.property_panel)
     sizer.set_item(hyperlink_ctrl.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(hyperlink_ctrl)
+    node = Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

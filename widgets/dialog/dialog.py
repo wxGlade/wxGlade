@@ -14,7 +14,7 @@ import common
 import compat
 import config
 import misc
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 from edit_windows import TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
@@ -247,7 +247,7 @@ def builder(parent, sizer, pos, number=[0]):
         import panel
         dialog = panel.EditTopLevelPanel(label, parent, wx.NewId(),
                                          common.property_panel, klass=klass)
-    node = Tree.Node(dialog)
+    node = Node(dialog)
     dialog.node = node
     dialog.show_widget(True)
     common.app_tree.add(node)
@@ -269,7 +269,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     dialog = EditDialog(label, parent, wx.NewId(), "", common.property_panel,
                         show=False, style=0)
-    node = Tree.Node(dialog)
+    node = Node(dialog)
     dialog.node = node
     common.app_tree.add(node)
     return dialog
