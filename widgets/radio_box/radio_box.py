@@ -11,7 +11,7 @@ import common
 import compat
 import misc
 from edit_windows import ManagedBase
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 from misc import wxGladeRadioButton
 
@@ -243,7 +243,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = u'radio_box_%d' % number[0]
     radio_box = EditRadioBox(label, parent, wx.NewId(), label, [u'choice 1'], 1, 0, sizer, pos, common.property_panel)
-    node = Tree.Node(radio_box)
+    node = Node(radio_box)
     radio_box.node = node
     radio_box.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
@@ -260,7 +260,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     radio_box = EditRadioBox(label, parent, wx.NewId(), '', [], 1, 0, sizer, pos, common.property_panel)
     sizer.set_item(radio_box.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(radio_box)
+    node = Node(radio_box)
     radio_box.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

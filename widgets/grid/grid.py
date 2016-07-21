@@ -12,7 +12,7 @@ import common
 import compat
 import misc
 from edit_windows import ManagedBase
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
@@ -400,7 +400,7 @@ def builder(parent, sizer, pos, number=[1]):
     # or you can't see it.
     grid.set_option(1)
     grid.esm_border.set_style("wxEXPAND")
-    node = Tree.Node(grid)
+    node = Node(grid)
     grid.node = node
     grid.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
@@ -421,7 +421,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
                     pos, common.property_panel, show=False)
     sizer.set_item(grid.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
-    node = Tree.Node(grid)
+    node = Node(grid)
     grid.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

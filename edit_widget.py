@@ -11,7 +11,7 @@ import common
 import compat
 import config
 from edit_windows import ManagedBase
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 
 
@@ -88,7 +88,7 @@ def increment_label(label, number=[1]):
 
 def add_widget_node(widget, sizer, pos, from_xml=False,
                     option=0, flag=0, border=0):
-    node = Tree.Node(widget)
+    node = Node(widget)
     widget.node = node
 
     if not border and config.preferences.default_border:

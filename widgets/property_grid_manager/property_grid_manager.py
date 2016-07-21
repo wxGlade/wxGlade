@@ -12,7 +12,7 @@ from wx.propgrid import *
 import common
 import compat
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 
 
@@ -70,7 +70,7 @@ def builder(parent, sizer, pos, number=[1]):
     # or you can't see it.
     property_grid_manager.set_option(1)
     property_grid_manager.esm_border.set_style("wxEXPAND")
-    node = Tree.Node(property_grid_manager)
+    node = Node(property_grid_manager)
     property_grid_manager.node = node
     property_grid_manager.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
@@ -89,7 +89,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
                     pos, common.property_panel, show=False)
     sizer.set_item(property_grid_manager.pos, option=sizeritem.option, flag=sizeritem.flag,
                    border=sizeritem.border)
-    node = Tree.Node(property_grid_manager)
+    node = Node(property_grid_manager)
     property_grid_manager.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
