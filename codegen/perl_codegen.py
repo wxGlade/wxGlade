@@ -23,10 +23,9 @@ import os.path
 import re
 import types
 
-from codegen import BaseLangCodeWriter, \
-                    BaseSourceFileContent, \
-                    BaseWidgetHandler
+from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
 import wcodegen
+import compat
 
 
 class SourceFileContent(BaseSourceFileContent):
@@ -463,7 +462,7 @@ unless(caller){
 
             if new_signature:
                 for k in new_signature:
-                    if self.new_defaults.has_key(k):
+                    if k in self.new_defaults:
                         write(self.new_defaults[k])
             else:
                 new_signature = ['@_[1 .. $#_]']  # shift(@_)->SUPER::new(@_);
@@ -608,7 +607,7 @@ unless(caller){
         s = s.replace('@', r'\@')
 
         # convert all strings to unicode first
-        if not isinstance(s, types.UnicodeType):
+        if not isinstance(s, compat.unicode):
             s = s.decode(self.app_encoding)
 
         # check if it's pure ascii

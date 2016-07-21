@@ -48,7 +48,7 @@ class EditGauge(ManagedBase, EditStylesMixin):
         szr.Add(prop['range'].panel, 0, wx.EXPAND)
         szr.Add(prop['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 

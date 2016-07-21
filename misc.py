@@ -8,8 +8,8 @@ Miscellaneous stuff, used in many parts of wxGlade
 
 import common
 import config
+import compat
 
-import StringIO
 import logging
 import os
 import re
@@ -49,7 +49,7 @@ class wxMSWRadioButton(wx.RadioButton):
             dc = wx.ScreenDC()
             dc.SetFont(wx.SystemSettings_GetFont(
                 wx.SYS_DEFAULT_GUI_FONT))
-            self.__radio_size = (3*dc.GetCharHeight())/2
+            self.__radio_size = (3*dc.GetCharHeight())//2
         label = self.GetLabel()
         if label:
             w, h = self.GetTextExtent(label)
@@ -165,21 +165,21 @@ class UnicodeStringIO(object):
     "Wrapper class to store data in Unicode"
 
     def __init__(self, encoding=None):
-        self.out = StringIO.StringIO()
+        #self.out = compat.StringIO()
+        self.out = compat.BytesIO()
         self.encoding = encoding
 
     def write(self, data):
-        if self.encoding is not None and isinstance(data, types.UnicodeType):
+        if self.encoding is not None and isinstance(data, compat.unicode):
             data = data.encode(self.encoding)
         self.out.write(data)
 
     def getvalue(self):
         return self.out.getvalue()
 
-# end of class UnicodeStringIO
 
 
-class AsciiStringIO(StringIO.StringIO):
+class AsciiStringIO(compat.StringIO):
     """\
     Wrapper class to store data in ASCII
 
@@ -188,24 +188,23 @@ class AsciiStringIO(StringIO.StringIO):
     """
 
     def __init__(self, buf=''):
-        StringIO.StringIO.__init__(self, buf)
-        self.isUnicode = isinstance(buf, types.UnicodeType)
+        compat.StringIO.__init__(self, buf)
+        self.isUnicode = isinstance(buf, compat.unicode)
 
     def write(self, s):
         if not s:
             return
 
-        if not isinstance(s, types.StringTypes):
+        if not isinstance(s, compat.basestring):
             s = str(s)
 
-        if isinstance(s, types.UnicodeType):
+        if isinstance(s, compat.unicode):
             try:
                 s = s.encode('ascii')
             except UnicodeEncodeError:
                 self.isUnicode = True
-        StringIO.StringIO.write(self, s)
+        compat.StringIO.write(self, s)
 
-# end of class AsciiStringIO
 
 
 def bound(number, lower, upper):
@@ -341,7 +340,7 @@ def append_item(menu, id, text, xpm_file_or_artid=None):
     path = os.path.join(config.icons_path, path)
     if use_menu_icons and xpm_file_or_artid is not None:
         bmp = None
-        if not xpm_file_or_artid.startswith('wxART_'):
+        if not xpm_file_or_artid.startswith(b'wxART_'):
             try:
                 bmp = _item_bitmaps[xpm_file_or_artid]
             except KeyError:
@@ -407,7 +406,7 @@ accel_table = [
 def _reverse_dict(src):
     "Returns a dictionary whose keys are 'src' values and values 'src' keys."
     ret = {}
-    for key, val in src.iteritems():
+    for key, val in getattr(src, "iteritems", src.items)(): # Python 2/3
         ret[val] = key
     return ret
 
@@ -428,7 +427,7 @@ def streq(s1, s2):
     try:
         return s1 == s2
     except UnicodeError:
-        if isinstance(s1, types.UnicodeType):
+        if isinstance(s1, compat.unicode):
             s1 = s1.encode(common.app_tree.app.encoding)
         else:
             s2 = s2.encode(common.app_tree.app.encoding)
@@ -442,16 +441,10 @@ def wxstr(s, encoding=None):
             return str(s)
         else:
             encoding = common.app_tree.app.encoding
-    if wx.USE_UNICODE:
-        if not isinstance(s, types.UnicodeType):
-            return unicode(str(s), encoding)
-        else:
-            return s
+    if not isinstance(s, compat.unicode):
+        return compat.unicode(str(s), encoding)
     else:
-        if isinstance(s, types.UnicodeType):
-            return s.encode(encoding)
-        else:
-            return str(s)
+        return s
 
 
 def design_title(title):

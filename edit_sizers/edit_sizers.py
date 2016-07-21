@@ -108,8 +108,7 @@ class BaseSizerBuilder(object):
         # generate layout lines
         if obj.is_toplevel:
             layout.append(self.tmpl_SetSizer % self.props_get_code)
-            if not obj.parent.properties.has_key('size') and \
-                    obj.parent.is_toplevel:
+            if not 'size' in obj.parent.properties and obj.parent.is_toplevel:
                 layout.append(self.tmpl_Fit % self.props_get_code)
             if obj.parent.properties.get('sizehints', False):
                 layout.append(self.tmpl_SetSizeHints % self.props_get_code)
@@ -162,11 +161,11 @@ class BaseSizerBuilder(object):
         del result[-1]
 
         props = obj.properties
-        if props.has_key('growable_rows'):
+        if 'growable_rows' in props:
             for row in props['growable_rows'].split(','):
                 self.props_get_code['row'] = row.strip()
                 layout.append(self.tmpl_AddGrowableRow % self.props_get_code)
-        if props.has_key('growable_cols'):
+        if 'growable_cols' in props:
             for col in props['growable_cols'].split(','):
                 self.props_get_code['col'] = col.strip()
                 layout.append(self.tmpl_AddGrowableCol % self.props_get_code)
@@ -1400,7 +1399,7 @@ class SizerBase(Sizer):
             if selected:
                 color = wx.RED
             else:
-                color = wx.SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
+                color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
             self._btn.SetBackgroundColour(color)
             self._btn.Refresh(True)
 
@@ -1866,7 +1865,7 @@ class GridSizerBase(SizerBase):
         sizer.Add(props['vgap'].panel, 0, wx.EXPAND)
         sizer.Add(props['hgap'].panel, 0, wx.EXPAND)
         page.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(page, sizer)
+        page.SetSizer(sizer)
         sizer.Fit(page)
         self.notebook.AddPage(page, _("Grid"))
 
@@ -1980,7 +1979,7 @@ class GridSizerBase(SizerBase):
         if pos >= len(self.children):
             # fix the out of bounds index...
             tot = len(self.children) - 1
-            rows = tot / cols
+            rows = tot // cols
             if tot % cols:
                 rows += 1
             # self._logger.debug('fixed rows: %s', rows)
@@ -2197,10 +2196,10 @@ class EditFlexGridSizer(GridSizerBase):
                          page)
 
     def get_growable_rows(self):
-        return ','.join(map(str, self.grow_rows))
+        return ','.join( str(r) for r in self.grow_rows )
 
     def get_growable_cols(self):
-        return ','.join(map(str, self.grow_cols))
+        return ','.join( str(c) for c in self.grow_cols )
 
     def _insert_row(self, pos):
         for row in self.grow_rows:
@@ -2330,7 +2329,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     try:
         name = attrs['name']
     except KeyError:
-        raise XmlParsingError, _("'name' attribute missing")
+        raise XmlParsingError( _("'name' attribute missing") )
     orientation = wx.VERTICAL  # default value
     if sizer is not None:
         topl = False
@@ -2342,9 +2341,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         sz = EditBoxSizer(name, parent, orientation, 0, topl)
     if sizer is not None:
         if sizeritem is None:
-            raise XmlParsingError, _("'sizeritem' object not found")
-        sizer.add_item(sz, pos=pos, option=sizeritem.option,
-                       flag=sizeritem.flag, border=sizeritem.border)
+            raise XmlParsingError( _("'sizeritem' object not found") )
+        sizer.add_item(sz, pos=pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
         node = Tree.Node(sz)
         sz.node = node
         if pos is None:
@@ -2481,8 +2479,7 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         sz = constructor(name, parent, rows=0, cols=0, toplevel=False)
         if sizeritem is None:
             raise XmlParsingError(_("'sizeritem' object not found"))
-        sizer.add_item(sz, pos=pos, option=sizeritem.option,
-                       flag=sizeritem.flag, border=sizeritem.border)
+        sizer.add_item(sz, pos=pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
         node = Tree.Node(sz)
         sz.node = node
         if pos is None:
@@ -2512,14 +2509,8 @@ def init_all():
 
     import os.path
 
-    WidgetTree.images['EditStaticBoxSizer'] = os.path.join(
-        config.icons_path,
-        'sizer.xpm'
-    )
-    WidgetTree.images['EditFlexGridSizer'] = os.path.join(
-        config.icons_path,
-        'grid_sizer.xpm'
-    )
+    WidgetTree.images['EditStaticBoxSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
+    WidgetTree.images['EditFlexGridSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )
 
-    return [common.make_object_button('EditBoxSizer', 'sizer.xpm'),
+    return [common.make_object_button('EditBoxSizer',  'sizer.xpm'),
             common.make_object_button('EditGridSizer', 'grid_sizer.xpm')]

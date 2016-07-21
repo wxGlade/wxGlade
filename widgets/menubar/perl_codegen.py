@@ -41,7 +41,7 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                         name = item.name
                     else:
                         name = '%s_sub' % menu
-                        if not tmpsused.has_key(name):
+                        if not name in tmpsused:
                             tmpsused[name] = 1
                             append('my %s;\n' % name)
 

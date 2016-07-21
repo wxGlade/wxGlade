@@ -10,12 +10,11 @@ return an instance of XrcObject
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import StringIO
-
 from xml.sax.saxutils import escape, quoteattr
 from codegen import BaseLangCodeWriter, EventsPropertyHandler, ExtraPropertiesPropertyHandler
 from ordereddict import OrderedDict
 import common
+import compat
 import errors
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
@@ -197,17 +196,17 @@ class DefaultXrcObject(XrcObject):
                 write(self.tabs(ntabs) + '<object class=%s name=%s>\n' % (quoteattr(self.klass), quoteattr(self.name)))
         tab_str = self.tabs(ntabs + 1)
         # write the properties
-        if self.properties.has_key('foreground'):
+        if 'foreground' in self.properties:
             if self.properties['foreground'].startswith('#'):
                 # XRC does not support colors from system settings
                 self.properties['fg'] = self.properties['foreground']
             del self.properties['foreground']
-        if self.properties.has_key('background'):
+        if 'background' in self.properties:
             if self.properties['background'].startswith('#'):
                 # XRC does not support colors from system settings
                 self.properties['bg'] = self.properties['background']
             del self.properties['background']
-        if self.properties.has_key('font'):
+        if 'font' in self.properties:
             font = self.properties['font']
             del self.properties['font']
         else:
@@ -350,7 +349,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         self._overwrite = True
 
         self.output_file_name = app_attrs['path']
-        self.out_file = StringIO.StringIO()
+        self.out_file = compat.StringIO()
         self.out_file.write('\n<resource version="2.3.0.1">\n')
         self.curr_tab = 1
         self.xrc_objects = OrderedDict()

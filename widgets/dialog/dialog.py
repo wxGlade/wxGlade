@@ -100,10 +100,10 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
         szr.Add(self.properties['centered'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
-        w, h = panel.GetClientSizeTuple()
+        w, h = panel.GetClientSize()
         panel.SetScrollbars(5, 5, int(math.ceil(w/5.0)), int(math.ceil(h/5.0)))
 
     def get_icon(self):

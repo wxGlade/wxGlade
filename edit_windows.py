@@ -11,7 +11,6 @@ from ordereddict import OrderedDict
 import logging
 import math
 import re
-import types
 import wx
 
 # import project modules
@@ -448,18 +447,18 @@ class EditBase(EventsMixin, ExecAfterMixin):
             pass
 
     def set_property_blocking(self, key, item):
-        if self.property_blocking.has_key(key):
+        if key in self.property_blocking:
             self.property_blocking[key].append(item)
         else:
             self.property_blocking[key] = [item]
 
     def get_property_blocking(self, key):
-        if self.property_blocking.has_key(key):
+        if key in self.property_blocking:
             return self.property_blocking[key]
         return None
 
     def remove_property_blocking(self, key, item):
-        if self.property_blocking.has_key(key):
+        if key in self.property_blocking:
             for i in range(self.property_blocking[key].count(item)):
                 self.property_blocking[key].remove(item)
             if not len(self.property_blocking[key]):
@@ -488,7 +487,7 @@ class WindowBase(EditBase):
         self.access_functions['foreground'] = (self.get_foreground, self.set_foreground)
         # this is True if the user has selected a custom font
         self._font_changed = False
-        self.font = self._build_from_font(wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT))
+        self.font = self._build_from_font( compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT) )
         self.font[1] = 'default'
 
         self.access_functions['font'] = (self.get_font, self.set_font)
@@ -533,7 +532,7 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         self._original['background'] = self.widget.GetBackgroundColour()
         self._original['foreground'] = self.widget.GetForegroundColour()
         fnt = self.widget.GetFont()
-        if not fnt.Ok():
+        if not fnt.IsOk():
             fnt = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
         self._original['font'] = fnt
 
@@ -643,7 +642,8 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
 #            sizer_tmp.Add(note, 0, wx.ALL | wx.EXPAND, 3)
 
         panel.SetAutoLayout(1)
-        compat.SizerItem_SetSizer(panel, sizer_tmp)
+        #compat.SizerItem_SetSizer(panel, sizer_tmp)
+        panel.SetSizer(sizer_tmp)
         sizer_tmp.Layout()
         sizer_tmp.Fit(panel)
 
@@ -952,7 +952,7 @@ class ManagedBase(WindowBase):
         sizer_tmp.Add(szprop['border'].panel, 0, wx.EXPAND)
         sizer_tmp.Add(szprop['flag'].panel, 0, wx.EXPAND, 5)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, sizer_tmp)
+        panel.SetSizer(sizer_tmp)
         sizer_tmp.Layout()
         sizer_tmp.Fit(panel)
 
@@ -999,15 +999,10 @@ class ManagedBase(WindowBase):
             self._logger.exception(_('Internal Error'))
 
     def set_int_flag(self, flags=None):
-        """\
-        Set the widget flag
-
-        @param flags: Widget flag
-        @type flags: int
-        """
-        assert isinstance(flags, (types.IntType, types.NoneType))
-        if isinstance(flags, types.NoneType):
+        "Set the widget flags"
+        if flags is None:
             flags = self.esm_border.get_int_style()
+        assert isinstance(flags, int)
         self.flag = flags
         if not self.widget:
             return
@@ -1189,16 +1184,14 @@ class TopLevelBase(WindowBase, PreviewMixin, ExecAfterMixin):
     def _create_popup_menu(self):
         REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
         self._rmenu = misc.wxGladePopupMenu(self.name)
-        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                         wx.ART_DELETE)
+        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'), wx.ART_DELETE)
         misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
 
         wx.EVT_MENU(self.widget, REMOVE_ID, self.exec_after(self.remove))
         wx.EVT_MENU(self.widget, HIDE_ID, self.exec_after(self.hide_widget))
 
         PASTE_ID = wx.NewId()
-        misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'),
-                         wx.ART_PASTE)
+        misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'), wx.ART_PASTE)
         wx.EVT_MENU(self.widget, PASTE_ID, self.exec_after(self.clipboard_paste))
 
         PREVIEW_ID = wx.NewId()
@@ -1207,15 +1200,9 @@ class TopLevelBase(WindowBase, PreviewMixin, ExecAfterMixin):
         wx.EVT_MENU(self.widget, PREVIEW_ID, self.exec_after(self.preview_parent))
 
     def clipboard_paste(self, event=None):
-        """\
-        Insert a widget from the clipboard to the current destination.
-
-        @see: L{clipboard.paste()}
-        """
+        "Insert a widget from the clipboard to the current destination"
         if self.sizer is not None:
-            self._logger.warning(
-                _('WARNING: Sizer already set for this window')
-                )
+            self._logger.warning( _('WARNING: Sizer already set for this window') )
             return
         import xml_parse
         size = self.widget.GetSize()
@@ -1224,9 +1211,7 @@ class TopLevelBase(WindowBase, PreviewMixin, ExecAfterMixin):
                 common.app_tree.app.saved = False
                 self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
-            self._logger.warning(
-                _('WARNING: Only sizers can be pasted here')
-                )
+            self._logger.warning( _('WARNING: Only sizers can be pasted here') )
 
     def create_properties(self):
         WindowBase.create_properties(self)
@@ -1251,7 +1236,7 @@ class TopLevelBase(WindowBase, PreviewMixin, ExecAfterMixin):
         self.sizer = sizer
         if self.sizer and self.sizer.widget and self.widget:
             self.widget.SetAutoLayout(True)
-            compat.SizerItem_SetSizer(self.widget, self.sizer.widget)
+            self.widget.SetSizer(self.sizer.widget)
             self.widget.Layout()
 
     def on_enter(self, event):
@@ -1370,7 +1355,7 @@ class EditStylesMixin(object):
             raise NotImplementedError
 
         if styles:
-            if isinstance(styles, types.DictionaryType):
+            if isinstance(styles, dict):
                 for box_label in styles.keys():
                     self.style_names.extend(styles[box_label])
             else:
@@ -1407,7 +1392,7 @@ class EditStylesMixin(object):
         if not self.style_set:
             return style_list
 
-        for pos in xrange(len(self.style_names)):
+        for pos in range(len(self.style_names)):
             name = self.style_names[pos]
             if name in self.style_set:
                 style_list[pos] = True
@@ -1446,7 +1431,7 @@ class EditStylesMixin(object):
                     continue
 
                 style_value = self.wxname2attr(style_name)
-                if not isinstance(style_value, types.IntType):
+                if not isinstance(style_value, int):
                     self._logger.warning(
                         _('''Can't convert style "%s" to an integer. Got "%s" instead.'''), style_name, style_value)
                     continue
@@ -1506,21 +1491,20 @@ class EditStylesMixin(object):
         @see: L{update_widget_style}
         @see: L{_set_widget_style}
         """
-        assert isinstance(value, (types.ListType, types.StringType,
-                                  types.UnicodeType, types.NoneType))
+        #assert isinstance(value, (types.ListType, types.StringType, types.UnicodeType, types.NoneType))
 
-        if isinstance(value, types.NoneType):
+        if value is None:
             new_styles = set()
-        elif isinstance(value, types.StringTypes):
+        elif isinstance(value, compat.basestring):
             if not value or value == '0':
                 new_styles = set()
             else:
                 new_styles = set(value.split('|'))
-        else:
+        elif isinstance(value, list):
             new_styles = set()
-            for pos in range(len(self.style_names)):
+            for pos, name in enumerate(self.style_names):
                 if value[pos]:
-                    new_styles.add(self.style_names[pos])
+                    new_styles.add(name)
 
         self.style_set = self.widget_writer.combine_styles(new_styles)
         self._set_widget_style()

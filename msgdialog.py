@@ -8,6 +8,7 @@ import wx
 
 # begin wxGlade: dependencies
 import gettext
+import compat
 # end wxGlade
 
 # begin wxGlade: extracode
@@ -19,7 +20,8 @@ class MessageDialog(wx.Dialog):
         # begin wxGlade: MessageDialog.__init__
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         wx.Dialog.__init__(self, *args, **kwds)
-        self.msg_image = wx.StaticBitmap(self, wx.ID_ANY, wx.ArtProvider_GetBitmap(wx.ART_TIP, wx.ART_MESSAGE_BOX, (48, 48)))
+        bmp = compat.wx_ArtProvider_GetBitmap(wx.ART_TIP, wx.ART_MESSAGE_BOX, (48, 48))
+        self.msg_image = wx.StaticBitmap(self, wx.ID_ANY, bmp)
         self.msg_list = wx.ListCtrl(self, wx.ID_ANY, style=wx.BORDER_SUNKEN | wx.LC_NO_HEADER | wx.LC_REPORT | wx.LC_SINGLE_SEL)
         self.OK = wx.Button(self, wx.ID_OK, "")
 

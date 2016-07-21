@@ -98,7 +98,7 @@ def xrc_code_generator(obj):
             # the "tabs" property contains the pages of a notebook
             # be carefully: tabs in context of code generation are white
             # spaces used for indenting lines!!
-            if self.properties.has_key('tabs'):
+            if 'tabs' in self.properties:
                 self.pages = self.properties['tabs']
                 del self.properties['tabs']
             else:
