@@ -10,7 +10,7 @@ import wx
 import wx.grid
 import wx.lib.stattext
 
-import common
+import common, compat
 import widget_properties
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import GridProperty
@@ -108,7 +108,7 @@ class ExtraPropertiesProperty(GridProperty):
     def display(self, panel):
         GridProperty.display(self, panel)
         self.btn.Hide()
-        self.grid.Bind( wx.grid.EVT_GRID_CELL_CHANGE, self.on_change_val )
+        self.grid.Bind( compat.EVT_GRID_CELL_CHANGE, self.on_change_val )
         tooltip = """You can use this property to add some extra custom properties to this widget.
 
 For each property "prop" with value "val", wxGlade will generate a \
@@ -175,10 +175,8 @@ class ExtraPropertiesPropertyHandler(BaseXmlBuilderTagHandler):
 
 
 def _find_or_create_page(notebook, label):
-    """\
-    Searches the given notebook for a page whose label is "label". 
-    """
-    for i in xrange(notebook.GetPageCount()):
+    'Searches the given notebook for a page whose label is "label"'
+    for i in range(notebook.GetPageCount()):
         if notebook.GetPageText(i) == label:
             return notebook.GetPage(i), False
     return wx.Panel(notebook, -1, style=wx.TAB_TRAVERSAL), True

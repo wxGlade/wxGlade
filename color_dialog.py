@@ -15,7 +15,7 @@ class wxGladeColorDialog(wx.Dialog):
     def __init__(self, colors_dict):
         wx.Dialog.__init__(self, None, -1, "")
         self.colors_dict = colors_dict
-        choices = self.colors_dict.keys()
+        choices = list( self.colors_dict.keys() )
         choices.sort()
         # begin wxGlade: wxGladeColorDialog.__init__
         self.panel_1 = wx.Panel(self, -1)

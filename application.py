@@ -23,6 +23,10 @@ import errors
 import math
 import misc
 
+try:
+    basestring
+except:
+    basestring = (str,)
 
 class FileDirDialog(object):
     """\
@@ -192,7 +196,7 @@ class Application(object):
         self.header_ext_prop = TextProperty(self, 'header_ext', panel_settings)
         self.header_ext_prop.set_tooltip(_('Extension of the header file'))
 
-        _writers = common.code_writers.keys()
+        _writers = list( common.code_writers.keys() )
         columns = 3
 
         self.codewriters_prop = RadioProperty(self, "language", panel_application, _writers, columns=columns,
@@ -369,7 +373,7 @@ class Application(object):
     def set_encoding(self, value):
         try:
             unicode('a', value)
-        except LookupError, inst:
+        except LookupError as inst:
             bugdialog.Show(_('Set Encoding'), inst)
             self.encoding_prop.set_value(self.encoding)
         else:
@@ -382,9 +386,9 @@ class Application(object):
 
         @type value: str | int
         """
-        assert isinstance(value, types.StringTypes + (types.IntType, ))
+        assert isinstance(value, basestring) or isinstance(value, int)
 
-        if isinstance(value, types.IntType):
+        if isinstance(value, int):
             self.codewriters_prop.set_value(value)
             language = self.codewriters_prop.get_str_value()
         else:
@@ -596,13 +600,10 @@ class Application(object):
             if preview and codewriter == 'python':
                 self.overwrite = overwrite_save
 
-        except (errors.WxgBaseException, IOError, OSError), inst:
-            wx.MessageBox(
-                _("Error generating code:\n%s") % inst,
-                _("Error"),
-                wx.OK | wx.CENTRE | wx.ICON_ERROR,
-                )
-        except Exception, inst:
+        except (errors.WxgBaseException, IOError, OSError) as inst:
+            wx.MessageBox( _("Error generating code:\n%s") % inst,
+                           _("Error"), wx.OK | wx.CENTRE | wx.ICON_ERROR,)
+        except Exception as inst:
             bugdialog.Show(_('Generate Code'), inst)
         else:
             if not preview:
@@ -637,9 +638,11 @@ class Application(object):
         None will be returned in case of errors. The error details are written to the application log file."""
         if out_name is None:
             import warnings
-            warnings.filterwarnings("ignore", "tempnam", RuntimeWarning,
-                                    "application")
-            out_name = os.tempnam(None, 'wxg') + '.py'
+            warnings.filterwarnings("ignore", "tempnam", RuntimeWarning, "application")
+            try:
+                out_name = os.tempnam(None, 'wxg') + '.py'
+            except AttributeError: # XXX use a different name; e.g. the project file name with "_temp"
+                out_name = "C:\\Users\\Dietmar\\wxg_tmp.py"
         widget_class_name = widget.klass
 
         # make a valid name for the class (this can be invalid for
@@ -722,7 +725,7 @@ class Application(object):
                 name = self.output_path + ext
                 if os.path.isfile(name):
                     os.unlink(name)
-        except Exception, inst:
+        except Exception as inst:
             widget.preview_widget = None
             widget.preview_button.SetLabel(_('Preview'))
             bugdialog.Show(_("Generate Preview"), inst)

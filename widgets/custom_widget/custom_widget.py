@@ -94,7 +94,6 @@ class CustomWidget(ManagedBase):
 
     def on_paint(self, event):
         dc = wx.PaintDC(self.widget)
-        dc.BeginDrawing()
         dc.SetBrush(wx.WHITE_BRUSH)
         dc.SetPen(wx.BLACK_PEN)
         dc.SetBackground(wx.WHITE_BRUSH)
@@ -104,13 +103,11 @@ class CustomWidget(ManagedBase):
         dc.DrawLine(w, 0, 0, h)
         text = _('Custom Widget: %s') % self.klass
         tw, th = dc.GetTextExtent(text)
-        x = (w - tw)/2
-        y = (h - th)/2
+        x = (w - tw)//2
+        y = (h - th)//2
         dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
         dc.DrawRectangle(x-1, y-1, tw+2, th+2)
         dc.DrawText(text, x, y)
-
-        dc.EndDrawing()
 
     def create_properties(self):
         ManagedBase.create_properties(self)
@@ -123,7 +120,7 @@ class CustomWidget(ManagedBase):
         args.display(panel)
         szr.Add(args.panel, 1, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
         args.set_col_sizes([-1])

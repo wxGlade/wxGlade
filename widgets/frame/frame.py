@@ -75,7 +75,8 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         if self.parent:
             parent = self.parent.widget
         else:
-            parent = common.palette
+            #parent = common.palette
+            parent = None
         self.widget = wx.Frame(parent, self.id, self.get_title())
         self.set_icon(self.icon)
 
@@ -120,10 +121,10 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             szr.Add(sbprop.panel, 0, wx.EXPAND)
         szr.Add(prop['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
-        w, h = panel.GetClientSizeTuple()
+        w, h = panel.GetClientSize()
         panel.SetScrollbars(5, 5, int(math.ceil(w/5.0)), int(math.ceil(h/5.0)))
 
     def get_menubar(self):

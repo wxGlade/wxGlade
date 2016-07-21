@@ -101,14 +101,7 @@ def load_widgets_from_dir(widget_dir, submodule=''):
 
 
 def _get_modulenames_from_file(filename):
-    """\
-    Return a list of module names read from given file.
-
-    @param filename: Absolute filename of the widgets.txt file
-    @type filename:  str
-
-    @rtype: list[str] | None
-    """
+    "Return a list of module names read from given file"
     # test if the "widgets.txt" file exists
     if not os.path.isfile(filename):
         logging.debug(_('File %s not found.'), filename)
@@ -117,9 +110,8 @@ def _get_modulenames_from_file(filename):
         widgets_file = open(filename)
         module_list = widgets_file.readlines()
         widgets_file.close()
-    except (IOError, OSError), details:
-        logging.warning(
-            _("Can't read file %s file: %s"), filename, details)
+    except (IOError, OSError) as details:
+        logging.warning( _("Can't read file %s file: %s"), filename, details )
         return []
 
     # remove empty lines, comment lines and tailing comments
@@ -185,8 +177,7 @@ def _process_widget_config(module):
 
 def _init_codegen_gui(widget_dir, widget_name):
     """\
-    Initialise Python code generator for the widget as well as widget
-    GUI parts.
+    Initialise Python code generator for the widget as well as widget GUI parts.
 
     @param widget_dir: Directory to search for widgets
     @type widget_dir:  str
@@ -363,19 +354,11 @@ def _get_zipfile_filelist(filename):
             zfile = zipfile.ZipFile(filename)
             namelist = zfile.namelist()
             zfile.close()
-        except zipfile.BadZipfile, inst:
-            logging.warning(
-                _('ZIP file %s is corrupt (%s). Ignoring ZIP file.'),
-                filename,
-                inst
-            )
+        except zipfile.BadZipfile as inst:
+            logging.warning( _('ZIP file %s is corrupt (%s). Ignoring ZIP file.'), filename, inst )
             return []
-        except zipfile.LargeZipFile, inst:
-            logging.warning(
-                _('ZIP file %s is bigger than 4GB (%s). Ignoring ZIP file.'),
-                filename,
-                inst
-            )
+        except zipfile.LargeZipFile as inst:
+            logging.warning( _('ZIP file %s is bigger than 4GB (%s). Ignoring ZIP file.'), filename, inst )
             return []
     finally:
         if zfile:

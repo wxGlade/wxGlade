@@ -26,6 +26,7 @@ import types
 from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
 import wcodegen
 
+import compat
 
 class SourceFileContent(BaseSourceFileContent):
 
@@ -501,7 +502,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         @see: L{_recode_x80_xff()}
         """
         # convert all strings to unicode first
-        if not isinstance(s, types.UnicodeType):
+        if not isinstance(s, compat.unicode):
             s = s.decode(self.app_encoding)
 
         # check if it's pure ascii
@@ -520,9 +521,9 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         s = s.encode('raw-unicode-escape')
         s = self._recode_x80_xff(s)
         if self._use_gettext:
-            return '_(u"%s")' % s
+            return '_(u"%s")' % s.decode("ASCII") # XXX omit u for Python 3
         else:
-            return 'u"%s"' % s
+            return 'u"%s"' % s.decode("ASCII") # XXX omit u for Python 3
 
     def add_object_format_name(self, name):
         return '#self.%s' % name

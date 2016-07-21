@@ -38,8 +38,17 @@ if hasattr(sys, 'frozen') and not hasattr(sys.stderr, 'encoding'):
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
 
+# avoid problems with "_" in __builtins__ being replaced:
+def my_displayhook(value):
+    if value is not None:
+        print(repr(value))
+
+sys.displayhook = my_displayhook 
+
+
 import common
 import config
+import compat
 import log
 import errors
 
@@ -100,14 +109,14 @@ License MIT: The MIT License
     # print epilog because OptionParser.epilog isn't available to Python 2.3
     if options.help:
         parser.print_help()
-        print _("""
+        print( _("""
 Example: Generate Python code out of myapp.wxg
 
    wxglade -o output.py -g python myapp.wxg
 
 Report bugs to:    <wxglade-general@lists.sourceforge.net> or at
                    <https://sourceforge.net/projects/wxglade/>
-wxGlade home page: <http://wxglade.sourceforge.net/>""")
+wxGlade home page: <http://wxglade.sourceforge.net/>""") )
         sys.exit()
 
     # Make an absolute version of path.
@@ -168,12 +177,8 @@ def command_line_code_generation(filename, language, out_path=None):
             raise errors.WxgMissingCodeWriter(language)
 
         writer = common.code_writers[language]
-        CodeWriter(
-            writer=writer,
-            input=filename,
-            out_path=out_path,
-            )
-    except errors.WxgBaseException, inst:
+        CodeWriter( writer=writer, input=filename, out_path=out_path )
+    except errors.WxgBaseException as inst:
         logging.error(inst)
         sys.exit(inst)
     except Exception:
@@ -230,7 +235,7 @@ def init_localization():
     encoding = None
     try:
         locale.setlocale(locale.LC_ALL, '')
-    except locale.Error, e:
+    except locale.Error as e:
         # ignore problems by fallback to ascii
         logging.warning(_('Setting locale failed: %s'), str(e))
         logging.warning(_('Use "ascii" locale instead.'))
@@ -240,9 +245,8 @@ def init_localization():
     if not encoding and hasattr(locale, 'nl_langinfo'):
         try:
             encoding = locale.nl_langinfo(locale.CODESET)
-        except AttributeError, e:
-            logging.warning(
-                _('locale.nl_langinfo(locale.CODESET) failed: %s'), str(e))
+        except AttributeError as e:
+            logging.warning( _('locale.nl_langinfo(locale.CODESET) failed: %s'), str(e) )
 
     # try getdefaultlocale, it used environment variables
     if not encoding:
@@ -281,15 +285,16 @@ def init_stage2(use_gui):
     """
     config.use_gui = use_gui
     if use_gui:
-        # import proper wx-module using wxversion
-        if not hasattr(sys, "frozen") and 'wx' not in sys.modules:
-            try:
-                import wxversion
-                wxversion.ensureMinimal('2.8')
-            except ImportError:
-                msg = _('Please install missing Python module "wxversion".')
-                logging.error(msg)
-                sys.exit(msg)
+        # import proper wx-module using wxversion, which is only available in Classic
+        if compat.IS_CLASSIC:
+            if not hasattr(sys, "frozen") and 'wx' not in sys.modules:
+                try:
+                    import wxversion
+                    wxversion.ensureMinimal('2.8')
+                except ImportError:
+                    msg = _('Please install missing Python module "wxversion".')
+                    logging.error(msg)
+                    sys.exit(msg)
 
         try:
             import wx

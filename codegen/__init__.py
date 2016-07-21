@@ -6,7 +6,6 @@ Common code used by all code generators
 """
 
 import copy
-import StringIO
 import logging
 import os
 import os.path
@@ -18,6 +17,7 @@ import types
 
 import common
 import config
+import compat
 import errors
 import misc
 import wcodegen
@@ -961,7 +961,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
-                self.output_file = StringIO.StringIO()
+                self.output_file = compat.StringIO()
                 self.output_file_name = out_path
                 for line in self.header_lines:
                     self.output_file.write(line)
@@ -1041,8 +1041,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
             # module dependencies of all classes
             tag = '<%swxGlade replace dependencies>' % self.nonce
-            dep_list = self.dependencies.keys()
-            dep_list.sort()
+            dep_list = sorted( self.dependencies.keys() )
             code = self._tagcontent('dependencies', dep_list)
             content = content.replace(tag, code)
 
@@ -1163,8 +1162,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         base = code_obj.base
         klass = code_obj.klass
 
-        if self.classes.has_key(klass) and \
-           self.classes[klass].done:
+        if klass in self.classes and self.classes[klass].done:
             return  # the code has already been generated
 
         if self.multiple_files:
@@ -1191,7 +1189,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # the details are logged by the global exception handler
             raise
 
-        if prev_src and prev_src.classes.has_key(klass):
+        if prev_src and klass in prev_src.classes:
             is_new = False
             indentation = prev_src.spaces[klass]
         else:
@@ -1206,7 +1204,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         obuffer = []
         write = obuffer.append
 
-        if not self.classes.has_key(klass):
+        if not klass in self.classes:
             # if the class body was empty, create an empty ClassLines
             self.classes[klass] = self.ClassLines()
 
@@ -1360,7 +1358,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
             # create the new source file
             filename = self._get_class_filename(klass)
-            out = StringIO.StringIO()
+            out = compat.StringIO()
             write = out.write
             # write the common lines
             for line in self.header_lines:
@@ -2086,15 +2084,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         tmp += content
 
         # convert the file encoding from Unicode to self.app_encoding
-        if isinstance(tmp, types.UnicodeType):
+        if isinstance(tmp, compat.unicode):
             try:
                 tmp = tmp.encode(self.app_encoding)
-            except UnicodeEncodeError, inst:
-                raise errors.WxgOutputUnicodeError(
-                    self.app_encoding,
-                    inst.object[inst.start:inst.end].encode('unicode-escape'),
-                    inst.start,
-                    inst.end)
+            except UnicodeEncodeError as inst:
+                raise errors.WxgOutputUnicodeError( self.app_encoding,
+                                                    inst.object[inst.start:inst.end].encode('unicode-escape'),
+                                                    inst.start, inst.end )
 
         # check for necessary sub directories e.g. for Perl or Python modules
         dirname = os.path.dirname(filename)
@@ -2107,15 +2103,15 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # save the file now
         try:
             common.save_file(filename, tmp, 'codegen')
-        except IOError, e:
+        except IOError as e:
             raise XmlParsingError(str(e))
         except:
             self._logger.exception(_('Internal Error'))
         if mainfile and sys.platform in ['linux2', 'darwin']:
             try:
                 # make the file executable
-                os.chmod(filename, 0755)
-            except OSError, e:
+                os.chmod(filename, 0o755)
+            except OSError as e:
                 # this isn't necessarily a bad error
                 self.warning( _('Changing permission of main file "%s" failed: %s') % ( filename, str(e) ) )
 
@@ -2475,15 +2471,16 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         Re-code characters in range 0x80-0xFF (Latin-1 Supplement - also
         called C1 Controls and Latin-1 Supplement) from \\xXX to \\u00XX
         """
-        assert isinstance(s, types.StringType)
+        assert isinstance(s, bytes)
 
         def repl(matchobj):
             dec = ord(matchobj.group(0))
             if dec > 127:
-                return '\u00%x' % dec
+                return b'\u00%x' % dec # old
+                #return u'\\u00%x' % dec new
             return matchobj.group(0)
 
-        s = re.sub(r'[\x80-\xFF]{1}', repl, s)
+        s = re.sub(b'[\\x80-\\xFF]{1}', repl, s)
 
         return s
 
@@ -2567,10 +2564,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """
         code_list = []
         code_list.append( '%s begin wxGlade: %s' % (self.comment_sign, tag) )
-        if isinstance(content, types.ListType):
+        if isinstance(content, list):
             for entry in content:
                 code_list.append(entry.rstrip())
-        elif isinstance(content, types.StringTypes):
+        elif isinstance(content, compat.basestring):
             # don't append empty content
             _content = content.rstrip()
             if _content:

@@ -89,7 +89,7 @@ class PanelBase(EditStylesMixin):
         self.properties['scroll_rate'].display(panel)
         szr.Add(self.properties['scroll_rate'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 

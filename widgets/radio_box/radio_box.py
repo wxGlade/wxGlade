@@ -132,7 +132,7 @@ class EditRadioBox(ManagedBase):
             sizer.SetItemMinSize(button, w, h)
         self.widget.SetAutoLayout(True)
         sb_sizer = wx.StaticBoxSizer(self.static_box, wx.VERTICAL)
-        compat.SizerItem_SetSizer(self.widget, sb_sizer)
+        self.widget.SetSizer(sb_sizer)
         sb_sizer.Add(sizer, 1, wx.EXPAND)
         sb_sizer.SetMinSize(sizer.GetMinSize())
         sb_sizer.Fit(self.widget)

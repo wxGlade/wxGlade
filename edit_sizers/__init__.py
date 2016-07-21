@@ -25,7 +25,7 @@ def init_gui():
     if not config.use_gui:
         return
 
-    import edit_sizers
+    from . import edit_sizers
     global Sizer, SizerSlot, SizerBase, _builder
     Sizer = edit_sizers.Sizer
     SizerSlot = edit_sizers.SizerSlot

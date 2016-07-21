@@ -8,7 +8,6 @@ widgets and initializes all the stuff (tree, frame_property, etc.)
 """
 
 # import general python modules
-import StringIO
 import logging
 import os
 import os.path
@@ -25,6 +24,7 @@ import bugdialog
 import clipboard
 import common
 import config
+import compat
 import preferencesdialog
 import log
 import misc
@@ -164,13 +164,13 @@ class wxGladeFrame(wx.Frame):
         bmp = wx.Bitmap( os.path.join(config.icons_path, "icon.xpm"), wx.BITMAP_TYPE_XPM )
         icon.CopyFromBitmap(bmp)
         self.SetIcon(icon)
-        self.SetBackgroundColour(wx.SystemSettings_GetColour(
-            wx.SYS_COLOUR_BTNFACE))
+        self.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE) )
+
         menu_bar = wx.MenuBar()
         file_menu = wx.Menu(style=wx.MENU_TEAROFF)
         view_menu = wx.Menu(style=wx.MENU_TEAROFF)
         help_menu = wx.Menu(style=wx.MENU_TEAROFF)
-        wx.ToolTip_SetDelay(1000)
+        compat.wx_ToolTip_SetDelay(1000)
 
         # load the available code generators
         core_buttons, local_buttons, sizer_buttons = common.init_codegen()
@@ -356,7 +356,8 @@ class wxGladeFrame(wx.Frame):
             maxlen = max(len(heading_buttons[1]) for heading_buttons in core_buttons) + 1
             if len(sizer_buttons)+1>maxlen: maxlen = len(sizer_buttons)+1
             #sizer = wx.GridSizer(0, config.preferences.buttons_per_row)
-            sizer = wx.FlexGridSizer(0, maxlen+1)
+            #sizer = wx.FlexGridSizer(0, maxlen+1)
+            sizer = wx.FlexGridSizer(cols=maxlen+1)
             sizer.AddGrowableCol(0)
             self.SetAutoLayout(True)
             # core components
@@ -385,12 +386,9 @@ class wxGladeFrame(wx.Frame):
             if wx.Platform != '__WXGTK__':
                 frame_style |= wx.FRAME_TOOL_WINDOW
 
-        self.property_frame = wx.Frame(self, wx.ID_ANY,
-                                       _('Properties - <%s>' % _('app')),
-                                       style=frame_style,
-                                       name='PropertyFrame')
-        self.property_frame.SetBackgroundColour(wx.SystemSettings_GetColour(
-            wx.SYS_COLOUR_BTNFACE))
+        self.property_frame = wx.Frame( self, wx.ID_ANY, _('Properties - <%s>' % _('app')),
+                                        style=frame_style, name='PropertyFrame' )
+        self.property_frame.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE) )
         self.property_frame.SetIcon(icon)
 
         property_panel = wxGladePropertyPanel(self.property_frame, -1)
@@ -434,15 +432,15 @@ class wxGladeFrame(wx.Frame):
 
         if prefs.remember_geometry:
             self_geometry = prefs.get_geometry('main')
-            if isinstance(self_geometry, types.TupleType):
+            if isinstance(self_geometry, tuple):
                 self_geometry = wx.Rect(*self_geometry)
 
             property_geomentry = prefs.get_geometry('properties')
-            if isinstance(property_geomentry, types.TupleType):
+            if isinstance(property_geomentry, tuple):
                 property_geomentry = wx.Rect(*property_geomentry)
 
             tree_geometry = prefs.get_geometry('tree')
-            if isinstance(tree_geometry, types.TupleType):
+            if isinstance(tree_geometry, tuple):
                 tree_geometry = wx.Rect(*tree_geometry)
 
         if not self_geometry:
@@ -496,13 +494,13 @@ class wxGladeFrame(wx.Frame):
         if config.preferences.autosave:
             TIMER_ID = wx.NewId()
             self.autosave_timer = wx.Timer(self, TIMER_ID)
-            wx.EVT_TIMER(self, TIMER_ID, self.on_autosave_timer)
-            self.autosave_timer.Start(
-                int(config.preferences.autosave_delay) * 1000)
+            self.autosave_timer.Bind(wx.EVT_TIMER, self.on_autosave_timer)
+            #wx.EVT_TIMER(self, TIMER_ID, self.on_autosave_timer)
+            self.autosave_timer.Start( int(config.preferences.autosave_delay) * 1000 )
         # ALB 2004-10-15
         CLEAR_SB_TIMER_ID = wx.NewId()
         self.clear_sb_timer = wx.Timer(self, CLEAR_SB_TIMER_ID)
-        wx.EVT_TIMER(self, CLEAR_SB_TIMER_ID, self.on_clear_sb_timer)
+        self.clear_sb_timer.Bind(wx.EVT_TIMER, self.on_clear_sb_timer)
 
         self.property_frame.SetAcceleratorTable(self.accel_table)
         self.tree_frame.SetAcceleratorTable(self.accel_table)
@@ -684,17 +682,17 @@ class wxGladeFrame(wx.Frame):
         @return: True on Success
         @rtype: bool
         """
-        assert isinstance(filename_or_filelike,
-                          types.StringTypes + (StringIO.StringIO, ))
-        if isinstance(filename_or_filelike, StringIO.StringIO):
-            assert isinstance(filename_or_filelike.getvalue(), types.UnicodeType)
+        if isinstance(filename_or_filelike, compat.StringIO):
+            assert isinstance(filename_or_filelike.getvalue(), unicode)
+        else:
+            assert isinstance(filename_or_filelike, compat.basestring )
 
         error_msg = None
         filename = None
         infile = None
         old_dir = os.getcwd()
 
-        if isinstance(filename_or_filelike, types.StringTypes):
+        if isinstance(filename_or_filelike, compat.basestring):
             common.app_tree.app.filename = filename_or_filelike
             filename = filename_or_filelike
         else:
@@ -708,13 +706,13 @@ class wxGladeFrame(wx.Frame):
 
         try:
             try:
-                if isinstance(filename_or_filelike, StringIO.StringIO):
+                if isinstance(filename_or_filelike, compat.StringIO):
                     # convert filename_or_filelike to UTF-8 and write back
                     # as lines, because ProgressXmlWidgetBuilder uses lines
                     # to calculate and show the position
                     tmp = filename_or_filelike.getvalue()
                     tmp = tmp.encode('UTF-8')
-                    infile = StringIO.StringIO()
+                    infile = compat.StringIO()
                     for line in tmp.split('\n'):
                         infile.write('%s\n' % line)
                     infile.seek(0)
@@ -724,7 +722,10 @@ class wxGladeFrame(wx.Frame):
                     self._logger.info( _('Read wxGlade project from file "%s"'), filename )
                     os.chdir(os.path.dirname(filename))
                     # decoding will done automatically by SAX XML library
-                    infile = open(filename)
+                    if compat.PYTHON2:
+                        infile = open(filename)
+                    else:
+                        infile = open(filename, "r", encoding="UTF8")
 
                 if use_progress_dialog and config.preferences.show_progress:
                     p = ProgressXmlWidgetBuilder(input_file=infile)
@@ -732,8 +733,7 @@ class wxGladeFrame(wx.Frame):
                     p = XmlWidgetBuilder()
 
                 p.parse(infile)
-            except (IOError, OSError, SAXParseException,
-                    XmlParsingError), msg:
+            except (IOError, OSError, SAXParseException, XmlParsingError) as msg:
                 if filename:
                     error_msg = _("Error loading file %s: %s") % (misc.wxstr(filename), misc.wxstr(msg))
                 else:
@@ -810,14 +810,13 @@ class wxGladeFrame(wx.Frame):
 
     def _save_app(self, filename):
         try:
-            obuffer = StringIO.StringIO()
+            obuffer = compat.StringIO()
             common.app_tree.write(obuffer)
             common.save_file(filename, obuffer.getvalue(), 'wxg')
-        except (IOError, OSError), inst:
+        except (IOError, OSError) as inst:
             common.app_tree.app.saved = False
-            wx.MessageBox(_("Error saving app:\n%s") % inst, _("Error"),
-                         wx.OK | wx.CENTRE | wx.ICON_ERROR)
-        except Exception, inst:
+            wx.MessageBox( _("Error saving app:\n%s") % inst, _("Error"), wx.OK | wx.CENTRE | wx.ICON_ERROR )
+        except Exception as inst:
             common.app_tree.app.saved = False
             fn = os.path.basename(filename).encode('ascii', 'replace')
             bugdialog.Show(_('Save File "%s"') % fn, inst)
@@ -870,10 +869,9 @@ class wxGladeFrame(wx.Frame):
             common.app_tree.clear()
             try:
                 common.save_preferences()
-            except Exception, e:
-                wx.MessageBox(_('Error saving preferences:\n%s') % e,
-                              _('Error'),
-                              wx.OK|wx.CENTRE|wx.ICON_ERROR)
+            except Exception as e:
+                wx.MessageBox( _('Error saving preferences:\n%s') % e,
+                               _('Error'), wx.OK|wx.CENTRE|wx.ICON_ERROR )
             #self._skip_activate = True
             self.property_frame.Destroy()
             self.property_frame = None
@@ -942,19 +940,19 @@ class wxGladeFrame(wx.Frame):
         infilename = wx.FileSelector( _("Import file"), wildcard="XRC files (*.xrc)" "|*.xrc|All files|*",
                                       flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, default_path=self.cur_dir)
         if infilename:
-            ibuffer = StringIO.StringIO()
+            ibuffer = compat.StringIO()
             try:
                 xrc2wxg.convert(infilename, ibuffer)
 
                 # Convert UTF-8 returned by xrc2wxg.convert() to Unicode
                 tmp = ibuffer.getvalue().decode('UTF-8')
-                ibuffer = StringIO.StringIO()
+                ibuffer = compat.StringIO()
                 [ibuffer.write('%s\n' % line) for line in tmp.split('\n')]
                 ibuffer.seek(0)
 
                 self._open_app(ibuffer)
                 common.app_tree.app.saved = False
-            except Exception, inst:
+            except Exception as inst:
                 fn = os.path.basename(infilename).encode('ascii', 'replace')
                 bugdialog.Show(_('Import File "%s"') % fn, inst)
 
@@ -1029,7 +1027,7 @@ class wxGlade(wx.App):
         if config.preferences.log_debug_info:
             log.setDebugLevel()
 
-        wx.ArtProvider.PushProvider(wxGladeArtProvider())
+        compat.wx_ArtProviderPush(wxGladeArtProvider())
 
         frame = wxGladeFrame()
         self.SetTopWindow(frame)

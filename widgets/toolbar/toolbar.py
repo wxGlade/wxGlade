@@ -5,9 +5,9 @@ wxToolBar objects
 @copyright: 2014-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
+from __future__ import absolute_import
 
 import re
-import StringIO
 import wx
 from wx.lib.filebrowsebutton import FileBrowseButton
 
@@ -18,7 +18,7 @@ import math
 import misc
 import os
 from tree import Tree
-from tool import *
+from .tool import *
 from widget_properties import *
 from edit_windows import EditBase, PreviewMixin, EditStylesMixin
 from gui_mixins import BitmapMixin, ExecAfterMixin
@@ -398,7 +398,7 @@ class ToolsProperty(Property):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add( self.edit_btn, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 4 )
         self.panel.SetAutoLayout(1)
-        compat.SizerItem_SetSizer(self.panel, sizer)
+        self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
         wx.EVT_BUTTON(self.panel, edit_btn_id, self.edit_tools)
 
@@ -412,7 +412,7 @@ class ToolsProperty(Property):
             common.app_tree.app.saved = False  # update the status of the app
 
     def write(self, outfile, tabs):
-        inner_xml = StringIO.StringIO()
+        inner_xml = compat.StringIO()
         for tool in self.owner[self.name][0]():
             tool.write(inner_xml, tabs+1)
         stmt = common.format_xml_tag( u'tools', inner_xml.getvalue(), tabs, is_xml=True) 
@@ -561,7 +561,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin, ExecAfte
             sizer.Add(self.name_prop.panel, 0, wx.EXPAND)
             sizer.Add(self.klass_prop.panel, 0, wx.EXPAND)
             page.SetAutoLayout(1)
-            compat.SizerItem_SetSizer(page, sizer)
+            page.SetSizer(sizer)
         sizer.Add(self.properties['bitmapsize'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['margins'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['packing'].panel, 0, wx.EXPAND)

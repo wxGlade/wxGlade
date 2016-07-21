@@ -9,12 +9,12 @@ See L{wcodegen.taghandler} for custom tag handler base classes.
 """
 
 import logging
-import StringIO
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
 
 import common
 import config
+import compat
 import edit_sizers
 
 if config.use_gui:
@@ -80,12 +80,13 @@ class XmlParser(ContentHandler):
         #
         # That's not a general file handling issue because the parameter
         # source is an open file already.
-        source = StringIO.StringIO(source.read())
+        source = compat.StringIO(source.read())
         self.parser.parse(source)
         source.close()
 
     def parse_string(self, source):
-        source = StringIO.StringIO(source)
+        #source = compat.StringIO(source)
+        source = compat.BytesIO(source)
         self.parser.parse(source)
         source.close()
 
@@ -212,7 +213,7 @@ class XmlParser(ContentHandler):
         encoding = attrs.get('encoding', config.default_encoding)
         if encoding:
             try:
-                unicode('a', encoding)
+                'a'.encode(encoding)
             except LookupError:
                 self._logger.warning( _('Unknown encoding "%s", fallback to default encoding "%s"'),
                                       encoding, config.default_encoding)

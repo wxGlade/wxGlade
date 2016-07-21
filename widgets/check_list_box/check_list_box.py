@@ -57,7 +57,7 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
         ch.SetSize((ch.GetSize()[0]-20, 200))
         szr.Add(self.properties['choices'].panel, 1, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         w, h = panel.GetSize()
         from math import ceil

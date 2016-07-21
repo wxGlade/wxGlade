@@ -77,9 +77,7 @@ class EditSpacer(ManagedBase):
 
     def on_paint(self, event):
         dc = wx.PaintDC(self.widget)
-        dc.BeginDrawing()
-        brush = wx.TheBrushList.FindOrCreateBrush(
-            self.widget.GetBackgroundColour())
+        brush = wx.TheBrushList.FindOrCreateBrush( self.widget.GetBackgroundColour() )
         dc.SetBrush(brush)
         dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 1, wx.SOLID))
         dc.SetBackground(brush)
@@ -89,49 +87,44 @@ class EditSpacer(ManagedBase):
         dc.DrawLine(w, 0, 0, h)
         text = _('Spacer')
         tw, th = dc.GetTextExtent(text)
-        x = (w - tw) / 2
-        y = (h - th) / 2
+        x = (w - tw) // 2
+        y = (h - th) // 2
         dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
-        dc.DrawRectangle(x - 1, y - 1, tw + 2, th + 2)
+        dc.DrawRectangle(x-1, y-1, tw+2, th+2)
         dc.DrawText(text, x, y)
-        dc.EndDrawing()
 
-# end of class EditSpacer
+
+
+class _Dialog(wx.Dialog):
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1, _("Enter size"))
+
+        self.width = SpinProperty(self, 'width', self, label=_("width"))
+        self.height = SpinProperty(self, 'height', self, label=_("height"))
+        self.width.set_value(20)
+        self.width.spin.SetFocus()
+        self.width.spin.SetSelection(-1, -1)
+        self.height.set_value(20)
+
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(self.width.panel, 0, wx.EXPAND)
+        szr.Add(self.height.panel, 0, wx.EXPAND)
+        sz = wx.BoxSizer(wx.HORIZONTAL)
+        sz.Add(wx.Button(self, wx.ID_OK, _('OK')))
+        szr.Add(sz, 0, wx.ALL|wx.ALIGN_CENTER, 4)
+        self.SetAutoLayout(True)
+        self.SetSizer(szr)
+        szr.Fit(self)
+        self.CenterOnScreen()
+
+    def __getitem__(self, name):
+        return lambda : 0, lambda v: None
+
 
 
 def builder(parent, sizer, pos):
-    """\
-    factory function for EditSpacer objects.
-    """
-    class Dialog(wx.Dialog):
-        def __init__(self):
-            wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1,
-                              _("Enter size"))
-
-            self.width = SpinProperty(self, 'width', self, label=_("width"))
-            self.height = SpinProperty(self, 'height', self, label=_("height"))
-            self.width.set_value(20)
-            self.width.spin.SetFocus()
-            self.width.spin.SetSelection(-1, -1)
-            self.height.set_value(20)
-
-            szr = wx.BoxSizer(wx.VERTICAL)
-            szr.Add(self.width.panel, 0, wx.EXPAND)
-            szr.Add(self.height.panel, 0, wx.EXPAND)
-            sz = wx.BoxSizer(wx.HORIZONTAL)
-            sz.Add(wx.Button(self, wx.ID_OK, _('OK')))
-            szr.Add(sz, 0, wx.ALL|wx.ALIGN_CENTER, 4)
-            self.SetAutoLayout(True)
-            self.SetSizer(szr)
-            szr.Fit(self)
-            self.CenterOnScreen()
-
-        def __getitem__(self, name):
-            return lambda : 0, lambda v: None
-
-    # end of inner class
-
-    dialog = Dialog()
+    "factory function for EditSpacer objects"
+    dialog = _Dialog(parent)
     res = dialog.ShowModal()
     width = dialog.width.get_value()
     height = dialog.height.get_value()

@@ -22,6 +22,7 @@ import re
 
 from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
 import config
+import compat
 import misc
 import wcodegen
 
@@ -664,7 +665,7 @@ bool MyApp::OnInit()
         klass = code_obj.klass
         fmt_klass = self.cn_class(klass)
 
-        if self.classes.has_key(klass) and self.classes[klass].done:
+        if klass in self.classes and self.classes[klass].done:
             return  # the code has already been generated
 
         if self.multiple_files:
@@ -690,7 +691,7 @@ bool MyApp::OnInit()
             # the details are logged by the global exception handler
             raise
 
-        if prev_src and prev_src.classes.has_key(klass):
+        if prev_src and klass in prev_src.classes:
             is_new = False
         else:
             # this class wasn't in the previous version of the source (if any)
@@ -701,7 +702,7 @@ bool MyApp::OnInit()
         hwrite = header_buffer.append
         swrite = source_buffer.append
 
-        if not self.classes.has_key(klass):
+        if not klass in self.classes:
             # if the class body was empty, create an empty ClassLines
             self.classes[klass] = self.ClassLines()
 
@@ -1049,8 +1050,8 @@ bool MyApp::OnInit()
             # create the new source file
             header_file = os.path.join(self.out_dir, klass + self.header_extension)
             source_file = os.path.join(self.out_dir, klass + self.source_extension)
-            hout = StringIO.StringIO()
-            sout = StringIO.StringIO()
+            hout = compat.StringIO()
+            sout = compat.StringIO()
 
             # header file
             hwrite = hout.write
@@ -1125,7 +1126,7 @@ bool MyApp::OnInit()
         try:
             init, ids, props, layout = builder.get_code(sub_obj)
         except:
-            print sub_obj
+            print(sub_obj)
             raise  # this shouldn't happen
 
         if sub_obj.in_windows:  # the object is a wxWindow instance

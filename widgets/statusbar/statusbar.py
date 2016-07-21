@@ -94,7 +94,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
             sizer.Add(self.name_prop.panel, 0, wx.EXPAND)
             sizer.Add(self.klass_prop.panel, 0, wx.EXPAND)
             page.SetAutoLayout(1)
-            compat.SizerItem_SetSizer(page, sizer)
+            page.SetSizer(sizer)
         sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
         sizer.Add(prop.panel, 1, wx.ALL | wx.EXPAND, 3)
         sizer.Fit(page)
