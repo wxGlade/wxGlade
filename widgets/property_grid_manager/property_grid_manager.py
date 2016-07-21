@@ -35,7 +35,7 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
         self.properties['style'].display(panel)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         w, h = panel.GetSize()
         from math import ceil

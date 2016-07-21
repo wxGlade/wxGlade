@@ -14,7 +14,7 @@ import misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree
 from widget_properties import *
-from button_stockitems import *
+from .button_stockitems import *
 
 
 class EditButton(ManagedBase, EditStylesMixin):
@@ -43,7 +43,7 @@ class EditButton(ManagedBase, EditStylesMixin):
         self.properties['default'].tooltip=_("This sets the button to be the default item for the panel or dialog box.")
 
         #Get the list of items, and add a 'None'
-        choices = ButtonStockItems.stock_ids.keys()
+        choices = list( ButtonStockItems.stock_ids.keys() )
         choices.sort()
         choices[:0] = ['None']
         self.properties['stockitem'] = ComboBoxProperty(
@@ -64,7 +64,7 @@ class EditButton(ManagedBase, EditStylesMixin):
         szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
         if self.stockitem != "None":

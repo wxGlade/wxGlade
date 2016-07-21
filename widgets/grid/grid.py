@@ -178,7 +178,7 @@ class EditGrid(ManagedBase):
         szr.Add(self.properties['enable_grid_resize'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['selection_mode'].panel, 0, wx.ALL|wx.EXPAND, 5)
         panel.SetAutoLayout(1)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, _('Widget'))

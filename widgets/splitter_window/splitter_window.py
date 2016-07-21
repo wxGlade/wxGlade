@@ -169,7 +169,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         sizer.Add(self.properties['sash_pos'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['min_pane_size'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, sizer)
+        panel.SetSizer(sizer)
         sizer.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
 

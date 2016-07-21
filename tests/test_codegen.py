@@ -7,7 +7,6 @@ Code genera Commandline / non-graphical tests
 """
 
 import os
-import StringIO
 
 # import test base class
 from tests import WXGladeBaseTest
@@ -15,6 +14,7 @@ from tests import WXGladeBaseTest
 # import project modules
 import common
 import config
+import compat
 import errors
 import misc
 import xrc2wxg
@@ -682,7 +682,7 @@ class TestCodeGen(WXGladeBaseTest):
         # clear output_file
         if codewriter.output_file:
             codewriter.output_file.close()
-        codewriter.output_file = StringIO.StringIO()
+        codewriter.output_file = compat.StringIO()
 
         # generate application start code
         codewriter.add_app({'class': klass,
@@ -1599,7 +1599,7 @@ class TestCodeGen(WXGladeBaseTest):
     def test_xrc2wxg(self):
         "Test converting XRC files into WXG files"
         fullpath = os.path.join(self.caseDirectory, 'import_test.xrc')
-        obuffer = StringIO.StringIO()
+        obuffer = compat.StringIO()
 
         xrc2wxg.convert(fullpath, obuffer)
 

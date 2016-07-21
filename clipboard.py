@@ -6,14 +6,17 @@ Support for cut & paste of wxGlade widgets
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import cPickle
 import logging
-import StringIO
+import compat
+
 import wx
 
 
 # Format used by wxGlade for the clipboard.
-widget_data_format = wx.CustomDataFormat("wxglade_widget")
+try:
+    widget_data_format = wx.CustomDataFormat("wxglade_widget")
+except AttributeError:
+    widget_data_format = wx.DataFormat("wxglade_widget")
 
 
 def widget2clipboard(option, flag, border, xml_unicode):
@@ -33,7 +36,7 @@ def widget2clipboard(option, flag, border, xml_unicode):
 
     @see: L{clipboard2widget()}
     """
-    clipboard_data = cPickle.dumps((option, flag, border, xml_unicode))
+    clipboard_data = compat.pickle.dumps((option, flag, border, xml_unicode))
     return clipboard_data
 
 
@@ -51,7 +54,7 @@ def clipboard2widget(clipboard_data):
 
     @see: L{widget2clipboard()}
     """
-    option, flag, border, xml_unicode = cPickle.loads(clipboard_data)
+    option, flag, border, xml_unicode = compat.pickle.loads(clipboard_data)
 
     # remove the dirt at the end of XML representation
     bound = xml_unicode.rfind('>') + 1
@@ -75,7 +78,7 @@ def copy(widget):
     """
     if wx.TheClipboard.Open():
         try:
-            xml_unicode = StringIO.StringIO()
+            xml_unicode = compat.StringIO()
             widget.node.write(xml_unicode, 0)
             flag = widget.esm_border.get_string_style()
             option = widget.get_option()

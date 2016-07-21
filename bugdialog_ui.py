@@ -87,7 +87,7 @@ class UIBugDialog(wx.Dialog):
         # end wxGlade
 
     def OnCopy(self, event):  # wxGlade: UIBugDialog.<event_handler>
-        print "Event handler 'OnCopy' not implemented!"
+        print("Event handler 'OnCopy' not implemented!")
         event.Skip()
 
 # end of class UIBugDialog

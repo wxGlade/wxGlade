@@ -9,7 +9,6 @@ Classes to handle and display the structure of a wxGlade app
 import logging
 import os.path
 import sys
-import StringIO
 import time
 import types
 import wx
@@ -123,7 +122,7 @@ class Tree(object):
 
                 for child in children:
                     if hasattr(child, 'widget'):
-                        inner_xml = StringIO.StringIO()
+                        inner_xml = compat.StringIO()
                         for prop in child.widget.sizer_properties.values():
                             prop.write(inner_xml, tabs + 2)
                         child.write(inner_xml, tabs + 2, class_names)
@@ -277,7 +276,7 @@ class Tree(object):
             'header_extension': header_ext,
         }
 
-        inner_xml = StringIO.StringIO()
+        inner_xml = compat.StringIO()
 
         if self.app.is_template and getattr(self.app, 'template_data', None):
             self.app.template_data.write(inner_xml, tabs+1)
@@ -313,22 +312,12 @@ class Tree(object):
             node.parent.children.insert(new_pos+1, node)
 
     def _to_digit_string(self, value):
-        """\
-        Convert the given value to a digit string.
-
-        @param value: Value to convert
-        @type value: str|int|bool
-
-        @rtype: str
-        """
-        if isinstance(value, types.BooleanType):
-            if value:
-                return '1'
-            else:
-                return '0'
-        elif isinstance(value, types.IntType):
-            return '%s' % value
-        elif isinstance(value, types.StringTypes):
+        "Convert the given str, int or bool value to a digit string"
+        if isinstance(value, bool):
+            return '1' if value else '0'
+        elif isinstance(value, int):
+            return '%s'%value
+        elif isinstance(value, basestring):
             if value.isdigit():
                 return value
         # log failures
@@ -433,9 +422,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             item, cookie = self.GetNextChild(parent.item, cookie)
 
         Tree.insert(self, child, parent, index)
-        child.item = self.InsertItemBefore(parent.item, index,
-                                           self._build_label(child),
-                                           image_index)
+        child.item = compat.wx_Tree_InsertItemBefore(self, parent.item, index, self._build_label(child), image_index)
         self.SetPyData(child.item, child)
         if self.auto_expand:
             self.Expand(parent.item)
@@ -620,11 +607,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         image = self.GetItemImage(node.item)
         self.Freeze()
         if index >= new_pos:
-            node.item = self.InsertItemBefore(
-                node.parent.item, new_pos, self._build_label(node), image)
+            node.item = compat.wx_Tree_InsertItemBefore( self, node.parent.item, new_pos, self._build_label(node), image )
         else:
-            node.item = self.InsertItemBefore(
-                node.parent.item, new_pos+1, self._build_label(node), image)
+            node.item = compat.wx_Tree_InsertItemBefore( self, node.parent.item, new_pos+1, self._build_label(node), image )
         self.SetPyData(node.item, node)
 
         def append(parent, node):
@@ -681,7 +666,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         while item.Ok() and index < len(path):
             widget = self.GetPyData(item).widget
             name = path[index]
-            if index == 0 and isinstance(name, types.TupleType):
+            if index == 0 and isinstance(name, tuple):
                 name, pos = name
             if misc.streq(widget.name, name):
                 #self.EnsureVisible(item)

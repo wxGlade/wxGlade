@@ -229,7 +229,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
         sizer.Add(self.properties['tabs'].panel, 1, wx.ALL | wx.EXPAND, 3)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, sizer)
+        panel.SetSizer(sizer)
         sizer.Fit(panel)
         self.notebook.AddPage(panel, _('Widget'))
         self.properties['tabs'].set_col_sizes([-1])

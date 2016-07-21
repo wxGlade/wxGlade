@@ -26,7 +26,6 @@ in revision 81919 (27.12.2010) in the public Python repository.
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import StringIO
 import datetime
 import inspect
 import locale
@@ -37,7 +36,15 @@ import pprint
 import sys
 import types
 
-import config
+try:
+    import StringIO
+    _nameToLevel = logging._levelNames
+except:
+    import io as StringIO
+    _nameToLevel = logging._nameToLevel
+
+
+import config, compat
 
 
 stringLoggerInstance = None
@@ -79,7 +86,8 @@ class StringHandler(logging.handlers.MemoryHandler):
         @param storeAsUnicode: Store recorded log records as unicode strings
         """
         self.buffer = []
-        logging.handlers.MemoryHandler.__init__(self, sys.maxint, 99)
+        #logging.handlers.MemoryHandler.__init__(self, sys.maxint, 99)
+        logging.handlers.MemoryHandler.__init__(self, 2**31-1, 99)
         self.storeAsUnicode = storeAsUnicode
 
     def _toUnicode(self, msg):
@@ -90,11 +98,11 @@ class StringHandler(logging.handlers.MemoryHandler):
         @see: L{self.encoding}
         """
         # return msg if is already a unicode string or None
-        if isinstance(msg, (types.UnicodeType, types.NoneType)):
+        if msg is None or isinstance(msg, compat.unicode):
             return msg
 
         # convert character string into a unicode string
-        if not isinstance(msg, unicode):
+        if not isinstance(msg, compat.unicode):
             msg = msg.decode(self.encoding, 'replace')
         return msg
 
@@ -252,10 +260,10 @@ class ExceptionFormatter(logging.Formatter):
                             # convert name and value to ascii characters
                             var = frame.f_locals[var_name]
                             var_type = type(var)
-                            if isinstance(var_type, types.UnicodeType):
+                            if isinstance(var_type, compat.unicode):
                                 var_value = frame.f_locals[var_name]
                                 var_value = var_value.encode('unicode_escape')
-                            elif isinstance(var_type, types.StringType):
+                            elif isinstance(var_type, compat.basestring):
                                 var_value = frame.f_locals[var_name]
                                 var_value = var_value.encode('string-escape')
                             else:
@@ -268,10 +276,9 @@ class ExceptionFormatter(logging.Formatter):
                     else:
                         sio.write('  No local variables\n')
                     sio.write('\n')
-            except Exception, e:
+            except Exception as e:
                 # This code should NEVER be executed!
-                logging.error('An exception has been raised inside the '
-                              'exception handler: %s', e)
+                logging.error('An exception has been raised inside the exception handler: %s', e)
                 sys.exit(1)
 
         # delete local references of trace backs or part of them  to avoid
@@ -379,8 +386,8 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
 
     # Set log level for root logger only
     if level:
-        if level.upper() in logging._levelNames:                 # pylint: disable=W0212
-            logger.setLevel(logging._levelNames[level.upper()])  # pylint: disable=W0212
+        if level.upper() in _nameToLevel:                 # pylint: disable=W0212
+            logger.setLevel(_nameToLevel[level.upper()])  # pylint: disable=W0212
         else:
             logging.warning( _('Invalid log level "%s". Use "WARNING" instead.'), level.upper() )
             logger.setLevel(logging.WARNING)
@@ -493,7 +500,7 @@ def getMessage(self):
 
     This specific version tries to handle Unicode user-supplied arguments.
     """
-    if not hasattr(types, "UnicodeType"):  # if no unicode support...
+    if not hasattr(types, "UnicodeType"):  # if no unicode support... # XXX
         msg = str(self.msg)
     else:
         msg = self.msg

@@ -8,11 +8,15 @@ Different Mixins
 import copy
 import decorators
 import logging
-import types
 import wx
 
 import config
 import misc
+
+try:
+    basestring
+except:
+    basestring = (str,)
 
 
 class StylesMixin(object):
@@ -65,7 +69,7 @@ class StylesMixin(object):
         @see: tmpl_flag_join
         @see: L{config.widget_config}
         """
-        assert isinstance(flags, types.StringTypes)
+        assert isinstance(flags, basestring)
         if flags.isdigit():
             return flags
 

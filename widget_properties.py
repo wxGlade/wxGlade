@@ -22,11 +22,15 @@ import misc
 from misc import _reverse_dict
 from ordereddict import OrderedDict
 
+try:
+    basestring
+except:
+    basestring = (str,)
 
 __all__ = ['CheckBoxProperty', 'CheckListProperty', 'ColorDialogProperty',
            'ComboBoxProperty', 'DialogProperty', 'FileDialogProperty',
            'FontDialogProperty', 'GridProperty', 'HiddenProperty',
-           'Property', 'RadioProperty', 'SpinProperty', 'TextProperty', ]
+           'Property', 'RadioProperty', 'SpinProperty', 'TextProperty']
 
 
 class Property(object):
