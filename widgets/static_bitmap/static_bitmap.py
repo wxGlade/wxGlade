@@ -14,7 +14,7 @@ import compat
 import config
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 
 
@@ -103,7 +103,7 @@ def builder(parent, sizer, pos, number=[1]):
         name = 'bitmap_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image"))
     static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer, pos, common.property_panel)
-    node = Tree.Node(static_bitmap)
+    node = Node(static_bitmap)
     static_bitmap.node = node
     static_bitmap.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
@@ -120,7 +120,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     bitmap = EditStaticBitmap(label, parent, wx.NewId(), '', sizer, pos, common.property_panel)
     sizer.set_item(bitmap.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(bitmap)
+    node = Node(bitmap)
     bitmap.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

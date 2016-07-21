@@ -13,7 +13,7 @@ import common
 import compat
 import config
 import misc
-from tree import Tree
+from tree import Tree, Node, Node
 from gui_mixins import ExecAfterMixin
 from widget_properties import *
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
@@ -324,8 +324,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         super(EditTopLevelPanel, self).set_scrollable(value)
         if self.scrollable:
             # 2003-06-26 ALB: change the "class name", to allow code generation
-            # for a wxScrolledWindow (see Tree.Node.write and
-            # common.class_names usage in xml_parse.py)
+            # for a wxScrolledWindow (see Node.write and common.class_names usage in xml_parse.py)
             self._classname = 'EditTopLevelScrolledWindow'
         else:
             self._classname = self.__class__.__name__
@@ -341,7 +340,7 @@ def builder(parent, sizer, pos, number=[1]):
         name = 'panel_%d' % number[0]
     panel = EditPanel(name, parent, wx.NewId(), sizer, pos,
                       common.property_panel, style='')
-    node = Tree.Node(panel)
+    node = Node(panel)
     panel.node = node
 
     panel.set_option(1)
@@ -364,7 +363,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     panel = EditPanel(name, parent, wx.NewId(), sizer, pos, common.property_panel, True, style='')
     sizer.set_item(panel.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(panel)
+    node = Node(panel)
     panel.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
@@ -380,17 +379,14 @@ def xml_toplevel_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
     panel = EditTopLevelPanel( label, parent, wx.NewId(), common.property_panel, show=False, style='' )
-    node = Tree.Node(panel)
+    node = Node(panel)
     panel.node = node
     common.app_tree.add(node)
     return panel
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditPanel'] = builder
     common.widgets_from_xml['EditPanel'] = xml_builder
 

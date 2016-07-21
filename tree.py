@@ -19,140 +19,108 @@ import compat
 import config
 
 
-class SlotNode(object):
-    "To write a placeholder for an empty sizer slot"
 
+class Node(object):
+    __empty_win = None
+
+    def __init__(self, widget=None, children=None):
+        self.widget = widget      # e.g. EditPanel or EditBoxSizer
+        self.children = children  # list of Node or SlotNode instances
+        self.parent = None        # parent node; will be set in Tree.add/insert
+
+    @classmethod
+    def remove_rec(cls, node):
+        "recursively remove node and it's children"
+        for child_node in (node.children or []):
+            cls.remove_rec(child_node)
+        node.children = None
+        if node.widget is not None:
+            if node.widget.property_window is not None:  # replace the just destroyed notebook with an empty window
+                pw = node.widget.property_window
+                pw.SetTitle(_('Properties - <%s>') % '')
+                if Node.__empty_win is None:
+                    Node.__empty_win = wx.Window(pw, -1)
+                compat.SizerItem_SetWindow( pw.GetSizer().GetChildren()[0], Node.__empty_win )
+            # call the widget's ``destructor''
+            node.widget.delete()
+        node.widget = None
+
+    def remove(self):
+        self.remove_rec(self)
+        try:
+            self.parent.children.remove(self)
+        except:
+            pass
+
+    def __repr__(self):
+        try: return self.widget.name
+        except AttributeError: return repr(self.widget)
+
+    def write(self, outfile, tabs, class_names=None):
+        "Writes the xml code for the widget to the given output file"
+        import edit_sizers
+        fwrite = outfile.write
+        assert self.widget is not None
+        classname = getattr(self.widget, '_classname', self.widget.__class__.__name__)
+        # to disable custom class code generation (for panels...)
+        if getattr(self.widget, 'no_custom_class', False):
+            no_custom = u' no_custom_class="1"'
+        else:
+            no_custom = ""
+        outer_tabs = u'    ' * tabs
+        fwrite(u'%s<object %s %s %s%s>\n' % ( outer_tabs,
+                                              common.format_xml_attrs(**{'class': self.widget.klass}),
+                                              common.format_xml_attrs(name=self.widget.name),
+                                              common.format_xml_attrs(base=classname),
+                                              no_custom) )
+
+        for prop in self.widget.properties:
+            if not getattr(self.widget.properties[prop], '_omitter', None):
+                self.write_by_omitter(self.widget, prop, outfile, tabs+1)
+
+        if class_names is not None and self.widget.__class__.__name__ != 'CustomWidget':
+            class_names.add(self.widget.klass)
+
+        if isinstance(self.widget, edit_sizers.SizerBase):
+            for child in self.children or []:
+                if not isinstance(child, SlotNode):# hasattr(child, 'widget'):
+                    inner_xml = compat.StringIO()
+                    for prop in child.widget.sizer_properties.values():
+                        prop.write(inner_xml, tabs+2)
+                    child.write(inner_xml, tabs+2, class_names)
+                    stmt = common.format_xml_tag( u'object', inner_xml.getvalue(), tabs+1,
+                                                  is_xml=True, **{'class': 'sizeritem'} )
+                    fwrite(stmt)
+                else:
+                    child.write(outfile, tabs + 1)
+        elif self.children is not None:
+            for child in self.children:
+                child.write(outfile, tabs + 1, class_names)
+        fwrite(u'%s</object>\n' % outer_tabs)
+
+    def write_by_omitter(self, widget, name, file, tabs):
+        """Write to given output file:
+        - value of property
+        - values of properties that previous can block
+        - any omitter can be blocked as well"""
+        widget.properties[name].write(file, tabs)
+        if getattr(widget, 'get_property_blocking', None):
+            items = widget.get_property_blocking(name)
+            if items:
+                for name in items:
+                    self.write_by_omitter(widget, name, file, tabs)
+
+
+
+class SlotNode(Node):
+    "Placeholder for an empty sizer slot"
     def write(self, outfile, tabs):
         stmt = common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'})
         outfile.write(stmt)
 
 
 class Tree(object):
-    """\
-    A class to represent a hierarchy of widgets.
-
-    @ivar _logger: Class specific logging instance
-    """
-    class Node(object):
-        __empty_win = None
-
-        def __init__(self, widget=None, children=None):
-            self.widget = widget
-            self.children = children
-            self.parent = None
-
-        def remove(self):
-            def remove_rec(node):
-                if node.children is not None:
-                    map(remove_rec, node.children)
-                node.children = None
-                if node.widget is not None:
-                    # replace the just destroyed notebook with an empty window
-                    pw = node.widget.property_window
-                    pw.SetTitle(_('Properties - <%s>') % '')
-                    if Tree.Node.__empty_win is None:
-                        Tree.Node.__empty_win = wx.Window(pw, -1)
-                    compat.SizerItem_SetWindow(
-                        pw.GetSizer().GetChildren()[0],
-                        Tree.Node.__empty_win,
-                        )
-                    # call the widget's ``destructor''
-                    node.widget.delete()
-                node.widget = None
-            remove_rec(self)
-            try:
-                self.parent.children.remove(self)
-            except:
-                pass
-
-        def __repr__(self):
-            try: return self.widget.name
-            except AttributeError: return repr(self.widget)
-
-        def write(self, outfile, tabs, class_names=None):
-            """\
-            Writes the xml code for the widget to the given output file
-            """
-            import edit_sizers
-            fwrite = outfile.write
-            assert self.widget is not None
-            classname = getattr(self.widget, '_classname',
-                                self.widget.__class__.__name__)
-            # to disable custom class code generation (for panels...)
-            if getattr(self.widget, 'no_custom_class', False):
-                no_custom = u' no_custom_class="1"'
-            else:
-                no_custom = ""
-            outer_tabs = u'    ' * tabs
-            fwrite(u'%s<object %s %s %s%s>\n' % (
-                outer_tabs,
-                common.format_xml_attrs(**{'class': self.widget.klass}),
-                common.format_xml_attrs(name=self.widget.name),
-                common.format_xml_attrs(base=classname),
-                no_custom))
-
-            for prop in self.widget.properties:
-                if not getattr(self.widget.properties[prop], '_omitter',
-                               None):
-                    self.write_by_omitter(self.widget, prop, outfile,
-                                          tabs + 1)
-
-            if class_names is not None and \
-                            self.widget.__class__.__name__ != 'CustomWidget':
-                class_names.add(self.widget.klass)
-
-            # sort children by sizer position and add "sizerlots" for empty
-            # positions
-            if isinstance(self.widget, edit_sizers.SizerBase):
-                # number of sizer slots from parent object
-                sizer_slots = len(self.widget.children)
-
-                # children = self.children is not None and self.children or []
-                children = self.children or []
-
-                # create list of children / "sizerslots" based on sizer
-                # position
-                children_by_position = {}
-                for child in children:
-                    children_by_position[child.widget.pos] = child
-
-                # convert back to list
-                children = [children_by_position.get(pos, SlotNode())
-                            for pos in range(1, sizer_slots)]
-
-                for child in children:
-                    if hasattr(child, 'widget'):
-                        inner_xml = compat.StringIO()
-                        for prop in child.widget.sizer_properties.values():
-                            prop.write(inner_xml, tabs + 2)
-                        child.write(inner_xml, tabs + 2, class_names)
-                        stmt = common.format_xml_tag(
-                            u'object', inner_xml.getvalue(), tabs + 1,
-                            is_xml=True, **{'class': 'sizeritem'}
-                        )
-                        fwrite(stmt)
-                    else:
-                        child.write(outfile, tabs + 1)
-            elif self.children is not None:
-                for child in self.children:
-                    child.write(outfile, tabs + 1, class_names)
-            fwrite(u'%s</object>\n' % outer_tabs)
-
-        def write_by_omitter(self, widget, name, file, tabs):
-            """\
-            Write to given output file:
-            - value of property
-            - values of properties that previous can block
-            - any omitter can be blocked as well
-            """
-            widget.properties[name].write(file, tabs)
-            if getattr(widget, 'get_property_blocking', None):
-                items = widget.get_property_blocking(name)
-                if items:
-                    for name in items:
-                        self.write_by_omitter(widget, name, file, tabs)
-
-    # end of class Node
+    "A class to represent a hierarchy of widgets"
 
     def __init__(self, root=None, app=None):
         # initialise instance logger
@@ -160,7 +128,7 @@ class Tree(object):
 
         # initialise instance
         self.root = root
-        if self.root is None: self.root = Tree.Node()
+        if self.root is None: self.root = Node()
         self.current = self.root
         self.app = app  # reference to the app properties
         self.names = {}  # dictionary of names of the widgets: each entry is a dictionary, one for each toplevel widget
@@ -175,7 +143,6 @@ class Tree(object):
 
     def has_name(self, name, node=None):
         if node is None:
-            #self._logger.debug('name to check: %s', name)
             for n in self.names:
                 if name in self.names[n]:
                     return True
@@ -210,17 +177,19 @@ class Tree(object):
         if parent is self.root:
             self.app.add_top_window(child.widget.name)
 
+    def clear_name_rec(self, n):
+        try:
+            #del self.names[str(n.widget.name)]
+            del self.names[self._find_toplevel(n)][str(n.widget.name)]
+        except (KeyError, AttributeError):
+            pass
+
+        for c in (n.children or []):
+            self.clear_name_rec(c)
+
     def remove(self, node=None):
         if node is not None:
-            def clear_name(n):
-                try:
-                    #del self.names[str(n.widget.name)]
-                    del self.names[self._find_toplevel(n)][str(n.widget.name)]
-                except (KeyError, AttributeError):
-                    pass
-                if n.children:
-                    for c in n.children: clear_name(c)
-            clear_name(node)
+            self.clear_name_rec(node)
             if node.parent is self.root:
                 self.app.remove_top_window(node.widget.name)
             node.remove()
@@ -339,7 +308,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         elif wx.Platform == '__WXMAC__':
             style &= ~wx.TR_ROW_LINES
         wx.TreeCtrl.__init__(self, parent, id, style=style)
-        root_node = Tree.Node(application)
+        root_node = Node(application)
         self.cur_widget = None  # reference to the selected widget
         Tree.__init__(self, root_node, application)
         image_list = wx.ImageList(21, 21)

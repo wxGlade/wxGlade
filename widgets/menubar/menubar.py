@@ -14,7 +14,7 @@ import config
 import misc
 from gui_mixins import ExecAfterMixin
 from MenuTree import *
-from tree import Tree
+from tree import Tree, Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import *
 from edit_windows import EditBase, PreviewMixin
@@ -762,7 +762,7 @@ def builder(parent, sizer, pos, number=[0]):
         name = 'menubar_%d' % number[0]
 
     mb = EditMenuBar(name, klass, parent, common.property_panel)
-    mb.node = Tree.Node(mb)
+    mb.node = Node(mb)
     common.app_tree.add(mb.node)
     mb.show_widget(True)
     mb.show_properties()
@@ -778,7 +778,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         return parent.menubar
     else:
         mb = EditMenuBar(name, attrs.get('class', 'wxMenuBar'), None, common.property_panel)
-        mb.node = Tree.Node(mb)
+        mb.node = Node(mb)
         common.app_tree.add(mb.node)
         return mb
 

@@ -11,7 +11,7 @@ import common
 import compat
 import misc
 from edit_windows import ManagedBase
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 
 from ChoicesProperty import *
@@ -108,7 +108,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'choice_%d' % number[0]
     choice = EditChoice(name, parent, wx.NewId(), [u'choice 1'], sizer, pos, common.property_panel)
-    node = Tree.Node(choice)
+    node = Node(choice)
     #sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
     choice.show_widget(True)
@@ -126,7 +126,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     choice = EditChoice(name, parent, wx.NewId(), [], sizer, pos, common.property_panel)
     sizer.set_item(choice.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(choice)
+    node = Node(choice)
     choice.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

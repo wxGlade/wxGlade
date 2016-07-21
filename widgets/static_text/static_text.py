@@ -13,7 +13,7 @@ import compat
 import config
 import misc
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 
 
@@ -86,7 +86,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = u'label_%d' % number[0]
     static_text = EditStaticText(label, parent, wx.NewId(), label, sizer, pos, common.property_panel)
-    node = Tree.Node(static_text)
+    node = Node(static_text)
     static_text.node = node
     static_text.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
@@ -103,7 +103,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     static_text = EditStaticText(label, parent, wx.NewId(), "", sizer, pos, common.property_panel)
     sizer.set_item(static_text.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(static_text)
+    node = Node(static_text)
     static_text.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

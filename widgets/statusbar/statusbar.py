@@ -10,7 +10,7 @@ import wx
 import common
 import compat
 import misc
-from tree import Tree
+from tree import Tree, Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import *
 from edit_windows import EditBase, EditStylesMixin
@@ -52,7 +52,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance variables
-        self.node = Tree.Node(self)
+        self.node = Node(self)
         self.add = common.app_tree.add(self.node, parent.node)
 
         # initialise properties remaining staff
@@ -199,7 +199,7 @@ def builder(parent, sizer, pos, number=[0]):
         name = 'statusbar_%d' % number[0]
 
     widget = EditStatusBar(name, klass, parent, common.property_panel)
-    widget.node = Tree.Node(widget)
+    widget.node = Node(widget)
     common.app_tree.add(widget.node)
     widget.show_widget(True)
     widget.show_properties()
@@ -215,7 +215,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         return parent.statusbar
     else:
         widget = EditStatusBar(name, attrs.get('class', 'wxStatusBar'), None, common.property_panel)
-        widget.node = Tree.Node(widget)
+        widget.node = Node(widget)
         common.app_tree.add(widget.node)
         return widget
 

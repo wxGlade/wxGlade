@@ -11,7 +11,7 @@ import wx
 import common
 import compat
 import wcodegen
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
@@ -311,7 +311,7 @@ def builder(parent, sizer, pos, number=[1]):
         widget.window_1 = pane1
         widget.window_2 = pane2
 
-    node = Tree.Node(widget)
+    node = Node(widget)
     widget.node = node
     widget.virtual_sizer.node = node
 
@@ -322,11 +322,11 @@ def builder(parent, sizer, pos, number=[1]):
     common.app_tree.insert(node, sizer.node, pos - 1)
 
     if _has_panel:
-        node2 = Tree.Node(widget.window_1)
+        node2 = Node(widget.window_1)
         widget.window_1.node = node2
         common.app_tree.add(node2, widget.node)
 
-        node3 = Tree.Node(widget.window_2)
+        node3 = Node(widget.window_2)
         widget.window_2.node = node3
         common.app_tree.add(node3, widget.node)
 
@@ -344,7 +344,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     widget = editor_class(name, parent, wx.NewId(), None, None, None, editor_style, sizer, pos, common.property_panel)
     sizer.set_item(widget.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(widget)
+    node = Node(widget)
     widget.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

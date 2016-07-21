@@ -8,7 +8,7 @@ wxDatePickerCtrl objects
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
+from tree import Tree, Node, Node
 import common
 import compat
 import config
@@ -83,7 +83,7 @@ def builder(parent, sizer, pos, number=[1]):
         label = 'datepicker_ctrl_%d' % number[0]
     datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer,
                         pos, common.property_panel)
-    node = Tree.Node(datepicker_ctrl)
+    node = Node(datepicker_ctrl)
     datepicker_ctrl.node = node
     datepicker_ctrl.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
@@ -102,7 +102,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
                         pos, common.property_panel, show=False)
     sizer.set_item(datepicker_ctrl.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(datepicker_ctrl)
+    node = Node(datepicker_ctrl)
     datepicker_ctrl.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

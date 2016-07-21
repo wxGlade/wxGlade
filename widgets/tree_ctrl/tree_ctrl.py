@@ -8,7 +8,7 @@ wxTreeCtrl objects
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
+from tree import Tree, Node
 import common
 import compat
 import config
@@ -87,7 +87,7 @@ def builder(parent, sizer, pos, number=[1]):
         name = 'tree_ctrl_%d' % number[0]
     tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos,
                              common.property_panel)
-    node = Tree.Node(tree_ctrl)
+    node = Node(tree_ctrl)
     tree_ctrl.node = node
     tree_ctrl.set_option(1)
     tree_ctrl.set_style("wxEXPAND")
@@ -111,7 +111,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
                              common.property_panel, style=0)
     sizer.set_item(tree_ctrl.pos, option=sizeritem.option,
                    flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(tree_ctrl)
+    node = Node(tree_ctrl)
     tree_ctrl.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

@@ -9,7 +9,7 @@ wxGenericCalendarCtrl objects
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
+from tree import Tree, Node
 import common
 import compat
 import config
@@ -80,7 +80,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'generic_calendar_ctrl_%d' % number[0]
     calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer, pos, common.property_panel)
-    node = Tree.Node(calendar_ctrl)
+    node = Node(calendar_ctrl)
     calendar_ctrl.node = node
     calendar_ctrl.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
@@ -97,7 +97,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer, pos, common.property_panel, show=False)
     sizer.set_item(calendar_ctrl.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(calendar_ctrl)
+    node = Node(calendar_ctrl)
     calendar_ctrl.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
