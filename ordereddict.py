@@ -20,10 +20,9 @@
 #     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #     OTHER DEALINGS IN THE SOFTWARE.
 
-from UserDict import DictMixin
 
 
-class OrderedDict(dict, DictMixin):
+class OrderedDict(dict):
 
     def __init__(self, *args, **kwds):
         if len(args) > 1:
@@ -89,15 +88,6 @@ class OrderedDict(dict, DictMixin):
 
     def keys(self):
         return list(self)
-
-    setdefault = DictMixin.setdefault
-    update = DictMixin.update
-    pop = DictMixin.pop
-    values = DictMixin.values
-    items = DictMixin.items
-    iterkeys = DictMixin.iterkeys
-    itervalues = DictMixin.itervalues
-    iteritems = DictMixin.iteritems
 
     def __repr__(self):
         if not self:

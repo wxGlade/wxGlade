@@ -94,7 +94,6 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
 def self_%s_on_paint(event):
     widget = self.%s
     dc = wx.PaintDC(widget)
-    dc.BeginDrawing()
     dc.SetBrush(wx.WHITE_BRUSH)
     dc.SetPen(wx.BLACK_PEN)
     dc.SetBackground(wx.WHITE_BRUSH)
@@ -109,7 +108,6 @@ def self_%s_on_paint(event):
     dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
     dc.DrawRectangle(x-1, y-1, tw+2, th+2)
     dc.DrawText(text, x, y)
-    dc.EndDrawing()    
 """ % ((widget.name,) * 3)
         for line in on_paint_code.splitlines():
             append(line + '\n')

@@ -67,7 +67,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         szr.Add(self.properties['selection'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['choices'].panel, 1, wx.EXPAND)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, 'Widget')
         self.properties['choices'].set_col_sizes([-1])

@@ -7,7 +7,7 @@ A class to represent a menu on a wxMenuBar
 """
 
 from common import format_xml_tag
-import StringIO
+import compat
 
 
 class MenuTree(object):
@@ -61,7 +61,7 @@ class MenuTree(object):
                 if self.handler:
                     attrs[u'handler'] = self.handler
                 attrs[u'label'] = self.label
-                value = StringIO.StringIO()
+                value = compat.StringIO()
                 for c in self.children:
                     c.write(value, tabs + 1)
                 inner_xml = value.getvalue()

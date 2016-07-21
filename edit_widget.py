@@ -68,7 +68,7 @@ class EditWidget(ManagedBase):
             self.properties[name].display(panel)
             szr.Add( self.properties[name].panel, self.property_proportion[name], wx.EXPAND )
         panel.SetAutoLayout(1)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, 'Widget')

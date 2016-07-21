@@ -5,6 +5,8 @@ Common code used by all widget code generators
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+from __future__ import absolute_import
+
 import common
 import config
 import misc
@@ -13,7 +15,7 @@ import copy
 import logging
 import os.path
 import types
-from dialogs import *
+from .dialogs import *
 from gui_mixins import StylesMixin
 
 
@@ -843,7 +845,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         if self.tmpl_import_artprovider and (bmp_first.startswith('art:') or bmp_second.startswith('art:')):
             self.import_modules.append(self.tmpl_import_artprovider)
 
-        if not obj.properties.has_key('size') and self.tmpl_SetBestSize:
+        if not 'size' in obj.properties and self.tmpl_SetBestSize:
             self.tmpl_props.append(self.tmpl_SetBestSize)
 
         self.has_setdefault = obj.properties.get('default', False)
@@ -1235,14 +1237,14 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         @see: L{config.widget_config}
         """
-        assert isinstance(major, types.IntType)
-        assert isinstance(minor, (types.IntType, types.NoneType))
+        assert isinstance(major, int)
+        assert isinstance(minor, (int,None))
 
         # no restrictions exists
         if 'supported_by' not in self.config:
             return True
 
-        if not isinstance(minor, types.NoneType):
+        if minor is not None:
             version_specific = 'wx%s%s' % (major, minor)
             if version_specific in self.config['supported_by']:
                 return True

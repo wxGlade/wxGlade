@@ -7,7 +7,6 @@ wxMenuBar objects
 """
 
 import wx
-import StringIO
 
 import common
 import compat
@@ -239,7 +238,7 @@ class MenuItemDialog(wx.Dialog):
     def item_level(self, index, label=None):
         "returns the indentation level of the menu item at the given index"
         label = self.menu_items.GetItem(index, 0).m_text
-        return (len(label) - len(label.lstrip())) / 4
+        return (len(label) - len(label.lstrip())) // 4
 
     def remove_menu_item(self, event):
         "Event handler called when the Remove button is clicked"
@@ -471,7 +470,7 @@ class MenuProperty(Property):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 4)
         self.panel.SetAutoLayout(1)
-        compat.SizerItem_SetSizer(self.panel, sizer)
+        self.panel.SetSizer(sizer)
         self.panel.SetSize(sizer.GetMinSize())
         wx.EVT_BUTTON(self.panel, edit_btn_id, self.edit_menus)
 
@@ -486,7 +485,7 @@ class MenuProperty(Property):
         dialog.Destroy()
 
     def write(self, outfile, tabs):
-        inner_xml = StringIO.StringIO()
+        inner_xml = compat.StringIO()
         for menu in self.owner[self.name][0]():
             menu.write(inner_xml, tabs + 1)
         stmt = common.format_xml_tag( u'menus', inner_xml.getvalue(), tabs, is_xml=True )
@@ -610,7 +609,7 @@ class EditMenuBar(EditBase, PreviewMixin, ExecAfterMixin):
             sizer.Add(self.name_prop.panel, 0, wx.EXPAND)
             sizer.Add(self.klass_prop.panel, 0, wx.EXPAND)
             page.SetAutoLayout(1)
-            compat.SizerItem_SetSizer(page, sizer)
+            page.SetSizer(sizer)
         sizer.Add(self.properties['menus'].panel, 0, wx.ALL|wx.EXPAND, 3)
         sizer.Fit(page)
         page.SetSize(self.notebook.GetClientSize())

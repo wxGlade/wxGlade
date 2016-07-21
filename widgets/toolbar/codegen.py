@@ -9,7 +9,7 @@ Code generator functions for wxToolBar objects
 import common
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
-from tool import *
+from .tool import *
 
 
 class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):

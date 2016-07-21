@@ -64,7 +64,7 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['attribute'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         self.notebook.AddPage(panel, _('Widget'))
 
@@ -84,8 +84,7 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(value.replace('\\n', '\n'))
                 if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos,
-                                        size=self.widget.GetBestSize())
+                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def get_url(self):
         return self.url

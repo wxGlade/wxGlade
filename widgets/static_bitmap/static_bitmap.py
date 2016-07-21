@@ -70,7 +70,7 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
         szr.Add(self.properties['attribute'].panel, 0, wx.EXPAND)
         szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, "Widget")

@@ -12,7 +12,7 @@ import wx.grid
 import re
 
 import common
-import config
+import config, compat
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import GridProperty
 
@@ -41,7 +41,7 @@ class EventsProperty(GridProperty):
         self.grid.SetColAttr(0, attr)
         self.grid.AutoSizeColumn(0, False)
         self.grid.AutoSizeColumn(1, False)
-        wx.grid.EVT_GRID_CELL_CHANGE(self.grid, self.on_change_val)
+        self.grid.Bind( compat.EVT_GRID_CELL_CHANGE, self.on_change_val )
         szr = self.panel.GetSizer()
         szr.Show(self.btn_sizer, False)
         szr.Layout()
@@ -129,7 +129,7 @@ class EventsMixin(object):
     def __init__(self):
         self.handlers = {}
         try:
-            self.events = config.widget_config[self.klass]['events'].keys()
+            self.events = list( config.widget_config[self.klass]['events'].keys() )
             if 'default' in self.events:
                 self.events.remove('default')
             self.events.sort()
