@@ -8,7 +8,7 @@ Spacers to use in sizers
 
 import wx
 import common, misc
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 from edit_windows import ManagedBase
 
@@ -133,8 +133,8 @@ def builder(parent, sizer, pos):
         return
 
     name = 'spacer'
-    spacer = EditSpacer(name, parent, wx.NewId(), width, height, sizer, pos, common.property_panel)
-    node = Tree.Node(spacer)
+    spacer = EditSpacer( name, parent, wx.NewId(), width, height, sizer, pos, common.property_panel )
+    node = Node(spacer)
     spacer.node = node
     spacer.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
@@ -147,7 +147,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos, common.property_panel, True)
     sizer.set_item(spacer.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(spacer)
+    node = Node(spacer)
     spacer.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

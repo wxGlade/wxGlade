@@ -17,7 +17,7 @@ import config
 import math
 import misc
 import os
-from tree import Tree
+from tree import Tree, Node
 from .tool import *
 from widget_properties import *
 from edit_windows import EditBase, PreviewMixin, EditStylesMixin
@@ -777,7 +777,7 @@ def builder(parent, sizer, pos, number=[0]):
         name = 'toolbar_%d' % number[0]
 
     tb = EditToolBar(name, klass, parent, common.property_panel)
-    tb.node = Tree.Node(tb)
+    tb.node = Node(tb)
     common.app_tree.add(tb.node)
     tb.show_widget(True)
     tb.show_properties()
@@ -793,7 +793,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         return parent.toolbar
     else:
         tb = EditToolBar(name, attrs.get('class', 'wxMenuBar'), None, common.property_panel)
-        tb.node = Tree.Node(tb)
+        tb.node = Node(tb)
         common.app_tree.add(tb.node)
         return tb
 

@@ -10,7 +10,7 @@ import wx
 import common
 import compat
 import misc
-from tree import Tree
+from tree import Tree, Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import *
 from edit_windows import ManagedBase
@@ -183,7 +183,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'window_%d' % number[0]
     win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos, common.property_panel)
-    node = Tree.Node(win)
+    node = Node(win)
     win.node = node
 
     win.set_option(1)
@@ -205,7 +205,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos, common.property_panel, True)
     sizer.set_item(win.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(win)
+    node = Node(win)
     win.node = node
     if pos is None: common.app_tree.add(node, sizer.node)
     else: common.app_tree.insert(node, sizer.node, pos-1)

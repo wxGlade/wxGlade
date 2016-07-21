@@ -11,7 +11,7 @@ import common
 import compat
 import wcodegen
 import misc
-from tree import Tree
+from tree import Tree, Node, SlotNode
 from widget_properties import *
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
@@ -244,7 +244,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.tabs[pos - 1][1] = window
         else:
             window._dont_destroy = True
-            node = Tree.Node(window)
+            node = Node(window)
             window.node = node
             common.app_tree.add(node, self.node)
         if self.widget:
@@ -373,7 +373,7 @@ def builder(parent, sizer, pos, number=[1]):
     if _has_panel:
         pane1 = EditPanel(widget.next_pane_name(), widget, wx.ID_ANY, widget.virtual_sizer, 1, common.property_panel)
 
-    node = Tree.Node(widget)
+    node = Node(widget)
     widget.node = node
     widget.virtual_sizer.node = node
 
@@ -398,7 +398,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos, common.property_panel)
     sizer.set_item(widget.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(widget)
+    node = Node(widget)
     widget.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

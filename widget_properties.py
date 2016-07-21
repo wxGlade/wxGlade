@@ -79,6 +79,14 @@ class Property(object):
                 self.owner[self.name][1](val)
             self.val = self.get_value()
         event.Skip()
+        
+    def retrieve_value(self):
+        "get current value from object"
+        if self.getter:
+            value = self.getter()
+        else:
+            value = self.owner[self.name][0]()
+        return value
 
     def write(self, outfile, tabs=0):
         """\
@@ -89,10 +97,7 @@ class Property(object):
         @param tabs: Indention level, Each level are four spaces
         @type tabs:  int
         """
-        if self.getter:
-            value = self.getter()
-        else:
-            value = self.owner[self.name][0]()
+        value = self.retrieve_value()
         if not misc.streq(value, ''):
             stmt = common.format_xml_tag(self.name, value, tabs)
             outfile.write(stmt)

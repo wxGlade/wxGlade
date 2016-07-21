@@ -12,7 +12,7 @@ import common
 import compat
 import misc
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 from .button_stockitems import *
 
@@ -125,7 +125,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = u'button_%d' % number[0]
     button = EditButton(name, parent, wx.NewId(), name, sizer, pos, common.property_panel)
-    node = Tree.Node(button)
+    node = Node(button)
     button.node = node
     button.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos - 1)
@@ -142,7 +142,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     button = EditButton(label, parent, wx.NewId(), '', sizer, pos, common.property_panel, show=False)
     sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(button)
+    node = Node(button)
     button.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

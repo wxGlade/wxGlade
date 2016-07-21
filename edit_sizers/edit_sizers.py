@@ -19,7 +19,7 @@ from gui_mixins import ExecAfterMixin
 from layout_option_property import LayoutOptionProperty, LayoutPosProperty
 from widget_properties import *
 from edit_windows import EditStylesMixin
-from tree import Tree, WidgetTree
+from tree import Tree, WidgetTree, Node, SlotNode
 import clipboard
 import common
 import compat
@@ -1215,10 +1215,10 @@ class SizerBase(Sizer):
                 size = elem.GetSize()
             item = elem.GetWindow()
             w, h = size
-            if w == -1:
-                w = item.GetBestSize()[0]
-            if h == -1:
-                h = item.GetBestSize()[1]
+            if w==-1 or h==-1:
+                best_size = item.GetBestSize()
+            if w == -1: w = best_size[0]
+            if h == -1: h = best_size[1]
             self.widget.SetItemMinSize(item, w, h)
 
         if force_layout:
@@ -1499,14 +1499,13 @@ class SizerBase(Sizer):
 
 class wxGladeBoxSizer(wx.BoxSizer):
     def SetItemMinSize(self, item, w, h):
-        try:
-            w2, h2 = item.GetBestSize()
-            if w == -1:
-                w = w2
-            if h == -1:
-                h = h2
-        except AttributeError:
-            pass
+        if w==-1 or h==-1:
+            try:
+                w2, h2 = item.GetBestSize()
+                if w == -1: w = w2
+                if h == -1: h = h2
+            except AttributeError:
+                pass
         wx.BoxSizer.SetItemMinSize(self, item, w, h)
 
 
@@ -1594,14 +1593,13 @@ class EditBoxSizer(SizerBase):
 
 class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
     def SetItemMinSize(self, item, w, h):
-        try:
-            w2, h2 = item.GetBestSize()
-            if w == -1:
-                w = w2
-            if h == -1:
-                h = h2
-        except AttributeError:
-            pass
+        if w==-1 or h==-1:
+            try:
+                w2, h2 = item.GetBestSize()
+                if w == -1: w = w2
+                if h == -1: h = h2
+            except AttributeError:
+                pass
         wx.StaticBoxSizer.SetItemMinSize(self, item, w, h)
 
 
@@ -2234,82 +2232,76 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=Fal
 
     if sizer is not None:
         sizer.add_item(sz, pos, 1, wx.EXPAND)
-        node = Tree.Node(sz)
+        node = Node(sz)
         sz.node = node
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
         common.adding_sizer = False
     else:
         parent.set_sizer(sz)
-        node = Tree.Node(sz)
+        node = Node(sz)
         sz.node = node
         if pos is None:
             common.app_tree.add(node, parent.node)
         else:
-            common.app_tree.insert(node, parent.node, pos - 1)
+            common.app_tree.insert(node, parent.node, pos-1)
             sz.pos = pos
 
     sz.show_widget(show)
     if sizer is not None:
         sz.sizer_properties['flag'].set_value('wxEXPAND')
-        sz.sizer_properties['pos'].set_value(pos - 1)
+        sz.sizer_properties['pos'].set_value(pos-1)
+
+
+class _SizerDialog(wx.Dialog):
+    def __init__(self, parent):
+        wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type') )
+        self.orientation = wx.RadioBox( self, -1, _('Orientation'), choices=[_('Horizontal'), _('Vertical')] )
+        self.orientation.SetSelection(0)
+        tmp = wx.BoxSizer(wx.HORIZONTAL)
+        tmp.Add( wx.StaticText(self, -1, _('Slots: ')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3 )
+        self.num = wx.SpinCtrl(self, -1)
+        self.num.SetRange(1, 100)
+        self.num.SetValue(1)
+        tmp.Add(self.num, 1, wx.ALL, 3)
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(self.orientation, 0, wx.ALL | wx.EXPAND, 4)
+        szr.Add(tmp, 0, wx.EXPAND)
+        CHECK_ID = wx.NewId()
+        self.check = wx.CheckBox(self, CHECK_ID, _('Has a Static Box'))
+        self.label = wx.TextCtrl(self, -1, "")
+        self.label.Enable(False)
+        wx.EVT_CHECKBOX(self, CHECK_ID, self.on_check_statbox)
+        szr.Add(self.check, 0, wx.ALL | wx.EXPAND, 4)
+        tmp = wx.BoxSizer(wx.HORIZONTAL)
+        tmp.Add(wx.StaticText(self, -1, _("Label: ")), 0, wx.ALIGN_CENTER)
+        tmp.Add(self.label, 1)
+        szr.Add(tmp, 0, wx.ALL | wx.EXPAND, 4)
+
+        btn = wx.Button(self, wx.ID_OK, _('OK'))
+        btn.SetDefault()
+        szr.Add(btn, 0, wx.ALL | wx.ALIGN_CENTER, 10)
+        self.SetAutoLayout(1)
+        self.SetSizer(szr)
+        szr.Fit(self)
+        self.Layout()
+        self.CenterOnScreen()
+
+    def reset(self):
+        self.orientation.SetSelection(0)
+        self.num.SetValue(1)
+        self.check.SetValue(0)
+        self.label.SetValue("")
+        self.label.Enable(False)
+
+    def on_check_statbox(self, event):
+        self.label.Enable(event.IsChecked())
+
 
 
 def builder(parent, sizer, pos, number=[1], show=True):
-    """\
-    factory function for box sizers.
-    """
+    "factory function for box sizers"
 
-    class SizerDialog(wx.Dialog):
-        def __init__(self, parent):
-            wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1,
-                               _('Select sizer type'))
-            self.orientation = wx.RadioBox(self, -1, _('Orientation'),
-                                           choices=[_('Horizontal'),
-                                                    _('Vertical')])
-            self.orientation.SetSelection(0)
-            tmp = wx.BoxSizer(wx.HORIZONTAL)
-            tmp.Add(wx.StaticText(self, -1, _('Slots: ')), 0,
-                    wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3)
-            self.num = wx.SpinCtrl(self, -1)
-            self.num.SetRange(1, 100)
-            self.num.SetValue(1)
-            tmp.Add(self.num, 1, wx.ALL, 3)
-            szr = wx.BoxSizer(wx.VERTICAL)
-            szr.Add(self.orientation, 0, wx.ALL | wx.EXPAND, 4)
-            szr.Add(tmp, 0, wx.EXPAND)
-            CHECK_ID = wx.NewId()
-            self.check = wx.CheckBox(self, CHECK_ID, _('Has a Static Box'))
-            self.label = wx.TextCtrl(self, -1, "")
-            self.label.Enable(False)
-            wx.EVT_CHECKBOX(self, CHECK_ID, self.on_check_statbox)
-            szr.Add(self.check, 0, wx.ALL | wx.EXPAND, 4)
-            tmp = wx.BoxSizer(wx.HORIZONTAL)
-            tmp.Add(wx.StaticText(self, -1, _("Label: ")), 0, wx.ALIGN_CENTER)
-            tmp.Add(self.label, 1)
-            szr.Add(tmp, 0, wx.ALL | wx.EXPAND, 4)
-
-            btn = wx.Button(self, wx.ID_OK, _('OK'))
-            btn.SetDefault()
-            szr.Add(btn, 0, wx.ALL | wx.ALIGN_CENTER, 10)
-            self.SetAutoLayout(1)
-            self.SetSizer(szr)
-            szr.Fit(self)
-            self.Layout()
-            self.CenterOnScreen()
-
-        def reset(self):
-            self.orientation.SetSelection(0)
-            self.num.SetValue(1)
-            self.check.SetValue(0)
-            self.label.SetValue("")
-            self.label.Enable(False)
-
-        def on_check_statbox(self, event):
-            self.label.Enable(event.IsChecked())
-
-    # end of class SizerDialog
-
-    dialog = SizerDialog(parent)
+    dialog = _SizerDialog(parent)
     dialog.ShowModal()
     if dialog.orientation.GetStringSelection() == _('Horizontal'):
         orientation = wx.HORIZONTAL
@@ -2342,8 +2334,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is not None:
         if sizeritem is None:
             raise XmlParsingError( _("'sizeritem' object not found") )
-        sizer.add_item(sz, pos=pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-        node = Tree.Node(sz)
+        sizer.add_item( sz, pos=pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border )
+        node = Node(sz)
         sz.node = node
         if pos is None:
             common.app_tree.add(node, sizer.node)
@@ -2351,76 +2343,58 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
             common.app_tree.insert(node, sizer.node, pos-1)
     else:
         parent.set_sizer(sz)
-        node = Tree.Node(sz)
+        node = Node(sz)
         sz.node = node
         common.app_tree.add(node, parent.node)
     return sz
 
 
+class _GridBuilderDialog(wx.Dialog):
+    def __init__(self, parent):
+        wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer attributes') )
+        self.rows = SpinProperty(self, 'rows', self, label=_("rows"))
+        self.cols = SpinProperty(self, 'cols', self, label=_("cols"))
+        self.vgap = SpinProperty(self, 'vgap', self, label=_("vgap"))
+        self.hgap = SpinProperty(self, 'hgap', self, label=_("hgap"))
+        self.rows.set_tooltip(_('Numbers of sizer rows'))
+        self.cols.set_tooltip(_('Numbers of sizer columns'))
+        self.vgap.set_tooltip(_('Vertical extra space between all children'))
+        self.hgap.set_tooltip(_('Horizontal extra space between all children'))
+        self.rows.spin.SetFocus()
+        self.rows.spin.SetSelection(-1, -1)
+
+        self.flex = CheckBoxProperty( self, 'flex', self, _('Flexible'), write_always=True )
+        self.flex.set_tooltip(_('Create a wxFlexGridSizer instead of a wxGridSizer'))
+
+        self.rows.set_value(3)
+        self.cols.set_value(3)
+        self.vgap.set_value(0)
+        self.hgap.set_value(0)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.rows.panel, 0, wx.LEFT | wx.RIGHT | wx.TOP | wx.EXPAND, 10)
+        sizer.Add(self.cols.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
+        sizer.Add(self.vgap.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
+        sizer.Add(self.hgap.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
+        sizer.Add(self.flex.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
+        szr = wx.BoxSizer(wx.HORIZONTAL)
+        btn = wx.Button(self, wx.ID_OK, _('OK'))
+        btn.SetDefault()
+        szr.Add(btn)
+        sizer.Add(szr, 0, wx.ALL | wx.ALIGN_CENTER, 10)
+        self.SetAutoLayout(True)
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+        self.Layout()
+        self.CentreOnParent()
+
+    def __getitem__(self, name):
+        return lambda: 0, lambda v: None
+
+
 def grid_builder(parent, sizer, pos, number=[1], show=True):
-    """\
-    factory function for grid sizers
-    """
-
-    class Dialog(wx.Dialog):
-        def __init__(self, parent):
-            wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1,
-                               _('Select sizer attributes'))
-            self.rows = SpinProperty(self, 'rows', self, label=_("rows"))
-            self.cols = SpinProperty(self, 'cols', self, label=_("cols"))
-            self.vgap = SpinProperty(self, 'vgap', self, label=_("vgap"))
-            self.hgap = SpinProperty(self, 'hgap', self, label=_("hgap"))
-            self.rows.set_tooltip(_('Numbers of sizer rows'))
-            self.cols.set_tooltip(_('Numbers of sizer columns'))
-            self.vgap.set_tooltip(
-                    _('Vertical extra space between all children')
-            )
-            self.hgap.set_tooltip(
-                    _('Horizontal extra space between all children')
-            )
-            self.rows.spin.SetFocus()
-            self.rows.spin.SetSelection(-1, -1)
-
-            self.flex = CheckBoxProperty(
-                    self,
-                    'flex',
-                    self,
-                    _('Flexible'),
-                    write_always=True,
-            )
-            self.flex.set_tooltip(
-                    _('Create a wxFlexGridSizer instead of a wxGridSizer')
-            )
-
-            self.rows.set_value(3)
-            self.cols.set_value(3)
-            self.vgap.set_value(0)
-            self.hgap.set_value(0)
-
-            sizer = wx.BoxSizer(wx.VERTICAL)
-            sizer.Add(self.rows.panel, 0,
-                      wx.LEFT | wx.RIGHT | wx.TOP | wx.EXPAND, 10)
-            sizer.Add(self.cols.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-            sizer.Add(self.vgap.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-            sizer.Add(self.hgap.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-            sizer.Add(self.flex.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-            szr = wx.BoxSizer(wx.HORIZONTAL)
-            btn = wx.Button(self, wx.ID_OK, _('OK'))
-            btn.SetDefault()
-            szr.Add(btn)
-            sizer.Add(szr, 0, wx.ALL | wx.ALIGN_CENTER, 10)
-            self.SetAutoLayout(True)
-            self.SetSizer(sizer)
-            sizer.Fit(self)
-            self.Layout()
-            self.CentreOnParent()
-
-        def __getitem__(self, name):
-            return lambda: 0, lambda v: None
-
-    # end of inner class
-
-    dialog = Dialog(parent)
+    "factory function for grid sizers"
+    dialog = _GridBuilderDialog(parent)
     dialog.ShowModal()
     rows = int(dialog.rows.get_value())
     cols = int(dialog.cols.get_value())
@@ -2443,18 +2417,18 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
     sz = constructor(name, parent, rows, cols, vgap, hgap, is_toplevel)
     if sizer is not None:
         sizer.add_item(sz, pos, 1, wx.EXPAND)
-        node = Tree.Node(sz)
+        node = Node(sz)
         sz.node = node
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
         common.adding_sizer = False
     else:
         parent.set_sizer(sz)
-        node = Tree.Node(sz)
+        node = Node(sz)
         sz.node = node
         if pos is None:
             common.app_tree.add(node, parent.node)
         else:
-            common.app_tree.insert(node, parent.node, pos - 1)
+            common.app_tree.insert(node, parent.node, pos-1)
             sz.pos = pos
 
     sz.show_widget(show)  # True)
@@ -2480,7 +2454,7 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         if sizeritem is None:
             raise XmlParsingError(_("'sizeritem' object not found"))
         sizer.add_item(sz, pos=pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-        node = Tree.Node(sz)
+        node = Node(sz)
         sz.node = node
         if pos is None:
             common.app_tree.add(node, sizer.node)
@@ -2489,7 +2463,7 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     else:
         sz = constructor(name, parent, rows=0, cols=0, toplevel=True)
         parent.set_sizer(sz)
-        node = Tree.Node(sz)
+        node = Node(sz)
         sz.node = node
         common.app_tree.add(node, parent.node)
     return sz

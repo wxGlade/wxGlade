@@ -14,7 +14,7 @@ import common
 import compat
 import config
 import misc
-from tree import Tree
+from tree import Tree, Node, Node
 from widget_properties import *
 from edit_windows import TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
@@ -134,7 +134,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         if value:
             from menubar import EditMenuBar
             self.menubar = EditMenuBar(self.name + '_menubar', 'wxMenuBar', self, common.property_panel)
-            self.menubar.node = Tree.Node(self.menubar)
+            self.menubar.node = Node(self.menubar)
             common.app_tree.add(self.menubar.node, self.node)
 
             if self.widget:
@@ -168,7 +168,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         if value:
             from toolbar import EditToolBar
             self.toolbar = EditToolBar(self.name + '_toolbar', 'wxToolBar', self, common.property_panel)
-            self.toolbar.node = Tree.Node(self.toolbar)
+            self.toolbar.node = Node(self.toolbar)
             common.app_tree.add(self.toolbar.node, self.node)
 
             if self.widget:
@@ -292,7 +292,7 @@ def builder(parent, sizer, pos, number=[0]):
     else:
         base_class = EditMDIChildFrame
     frame = base_class(label, parent, wx.NewId(), label, common.property_panel, klass=klass)
-    node = Tree.Node(frame)
+    node = Node(frame)
     frame.node = node
     common.app_tree.add(node)
     frame.show_widget(True)
@@ -316,7 +316,7 @@ def _make_builder(base_class):
         except KeyError:
             raise XmlParsingError(_("'name' attribute missing"))
         frame = base_class(label, parent, wx.NewId(), "", common.property_panel, show=False, style=0)
-        node = Tree.Node(frame)
+        node = Node(frame)
         frame.node = node
         common.app_tree.add(node)
         return frame

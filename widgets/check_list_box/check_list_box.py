@@ -12,7 +12,7 @@ import common
 import compat
 import misc
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 from ChoicesProperty import *
 
@@ -103,7 +103,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'check_list_box_%d' % number[0]
     check_list_box = EditCheckListBox(name, parent, wx.NewId(), [u'choice 1'], sizer, pos, common.property_panel)
-    node = Tree.Node(check_list_box)
+    node = Node(check_list_box)
 ##     sizer.set_item(pos, size=check_list_box.GetBestSize())
     check_list_box.node = node
     check_list_box.show_widget(True)
@@ -121,7 +121,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     check_list_box = EditCheckListBox(name, parent, wx.NewId(), [], sizer, pos, common.property_panel)
     sizer.set_item(check_list_box.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
-    node = Tree.Node(check_list_box)
+    node = Node(check_list_box)
     check_list_box.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)

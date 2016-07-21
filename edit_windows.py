@@ -321,9 +321,7 @@ class EditBase(EventsMixin, ExecAfterMixin):
             widget.preview(None)
 
     def show_properties(self, *args):
-        """\
-        Updates property_window to display the properties of self
-        """
+        "Updates property_window to display the properties of self"
         if self.klass == 'wxPanel':  # am I a wxPanel under a wxNotebook?
             if self.parent and self.parent.klass == 'wxNotebook':
                 nb = self.parent
@@ -405,19 +403,11 @@ class EditBase(EventsMixin, ExecAfterMixin):
         return EventsMixin.get_property_handler(self, prop_name)
 
     def clipboard_copy(self, event=None):
-        """\
-        Store a widget copy into the clipboard
-
-        @see: L{clipboard.copy()}
-        """
+        "Store a widget copy into the clipboard;  @see: L{clipboard.copy()}"
         clipboard.copy(self)
 
     def clipboard_cut(self, event=None):
-        """\
-        Store a copy of self into the clipboard and delete the widget.
-
-        @see: L{clipboard.cut()}
-        """
+        "Store a copy of self into the clipboard and delete the widget;  @see: L{clipboard.cut()}"
         clipboard.cut(self)
 
     def is_visible(self):
@@ -819,7 +809,6 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
                 self.widget.SetMinSize(size)
                 self.widget.SetSize(size)
                 try:
-                    #self.sizer.set_item(self.pos, size=self.widget.GetSize())
                     self.sizer.set_item(self.pos, size=size)
                 except AttributeError:
                     pass
