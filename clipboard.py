@@ -67,6 +67,16 @@ def clipboard2widget(clipboard_data):
     return option, flag, border, xml_unicode
 
 
+def get_copy(widget):
+    xml_unicode = compat.StringIO()
+    widget.node.write(xml_unicode, 0)
+    flag = widget.esm_border.get_string_style()
+    option = widget.get_option()
+    border = widget.get_border()
+    clipboard_data = widget2clipboard( option, flag, border, xml_unicode.getvalue() )
+    return clipboard_data
+
+
 def copy(widget):
     """\
     Store a widget copy into the clipboard
@@ -78,13 +88,7 @@ def copy(widget):
     """
     if wx.TheClipboard.Open():
         try:
-            xml_unicode = compat.StringIO()
-            widget.node.write(xml_unicode, 0)
-            flag = widget.esm_border.get_string_style()
-            option = widget.get_option()
-            border = widget.get_border()
-            clipboard_data = widget2clipboard(
-                option, flag, border, xml_unicode.getvalue())
+            clipboard_data = get_copy(widget)
             wdo = wx.CustomDataObject(widget_data_format)
             wdo.SetData(clipboard_data)
             if not wx.TheClipboard.SetData(wdo):
@@ -115,7 +119,7 @@ def cut(widget):
         return False
 
 
-def paste(parent, sizer, pos):
+def paste(parent, sizer, pos, clipboard_data=None):
     """\
     Copies a widget (and all its children) from the clipboard to the given
     destination (parent, sizer and position inside the sizer).
@@ -131,28 +135,26 @@ def paste(parent, sizer, pos):
     @return: True on success
     @rtype: bool
     """
-    if wx.TheClipboard.Open():
-        try:
-            if wx.TheClipboard.IsSupported(widget_data_format):
-                data_object = wx.CustomDataObject(widget_data_format)
-                if not wx.TheClipboard.GetData(data_object):
-                    logging.debug(_("Data can't be copied from clipboard."))
+    if clipboard_data is None:
+        if wx.TheClipboard.Open():
+            try:
+                if wx.TheClipboard.IsSupported(widget_data_format):
+                    data_object = wx.CustomDataObject(widget_data_format)
+                    if not wx.TheClipboard.GetData(data_object):
+                        logging.debug(_("Data can't be copied from clipboard."))
+                        return False
+                else:
+                    wx.MessageBox( _("The clipboard doesn't contain wxGlade widget data."),
+                                   _("Information"), wx.OK | wx.CENTRE | wx.ICON_INFORMATION )
                     return False
-            else:
-                wx.MessageBox(
-                    _("The clipboard doesn't contain wxGlade widget data."),
-                    _("Information"),
-                    wx.OK | wx.CENTRE | wx.ICON_INFORMATION,
-                    )
-                return False
-        finally:
-            wx.TheClipboard.Close()
-    else:
-        logging.info(_("Clipboard can't be opened."))
-        return False
+            finally:
+                wx.TheClipboard.Close()
+        else:
+            logging.info(_("Clipboard can't be opened."))
+            return False
+        clipboard_data = data_object.GetData()
 
-    option, flag, border, xml_unicode = clipboard2widget(
-        data_object.GetData())
+    option, flag, border, xml_unicode = clipboard2widget( clipboard_data )
     if xml_unicode:
         import xml_parse
         try:
