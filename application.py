@@ -431,11 +431,7 @@ class Application(object):
         self.output_path = new_name
 
     def get_language(self):
-        """\
-        Return the selected code writer language
-
-        @rtype: str
-        """
+        "Return the selected code writer language as string"
         return self.language
 
     def _get_saved(self):
@@ -676,7 +672,13 @@ class Application(object):
                                _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
                 return None
 
-            preview_class = getattr(preview_module, widget.klass)
+            try:
+                preview_class = getattr(preview_module, widget.klass)
+            except AttributeError:
+                # module loade previously -> do a re-load XXX this is required for Python 3; check alternatives
+                import importlib
+                preview_module = importlib.reload(preview_module)
+                preview_class = getattr(preview_module, widget.klass)
 
             if not preview_class:
                 wx.MessageBox( _('No preview class "%s" found.\nThe details are written to the log file.\n'
