@@ -8,7 +8,7 @@ wxSpinCtrl objects
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
+from tree import Tree, Node
 import common
 import compat
 import config
