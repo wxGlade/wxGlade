@@ -21,7 +21,6 @@ import common
 import compat
 import config
 import decorators
-from gui_mixins import ExecAfterMixin
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 # event handling support
@@ -53,10 +52,9 @@ class FontHandler(BaseXmlBuilderTagHandler):
         char_data = self.get_char_data()
         self.props[self.index] = char_data
 
-# end of class FontHandler
 
 
-class EditBase(EventsMixin, ExecAfterMixin):
+class EditBase(EventsMixin):
     """\
     Base class of every window available in the builder.
 
@@ -297,10 +295,10 @@ class EditBase(EventsMixin, ExecAfterMixin):
         PREVIEW_ID = wx.NewId()
         misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
 
-        wx.EVT_MENU(self.widget, REMOVE_ID, self.exec_after(self.remove))
-        wx.EVT_MENU(self.widget, COPY_ID, self.exec_after(self.clipboard_copy))
-        wx.EVT_MENU(self.widget, CUT_ID, self.exec_after(self.clipboard_cut))
-        wx.EVT_MENU(self.widget, PREVIEW_ID, self.exec_after(self.preview_parent))
+        wx.EVT_MENU(self.widget, REMOVE_ID, misc.exec_after(self.remove))
+        wx.EVT_MENU(self.widget, COPY_ID, misc.exec_after(self.clipboard_copy))
+        wx.EVT_MENU(self.widget, CUT_ID, misc.exec_after(self.clipboard_cut))
+        wx.EVT_MENU(self.widget, PREVIEW_ID, misc.exec_after(self.preview_parent))
 
     def remove(self, *args):
         self._dont_destroy = False  # always destroy when explicitly asked
@@ -845,7 +843,6 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
         try: self.hidden_p = bool(int(value))
         except ValueError: pass
 
-# end of class WindowBase
 
 
 class ManagedBase(WindowBase):
@@ -1070,7 +1067,6 @@ class ManagedBase(WindowBase):
         self.sizer_properties['pos'].set_value(value-1)
         self.pos = value
 
-# end of class ManagedBase
 
 
 class PreviewMixin(object):
@@ -1117,17 +1113,12 @@ class PreviewMixin(object):
             self.preview_widget.Close()
 
     def preview_is_visible(self):
-        """\
-        True if the L{preview_button} is created
-
-        @rtype: bool
-        """
+        "True if the L{preview_button} is created"
         return self.preview_widget is not None
 
-# end of class PreviewMixin
 
 
-class TopLevelBase(WindowBase, PreviewMixin, ExecAfterMixin):
+class TopLevelBase(WindowBase, PreviewMixin):
     "Base class for every non-managed window (i.e. Frames and Dialogs)"
     _is_toplevel = True
     _custom_base_classes = True
@@ -1176,17 +1167,17 @@ class TopLevelBase(WindowBase, PreviewMixin, ExecAfterMixin):
         misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'), wx.ART_DELETE)
         misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
 
-        wx.EVT_MENU(self.widget, REMOVE_ID, self.exec_after(self.remove))
-        wx.EVT_MENU(self.widget, HIDE_ID, self.exec_after(self.hide_widget))
+        wx.EVT_MENU(self.widget, REMOVE_ID, misc.exec_after(self.remove))
+        wx.EVT_MENU(self.widget, HIDE_ID, misc.exec_after(self.hide_widget))
 
         PASTE_ID = wx.NewId()
         misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'), wx.ART_PASTE)
-        wx.EVT_MENU(self.widget, PASTE_ID, self.exec_after(self.clipboard_paste))
+        wx.EVT_MENU(self.widget, PASTE_ID, misc.exec_after(self.clipboard_paste))
 
         PREVIEW_ID = wx.NewId()
         self._rmenu.AppendSeparator()
         misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
-        wx.EVT_MENU(self.widget, PREVIEW_ID, self.exec_after(self.preview_parent))
+        wx.EVT_MENU(self.widget, PREVIEW_ID, misc.exec_after(self.preview_parent))
 
     def clipboard_paste(self, event=None):
         "Insert a widget from the clipboard to the current destination"
@@ -1270,7 +1261,6 @@ class TopLevelBase(WindowBase, PreviewMixin, ExecAfterMixin):
             self.preview_widget = None
         WindowBase.delete(self)
 
-# end of class TopLevelBase
 
 
 class EditStylesMixin(object):
@@ -1522,4 +1512,3 @@ class EditStylesMixin(object):
         attr = getattr(wx, cn)
         return attr
 
-# end of class EditStylesMixin
