@@ -365,15 +365,7 @@ def is_valid_zip(filename, module_name):
 
 
 def _get_zipfile_filelist(filename):
-    """\
-    Return the file list of a zip file. The list will be empty if an error
-    occurred.
-
-    @param filename: ZIP file name
-    @type filename:  str
-
-    @rtype: list
-    """
+    """Return the file list of a zip file. The list will be empty if an error occurred. """
     zfile = None
     namelist = []
     try:
