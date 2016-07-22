@@ -12,7 +12,6 @@ import common
 import compat
 import config
 import misc
-from gui_mixins import ExecAfterMixin
 from MenuTree import *
 from tree import Tree, Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
@@ -560,7 +559,7 @@ class MenuHandler(BaseXmlBuilderTagHandler):
 # end of class MenuHandler
 
 
-class EditMenuBar(EditBase, PreviewMixin, ExecAfterMixin):
+class EditMenuBar(EditBase, PreviewMixin):
     __hidden_frame = None  # used on GTK to reparent a menubar before deletion
 
     def __init__(self, name, klass, parent, property_window):
@@ -693,8 +692,8 @@ class EditMenuBar(EditBase, PreviewMixin, ExecAfterMixin):
                          wx.ART_DELETE)
         misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
 
-        wx.EVT_MENU(self.widget, REMOVE_ID, self.exec_after(self.remove))
-        wx.EVT_MENU(self.widget, HIDE_ID, self.exec_after(self.hide_widget))
+        wx.EVT_MENU(self.widget, REMOVE_ID, misc.exec_after(self.remove))
+        wx.EVT_MENU(self.widget, HIDE_ID, misc.exec_after(self.hide_widget))
 
     def hide_widget(self, *args):
         if self.widget and self.widget is not self._mb:
@@ -713,7 +712,6 @@ class EditMenuBar(EditBase, PreviewMixin, ExecAfterMixin):
             return MenuHandler(self)
         return None
 
-# end of class EditMenuBar
 
 
 def builder(parent, sizer, pos, number=[0]):

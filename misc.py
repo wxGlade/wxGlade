@@ -359,6 +359,11 @@ def append_item(menu, id, text, xpm_file_or_artid=None):
     menu.AppendItem(item)
 
 
+def exec_after(func, *args, **kwargs):
+    "Execute the function away from calling context forward to the event handling mechanism of wxWidgets."
+    return lambda e: wx.CallAfter(func, *args, **kwargs)
+
+
 def _remove():
     global focused_widget
     if focused_widget is not None:
