@@ -20,9 +20,7 @@ except:
 
 
 class StylesMixin(object):
-    """\
-    Class mixin to handle formatting and re-combining styles
-    """
+    "Class mixin to handle formatting and re-combining styles"
 
     def cn_f(self, flags):
         """\
@@ -249,7 +247,6 @@ class StylesMixin(object):
 
         return flags
 
-# end of class StylesMixin
 
 
 class BitmapMixin(object):
@@ -360,22 +357,3 @@ class BitmapMixin(object):
         except ValueError:
             self._logger.warn( 'Malformed statement to create an empty bitmap: %s', bitmap )
         return wx.EmptyBitmap(max(1, width), max(1, height))
-
-# end of class BitmapMixin
-
-
-class ExecAfterMixin(object):
-    """\
-    Class mixin to execute the function away from calling context forward to
-    the event handling mechanism of wxWidgets.
-    """
-
-    @staticmethod
-    def exec_after(func):
-        """\
-        Execute the function away from calling context forward to the event
-        handling mechanism of wxWidgets.
-        """
-        return lambda e: wx.CallAfter(func)
-
-# end of class ExecAfterMixin

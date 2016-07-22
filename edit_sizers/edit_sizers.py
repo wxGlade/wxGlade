@@ -15,7 +15,6 @@ import wx
 from wx.lib.buttons import GenButton
 
 # import project modules
-from gui_mixins import ExecAfterMixin
 from layout_option_property import LayoutOptionProperty, LayoutPosProperty
 from widget_properties import *
 from edit_windows import EditStylesMixin
@@ -178,7 +177,7 @@ class BaseSizerBuilder(object):
 # end of class BaseSizerBuilder
 
 
-class SizerSlot(ExecAfterMixin):
+class SizerSlot(object):
     """\
     A window to represent a slot in a sizer
 
@@ -220,7 +219,7 @@ class SizerSlot(ExecAfterMixin):
         self.widget.Bind(wx.EVT_SIZE, self.on_size)
         self.widget.Bind(wx.EVT_RIGHT_DOWN, self.on_popup_menu)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_drop_widget)
-        self.widget.Bind(wx.EVT_MIDDLE_DOWN, self.exec_after(self.on_select_and_paste))
+        self.widget.Bind(wx.EVT_MIDDLE_DOWN, misc.exec_after(self.on_select_and_paste))
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
         self.widget.Bind(wx.EVT_KEY_DOWN, self.on_key_down)
@@ -338,11 +337,11 @@ class SizerSlot(ExecAfterMixin):
         misc.append_item(self.menu, PREVIEW_ID, _('Preview'))
 
         wx.EVT_MENU(self.widget, REMOVE_ID,
-                    self.exec_after(self.remove))
+                    misc.exec_after(self.remove))
         wx.EVT_MENU(self.widget, PASTE_ID,
-                    self.exec_after(self.clipboard_paste))
+                    misc.exec_after(self.clipboard_paste))
         wx.EVT_MENU(self.widget, PREVIEW_ID,
-                    self.exec_after(self.preview_parent))
+                    misc.exec_after(self.preview_parent))
 
     def remove(self, *args):
         if not self.sizer.is_virtual():
@@ -350,8 +349,7 @@ class SizerSlot(ExecAfterMixin):
             self.delete()
 
     def on_drop_widget(self, event):
-        """\
-        replaces self with a widget in self.sizer. This method is called
+        """\replaces self with a widget in self.sizer. This method is called
         to add every non-toplevel widget or sizer, and in turn calls the
         appropriate builder function (found in the ``common.widgets'' dict)
         """
@@ -459,13 +457,8 @@ class SizerSlot(ExecAfterMixin):
 # end of class SizerSlot
 
 
-class SizerHandleButton(GenButton, ExecAfterMixin):
-    """\
-    Provides a "handle" to activate a Sizer and to access its popup menu
-
-    @ivar menu: Content popup menu as a list of tuples with label and function
-    @type menu: list[(str, func)]
-    """
+class SizerHandleButton(GenButton):
+    'Provides a "handle" to activate a Sizer and to access its popup menu'
 
     def __init__(self, parent, id, sizer, menu):
         GenButton.__init__(self, parent.widget, id, '', size=(5, 5))
@@ -516,18 +509,18 @@ class SizerHandleButton(GenButton, ExecAfterMixin):
 
         misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
                          wx.ART_DELETE)
-        wx.EVT_MENU(self, REMOVE_ID, self.exec_after(self._remove))
+        wx.EVT_MENU(self, REMOVE_ID, misc.exec_after(self._remove))
         for item in self.menu:
             id = wx.NewId()
             bmp = None
             if len(item) > 2:
                 bmp = item[2]
             misc.append_item(self._rmenu, id, item[0], bmp)
-            wx.EVT_MENU(self, id, self.exec_after(item[1]))
+            wx.EVT_MENU(self, id, misc.exec_after(item[1]))
         self._rmenu.AppendSeparator()
         PREVIEW_ID = wx.NewId()
         misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
-        wx.EVT_MENU(self, PREVIEW_ID, self.exec_after(self.preview_parent))
+        wx.EVT_MENU(self, PREVIEW_ID, misc.exec_after(self.preview_parent))
         self.sizer._rmenu = self._rmenu
         del self.menu
 
