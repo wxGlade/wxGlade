@@ -121,10 +121,7 @@ def init_codegen():
 
 
 def load_code_writers():
-    """\
-    Fills the common.code_writers dictionary: to do so, loads the modules
-    found in the 'codegen/' subdir
-    """
+    "Fills the common.code_writers dictionary: to do so, loads the modules found in the 'codegen/' subdir"
     logging.info('Load code generators:')
     codegen_path = os.path.join(config.wxglade_path, 'codegen')
     sys.path.insert(0, codegen_path)
@@ -154,11 +151,7 @@ def load_code_writers():
 
 
 def load_config():
-    """\
-    Load widget configuration.
-
-    @see: L{plugins.load_widgets_from_dir()}
-    """
+    "Load widget configuration;  @see: L{plugins.load_widgets_from_dir()}"
     # load the "built-in" widgets
     plugins.load_widgets_from_dir( config.widgets_path, 'wconfig' )
 
@@ -169,13 +162,8 @@ def load_config():
 
 
 def load_sizers():
-    """\
-    Load and initialise the sizer support modules.
-
-    @return: A list of BitmapButton objects to handle sizer buttons
-
-    @see: L{edit_sizers}
-    """
+    """Load and initialise the sizer support modules; returns list of BitmapButton objects to handle sizer buttons
+    @see: L{edit_sizers}"""
     logging.info('Load sizer generators:')
     for lang in code_writers.keys():
         module_name = 'edit_sizers.%s_sizers_codegen' % code_writers[lang].lang_prefix
@@ -511,7 +499,7 @@ def get_name_for_autosave(filename=None):
 
 
 def autosave_current():
-    "Save automatic backup copy for the current and un-saved design; returns 0: error; 1: no changes to save; 2: saved"
+    "Save automatic backup copy for the current and un-saved design;  returns 0: error; 1: no changes to save; 2: saved"
     if app_tree.app.saved:
         return 1            # do nothing in this case...
 
@@ -556,15 +544,10 @@ def check_autosaved(filename):
 
 
 def restore_from_autosaved(filename):
-    """\
-    Copy the content of an auto-saved file to the current file. The
-    auto-saved file will still remain as a kind of backup.
+    """Copy the content of an auto-saved file to the current file.
+    The auto-saved file will still remain as a kind of backup.
+    Returns True on success."""
 
-    @param filename: Original filename to restore to
-    @type filename:  str
-
-    @rtype: bool
-    """
     autosave_name = get_name_for_autosave(filename)
     if os.access(autosave_name, os.R_OK):
         try:
@@ -628,8 +611,7 @@ def _create_appdata_path():
 def _set_appdata_path():
     "Set the path of the application data directory"
     if 'WXGLADE_CONFIG_PATH' in os.environ:
-        config.appdata_path = os.path.expandvars(
-            os.environ['WXGLADE_CONFIG_PATH'])
+        config.appdata_path = os.path.expandvars( os.environ['WXGLADE_CONFIG_PATH'] )
         return
 
     if os.name == 'nt' and 'APPDATA' in os.environ:
@@ -666,8 +648,7 @@ def _set_home_path():
     "Set the path of the home directory"
     home_path = os.path.expanduser('~')
 
-    # to prevent unexpanded "%HOMEDRIVE%%HOMEPATH%" as reported
-    # in SF Bug #185
+    # to prevent unexpanded "%HOMEDRIVE%%HOMEPATH%" as reported in SF Bug #185
     home_path = os.path.expandvars(home_path)
 
     if home_path == '~':
@@ -704,8 +685,7 @@ def _get_install_method():
     @rtype: str
     """
     # on Windows or installation in a single directory
-    if os.name == 'nt' or \
-            os.path.isdir(os.path.join(config.wxglade_path, 'icons')):
+    if os.name == 'nt' or os.path.isdir(os.path.join(config.wxglade_path, 'icons')):
         return 'single_directory'
     else:
         return 'filesystem_installation'
@@ -832,12 +812,7 @@ def init_preferences():
 
 
 def save_preferences():
-    """\
-    Save current settings as well as the file history
-
-    @see: L{config.history_file}
-    @see: L{config.use_file_history}
-    """
+    "Save current settings as well as the file history;  @see: L{config.history_file} and L{config.use_file_history}"
     # let the exception be raised
     path = os.path.dirname(config.rc_file)
     if not os.path.isdir(path):
@@ -859,14 +834,7 @@ def save_preferences():
 
 
 def load_history():
-    """\
-    Loads the file history and returns a list of paths
-
-    @see: L{config.history_file}
-    @see: L{config.use_file_history}
-
-    @rtype: list[unicode]
-    """
+    "Loads the file history and returns a list of paths;  @see: L{config.history_file} and L{config.use_file_history}"
     try:
         infile = codecs.open(config.history_file, encoding='utf-8')
         lines = infile.readlines()
