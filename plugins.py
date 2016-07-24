@@ -275,7 +275,6 @@ def import_module(widget_dir, module_name):
                 logging.exception( _('Importing widget "%s" failed'), module_name )
             return None
         except:
-            if 'WINGDB_ACTIVE' in os.environ: raise
             logging.exception( _('Unexpected error during import of widget module %s'), module_name )
             return None
 
@@ -338,7 +337,15 @@ def is_valid_zip(filename, module_name):
 
 
 def _get_zipfile_filelist(filename):
-    """Return the file list of a zip file. The list will be empty if an error occurred. """
+    """\
+    Return the file list of a zip file. The list will be empty if an error
+    occurred.
+
+    @param filename: ZIP file name
+    @type filename:  str
+
+    @rtype: list
+    """
     zfile = None
     namelist = []
     try:

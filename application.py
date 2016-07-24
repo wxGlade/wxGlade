@@ -90,11 +90,7 @@ class FileDirDialog(object):
         return wx.ID_CANCEL
 
     def get_value(self):
-        """\
-        Return the dialog value returned during the last L{ShowModal()} call.
-
-        @see: L{value}
-        """
+        "Return the dialog value returned during the last L{ShowModal()} call;  @see: L{value}"
         return self.value
 
 # end of class FileDirDialog
@@ -380,12 +376,7 @@ class Application(object):
             self.encoding = value
 
     def set_language(self, value):
-        """\
-        Set code generator language and adapt corresponding settings like
-        file dialog wild cards.
-
-        @type value: str | int
-        """
+        "Set code generator language and adapt corresponding settings like file dialog wild cards (value: str or int)"
         assert isinstance(value, basestring) or isinstance(value, int)
 
         if isinstance(value, int):
@@ -723,7 +714,7 @@ class Application(object):
             frame.CenterOnScreen()
             frame.Show()
             # remove the temporary file (and the .pyc/.pyo ones too)
-            for ext in '', 'c', 'o', '~':
+            for ext in ('', 'c', 'o', '~'):
                 name = self.output_path + ext
                 if os.path.isfile(name):
                     os.unlink(name)
@@ -743,11 +734,8 @@ class Application(object):
         return frame
 
     def check_codegen(self, widget=None, language=None):
-        """\
-        Checks whether widget has a suitable code generator for the given
-        language (default: the current active language). If not, the user is
-        informed with a message.
-        """
+        """Checks whether widget has a suitable code generator for the given language 
+        (default: the current active language). If not, the user is informed with a message."""
         if language is None:
             language = self.language
         if widget is not None:
@@ -774,10 +762,7 @@ class Application(object):
                     check_rec(c)
 
     def _update_wildcards(self, dialog, language):
-        """\
-        Update wildcards and default extension in the generic file and
-        directory dialog (L{FileDirDialog}).
-        """
+        "Update wildcards and default extension in the generic file and directory dialog (L{FileDirDialog})."
         ext = getattr(common.code_writers[language], 'default_extensions', [])
         wildcards = []
         for e in ext:
