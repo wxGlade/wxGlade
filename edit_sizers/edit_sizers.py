@@ -78,11 +78,7 @@ class BaseSizerBuilder(object):
         self.codegen = common.code_writers[self.language]
 
     def _get_wparent(self, obj):
-        """\
-        Return the parent widget or a reference to it.
-
-        @rtype: str
-        """
+        "Return the parent widget or a reference to it as string"
         raise NotImplementedError
 
     def _get_code(self, obj):
@@ -116,14 +112,10 @@ class BaseSizerBuilder(object):
 
     def get_code(self, obj):
         "Generates the language specific code for sizer specified in L{klass}"
-        if self.klass == 'wxBoxSizer':
-            return self.get_code_wxBoxSizer(obj)
-        if self.klass == 'wxStaticBoxSizer':
-            return self.get_code_wxStaticBoxSizer(obj)
-        if self.klass == 'wxGridSizer':
-            return self.get_code_wxGridSizer(obj)
-        if self.klass == 'wxFlexGridSizer':
-            return self.get_code_wxFlexGridSizer(obj)
+        if self.klass == 'wxBoxSizer':       return self.get_code_wxBoxSizer(obj)
+        if self.klass == 'wxStaticBoxSizer': return self.get_code_wxStaticBoxSizer(obj)
+        if self.klass == 'wxGridSizer':      return self.get_code_wxGridSizer(obj)
+        if self.klass == 'wxFlexGridSizer':  return self.get_code_wxFlexGridSizer(obj)
         return self._get_code(obj)
 
     def get_code_wxStaticBoxSizer(self, obj):
@@ -178,31 +170,15 @@ class BaseSizerBuilder(object):
 
 
 class SizerSlot(object):
-    """\
-    A window to represent a slot in a sizer
-
-    @ivar _logger: Class specific logging instance
-
-    @ivar parent: Parent object
-    @type parent: EditFrame
-
-    @ivar pos: item's position in the sizer
-    @type pos: int
-
-    @ivar sizer: Sizer object
-    @type sizer: SizerBase
-
-    @ivar widget: Reference to the widget resembling the slot
-    @type widget: wx.Window
-    """
+    "A window to represent a slot in a sizer"
 
     def __init__(self, parent, sizer, pos=0):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
         # initialise instance
-        self.widget = None
-        self.sizer = sizer
+        self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
+        self.sizer = sizer       # Sizer object (SizerBase instance)
         self.parent = parent
         self.pos = pos
         self.menu = None
@@ -349,10 +325,9 @@ class SizerSlot(object):
             self.delete()
 
     def on_drop_widget(self, event):
-        """\replaces self with a widget in self.sizer. This method is called
+        """replaces self with a widget in self.sizer. This method is called
         to add every non-toplevel widget or sizer, and in turn calls the
-        appropriate builder function (found in the ``common.widgets'' dict)
-        """
+        appropriate builder function (found in the ``common.widgets'' dict)"""
         if not common.adding_widget:
             misc.focused_widget = self
             self.widget.SetFocus()
@@ -627,8 +602,8 @@ def change_sizer(old, new, which_page=0, _hidden=[None]):
                     persistently between different function calls.
     """
     constructors = {
-        'wxBoxSizer (wxVERTICAL)':   lambda: EditBoxSizer(old.name, old.window, wx.VERTICAL, 0, old.toplevel),
-        'wxBoxSizer (wxHORIZONTAL)': lambda: EditBoxSizer(old.name, old.window, wx.HORIZONTAL, 0, old.toplevel),
+        'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, old.window, wx.VERTICAL, 0, old.toplevel),
+        'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, old.window, wx.HORIZONTAL, 0, old.toplevel),
         'wxStaticBoxSizer (wxVERTICAL)':   lambda: EditStaticBoxSizer(old.name, old.window, wx.VERTICAL,
                                                                       getattr(old, 'label', old.name), 0, old.toplevel),
         'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, old.window, wx.HORIZONTAL,
@@ -891,18 +866,12 @@ class SizerBase(Sizer):
             'attribute': (self.get_attribute, self.set_attribute),
         }
         if not self.toplevel:
-            self.access_functions['option'] = (self.get_option,
-                                               self.set_option)
-            self.access_functions['flag'] = (self.esm_border.get_style,
-                                             self.esm_border.set_style)
-            self.access_functions['border'] = (self.get_border,
-                                               self.set_border)
+            self.access_functions['option'] = (self.get_option, self.set_option)
+            self.access_functions['flag'] = (self.esm_border.get_style, self.esm_border.set_style)
+            self.access_functions['border'] = (self.get_border, self.set_border)
             self.access_functions['pos'] = (self.get_pos, self.set_pos)
 
         self.name_prop = TextProperty(self, 'name', label=_('name'))
-        dialog = SizerClassDialog(self, None)
-        self.klass_prop = DialogProperty(self, 'class', None, dialog,
-                                         label=_('class'))
 
         self.attr_prop = CheckBoxProperty(self, 'attribute',
                                           label=_('Store as attribute'))
@@ -1507,7 +1476,6 @@ class wxGladeBoxSizer(wx.BoxSizer):
         wx.BoxSizer.SetItemMinSize(self, item, w, h)
 
 
-# end of class wxGladeBoxSizer
 
 
 class EditBoxSizer(SizerBase):
@@ -1601,7 +1569,6 @@ class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
         wx.StaticBoxSizer.SetItemMinSize(self, item, w, h)
 
 
-# end of class wxGladeStaticBoxSizer
 
 
 class EditStaticBoxSizer(SizerBase):

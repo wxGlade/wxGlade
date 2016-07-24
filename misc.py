@@ -211,16 +211,8 @@ def bound(number, lower, upper):
 
 
 def capitalize(string):
-    """\
-    Return string with first character capitalised. Some acronym like
-    XML, XRC.
-
-    @param string: String to convert
-    @type string:  str
-
-    @note: Be carefully it possibly breaks i18n.
-    @rtype: str
-    """
+    """Return string with first character capitalised. Some acronym like XML, XRC.
+    @note: Be carefully it possibly breaks i18n."""
     # Don't capitalise those terms
     if string.upper() in ['XML', 'XRC', 'URL']:
         return string.upper()
@@ -421,13 +413,8 @@ def _reverse_dict(src):
 
 
 def streq(s1, s2):
-    """\
-    Returns True if the strings or unicode objects s1 and s2 are equal, i.e.
-    contain the same text. Appropriate encoding/decoding are performed to
-    make the comparison
-
-    @rtype: bool
-    """
+    """Returns True if the strings or unicode objects s1 and s2 are equal, i.e. contain the same text.
+    Appropriate encoding/decoding are performed to make the comparison."""
     try:
         return s1 == s2
     except UnicodeError:
