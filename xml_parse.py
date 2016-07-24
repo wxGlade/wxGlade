@@ -1005,11 +1005,7 @@ class Stack(object):
 
 
 class Sizeritem(object):
-    """\
-    Represents a child of a sizer.
-
-    @ivar _logger: Class specific logging instance
-    """
+    "Represents a child of a sizer"
     if config.use_gui:
         flags = {
             'wxALL': wx.ALL,

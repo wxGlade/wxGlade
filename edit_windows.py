@@ -452,7 +452,6 @@ class EditBase(EventsMixin):
             if not len(self.property_blocking[key]):
                 del self.property_blocking[key]
 
-# end of class EditBase
 
 
 class WindowBase(EditBase):
@@ -854,8 +853,7 @@ class ManagedBase(WindowBase):
     @ivar sel_marker: Selection markers
     @type sel_marker: SelectionMarker
 
-    @ivar self.sizer_properties: Properties relative to the sizer which
-                                 controls this window
+    @ivar self.sizer_properties: Properties relative to the sizer which controls this window
     @type self.sizer_properties: dict
     """
 
@@ -868,8 +866,7 @@ class ManagedBase(WindowBase):
         # selection markers
         self.sel_marker = None
 
-        # dictionary of properties relative to the sizer which
-        # controls this window
+        # dictionary of properties relative to the sizer which controls this window
         self.sizer_properties = {}
 
         # attributes to keep the values of the sizer_properties
@@ -1067,6 +1064,7 @@ class ManagedBase(WindowBase):
         self.sizer_properties['pos'].set_value(value-1)
         self.pos = value
 
+# end of class ManagedBase
 
 
 class PreviewMixin(object):
@@ -1113,9 +1111,14 @@ class PreviewMixin(object):
             self.preview_widget.Close()
 
     def preview_is_visible(self):
-        "True if the L{preview_button} is created"
+        """\
+        True if the L{preview_button} is created
+
+        @rtype: bool
+        """
         return self.preview_widget is not None
 
+# end of class PreviewMixin
 
 
 class TopLevelBase(WindowBase, PreviewMixin):
@@ -1283,18 +1286,10 @@ class EditStylesMixin(object):
 
     """
     codegen = None
-    """\
-    Code generator class
-
-    @see: L{codegen.BaseLangCodeWriter}
-    """
+    "Code generator class; @see: L{codegen.BaseLangCodeWriter}"
 
     update_widget_style = True
-    """\
-    Flag to update the widget style if a style is set using L{set_style()}
-
-    @type: bool
-    """
+    "Flag to update the widget style if a style is set using L{set_style()}"
 
     def __init__(self, klass='', styles=[]):
         """\
