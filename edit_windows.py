@@ -131,6 +131,7 @@ class EditBase(EventsMixin):
         self.properties['extraproperties'] = code_property.ExtraPropertiesProperty(self)
 
     def show_widget(self, yes):
+        if self.parent is not None and self.parent.widget is None: return
         if yes and self.widget is None:
             self.create_widget()
             self.finish_widget_creation()
@@ -148,10 +149,7 @@ class EditBase(EventsMixin):
         """Destructor. deallocates the popup menu, the notebook and all the properties.
         Why we need explicit deallocation? Well, basically because otherwise we get a lot of memory leaks... :)"""
         # first, destroy the popup menu...
-        if wx.Platform != '__WXMAC__':
-            if self._rmenu:
-                self._rmenu.Destroy()
-                self._rmenu = None
+        self._destroy_popup_menu()
         # ...then, destroy the property notebook...
         if self.notebook:
             nb_szr = self.notebook.sizer
@@ -175,13 +173,12 @@ class EditBase(EventsMixin):
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
 
-        self._common_panel = panel = wx.ScrolledWindow(
-            self.notebook, -1, style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE)
+        self._common_panel = wx.ScrolledWindow( self.notebook, -1, style=wx.TAB_TRAVERSAL|wx.FULL_REPAINT_ON_RESIZE )
 
-        self.name_prop.display(panel)
-        self.klass_prop.display(panel)
+        self.name_prop.display(self._common_panel)
+        self.klass_prop.display(self._common_panel)
         if getattr(self, '_custom_base_classes', False):
-            self.properties['custom_base'].display(panel)
+            self.properties['custom_base'].display(self._common_panel)
 
     def __getitem__(self, value):
         return self.access_functions[value]
@@ -204,12 +201,11 @@ class EditBase(EventsMixin):
         else:
             oldname = self.name
             self.name = value
-            if self._rmenu:
-                self._rmenu.SetTitle(self.name)
             try:
                 common.app_tree.refresh_name(self.node, oldname)
             except AttributeError: pass
             self.property_window.SetTitle(_('Properties - <%s>') % self.name)
+            self.name_prop.set_value(self.name)
     set_name_pattern = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
 
     def set_klass(self, value):
@@ -226,55 +222,97 @@ class EditBase(EventsMixin):
 
     # context menu #####################################################################################################
     def popup_menu(self, event):
-        if not self.widget:
-            return
-        if not self._rmenu:
-            self._create_popup_menu()
-        self.setup_preview_menu()
-        # convert relative event position to relative widget position
+        self._destroy_popup_menu()
         event_widget = event.GetEventObject()
-        event_pos = event.GetPosition()
+        menu = self._create_popup_menu(widget=event_widget)
+        # convert relative event position to relative widget position
+        event_pos  = event.GetPosition()
         screen_pos = event_widget.ClientToScreen(event_pos)
-        client_pos = self.widget.ScreenToClient(screen_pos)
-        self.widget.PopupMenu(self._rmenu, client_pos)
+        client_pos = event_widget.ScreenToClient(screen_pos)
+        event_widget.PopupMenu(menu, client_pos)
 
-    def _create_popup_menu(self):
-        COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
-        self._rmenu = misc.wxGladePopupMenu(self.name)
-        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                         wx.ART_DELETE)
-        misc.append_item(self._rmenu, COPY_ID, _('Copy\tCtrl+C'),
-                         wx.ART_COPY)
-        misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
-                         wx.ART_CUT)
-        self._rmenu.AppendSeparator()
-        PREVIEW_ID = wx.NewId()
-        misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
+    def _create_popup_menu(self, widget):
+        self._destroy_popup_menu()
 
-        wx.EVT_MENU(self.widget, REMOVE_ID, misc.exec_after(self.remove))
-        wx.EVT_MENU(self.widget, COPY_ID, misc.exec_after(self.clipboard_copy))
-        wx.EVT_MENU(self.widget, CUT_ID, misc.exec_after(self.clipboard_cut))
-        wx.EVT_MENU(self.widget, PREVIEW_ID, misc.exec_after(self.preview_parent))
+        menu = misc.wxGladePopupMenu(self.name)
+
+        # remove/copy/cut
+        i = misc.append_menu_item(menu, -1, _('Remove\tDel'), wx.ART_DELETE)
+        misc.bind_menu_item_after(widget, i, self.remove)
+        i = misc.append_menu_item( menu, -1, _('Copy\tCtrl+C'), wx.ART_COPY )
+        misc.bind_menu_item_after(widget, i, self.clipboard_copy)
+        i = misc.append_menu_item( menu, -1, _('Cut\tCtrl+X'), wx.ART_CUT )
+        misc.bind_menu_item_after(widget, i, self.clipboard_cut)
+        menu.AppendSeparator()
+
+        # slots
+        i = misc.append_menu_item(menu, -1, _('Insert Slot before') )
+        misc.bind_menu_item_after(widget, i, self.insert_slot)
+        i = misc.append_menu_item(menu, -1, _('Insert Slots before...') )
+        misc.bind_menu_item_after(widget, i, self.insert_slot, True)
+
+        if self.pos==len(self.sizer.children)-1: # last slot -> allow to add
+            i = misc.append_menu_item(menu, -1, _('Add Slot') )
+            misc.bind_menu_item_after(widget, i, self.add_slot)
+            i = misc.append_menu_item(menu, -1, _('Add Slots...') )
+            misc.bind_menu_item_after(widget, i, self.add_slot, True)
+
+        # preview (create or close?)
+        menu.AppendSeparator()
+        p = misc.get_toplevel_widget(self)
+        if p is not None and p.preview_is_visible():
+            item = _('Close preview (%s)\tCtrl+P') % p.name
+        else:
+            item = _('Preview (%s)\tCtrl+P') % p.name
+        i = misc.append_menu_item( menu, -1, item )
+        misc.bind_menu_item_after(widget, i, self.preview_parent)
+
+        self._rmenu = (menu, widget) # store for destryoing and unbinding
+        return menu
+
+    def preview_parent(self):
+        self._destroy_popup_menu()
+        widget = misc.get_toplevel_widget(self)
+        if widget is not None:
+            widget.preview(None)
+
+    def _destroy_popup_menu(self):
+        if self._rmenu is None: return
+        menu, widget = self._rmenu
+        widget.Unbind(wx.EVT_MENU)
+        menu.Destroy()
+        self._rmenu = None
+
+    # slots ############################################################################################################
+    def _ask_count(self, insert=True):
+        # helper for next method (insertion/adding of multiple slots)
+        choices = [str(n) for n in range(1,11)]
+        if insert:
+            dlg = wx.SingleChoiceDialog(None, "Select number of slots to be inserted", "Insert Slots", choices)
+        else:
+            dlg = wx.SingleChoiceDialog(None, "Select number of slots to be added", "Add Slots", choices)
+        ret = 0  if dlg.ShowModal()==wx.ID_CANCEL  else   int(dlg.GetStringSelection())
+        dlg.Destroy()
+        return ret
+
+    def insert_slot(self, multiple=False):
+        # insert before current
+        count = self._ask_count() if multiple else 1
+        for n in range(count):
+            self.sizer.insert_slot( self.pos, force_layout=True )
+
+    def add_slot(self, multiple=False):
+        # add to the end
+        count = self._ask_count(insert=False) if multiple else 1
+        for n in range(count):
+            self.sizer.add_slot()
+    ####################################################################################################################
 
     def remove(self, *args):
         self._dont_destroy = False  # always destroy when explicitly asked
         common.app_tree.remove(self.node)
 
-    def setup_preview_menu(self):
-        p = misc.get_toplevel_widget(self)
-        if p is not None:
-            item = list(self._rmenu.GetMenuItems())[-1]
-            if p.preview_is_visible():
-                item.SetText(_('Close preview') + ' (%s)\tCtrl+P' % p.name)
-            else:
-                item.SetText(_('Preview') + ' (%s)\tCtrl+P' % p.name)
-
-    def preview_parent(self):
-        widget = misc.get_toplevel_widget(self)
-        if widget is not None:
-            widget.preview(None)
-
-    def show_properties(self, *args):
+    def show_properties(self, force_update=False):
         "Updates property_window to display the properties of self"
         if self.klass == 'wxPanel':  # am I a wxPanel under a wxNotebook?
             if self.parent and self.parent.klass == 'wxNotebook':
@@ -290,6 +328,7 @@ class EditBase(EventsMixin):
                             pass
                         i += 1
         if self.parent and self.parent.klass == 'wxPanel':
+            # XXX use this code in tree.show_widget or something like common.set_focused_widget(widget); delete here
             # am I a widget under a wxPanel under a wxNotebook?
             if self.parent.parent and self.parent.parent.klass == 'wxNotebook':
                 nb = self.parent.parent
@@ -303,18 +342,18 @@ class EditBase(EventsMixin):
                             pass
                         i += 1
 
-        if not self.is_visible():
-            return  # don't do anything if self is hidden
-        # create the notebook the first time the function is called: this
-        # allows us to create only the notebooks we really need
+        # create the notebook the first time the function is called:
+        # this allows us to create only the notebooks we really need
         if self.notebook is None:
             self.create_properties()
             self.create_events_property()
             self.create_extracode_property()
+        else:
+            self.update_properties_display()
         sizer_tmp = self.property_window.GetSizer()
         child = sizer_tmp.GetChildren()[0]
         w = child.GetWindow()
-        if w is self.notebook:
+        if w is self.notebook and not force_update:
             return
 
         try:
@@ -339,10 +378,12 @@ class EditBase(EventsMixin):
         self.property_window.Layout()
         self.property_window.SetTitle(_('Properties - <%s>') % self.name)
         try:
-            common.app_tree.select_item(self.node)
+            if not common.app_tree.skip_select: # the call is alreqa
+                common.app_tree.select_item(self.node)
         except AttributeError:
             pass
-        self.widget.SetFocus()
+        if self.is_visible():
+            self.widget.SetFocus()
 
     def on_set_focus(self, event):
         """Event handler called when a window receives the focus: this in fact is
@@ -351,18 +392,30 @@ class EditBase(EventsMixin):
         misc.focused_widget = self
         #if wxPlatform != '__WXMSW__': event.Skip()
 
+    def update_properties_display(self):
+        for name, property in self.properties.items():
+            property.update_display()
+
     def get_property_handler(self, prop_name):
         """Returns a custom handler function for the property 'prop_name', used when loading this object from a XML file.
         handler must provide three methods: 'start_elem', 'end_elem' and 'char_data'"""
         return EventsMixin.get_property_handler(self, prop_name)
 
+    # clipboard ########################################################################################################
+    def check_compatibility(self, widget):
+        # only with slots before/after
+        return "Slot"
+
     def clipboard_copy(self, event=None):
         "Store a widget copy into the clipboard;  @see: L{clipboard.copy()}"
+        self._destroy_popup_menu()
         clipboard.copy(self)
 
     def clipboard_cut(self, event=None):
         "Store a copy of self into the clipboard and delete the widget;  @see: L{clipboard.cut()}"
+        self._destroy_popup_menu()
         clipboard.cut(self)
+    ####################################################################################################################
 
     def is_visible(self):
         if not self.widget: return False
@@ -513,20 +566,7 @@ class WindowBase(EditBase):
         wx.EVT_SIZE(self.widget, self.on_size)
         # after setting various Properties, we must Refresh widget in order to see changes
         self.widget.Refresh()
-
-        def on_key_down(event):
-            evt_flags = 0
-            if event.ControlDown(): evt_flags = wx.ACCEL_CTRL
-            evt_key = event.GetKeyCode()
-            done = False
-            for flags, key, function in misc.accel_table:
-                if evt_flags == flags and evt_key == key:
-                    wx.CallAfter(function)
-                    done = True
-                    break
-            if not done:
-                event.Skip()
-        wx.EVT_KEY_DOWN(self.widget, on_key_down)
+        wx.EVT_KEY_DOWN(self.widget, misc.on_key_down_event)
 
     def create_properties(self):
         EditBase.create_properties(self)
@@ -934,8 +974,6 @@ class ManagedBase(WindowBase):
                 w, h = [ int(v) for v in size.split(',') ]
                 if use_dialog_units:
                     w, h = wx.DLG_SZE(self.widget, (w, h))
-                if value:
-                    w, h = 1, 1
             else:
                 w, h = self.widget.GetBestSize()
             self.sizer.set_item(self.pos, option=value, size=(w, h))
@@ -952,8 +990,8 @@ class ManagedBase(WindowBase):
             return
         try:
             try:
-                sp = self.properties['size']
-                size = sp.get_value().strip()
+                size_prop = self.properties['size']
+                size = size_prop.get_value().strip()
                 if size[-1] == 'd':
                     size = size[:-1]
                     use_dialog_units = True
@@ -976,21 +1014,20 @@ class ManagedBase(WindowBase):
         if not self.widget:
             return
         try:
-            sp = self.properties['size']
-            size = sp.get_value().strip()
-            if size[-1] == 'd':
-                size = size[:-1]
-                use_dialog_units = True
+            size_prop = self.properties['size']
+            if size_prop.is_active(): # or use get_value, which will now return the default value if disabled
+                size = size_prop.get_value().strip()
+                if size[-1] == 'd':
+                    size = size[:-1]
+                    use_dialog_units = True
+                else:
+                    use_dialog_units = False
+                size = [int(v) for v in size.split(',')]
+                if use_dialog_units:
+                    size = wx.DLG_SZE(self.widget, size)
             else:
-                use_dialog_units = False
-            w, h = [int(v) for v in size.split(',')]
-            if use_dialog_units:
-                w, h = wx.DLG_SZE(self.widget, (w, h))
-            if w == -1:
-                w = self.widget.GetSize()[0]
-            if h == -1:
-                h = self.widget.GetSize()[1]
-            self.sizer.set_item(self.pos, border=int(value), size=(w, h))
+                size = (-1,-1) # would None or wx.DefaultSize be better`?`
+            self.sizer.set_item(self.pos, border=int(value), size=size)
         except AttributeError:
             self._logger.exception(_('Internal Error'))
 
@@ -1011,7 +1048,8 @@ class ManagedBase(WindowBase):
 
     def remove(self, *args):
         self.sizer.free_slot(self.pos)
-        WindowBase.remove(self)
+        if self.sizer.is_virtual():
+            WindowBase.remove(self)
 
     def get_pos(self):
         return self.pos - 1
@@ -1116,38 +1154,54 @@ class TopLevelBase(WindowBase, PreviewMixin):
             elif self.sizer:
                 self.sizer.fit_parent()
 
-    def _create_popup_menu(self):
-        REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
-        self._rmenu = misc.wxGladePopupMenu(self.name)
-        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'), wx.ART_DELETE)
-        misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
+    def _create_popup_menu(self, widget):
+        # remove, hide
+        menu = misc.wxGladePopupMenu(self.name)
+        i = misc.append_menu_item(menu, -1, _('Remove\tDel'), wx.ART_DELETE)
+        misc.bind_menu_item_after(widget, i, self.remove)
+        i = misc.append_menu_item(menu, -1, _('Hide'))
+        misc.bind_menu_item_after(widget, i, self.hide_widget)
+        # paste
+        i = misc.append_menu_item(menu, -1, _('Paste\tCtrl+V'), wx.ART_PASTE)
+        misc.bind_menu_item_after(widget, i, self.clipboard_paste)
+        # preview
+        menu.AppendSeparator()
+        i = misc.append_menu_item(menu, -1, _('Preview'))
+        misc.bind_menu_item(widget, i, self.preview_parent)
 
-        wx.EVT_MENU(self.widget, REMOVE_ID, misc.exec_after(self.remove))
-        wx.EVT_MENU(self.widget, HIDE_ID, misc.exec_after(self.hide_widget))
+        self._rmenu = (menu, widget)
+        return menu
 
-        PASTE_ID = wx.NewId()
-        misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'), wx.ART_PASTE)
-        wx.EVT_MENU(self.widget, PASTE_ID, misc.exec_after(self.clipboard_paste))
+    ####################################################################################################################
+    def check_compatibility(self, widget):
+        "check in advance whether widget can be pasted"
 
-        PREVIEW_ID = wx.NewId()
-        self._rmenu.AppendSeparator()
-        misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
-        wx.EVT_MENU(self.widget, PREVIEW_ID, misc.exec_after(self.preview_parent))
+        if self.sizer is not None:
+            self._logger.warning( _('WARNING: Sizer already set for this window') )
+            return False
 
-    def clipboard_paste(self, event=None):
+        import edit_sizers
+        if not isinstance(widget, edit_sizers.Sizer):
+            self._logger.warning(_('Only sizers can be pasted here'))
+            return False
+        return True
+
+    def clipboard_paste(self, event=None, clipboard_data=None):
         "Insert a widget from the clipboard to the current destination"
+        self._destroy_popup_menu()
         if self.sizer is not None:
             self._logger.warning( _('WARNING: Sizer already set for this window') )
             return
         import xml_parse
         size = self.widget.GetSize()
         try:
-            if clipboard.paste(self, None, 0):
+            if clipboard.paste(self, None, 0, clipboard_data):
                 common.app_tree.app.saved = False
                 self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
             self._logger.warning( _('WARNING: Only sizers can be pasted here') )
-
+    ####################################################################################################################
+    
     def create_properties(self):
         WindowBase.create_properties(self)
         # don't display the title ourselves anymore, now it's a
@@ -1190,6 +1244,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         common.widget_to_add = None
 
     def hide_widget(self, *args):
+        self._destroy_popup_menu()
         self.widget.Hide()
         common.app_tree.expand(self.node, False)
         common.app_tree.select_item(self.node.parent)

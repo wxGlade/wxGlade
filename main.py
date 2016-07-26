@@ -175,57 +175,54 @@ class wxGladeFrame(wx.Frame):
         # load the available code generators
         core_buttons, local_buttons, sizer_buttons = common.init_codegen()
 
-        append_item = misc.append_item
+        append_menu_item = misc.append_menu_item
         self.TREE_ID = TREE_ID = wx.NewId()
-        append_item(view_menu, TREE_ID, _("Show &Tree\tF2"))
+        append_menu_item(view_menu, TREE_ID, _("Show &Tree\tF2"))
         self.PROPS_ID = PROPS_ID = wx.NewId()
         self.RAISE_ID = RAISE_ID = wx.NewId()
-        append_item(view_menu, PROPS_ID, _("Show &Properties\tF3"))
-        append_item(view_menu, RAISE_ID, _("&Raise All\tF4"))
+        append_menu_item(view_menu, PROPS_ID, _("Show &Properties\tF3"))
+        append_menu_item(view_menu, RAISE_ID, _("&Raise All\tF4"))
         NEW_ID = wx.NewId()
-        append_item(file_menu, NEW_ID, _("&New\tCtrl+N"), wx.ART_NEW)
+        append_menu_item(file_menu, NEW_ID, _("&New\tCtrl+N"), wx.ART_NEW)
         NEW_FROM_TEMPLATE_ID = wx.NewId()
-        append_item(file_menu, NEW_FROM_TEMPLATE_ID,
-                    _("New from &Template...\tShift+Ctrl+N"))
+        append_menu_item(file_menu, NEW_FROM_TEMPLATE_ID, _("New from &Template...\tShift+Ctrl+N"))
         OPEN_ID = wx.NewId()
-        append_item(file_menu, OPEN_ID, _("&Open...\tCtrl+O"), wx.ART_FILE_OPEN)
+        append_menu_item(file_menu, OPEN_ID, _("&Open...\tCtrl+O"), wx.ART_FILE_OPEN)
         SAVE_ID = wx.NewId()
-        append_item(file_menu, SAVE_ID, _("&Save\tCtrl+S"), wx.ART_FILE_SAVE)
+        append_menu_item(file_menu, SAVE_ID, _("&Save\tCtrl+S"), wx.ART_FILE_SAVE)
         SAVE_AS_ID = wx.NewId()
-        append_item(file_menu, SAVE_AS_ID, _("Save As...\tShift+Ctrl+S"),
-                    wx.ART_FILE_SAVE_AS)
+        append_menu_item(file_menu, SAVE_AS_ID, _("Save As...\tShift+Ctrl+S"), wx.ART_FILE_SAVE_AS)
         SAVE_TEMPLATE_ID = wx.NewId()
-        append_item(file_menu, SAVE_TEMPLATE_ID, _("Save As Template..."))
+        append_menu_item(file_menu, SAVE_TEMPLATE_ID, _("Save As Template..."))
         file_menu.AppendSeparator()
         RELOAD_ID = wx.ID_REFRESH
-        append_item(file_menu, RELOAD_ID, _("&Refresh\tf5"))
+        append_menu_item(file_menu, RELOAD_ID, _("&Refresh\tf5"))
         GENERATE_CODE_ID = wx.NewId()
-        append_item(file_menu, GENERATE_CODE_ID, _("&Generate Code\tCtrl+G"),
-                    wx.ART_EXECUTABLE_FILE)
+        append_menu_item(file_menu, GENERATE_CODE_ID, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
 
         file_menu.AppendSeparator()
         IMPORT_ID = wx.NewId()
-        append_item(file_menu, IMPORT_ID, _("&Import from XRC...\tCtrl+I"))
+        append_menu_item(file_menu, IMPORT_ID, _("&Import from XRC...\tCtrl+I"))
 
         EXIT_ID = wx.NewId()
         file_menu.AppendSeparator()
-        append_item(file_menu, EXIT_ID, _('E&xit\tCtrl+Q'), wx.ART_QUIT)
+        append_menu_item(file_menu, EXIT_ID, _('E&xit\tCtrl+Q'), wx.ART_QUIT)
         PREFS_ID = wx.ID_PREFERENCES
         view_menu.AppendSeparator()
         MANAGE_TEMPLATES_ID = wx.NewId()
-        append_item(view_menu, MANAGE_TEMPLATES_ID, _('Template Manager...'))
+        append_menu_item(view_menu, MANAGE_TEMPLATES_ID, _('Template Manager...'))
         view_menu.AppendSeparator()
-        append_item(view_menu, PREFS_ID, _('Preferences...'))
+        append_menu_item(view_menu, PREFS_ID, _('Preferences...'))
         menu_bar.Append(file_menu, _("&File"))
         menu_bar.Append(view_menu, _("&View"))
 
         MANUAL_ID = wx.NewId()
-        append_item(help_menu, MANUAL_ID, _('Manual\tF1'), wx.ART_HELP)
+        append_menu_item(help_menu, MANUAL_ID, _('Manual\tF1'), wx.ART_HELP)
         TUTORIAL_ID = wx.NewId()
-        append_item(help_menu, TUTORIAL_ID, _('Tutorial'))
+        append_menu_item(help_menu, TUTORIAL_ID, _('Tutorial'))
         help_menu.AppendSeparator()
         ABOUT_ID = wx.ID_ABOUT
-        append_item(help_menu, ABOUT_ID, _('About'))
+        append_menu_item(help_menu, ABOUT_ID, _('About'))
         menu_bar.Append(help_menu, _('&Help'))
 
         parent.SetMenuBar(menu_bar)
@@ -355,8 +352,6 @@ class wxGladeFrame(wx.Frame):
         else:
             maxlen = max(len(heading_buttons[1]) for heading_buttons in core_buttons) + 1
             if len(sizer_buttons)+1>maxlen: maxlen = len(sizer_buttons)+1
-            #sizer = wx.GridSizer(0, config.preferences.buttons_per_row)
-            #sizer = wx.FlexGridSizer(0, maxlen+1)
             sizer = wx.FlexGridSizer(cols=maxlen+1)
             sizer.AddGrowableCol(0)
             self.SetAutoLayout(True)
@@ -600,11 +595,9 @@ class wxGladeFrame(wx.Frame):
             sb.SetStatusText("")
 
     def ask_save(self):
-        """\
-        checks whether the current app has changed and needs to be saved:
+        """checks whether the current app has changed and needs to be saved:
         if so, prompts the user;
-        returns False if the operation has been cancelled
-        """
+        returns False if the operation has been cancelled"""
         if not common.app_tree.app.saved:
             ok = wx.MessageBox(_("Save changes to the current app?"),
                                _("Confirm"), wx.YES_NO|wx.CANCEL|wx.CENTRE|wx.ICON_QUESTION)
@@ -734,6 +727,7 @@ class wxGladeFrame(wx.Frame):
 
                 p.parse(infile)
             except (IOError, OSError, SAXParseException, XmlParsingError) as msg:
+                if 'WINGDB_ACTIVE' in os.environ: raise
                 if filename:
                     error_msg = _("Error loading file %s: %s") % (misc.wxstr(filename), misc.wxstr(msg))
                 else:
@@ -882,11 +876,7 @@ class wxGladeFrame(wx.Frame):
             wx.CallAfter(wx.GetApp().ExitMainLoop)
 
     def show_about_box(self, event):
-        """\
-        show the about dialog
-        
-        @see: L{about.wxGladeAboutBox}
-        """
+        "show the about dialog;  @see: L{about.wxGladeAboutBox}"
         about_box = about.wxGladeAboutBox()
         about_box.ShowModal()
         about_box.Destroy()
@@ -900,19 +890,14 @@ class wxGladeFrame(wx.Frame):
         self._show_html(config.tutorial_file)
 
     def _show_html(self, html_file):
-        """\
-        Open browser and show an HTML documentation
+        "Open browser and show an HTML documentation"
 
-        @param html_file: HTML file to show
-        @type html_file: str | Unicode
-        """
         if wx.Platform == "__WXMAC__":
             os.system(r'open -a Help\ Viewer.app %s' % html_file)
         else:
             import webbrowser
             import threading
-            # ALB 2004-08-15: why did this block the program?????
-            # (at least on linux - GTK)
+            # ALB 2004-08-15: why did this block the program????? (at least on linux - GTK)
 
             def go():
                 webbrowser.open_new(html_file)
@@ -1013,8 +998,9 @@ class wxGlade(wx.App):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
 
-        # replace text based exception handler by a graphical exception dialog
-        sys.excepthook = self.graphical_exception_handler
+        if not 'WINGDB_ACTIVE' in os.environ:
+            # replace text based exception handler by a graphical exception dialog
+            sys.excepthook = self.graphical_exception_handler
 
         # use graphical implementation to show caught exceptions
         self._exception_orig = logging.exception

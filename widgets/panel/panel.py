@@ -216,42 +216,49 @@ class EditPanel(PanelBase, ManagedBase):
         else:
             self._classname = self.__class__.__name__
 
-    def _create_popup_menu(self):
+    def _create_popup_menu(self, widget=None):
         COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
         self._rmenu = misc.wxGladePopupMenu(self.name)
-        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                         wx.ART_DELETE)
-        misc.append_item(self._rmenu, COPY_ID, _('Copy\tCtrl+C'),
-                         wx.ART_COPY)
-        misc.append_item(self._rmenu, CUT_ID, _('Cut\tCtrl+X'),
-                         wx.ART_CUT)
+        misc.append_menu_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),  wx.ART_DELETE)
+        misc.append_menu_item(self._rmenu, COPY_ID,   _('Copy\tCtrl+C'), wx.ART_COPY)
+        misc.append_menu_item(self._rmenu, CUT_ID,    _('Cut\tCtrl+X'),  wx.ART_CUT)
 
-        wx.EVT_MENU(self.widget, REMOVE_ID, misc.exec_after(self.remove))
-        wx.EVT_MENU(self.widget, COPY_ID, misc.exec_after(self.clipboard_copy))
-        wx.EVT_MENU(self.widget, CUT_ID, misc.exec_after(self.clipboard_cut))
+        if widget is None: widget = self.widget
+        wx.EVT_MENU(widget, REMOVE_ID, misc.exec_after(self.remove))
+        wx.EVT_MENU(widget, COPY_ID, misc.exec_after(self.clipboard_copy))
+        wx.EVT_MENU(widget, CUT_ID, misc.exec_after(self.clipboard_cut))
 
         PASTE_ID = wx.NewId()
-        misc.append_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'),
-                         wx.ART_PASTE)
-        wx.EVT_MENU(self.widget, PASTE_ID, misc.exec_after(self.clipboard_paste))
+        misc.append_menu_item(self._rmenu, PASTE_ID, _('Paste\tCtrl+V'), wx.ART_PASTE)
+        wx.EVT_MENU(widget, PASTE_ID, misc.exec_after(self.clipboard_paste))
 
         PREVIEW_ID = wx.NewId()
         self._rmenu.AppendSeparator()
-        misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
-        wx.EVT_MENU(self.widget, PREVIEW_ID, misc.exec_after(self.preview_parent))
+        misc.append_menu_item(self._rmenu, PREVIEW_ID, _('Preview'))
+        wx.EVT_MENU(widget, PREVIEW_ID, misc.exec_after(self.preview_parent))
 
-    def clipboard_paste(self, event=None):
-        """\
-        Insert a widget from the clipboard to the current destination.
-
-        @see: L{clipboard.paste()}
-        """
+    def check_compatibility(self, widget):
+        "check whether widget can be pasted"
+        import edit_sizers
+        if not isinstance(widget, edit_sizers.Sizer):
+            self._logger.warning(_('Only sizers can be pasted here'))
+            return False
+        #if self.sizer is not None:
+        if self.top_sizer:
+            self._logger.warning(_('Sizer set already'))
+            return False
+        return True
+        
+    def clipboard_paste(self, event=None, clipboard_data=None):
+        "Insert a widget from the clipboard to the current destination"
         import xml_parse
-        size = self.widget.GetSize()
+        if self.widget is not None:
+            size = self.widget.GetSize()
         try:
-            if clipboard.paste(self, None, 0):
+            if clipboard.paste(self, None, 0, clipboard_data):
                 common.app_tree.app.saved = False
-                self.widget.SetSize(size)
+                if self.widget is not None:
+                    self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
             self._logger.warning(_('Only sizers can be pasted here'))
 
@@ -337,8 +344,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'panel_%d' % number[0]
-    panel = EditPanel(name, parent, wx.NewId(), sizer, pos,
-                      common.property_panel, style='')
+    panel = EditPanel(name, parent, wx.NewId(), sizer, pos, common.property_panel, style='')
     node = Node(panel)
     panel.node = node
 

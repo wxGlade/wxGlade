@@ -29,8 +29,10 @@ class MenuItemDialog(wx.Dialog):
         self._staticbox = wx.StaticBox(self, -1, _("Menu item:"))
 
         self.owner = owner
-        self.menu_items = wx.ListCtrl(self, LIST_ID, style=wx.LC_REPORT |
-                                      wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN)
+        self.menu_items = wx.ListCtrl( self, LIST_ID,
+                                       style=wx.LC_REPORT|wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN|wx.LC_EDIT_LABELS )
+        self.menu_items.Bind(wx.EVT_LIST_END_LABEL_EDIT, self.on_label_edited)
+        
         # ALB 2004-09-26: workaround to make the scroll wheel work...
         wx.EVT_MOUSEWHEEL(self.menu_items, lambda e: e.Skip())
 
@@ -98,7 +100,34 @@ class MenuItemDialog(wx.Dialog):
         wx.EVT_LIST_ITEM_SELECTED(self, LIST_ID, self.show_menu_item)
         if items:
             self.add_items(items)
+    def on_label_edited(self, event):
+        indented_label = event.GetLabel()
+        label = indented_label.lstrip(" ")
+        space_count = len(label) - len(indented_label)
+        if space_count and space_count % 4:
+            event.Veto()
+            return
 
+        index = event.GetIndex()
+        
+        #set_item = self.menu_items.SetStringItem
+        if index == self.selected_index:
+            # update edit field
+            self.label.SetValue(label)
+        
+        #val = self.event_handler.GetValue()
+        #if not self.handler_re.match(val):
+            #event.GetEventObject().SetFocus()
+            #return
+        #if index < 0:
+            #return event.Skip()
+        #set_item(index, 0, "    " * self.item_level(index) + self.label.GetValue().lstrip())
+        #set_item(index, 1, self.id.GetValue())
+        #set_item(index, 2, self.name.GetValue())
+        #set_item(index, 3, self.help_str.GetValue())
+        #set_item(index, 4, str(self.check_radio.GetSelection()))
+        #set_item(index, 5, self.event_handler.GetValue())
+        #event.Skip()
     def do_layout(self):
         self.label.Enable(False)
         self.id.Enable(False)
@@ -664,6 +693,7 @@ class EditMenuBar(EditBase, PreviewMixin):
         self._mb.Refresh()
 
     def remove(self, *args, **kwds):
+        self._destroy_popup_menu()
         if self.parent is not None:
             self.parent.properties['menubar'].set_value(0)
             if kwds.get('gtk_do_nothing', False) and wx.Platform == '__WXGTK__':
@@ -685,17 +715,18 @@ class EditMenuBar(EditBase, PreviewMixin):
             return  # do nothing in this case
         super(EditMenuBar, self).popup_menu(event)
 
-    def _create_popup_menu(self):
+    def _create_popup_menu(self, widget=None):
         REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
         self._rmenu = misc.wxGladePopupMenu(self.name)
-        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                         wx.ART_DELETE)
-        misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
+        misc.append_menu_item(self._rmenu, REMOVE_ID, _('Remove\tDel'), wx.ART_DELETE)
+        misc.append_menu_item(self._rmenu, HIDE_ID, _('Hide'))
 
-        wx.EVT_MENU(self.widget, REMOVE_ID, misc.exec_after(self.remove))
-        wx.EVT_MENU(self.widget, HIDE_ID, misc.exec_after(self.hide_widget))
+        if widget is None: widget = self.widget
+        wx.EVT_MENU(widget, REMOVE_ID, misc.exec_after(self.remove))
+        wx.EVT_MENU(widget, HIDE_ID, misc.exec_after(self.hide_widget))
 
     def hide_widget(self, *args):
+        self._destroy_popup_menu()
         if self.widget and self.widget is not self._mb:
             self.widget.Hide()
             common.app_tree.expand(self.node, False)
@@ -713,39 +744,40 @@ class EditMenuBar(EditBase, PreviewMixin):
         return None
 
 
+class Dialog(wx.Dialog):
+    def __init__(self, number):
+        wx.Dialog.__init__(self, None, -1, _('Select menubar class'))
+        if common.app_tree.app.get_language().lower() == 'xrc':
+            self.klass = 'wxMenuBar'
+        else:
+            if not number[0]: self.klass = 'MyMenuBar'
+            else: self.klass = 'MyMenuBar%s' % number[0]
+            number[0] += 1
+        klass_prop = TextProperty(self, 'class', self, label=_('class'))
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(klass_prop.panel, 0, wx.EXPAND)
+        sz2 = wx.BoxSizer(wx.HORIZONTAL)
+        sz2.Add(wx.Button(self, wx.ID_OK, _('OK')), 0, wx.ALL, 3)
+        sz2.Add(wx.Button(self, wx.ID_CANCEL, _('Cancel')), 0, wx.ALL, 3)
+        szr.Add(sz2, 0, wx.ALL|wx.ALIGN_CENTER, 3)
+        self.SetAutoLayout(True)
+        self.SetSizer(szr)
+        szr.Fit(self)
+        if self.GetBestSize()[0] < 150:
+            self.SetSize((150, -1))
+        self.CenterOnScreen()
+
+    def __getitem__(self, value):
+        if value == 'class':
+            def set_klass(c): self.klass = c
+            return lambda : self.klass, set_klass
+
+
 
 def builder(parent, sizer, pos, number=[0]):
     "factory function for EditMenuBar objects"
-    class Dialog(wx.Dialog):
-        def __init__(self):
-            wx.Dialog.__init__(self, None, -1, _('Select menubar class'))
-            if common.app_tree.app.get_language().lower() == 'xrc':
-                self.klass = 'wxMenuBar'
-            else:
-                if not number[0]: self.klass = 'MyMenuBar'
-                else: self.klass = 'MyMenuBar%s' % number[0]
-                number[0] += 1
-            klass_prop = TextProperty(self, 'class', self, label=_('class'))
-            szr = wx.BoxSizer(wx.VERTICAL)
-            szr.Add(klass_prop.panel, 0, wx.EXPAND)
-            sz2 = wx.BoxSizer(wx.HORIZONTAL)
-            sz2.Add(wx.Button(self, wx.ID_OK, _('OK')), 0, wx.ALL, 3)
-            sz2.Add(wx.Button(self, wx.ID_CANCEL, _('Cancel')), 0, wx.ALL, 3)
-            szr.Add(sz2, 0, wx.ALL|wx.ALIGN_CENTER, 3)
-            self.SetAutoLayout(True)
-            self.SetSizer(szr)
-            szr.Fit(self)
-            if self.GetBestSize()[0] < 150:
-                self.SetSize((150, -1))
-            self.CenterOnScreen()
 
-        def __getitem__(self, value):
-            if value == 'class':
-                def set_klass(c): self.klass = c
-                return lambda : self.klass, set_klass
-    # end of inner class
-
-    dialog = Dialog()
+    dialog = Dialog(number)
     res = dialog.ShowModal()
     klass = dialog.klass
     dialog.Destroy()
