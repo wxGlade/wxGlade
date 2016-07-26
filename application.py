@@ -23,6 +23,10 @@ import errors
 import math
 import misc
 
+try:
+    basestring
+except:
+    basestring = (str,)
 
 class FileDirDialog(object):
     """\
@@ -86,11 +90,7 @@ class FileDirDialog(object):
         return wx.ID_CANCEL
 
     def get_value(self):
-        """\
-        Return the dialog value returned during the last L{ShowModal()} call.
-
-        @see: L{value}
-        """
+        "Return the dialog value returned during the last L{ShowModal()} call;  @see: L{value}"
         return self.value
 
 # end of class FileDirDialog
@@ -192,7 +192,7 @@ class Application(object):
         self.header_ext_prop = TextProperty(self, 'header_ext', panel_settings)
         self.header_ext_prop.set_tooltip(_('Extension of the header file'))
 
-        _writers = common.code_writers.keys()
+        _writers = list( common.code_writers.keys() )
         columns = 3
 
         self.codewriters_prop = RadioProperty(self, "language", panel_application, _writers, columns=columns,
@@ -369,22 +369,17 @@ class Application(object):
     def set_encoding(self, value):
         try:
             unicode('a', value)
-        except LookupError, inst:
+        except LookupError as inst:
             bugdialog.Show(_('Set Encoding'), inst)
             self.encoding_prop.set_value(self.encoding)
         else:
             self.encoding = value
 
     def set_language(self, value):
-        """\
-        Set code generator language and adapt corresponding settings like
-        file dialog wild cards.
+        "Set code generator language and adapt corresponding settings like file dialog wild cards (value: str or int)"
+        assert isinstance(value, basestring) or isinstance(value, int)
 
-        @type value: str | int
-        """
-        assert isinstance(value, types.StringTypes + (types.IntType, ))
-
-        if isinstance(value, types.IntType):
+        if isinstance(value, int):
             self.codewriters_prop.set_value(value)
             language = self.codewriters_prop.get_str_value()
         else:
@@ -592,11 +587,12 @@ class Application(object):
             if preview and codewriter == 'python':
                 self.overwrite = overwrite_save
 
-        except errors.WxgBaseException, inst:
+        except errors.WxgBaseException as inst:
             wx.MessageBox(_("Error generating code:\n%s") % inst, _("Error"), wx.OK | wx.CENTRE | wx.ICON_ERROR)
-        except EnvironmentError, inst:
+        except EnvironmentError as inst:
             bugdialog.ShowEnvironmentError(_('An IO/OS related error is occurred:'), inst)
         except Exception, inst:
+            if 'WINGDB_ACTIVE' in os.environ: raise
             bugdialog.Show(_('Generate Code'), inst)
         else:
             if not preview:
@@ -620,7 +616,7 @@ class Application(object):
             return self.klass
         return ''
 
-    def update_view(self, *args):
+    def update_view(self, selected=False):
         pass
 
     def is_visible(self):
@@ -631,9 +627,11 @@ class Application(object):
         None will be returned in case of errors. The error details are written to the application log file."""
         if out_name is None:
             import warnings
-            warnings.filterwarnings("ignore", "tempnam", RuntimeWarning,
-                                    "application")
-            out_name = os.tempnam(None, 'wxg') + '.py'
+            warnings.filterwarnings("ignore", "tempnam", RuntimeWarning, "application")
+            try:
+                out_name = os.tempnam(None, 'wxg') + '.py'
+            except AttributeError: # XXX use a different name; e.g. the project file name with "_temp"
+                out_name = "C:\\Users\\Dietmar\\wxg_tmp.py"
         widget_class_name = widget.klass
 
         # make a valid name for the class (this can be invalid for
@@ -718,11 +716,11 @@ class Application(object):
             frame.CenterOnScreen()
             frame.Show()
             # remove the temporary file (and the .pyc/.pyo ones too)
-            for ext in '', 'c', 'o', '~':
+            for ext in ('', 'c', 'o', '~'):
                 name = self.output_path + ext
                 if os.path.isfile(name):
                     os.unlink(name)
-        except Exception, inst:
+        except Exception as inst:
             widget.preview_widget = None
             widget.preview_button.SetLabel(_('Preview'))
             bugdialog.Show(_("Generate Preview"), inst)
@@ -738,11 +736,8 @@ class Application(object):
         return frame
 
     def check_codegen(self, widget=None, language=None):
-        """\
-        Checks whether widget has a suitable code generator for the given
-        language (default: the current active language). If not, the user is
-        informed with a message.
-        """
+        """Checks whether widget has a suitable code generator for the given language
+        (default: the current active language). If not, the user is informed with a message."""
         if language is None:
             language = self.language
         if widget is not None:
@@ -769,10 +764,7 @@ class Application(object):
                     check_rec(c)
 
     def _update_wildcards(self, dialog, language):
-        """\
-        Update wildcards and default extension in the generic file and
-        directory dialog (L{FileDirDialog}).
-        """
+        "Update wildcards and default extension in the generic file and directory dialog (L{FileDirDialog})."
         ext = getattr(common.code_writers[language], 'default_extensions', [])
         wildcards = []
         for e in ext:
@@ -785,4 +777,7 @@ class Application(object):
         else:
             dialog.default_extension = None
 
-# end of class Application
+    def popup_menu(self, event):
+        # right click event -> expand all
+        # XXX add other actions?
+        common.app_tree.ExpandAll()

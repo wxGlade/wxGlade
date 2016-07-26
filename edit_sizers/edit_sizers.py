@@ -18,7 +18,7 @@ from wx.lib.buttons import GenButton
 from layout_option_property import LayoutOptionProperty, LayoutPosProperty
 from widget_properties import *
 from edit_windows import EditStylesMixin
-from tree import Tree, WidgetTree, Node
+from tree import Tree, WidgetTree, Node, SlotNode
 import clipboard
 import common
 import compat
@@ -166,8 +166,6 @@ class BaseSizerBuilder(object):
         return result
 
 
-# end of class BaseSizerBuilder
-
 
 class SizerSlot(object):
     "A window to represent a slot in a sizer"
@@ -180,10 +178,42 @@ class SizerSlot(object):
         self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
         self.sizer = sizer       # Sizer object (SizerBase instance)
         self.parent = parent
-        self.pos = pos
-        self.menu = None
-        self._backgroundBuffer = None
-        self._reDrawBackground = False
+        self.pos = pos           # item's position in the sizer (1 based)
+        self._rmenu = None       # context menu and widget, when active
+
+        self.name = "SLOT"
+        self.property_window = None
+
+    def post_load(self): # called from show_widget
+        pass
+
+    def show_properties(self, *args):
+        # temporary solutiion: show properties of the sizer
+        # XXX to be done?  show index
+        self.sizer.show_properties(*args)
+        
+        # XXX this is from EditBase.show_properties
+        #     this should be centralised into something like common.set_focused_widget(widget)
+        if self.parent and self.parent.klass == 'wxPanel': # XXX centralize this code; delete here
+            # am I a widget under a wxPanel under a wxNotebook?
+            if self.parent.parent and self.parent.parent.klass == 'wxNotebook':
+                nb = self.parent.parent
+                if nb.widget:
+                    i = 0
+                    for tn, ep in nb.tabs:  # tn=tabname, ep = editpanel
+                        try:
+                            if ep and self.parent.name == ep.name:
+                                nb.widget.SetSelection(i)
+                        except AttributeError:
+                            pass
+                        i += 1
+
+        self.update_view(True)
+
+    def update_view(self, selected):
+        # we can ignore selected here, as the repainting only takes place later
+        if self.widget:
+            self.widget.Refresh()
 
     def create_widget(self):
         style = wx.FULL_REPAINT_ON_RESIZE
@@ -191,32 +221,19 @@ class SizerSlot(object):
         self.widget.SetBackgroundColour(wx.LIGHT_GREY)
         self.widget.SetAutoLayout(True)
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
-        self.widget.Bind(wx.EVT_IDLE, self.on_idle)
-        self.widget.Bind(wx.EVT_SIZE, self.on_size)
-        self.widget.Bind(wx.EVT_RIGHT_DOWN, self.on_popup_menu)
+        self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_drop_widget)
         self.widget.Bind(wx.EVT_MIDDLE_DOWN, misc.exec_after(self.on_select_and_paste))
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
-        self.widget.Bind(wx.EVT_KEY_DOWN, self.on_key_down)
-
-        self.draw_background_buffer()
-
-    def on_key_down(self, event):
-        evt_flags = 0
-        if event.ControlDown():
-            evt_flags = wx.ACCEL_CTRL
-        evt_key = event.GetKeyCode()
-        for flags, key, func in misc.accel_table:
-            if evt_flags == flags and evt_key == key:
-                wx.CallAfter(func)
-                break
+        self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
     def show_widget(self, yes):
         if yes and not self.widget:
             self.create_widget()
         if self.widget:
             self.widget.Show(yes)
+            self.widget.Refresh()
 
     def on_enter(self, event):
         # hack. definitely. but...
@@ -234,95 +251,78 @@ class SizerSlot(object):
         event.Skip()
 
     def on_paint(self, event):
-        """\
-        Handle paint request and draw prepared image onto the window
-        """
-        if self._backgroundBuffer:
-            wx.BufferedPaintDC(self.widget, self._backgroundBuffer)
-
-    def draw_background_buffer(self):
-        """\
-        Redraw the background and store in into a the bitmap buffer
-        L{_backgroundBuffer}.
-        """
-        size = self.widget.GetClientSize()
-
-        self._backgroundBuffer = wx.EmptyBitmap(size.width, size.height)
-        dc = wx.BufferedDC(None, self._backgroundBuffer)
-
+        "Handle paint request and draw hatched lines onto the window"
+        dc = wx.PaintDC(self.widget)
         # fill background first
         dc.SetBackground(wx.Brush(wx.LIGHT_GREY))
         dc.Clear()
-
+        # draw the hatches (red if selected)
+        color = wx.RED  if misc.focused_widget is self  else  wx.BLACK
         if self.pos % 2:
-            brush = wx.Brush(wx.BLACK, wx.FDIAGONAL_HATCH)
+            brush = wx.Brush(color, wx.FDIAGONAL_HATCH)
         else:
-            brush = wx.Brush(wx.BLACK, wx.BDIAGONAL_HATCH)
-
-        # don't draw hatched lines in background on MSW due to wxWidget
-        # bug #17326 "SetBackground() with hatched brushes cases black
-        # background on MSW"
+            brush = wx.Brush(color, wx.BDIAGONAL_HATCH)
+        # don't draw hatched lines in background on MSW due to wxWidget bug #17326:
+        # "SetBackground() with hatched brushes cases black background on MSW"
         if wx.Platform == '__WXMSW__':
             # draw hatched lines in foreground
             dc.SetBrush(brush)
+            size = self.widget.GetClientSize()
             dc.DrawRectangle(0, 0, size.width, size.height)
         else:
             # draw hatched lines in background
             dc.SetBackground(brush)
             dc.Clear()
 
-        self._reDrawBackground = False
-
-    def on_size(self, event):
-        """\
-        Redraw background during next idle event
-        """
-        self._reDrawBackground = True
-
-    def on_idle(self, event):
-        """\
-        Prepare the background during this idle event
-        """
-        if self._reDrawBackground:
-            self.draw_background_buffer()
-            self.widget.Refresh(False)
-
-    def on_popup_menu(self, event):
-        if not self.menu:
-            self._create_popup_menu()
-        self.setup_preview_menu()
-        # convert relative event position to relative widget position
+    # context menu #####################################################################################################
+    def popup_menu(self, event):
         event_widget = event.GetEventObject()
-        event_pos = event.GetPosition()
+        menu = self._create_popup_menu(widget=event_widget)
+        # convert relative event position to relative widget position
+        event_pos  = event.GetPosition()
         screen_pos = event_widget.ClientToScreen(event_pos)
-        client_pos = self.widget.ScreenToClient(screen_pos)
-        self.widget.PopupMenu(self.menu, client_pos)
+        client_pos = event_widget.ScreenToClient(screen_pos)
+        event_widget.PopupMenu(menu, client_pos)
 
-    def _create_popup_menu(self):
-        self.menu = wx.Menu(_('Options'))
-        REMOVE_ID = wx.NewId()
-        PASTE_ID = wx.NewId()
-        PREVIEW_ID = wx.NewId()
+    def _create_popup_menu(self, widget):
+        self._destroy_popup_menu()
+        menu = wx.Menu(_("Slot %d"%self.pos))
+        
         if not self.sizer.is_virtual():
             # we cannot remove items from virtual sizers
-            misc.append_item(self.menu, REMOVE_ID, _('Remove\tDel'),
-                             wx.ART_DELETE)
-        misc.append_item(self.menu, PASTE_ID, _('Paste\tCtrl+V'),
-                         wx.ART_PASTE)
-        self.menu.AppendSeparator()
-        misc.append_item(self.menu, PREVIEW_ID, _('Preview'))
+            i = misc.append_menu_item(menu, -1, _('Remove\tDel'), wx.ART_DELETE)
+            misc.bind_menu_item_after(widget, i, self.remove)
+        i = misc.append_menu_item(menu, -1, _('Paste\tCtrl+V'), wx.ART_PASTE)
+        misc.bind_menu_item_after(widget, i, self.clipboard_paste)
+        menu.AppendSeparator()
 
-        wx.EVT_MENU(self.widget, REMOVE_ID,
-                    misc.exec_after(self.remove))
-        wx.EVT_MENU(self.widget, PASTE_ID,
-                    misc.exec_after(self.clipboard_paste))
-        wx.EVT_MENU(self.widget, PREVIEW_ID,
-                    misc.exec_after(self.preview_parent))
+        p = misc.get_toplevel_widget(self.sizer)
+        if p is not None and p.preview_is_visible():
+            item = _('Close preview (%s)\tCtrl+P') % p.name
+        else:
+            item = _('Preview (%s)\tCtrl+P') % p.name
 
+        i = misc.append_menu_item( menu, -1, item )
+        misc.bind_menu_item_after(widget, i, self.preview_parent)
+
+        self._rmenu = (menu, widget) # store for destryoing and unbinding
+        return menu
+
+    def _destroy_popup_menu(self):
+        if self._rmenu is None: return
+        menu, widget = self._rmenu
+        widget.Unbind(wx.EVT_MENU)
+        menu.Destroy()
+        self._rmenu = None
+    ####################################################################################################################
+    
     def remove(self, *args):
+        self._destroy_popup_menu()
         if not self.sizer.is_virtual():
+            node = self.sizer.children[self.pos].item.node
             self.sizer.remove_item(self)
             self.delete()
+            common.app_tree.remove(node)
 
     def on_drop_widget(self, event):
         """replaces self with a widget in self.sizer. This method is called
@@ -336,23 +336,30 @@ class SizerSlot(object):
             return
         common.adding_widget = False
         common.adding_sizer = False
-        self.widget.SetCursor(wx.NullCursor)
-        self.widget.Hide()
+        if self.widget:
+            self.widget.SetCursor(wx.NullCursor)
+            self.widget.Hide()
         # call the appropriate builder
         common.widgets[common.widget_to_add](self.parent, self.sizer, self.pos)
         common.widget_to_add = None
         common.app_tree.app.saved = False
 
-    def clipboard_paste(self, event=None):
-        """\
-        Insert a widget from the clipboard to the current destination.
+    # clipboard handling ###############################################################################################
+    def check_compatibility(self, widget):
+        "check whether widget can be pasted here"
+        if getattr(widget, "_is_toplevel", False):
+            return False
+        return True
 
-        @see: L{clipboard.paste()}
-        """
+    def clipboard_paste(self, event=None, clipboard_data=None):
+        "Insert a widget from the clipboard to the current destination"
+        self._destroy_popup_menu()
         if self.widget:
             self.widget.Hide()
-        if clipboard.paste(self.parent, self.sizer, self.pos):
+        if clipboard.paste(self.parent, self.sizer, self.pos, clipboard_data):
             common.app_tree.app.saved = False
+            if self.parent.node.widget.widget is not None:
+                common.app_tree.show_widget(self.parent.node)
         else:
             self.widget.Show()
 
@@ -361,6 +368,7 @@ class SizerSlot(object):
         misc.focused_widget = self
         self.widget.SetFocus()
         self.clipboard_paste()
+    ####################################################################################################################
 
     def delete(self):
         # mainly deletes the widget
@@ -372,8 +380,6 @@ class SizerSlot(object):
 
             # unbind events to prevent new created (and queued) events
             self.widget.Bind(wx.EVT_PAINT, None)
-            self.widget.Bind(wx.EVT_IDLE, None)
-            self.widget.Bind(wx.EVT_SIZE, None)
             self.widget.Bind(wx.EVT_RIGHT_DOWN, None)
             self.widget.Bind(wx.EVT_LEFT_DOWN, None)
             self.widget.Bind(wx.EVT_MIDDLE_DOWN, None)
@@ -381,17 +387,7 @@ class SizerSlot(object):
             self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
             self.widget.Bind(wx.EVT_KEY_DOWN, None)
 
-            # don't redraw background during next idle event
-            self._reDrawBackground = False
-
-            if self.menu:
-                self.menu.Destroy()
-                self.menu = None
-
-            if self._backgroundBuffer:
-                self._backgroundBuffer.Destroy()
-                self._backgroundBuffer = None
-
+            self._destroy_popup_menu()
             self.widget = None
 
         if misc.focused_widget is self:
@@ -402,18 +398,8 @@ class SizerSlot(object):
         "called by self.sizer.change_item_pos to update the item's position when another widget is moved"
         self.pos = value
 
-        self._reDrawBackground = True
-
-    def setup_preview_menu(self):
-        p = misc.get_toplevel_widget(self.sizer)
-        if p is not None:
-            item = list(self.menu.GetMenuItems())[-1]
-            if p.preview_is_visible():
-                item.SetText(_('Close preview (%s)\tCtrl+P') % p.name)
-            else:
-                item.SetText(_('Preview (%s)\tCtrl+P') % p.name)
-
     def preview_parent(self):
+        self._destroy_popup_menu()
         p = misc.get_toplevel_widget(self.sizer)
         if p is not None:
             p.preview(None)
@@ -429,117 +415,26 @@ class SizerSlot(object):
         # re-initialise logger instance deleted from __getstate__
         self._logger = logging.getLogger(self.__class__.__name__)
 
-# end of class SizerSlot
 
 
 class SizerHandleButton(GenButton):
     'Provides a "handle" to activate a Sizer and to access its popup menu'
-
-    def __init__(self, parent, id, sizer, menu):
+    def __init__(self, parent, id, sizer):
         GenButton.__init__(self, parent.widget, id, '', size=(5, 5))
         self.sizer = sizer
-        self.menu = menu
-        self._rmenu = None
         self.SetUseFocusIndicator(False)
-        wx.EVT_RIGHT_DOWN(self, self.popup_menu)
+        wx.EVT_RIGHT_DOWN(self, self.sizer.popup_menu )
+        wx.EVT_KEY_DOWN(self, misc.on_key_down_event)
+        wx.EVT_SET_FOCUS(self, self.on_set_focus)
 
-        def on_key_down(event):
-            evt_flags = 0
-            if event.ControlDown():
-                evt_flags = wx.ACCEL_CTRL
-            evt_key = event.GetKeyCode()
-            for flags, key, function in misc.accel_table:
-                if evt_flags == flags and evt_key == key:
-                    wx.CallAfter(function)
-                    break
-                    # event.Skip()
+    def on_set_focus(self, event):
+        misc.focused_widget = self
+        event.Skip()
 
-        wx.EVT_KEY_DOWN(self, on_key_down)
-
-        def on_set_focus(event):
-            misc.focused_widget = self
-            event.Skip()
-
-        wx.EVT_SET_FOCUS(self, on_set_focus)
-
-    def set_menu_title(self, title):
-        if self._rmenu:
-            self._rmenu.SetTitle(title)
-
-    def popup_menu(self, event):
-        if not self._rmenu:
-            self._create_popup_menu()
-        self.setup_preview_menu()
-        # convert relative event position to relative widget position
-        event_widget = event.GetEventObject()
-        event_pos = event.GetPosition()
-        screen_pos = event_widget.ClientToScreen(event_pos)
-        client_pos = self.ScreenToClient(screen_pos)
-        self.PopupMenu(self._rmenu, client_pos)
-
-    def _create_popup_menu(self):
-        # provide popup menu for removal
-        REMOVE_ID = wx.NewId()
-        self._rmenu = misc.wxGladePopupMenu(self.sizer.name)
-
-        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                         wx.ART_DELETE)
-        wx.EVT_MENU(self, REMOVE_ID, misc.exec_after(self._remove))
-        for item in self.menu:
-            id = wx.NewId()
-            bmp = None
-            if len(item) > 2:
-                bmp = item[2]
-            misc.append_item(self._rmenu, id, item[0], bmp)
-            wx.EVT_MENU(self, id, misc.exec_after(item[1]))
-        self._rmenu.AppendSeparator()
-        PREVIEW_ID = wx.NewId()
-        misc.append_item(self._rmenu, PREVIEW_ID, _('Preview'))
-        wx.EVT_MENU(self, PREVIEW_ID, misc.exec_after(self.preview_parent))
-        self.sizer._rmenu = self._rmenu
-        del self.menu
-
-    def _remove(self, *args):
-        # removes the sizer from his parent, if it has one
-        if self.sizer.toplevel:
-            window = self.sizer.window
-            common.app_tree.remove(self.sizer.node)
-            window.set_sizer(None)
-            return
-        self.sizer.sizer.free_slot(self.sizer.pos)
-        common.app_tree.remove(self.sizer.node)
-
-    # needed for consistency (common.focused_widget.remove)
-    remove = _remove
-
-    def Destroy(self):
-        if self._rmenu:
-            self._rmenu.Destroy()
-            self._rmenu = None
-        GenButton.Destroy(self)
-        if misc.focused_widget is self:
-            misc.focused_widget = None
-
-    def setup_preview_menu(self):
-        p = misc.get_toplevel_widget(self.sizer)
-        if p is not None:
-            item = list(self._rmenu.GetMenuItems())[-1]
-            if p.preview_is_visible():
-                item.SetText(_('Close preview (%s)\tCtrl+P') % p.name)
-            else:
-                item.SetText(_('Preview (%s)\tCtrl+P') % p.name)
-
-    def preview_parent(self):
-        p = misc.get_toplevel_widget(self.sizer)
-        p.preview(None)
-
-
-# end of class SizerHandleButton
 
 
 class SizerItem(object):
     "Represents a child of a sizer"
-
     def __init__(self, item, pos, option=0, flag=0, border=0, size=None):
         self.item = item
         self.item.pos = pos
@@ -549,58 +444,11 @@ class SizerItem(object):
         self.size = size
 
 
-# end of class SizerItem
+_change_sizer_panel = None  # reference to a hidden frame persistently shared between different calls of change_sizer
 
-
-class SizerClassDialog(object):
-    choices = [
-        ('EditBoxSizerV', 'wxBoxSizer (wxVERTICAL)'),
-        ('EditBoxSizerH', 'wxBoxSizer (wxHORIZONTAL)'),
-        ('EditStaticBoxSizerV', 'wxStaticBoxSizer (wxVERTICAL)'),
-        ('EditStaticBoxSizerH', 'wxStaticBoxSizer (wxHORIZONTAL)'),
-        ('EditGridSizer', 'wxGridSizer'),
-        ('EditFlexGridSizer', 'wxFlexGridSizer')
-    ]
-
-    def __init__(self, owner, parent):
-        self.owner = owner
-        self.parent = parent
-        self.selection = None
-
-    def ShowModal(self):
-        name = self.owner.__class__.__name__
-        if hasattr(self.owner, 'orient'):
-            if self.owner.orient == wx.HORIZONTAL:
-                name += 'H'
-            else:
-                name += 'V'
-        choices = [b for a, b in self.choices if a != name]
-        dialog = wx.SingleChoiceDialog(self.parent,
-                                       _("Select sizer type"),
-                                       _("Select sizer type"), choices)
-        dialog.CenterOnScreen()
-        res = dialog.ShowModal()
-        self.selection = dialog.GetStringSelection()
-        dialog.Destroy()
-        return res
-
-    def get_value(self):
-        return self.selection
-
-# end of class SizerClassDialog
-
-
-def change_sizer(old, new, which_page=0, _hidden=[None]):
-    """\
-    Changes 'old' sizer to 'new' sizer
-
-    @param old: SizerBase instance to replace
-    @param new: string selection that identifies the new instance
-    @param which_page: index of the notebook page of the property window to
-                       display: this is used only by set_growable_(rows|cols)
-    @param _hidden: Don't use! Hack to share the reference to a hidden frame
-                    persistently between different function calls.
-    """
+def change_sizer(old, new, which_page=0):
+    """Replaces sizer instance 'old' with a new one; 'new' is the name of the new one.
+    (which_page: index of the property windows notebook page; used only by set_growable_(rows|cols)"""
     constructors = {
         'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, old.window, wx.VERTICAL, 0, old.toplevel),
         'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, old.window, wx.HORIZONTAL, 0, old.toplevel),
@@ -611,9 +459,13 @@ def change_sizer(old, new, which_page=0, _hidden=[None]):
         'wxGridSizer':     lambda: EditGridSizer(old.name, old.window, rows=0, cols=0, toplevel=old.toplevel),
         'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.window, rows=0, cols=0, toplevel=old.toplevel)
     }
+    if not new.startswith("wx"):
+        new = "wx" + new
+
     szr = constructors[new]()
     szr.children.extend(old.children[1:])
     szr.node = old.node
+
     if isinstance(szr, GridSizerBase):
         szr.set_rows(getattr(old, 'rows', 1))
         szr.set_cols(getattr(old, 'cols', len(szr.children) - 1))
@@ -633,10 +485,13 @@ def change_sizer(old, new, which_page=0, _hidden=[None]):
                     szr.properties['growable_cols'].set_value(szr.get_growable_cols())
             except (AttributeError, KeyError):
                 pass
-    szr.show_widget(True, dont_set=True)
-
-    if _hidden[0] is None:
-        _hidden[0] = wx.Frame(None, -1, _("HIDDEN FRAME FOR CHANGE SIZER"))
+    # XXX replace old sizer in parent.children;
+    #     also check for tree
+    global _change_sizer_panel
+    if old.widget is not None:
+        szr.show_widget(True, dont_set=True)
+        if _change_sizer_panel is None:
+            _change_sizer_panel = wx.Frame(None, -1, _("HIDDEN FRAME FOR CHANGE SIZER"))
 
     for c in szr.children[1:]:
         widget = c.item
@@ -649,11 +504,21 @@ def change_sizer(old, new, which_page=0, _hidden=[None]):
             # problem
             if hasattr(widget.widget, 'GetParent'):
                 p = widget.widget.GetParent()
-                widget.widget.Reparent(_hidden[0])
+                widget.widget.Reparent(_change_sizer_panel)
                 widget.widget.Reparent(p)
-            szr.widget.Insert(widget.pos, widget.widget,
-                              int(widget.get_option()), widget.get_int_flag(),
-                              int(widget.get_border()))
+            if szr.widget is not None:
+                szr.widget.Insert(widget.pos, widget.widget,
+                                  int(widget.get_option()), widget.get_int_flag(),
+                                  int(widget.get_border()))
+
+    if old.widget is not None:
+        # previously, this code was after compat.SizerItem_SetSizer(elem, szr.widget)
+        # but this does not work any longer w. Phoenix, as probably AssignSizer deletes the old widget already
+        for c in old.widget.GetChildren():
+            if c and c.IsSizer():
+                compat.SizerItem_SetSizer(c, None)
+        old.widget.Clear()  # without deleting window items
+
     if not szr.toplevel:
         szr.sizer = old.sizer
         szr.option = old.option
@@ -663,48 +528,20 @@ def change_sizer(old, new, which_page=0, _hidden=[None]):
         szr.sizer.children[szr.pos].item = szr
         if szr.sizer.widget:
             elem = szr.sizer.widget.GetChildren()[szr.pos]
-            compat.SizerItem_SetSizer(elem, szr.widget)
+            compat.SizerItem_SetSizer(elem, szr.widget)  # old.widget will be deleted here
+
     common.app_tree.change_node(szr.node, szr)
+
     old.toplevel = False
     szr.show_properties()
     szr.notebook.SetSelection(which_page)
-    for c in old.widget.GetChildren():
-        if c and c.IsSizer():
-            compat.SizerItem_SetSizer(c, None)
-    old.widget.Clear()
+
     old.children = old.children[:1]
     old.delete()
     if szr.toplevel:
         szr.window.set_sizer(szr)
     szr.layout(True)
 
-
-class InsertDialog(wx.Dialog):
-    def __init__(self, max_val):
-        wx.Dialog.__init__(self, None, -1, _("Select a position"))
-        self.pos = 0
-        pos_prop = SpinProperty(self, 'position', self, r=(0, max_val),
-                                label=_("position"))
-        pos_prop.spin.SetFocus()
-        pos_prop.spin.SetSelection(-1, -1)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        szr.Add(pos_prop.panel, 0, wx.ALL | wx.EXPAND, 5)
-        szr2 = wx.BoxSizer(wx.HORIZONTAL)
-        szr2.Add(wx.Button(self, wx.ID_OK, _("OK")), 0, wx.ALL, 5)
-        szr2.Add(wx.Button(self, wx.ID_CANCEL, _("Cancel")), 0, wx.ALL, 5)
-        szr.Add(szr2, 0, wx.ALIGN_CENTER)
-        self.SetAutoLayout(True)
-        self.SetSizer(szr)
-        szr.Fit(self)
-        self.CenterOnScreen()
-
-    def __getitem__(self, name):
-        def set_pos(v):
-            self.pos = int(v)
-
-        return lambda: self.pos, set_pos
-
-# end of class InsertDialog
 
 
 class Sizer(object):
@@ -756,7 +593,6 @@ class Sizer(object):
         # re-initialise logger instance deleted from __getstate__
         self._logger = logging.getLogger(self.__class__.__name__)
 
-# end of class Sizer
 
 
 class SizerBase(Sizer):
@@ -814,16 +650,8 @@ class SizerBase(Sizer):
             self.border = 0
             self.sizer = None
 
-        self.menu = menu
-        if self.menu is None:
-            self.menu = [(_('Add slot'), self.add_slot),
-                         (_('Insert slot...'), self.insert_slot)]
-        self.menu.extend([
-            (_('Copy\tCtrl+C'), self.clipboard_copy, wx.ART_COPY),
-            (_('Cut\tCtrl+X'), self.clipboard_cut, wx.ART_CUT),
-            ])
-
         self._btn = None
+        self._rmenu = None
         self.notebook = None
         self._property_setup()
         self.children = []
@@ -835,7 +663,7 @@ class SizerBase(Sizer):
     def show_widget(self, yes, dont_set=False):
         if not yes or self.widget:
             return  # nothing to do if the sizer has already been created
-        self._btn = SizerHandleButton(self.window, self.id, self, self.menu)
+        self._btn = SizerHandleButton(self.window, self.id, self ) # XXX handle the popupmenu creation in SizerHandleButton
         # ScreenToClient used by WidgetTree for the popup menu
         wx.EVT_BUTTON(self._btn, self.id, self.show_properties)
         self.create_widget()
@@ -863,6 +691,7 @@ class SizerBase(Sizer):
         self.access_functions = {
             'name': (lambda: self.name, self.set_name),
             'class': (lambda: self.klass, self.change),
+            'class_orient': (self.get_class_orient, self.change),
             'attribute': (self.get_attribute, self.set_attribute),
         }
         if not self.toplevel:
@@ -873,8 +702,19 @@ class SizerBase(Sizer):
 
         self.name_prop = TextProperty(self, 'name', label=_('name'))
 
-        self.attr_prop = CheckBoxProperty(self, 'attribute',
-                                          label=_('Store as attribute'))
+        # radio box: class name and orientation
+        choices = [ ('wxBoxSizer (wxVERTICAL)', 'without box and label'),
+                    ('wxBoxSizer (wxHORIZONTAL)', 'without box and label'),
+                    ('wxStaticBoxSizer (wxVERTICAL)', 'with box and label'),
+                    ('wxStaticBoxSizer (wxHORIZONTAL)', 'with box and label'),
+                    ('wxGridSizer', None),
+                    ('wxFlexGridSizer', "with columns/rows of different widths") ]
+
+        tooltips = [c[1] for c in choices]
+        choices  = [c[0] for c in choices]
+        self.klass_prop = RadioProperty( self, 'class_orient', None, choices, label=_('Class'), tooltips=tooltips )
+
+        self.attr_prop = CheckBoxProperty(self, 'attribute', label=_('Store as attribute'))
         self.properties['attribute'] = self.attr_prop
 
         if not self.toplevel:
@@ -906,8 +746,14 @@ class SizerBase(Sizer):
         self.sizer_properties['pos'].set_value(value-1)
         self.pos = value
 
+    def get_class_orient(self):
+        # as string
+        return self.WX_CLASS
+
     def change(self, *args):
-        wx.CallAfter(change_sizer, self, self.klass_prop.get_value())
+        value = self.klass_prop.get_value()
+        classname = self.klass_prop.choices[value]
+        wx.CallAfter(change_sizer, self, classname)
 
     def create_properties(self):
         "Displays the Properties of self"
@@ -918,11 +764,10 @@ class SizerBase(Sizer):
         sizer_tmp = wx.BoxSizer(wx.VERTICAL)
         self.name_prop.display(panel)
         self.klass_prop.display(panel)
-        self.klass_prop.text.SetEditable(False)
         self.attr_prop.display(panel)
-        sizer_tmp.Add(self.name_prop.panel, 0, wx.EXPAND)
-        sizer_tmp.Add(self.klass_prop.panel, 0, wx.EXPAND)
-        sizer_tmp.Add(self.attr_prop.panel, 0, wx.EXPAND)
+        sizer_tmp.Add( self.name_prop.panel,  0, wx.EXPAND )
+        sizer_tmp.Add( self.klass_prop.panel,  0, wx.ALL|wx.EXPAND, 5)
+        sizer_tmp.Add( self.attr_prop.panel,  0, wx.EXPAND )
         if not self.toplevel:
             prop = self.sizer_properties
             prop['pos'].display(panel)
@@ -941,20 +786,110 @@ class SizerBase(Sizer):
             wx.EVT_BUTTON(self.fit_btn, FIT_ID, self.fit_parent)
             sizer_tmp.Add(self.fit_btn, 0, wx.ALL | wx.EXPAND, 5)
         panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, sizer_tmp)
+        panel.SetSizer(sizer_tmp)
         sizer_tmp.Fit(panel)
 
-        w, h = panel.GetClientSizeTuple()
+        w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, _("Common"))
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
 
+    def check_compatibility(self, widget):
+        return "AddSlot" # a slot is to be added before inserting/pasting
+
     def popup_menu(self, event):
-        """\
-        pops up a menu to add or remove slots from self, or to remove self
-        from the application.
-        """
-        if self._btn:
-            self._btn.popup_menu(event)
+        "pops up a menu to add or remove slots from self, or to remove self from the application."
+        event_widget = event.GetEventObject()
+        menu = self._create_popup_menu(widget=event_widget)
+        # convert relative event position to relative widget position
+        event_pos  = event.GetPosition()
+        screen_pos = event_widget.ClientToScreen(event_pos)
+        client_pos = event_widget.ScreenToClient(screen_pos)
+        event_widget.PopupMenu(menu, client_pos)
+
+    def _create_popup_menu(self, widget):
+        # provide popup menu for removal
+        self._destroy_popup_menu()
+        menu = misc.wxGladePopupMenu(self.name)
+
+        i = misc.append_menu_item(menu, -1, _('Remove\tDel'), wx.ART_DELETE)
+        misc.bind_menu_item_after(widget, i, self._remove)
+
+        if not self.toplevel and self.sizer:
+            i = misc.append_menu_item( menu, -1, _('Insert slot before...') )
+            misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
+            menu.AppendSeparator()
+        # other menu items: add/insert slot, copy, cut
+        i = misc.append_menu_item( menu, -1, _('Add slot') )
+        misc.bind_menu_item_after(widget, i, self.add_slot)
+        i = misc.append_menu_item( menu, -1, _('Copy\tCtrl+C'), wx.ART_COPY )
+        misc.bind_menu_item_after(widget, i, self.clipboard_copy)
+        i = misc.append_menu_item( menu, -1, _('Cut\tCtrl+X'), wx.ART_CUT )
+        misc.bind_menu_item_after(widget, i, self.clipboard_cut)
+
+        ## for testing without property window: change sizer orientation
+        #if hasattr(self, "orient"):
+            #menu.AppendSeparator()
+            #i = misc.append_menu_item( menu, -1, 'Change orientation' )
+            #misc.bind_menu_item_after(widget, i, self.change_orientation)
+
+        # preview (create or close?)
+        menu.AppendSeparator()
+        p = misc.get_toplevel_widget(self)
+        if p is not None and p.preview_is_visible():
+            item = _('Close preview (%s)\tCtrl+P') % p.name
+        else:
+            item = _('Preview (%s)\tCtrl+P') % p.name
+        i = misc.append_menu_item( menu, -1, item )
+        misc.bind_menu_item_after(widget, i, self.preview_parent)
+
+        self._rmenu = (menu, widget) # store for destryoing and unbinding
+        return menu
+
+    #def change_orientation(self):
+        ## for testing without property window
+        #current = self.ORIENTATION_to_STRING[self.orient]
+        #other = [v for v in self.ORIENTATION_to_STRING.values() if v!=current][0]
+        #new = "%s (%s)"%( self.WX_CLASS, other)
+        #change_sizer(self, new)
+
+    def _destroy_popup_menu(self):
+        if self._rmenu is None: return
+        menu, widget = self._rmenu
+        widget.Unbind(wx.EVT_MENU)
+        menu.Destroy()
+        self._rmenu = None
+        ####################################################################################################################
+
+    def _remove(self, *args):
+        "removes the sizer from his parent, if it has one"
+        if self.toplevel:
+            window = self.window
+            common.app_tree.remove(self.node)
+            window.set_sizer(None)
+            return
+        # XXX as of now: remove old and then create a new slot
+        common.app_tree.remove(self.node)
+        sizer = self.sizer
+        self.sizer.remove_item(self)
+        sizer.insert_slot(self.pos)
+        # XXX as of now, this won't work
+        #self.sizer.free_slot(self.pos)
+        #for node in self.node.children:
+        #    common.app_tree.remove(self.node)
+        self._destroy_popup_menu()
+
+    remove = _remove # needed for consistency (common.focused_widget.remove)
+
+    def Destroy(self):
+        self._destroy_popup_menu()
+        GenButton.Destroy(self)
+        if misc.focused_widget is self:
+            misc.focused_widget = None
+
+    def preview_parent(self):
+        self._destroy_popup_menu()
+        p = misc.get_toplevel_widget(self)
+        p.preview(None)
 
     def set_name(self, value):
         value = "%s" % value
@@ -969,7 +904,7 @@ class SizerBase(Sizer):
         else:
             oldname = self.name
             self.name = value
-            self._btn.set_menu_title(value)
+            #self.set_menu_title(value)
             try:
                 common.app_tree.refresh_name(self.node, oldname)
             except AttributeError:
@@ -982,12 +917,9 @@ class SizerBase(Sizer):
         return self.access_functions[value]
 
     def show_properties(self, *args):
-        """\
-        Updates common.property_panel to show the notebook with the Properties
-        of self
-        """
-        if not self.window.is_visible():
-            return  # don't do anything if self is hidden
+        "Updates common.property_panel to show the notebook with the Properties of self"
+        #if not self.window.is_visible():
+            #return  # don't do anything if self is hidden
         if not self.notebook:
             self.create_properties()
         sizer_tmp = self.property_window.GetSizer()
@@ -1040,7 +972,8 @@ class SizerBase(Sizer):
         border = int(border)
         if pos is None:
             pos = len(self.children)
-            self.add_slot()
+        if pos==len(self.children):
+            self.add_slot(add_node=False)
         try:
             old_child = self.children[pos]
             if isinstance(old_child.item, SizerSlot):
@@ -1087,7 +1020,10 @@ class SizerBase(Sizer):
 
         self.widget.Insert(pos, item.widget, option, flag, border)
         self.widget.Remove(pos + 1)
-        if elem.IsWindow():
+        # XXX
+        #si = wx.SizerItem(item.widget, option, flag, border)
+        #self.widget.Replace(pos, si )
+        if elem.IsWindow(): # delete old window at this position
             w = elem.GetWindow()
             w.SetContainingSizer(None)
             w.Destroy()
@@ -1101,14 +1037,13 @@ class SizerBase(Sizer):
             flag = elem.GetFlag()
             if not size or (option == 0 or not (flag & wx.EXPAND)):
                 self.widget.SetItemMinSize(item.widget, w, h)
-            else:
+            elif hasattr(item.widget, "GetBestSize"):
                 w, h = item.widget.GetBestSize()
                 self.widget.SetItemMinSize(item.widget, w, h)
-                # *item.widget.GetBestSize())
-                # self.widget.SetItemMinSize(item.widget, w, h)
         except Exception:
-            # self._logger.exception(_('Internal Error'))
-            pass
+            # production version: exceptions to be ignored
+            import os
+            if 'WINGDB_ACTIVE' in os.environ: raise # for debugging: check
         if force_layout:
             self.layout()  # update the layout of self
 
@@ -1311,17 +1246,9 @@ class SizerBase(Sizer):
             return '0'
         return str(self.border)
 
-    def remove(self):
-        # this function is here for clipboard compatibility
-        if not self._btn:
-            return
-        self._btn._remove()
-
     def delete(self):
-        """\
-        Destructor
-        """
-        self._rmenu = None
+        "Destructor"
+        self._destroy_popup_menu()
         if self._btn:
             self._btn.Destroy()
             self._btn = None
@@ -1368,25 +1295,29 @@ class SizerBase(Sizer):
             self._btn.SetBackgroundColour(color)
             self._btn.Refresh(True)
 
-    def add_slot(self, *args, **kwds):
-        """\
-        adds a slot to the sizer, i.e. a fake window that will accept the
-        dropping of widgets
-        """
+    def add_slot(self, add_node=True, **kwds):
+        "adds a slot to the sizer, i.e. a fake window that will accept the dropping of widgets"
         tmp = SizerSlot(self.window, self, len(self.children))
         item = SizerItem(tmp, len(self.children), 1, wx.EXPAND)
         self.children.append(item)
-        if not self.widget:
-            return
-        tmp.show_widget(True)  # create the actual SizerSlot widget
-        self.widget.Add(tmp.widget, 1, wx.EXPAND)
-        self.widget.SetItemMinSize(tmp.widget, 20, 20)
-        force_layout = kwds.get('force_layout', True)
-        if force_layout:
-            self.layout(True)
+        
+        if add_node:
+            # insert node into tree
+            tmp.node = node = SlotNode(tmp)
+            common.app_tree.add(node, self.node, image=None)
+        
+        #if not self.widget:
+            #return
+        if self.widget:
+            tmp.show_widget(True)  # create the actual SizerSlot widget
+            self.widget.Add(tmp.widget, 1, wx.EXPAND)
+            self.widget.SetItemMinSize(tmp.widget, 20, 20)
+            force_layout = kwds.get('force_layout', True)
+            if force_layout:
+                self.layout(True)
         common.app_tree.app.saved = False
 
-    def insert_slot(self, interactive=True, pos=0, force_layout=True):
+    def insert_slot(self, pos=None, force_layout=True):
         """\
         Inserts a slot into the sizer
 
@@ -1402,36 +1333,43 @@ class SizerBase(Sizer):
         @param force_layout: Force layout update
         @type force_layout: bool
         """
+        # pos is 1 based here
+        tmp = SizerSlot(self.window, self, pos)
+        item = SizerItem(tmp, pos, 1, wx.EXPAND, 0)
+        for c in self.children[pos:]: # self.children[0] is a Dummy
+            c.item.pos += 1
+        self.children.insert(pos, item)
 
-        if not self.widget:
-            return
+        # insert node into tree
+        tmp.node = node = SlotNode(tmp)
+        common.app_tree.insert(node, self.node, pos-1, image=None)
 
-        dialog = InsertDialog(len(self.children) - 1)
-        if dialog.ShowModal() == wx.ID_OK:
-            pos = dialog.pos + 1
-            tmp = SizerSlot(self.window, self, pos)
-            for c in self.children[pos:]:
-                c.item.pos += 1
-            self.children.insert(pos, SizerItem(tmp, pos, 1, wx.EXPAND, 0))
+        if self.widget:
             tmp.show_widget(True)  # create the actual SizerSlot
             self.widget.Insert(pos, tmp.widget, 1, wx.EXPAND)
             self.widget.SetItemMinSize(tmp.widget, 20, 20)
             if force_layout:
                 self.layout(True)
-            common.app_tree.app.saved = False
-        dialog.Destroy()
+        common.app_tree.app.saved = False
 
     def free_slot(self, pos, force_layout=True):
-        """\
-        Replaces the element at pos with an empty slot
-        """
+        "Replaces the element at pos with an empty slot"
+        old_node = self.children[pos].item.node
+
         tmp = SizerSlot(self.window, self, pos)
         item = SizerItem(tmp, pos, 1, wx.EXPAND, 0)
         self.children[pos] = item
+
+        # replace the node with a SlotNode
+        tmp.node = node = SlotNode(tmp)
+        common.app_tree.change_node( old_node, tmp, node )
+
         if self.widget:
-            tmp.show_widget(True)  # create the actual SizerSlot
-            self.widget.Insert(pos + 1, tmp.widget, 1, wx.EXPAND)
-            self.widget.Detach(pos)
+            tmp.show_widget(True)  # create the actual SizerSlot as wx.Window with hatched background
+            # pos is 1 based, Insert/Detach are 0 based, but item at 0 is the handle button
+            self.widget.Insert(pos, tmp.widget, 1, wx.EXPAND)
+            # detach is not needed here any more, as change_node does this already
+            #self.widget.Detach(pos-1) # does only remove from sizer, but not destroy item
             if force_layout:
                 self.layout()
 
@@ -1461,8 +1399,6 @@ class SizerBase(Sizer):
             self.window.set_size('%s, %s%s' % (w, h, prefix))
 
 
-# end of class SizerBase
-
 
 class wxGladeBoxSizer(wx.BoxSizer):
     def SetItemMinSize(self, item, w, h):
@@ -1477,33 +1413,47 @@ class wxGladeBoxSizer(wx.BoxSizer):
 
 
 
+class BoxSizerBase(SizerBase):
+    "orientation handling for BoxSizer and StaticBoxSizer"
+    ORIENTATION_to_STRING = {wx.HORIZONTAL: 'wxHORIZONTAL', wx.VERTICAL: 'wxVERTICAL'}
+    STRING_to_ORIENTATION = {'wxHORIZONTAL': wx.HORIZONTAL, 'wxVERTICAL': wx.VERTICAL}
+    def __init__(self, name, window, orient=wx.VERTICAL, elements=0, toplevel=True, show=True):
+        # elements: number of slots
+        self.orient = orient
+        SizerBase.__init__(self, name, self.WX_CLASS, window, toplevel, show)
 
-class EditBoxSizer(SizerBase):
-    """\
-    Class to handle wxBoxSizer objects
-    """
-
-    def __init__(self, name, window, orient=wx.VERTICAL, elements=3,
-                 toplevel=True, show=True):
-        SizerBase.__init__(self, name, 'wxBoxSizer', window, toplevel, show)
         self.access_functions['orient'] = (self.get_orient, self.set_orient)
-        self.properties['orient'] = HiddenProperty(
-            self,
-            'orient',
-            (orient == wx.HORIZONTAL and 'wxHORIZONTAL' or 'wxVERTICAL'),
-        )
+        self.properties['orient'] = HiddenProperty( self, 'orient', self.ORIENTATION_to_STRING[orient] )
 
         class Dummy(object):
             widget = None
-            name = ""
 
         # add to self.children the SizerItem for self._btn
         self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]
         for i in range(1, elements + 1):
-            tmp = SizerSlot(self.window, self, i)
-            self.children.append(SizerItem(tmp, i, 1, wx.EXPAND))
+            self.add_slot()
+            #tmp = SizerSlot(self.window, self, i) # XXX no node?
+            #self.children.append(SizerItem(tmp, i, 1, wx.EXPAND))
+    
+    def get_orient(self):
+        return self.ORIENTATION_to_STRING.get(self.orient)
 
-        self.orient = orient
+    def set_orient(self, value):
+        self.orient = self.STRING_to_ORIENTATION.get(value, wx.VERTICAL)
+        if self.klass_prop:
+            classname = self.get_class_orient()
+            self.klass_prop.set_str_value(classname)
+        if self.node:
+            image = common.app_tree.get_image(self)
+            common.app_tree.SetItemImage(self.node.item, image )
+    def get_class_orient(self):
+        return '%s (%s)'%(self.WX_CLASS, self.get_orient())
+
+
+
+class EditBoxSizer(BoxSizerBase):
+    "Class to handle wxBoxSizer objects"
+    WX_CLASS = "wxBoxSizer"
 
     def create_widget(self):
         self.widget = wxGladeBoxSizer(self.orient)
@@ -1538,23 +1488,9 @@ class EditBoxSizer(SizerBase):
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
         if not self.toplevel and getattr(self, 'sizer'):
-            # hasattr(self, 'sizer') is False only in case of a 'change_sizer'
-            # call
-            self.sizer.add_item(self, self.pos, self.option, self.flag,
-                                self.border, self.widget.GetMinSize())
+            # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
+            self.sizer.add_item( self, self.pos, self.option, self.flag, self.border, self.widget.GetMinSize() )
 
-    def get_orient(self):
-        od = {wx.HORIZONTAL: 'wxHORIZONTAL',
-              wx.VERTICAL: 'wxVERTICAL'}
-        return od.get(self.orient)
-
-    def set_orient(self, value):
-        od = {'wxHORIZONTAL': wx.HORIZONTAL,
-              'wxVERTICAL': wx.VERTICAL}
-        self.orient = od.get(value, wx.VERTICAL)
-
-
-# end of class EditBoxSizer
 
 
 class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
@@ -1570,33 +1506,12 @@ class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
 
 
 
-
-class EditStaticBoxSizer(SizerBase):
-    """\
-    Class to handle wxStaticBoxSizer objects
-    """
-
-    def __init__(self, name, window, orient=wx.VERTICAL, label='', elements=3,
-                 toplevel=True, show=True):
+class EditStaticBoxSizer(BoxSizerBase):
+    "Class to handle wxStaticBoxSizer objects"
+    WX_CLASS = "wxStaticBoxSizer"
+    def __init__(self, name, window, orient=wx.VERTICAL, label='', elements=3, toplevel=True, show=True):
         self.label = label
-        self.orient = orient
-        SizerBase.__init__(self, name, 'wxStaticBoxSizer', window, toplevel,
-                           show)
-        self.access_functions['orient'] = (self.get_orient, self.set_orient)
-        self.properties['orient'] = HiddenProperty(
-            self,
-            'orient',
-            (orient == wx.HORIZONTAL and 'wxHORIZONTAL' or 'wxVERTICAL'),
-        )
-
-        class Dummy(object):
-            widget = None
-
-        # add to self.children the SizerItem for self._btn
-        self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]
-        for i in range(1, elements + 1):
-            tmp = SizerSlot(self.window, self, i)
-            self.children.append(SizerItem(tmp, i, 1, wx.EXPAND))
+        BoxSizerBase.__init__(self, name, window, orient, elements, toplevel, show)
 
     def create_widget(self):
         self.widget = wxGladeStaticBoxSizer( wx.StaticBox(self.window.widget, -1, self.label), self.orient )
@@ -1651,6 +1566,7 @@ class EditStaticBoxSizer(SizerBase):
     def set_label(self, value):
         "Sets the label of the static box"
         self.label = misc.wxstr(value)
+        common.app_tree.refresh_name(self.node)
         if self.widget:
             self.widget.GetStaticBox().SetLabel(self.label)
         self.layout()
@@ -1662,19 +1578,6 @@ class EditStaticBoxSizer(SizerBase):
         if self.widget:
             self.widget.GetStaticBox().Destroy()
         SizerBase.delete(self)
-
-    def get_orient(self):
-        od = {wx.HORIZONTAL: 'wxHORIZONTAL',
-              wx.VERTICAL: 'wxVERTICAL'}
-        return od.get(self.orient)
-
-    def set_orient(self, value):
-        od = {'wxHORIZONTAL': wx.HORIZONTAL,
-              'wxVERTICAL': wx.VERTICAL}
-        self.orient = od.get(value, wx.VERTICAL)
-
-
-# end of class EditStaticBoxSizer
 
 
 class CustomSizer(wx.BoxSizer):
@@ -1732,7 +1635,6 @@ class CustomSizer(wx.BoxSizer):
         self._grid.Layout()
         wx.BoxSizer.Layout(self)
 
-# end of class CustomSizer
 
 
 class GridSizerBase(SizerBase):
@@ -1742,11 +1644,11 @@ class GridSizerBase(SizerBase):
         self.cols = cols
         self.vgap = vgap
         self.hgap = hgap
-        if self.cols or self.rows:
-            if not self.rows:
-                self.rows = 1
-            elif not self.cols:
-                self.cols = 1
+        #if self.cols or self.rows:
+            #if not self.rows:
+                #self.rows = 1
+            #elif not self.cols:
+                #self.cols = 1
         menu = [(_('Add slot'), self.add_slot),
                 (_('Insert slot...'), self.insert_slot),
                 (_('Add row'), self.add_row),
@@ -1761,7 +1663,7 @@ class GridSizerBase(SizerBase):
         # add to self.children the SizerItem for self._btn
         self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]
         for i in range(1, self.rows * self.cols + 1):
-            tmp = SizerSlot(self.window, self, i)
+            tmp = SizerSlot(self.window, self, i) # XXX no node?
             self.children.append(SizerItem(tmp, i, 1, wx.EXPAND))
 
 
@@ -1885,43 +1787,20 @@ class GridSizerBase(SizerBase):
             self.widget.Fit(self.window.widget)
             self.widget.SetSizeHints(self.window.widget)
 
-    def insert_slot(self, interactive=True, pos=0, force_layout=True):
-        """\
-        Inserts a slot into the sizer
+    def insert_slot(self, pos=0, force_layout=True):
+        "Inserts a slot into the sizer at 'pos'; optionally force a layout update"
+        if not self.widget: return
 
-        The user will be asked for a position before which to insert the
-        SizerSlot object
-
-        @param interactive: Open a dialog to ask to the position to insert
-        @type interactive: bool
-
-        @param pos: Position to insert a new slot
-        @type pos: int
-
-        @param force_layout: Force layout update
-        @type force_layout: bool
-        """
-        if not self.widget:
-            return
-
-        if interactive:
-            dialog = InsertDialog(len(self.children))
-            ok = dialog.ShowModal() == wx.ID_OK
-            pos = dialog.pos + 1
-            dialog.Destroy()
-        else:
-            ok = True
-        if ok:
-            new_slot = SizerSlot(self.window, self, pos)
-            for c in self.children[pos:]:
-                c.item.pos += 1
-            self.children.insert(pos, SizerItem(new_slot, pos, 1, wx.EXPAND, 0))
-            new_slot.show_widget(True)  # create the actual SizerSlot
-            self.widget.Insert(pos, new_slot.widget, 1, wx.EXPAND)
-            self.widget.SetItemMinSize(new_slot.widget, 20, 20)
-            if force_layout:
-                self.layout(True)
-            common.app_tree.app.saved = False
+        new_slot = SizerSlot(self.window, self, pos)
+        for c in self.children[pos:]:
+            c.item.pos += 1
+        self.children.insert(pos, SizerItem(new_slot, pos, 1, wx.EXPAND, 0))
+        new_slot.show_widget(True)  # create the actual SizerSlot
+        self.widget.Insert(pos, new_slot.widget, 1, wx.EXPAND)
+        self.widget.SetItemMinSize(new_slot.widget, 20, 20)
+        if force_layout:
+            self.layout(True)
+        common.app_tree.app.saved = False
 
     def add_row(self, *args, **kwds):
         if not self.widget:
@@ -1949,13 +1828,11 @@ class GridSizerBase(SizerBase):
             # self._logger.debug('fixed rows: %s', rows)
             if rows * cols > tot:
                 for i in range(rows * cols - tot):
-                    self.insert_slot(interactive=False, pos=tot + i + 1,
-                                     force_layout=False)
+                    self.insert_slot( tot+i+1, force_layout=False )
             pos = rows * cols + 1
         self.set_rows(rows + 1)
         for i in range(cols):
-            self.insert_slot(interactive=False, pos=pos + i,
-                             force_layout=False)
+            self.insert_slot( pos + i, force_layout=False )
         self.properties['rows'].set_value(self.rows)
         self.layout(True)
         common.app_tree.app.saved = False
@@ -1985,19 +1862,15 @@ class GridSizerBase(SizerBase):
             # self._logger.debug('fixed cols: %s', cols)
             if rows * cols > tot:
                 for i in range(rows * cols - tot):
-                    self.insert_slot(interactive=False, pos=tot + i + 1,
-                                     force_layout=False)
-            pos = rows * cols + 1
-        self.set_cols(cols + 1)
+                    self.insert_slot( tot+i+1, force_layout=False)
+            pos = rows*cols + 1
+        self.set_cols(cols+1)
         for i in range(rows):
-            self.insert_slot(interactive=False, pos=pos + self.cols * i,
-                             # pos=cols + self.cols * i,
-                             force_layout=False)
+            self.insert_slot( pos + self.cols*i, force_layout=False )
         self.properties['cols'].set_value(self.cols)
         self.layout(True)
         common.app_tree.app.saved = False
 
-# end of class GridSizerBase
 
 
 class EditGridSizer(GridSizerBase):
@@ -2014,8 +1887,6 @@ class EditGridSizer(GridSizerBase):
             self.sizer.add_item(self, self.pos, self.option, self.flag,  self.border) # , self.widget.GetMinSize())
         GridSizerBase.create_widget(self)
 
-
-# end of class EditGridSizer
 
 
 class CheckListDialogProperty(DialogProperty):
@@ -2077,8 +1948,6 @@ class CheckListDialogProperty(DialogProperty):
         self.dialog.set_choices(values)
 
 
-# end of class CheckListDialogProperty
-
 
 class EditFlexGridSizer(GridSizerBase):
     "Class to handle wxFlexGridSizer objects"
@@ -2130,6 +1999,12 @@ class EditFlexGridSizer(GridSizerBase):
         sizer.Layout()
         sizer.Fit(page)
 
+    def _recreate(self):
+        # recreatea the sizer by calling change_sizer
+        if self.widget is None: return
+        page = self.notebook.GetSelection()  if self.notebook  else 0
+        wx.CallAfter(change_sizer, self, self.get_class_orient(), page)
+
     def set_growable_rows(self, value):
         try:
             self.grow_rows = [int(i) for i in value.split(',')]
@@ -2139,13 +2014,7 @@ class EditFlexGridSizer(GridSizerBase):
             else:
                 self.properties['growable_rows'].set_value( self.get_growable_rows() )
                 return
-        if self.widget:
-            if self.notebook:
-                page = self.notebook.GetSelection()
-            else:
-                page = 0
-            wx.CallAfter(change_sizer, self, self.klass_prop.get_value(),
-                         page)
+        self._recreate()
 
     def set_growable_cols(self, value):
         try:
@@ -2156,13 +2025,7 @@ class EditFlexGridSizer(GridSizerBase):
             else:
                 self.properties['growable_cols'].set_value( self.get_growable_cols() )
                 return
-        if self.widget:
-            if self.notebook:
-                page = self.notebook.GetSelection()
-            else:
-                page = 0
-            wx.CallAfter(change_sizer, self, self.klass_prop.get_value(),
-                         page)
+        self._recreate()
 
     def get_growable_rows(self):
         return ','.join( str(r) for r in self.grow_rows )
@@ -2184,7 +2047,6 @@ class EditFlexGridSizer(GridSizerBase):
         GridSizerBase._insert_col(self, pos)
         self.set_growable_cols(self.get_growable_cols())
 
-# end of class EditFlexGridSizer
 
 
 def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="", number=[1], show=True):
@@ -2197,10 +2059,13 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=Fal
         topl = False
     else:
         topl = True
+
+    # add slots later
     if is_static:
-        sz = EditStaticBoxSizer(name, parent, orientation, label, num, topl)
+        sz = EditStaticBoxSizer(name, parent, orientation, label, 0, topl)
     else:
-        sz = EditBoxSizer(name, parent, orientation, num, topl)
+        sz = EditBoxSizer(name, parent, orientation, 0, topl)
+
 
     if sizer is not None:
         sizer.add_item(sz, pos, 1, wx.EXPAND)
@@ -2218,7 +2083,12 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=Fal
             common.app_tree.insert(node, parent.node, pos-1)
             sz.pos = pos
 
-    sz.show_widget(show)
+    # add the slots
+    for i in range(num):
+        sz.add_slot()
+
+    if parent.is_visible():
+        sz.show_widget(show)
     if sizer is not None:
         sz.sizer_properties['flag'].set_value('wxEXPAND')
         sz.sizer_properties['pos'].set_value(pos-1)
@@ -2386,7 +2256,8 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
         constructor = EditGridSizer
     if sizer is not None:
         is_toplevel = False
-    sz = constructor(name, parent, rows, cols, vgap, hgap, is_toplevel)
+    #sz = constructor(name, parent, rows, cols, vgap, hgap, is_toplevel)
+    sz = constructor(name, parent, 0, cols, vgap, hgap, is_toplevel) # add slots later
     if sizer is not None:
         sizer.add_item(sz, pos, 1, wx.EXPAND)
         node = Node(sz)
@@ -2403,7 +2274,13 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
             common.app_tree.insert(node, parent.node, pos-1)
             sz.pos = pos
 
-    sz.show_widget(show)  # True)
+    # add the slots
+    for i in range(rows*cols):
+        sz.add_slot()
+
+    if parent.is_visible():
+        sz.show_widget(show)  # True)
+
     if sizer is not None:
         sz.sizer_properties['flag'].set_value('wxEXPAND')
         sz.sizer_properties['pos'].set_value(pos - 1)
@@ -2457,6 +2334,13 @@ def init_all():
 
     WidgetTree.images['EditStaticBoxSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
     WidgetTree.images['EditFlexGridSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )
+    
+    WidgetTree.images['EditVerticalSizer']   = os.path.join( config.icons_path, 'sizer_v.xpm' )
+    WidgetTree.images['EditHorizontalSizer'] = os.path.join( config.icons_path, 'sizer_h.xpm' )
+    
+    WidgetTree.images['EditVerticalSizerSlot']   = os.path.join( config.icons_path, 'sizer_slot_v.xpm' )
+    WidgetTree.images['EditHorizontalSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot_h.xpm' )
+    WidgetTree.images['EditSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot.xpm' )
 
     ret = {'Sizers': [
         common.make_object_button('EditBoxSizer', 'sizer.xpm'),

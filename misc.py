@@ -95,6 +95,7 @@ class SelectionTag(wx.Window):
     def __init__(self, parent):
         kwds = {'size': (7, 7)}
         wx.Window.__init__(self, parent, wx.ID_ANY, **kwds)
+        # XXX
         self.SetBackgroundColour(wx.BLUE)
         self.Hide()
 
@@ -319,7 +320,8 @@ def check_wx_version(major, minor=0, release=0, revision=0):
     return wx.VERSION[:-1] >= (major, minor, release, revision)
 
 
-def append_item(menu, id, text, xpm_file_or_artid=None):
+
+def append_menu_item(menu, id, text, xpm_file_or_artid=None): # XXX change: move id to the end of the argument list?
     global use_menu_icons
     if use_menu_icons is None:
         use_menu_icons = config.preferences.use_menu_icons
@@ -349,6 +351,18 @@ def append_item(menu, id, text, xpm_file_or_artid=None):
             except AttributeError:
                 pass
     menu.AppendItem(item)
+    return item
+
+
+def bind_menu_item(widget, item, func, *args, **kwargs):
+    "Bind a menu handler with immediate callback"
+    def handler():
+        func( *args, **kwargs )
+    widget.Bind(wx.EVT_MENU, handler, item )
+
+def bind_menu_item_after(widget, item, func, *args, **kwargs):
+    "Bind a menu handler with later callback (via wxCallAfter)"
+    widget.Bind(wx.EVT_MENU, exec_after(func, *args, **kwargs), item )
 
 
 def exec_after(func, *args, **kwargs):
@@ -390,13 +404,24 @@ def _paste():
             pass
 
 
+# accelerator table to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
 accel_table = [
     (0, wx.WXK_DELETE, _remove),
     (wx.ACCEL_CTRL, ord('C'), _copy),
     (wx.ACCEL_CTRL, ord('X'), _cut),
     (wx.ACCEL_CTRL, ord('V'), _paste),
 ]
-"accelerator table to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)"
+
+def on_key_down_event(event):
+    "centralized handler for Ctrl+C/X/V or Del key"
+    evt_flags = wx.ACCEL_CTRL  if event.ControlDown()  else  0
+    evt_key = event.GetKeyCode()
+    for flags, key, function in accel_table:
+        if evt_flags == flags and evt_key == key:
+            wx.CallAfter(function)
+            return
+    # not handled
+    event.Skip()
 
 
 def _reverse_dict(src):
@@ -410,7 +435,6 @@ def _reverse_dict(src):
 #-----------------------------------------------------------------------------
 # helper functions to work with a Unicode-enabled wxPython
 #-----------------------------------------------------------------------------
-
 
 def streq(s1, s2):
     """Returns True if the strings or unicode objects s1 and s2 are equal, i.e. contain the same text.
@@ -456,9 +480,6 @@ def get_xpm_bitmap(path):
                 try:
                     data = zipfile.ZipFile(archive).read(name)
                     data = [d[1:-1] for d in _get_xpm_bitmap_re.findall(data)]
-##                     logging.debug("DATA:")
-##                     for d in data:
-##                         logging.debug(d)
                     bmp = wx.BitmapFromXPMData(data)
                 except:
                     logging.exception(_('Internal Error'))

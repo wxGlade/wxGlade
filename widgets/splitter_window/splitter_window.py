@@ -185,7 +185,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                     max_pos = self.widget.GetClientSize()[0]
                 else:
                     max_pos = self.widget.GetClientSize()[1]
-                sp = max_pos / 2
+                sp = max_pos // 2
             if self.orientation == 'wxSPLIT_VERTICAL':
                 self.widget.SplitVertically(self.window_1.widget,
                                             self.window_2.widget, sp)
@@ -230,7 +230,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                 max_pos = self.widget.GetClientSize()[1]
             self.properties['sash_pos'].set_range(-max_pos, max_pos)
             if not self.properties['sash_pos'].is_active():
-                self.widget.SetSashPosition(max_pos / 2)
+                self.widget.SetSashPosition(max_pos // 2)
                 self.sash_pos = self.widget.GetSashPosition()
                 self.properties['sash_pos'].set_value(self.sash_pos)
         except (AttributeError, KeyError):
@@ -243,20 +243,11 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         event.Skip()
 
     def get_orientation(self):
-        """\
-        Return the attribute name of the selected orientation.
-
-        @rtype: str | unicode
-        """
+        "Returns the attribute name of the selected orientation as string/unicode"
         return self.orientation
 
     def set_orientation(self, value):
-        """\
-        Select a orientation
-
-        @param value: Attribute name e.g. 'wxSPLIT_HORIZONTAL'
-        @type value:  str | unicode
-        """
+        "Select an orientation (e.g. 'wxSPLIT_HORIZONTAL')"
         assert value in ['wxSPLIT_HORIZONTAL', 'wxSPLIT_VERTICAL']
         self.orientation = value
 

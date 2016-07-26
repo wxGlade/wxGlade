@@ -86,7 +86,7 @@ class LayoutOptionProperty(widget_properties.Property):
             function(event)
 
         wx.EVT_KILL_FOCUS(self.spin, func_2)
-        if wx.Platform == '__WXMAC__':
+        if wx.Platform == '__WXMAC__' or True: # XXX immediate action
             wx.EVT_TEXT(self.spin, self.spin.GetId(), func_2)
             wx.EVT_SPINCTRL(self.spin, self.spin.GetId(), func_2)
 
