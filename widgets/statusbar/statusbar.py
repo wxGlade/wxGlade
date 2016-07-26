@@ -51,10 +51,6 @@ class EditStatusBar(EditBase, EditStylesMixin):
         EditBase.__init__( self, name, klass, parent, wx.NewId(), property_window, custom_class=False, show=False )
         EditStylesMixin.__init__(self)
 
-        # initialise instance variables
-        self.node = Node(self)
-        self.add = common.app_tree.add(self.node, parent.node)
-
         # initialise properties remaining staff
         self.access_functions['style'] = (self.get_style, self.set_style)
         self.properties['style'] = CheckListProperty( self, 'style', self.widget_writer )
@@ -74,6 +70,9 @@ class EditStatusBar(EditBase, EditStylesMixin):
             outfile.write(stmt)
 
         prop.write = write_prop
+
+        self.node = Node(self)
+        common.app_tree.add(self.node, parent.node)
 
     def create_widget(self):
         self.widget = wx.StatusBar(self.parent.widget, wx.NewId())

@@ -114,6 +114,14 @@ class Property(object):
         "Set the content of this property to the given value"
         raise NotImplementedError
 
+    def update_display(self):
+        "update display when the owners's property has changed"
+        value = self.retrieve_value()
+        try:
+            self.set_value(value)
+        except NotImplementedError:
+            pass
+
     def _mangle(self, label):
         "Returns a mangled version of label, suitable for displaying the name of a property"
         return misc.wxstr(misc.capitalize(label).replace('_', ' '))
@@ -347,6 +355,7 @@ class TextProperty(Property, _activator):
         self.multiline = multiline
         _activator.__init__(self, omitter=omitter)
         if can_disable:
+            self._default_value = self.val # get_value will use this if disabled   XXX implement for other properties and use this more often instead of checking for is_active?
             self.toggle_active(enabled)
             self.toggle_blocked(blocked)
         self.panel = None
@@ -408,7 +417,10 @@ class TextProperty(Property, _activator):
 
     def get_value(self):
         try:
-            val = self.text.GetValue()
+            if self.can_disable and not self._active:
+                val = self._default_value
+            else:
+                val = self.text.GetValue()
             if self.multiline:
                 val = self._escape(val)
             return val
@@ -1204,7 +1216,10 @@ class RadioProperty(Property, _activator):
         self.label = label
         self.sort = sort
         self.tooltips = tooltips
-        self.val = owner[name][0]()
+        val = owner[name][0]()
+        if isinstance(val, basestring):
+            val = self.choices.index(val)
+        self.val = val
         if label is None:
             self.label = self._mangle(name)
         if parent is not None:
@@ -1233,7 +1248,7 @@ class RadioProperty(Property, _activator):
         if self.tooltips:
             max_tooltips = len(self.choices)
             for i, tooltip in enumerate(self.tooltips):
-                if i >= max_tooltips:
+                if i >= max_tooltips or not tooltip:
                     break
                 self.options.SetItemToolTip(i, tooltip)
         try:
@@ -1357,6 +1372,7 @@ class GridProperty(Property, _activator):
     @cvar INT:    Column displays integer values.
     @cvar FLOAT:  Column displays float values.
     @cvar BOOL:   Column displays boolean values.
+    @cvar INDEX:  Column displays non-editable integer index.
 
     @cvar col_format: List of functions to set the column format.
     """
@@ -1366,11 +1382,12 @@ class GridProperty(Property, _activator):
                   lambda g, c: g.SetColFormatFloat(c),
                   lambda g, c: g.SetColFormatBool(c)]
 
-    def __init__(self, owner, name, parent, cols, rows=1, can_add=True,
-                 can_remove=True, can_insert=True, label=None, omitter=None,
-                 col_sizes=None, can_remove_last=True):
+    def __init__(self, owner, name, parent, cols, rows=1, can_add=True, can_remove=True, can_insert=True, label=None,
+                 omitter=None, col_sizes=None, can_remove_last=True, with_index=False):
         Property.__init__(self, owner, name, parent, label=label)
         self.val = owner[name][0]()
+        self.with_index = with_index # display index; also provide the original indices to the owner when updating value
+        self._changing_value = False
         self.set_value(self.val)
         self.rows = rows
         self.col_defs = cols
@@ -1415,7 +1432,8 @@ class GridProperty(Property, _activator):
             self.grid.SetColLabelValue(i, misc.wxstr(column[0]))
             GridProperty.col_format[column[1]](self.grid, i)
 
-        self.grid.SetRowLabelSize(0)
+        self.grid.SetRowLabelSize(20 if self.with_index else 0)
+
         self.grid.SetColLabelSize(20)
         if self.col_sizes:
             self.set_col_sizes(self.col_sizes)
@@ -1484,19 +1502,45 @@ class GridProperty(Property, _activator):
                 for j in range(len(val[i])):
                     if not misc.streq(val[i][j], self.val[i][j]):
                         return True
+            # compare the indices
+            if self.with_index and self.indices!=[str(i) for i in range(len(val))]:
+                return True
             return False
 
         if has_changed():
+            if self.with_index:
+                indices = [int(i) if i else None  for i in self.indices]
             common.app_tree.app.saved = False  # update the status of the app
+            self._changing_value = True
             if self.setter:
-                self.setter(val)
+                if self.with_index:
+                    self.setter(val, indices)
+                else:
+                    self.setter(val)
             else:
-                self.owner[self.name][1](val)
+                if self.with_index:
+                    self.owner[self.name][1](val, indices)
+                else:
+                    self.owner[self.name][1](val)
+            self._changing_value = False
             self.val = val
+            self._initialize_indices()
+            self._update_indices()
         event.Skip()
 
+    def _initialize_indices(self):
+        if not self.with_index: return
+        self.indices = [str(i) for i in range(len(self.val))]
+    def _update_indices(self):
+        if not self.with_index: return
+        for i, index in enumerate(self.indices):
+            self.grid.SetRowLabelValue(i, index)
+
     def set_value(self, values):
+        if self._changing_value: return
         self.val = [[misc.wxstr(v) for v in val] for val in values]
+        self._initialize_indices()
+
         if not hasattr(self, 'grid'):
             return
 
@@ -1511,19 +1555,23 @@ class GridProperty(Property, _activator):
             self.grid.DeleteRows(rows_new, self.rows - rows_new)
 
         # update content
-        for i in range(len(self.val)):
-            for j in range(len(self.val[i])):
-                self.grid.SetCellValue(i, j, self.val[i][j])
+        for i,row in enumerate(self.val):
+            for j, col in enumerate(row):
+                self.grid.SetCellValue(i, j, col)
 
-        # update state of the remove button
+        # update state of the remove button and the row label
         self._update_remove_button()
+        self._update_indices()
 
     def add_row(self, event):
         self.grid.AppendRows()
         self.grid.MakeCellVisible(self.rows, 0)
         self.grid.ForceRefresh()
         self.rows += 1
+        if self.with_index:
+            self.indices.append("")
         self._update_remove_button()
+        self._update_indices()
 
     def remove_row(self, event):
         if not self.can_remove_last and self.rows == 1:
@@ -1532,14 +1580,23 @@ class GridProperty(Property, _activator):
         if self.rows > 0:
             self.grid.DeleteRows(self.cur_row)
             self.rows -= 1
+            if self.with_index:
+                del self.indices[self.cur_row]
+            if self.cur_row>=self.rows:
+                self.cur_row -= 1
         self._update_remove_button()
+        self._update_indices()
 
     def insert_row(self, event):
         self.grid.InsertRows(self.cur_row)
         self.grid.MakeCellVisible(self.cur_row, 0)
         self.grid.ForceRefresh()
         self.rows += 1
+        if self.with_index:
+            self.indices.insert(self.cur_row, "")
         self._update_remove_button()
+        self._update_indices()
+        print("insert_row", self.cur_row, self.rows, self.indices)
 
     def set_col_sizes(self, sizes):
         """\

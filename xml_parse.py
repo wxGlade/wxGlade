@@ -491,6 +491,18 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             # generate a unique name for the copy
             oldname = str(attrs['name'])
             newname = oldname
+            if "_" in oldname:
+                # if the old name ends with an underscore and a number, just increase the number
+                try:
+                    template, i = oldname.rsplit("_", 1)
+                    i = int(i) + 1
+                    template = template + '_%s'
+                    while common.app_tree.has_name(newname, node=self.parent_node):
+                        newname = template%i
+                        i += 1
+                except:
+                    pass
+
             i = 0
             while common.app_tree.has_name(newname, node=self.parent_node):
                 if not i:
@@ -518,7 +530,8 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 common.app_tree.auto_expand = True
                 try:
                     # show the first object and update its layout
-                    common.app_tree.show_widget(self.top_obj.node)
+                    if self.top_obj.node.parent.widget.is_visible():
+                        common.app_tree.show_widget(self.top_obj.node)
                     self.top_obj.show_properties()
                     common.app_tree.select_item(self.top_obj.node)
                 except AttributeError:
