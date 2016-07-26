@@ -55,84 +55,35 @@ class FontHandler(BaseXmlBuilderTagHandler):
 
 
 class EditBase(EventsMixin):
-    """\
-    Base class of every window available in the builder.
+    """Base class of every window available in the builder.
 
-    @ivar custom_class: If true, the user can change the value of the
-                        'class' property
-    @type custom_class: bool
-
-    @ivar base: Name of object's wxWidget class; base and klass are mostly
-                the same, except e.g. wxDialog
-    @type base: str
-
-    @ivar klass: Name of the object's class
-    @type klass: str
-
-    @ivar name:  Name of the object
-    @type name:  str
-
-    @ivar property_window: Widget inside which Properties of this object are
-                           displayed
-
-    @ivar widget: This is the reference to the actual wxWindow widget; it is
-                  created only if needed, i.e. when it should become visible
-
-    @ivar access_functions: Getter and setter for each property
-    @type access_functions: dict
-
-    @ivar properties: Property instance for each property
-    @type properties: dict
-
-    @ivar _logger: Instance specific logger
-
-    @ivar _rmenu: Popup menu
-    """
+    This class holds the basic properties for this object.
+    The properties that control the layout (i.e. the behaviour when inside a sizer) are in L{ManagedBase}."""
 
     def __init__(self, name, klass, parent, id, property_window, show=True, custom_class=True):
-        """\
-        Dictionary of properties relative to this object; the properties that
-        control the layout (i.e. the behaviour when inside a sizer) are not
-        contained here, but in a separate list (see L{ManagedBase})
-        the keys of the dict are the names of the properties
 
-        @param property_window: Widget inside which Properties of this object
-                                are displayed
-
-        @param name: Name of the object
-        @type name:  str
-
-        @param klass: Name of the object's class
-        @type klass:  str
-
-        @param show: Show this widget
-        @type show:  bool
-
-        @param custom_class: If true, the user can change the value of the
-                            'class' property
-        """
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
         # initialise instance
-        self.properties = {}
-        self.property_blocking = {}
         self.parent = parent
-        # id used for internal purpose events
-        self.id = id
-        self.name = name
-        self.klass = klass
-        self.base = klass
-        self.custom_class = custom_class
+        self.properties = {}         # Property instance for each property
+        self.property_blocking = {}
+        self.access_functions  = {}  # (getter, setter) for each property
 
-        self._dont_destroy = False
-
-        self.access_functions = { 'name': (lambda: self.name, self.set_name),
-                                  'class': (lambda: self.klass, self.set_klass) }
-
-        # these two properties are special and are not listed in 'self.properties'
+        self.id = id        # id used for internal purpose events
+        
+        # name and class properties: these two properties are special and are not listed in 'self.properties'
+        self.name = name    # Name of the object
+        self.access_functions['name'] = (lambda: self.name, self.set_name)
         self.name_prop = TextProperty(self, 'name', None, label=_("name"))
         self.name_prop.tooltip = _("Name of the variable for assigning the reference to the created widget instance.")
+
+        self.klass = klass  # Name of the object's class
+        self.base = klass   # Name of object's wxWidget class; base and klass are mostly the same, except e.g. wxDialog
+        self.custom_class = custom_class # If true, the user can change the value of the 'class' property
+        self.access_functions['class'] = (lambda: self.klass, self.set_klass)
+
         self.klass_prop = TextProperty( self, 'class', None, readonly=not custom_class, label=_("class") )
         if custom_class:
             self.klass_prop.tooltip = _("If you change the default value, it will be interpreted as the name "
@@ -143,9 +94,9 @@ class EditBase(EventsMixin):
             self.custom_base = ""
 
             def get_custom_base(): return self.custom_base
-
             def set_custom_base(val): self.custom_base = val
             self.access_functions['custom_base'] = (get_custom_base, set_custom_base)
+
             p = self.properties['custom_base'] = TextProperty( self, 'custom_base', can_disable=True, enabled=False )
             p.label = _('Base class(es)')
             p.tooltip = _("A comma-separated list of custom base classes. The first will be invoked\n"
@@ -153,14 +104,18 @@ class EditBase(EventsMixin):
                           "constructor will be used. You should probably not use this if \n"
                           "overwrite existing sources is not set.")
 
+
+        self._dont_destroy = False
+
+        # Widget inside which Properties of this object are displayed
         self.notebook = None
         self.property_window = property_window
 
         # popup menu
         self._rmenu = None
 
-        # this is the reference to the actual wxWindow widget; it is created
-        # only if needed, i.e. when it should become visible
+        # this is the reference to the actual wxWindow widget
+        # it is created only if needed, i.e. when it should become visible
         self.widget = None
 
         if show:
@@ -269,6 +224,7 @@ class EditBase(EventsMixin):
                 pass
     set_klass_pattern = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
 
+    # context menu #####################################################################################################
     def popup_menu(self, event):
         if not self.widget:
             return
@@ -460,62 +416,69 @@ class WindowBase(EditBase):
 
     def __init__(self, name, klass, parent, id, property_window, show=True):
         EditBase.__init__(self, name, klass, parent, id, property_window, show=False)
-        # 'property' id (editable by the user)
-        self.window_id = "wxID_ANY"
 
+        prop = self.properties
+
+        # id property
+        self.window_id = "wxID_ANY"  # 'property' id (editable by the user)
         def set_id(value):
             self.window_id = value
         self.access_functions['id'] = (lambda s=self: s.window_id, set_id)
-        self.size = '-1, -1'
-        self.access_functions['size'] = (self.get_size, self.set_size)
-        self.background = ''
-        self.access_functions['background'] = (self.get_background, self.set_background)
-        self.foreground = ''
-        self.access_functions['foreground'] = (self.get_foreground, self.set_foreground)
-        # this is True if the user has selected a custom font
-        self._font_changed = False
-        self.font = self._build_from_font( compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT) )
-        self.font[1] = 'default'
-
-        self.access_functions['font'] = (self.get_font, self.set_font)
-
-        self.tooltip = ''
-        self.access_functions['tooltip'] = (self.get_tooltip, self.set_tooltip)
-
-        self._original = {'background': None, 'foreground': None, 'font': None}
-
-        prop = self.properties
         prop['id'] = TextProperty(self, 'id', None, can_disable=True)
         prop['id'].tooltip = _("""The "Id" property could be 
-1) a constant numeric value
-2) a predefined identifier e.g. wxID_ANY
-3) a predefined variable like a class member e.g. self.myButtonID
-4) a variable assignment e.g. self.myButtonID=?
-
-The pattern of a variable assignment is always "variable=value". The \
-value could be again a numeric value, a predefined identifier, \
-another predefined variable or "?" a shortcut for "wxNewId()". \
-""")
+    1) a constant numeric value
+    2) a predefined identifier e.g. wxID_ANY
+    3) a predefined variable like a class member e.g. self.myButtonID
+    4) a variable assignment e.g. self.myButtonID=?
+    
+    The pattern of a variable assignment is always "variable=value". The \
+    value could be again a numeric value, a predefined identifier, \
+    another predefined variable or "?" a shortcut for "wxNewId()".""")
+        # size, background, foreground properties
+        self.size = '-1, -1'
+        self.access_functions['size'] = (self.get_size, self.set_size)
         prop['size'] = TextProperty(self, 'size', None, can_disable=True, label=_("size"))
+
+        # background, foreground, font properties
+        # their actual values will be stored/modified after widget creation in 'finish_widget_creation'
+        # before that, the actual values will be stored in this dict from the actual values of the widget:
+        self._original = {'background': None, 'foreground': None, 'font': None}
+        # background
+        self.background = ''
+        self.access_functions['background'] = (self.get_background, self.set_background)
         prop['background'] = ColorDialogProperty(self, "background", None, label=_("background"))
+        # foreground
+        self.foreground = ''
+        self.access_functions['foreground'] = (self.get_foreground, self.set_foreground)
         prop['foreground'] = ColorDialogProperty(self, "foreground", None, label=_("foreground"))
+        # font property
+        self._font_changed = False # this is True if the user has selected a custom font
+        self.font = self._build_from_font( compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT) )
+        self.font[1] = 'default'
+        self.access_functions['font'] = (self.get_font, self.set_font)
         prop['font'] = FontDialogProperty(self, "font", None, label=_("font"))
 
+        # tooltip property
+        self.tooltip = ''
+        self.access_functions['tooltip'] = (self.get_tooltip, self.set_tooltip)
         prop['tooltip'] = TextProperty(self, 'tooltip', None, can_disable=True, label=_('tooltip'))
 
+        # disabled properties
         self.disabled_p = False
         self.access_functions['disabled'] = (self.get_disabled, self.set_disabled)
         prop['disabled'] = CheckBoxProperty(self, 'disabled', None, _('disabled'))
-
+        # focused property
         self.focused_p = False
         self.access_functions['focused'] = (self.get_focused, self.set_focused)
         prop['focused'] = CheckBoxProperty(self, 'focused', None, _('focused'))
-
+        # hidden property
         self.hidden_p = False
         self.access_functions['hidden'] = (self.get_hidden, self.set_hidden)
         prop['hidden'] = CheckBoxProperty(self, 'hidden', None, _('hidden'))
 
     def finish_widget_creation(self, *args, **kwds):
+        # store the actual values of foreground, background and font from the actual widget
+        # if the corresponding property editor is deactivated, the value from here will be restored
         self._original['background'] = self.widget.GetBackgroundColour()
         self._original['foreground'] = self.widget.GetForegroundColour()
         fnt = self.widget.GetFont()
@@ -544,7 +507,9 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
             prop['foreground'].set_value(color)
         if prop['font'].is_active():
             self.set_font(prop['font'].get_value())
+
         EditBase.finish_widget_creation(self)
+
         wx.EVT_SIZE(self.widget, self.on_size)
         # after setting various Properties, we must Refresh widget in order to see changes
         self.widget.Refresh()
@@ -845,17 +810,11 @@ another predefined variable or "?" a shortcut for "wxNewId()". \
 
 
 class ManagedBase(WindowBase):
-    """\
-    Base class for every managed window used by the builder: extends WindowBase
-    with the addition of properties relative to the layout of the window:
-    option, flag, and border
-
-    @ivar sel_marker: Selection markers
-    @type sel_marker: SelectionMarker
-
-    @ivar self.sizer_properties: Properties relative to the sizer which controls this window
-    @type self.sizer_properties: dict
-    """
+    """Base class for every window managed by a sizer.
+    
+    Extends WindowBase with the addition of properties relative to the layout of the window: option, flag, and border.
+    These properties are stored in dict 'sizer_properties'.
+    'option' should actually be named 'proportion'"""
 
     def __init__(self, name, klass, parent, id, sizer, pos, property_window, show=True):
         WindowBase.__init__(self, name, klass, parent, id, property_window, show=show)
@@ -863,7 +822,7 @@ class ManagedBase(WindowBase):
         # inside the sizer (proportion, borders, alignment...)
         self._has_layout = not sizer.is_virtual()
 
-        # selection markers
+        # selection markers (a SelectionMarker instance)
         self.sel_marker = None
 
         # dictionary of properties relative to the sizer which controls this window
@@ -900,8 +859,10 @@ class ManagedBase(WindowBase):
         from layout_option_property import LayoutOptionProperty, LayoutPosProperty
         szprop['option'] = LayoutOptionProperty(self, sizer)
         szprop['flag'] = CheckListProperty(self, 'flag', styles=border_styles)
-        szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000), label=_('border'))
+        szprop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000), label=_('border'), immediate=True)
+        szprop['border'].set_tooltip( _("Border width, if enabled below") )
         szprop['pos'] = LayoutPosProperty(self, sizer)
+        szprop['pos'].set_tooltip( _("Sizer slot") )
 
     def finish_widget_creation(self, sel_marker_parent=None):
         if sel_marker_parent is None: sel_marker_parent = self.parent.widget
@@ -963,9 +924,9 @@ class ManagedBase(WindowBase):
         self.option = value = int(value)
         if not self.widget: return
         try:
-            sz = self.properties['size']
-            if value or sz.is_active():
-                size = sz.get_value().strip()
+            size_prop = self.properties['size']
+            if value or size_prop.is_active():
+                size = size_prop.get_value().strip()
                 if size[-1] == 'd':
                     size = size[:-1]
                     use_dialog_units = True
@@ -1068,14 +1029,10 @@ class ManagedBase(WindowBase):
 
 
 class PreviewMixin(object):
-    """\
-    Mixin class used to add preview to a widget
+    """Mixin class used to add preview to a widget
 
     @ivar preview_button: Button to show or close the preview window
-    @ivar preview_widget: Widget to be represented
-
-    @ivar _logger: Class specific logging instance
-    """
+    @ivar preview_widget: Widget to be represented"""
 
     def __init__(self):
         # initialise instance logger
@@ -1111,14 +1068,9 @@ class PreviewMixin(object):
             self.preview_widget.Close()
 
     def preview_is_visible(self):
-        """\
-        True if the L{preview_button} is created
-
-        @rtype: bool
-        """
+        "True if the L{preview_button} is created"
         return self.preview_widget is not None
 
-# end of class PreviewMixin
 
 
 class TopLevelBase(WindowBase, PreviewMixin):
