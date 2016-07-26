@@ -111,8 +111,9 @@ def builder(parent, sizer, pos, number=[1]):
     text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel)
     node = Node(text)
     text.node = node
-    text.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    if parent.is_visible():
+        text.show_widget(True)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):

@@ -591,6 +591,7 @@ class Application(object):
             wx.MessageBox( _("Error generating code:\n%s") % inst,
                            _("Error"), wx.OK | wx.CENTRE | wx.ICON_ERROR,)
         except Exception as inst:
+            if 'WINGDB_ACTIVE' in os.environ: raise
             bugdialog.Show(_('Generate Code'), inst)
         else:
             if not preview:
@@ -614,7 +615,7 @@ class Application(object):
             return self.klass
         return ''
 
-    def update_view(self, *args):
+    def update_view(self, selected=False):
         pass
 
     def is_visible(self):
@@ -774,5 +775,8 @@ class Application(object):
             dialog.default_extension = '.%s' % ext[0]
         else:
             dialog.default_extension = None
-
-# end of class Application
+            
+    def popup_menu(self, event):
+        # right click event -> expand all
+        # XXX add other actions?
+        common.app_tree.ExpandAll()

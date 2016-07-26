@@ -32,7 +32,7 @@ class MessageDialog(wx.Dialog):
     def __set_properties(self):
         # begin wxGlade: MessageDialog.__set_properties
         self.SetTitle(_("wxGlade Message"))
-        self.SetSize(wx.DLG_SZE(self, (250, 112)))
+        # self.SetSize(wx.DLG_SZE(self, (250, 112))) # XXX necessary?
         self.msg_image.SetMinSize((48, 48))
         self.OK.SetFocus()
         self.OK.SetDefault()
