@@ -3,6 +3,7 @@ Classes to handle and display the structure of a wxGlade app
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright_ 2014-2016 Carsten Grohmann
+@copyright_ 2016      Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -14,7 +15,7 @@ import types
 import wx
 
 import misc, common, compat, config
-import edit_sizers
+import edit_sizers, application
 
 
 class Node(object):
@@ -153,7 +154,7 @@ class Tree(object):
                     return True
             return False
         else:
-            node = self._find_toplevel(node)
+            node = self._find_toplevel(node) # node is a name
             return name in self.names[node]
 
     def add(self, child, parent=None):
@@ -162,8 +163,6 @@ class Tree(object):
         parent.children.append(child)
         child.parent = parent
         self.current = child
-        #self.names[str(child.widget.name)] = 1
-        #self.names.setdefault(parent, {})[str(child.widget.name)] = 1
         self.names.setdefault(self._find_toplevel(child), {})[str(child.widget.name)] = 1
         if parent is self.root and getattr(child.widget.__class__, '_is_toplevel', False):
             self.app.add_top_window(child.widget.name)
@@ -176,15 +175,12 @@ class Tree(object):
         parent.children.insert(index, child)
         child.parent = parent
         self.current = child
-        #self.names[str(child.widget.name)] = 1
-        #self.names.setdefault(parent, {})[str(child.widget.name)] = 1
         self.names.setdefault(self._find_toplevel(child), {})[str(child.widget.name)] = 1
         if parent is self.root:
             self.app.add_top_window(child.widget.name)
 
     def clear_name_rec(self, n):
         try:
-            #del self.names[str(n.widget.name)]
             del self.names[self._find_toplevel(n)][str(n.widget.name)]
         except (KeyError, AttributeError):
             pass
@@ -268,12 +264,10 @@ class Tree(object):
     def change_node(self, node, widget):
         "Changes the node 'node' so that it refers to 'widget'"
         try:
-            #del self.names[node.widget.name]
             del self.names[self._find_toplevel(node)][node.widget.name]
         except KeyError:
             pass
         node.widget = widget
-        #self.names[widget.name] = 1
         self.names.setdefault(self._find_toplevel(node), {})[widget.name] = 1
 
     def change_node_pos(self, node, new_pos, index=None):
@@ -330,8 +324,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.set_title(self.title)
 
         self.auto_expand = True  # this control the automatic expansion of  nodes: it is set to False during xml loading
-        self._show_menu = misc.wxGladePopupMenu('widget')  # popup menu to show toplevel widgets
-        self._show_menu.Append(wx.ID_ANY, _('Show'))
         self.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_change_selection)
         self.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
         self.Bind(wx.EVT_LEFT_DCLICK, self.show_toplevel)
@@ -345,6 +337,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
     def begin_drag(self, evt):
+        # remember the dragged item
         item = evt.GetItem()
         if isinstance(self.GetPyData(item), SlotNode):
             return
@@ -355,12 +348,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
         return True
 
     def end_drag(self, evt):
-        copy = wx.GetKeyState(wx.WXK_CONTROL)
+        # move or copy a node including children; re-uses clipboard functionality
+        copy = wx.GetKeyState(wx.WXK_CONTROL)  # if Ctrl key is pressed, we will copy
 
         if self.cur_widget:
             self.cur_widget.update_view(False)
 
-        src = self._dragged_item
+        src = self._dragged_item  # was set in begin_drag
         dst = evt.GetItem()
         self._dragged_item = None
         if src is dst: return
@@ -372,7 +366,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         dst_widget = dst_node.widget
         if src_widget==dst_widget: return
 
-        # do some checks before cutting
+        # do some checks before cutting ################################################################################
         # avoid dragging of an item on it's child
         if dst_node.has_ancestor(src_node):
             return
@@ -393,7 +387,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not hasattr(dst_widget, "clipboard_paste"):
             return
 
-        # use cut and paste functionality from clipboard
+        # use cut and paste functionality from clipboard to do the actual work #########################################
         import clipboard
 
         data = clipboard.get_copy(src_widget)
@@ -413,7 +407,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         item = evt.Item
         node = self.GetPyData( evt.Item )
         widget = node.widget
-        # XXX split user input into name and label (reverse of self._build_label)
+        # XXX split user input into name and label/title (reverse of self._build_label)
         old_label = self.GetItemText(item)
         widget.set_name(evt.Label)
         if self.GetItemText(item) == old_label:
@@ -435,7 +429,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def get_image(self, child, image=None):
         if image is not None:
             return image
-        
+
         #if child.widget:
         if isinstance(child, Node):
             name = child.widget.__class__.__name__
@@ -539,13 +533,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def refresh_name(self, node, oldname=None):  # , name=None):
         if oldname is not None:
             try:
-                #del self.names[self.GetItemText(node.item)]
                 del self.names[self._find_toplevel(node)][oldname]
             except KeyError:
                 pass
-        #self.names[name] = 1
-        #self.SetItemText(node.item, name)
-        #self.names[node.widget.name] = 1
         self.names.setdefault(self._find_toplevel(node), {})[node.widget.name] = 1
         self.SetItemText(node.item, self._build_label(node))
 
@@ -746,7 +736,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
         """returns a list of widget names, from the toplevel to the selected one
         Example: ['frame_1', 'sizer_1', 'panel_1', 'sizer_2', 'button_1']
                  if button_1 is the currently selected widget"""
-        from edit_sizers import SizerBase
         ret = []
         w = self.cur_widget
         oldw = None
@@ -759,13 +748,15 @@ class WidgetTree(wx.TreeCtrl, Tree):
             elif sizer is not None and not sizer.is_virtual():
                 w = sizer
             else:
-                if isinstance(w, SizerBase):
+                if isinstance(w, edit_sizers.SizerBase):
                     w = w.window
+                elif isinstance(w, application.Application):
+                    w = None
                 else:
                     w = w.parent
         ret.reverse()
         # ALB 2007-08-28: remember also the position of the toplevel window in the selected path
-        if oldw is not None:
+        if oldw is not None and oldw.widget is not None:
             assert oldw.widget
             pos = misc.get_toplevel_parent(oldw.widget).GetPosition()
             ret[0] = (ret[0], pos)
@@ -796,7 +787,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if itemok is not None:
             node = self.GetPyData(itemok)
             if parent is not None:
-                self.show_widget(parent, True)
+                self._show_widget_toplevel(parent)
                 if pos is not None:
                     misc.get_toplevel_parent(parent.widget).SetPosition(pos)
             self.select_item(node)
