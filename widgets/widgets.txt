@@ -1,21 +1,33 @@
-# list of widget modules available (one per line, without extension)
-# lines starting with a '#' are comments
-"Forms"
+# List of widget modules
+#
+# List all available widget modules - each on a own line. 
+# 
+# The modules can optionally be grouped by preceding section headers.
+# A section header is the name of the section enclosed in square brackets.
+#
+# Empty lines will be ignored. Lines beginning with hash sign ('#') are
+# ignored too and may be used to provide comments.
+#
+# Comments can also entered after modules or sections. Use the hash sign
+# ('#') preceded by a whitespace character for such cases.
+
+
+[Forms]
 frame
 dialog
 panel
 
-"Containers"
+[Containers]
 notebook
 splitter_window
 
-"Buttons"
+[Buttons]
 button
 toggle_button
 bitmap_button
 spin_button
 
-"Inputs"
+[Inputs]
 text_ctrl
 choice
 combo_box
@@ -25,7 +37,7 @@ checkbox
 radio_button
 radio_box
 
-"Numeric/Date/Time"
+[Numeric/Date/Time]
 spin_ctrl
 slider
 gauge
@@ -33,23 +45,23 @@ calendar_ctrl
 generic_calendar_ctrl
 datepicker_ctrl
 
-"Data"
+[Data]
 list_ctrl
 tree_ctrl
 grid
 
-"Static"
+[Static]
 static_text
 hyperlink_ctrl
 static_line
 static_bitmap
 spacer
 
-"???"
+[Misc]
 property_grid_manager
 custom_widget
 
-"Menu/Tool/Statusbar"
+[Menu/Tool/Statusbar]
 menubar
 toolbar
 statusbar

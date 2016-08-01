@@ -137,7 +137,7 @@ def _get_modulenames_from_file(filename):
             if len(cleaned[-1])>1:
                 cleaned.append( [None,[]] ) # no heading yet
             continue
-        if module_name.startswith('"'):
+        if module_name.startswith('['):
             # section heading
             cleaned[-1][0] = module_name[1:-1]
             continue
