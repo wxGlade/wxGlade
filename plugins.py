@@ -7,27 +7,28 @@ Functions to import modules
 
 import logging
 import os
+import re
 import sys
 import zipfile
+from ordereddict import OrderedDict
 
 import common
 import config
 
+rec_section = re.compile(r'\[(?P<section>[^]]+)\]')
+"""Regex tp match section headers"""
 
-def load_widgets_from_dir(widget_dir, submodule=''):
+rec_module = re.compile(r'^(?P<module>\w+)')
+"""Regex to match modules"""
+
+
+def load_widgets_from_dir(widget_dir, submodule='',
+                          default_section='not_set'):
     """\
-    Load and initialise the all widgets listed in widgets.txt in the given
-    directory.
+    Load and initialise the all widgets listed in widgets.txt in the given directory.
 
-    The names of the modules to import, are read from the file widgets.txt.
-
-    If you need to import a submodule instead, just specify the name of the
-    submodule and "<module name>.<submodule>" will be imported. This is
-    useful to import language specific code generators.
-
-    If wxGlade run in the GUI mode, the imported module returns a
-    wxBitmapButton object. A list of such objects will be returned. In batch
-    mode or if submodules are imported, an empty list will be returned.
+    If you need to import a submodule instead, just specify the name of the submodule and "<module name>.<submodule>"
+    will be imported. This is useful to import language specific code generators.
 
     @param widget_dir: Directory to search for widgets
     @type widget_dir:  str
@@ -35,29 +36,34 @@ def load_widgets_from_dir(widget_dir, submodule=''):
     @param submodule: Submodule to import
     @type submodule:  str
 
-    @rtype: list
+    @param default_section: Section name to group all widgets, if no section has been found
+    @type default_section: str
+
+    @return: In GUI-Mode: a dict with module sections as key and assigned list of wxBitmapButtons, the dict is empty
+             in batch mode.
+    @rtype:  OrderedDict
 
     @see: L{import_module()}
     @see: L{config.use_gui} - for "GUI" or "batch" mode
     """
-    buttons = []
+    buttons = OrderedDict()
 
     # language code generators e.g. perl_codegen
     widgets_filename = os.path.join(widget_dir, 'widgets.txt')
-    module_list = _get_modulenames_from_file(widgets_filename)
+    module_info = _modulenames_from_file(widgets_filename,
+                                         default_section)
 
-    if module_list and config.use_gui and not submodule.endswith('_codegen'):
+    if module_info and config.use_gui and not submodule.endswith('_codegen'):
         if submodule:
             logging.info(_('Loading "%s" modules from %s:'),
                          submodule, widgets_filename)
         else:
             logging.info(_('Loading widgets from %s:'), widgets_filename)
 
-    for header, module_names in module_list:
-        buttons.append( [header,[]] )
+    for section, module_names in module_info.iteritems():
+        buttons[section] = []
+
         for module_name in module_names:
-            #if not module_name:
-            #    buttons.append(object)
             if submodule:
                 fqmn = "%s.%s" % (module_name, submodule)
             else:
@@ -73,7 +79,7 @@ def load_widgets_from_dir(widget_dir, submodule=''):
             if hasattr(module, 'initialize'):
                 button = module.initialize()
                 if config.use_gui and button:
-                    buttons[-1][1].append(button)
+                    buttons[section].append(button)
     
             # step 3: import and initialise Python codegen as well as widget
             #         GUI elements
@@ -82,7 +88,7 @@ def load_widgets_from_dir(widget_dir, submodule=''):
                 if not result:
                     continue
                 if config.use_gui and button:
-                    buttons[-1][1].append(button)
+                    buttons[section].append(button)
     
             # step 4: do special initialisation for wconfig submodules
             elif submodule and submodule == 'wconfig':
@@ -103,51 +109,63 @@ def load_widgets_from_dir(widget_dir, submodule=''):
     return buttons
 
 
-def _get_modulenames_from_file(filename):
+def _modulenames_from_file(filename, default_section):
     """\
-    Return a list of module names read from given file.
+    Return a dict with module sections as key and assigned list of module names read from given file.
 
     @param filename: Absolute filename of the widgets.txt file
     @type filename:  str
 
-    @rtype: list[str] | None
+    @param default_section: Section name to group all widgets, if no section has been found
+    @type default_section: str
+
+    @rtype: OrderedDict
     """
+    content = OrderedDict()
+
     # test if the "widgets.txt" file exists
     if not os.path.isfile(filename):
         logging.debug(_('File %s not found.'), filename)
-        return []
+        return content
     try:
         widgets_file = open(filename)
-        module_list = widgets_file.readlines()
+        module_lines = widgets_file.readlines()
         widgets_file.close()
     except EnvironmentError, details:
         logging.warning(
             _("Can't read file %s file: %s"), filename, details)
-        return []
+        return content
 
-    # remove empty lines, comment lines and tailing comments
-    cleaned = []
-    cleaned.append( [None,[]] ) # no title yet
-    for module_name in module_list:
-        module_name = module_name.rstrip()
-        if module_name.startswith('#'):
+    cursect = default_section
+
+    for line in module_lines:
+
+        # remove empty lines, comment lines and tailing comments
+        line = line.rstrip()
+        if not line:
             continue
-        if not module_name:
-            # new section
-            if len(cleaned[-1])>1:
-                cleaned.append( [None,[]] ) # no heading yet
+        if line.startswith('#'):
             continue
-        if module_name.startswith('['):
-            # section heading
-            cleaned[-1][0] = module_name[1:-1]
+
+        if cursect not in content:
+            content[cursect] = []
+
+        # section heading
+        mo = rec_section.match(line)
+        if mo:
+            cursect = mo.group('section')
             continue
-        module_name = module_name.split('#', 1)[0].strip()
-        module_name = module_name.strip()
-        if module_name:
-            cleaned[-1][1].append(module_name)
-    if not cleaned[-1][1]:
-        del cleaned[-1]
-    return cleaned
+
+        mo = rec_module.match(line)
+        if mo:
+            content[cursect].append(mo.group('module'))
+
+    # remove empty sections
+    for section in content.keys():
+        if not content[section]:
+            del content[section]
+
+    return content
 
 
 def _process_widget_config(module):

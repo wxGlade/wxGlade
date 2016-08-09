@@ -31,7 +31,7 @@ Shortcut for L{edit_sizers._builder}
 
 def init_gui():
     if not config.use_gui:
-        return
+        return {}
 
     import edit_sizers
     global Sizer, SizerSlot, SizerBase, _builder

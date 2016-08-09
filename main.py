@@ -184,9 +184,6 @@ class wxGladeFrame(wx.Frame):
         help_menu = wx.Menu(style=wx.MENU_TEAROFF)
         wx.ToolTip_SetDelay(1000)
 
-        # load the available code generators
-        core_buttons, local_buttons, sizer_buttons = common.init_codegen()
-
         append_item = misc.append_item
         self.TREE_ID = TREE_ID = wx.NewId()
         append_item(view_menu, TREE_ID, _("Show &Tree\tF2"))
@@ -326,79 +323,27 @@ class wxGladeFrame(wx.Frame):
             (wx.ACCEL_CTRL, ord('P'), PREVIEW_ID),
             ])
 
-        # layout
-        # if there are custom components, add the toggle box...
-        if local_buttons:
-            main_sizer = wx.BoxSizer(wx.VERTICAL)
-            show_core_custom = ToggleButtonBox(
-                self, -1, [_("Core components"), _("Custom components")], 0)
+        # load the available code generators
+        all_widgets = common.init_codegen()
 
-            core_sizer = wx.FlexGridSizer(
-                0,
-                config.preferences.buttons_per_row
-                )
-            custom_sizer = wx.FlexGridSizer(
-                0,
-                config.preferences.buttons_per_row
-                )
-            self.SetAutoLayout(True)
-            # core components
-            for b in core_buttons:
-                core_sizer.Add(b)
-            for sb in sizer_buttons:
-                core_sizer.Add(sb)
-            # custom components
-            for b in local_buttons:
-                custom_sizer.Add(b)
-                custom_sizer.Show(b, False)
-            custom_sizer.Layout()
-            main_sizer.Add(show_core_custom, 0, wx.EXPAND)
-            main_sizer.Add(core_sizer, 0, wx.EXPAND)
-            main_sizer.Add(custom_sizer, 0, wx.EXPAND)
-            self.SetSizer(main_sizer)
-            main_sizer.Fit(self)
-            # events to display core/custom components
+        max_buttons = max(len(buttons) for buttons in all_widgets.itervalues()) + 1
+        sizer = wx.FlexGridSizer(0, max_buttons+1)
+        sizer.AddGrowableCol(0)
+        self.SetAutoLayout(True)
 
-            def on_show_core_custom(event):
-                show_core = True
-                show_custom = False
-                if event.GetValue() == 1:
-                    show_core = False
-                    show_custom = True
-                for b in local_buttons:
-                    custom_sizer.Show(b, show_custom)
-                for b in core_buttons:
-                    core_sizer.Show(b, show_core)
-                for b in sizer_buttons:
-                    core_sizer.Show(b, show_core)
-                core_sizer.Layout()
-                custom_sizer.Layout()
-                main_sizer.Layout()
-            EVT_TOGGLE_BOX(self, show_core_custom.GetId(), on_show_core_custom)
-        # ... otherwise (the common case), just add the palette of core buttons
-        else:
-            maxlen = max(len(heading_buttons[1]) for heading_buttons in core_buttons) + 1
-            if len(sizer_buttons)+1>maxlen: maxlen = len(sizer_buttons)+1
-            #sizer = wx.GridSizer(0, config.preferences.buttons_per_row)
-            sizer = wx.FlexGridSizer(0, maxlen+1)
-            sizer.AddGrowableCol(0)
-            self.SetAutoLayout(True)
-            # core components
-            for heading, buttons in core_buttons:
-                if heading:
-                    sizer.Add(wx.StaticText(self, -1, "%s:"%heading), 1, wx.ALIGN_CENTER_VERTICAL)
-                else:
-                    sizer.AddSpacer(0)
-                for b in buttons:
-                    sizer.Add(b, flag=wx.ALL, border=2)
-                # fill up the rest of the line
-                for i in range(maxlen-len(buttons)):
-                    sizer.AddSpacer(0)
-            sizer.Add(wx.StaticText(self, -1, "Sizers:"))
-            for sb in sizer_buttons:
-                sizer.Add(sb, flag=wx.ALL,border=2)
-            self.SetSizer(sizer)
-            sizer.Fit(self)
+        for section, buttons in all_widgets.iteritems():
+            if section:
+                sizer.Add(wx.StaticText(self, -1, "%s:" % section), 1, wx.ALIGN_CENTER_VERTICAL)
+            else:
+                sizer.AddSpacer(0)
+            for b in buttons:
+                sizer.Add(b, flag=wx.ALL, border=2)
+            # fill up the rest of the line
+            for i in range(max_buttons-len(buttons)):
+                sizer.AddSpacer(0)
+
+        self.SetSizer(sizer)
+        sizer.Fit(self)
 
         # Properties window
         frame_style = wx.DEFAULT_FRAME_STYLE
