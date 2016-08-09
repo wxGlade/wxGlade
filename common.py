@@ -15,6 +15,7 @@ import os.path
 import sys
 import tempfile
 import types
+from ordereddict import OrderedDict
 from xml.sax.saxutils import escape, quoteattr
 
 import config
@@ -118,15 +119,11 @@ Dictionary of objects used to generate the code in a given language.
 
 def init_codegen():
     """\
-    Load available code generators, core and user widgets as well as sizers
+    Load available code generators, built-in and user widgets as well as sizers
 
-    If wxGlade has been started in GUI mode, the function returns three lists
-    of wxBitmapButton objects to handle them. The first contains the
-    built-in widgets and the second one the user widgets and the third list
-    contains the sizers.
-
-    @return: List of core buttons, list of local buttons and list of sizer
-             buttons
+    @return: In GUI-Mode: a dict with module sections as key and assigned list of wxBitmapButtons, the dict is empty
+             in batch mode.
+    @rtype:  OrderedDict
 
     @see: L{load_config()}
     @see: L{load_code_writers()}
@@ -137,10 +134,17 @@ def init_codegen():
     style_attrs_to_sets(config.widget_config['generic_styles'])
     load_config()
     load_code_writers()
-    core_buttons, local_buttons = load_widgets()
+    all_widgets = load_widgets()
     sizer_buttons = load_sizers()
 
-    return core_buttons, local_buttons, sizer_buttons
+    # merge sizer buttons
+    for section in sizer_buttons:
+        if section not in all_widgets:
+            all_widgets[section] = sizer_buttons[section]
+        else:
+            all_widgets[section].extend(sizer_buttons[section])
+
+    return all_widgets
 
 
 def load_code_writers():
@@ -207,9 +211,8 @@ def load_sizers():
     """\
     Load and initialise the sizer support modules.
 
-    @return: A list of BitmapButton objects to handle sizer buttons
-
-    @see: L{edit_sizers}
+    @return: The initialise sizers like described in L{edit_sizers.edit_sizers.init_all}
+    @rtype: dict
     """
     logging.info('Load sizer generators:')
     for lang in code_writers.keys():
@@ -248,34 +251,24 @@ def load_sizers():
 
 def load_widgets():
     """\
-    Load core and user widgets.
+    Load built-in and user widgets.
 
-    Scans the application 'widgets/' directory as well as the user widgets
-    directory to find the installed widgets.
+    Scans the built-in and user widget directories to find the installed widgets and loads it.
 
-    It loads built-in widgets and "user" widgets. The build-in widgets are
-    load from path in L{config.widgets_path}. The user widget path is stored
-    in C{config.preferences.local_widget_path}.
+    @rtype: OrderedDict
 
-    If wxGlade has been started in GUI mode, the function returns two lists
-    of wxBitmapButton objects to handle them. The first contains the
-    built-in widgets and the second one the user widgets.
-
-    Both lists are empty in the batch mode.
-
-    If widget ZIP files are found, they will be process first and the default
-    Python imports will be the second.
-
-    @see: L{plugins.load_widgets_from_dir()}
+    @see: L{plugins.load_widgets_from_dir()} for more details e.g. the structure of the dictionary.
     """
     # load the "built-in" widgets
     core_buttons = plugins.load_widgets_from_dir(
         config.widgets_path,
+        default_section=_('Core widgets')
     )
 
     # load the "user" widgets
     local_buttons = plugins.load_widgets_from_dir(
         config.preferences.local_widget_path,
+        default_section=_('Custom widgets')
     )
 
     # load (remaining) widget code generators
@@ -291,7 +284,17 @@ def load_widgets():
                 path,
                 submodule=codegen_name,
             )
-    return core_buttons, local_buttons
+
+    all_widgets = OrderedDict()
+    all_widgets.update(core_buttons)
+
+    for section in local_buttons:
+        if section not in all_widgets:
+            all_widgets[section] = local_buttons[section]
+        else:
+            all_widgets[section].extend(local_buttons[section])
+
+    return all_widgets
 
 
 def add_object(event):

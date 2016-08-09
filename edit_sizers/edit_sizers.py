@@ -2722,8 +2722,8 @@ def init_all():
     """\
     Module initialization function
 
-    @return: A list of buttons (to add to the main palette) to add the
-             various sizers
+    @return: A dict with key "Sizers" and a assigned list of sizer buttons to add to the main palette
+    @rtype: dict
     """
     cw = common.widgets
     cw['EditBoxSizer'] = builder
@@ -2746,5 +2746,8 @@ def init_all():
         'grid_sizer.xpm'
     )
 
-    return [common.make_object_button('EditBoxSizer', 'sizer.xpm'),
-            common.make_object_button('EditGridSizer', 'grid_sizer.xpm')]
+    ret = {'Sizers': [
+        common.make_object_button('EditBoxSizer', 'sizer.xpm'),
+        common.make_object_button('EditGridSizer', 'grid_sizer.xpm'),
+    ]}
+    return ret
