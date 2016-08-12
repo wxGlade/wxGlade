@@ -333,6 +333,7 @@ class wxGladeFrame(wx.Frame):
 
         for section, buttons in all_widgets.iteritems():
             if section:
+                section = section.replace('&', '&&')
                 sizer.Add(wx.StaticText(self, -1, "%s:" % section), 1, wx.ALIGN_CENTER_VERTICAL)
             else:
                 sizer.AddSpacer(0)
