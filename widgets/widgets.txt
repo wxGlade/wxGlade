@@ -37,7 +37,7 @@ checkbox
 radio_button
 radio_box
 
-[Numeric/Date/Time]
+[Numeric & Dates]
 spin_ctrl
 slider
 gauge
@@ -61,7 +61,7 @@ spacer
 property_grid_manager
 custom_widget
 
-[Menu/Tool/Statusbar]
+[Menu & Bars]
 menubar
 toolbar
 statusbar
