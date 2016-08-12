@@ -27,4 +27,10 @@
 
     <!-- Use number and title in cross references -->
     <xsl:param name="xref.with.number.and.title" select="1"/>
+
+    <!-- Use number and title in cross references -->
+    <xsl:param name="use.id.as.filename" select="1"/>
+
+    <!-- Create chunk even for first toplevel section -->
+    <xsl:param name="chunk.first.sections" select="0"></xsl:param>
 </xsl:stylesheet>

@@ -107,6 +107,8 @@ class TestBugs(WXGladeBaseTest):
     def test_bug188_toolbar_depencencies(self):
         """\
         Test bug #188 - Missing dependencies with wxToolBox widgets
+
+        That's the test case for SF bug #188.
         """
         self._test_all('bug188_included_toolbar')
         self._test_all('bug188_standalone_toolbar')
@@ -116,3 +118,22 @@ class TestBugs(WXGladeBaseTest):
         Test AttributeError during code generation of toplevel menubars
         """
         self._test_all('bars_wo_parent')
+
+    def test_bug189_XMLParsingError(self):
+        """\
+        Test bug #189 - XmlParsingError : An internal error occurred while
+        Generate Code
+
+        That's the test case for SF bug #189.
+        """
+        # Lisp code has to raise an exception
+        source = self._load_file('bug183.wxg')
+        source = self._modify_attrs(source, path='/tmp/existing_but_no_access.pl')
+
+        self.failUnlessRaises(
+            IOError,
+            self._generate_code,
+            'perl',
+            source,
+            '/tmp/existing_but_no_access.pl',
+        )

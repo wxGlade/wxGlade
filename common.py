@@ -7,6 +7,7 @@ Global functions and variables
 """
 
 import codecs
+import errno
 import ConfigParser
 import logging
 import md5
@@ -621,8 +622,16 @@ def check_autosaved(filename):
             return orig.st_mtime < auto.st_mtime
         else:
             return os.path.exists(autosave_name)
-    except OSError, e:
-        if e.errno != 2:
+    except EnvironmentError, inst:
+        # File doesn't exists
+        if inst.errno == errno.ENOENT:
+            pass
+        # Security frameworks like SELinux may deny the write access even if
+        # the check for write permissions was successful.
+        elif inst.errno in [errno.EPERM, errno.EACCES]:
+            logging.info(
+                _('Ignore autosave permission error: %s'), str(inst))
+        else:
             logging.exception(_('Internal Error'))
         return False
 
