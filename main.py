@@ -326,22 +326,18 @@ class wxGladeFrame(wx.Frame):
         # load the available code generators
         all_widgets = common.init_codegen()
 
-        max_buttons = max(len(buttons) for buttons in all_widgets.itervalues()) + 1
-        sizer = wx.FlexGridSizer(0, max_buttons+1)
+        sizer = wx.FlexGridSizer(0, 2)
         sizer.AddGrowableCol(0)
         self.SetAutoLayout(True)
 
-        for section, buttons in all_widgets.iteritems():
+        for section in all_widgets:
             if section:
-                section = section.replace('&', '&&')
-                sizer.Add(wx.StaticText(self, -1, "%s:" % section), 1, wx.ALIGN_CENTER_VERTICAL)
-            else:
-                sizer.AddSpacer(0)
-            for b in buttons:
-                sizer.Add(b, flag=wx.ALL, border=2)
-            # fill up the rest of the line
-            for i in range(max_buttons-len(buttons)):
-                sizer.AddSpacer(0)
+                sizer.Add(wx.StaticText(self, -1, "%s:" % section.replace('&', '&&')), 1, wx.ALIGN_CENTER_VERTICAL)
+
+            bsizer = wx.GridSizer(cols=config.preferences.buttons_per_row)
+            for button in all_widgets[section]:
+                bsizer.Add(button, flag=wx.ALL, border=1)
+            sizer.AddSizer(bsizer)
 
         self.SetSizer(sizer)
         sizer.Fit(self)
