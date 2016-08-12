@@ -33,6 +33,7 @@ Submitting Issues
 
 Writing a helpful bug report is easy if you follow some hints. The items below
 should help you to integrate useful information. They are not an absolute rule
+
 - it's more like a guideline.
 - What did you? May you want to include a screenshot.
 - What do you want to happen?

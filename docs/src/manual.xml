@@ -5,7 +5,7 @@
   <title>wxGlade manual</title>
 
   <bookinfo>
-    <date>2016-03-03</date>
+    <date>2016-06-24</date>
 
     <authorgroup>
       <author>
@@ -28,7 +28,7 @@
     </authorgroup>
   </bookinfo>
 
-  <preface>
+  <preface id="preface">
     <title>Preface</title>
 
     <para>This manual describes the program wxGlade, initially written by
@@ -37,7 +37,7 @@
     Each of the chapters in this manual is designed as a tutorial for using
     wxGlade and a reference for widgets supported until now.</para>
 
-    <section>
+    <section id="preface_contact">
       <title>Contact</title>
 
       <para>Check the project homepage <ulink
@@ -50,21 +50,21 @@
       <para>Any kind of feedback is always welcome.</para>
     </section>
 
-    <section>
+    <section id="preface_license">
       <title>License</title>
 
       <para>wxGlade is copyright 2002-2007 by Alberto Griggio and 2011-2016 by
       Carsten Grohmann.</para>
 
       <para>Use and distribution of wxGlade is governed by the MIT license,
-      located in <xref linkend="mit.license.section"/>.</para>
+      located in <xref linkend="license_mit"/>.</para>
     </section>
   </preface>
 
-  <chapter>
+  <chapter id="start">
     <title>Getting Started</title>
 
-    <section>
+    <section id="what_is_wxglade">
       <title>What is wxGlade?</title>
 
       <para>wxGlade is an open source graphical user interface builder written
@@ -143,10 +143,10 @@
     </section>
   </chapter>
 
-  <chapter>
+  <chapter id="installation">
     <title>Installation</title>
 
-    <section id="requirements.supported.platforms.section">
+    <section id="requirements">
       <title>Requirements and Supported Platforms</title>
 
       <para>wxGlade has been run on Microsoft Windows, Linux, OS X because
@@ -181,8 +181,8 @@
       url="http://www.wxpython.org">http://www.wxpython.org</ulink>.</para>
     </section>
 
-    <section>
-      <title>Installation</title>
+    <section id="installing">
+      <title>Installing wxGlade</title>
 
       <para>wxGlade is available in four different package types:</para>
 
@@ -237,12 +237,12 @@
           url="http://mercurial.selenic.com">Mercurial</ulink> repository
           hosted on <ulink url="https://bitbucket.org">Bitbucket.org</ulink>.
           You can fetch the whole repository from <ulink
-          url="https://bitbucket.org/agriggio/wxglade">https://bitbucket.org/agriggio/wxglade</ulink>
+          url="https://bitbucket.org/wxglade/wxglade">https://bitbucket.org/wxglade/wxglade</ulink>
           using anonymous Mercurial (<command>hg</command>) access.</para>
 
           <para>Alternatively you can download different source tarballs from
           <ulink
-          url="https://bitbucket.org/agriggio/wxglade/downloads">https://bitbucket.org/agriggio/wxglade/downloads</ulink>.</para>
+          url="https://bitbucket.org/wxglade/wxglade/downloads">https://bitbucket.org/wxglade/wxglade/downloads</ulink>.</para>
         </section>
       </section>
 
@@ -270,7 +270,7 @@
         package and all dependencies.</para>
 
         <para>Install wxGlade from the source package like described in <xref
-        linkend="installing.from.source.section"/> if your distribution
+        linkend="installation_from_source"/> if your distribution
         doesn't provide any package or the package is out-of-date.</para>
 
         <para>On Unix systems wxGlade will be started using the shell script
@@ -282,7 +282,7 @@
         if you want to use a non-default interpreter.</para>
       </section>
 
-      <section id="installing.from.source.section">
+      <section id="installation_from_source">
         <title>Installing from Source</title>
 
         <para>The installation from scratch requires Python, wxPython and
@@ -297,7 +297,7 @@
         <para>You can install wxGlade from source in three different
         ways.</para>
 
-        <section id="single.user.install.section">
+        <section id="installation_single_user">
           <title>Single User Installation (Extract and Run)</title>
 
           <sidebar>
@@ -318,7 +318,7 @@
           installation privileges.</para>
 
           <para>The dependencies listed in <xref
-          linkend="requirements.supported.platforms.section"/> have been
+          linkend="requirements"/> have been
           satisfied.</para>
 
           <para>The source packages and the development packages have the same
@@ -342,7 +342,7 @@
           Unix</title>
 
           <para>The first variant of a multi user installation is very similar
-          to <xref linkend="single.user.install.section"/> except the
+          to <xref linkend="installation_single_user"/> except the
           installation directory. And probably you need administrative
           permissions. You could extract the wxGlade source package e.g. into
           <command>C:\Program Files\wxGlade</command> on Microsoft Windows or
@@ -434,28 +434,28 @@ changing mode of /opt/wxGlade/usr/bin/wxglade to 755
     </section>
   </chapter>
 
-  <chapter>
+  <chapter id="running_wxglade">
     <title>Running wxGlade</title>
 
     <para>Once the installation of wxGlade is finished successfully, you can
     start wxGlade either by clicking on the desktop icon, selecting the
     program from the <quote>Start Menu</quote> or on a command line as
-    described in <xref linkend="command.line.invocation.section"
+    described in <xref linkend="invocation_cmdline"
     xreflabel="command line"/>.</para>
 
-    <section>
+    <section id="known_platforms">
       <title>Known Platforms</title>
 
       <para>wxGlade works on most Unix platforms and Microsoft Windows.</para>
     </section>
 
-    <section>
+    <section id="languages">
       <title>Languages</title>
 
       <para>wxGlade uses English only, currently.</para>
     </section>
 
-    <section id="command.line.invocation.section">
+    <section id="invocation_cmdline">
       <title>Command Line Invocation</title>
 
       <para>You can run wxGlade without parameters to start the GUI with an
@@ -530,10 +530,10 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
       </note>
     </section>
 
-    <section>
+    <section id="configure_wxglade">
       <title>Configuring wxGlade</title>
 
-      <section id="preferences.section">
+      <section id="preferences">
         <title>Preferences Dialog</title>
 
         <para>You can access the Preferences Dialog with the menu <menuchoice>
@@ -575,7 +575,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
         new environment.</para>
       </section>
 
-      <section id="config.files.section">
+      <section id="config_files">
         <title>Configuration Files</title>
 
         <para>wxGlade stores several internal information like configuration
@@ -613,7 +613,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
       </section>
     </section>
 
-    <section id="deprecated.features.section">
+    <section id="deprecated_features">
       <title>Deprecated Features</title>
 
       <para>This section lists deprecated features of wxGlade. These features
@@ -630,7 +630,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
         functionality.</para>
 
         <para>The pro and cons are discussed detailed in <xref
-        linkend="shared.control.section"/>.</para>
+        linkend="shared_control"/>.</para>
 
         <para>This feature isn't removed currently to stay backward
         compatible.</para>
@@ -641,7 +641,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
       </section>
     </section>
 
-    <section>
+    <section id="troubleshooting">
       <title>Troubleshooting and Error Handling</title>
 
       <section>
@@ -657,14 +657,14 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
 
               <glossdef>
                 <para>Check the log file for errors (see <xref
-                linkend="config.files.section"/>) and check that all
+                linkend="config_files"/>) and check that all
                 dependencies (especially wxWidgets and wxPython) are
                 installed. A list of dependencies is in <xref
-                linkend="requirements.supported.platforms.section"/>.</para>
+                linkend="requirements"/>.</para>
 
                 <para>If you think this is an application issue, please file a
                 bug report like described in <xref
-                linkend="report.bug.section"/>.</para>
+                linkend="report_bugs"/>.</para>
               </glossdef>
             </glossentry>
           </glosslist></para>
@@ -801,7 +801,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
 
               <para><emphasis role="bold">Corrective Action:</emphasis> That's
               probably a bug in wxGlade. Please check the log file and file a
-              bug report. See <xref linkend="report.bug.section"/> for more
+              bug report. See <xref linkend="report_bugs"/> for more
               details.</para>
             </glossdef>
           </glossentry>
@@ -899,7 +899,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
         </glosslist>
       </section>
 
-      <section id="report.bug.section">
+      <section id="report_bugs">
         <title>How to Report a Bug</title>
 
         <para>Writing a helpful bug report is easy if you follow some hints.
@@ -931,7 +931,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
             <quote>wxglade.log</quote> always. The pane <quote><guilabel>How
             to Report a Bug</guilabel></quote> contains the full path of the
             error log file. The file location is additionally described in
-            <xref linkend="config.files.section"/>.</para>
+            <xref linkend="config_files"/>.</para>
           </listitem>
         </itemizedlist>
 
@@ -956,7 +956,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
     </section>
   </chapter>
 
-  <chapter>
+  <chapter id="working_with_wxglade">
     <title>Working with wxGlade</title>
 
     <para>The program wxGlade is a tool for designing Graphical User
@@ -985,10 +985,10 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
       <para>These sections provided you a short introduction into wxGlade.
       Advanced topics like escaping special characters or naming convention
       will be discussed in <xref
-      linkend="next.steps.with.wxglade.section"/>.</para>
+      linkend="next_steps"/>.</para>
 
       <para>The used abbreviations are described in <xref
-      linkend="abbreviations.section"/>.</para>
+      linkend="abbreviations"/>.</para>
 
       <section>
         <title>Quick Example</title>
@@ -1062,7 +1062,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
       </section>
     </section>
 
-    <section id="next.steps.with.wxglade.section">
+    <section id="next_steps">
       <title>Next Steps</title>
 
       <para>This section covers advanced topics like the handling of
@@ -1093,7 +1093,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
         Question marks especially double quotes will be escaped also.</para>
       </section>
 
-      <section id="best.practice.section">
+      <section id="best_practice">
         <title>Best Practice</title>
 
         <para>These recommendations should help to improve the usability and
@@ -1107,7 +1107,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
           files to reflect changed designs.</para>
 
           <para>This feature has some limitations. They are detailed discusses
-          in <xref linkend="shared.control.section"/>.</para>
+          in <xref linkend="shared_control"/>.</para>
 
           <para>It's common coding practice to separate and encapsulate
           individual responsibilities. Using a derived class to extend the
@@ -1118,7 +1118,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
               future version of wxGlade. Thereby it's advised not to use this
               feature for new projects. Details about all deprecated features
               are shown in <xref
-              linkend="deprecated.features.section"/>.</para>
+              linkend="deprecated_features"/>.</para>
             </warning></para>
         </section>
 
@@ -1188,7 +1188,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
           combination with disabled feature <quote><guilabel>Overwrite
           existing sources</guilabel></quote>. Use derived classes to
           implement your functionality. See <xref
-          linkend="best.practice.section"/> also.</para>
+          linkend="best_practice"/> also.</para>
         </section>
 
         <section>
@@ -1215,7 +1215,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
           <title>XRC</title>
 
           <para>The XRC code writer doesn't supports all bitmap path tags
-          described in <xref linkend="bitmap.path.section"/>.</para>
+          described in <xref linkend="codegen_bitmap_path"/>.</para>
 
           <para>Just the <quote><code>art:</code></quote> statement is
           supported. The remaining bitmap tags will irgnored.</para>
@@ -1244,8 +1244,8 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
         by wxGlade</quote> and <quote>Shared control</quote>. It separated the
         two ways to work with wxGlade.</para>
 
-        <section id="full.control.section">
-          <title id="full.control.wxglade.section">Full Control by
+        <section id="full_control">
+          <title>Full Control by
           wxGlade</title>
 
           <para>If <quote><guilabel>Overwrite existing
@@ -1257,13 +1257,13 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
           <para>The files written by wxGlade are consistent always. Also if
           e.g. classes or attributes are renamed. Rewriting the whole files is
           less error-prone in comparison with <xref
-          linkend="shared.control.section"/>. That is the advantages of this
+          linkend="shared_control"/>. That is the advantages of this
           method.</para>
 
           <para>This method is the recommended one.</para>
         </section>
 
-        <section id="shared.control.section">
+        <section id="shared_control">
           <title>Shared Control</title>
 
           <para>Manual changes in the source files won't be overwritten if
@@ -1317,7 +1317,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
             <para>This feature is deprecated and will be removed from a future
             version of wxGlade. Thereby it's advised not to use this feature
             for new projects. Details about all deprecated features are shown
-            in <xref linkend="deprecated.features.section"/>.</para>
+            in <xref linkend="deprecated_features"/>.</para>
           </warning>
         </section>
 
@@ -1368,7 +1368,7 @@ wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
           </orderedlist>
 
           <para>Those properties are explained in <xref
-          linkend="application.properties.section"/>. Different combinations
+          linkend="ui_application_properties"/>. Different combinations
           of those attributes generated different application start code. The
           table below shows the type of application start code resulting from
           different combinations of the three properties. The
@@ -1621,10 +1621,10 @@ if __name__ == "__main__":
     </section>
   </chapter>
 
-  <chapter>
+  <chapter id="ui">
     <title>wxGlade User Interface</title>
 
-    <section>
+    <section id="ui_palette_window">
       <title>Main Palette</title>
 
       <para>The main window is a palette that hosts the menu and the widget
@@ -1657,7 +1657,7 @@ if __name__ == "__main__":
       click on a sizer's empty cell to add the widget to it.</para>
     </section>
 
-    <section>
+    <section id="ui_tree_window">
       <title>Tree Window</title>
 
       <para>The tree window shows the logical hierarchy of widgets and their
@@ -1703,7 +1703,7 @@ if __name__ == "__main__":
       </note>
     </section>
 
-    <section>
+    <section id="ui_design_window">
       <title>Design Window</title>
 
       <para>The design window shows the frame or panel you are creating in
@@ -1729,7 +1729,7 @@ if __name__ == "__main__":
       linkend="sizer_menu.fig"/>.</para>
     </section>
 
-    <section id="widget_properties.section">
+    <section id="ui_properties_window">
       <title>Properties Window</title>
 
       <para>The <quote><guilabel>Properties</guilabel></quote> window lets you
@@ -1790,7 +1790,7 @@ if __name__ == "__main__":
           <guimenuitem>Show Properties</guimenuitem>
         </menuchoice>.</para>
 
-      <section id="application.properties.section">
+      <section id="ui_application_properties">
         <title>Application Properties</title>
 
         <para>The page <quote><guilabel>Application</guilabel></quote>
@@ -1921,7 +1921,7 @@ if __name__ == "__main__":
                     a future version of wxGlade. Thereby it's advised not to
                     use this feature for new projects. Details about all
                     deprecated features are shown in <xref
-                    linkend="deprecated.features.section"/>.</para>
+                    linkend="deprecated_features"/>.</para>
                   </warning></para>
               </glossdef>
             </glossentry>
@@ -2004,7 +2004,7 @@ if __name__ == "__main__":
           </glosslist></para>
       </section>
 
-      <section id="common.properties.section">
+      <section>
         <title>Common Properties</title>
 
         <para>The first tab contains the common properties that apply to all
@@ -2243,7 +2243,7 @@ if __name__ == "__main__":
         </glosslist>
       </section>
 
-      <section id="layout_properties.section">
+      <section id="layout_properties">
         <title>Layout Properties</title>
 
         <para>The second tab is related to layout properties that control
@@ -2256,7 +2256,7 @@ if __name__ == "__main__":
         uncheck any option related to the placement in the sizer. Many widgets
         may have a default value of 3 in the
         <quote><guilabel>Border</guilabel></quote> property in the Preferences
-        Dialog (see <xref linkend="preferences.section"/>). If you let a
+        Dialog (see <xref linkend="preferences"/>). If you let a
         widget have a default border, the <constant>wxAll</constant> option is
         also checked.</para>
       </section>
@@ -2316,12 +2316,12 @@ if __name__ == "__main__":
         your changes. Otherwise they will lost.</para>
       </section>
 
-      <section id="styles.section">
+      <section>
         <title>Styles</title>
 
         <para>The most of the styles as shown in the <xref
-        linkend="layout_properties.section"/> and <xref
-        linkend="widget_properties.section"/> have a tooltip with additional
+        linkend="layout_properties"/> and <xref
+        linkend="ui_properties_window"/> have a tooltip with additional
         information about the style.</para>
 
         <para>The tooltips show a short description as well as additional
@@ -2388,7 +2388,7 @@ if __name__ == "__main__":
         </example>
       </section>
 
-      <section id="code.properties.section">
+      <section id="ui_code_properties">
         <title>Code Properties</title>
 
         <para>The fifth and last tab is named
@@ -2470,12 +2470,12 @@ if __name__ == "__main__":
       </section>
     </section>
 
-    <section id="menu.section">
+    <section id="ui_menu">
       <title>The wxGlade Menu</title>
 
       <para>wxGlade has only a few very small number of menus.</para>
 
-      <section id="menu.file.section">
+      <section id="ui_file_menu">
         <title>The FILE Menu</title>
 
         <para>In the <guimenu>FILE</guimenu> menu are the classic <menuchoice>
@@ -2502,7 +2502,7 @@ if __name__ == "__main__":
           </menuchoice> item produces the code from the current design.</para>
       </section>
 
-      <section id="menu.view.section">
+      <section id="ui_view_menu">
         <title>The VIEW Menu</title>
 
         <para>In the <guimenu>VIEW</guimenu> menu, you can show or hide the
@@ -2512,7 +2512,7 @@ if __name__ == "__main__":
         <para>In this menu you access the Preferences Dialog as well.</para>
       </section>
 
-      <section>
+      <section id="ui_help_menu">
         <title>The HELP Menu</title>
 
         <para>The <guimenu>HELP</guimenu> menu provides access to the wxGlade
@@ -2521,7 +2521,7 @@ if __name__ == "__main__":
       </section>
     </section>
 
-    <section>
+    <section id="ui_shortcuts">
       <title>Shortcuts</title>
 
       <glosslist>
@@ -2660,10 +2660,10 @@ if __name__ == "__main__":
     </section>
   </chapter>
 
-  <chapter>
+  <chapter id="supported_widgets">
     <title>Supported widgets</title>
 
-    <section id="widgets.intro.section">
+    <section>
       <title>Introduction</title>
 
       <para>wxGlade supports a number of widgets and helps you to edit the
@@ -2877,7 +2877,7 @@ if __name__ == "__main__":
       Widget</quote>.</para>
     </section>
 
-    <section id="bitmap.path.section">
+    <section id="codegen_bitmap_path">
       <title>Specifying the Path of Bitmaps</title>
 
       <para>You need to specify a bitmap in some widgets. This can be done in
@@ -3006,17 +3006,17 @@ if __name__ == "__main__":
         preview window shows a fixed size empty bitmap instead.</para>
 
         <note>
-          <para>Refer to <xref linkend="code.properties.section"/> for a
+          <para>Refer to <xref linkend="ui_code_properties"/> for a
           description of declaration and assignment of additional functions
           and variables.</para>
         </note>
       </section>
     </section>
 
-    <section>
-      <title>Menu, Statusbar and Toolbar</title>
+    <section id="star_bars">
+      <title>Menubar, Statusbar and Toolbar</title>
 
-      <section id="menu.intro.section">
+      <section>
         <title>Introduction</title>
 
         <para>wxGlade helps you to design the menu, the tool bar and the
@@ -3044,7 +3044,7 @@ if __name__ == "__main__":
         generated.</para>
       </section>
 
-      <section id="menu.menu.section">
+      <section>
         <title>Menu</title>
 
         <para>In the menu <quote><guilabel>Properties</guilabel></quote>
@@ -3077,7 +3077,7 @@ if __name__ == "__main__":
         </figure>
       </section>
 
-      <section id="menu.statusbar.section">
+      <section>
         <title>Statusbar</title>
 
         <para>In the <quote><guilabel>Properties</guilabel></quote> window you
@@ -3095,7 +3095,7 @@ if __name__ == "__main__":
         </figure>
       </section>
 
-      <section id="menu.toolbar.section">
+      <section>
         <title>Toolbar</title>
 
         <para>You can edit the toolbar style and bitmap size in the properties
@@ -3118,7 +3118,7 @@ if __name__ == "__main__":
         <para>You have to enter two bitmaps, one for normal status and the
         other for the pushed status.</para>
 
-        <para>Refer to <xref linkend="bitmap.path.section"/> for bitmap path
+        <para>Refer to <xref linkend="codegen_bitmap_path"/> for bitmap path
         specifications.</para>
 
         <figure>
@@ -3134,13 +3134,13 @@ if __name__ == "__main__":
       </section>
     </section>
 
-    <section id="widgets.wlist.section">
+    <section id="widget_list">
       <title>Widget List</title>
 
       <para>Follow the widget list as it appears in the wxGlade main
       window.</para>
 
-      <section id="widgets.frame.section">
+      <section>
         <title>Frame</title>
 
         <para>This prompts for a <classname>wxFrame</classname> or a
@@ -3149,7 +3149,7 @@ if __name__ == "__main__":
         window you can choose the styles and you can add an icon.</para>
       </section>
 
-      <section id="widgets.dialog.section">
+      <section>
         <title>Dialog or Panel</title>
 
         <para>This prompts for a <classname>wxDialog</classname> or a
@@ -3158,7 +3158,7 @@ if __name__ == "__main__":
         the styles and, for the dialog, you can add an icon.</para>
       </section>
 
-      <section id="widgets.panel.section">
+      <section>
         <title>Panel</title>
 
         <para>This allows you to add a panel to a sizer. In the
@@ -3166,7 +3166,7 @@ if __name__ == "__main__":
         the styles.</para>
       </section>
 
-      <section id="widgets.splitter.section">
+      <section>
         <title>Splitter Window</title>
 
         <para>This produces a <classname>wxSplitterWindow</classname> and two
@@ -3180,7 +3180,7 @@ if __name__ == "__main__":
         and the other will shrink to the minimum size possible.</para>
       </section>
 
-      <section id="widgets.notebook.section">
+      <section>
         <title>Notebook</title>
 
         <para>This produces a <classname>wxNotebook</classname> and one panel
@@ -3191,7 +3191,7 @@ if __name__ == "__main__":
       <section>
         <title>Buttons</title>
 
-        <section id="widgets.button.section">
+        <section>
           <title>Button</title>
 
           <para>This produces a <classname>wxButton</classname>. You can enter
@@ -3206,11 +3206,11 @@ if __name__ == "__main__":
           <para>This produces a <classname>wxBitmapButton</classname>. You can
           set the <quote>default</quote> flag on or off. You also can choose
           the bitmap for the button and, optionally, the bitmap for the
-          disabled status. Refer to <xref linkend="bitmap.path.section"/> for
+          disabled status. Refer to <xref linkend="codegen_bitmap_path"/> for
           bitmap path specifications.</para>
         </section>
 
-        <section id="widgets.radio.section">
+        <section>
           <title>Radio Button</title>
 
           <para>This produces a <classname>wxRadioButton</classname>. In the
@@ -3226,7 +3226,7 @@ if __name__ == "__main__":
           the range and the value.</para>
         </section>
 
-        <section id="widgets.toggle_button.section">
+        <section>
           <title>Toggle Button</title>
 
           <para>This produces a <classname>wxToggleButton</classname>. You can
@@ -3251,7 +3251,7 @@ if __name__ == "__main__":
         the choices, the selection and the style.</para>
       </section>
 
-      <section id="widgets.checkbox.section">
+      <section>
         <title>Check Box</title>
 
         <para>This produces a <classname>wxCheckBox</classname>. In the
@@ -3259,7 +3259,7 @@ if __name__ == "__main__":
         the text, and the status, checked or not, of the button.</para>
       </section>
 
-      <section id="widgets.choice.section">
+      <section>
         <title>Choice</title>
 
         <para>This produces a <classname>wxChoice</classname>. In the
@@ -3268,7 +3268,7 @@ if __name__ == "__main__":
         list of choices.</para>
       </section>
 
-      <section id="widgets.combo.section">
+      <section>
         <title>Combo Box</title>
 
         <para>This produces a <classname>wxComboBox</classname>. In the
@@ -3288,7 +3288,7 @@ if __name__ == "__main__":
         the style.</para>
       </section>
 
-      <section id="widgets.gauge.section">
+      <section>
         <title>Gauge</title>
 
         <para>This produces a <classname>wxGauge</classname>. In the
@@ -3322,7 +3322,7 @@ if __name__ == "__main__":
         style.</para>
       </section>
 
-      <section id="widgets.listbox.section">
+      <section>
         <title>List Box</title>
 
         <para>This produces a <classname>wxListBox</classname>. In the
@@ -3331,7 +3331,7 @@ if __name__ == "__main__":
         list of choices.</para>
       </section>
 
-      <section id="widgets.listctrl.section">
+      <section>
         <title>List Control</title>
 
         <para>This produces a <classname>wxListCtrl</classname>. In the
@@ -3347,7 +3347,7 @@ if __name__ == "__main__":
         the style.</para>
       </section>
 
-      <section id="widgets.radiobox.section">
+      <section>
         <title>Radio Box</title>
 
         <para>This produces a <classname>wxRadioBox</classname>. In the
@@ -3360,7 +3360,7 @@ if __name__ == "__main__":
         of choices.</para>
       </section>
 
-      <section id="widgets.slider.section">
+      <section>
         <title>Slider</title>
 
         <para>This produces a <classname>wxSlider</classname>. In the
@@ -3368,7 +3368,7 @@ if __name__ == "__main__":
         the value, the range and also set the style.</para>
       </section>
 
-      <section id="widgets.spinctrl.section">
+      <section>
         <title>Spin Control</title>
 
         <para>This produces a <classname>wxSpinCtrl</classname>. In the
@@ -3386,18 +3386,18 @@ if __name__ == "__main__":
         class.</para>
       </section>
 
-      <section id="widgets.static_bitmap.section">
+      <section>
         <title>Static Bitmap</title>
 
         <para>This produces a <classname>wxStaticBitmap</classname>. You will
         be prompted for the bitmap path. Refer to <xref
-        linkend="bitmap.path.section"/> for bitmap path specifications. In the
+        linkend="codegen_bitmap_path"/> for bitmap path specifications. In the
         <quote><guilabel>Properties</guilabel></quote> window you can set the
         style and you can tell wxGlade whether to store the object as an
         attribute of the frame class.</para>
       </section>
 
-      <section id="widgets.static_text.section">
+      <section>
         <title>Static Text</title>
 
         <para>This produces a <classname>wxStaticText</classname>. In the
@@ -3406,7 +3406,7 @@ if __name__ == "__main__":
         as an attribute.</para>
       </section>
 
-      <section id="widgets.textctrl.section">
+      <section>
         <title>Text Control</title>
 
         <para>This produces a <classname>wxTextCtrl</classname>. In the
@@ -3414,7 +3414,7 @@ if __name__ == "__main__":
         the text and also set the style.</para>
       </section>
 
-      <section id="widgets.treectrl.section">
+      <section>
         <title>Tree Control</title>
 
         <para>This produces a <classname>wxTreeCtrl</classname>. In the
@@ -3422,7 +3422,7 @@ if __name__ == "__main__":
         style.</para>
       </section>
 
-      <section id="widgets.custom.section">
+      <section>
         <title>Custom Widget</title>
 
         <para>When you put a Custom Widget in the design window you will be
@@ -3528,7 +3528,7 @@ if __name__ == "__main__":
           </example>
 
           <note>
-            <para>Refer to <xref linkend="code.properties.section"/> for a
+            <para>Refer to <xref linkend="ui_code_properties"/> for a
             description of declaration and assignment of additional functions
             and variables.</para>
           </note>
@@ -3636,7 +3636,7 @@ if __name__ == "__main__":
         </section>
       </section>
 
-      <section id="widgets.spacer.section">
+      <section>
         <title>Spacer</title>
 
         <para>When you put a spacer into a sizer slot in the design window you
@@ -3646,7 +3646,7 @@ if __name__ == "__main__":
     </section>
   </chapter>
 
-  <chapter>
+  <chapter id="technical_notes">
     <title>wxGlade technical notes</title>
 
     <para>This is an informal overview of wxGlade internals, made through a
@@ -3756,7 +3756,7 @@ test of static_text.zip OK</programlisting></para>
         <orderedlist>
           <listitem>
             <para>Place the widget package in the <guilabel>Local widget
-            path</guilabel> (see <xref linkend="preferences.section"/>).
+            path</guilabel> (see <xref linkend="preferences"/>).
             Create this directory if it doesn't exist.</para>
           </listitem>
 
@@ -3900,7 +3900,7 @@ def initialize():
       </section>
     </section>
 
-    <section id="for.contributors.section">
+    <section id="contributing">
       <title>Contributing to wxGlade</title>
 
       <para>You are, of course, free to make any changes/additions you want to
@@ -3976,7 +3976,7 @@ def initialize():
       </section>
     </section>
 
-    <section>
+    <section id="incomplete_and_outdated">
       <title>Incomplete and outdated parts</title>
 
       <caution>
@@ -4253,7 +4253,7 @@ def initialize():
     </section>
   </chapter>
 
-  <appendix id="abbreviations.section">
+  <appendix id="abbreviations">
     <title>Glossary of Terms, Abbreviations, and Acronyms</title>
 
     <para>The following abbreviations are used in this manual: <variablelist>
@@ -4465,7 +4465,7 @@ def initialize():
       </variablelist></para>
   </appendix>
 
-  <appendix>
+  <appendix id="copyright">
     <title>Copyrights, Licenses and Trademarks</title>
 
     <section>
@@ -4473,10 +4473,10 @@ def initialize():
 
       <para>wxGlade is copyright 2002-2007 by Alberto Griggio and 2011-2016 by
       Carsten Grohmann. Use and distribution of wxGlade is governed by the MIT
-      license, located in <xref linkend="mit.license.section"/>.</para>
+      license, located in <xref linkend="license_mit"/>.</para>
     </section>
 
-    <section id="mit.license.section">
+    <section id="license_mit">
       <title>wxGlade License Agreement</title>
 
       <para>Copyright (c) 2002-2007 Alberto Griggio.</para>
@@ -4503,7 +4503,7 @@ def initialize():
       SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</para>
     </section>
 
-    <section>
+    <section id="trademarks">
       <title>Trademarks</title>
 
       <para>wxWidgets is copyright (C) 1998-2005 Julian Smart, Robert Roebling
@@ -4520,7 +4520,7 @@ def initialize():
       owners.</para>
     </section>
 
-    <section>
+    <section id="incorporated">
       <title>Licenses and Acknowledgements for Incorporated Software</title>
 
       <para>This section lists licenses and acknowledgements for third-party
@@ -4559,7 +4559,7 @@ subject to the following conditions:
     </section>
   </appendix>
 
-  <appendix>
+  <appendix id="icon">
     <title>The wxGlade Icon</title>
 
     <mediaobject>
