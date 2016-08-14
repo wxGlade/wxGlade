@@ -311,13 +311,6 @@ def init_stage2(use_gui):
             logging.error(msg)
             sys.exit(msg)
 
-        try:
-            import faulthandler
-            faulthandler.enable()
-            logging.info(_('Python fault handler found and activated'))
-        except ImportError:
-            logging.debug(_('Python fault handler not found'))
-
         # store current version and platform ('not_set' is default)
         config.platform = wx.Platform
         config.wx_version = wx.__version__
