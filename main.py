@@ -715,7 +715,7 @@ class wxGladeFrame(wx.Frame):
                     p = XmlWidgetBuilder()
 
                 p.parse(infile)
-            except (IOError, OSError, SAXParseException,
+            except (EnvironmentError, SAXParseException,
                     XmlParsingError), msg:
                 if filename:
                     error_msg = _("Error loading file %s: %s") % \
@@ -804,7 +804,7 @@ class wxGladeFrame(wx.Frame):
             obuffer = StringIO.StringIO()
             common.app_tree.write(obuffer)
             common.save_file(filename, obuffer.getvalue(), 'wxg')
-        except (IOError, OSError), inst:
+        except (EnvironmentError), inst:
             common.app_tree.app.saved = False
             wx.MessageBox(_("Error saving app:\n%s") % inst, _("Error"),
                          wx.OK | wx.CENTRE | wx.ICON_ERROR)

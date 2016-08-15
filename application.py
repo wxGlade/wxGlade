@@ -737,7 +737,7 @@ class Application(object):
             if preview and codewriter == 'python':
                 self.overwrite = overwrite_save
 
-        except (errors.WxgBaseException, IOError, OSError), inst:
+        except (errors.WxgBaseException, EnvironmentError), inst:
             wx.MessageBox(
                 _("Error generating code:\n%s") % inst,
                 _("Error"),

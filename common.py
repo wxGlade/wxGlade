@@ -583,7 +583,7 @@ def autosave_current():
         outfile = codecs.open(autosave_name, 'w', 'utf-8')
         app_tree.write(outfile)
         outfile.close()
-    except (IOError, OSError), details:
+    except EnvironmentError, details:
         logging.warning(
             _('Saving the autosave file "%s" failed: %s'),
             autosave_name, details)
@@ -601,7 +601,7 @@ def remove_autosaved(filename=None):
     if os.path.exists(autosave_name):
         try:
             os.unlink(autosave_name)
-        except OSError:
+        except EnvironmentError:
             logging.exception(_('Internal Error'))
 
 
@@ -651,7 +651,7 @@ def restore_from_autosaved(filename):
         try:
             content = codecs.open(autosave_name, encoding='UTF-8').read()
             save_file(filename, content, 'wxg')
-        except OSError:
+        except EnvironmentError:
             logging.exception(_('Internal Error'))
             return False
         return True
@@ -707,7 +707,7 @@ def _create_appdata_path():
     if not os.path.isdir(config.appdata_path):
         try:
             os.makedirs(config.appdata_path, 0700)
-        except (IOError, OSError), e:
+        except EnvironmentError, e:
             logging.error(_('Failed to create config directory: "%s"'), e)
 
 
@@ -733,7 +733,7 @@ def _set_appdata_path():
             try:
                 os.rename(old_name, new_name)
                 path = new_name
-            except (IOError, OSError), e:
+            except EnvironmentError, e:
                 # ignore rename errors and just write an info message
                 logging.info(_('Renaming failed: "%s"'), e)
                 logging.info(_('Using the old path "%s" instead'), old_name)
@@ -979,7 +979,7 @@ def load_history():
             lines = lines[1:]
         infile.close()
         return lines
-    except IOError:
+    except EnvironmentError:
         # don't consider this an error
         return []
 
