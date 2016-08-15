@@ -1065,6 +1065,14 @@ class wxGlade(wx.App):
         if config.preferences.log_debug_info:
             log.setDebugLevel()
 
+            # enable faulthandler
+            try:
+                import faulthandler
+                faulthandler.enable()
+                logging.info(_('Python fault handler found and activated'))
+            except ImportError:
+                logging.debug(_('Python fault handler not found'))
+
         wx.ArtProvider.PushProvider(wxGladeArtProvider())
 
         frame = wxGladeFrame()
