@@ -212,7 +212,7 @@ def save_template(data=None):
         if not os.path.exists(template_directory):
             try:
                 os.makedirs(template_directory)
-            except (OSError, IOError):
+            except EnvironmentError:
                 logging.exception(
                     _('ERROR creating directory "%s"'), template_directory)
                 return None, retdata

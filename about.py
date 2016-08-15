@@ -67,7 +67,7 @@ class wxGladeAboutBox(wx.Dialog):
                             license_file.close()
                             dlg.ShowModal()
                             dlg.Destroy()
-                        except IOError:
+                        except EnvironmentError:
                             wx.MessageBox(
                                 _('License file "LICENSE.txt" not found!\n'
                                   'You can get a copy at \n'
@@ -97,7 +97,7 @@ class wxGladeAboutBox(wx.Dialog):
                             credits_file.close()
                             dlg.ShowModal()
                             dlg.Destroy()
-                        except IOError:
+                        except EnvironmentError:
                             wx.MessageBox(
                                 _('Credits file "CREDITS.txt" not found!'),
                                 _('Error'),

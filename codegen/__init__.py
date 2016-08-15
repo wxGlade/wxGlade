@@ -2311,11 +2311,7 @@ It is available for wx versions %(supported_versions)s only.""") % {
                 os.chmod(filename, 0755)
             except OSError, e:
                 # this isn't necessarily a bad error
-                self.warning(
-                    _('Changing permission of main file "%s" failed: %s') % (
-                        filename, str(e)
-                        )
-                    )
+                self.warning(_('Changing permission of file "%s" failed: %s') % (filename, str(e)))
 
     def test_attribute(self, obj):
         """\
