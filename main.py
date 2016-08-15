@@ -1065,13 +1065,17 @@ class wxGlade(wx.App):
         if config.preferences.log_debug_info:
             log.setDebugLevel()
 
-            # enable faulthandler
+            # enable Python faulthandler to dump a traceback on SIGSEGV, SIGFPE, SIGABRT, SIGBUS, and SIGILL signals.
             try:
                 import faulthandler
                 faulthandler.enable()
-                logging.info(_('Python fault handler found and activated'))
+                logging.info(_('Python faulthandler found and activated'))
             except ImportError:
-                logging.debug(_('Python fault handler not found'))
+                logging.debug(_('Python faulthandler not found'))
+            except RuntimeError, details:
+                logging.info(_('Python faulthandler found, but enabling failed: %s'), details)
+            except Exception, details:
+                logging.info(_('Generic error during faulthandler initialisation: %s'), details)
 
         wx.ArtProvider.PushProvider(wxGladeArtProvider())
 
