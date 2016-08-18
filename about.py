@@ -6,6 +6,7 @@ About box with general info
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import bugdialog
 import codecs
 import wx
 import wx.html
@@ -67,22 +68,14 @@ class wxGladeAboutBox(wx.Dialog):
                             license_file.close()
                             dlg.ShowModal()
                             dlg.Destroy()
-                        except EnvironmentError:
-                            wx.MessageBox(
-                                _('License file "LICENSE.txt" not found!\n'
-                                  'You can get a copy at \n'
-                                  'http://www.opensource.org/licenses/'
-                                  'mit-license.php'),
-                                _('Error'),
-                                wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
+                        except EnvironmentError, inst:
+                            bugdialog.ShowEnvironmentError(
+                                _('''Can't read the file "LICENSE.txt".\n\nYou can get a license copy at\n'''
+                                  '''http://www.opensource.org/licenses/mit-license.php'''), inst)
                     else:
-                        wx.MessageBox(
-                            _('License file "LICENSE.txt" not found!\n'
-                              'You can get a copy at \n'
-                              'http://www.opensource.org/licenses/'
-                              'mit-license.php'),
-                            _('Error'),
-                            wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
+                        wx.MessageBox(_('File "LICENSE.txt" not found!\nYou can get a license copy at\n'
+                                        'http://www.opensource.org/licenses/mit-license.php'),
+                                      _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
                 elif href == 'show_credits':
                     if config.credits_file:
                         from wx.lib.dialogs import ScrolledMessageDialog
@@ -97,16 +90,11 @@ class wxGladeAboutBox(wx.Dialog):
                             credits_file.close()
                             dlg.ShowModal()
                             dlg.Destroy()
-                        except EnvironmentError:
-                            wx.MessageBox(
-                                _('Credits file "CREDITS.txt" not found!'),
-                                _('Error'),
-                                wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
+                        except EnvironmentError, inst:
+                            bugdialog.ShowEnvironmentError(_('''Can't read the file "CREDITS.txt"'''), inst)
                     else:
-                        wx.MessageBox(
-                            _('Credits file "CREDITS.txt" not found!'),
-                            _('Error'),
-                            wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
+                        wx.MessageBox(_('File "CREDITS.txt" not found!'), _('Error'),
+                                      wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION)
                 else:
                     import webbrowser
                     webbrowser.open(linkinfo.GetHref(), new=True)
