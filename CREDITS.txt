@@ -1,6 +1,7 @@
  Main Developer:
  ---------------------------------------------------------------------------
- - Carsten Grohmann <mail@carstengrohmann.de>
+ - Carsten Grohmann <mail@carstengrohmann.de> (project lead)
+ - Dietmar Schwertberger <dietmar@schwertberger.de>
 
  Other Developers:
  ---------------------------------------------------------------------------
