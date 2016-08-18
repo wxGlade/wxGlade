@@ -158,3 +158,36 @@ def ShowEI(exc_type, exc_value, exc_tb, msg=None):
     dialog.SetContentEI(exc_type, exc_value, exc_tb, msg)
     dialog.ShowModal()
     dialog.Destroy()
+
+
+def ShowEnvironmentError(msg, inst):
+    """\
+    Show EnvironmentError exceptions detailed and user-friendly
+
+    @param msg:  Error message
+    @type msg:   Unicode
+    @param inst: The caught exception
+    @type inst:  Exception
+    """
+
+    details = {
+        'msg': msg,
+        'type': inst.__class__.__name__,
+    }
+
+    if inst.filename:
+        details['filename'] = _('Filename:   %s') % inst.filename
+
+    if inst.errno is not None and inst.strerror is not None:
+        details['error'] = '%s - %s' % (inst.errno, inst.strerror)
+    else:
+        details['error'] = str(inst.args)
+
+    text = _("""\
+%(msg)s
+
+Error type: %(type)s
+Error code: %(error)s
+%(filename)s""") % details
+
+    wx.MessageBox(text, _('Error'), wx.OK | wx.CENTRE | wx.ICON_ERROR)

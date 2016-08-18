@@ -804,10 +804,9 @@ class wxGladeFrame(wx.Frame):
             obuffer = StringIO.StringIO()
             common.app_tree.write(obuffer)
             common.save_file(filename, obuffer.getvalue(), 'wxg')
-        except (EnvironmentError), inst:
+        except EnvironmentError, inst:
             common.app_tree.app.saved = False
-            wx.MessageBox(_("Error saving app:\n%s") % inst, _("Error"),
-                         wx.OK | wx.CENTRE | wx.ICON_ERROR)
+            bugdialog.ShowEnvironmentError(_('Saving this project failed'), inst)
         except Exception, inst:
             common.app_tree.app.saved = False
             fn = os.path.basename(filename).encode('ascii', 'replace')

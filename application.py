@@ -737,12 +737,10 @@ class Application(object):
             if preview and codewriter == 'python':
                 self.overwrite = overwrite_save
 
-        except (errors.WxgBaseException, EnvironmentError), inst:
-            wx.MessageBox(
-                _("Error generating code:\n%s") % inst,
-                _("Error"),
-                wx.OK | wx.CENTRE | wx.ICON_ERROR,
-                )
+        except errors.WxgBaseException, inst:
+            wx.MessageBox(_("Error generating code:\n%s") % inst, _("Error"), wx.OK | wx.CENTRE | wx.ICON_ERROR)
+        except EnvironmentError, inst:
+            bugdialog.ShowEnvironmentError(_('An IO/OS related error is occurred:'), inst)
         except Exception, inst:
             bugdialog.Show(_('Generate Code'), inst)
         else:
