@@ -137,3 +137,7 @@ class TestBugs(WXGladeBaseTest):
             source,
             '/tmp/existing_but_no_access.pl',
         )
+
+    def test_bug194(self):
+        """Test bug #194 - LB_EXTENDED for ListBox they never show up in generated code"""
+        self._test_all('bug194')
