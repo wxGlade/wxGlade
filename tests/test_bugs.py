@@ -98,3 +98,7 @@ class TestCodeGen(WXGladeBaseTest):
         Test AttributeError during code generation of toplevel menubars
         """
         self._test_all('bars_wo_parent')
+
+    def test_bug194(self):
+        """Test bug #194 - LB_EXTENDED for ListBox they never show up in generated code"""
+        self._test_all('bug194')
