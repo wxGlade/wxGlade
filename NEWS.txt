@@ -33,6 +33,7 @@ Bugs:
   - Fix AttributeError during code generation of toplevel menubars
   - Catch all errors raised during faulthandler initiasisation (sf bug #193)
   - Fix wrong CheckListBox C++ statement if styles are selected
+  - Add excludes for wxCheckListBox mutual styles
 
 Deprecation
   - In place modifications for generated source files will be removed in one
