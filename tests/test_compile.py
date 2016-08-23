@@ -174,3 +174,7 @@ Output:
         """
         self._compile28('bars_wo_parent.cpp')
         self._compile30('bars_wo_parent.cpp')
+    def test_bug194(self):
+        """Test compilation for SF bug #186"""
+        self._compile28('bug194.cpp')
+        self._compile30('bug194.cpp')

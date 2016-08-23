@@ -22,7 +22,7 @@ config = {
             'desc': _('Extended-selection list: the user can extend the '
                       'selection by using SHIFT or CTRL keys together with '
                       'the cursor movement keys or the mouse.'),
-            'exclude': 'wxLB_EXTENDED|wxLB_MULTIPLE',
+            'exclude': 'wxLB_SINGLE|wxLB_MULTIPLE',
         },
         'wxLB_HSCROLL': {
             'desc': _('Create horizontal scrollbar if contents are too wide '
