@@ -26,6 +26,7 @@ Bugs:
   - Don't wrap up IOError in XmlParsingError (sf bug #189)
   - Catch all errors raised during faulthandler initiasisation (sf bug #193)
   - Fix wrong CheckListBox C++ statement if styles are selected
+  - Add excludes for wxCheckListBox mutual styles
   - ...
 
 Deprecation
