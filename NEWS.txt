@@ -27,6 +27,7 @@ Bugs:
   - Catch all errors raised during faulthandler initiasisation (sf bug #193)
   - Fix wrong CheckListBox C++ statement if styles are selected
   - Add excludes for wxCheckListBox mutual styles
+  - LB_EXTENDED for ListBox never show up in generated code (sf bug #194)
   - ...
 
 Deprecation
