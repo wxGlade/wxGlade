@@ -25,6 +25,7 @@ Bugs:
   - Fix AttributeError during code generation of toplevel menubars
   - Don't wrap up IOError in XmlParsingError (sf bug #189)
   - Catch all errors raised during faulthandler initiasisation (sf bug #193)
+  - Fix wrong CheckListBox C++ statement if styles are selected
   - ...
 
 Deprecation
