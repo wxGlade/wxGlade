@@ -230,13 +230,13 @@ class DefaultXrcObject(XrcObject):
             del self.properties['extraproperties']
             self.properties.update(prop)
 
-        for name, val in self.properties.iteritems():
+        for name, val in self.properties.items():
             self.write_property(str(name), val, out_file, ntabs + 1)
         # write the font, if present
         if font:
             write(tab_str + '<font>\n')
             tab_str = self.tabs(ntabs + 2)
-            for key, val in font.iteritems():
+            for key, val in font.items():
                 if val:
                     write(tab_str + '<%s>%s</%s>\n' % (escape(key), escape(val), escape(key)))
             write(self.tabs(ntabs + 1) + '</font>\n')

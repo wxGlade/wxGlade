@@ -3,6 +3,7 @@ wxChoice objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -21,7 +22,7 @@ if wx.Platform == '__WXMSW__':
         def GetBestSize(self):
             w, h = wx.Choice.GetBestSize(self)
             n = self.GetCount()
-            return w, h/(n+1)
+            return w, h//(n+1)
 
         def GetSize(self):
             return self.GetClientSize()
