@@ -80,7 +80,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer, pos, common.property_panel, show=False)
+    calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer, pos, show=False)
     sizer.set_item(calendar_ctrl.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(calendar_ctrl)
     calendar_ctrl.node = node
