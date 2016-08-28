@@ -1483,8 +1483,9 @@ class GridProperty(Property):
 
         indices = [int(i) if i else None  for i in self.indices]
         #self._changing_value = True
-        setter(new_value, indices)
+        old_value = self.value[:]
         self.value[:] = new_value
+        setter(old_value, indices)
         #self._changing_value = False
         self.editing_values = None
         self._initialize_indices()
