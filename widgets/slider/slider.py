@@ -3,6 +3,7 @@ wxSlider objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,76 +12,54 @@ import common, compat
 import wcodegen
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
-from widget_properties import *
+import new_properties as np
+
 
 
 class EditSlider(ManagedBase, EditStylesMixin):
     "Class to handle wxSlider objects"
 
-    def __init__(self, name, parent, id, style, sizer, pos, property_window, show=True):
+    _PROPERTIES = ["Widget", "range", "value", "style"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-        # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxSlider', parent, id, sizer, pos, property_window, show=show)
+    def __init__(self, name, parent, id, style, sizer, pos, show=True):
+        ManagedBase.__init__(self, name, 'wxSlider', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
 
-        # initialise instance variables
-        self.set_style(style)
-        self.value = 0
-        self.range = (0, 10)
-
-        # initialise properties remaining staff
-        prop = self.properties
-        self.access_functions['style'] = (self.get_style, self.set_style)
-        self.access_functions['value'] = (self.get_value, self.set_value)
-        self.access_functions['range'] = (self.get_range, self.set_range)
-        prop['style'] = CheckListProperty( self, 'style', self.widget_writer )
-        prop['range'] = TextProperty( self, 'range', None, can_disable=True, label=_("range") )
-        prop['value'] = SpinProperty( self, 'value', None, can_disable=True, label=_("value"), immediate=True )
+        # initialise instance properties
+        self.range = np.IntRangePropertyA( "0, 10" )
+        self.value = np.SpinPropertyA(0, val_range=(0,10), immediate=True)
+        if style: self.properties["style"].set(style)
 
     def create_widget(self):
-        self.widget = wx.Slider(self.parent.widget, self.id, self.value, self.range[0], self.range[1],
-                                style=self.get_int_style())
+        mi,ma = self.properties["range"].get_tuple()
+        value_p = self.properties["value"]
+        value = value_p.get()  if value_p.is_active()  else  mi
+        self.widget = wx.Slider(self.parent.widget, self.id, value, mi, ma, style=self.style)
 
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
-        prop = self.properties
-        szr = wx.BoxSizer(wx.VERTICAL)
-        prop['range'].display(panel)
-        prop['value'].display(panel)
-        prop['style'].display(panel)
-        szr.Add(prop['range'].panel, 0, wx.EXPAND)
-        szr.Add(prop['value'].panel, 0, wx.EXPAND)
-        szr.Add(prop['style'].panel, 0, wx.EXPAND)
-        panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
-        szr.Fit(panel)
-        self.notebook.AddPage(panel, _('Widget'))
+    def properties_changed(self, modified):
+        if not modified or "range" in modified and self.widget:
+            mi,ma = self.properties["range"].get_tuple()
+            self.widget.SetRange(mi, ma)
+            self.properties["value"].set_range(mi,ma)
 
-    def get_range(self):
-        return "%s, %s" % self.range
+        if not modified or "value" in modified or "range" in modified:
+            # check that value is inside range
+            value_p = self.properties["value"]
+            if value_p.is_active():
+                mi,ma = self.properties["range"].get_tuple()
+                value = value_p.get()
+                if value<mi:
+                    value_p.set(mi)
+                    value = mi
+                elif value>ma:
+                    value_p.set(ma)
+                    value = ma
+                if self.widget: self.widget.SetValue(value)
 
-    def set_range(self, val):
-        try:
-            min_v, max_v = map(int, val.split(','))
-        except:
-            self.properties['range'].set_value(self.get_range())
-        else:
-            self.range = (min_v, max_v)
-        self.properties['value'].set_range(min_v, max_v)
-        if self.widget:
-            self.widget.SetRange(min_v, max_v)
+        ManagedBase.properties_changed(self, modified)
 
-    def get_value(self):
-        return self.value
 
-    def set_value(self, value):
-        value = int(value)
-        if value != self.value:
-            self.value = value
-            if self.widget: self.widget.SetValue(value)
-
-# end of class EditSlider
 
 
 editor_class = EditSlider
@@ -107,10 +86,10 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
-    widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos, common.property_panel)
+    widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
     node = Node(widget)
     widget.node = node
-    widget.set_style("wxEXPAND")
+    widget.properties["flag"].set("wxEXPAND")
     widget.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
 
@@ -124,8 +103,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos, common.property_panel)
-    sizer.set_item(widget.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
+    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos)
+    sizer.set_item(widget.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(widget)
     widget.node = node
     if pos is None:

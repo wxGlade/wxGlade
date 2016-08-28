@@ -201,6 +201,8 @@ class EditBase(EventsMixin):
         else:
             oldname = self.name
             self.name = value
+            if self._rmenu:
+                self._rmenu.SetTitle(self.name)
             try:
                 common.app_tree.refresh_name(self.node, oldname)
             except AttributeError: pass
@@ -1201,7 +1203,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         except xml_parse.XmlParsingError:
             self._logger.warning( _('WARNING: Only sizers can be pasted here') )
     ####################################################################################################################
-    
+
     def create_properties(self):
         WindowBase.create_properties(self)
         # don't display the title ourselves anymore, now it's a

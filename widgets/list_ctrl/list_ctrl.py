@@ -3,6 +3,7 @@ wxListCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -10,9 +11,8 @@ import math
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
-import common
-import compat
-from widget_properties import *
+import common, compat
+import new_properties as np
 
 
 class EditListCtrl(ManagedBase, EditStylesMixin):
@@ -20,21 +20,16 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
 
     update_widget_style = False
 
-    def __init__(self, name, parent, id, sizer, pos, property_window, show=True, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
+    _PROPERTIES = ["Widget", "style"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-        # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos, property_window, show=show)
+    def __init__(self, name, parent, id, sizer, pos, show=True, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
-
-        # initialise instance variables
-        self.style = style
-
-        # initialise properties remaining staff
-        self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['style'] = CheckListProperty(self, 'style', self.widget_writer)
+        if style: self.properties["style"].set(style)
 
     def create_widget(self):
-        self.widget = wx.ListCtrl(self.parent.widget, self.id, style=wx.LC_REPORT | wx.BORDER_SUNKEN)
+        self.widget = wx.ListCtrl(self.parent.widget, self.id, style=self.style)
         # add a couple of columns just for a better appearance (for now)
         self.widget.InsertColumn(0, _('List Control:'))
         self.widget.InsertColumn(1, self.name)
@@ -43,27 +38,16 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
 
-    def set_name(self, name):
-        ManagedBase.set_name(self, name)
-        if self.widget:
-            col = self.widget.GetColumn(1)
-            col.SetText(self.name)
-            self.widget.SetColumn(1, col)
+    def _set_name(self):
+        if not self.widget: return
+        col = self.widget.GetColumn(1)
+        col.SetText(self.name)
+        self.widget.SetColumn(1, col)
 
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
-        prop = self.properties
-        prop['style'].display(panel)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        szr.Add(prop['style'].panel, 0, wx.EXPAND)
-        panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
-        szr.Fit(panel)
-        w, h = panel.GetClientSize()
-        self.notebook.AddPage(panel, 'Widget')
-        self.property_window.Layout()
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
+    def properties_changed(self, modified):
+        ManagedBase.properties_changed(self, modified)
+        if not modified or "name" in modified:
+            self._set_name()
 
 
 
@@ -73,11 +57,11 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'list_ctrl_%d' % number[0]
-    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel)
+    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos)
     node = Node(list_ctrl)
     list_ctrl.node = node
-    list_ctrl.set_option(1)
-    list_ctrl.set_style("wxEXPAND")
+    list_ctrl.properties["proportion"].set(1)
+    list_ctrl.properties["flag"].set("wxEXPAND")
     list_ctrl.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
@@ -92,9 +76,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos, common.property_panel, style=0)
-    sizer.set_item(list_ctrl.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
+    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos, style=0)
+    sizer.set_item(list_ctrl.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(list_ctrl)
     list_ctrl.node = node
     if pos is None:

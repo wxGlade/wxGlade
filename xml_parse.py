@@ -5,6 +5,7 @@ See L{wcodegen.taghandler} for custom tag handler base classes.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -185,7 +186,6 @@ class XmlWidgetBuilder(XmlParser):
 
     def __init__(self):
         XmlParser.__init__(self)
-        self.top_window = ''
 
     def startElement(self, name, attrs):
         if name == 'application':
@@ -193,75 +193,44 @@ class XmlWidgetBuilder(XmlParser):
             self._appl_started = True
             attrs = self._process_app_attrs(attrs)
             app = common.app_tree.app
+            p = app.properties
 
-            encoding = attrs['encoding']
-            app.encoding = encoding
-            app.encoding_prop.set_value(encoding)
+            p["encoding"].set( attrs['encoding'] )
+            p["output_path"].set( attrs['path'] )
+            p["class"].set( attrs['class'], activate=bool(attrs.get("class")) )
+            p["name"].set( attrs['name'], activate=bool(attrs.get("name")) )
+            p["multiple_files"].set( attrs['option'] )
+            p["language"].set( attrs['language'] )
+            p["top_window"].set( attrs['top_window'] )
+            p["use_gettext"].set( attrs['use_gettext'] )
+            p["is_template"].set( attrs['is_template'] )
+            p["overwrite"].set( attrs['overwrite'] )
+            p["indent_mode"].set( attrs['indent_symbol'] )
+            p["indent_amount"].set( attrs['indent_amount'] )
+            p["for_version"].set( attrs['for_version'] )
 
-            path = attrs['path']
-            if path:
-                app.output_path = path
-                app.outpath_prop.set_value(path)
-
-            klass = attrs['class']
-            if klass:
-                app.klass = klass
-                app.klass_prop.toggle_active(True)
-                app.klass_prop.set_value(klass)
-
-            name = attrs['name']
-            if name:
-                app.name = name
-                app.name_prop.toggle_active(True)
-                app.name_prop.set_value(name)
-
-            app.multiple_files = attrs['option']
-            app.multiple_files_prop.set_value(attrs['option'])
-
-            app.set_language(attrs['language'])
-
-            top_window = attrs['top_window']
-            if top_window:
-                self.top_window = top_window
-
-            app.use_gettext = attrs['use_gettext']
-            app.use_gettext_prop.set_value(attrs['use_gettext'])
-
-            app.is_template = attrs['is_template']
-
-            app.overwrite = attrs['overwrite']
-            app.overwrite_prop.set_value(attrs['overwrite'])
-
-            indent_symbol = attrs['indent_symbol']
-            if indent_symbol == 'space':
-                app.indent_mode = 1
-            elif indent_symbol == 'tab':
-                app.indent_mode = 0
-            app.indent_mode_prop.set_value(app.indent_mode)
-
-            indent_amount = attrs['indent_amount']
-            app.indent_amount = indent_amount
-            app.indent_amount_prop.set_value(indent_amount)
+            modified = ["encoding", "output_path", "class", "name", "multiple_files", "language", "top_window",
+                        "use_gettext", "use_gettext", "is_template", "overwrite", "indent_mode", "indent_amount",
+                        "for_version"]
 
             source_extension = attrs['source_extension']
             if source_extension and source_extension[0] == '.':
-                app.source_ext = source_extension[1:]
-                app.source_ext_prop.set_value(source_extension[1:])
+                p["source_extension"].set( source_extension[1:] )
+                modified.append( "source_extension" )
+                
             header_extension = attrs['header_extension']
             if header_extension and header_extension[0] == '.':
-                app.header_ext = header_extension[1:]
-                app.header_ext_prop.set_value(header_extension[1:])
+                p["header_extension"].set( header_extension[1:] )
+                modified.append( "header_extension" )
 
-            for_version = attrs['for_version']
-            app.for_version = for_version
-            app.for_version_prop.set_str_value(for_version)
-            app.set_for_version(for_version)
-
+            app.properties_changed(modified)
             return
 
         if not self._appl_started:
             raise XmlParsingError(_("the root of the tree must be <application>"))
         if name == 'object':
+            top = self.top()
+            if top: top.notify_owner()
             # create the object and push it on the appropriate stacks
             XmlWidgetObject(attrs, self)
         else:
@@ -283,45 +252,33 @@ class XmlWidgetBuilder(XmlParser):
     def endElement(self, name):
         if name == 'application':
             self._appl_started = False
-            if hasattr(self, 'top_window'):
-                common.app_tree.app.top_window = self.top_window
-                common.app_tree.app.top_win_prop.SetStringSelection(self.top_window)
             return
         if name == 'object':
             # remove last object from Stack
             obj = self.pop()
+            obj.notify_owner()
             if obj.klass in ('sizeritem', 'sizerslot'):
                 return
             si = self._sizer_item.top()
             if si is not None and si.parent == obj.parent:
-                sprop = obj.obj.sizer_properties
-                # update the values
-                sprop['option'].set_value(si.obj.option)
-                sprop['flag'].set_value(si.obj.flag_str())
-                sprop['border'].set_value(si.obj.border)
-                # call the setter functions
-                obj.obj['option'][1](si.obj.option)
-                obj.obj['flag'][1](si.obj.flag_str())
-                obj.obj['border'][1](si.obj.border)
+                obj.obj.copy_properties( si.obj, ("option","flag","border") )
         else:
             # end of a property or error
-            # 1: set _curr_prop value
+            # case 1: set _curr_prop value
             data = "".join(self._curr_prop_val)
             if data:
                 try:
                     handler = self.top().prop_handlers.top()
                     if not handler or handler.char_data(data):
-                        # if char_data returned False,
-                        # we don't have to call add_property
+                        # if char_data returned False, we don't have to call add_property
                         self.top().add_property(self._curr_prop, data)
                 except AttributeError:
                     pass
 
-            # 2: call custom end_elem handler
+            # case 2: call custom end_elem handler
             try:
-                # if there is a custom handler installed for this property,
-                # call its end_elem function: if this returns True, remove
-                # the handler from Stack
+                # if there is a custom handler installed for this property, call its end_elem function:
+                #  if this returns True, remove the handler from Stack
                 obj = self.top()
                 handler = obj.prop_handlers.top()
                 if handler.end_elem(name):
@@ -335,8 +292,7 @@ class XmlWidgetBuilder(XmlParser):
         if not data or data.isspace():
             return
         if self._curr_prop is None:
-            raise XmlParsingError(
-                _("Character data can be present only inside properties"))
+            raise XmlParsingError(_("Character data can be present only inside properties"))
         self._curr_prop_val.append(data)
 
 
@@ -406,13 +362,23 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         the operation
     """
 
-    def __init__(self, parent, sizer, pos, option, flag, border):
+    def __init__(self, parent, sizer, pos, proportion, flag, border):
         XmlWidgetBuilder.__init__(self)
-        self.parent_node = parent.node
+        if parent is not None:
+            self.parent_node = parent.node
+        else:
+            # e.g. a frame is pasted
+            self.parent_node = None
+            self.have_names = set()
+            # update with the top level names
+            for node in common.app_tree.names.keys():
+                self.have_names.add( node.widget.name )
 
         class XmlClipboardObject(object):
             def __init__(self, **kwds):
                 self.__dict__.update(kwds)
+            def notify_owner(self):
+                pass
 
         # fake parent window object
         fake_parent = XmlClipboardObject(obj=parent, parent=parent)
@@ -421,10 +387,10 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         if sizer:
             fake_sizer = XmlClipboardObject(obj=sizer, parent=parent)
             sizeritem = Sizeritem()
-            sizeritem.option = option
-            sizeritem.set_flag(flag)
-            sizeritem.border = border
-            sizeritem.pos = pos
+            sizeritem.properties["proportion"].set(proportion)
+            sizeritem.properties["flag"].set(flag)
+            sizeritem.properties["border"].set(border)
+            sizeritem.properties["pos"].set(pos)
             # fake sizer item
             fake_sizeritem = XmlClipboardObject(obj=sizeritem, parent=parent)
 
@@ -440,30 +406,56 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self.depth_level = 0
         self._appl_started = True  # no application tag when parsing from the clipboard
 
-    def startElement(self, name, attrs):
-        if name == 'object' and 'name' in attrs:
-            # generate a unique name for the copy
-            oldname = str(attrs['name'])
-            newname = oldname
-            if "_" in oldname:
-                # if the old name ends with an underscore and a number, just increase the number
-                try:
-                    template, i = oldname.rsplit("_", 1)
-                    i = int(i) + 1
-                    template = template + '_%s'
+    def _get_new_name(self, oldname):
+        newname = oldname
+        if "_" in oldname:
+            # if the old name ends with an underscore and a number, just increase the number
+            try:
+                template, i = oldname.rsplit("_", 1)
+                #i = int(i) + 1
+                i = int(i)
+                template = template + '_%s'
+                if self.parent_node is not None:
                     while common.app_tree.has_name(newname, node=self.parent_node):
                         newname = template%i
                         i += 1
-                except:
-                    pass
+                    return newname
+                # top level, e.g. a new frame is pasted
+                while newname in self.have_names:
+                    newname = template%i
+                    i += 1
+                self.have_names.add(newname)
+                return newname
+            except:
+                pass
 
-            i = 0
+
+        # add _copy to the old name
+        i = 0
+        if self.parent_node is not None:
             while common.app_tree.has_name(newname, node=self.parent_node):
                 if not i:
                     newname = '%s_copy' % oldname
                 else:
                     newname = '%s_copy_%s' % (oldname, i)
                 i += 1
+            return newname
+
+        # top level, e.g. a new frame is pasted
+        while newname in self.have_names:
+            if not i:
+                newname = '%s_copy' % oldname
+            else:
+                newname = '%s_copy_%s' % (oldname, i)
+            i += 1
+        self.have_names.add(newname)
+        return newname
+
+    def startElement(self, name, attrs):
+        if name == 'object' and 'name' in attrs:
+            # generate a unique name for the copy
+            oldname = str(attrs['name'])
+            newname = self._get_new_name(oldname)
             attrs = dict(attrs)
             attrs['name'] = newname
         XmlWidgetBuilder.startElement(self, name, attrs)
@@ -482,14 +474,16 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             self.depth_level -= 1
             if not self.depth_level:
                 common.app_tree.auto_expand = True
-                try:
+                import misc
+                misc.set_focused_widget(self.top_obj)
+#                try:
                     # show the first object and update its layout
-                    if self.top_obj.node.parent.widget.is_visible():
-                        common.app_tree.show_widget(self.top_obj.node)
-                    self.top_obj.show_properties()
-                    common.app_tree.select_item(self.top_obj.node)
-                except AttributeError:
-                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
+                    #if self.top_obj.node.parent.widget.is_visible():
+                    #    common.app_tree.show_widget(self.top_obj.node)
+                    #self.top_obj.show_properties()
+                    #common.app_tree.select_item(self.top_obj.node)
+#                except AttributeError:
+#                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
         XmlWidgetBuilder.endElement(self, name)
 
 
@@ -503,7 +497,9 @@ class XmlWidgetObject(object):
 
         self.prop_handlers = Stack()  # a stack of custom handler functions to set properties of this object
         self.parser = parser
-        self.in_windows = self.in_sizers = False
+        self.in_sizers = False   # if True, the widget is     a sizer, opposite of 'in_windows'
+        self.in_windows = False  # if True, the widget is not a sizer, opposite of 'in_sizers'
+        self._properties_added = []
         try:
             base = attrs.get('base', None)
             self.klass = attrs['class']
@@ -540,12 +536,8 @@ class XmlWidgetObject(object):
             # build the widget
             if pos is not None: pos = int(pos)
             self.obj = common.widgets_from_xml[base](attrs, parent, sizer, sizeritem, pos)
-            try:
-                #self.obj.klass = self.klass
-                self.obj.set_klass(self.klass)
-                self.obj.klass_prop.set_value(self.klass)
-            except AttributeError:
-                pass
+            p = self.obj.properties.get("class")
+            if p: p.set(self.klass)
 
             # push the object on the appropriate stack
             if isinstance(self.obj, edit_sizers.SizerBase):
@@ -583,20 +575,21 @@ class XmlWidgetObject(object):
         if name == 'pos':  # sanity check, this shouldn't happen...
             self._logger.debug('add_property(name=pos)')
             return
+        prop = self.obj.properties[name]
         try:
-            # call the setter for this property
-            setter = self.obj[name][1]
-            setter(val)
-            try:
-                prop = self.obj.properties[name]
-                prop.set_value(val)
-                prop.toggle_active(True)
-            except AttributeError:
-                pass
+            prop.set(val, activate=True)
         except KeyError:
-            # unknown property for this object
-            # issue a warning and ignore the property
+            # unknown property for this object; issue a warning and ignore the property
+            import os
+            if 'WINGDB_ACTIVE' in os.environ: raise
             self._logger.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
+        #self.obj.properties_changed([name])
+        self._properties_added.append(name)
+    def notify_owner(self):
+        # notify owner about the added properties
+        if not self._properties_added: return
+        self.obj.properties_changed(self._properties_added)
+        del self._properties_added[:]
 
 
 
@@ -604,35 +597,24 @@ class CodeWriter(XmlParser):
     "Parser used to produce the source from a given XML file"
 
     def __init__(self, writer, input, from_string=False, out_path=None, preview=False, class_names=None):
-        """\
-        @param writer: Language specific code writer; stored in
-                       L{self.code_writer}
-        @type writer:  wxglade.codegen.BaseLangCodeWriter
-
-        @param input: Name of file to load or XML document as a String
-        @type input:  str
-
-        @param from_string: True if L{input} is a XML document as String
-        @type from_string:  bool
-
-        @param out_path: Override the output path specified in the XML
-                         document; stored in L{self.out_path}
-        @type out_path:  str | None
-
-        @param preview: True to generate code for the preview
-        @type preview:  bool
         """
+        writer: Language specific code writer; stored in L{self.code_writer}; wxglade.codegen.BaseLangCodeWriter
+        input: Name of file to load or XML document as a String
+        from_string: True if L{input} is a XML document as String
+        out_path: Override the output path specified in the XML document; stored in L{self.out_path}, string or None
+
+        preview: True to generate code for the preview"""
         self._logger = logging.getLogger(self.__class__.__name__)
-        # writer: object that actually writes the code
+
         XmlParser.__init__(self)
-        self._toplevels = Stack()
-        self.app_attrs = {}
-        self.top_window = ''
-        self.out_path = out_path
-        self.code_writer = writer
-        self.preview = preview
-        # used in the CustomWidget preview code, to generate better previews
-        # (see widgets/custom_widget/codegen.py)
+        self._toplevels = Stack() # Toplevel objects, i.e. instances of a custom class
+        self.app_attrs = {}       # Attributes of the app (name, class, top_window)
+        self.top_window = ''      # Class name of the top window of the app (if any)
+        self.out_path = out_path  # Override the output path specified in the XML document
+        self.code_writer = writer # Language specific code writer; wxglade.codegen.BaseLangCodeWriter instance
+        self.preview = preview    # True to generate code for the preview
+
+        # used in the CustomWidget preview code, to generate better previews (see widgets/custom_widget/codegen.py)
         self.class_names = class_names
         if self.class_names is None:
             self.class_names = set()
@@ -730,7 +712,8 @@ class CodeWriter(XmlParser):
                     szr = self._sizers.top()
                     if not szr:
                         return
-                    self.code_writer.add_sizeritem(topl, szr, obj, si.obj.option, si.obj.flag_str(), si.obj.border)
+                    flag = si.obj.properties["flag"].get_string_value()  # as string, joined with "|"
+                    self.code_writer.add_sizeritem(topl, szr, obj, si.obj.proportion, flag, si.obj.border)
         else:
             # end of a property or error
             # case 1: set _curr_prop value
@@ -879,89 +862,14 @@ class Stack(object):
 
 
 
-class Sizeritem(object):
-    "Represents a child of a sizer"
-    if config.use_gui:
-        flags = {
-            'wxALL': wx.ALL,
-            'wxEXPAND': wx.EXPAND,
-            'wxALIGN_RIGHT': wx.ALIGN_RIGHT,
-            'wxALIGN_BOTTOM': wx.ALIGN_BOTTOM,
-            'wxALIGN_CENTER': wx.ALIGN_CENTER,
-            'wxALIGN_CENTER_HORIZONTAL': wx.ALIGN_CENTER_HORIZONTAL,
-            'wxALIGN_CENTER_VERTICAL': wx.ALIGN_CENTER_VERTICAL,
-            'wxLEFT': wx.LEFT,
-            'wxRIGHT': wx.RIGHT,
-            'wxTOP': wx.TOP,
-            'wxBOTTOM': wx.BOTTOM,
-            'wxSHAPED': wx.SHAPED,
-            'wxADJUST_MINSIZE': wx.ADJUST_MINSIZE,
-            'wxFIXED_MINSIZE': wx.FIXED_MINSIZE,
-        }
+import new_properties as np
 
-    all_border_flags = set(['wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM'])
-
+class Sizeritem(np.PropertyOwner):
+    "temporarily represents a child of a sizer"
+    SIZER_PROPERTIES = ["pos","proportion","border","flag"]
     def __init__(self):
-        self.option = 0
-        self.border = 0
-        self.flag = 0
-        self.flag_set = set()
-
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
-
-    def __getitem__(self, name):
-        def set_value(value):
-            setattr(self, name, value)
-
-        if name != 'flag':
-            return None, set_value
-        return None, self.set_flag
-
-    def set_flag(self, value):
-        """\
-        Set flags
-
-        @param value: Flags concatenated with '|'
-        @type value: str | Unicode
-        """
-        self.flag_set = set(value.split("|"))
-
-        # convert flags to integers
-        value = 0
-        for flag in self.flag_set:
-            try:
-                value += self.flags[flag]
-            except KeyError:
-                pass
-        self.flag = value
-
-    def flag_str(self):
-        """\
-        Returns the flag attribute as a string of tokens separated by a '|'
-        (used during the code generation)
-
-        @rtype: str
-        """
-        if hasattr(self, 'flag_s'):
-            return self.flag_s
-
-        try:
-            if self.all_border_flags <= self.flag_set:
-                self.flag_set -= self.all_border_flags
-                self.flag_set.add('wxALL')
-
-            if 'wxALL' in self.flag_set:
-                self.flag_set -= self.all_border_flags
-
-            tmp = '|'.join(sorted(self.flag_set))
-        except:
-            self._logger.exception('self.flags = %s, self.flag_set = %s', self.flags, repr(self.flag_set))
-            raise
-
-        if tmp:
-            return tmp
-        else:
-            return '0'
-
-# end of class Sizeritem
+        np.PropertyOwner.__init__(self)
+        self.proportion = np.SpinProperty(0, name="option")
+        self.border = np.SpinProperty(0)
+        self.flag = np.ManagedFlags(None)
+        self.pos = np.SpinProperty(None)

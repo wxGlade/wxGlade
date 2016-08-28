@@ -349,7 +349,12 @@ class TextProperty(Property, _activator):
     def __init__(self, owner, name, parent=None, can_disable=False, enabled=False, readonly=False, multiline=False,
                  label=None, blocked=False, omitter=None):
         Property.__init__(self, owner, name, parent, label=label)
-        self.val = misc.wxstr(owner[name][0]()) # text
+        value = owner[name][0]()
+        if isinstance(value, int):
+            value = str(value)
+        else:
+            value = misc.wxstr(value) # text
+        self.val = value
         self.can_disable = can_disable
         self.readonly = readonly
         self.multiline = multiline

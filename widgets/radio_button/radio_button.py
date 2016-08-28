@@ -3,6 +3,7 @@ wxRadioButton objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -10,7 +11,7 @@ import wx
 import common, compat, config, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
-from widget_properties import *
+import new_properties as np
 from misc import wxGladeRadioButton
 
 
@@ -18,69 +19,41 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     "Class to handle wxRadioButton objects"
     update_widget_style = False
 
-    def __init__(self, name, parent, id, label, sizer, pos, property_window, show=True):
-        # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxRadioButton', parent, id, sizer, pos, property_window, show=show)
+    _PROPERTIES = ["Widget", "label", "clicked", "style"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+
+    def __init__(self, name, parent, id, label, sizer, pos, show=True):
+        ManagedBase.__init__(self, name, 'wxRadioButton', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
 
-        # initialise instance variables
-        self.label = label
-        self.value = 0  # if nonzero, che radio button is selected
-        if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
+        # initialise instance properties
+        self.label   = np.TextProperty("", multiline=True, fixed_height=True)
+        self.clicked = np.CheckBoxProperty(False, default_value=False)
 
-        # initialise properties remaining staff
-        self.access_functions['label'] = (self.get_label, self.set_label)
-        self.access_functions['clicked'] = (self.get_value, self.set_value)
-        self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['label'] = TextProperty(self, 'label', None, multiline=True, label=_("label"))
-        self.properties['clicked'] = CheckBoxProperty(self, 'clicked', None, _('Clicked'))
-        self.properties['style'] = CheckListProperty( self, 'style', self.widget_writer)
+        if config.preferences.default_border:
+            self.border.set( config.preferences.default_border_size )
+            self.flag.set( wx.ALL )
 
     def create_widget(self):
-        label = self.label.replace('\\n', '\n')
-        self.widget = wxGladeRadioButton(self.parent.widget, self.id, label)
-        try:
-            self.widget.SetValue(self.value)
-        except AttributeError:
-            raise
-
+        self.widget = wxGladeRadioButton(self.parent.widget, self.id, self.label)
+        self.widget.SetValue(self.clicked)
         wx.EVT_CHECKBOX(self.widget, self.id, lambda e: self.widget.SetValue(self.value))
 
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.Panel(self.notebook, -1)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        self.properties['label'].display(panel)
-        self.properties['clicked'].display(panel)
-        self.properties['style'].display(panel)
-        szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['clicked'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
-        panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
-        szr.Fit(panel)
-        self.notebook.AddPage(panel, _('Widget'))
+    def _set_label(self):
+        if not self.widget: return
+        self.widget.SetLabel(self.label)
+        if not self.properties['size'].is_active():  # XXX changed this: '-1, -1' is identical to not active
+            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
-    def get_label(self):
-        return self.label
+    def properties_changed(self, modified):
+        resize = False
 
-    def get_value(self):
-        return self.value
+        if not modified or "label" in modified: self._set_label()
 
-    def set_label(self, value):
-        value = misc.wxstr(value)
-        if not misc.streq(value, self.label):
-            self.label = value
-            if self.widget:
-                self.widget.SetLabel(value.replace('\\n', '\n'))
-                if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+        if not modified or "clicked" in modified and self.widget:
+            self.widget.SetValue(self.clicked)
 
-    def set_value(self, value):
-        self.value = int(value)
-        if self.widget: self.widget.SetValue(self.value)
+        ManagedBase.properties_changed(self, modified)
 
 
 
@@ -90,7 +63,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = u'radio_btn_%d' % number[0]
-    radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos, common.property_panel)
+    radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos)
     node = Node(radio)
     radio.node = node
     radio.show_widget(True)
@@ -106,8 +79,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    radio = EditRadioButton(label, parent, wx.NewId(), "", sizer, pos, common.property_panel)
-    sizer.set_item(radio.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
+    radio = EditRadioButton(label, parent, wx.NewId(), "", sizer, pos)
+    sizer.set_item(radio.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(radio)
     radio.node = node
     if pos is None:

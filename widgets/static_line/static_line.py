@@ -3,6 +3,7 @@ wxStaticLine objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,64 +12,38 @@ import common, compat
 import wcodegen
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
-from widget_properties import *
+import new_properties as np
 
 
 class EditStaticLine(ManagedBase, EditStylesMixin):
+    "Class to handle wxStaticLine objects"
+    _PROPERTIES = ["Widget", "attribute"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    PROPERTIES.remove("font")
+    _PROPERTY_LABELS = {"attribute":'Store as attribute'}
 
-    def __init__(self, name, parent, id, style, sizer, pos, property_window, show=True):
-        "Class to handle wxStaticLine objects"
-        # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer, pos, property_window, show=show)
+    def __init__(self, name, parent, id, style, sizer, pos, show=True):
+        ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
 
-        # initialise instance variables
-        self.set_style(style)
-        self.attribute = True
-
-        # initialise properties remaining staff
-        access = self.access_functions
-        properties = self.properties
-
-        access['style'] = (self.get_string_style, self.set_style)
-        access['attribute'] = (self.get_attribute, self.set_attribute)
-
-        properties['style'] = HiddenProperty(self, 'style', style)
-        properties['attribute'] = CheckBoxProperty(self, 'attribute', label=_('Store as attribute'), write_always=True)
-        self.removed_p = self.properties['font']
+        # initialise instance properties
+        self.attribute = np.CheckBoxProperty(True, default_value=False)
+        if style: self.properties["style"].set(style)
 
     def create_widget(self):
-        self.widget = wx.StaticLine(self.parent.widget, self.id, style=self.get_int_style())
+        self.widget = wx.StaticLine(self.parent.widget, self.id, style=self.style)
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
         self.sel_marker.Reparent(self.parent.widget)
-        del self.properties['font']
-
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        if self.removed_p.panel:
-            self.removed_p.panel.Hide()
-        panel = wx.Panel(self.notebook, -1)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        self.properties['attribute'].display(panel)
-        szr.Add(self.properties['attribute'].panel, 0, wx.EXPAND)
-        panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
-        szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')
+        #del self.properties['font']
 
     def __getitem__(self, key):
         if key != 'font':
             return ManagedBase.__getitem__(self, key)
         return lambda: "", lambda v: None
 
-    def set_attribute(self, v):
-        self.attribute = int(v)
-
-    def get_attribute(self):
-        return self.attribute
 
 
 
@@ -96,7 +71,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
-    widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos, common.property_panel)
+    widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
     node = Node(widget)
     widget.node = node
     widget.show_widget(True)
@@ -112,8 +87,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos, common.property_panel)
-    sizer.set_item(widget.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
+    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos)
+    sizer.set_item(widget.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(widget)
     widget.node = node
     if pos is None:
