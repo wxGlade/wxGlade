@@ -16,11 +16,11 @@ from widget_properties import *
 
 
 class EditWidget(ManagedBase):
-    def __init__(self, name, klass, parent, id, label, sizer, pos, property_window, show=True):
+    def __init__(self, name, klass, parent, id, label, sizer, pos, show=True):
         "Class to handle wxFoo objects"
         self.label = label
         self.default = False
-        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos, property_window, show=show)
+        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos, show=show)
 
         # introspect subclass looking for properties
         # and widgets

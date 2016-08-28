@@ -3,6 +3,7 @@ Dialog to select a color
 
 @copyright: 2007 Marcello Semboli
 @copyright: 2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,18 +13,15 @@ import misc
 
 
 class wxGladeColorDialog(wx.Dialog):
-    def __init__(self, colors_dict):
-        wx.Dialog.__init__(self, None, -1, "")
+    def __init__(self, colors_dict, parent=None):
+        wx.Dialog.__init__(self, parent, -1, "")
         self.colors_dict = colors_dict
         choices = list( self.colors_dict.keys() )
         choices.sort()
         # begin wxGlade: wxGladeColorDialog.__init__
         self.panel_1 = wx.Panel(self, -1)
-        self.use_sys_color = wx.RadioButton(
-            self.panel_1, -1, _("System Color"), style=wx.RB_GROUP)
-        self.sys_color = wx.ComboBox(
-            self.panel_1, -1, choices=choices,
-            style=wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.use_sys_color = wx.RadioButton( self.panel_1, -1, _("System Color"), style=wx.RB_GROUP )
+        self.sys_color = wx.ComboBox( self.panel_1, -1, choices=choices, style=wx.CB_DROPDOWN | wx.CB_READONLY)
         self.use_chooser = wx.RadioButton(self.panel_1, -1, _("Custom Color"))
         self.color_chooser = PyColourChooser(self, -1)
         self.ok = wx.Button(self, wx.ID_OK, _("OK"))

@@ -3,6 +3,7 @@ Support for cut & paste of wxGlade widgets
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -41,8 +42,8 @@ def clipboard2widget(clipboard_data):
     xml_unicode = xml_unicode[:bound]
 
     # option, flag and border are integers.
-    option = int(option)
-    border = int(border)
+    if option is not None: option = int(option)
+    if border is not None: border = int(border)
 
     return option, flag, border, xml_unicode
 
@@ -50,10 +51,16 @@ def clipboard2widget(clipboard_data):
 def get_copy(widget):
     xml_unicode = compat.StringIO()
     widget.node.write(xml_unicode, 0)
-    flag = widget.esm_border.get_string_style()
-    option = widget.get_option()
-    border = widget.get_border()
-    clipboard_data = widget2clipboard( option, flag, border, xml_unicode.getvalue() )
+    flag = option = border = None
+    flag = widget.properties["flag"].get_string_value()
+    #if isinstance(widget, edit_windows.ManagedBase):
+        ## an element in a sizer
+        
+    #else: # a sizer   XXX old style
+        #flag = widget.esm_border.get_string_style()
+    #option = widget.get_option()
+    #border = widget.get_border()
+    clipboard_data = widget2clipboard( widget.proportion, flag, widget.border, xml_unicode.getvalue() )
     return clipboard_data
 
 

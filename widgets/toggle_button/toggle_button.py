@@ -3,6 +3,7 @@ wxToggleButton objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,76 +12,42 @@ import wx
 import common, compat, config, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
-from widget_properties import *
+import new_properties as np
 
 
 class EditToggleButton(ManagedBase, EditStylesMixin):
     "Class to handle wxToggleButton objects"
 
-    def __init__(self, name, parent, id, label, sizer, pos, property_window, show=True):
-        # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxToggleButton', parent, id, sizer, pos, property_window, show=show)
+    _PROPERTIES = ["Widget", "label", "value", "style"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    _PROPERTY_LABELS = {"value":"Clicked"}
+
+    def __init__(self, name, parent, id, label, sizer, pos, show=True):
+        ManagedBase.__init__(self, name, 'wxToggleButton', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
 
         # initialise instance variable
-        self.label = label
-        self.value = 0
-        if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
+        self.label = np.TextProperty("", multiline=True, fixed_height=True)
+        self.value = np.CheckBoxProperty(False, default_value=False)
 
-        # initialise properties and remaining staff
-        self.access_functions ['label'] = (self.get_label, self.set_label)
-        self.access_functions ['value'] = (self.get_value, self.set_value)
-        self.access_functions ['style'] = (self.get_style, self.set_style)
-        self.properties ['label'] = TextProperty(self, 'label', multiline=True, label=_("label"))
-        self.properties ['value'] = CheckBoxProperty(self, 'value', label=_('Clicked'))
-        self.properties ['style'] = CheckListProperty(self, 'style', self.widget_writer)
+        if config.preferences.default_border:
+            self.border.set( config.preferences.default_border_size )
+            self.flag.set( wx.ALL )
 
     def create_widget(self):
-        label = self.label.replace('\\n', '\n')
-        self.widget = wx.ToggleButton(self.parent.widget, self.id, label)
+        self.widget = wx.ToggleButton(self.parent.widget, self.id, self.label)
         self.widget.SetValue(self.value)
         wx.EVT_TOGGLEBUTTON(self.widget, self.id, self.on_set_focus)
 
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.Panel(self.notebook, -1)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        self.properties['label'].display(panel)
-        self.properties['value'].display(panel)
-        self.properties['style'].display(panel)
-        szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['value'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
-        panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
-        szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')
+    def properties_changed(self, modified):
+        if not modified or "value" in modified and self.widget:
+            self.widget.SetValue(self.value)
 
-    def get_label(self):
-        return self.label
+        if not modified or "label" in modified and self.widget:
+            self.widget.SetLabel(self.label)
+            self._set_widget_best_size()
 
-    def set_label(self, value):
-        value = misc.wxstr(value)
-        if not misc.streq(value, self.label):
-            self.label = value
-            if self.widget:
-                self.widget.SetLabel(value.replace('\\n', '\n'))
-                if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
-
-    def get_value(self):
-        return self.value
-
-    def set_value(self, value):
-        # !!! This should be done with bool.
-        # 2003-03-21 NO! bools are evil here: bool('0') == True != int('0')
-        value = int(value)
-        if value != self.value:
-            self.value = value
-            if self.widget: self.widget.SetValue(value)
-
+        ManagedBase.properties_changed(self, modified)
 
 
 def builder(parent, sizer, pos, number=[1]):
@@ -89,12 +56,11 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = u'button_%d' % number[0]
-    button = EditToggleButton(label, parent, wx.NewId(), label, sizer, pos,
-                              common.property_panel)
+    button = EditToggleButton(label, parent, wx.NewId(), label, sizer, pos)
     node = Node(button)
     button.node = node
     button.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -106,14 +72,14 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditToggleButton(label, parent, wx.NewId(), '', sizer, pos, common.property_panel)
-    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
+    button = EditToggleButton(label, parent, wx.NewId(), '', sizer, pos)
+    sizer.set_item(button.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(button)
     button.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return button
 
 

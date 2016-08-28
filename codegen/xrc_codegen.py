@@ -68,10 +68,10 @@ class XrcObject(wcodegen.XrcWidgetCodeWriter):
 class SizerItemXrcObject(XrcObject):
     "XrcObject to handle sizer items"
 
-    def __init__(self, obj, option, flag, border):
+    def __init__(self, obj, proportion, flag, border):
         XrcObject.__init__(self)
         self.obj = obj  # the XrcObject representing the widget
-        self.option = option
+        self.proportion = proportion
         self.flag = flag
         self.border = border
 
@@ -80,8 +80,8 @@ class SizerItemXrcObject(XrcObject):
         tabs = self.tabs(ntabs)
         tabs1 = self.tabs(ntabs + 1)
         write(tabs + '<object class="sizeritem">\n')
-        if self.option != '0':
-            write(tabs1 + '<option>%s</option>\n' % self.option)
+        if self.proportion != '0':
+            write(tabs1 + '<option>%s</option>\n' % self.proportion)
         if self.flag and self.flag != '0':
             write(tabs1 + '<flag>%s</flag>\n' % self.cn_f(self.flag))
         if self.border != '0':
@@ -98,7 +98,7 @@ class SpacerXrcObject(XrcObject):
     def __init__(self, size_str, option, flag, border):
         XrcObject.__init__(self)
         self.size_str = size_str
-        self.option = option
+        self.proportion = option
         self.flag = flag
         self.border = border
 
@@ -108,8 +108,8 @@ class SpacerXrcObject(XrcObject):
         tabs1 = self.tabs(ntabs + 1)
         write(tabs + '<object class="spacer">\n')
         write(tabs1 + '<size>%s</size>\n' % self.size_str.strip())
-        if self.option != '0':
-            write(tabs1 + '<option>%s</option>\n' % self.option)
+        if self.proportion != '0':
+            write(tabs1 + '<option>%s</option>\n' % self.proportion)
         if self.flag and self.flag != '0':
             write(tabs1 + '<flag>%s</flag>\n' % self.cn_f(self.flag))
         if self.border != '0':

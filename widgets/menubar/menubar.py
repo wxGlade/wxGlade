@@ -12,7 +12,7 @@ import common, compat, config, misc
 from MenuTree import *
 from tree import Tree, Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
-from widget_properties import *
+import new_properties as np
 from edit_windows import EditBase, PreviewMixin
 
 
@@ -472,37 +472,25 @@ class MenuItemDialog(wx.Dialog):
 class MenuProperty(np.Property):
     "Property to edit the menus of an EditMenuBar instance"
 
-    def __init__(self, owner, name, parent):
-        Property.__init__(self, owner, name, parent)
-        self.panel = None
+    def __init__(self):
+        np.Property.__init__(self, None)
         self.menu_items = {}
-        if parent is not None: self.display(parent)
 
-    def display(self, parent):
-        self.panel = wx.Panel(parent, -1)
-        edit_btn_id = wx.NewId()
-        self.edit_btn = wx.Button(self.panel, edit_btn_id, _("Edit menus..."))
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
+    def create_editor(self, panel, sizer):
+        self.edit_btn = wx.Button(panel, -1, _("Edit menus..."))
         sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 4)
-        self.panel.SetAutoLayout(1)
-        self.panel.SetSizer(sizer)
-        self.panel.SetSize(sizer.GetMinSize())
-        wx.EVT_BUTTON(self.panel, edit_btn_id, self.edit_menus)
-
-    def bind_event(self, function):
-        pass
+        self.edit_btn.Bind(wx.EVT_BUTTON, self.edit_menus)
 
     def edit_menus(self, event):
-        dialog = MenuItemDialog( self.panel, self.owner, items=self.owner.get_menus() )
+        dialog = MenuItemDialog( self.edit_btn.GetTopLevelParent(), self.owner, items=self.value )
         if dialog.ShowModal() == wx.ID_OK:
-            self.owner.set_menus(dialog.get_menus())
-            common.app_tree.app.saved = False  # update the status of the app
+            self.on_value_edited(dialog.get_menus())
         dialog.Destroy()
 
     def write(self, outfile, tabs):
         inner_xml = compat.StringIO()
-        for menu in self.owner[self.name][0]():
-            menu.write(inner_xml, tabs + 1)
+        for menu in self.get():
+            menu.write(inner_xml, tabs+1)
         stmt = common.format_xml_tag( u'menus', inner_xml.getvalue(), tabs, is_xml=True )
         outfile.write(stmt)
 
@@ -514,6 +502,7 @@ class MenuHandler(BaseXmlBuilderTagHandler):
     def __init__(self, owner):
         super(MenuHandler, self).__init__()
         self.owner = owner
+        self.menus = []
         self.curr_menu = []
         self.curr_item = None
         self.curr_index = 0
@@ -530,7 +519,9 @@ class MenuHandler(BaseXmlBuilderTagHandler):
                              attrs.get('help_str', ''),
                              handler=attrs.get('handler', ''))
                 self.curr_menu.append( (t.root,) )
-                self.owner.menus.append(t)
+                #self.owner.menus.append(t)
+                #self.owner.properties["menus"].value.append(t)
+                self.menus.append(t)
                 return
             node = MenuTree.Node(label=attrs['label'],
                                  name=attrs['name'],
@@ -563,7 +554,10 @@ class MenuHandler(BaseXmlBuilderTagHandler):
             self.menu_depth -= 1
             self.curr_menu.pop()
         elif name == 'menus':
-            self.owner.set_menus(self.owner.menus)
+            #self.owner.set_menus(self.owner.menus)
+            #self.owner.properties["menus"].set(self.owner.menus)
+            self.owner.properties["menus"].set(self.menus)
+            self.owner.properties_changed(["menus"])
             return True
 
     def char_data(self, data):
@@ -576,16 +570,20 @@ class MenuHandler(BaseXmlBuilderTagHandler):
 class EditMenuBar(EditBase, PreviewMixin):
     __hidden_frame = None  # used on GTK to reparent a menubar before deletion
 
-    def __init__(self, name, klass, parent, property_window):
+    _PROPERTIES = ["menus", "preview"]
+    PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
+
+    def __init__(self, name, klass, parent):
         custom_class = parent is None
-        EditBase.__init__(self, name, klass, parent, wx.NewId(), property_window, custom_class=custom_class, show=False)
+        EditBase.__init__(self, name, klass, parent, wx.NewId(), custom_class=custom_class, show=False)
         self.base = 'wxMenuBar'
 
-        self.menus = []  # list of MenuTree objects
+        self.menus = MenuProperty()
         self._mb = None  # the real menubar
-        self.access_functions['menus'] = (self.get_menus, self.set_menus)
-        prop = self.properties['menus'] = MenuProperty(self, 'menus', None)
-        PreviewMixin.__init__(self)
+        if not self.parent:
+            PreviewMixin.__init__(self)  # add a preview button
+        else:
+            self.preview = None
 
     def create_widget(self):
         if wx.Platform == '__WXGTK__' and not EditMenuBar.__hidden_frame:
@@ -611,33 +609,6 @@ class EditMenuBar(EditBase, PreviewMixin):
             wx.EVT_CLOSE(self.widget, lambda e: self.hide_widget())
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
         self.set_menus(self.menus)  # show the menus
-
-    def create_properties(self):
-        EditBase.create_properties(self)
-        page = self._common_panel
-        sizer = page.GetSizer()
-        self.properties['menus'].display(page)
-        if not sizer:
-            sizer = wx.BoxSizer(wx.VERTICAL)
-            sizer.Add(self.name_prop.panel, 0, wx.EXPAND)
-            sizer.Add(self.klass_prop.panel, 0, wx.EXPAND)
-            page.SetAutoLayout(1)
-            page.SetSizer(sizer)
-        sizer.Add(self.properties['menus'].panel, 0, wx.ALL|wx.EXPAND, 3)
-        sizer.Fit(page)
-        page.SetSize(self.notebook.GetClientSize())
-        sizer.Layout()
-        self.notebook.AddPage(page, _("Common"))
-        if self.parent is not None:
-            self.property_window.Layout()
-        else:
-            PreviewMixin.create_properties(self)
-
-    def __getitem__(self, key):
-        return self.access_functions[key]
-
-    def get_menus(self):
-        return self.menus
 
     def set_menus(self, menus):
         self.menus = menus
@@ -680,7 +651,8 @@ class EditMenuBar(EditBase, PreviewMixin):
     def remove(self, *args, **kwds):
         self._destroy_popup_menu()
         if self.parent is not None:
-            self.parent.properties['menubar'].set_value(0)
+            self.parent.properties['menubar'].set(False)
+            self.parent._menubar = None
             if kwds.get('gtk_do_nothing', False) and wx.Platform == '__WXGTK__':
                 # workaround to prevent some segfaults on GTK: unfortunately,
                 # I'm not sure that this works in all cases, and moreover it
@@ -729,54 +701,16 @@ class EditMenuBar(EditBase, PreviewMixin):
         return None
 
 
-class Dialog(wx.Dialog):
-    def __init__(self, number):
-        wx.Dialog.__init__(self, None, -1, _('Select menubar class'))
-        if common.app_tree.app.get_language().lower() == 'xrc':
-            self.klass = 'wxMenuBar'
-        else:
-            if not number[0]: self.klass = 'MyMenuBar'
-            else: self.klass = 'MyMenuBar%s' % number[0]
-            number[0] += 1
-        klass_prop = TextProperty(self, 'class', self, label=_('class'))
-        szr = wx.BoxSizer(wx.VERTICAL)
-        szr.Add(klass_prop.panel, 0, wx.EXPAND)
-        sz2 = wx.BoxSizer(wx.HORIZONTAL)
-        sz2.Add(wx.Button(self, wx.ID_OK, _('OK')), 0, wx.ALL, 3)
-        sz2.Add(wx.Button(self, wx.ID_CANCEL, _('Cancel')), 0, wx.ALL, 3)
-        szr.Add(sz2, 0, wx.ALL|wx.ALIGN_CENTER, 3)
-        self.SetAutoLayout(True)
-        self.SetSizer(szr)
-        szr.Fit(self)
-        if self.GetBestSize()[0] < 150:
-            self.SetSize((150, -1))
-        self.CenterOnScreen()
-
-    def __getitem__(self, value):
-        if value == 'class':
-            def set_klass(c): self.klass = c
-            return lambda : self.klass, set_klass
-
-
 
 def builder(parent, sizer, pos, number=[0]):
     "factory function for EditMenuBar objects"
-
-    dialog = Dialog(number)
-    res = dialog.ShowModal()
-    klass = dialog.klass
+    klass = 'wxMenuBar' if common.app_tree.app.language.lower()=='xrc' else 'MyMenuBar'
+    dialog = window_dialog.WindowDialog(klass, base_classes, 'Select menubar class', True)
+    klass = dialog.show()
     dialog.Destroy()
-    if res != wx.ID_OK:
-        if number[0] > 0:
-            number[0] -= 1
-        return
-
-    name = 'menubar_%d' % (number[0] or 1)
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'menubar_%d' % number[0]
-
-    mb = EditMenuBar(name, klass, parent, common.property_panel)
+    if klass is None: return
+    name = dialog.get_next_name("menubar")
+    mb = EditMenuBar(name, klass, parent)
     mb.node = Node(mb)
     common.app_tree.add(mb.node)
     mb.show_widget(True)
@@ -788,11 +722,11 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     name = attrs.get('name')
     if parent is not None:
         if name:
-            parent.menubar.set_name(name)
-            parent.menubar.name_prop.set_value(name)
-        return parent.menubar
+            parent._menubar.properties["name"].set(name)
+            parent._menubar.properties_changed(["name"])
+        return parent._menubar
     else:
-        mb = EditMenuBar(name, attrs.get('class', 'wxMenuBar'), None, common.property_panel)
+        mb = EditMenuBar(name, attrs.get('class', 'wxMenuBar'), None)
         mb.node = Node(mb)
         common.app_tree.add(mb.node)
         return mb

@@ -3,16 +3,14 @@ wxTreeCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
-import common
-import compat
-import config
-from widget_properties import *
+import common, compat, config
 
 
 class EditTreeCtrl(ManagedBase, EditStylesMixin):
@@ -20,57 +18,37 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
 
     update_widget_style = False
 
-    def __init__(self, name, parent, id, sizer, pos, property_window,
-                 show=True, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
+    _PROPERTIES = ["Widget", "style"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-        # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, id, sizer, pos,
-                             property_window, show=show)
+    def __init__(self, name, parent, id, sizer, pos, show=True, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
 
-        # initialise instance variables
-        self.style = style
-        self._item_with_name = None
-
-        # initialise properties remaining staff
-        self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
+        # initialise instance properties
+        if style: self.properties["style"].set(style)
+        self._item_with_name = None  # a Tree item for visualization
 
     def create_widget(self):
-        self.widget = wx.TreeCtrl(self.parent.widget, self.id,
-                                 style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN)
+        self.widget = wx.TreeCtrl(self.parent.widget, self.id, style=self.style) # wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN)
         # add a couple of items just for a better appearance
         root = self.widget.AddRoot(_(' Tree Control:'))
         self._item_with_name = self.widget.AppendItem(root, ' ' + self.name)
-        self.widget.AppendItem(self._item_with_name,
-                               _(' on wxGlade %s') % config.version)
+        self.widget.AppendItem(self._item_with_name, _(' on wxGlade version %s') % config.version )
         self.widget.Expand(root)
         self.widget.Expand(self._item_with_name)
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
 
-    def set_name(self, name):
-        ManagedBase.set_name(self, name)
-        if self.widget and self._item_with_name:
-            self.widget.SetItemText(self._item_with_name, ' ' + self.name)
+    def _set_name(self, name):
+        if not self.widget or not self._item_with_name: return
+        self.widget.SetItemText(self._item_with_name, ' ' + self.name)
 
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
-        prop = self.properties
-        prop['style'].display(panel)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        szr.Add(prop['style'].panel, 0, wx.EXPAND)
-        panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
-        szr.Fit(panel)
-        w, h = panel.GetClientSize()
-        self.notebook.AddPage(panel, _('Widget'))
-        self.property_window.Layout()
-        import math
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
+    def properties_changed(self, modified):
+        ManagedBase.properties_changed(self, modified)
+        if not modified or "name" in modified:
+            self._set_name()
 
 
 
@@ -80,12 +58,11 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'tree_ctrl_%d' % number[0]
-    tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos,
-                             common.property_panel)
+    tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos)
     node = Node(tree_ctrl)
     tree_ctrl.node = node
-    tree_ctrl.set_option(1)
-    tree_ctrl.set_style("wxEXPAND")
+    tree_ctrl.properties["proportion"].set(1)
+    tree_ctrl.properties["flag"].set("wxEXPAND")
     tree_ctrl.show_widget(True)
     common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(tree_ctrl.pos, 1, wx.EXPAND)
@@ -100,10 +77,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos,
-                             common.property_panel, style=0)
-    sizer.set_item(tree_ctrl.pos, option=sizeritem.option,
-                   flag=sizeritem.flag, border=sizeritem.border)
+    tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos, style=0)
+    sizer.set_item(tree_ctrl.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(tree_ctrl)
     tree_ctrl.node = node
     if pos is None:
