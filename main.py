@@ -25,8 +25,8 @@ from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, XmlParsingErro
 
 class wxGladePropertyPanel(wx.Frame):
     "Panel used to display the Properties of the various widgets"
-    def __init__(self, frame_style):
-        wx.Frame.__init__( self, None, -1, _('Properties - <%s>' % _('app')), style=frame_style, name='PropertyFrame' )
+    def __init__(self, parent, frame_style):
+        wx.Frame.__init__( self, parent, -1, _('Properties - <%s>' % _('app')), style=frame_style, name='PropertyFrame' )
 
         self.current_widget = None        # instance currently being edited
         self.next_widget = None           # the next one, will only be edited after a small delay
@@ -326,7 +326,7 @@ class wxGladeFrame(wx.Frame):
                 # fill up the rest of the line
                 for i in range(maxlen-len(buttons)):
                     sizer.AddSpacer(0)
-            sizer.Add(wx.StaticText(self, -1, "Sizers:"))
+            sizer.Add(wx.StaticText(self, -1, "Sizers:"), 1, wx.ALIGN_CENTER_VERTICAL)
             for sb in sizer_buttons:
                 sizer.Add(sb, flag=wx.ALL,border=2)
             self.SetSizer(sizer)
@@ -541,7 +541,7 @@ class wxGladeFrame(wx.Frame):
     # GUI elements: property frame, tree frame #########################################################################
     def create_property_panel(self, frame_style, icon):
         # create property editor frame
-        self.property_frame = wxGladePropertyPanel(frame_style)
+        self.property_frame = wxGladePropertyPanel(self, frame_style)
         self.property_frame.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE) )
         self.property_frame.SetIcon(icon)
 
