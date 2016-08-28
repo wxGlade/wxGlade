@@ -29,14 +29,14 @@ class wxGladePropertyPanel(wx.Panel):
 
         self.current_widget = None        # Edit.. instance currently being edited
         self.next_widget = None           # the next one, will only be edited after a small delay
-        self.current_widget_class = None  # 
+        self.current_widget_class = None  #
 
         self.notebook = wx.Notebook(self, -1)
         self.notebook.sizer = None
         self.notebook.SetAutoLayout(True)
         self.notebook.Hide()
         self.pagenames = []
-        
+
     def SetTitle(self, title):
         try: self.GetParent().SetTitle(title)
         except AttributeError: pass
@@ -48,7 +48,7 @@ class wxGladePropertyPanel(wx.Panel):
 
     def is_visible(self):
         return self.GetParent().IsShown()
-    
+
     ####################################################################################################################
     # new editor interface
     def set_widget(self, widget):
@@ -111,7 +111,7 @@ class wxGladePropertyPanel(wx.Panel):
                 # start new page
                 current_pagename = prop
                 if prop=="Layout" and not edit_widget._has_layout:continue
-                
+
                 current_page = self.start_page(prop)
                 current_sizer = wx.BoxSizer(wx.VERTICAL)
                 self.sizers.append(current_sizer)
@@ -159,7 +159,7 @@ class wxGladePropertyPanel(wx.Panel):
         panel.SetSizer(sizer)
         sizer.Layout()
         sizer.Fit(panel)
-    
+
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, _(header),select=select)
         #self.Layout()
@@ -306,7 +306,7 @@ class wxGladeFrame(wx.Frame):
         SAVE_TEMPLATE_ID = wx.NewId()
         append_menu_item(file_menu, SAVE_TEMPLATE_ID, _("Save As Template..."))
         file_menu.AppendSeparator()
-        
+
         append_menu_item(file_menu, wx.ID_REFRESH, _("&Refresh Preview\tf5"))
 
         GENERATE_CODE_ID = wx.NewId()
