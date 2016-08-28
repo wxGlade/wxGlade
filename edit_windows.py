@@ -580,19 +580,9 @@ class WindowBase(EditBase):
             self.properties_changed(modified)
 
     def properties_changed(self, modified=None):
-        # XXX check
+        # XXX check whether actions are required
         return
-        if not modified:
-            # no specific property modified; update all
-            self.display_properties()
-            return
 
-        # update property editors, if visible
-        if not common.property_panel.current_widget is self: return
-        editors = common.property_panel.editors
-        for editor in editors.values():
-            pass
-        
     def get_properties(self, without=set()):
         if not self.properties["foreground"].is_active(): without.add("foreground")
         if not self.properties["background"].is_active(): without.add("background")

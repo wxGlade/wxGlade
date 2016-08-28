@@ -118,7 +118,8 @@ class NotebookVirtualSizer(Sizer):
 
 class NotebookPagesProperty(np.GridProperty):
     def __init__(self, value, cols):
-        np.GridProperty.__init__(self, value, cols, can_remove_last=False, with_index=True)
+        col_widths = [300,]
+        np.GridProperty.__init__(self, value, cols, col_sizes=col_widths, can_remove_last=False, with_index=True)
 
     def write(self, outfile, tabs):
         inner_xml = u''
@@ -183,6 +184,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     def on_set_focus(self, event):
         # allow switching of pages
         event.Skip()
+        misc.exec_after(self.widget.Refresh())
 
     def _add_tab(self, window, pos):
         # XXX remove method if not used
@@ -210,17 +212,22 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     # new implementation:
     # together with NotebookVirtualSizer insert_tab, remove_tab, free_tab
     def insert_tab(self, index, label):
-        self.tabs.insert(index, [label, None]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
+
+        # add tab/page this needs to be done before EditPanel calls self.virtual_sizer.add_item
+        tabs_p = self.properties["tabs"]
+        tabs = tabs_p.get()
+        tabs.insert(index, [label,])
+        tabs_p.set(tabs)
+        self.pages.insert(index, None)
 
         pos = index+1
-        if _has_panel:
-            window = EditPanel( self.next_pane_name(suggestion=label), self, -1, self.virtual_sizer, pos, self.property_window )
-            window._dont_destroy = True
-            node = Node(window)
-        else: # a SizerSlot/SlotNode; not tested
-            window = SizerSlot(self, self.virtual_sizer, pos)
-            node = SlotNode(window) # XXX not tested
-            self.tabs[index][1] = window # the EditPanel above sets itself to tabs during it's __init__
+        window = EditPanel( self.next_pane_name(suggestion=label), self, -1, self.virtual_sizer, pos )
+        window._dont_destroy = True
+        node = Node(window)
+        #else: # a SizerSlot/SlotNode; not tested
+            #window = SizerSlot(self, self.virtual_sizer, pos)
+            #node = SlotNode(window) # XXX not tested
+            #self.tabs[index][1] = window # the EditPanel above sets itself to tabs during it's __init__
 
         window.node = node
         common.app_tree.add(node, self.node)
@@ -237,18 +244,18 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 if 'WINGDB_ACTIVE' in os.environ: raise
         self.properties["tabs"].update_display()
 
-    def set_tabs(self, tabs, indices):
+    def set_tabs(self, old_names, indices):
         """tabs: list of strings
         indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
         keep_indices = [i for i in indices if i is not None]
         if keep_indices != sorted(keep_indices):
             raise ValueError("Re-ordering is not yet implemented")
         keep_indices = set(keep_indices)
-        old_names = self.properties["tabs"].get()
+        #old_names = self.properties["tabs"].get()
         new_names = old_names[:]
 
         # set tab labels of existing pages, if modified
-        for (name,), index in zip(tabs, indices):
+        for (name,), index in zip(self.tabs, indices):
             if index is not None and old_names[index]!=name:
                 new_names[index] = [name,]
                 if self.widget:
@@ -266,7 +273,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
         # insert/add tabs
         added = None
-        for i, (name,) in enumerate(tabs):
+        for i, (name,) in enumerate(self.tabs):
             index = indices[i]
             if index is not None: continue                  # old tab to be kept
 
@@ -274,6 +281,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             #self.insert_tab(i, name)
 
             new_names.insert(i, [name,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
+            self.pages.insert(i, None)
             # create panel and node, add to tree
             pos = i+1
             window = EditPanel( self.next_pane_name(name), self, -1, self.virtual_sizer, pos )
@@ -370,7 +378,7 @@ def builder(parent, sizer, pos, number=[1]):
     if res != wx.ID_OK:
         return
 
-    widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos, common.property_panel, show=False)
+    widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos, show=False)
 
     node = Node(widget)
     widget.node = node

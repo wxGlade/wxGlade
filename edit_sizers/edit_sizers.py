@@ -310,8 +310,9 @@ class SizerSlot(np.PropertyOwner):
             self.widget.Hide()
         if clipboard.paste(self.parent, self.sizer, self.pos, clipboard_data):
             common.app_tree.app.saved = False
-            if self.parent.node.widget.widget is not None:
-                common.app_tree.show_widget(self.parent.node)
+            misc.set_focused_widget(self.parent)
+            #if self.parent.node.widget.widget is not None:
+            #    common.app_tree.show_widget(self.parent.node)
         else:
             self.widget.Show()
 
