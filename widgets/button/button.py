@@ -7,10 +7,7 @@ wxButton objects
 """
 
 import wx
-import config
-import common
-import compat
-import misc
+import config, common, compat, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
 from widget_properties import *
@@ -152,10 +149,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditButton'] = builder
     common.widgets_from_xml['EditButton'] = xml_builder
 

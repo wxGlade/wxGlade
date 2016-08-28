@@ -18,11 +18,7 @@ Like all other perl parts, based on the pre-existing python generators
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import os
-import os.path
-import re
-import types
-
+import os, os.path, re
 from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
 import wcodegen
 import compat

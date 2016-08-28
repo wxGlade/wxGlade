@@ -8,10 +8,7 @@ Entry point of wxGlade on windows
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import sys
-import traceback
-import types
-
+import sys, traceback, types
 import gettext
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
@@ -19,29 +16,12 @@ t.install("wxglade")
 import config
 import wxglade
 
-msg = u''
-"""\
-Message to show in the message box
-
-@type: Unicode
-
-@see: L{show_error_details()}
-"""
-
-title = u''
-"""\
-Title of the message box
-
-@type:  Unicode
-
-@see: L{show_error_details()}
-"""
+msg   = u''  # Message to show in the message box (see {show_error_details())
+title = u''  # Title of the message box
 
 
 def show_error_details():
-    """\
-    Show a message box
-    """
+    "Show a message box; msg and title have to be set before"
 
     # ctypes has introduced with Python 2.5, but wxGlade is supported with
     # Python 2.4 too. Thereby ctypes will be used if available only.

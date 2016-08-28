@@ -8,10 +8,7 @@ wxStaticText objects
 
 import wx
 import wx.lib.stattext
-import common
-import compat
-import config
-import misc
+import common, compat, config, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
 from widget_properties import *
@@ -89,7 +86,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(static_text)
     static_text.node = node
     static_text.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -108,7 +105,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return static_text
 
 

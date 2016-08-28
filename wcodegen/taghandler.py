@@ -7,7 +7,6 @@ The custon tag handlers are called within the XML parsers in L{xml_parse}.
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import types
 import xml.sax.saxutils
 import compat
 

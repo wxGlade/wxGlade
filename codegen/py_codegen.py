@@ -17,16 +17,11 @@ methods of the parent object.
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import os
-import os.path
-import random
-import re
-import types
-
+import os, os.path, random, re
 from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
 import wcodegen
-
 import compat
+
 
 class SourceFileContent(BaseSourceFileContent):
 
@@ -194,11 +189,7 @@ class WidgetHandler(BaseWidgetHandler):
 
 
 class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
-    """\
-    Code writer class for writing Python code out of the designed GUI elements
-
-    @see: L{BaseLangCodeWriter}
-    """
+    "Code writer class for writing Python code out of the designed GUI elements"
 
     _code_statements = {
         'backgroundcolour': "%(objname)s.SetBackgroundColour(%(value)s)\n",

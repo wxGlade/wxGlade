@@ -13,14 +13,12 @@ import wcodegen
 class PythonStaticLineGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
-# end of class PythonStaticLineGenerator
 
 
 class CppStaticLineGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/statline.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
 
-# end of class CppStaticLineGenerator
 
 
 def xrc_code_generator(obj):
@@ -41,5 +39,5 @@ def initialize():
     klass = 'wxStaticLine'
     common.class_names['EditStaticLine'] = klass
     common.register('python', klass, PythonStaticLineGenerator(klass))
-    common.register('C++', klass, CppStaticLineGenerator(klass))
-    common.register('XRC', klass, xrc_code_generator)
+    common.register('C++',    klass, CppStaticLineGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)

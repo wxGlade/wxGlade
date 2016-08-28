@@ -20,40 +20,20 @@ except AttributeError:
 
 
 def widget2clipboard(option, flag, border, xml_unicode):
-    """\
-    Pickle all parameter to store them as a string in the clipboard.
+    """Pickle all parameter to store them as a string in the clipboard.
+    
+    option, flag, border: widget layout properties
+    xml_unicode: XML representation of this widget"""
 
-    @param option: Widget layout proportions
-    @type option:  str
-    @param flag: Widget flags / styles
-    @type flag:  str
-    @param border: Widget border
-    @type border:  str
-    @param xml_unicode: XML representation of this widget
-    @type xml_unicode: Unicode
-    @return: Pickled parameters
-    @rtype:  str
-
-    @see: L{clipboard2widget()}
-    """
     clipboard_data = compat.pickle.dumps((option, flag, border, xml_unicode))
     return clipboard_data
 
 
 def clipboard2widget(clipboard_data):
-    """\
-    Convert widget data prepared in L{widget2clipboard()} back to single values.
+    """Convert widget data prepared in widget2clipboard() back to single values.
 
-    The values are option (proportions), flag, border and widget in XML
-    representation. They will be returned in a list.
+    Returns a list [option (proportions), flag, border and widget in XML representation]"""
 
-    @param clipboard_data: Widget data prepared in L{widget2clipboard()}
-    @type clipboard_data:  str
-
-    @rtype: list[int, str, int, str]
-
-    @see: L{widget2clipboard()}
-    """
     option, flag, border, xml_unicode = compat.pickle.loads(clipboard_data)
 
     # remove the dirt at the end of XML representation
@@ -78,14 +58,7 @@ def get_copy(widget):
 
 
 def copy(widget):
-    """\
-    Store a widget copy into the clipboard
-
-    @param widget: Widget to copy
-
-    @return: True on success
-    @rtype: bool
-    """
+    "Store a widget copy into the clipboard; returns True on success"
     if wx.TheClipboard.Open():
         try:
             clipboard_data = get_copy(widget)
@@ -103,15 +76,7 @@ def copy(widget):
 
 
 def cut(widget):
-    """\
-    Store a copy of self into the clipboard and delete the widget.
-
-    @param widget: Widget to copy and delete
-
-    @return: True on success
-    @rtype: bool
-    @see: L{copy()}
-    """
+    "Store a copy of self into the clipboard and delete the widget; returns True on success"
     if copy(widget):
         widget.remove()
         return True
@@ -120,21 +85,12 @@ def cut(widget):
 
 
 def paste(parent, sizer, pos, clipboard_data=None):
-    """\
-    Copies a widget (and all its children) from the clipboard to the given
-    destination (parent, sizer and position inside the sizer).
+    """Copies a widget (and all its children) from the clipboard to the given
+    destination (parent, sizer and position inside the sizer). Returns True on success.
 
-    @param parent: Parent widget of the widget to add
-
-    @param sizer: Sizer to place widget in
-    @type sizer: edit_sizers.edit_sizers.SizerBase | None
-
-    @param pos: Position inside the sizer
-    @type pos: int
-
-    @return: True on success
-    @rtype: bool
-    """
+    parent: Parent widget of the widget to add
+    sizer: Sizer to place widget in
+    pos: Position inside the sizer"""
     if clipboard_data is None:
         if wx.TheClipboard.Open():
             try:

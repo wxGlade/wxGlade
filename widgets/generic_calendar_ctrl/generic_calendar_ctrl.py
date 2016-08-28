@@ -70,7 +70,6 @@ class EditGenericCalendarCtrl(ManagedBase, EditStylesMixin):
     def set_default(self, value):
         self.default = bool(int(value))
 
-# end of class EditGenericCalendarCtrl
 
 
 def builder(parent, sizer, pos, number=[1]):
@@ -83,7 +82,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(calendar_ctrl)
     calendar_ctrl.node = node
     calendar_ctrl.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -102,7 +101,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return calendar_ctrl
 
 

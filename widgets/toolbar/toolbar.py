@@ -7,16 +7,11 @@ wxToolBar objects
 """
 from __future__ import absolute_import
 
-import re
 import wx
 from wx.lib.filebrowsebutton import FileBrowseButton
 
-import common
-import compat
-import config
-import math
-import misc
-import os
+import common, compat, config, misc
+import math, os, re
 from tree import Tree, Node
 from .tool import *
 from widget_properties import *
@@ -731,6 +726,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             return ToolsHandler(self)
         return None
 
+        EditBase.properties_changed(self, modified)
 
 
 def builder(parent, sizer, pos, number=[0]):

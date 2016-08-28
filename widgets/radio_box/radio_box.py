@@ -7,15 +7,14 @@ wxRadioBox objects
 """
 
 import wx
-import common
-import compat
-import misc
+import common, compat, misc
 from edit_windows import ManagedBase
 from tree import Tree, Node
 from widget_properties import *
 from misc import wxGladeRadioButton
 
 from ChoicesProperty import *
+
 
 
 class EditRadioBox(ManagedBase):
@@ -246,7 +245,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(radio_box)
     radio_box.node = node
     radio_box.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -265,7 +264,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return radio_box
 
 

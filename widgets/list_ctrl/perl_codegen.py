@@ -14,7 +14,6 @@ import wcodegen
 class PerlListCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s%(style)s);\n'
 
-# end of class PerlListCtrlGenerator
 
 
 def initialize():

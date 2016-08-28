@@ -13,12 +13,10 @@ from ChoicesCodeHandler import *
 
 
 class PythonComboBoxGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, ' \
-           'choices=[%(choices)s]%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s)\n'
 
     set_default_style = True
 
-# end of class PythonComboBoxGenerator
 
 
 class CppComboBoxGenerator(wcodegen.CppWidgetCodeWriter):
@@ -29,7 +27,6 @@ class CppComboBoxGenerator(wcodegen.CppWidgetCodeWriter):
     prefix_style = False
     set_default_style = True
 
-# end of class CppComboBoxGenerator
 
 
 def xrc_code_generator(obj):
@@ -40,10 +37,7 @@ def xrc_code_generator(obj):
             if name == 'choices':
                 xrc_write_choices_property(self, outfile, tabs)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                       outfile, tabs)
-
-    # end of class ComboBoxXrcObject
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
 
     return ComboBoxXrcObject(obj)
 
@@ -51,9 +45,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxComboBox'
     common.class_names['EditComboBox'] = klass
-    common.register('python', klass, PythonComboBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
-    common.register('C++', klass, CppComboBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
-    common.register('XRC', klass, xrc_code_generator,
-                    'choices', ChoicesCodeHandler)
+    common.register('python', klass, PythonComboBoxGenerator(klass), 'choices', ChoicesCodeHandler)
+    common.register('C++',    klass, CppComboBoxGenerator(klass),    'choices', ChoicesCodeHandler)
+    common.register('XRC',    klass, xrc_code_generator,             'choices', ChoicesCodeHandler)

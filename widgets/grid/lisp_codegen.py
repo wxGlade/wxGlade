@@ -20,8 +20,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         if id_name:
             init.append(id_name)
 
-        init.append('(setf (slot-%s obj) (wxGrid_Create %s %s -1 -1 -1 -1 wxWANTS_CHARS))\n' %
-                    (obj.name, parent, id))
+        init.append('(setf (slot-%s obj) (wxGrid_Create %s %s -1 -1 -1 -1 wxWANTS_CHARS))\n' % (obj.name, parent, id))
         props_buf = self.get_properties_code(obj)
         return init, props_buf, []
 
@@ -36,14 +35,11 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         if not create_grid: return []
 
         columns = prop.get('columns', [['A', '-1']])
-        out.append('(wxGrid_CreateGrid (slot-%s obj) %s %s 0)\n' %
-                   (name, prop.get('rows_number', '1'), len(columns)))
+        out.append('(wxGrid_CreateGrid (slot-%s obj) %s %s 0)\n' % (name, prop.get('rows_number', '1'), len(columns)))
         if prop.get('row_label_size'):
-            out.append('(wxGrid_SetRowLabelSize (slot-%s obj) %s)\n' %
-                       (name, prop['row_label_size']))
+            out.append('(wxGrid_SetRowLabelSize (slot-%s obj) %s)\n' % (name, prop['row_label_size']))
         if prop.get('col_label_size'):
-            out.append('(wxGrid_SetColLabelSize (slot-%s obj) %s)\n' %
-                       (name, prop['col_label_size']))
+            out.append('(wxGrid_SetColLabelSize (slot-%s obj) %s)\n' % (name, prop['col_label_size']))
         enable_editing = prop.get('enable_editing', '1')
         if enable_editing != '1':
             out.append('(wxGrid_EnableEditing (slot-%s obj) 0)\n' % name)
@@ -69,18 +65,15 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         sel_mode = prop.get('selection_mode')
 
         if sel_mode and sel_mode != 'wxGridSelectCells':
-            out.append('(wxGrid_SetSelectionMode (slot-%s obj) %s)\n' %
-                       (name, sel_mode.replace('wxGrid.','')))
+            out.append('(wxGrid_SetSelectionMode (slot-%s obj) %s)\n' % (name, sel_mode.replace('wxGrid.','')))
 
         i = 0
         for label, size in columns:
             if _check_label(label, i):
-                out.append('(wxGrid_SetColLabelValue (slot-%s obj) %s %s)\n' % \
-                           (name, i, self.codegen.quote_str(label)))
+                out.append('(wxGrid_SetColLabelValue (slot-%s obj) %s %s)\n' % (name, i, self.codegen.quote_str(label)))
             try:
                 if int(size) > 0:
-                    out.append('(wxGrid_SetColSize (slot-%s obj) %s %s)\n' % \
-                               (name, i, size))
+                    out.append('(wxGrid_SetColSize (slot-%s obj) %s %s)\n' % (name, i, size))
             except ValueError: pass
             i += 1
 

@@ -6,14 +6,8 @@ Miscellaneous stuff, used in many parts of wxGlade
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import common
-import config
-import compat
-
-import logging
-import os
-import re
-import types
+import common, config, compat
+import logging, os, re
 import wx
 
 focused_widget = None
