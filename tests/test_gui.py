@@ -12,7 +12,6 @@ from tests import WXGladeBaseTest
 import glob
 import os.path
 import sys
-import types
 import wx
 import wx.xrc
 

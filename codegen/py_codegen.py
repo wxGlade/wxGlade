@@ -14,6 +14,7 @@ methods of the parent object.
 @copyright: John Dubery
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -426,7 +427,7 @@ if __name__ == "__main__":
         #  2nd) for function body
         self.tmpl_func_event_stub = self.tabs(1) + """\
 def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
-%(tab)sprint "Event handler '%(handler)s' not implemented!"
+%(tab)sprint( "Event handler '%(handler)s' not implemented!" )
 %(tab)sevent.Skip()
 """
         return BaseLangCodeWriter.generate_code_event_handler( self, code_obj, is_new, tab, prev_src, event_handlers )

@@ -61,8 +61,8 @@ class wxGladeFontDialog(wx.Dialog):
             return
 
         family = font.GetFamily()
-        for f in (wx.VARIABLE, wx.FIXED):
-            if family & f: family = family ^ f
+        #for f in (wx.VARIABLE, wx.FIXED):
+        #    if family & f: family = family ^ f
         self.value = "['%s', '%s', '%s', '%s', '%s', '%s']" % \
                      (font.GetPointSize(),
                       self.font_families_from[family],
