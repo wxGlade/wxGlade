@@ -216,17 +216,8 @@ def capitalize(string):
 
 
 def color_to_string(color):
-    """\
-    returns the hexadecimal string representation of the given colour
-
-    Example::
-        >>> color_to_string(wx.Colour(255, 255, 255))
-       '#ffffff'
-
-    @rtype: str
-    """
-    import operator
-    return '#' + "".join( ['%02x' % bound(c, 0, 255) for c in color.Get()] )
+    "returns the hexadecimal string representation of the given colour  '#RRGGBB'"
+    return '#%.2x%.2x%.2x'%(color.Red(), color.Green(), color.Blue())
 
 
 def string_to_color(color):
@@ -240,9 +231,11 @@ def string_to_color(color):
 
     @rtype: wx.Colour
     """
-    if len(color) != 7:
-        raise ValueError
-    return apply(wx.Colour, [int(color[i:i + 2], 16) for i in range(1, 7, 2)])
+    if len(color)==7:
+        return wx.Colour( *[int(color[i:i + 2], 16) for i in range(1, 7, 2)] )
+    if len(color)==9:
+        return wx.Colour( *[int(color[i:i + 2], 16) for i in range(1, 9, 2)] )
+    raise ValueError
 
 
 def format_for_version(version):

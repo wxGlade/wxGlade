@@ -148,7 +148,7 @@ class Property(object):
         # set tooltip
         for widget in self._tooltip_widgets:
             if widget:
-                widget.SetToolTip(wx.ToolTip(self.tooltip))
+                compat.SetToolTip(widget, self.tooltip)
 
     def _escape(self, val):
         """\

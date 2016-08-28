@@ -3,6 +3,7 @@ wxDatePickerCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -14,6 +15,13 @@ import compat
 import config
 from widget_properties import *
 
+
+if compat.IS_PHOENIX:
+    #import wx.adv
+    from wx.adv import DatePickerCtrl
+else:
+    #import wx.calendar
+    from wx import DatePickerCtrl
 
 class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxDatePickerCtrl objects"

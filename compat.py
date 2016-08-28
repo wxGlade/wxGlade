@@ -215,6 +215,8 @@ if len(wx.VERSION)==5:
     wx_ArtProvider_GetBitmap = wx.ArtProvider_GetBitmap
     wx_ToolTip_SetDelay = wx.ToolTip_SetDelay
     wx_Tree_InsertItemBefore = wx.TreeCtrl.InsertItemBefore
+    def SetToolTip(c, s):
+        c.SetToolTipString(s)
 else:
     # wxPython Phoenix
     IS_CLASSIC = False
@@ -227,5 +229,6 @@ else:
     wx_ArtProvider_GetBitmap = wx.ArtProvider.GetBitmap
     wx_ToolTip_SetDelay = wx.ToolTip.SetDelay
     wx_Tree_InsertItemBefore = wx.TreeCtrl.InsertItem # overloaded: index or item
-
     SizerItem_SetSizer = SizerItem_SetSizerPhoenix    # uses AssignSizer
+    def SetToolTip(c, s):
+        c.SetToolTipString(s)

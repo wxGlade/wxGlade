@@ -6,7 +6,7 @@ C++ generator functions for the various wxSizerS
 """
 
 import common
-from edit_sizers import BaseSizerBuilder
+from .edit_sizers import BaseSizerBuilder
 
 
 class BaseCPPSizerBuilder(BaseSizerBuilder):
