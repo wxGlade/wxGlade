@@ -8,9 +8,7 @@ wxCheckListBox objects
 """
 
 import wx
-import common
-import compat
-import misc
+import common, compat, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
 from widget_properties import *
@@ -93,7 +91,6 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetSelection(value)
 
-# end of class EditCheckListBox
 
 
 def builder(parent, sizer, pos, number=[1]):
@@ -131,10 +128,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditCheckListBox'] = builder
     common.widgets_from_xml['EditCheckListBox'] = xml_builder
 

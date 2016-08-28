@@ -7,9 +7,7 @@ wxListBox objects
 """
 
 import wx
-import common
-import compat
-import misc
+import common, compat, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
 from widget_properties import *
@@ -97,7 +95,6 @@ class EditListBox(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetSelection(value)
 
-# end of class EditListBox
 
 
 def builder(parent, sizer, pos, number=[1]):
@@ -111,7 +108,7 @@ def builder(parent, sizer, pos, number=[1]):
 ##     sizer.set_item(pos, size=list_box.GetBestSize())
     list_box.node = node
     list_box.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -130,7 +127,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return list_box
 
 

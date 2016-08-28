@@ -6,14 +6,10 @@ wxDialog objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import math
-import os
+import math, os
 import wx
 
-import common
-import compat
-import config
-import misc
+import common, compat, config, misc
 from tree import Tree, Node
 from widget_properties import *
 from edit_windows import TopLevelBase, EditStylesMixin
@@ -69,14 +65,12 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
         else:
             parent = common.palette
 
-        # we set always a default style because this is the best one for
-        # editing the dialog (for example, a dialog without a caption would
-        # be hard to move, etc.)
+        # we set always a default style because this is the best one for editing the dialog
+        # (for example, a dialog without a caption would be hard to move, etc.)
         default_style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
 
         # change 2002-10-09: now we create a wxFrame instead of a wxDialog,
-        # because the latter gives troubles I wasn't able to solve when using
-        # wxPython 2.3.3.1 :-/
+        # because the latter gives troubles I wasn't able to solve when using wxPython 2.3.3.1 :-/
         self.widget = wx.Frame(parent, self.id, "", style=default_style)
         self.widget.SetBackgroundColour(
             wx.SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE))
@@ -282,5 +276,4 @@ def initialize():
 
     common.widgets['EditDialog'] = builder
 
-    return common.make_object_button('EditDialog', 'dialog.xpm', 1,
-                                     tip='Add a Dialog/Panel')
+    return common.make_object_button('EditDialog', 'dialog.xpm', 1, tip='Add a Dialog/Panel')

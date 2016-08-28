@@ -8,10 +8,7 @@ wxToggleButton objects
 
 import wx
 
-import common
-import compat
-import config
-import misc
+import common, compat, config, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
 from widget_properties import *

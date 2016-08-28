@@ -7,13 +7,8 @@ Classes to handle and display the structure of a wxGlade app
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging
-import os.path
-import sys
-import time
-import types
+import logging, os.path, sys, time
 import wx
-
 import misc, common, compat, config
 import edit_sizers, application
 
@@ -64,6 +59,7 @@ class Node(object):
 
     def write(self, outfile, tabs, class_names=None):
         "Writes the xml code for the widget to the given output file"
+        # XXX move this to the widget
         import edit_sizers
         fwrite = outfile.write
         assert self.widget is not None
@@ -337,7 +333,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
     def begin_drag(self, evt):
-        # remember the dragged item
+        # inhibit drag start or remember the dragged item
         item = evt.GetItem()
         if isinstance(self.GetPyData(item), SlotNode):
             return

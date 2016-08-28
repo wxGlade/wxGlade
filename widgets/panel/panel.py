@@ -9,13 +9,11 @@ wxPanel objects
 import logging
 import wx
 import clipboard
-import common
-import compat
-import config
-import misc
+import common, compat, config, misc
 from tree import Tree, Node, Node
 from widget_properties import *
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
+
 
 
 class PanelBase(EditStylesMixin):
@@ -180,7 +178,6 @@ class PanelBase(EditStylesMixin):
         # re-initialise logger instance deleted from __getstate__
         self._logger = logging.getLogger(self.__class__.__name__)
 
-# end of class PanelBase
 
 
 class EditPanel(PanelBase, ManagedBase):

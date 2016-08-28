@@ -7,10 +7,7 @@ wxHyperlinkCtrl objects
 
 
 import wx
-import common
-import compat
-import config
-import misc
+import common, compat, config, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
 from widget_properties import *
@@ -108,7 +105,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node
     hyperlink_ctrl.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -127,7 +124,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return hyperlink_ctrl
 
 
@@ -136,5 +133,4 @@ def initialize():
     common.widgets['EditHyperlinkCtrl'] = builder
     common.widgets_from_xml['EditHyperlinkCtrl'] = xml_builder
 
-    return common.make_object_button(
-        'EditHyperlinkCtrl', 'hyperlink_ctrl.xpm')
+    return common.make_object_button('EditHyperlinkCtrl', 'hyperlink_ctrl.xpm')

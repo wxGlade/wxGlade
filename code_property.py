@@ -1,5 +1,5 @@
 """
-Property class for the 'code' property of toplevel widgets
+Property class for the 'code' and 'extraproperties' property of toplevel widgets
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann

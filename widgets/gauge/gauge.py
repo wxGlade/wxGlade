@@ -6,8 +6,7 @@ wxGauge objects
 """
 
 import wx
-import common
-import compat
+import common, compat
 import wcodegen
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
@@ -92,7 +91,7 @@ def builder(parent, sizer, pos, number=[1]):
     widget.node = node
     widget.set_style("wxEXPAND")
     widget.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -111,7 +110,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return widget
 
 

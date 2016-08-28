@@ -8,74 +8,43 @@ Global functions and variables
 
 import codecs
 try:
+    # Python 2
     import ConfigParser
     from md5 import new as md5
 except:
+    # Python 3
     import configparser as ConfigParser
     from hashlib import md5
 
-import logging
-
-import os
-import os.path
-import sys
-import tempfile
-import types
+import logging, os, os.path, sys, tempfile
 from xml.sax.saxutils import escape, quoteattr
 
-import config
-import compat
-import plugins
+import config, compat, plugins
 
-widgets = {}
-"""\
-Widgets dictionary: each key is the name of some EditWidget class; the mapped
-value is a 'factory' function which actually builds the object. Each of these
-functions accept 3 parameters: the parent of the widget, the sizer by which
-such widget is controlled, and the position inside this sizer.
 
-@type: dict
-"""
+widgets = {}          # all widgets: EditWidget class name -> factory(parent, sizer, pos)
+widgets_from_xml = {} # Factory functions to build objects from a XML file
 
-widgets_from_xml = {}
-"Factory functions to build objects from a XML file"
+class_names = {} # maps the name of the classes used by wxGlade to the correspondent classes of wxWindows
+toplevels = {}   # names of the Edit classes that can be toplevels, i.e. class declaration will be generated in the code
 
-property_panel = None
-"property_panel wxPanel: container inside which Properties of the current focused widget are displayed"
+# references to windows:
+palette = None         # main window (the palette which contains the various buttons to add the different widgets)
+property_panel = None  # panel for editing the current widgets properties
+app_tree = None        # widget hierarchy of the application; root is application itself; a tree.WidgetTree instance
 
-app_tree = None
-"app_tree Tree: represents the widget hierarchy of the application; the root is the application itself"
+# these will be set when clicking an item on the palette window:
+adding_widget = False # If True, the user is adding a widget to some sizer
+adding_sizer = False  # "Needed to add toplevel sizers"
+widget_to_add = None  # widget class name that is being added
 
-adding_widget = False
-"If True, the user is adding a widget to some sizer"
-
-adding_sizer = False
-"Needed to add toplevel sizers"
-
-widget_to_add = None
-"Reference to the widget that is being added: this is a key in the 'widgets' dictionary"
-
-palette = None
-"Reference to the main window (the one which contains the various buttons to add the different widgets)"
-
+# Dictionary which maps the ids used in the event handlers to the corresponding widgets:
+# used to call the appropriate builder function when a dropping of a widget occurs, knowing only the id of the event
 refs = {}
-"""\
-Dictionary which maps the ids used in the event handlers to the
-corresponding widgets: used to call the appropriate builder function
-when a dropping of a widget occurs, knowing only the id of the event
 
-@type: dict
-"""
-
-class_names = {}
-"Dictionary which maps the name of the classes used by wxGlade to the correspondent classes of wxWindows"
-
-toplevels = {}
-"Names of the Edit* classes that can be toplevels, i.e. widgets for which to generate a class declaration in the code"
 
 code_writers = {}
-"""\
-Dictionary of objects used to generate the code in a given language.
+"""Dictionary of language name -> BaseLangCodeWriter objects used to generate the code in a given language.
 
 @note: A code writer object must implement this interface:
  - initialize(out_path, multi_files)
@@ -88,9 +57,8 @@ Dictionary of objects used to generate the code in a given language.
  - add_sizeritem(toplevel, sizer, obj_name, option, flag, border)
  - add_app(app_attrs, top_win_class)
  - ...
-
-@type: dict[str, BaseLangCodeWriter]
 """
+
 
 
 def init_codegen():
@@ -152,10 +120,8 @@ def load_code_writers():
 
 def load_config():
     "Load widget configuration;  @see: L{plugins.load_widgets_from_dir()}"
-    # load the "built-in" widgets
-    plugins.load_widgets_from_dir( config.widgets_path, 'wconfig' )
-
-    # load the "user" widgets
+    # load the "built-in" and "user" widgets
+    plugins.load_widgets_from_dir( config.widgets_path,                  'wconfig' )
     plugins.load_widgets_from_dir( config.preferences.local_widget_path, 'wconfig' )
 
     return
@@ -213,19 +179,12 @@ def load_widgets():
 
     @see: L{plugins.load_widgets_from_dir()}
     """
-    # load the "built-in" widgets
-    core_buttons = plugins.load_widgets_from_dir(
-        config.widgets_path,
-    )
-
-    # load the "user" widgets
-    local_buttons = plugins.load_widgets_from_dir(
-        config.preferences.local_widget_path,
-    )
+    # load the "built-in" and "user" widgets
+    core_buttons  = plugins.load_widgets_from_dir(config.widgets_path)
+    local_buttons = plugins.load_widgets_from_dir(config.preferences.local_widget_path)
 
     # load (remaining) widget code generators
-    # Python, C++ and XRC are often loaded via
-    # plugins.load_widgets_from_dir() above
+    # Python, C++ and XRC are often loaded via plugins.load_widgets_from_dir() above
     for path in [config.widgets_path, config.preferences.local_widget_path]:
         for lang in ['perl', 'lisp']:
             if lang not in code_writers:
@@ -322,33 +281,15 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
 
 
 def encode_to_unicode(item, encoding=None):
-    """\
-    Decode the item to a Unicode string. The encoding to UTF-8 will be done
-    later.
+    """Decode the item to a Unicode string. The encoding to UTF-8 will be done later.
 
     Non-string items will be converted to string automatically.
-
-    If no encoding given, app_tree.app.encoding or 'UFT-8' will be used.
-
-    @param item: Item to convert
-    @type item:  str | Unicode
-
-    @param encoding: Codec to decode
-    @type encoding:  str | None
-
-    @rtype: unicode
-
-    @see: L{app_tree}
-    """
+    If no encoding given, app_tree.app.encoding or 'UFT-8' will be used."""
     if not isinstance(item, compat.basestring):
         item = str(item)
     if isinstance(item, compat.unicode):
         return item
-    if not encoding:
-        if app_tree:
-            encoding = app_tree.app.encoding
-        else:
-            encoding = 'UTF-8'
+    encoding = encoding or (app_tree and app_tree.app.encoding) or "UTF-8"
     item = item.decode(encoding)
     return item
 
@@ -356,8 +297,7 @@ def encode_to_unicode(item, encoding=None):
 def register(lang, klass_name, code_writer, property_name=None,
              property_handler=None, widget_name=None):
     """\
-    Initialise and register widget code generator instance. The property
-    handler will registered additionally.
+    Initialise and register widget code generator instance. The property handler will registered additionally.
 
     @param lang:             Code code_writer language
     @param klass_name:       wxWidget class name
@@ -415,8 +355,7 @@ def save_file(filename, content, which='wxg'):
 
     @note: The content of 'wxg' files must be Unicode always!
 
-    @note: Exceptions that may occur while performing the operations are not
-           handled.
+    @note: Exceptions that may occur while performing the operations are not handled.
 
     @see: L{config.backed_up}
 
@@ -480,14 +419,7 @@ def save_file(filename, content, which='wxg'):
 
 
 def get_name_for_autosave(filename=None):
-    """\
-    Return the filename for the automatic backup.
-
-    @param filename: File to generate a backup for
-    @type filename: str | None
-
-    @rtype: str
-    """
+    "Return filename for the automatic backup of named file or current file (app_tree.app.filename)"
     if not filename:
         filename = app_tree.app.filename
     if not filename:

@@ -29,31 +29,20 @@ except:
     basestring = (str,)
 
 class FileDirDialog(object):
-    """\
-    Custom class which displays a FileDialog or a DirDialog, according to the
-    value of the L{Application.multiple_files} of its parent (instance of
-    L{Application}).
+    """Custom class which displays a FileDialog or a DirDialog, according to the value of the
+    L{Application.multiple_files} of its parent (instance of L{Application}).
 
-    @ivar default_extension: The default extension will be added to all
-                             file names without extension.
-    @type default_extension: str
-
+    @ivar default_extension: The default extension will be added to all file names without extension.
     @ivar file_message: Message to show on the file dialog
-    @type file_message: str
-
     @ivar dir_message: Message to show on the directory dialog
-    @type dir_message: str
 
     @ivar file_style: Style for the file dialog
     @ivar dir_style:  Style for the directory dialog
     @ivar value:      Value returned by file or directory dialog on success
     @ivar parent:     Parent instance of L{Application}
-    @ivar prev_dir:   Previous directory
-    """
+    @ivar prev_dir:   Previous directory"""
 
-    def __init__(self, parent, wildcard=_("All files|*"),
-                 file_message=_("Choose a file"), dir_message=None,
-                 file_style=0):
+    def __init__(self, parent, wildcard=_("All files|*"), file_message=_("Choose a file"),dir_message=None,file_style=0):
         self.prev_dir = config.preferences.codegen_path or ""
         self.wildcard = wildcard
         self.file_message = file_message
@@ -93,7 +82,6 @@ class FileDirDialog(object):
         "Return the dialog value returned during the last L{ShowModal()} call;  @see: L{value}"
         return self.value
 
-# end of class FileDirDialog
 
 
 class Application(object):
@@ -564,7 +552,7 @@ class Application(object):
         from xml_parse import CodeWriter
         try:
             # generate the code from the xml buffer
-            codewriter = self.get_language()
+            language = self.language
 
             # save and overwrite some code generation settings
             if preview and codewriter == 'python':

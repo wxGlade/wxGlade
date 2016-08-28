@@ -7,9 +7,7 @@ wxFrame and wxStatusBar objects
 """
 
 import wx
-import common
-import compat
-import misc
+import common, compat, misc
 from tree import Tree, Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import *

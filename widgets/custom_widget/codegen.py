@@ -28,7 +28,6 @@ class ArgumentsCodeHandler(BaseCodeWriterTagHandler):
             self.arguments.append(tab_name)
         return False
 
-# end of class ArgumentsCodeHandler
 
 
 def format_ctor_arguments(arguments, parent, id, size):
@@ -114,7 +113,6 @@ def self_%s_on_paint(event):
         append( 'wx.EVT_PAINT(self.%s, self_%s_on_paint)\n' % (widget.name, widget.name) )
         return init, [], []
 
-# end of class PythonCustomWidgetGenerator
 
 
 class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
@@ -139,13 +137,13 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
         props_buf = self.codegen.generate_common_properties(widget)
         return init, ids, props_buf, []
 
-# end of class CppCustomWidgetGenerator
 
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class CustomXrcObject(xrcgen.DefaultXrcObject):
+        # return value for xrc_code_generator
         def write(self, outfile, ntabs):
             # first, fix the class:
             self.klass = obj.klass
@@ -161,13 +159,11 @@ def xrc_code_generator(obj):
                         name, val = [s.strip() for s in arg.split(':', 1)]
                     except Exception:
                         # show malformed arguments
-                        logging.warning( 'Ignore malformed argument "%s" for "%s". '
-                                         'Argument format should be: name:value', arg, self.klass )
+                        logging.warning('Ignore malformed argument "%s" for "%s". Argument format should be: name:value',
+                                        arg, self.klass )
                         continue
                     self.properties[name] = val
             xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
-
-    # end of class CustomXrcObject
 
     return CustomXrcObject(obj)
 

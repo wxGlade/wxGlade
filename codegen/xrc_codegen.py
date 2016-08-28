@@ -13,9 +13,7 @@ return an instance of XrcObject
 from xml.sax.saxutils import escape, quoteattr
 from codegen import BaseLangCodeWriter, EventsPropertyHandler, ExtraPropertiesPropertyHandler
 from ordereddict import OrderedDict
-import common
-import compat
-import errors
+import common, compat, errors
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
 
@@ -39,14 +37,10 @@ class FontPropertyHandler(BaseCodeWriterTagHandler):
         super(FontPropertyHandler, self).char_data(data)
         self.props[self.current] = self.get_char_data()
 
-# end of class FontHandler
 
 
 class XrcObject(wcodegen.XrcWidgetCodeWriter):
-    """\
-    Class to produce the XRC code for a given widget. This is a base
-    class which does nothing
-    """
+    "Class to produce the XRC code for a given widget. This is a base class which does nothing"
 
     def __init__(self, klass=None):
         wcodegen.XrcWidgetCodeWriter.__init__(self, klass)
@@ -66,21 +60,13 @@ class XrcObject(wcodegen.XrcWidgetCodeWriter):
         pass
 
     def warning(self, msg):
-        """\
-        Show a warning message
-
-        @param msg: Warning message
-        @type msg:  String
-        """
+        "Show a warning message"
         self._logger.warning(msg)
 
-# end of class XrcObject
 
 
 class SizerItemXrcObject(XrcObject):
-    """\
-    XrcObject to handle sizer items
-    """
+    "XrcObject to handle sizer items"
 
     def __init__(self, obj, option, flag, border):
         XrcObject.__init__(self)
@@ -104,7 +90,6 @@ class SizerItemXrcObject(XrcObject):
         self.obj.write(out_file, ntabs + 1)
         write(tabs + '</object>\n')
 
-# end of class SizerItemXrcObject
 
 
 class SpacerXrcObject(XrcObject):
@@ -131,7 +116,6 @@ class SpacerXrcObject(XrcObject):
             write(tabs1 + '<border>%s</border>\n' % self.border)
         write(tabs + '</object>\n')
 
-# end of class SpacerXrcObject
 
 
 class DefaultXrcObject(XrcObject):
@@ -159,11 +143,8 @@ class DefaultXrcObject(XrcObject):
             outfile.write(line)
 
     def _format_bitmap_property(self, name, val):
-        """\
-        Return formatted bitmap/icon XRC property.
+        "Return formatted bitmap/icon XRC property (as string)."
 
-        @rtype: str | None
-        """
         if val.startswith('art:'):
             content = val[4:]
             elements = [item.strip() for item in content.split(',')]
@@ -266,14 +247,11 @@ class DefaultXrcObject(XrcObject):
             self.write_child_epilogue(c, out_file, ntabs + 1)
         write(self.tabs(ntabs) + '</object>\n')
 
-# end of class DefaultXrcObject
 
 
 class NotImplementedXrcObject(XrcObject):
-    """\
-    XrcObject used when no code for the widget can be generated (for
-    example, because XRC does not currently handle such widget)
-    """
+    """XrcObject used when no code for the widget can be generated (for
+    example, because XRC does not currently handle such widget)"""
 
     def __init__(self, code_obj):
         XrcObject.__init__(self)
@@ -285,7 +263,6 @@ class NotImplementedXrcObject(XrcObject):
         stmt = '%s%s\n' % (self.tabs(ntabs), self._format_comment(msg))
         outfile.write(stmt)
 
-# end of class NotImplementedXrcObject
 
 
 class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
@@ -441,7 +418,6 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def _quote_str(self, s):
         return s
 
-# end of class XRCCodeWriter
 
 writer = XRCCodeWriter()
 "The code writer is an instance of L{XRCCodeWriter}."
