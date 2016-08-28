@@ -7,10 +7,7 @@ wxRadioButton objects
 """
 
 import wx
-import common
-import compat
-import config
-import misc
+import common, compat, config, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
 from widget_properties import *
@@ -85,7 +82,6 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
         self.value = int(value)
         if self.widget: self.widget.SetValue(self.value)
 
-# end of class EditRadioButton
 
 
 def builder(parent, sizer, pos, number=[1]):
@@ -98,7 +94,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(radio)
     radio.node = node
     radio.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):

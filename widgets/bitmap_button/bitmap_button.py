@@ -8,9 +8,7 @@ wxBitmapButton objects
 
 import wx
 
-import config
-import common
-import compat
+import common, compat, config
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 from tree import Tree, Node, Node
@@ -18,9 +16,7 @@ from widget_properties import *
 
 
 class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
-    """\
-    Class to handle wxBitmapButton objects
-    """
+    "Class to handle wxBitmapButton objects"
 
     def __init__(self, name, parent, id, bmp_file, sizer, pos,
                  property_window, show=True):
@@ -155,10 +151,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditBitmapButton'] = builder
     common.widgets_from_xml['EditBitmapButton'] = xml_builder
 

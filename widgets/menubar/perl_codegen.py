@@ -9,7 +9,7 @@ Perl generator functions for wxMenuBar objects
 import common
 import wcodegen
 from MenuTree import *
-from codegen import MenuHandler
+from .codegen import MenuHandler
 
 
 class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):

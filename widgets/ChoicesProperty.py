@@ -1,6 +1,5 @@
 """\
-Defines a Property and two handlers used by choice, combo_box, radio_box,
-list_box
+Defines a Property and two handlers used by choice, combo_box, radio_box, list_box
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
@@ -31,7 +30,6 @@ class ChoicesProperty(widget_properties.GridProperty):
             u'choices', inner_xml, tabs, is_xml=True)
         outfile.write(stmt)
 
-# end of class ChoicesProperty
 
 
 class ChoicesHandler(BaseXmlBuilderTagHandler):
@@ -64,6 +62,4 @@ class ChoicesHandler(BaseXmlBuilderTagHandler):
                 self.owner.get_choices())
             self.choices = []
             return True  # remove the handler
-
-# end of class ChoicesHandler
 

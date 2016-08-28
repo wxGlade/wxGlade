@@ -352,8 +352,7 @@ class BitmapMixin(object):
         height = 16
         try:
             size = bitmap[6:]
-            width, height = \
-                [int(item.strip()) for item in size.split(',', 1)]
+            width, height = [int(item.strip()) for item in size.split(',', 1)]
         except ValueError:
             self._logger.warn( 'Malformed statement to create an empty bitmap: %s', bitmap )
         return wx.EmptyBitmap(max(1, width), max(1, height))

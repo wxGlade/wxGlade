@@ -99,7 +99,6 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
                     misc.focused_widget = self
                     self.sel_marker.Show(True)
 
-# end of class EditTextCtrl
 
 
 def builder(parent, sizer, pos, number=[1]):

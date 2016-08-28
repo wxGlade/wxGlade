@@ -13,18 +13,16 @@ import wcodegen
 class PythonListCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
-# end of class PythonListCtrlGenerator
 
 
 class CppListCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/listctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
 
-# end of class CppListCtrlGenerator
 
 
 def initialize():
     klass = 'wxListCtrl'
     common.class_names['EditListCtrl'] = klass
     common.register('python', klass, PythonListCtrlGenerator(klass))
-    common.register('C++', klass, CppListCtrlGenerator(klass))
+    common.register('C++',    klass, CppListCtrlGenerator(klass))

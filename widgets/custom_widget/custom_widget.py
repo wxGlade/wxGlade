@@ -7,9 +7,7 @@ Custom wxWindow objects
 """
 
 import wx
-import common
-import compat
-import misc
+import common, compat, misc
 from tree import Tree, Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from widget_properties import *
@@ -31,11 +29,9 @@ class ArgumentsProperty(GridProperty):
                 u'arguments', inner_xml, tabs, is_xml=True)
             outfile.write(stmt)
 
-# end of class ArgumentsProperty
 
 
 class ArgumentsHandler(BaseXmlBuilderTagHandler):
-
     def __init__(self, parent):
         super(ArgumentsHandler, self).__init__()
         self.parent = parent
@@ -51,7 +47,6 @@ class ArgumentsHandler(BaseXmlBuilderTagHandler):
             self.arguments.append([char_data])
         return False
 
-# end of class ArgumentsHandler
 
 
 class CustomWidget(ManagedBase):
@@ -142,36 +137,35 @@ class CustomWidget(ManagedBase):
     def set_custom_ctor(self, value):
         self.custom_ctor = value.strip()
 
+class Dialog(wx.Dialog):
+    def __init__(self, number=[0]):
+        title = _('Select widget class')
+        wx.Dialog.__init__(self, None, -1, title)
+        self.klass = 'CustomWidget'
+        if number[0]:
+            self.klass = 'CustomWidget%s' % (number[0] - 1)
+        number[0] += 1
+        import widget_properties
+        klass_prop = widget_properties.TextProperty(self, 'class', self, label=_("class"))
+        szr = wx.BoxSizer(wx.VERTICAL)
+        szr.Add(klass_prop.panel, 0, wx.ALL | wx.EXPAND, 5)
+        szr.Add(wx.Button(self, wx.ID_OK, _('OK')), 0, wx.ALL | wx.ALIGN_CENTER, 5)
+        self.SetAutoLayout(True)
+        self.SetSizer(szr)
+        szr.Fit(self)
+        w = self.GetTextExtent(title)[0] + 50
+        if self.GetSize()[0] < w:
+            self.SetSize((w, -1))
+        self.CenterOnScreen()
+
+    def __getitem__(self, value):
+        def set_klass(c):
+            self.klass = c
+        return lambda: self.klass, set_klass
 
 
 def builder(parent, sizer, pos, number=[1]):
     "factory function for CustomWidget objects"
-    class Dialog(wx.Dialog):
-        def __init__(self, number=[0]):
-            title = _('Select widget class')
-            wx.Dialog.__init__(self, None, -1, title)
-            self.klass = 'CustomWidget'
-            if number[0]:
-                self.klass = 'CustomWidget%s' % (number[0] - 1)
-            number[0] += 1
-            klass_prop = TextProperty(self, 'class', self, label=_("class"))
-            szr = wx.BoxSizer(wx.VERTICAL)
-            szr.Add(klass_prop.panel, 0, wx.ALL | wx.EXPAND, 5)
-            szr.Add(wx.Button(self, wx.ID_OK, _('OK')), 0, wx.ALL | wx.ALIGN_CENTER, 5)
-            self.SetAutoLayout(True)
-            self.SetSizer(szr)
-            szr.Fit(self)
-            w = self.GetTextExtent(title)[0] + 50
-            if self.GetSize()[0] < w:
-                self.SetSize((w, -1))
-            self.CenterOnScreen()
-
-        def __getitem__(self, value):
-            def set_klass(c):
-                self.klass = c
-            return lambda: self.klass, set_klass
-
-    # end of inner class
 
     dialog = Dialog()
     dialog.ShowModal()

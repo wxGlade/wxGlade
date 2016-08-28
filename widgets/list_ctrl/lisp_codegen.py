@@ -11,10 +11,8 @@ import wcodegen
 
 
 class LispListCtrlGenerator(wcodegen.LispWidgetCodeWriter):
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
-           '-1 -1 -1 -1 %(style)s))\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s -1 -1 -1 -1 %(style)s))\n'
 
-# end of class LispListCtrlGenerator
 
 
 def initialize():

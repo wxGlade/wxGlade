@@ -74,16 +74,10 @@ class SplitterWindowSizer(Sizer):
     def is_virtual(self):
         return True
 
-# end of class SplitterWindowSizer
 
 
 class EditSplitterWindow(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxSplitterWindow objects
-
-    @ivar orientation: Orientation of the widget e.g. wxSPLIT_VERTICAL
-    @type orientation: str | unicode
-    """
+    "Class to handle wxSplitterWindow objects; orientation: Orientation of the widget as string e.g. 'wxSPLIT_VERTICAL'"
 
     _custom_base_classes = True
 
@@ -310,7 +304,7 @@ def builder(parent, sizer, pos, number=[1]):
     widget.set_style("wxEXPAND")
     widget.show_widget(True)
 
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
     if _has_panel:
         node2 = Node(widget.window_1)
@@ -340,15 +334,12 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return widget
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets[editor_name] = builder
     common.widgets_from_xml[editor_name] = xml_builder
     return common.make_object_button(editor_name, editor_icon)

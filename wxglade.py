@@ -160,16 +160,11 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""") )
 
 
 def command_line_code_generation(filename, language, out_path=None):
-    """\
-    Starts a code generator without starting the GUI.
+    """Starts a code generator without starting the GUI.
 
-    @param filename: Name of wxg file to generate code from
-    @type filename:  str
-    @param language: Code generator language
-    @type language:  str
-    @param out_path: output file / output directory
-    @type out_path:  str
-    """
+    filename: Name of wxg file to generate code from
+    language: Code generator language
+    out_path: output file / output directory"""
     from xml_parse import CodeWriter
 
     try:

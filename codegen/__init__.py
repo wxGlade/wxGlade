@@ -5,21 +5,9 @@ Common code used by all code generators
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import copy
-import logging
-import os
-import os.path
-import random
-import re
-import sys
-import time
-import types
+import copy, logging, os, os.path, random, re, sys, time
 
-import common
-import config
-import compat
-import errors
-import misc
+import common, config, compat, errors, misc
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
 from xml_parse import XmlParsingError
@@ -34,13 +22,10 @@ class DummyPropertyHandler(BaseCodeWriterTagHandler):
         self.event_name = None
         self.curr_handler = []
 
-# end of class DummyPropertyHandler
 
 
 class EventsPropertyHandler(DummyPropertyHandler):
-    """\
-    Handler for event properties
-    """
+    "Handler for event properties"
     strip_char_data = True
 
     def start_elem(self, name, attrs):
@@ -57,7 +42,6 @@ class EventsPropertyHandler(DummyPropertyHandler):
             code_obj.properties['events'] = self.handlers
             return True
 
-# end of class EventsPropertyHandler
 
 
 class ExtraPropertiesPropertyHandler(DummyPropertyHandler):
@@ -83,7 +67,6 @@ class ExtraPropertiesPropertyHandler(DummyPropertyHandler):
             code_obj.properties['extraproperties'] = self.props
             return True  # to remove this handler
 
-# end of class ExtraPropertiesPropertyHandler
 
 
 # custom property handlers
@@ -128,7 +111,6 @@ class FontPropertyHandler(BaseCodeWriterTagHandler):
                 val = char_data
             self.attrs[self.current] = val
 
-# end of class FontPropertyHandler
 
 
 class BaseSourceFileContent(object):
@@ -268,23 +250,15 @@ class BaseSourceFileContent(object):
         # re-initialise logger instance deleted from __getstate__
         self._logger = logging.getLogger(self.__class__.__name__)
 
-# end of class BaseSourceFileContent
 
 
 class BaseWidgetHandler(object):
-    """\
-    Interface the various code generators for the widgets must implement
-    """
+    "Interface the various code generators for the widgets must implement"
 
-    import_modules = []
-    """\
-    List of modules to import (eg. ['use Wx::Grid;\n'])
-    """
+    import_modules = []  # List of modules to import (eg. ['use Wx::Grid;\n'])
 
     def __init__(self):
-        """\
-        Initialise instance variables
-        """
+        "Initialise instance variables"
         self.import_modules = []
 
     def get_code(self, obj):
@@ -320,7 +294,6 @@ class BaseWidgetHandler(object):
         """
         return []
 
-# end of class BaseWidgetHandler
 
 
 class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
@@ -1491,7 +1464,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             builder = self.obj_builders[sub_obj.base]
         except KeyError:
             # no code generator found: write a comment about it
-            msg = _('Code for instance "%s" of "%s" not generated: no 22222suitable writer found') % (
+            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (
                                                                                            sub_obj.name, sub_obj.klass )
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
@@ -1773,11 +1746,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return code_lines
 
     def generate_code_extraproperties(self, obj):
-        """\
-        Returns a code fragment that set extra properties for the given object
-
-        @rtype: list[str]
-        """
+        "Returns a list of code fragments that set extra properties for the given object"
         tmpl = self._get_code_statement('extraproperties')
         if not tmpl:
             return []
@@ -1793,19 +1762,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return ret
 
     def generate_code_focused(self, obj):
-        """\
-        Returns the code fragment that get the focus to the given object.
-
-        @rtype: str
-        """
+        "Returns the code fragment that get the focus to the given object"
         return self._generic_code(obj, 'focused')
 
     def generate_code_font(self, obj):
-        """\
-        Returns the code fragment that sets the font of the given object.
-
-        @rtype: str
-        """
+        "Returns the code fragment that sets the font of the given object"
         stmt = None
 
         # check if there is an code template for this property
@@ -1830,14 +1791,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return stmt
 
     def generate_code_foreground(self, obj):
-        """\
-        Returns the code fragment that sets the foreground colour of
-        the given object.
-
-        @rtype: str
-
-        @see: L{_get_colour()}
-        """
+        "Returns the code fragment that sets the foreground colour of the given object; @see: L{_get_colour()}"
         # check if there is an code template for this property
         tmpl = self._get_code_statement('foregroundcolour' )
         if not tmpl:
@@ -1851,23 +1805,17 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return stmt
 
     def generate_code_hidden(self, obj):
-        """\
-        Returns the code fragment that hides the given object.
-
-        @rtype: str
-        """
+        "Returns the code fragment that hides the given object"
         return self._generic_code(obj, 'hidden')
 
     def generate_code_id(self, obj, id=None):
         """\
         Generate the code for the widget ID.
 
-        The parameter C{id} is evaluated first. An empty string for
-        C{id} returns C{'', 'wxID_ANY'}.
+        The parameter C{id} is evaluated first. An empty string for C{id} returns C{'', 'wxID_ANY'}.
 
         Returns a tuple of two string. The two strings are:
-         1. A line to the declare the variable. It's empty if the object id
-            is a constant
+         1. A line to the declare the variable. It's empty if the object id is a constant
          2. The value of the id
 
         @param obj: An instance of L{xml_parse.CodeObject}

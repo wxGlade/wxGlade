@@ -12,10 +12,8 @@ from ChoicesCodeHandler import *
 
 
 class PythonListBoxGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, ' \
-           'choices=[%(choices)s]%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s)\n'
 
-# end of class PythonListBoxGenerator
 
 
 class CppListBoxGenerator(wcodegen.CppWidgetCodeWriter):
@@ -26,7 +24,6 @@ class CppListBoxGenerator(wcodegen.CppWidgetCodeWriter):
     prefix_style = False
     set_default_style = True
 
-# end of class CppListBoxGenerator
 
 
 def xrc_code_generator(obj):
@@ -39,13 +36,9 @@ def xrc_code_generator(obj):
             elif name == 'selection':
                 choices = self.properties['choices']
                 if choices:
-                    xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                           outfile, tabs)
+                    xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                       outfile, tabs)
-
-    # end of class ListBoxXrcObject
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
 
     return ListBoxXrcObject(obj)
 
@@ -53,9 +46,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxListBox'
     common.class_names['EditListBox'] = klass
-    common.register('python', klass, PythonListBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
-    common.register('C++', klass, CppListBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
-    common.register('XRC', klass, xrc_code_generator,
-                    'choices', ChoicesCodeHandler)
+    common.register('python', klass, PythonListBoxGenerator(klass), 'choices', ChoicesCodeHandler)
+    common.register('C++',    klass, CppListBoxGenerator(klass),    'choices', ChoicesCodeHandler)
+    common.register('XRC',    klass, xrc_code_generator,            'choices', ChoicesCodeHandler)

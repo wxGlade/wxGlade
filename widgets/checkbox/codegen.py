@@ -11,10 +11,8 @@ import common
 import wcodegen
 
 
-class PythonCheckBoxGenerator(wcodegen.PythonWidgetCodeWriter,
-                              checkbox_base.CheckBoxMixin):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s)\n'
+class PythonCheckBoxGenerator(wcodegen.PythonWidgetCodeWriter, checkbox_base.CheckBoxMixin):
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
     tmpl_set3statevalue = '%(name)s.Set3StateValue(%(value_3state)s)\n'
 
     def _prepare_tmpl_content(self, obj):
@@ -22,18 +20,14 @@ class PythonCheckBoxGenerator(wcodegen.PythonWidgetCodeWriter,
         self._prepare_checkbox_content(obj)
 
     def get_code(self, obj):
-        init_lines, prop_lines, layout_lines = \
-            super(PythonCheckBoxGenerator, self).get_code(obj)
+        init_lines, prop_lines, layout_lines = super(PythonCheckBoxGenerator, self).get_code(obj)
         self._get_checkbox_code(prop_lines)
         return init_lines, prop_lines, layout_lines
 
-# end of class PythonCheckBoxGenerator
 
 
-class CppCheckBoxGenerator(wcodegen.CppWidgetCodeWriter,
-                           checkbox_base.CheckBoxMixin):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s);\n'
+class CppCheckBoxGenerator(wcodegen.CppWidgetCodeWriter, checkbox_base.CheckBoxMixin):
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
     tmpl_set3statevalue = '%(name)s->Set3StateValue(%(value_3state)s);\n'
 
     def _prepare_tmpl_content(self, obj):
@@ -41,13 +35,9 @@ class CppCheckBoxGenerator(wcodegen.CppWidgetCodeWriter,
         self._prepare_checkbox_content(obj)
 
     def get_code(self, obj):
-        init_lines, id_lines, prop_lines, layout_lines = \
-            super(CppCheckBoxGenerator, self).get_code(obj)
+        init_lines, id_lines, prop_lines, layout_lines = super(CppCheckBoxGenerator, self).get_code(obj)
         self._get_checkbox_code(prop_lines)
         return init_lines, id_lines, prop_lines, layout_lines
-
-
-# end of class CppCheckBoxGenerator
 
 
 def initialize():

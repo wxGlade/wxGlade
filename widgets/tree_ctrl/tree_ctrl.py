@@ -16,9 +16,7 @@ from widget_properties import *
 
 
 class EditTreeCtrl(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wx.TreeCtrl objects
-    """
+    "Class to handle wx.TreeCtrl objects"
 
     update_widget_style = False
 
@@ -74,13 +72,10 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
         import math
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
-# end of class EditTreeCtrl
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditTreeCtrl objects.
-    """
+    "factory function for EditTreeCtrl objects"
     name = 'tree_ctrl_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
@@ -92,14 +87,12 @@ def builder(parent, sizer, pos, number=[1]):
     tree_ctrl.set_option(1)
     tree_ctrl.set_style("wxEXPAND")
     tree_ctrl.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(tree_ctrl.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory function to build EditTreeCtrl objects from a XML file
-    """
+    "factory function to build EditTreeCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -116,15 +109,12 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return tree_ctrl
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     common.widgets['EditTreeCtrl'] = builder
     common.widgets_from_xml['EditTreeCtrl'] = xml_builder
 

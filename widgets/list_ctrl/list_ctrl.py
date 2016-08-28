@@ -65,7 +65,6 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
         self.property_window.Layout()
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
 
-# end of class EditListCtrl
 
 
 def builder(parent, sizer, pos, number=[1]):
@@ -80,7 +79,7 @@ def builder(parent, sizer, pos, number=[1]):
     list_ctrl.set_option(1)
     list_ctrl.set_style("wxEXPAND")
     list_ctrl.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
 
 
@@ -101,7 +100,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return list_ctrl
 
 

@@ -9,9 +9,7 @@ wxStaticBitmap objects
 import math
 import wx
 
-import common
-import compat
-import config
+import common, compat, config
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 from tree import Tree, Node

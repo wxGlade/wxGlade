@@ -7,10 +7,7 @@ wxCheckBox objects
 """
 
 import wx
-import common
-import compat
-import config
-import misc
+import common, compat, config, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
 from widget_properties import *
@@ -148,7 +145,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
                     prop.set_str_value(_('Unchecked'))
                 prop.enable_item(_('Undetermined'), False)
 
-# end of class EditCheckBox
+
 
 
 def builder(parent, sizer, pos, number=[1]):
@@ -180,7 +177,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return checkbox
 
 

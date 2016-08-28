@@ -14,7 +14,6 @@ class PythonStaticBitmapGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(bitmap)s%(style)s)\n'
     tmpl_SetBestSize = ''
 
-# end of class PythonStaticBitmapGenerator
 
 
 class CppStaticBitmapGenerator(wcodegen.CppWidgetCodeWriter):
@@ -22,7 +21,6 @@ class CppStaticBitmapGenerator(wcodegen.CppWidgetCodeWriter):
            '%(bitmap)s%(style)s);\n'
     tmpl_SetBestSize = ''
 
-# end of class CppStaticBitmapGenerator
 
 
 def xrc_code_generator(obj):

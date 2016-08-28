@@ -6,14 +6,9 @@ wxFrame objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import os
-import math
 import wx
-
-import common
-import compat
-import config
-import misc
+import os, math
+import common, compat, config, misc
 from tree import Tree, Node, Node
 from widget_properties import *
 from edit_windows import TopLevelBase, EditStylesMixin
@@ -227,7 +222,6 @@ class EditMDIChildFrame(EditFrame):
         self.base = 'wxFrame'
         del self.properties['statusbar']
 
-# end of class EditMDIChildFrame
 
 
 def builder(parent, sizer, pos, number=[0]):
@@ -324,12 +318,9 @@ def _make_builder(base_class):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     cwx = common.widgets_from_xml
-    cwx['EditFrame'] = _make_builder(EditFrame)
+    cwx['EditFrame']         = _make_builder(EditFrame)
     cwx['EditMDIChildFrame'] = _make_builder(EditMDIChildFrame)
 
     common.widgets['EditFrame'] = builder

@@ -16,9 +16,8 @@ from widget_properties import *
 
 
 class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxDatePickerCtrl objects
-    """
+    "Class to handle wxDatePickerCtrl objects"
+    # XXX unify with EditCalendarCtrl?
 
     def __init__(self, name, parent, id, sizer, pos, property_window,
                  show=True):
@@ -74,9 +73,7 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditDatePickerCtrl objects.
-    """
+    "factory function for EditDatePickerCtrl objects"
     label = 'datepicker_ctrl_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
@@ -86,7 +83,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(datepicker_ctrl)
     datepicker_ctrl.node = node
     datepicker_ctrl.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -107,7 +104,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return datepicker_ctrl
 
 

@@ -9,8 +9,7 @@ wxPropertyGridManager objects
 
 import wx
 from wx.propgrid import *
-import common
-import compat
+import common, compat
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node
 from widget_properties import *
@@ -53,13 +52,10 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
     def get_property_handler(self, name):
         return ManagedBase.get_property_handler(self, name)
 
-# end of class EditPropertyGridManager
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditPropertyGridManager objects.
-    """
+    "factory function for EditPropertyGridManager objects"
     label = 'property_grid_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
@@ -73,7 +69,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(property_grid_manager)
     property_grid_manager.node = node
     property_grid_manager.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -94,7 +90,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return property_grid_manager
 
 

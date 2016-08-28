@@ -11,8 +11,7 @@ import wcodegen
 
 
 class PythonSliderGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(value)s, ' \
-           '%(minValue)s, %(maxValue)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(value)s, %(minValue)s, %(maxValue)s%(style)s)\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -26,12 +25,10 @@ class PythonSliderGenerator(wcodegen.PythonWidgetCodeWriter):
         self.tmpl_dict['maxValue'] = maxValue
         return
 
-# end of class PythonSliderGenerator
 
 
 class CppSliderGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s, ' \
-           '%(minValue)s, %(maxValue)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s, %(minValue)s, %(maxValue)s%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -45,7 +42,6 @@ class CppSliderGenerator(wcodegen.CppWidgetCodeWriter):
         self.tmpl_dict['maxValue'] = maxValue
         return
 
-# end of class CppSliderGenerator
 
 
 def xrc_code_generator(obj):
@@ -63,10 +59,7 @@ def xrc_code_generator(obj):
                     outfile.write(tab_s + '<min>%s</min>\n' % min)
                     outfile.write(tab_s + '<max>%s</max>\n' % max)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                       outfile, tabs)
-
-    # end of class SliderXrcObject
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
 
     return SliderXrcObject(obj)
 
@@ -75,5 +68,5 @@ def initialize():
     klass = 'wxSlider'
     common.class_names['EditSlider'] = klass
     common.register('python', klass, PythonSliderGenerator(klass))
-    common.register('C++', klass, CppSliderGenerator(klass))
-    common.register('XRC', klass, xrc_code_generator)
+    common.register('C++',    klass, CppSliderGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)
