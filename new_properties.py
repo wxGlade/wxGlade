@@ -363,9 +363,11 @@ def _is_gridbag(dummy):
 
 class LayoutPosProperty(SpinProperty):
     readonly = True
+    TOOLTIP = "Position of item within sizer; 1-based"
+
     def __init__(self, value, sizer):
         self.is_gridbag = _is_gridbag(sizer)
-        SpinProperty.__init__(self, value, val_range=(0,1000), immediate=False, default_value=_DefaultArgument, name="pos")
+        SpinProperty.__init__(self, value, val_range=(1,1000), immediate=False, default_value=_DefaultArgument, name="pos")
 
     def set_sizer(self, sizer):
         self.is_gridbag = _is_gridbag(sizer)
