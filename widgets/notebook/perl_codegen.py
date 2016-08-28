@@ -8,7 +8,7 @@ Perl generator functions for wxNotebook objects
 
 import common
 import wcodegen
-from codegen import TabsCodeHandler
+from .codegen import TabsCodeHandler
 
 
 class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):

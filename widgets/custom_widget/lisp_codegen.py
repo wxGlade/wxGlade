@@ -9,7 +9,7 @@ Lisp generator functions for CustomWidget objects
 
 import common
 import wcodegen
-from codegen import ArgumentsCodeHandler, format_ctor_arguments
+from .codegen import ArgumentsCodeHandler, format_ctor_arguments
 
 
 class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):

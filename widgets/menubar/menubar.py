@@ -140,7 +140,7 @@ class MenuItemDialog(wx.Dialog):
         self.name.SetSize((150, -1))
         self.help_str.SetSize((150, -1))
         self.event_handler.SetSize((150, -1))
-        szr = wx.FlexGridSizer(0, 2)
+        szr = wx.FlexGridSizer(2,0,0)
         flag = wx.FIXED_MINSIZE
         label_flag = wx.ALIGN_CENTER_VERTICAL
         szr.Add(wx.StaticText(self, -1, _("Id   ")), flag=label_flag)
@@ -231,13 +231,13 @@ class MenuItemDialog(wx.Dialog):
     def show_menu_item(self, event):
         "Event handler called when a menu item in the list is selected"
         self.selected_index = index = event.GetIndex()
-        if not misc.streq(self.menu_items.GetItem(index, 2).m_text, '---'):
+        if not misc.streq(self.menu_items.GetItem(index, 2).GetText(), '---'):
             # skip if the selected item is a separator
             for (s, i) in ((self.label, 0), (self.id, 1), (self.name, 2), (self.help_str, 3), (self.event_handler, 5)):
-                s.SetValue(self.menu_items.GetItem(index, i).m_text)
+                s.SetValue(self.menu_items.GetItem(index, i).GetText())
             self.label.SetValue(self.label.GetValue().lstrip())
             try:
-                self.check_radio.SetSelection( int(self.menu_items.GetItem(index, 4).m_text))
+                self.check_radio.SetSelection( int(self.menu_items.GetItem(index, 4).GetText()))
             except:
                 self.check_radio.SetSelection(0)
         event.Skip()
@@ -262,7 +262,7 @@ class MenuItemDialog(wx.Dialog):
 
     def item_level(self, index, label=None):
         "returns the indentation level of the menu item at the given index"
-        label = self.menu_items.GetItem(index, 0).m_text
+        label = self.menu_items.GetItem(index, 0).GetText()
         return (len(label) - len(label.lstrip())) // 4
 
     def remove_menu_item(self, event):
@@ -362,7 +362,7 @@ class MenuItemDialog(wx.Dialog):
         if index > 0:
             if ( index+1 < self.menu_items.GetItemCount() and (self.item_level(index) < self.item_level(index+1)) ):
                 return
-            label = self.menu_items.GetItem(index, 0).m_text
+            label = self.menu_items.GetItem(index, 0).GetText()
             if misc.streq(label[:4], " " * 4):
                 self.menu_items.SetStringItem(index, 0, label[4:])
                 self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
@@ -375,7 +375,7 @@ class MenuItemDialog(wx.Dialog):
 
     def _move_item_right(self, index):
         if index > 0 and (self.item_level(index) <= self.item_level(index-1)):
-            label = self.menu_items.GetItem(index, 0).m_text
+            label = self.menu_items.GetItem(index, 0).GetText()
             self.menu_items.SetStringItem(index, 0, misc.wxstr(" "*4) + label)
             self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
@@ -399,7 +399,7 @@ class MenuItemDialog(wx.Dialog):
         #index = self.selected_index
         if index <= 0: return None
 
-        def get(i, j): return self.menu_items.GetItem(i, j).m_text
+        def get(i, j): return self.menu_items.GetItem(i, j).GetText()
 
         def getall(i): return [get(i, j) for j in range(6)]
         level = self.item_level(index)
@@ -441,7 +441,7 @@ class MenuItemDialog(wx.Dialog):
         self.selected_index = -1
         if index < 0: return
 
-        def get(i, j): return self.menu_items.GetItem(i, j).m_text
+        def get(i, j): return self.menu_items.GetItem(i, j).GetText()
 
         def getall(i): return [get(i, j) for j in range(6)]
         level = self.item_level(index)
