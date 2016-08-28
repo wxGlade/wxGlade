@@ -368,12 +368,6 @@ class SizerHandleButton(GenButton):
         self.SetUseFocusIndicator(False)
         wx.EVT_RIGHT_DOWN(self, self.sizer.popup_menu )
         wx.EVT_KEY_DOWN(self, misc.on_key_down_event)
-        wx.EVT_SET_FOCUS(self, self.on_set_focus)
-
-    def on_set_focus(self, event):
-        #misc.focused_widget = self.sizer
-        misc.set_focused_widget(self.sizer)
-        event.Skip()
 
 
 
