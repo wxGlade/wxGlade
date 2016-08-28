@@ -10,23 +10,18 @@ import wx
 import common, compat, misc
 from tree import Tree, Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
-from widget_properties import *
+import new_properties as np
 from edit_windows import ManagedBase
 
 
-class ArgumentsProperty(GridProperty):
+class ArgumentsProperty(np.GridProperty):
     def write(self, outfile, tabs):
-        if self.getter:
-            arguments = self.getter()
-        else:
-            arguments = self.owner[self.name][0]()
+        arguments = self.get()
         if arguments:
             inner_xml = u''
             for argument in arguments:
-                inner_xml += common.format_xml_tag(u'argument', argument[0],
-                                                   tabs + 1)
-            stmt = common.format_xml_tag(
-                u'arguments', inner_xml, tabs, is_xml=True)
+                inner_xml += common.format_xml_tag(u'argument', argument[0], tabs+1)
+            stmt = common.format_xml_tag( u'arguments', inner_xml, tabs, is_xml=True)
             outfile.write(stmt)
 
 
@@ -39,8 +34,8 @@ class ArgumentsHandler(BaseXmlBuilderTagHandler):
 
     def end_elem(self, name):
         if name == 'arguments':
-            self.parent.arguments = self.arguments
-            self.parent.properties['arguments'].set_value(self.arguments)
+            self.parent.properties['arguments'].set(self.arguments)
+            self.parent.properties_changed(["arguments"])
             return True
         elif name == 'argument':
             char_data = self.get_char_data()
@@ -50,38 +45,28 @@ class ArgumentsHandler(BaseXmlBuilderTagHandler):
 
 
 class CustomWidget(ManagedBase):
-    """\
-    Class to handle custom widgets
+    """Class to handle custom widgets
 
-    @ivar arguments: Constructor arguments
-    @type arguments: list[str]
+    arguments: Constructor arguments
+    custom_ctor: if not empty, an arbitrary piece of code that will be used instead of the constructor name"""
 
-    @ivar custom_ctor: if not empty, an arbitrary piece of code that will be used instead of the constructor name
-    @type custom_ctor: Unicode
-    """
+    _PROPERTIES = ["Widget", "custom_ctor", "arguments"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, klass, parent, id, sizer, pos, property_window, show=True):
-        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos, property_window, show)
-        self.arguments = [['$parent'], ['$id']]  # ,['$width'],['$height']]
-        self.access_functions['arguments'] = (self.get_arguments, self.set_arguments)
+    _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
+    _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
-        cols = [('Arguments', GridProperty.STRING)]
-        self.properties['arguments'] = ArgumentsProperty( self, 'arguments', None, cols, 2, label=_("arguments") )
+    def __init__(self, name, klass, parent, id, sizer, pos, show=True):
+        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos, show)
 
-        self.custom_ctor = ""
-        self.access_functions['custom_ctor'] = (self.get_custom_ctor, self.set_custom_ctor)
-        self.properties['custom_ctor'] = TextProperty(self, 'custom_ctor', None, True, label=_('Custom constructor'))
-        self.properties['custom_ctor'].set_tooltip(_('Specify a custom constructor like a factory method'))
-
-    def set_klass(self, value):
-        ManagedBase.set_klass(self, value)
-        if self.widget:
-            self.widget.Refresh()
+        # initialise instance properties
+        arguments = [['$parent'], ['$id']]  # ,['$width'],['$height']]
+        cols      = [('Arguments', np.GridProperty.STRING)]
+        self.arguments   = ArgumentsProperty( arguments, cols )
+        self.custom_ctor = np.TextPropertyD("", name="custom_constructor", strip=True)
 
     def create_widget(self):
-        self.widget = wx.Window(
-            self.parent.widget, self.id,
-            style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
+        self.widget = wx.Window( self.parent.widget, self.id, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
         wx.EVT_PAINT(self.widget, self.on_paint)
 
     def finish_widget_creation(self):
@@ -104,38 +89,17 @@ class CustomWidget(ManagedBase):
         dc.DrawRectangle(x-1, y-1, tw+2, th+2)
         dc.DrawText(text, x, y)
 
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.ScrolledWindow(self.notebook, -1)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        ctor = self.properties['custom_ctor']
-        ctor.display(panel)
-        szr.Add(ctor.panel, 0, wx.EXPAND)
-        args = self.properties['arguments']
-        args.display(panel)
-        szr.Add(args.panel, 1, wx.ALL|wx.EXPAND, 5)
-        panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
-        szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')
-        args.set_col_sizes([-1])
-
-    def get_arguments(self):
-        return self.arguments
-
-    def set_arguments(self, value):
-        self.arguments = [[misc.wxstr(v) for v in val] for val in value]
-
     def get_property_handler(self, name):
         if name == 'arguments':
             return ArgumentsHandler(self)
         return ManagedBase.get_property_handler(self, name)
 
-    def get_custom_ctor(self):
-        return self.custom_ctor
+    def properties_changed(self, modified):
+        if not modified or "klass" in modified:
+            if self.widget:
+                self.widget.Refresh()
+        ManagedBase.properties_changed(self, modified)
 
-    def set_custom_ctor(self, value):
-        self.custom_ctor = value.strip()
 
 class Dialog(wx.Dialog):
     def __init__(self, number=[0]):
@@ -176,12 +140,12 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'window_%d' % number[0]
-    win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos, common.property_panel)
+    win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos)
     node = Node(win)
     win.node = node
 
-    win.set_option(1)
-    win.esm_border.set_style("wxEXPAND")
+    win.properties["proportion"].set(1)
+    win.properties["flag"].set("wxEXPAND")
     win.show_widget(True)
 
     common.app_tree.insert(node, sizer.node, pos-1)
@@ -197,8 +161,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos, common.property_panel, True)
-    sizer.set_item(win.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
+    win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos, True)
+    sizer.set_item(win.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(win)
     win.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

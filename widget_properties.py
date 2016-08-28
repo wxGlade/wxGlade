@@ -349,7 +349,12 @@ class TextProperty(Property, _activator):
     def __init__(self, owner, name, parent=None, can_disable=False, enabled=False, readonly=False, multiline=False,
                  label=None, blocked=False, omitter=None):
         Property.__init__(self, owner, name, parent, label=label)
-        self.val = misc.wxstr(owner[name][0]()) # text
+        value = owner[name][0]()
+        if isinstance(value, int):
+            value = str(value)
+        else:
+            value = misc.wxstr(value) # text
+        self.val = value
         self.can_disable = can_disable
         self.readonly = readonly
         self.multiline = multiline
@@ -376,7 +381,7 @@ class TextProperty(Property, _activator):
         lbl = getattr(self, 'label', None)
         if lbl is None:
             lbl = self._mangle(self.dispName)
-        label = wx.lib.stattext.GenStaticText( parent, wx.ID_ANY, lbl, size=(config.label_initial_width, -1) )
+        label = wx.lib.stattext.GenStaticText( parent, wx.ID_ANY, lbl, size=(config.label_width, -1) )
         self.text = wx.TextCtrl( parent, wx.ID_ANY, val, style=style, size=(1, -1) )
         enabler = None
         if self.can_disable:

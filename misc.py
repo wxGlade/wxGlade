@@ -3,6 +3,7 @@ Miscellaneous stuff, used in many parts of wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -10,16 +11,6 @@ import common, config, compat
 import logging, os, re
 import wx
 
-focused_widget = None
-"""\
-If not None, this is the currently selected widget - This is different from
-tree.WidgetTree.cur_widget because it takes into account also SizerSlot
-objects
-
-this is an implementation hack, used to handle keyboard shortcuts for
-popup menus properly (for example, to ensure that the object to remove is
-the currently highlighted one, ecc...)
-"""
 
 use_menu_icons = None
 
@@ -33,6 +24,59 @@ _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
 _item_bitmaps = {}
 
 
+
+focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
+
+def set_focused_widget(widget):
+    if not config.use_gui: return
+    # set focused widget; tell tree and property panel
+    global focused_widget
+    if focused_widget:
+        focused_widget.update_view(selected=False)
+    focused_widget = widget
+    common.app_tree.set_current_widget(widget)
+    common.property_panel.set_widget(widget)
+    if widget and widget.widget:
+        # ensure that it is visible and selection is displayed, if applicable
+        show_widget(widget)
+        widget.update_view(selected=True)
+
+
+def show_widget(widget):
+    # ensure that notebook pages are selected such that widget is visible
+    if not widget.widget: return
+    while True:
+        if not widget.node or not widget.node.parent: break  # Application.node is None
+        parent = widget.node.parent.widget
+        if widget.klass == 'wxPanel':
+            # am I a wxPanel under a wxNotebook?
+            if parent.klass == 'wxNotebook':
+                if parent.widget:
+                    for i, editpanel in enumerate(parent.pages):
+                        try:
+                            if editpanel and widget.name == editpanel.name:
+                                # If I am under this tab...
+                                parent.widget.SetSelection(i)  # ...Show that tab.
+                        except AttributeError:
+                            pass
+        elif parent.klass == 'wxPanel':
+            # am I a widget under a wxPanel under a wxNotebook?
+            if parent.parent and parent.parent.klass == 'wxNotebook':
+                if parent.parent.widget:
+                    for i,editpanel in enumerate(parent.parent.pages):
+                        try:
+                            if editpanel and parent.name == editpanel.name:
+                                parent.parent.widget.SetSelection(i)
+                                break
+                        except AttributeError:
+                            pass
+                parent = parent.parent  # skip one level
+
+        widget = parent  # go up one level
+
+
+
+
 class wxMSWRadioButton(wx.RadioButton):
     """Custom wxRadioButton class which tries to implement a better GetBestSize than the default one for WXMSW
     (mostly copied from wxCheckBox::DoGetBestSize in checkbox.cpp)"""
@@ -41,8 +85,7 @@ class wxMSWRadioButton(wx.RadioButton):
     def GetBestSize(self):
         if not self.__radio_size:
             dc = wx.ScreenDC()
-            dc.SetFont(wx.SystemSettings_GetFont(
-                wx.SYS_DEFAULT_GUI_FONT))
+            dc.SetFont(compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT))
             self.__radio_size = (3*dc.GetCharHeight())//2
         label = self.GetLabel()
         if label:
@@ -89,7 +132,6 @@ class SelectionTag(wx.Window):
     def __init__(self, parent):
         kwds = {'size': (7, 7)}
         wx.Window.__init__(self, parent, wx.ID_ANY, **kwds)
-        # XXX
         self.SetBackgroundColour(wx.BLUE)
         self.Hide()
 
@@ -293,10 +335,10 @@ def get_toplevel_parent(obj):
 
 def get_toplevel_widget(widget):
     from edit_windows import EditBase, TopLevelBase
-    from edit_sizers import Sizer
+    from edit_sizers import Sizer, SizerSlot
     if isinstance(widget, Sizer):
         widget = widget.window
-    assert isinstance(widget, EditBase), _("EditBase or SizerBase object needed")
+    assert isinstance(widget, (EditBase,SizerSlot)), _("EditBase or SizerBase object needed")
     while widget and not isinstance(widget, TopLevelBase):
         widget = widget.parent
     return widget
@@ -343,7 +385,7 @@ def append_menu_item(menu, id, text, xpm_file_or_artid=None): # XXX change: move
 
 def bind_menu_item(widget, item, func, *args, **kwargs):
     "Bind a menu handler with immediate callback"
-    def handler():
+    def handler(event):
         func( *args, **kwargs )
     widget.Bind(wx.EVT_MENU, handler, item )
 
@@ -376,6 +418,7 @@ def _cut():
 
 
 def _copy():
+    global focused_widget
     if focused_widget is not None:
         try:
             focused_widget.clipboard_copy()
@@ -384,6 +427,7 @@ def _copy():
 
 
 def _paste():
+    global focused_widget
     if focused_widget is not None:
         try:
             focused_widget.clipboard_paste()
@@ -391,12 +435,17 @@ def _paste():
             pass
 
 
+def _preview():
+    common.palette.preview(None)
+
+
 # accelerator table to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
 accel_table = [
-    (0, wx.WXK_DELETE, _remove),
-    (wx.ACCEL_CTRL, ord('C'), _copy),
-    (wx.ACCEL_CTRL, ord('X'), _cut),
-    (wx.ACCEL_CTRL, ord('V'), _paste),
+    (0,             wx.WXK_DELETE, _remove),
+    (wx.ACCEL_CTRL, ord('C'),      _copy),
+    (wx.ACCEL_CTRL, ord('X'),      _cut),
+    (wx.ACCEL_CTRL, ord('V'),      _paste),
+    (0,             wx.WXK_F5,     _preview),
 ]
 
 def on_key_down_event(event):
@@ -443,10 +492,10 @@ def wxstr(s, encoding=None):
             return str(s)
         else:
             encoding = common.app_tree.app.encoding
-    if not isinstance(s, compat.unicode):
-        return compat.unicode(str(s), encoding)
-    else:
-        return s
+    if isinstance(s, compat.unicode): return s
+    s = str(s)
+    if isinstance(s, compat.unicode): return s
+    return compat.unicode(s, encoding)
 
 
 def design_title(title):

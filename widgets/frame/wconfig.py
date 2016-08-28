@@ -2,6 +2,7 @@
 wxFrame widget configuration
 
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

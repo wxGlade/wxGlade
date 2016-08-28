@@ -24,7 +24,19 @@ from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, XmlParsingErro
 
 class wxGladePropertyPanel(wx.Panel):
     "Panel used to display the Properties of the various widgets"
+    def __init__(self, *args, **kw):
+        wx.Panel.__init__(self, *args, **kw)
 
+        self.current_widget = None        # Edit.. instance currently being edited
+        self.next_widget = None           # the next one, will only be edited after a small delay
+        self.current_widget_class = None  # 
+
+        self.notebook = wx.Notebook(self, -1)
+        self.notebook.sizer = None
+        self.notebook.SetAutoLayout(True)
+        self.notebook.Hide()
+        self.pagenames = []
+        
     def SetTitle(self, title):
         try: self.GetParent().SetTitle(title)
         except AttributeError: pass
@@ -36,8 +48,123 @@ class wxGladePropertyPanel(wx.Panel):
 
     def is_visible(self):
         return self.GetParent().IsShown()
+    
+    ####################################################################################################################
+    # new editor interface
+    def set_widget(self, widget):
+        if widget is self.current_widget:
+            # just update
+            return
+        self.next_widget = widget
+        if self.current_widget:
+            for editor in self.current_widget.properties.values():
+                editor.destroy_editor()
+            self.current_widget = None   # delete the reference
+        wx.CallLater( 150, self.edit_properties, widget )
+    def edit_properties(self, edit_widget):
+        # this will be called with a delay
+        if edit_widget is not self.next_widget:
+            # wait for another call...
+            return
 
-# end of class wxGladePropertyPanel
+        self.current_widget = None
+        self.create_editor(edit_widget)
+        self.current_widget = edit_widget
+        self.SetTitle(_('Properties - <%s>') % edit_widget.name)
+
+    def create_editor(self, edit_widget):
+        # fill the frame with a notebook of property editors
+        import widget_properties
+        # not called yet
+        self.current_widget_class = edit_widget.__class__
+
+        self.notebook.Hide()
+
+        # remember the notebook page to be selected
+        select_page = None
+        if self.notebook is not None:
+            selection = self.notebook.GetSelection()
+            if selection!=-1:
+                select_page = self.pagenames[selection]  if selection!=-1  else Non
+
+        # clear notebook pages
+        if self.notebook.PageCount:
+            #self.notebook.DeleteAllPages()  # deletes also the windows on the pages
+            while self.notebook.PageCount:
+                self.notebook.DeletePage(self.notebook.PageCount-1)
+
+        self.editors = editors = {}
+
+        self.pagenames = pagenames = []
+        self.sizers = []
+        current_page = current_sizer = None
+        property_instance = None
+        for prop in edit_widget.PROPERTIES:
+            if prop[0].isupper():
+                # end previous page
+                if current_page is not None:
+                    if property_instance and not property_instance.GROW:
+                        current_sizer.AddStretchSpacer(prop=5)
+                    self.end_page(current_page, current_sizer, current_pagename)
+                    current_page = None
+
+                # start new page
+                current_pagename = prop
+                if prop=="Layout" and not edit_widget._has_layout:continue
+                
+                current_page = self.start_page(prop)
+                current_sizer = wx.BoxSizer(wx.VERTICAL)
+                self.sizers.append(current_sizer)
+
+                self.pagenames.append(prop)
+
+                continue
+
+            if current_pagename=="Layout" and not edit_widget._has_layout: continue
+
+            # a property or None
+            property_instance = edit_widget.properties.get(prop)
+            if property_instance is not None:
+                property_instance.create_editor(current_page, current_sizer)
+
+        self.end_page(current_page, current_sizer, current_pagename)
+
+        if select_page and select_page in pagenames:
+            index = pagenames.index(select_page)
+            self.notebook.SetSelection(index)
+        else:
+            self.notebook.SetSelection(0)
+
+        #sizer = self.GetSizer()
+        #child = sizer.GetChildren()[0]
+        #w = child.GetWindow()
+
+        # XXX check whether the same code as here could replace the workaround Notebook._toggle_pages
+        #if w is self.notebook: return
+        #w.Hide() # XXX remove this once all properties are changed to new system
+        self.notebook.Show()
+        self.notebook.SetSize(self.GetClientSize())
+
+        #compat.SizerItem_SetWindow(child, self.notebook)
+        self.notebook.Layout()
+        self.Layout()
+
+    def start_page(self, name):
+        panel = wx.ScrolledWindow( self.notebook, wx.ID_ANY, style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE,
+                                   name=name )
+        return panel
+    def end_page(self, panel, sizer, header, select=False):
+        panel.SetAutoLayout(1)
+        #compat.SizerItem_SetSizer(panel, sizer)
+        panel.SetSizer(sizer)
+        sizer.Layout()
+        sizer.Fit(panel)
+    
+        w, h = panel.GetClientSize()
+        self.notebook.AddPage(panel, _(header),select=select)
+        #self.Layout()
+        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
+
 
 
 TOGGLE_BOX_EVENT = wx.NewEventType()
@@ -182,8 +309,9 @@ class wxGladeFrame(wx.Frame):
         SAVE_TEMPLATE_ID = wx.NewId()
         append_menu_item(file_menu, SAVE_TEMPLATE_ID, _("Save As Template..."))
         file_menu.AppendSeparator()
-        RELOAD_ID = wx.ID_REFRESH
-        append_menu_item(file_menu, RELOAD_ID, _("&Refresh\tf5"))
+        
+        append_menu_item(file_menu, wx.ID_REFRESH, _("&Refresh Preview\tf5"))
+
         GENERATE_CODE_ID = wx.NewId()
         append_menu_item(file_menu, GENERATE_CODE_ID, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
 
@@ -272,7 +400,7 @@ class wxGladeFrame(wx.Frame):
         wx.EVT_MENU(self, PREFS_ID, self.edit_preferences)
         wx.EVT_MENU(self, MANAGE_TEMPLATES_ID, self.manage_templates)
         wx.EVT_MENU(self, IMPORT_ID, self.import_xrc)
-        wx.EVT_MENU(self, RELOAD_ID, self.reload_app)
+        wx.EVT_MENU(self, wx.ID_REFRESH, self.preview) # self.reload_app)
 
         PREVIEW_ID = wx.NewId()
         wx.EVT_MENU(self, PREVIEW_ID, self.preview)
@@ -286,7 +414,7 @@ class wxGladeFrame(wx.Frame):
             (wx.ACCEL_CTRL, ord('I'), IMPORT_ID),
             (0, wx.WXK_F1, MANUAL_ID),
             (wx.ACCEL_CTRL, ord('Q'), EXIT_ID),
-            (0, wx.WXK_F5, RELOAD_ID),
+            (0, wx.WXK_F5, wx.ID_REFRESH),
             (0, wx.WXK_F2, TREE_ID),
             (0, wx.WXK_F3, PROPS_ID),
             (0, wx.WXK_F4, RAISE_ID),
@@ -392,15 +520,15 @@ class wxGladeFrame(wx.Frame):
         self.tree_frame = wx.Frame(self, -1, _('wxGlade: Tree'), style=frame_style, name='TreeFrame')
         self.tree_frame.SetIcon(icon)
 
-        app = application.Application(common.property_panel)
+        app = application.Application()
         common.app_tree = WidgetTree(self.tree_frame, app)
         self.tree_frame.SetSize((300, 300))
-        app.notebook.Show()
+        #app.notebook.Show()
 
-        sizer_tmp = wx.BoxSizer(wx.VERTICAL)
-        sizer_tmp.Add(app.notebook, 1, wx.EXPAND)
-        property_panel.SetSizer(sizer_tmp)
-        sizer_tmp.Fit(property_panel)
+        #sizer_tmp = wx.BoxSizer(wx.VERTICAL)
+        #sizer_tmp.Add(app.notebook, 1, wx.EXPAND)
+        #property_panel.SetSizer(sizer_tmp)
+        #sizer_tmp.Fit(property_panel)
 
         def on_tree_frame_close(event):
             #menu_bar.Check(TREE_ID, False)
@@ -530,24 +658,24 @@ class wxGladeFrame(wx.Frame):
         dialog.Destroy()
 
     def preview(self, event):
-        """\
-        Generate preview of the current loaded project.
+        """Generate preview of the current loaded project.
         
-        A preview can be triggered by keyboard shortcut or by pressing the
-        preview button. The preview can be triggered for all selected widgets.
-        This doesn't mean that the widget is opened for editing.
-        
-        A good indicator for editing is the availability of the preview
-        button.
-       
-        @see: L{edit_windows.PreviewMixin.preview_button}
-        """
-        # Show preview only, if preview_button is available
-        #
-        if not getattr(common.app_tree.cur_widget, 'preview_button', None):
-            return
-        preview_widget = misc.get_toplevel_widget(common.app_tree.cur_widget)
-        if preview_widget is not None:
+        A preview can be triggered by keyboard shortcut or by pressing the preview button.
+        The preview can be triggered for all selected widgets.
+        This doesn't mean that the widget is opened for editing."""
+
+        if not common.app_tree.cur_widget or isinstance(common.app_tree.cur_widget, application.Application):
+            preview_widget = common.app_tree.root.children[0].widget
+        else:
+            preview_widget = misc.get_toplevel_widget(common.app_tree.cur_widget)
+
+        if preview_widget is None: return
+
+        if preview_widget.preview_widget:
+            # preview is already active: close and re-generate
+            preview_widget.preview_widget.Close()
+            wx.CallAfter(preview_widget.preview, None)
+        else:
             preview_widget.preview(None)
 
     def show_tree(self, event):
@@ -613,15 +741,15 @@ class wxGladeFrame(wx.Frame):
             self._open_app(infile, add_to_history=False)
             common.app_tree.app.template_data = None
 
-    def reload_app(self, event):
-        self.ask_save()
-        if not common.app_tree.app.filename:
-            wx.MessageBox(_("Impossible to reload an unsaved application"),
-                          _("Alert"), style=wx.OK|wx.ICON_INFORMATION)
-            return
-        path = common.app_tree.get_selected_path()
-        self._open_app(common.app_tree.app.filename, add_to_history=False)
-        common.app_tree.select_path(path)
+    #def reload_app(self, event):
+        #self.ask_save()
+        #if not common.app_tree.app.filename:
+            #wx.MessageBox(_("Impossible to reload an unsaved application"),
+                          #_("Alert"), style=wx.OK|wx.ICON_INFORMATION)
+            #return
+        #path = common.app_tree.get_selected_path()
+        #self._open_app(common.app_tree.app.filename, add_to_history=False)
+        #common.app_tree.select_path(path)
 
     def open_app(self, event_unused):
         """\
@@ -636,15 +764,23 @@ class wxGladeFrame(wx.Frame):
                                    "XML files (*.xml)|*.xml|All files|*",
                                    flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
                                    default_path=self.cur_dir)
-        if infile:
-            if common.check_autosaved(infile) and \
-                   wx.MessageBox( _("There seems to be auto saved data for this file: do you want to restore it?"),
-                                  _("Auto save detected"), style=wx.ICON_QUESTION|wx.YES_NO ) == wx.YES:
-                common.restore_from_autosaved(infile)
-            else:
-                common.remove_autosaved(infile)
-            self._open_app(infile)
-            self.cur_dir = os.path.dirname(infile)
+        if not infile: return
+        if common.check_autosaved(infile):
+                if wx.MessageBox( _("There seems to be auto saved data for this file: do you want to restore it?"),
+                                 _("Auto save detected"), style=wx.ICON_QUESTION|wx.YES_NO ) == wx.YES:
+                    common.restore_from_autosaved(infile)
+                else:
+                    common.remove_autosaved(infile)
+        if infile == common.app_tree.app.filename:
+            # if we are re-loading the file, go the the previous position
+            path = common.app_tree.get_selected_path()
+        else:
+            path = None
+        self._open_app(infile)
+        self.cur_dir = os.path.dirname(infile)
+
+        if path is not None:
+            common.app_tree.select_path(path)  # re-loaded file -> go to previous position
 
     def _open_app(self, filename_or_filelike, use_progress_dialog=True, add_to_history=True):
         """\
@@ -745,9 +881,11 @@ class wxGladeFrame(wx.Frame):
 
                 return False
 
-        common.app_tree.select_item(common.app_tree.root)
-        common.app_tree.root.widget.show_properties()
+        #common.app_tree.select_item(common.app_tree.root)
+        #common.app_tree.root.widget.show_properties()
         common.property_panel.Reparent(self.property_frame)
+        #common.property_panel.set_widget(common.app_tree.root.widget)
+        misc.set_focused_widget(common.app_tree.root.widget)
 
         # re-enable auto-expansion of nodes
         common.app_tree.auto_expand = True
